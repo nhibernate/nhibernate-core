@@ -476,7 +476,7 @@ namespace NHibernate.Loader
 			return lockModeArray;
 		}
 
-		protected LockMode[] createLockModeArray(int length, LockMode lockMode) 
+		protected LockMode[] CreateLockModeArray(int length, LockMode lockMode) 
 		{
 			LockMode[] lmArray = new LockMode[length];
 			for(int i = 0 ; i < length; i++) 

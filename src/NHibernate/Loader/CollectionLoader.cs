@@ -76,6 +76,7 @@ namespace NHibernate.Loader
 //			sql = select.ToStatementString();
 
 			classPersisters = new ILoadable[joins];
+			lockModeArray = CreateLockModeArray(joins, LockMode.None);
 			for (int i=0; i<joins; i++) classPersisters[i] = (ILoadable) ((OuterJoinableAssociation) associations[i]).Subpersister;
 			this.collectionPersister = persister;
 

@@ -184,7 +184,13 @@ namespace NHibernate.Loader
 			}
 			else 
 			{
-				st = PrepareQueryStatement( SQLString, values, types, namedParams, selection, false, session );
+				// it is okay to convert to and from a string to SqlString and back to a string
+				// because there are no parameters in the SqlString - even though there are parameters
+				// in the string that contains sql.  SqlString will not parse out parameters - it assumes
+				// a string passed to it is a string.
+				st = PrepareQueryStatement( 
+					ApplyLocks(new SqlString(SQLString), lockModes, session.Factory.Dialect).ToString()
+					, values, types, namedParams, selection, false, session );
 			}
 			IDataReader rs = GetResultSet(st, selection, session);
 
