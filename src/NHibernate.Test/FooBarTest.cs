@@ -350,7 +350,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void ForceOuterJoin() 
 		{
 			
@@ -433,9 +433,30 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("IQuery.SetMaxResults() - http://jira.nhibernate.org:8080/browse/NH-93")]
 		public void Limit() 
 		{
+			ISession s = sessions.OpenSession();
+			for( int i=0; i<10; i++) 
+			{
+				s.Save( new Foo() );
+			}
+
+			IEnumerable enumerable = s.CreateQuery("from Foo foo")
+				.SetMaxResults(4)
+				.SetFirstResult(2)
+				.Enumerable();
+
+			int count = 0;
+			foreach(object obj in enumerable) 
+			{
+				count++;
+			}
+
+			Assert.AreEqual( 4, count );
+			Assert.AreEqual( 10, s.Delete("from Foo foo") );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
@@ -484,12 +505,6 @@ namespace NHibernate.Test
 			Assert.IsTrue( row is object[] && ( (object[])row).Length==3 );
 
 
-		}
-
-		[Test]
-		[Ignore("Test not written yet.")]
-		public void Dyna() 
-		{
 		}
 
 		[Test]
@@ -2048,7 +2063,7 @@ namespace NHibernate.Test
 		}
 		
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("IScrollableResults - http://jira.nhibernate.org:8080/browse/NH-37")]
 		public void ScrollableIterator() 
 		{
 		}
@@ -2485,9 +2500,99 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void OrderBy() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Foo foo = new Foo();
+			s.Save(foo);
+			IList list = s.Find("select foo from foo in class Foo, fee in class Fee where foo.Dependent = fee order by foo.String desc, foo.Component.Count asc, fee.id");
+			Assert.AreEqual( 1, list.Count, "order by");
+			Foo foo2 = new Foo();
+			s.Save(foo2);
+			foo.TheFoo = foo2;
+			list = s.Find("select foo.TheFoo, foo.Dependent from foo in class Foo order by foo.TheFoo.String desc, foo.Component.Count asc, foo.Dependent.id");
+			Assert.AreEqual( 1, list.Count, "order by" );
+			list = s.Find("select foo from foo in class NHibernate.DomainModel.Foo order by foo.Dependent.id, foo.Dependent.Fi");
+			Assert.AreEqual( 2, list.Count, "order by");
+			s.Delete(foo);
+			s.Delete(foo2);
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			Many manyB = new Many();
+			s.Save(manyB);
+			One oneB = new One();
+			s.Save(oneB);
+			oneB.Value = "b";
+			manyB.One = oneB;
+			Many manyA = new Many();
+			s.Save(manyA);
+			One oneA = new One();
+			s.Save(oneA);
+			oneA.Value = "a";
+			manyA.One = oneA;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			IEnumerable enumerable = s.Enumerable("SELECT one FROM one IN CLASS " + typeof(One).Name + " ORDER BY one.Value ASC");
+			int count = 0;
+			foreach(One one in enumerable) 
+			{
+				switch(count) 
+				{
+					case 0:
+						Assert.AreEqual( "a", one.Value, "a - ordering failed" );
+						break;
+					case 1:
+						Assert.AreEqual( "b", one.Value, "b - ordering failed" );
+						break;
+					default:
+						Assert.Fail("more than two elements");
+						break;
+				}
+				count++;
+			}
+	
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			enumerable = s.Enumerable("SELECT many.One FROM many IN CLASS " + typeof(Many).Name + " ORDER BY many.One.Value ASC, many.One.id");
+			count = 0;
+			foreach(One one in enumerable) 
+			{
+				switch(count) 
+				{
+					case 0:
+						Assert.AreEqual( "a", one.Value, "'a' should be first element" );
+						break;
+					case 1:
+						Assert.AreEqual( "b", one.Value, "'b' should be second element" );
+						break;
+					default:
+						Assert.Fail("more than 2 elements");
+						break;
+				}
+				count++;
+			}
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			oneA = (One)s.Load( typeof(One), oneA.Key );
+			manyA = (Many)s.Load( typeof(Many), manyA.Key );
+			oneB = (One)s.Load( typeof(One), oneB.Key );
+			manyB = (Many)s.Load( typeof(Many), manyB.Key );
+			s.Delete(manyA);
+			s.Delete(oneA);
+			s.Delete(manyB);
+			s.Delete(oneB);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
@@ -2659,9 +2764,24 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void SerializableType() 
 		{
+			ISession s = sessions.OpenSession();
+			Vetoer v = new Vetoer();
+			v.Strings = new string[] {"foo", "bar", "baz"};
+			s.Save(v);
+			object id = s.Save(v);
+			v.Strings[1] = "osama";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			v = (Vetoer)s.Load( typeof(Vetoer), id );
+			Assert.AreEqual( "osama", v.Strings[1], "serializable type" );
+			s.Delete(v);
+			s.Delete(v);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
