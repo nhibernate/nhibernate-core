@@ -34,7 +34,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Generated SQL contains bad quoting")]
+			//[Ignore("Generated SQL contains bad quoting")]
 		public void FetchInitializedCollection()
 		{
 			ISession s = sessions.OpenSession();
@@ -62,6 +62,31 @@ namespace NHibernate.Test
 			s.Delete(baz);
 			s.Flush();
 
+			s.Close();
+		}
+
+		[Test]
+		public void Sortables()
+		{
+			ISession s = sessions.OpenSession();
+			Baz b = new Baz();
+			IDictionary ss = new Hashtable();
+			ss.Add(b, new Sortable[] {new Sortable("foo") });
+//			ss.Add(b, new Sortable("bar") );
+//			ss.Add(b, new Sortable("baz") );
+			b.sortablez = ss;
+			s.Save(b);
+			s.Flush();
+			s.Close();
+		
+			s = sessions.OpenSession();
+			IList result = s.CreateCriteria(typeof(Baz))
+				.AddOrder( Expression.Order.Asc("name") )
+				.List();
+			b = (Baz) result[0];
+			Assert.IsTrue( b.sortablez.Count==3 );
+			Assert.AreEqual( ( (Sortable) b.sortablez[0] ).name, "bar" );
+			s.Flush();
 			s.Close();
 		}
 
