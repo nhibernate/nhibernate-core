@@ -3503,7 +3503,7 @@ namespace NHibernate.Impl
 				{
 					if (connection==null) throw new HibernateException("session already disconnected");
 
-					if (batcher!=null) batcher.CloseStatements();
+					if (batcher!=null) batcher.CloseCommands();
 					IDbConnection c = connection;
 					connection=null;
 					if (autoClose) 
