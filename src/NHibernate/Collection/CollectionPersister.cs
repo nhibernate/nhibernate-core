@@ -10,7 +10,6 @@ using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
-using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -490,7 +489,7 @@ namespace NHibernate.Collection
 
 		public string SelectClauseFragment(string alias) 
 		{
-			SqlCommand.SelectFragment frag = new SqlCommand.SelectFragment(factory.Dialect)
+			SelectFragment frag = new SelectFragment(factory.Dialect)
 				.SetSuffix(String.Empty)
 				.AddColumns(alias, elementColumnNames, elementColumnAliases);
 			if (hasIndex) frag.AddColumns(alias, indexColumnNames, indexColumnAliases);
