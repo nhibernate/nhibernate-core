@@ -529,6 +529,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\SQLiteDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\SybaseDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -600,6 +605,11 @@
                 />
                 <File
                     RelPath = "Driver\SqlClientDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\SQLiteDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
