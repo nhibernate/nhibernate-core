@@ -37,11 +37,12 @@ namespace NHibernate.Test.SqlCommandTest
 			update.SetIdentityColumn(new string[] {"decimalColumn"}, NHibernate.Decimal);
 			update.SetVersionColumn(new string[] {"versionColumn"}, (IVersionType)NHibernate.Int32);
 
+			update.AddWhereFragment("a=b");
 			SqlString sqlString = update.ToSqlString();
 			Parameter[] actualParams = new Parameter[4];
 			int numOfParameters = 0;
 
-			string expectedSql = "UPDATE test_update_builder SET intColumn = :intColumn, longColumn = :longColumn, literalColumn = 0, stringColumn = 5 WHERE decimalColumn = :decimalColumn AND versionColumn = :versionColumn";
+			string expectedSql = "UPDATE test_update_builder SET intColumn = :intColumn, longColumn = :longColumn, literalColumn = 0, stringColumn = 5 WHERE decimalColumn = :decimalColumn AND versionColumn = :versionColumn AND a=b";
 
 			Assertion.AssertEquals("SQL String", expectedSql , sqlString.ToString());
 			

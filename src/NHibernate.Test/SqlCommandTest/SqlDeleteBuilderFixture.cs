@@ -32,12 +32,13 @@ namespace NHibernate.Test.SqlCommandTest
 			delete.SetIdentityColumn(new string[] {"decimalColumn"}, NHibernate.Decimal);
 			delete.SetVersionColumn(new string[] {"versionColumn"}, (IVersionType)NHibernate.Int32);
 
+			delete.AddWhereFragment("a=b");
 			SqlString sqlString = delete.ToSqlString();
 			Parameter[] actualParams = new Parameter[2];
 			int numOfParameters = 0;
 			
 
-			string expectedSql = "DELETE FROM test_delete_builder WHERE decimalColumn = :decimalColumn AND versionColumn = :versionColumn";
+			string expectedSql = "DELETE FROM test_delete_builder WHERE decimalColumn = :decimalColumn AND versionColumn = :versionColumn AND a=b";
 			Assertion.AssertEquals("SQL String", expectedSql , sqlString.ToString());
 			
 			foreach(object part in sqlString.SqlParts) {

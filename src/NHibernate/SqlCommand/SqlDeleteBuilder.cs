@@ -73,6 +73,16 @@ namespace NHibernate.SqlCommand {
 			return this;
 		}
 
+		/// <summary>
+		/// Adds a string to the WhereFragement
+		/// </summary>
+		/// <param name="whereString">A well formed sql string with no parameters.</param>
+		/// <returns>The SqlDeleteBuilder</returns>
+		public SqlDeleteBuilder AddWhereFragment(string whereString) 
+		{
+			whereStrings.Add( new SqlString(whereString) );
+			return this;
+		}
 
 		#region ISqlStringBuilder Members
 
