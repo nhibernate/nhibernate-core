@@ -47,7 +47,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
 		{
-			session.Factory.GetIdentifierType( AssociatedClass )
+			GetIdentifierOrUniqueKeyType( session.Factory )
 				.NullSafeSet( cmd, GetIdentifier( value, session ), index, session );
 		}
 
@@ -81,8 +81,14 @@ namespace NHibernate.Type
 		/// </returns>
 		public override object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
 		{
-			return session.Factory.GetIdentifierType( AssociatedClass )
+			object id = GetIdentifierOrUniqueKeyType( session.Factory )
 				.NullSafeGet( rs, names, session, owner );
+
+			if ( id != null )
+			{
+				session.ScheduleBatchLoad( AssociatedClass, id );
+			}
+			return id;
 		}
 
 		/// <summary>
