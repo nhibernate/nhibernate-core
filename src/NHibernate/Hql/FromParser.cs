@@ -226,7 +226,7 @@ namespace NHibernate.Hql {
 							{
 								q.SetCollectionToFetch( peParser.CollectionRole, peParser.CollectionName, peParser.CollectionOwnerName );
 							}
-							q.addEntityToFetch(entityName);
+							q.AddEntityToFetch(entityName);
 						
 							afterFetch = false;
 						}

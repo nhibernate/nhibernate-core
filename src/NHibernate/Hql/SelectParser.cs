@@ -16,17 +16,11 @@ namespace NHibernate.Hql
 	public class SelectParser : IParser 
 	{
 		private ArrayList aggregateFuncTokenList = new ArrayList();
-		private static StringCollection aggregateFunctions = new StringCollection();
+		private static IDictionary aggregateFunctions = new Hashtable();
 		private static StringCollection countArguments = new StringCollection();
 		
 		static SelectParser() 
 		{
-			aggregateFunctions.Add("count");
-			aggregateFunctions.Add("avg");
-			aggregateFunctions.Add("max");
-			aggregateFunctions.Add("min");
-			aggregateFunctions.Add("sum");
-				
 			countArguments.Add("distinct");
 			countArguments.Add("all");
 			countArguments.Add("*");
@@ -115,7 +109,7 @@ namespace NHibernate.Hql
 				else if (aggregate && ready) 
 				{
 					q.AppendScalarSelectToken(token);
-					aggregateFunctions.RemoveAt(0);
+					aggregateFuncTokenList.RemoveAt(0);
 					if (aggregateFuncTokenList.Count < 1) 
 					{
 						aggregate = false;
@@ -199,21 +193,21 @@ namespace NHibernate.Hql
 		}
 		public bool AggregateHasArgs(String funcToken, QueryTranslator q) 
 		{
-			Hashtable funcMap = q.AggregateFunctions;
+			IDictionary funcMap = q.AggregateFunctions;
 			IQueryFunctionInfo funcInfo = (IQueryFunctionInfo)funcMap[funcToken];
 			return funcInfo.IsFunctionArgs;
 		}
 
 		public bool AggregateFuncNoArgsHasParenthesis(String funcToken, QueryTranslator q) 
 		{
-			Hashtable funcMap = q.AggregateFunctions;
+			IDictionary funcMap = q.AggregateFunctions;
 			IQueryFunctionInfo funcInfo = (IQueryFunctionInfo)funcMap[funcToken];
 			return funcInfo.IsFunctionNoArgsUseParanthesis;
 		}
 
 		public IType AggregateType( ArrayList funcTokenList, IType type, QueryTranslator q) 
 		{ 
-			Hashtable funcMap = q.AggregateFunctions;
+			IDictionary funcMap = q.AggregateFunctions;
 			IType argType = type;
 			IType retType = type;
 			for (int i=0; i<funcTokenList.Count; i++) 

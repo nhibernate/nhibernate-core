@@ -422,7 +422,7 @@ namespace NHibernate.Hql
 
 		private void AddJoin( JoinFragment ojf, QueryTranslator q ) 
 		{
-			JoinFragment fromClause = q.CreateJoinFragment();
+			JoinFragment fromClause = q.CreateJoinFragment(true);
 			fromClause.AddJoins( ojf.ToFromFragmentString, String.Empty );
 			q.AddJoin( pathExpressionParser.Name, fromClause );
 			AddToCurrentJoin( ojf.ToWhereFragmentString );		
