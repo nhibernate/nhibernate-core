@@ -154,5 +154,22 @@ namespace NHibernate.Driver
 		/// </remarks>
 		bool SupportsMultipleOpenReaders { get; }
 
+		/// <summary>
+		/// Does this Driver support IDbCommand.Prepare().
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// A value of <c>false</c> indicates that an exception would be thrown or the 
+		/// company that produces the Driver we are wrapping does not recommend using
+		/// IDbCommand.Prepare().
+		/// </para>
+		/// <para>
+		/// A value of <c>true</c> indicates that calling IDbCommand.Prepare() will function
+		/// fine on this Driver.
+		/// </para>
+		/// </remarks>
+		bool SupportsPreparingCommands { get; }
+
+
 	}
 }

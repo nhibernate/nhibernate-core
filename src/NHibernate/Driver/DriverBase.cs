@@ -80,6 +80,11 @@ namespace NHibernate.Driver
 			get { return true;}
 		}
 
+		public virtual bool SupportsPreparingCommands 
+		{ 
+			get { return true; }
+		}
+
 		#endregion
 	}
 }
