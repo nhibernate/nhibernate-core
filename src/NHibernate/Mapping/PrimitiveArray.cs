@@ -1,6 +1,9 @@
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// A primitive array has a primary key consisting 
+	/// of the key columns + index column.
+	/// </summary>
 	public class PrimitiveArray : Array
 	{
 		/// <summary>

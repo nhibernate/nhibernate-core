@@ -3,7 +3,10 @@ using System.Collections;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// The mapping for a component, composite element, composite identifier,
+	/// etc.
+	/// </summary>
 	public class Component : SimpleValue
 	{
 		private ArrayList properties = new ArrayList();

@@ -2,7 +2,10 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// A map has a primary key consisting of the key columns 
+	/// + index columns.
+	/// </summary>
 	public class Map : IndexedCollection
 	{
 		/// <summary>

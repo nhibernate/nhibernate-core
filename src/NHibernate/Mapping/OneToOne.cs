@@ -4,7 +4,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// A mapping for a <c>one-to-one</c> association.
+	/// </summary>
 	public class OneToOne : ToOne
 	{
 		private bool constrained;
@@ -46,7 +48,6 @@ namespace NHibernate.Mapping
 		public override void CreateForeignKey()
 		{
 			if( constrained && ReferencedPropertyName == null )
-			//if( constrained )
 			{
 				// TODO: 2.1+ handle the case of a foreign key to something other than the pk
 				CreateForeignKeyOfClass( ( ( EntityType ) Type ).AssociatedClass );

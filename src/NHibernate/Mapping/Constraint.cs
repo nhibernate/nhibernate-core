@@ -1,11 +1,10 @@
 using System.Collections;
-using System.Text;
 using NHibernate.Engine;
 
 namespace NHibernate.Mapping
 {
 	/// <summary>
-	/// Base class for Constraints in the database.
+	/// Base class for relational constraints in the database.
 	/// </summary>
 	public abstract class Constraint : IRelationalModel
 	{

@@ -5,7 +5,9 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// A mapping for a <c>one-to-many</c> association.
+	/// </summary>
 	public class OneToMany : IValue
 	{
 		private EntityType type;

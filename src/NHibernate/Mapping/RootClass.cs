@@ -8,7 +8,9 @@ using NHibernate.Persister;
 namespace NHibernate.Mapping
 {
 	/// <summary>
-	/// Declaration of a System.Type mapped with the <c>&lt;class&gt;</c> element.
+	/// Declaration of a System.Type mapped with the <c>&lt;class&gt;</c> element that
+	/// is the root class of a table-per-sublcass, or table-per-concrete-class 
+	/// inheritance heirarchy.
 	/// </summary>
 	public class RootClass : PersistentClass
 	{

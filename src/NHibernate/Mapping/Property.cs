@@ -5,7 +5,10 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// Mapping for a property of a .NET class (entity
+	/// or component).
+	/// </summary>
 	public class Property
 	{
 		private string name;

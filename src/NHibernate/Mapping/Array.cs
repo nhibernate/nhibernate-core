@@ -1,4 +1,3 @@
-using NHibernate.Collection;
 using NHibernate.Type;
 
 namespace NHibernate.Mapping

@@ -6,7 +6,10 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// Mapping for a collection.  Subclasses specialize to particular
+	/// collection styles.
+	/// </summary>
 	public abstract class Collection : IFetchable, IValue
 	{
 		private static readonly ICollection EmptyColumns = new ArrayList();
@@ -251,6 +254,7 @@ namespace NHibernate.Mapping
 
 		private void CreateForeignKeys( )
 		{
+			// for inverse collections, let the "other end" hanlde it
 			if ( !IsInverse )
 			{
 				Element.CreateForeignKey();

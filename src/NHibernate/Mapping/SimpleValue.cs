@@ -233,12 +233,6 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public virtual bool IsAny
-		{
-			get { return false; }
-		}
-
-		/// <summary></summary>
 		public Formula Formula
 		{
 			get { return formula; }

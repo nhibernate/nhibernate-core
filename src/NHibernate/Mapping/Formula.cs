@@ -4,7 +4,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// A formula is a derived column value.
+	/// </summary>
 	public class Formula
 	{
 		private static int formulaUniqueInteger = 0;

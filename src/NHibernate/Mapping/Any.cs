@@ -3,11 +3,16 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// A NHibernate <c>any</c> type.
+	/// </summary>
+	/// <remarks>
+	/// Polymorphic association to one of several tables.
+	/// </remarks>
 	public class Any : SimpleValue
 	{
 		private IType identifierType;
-		private IType metaType = TypeFactory.GetTypeType();
+		private IType metaType = NHibernateUtil.Class; 
 
 		/// <summary>
 		/// 
@@ -15,12 +20,6 @@ namespace NHibernate.Mapping
 		/// <param name="table"></param>
 		public Any( Table table ) : base( table )
 		{
-		}
-
-		/// <summary></summary>
-		public override bool IsAny
-		{
-			get { return true; }
 		}
 
 		/// <summary>
