@@ -663,6 +663,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\EqPropertyExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\Expression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -698,6 +703,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\LePropertyExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\LikeExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -709,6 +719,11 @@
                 />
                 <File
                     RelPath = "Expression\LtExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\LtPropertyExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -734,6 +749,11 @@
                 />
                 <File
                     RelPath = "Expression\OrExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\PropertyExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -500,10 +500,9 @@ namespace NHibernate.Test
 			s.Save(f);
 			s.Flush();
 
-			//TODO: need to add PropertyExpressions to Expression namespace.
 			IList list = s.CreateCriteria(typeof(Foo))
 				.Add( Expression.Expression.Eq( "Integer", f.Integer ) )
-				//.Add( Expression.Expression.EqProperty("integer", "integer") )
+				.Add( Expression.Expression.EqProperty("Integer", "Integer") )
 				.Add( Expression.Expression.Like( "String", f.String) )
 				.Add( Expression.Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean} ) )
 				.SetFetchMode("TheFoo", FetchMode.Eager)

@@ -157,6 +157,39 @@ namespace NHibernate.Expression
 			return new NotNullExpression(propertyName); 
 		}
 
+		
+		/// <summary>
+		/// Apply an "equal" constraint to two properties
+		/// </summary>
+		/// <param name="propertyName">The lhs Property Name</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="EqPropertyExpression"/> .</returns>
+		public static Expression EqProperty(String propertyName, String otherPropertyName) 
+		{
+			return new EqPropertyExpression(propertyName, otherPropertyName);
+		}
+		
+		/// <summary>
+		/// Apply a "less than" constraint to two properties
+		/// </summary>
+		/// <param name="propertyName">The lhs Property Name</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="LtPropertyExpression"/> .</returns>
+		public static Expression LtProperty(String propertyName, String otherPropertyName) 
+		{
+			return new LtPropertyExpression(propertyName, otherPropertyName);
+		}
+		
+		/// <summary>
+		/// Apply a "less than or equal" constraint to two properties
+		/// </summary>
+		/// <param name="propertyName">The lhs Property Name</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="LePropertyExpression"/> .</returns>
+		public static Expression LeProperty(String propertyName, String otherPropertyName) 
+		{
+			return new LePropertyExpression(propertyName, otherPropertyName);
+		}
 		/// <summary>
 		/// Return the conjuction of two expressions
 		/// </summary>
