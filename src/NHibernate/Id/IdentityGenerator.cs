@@ -1,24 +1,37 @@
 using System;
 using NHibernate.Engine;
 
-namespace NHibernate.Id {
+namespace NHibernate.Id 
+{
 	/// <summary>
-	/// The general contract between a class that generates unique
-	/// identifiers and the <c>Session</c>. It is not intended that
-	/// this interface ever be exposed to the application. It <b>is</b>
-	/// intended that users implement this interface to provide
-	/// custom identifier generation strategies.
-	/// 
-	/// Implementors should provide a public default constructor.
-	/// 
-	/// Implementations that accept configuration parameters should
-	/// also implement <c>Configurable</c>.
-	/// 
-	/// Implementors MUST be threadsafe.
+	/// Indicates to the <see cref="ISession"/> that identity
+	/// (ie. identity/autoincrement column) key generation should be used.
 	/// </summary>
-	public class IdentityGenerator : IIdentifierGenerator {
-		
-		public object Generate(ISessionImplementor s, object obj) {
+	/// <remarks>
+	/// <para>
+	///	This id generation strategy is specified in the mapping file as 
+	///	<c>&lt;generator class="identity"&gt;</c>
+	/// </para>
+	/// <para>
+	/// This indicates to NHibernate that the database generates the id when
+	/// the entity is inserted.
+	/// </para>
+	/// </remarks>
+	public class IdentityGenerator : IIdentifierGenerator 
+	{
+		/// <summary>
+		/// This class can not generate the <c>id</c>.  It has to get the 
+		/// value from the database.
+		/// </summary>
+		/// <param name="s">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
+		/// <param name="obj">The entity the id is being generated for.</param>
+		/// <returns>
+		/// <c>null</c> because this <see cref="IIdentifierGenerator"/> can not generate
+		/// an id.  The entity must be inserted into the database to get the database 
+		/// generated id.
+		/// </returns>
+		public object Generate(ISessionImplementor s, object obj) 
+		{
 			return null;
 		}
 	}
