@@ -1,14 +1,29 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="net.sf.hibernate.test.One" table="one">
-		<id name="key" column="one_key">
+	<class 
+		name="NHibernate.DomainModel.One, NHibernate.DomainModel" 
+		table="one"
+	>
+		<id 
+			name="Key" 
+			column="one_key"
+		>
 			<generator class="native" />
 		</id>
-		<property name="x" />
-		<property column="one_value" name="value" />
-		<set name="manies" inverse="true" lazy="true">
+		<property name="X" />
+		<property 
+			column="one_value" 
+			name="Value" 
+		/>
+		<set 
+			name="Manies" 
+			inverse="true" 
+			lazy="true"
+		>
 			<key column="one_key" />
-			<one-to-many class="net.sf.hibernate.test.Many" />
+			<one-to-many 
+				class="NHibernate.DomainModel.Many, NHibernate.DomainModel" 
+			/>
 		</set>
 	</class>
 </hibernate-mapping>

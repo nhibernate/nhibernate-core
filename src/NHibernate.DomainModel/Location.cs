@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace NHibernate.DomainModel 
 {
@@ -12,7 +13,7 @@ namespace NHibernate.DomainModel
 		private string _city;
 		private string _streetName;
 		private string _countryCode;
-		// private Locale _locale; TODO: how to do this in .net??
+		private CultureInfo _locale;
 		private string _description;
 		
 		public int StreetNumber
@@ -46,6 +47,11 @@ namespace NHibernate.DomainModel
 			set { _description = value; }
 		}
 
+		public CultureInfo Locale
+		{
+			get { return _locale; }
+			set { _locale = value; }
+		}
 
 		#region System.Object Members
 

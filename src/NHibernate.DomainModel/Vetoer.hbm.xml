@@ -1,10 +1,16 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="net.sf.hibernate.test.Vetoer">
-		<id type="string" column="id_" length="32">
+	<class 
+		name="NHibernate.DomainModel.Vetoer, NHibernate.DomainModel"
+	>
+		<id 
+			type="String(32)" 
+			column="id_" 
+			length="32"
+		>
 			<generator class="uuid.hex" />
 		</id>
-		<property name="name" />
-		<property name="strings" />
+		<property name="Name" />
+		<property name="Strings" /><!-- TODO: fix that NH is not recognizing this as an array -->
 	</class>
 </hibernate-mapping>

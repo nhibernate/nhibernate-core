@@ -1,13 +1,24 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="net.sf.hibernate.test.Location">
+	<class 
+		name="NHibernate.DomainModel.Location, NHibernate.DomainModel"
+	>
 		<composite-id>
-			<key-property name="streetNumber" />
-			<key-property name="streetName" length="20" />
-			<key-property name="city" length="20" />
-			<key-property name="countryCode" length="2" />
+			<key-property name="StreetNumber"  />
+			<key-property 
+				name="StreetName" 
+				length="20" 
+			/>
+			<key-property 
+				name="City" 
+				length="20" 
+			/>
+			<key-property 
+				name="CountryCode" 
+				length="2" 
+			/>
 		</composite-id>
-		<property name="locale" />
-		<property name="description" />
+		<property name="Locale" />
+		<property name="Description" />
 	</class>
 </hibernate-mapping>

@@ -2,11 +2,11 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="NHibernate.DomainModel.Fum, NHibernate.DomainModel">
 		<composite-id name="id" unsaved-value="any">
-			<key-property name="string">
+			<key-property name="String">
 				<column name="string_" length="10" />
 			</key-property>
-			<key-property name="short" column="short_" />
-			<key-property name="date" column="date_" type="DateTime" />
+			<key-property name="Short" column="short_" />
+			<key-property name="Date" column="date_" type="DateTime" />
 		</composite-id>
 		<version name="lastUpdated" type="DateTime" />
 		<property name="fum" not-null="true" />

@@ -6,53 +6,40 @@ namespace NHibernate.DomainModel
 	[Serializable]
 	public class FumCompositeID 
 	{
-		String string_;
-		DateTime date_;
-		short short_;
+		String _string;
+		DateTime _date;
+		short _short;
+	
+		public string String
+		{
+			get { return _string; }
+			set { _string = value; }
+		}
+		public DateTime Date
+		{
+			get { return _date; }
+			set { _date = value; }
+		}
+		public short Short
+		{
+			get { return _short; }
+			set { _short = value; }
+		}
+
 		
+		#region System.Object Members
+
 		public override bool Equals(object obj)
 		{
 			FumCompositeID that = (FumCompositeID) obj;
-			return this.string_.Equals(that.string_) && this.short_==that.short_;
+			return this._string.Equals(that._string) && this._short==that._short;
 		}
 
 		public override int GetHashCode()
 		{
-			return string_.GetHashCode();
+			return _string.GetHashCode();
 		}
 
-		public string @string
-		{
-			get
-			{
-				return string_;
-			}
-			set
-			{
-				this.string_ = value;
-			}
-		}
-		public DateTime date
-		{
-			get
-			{
-				return date_;
-			}
-			set
-			{
-				this.date_ = value;
-			}
-		}
-		public short @short
-		{
-			get
-			{
-				return short_;
-			}
-			set
-			{
-				this.short_ = value;
-			}
-		}
+		#endregion
 	}
 }

@@ -13,7 +13,7 @@
 	/>
 	<class 
 		name="NHibernate.DomainModel.Container, NHibernate.DomainModel" 
-		proxy="net.sf.hibernate.test.Container"
+		proxy="NHibernate.DomainModel.Container, NHibernate.DomainModel"
 	>
 		<id 
 			name="Id" 
@@ -39,7 +39,7 @@
 			<key column="container_id2" />
 			<index column="list_index" />
 			<many-to-many 
-				class="net.sf.hibernate.test.Simple" 
+				class="NHibernate.DomainModel.Simple, NHibernate.DomainModel" 
 			/>
 		</list>
 		<list 
@@ -132,7 +132,7 @@
 			<key column="container_id" />
 			<index 
 				column="idx" 
-				type="string" 
+				type="String(32)" 
 				length="32" 
 			/>
 			<composite-element 

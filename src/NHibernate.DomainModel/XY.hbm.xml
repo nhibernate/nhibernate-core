@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="net.sf.hibernate.test.X">
-		<id name="id" unsaved-value="0">
+	<class name="NHibernate.DomainModel.X, NHibernate.DomainModel">
+		<id name="Id" unsaved-value="0">
 			<generator class="foreign">
-				<param name="property">y</param>
+				<param name="property">Y</param>
 			</generator>
 		</id>
-		<one-to-one name="y" constrained="true" cascade="all" />
+		<one-to-one name="Y" constrained="true" cascade="all" />
 	</class>
-	<class name="net.sf.hibernate.test.Y">
-		<id name="id">
+	<class name="NHibernate.DomainModel.Y, NHibernate.DomainModel">
+		<id name="Id">
 			<generator class="hilo" />
 		</id>
-		<property name="x" />
-		<one-to-one name="theX" cascade="save-update" />
+		<property name="X" />
+		<one-to-one name="TheX" cascade="save-update" />
 	</class>
 </hibernate-mapping>

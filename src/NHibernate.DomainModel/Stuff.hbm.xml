@@ -1,29 +1,67 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="net.sf.hibernate.test.MoreStuff">
+	<class 
+		name="NHibernate.DomainModel.MoreStuff, NHibernate.DomainModel"
+	>
 		<composite-id>
-			<key-property name="intId" />
-			<key-property name="stringId" length="32" />
+			<key-property 
+				name="IntId" 
+			/>
+			<key-property 
+				name="StringId" 
+				length="32" 
+			/>
 		</composite-id>
-		<property name="name" />
-		<bag name="stuffs" inverse="true" lazy="false" cascade="all">
+		<property name="Name" />
+		<bag 
+			name="Stuffs" 
+			inverse="true" 
+			lazy="false" 
+			cascade="all"
+		>
 			<key>
 				<!--unfortunately have to specify not-null here because of limitation in schema export....-->
-				<column name="moreInt" not-null="true" />
-				<column name="moreString" not-null="true" length="32" />
+				<column 
+					name="moreInt" 
+					not-null="true" 
+				/>
+				<column 
+					name="moreString" 
+					not-null="true" 
+					length="32" 
+				/>
 			</key>
-			<one-to-many class="net.sf.hibernate.test.Stuff" />
+			<one-to-many 
+				class="NHibernate.DomainModel.Stuff, NHibernate.DomainModel" 
+			/>
 		</bag>
 	</class>
-	<class name="net.sf.hibernate.test.Stuff">
+	<class 
+		name="NHibernate.DomainModel.Stuff, NHibernate.DomainModel"
+	>
 		<composite-id unsaved-value="any">
-			<key-property name="id" />
-			<key-many-to-one name="foo" class="net.sf.hibernate.test.Foo" />
-			<key-many-to-one name="moreStuff" class="net.sf.hibernate.test.MoreStuff">
-				<column name="moreInt" />
-				<column name="moreString" length="32" />
+			<key-property name="Id" />
+			<key-many-to-one 
+				name="Foo" 
+				class="NHibernate.DomainModel.Foo, NHibernate.DomainModel" 
+			/>
+			<key-many-to-one 
+				name="MoreStuff" 
+				class="NHibernate.DomainModel.MoreStuff, NHibernate.DomainModel"
+			>
+			
+				<column 
+					name="moreInt" 
+				/>
+				<column 
+					name="moreString" 
+					length="32" 
+				/>
 			</key-many-to-one>
 		</composite-id>
-		<property name="property" />
+		<!--
+			TODO: in h2.0.3 this is mapped to a TimeZone - what to use in .net???
+			<property name="Property" />
+		-->
 	</class>
 </hibernate-mapping>

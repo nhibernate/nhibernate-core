@@ -1,10 +1,20 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="net.sf.hibernate.test.Many" table="many">
-		<id name="key" column="many_key">
+	<class 
+		name="NHibernate.DomainModel.Many, NHibernate.DomainModel" 
+		table="many"
+	>
+		<id 
+			name="Key" 
+			column="many_key"
+		>
 			<generator class="native" />
 		</id>
-		<property name="x" />
-		<many-to-one name="one" column="one_key" class="net.sf.hibernate.test.One" />
+		<property name="X" />
+		<many-to-one 
+			name="One" 
+			column="one_key" 
+			class="NHibernate.DomainModel.One, NHibernate.DomainModel" 
+		/>
 	</class>
 </hibernate-mapping>

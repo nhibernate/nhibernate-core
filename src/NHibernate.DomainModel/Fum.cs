@@ -23,9 +23,9 @@ namespace NHibernate.DomainModel
 			_lastUpdated = DateTime.Now;
 			
 			FumCompositeID fid = new FumCompositeID();
-			fid.date= new DateTime(2004, 4, 29, 9, 50, 0, 0);
-			fid.@short= (short) ( id.@short + 33 );
-			fid.@string= id.@string + "dd";
+			fid.Date= new DateTime(2004, 4, 29, 9, 50, 0, 0);
+			fid.Short= (short) ( id.Short + 33 );
+			fid.String= id.String + "dd";
 			
 			Fum f = new Fum();
 			f.id = fid;
