@@ -425,36 +425,48 @@ namespace NHibernate.DomainModel
 			Foo other = (Foo)obj;
 			if ( _bytes!=other._bytes ) 
 			{
-				if ( _bytes==null || other._bytes==null ) return false;
-				if ( _bytes.Length!=other._bytes.Length ) return false;
+				if ( _bytes==null || other.Bytes==null ) return false;
+				if ( _bytes.Length!=other.Bytes.Length ) return false;
 				for ( int i=0; i< _bytes.Length; i++) 
 				{
-					if ( _bytes[i] != other._bytes[i] ) return false;
+					if ( _bytes[i] != other.Bytes[i] ) return false;
+				}
+			}
+
+			if(_binary!=other.Binary) 
+			{
+				if (_binary==null || other.Binary==null) return false;
+				if (_binary.Length!=other.Binary.Length) return false;
+				for(int i=0; i< _binary.Length; i++) 
+				{
+					if( _binary[i]!=other.Binary[i] ) return false;
 				}
 			}
 		
-			return ( _bool == other._bool )
-				&& ( ( _boolean == other._boolean ) || ( _boolean.Equals(other._boolean) ) )
-				&& ( ( _byte == other._byte ) || ( _byte.Equals(other._byte) ) )
+			return ( _bool == other.Bool )
+				&& ( ( _boolean == other.Boolean ) || ( _boolean.Equals(other.Boolean) ) )
+				&& ( ( _byte == other.Byte ) || ( _byte.Equals(other.Byte) ) )
 				//&& ( ( this._date == other._date ) || ( this._date.getDate() == other._date.getDate() && this._date.getMonth() == other._date.getMonth() && this._date.getYear() == other._date.getYear() ) )
-				&& ( ( _double == other._double ) || ( _double.Equals(other._double) ) )
-				&& ( ( _float == other._float ) || ( _float.Equals(other._float) ) )
-				&& ( _int == other._int )
-				&& ( ( _integer == other._integer ) || ( _integer.Equals(other._integer) ) )
-				&& ( ( _long == other._long ) || ( _long.Equals(other._long) ) )
-				&& ( _null == other._null )
-				&& ( ( _short == other._short ) || ( _short.Equals(other._short) ) )
-				&& ( ( _string == other._string) || ( _string.Equals(other._string) ) )
+				&& ( ( _double == other.Double ) || ( _double.Equals(other.Double) ) )
+				&& ( ( _float == other.Float ) || ( _float.Equals(other.Float) ) )
+				&& ( _int == other.Int )
+				&& ( ( _integer == other.Integer ) || ( _integer.Equals(other.Integer) ) )
+				&& ( ( _long == other.Long ) || ( _long.Equals(other.Long) ) )
+				&& ( _null == other.NullInt32 )
+				&& ( ( _short == other.Short ) || ( _short.Equals(other.Short) ) )
+				&& ( ( _string == other.String) || ( _string.Equals(other.String) ) )
 				//&& ( ( this._timestamp==other._timestamp) || ( this._timestamp.getDate() == other._timestamp.getDate() && this._timestamp.getYear() == other._timestamp.getYear() && this._timestamp.getMonth() == other._timestamp.getMonth() ) )
-				&& ( _zero == other._zero )
-				&& ( ( _foo == other._foo ) || ( _foo.Key.Equals( other._foo.Key ) ) )
+				&& ( _zero == other.Zero )
+				&& ( ( _foo == other.TheFoo ) || ( _foo.Key.Equals( other.TheFoo.Key ) ) )
 				&& ( ( _blob == other.Blob ) || ( _blob.Equals(other.Blob) ) )
 				&& ( _yesno == other.YesNo )
 				&& ( _status == other.Status )
-				&& ( ( _binary == other.Binary ) || _binary.Equals(other.Binary))
+				// moved binary to its own loop - .net's Collections don't implement Equals() like java's collections.
+				//&& ( ( _binary == other.Binary ) || _binary.Equals(other.Binary))
 				&& ( _key.Equals(other.Key) )
 				&& ( _locale.Equals(other.Locale) )
-				&& ( ( _custom == other.Custom ) || ( _custom[0].Equals(other.Custom[0]) && _custom[1].Equals(other.Custom[1]) ) );
+				&& ( ( _custom == other.Custom ) || ( _custom[0].Equals(other.Custom[0]) && _custom[1].Equals(other.Custom[1]) ) )
+				;
 		}
 
 //		public override int GetHashCode()
