@@ -153,10 +153,10 @@ namespace NHibernate.Persister
 		bool HasIdentifierProperty { get; }
 
 		/// <summary>
-		/// 
+		/// Gets if the Type has a Property for the &lt;id&gt; or uses a &lt;composite-id&gt;
+		/// to store the id.
 		/// </summary>
-		/// <returns></returns>
-		//TODO: Added in H2.0.3 - what exactly does it do...
+		/// <returns><c>true if there is a Identifier Property or Composite Identifier.</c></returns>
 		bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier{get;}
 
 		/// <summary>
@@ -169,8 +169,8 @@ namespace NHibernate.Persister
 		/// <summary>
 		/// Set the identifier of an instance (or do nothing if no identifier property)
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="id"></param>
+		/// <param name="obj">The object to set the Id property on.</param>
+		/// <param name="id">The value to set the Id property to.</param>
 		void SetIdentifier(object obj, object id);
 
 		/// <summary>
@@ -281,8 +281,22 @@ namespace NHibernate.Persister
 		/// </summary>
 		string[] PropertyNames { get; }
 
+		/// <summary>
+		/// Gets if the Property is updatable
+		/// </summary>
+		/// <value><c>true</c> if the Property's value can be updated.</value>
+		/// <remarks>
+		/// This is for formula columns and if the user sets the update attribute on the &lt;property&gt; element.
+		/// </remarks>
 		bool[] PropertyUpdateability { get; }
 
+		/// <summary>
+		/// Gets if the Property is insertable.
+		/// </summary>
+		/// <value><c>true</c> if the Property's value can be inserted.</value>
+		/// <remarks>
+		/// This is for formula columns and if the user sets the insert attribute on the &lt;property&gt; element.
+		/// </remarks>
 		bool[] PropertyInsertability { get; }
 
 		/// <summary>

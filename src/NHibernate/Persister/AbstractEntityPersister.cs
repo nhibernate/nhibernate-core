@@ -116,9 +116,7 @@ namespace NHibernate.Persister
 				.ToSqlStringFragment(false);
 		}
 
-		//TODO: not in same spot in h2.0.3
-		public abstract string[] ToColumns(string name, string path) ;
-
+		
 		public virtual IType GetPropertyType(string path) 
 		{
 			return (IType) typesByPropertyPath[path];
@@ -828,6 +826,7 @@ namespace NHibernate.Persister
 		public abstract SqlString PropertySelectFragment(string alias, string suffix);
 		public abstract string TableName { get; }
 		public abstract string[] ToColumns(string name, int i);
+		public abstract string[] ToColumns(string name, string path) ;
 		public abstract SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 		public abstract string DiscriminatorColumnName { get; }
 		public abstract string[] GetSubclassPropertyColumnNames(int i);
