@@ -119,9 +119,19 @@ namespace NHibernate.Dialect
 			get { return 8000; }
 		}
 
+		public override int MaxBinaryBlobSize 
+		{
+			get { return 2147483647; }
+		}
+		
 		public override int MaxBinarySize
 		{
 			get { return 8000; }
+		}		
+
+		public override int MaxStringClobSize 
+		{
+			get { return 1073741823; }
 		}
 
 		public override int MaxStringSize

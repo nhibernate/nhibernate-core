@@ -507,28 +507,20 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// Setting the value to 0 indicates that there is no Maximum Size or that it 
-		/// does not need to be set to Prepare the IDbCommand.
-		/// </para>
-		/// <para>
 		/// Currently the only Driver that needs to worry about setting the Param size
 		/// is MsSql
 		/// </para>
 		/// </remarks>
 		public virtual int MaxAnsiStringSize 
 		{
-			get { throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract"); }
+			get { throw new NotImplementedException("should be implemented by subclass if needed."); }
 		}
 
 		/// <summary>
 		/// The largest value that can be set in IDbDataParameter.Size for a parameter
-		/// that contains a Binary.
+		/// that contains a DbType.Binary value.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// Setting the value to 0 indicates that there is no Maximum Size or that it 
-		/// does not need to be set to Prepare the IDbCommand.
-		/// </para>
 		/// <para>
 		/// Currently the only Driver that needs to worry about setting the Param size
 		/// is MsSql
@@ -536,12 +528,42 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public virtual int MaxBinarySize 
 		{
-			get { throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract"); }
+			get { throw new NotImplementedException("should be implemented by subclass if needed."); }
 		}
 
 		/// <summary>
 		/// The largest value that can be set in IDbDataParameter.Size for a parameter
-		/// that contains an Unicode String.
+		/// that contains a DbType.Binary value that is written to a BLOB column.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Currently the only Driver that needs to worry about setting the Param size
+		/// is MsSql
+		/// </para>
+		/// </remarks>
+		public virtual int MaxBinaryBlobSize 
+		{
+			get { throw new NotImplementedException("should be implemented by subclass if needed."); }
+		}
+
+		/// <summary>
+		/// The largest value that can be set in IDbDataParameter.Size for a parameter
+		/// that contains a Unicode String value that is written to a CLOB column.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Currently the only Driver that needs to worry about setting the Param size
+		/// is MsSql.  		
+		/// </para>
+		/// </remarks>
+		public virtual int MaxStringClobSize 
+		{
+			get { throw new NotImplementedException("should be implemented by subclass if needed."); }
+		}
+
+		/// <summary>
+		/// The largest value that can be set in IDbDataParameter.Size for a parameter
+		/// that contains an Unicode String value.
 		/// </summary>
 		/// <remarks>
 		/// <para>
