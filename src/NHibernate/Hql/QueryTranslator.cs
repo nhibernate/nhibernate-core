@@ -922,13 +922,38 @@ namespace NHibernate.Hql
 		public IEnumerable GetEnumerable(object[] values, IType[] types, RowSelection selection, 
 			IDictionary namedParams, IDictionary lockModes, ISessionImplementor session) 
 		{
+			//TODO: this is a major hack - apply locks is not working with a string of Sql so we need
+			// to give it a SqlString...
+			//http://jira.nhibernate.org:8080/browse/NH-64
+			// ApplyLocks(SqlString, lockModes, session.Factory.Dialect).ToString(),
+			// this works because it is just appending strings and not doing any 
+			string sqlWithLock = ApplyLocks(new SqlString(SQLString), lockModes, session.Factory.Dialect).ToString();
+
+
 			IDbCommand st = PrepareQueryStatement(
-				ApplyLocks(SqlString, lockModes, session.Factory.Dialect).ToString(),
+				sqlWithLock,
 				values, types, namedParams, selection, false, session);
 			try 
 			{
 				SetMaxRows(st, selection);
+
+				//TODO: H2.0.3 - uses session.Batcher.GetResultSet(st) instead
+				// of directly executing the reader - the Batcher can be smarter 
+				// about when to wrap the IDataReader in an NDataReader
 				IDataReader rs = st.ExecuteReader();
+				
+				//TODO: make this a much smarter implementation that looks at the Type
+				// that is being loaded and determines wether or not to wrap this IDataReader
+				// in a NDataReader.  I believe the problem of multiple readers being opened
+				// are occuring in <composite-id> with <many-to-one> and <component> with
+				// a <collection>, <many-to-one>, and <one-to-one> inside of them.  I believe
+				// this is caused when the NullSafeGet() method calls other methods that can 
+				// potentially perform a Load of another object.
+				if(!session.Factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders) 
+				{
+					rs = new Driver.NDataReader(rs); 
+				}
+
 				Advance(rs, selection, session);
 				return new EnumerableImpl(rs, session, ReturnTypes, ScalarColumnNames );
 			} 
