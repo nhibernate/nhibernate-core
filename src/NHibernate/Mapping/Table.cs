@@ -117,33 +117,37 @@ namespace NHibernate.Mapping
 			get { return uniqueKeys.Values; }
 		}
 
-		//TODO: NH2.0.3 has an ICollection SqlAlterStrings method instead of this one...
-		public string SqlAlterString(Dialect.Dialect dialect, IMapping p, DataTable tableInfo) 
+		public IList SqlAlterStrings(Dialect.Dialect dialect, IMapping p, DataTable tableInfo) 
 		{
-			StringBuilder buf = new StringBuilder(50);
+			StringBuilder root = new StringBuilder("alter table ")
+				.Append( GetQualifiedName(dialect) )
+				.Append(" ")
+				.Append( dialect.AddColumnString );
+
+			IList results = new ArrayList(ColumnCollection.Count);
+
 			foreach(Column col in ColumnCollection) 
 			{
 				DataColumn columnInfo = tableInfo.Columns[ col.Name ];
 
 				if (columnInfo == null) 
 				{
-					// the column doesnt exist at all
-					if (buf.Length != 0)
-						buf.Append(StringHelper.CommaSpace);
-						buf.Append(col.GetQuotedName(dialect))
-							.Append(' ')
-							.Append(col.GetSqlType(dialect, p));
-					if (col.IsUnique && dialect.SupportsUnique) {
-						buf.Append(" unique");
+					StringBuilder alter = new StringBuilder( root.ToString() )
+						.Append(" ")
+						.Append( col.GetQuotedName(dialect) )
+						.Append(" ")
+						.Append(col.GetSqlType(dialect, p));
+
+					if (col.IsUnique && dialect.SupportsUnique) 
+					{
+						alter.Append(" unique");
 					}
+
+					results.Add( alter.ToString() );
 				}
 			}
 
-			if (buf.Length == 0)
-				return null;
-
-			return new StringBuilder("alter table ").Append(GetQualifiedName(dialect)).Append(" add ").Append(buf).ToString();
-
+			return results;
 		}
 
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p) 
@@ -156,46 +160,68 @@ namespace NHibernate.Mapping
 
 			// try to find out the name of the pk to create it as identity if the identitygenerator is used
 			string pkname = null;
-			if (primaryKey != null && identityColumn ) {
-				foreach(Column col in primaryKey.ColumnCollection) {
+			if (primaryKey != null && identityColumn ) 
+			{
+				foreach(Column col in primaryKey.ColumnCollection) 
+				{
 					pkname = col.GetQuotedName(dialect); //should only go through this loop once
 				}
 			}
+
 			int i = 0;
-			foreach(Column col in ColumnCollection) {
+			foreach(Column col in ColumnCollection) 
+			{
 				i++;
 				buf.Append( col.GetQuotedName(dialect) )
 					.Append(' ')
 					.Append( col.GetSqlType(dialect, p) );
 
-				if ( identityColumn && col.GetQuotedName(dialect).Equals(pkname) ) {
+				if ( identityColumn && col.GetQuotedName(dialect).Equals(pkname) ) 
+				{
 					buf.Append(' ')
 						.Append( dialect.IdentityColumnString);
-				} else {
-					if (col.IsNullable) {
+				} 
+				else 
+				{
+					if (col.IsNullable) 
+					{
 						buf.Append( dialect.NullColumnString );
-					} else {
+					} 
+					else 
+					{
 						buf.Append(" not null" );
 					}
 				}
 
-				if ( col.IsUnique && dialect.SupportsUnique ) {
-					buf.Append(" unique");
+				if ( col.IsUnique)
+				{
+					if(dialect.SupportsUnique) 
+					{
+						buf.Append(" unique");
+					}
+					else 
+					{
+						UniqueKey uk = GetUniqueKey(col.GetQuotedName(dialect) + "_");
+						uk.AddColumn(col);
+					}
 				}
 				if ( i < ColumnCollection.Count ) buf.Append(StringHelper.CommaSpace);
 			}
-			if (primaryKey != null) {
+
+			if (primaryKey != null) 
+			{
 				//if ( dialect is HSQLDialect && identityColumn ) {
 				//	//ugly hack...
 				//} else {
 				buf.Append(',').Append( primaryKey.SqlConstraintString(dialect) );
 				//}
 			}
-			if ( dialect.SupportsUnique ) {
-				foreach(UniqueKey uk in UniqueKeyCollection) {
-					buf.Append(',').Append( uk.SqlConstraintString(dialect) );
-				}
+			
+			foreach(UniqueKey uk in UniqueKeyCollection) 
+			{
+				buf.Append(',').Append( uk.SqlConstraintString(dialect) );
 			}
+			
 			buf.Append(StringHelper.ClosedParen);
 
 			return buf.ToString();
@@ -205,15 +231,18 @@ namespace NHibernate.Mapping
 			return "drop table " + GetQualifiedName(dialect) + dialect.CascadeConstraintsString;
 		}
 
-		public PrimaryKey PrimaryKey {
+		public PrimaryKey PrimaryKey 
+		{
 			get { return primaryKey; }
 			set { primaryKey = value; }
 		}
 
-		public Index GetIndex(string name) {
+		public Index GetIndex(string name) 
+		{
 			Index index = (Index) indexes[name];
 
-			if (index == null) {
+			if (index == null) 
+			{
 				index = new Index();
 				index.Name = name;
 				index.Table = this;
@@ -223,7 +252,8 @@ namespace NHibernate.Mapping
 			return index;
 		}
 
-		public UniqueKey GetUniqueKey(string name) {
+		public UniqueKey GetUniqueKey(string name) 
+		{
 			UniqueKey uk = (UniqueKey) uniqueKeys[name];
 
 			if (uk == null) {
@@ -232,10 +262,12 @@ namespace NHibernate.Mapping
 				uk.Table = this;
 				uniqueKeys.Add(name, uk);
 			}
+
 			return uk;
 		}
 
-		public ForeignKey CreateForeignKey(IList columns) {
+		public ForeignKey CreateForeignKey(IList columns) 
+		{
 			string name = "FK" + UniqueColumnString( columns );
 			ForeignKey fk = (ForeignKey) foreignKeys[name];
 
@@ -245,18 +277,22 @@ namespace NHibernate.Mapping
 				fk.Table = this;
 				foreignKeys.Add(name, fk);
 			}
-			foreach(Column col in columns) {
+
+			foreach(Column col in columns) 
+			{
 				fk.AddColumn( col );
 			}
+
 			return fk;
 		}
 
-		public string UniqueColumnString(ICollection col) {
+		public string UniqueColumnString(ICollection col) 
+		{
 			
 			int result = 0;
 			
-			foreach(object obj in col) {
-				
+			foreach(object obj in col) 
+			{
 				// this is marked as unchecked because the GetHashCode could potentially
 				// cause an integer overflow.  This way if there is an overflow it will
 				// just roll back over.
@@ -266,19 +302,27 @@ namespace NHibernate.Mapping
 			return ( name.GetHashCode().ToString("X") + result.GetHashCode().ToString("X") );
 		}
 
-		public string Schema {
+		public string Schema 
+		{
 			get { return schema; }
 			set { schema = value; }
 		}
 
-		public int UniqueInteger {
+		public int UniqueInteger 
+		{
 			get { return uniqueInteger; }
 		}
 
-		public void SetIdentifierValue(Value idValue) {
+		public void SetIdentifierValue(Value idValue) 
+		{
 			this.idValue = idValue;
 		}
 
+		public bool IsQuoted 
+		{
+			get { return quoted; }
+			set { quoted = value; }
+		}
 	
 
 	}
