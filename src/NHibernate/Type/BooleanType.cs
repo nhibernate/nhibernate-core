@@ -10,10 +10,11 @@ namespace NHibernate.Type {
 	/// Maps a <see cref="System.Boolean"/> Property 
 	/// to a <see cref="DbType.Boolean"/> column.
 	/// </summary>
-
-	//Had to use setShort / getShort instead of setBoolean / getBoolean
-	//to work around a HypersonicSQL driver bug
-
+	/// <remarks>
+	/// Had to use setShort / getShort instead of setBoolean / getBoolean
+	/// to work around a HypersonicSQL driver bug - these are comments copied 
+	/// from Hibernate so I am not sure how/if they apply to NHibernate
+	/// </remarks>
 	public class BooleanType : PrimitiveType, IDiscriminatorType {
 
 		private static readonly string TRUE = "1";
@@ -41,9 +42,7 @@ namespace NHibernate.Type {
 		}
 
 		public override object Get(IDataReader rs, int index) {
-			//TODO: either fix the mapping of a boolean to byte or fix this
-			// to read the GetByte instead of the GetBoolean...
-			return Convert.ToBoolean(rs.GetByte(index));
+			return rs.GetBoolean(index); 
 		}
 
 		public override object Get(IDataReader rs, string name) {
