@@ -18,14 +18,14 @@ namespace NHibernate.Dialect {
 			Types.TINYINT, "TINYINT" );
 			Types.INTEGER, "INT" );
 			Types.CHAR, "CHAR(1)" );
-			Types.VARCHAR, "VARCHAR($l)" );
+			Types.VARCHAR, "VARCHAR($1)" );
 			Types.FLOAT, "FLOAT" );
 			Types.DOUBLE, "DOUBLE PRECISION"
 			Types.DATE, "DATETIME" );
 			Types.TIME, "DATETIME" );
 			Types.TIMESTAMP, "DATETIME" );
-			Types.VARBINARY, "VARBINARY($l)"
-			Types.NUMERIC, "NUMERIC(19,$l)" 
+			Types.VARBINARY, "VARBINARY($1)"
+			Types.NUMERIC, "NUMERIC(19,$1)" 
 			Types.BLOB, "IMAGE" );
 			Types.CLOB, "TEXT" );
 			*/			
@@ -36,13 +36,13 @@ namespace NHibernate.Dialect {
 			Register( DbType.Int32, "INT" );
 			Register( DbType.Byte, "TINYINT" );
 			//Register( DbType.Character, "CHAR(1)" );
-			Register( DbType.String, "VARCHAR($l)" );
+			Register( DbType.String, "VARCHAR($1)" );
 			Register( DbType.Single, "FLOAT" );
 			Register( DbType.Double, "DOUBLE PRECISION" );
 			Register( DbType.DateTime, "DATETIME" );
 			//Register( DbType.Timestamp, "DATETIME" );
-			//Register( DbType.VarBinary, "VARBINARY($l)" );
-			Register( DbType.Decimal, "NUMERIC(19,$l)" );
+			//Register( DbType.VarBinary, "VARBINARY($1)" );
+			Register( DbType.Decimal, "NUMERIC(19,$1)" );
 			Register( DbType.Binary, "IMAGE" );
 			Register( DbType.AnsiString, "TEXT" );
 		
