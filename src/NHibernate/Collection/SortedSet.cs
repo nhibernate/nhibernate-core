@@ -5,8 +5,8 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Collection {
-
+namespace NHibernate.Collection 
+{
 	/// <summary>
 	/// A Persistent wrapper for a <c>System.Collections.IDictionary</c> that has
 	/// Set logic to prevent duplicate elements.
@@ -18,13 +18,15 @@ namespace NHibernate.Collection {
 	/// to the Dictionary.  In my opinion, the index is not useful except to get the first or last
 	/// element.
 	/// </remarks>
-	public class SortedSet : Set, IDictionary  {
-
+	public class SortedSet : Set, IDictionary  
+	{
 		private IComparer comparer;
 
-		protected override object Snapshot(CollectionPersister persister) {
+		protected override object Snapshot(CollectionPersister persister) 
+		{
 			SortedList clonedSet = new SortedList(comparer, map.Count);
-			foreach(DictionaryEntry de in map) {
+			foreach(DictionaryEntry de in map) 
+			{
 				object copy = persister.ElementType.DeepCopy(de.Key);
 				clonedSet.Add(copy, copy);
 			}
@@ -32,27 +34,25 @@ namespace NHibernate.Collection {
 			return clonedSet;
 		}
 
-		public IComparer Comparer {
+		public IComparer Comparer 
+		{
 			get { return comparer;}
-			//set { comparer = value;}
 		}
 
 
-		public override void BeforeInitialize(CollectionPersister persister) {
-			this.map = new SortedList(comparer); // new Hashtable(null, comparer);
+		public override void BeforeInitialize(CollectionPersister persister) 
+		{
+			this.map = new SortedList(comparer); 
+			// an ArrayList of the identifiers is what Set uses because there is not
+			// both a Key & Value to worry about - just the Key.
+			this.tempIdentifierList = new ArrayList();
 		}
-
-		// changed the Comparer to a readonly property because you can't change it on SortedList after
-		// it has been created - so there is no point in being able to change it on this class.
-//		public SortedSet(ISessionImplementor session) : base(session) 
-//		{
-//		}
 
 		/// <summary>
-		/// Constuct a new empty SortedSet
+		/// Constuct a new empty SortedSet that uses a IComparer to perform the sorting.
 		/// </summary>
 		/// <param name="session"></param>
-		/// <param name="comparer"></param>
+		/// <param name="comparer">The IComparer to user for Sorting.</param>
 		public SortedSet(ISessionImplementor session, IComparer comparer) : base(session, new SortedList(comparer))
 		{
 			this.comparer = comparer;

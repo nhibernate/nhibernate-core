@@ -50,10 +50,20 @@ namespace NHibernate.Collection {
 		}
 
 		public override void BeforeInitialize(CollectionPersister persister) {
-			//TODO: check this
-			//this.map = persister.HasOrdering ? LinkedHashCollectionHelper.CreateLinkedHashMap() : new Hashtable();
-			this.map = new Hashtable();
-			this.mapIdentifiers = new Hashtable();
+			
+			if(persister.HasOrdering) 
+			{
+				// if this Persister has an Ordering then use the ListDictionary because
+				// it maintains items in the Dictionary in the same order as they were 
+				// added.
+				this.map = new System.Collections.Specialized.ListDictionary();
+				this.mapIdentifiers = new System.Collections.Specialized.ListDictionary();
+			}
+			else 
+			{
+				this.map = new Hashtable();
+				this.mapIdentifiers = new Hashtable();
+			}
 		}
 
 		public Map(ISessionImplementor session, IDictionary map) : base(session) {

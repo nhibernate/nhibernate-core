@@ -30,7 +30,6 @@ namespace NHibernate.Mapping
 		{
 			get 
 			{
-				//TODO: modify when added implementation of sorted set
 				return IsSorted ?
 					TypeFactory.SortedSet(Role, Comparer) :
 					TypeFactory.Set(Role);

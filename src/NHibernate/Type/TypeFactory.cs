@@ -1067,11 +1067,11 @@ namespace NHibernate.Type
 		{
 			return new SetType(role);
 		}
-		/*
+		
 		public static PersistentCollectionType SortedMap(string role, IComparer comparer) 
 		{
 			return new SortedMapType(role, comparer);
-		}*/
+		}
 
 		public static PersistentCollectionType SortedSet(string role, IComparer comparer) 
 		{

@@ -27,7 +27,7 @@ namespace NHibernate.Collection {
 		
 		protected IDictionary map;
 		
-		private IList tempIdentifierList;
+		protected IList tempIdentifierList;
 
 		/// <summary>
 		/// Returns a Hashtable where the Key & the Value are both a Copy of the
@@ -93,8 +93,14 @@ namespace NHibernate.Collection {
 		/// </summary>
 		public override void BeforeInitialize(CollectionPersister persister) {
 			
-			//this.map = persister.HasOrdering ? LinkedHashCollectionHelper.CreateLinkedHashMap() : new Hashtable();
-			this.map = new Hashtable();
+			if(persister.HasOrdering) 
+			{
+				this.map = new System.Collections.Specialized.ListDictionary();
+			}
+			else 
+			{
+				this.map = new Hashtable();
+			}
 		}
 
 		/// <summary>
