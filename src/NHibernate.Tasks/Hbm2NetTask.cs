@@ -1,39 +1,34 @@
-using System;
-using System.Collections;
 using System.IO;
 using System.Text;
-
-using NAnt.Core;
-using NAnt.Core.Types;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Types;
 
-
-namespace NHibernate.Tasks 
+namespace NHibernate.Tasks
 {
-	[TaskName("hbm2net")]
+	[TaskName( "hbm2net" )]
 	public class Hbm2NetTask : ExternalProgramBase
 	{
-		FileSet _set = new FileSet();
-		string _output = null;
-		string _config = null;
-		string _args = null;
+		private FileSet _set = new FileSet();
+		private string _output = null;
+		private string _config = null;
+		private string _args = null;
 
-		[BuildElement("fileset", Required=true)]
+		[BuildElement( "fileset", Required=true )]
 		public FileSet Hbm2NetFileSet
 		{
 			get { return _set; }
 			set { _set = value; }
 		}
 
-		[TaskAttribute("output")]
+		[TaskAttribute( "output" )]
 		public string Output
 		{
 			get { return _output; }
 			set { _output = value; }
 		}
 
-		[TaskAttribute("config")]
+		[TaskAttribute( "config" )]
 		public string Config
 		{
 			get { return _config; }
@@ -45,7 +40,7 @@ namespace NHibernate.Tasks
 			get
 			{
 				string asm = this.GetType().Assembly.Location;
-				string basename = asm.Substring(0, asm.LastIndexOf(Path.DirectorySeparatorChar)+1);
+				string basename = asm.Substring( 0, asm.LastIndexOf( Path.DirectorySeparatorChar ) + 1 );
 				return basename + "NHibernate.Tool.hbm2net.exe";
 			}
 		}
@@ -58,20 +53,20 @@ namespace NHibernate.Tasks
 		protected override void ExecuteTask()
 		{
 			StringBuilder sb = new StringBuilder();
-			if(_output != null)
+			if( _output != null )
 			{
-				sb.Append("--output=\"" + _output + "\" ");
+				sb.Append( "--output=\"" + _output + "\" " );
 			}
-			if(_config != null)
+			if( _config != null )
 			{
-				sb.Append("--config=\"" + _config + "\" ");
+				sb.Append( "--config=\"" + _config + "\" " );
 			}
-			foreach(string filename in _set.FileNames)
+			foreach( string filename in _set.FileNames )
 			{
-				sb.Append("\"" + filename + "\" ");
+				sb.Append( "\"" + filename + "\" " );
 			}
 			_args = sb.ToString();
-			
+
 			base.ExecuteTask();
 		}
 	}
