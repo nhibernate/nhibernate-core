@@ -287,29 +287,84 @@ namespace NHibernate.Impl
 		[Serializable]
 		sealed internal class EntityEntry  
 		{
-			
-			internal LockMode lockMode;
-			internal Status status;
-			internal object id;
-			internal object[] loadedState;
-			internal object[] deletedState;
-			internal bool existsInDatabase;
-			internal object version;
+			private LockMode _lockMode;
+			private Status _status;
+			private object _id;
+			private object[] _loadedState;
+			private object[] _deletedState;
+			private bool _existsInDatabase;
+			private object _version;
 			// for convenience to save some lookups
-			[NonSerialized] internal IClassPersister persister;
-			internal string className;
-
+			[NonSerialized] private IClassPersister _persister;
+			private string _className;
+			
 			public EntityEntry(Status status, object[] loadedState, object id, object version, LockMode lockMode, bool existsInDatabase, IClassPersister persister) 
 			{
-				this.status = status;
-				this.loadedState = loadedState;
-				this.id = id;
-				this.existsInDatabase = existsInDatabase;
-				this.version = version;
-				this.lockMode = lockMode;
-				this.persister = persister;
-				if (persister!=null) className = persister.ClassName;
+				_status = status;
+				_loadedState = loadedState;
+				_id = id;
+				_existsInDatabase = existsInDatabase;
+				_version = version;
+				_lockMode = lockMode;
+				_persister = persister;
+				if (_persister!=null) _className = _persister.ClassName;
 			}
+
+			
+			public LockMode LockMode
+			{
+				get { return _lockMode; }
+				set { _lockMode = value; }
+			}
+
+			public Status Status
+			{
+				get { return _status; }
+				set { _status = value; }
+			}
+
+			public object Id
+			{
+				get { return _id; }
+				set { _id = value; }
+			}
+
+			public object[] LoadedState
+			{
+				get { return _loadedState; }
+				set { _loadedState = value; }
+			}
+
+			public object[] DeletedState
+			{
+				get { return _deletedState; }
+				set { _deletedState = value; }
+			}
+
+			public bool ExistsInDatabase
+			{
+				get { return _existsInDatabase; }
+				set { _existsInDatabase = value; }
+			}
+
+			public object Version
+			{
+				get { return _version; }
+				set { _version = value; }
+			}
+
+			public IClassPersister Persister
+			{
+				get { return _persister; }
+				set { _persister = value; }
+			}
+
+			public string ClassName
+			{
+				get { return _className; }
+				set { _className = value; }
+			}
+
 		}
 
 		
@@ -547,7 +602,7 @@ namespace NHibernate.Impl
 			// downgrade locks
 			foreach(EntityEntry entry in entries.Values) 
 			{
-				entry.lockMode = LockMode.None;
+				entry.LockMode = LockMode.None;
 			}
 			
 			// release cache softlocks
@@ -605,13 +660,13 @@ namespace NHibernate.Impl
 			EntityEntry e = GetEntry(obj);
 			if (e==null) throw new TransientObjectException("Given object not associated with the session");
 			
-			if (e.status!=Status.Loaded) throw new ObjectDeletedException("The given object was deleted", e.id);
-			return e.lockMode;
+			if (e.Status!=Status.Loaded) throw new ObjectDeletedException("The given object was deleted", e.Id);
+			return e.LockMode;
 		}
 
 		public LockMode GetLockMode(object entity) 	
 		{
-			return GetEntry(entity).lockMode;
+			return GetEntry(entity).LockMode;
 		}
 
 		private void AddEntity(Key key, object obj) 
@@ -633,7 +688,7 @@ namespace NHibernate.Impl
 
 		public void SetLockMode(object entity, LockMode lockMode) 
 		{
-			GetEntry(entity).lockMode = lockMode;
+			GetEntry(entity).LockMode = lockMode;
 		}
 
 		private EntityEntry AddEntry(
@@ -705,14 +760,14 @@ namespace NHibernate.Impl
 			EntityEntry e = GetEntry(theObj);
 			if ( e!=null ) 
 			{
-				if ( e.status==Status.Deleted) 
+				if ( e.Status==Status.Deleted) 
 				{
 					Flush();
 				} 
 				else 
 				{
 					log.Debug( "object already associated with session" );
-					return e.id;
+					return e.Id;
 				}
 			}
 
@@ -746,16 +801,16 @@ namespace NHibernate.Impl
 			EntityEntry e = GetEntry(theObj);
 			if ( e!=null ) 
 			{
-				if ( e.status==Status.Deleted ) 
+				if ( e.Status==Status.Deleted ) 
 				{
 					Flush();
 				} 
 				else 
 				{
-					if ( !id.Equals(e.id) ) 
+					if ( !id.Equals(e.Id) ) 
 						throw new PersistentObjectException(
 							"object passed to save() was already persistent: " + 
-							MessageHelper.InfoString(e.persister, id)
+							MessageHelper.InfoString(e.Persister, id)
 							);
 					log.Debug( "object already associated with session" );
 				}
@@ -794,7 +849,7 @@ namespace NHibernate.Impl
 				object old = GetEntity(key);
 				if (old!=null) 
 				{
-					if ( GetEntry(old).status==Status.Deleted) 
+					if ( GetEntry(old).Status==Status.Deleted) 
 					{
 						Flush();
 					} 
@@ -1052,8 +1107,8 @@ namespace NHibernate.Impl
 				}
 			}
 
-			return e.status==Status.Saving || (
-				earlyInsert ? !e.existsInDatabase : nullifiables.Contains( new Key(e.id, e.persister) )
+			return e.Status==Status.Saving || (
+				earlyInsert ? !e.ExistsInDatabase : nullifiables.Contains( new Key(e.Id, e.Persister) )
 				);
 		}
 
@@ -1107,11 +1162,11 @@ namespace NHibernate.Impl
 			{
 				log.Debug("deleting a persistent instance");
 
-				if ( entry.status==Status.Deleted || entry.status==Status.Gone) {
+				if ( entry.Status==Status.Deleted || entry.Status==Status.Gone) {
 					log.Debug("object was already deleted");
 					return;
 				}
-				persister = entry.persister;
+				persister = entry.Persister;
 			}
 
 			if ( !persister.IsMutable ) 
@@ -1120,26 +1175,26 @@ namespace NHibernate.Impl
 					MessageHelper.InfoString(persister)
 					);
 
-			if ( log.IsDebugEnabled ) log.Debug( "deleting " + MessageHelper.InfoString(persister, entry.id) );
+			if ( log.IsDebugEnabled ) log.Debug( "deleting " + MessageHelper.InfoString(persister, entry.Id) );
 
 			IType[] propTypes = persister.PropertyTypes;
 
-			object version = entry.version;
+			object version = entry.Version;
 
-			if (entry.loadedState==null ) 
+			if (entry.LoadedState==null ) 
 			{ 
 				//ie the object came in from Update()
-				entry.deletedState = persister.GetPropertyValues(theObj);
+				entry.DeletedState = persister.GetPropertyValues(theObj);
 			} 
 			else 
 			{
-				entry.deletedState = new object[entry.loadedState.Length];
-				TypeFactory.DeepCopy(entry.loadedState, propTypes, persister.PropertyUpdateability, entry.deletedState);
+				entry.DeletedState = new object[entry.LoadedState.Length];
+				TypeFactory.DeepCopy(entry.LoadedState, propTypes, persister.PropertyUpdateability, entry.DeletedState);
 			}
 
-			interceptor.OnDelete(theObj, entry.id, entry.deletedState, persister.PropertyNames, propTypes);
+			interceptor.OnDelete(theObj, entry.Id, entry.DeletedState, persister.PropertyNames, propTypes);
 
-			NullifyTransientReferences(entry.deletedState, propTypes, false, theObj);
+			NullifyTransientReferences(entry.DeletedState, propTypes, false, theObj);
 
 			ArrayList oldNullifiables = null;
 			ArrayList oldDeletions = null;
@@ -1150,9 +1205,9 @@ namespace NHibernate.Impl
 				oldDeletions = (ArrayList) deletions.Clone();
 			}
 
-			nullifiables.Add( new Key(entry.id, persister) );
-			entry.status = Status.Deleted; // before any callbacks, etc, so subdeletions see that this deletion happend first
-			ScheduledDeletion delete = new ScheduledDeletion(entry.id, version, theObj, persister, this);
+			nullifiables.Add( new Key(entry.Id, persister) );
+			entry.Status = Status.Deleted; // before any callbacks, etc, so subdeletions see that this deletion happend first
+			ScheduledDeletion delete = new ScheduledDeletion(entry.Id, version, theObj, persister, this);
 			deletions.Add(delete); // ensures that containing deletions happen before sub-deletions
 
 			try 
@@ -1227,8 +1282,8 @@ namespace NHibernate.Impl
 
 		private void RollbackDeletion(EntityEntry entry, ScheduledDeletion delete) 
 		{
-			entry.status = Status.Loaded;
-			entry.deletedState = null;
+			entry.Status = Status.Loaded;
+			entry.DeletedState = null;
 			deletions.Remove(delete);
 		}
 
@@ -1388,7 +1443,7 @@ namespace NHibernate.Impl
 			object theObj = UnproxyAndReassociate(obj);
 
 			EntityEntry e = GetEntry(theObj);
-			if (e!=null && e.status!=Status.Deleted) 
+			if (e!=null && e.Status!=Status.Deleted) 
 			{
 				// do nothing for persistent instances
 				log.Debug("SaveOrUpdate() persistent instance");
@@ -1472,10 +1527,10 @@ namespace NHibernate.Impl
 			} 
 			else 
 			{
-				if ( !e.id.Equals(id) ) 
+				if ( !e.Id.Equals(id) ) 
 					throw new PersistentObjectException(
 							"The instance passed to Update() was already persistent: " +
-							MessageHelper.InfoString(e.persister, id)
+							MessageHelper.InfoString(e.Persister, id)
 							);
 			}
 		}
@@ -1704,19 +1759,19 @@ namespace NHibernate.Impl
 
 			EntityEntry e = GetEntry(obj);
 			if (e==null) throw new TransientObjectException("attempted to lock a transient instance");
-			IClassPersister persister = e.persister;
+			IClassPersister persister = e.Persister;
 
-			if ( lockMode.GreaterThan(e.lockMode) ) 
+			if ( lockMode.GreaterThan(e.LockMode) ) 
 			{
-				if (e.status!=Status.Loaded) throw new TransientObjectException("attempted to lock a deleted instance");
+				if (e.Status!=Status.Loaded) throw new TransientObjectException("attempted to lock a deleted instance");
 
-				if ( log.IsDebugEnabled ) log.Debug( "locking " + MessageHelper.InfoString(persister, e.id) + " in mode: " + lockMode);
+				if ( log.IsDebugEnabled ) log.Debug( "locking " + MessageHelper.InfoString(persister, e.Id) + " in mode: " + lockMode);
 
-				if ( persister.HasCache ) persister.Cache.Lock(e.id);
+				if ( persister.HasCache ) persister.Cache.Lock(e.Id);
 				try 
 				{
-					persister.Lock(e.id, e.version, obj, lockMode, this);
-					e.lockMode = lockMode;
+					persister.Lock(e.Id, e.Version, obj, lockMode, this);
+					e.LockMode = lockMode;
 				} 
 				catch (Exception exp) 
 				{
@@ -1726,7 +1781,7 @@ namespace NHibernate.Impl
 				{
 					// the database now holds a lock + the object is flushed from the cache,
 					// so release the soft lock
-					if ( persister.HasCache ) persister.Cache.Release(e.id);
+					if ( persister.HasCache ) persister.Cache.Release(e.Id);
 				}
 			}
 		}
@@ -1879,7 +1934,7 @@ namespace NHibernate.Impl
 			// can't use e.persister since it is null after addUninitializedEntity 
 			// (when this method is called)
 			IClassPersister p = GetPersister(impl);
-			return ProxyFor( p, new Key(e.id, p), impl);
+			return ProxyFor( p, new Key(e.Id, p), impl);
 		}
 
 		/// <summary>
@@ -1922,7 +1977,7 @@ namespace NHibernate.Impl
 		public void Load(object obj, object id) 
 		{
 			if (id==null) throw new NullReferenceException("null is not a valid identifier");
-			DoLoadByObject(obj, id, true);
+			DoLoadByObject(obj, id, true, LockMode.None);
 		}
 
 		//TODO: Resume synch with H2.0.3 here...
@@ -1967,14 +2022,14 @@ namespace NHibernate.Impl
 		* existing uninitialized proxy, this will break identity equals as far
 		* as the application is concerned.
 		*/
-		private void DoLoadByObject(object obj, object id, bool checkDeleted) {
+		private void DoLoadByObject(object obj, object id, bool checkDeleted, LockMode lockMode) {
 			
 			System.Type clazz = obj.GetType();
 			if ( GetEntry(obj)!=null ) throw new PersistentObjectException(
 										   "attempted to load into an instance that was already associated with the Session: "+
 										   MessageHelper.InfoString(clazz, id)
 										   );
-			object result = DoLoad(clazz, id, obj, LockMode.None, checkDeleted);
+			object result = DoLoad(clazz, id, obj, lockMode, checkDeleted);
 			ThrowObjectNotFound(result, id, clazz);
 			if (result!=obj) throw new HibernateException(
 								 "The object with that id was already loaded by the Session: " +
@@ -2097,7 +2152,7 @@ namespace NHibernate.Impl
 			// Look for Status.Loaded object
 			object old = GetEntity(key);
 			if (old!=null) { //if this object was already loaded
-				Status status = GetEntry(old).status;
+				Status status = GetEntry(old).Status;
 				//if ( checkDeleted && ( status==DELETED || status==GONE ) ) {
 				if ( checkDeleted && ( status==Status.Deleted || status==Status.Gone) ) {
 					throw new ObjectDeletedException("The object with that id was deleted", id);
@@ -2159,18 +2214,18 @@ namespace NHibernate.Impl
 			object theObj = UnproxyAndReassociate(obj);
 			EntityEntry e = RemoveEntry(theObj);
 
-			if ( log.IsDebugEnabled ) log.Debug( "refreshing " + MessageHelper.InfoString(e.persister, e.id) );
+			if ( log.IsDebugEnabled ) log.Debug( "refreshing " + MessageHelper.InfoString(e.Persister, e.Id) );
 
-			if ( !e.existsInDatabase ) throw new HibernateException("this instance does not yet exist as a row in the database");
+			if ( !e.ExistsInDatabase ) throw new HibernateException("this instance does not yet exist as a row in the database");
 
-			Key key = new Key(e.id, e.persister);
+			Key key = new Key(e.Id, e.Persister);
 			RemoveEntity( key );
 			try {
-				e.persister.Load( e.id, theObj, lockMode, this);
+				e.Persister.Load( e.Id, theObj, lockMode, this);
 			} catch (Exception exp) {
 				throw new ADOException("could not refresh object", exp);
 			}
-			GetEntry(theObj).lockMode = e.lockMode;
+			GetEntry(theObj).LockMode = e.LockMode;
 		}
 
 		/// <summary>
@@ -2182,9 +2237,9 @@ namespace NHibernate.Impl
 		public void InitializeEntity(object obj) {
 
 			EntityEntry e = GetEntry(obj);
-			IClassPersister persister = e.persister;
-			object id = e.id;
-			object[] hydratedState = e.loadedState;
+			IClassPersister persister = e.Persister;
+			object id = e.Id;
+			object[] hydratedState = e.LoadedState;
 
 			IType[] types = persister.PropertyTypes;
 
@@ -2333,13 +2388,13 @@ namespace NHibernate.Impl
 		}
 
 		public void PostInsert(object obj) {
-			GetEntry(obj).existsInDatabase = true;
+			GetEntry(obj).ExistsInDatabase = true;
 		}
 
 		public void PostDelete(object obj) {
 			EntityEntry e = RemoveEntry(obj);
-			e.status = Status.Gone;
-			Key key = new Key(e.id, e.persister);
+			e.Status = Status.Gone;
+			Key key = new Key(e.Id, e.Persister);
 			RemoveEntity(key);
 			proxiesByKey.Remove(key);
 		}
@@ -2347,12 +2402,12 @@ namespace NHibernate.Impl
 		public void PostUpdate(object obj, object[] updatedState, object nextVersion) 
 		{
 			EntityEntry e = GetEntry(obj);
-			e.loadedState = updatedState;
-			e.lockMode = LockMode.Write;
-			if(e.persister.IsVersioned) 
+			e.LoadedState = updatedState;
+			e.LockMode = LockMode.Write;
+			if(e.Persister.IsVersioned) 
 			{
-				e.version = nextVersion;
-				e.persister.SetPropertyValue(obj, e.persister.VersionProperty, nextVersion);
+				e.Version = nextVersion;
+				e.Persister.SetPropertyValue(obj, e.Persister.VersionProperty, nextVersion);
 			}
 		}
 
@@ -2390,21 +2445,21 @@ namespace NHibernate.Impl
 
 			foreach(DictionaryEntry me in iterSafeCollection) {	
 				EntityEntry entry = (EntityEntry) me.Value;
-				Status status = entry.status;
+				Status status = entry.Status;
 
 				if (status != Status.Loading && status != Status.Gone) {
 					object obj = me.Key;
-					IClassPersister persister = entry.persister;
+					IClassPersister persister = entry.Persister;
 
 					// make sure user didn't mangle the id
 					if ( persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier ) {
 						object oid = persister.GetIdentifier(obj);
 
-						if ( !entry.id.Equals(oid) ) throw new HibernateException(
+						if ( !entry.Id.Equals(oid) ) throw new HibernateException(
 														 "identiifier of an instance of " +
 														 persister.ClassName +
 														 " altered from " +
-														 entry.id + 
+														 entry.Id + 
 														 " to " + oid
 														 );
 					}
@@ -2412,7 +2467,7 @@ namespace NHibernate.Impl
 					object[] values;
 					if ( status==Status.Deleted) {
 						//grab its state saved at deletion
-						values = entry.deletedState;
+						values = entry.DeletedState;
 					} 
 					else {
 						//grab its current state
@@ -2433,15 +2488,15 @@ namespace NHibernate.Impl
 					bool cannotDirtyCheck;
 					bool interceptorHandledDirtyCheck;
 
-					int[] dirtyProperties = interceptor.FindDirty(obj, entry.id, values, entry.loadedState, persister.PropertyNames, types);
+					int[] dirtyProperties = interceptor.FindDirty(obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types);
 
 
 					if ( dirtyProperties==null ) {
 						// interceptor returned null, so do the dirtycheck ourself, if possible
 						interceptorHandledDirtyCheck = false;
-						cannotDirtyCheck = entry.loadedState==null; // object loaded by update()
+						cannotDirtyCheck = entry.LoadedState==null; // object loaded by update()
 						if ( !cannotDirtyCheck ) {
-							dirtyProperties = persister.FindDirty(values, entry.loadedState, obj, this);
+							dirtyProperties = persister.FindDirty(values, entry.LoadedState, obj, this);
 						}
 					} else {
 						// the interceptor handled the dirty checking
@@ -2463,22 +2518,22 @@ namespace NHibernate.Impl
 						{
 							if(status == Status.Deleted) 
 							{ 
-								log.Debug("Updating deleted entity: " + MessageHelper.InfoString(persister, entry.id) );
+								log.Debug("Updating deleted entity: " + MessageHelper.InfoString(persister, entry.Id) );
 							}
 							else 
 							{
-								log.Debug("Updating entity: " + MessageHelper.InfoString(persister, entry.id) );
+								log.Debug("Updating entity: " + MessageHelper.InfoString(persister, entry.Id) );
 							}
 						}
 
 						// give the Interceptor a chance to modify property values
 						bool intercepted = interceptor.OnFlushDirty(
-							obj, entry.id, values, entry.loadedState, persister.PropertyNames, types);
+							obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types);
 
 						//no we might need to recalculate the dirtyProperties array
 						if(intercepted && !cannotDirtyCheck && !interceptorHandledDirtyCheck) 
 						{
-							dirtyProperties = persister.FindDirty(values, entry.loadedState, obj, this);
+							dirtyProperties = persister.FindDirty(values, entry.LoadedState, obj, this);
 						}
 						// if the properties were modified by the Interceptor, we need to set them back to the object
 						substitute = substitute || intercepted;
@@ -2490,10 +2545,10 @@ namespace NHibernate.Impl
 						}
 
 						//increment the version number (if necessary)
-						object nextVersion = entry.version;
+						object nextVersion = entry.Version;
 						if(persister.IsVersioned) 
 						{
-							if(status!=Status.Deleted) nextVersion = Versioning.Increment(entry.version, persister.VersionType);
+							if(status!=Status.Deleted) nextVersion = Versioning.Increment(entry.Version, persister.VersionType);
 							Versioning.SetVersion(values, nextVersion, persister);
 						}
 						
@@ -2505,7 +2560,7 @@ namespace NHibernate.Impl
 						}
 						
 						updates.Add(
-							new ScheduledUpdate(entry.id, values, dirtyProperties, entry.version, nextVersion, obj, updatedState, persister, this)
+							new ScheduledUpdate(entry.Id, values, dirtyProperties, entry.Version, nextVersion, obj, updatedState, persister, this)
 							);
 					}
 					
@@ -2539,7 +2594,7 @@ namespace NHibernate.Impl
 			foreach(DictionaryEntry me in iterSafeCollection) 
 			{
 				EntityEntry entry = (EntityEntry) me.Value;
-				Status status = entry.status;
+				Status status = entry.Status;
 
 				if ( status!=Status.Loading && status!=Status.Gone && status!=Status.Deleted) 
 				{
@@ -2547,7 +2602,7 @@ namespace NHibernate.Impl
 					cascading++;
 					try 
 					{
-						Cascades.Cascade(this, entry.persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate);
+						Cascades.Cascade(this, entry.Persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate);
 					} 
 					finally 
 					{
@@ -2587,7 +2642,7 @@ namespace NHibernate.Impl
 			} else {
 				EntityEntry entry = GetEntry(obj);
 				if (entry==null) throw new TransientObjectException("the instance was not associated with this session");
-				return entry.id;
+				return entry.Id;
 			}
 		}
 
@@ -2619,7 +2674,7 @@ namespace NHibernate.Impl
 				return HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj ).Identifier;
 			} else {
 				EntityEntry entry = GetEntry(obj);
-				return (entry!=null) ? entry.id : null;
+				return (entry!=null) ? entry.Id : null;
 			}
 		}
 
@@ -2642,7 +2697,7 @@ namespace NHibernate.Impl
 				EntityEntry entry = GetEntry(obj);
 				if(entry!=null) 
 				{
-					return entry.id;
+					return entry.Id;
 				}
 				else 
 				{
@@ -3543,8 +3598,8 @@ namespace NHibernate.Impl
                 else { 
                         EntityEntry e = (EntityEntry) RemoveEntry(obj); 
                         if (e!=null) { 
-                                RemoveEntity( new Key(e.id, e.persister) ); 
-                                DoEvict(e.persister, obj); 
+                                RemoveEntity( new Key(e.Id, e.Persister) ); 
+                                DoEvict(e.Persister, obj); 
                         } 
                 } 
         } 
@@ -3593,7 +3648,7 @@ namespace NHibernate.Impl
         } 
 	
 		public object GetVersion(object entity) {
-			return GetEntry(entity).version;
+			return GetEntry(entity).Version;
 		}
 
 		private static readonly ICollection EmptyCollection = new ArrayList(0);
