@@ -18,7 +18,7 @@ namespace NHibernate.Type
 
 		public override object Get(IDataReader rs, int index) 
 		{
-			return new DateTime(rs.GetInt64(index));
+			return new TimeSpan(rs.GetInt64(index));
 		}
 
 		public override object Get(IDataReader rs, string name) 
