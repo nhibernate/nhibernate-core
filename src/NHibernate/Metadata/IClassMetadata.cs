@@ -96,7 +96,6 @@ namespace NHibernate.Metadata
 		/// </summary>
 		bool IsVersioned { get; }
 
-		
 		/// <summary>
 		/// Get the version number (or timestamp) from the object's version property 
 		/// (or return null if not versioned)
