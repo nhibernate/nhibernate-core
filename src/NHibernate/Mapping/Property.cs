@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
-using NHibernate.Type;
+
 using NHibernate.Engine;
+using NHibernate.Type;
+using NHibernate.Property;
 
 namespace NHibernate.Mapping 
 {
@@ -12,6 +14,7 @@ namespace NHibernate.Mapping
 		private string cascade;
 		private bool updateable;
 		private bool insertable;
+		private string propertyAccessorName;
 
 		public Property(Value propertyValue) 
 		{
@@ -120,6 +123,32 @@ namespace NHibernate.Mapping
 		public bool IsFormula 
 		{
 			get { return Formula!=null; }
+		}
+
+		public string PropertyAccessorName 
+		{
+			get { return propertyAccessorName; }
+			set { propertyAccessorName = value; }
+		}
+
+		public IGetter GetGetter(System.Type clazz) 
+		{
+			return PropertyAccessor.GetGetter(clazz, name);
+		}
+
+		public ISetter GetSetter(System.Type clazz) 
+		{
+			return PropertyAccessor.GetSetter(clazz, name);
+		}
+
+		protected IPropertyAccessor PropertyAccessor 
+		{
+			get { return PropertyAccessorFactory.GetPropertyAccessor( PropertyAccessorName ); }
+		}
+
+		public bool IsBasicPropertyAccessor 
+		{
+			get { return propertyAccessorName==null || propertyAccessorName.Equals("property"); }
 		}
 	}
 }
