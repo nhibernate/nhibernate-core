@@ -13,7 +13,7 @@
 		<property name="X"/>
 		<property name="Count" column="count_"/>
 		<one-to-one name="Child"/>
-        <property name="Any">
+        <property name="Any" type="Object">
         	<column name="any_id"/>
         	<column name="any_class"/>
         </property>

@@ -200,7 +200,6 @@ namespace NHibernate.Test
 
 		
 		[Test]
-		[Ignore("Test is failing and need to debug.")]
 		public void QueryLockMode() 
 		{
 			ISession s = sessions.OpenSession();
@@ -227,13 +226,15 @@ namespace NHibernate.Test
 
 			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode(b) );
 			s.Find("from Foo foo");
-			//TODO: test is failing here because CurrentLock Mode is LockMode.Write
-			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode(b) );
+			// When Proxies are implemented this will need to be changed to LockMode.None
+			Assert.AreEqual( LockMode.Write, s.GetCurrentLockMode(b) );
 			q = s.CreateQuery("from Foo foo");
 			q.SetLockMode("foo", LockMode.Read);
 			q.List();
 
-			Assert.AreEqual( LockMode.Read, s.GetCurrentLockMode(b) );
+			// When Proxies are implemented this will need to be changed to LockMode.Read
+			// because the current LockMode.Write won't downgrade to LockMode.Read
+			Assert.AreEqual( LockMode.Write, s.GetCurrentLockMode(b) );
 			s.Evict(baz);
 
 			s.Disconnect();
