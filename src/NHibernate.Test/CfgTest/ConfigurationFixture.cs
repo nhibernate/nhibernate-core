@@ -23,7 +23,6 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void ReadCfgXmlFromDefaultFile() 
 		{
-
 			Configuration cfg = new Configuration();
 			cfg.Configure();
 			
@@ -59,6 +58,21 @@ namespace NHibernate.Test.CfgTest
 			ISessionFactory factory = cfg.BuildSessionFactory();
 
 		}
+
+		/// <summary>
+		/// Verify that NHibernate can read the configuration from a manifest resource in an
+		/// Assembly and that the values override what is in the app.config.
+		/// </summary>
+		[Test]
+		public void ReadCfgXmlFromAssembly() 
+		{
+			Configuration cfg = new Configuration();
+			cfg.Configure( this.GetType().Assembly, "NHibernate.Test.hibernate.cfg.xml" );
+			
+			Assert.AreEqual( "true 1, false 0, yes 'Y', no 'N'", cfg.Properties[Cfg.Environment.QuerySubstitutions]);
+			Assert.AreEqual( "Server=localhost;initial catalog=nhibernate;User Id=;Password=", cfg.Properties[Cfg.Environment.ConnectionString]);
+		}
+
 
 	}
 }

@@ -678,8 +678,7 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration Configure() 
 		{
-			Configure("hibernate.cfg.xml");
-			return this;
+			return Configure("hibernate.cfg.xml");
 		}
 
 		/// <summary>
@@ -692,14 +691,57 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration Configure(string resource) 
 		{
+			XmlTextReader reader = new XmlTextReader( resource );
+			return Configure( reader );
+		}
+
+		/// <summary>
+		/// Configure NHibernate using a resource contained in an Assembly.
+		/// </summary>
+		/// <param name="assembly">The <see cref="Assembly"/> that contains the resource.</param>
+		/// <param name="resourceName">The name of the manifest resource being requested.</param>
+		/// <returns>A Configuration object initialized from the manifest resource.</returns>
+		/// <remarks>
+		/// Calling Configure(Assembly, string) will overwrite the values set in app.config or web.config
+		/// </remarks>
+		public Configuration Configure(Assembly assembly, string resourceName) 
+		{ 
+			if( assembly==null || resourceName==null ) 
+			{ 
+				throw new HibernateException( "Could not configure NHibernate.", new ArgumentException( "A null value was passed in.", "assembly or resourceName" ) );
+			} 
+
+			Stream stream = assembly.GetManifestResourceStream( resourceName ); 
+			if (stream==null) 
+			{ 
+				// resource does not exist - throw appropriate exception 
+				throw new HibernateException( "A ManifestResourceStream could not be created for the resource " + resourceName + " in Assembly " + assembly.FullName ); 
+			} 
+
+			return Configure( new XmlTextReader( stream ) ); 
 			
+		} 
+
+		/// <summary>
+		/// Configure NHibernate using the specified XmlTextReader.
+		/// </summary>
+		/// <param name="reader">The <see cref="XmlTextReader"/> that contains the Xml to configure NHibernate.</param>
+		/// <returns>A Configuration object initialized with the file.</returns>
+		/// <remarks>
+		/// Calling Configure(XmlTextReader) will overwrite the values set in app.config or web.config
+		/// </remarks>
+		public Configuration Configure(XmlTextReader reader) 
+		{
+			if( reader==null ) 
+			{
+				throw new HibernateException( "Could not configure NHibernate.", new ArgumentException( "A null value was passed in.", "reader" ) );
+			}
+
 			XmlDocument doc = new XmlDocument();
 			XmlValidatingReader validatingReader = null;
-			XmlTextReader reader = null;
-
+			
 			try 
 			{
-				reader = new XmlTextReader(resource);
 				validatingReader = new XmlValidatingReader( reader );
 				validatingReader.ValidationType = ValidationType.Schema;
 				validatingReader.Schemas.Add(cfgSchema);
@@ -714,8 +756,8 @@ namespace NHibernate.Cfg
 			} 
 			catch (Exception e) 
 			{
-				log.Error("Problem parsing configuraiton " + resource, e);
-				throw new HibernateException("problem parsing configuration " + resource + ": " + e);
+				log.Error("Problem parsing configuration", e);
+				throw new HibernateException("problem parsing configuration : " + e);
 			}
 
 			XmlNode sfNode = doc.DocumentElement.SelectSingleNode(CfgNamespacePrefix + ":session-factory", CfgNamespaceMgr);
@@ -725,7 +767,6 @@ namespace NHibernate.Cfg
 
 			foreach(XmlNode mapElement in sfNode.ChildNodes) 
 			{
-				//string elemname = mapElement.Name;
 				string elemname = mapElement.LocalName;
 				if ( "mapping".Equals(elemname) ) 
 				{
