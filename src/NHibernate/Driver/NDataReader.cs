@@ -356,7 +356,7 @@ namespace NHibernate.Driver
 						for(int i = 0; i < reader.FieldCount; i++) 
 						{
 							string fieldName = reader.GetName(i);
-							fieldNameToIndex.Add( fieldName, i);
+							fieldNameToIndex[fieldName] = i;
 							fieldIndexToName.Add(fieldName);
 							fieldTypes.Add( reader.GetFieldType(i) );
 							fieldDataTypeNames.Add( reader.GetDataTypeName(i) );
