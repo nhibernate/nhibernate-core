@@ -4,7 +4,7 @@ using System.Xml;
 namespace NHibernate.Cache
 {
 	/// <summary>
-	/// Summary description for CacheFactory.
+	/// Factory class for creating an <see cref="ICacheConcurrencyStrategy"/>.
 	/// </summary>
 	public class CacheFactory
 	{
@@ -19,11 +19,25 @@ namespace NHibernate.Cache
 		public const string ReadWrite = "read-write";
 		public const string NonstrictReadWrite = "nonstrict-read-write";
 
+		/// <summary>
+		/// Creates an <see cref="ICacheConcurrencyStrategy"/> from the parameters.
+		/// </summary>
+		/// <param name="node">The <see cref="XmlNode"/> that contains the attribute <c>usage</c>.</param>
+		/// <param name="name">The name of the class the strategy is being created for.</param>
+		/// <param name="mutable"><c>true</c> if the object being stored in the cache is mutable.</param>
+		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
 		public static ICacheConcurrencyStrategy CreateCache(XmlNode node, string name, bool mutable) 
 		{
 			return CacheFactory.CreateCache( node.Attributes["usage"].Value, name, mutable );
 		}
 		
+		/// <summary>
+		/// Creates an <see cref="ICacheConcurrencyStrategy"/> from the parameters.
+		/// </summary>
+		/// <param name="usage">The name of the strategy that <see cref="ICacheProvider"/> should use for the class.</param>
+		/// <param name="name">The name of the class the strategy is being created for.</param>
+		/// <param name="mutable"><c>true</c> if the object being stored in the cache is mutable.</param>
+		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
 		// was private in h2.1
 		public static ICacheConcurrencyStrategy CreateCache(string usage, string name, bool mutable) 
 		{

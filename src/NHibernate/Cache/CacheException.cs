@@ -1,16 +1,20 @@
 using System;
 
-namespace NHibernate.Cache 
+namespace NHibernate.Cache
 {
 	/// <summary>
-	/// Represents any exception from an <c>ICache</c>
+	/// Represents any exception from an <see cref="ICache"/>.
 	/// </summary>
 	[Serializable]
-	public class CacheException : HibernateException 
+	public class CacheException : HibernateException
 	{
-		public CacheException(string message) : base(message) { }
+		public CacheException(string message) : base( message )
+		{
+		}
 
-		public CacheException(Exception e) : base(e) { }
+		public CacheException(Exception e) : base( e )
+		{
+		}
 	}
 
 }
