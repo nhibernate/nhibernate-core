@@ -1,8 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 7.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate", "NHibernate.csproj", "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "..\UnitTesting\UnitTesting.csproj", "{F550A23F-5311-4C23-A14D-C39388DFA6FD}"
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
@@ -15,10 +13,6 @@ Global
 		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Debug.Build.0 = Debug|.NET
 		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Release.ActiveCfg = Release|.NET
 		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Release.Build.0 = Release|.NET
-		{F550A23F-5311-4C23-A14D-C39388DFA6FD}.Debug.ActiveCfg = Debug|.NET
-		{F550A23F-5311-4C23-A14D-C39388DFA6FD}.Debug.Build.0 = Debug|.NET
-		{F550A23F-5311-4C23-A14D-C39388DFA6FD}.Release.ActiveCfg = Release|.NET
-		{F550A23F-5311-4C23-A14D-C39388DFA6FD}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

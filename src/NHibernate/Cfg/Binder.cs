@@ -15,7 +15,7 @@ namespace NHibernate.Cfg {
 
 		public static void BindClass(XmlNode node, PersistentClass model) {
 			
-			string className = node.Attributes["name"].Value;
+			string className = node.Attributes["name"] == null ? null : node.Attributes["name"].Value;
 			// class
 			try {
 				model.PersistentClazz = ReflectHelper.ClassForName(className);

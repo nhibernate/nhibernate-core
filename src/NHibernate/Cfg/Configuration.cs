@@ -218,6 +218,66 @@ namespace NHibernate.Cfg {
 			return generators.Values;
 		}
 
+		/// <summary>
+		/// Generate DDL for droping tables
+		/// </summary>
+		public string[] GenerateDropSchemaScript(Dialect.Dialect dialect) {
+			SecondPassCompile();
+
+			ArrayList script = new ArrayList(50);
+
+			if ( dialect.DropConstraints ) {
+				foreach(Table table in TableMappings) {
+					foreach(ForeignKey fk in table.ForeignKeyCollection) {
+						script.Add(fk.SqlDropString(dialect));
+					}
+				}
+			}
+
+			foreach(Table table in TableMappings) {
+				script.Add( table.SqlDropString(dialect) );
+			}
+
+			foreach(IPersistentIdentifierGenerator idGen in CollectionGenerators(dialect) ) {
+				string dropString = idGen.SqlDropString(dialect);
+				if (dropString!=null) script.Add( dropString );
+			}
+
+			return ArrayHelper.ToStringArray(script);
+		}
+
+		/// <summary>
+		/// Generate DDL for creating tables
+		/// </summary>
+		public string[] GenerateSchemaCreationScript(Dialect.Dialect dialect) {
+			SecondPassCompile();
+
+			ArrayList script = new ArrayList(50);
+
+			foreach(Table table in TableMappings) {
+				script.Add( table.SqlCreateString(dialect, this) );
+			}
+
+			foreach(Table table in TableMappings) {
+				foreach(ForeignKey fk in table.ForeignKeyCollection) {
+					script.Add( fk.SqlCreateString(dialect, this) );
+				}
+				foreach(Index index in table.IndexCollection) {
+					script.Add( index.SqlCreateString(dialect, this) );
+				}
+			}
+
+			foreach(IPersistentIdentifierGenerator idGen in CollectionGenerators(dialect)) {
+				string[] lines = idGen.SqlCreateStrings(dialect);
+				for (int i=0; i<lines.Length; i++ ) script.Add( lines[i] );
+			}
+
+			return ArrayHelper.ToStringArray(script);
+		}
+
+			
+
+
 		private void SecondPassCompile() {
 			
 			foreach(Binder.SecondPass sp in secondPasses) {

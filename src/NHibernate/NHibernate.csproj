@@ -1141,6 +1141,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tool\hbm2ddl\AdoColumn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tool\hbm2ddl\AdoTable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tool\hbm2ddl\SchemaExport.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Transaction\ITransactionFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

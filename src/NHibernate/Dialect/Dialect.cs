@@ -242,6 +242,16 @@ namespace NHibernate.Dialect {
 			}
 		}
 
+		public static Dialect GetDialect(IDictionary props) {
+			string dialectName = (string) props[Cfg.Environment.Dialect];
+			if (dialectName==null) return GetDialect();
+			try {
+				return (Dialect) Activator.CreateInstance(ReflectHelper.ClassForName(dialectName));
+			} catch (Exception e) {
+				throw new HibernateException("could not instantiate dialect class", e);
+			}
+		}
+
 		/// <summary>
 		/// Retrieve a set of default Hibernate properties for this database.
 		/// </summary>

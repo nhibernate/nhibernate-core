@@ -22,8 +22,9 @@ namespace NHibernate.Proxy {
 
 
 		public static bool IsProxy(object obj) {
-			//TODO: this is obviously very fragile...is there a better way?
-			return obj.GetType().FullName.Equals("System.Runtime.Remoting.Proxies.__TransparentProxy");
+			//TODO: determine if the object is a proxy object
+			// can we just see if it's an instance of HibernateProxy?
+			return false;
 		}
 
 	}
