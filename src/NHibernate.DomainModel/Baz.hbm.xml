@@ -22,7 +22,7 @@
 				<column name="id" length="16"/>
 			</key>
 			<index column="i"/>
-			<element column="j" type="int"/>
+			<element column="j" type="Int32"/>
 		</primitive-array>
 		<set name="fooSet" lazy="true" order-by="string_">
 			<key>
@@ -52,7 +52,7 @@
 				<column name="baz_id" length="16"/>
 			</key>
 			<index column="j"/>
-			<element column="the_time" type="time"/>
+			<element column="the_time" type="Time"/>
 		</array>
 		<bag name="bag" order-by="`name!`" table="`$%^^b'a'g`">
 			<key>

@@ -127,6 +127,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Bar.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "BarProxy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "BasicClass.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -171,6 +181,11 @@
                 <File
                     RelPath = "ClassWithCompositeId.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ComponentCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "CompositeElement.cs"
@@ -291,6 +306,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NestingComponent.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHibernate.DomainModel.build"
                     BuildAction = "None"
                 />
@@ -331,6 +351,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "ReverseComparator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SexType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -359,6 +384,11 @@
                 />
                 <File
                     RelPath = "Sortable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "StringComparator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
