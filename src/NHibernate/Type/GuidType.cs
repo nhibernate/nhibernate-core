@@ -5,7 +5,10 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type 
 {
-
+	/// <summary>
+	/// Maps a <see cref="System.Guid"/> Property 
+	/// to a <see cref="DbType.Guid"/> column.
+	/// </summary>
 	public class GuidType : ValueTypeType, IDiscriminatorType 
 	{
 	

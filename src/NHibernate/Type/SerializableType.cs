@@ -9,13 +9,13 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type {
 	
 	/// <summary>
-	/// Maps an instance of a System.Type that has the SerializableAttribute to
-	/// a Binary column.  
+	/// Maps an instance of a <see cref="System.Object" /> that has the <see cref="System.SerializableAttribute" />
+	/// to a <see cref="DbType.Binary" /> column.  
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// The Serializabletype should be used when you know that Bytes are 
-	/// not going to be greater than 8,000
+	/// The SerializableType should be used when you know that Bytes are 
+	/// not going to be greater than 8,000.
 	/// </para>
 	/// <para>
 	/// The base class is <see cref="MutableType"/> because the data is stored in 

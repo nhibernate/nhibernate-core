@@ -7,7 +7,8 @@ namespace NHibernate.Type
 {
 
 	/// <summary>
-	/// DecimalType
+	/// Maps a <see cref="System.Decimal"/> Property 
+	/// to a <see cref="DbType.Decimal"/> column.
 	/// </summary>
 	public class DecimalType : ValueTypeType, IIdentifierType
 	{

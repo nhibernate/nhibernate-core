@@ -9,11 +9,6 @@ namespace NHibernate.Type {
 	/// Maps a <see cref="System.Boolean"/> Property 
 	/// to a <see cref="DbType.Boolean"/> column.
 	/// </summary>
-	/// <remarks>
-	/// Had to use setShort / getShort instead of setBoolean / getBoolean
-	/// to work around a HypersonicSQL driver bug - these are comments copied 
-	/// from Hibernate so I am not sure how/if they apply to NHibernate
-	/// </remarks>
 	public class BooleanType : ValueTypeType, IDiscriminatorType {
 
 		private static readonly string TRUE = "1";

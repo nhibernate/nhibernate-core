@@ -5,8 +5,8 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// Maps a System.Boolean to a single character column that stores a 
-	/// "T"/F" to indicate true/false.
+	/// Maps a <see cref="System.Boolean" /> to a 1 char <see cref="DbType.AnsiStringFixedLength" /> column 
+	/// that stores a <code>'T'/'F'</code> to indicate <code>true/false</code>.
 	/// </summary>
 	/// <remarks>
 	/// If you are using schema-export to generate your tables then you need

@@ -6,9 +6,11 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type {
 
 	/// <summary>
-	/// Alternative boolean types.
+	/// Maps a <see cref="System.Boolean"/> Property 
+	/// to a <see cref="DbType.AnsiStringFixedLength"/> column.
 	/// </summary>
-	public abstract class CharBooleanType : BooleanType {
+	public abstract class CharBooleanType : BooleanType 
+	{
 
 		protected abstract string TrueString { get; }
 		protected abstract string FalseString { get; }
@@ -27,7 +29,7 @@ namespace NHibernate.Type {
 		}
 
 		public override object Get(IDataReader rs, string name) {
-            return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		public override void Set(IDbCommand cmd, Object value, int index) {

@@ -5,6 +5,10 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type 
 {
 	
+	/// <summary>
+	/// Maps the Year, Month, and Day of a <see cref="System.DateTime"/> Property to a 
+	/// <see cref="DbType.Date"/> column
+	/// </summary>
 	public class DateType : ValueTypeType, IIdentifierType, ILiteralType 
 	{
 

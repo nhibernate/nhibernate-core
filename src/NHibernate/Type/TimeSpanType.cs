@@ -7,7 +7,7 @@ namespace NHibernate.Type
 {
 	
 	/// <summary>
-	/// Maps a System.Timespan Property to an Int64 column 
+	/// Maps a <see cref="System.Timespan" /> Property to an <see cref="DbType.Int64" /> column 
 	/// </summary>
 	public class TimeSpanType : ValueTypeType, IVersionType, ILiteralType
 	{

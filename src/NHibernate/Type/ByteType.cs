@@ -7,9 +7,11 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type {
 
 	/// <summary>
-	/// ByteType.
+	/// Maps a <see cref="System.Byte"/> Property 
+	/// to a <see cref="DbType.Byte"/> column.
 	/// </summary>
-	public class ByteType : ValueTypeType, IDiscriminatorType {
+	public class ByteType : ValueTypeType, IDiscriminatorType 
+	{
 		
 		internal ByteType() : base( new ByteSqlType() ) 
 		{

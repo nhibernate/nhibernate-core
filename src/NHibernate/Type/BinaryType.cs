@@ -62,7 +62,7 @@ namespace NHibernate.Type {
 				
 			}
 			else {
-				//TODO: not sure if this will work...
+				//TODO: not sure if this will work with all dbs
 				return (byte[])rs[index];
 			}
 		}

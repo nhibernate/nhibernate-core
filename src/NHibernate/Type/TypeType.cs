@@ -8,7 +8,7 @@ namespace NHibernate.Type {
 	
 	/// <summary>
 	/// Maps the Assembly Qualified Name of a <see cref="System.Type"/> to a 
-	/// variable length string column.
+	/// <see cref="DbType.Stirng" /> column.
 	/// </summary>
 	public class TypeType : ImmutableType 
 	{

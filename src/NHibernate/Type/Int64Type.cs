@@ -5,6 +5,10 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
+	/// <summary>
+	/// Maps a <see cref="System.Int64"/> Property 
+	/// to a <see cref="DbType.Int64"/> column.
+	/// </summary>
 	public class Int64Type : ValueTypeType, IIdentifierType, IVersionType 
 	{
 		

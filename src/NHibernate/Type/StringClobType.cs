@@ -5,7 +5,8 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	/// <summary>
-	///	Maps a System.String Property to an column that can store a CLOB.
+	///	Maps a <see cref="System.String" /> Property to an 
+	///	<see cref="System.String" /> column that can store a CLOB.
 	/// </summary>
 	/// <remarks>
 	/// This is only needed by DataProviders (SqlClient) that need to specify a Size for the

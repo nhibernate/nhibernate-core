@@ -6,8 +6,8 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type 
 {
 	/// <summary>
-	/// Maps a System.DateTime Property to a column that stores date &amp; time down to 
-	/// the accuracy of a second.
+	/// Maps a <see cref="System.DateTime" /> Property to a <see cref="DbType.DateTime"/> column that 
+	/// stores date &amp; time down to the accuracy of a second.
 	/// </summary>
 	/// <remarks>
 	/// This only stores down to a second, so if you are looking for the most accurate

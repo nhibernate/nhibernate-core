@@ -5,7 +5,12 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
-	public class Int16Type : ValueTypeType, IDiscriminatorType, IVersionType {
+	/// <summary>
+	/// Maps a <see cref="System.Int16"/> Property 
+	/// to a <see cref="DbType.Int16"/> column.
+	/// </summary>
+	public class Int16Type : ValueTypeType, IDiscriminatorType, IVersionType 
+	{
 		
 		internal Int16Type() : base( new Int16SqlType() ) 
 		{

@@ -5,7 +5,12 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
-	public class DoubleType : ValueTypeType {
+	/// <summary>
+	/// Maps a <see cref="System.Double"/> Property 
+	/// to a <see cref="DbType.Double"/> column.
+	/// </summary>
+	public class DoubleType : ValueTypeType 
+	{
 		
 		internal DoubleType() : base( new DoubleSqlType() ) 
 		{

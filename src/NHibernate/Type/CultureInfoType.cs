@@ -7,10 +7,15 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type {
 
 	/// <summary>
-	/// CultureInfoType for using a System.Globalization.CultureInfo an the 
-	/// culture name (not the Culture ID) is stored in the DB.
+	/// Maps a <see cref="System.Globalization.CultureInfo"/> Property 
+	/// to a <see cref="DbType.String"/> column.
 	/// </summary>
-	public class CultureInfoType : ImmutableType, ILiteralType {
+	/// <remarks>
+	/// CultureInfoType stores the culture name (not the Culture ID) of the 
+	/// <see cref="System.Globalization.CultureInfo"/> in the DB.
+	/// </remarks>
+	public class CultureInfoType : ImmutableType, ILiteralType 
+	{
 
 		internal CultureInfoType() : base( new StringSqlType(5) ) 
 		{

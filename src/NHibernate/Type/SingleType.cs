@@ -7,11 +7,12 @@ namespace NHibernate.Type
 {
 	
 	/// <summary>
-	/// Maps a System.Single Property to an column that can store a single precision number.
+	/// Maps a <see cref="System.Single" /> Property to an 
+	/// <see cref="DbType.Single" /> column.
 	/// </summary>
 	/// <remarks>
 	/// Verify through your database's documentation if there is a column type that
-	/// matches up with the capabilities of System.Single  
+	/// matches up with the capabilities of <see cref="System.Single" />  
 	/// </remarks>
 	public class SingleType : ValueTypeType 
 	{

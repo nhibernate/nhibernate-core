@@ -8,7 +8,7 @@ using NHibernate.Util;
 namespace NHibernate.Type {
 	
 	/// <summary>
-	/// Maps a System.String to a single variable length string column
+	/// Maps a <see cref="System.String" /> to a <see cref="DbType.String" /> column.
 	/// </summary>
 	public class StringType : ImmutableType, IDiscriminatorType {
 		

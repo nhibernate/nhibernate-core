@@ -7,8 +7,8 @@ namespace NHibernate.Type
 {
 	
 	/// <summary>
-	/// Maps a System.DateTime Property to an Int64 column that stores the DateTime using
-	/// the Ticks property.
+	/// Maps a <see cref="System.DateTime" /> Property to an <see cref="DbType.Int64" /> column 
+	/// that stores the DateTime using the Ticks property.
 	/// </summary>
 	/// <remarks>
 	/// This is the recommended way to "timestamp" a column.  The System.DateTime.Ticks 

@@ -6,9 +6,11 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type {
 
 	/// <summary>
-	/// Summary description for CharacterType.
+	/// Maps a <see cref="System.Char"/> Property 
+	/// to a <see cref="DbType.Char"/> column.
 	/// </summary>
-	public class CharType : ValueTypeType , IDiscriminatorType	{
+	public class CharType : ValueTypeType , IDiscriminatorType	
+	{
 
 		internal CharType() : base( new StringFixedLengthSqlType(1) ) 
 		{
