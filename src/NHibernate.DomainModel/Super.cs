@@ -2,17 +2,11 @@ namespace NHibernate.DomainModel
 {
 	public class Super 
 	{
-		protected string name;
+		protected string _name;
 		public string Name
 		{
-			get
-			{
-				return name;
-			}
-			set
-			{
-				this.name = value;
-			}
+			get { return _name; }
+			set { _name = value; }
 		}
 	}
 }

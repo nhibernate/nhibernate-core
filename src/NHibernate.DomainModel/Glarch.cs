@@ -8,173 +8,105 @@ namespace NHibernate.DomainModel
 	{
 	
 		private int _version;
-
+		private GlarchProxy _next;
+		private short _order;
+		private IList _strings;
+		private IDictionary _stringSets;
+		private IList _fooComponents;
+		private GlarchProxy[] _proxyArray;
+		private IList _proxySet;
+		private object _dynaBean;
+		private string _immutable;
+		private int _derivedVersion;
+		private object _any;
 		private int _x;
-	
+		private Multiplicity _multiple;
+
 		public int x
 		{
-			get
-			{
-				return _x;
-			}
-			set
-			{
-				this._x = value;
-			}
+			get { return _x; }
+			set { this._x = value; }
 		}
 	
 		public int version
 		{
-			get
-			{
-				return _version;
-			}
-			set
-			{
-				this._version = value;
-			}
+			get { return _version; }
+			set { this._version = value; }
 		}
 
-		/// <summary>
-		/// Holds the _next
-		/// </summary> 
-		private GlarchProxy _next;
+		
 
 		/// <summary>
 		/// Gets or sets the _next
 		/// </summary> 
 		public GlarchProxy next
 		{
-			get 
-			{
-				return _next; 
-			}
-			set 
-			{
-				_next = value;
-			}
+			get { return _next;  }
+			set { _next = value; }
 		}
 
-		/// <summary>
-		/// Holds the _order
-		/// </summary> 
-		private short _order;
-
+		
 		/// <summary>
 		/// Gets or sets the _order
 		/// </summary> 
 		public short order
 		{
-			get 
-			{
-				return _order; 
-			}
-			set 
-			{
-				_order = value;
-			}
+			get { return _order; }
+			set { _order = value; }
 		}
 
-		/// <summary>
-		/// Holds the _strings
-		/// </summary> 
-		private IList _strings;
-
+		
 		/// <summary>
 		/// Gets or sets the _strings
 		/// </summary> 
 		public IList strings
 		{
-			get 
-			{
-				return _strings; 
-			}
-			set 
-			{
-				_strings = value;
-			}
+			get { return _strings;  }
+			set { _strings = value; }
 		}
 
-		/// <summary>
-		/// Holds the _stringSets
-		/// </summary> 
-		private IDictionary _stringSets;
-
+		
 		/// <summary>
 		/// Gets or sets the _stringSets
 		/// </summary> 
 		public IDictionary stringSets
 		{
-			get 
-			{
-				return _stringSets; 
-			}
-			set 
-			{
-				_stringSets = value;
-			}
+			get { return _stringSets; }
+			set { _stringSets = value; }
 		}
 
-		/// <summary>
-		/// Holds the _fooComponents
-		/// </summary> 
-		private IList _fooComponents;
-
+		
 		/// <summary>
 		/// Gets or sets the _fooComponents
 		/// </summary> 
 		public IList fooComponents
 		{
-			get 
-			{
-				return _fooComponents; 
-			}
-			set 
-			{
-				_fooComponents = value;
-			}
+			get { return _fooComponents;  }
+			set { _fooComponents = value; }
 		}
 
-		/// <summary>
-		/// Holds the _proxyArray
-		/// </summary> 
-		private GlarchProxy[] _proxyArray;
-
+		
 		/// <summary>
 		/// Gets or sets the _proxyArray
 		/// </summary> 
 		public GlarchProxy[] proxyArray
 		{
-			get 
-			{
-				return _proxyArray; 
-			}
-			set 
-			{
-				_proxyArray = value;
-			}
+			get { return _proxyArray; }
+			set { _proxyArray = value; }
 		}
 
-		/// <summary>
-		/// Holds the _proxySet
-		/// </summary> 
-		private IList _proxySet;
-
+		
 		/// <summary>
 		/// Gets or sets the _proxySet
 		/// </summary> 
 		public IList proxySet
 		{
-			get 
-			{
-				return _proxySet; 
-			}
-			set 
-			{
-				_proxySet = value;
-			}
+			get { return _proxySet; }
+			set { _proxySet = value; }
 		}
 	
+		#region NHibernate.ILifecycle Members
+
 		public LifecycleVeto OnDelete(ISession s)
 		{
 			return LifecycleVeto.NoVeto;
@@ -213,116 +145,60 @@ namespace NHibernate.DomainModel
 			return LifecycleVeto.NoVeto;
 		}
 	
-		/// <summary>
-		/// Holds the _dynaBean
-		/// </summary> 
-		private object _dynaBean;
+		#endregion
 
 		/// <summary>
 		/// Gets or sets the _dynaBean
 		/// </summary> 
 		public object dynaBean
 		{
-			get 
-			{
-				return _dynaBean; 
-			}
-			set 
-			{
-				_dynaBean = value;
-			}
+			get { return _dynaBean; }
+			set { _dynaBean = value; }
 		}
 
-		/// <summary>
-		/// Holds the _immutable
-		/// </summary> 
-		private string _immutable;
-
+		
 		/// <summary>
 		/// Gets or sets the _immutable
 		/// </summary> 
 		public string immutable
 		{
-			get 
-			{
-				return _immutable; 
-			}
-			set 
-			{
-				_immutable = value;
-			}
+			get { return _immutable; }
+			set { _immutable = value; }
 		}
-
-		/// <summary>
-		/// Holds the _derivedVersion
-		/// </summary> 
-		private int _derivedVersion;
 
 		/// <summary>
 		/// Gets or sets the _derivedVersion
 		/// </summary> 
 		public int derivedVersion
 		{
-			get 
-			{
-				return _derivedVersion; 
-			}
-			set 
-			{
-				_derivedVersion = value;
-			}
+			get { return _derivedVersion;  }
+			set { _derivedVersion = value; }
 		}
-
-		/// <summary>
-		/// Holds the _any
-		/// </summary> 
-		private object _any;
 
 		/// <summary>
 		/// Gets or sets the _any
 		/// </summary> 
 		public object any
 		{
-			get 
-			{
-				return _any; 
-			}
-			set 
-			{
-				_any = value;
-			}
+			get { return _any; }
+			set { _any = value; }
 		}
 
-		/// <summary>
-		/// Holds the _multiple
-		/// </summary> 
-		private Multiplicity _multiple;
+		
 
 		/// <summary>
 		/// Gets or sets the _multiple
 		/// </summary> 
 		public Multiplicity multiple
 		{
-			get 
-			{
-				return _multiple; 
-			}
-			set 
-			{
-				_multiple = value;
-			}
+			get  { return _multiple; }
+			set  { _multiple = value; }
 		}
 
 		public new string name
 		{
-			get
-			{
-				return base.name;
-			}
-			set
-			{
-				this.name = value;
-			}
+			get { return base._name; }
+			set { this._name = value; }
 		}
 
 	}

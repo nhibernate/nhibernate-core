@@ -591,6 +591,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "SubDetail.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SubMulti.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Super.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -610,6 +620,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TrivialClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UnsavedType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -619,12 +634,37 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Vetoer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Vetoer.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "W.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "X.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "XY.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Y.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Z.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
             </Include>
         </Files>
