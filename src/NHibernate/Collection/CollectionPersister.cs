@@ -28,59 +28,58 @@ namespace NHibernate.Collection
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CollectionPersister));
 
-		private SqlString sqlDeleteString; 
-		private SqlString sqlInsertRowString;
-		private SqlString sqlUpdateRowString;
-		private SqlString sqlDeleteRowString;
+		private readonly SqlString sqlDeleteString; 
+		private readonly SqlString sqlInsertRowString;
+		private readonly SqlString sqlUpdateRowString;
+		private readonly SqlString sqlDeleteRowString;
 
-		private string sqlOrderByString;		
-		private string sqlOrderByStringTemplate;
-		private string sqlWhereString;
-		private string sqlWhereStringTemplate;
+		private readonly string sqlOrderByString;		
+		private readonly string sqlOrderByStringTemplate;
+		private readonly string sqlWhereString;
+		private readonly string sqlWhereStringTemplate;
 
-		private bool hasOrder;
-		private bool hasWhere;
-		private bool hasOrphanDelete;
-		private IType keyType;
-		private IType indexType;
-		private IType elementType;
-		private string[] keyColumnNames;
-		private string[] indexColumnNames;
-		private string[] elementColumnNames;
-		private string[] rowSelectColumnNames;
+		private readonly bool hasOrder;
+		private readonly bool hasWhere;
+		private readonly bool hasOrphanDelete;
+		private readonly IType keyType;
+		private readonly IType indexType;
+		private readonly IType elementType;
+		private readonly string[] keyColumnNames;
+		private readonly string[] indexColumnNames;
+		private readonly string[] elementColumnNames;
+		private readonly string[] rowSelectColumnNames;
 		
-		//TODO: populate this field
-		private string[] indexColumnAliases;
-		private string[] elementColumnAliases;
-		private string[] keyColumnAliases;
+		private readonly string[] indexColumnAliases;
+		private readonly string[] elementColumnAliases;
+		private readonly string[] keyColumnAliases;
 		
-		private IType rowSelectType;
-		private bool primitiveArray;
-		private bool array;
-		private bool isOneToMany;
-		private string qualifiedTableName;
-		private bool hasIndex;
-		private bool isLazy;
-		private bool isInverse;
-		private System.Type elementClass;
-		private ICacheConcurrencyStrategy cache;
-		private PersistentCollectionType collectionType;
-		private OuterJoinLoaderType enableJoinedFetch;
-		private System.Type ownerClass;
+		private readonly IType rowSelectType;
+		private readonly bool primitiveArray;
+		private readonly bool array;
+		private readonly bool isOneToMany;
+		private readonly string qualifiedTableName;
+		private readonly bool hasIndex;
+		private readonly bool isLazy;
+		private readonly bool isInverse;
+		private readonly System.Type elementClass;
+		private readonly ICacheConcurrencyStrategy cache;
+		private readonly PersistentCollectionType collectionType;
+		private readonly OuterJoinLoaderType enableJoinedFetch;
+		private readonly System.Type ownerClass;
 
-		private IIdentifierGenerator identifierGenerator;
-		private string unquotedIdentifierColumnName;
-		private IType identifierType;
-		private bool hasIdentifier;
-		private string identifierColumnName;
-		private string identifierColumnAlias;
+		private readonly IIdentifierGenerator identifierGenerator;
+		private readonly string unquotedIdentifierColumnName;
+		private readonly IType identifierType;
+		private readonly bool hasIdentifier;
+		private readonly string identifierColumnName;
+		private readonly string identifierColumnAlias;
 
-		private ICollectionInitializer loader;
+		private readonly ICollectionInitializer loader;
 
-		private string role;
+		private readonly string role;
 
-		private Dialect.Dialect dialect;
-		private ISessionFactoryImplementor factory;
+		private readonly Dialect.Dialect dialect;
+		private readonly ISessionFactoryImplementor factory;
 
 		public CollectionPersister(Mapping.Collection collection, Configuration datastore, ISessionFactoryImplementor factory) 
 		{
