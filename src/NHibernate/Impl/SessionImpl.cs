@@ -36,13 +36,41 @@ namespace NHibernate.Impl
 		private bool autoClose;
 		private long timestamp;
 
-		private bool closed = false;
+		/// <summary>
+		/// Indicates if the Session has been closed.
+		/// </summary>
+		/// <value>
+		/// <c>false</c> (by default) if the Session is Open and can be used, 
+		/// <c>true</c> if the Session has had the methods <c>Close()</c> or
+		/// <c>Dispose()</c> invoked.</value>
+		private bool closed;
 		private FlushMode flushMode = FlushMode.Auto;
 
+		/// <summary>
+		/// A boolean indicating if the method AfterTransactionCompletion() should 
+		/// be called from the method Disconnect().
+		/// </summary>
+		/// <value>
+		/// <c>true</c> (by default) if the method should be called.
+		/// </value>
+		/// <remarks>
+		/// This is set to false when the method BeginTransaction() is invoked
+		/// because the Transaction will call the method AfterTransactionCompletion() 
+		/// when the Transaction is Committed.
+		/// </remarks>
 		private bool callAfterTransactionCompletionFromDisconnect = true;
 
-		private IDictionary entitiesByKey; //key=Key, value=Object
-		private IDictionary proxiesByKey; //key=Key, value=HibernateProxy
+		/// <summary>
+		/// An <see cref="IDictionary"/> with the <see cref="Key"/> as the key
+		/// and an <see cref="Object"/> as the value.
+		/// </summary>
+		private IDictionary entitiesByKey; 
+
+		/// <summary>
+		/// An <see cref="IDictionary"/> with the <see cref="Key"/> as the key
+		/// and an <see cref="INHibernateProxy"/> as the value.
+		/// </summary>
+		private IDictionary proxiesByKey; 
 
 		// these are used to serialize the proxiesByKey Dictionary - I was not able to
 		// have a Hashtable serialize fully by the time that SessionImpl OnDeserialization
@@ -54,22 +82,56 @@ namespace NHibernate.Impl
 
 
 		//IdentityMaps are serializable in NH 
-		private IdentityMap entries; //key=Object, value=EntityEntry
-		private IdentityMap arrayHolders; //key=array, value=ArrayHolder
-		private IdentityMap collections; //key=PersistentCollection, value=CollectionEntry
+		/// <summary>
+		/// An <see cref="IdentityMap"/> with the <see cref="Object"/> as the key
+		/// and an <see cref="EntityEntry"/> as the value.
+		/// </summary>
+		private IdentityMap entries; 
+		/// <summary>
+		/// An <see cref="IdentityMap"/> with the <see cref="Array"/> as the key
+		/// and an <see cref="ArrayHolder"/> as the value.
+		/// </summary>
+		private IdentityMap arrayHolders; 
+		/// <summary>
+		/// An <see cref="IdentityMap"/> with the <see cref="PersistentCollection"/> as the key
+		/// and an <see cref="CollectionEntry"/> as the value.
+		/// </summary>
+		private IdentityMap collections; 
 
-		private ISet nullifiables = new HashedSet(); //set of Keys of deleted objects
+		/// <summary>
+		/// An <see cref="ISet"/> of <see cref="Key"/> objects of the deleted entities.
+		/// </summary>
+		private ISet nullifiables = new HashedSet(); 
 
 		private IInterceptor interceptor;
 
 		[NonSerialized]
 		private IDbConnection connection;
 
+		/// <summary>
+		/// A boolean indicating if the Session should automattically connect to the
+		/// database - ie, open a new <see cref="IDbConnection"/> for the operation if
+		/// <c>this.Connection==null</c>.
+		/// </summary>
+		/// <remarks>
+		/// <p>
+		/// This will be initialzed to <c>true</c> by the ctor if NHibernate is managing
+		/// the Connections, <c>false</c> if the user passes in their own connection - 
+		/// indicating they will be responsible for managing connections.
+		/// </p>
+		/// <p>
+		/// This can also be set to <c>false</c> when NHibernate has opened the connection
+		/// on its own and the Session has had the methods <c>Close()</c> or 
+		/// <c>Disconnect()</c> invoked.
+		/// </p>
+		/// <p>
+		/// This can also be set to <c>true</c> when the Session has had the method 
+		/// <c>Reconnect()</c> invoked.
+		/// </p>
+		/// </remarks>
 		[NonSerialized]
 		private bool connect;
 
-		// TODO: find out if we want the reference to IDbTransaction or ITransaction - leaning
-		// towards an ITransaction because we can get the IDbTransaction from that.
 		[NonSerialized]
 		private ITransaction transaction;
 
@@ -354,7 +416,17 @@ namespace NHibernate.Impl
 
 			try
 			{
-				return ( connection == null ) ? null : Disconnect();
+				// when the connection is null nothing needs to be done - if there
+				// is a value for connection then Disconnect() was not called - so we
+				// need to ensure it gets called.
+				if( connection==null )
+				{
+					return null;
+				}
+				else
+				{
+					return Disconnect();
+				}
 			}
 			finally
 			{
@@ -362,7 +434,11 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Ensure that the locks are downgraded to <see cref="LockMode.None"/>
+		/// and that all of the softlocks in the <see cref="Cache"/> have
+		/// been released.
+		/// </summary>
 		public void AfterTransactionCompletion()
 		{
 			log.Debug( "transaction completion" );
@@ -392,7 +468,9 @@ namespace NHibernate.Impl
 			}
 			executions.Clear();
 
-			callAfterTransactionCompletionFromDisconnect = true; //not really necessary
+			// the transaction was completed so reset the field callAfter... to its default
+			// value.
+			callAfterTransactionCompletionFromDisconnect = true; //h2.0.3-not really necessary
 		}
 
 		private void InitTransientCollections()
@@ -406,6 +484,11 @@ namespace NHibernate.Impl
 			executions = new ArrayList( 50 );
 		}
 
+		/// <summary>
+		/// Mark the Session as being closed and Clear out the HashTables of
+		/// entities and proxies along with the Identity Maps for entries, array
+		/// holders, collections, and nullifiables.
+		/// </summary>
 		private void Cleanup()
 		{
 			closed = true;
@@ -3847,7 +3930,17 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets if the ISession is connected.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if the ISession is connected.
+		/// </value>
+		/// <remarks>
+		/// An ISession is considered connected if there is an <see cref="IDbConnection"/> (regardless
+		/// of its state) or if it the field <c>connect</c> is true.  Meaning that it will connect
+		/// at the next operation that requires a connection.
+		/// </remarks>
 		public bool IsConnected
 		{
 			get { return connection != null || connect; }
@@ -3860,14 +3953,17 @@ namespace NHibernate.Impl
 
 			try
 			{
+				// the Session is flagged as needing to create a Connection for the
+				// next operation
 				if( connect )
 				{
+					// a Disconnected Session should not automattically "connect"
 					connect = false;
 					return null;
 				}
 				else
 				{
-					if( connection == null )
+					if( connection==null )
 					{
 						throw new HibernateException( "session already disconnected" );
 					}
@@ -3876,21 +3972,34 @@ namespace NHibernate.Impl
 					{
 						batcher.CloseCommands();
 					}
+					
+					// get a new reference to the the Session's connection before 
+					// closing it - and set the existing to Session's connection to
+					// null but don't close it yet
 					IDbConnection c = connection;
 					connection = null;
+					
+					// if Session is supposed to auto-close the connection then
+					// the Sesssion is managing the IDbConnection. 
 					if( autoClose )
 					{
+						// let the SessionFactory close it and return null
+						// because the connection is internal to the Session
 						factory.CloseConnection( c );
 						return null;
 					}
 					else
 					{
+						// return the connection the user provided - at this point
+						// it has been disassociated with the NHibernate session. 
 						return c;
 					}
 				}
 			}
 			finally
 			{
+				// ensure that AfterTransactionCompletion gets called since
+				// it takes care of the Locks and Cache.
 				if( callAfterTransactionCompletionFromDisconnect )
 				{
 					AfterTransactionCompletion();
@@ -3927,30 +4036,100 @@ namespace NHibernate.Impl
 		#region System.IDisposable Members
 
 		/// <summary>
+		/// A flag to indicate if <c>Disose()</c> has been called.
+		/// </summary>
+		private bool _isAlreadyDisposed;
+
+		/// <summary>
+		/// Finalizer that ensures the object is correctly disposed of.
+		/// </summary>
+		~SessionImpl()
+		{
+			Dispose( false );
+		}
+
+		/// <summary>
 		/// Just in case the user forgot to Commit() or Close()
 		/// </summary>
-		void IDisposable.Dispose()
+		public void Dispose()
 		{
 			log.Debug( "running ISession.Dispose()" );
+			Dispose( true );
 
-			// it was never disconnected
-			if( connection != null )
+//			// it was never disconnected
+//			if( connection != null )
+//			{
+//				AfterTransactionCompletion();
+//
+//				if( connection.State == ConnectionState.Closed )
+//				{
+//					log.Warn( "finalizing unclosed session with closed connection" );
+//				}
+//				else
+//				{
+//					log.Warn( "unclosed connection" );
+//					if( autoClose )
+//					{
+//						connection.Close();
+//					}
+//				}
+//			}
+		}
+
+		/// <summary>
+		/// Takes care of freeing the managed and unmanaged resources that 
+		/// this class is responsible for.
+		/// </summary>
+		/// <param name="isDisposing">Indicates if this Session is being Disposed of or Finalized.</param>
+		/// <remarks>
+		/// If this Session is being Finalized (<c>isDisposing==false</c>) then make sure not
+		/// to call any methods that could potentially bring this Session back to life.
+		/// </remarks>
+		protected virtual void Dispose(bool isDisposing)
+		{
+			if( _isAlreadyDisposed )
 			{
-				AfterTransactionCompletion();
+				// don't dispose of multiple times.
+				return;
+			}
 
-				if( connection.State == ConnectionState.Closed )
+			// free managed resources that are being managed by the session if we
+			// know this call came through Dispose()
+			if( isDisposing )
+			{
+				// we are not reusing the Close() method because that sets the connection==null
+				// during the Close() - if the connection is null we can't get to it to Dispose
+				// of it.
+				if( connection!=null )
 				{
-					log.Warn( "finalizing unclosed session with closed connection" );
+					// ensure the Locks are downgraded and the Cache releases its softlocks.
+					AfterTransactionCompletion();
 				}
-				else
+				//TODO: add a Dispose to IBatcher (NDataReader), & ITransaction
+				
+				// if the Session is responsible for managing the connection then make sure
+				// the connection is disposed of.
+				if( autoClose )
 				{
-					log.Warn( "unclosed connection" );
-					if( autoClose )
+					if( connection!=null ) 
 					{
-						connection.Close();
+						connection.Dispose();
 					}
 				}
+
+				// it is important to call Cleanup because that marks the Session as being
+				// closed - the Session could still be associated with a Proxy that is attempting
+				// to be reassociated with another Session.  If the Proxy sees ISession.IsOpen==true
+				// then an exception will be thrown for trying to associate it with 2 open sessions.
+				Cleanup();
+				
 			}
+
+			// free unmanaged resources here
+			
+			_isAlreadyDisposed = true;
+			// nothing for Finalizer to do - so tell the GC to ignore it
+			GC.SuppressFinalize( this );
 		}
 
 		#endregion
