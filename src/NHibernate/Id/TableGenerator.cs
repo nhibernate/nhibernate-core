@@ -158,9 +158,12 @@ namespace NHibernate.Id
 
 		public string[] SqlCreateStrings(Dialect.Dialect dialect) 
 		{
+			// changed the first value to be "1" by default since an uninitialized Int32 is 0 - leaving
+			// it at 0 would cause problems with an unsaved-value="0" which is what most people are 
+			// defaulting <id>'s with Int32 types at.
 			return new string[] {
 						"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName( SqlTypeFactory.GetInt32() ) + " )",
-						"insert into " + tableName + " values ( 0 )"
+						"insert into " + tableName + " values ( 1 )"
 								};
 		}
 
