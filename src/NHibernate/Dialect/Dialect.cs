@@ -411,19 +411,6 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c> 
-		/// </summary>
-		/// <param name="querySelect"></param>
-		/// <returns>The modified SQL</returns>
-		[Obsolete("Use the GetLimitString(SqlString) overload instead.")]
-		public virtual string GetLimitString(String querySelect) 
-		{
-			//TODO: H2.0.3 - this might need to the a SqlString or an IDbCommand depending
-			// on when it comes in.  Need to look at Loader to know for sure...
-			throw new NotSupportedException("Paged Queries not supported");
-		}
-
-		/// <summary>
 		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
 		/// <param name="querySqlString">A Query in the form of a SqlString.</param>

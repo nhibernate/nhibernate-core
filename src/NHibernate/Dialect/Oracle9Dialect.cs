@@ -124,15 +124,6 @@ namespace NHibernate.Dialect
 			get	{ return true;	}
 		}
 
-		public override string GetLimitString(String querySelect)
-		{
-			StringBuilder pagingSelect = new StringBuilder(100);
-			pagingSelect.Append("select * from ( select row_.*, rownum rownum_ from ( ");
-			pagingSelect.Append(querySelect);
-			pagingSelect.Append(" ) row_ where rownum <= ?) where rownum_ > ?");
-			return pagingSelect.ToString();
-		}
-
 		public override SqlString GetLimitString(SqlString querySqlString)
 		{
 			Parameter p1 = new Parameter();

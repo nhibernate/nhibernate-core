@@ -82,11 +82,6 @@ namespace NHibernate.Dialect
 			get	{ return true; }
 		}
 
-		public override string GetLimitString(String querySelect)
-		{
-			return querySelect + " limit ? offset ? ";
-		}
-		
 		public override SqlString GetLimitString(SqlString querySqlString)
 		{
 			Parameter p1 = new Parameter();
