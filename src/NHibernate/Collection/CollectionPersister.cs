@@ -469,7 +469,7 @@ namespace NHibernate.Collection
 
 		private void WriteRowSelect(IDbCommand st, object idx, ISessionImplementor session) 
 		{
-			rowSelectType.NullSafeSet(st, idx, keyColumnNames.Length, session);
+			rowSelectType.NullSafeSet(st, idx, (HasIdentifier ? 0 : keyColumnNames.Length), session);
 		}
 
 		public void WriteKey(IDbCommand st, object id, bool writeOrder, ISessionImplementor session) 
