@@ -86,11 +86,11 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Does this dialect support the <c>FOR UDPATE</c> syntax?
+		/// Does this dialect support the <c>FOR UDPATE OF</c> syntax?
 		/// </summary>
 		public virtual bool SupportsForUpdateOf
 		{
-			get { return true; }
+			get { return false; }
 		}
 
 		/// <summary>
