@@ -194,6 +194,7 @@ namespace NHibernate.Test
 		[Ignore("Test not yet written")]
 		public void Serialization() 
 		{
+			//blah
 		}
 
 		[Test]
