@@ -30,9 +30,13 @@
 				type="Int32" 
 			/>
 			
+			<!--
+				the discriminator-value used to be "null", but there are null values
+				for Int32 so I made it -2
+			-->
 			<subclass 
 				name="NHibernate.DomainModel.C1, NHibernate.DomainModel" 
-				discriminator-value="null"
+				discriminator-value="-2"
 			>
 				<property 
 					name="Address" 

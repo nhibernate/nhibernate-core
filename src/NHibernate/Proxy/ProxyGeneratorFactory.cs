@@ -18,6 +18,8 @@ namespace NHibernate.Proxy
 		
 		public static IProxyGenerator GetProxyGenerator() 
 		{
+			//TODO: make this read from a configuration file!!!  At this point anybody
+			// could substitue in their own IProxyGenerator and LazyInitializer.
 			return _generator;
 		}
 	}

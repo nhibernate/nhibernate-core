@@ -21,11 +21,9 @@ namespace NHibernate.Proxy
 		/// <returns>A reference to NLazyInitializer that contains the details of the Proxied object.</returns>
 		public static LazyInitializer GetLazyInitializer(INHibernateProxy proxy) 
 		{
-			// have to hard code in "handler" - very dependant on them not changing their
-			// implementation - email Hammet about this - or atleast to provide a static
-			// field 
-			object fieldValue = proxy.GetType().GetField( "handler" ).GetValue(proxy);
-			return (LazyInitializer)fieldValue;
+			LazyInitializer li = ProxyGeneratorFactory.GetProxyGenerator().GetLazyInitializer( proxy );
+			return li;
+			
 		}
 
 		/// <summary>
@@ -39,7 +37,7 @@ namespace NHibernate.Proxy
 			if (obj is INHibernateProxy) 
 			{
 				INHibernateProxy proxy = (INHibernateProxy) obj;
-				LazyInitializer li = GetLazyInitializer(proxy);
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( proxy );
 				return li.PersistentClass;
 			}
 			else 

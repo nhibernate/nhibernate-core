@@ -50,7 +50,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for id
 	/// </summary>
-	public Int64 Id
+	public virtual Int64 Id
 	{
 		get { return _id; }
 		set { _id = value; }
@@ -59,7 +59,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for Amount
 	/// </summary>
-	public Double Amount
+	public virtual Double Amount
 	{
 		get { return _amount; }
 		set { _amount = value; }

@@ -993,7 +993,11 @@ namespace NHibernate.Impl
 			{ 
 				IClassPersister persister = GetPersister( li.PersistentClass ); 
 				Key key = new Key( li.Identifier, persister ); 
-				if ( !proxiesByKey.Contains(key) ) proxiesByKey[key] = proxy; // any earlier proxy takes precedence 
+				if ( !proxiesByKey.Contains(key) ) 
+				{
+					proxiesByKey[key] = proxy; // any earlier proxy takes precedence 
+				}
+				
 				NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) proxy ).Session = this; 
 			} 
 		} 
@@ -1920,8 +1924,14 @@ namespace NHibernate.Impl
 				} 
 				else 
 				{
-					//TODO: Get the proxy - there is some CGLIB code here
-					proxy = null; 
+					IProxyGenerator generator = ProxyGeneratorFactory.GetProxyGenerator();
+					proxy = generator.GetProxy( 
+						p.MappedClass
+						, p.ConcreteProxyClass
+						, p.ProxyInterfaces
+						, p.ProxyIdentifierProperty
+						, key.Identifier
+						, this );
 
 					proxiesByKey[key] = proxy;
 					return proxy;
@@ -2122,7 +2132,7 @@ namespace NHibernate.Impl
 					if ( persister.HasProxy ) 
 					{
 						IProxyGenerator generator = ProxyGeneratorFactory.GetProxyGenerator();
-						proxy = generator.GetProxy( clazz, persister.ProxyInterfaces, persister.ProxyIdentifierProperty, id, this );
+						proxy = generator.GetProxy( clazz, persister.ConcreteProxyClass, persister.ProxyInterfaces, persister.ProxyIdentifierProperty, id, this );
 					}
 					proxiesByKey[key] = proxy;
 					return proxy;
@@ -2747,7 +2757,10 @@ namespace NHibernate.Impl
 			if (obj is INHibernateProxy) 
 			{
 				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj );
-				if ( li.Session!=this ) throw new TransientObjectException("The proxy was not associated with this session");
+				if ( li.Session!=this ) 
+				{
+					throw new TransientObjectException("The proxy was not associated with this session");
+				}
 				return li.Identifier;
 			} 
 			else 
@@ -3880,7 +3893,7 @@ namespace NHibernate.Impl
 		{ 
             if (obj is INHibernateProxy) 
 			{ 
-                LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ); 
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ); 
                 object id = li.Identifier; 
                 IClassPersister persister = GetPersister( li.PersistentClass ); 
                 Key key = new Key(id, persister); 

@@ -66,16 +66,10 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for address
 	/// </summary>
-	public String Address
+	public virtual String Address
 	{
-		get
-		{
-			return this._address;
-		}
-		set
-		{
-			this._address = value;
-		}
+		get { return _address; }
+		set { _address = value; }
 	}
 	
 	#endregion

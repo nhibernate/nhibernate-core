@@ -1368,6 +1368,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Proxy\AvalonCustomProxyGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Proxy\AvalonLazyInitializer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

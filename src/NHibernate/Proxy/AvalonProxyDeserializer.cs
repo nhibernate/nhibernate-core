@@ -14,6 +14,7 @@ namespace NHibernate.Proxy
 		// these fields are set during the GetObjectData call in AvalonLazyInitializer.
 		private object _target = null;
 		private System.Type _persistentClass = null;
+		private System.Type _concreteProxy = null;
 		private System.Type[] _interfaces = null;
 		private PropertyInfo _identifierPropertyInfo = null;
 		private object _id = null;
@@ -35,6 +36,7 @@ namespace NHibernate.Proxy
 				
 				object proxy = generator.GetProxy( 
 					_persistentClass
+					, _concreteProxy
 					, _interfaces
 					, _identifierPropertyInfo
 					, _id

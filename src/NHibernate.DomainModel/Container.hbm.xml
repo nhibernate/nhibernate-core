@@ -13,6 +13,7 @@
 	/>
 	<class 
 		name="NHibernate.DomainModel.Container, NHibernate.DomainModel" 
+		proxy="NHibernate.DomainModel.Container, NHibernate.DomainModel"
 	>
 	<!-- 
 			proxy doesn't work yet
@@ -160,6 +161,7 @@
 	</class>
 	<class 
 		name="NHibernate.DomainModel.Contained, NHibernate.DomainModel" 
+		proxy="NHibernate.DomainModel.Contained, NHibernate.DomainModel"
 	>
 	<!-- 
 			proxy doesn't work yet

@@ -20,6 +20,21 @@ namespace NHibernate.Proxy
 		/// <param name="id">The value for the Id.</param>
 		/// <param name="session">The Session the proxy is in.</param>
 		/// <returns>A fully built <c>INHibernateProxy</c>.</returns>
-		INHibernateProxy GetProxy(System.Type persistentClass, System.Type[] interfaces, PropertyInfo identifierPropertyInfo, object id, ISessionImplementor session);
+		INHibernateProxy GetProxy(System.Type persistentClass, System.Type concreteProxy, System.Type[] interfaces, PropertyInfo identifierPropertyInfo, object id, ISessionImplementor session);
+
+		/// <summary>
+		/// Gets the <see cref="LazyInitializer"/> that is used by the Proxy.
+		/// </summary>
+		/// <param name="proxy">The Proxy object</param>
+		/// <returns>The <see cref="LazyInitializer"/> that contains the details of the Proxied object.</returns>
+		LazyInitializer GetLazyInitializer(INHibernateProxy proxy); 
+
+		/// <summary>
+		/// Convenience method to figure out the underlying type for the object regardless of it
+		/// is a Proxied object or the real object.
+		/// </summary>
+		/// <param name="obj">The object to get the type of.</param>
+		/// <returns>The Underlying Type for the object regardless of if it is a Proxy.</returns>
+		System.Type GetClass(object obj); 
 	}
 }

@@ -103,7 +103,7 @@ namespace NHibernate.Proxy
 		/// with the instantiated target.
 		/// </summary>
 		/// <param name="info">The <see cref="SerializationInfo"/> to write the object to.</param>
-		protected abstract void AddSerializationInfo(SerializationInfo info);
+		protected abstract void AddSerailizationInfo(SerializationInfo info);
 
 		public object Identifier 
 		{
@@ -188,7 +188,7 @@ namespace NHibernate.Proxy
 
 				// let the specific LazyInitializer write its requirements for deserialization 
 				// into the stream.
-				AddSerializationInfo( info );
+				AddSerailizationInfo( info );
 
 				// don't need a return value for proxy.
 				return null;
