@@ -29,7 +29,7 @@ namespace NHibernate.Property
 
 		#endregion
 
-		private static BasicSetter GetSetterOrNull(System.Type type, string propertyName) 
+		internal static BasicSetter GetSetterOrNull(System.Type type, string propertyName) 
 		{
 			if (type == typeof(object) || type == null) return null;
 
@@ -55,7 +55,7 @@ namespace NHibernate.Property
 			}
 		}
 	
-		private static BasicGetter GetGetterOrNull(System.Type type, string propertyName) 
+		internal static BasicGetter GetGetterOrNull(System.Type type, string propertyName) 
 		{
 			if (type==typeof(object) || type==null) return null;
 

@@ -4,7 +4,7 @@ namespace NHibernate.Property
 {
 	/// <summary>
 	/// Implementation of FieldNamingStrategy for fields that are prefixed with
-	/// an "m_" and the PropertyName.
+	/// an "m_" and the first character in PropertyName capitalized.
 	/// </summary>
 	public class PascalCaseMUnderscoreStrategy : IFieldNamingStrategy
 	{
@@ -13,7 +13,7 @@ namespace NHibernate.Property
 
 		public string GetFieldName(string propertyName)
 		{
-			return "m_" + propertyName;
+			return "m_" + propertyName.Substring(0, 1).ToUpper() + propertyName.Substring(1);
 		}
 
 		#endregion

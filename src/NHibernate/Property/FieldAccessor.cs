@@ -7,9 +7,10 @@ namespace NHibernate.Property
 	/// Access fields directly.
 	/// </summary>
 	/// <remarks>
-	/// This accesses fields with the following naming convention:
+	/// This accesses fields with the following naming convention unless a 
+	/// <see cref="IFieldNamingStrategy"/> is supplied.
 	/// Property Name = "Id"
-	/// Field Name = "id"
+	/// Field Name = "Id"
 	/// </remarks>
 	public class FieldAccessor : IPropertyAccessor
 	{
@@ -40,7 +41,7 @@ namespace NHibernate.Property
 
 		#endregion
 	
-		private static FieldInfo GetField(System.Type clazz, string fieldName) 
+		internal static FieldInfo GetField(System.Type clazz, string fieldName) 
 		{
 			if( clazz==null || clazz==typeof(object) )
 			{
