@@ -49,7 +49,8 @@ namespace NHibernate.Mapping {
 
 		public Cascades.CascadeStyle CascadeStyle {
 			get {
-				if (value.Type.IsComponentType) {
+				IType type = value.Type;
+				if (type.IsComponentType && !type.IsObjectType) {
 					IAbstractComponentType actype = (IAbstractComponentType) value.Type;
 					int length = actype.Subtypes.Length;
 					for (int i=0; i<length; i++) {

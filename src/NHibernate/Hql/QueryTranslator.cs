@@ -628,23 +628,22 @@ namespace NHibernate.Hql {
 			pathJoins.Add( path, join.Copy() );
 		}
 
-		protected override void BindNamedParameters(IDbCommand ps, IDictionary namedParams, ISessionImplementor session) {
+		protected override void BindNamedParameters(IDbCommand ps, IDictionary namedParams, int start, ISessionImplementor session) {
 			if (namedParams != null) {
 				foreach (DictionaryEntry e in namedParams) {
 					string name = (string) e.Key;
 					TypedValue typedval = (TypedValue) e.Value;
 					int[] locs = GetNamedParameterLocs(name);
 					for (int i = 0; i < locs.Length; i++) {
-						typedval.Type.NullSafeSet(ps, typedval.Value, locs[i], session);
+						typedval.Type.NullSafeSet(ps, typedval.Value, locs[i] + start, session);
 					}
 				}
 			}
 		}
 
 		public IEnumerable GetEnumerable(object[] values, IType[] types, RowSelection selection, IDictionary namedParams, ISessionImplementor session) {
-			IDbCommand st = PrepareQueryStatement( SQLString, values, types, selection, false, session);
+			IDbCommand st = PrepareQueryStatement( SQLString, values, types, namedParams, selection, false, session);
 			try {
-				BindNamedParameters(st, namedParams, session);
 				SetMaxRows(st, selection);
 				IDataReader rs = st.ExecuteReader();
 				Advance(rs, selection, session);

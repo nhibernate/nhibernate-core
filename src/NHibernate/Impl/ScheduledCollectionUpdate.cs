@@ -23,7 +23,7 @@ namespace NHibernate.Impl {
 			else if ( collection.Empty ) {
 				if( !emptySnapshot ) persister.Remove(id, session);
 			}
-			else if ( collection.NeedsRecreate( persister.ElementType ) ) {
+			else if ( collection.NeedsRecreate() ) {
 				if( !emptySnapshot ) persister.Remove(id, session);
 				persister.Recreate(collection, id, session);
 			}

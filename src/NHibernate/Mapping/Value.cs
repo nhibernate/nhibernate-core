@@ -111,9 +111,10 @@ namespace NHibernate.Mapping {
 			set { nullValue = value; }
 		}
 
-		
-
-
-		
+		public virtual bool IsAny {
+			get {
+				return false;
+			}
+		}		
 	}
 }

@@ -36,7 +36,7 @@ namespace NHibernate.Collection {
 
 		protected void Write() {
 			Initialize(true);
-			if (session!=null && session.IsOpen) {
+			if (IsConnectedToSession) {
 				session.Dirty(this);
 			} else {
 				collectionSnapshot.SetDirty();
@@ -56,6 +56,7 @@ namespace NHibernate.Collection {
 			if ( MayQueueAdd ) {
 				if (additions == null) additions = new ArrayList(10);
 				additions.Add(element);
+				session.Dirty(this); //needed so that we remove this collection from the JCS cache
 				return true;
 			} else {
 				return false;
@@ -94,9 +95,17 @@ namespace NHibernate.Collection {
 			return this;
 		}
 
+		public virtual void BeginRead() {
+			// override on some subclasses
+		}
+	
+		public virtual void EndRead() {
+			// override on some subclasses
+		}
+
 		public void Initialize(bool writing) {
 			if (!initialized) {
-				if ( session!=null && session.IsOpen ) {
+				if ( IsConnectedToSession ) {
 					try {
 						session.Initialize(this, writing);
 						initialized = true;
@@ -129,7 +138,7 @@ namespace NHibernate.Collection {
 			if (session == this.session) {
 				return false;
 			} else {
-				if ( this.session!=null && this.session.IsOpen ) {
+				if ( IsConnectedToSession ) {
 					throw new HibernateException("Illegal attempt to associate a collection with two open sessions");
 				} else {
 					this.session = session;
@@ -158,7 +167,7 @@ namespace NHibernate.Collection {
 
 		public abstract object Disassemble(CollectionPersister persister);
 
-		public virtual bool NeedsRecreate(IType elemType) {
+		public virtual bool NeedsRecreate() {
 			return false;
 		}
 

@@ -4,6 +4,7 @@ using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
+using NHibernate.Sql;
 
 namespace NHibernate.Mapping {
 	
@@ -40,7 +41,7 @@ namespace NHibernate.Mapping {
 				if ( name.Length < 11 )
 					return name;
 				else
-					return name.Substring(0,10) + uniqueInteger + StringHelper.Underscore;
+					return (new Alias(10, uniqueInteger.ToString() + StringHelper.Underscore)).ToAliasString(name);
 			}
 		}
 
@@ -73,8 +74,23 @@ namespace NHibernate.Mapping {
 			set { unique = value; }
 		}
 
-		public string GetSqlType(Dialect.Dialect dialect, IMapping pi) {
-			return (sqlType==null) ? dialect.GetTypeName( GetAutoSqlType(pi), Length ) : sqlType;
+		public string GetSqlType(Dialect.Dialect dialect, IMapping mapping) {
+			return (sqlType==null) ? dialect.GetTypeName( GetAutoSqlType(mapping), Length ) : sqlType;
+		}
+
+		public DbType GetSqlType(IMapping mapping) {
+			try {
+				return Type.SqlTypes(mapping)[TypeIndex];
+			}
+			catch(Exception e) {
+				throw new MappingException(
+					"Could not determine type for column " +
+					name +
+					" of type " +
+					type.GetType().Name +
+					": " +
+					e.GetType().Name, e);
+			}
 		}
 
 		public override bool Equals(object obj) {

@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Util;
 using NHibernate.Persister;
 using NHibernate.Type;
+using NHibernate.Sql;
 
 
 namespace NHibernate.Loader {
@@ -52,7 +53,7 @@ namespace NHibernate.Loader {
 		}
 
 		/// <summary>
-		/// Are we allowed to do two-phase loading? (we aren't for some special cases like sets
+		/// Are we allowed to do two-phase loading? 
 		/// of entities ... actually onlt that one special case)
 		/// </summary>
 		protected virtual bool AllowTwoPhaseLoad {
@@ -88,7 +89,7 @@ namespace NHibernate.Loader {
 			object optionalCollectionOwner,
 			bool returnProxies,
 			RowSelection selection,
-			IDictionary namedParms) {
+			IDictionary namedParams) {
 
 			int maxRows = (selection==null || selection.MaxRows==0) ?
 				int.MaxValue : selection.MaxRows;
@@ -110,15 +111,19 @@ namespace NHibernate.Loader {
 
 			IList results = new ArrayList();
 
-			IDbCommand st = PrepareQueryStatement( SQLString, values, types, selection, false, session );
-			IDataReader rs = GetResultSet(st, namedParms, selection, session);
+			IDbCommand st = PrepareQueryStatement( SQLString, values, types, namedParams, selection, false, session );
+			IDataReader rs = GetResultSet(st, selection, session);
 
 			try {
 
 				Key[] keys = new Key[cols];
 				bool[] hydrate = new bool[cols];
 
-				for (int count=0; count<maxRows && rs.Read(); count++) {
+				if(log.IsDebugEnabled)
+					log.Debug("processing result set");
+
+				int count;
+				for ( count=0; count<maxRows && rs.Read(); count++) {
 					for (int i=0; i<cols; i++) {
 						keys[i] = GetKeyFromResultSet( persisters[i], suffixes[i], (i==cols-1) ? optionalID : null, rs, session );
 					}
@@ -150,6 +155,9 @@ namespace NHibernate.Loader {
 
 					if (collection) optionalCollection.ReadFrom( rs, CollectionPersister, optionalCollectionOwner );
 				}
+
+				if(log.IsDebugEnabled) log.Debug("done processing result set(" + count + " rows");
+
 			} catch (Exception e) {
 				throw e;
 			} finally {
@@ -165,6 +173,8 @@ namespace NHibernate.Loader {
 					session.InitializeEntity( obj );
 				}
 			}
+
+			if(collection) optionalCollection.EndRead();
 
 			return results;
 		}
@@ -189,7 +199,7 @@ namespace NHibernate.Loader {
 		private Key GetKeyFromResultSet(ILoadable persister, string suffix, object id, IDataReader rs, ISessionImplementor session) {
 			if (id==null) {
 				//todo: we can cache these on this object, from the construcotr
-				string[] keyColNames = StringHelper.Suffix( persister.IdentifierColumnNames, suffix);
+				string[] keyColNames = new Alias(suffix).ToAliasStrings( persister.IdentifierColumnNames );
 				StringHelper.UnQuoteInPlace(keyColNames);
 
 				id = persister.IdentifierType.NullSafeGet(rs, keyColNames, session, null);
@@ -224,6 +234,8 @@ namespace NHibernate.Loader {
 			ISessionImplementor session) {
 
 			int cols = persisters.Length;
+
+			if(log.IsDebugEnabled) log.Debug("result row: " + StringHelper.ToString(keys) );
 			object[] rowResults = new object[cols];
 
 			for (int i=0; i<cols; i++) {
@@ -301,9 +313,7 @@ namespace NHibernate.Loader {
 			System.Type topClass = persister.MappedClass;
 
 			if ( persister.HasSubclasses ) {
-				string col = StringHelper.UnQuote (
-					StringHelper.Suffix ( persister.DiscriminatorColumnName, suffix )
-					);
+				string col = new Alias(suffix).ToAliasString( persister.DiscriminatorColumnName );
 
 				// code to handle subclasses of topClass
 				object discriminatorValue = persister.DiscriminatorType.NullSafeGet(rs, col, session, null);
@@ -335,7 +345,7 @@ namespace NHibernate.Loader {
 			object[] values = new object[ types.Length ];
 
 			for (int i=0; i<types.Length; i++) {
-				string[] cols = StringHelper.Suffix(persister.GetPropertyColumnNames(i), suffix);
+				string[] cols = new Alias(suffix).ToAliasStrings( persister.GetPropertyColumnNames(i) );
 				StringHelper.UnQuote(cols);
 
 				values[i] = types[i].Hydrate( rs, cols, session, obj);
@@ -370,7 +380,7 @@ namespace NHibernate.Loader {
 		/// <param name="scroll"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected IDbCommand PrepareQueryStatement(string sql, object[] values, IType[] types, RowSelection selection, bool scroll, ISessionImplementor session) {
+		protected IDbCommand PrepareQueryStatement(string sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) {
 
 			IDbCommand st = session.Batcher.PrepareQueryStatement(sql);
 
@@ -383,6 +393,8 @@ namespace NHibernate.Loader {
 					types[i].NullSafeSet( st, values[i], col, session);
 					col += types[i].GetColumnSpan( session.Factory );
 				}
+				if (namedParams!=null)
+					BindNamedParameters(st, namedParams, values.Length, session);
 			} catch (Exception e) {
 				ClosePreparedStatement(st, selection, session);
 				throw e;
@@ -395,16 +407,24 @@ namespace NHibernate.Loader {
 			//not implemented
 		}
 
-		private IDataReader GetResultSet(IDbCommand st, IDictionary namedParams, RowSelection selection, ISessionImplementor session) {
+		/// <summary>
+		/// Fetch a <c>IDbCommand</c>, call <c>SetMaxRows</c> and then execute it,
+		/// advance to the first result and return an SQL <c>IDataReader</c>
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="selection"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		private IDataReader GetResultSet(IDbCommand st, RowSelection selection, ISessionImplementor session) {
 			try {
-				BindNamedParameters(st, namedParams, session);
 				SetMaxRows(st, selection);
 				IDataReader rs = st.ExecuteReader();
 				Advance(rs, selection, session);
 				return rs;
-			} catch (Exception e) {
+			}
+			catch (Exception sqle) {
 				ClosePreparedStatement(st, selection, session);
-				throw e;
+				throw sqle;
 			}
 		}
 
@@ -419,12 +439,12 @@ namespace NHibernate.Loader {
 		}
 
 		/// <summary>
-		/// Bind named parameters to the <c>PreparedStatement</c>
+		/// Bind named parameters to the <c>IDbCommand</c>
 		/// </summary>
 		/// <param name="st"></param>
 		/// <param name="namedParams"></param>
 		/// <param name="session"></param>
-		protected virtual void BindNamedParameters(IDbCommand st, IDictionary namedParams, ISessionImplementor session) {
+		protected virtual void BindNamedParameters(IDbCommand st, IDictionary namedParams, int start, ISessionImplementor session) {
 		}
 
 
