@@ -51,10 +51,16 @@ namespace NHibernate.Cfg
 		// MikeD added these while synching up SessionFactoryImpl.  Not sure if they have any ado.net
 		// equivalents - we can probably remove these and remove the SessionFactoryImpl code that
 		// uses them.
+		[Obsolete("Removing ConnectionPool from NH")]
 		public const string PoolSize = "hibernate.connection.pool_size";
 		public const string StatementBatchSize = "hibernate.jdbc.batch_size";
 		public const string StatementFetchSize = "hibernate.jdbc.fetch_size";
 		public const string UseScrollableResultSet = "hibernate.jdbc.use_scrollable_resultset";
+
+		// going to remove this - the DataProvider should implement their own IDbCommand
+		// caching, not NHibernate
+		[Obsolete("Removing StatementCache from NH")]
+		public const string StatementCacheSize = "hibernate.statement_cache.size";
 		
 		static Environment() 
 		{
