@@ -29,7 +29,6 @@
 		<property name="TrueFalseProperty" type="TrueFalse" column="tf_p"/>
 		<property name="YesNoProperty" type="YesNo" column="yn_p"/>
 		
-		
 		<array name="StringArray" table="bc_starr"  >
 			<key column="bc_id" />
 			<index column="sa_idx" />
@@ -42,13 +41,18 @@
 			<element column="int32_val" type="Int32" />
 		</primitive-array>
 		
+		<bag name="StringBag" table="bc_stbag">
+			<key column="bc_id" />
+			<element column="str_value" type="String(25)" />
+		</bag>
+		
 		<list name="StringList" table="bc_stlst">
 			<key column="bc_id" />
 			<index column="lst_idx" />
 			<element column="str_val" type="String(300)" />
 		</list>
 		
-		<map name="StringMap" table="bc_stmap">
+		<map name="StringMap" table="bc_stmap" >
 			<key column="bc_id"/>
 			<index column="strm_idx" type="String(10)" />
 			<element column="str_val" type="String(50)" />

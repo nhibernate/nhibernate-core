@@ -58,9 +58,10 @@ namespace NHibernate.DomainModel
 		private DateTime ticksProperty;
 		private bool trueFalseProperty;
 		private bool yesNoProperty;
-
+		
 		private string[] stringArray;
 		private int[] int32Array;
+		private IList stringBag;
 		private IList stringList;
 		private IDictionary stringMap;
 		private IDictionary stringSet;
@@ -197,6 +198,12 @@ namespace NHibernate.DomainModel
 		{
 			get { return int32Array; }
 			set { int32Array = value; }
+		}
+
+		public IList StringBag 
+		{
+			get { return stringBag; }
+			set { stringBag = value; }
 		}
 
 		public IList StringList
