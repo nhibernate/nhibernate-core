@@ -25,6 +25,7 @@
 				<excludes name="Eg/**" />
 				<excludes name="InternalTest/**/*.cs" />
 				<excludes name="Test/**/*.cs" />
+				<excludes name="Type/DateType.cs" />
 				<excludes name="Util/*Test.cs" />
 				<excludes name="Dialect/DB2Dialect.cs" />
 				<excludes name="Dialect/HSQLDialect.cs" />
@@ -63,6 +64,8 @@
 				<excludes name="Cache/*Test.cs" />
 				<excludes name="Eg/**" />
 				<excludes name="InternalTest/**/*.cs" />
+				<excludes name="Test/**/*.cs" />
+				<excludes name="Type/DateType.cs" />
 				<excludes name="Util/*Test.cs" />
 				<excludes name="Dialect/DB2Dialect.cs" />
 				<excludes name="Dialect/HSQLDialect.cs" />
