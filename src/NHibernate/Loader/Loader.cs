@@ -176,7 +176,7 @@ namespace NHibernate.Loader
 			// other classes to see what there sql building looks like...
 			//HACK: this is here until we get every loader moved over to commands...
 			IDbCommand st = null;
-			if(this.GetType()!=typeof(Hql.QueryTranslator)) 
+			if( this.GetType()!=typeof(Hql.QueryTranslator) && this.GetType()!=typeof(Hql.FilterTranslator) ) 
 			{
 				st = PrepareCommand(
 					ApplyLocks(SqlString, lockModes, session.Factory.Dialect), 
