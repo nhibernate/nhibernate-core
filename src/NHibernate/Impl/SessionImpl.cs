@@ -33,6 +33,8 @@ namespace NHibernate.Impl {
 
 			if (sql == null)
 				return;
+			//TODO: once this HACK class is removed get rid of the UseNamedParameters
+			// and the NamedParametersPrefix Properties in Dialect and all subclasses.
 			if (dialect.UseNamedParameters)
 			{
 				Regex parser = new Regex("(?<param>" + dialect.NamedParametersPrefix + "\\w*\\b)", RegexOptions.None); //.Compiled);
