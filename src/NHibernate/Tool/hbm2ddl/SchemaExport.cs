@@ -212,7 +212,7 @@ namespace NHibernate.Tool.hbm2ddl
 			catch (Exception e) 
 			{
 				Console.Write(e.StackTrace);
-				throw new HibernateException( e.Message );
+				throw new HibernateException( e.Message, e );
 			} 
 			finally 
 			{
