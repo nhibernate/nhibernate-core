@@ -415,7 +415,7 @@ namespace NHibernate.Engine {
 		public static void Cascade(ISessionImplementor session, IClassPersister persister, object parent, Cascades.CascadingAction action, CascadePoint cascadeTo) {
 			if ( persister.HasCascades ) 
 			{
-				if ( log.IsDebugEnabled ) log.Debug( "processing cascasdes for: " + persister.ClassName);
+				if ( log.IsDebugEnabled ) log.Debug( "processing cascades for: " + persister.ClassName);
 				IType[] types = persister.PropertyTypes;
 				Cascades.CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
 				for (int i=0; i<types.Length; i++) 

@@ -4,6 +4,7 @@ using System.Xml;
 using System.Data;
 using System.Collections;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 using NHibernate.Cache;
 using NHibernate.Connection;
@@ -93,7 +94,13 @@ namespace NHibernate.Impl {
 		{
 
 			log.Info("building session factory");
-			if ( log.IsDebugEnabled ) log.Debug("instantiating session factory with properties: " + properties);
+			if ( log.IsDebugEnabled ) 
+			{
+				StringBuilder sb = new StringBuilder("instantiating session factory with properties: ");
+				foreach(DictionaryEntry entry in properties)
+					sb.AppendFormat("{0}={1};", entry.Key, ((string)entry.Key).IndexOf("connection_string")>0?"***":entry.Value);
+				log.Debug(sb.ToString());
+			}
 
 			this.interceptor = interceptor;
 
@@ -218,7 +225,13 @@ namespace NHibernate.Impl {
 			// queries:
 
 			querySubstitutions = PropertiesHelper.ToDictionary(Cfg.Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties);
-			log.Info("Query language substitutions: " + querySubstitutions);
+			if ( log.IsInfoEnabled ) 
+			{
+				StringBuilder sb = new StringBuilder("Query language substitutions: ");
+				foreach(DictionaryEntry entry in querySubstitutions)
+					sb.AppendFormat("{0}={1};", entry.Key, entry.Value);
+				log.Info(sb.ToString());
+			}
 
 			namedQueries = cfg.NamedQueries;
 			imports = new Hashtable( cfg.Imports );
