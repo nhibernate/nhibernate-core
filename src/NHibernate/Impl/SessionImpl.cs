@@ -46,6 +46,10 @@ namespace NHibernate.Impl {
 
 		private IList nullifiables = new ArrayList();
 
+		#region Hack transaction: need to couple active IDbTransaction to IDbCommand
+		private ITransaction transaction = null;
+		#endregion
+
 		private IInterceptor interceptor;
 
 		[NonSerialized] private IDbConnection connection;
@@ -1658,8 +1662,16 @@ namespace NHibernate.Impl {
 
 		public ITransaction BeginTransaction() {
 			callAfterTransactionCompletionFromDisconnect = false;
-			return factory.TransactionFactory.BeginTransaction(this);
+
+			#region Hack transaction: store transaction 
+			transaction = factory.TransactionFactory.BeginTransaction(this);
+			return transaction;
+			#endregion
 		}
+
+		#region Hack transaction: need to couple active IDbTransaction to IDbCommand
+		internal ITransaction Transaction { get { return transaction; } }
+		#endregion
 
 		/// <summary>
 		/// 
@@ -1682,7 +1694,8 @@ namespace NHibernate.Impl {
 		/// holding. If they had a nonpersistable collection, substitute a persistable one
 		/// </para>
 		/// </remarks>
-		public void Flush() {
+		public void Flush() 
+		{
 			if (cascading>0) throw new HibernateException(
 								 "Flush during cascade is dangerous - this might occur if an object as deleted and then re-saved by cascade"
 								 );

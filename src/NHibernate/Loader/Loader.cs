@@ -111,6 +111,7 @@ namespace NHibernate.Loader {
 
 			IList results = new ArrayList();
 
+#warning this will fail because the SQL has "WHERE .. = ?" and there is no parameter collection (see SimpleTest)
 			IDbCommand st = PrepareQueryStatement( SQLString, values, types, namedParams, selection, false, session );
 			IDataReader rs = GetResultSet(st, selection, session);
 

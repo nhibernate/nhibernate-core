@@ -18,7 +18,12 @@ namespace NHibernate.Sql {
 
 		private SortedList columns = new SortedList();
 
-		public Update(Dialect.Dialect dialect) {
+		#region Hack parameters: need original order, refactor the entire approach
+		private ArrayList columnOrder = new ArrayList(); 
+		#endregion
+
+		public Update(Dialect.Dialect dialect) 
+		{
 			this.dialect = dialect;
 		}
  
@@ -45,6 +50,7 @@ namespace NHibernate.Sql {
 
 		public Update AddColumn(string columnName, string value) {
 			columns.Add(columnName, value);
+			columnOrder.Add(columnName);
 			return this;
 		}
 
@@ -69,18 +75,18 @@ namespace NHibernate.Sql {
 				.Append(tableName)
 				.Append(" set ");
 			int i=0;
-			foreach(string key in columns.Keys) {
+			foreach(string key in columnOrder) {
 				i++;
 				buf.Append( key )
 					.Append('=')
 					.Append(columns[key]);
-				if (i<columns.Count-1) buf.Append(StringHelper.CommaSpace);
+				if (i<=columns.Count-1) buf.Append(StringHelper.CommaSpace);
 			}
 			buf.Append(" where ");
 			if(useNamedPars) {
 				for(int j=0; j<primaryKeyColumnNames.Length; j++) {
 					buf.Append(primaryKeyColumnNames[j]);
-					buf.Append('"');
+					buf.Append('=');
 					buf.Append(dialect.NamedParametersPrefix);
 					buf.Append(primaryKeyColumnNames[j]);
 					if( j==primaryKeyColumnNames.Length-1) break;

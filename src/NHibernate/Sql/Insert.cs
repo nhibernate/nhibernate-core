@@ -14,7 +14,12 @@ namespace NHibernate.Sql {
 		private string tableName;
 		private SortedList columns = new SortedList();
 
-		public Insert(Dialect.Dialect dialect) {
+		#region Hack parameters: need original order, refactor the entire approach
+		private ArrayList columnOrder = new ArrayList(); 
+		#endregion
+
+		public Insert(Dialect.Dialect dialect) 
+		{
 			this.dialect = dialect;
 		}
 
@@ -37,6 +42,7 @@ namespace NHibernate.Sql {
 
 		public Insert AddColumn(string columnName, string value) {
 			columns.Add(columnName, value);
+			columnOrder.Add(columnName);
 			return this;
 		}
 
@@ -64,16 +70,16 @@ namespace NHibernate.Sql {
 			} else {
 				buf.Append(" (");
 				int i=0;
-				foreach(string key in columns.Keys) {
+				foreach(string key in columnOrder) {
 					i++;
 					buf.Append( key );
 					if (i<columns.Count) buf.Append(StringHelper.CommaSpace);
 				}
 				buf.Append(") values (");
 				i = 0;
-				foreach(string value in columns.Values) {
+				foreach(string key in columnOrder) {
 					i++;
-					buf.Append( value );
+					buf.Append( (string)columns[key] );
 					if (i<columns.Count) buf.Append(StringHelper.CommaSpace);
 				}
 				buf.Append(')');

@@ -21,6 +21,9 @@ namespace NHibernate.Test {
 			s.Save(simple, 10);
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 			q.SetProperties(simple);
+			// The INSERT and UPDATE are performed, but the SELECT will fail due
+			// to parameter problems in Loader and QueryTranslator
+			//
 			Assertion.Assert( q.List()[0]==simple );
 			s.Delete(simple);
 			t.Commit();

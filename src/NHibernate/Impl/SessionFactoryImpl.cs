@@ -4,6 +4,9 @@ using System.Xml;
 using System.Data;
 using System.Collections;
 using System.Runtime.CompilerServices;
+#region Hack parameters
+using System.Text.RegularExpressions;
+#endregion
 
 using NHibernate.Cache;
 using NHibernate.Connection;
@@ -343,6 +346,7 @@ namespace NHibernate.Impl {
 			get { return transactionFactory; }
 		}
 
+		
 		public IDbCommand GetPreparedStatement(IDbConnection conn, string sql, bool scrollable) {
 
 			if ( log.IsDebugEnabled ) log.Debug(
@@ -358,7 +362,15 @@ namespace NHibernate.Impl {
 					IDbCommand retVal = conn.CreateCommand();
 					retVal.CommandText = sql;
 					retVal.CommandType = CommandType.Text;
-					retVal.Prepare();
+
+					#region Hack parameters
+					CreateParameters(retVal);
+
+					// Disable Prepare() as long as the parameters have no datatypes!!
+
+					//	retVal.Prepare();
+					#endregion
+
 					return retVal;
 				} catch (Exception e) {
 					throw e;
@@ -366,7 +378,56 @@ namespace NHibernate.Impl {
 			}
 		}
 
-		public void ClosePreparedStatement(IDbCommand ps) {
+		#region Hack parameters: temporary hack to get parameters working
+		// Force parametercollection to be created
+		// Of course this is not the right place, this really means the entire concept
+		// of named parameters should be revised!!!
+		private void CreateParameters(IDbCommand cmd) 
+		{
+			string sql = cmd.CommandText;
+
+			if (sql == null)
+				return;
+			if (dialect.UseNamedParameters)
+			{
+				Regex parser = new Regex("(?<param>" + dialect.NamedParametersPrefix + "\\w*\\b)", RegexOptions.None); //.Compiled);
+				string[] tokens = parser.Split(sql);
+				if  (tokens.Length > 0)	{
+					for (int idx=0; idx < tokens.Length; idx++)	{
+						string token = tokens[idx];
+
+						if (token != null && token.Length > 1 && token.Substring(0, 1).Equals(dialect.NamedParametersPrefix)) {
+							IDbDataParameter param;
+
+							param = cmd.CreateParameter();
+							param.ParameterName = token;
+							cmd.Parameters.Add(param);
+						}
+					}
+				}
+			}
+			else {
+				int idx      = 0;
+				int paramIdx = 0;
+
+				while((idx=sql.IndexOf("?", idx)) != -1) {
+					IDbDataParameter param;
+
+					param = cmd.CreateParameter();
+					param.ParameterName = paramIdx.ToString();
+					cmd.Parameters.Add(param);
+					paramIdx++;
+					idx++;
+				}
+			}
+		}
+		#endregion
+
+
+
+
+		public void ClosePreparedStatement(IDbCommand ps) 
+		{
 			if ( statementCache != null ) {
 				statementCache.ClosePreparedStatement(ps);
 			} else {

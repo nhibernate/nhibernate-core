@@ -199,7 +199,7 @@ namespace NHibernate.Persister {
 		}
 
 		protected string SqlUpdateString {
-			get { return SqlUpdateString; }
+			get { return sqlUpdateString; }
 		}
 
 		protected virtual string GenerateDeleteString() {
@@ -286,7 +286,15 @@ namespace NHibernate.Persister {
 			if (log.IsDebugEnabled ) log.Debug("Dehydrating entity: " + ClassName + '#' + id);
 
 			int index = 1;
-			for (int j=0; j<hydrateSpan; j++) {
+
+			#region Hack parameter: parametercollection in .Net starts with 0
+			// there's a pretty strong coupling between the order of the SQL parameter 
+			// construction and the actual order of the parameter collection. 
+			index = 0;
+			#endregion
+
+			for (int j=0; j<hydrateSpan; j++) 
+			{
 				if ( includeProperty[j] ) {
 					PropertyTypes[j].NullSafeSet( st, fields[j], index, session );
 					index += propertyColumnSpans[j];

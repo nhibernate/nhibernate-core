@@ -427,6 +427,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\SybaseDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\TypeNames.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
