@@ -99,6 +99,8 @@ namespace NHibernate.Cfg {
 		/// <summary>
 		/// Get the mapping for a particular collection role
 		/// </summary>
+		/// <param name="role">role a collection role</param>
+		/// <returns>collection</returns>
 		public Mapping.Collection GetCollectionMapping(string role) {
 			return (Mapping.Collection) collections[role];
 		}
@@ -108,15 +110,18 @@ namespace NHibernate.Cfg {
 		/// </summary>
 		/// <param name="xmlFile">The name of the file (url or file system) that contains the Xml.</param>
 		/// <returns>This Configuration object.</returns>
-		public Configuration AddXmlFile(string xmlFile) {
+		public Configuration AddXmlFile(string xmlFile) 
+		{
 			log.Debug("Mapping file: " + xmlFile);
-			try {
+			try 
+			{
 				AddXmlReader(new XmlTextReader(xmlFile));
 //				XmlDocument doc = new XmlDocument();
 //				doc.Load(xmlFile);
 //				Add ( doc );
 			} 
-			catch (Exception e) {
+			catch (Exception e) 
+			{
 				log.Error("Could not configure datastore from file: " + xmlFile, e);
 				throw new MappingException(e);
 			}
@@ -128,9 +133,11 @@ namespace NHibernate.Cfg {
 		/// </summary>
 		/// <param name="xml">A string that contains the Mappings for the Xml</param>
 		/// <returns>This Configuration object.</returns>
-		public Configuration AddXmlString(string xml) {
+		public Configuration AddXmlString(string xml) 
+		{
 			if ( log.IsDebugEnabled ) log.Debug("Mapping XML:\n" + xml);
-			try {
+			try 
+			{
 				
 				// make a StringReader for the string passed in - the StringReader
 				// inherits from TextReader.  We can use the XmlTextReader.ctor that
@@ -141,7 +148,8 @@ namespace NHibernate.Cfg {
 //				doc.LoadXml(xml);
 //				Add ( doc );
 			} 
-			catch (Exception e) {
+			catch (Exception e) 
+			{
 				log.Error("Could not configure datastore from XML", e);
 			}
 			return this;
@@ -152,13 +160,16 @@ namespace NHibernate.Cfg {
 		/// </summary>
 		/// <param name="doc">A loaded XmlDocument that contains the Mappings.</param>
 		/// <returns>This Configuration object.</returns>
-		public Configuration AddDocument(XmlDocument doc) {
+		public Configuration AddDocument(XmlDocument doc) 
+		{
 			if ( log.IsDebugEnabled ) log.Debug("Mapping XML:\n" + doc.OuterXml);
-			try {
+			try 
+			{
 				AddXmlReader(new XmlNodeReader(doc));
 //				Add ( doc );
 			} 
-			catch (Exception e) {
+			catch (Exception e) 
+			{
 				log.Error("Could not configure datastore from XML document", e);
 				throw new MappingException(e);
 			}
@@ -172,9 +183,9 @@ namespace NHibernate.Cfg {
 		/// <param name="doc">The validated XmlDocument that contains the Mappings.</param>
 		private void Add(XmlDocument doc) 
 		{
-			try {
+			try 
+			{
 				Binder.dialect = Dialect.Dialect.GetDialect(properties);
-				//StringHelper.Dialect = Dialect.Dialect.GetDialect(properties);
 				Binder.BindRoot( doc, CreateMappings());
 			} 
 			catch (MappingException me) 
@@ -188,7 +199,8 @@ namespace NHibernate.Cfg {
 		/// Create a new <c>Mappings</c> to add classes and collection mappings to
 		/// </summary>
 		/// <returns></returns>
-		public Mappings CreateMappings() {
+		public Mappings CreateMappings() 
+		{
 			return new Mappings(classes, collections, tables, namedQueries, imports, secondPasses);
 		}
 
@@ -197,8 +209,10 @@ namespace NHibernate.Cfg {
 		/// </summary>
 		/// <param name="xmlInputStream">The Stream to read Xml from.</param>
 		/// <returns>This Configuration object.</returns>
-		public Configuration AddInputStream(Stream xmlInputStream) {
-			try {
+		public Configuration AddInputStream(Stream xmlInputStream) 
+		{
+			try 
+			{
 				AddXmlReader(new XmlTextReader(xmlInputStream));
 				
 //				XmlDocument doc = new XmlDocument();
@@ -206,10 +220,12 @@ namespace NHibernate.Cfg {
 //				Add( doc );
 				return this;
 			} 
-			catch (MappingException me) {
+			catch (MappingException me) 
+			{
 				throw me;
 			} 
-			catch (Exception e) {
+			catch (Exception e) 
+			{
 				log.Error("Could not configure datastore from input stream", e);
 				throw new MappingException(e);
 			}
@@ -221,7 +237,8 @@ namespace NHibernate.Cfg {
 		/// </summary>
 		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
 		/// <returns>This Configuration object.</returns>
-		public Configuration AddXmlReader(XmlReader hbmReader) {
+		public Configuration AddXmlReader(XmlReader hbmReader) 
+		{
 			
 			XmlValidatingReader validatingReader = new XmlValidatingReader(hbmReader);
 			validatingReader.ValidationType = ValidationType.Schema;
@@ -240,7 +257,8 @@ namespace NHibernate.Cfg {
 		/// <param name="path">The path to the Resource file in the Assembly</param>
 		/// <param name="assembly">The Assembly that contains the Resource file.</param>
 		/// <returns>This Configuration object.</returns>
-		public Configuration AddResource(string path, Assembly assembly) {
+		public Configuration AddResource(string path, Assembly assembly) 
+		{
 			log.Info("mapping resource: " + path);
 			Stream rsrc = assembly.GetManifestResourceStream(path);
 			if (rsrc==null) throw new MappingException("Resource: " + path + " not found");
@@ -257,7 +275,8 @@ namespace NHibernate.Cfg {
 		/// If the Mappings and Classes are defined in different Assemblies or don't follow
 		/// the same naming convention then this can not be used.
 		/// </remarks>
-		public Configuration AddClass(System.Type persistentClass) {
+		public Configuration AddClass(System.Type persistentClass) 
+		{
 			string fileName = persistentClass.FullName + ".hbm.xml";
 			log.Info("Mapping resource: " + fileName);
 			Stream rsrc = persistentClass.Assembly.GetManifestResourceStream(fileName);
@@ -274,27 +293,35 @@ namespace NHibernate.Cfg {
 		/// The Assembly must be in the local bin, probing path, or GAC so that the
 		/// Assembly can be loaded by name.
 		/// </remarks>
-		public Configuration AddAssembly(string assemblyName) {
+		public Configuration AddAssembly(string assemblyName) 
+		{
 			log.Info("searching for mapped documents in assembly: " + assemblyName);
 
 			Assembly assembly = null;
-			try {
+			try 
+			{
 				assembly = Assembly.Load(assemblyName);
 			} 
-			catch (Exception e) {
+			catch (Exception e) 
+			{
 				log.Error("Could not configure datastore from assembly", e);
 				throw new MappingException(e);
 			}
-			foreach(string fileName in assembly.GetManifestResourceNames() ) {
-				if ( fileName.EndsWith(".hbm.xml") ) {
+			foreach(string fileName in assembly.GetManifestResourceNames() ) 
+			{
+				if ( fileName.EndsWith(".hbm.xml") ) 
+				{
 					log.Info( "Found mapping documents in assembly: " + fileName );
-					try {
+					try 
+					{
 						AddInputStream( assembly.GetManifestResourceStream(fileName) );
 					} 
-					catch (MappingException me) {
+					catch (MappingException me) 
+					{
 						throw me;
 					} 
-					catch (Exception e) {
+					catch (Exception e) 
+					{
 						log.Error("Could not configure datastore from assembly", e);
 						throw new MappingException(e);
 					}
@@ -325,19 +352,24 @@ namespace NHibernate.Cfg {
 
 			ArrayList script = new ArrayList(50);
 
-			if ( dialect.DropConstraints ) {
-				foreach(Table table in TableMappings) {
-					foreach(ForeignKey fk in table.ForeignKeyCollection) {
+			if ( dialect.DropConstraints ) 
+			{
+				foreach(Table table in TableMappings) 
+				{
+					foreach(ForeignKey fk in table.ForeignKeyCollection) 
+					{
 						script.Add(fk.SqlDropString(dialect));
 					}
 				}
 			}
 
-			foreach(Table table in TableMappings) {
+			foreach(Table table in TableMappings) 
+			{
 				script.Add( table.SqlDropString(dialect) );
 			}
 
-			foreach(IPersistentIdentifierGenerator idGen in CollectionGenerators(dialect) ) {
+			foreach(IPersistentIdentifierGenerator idGen in CollectionGenerators(dialect) ) 
+			{
 				string dropString = idGen.SqlDropString(dialect);
 				if (dropString!=null) script.Add( dropString );
 			}
@@ -348,25 +380,32 @@ namespace NHibernate.Cfg {
 		/// <summary>
 		/// Generate DDL for creating tables
 		/// </summary>
-		public string[] GenerateSchemaCreationScript(Dialect.Dialect dialect) {
+		public string[] GenerateSchemaCreationScript(Dialect.Dialect dialect) 
+		{
 			SecondPassCompile();
 
 			ArrayList script = new ArrayList(50);
 
-			foreach(Table table in TableMappings) {
+			foreach(Table table in TableMappings) 
+			{
 				script.Add( table.SqlCreateString(dialect, this) );
 			}
 
-			foreach(Table table in TableMappings) {
-				foreach(ForeignKey fk in table.ForeignKeyCollection) {
-					script.Add( fk.SqlCreateString(dialect, this) );
-				}
-				foreach(Index index in table.IndexCollection) {
+			foreach(Table table in TableMappings) 
+			{
+				if (dialect.HasAlterTable)
+					foreach(ForeignKey fk in table.ForeignKeyCollection) 
+					{
+						script.Add( fk.SqlCreateString(dialect, this) );
+					}
+				foreach(Index index in table.IndexCollection) 
+				{
 					script.Add( index.SqlCreateString(dialect, this) );
 				}
 			}
 
-			foreach(IPersistentIdentifierGenerator idGen in CollectionGenerators(dialect)) {
+			foreach(IPersistentIdentifierGenerator idGen in CollectionGenerators(dialect)) 
+			{
 				string[] lines = idGen.SqlCreateStrings(dialect);
 				for (int i=0; i<lines.Length; i++ ) script.Add( lines[i] );
 			}
@@ -374,23 +413,95 @@ namespace NHibernate.Cfg {
 			return ArrayHelper.ToStringArray(script);
 		}
 
-			
+//		///<summary>
+//		/// Generate DDL for altering tables
+//		///</summary>
+//		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata) 
+//		{
+//			secondPassCompile();
+//		
+//			ArrayList script = new ArrayList(50);
+//
+//			foreach(Table table in TableMappings)
+//			{
+//				TableMetadata tableInfo = databaseMetadata.getTableMetadata( table.Name );
+//				if (tableInfo==null) 
+//				{
+//					script.Add( table.SqlCreateString(dialect, this) );
+//				}
+//				else 
+//				{
+//					foreach(string alterString in table.SqlAlterStrings(dialect, this, tableInfo))
+//						script.Add(alterString);
+//				}
+//			}
+//		
+//			foreach(Table table in TableMappings)
+//			{
+//				TableMetadata tableInfo = databaseMetadata.getTableMetadata( table.Name );
+//			
+//				if ( dialect.HasAlterTable)
+//				{
+//					foreach(ForeignKey fk in table.ForeignKeyCollection)
+//						if ( tableInfo==null || tableInfo.getForeignKeyMetadata( fk.Name ) == null ) 
+//						{
+//							script.Add( fk.SqlCreateString(dialect, mapping) );
+//						}
+//				}
+//				foreach(Index index in table.IndexCollection)
+//				{
+//					if ( tableInfo==null || tableInfo.getIndexMetadata( index.Name ) == null ) 
+//					{
+//						script.Add( index.SqlCreateString(dialect, mapping) );
+//					}
+//				}
+//			}
+//
+//			foreach(IPersistentIdentifierGenerator generator in CollectionGenerators(dialect))
+//			{
+//				object key = generator.GeneratorKey();
+//				if ( !databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key) ) 
+//				{
+//					string[] lines = generator.SqlCreateStrings(dialect);
+//					for (int i = 0; i < lines.Length; i++) script.Add( lines[i] );
+//				}
+//			}
+//		
+//			return ArrayHelper.ToStringArray(script);
+//		}
+//TODO: H2.0.3 After DatabaseMetadata is completed
 
-
-		private void SecondPassCompile() {
+		/// <remarks>
+		/// This method may be called many times!!
+		/// </remarks>
+		private void SecondPassCompile() 
+		{
 			
-			foreach(Binder.SecondPass sp in secondPasses) {
+			log.Info("processing one-to-many association mappings");
+
+			foreach(Binder.SecondPass sp in secondPasses) 
+			{
 				sp.DoSecondPass(classes);
 			}
 
 			secondPasses.Clear();
 
-			foreach(Table table in TableMappings) {
-				foreach(ForeignKey fk in table.ForeignKeyCollection) {
-					if ( fk.ReferencedTable == null ) {
+			//TODO: Somehow add the newly created foreign keys to the internal collection
+
+			log.Info("processing foreign key constraints");
+
+			foreach(Table table in TableMappings) 
+			{
+				foreach(ForeignKey fk in table.ForeignKeyCollection) 
+				{
+					if ( fk.ReferencedTable == null ) 
+					{
+						if ( log.IsDebugEnabled ) log.Debug("resolving reference to class: " + fk.ReferencedClass.Name);
 						PersistentClass referencedClass = (PersistentClass) classes[ fk.ReferencedClass ];
 						if ( referencedClass==null ) throw new MappingException(
-														 "An association refers to an unmapped class: " +
+														 "An association from the table " +
+														 fk.Table.Name +
+														 " refers to an unmapped class: " + 
 														 fk.ReferencedClass.Name
 														 );
 						fk.ReferencedTable = referencedClass.Table;
@@ -402,48 +513,60 @@ namespace NHibernate.Cfg {
 		/// <summary>
 		/// The named queries
 		/// </summary>
-		public IDictionary NamedQueries { 
+		public IDictionary NamedQueries 
+		{ 
 			get { return namedQueries; }
 		}
 
 		private static readonly IInterceptor EmptyInterceptor = new EmptyInterceptorClass();
 
 		[Serializable]
-		private class EmptyInterceptorClass : IInterceptor {
+			private class EmptyInterceptorClass : IInterceptor 
+		{
 			
-			public void OnDelete(object entity, object id, object[] state, string[] propertyNames, IType[] types) {
+			public void OnDelete(object entity, object id, object[] state, string[] propertyNames, IType[] types) 
+			{
 			}
 
-			public bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types) {
+			public bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types) 
+			{
 				return false;
 			}
 
-			public bool OnLoad(object entity, object id, object[] state, string[] propertyNames, IType[] types) {
+			public bool OnLoad(object entity, object id, object[] state, string[] propertyNames, IType[] types) 
+			{
 				return false;
 			}
 
-			public bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types) {
+			public bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types) 
+			{
 				return false;
 			}
 
-			public void OnPostFlush(object entity, object id, object[] currentState, string[] propertyNames, IType[] types) {
+			public void OnPostFlush(object entity, object id, object[] currentState, string[] propertyNames, IType[] types) 
+			{
 			}
 
-			public void PostFlush(ICollection entities) {
+			public void PostFlush(ICollection entities) 
+			{
 			}
 
-			public void PreFlush(ICollection entitites) {
+			public void PreFlush(ICollection entitites) 
+			{
 			}
 
-			public object IsUnsaved(object entity) {
+			public object IsUnsaved(object entity) 
+			{
 				return null;
 			}
 
-			public object Instantiate(System.Type clazz, object id) {
+			public object Instantiate(System.Type clazz, object id) 
+			{
 				return null;
 			}
 
-			public int[] FindDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types) {
+			public int[] FindDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types) 
+			{
 				return null;
 			}
 		}
@@ -454,42 +577,65 @@ namespace NHibernate.Cfg {
 		/// <c>Configuration</c> after building the <c>ISessionFactory</c> will not affect it.
 		/// </summary>
 		/// <returns></returns>
-		public ISessionFactory BuildSessionFactory() {
+		public ISessionFactory BuildSessionFactory() 
+		{
 			SecondPassCompile();
 			Hashtable copy = new Hashtable();
-			foreach(DictionaryEntry de in properties) {
+			foreach(DictionaryEntry de in properties) 
+			{
 				copy.Add(de.Key, de.Value);
 			}
 			return new SessionFactoryImpl(this, copy, interceptor);
 		}
 
-		public IInterceptor Interceptor {
-			get { return interceptor; }
-			set { this.interceptor = value; }
+		public IInterceptor Interceptor 
+		{
+			get 
+			{ 
+				return interceptor; 
+			}
+			set 
+			{ 
+				this.interceptor = value; 
+			}
 		}
 
-		public IDictionary Properties {
-			get { return properties; }
-			set { this.properties = value; }
+		public IDictionary Properties 
+		{
+			get 
+			{ 
+				return properties; 
+			}
+			set 
+			{ 
+				this.properties = value; 
+			}
 		}
 
-		public Configuration AddProperties(IDictionary properties) {
-			foreach(DictionaryEntry de in properties) {
+		public Configuration AddProperties(IDictionary properties) 
+		{
+			foreach(DictionaryEntry de in properties) 
+			{
 				this.properties.Add(de.Key, de.Value);
 			}
 			return this;
 		}
 
-		public void SetProperty(string name, string value) {
+		public Configuration SetProperty(string name, string value) 
+		{
 			properties[name] = value;
+			return this;
 		}
 
-		public string GetProperty(string name) {
+		public string GetProperty(string name) 
+		{
 			return properties[name] as string;
 		}
 
-		private void AddProperties(XmlNode parent) {
-			foreach(XmlNode node in parent.SelectNodes("property")) {
+		private void AddProperties(XmlNode parent) 
+		{
+			foreach(XmlNode node in parent.SelectNodes("property")) 
+			{
 				string name = node.Attributes["name"].Value;
 				string value = node.FirstChild.Value;
 				log.Debug(name + "=" + value);
@@ -498,18 +644,22 @@ namespace NHibernate.Cfg {
 			}
 		}
 
-
-		public Configuration Configure() {
+		public Configuration Configure() 
+		{
 			Configure("hibernate.cfg.xml");
 			return this;
 		}
 
-		public Configuration Configure(string resource) {
+		public Configuration Configure(string resource) 
+		{
 			
 			XmlDocument doc = new XmlDocument();
-			try {
+			try 
+			{
 				doc.Load(resource);
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				log.Error("Problem parsing configuraiton " + resource, e);
 				throw new HibernateException("problem parsing configuration " + resource + ": " + e);
 			}
@@ -519,19 +669,26 @@ namespace NHibernate.Cfg {
 			if (name!=null) properties.Add(Environment.SessionFactoryName, name.Value);
 			AddProperties(sfNode);
 
-			foreach(XmlNode mapElement in sfNode.ChildNodes) {
+			foreach(XmlNode mapElement in sfNode.ChildNodes) 
+			{
 				string elemname = mapElement.Name;
-				if ( "mapping".Equals(elemname) ) {
+				if ( "mapping".Equals(elemname) ) 
+				{
 					XmlAttribute rsrc = mapElement.Attributes["resource"];
 					XmlAttribute file = mapElement.Attributes["file"];
 					XmlAttribute assembly = mapElement.Attributes["assembly"];
-					if (rsrc!=null) {
+					if (rsrc!=null) 
+					{
 						log.Debug(name + "<-" + rsrc);
 						AddResource( rsrc.Value, Assembly.GetExecutingAssembly() );
-					} else if ( assembly!=null) {
+					} 
+					else if ( assembly!=null) 
+					{
 						log.Debug(name + "<-" + assembly);
 						AddAssembly(assembly.Value);
-					} else {
+					} 
+					else 
+					{
 						if (file==null) throw new MappingException("<mapping> element in configuration specifies no attributes");
 						log.Debug(name + "<-" + file);
 						AddXmlFile( file.Value );
@@ -549,8 +706,12 @@ namespace NHibernate.Cfg {
 		/// Get the query language imports
 		/// </summary>
 		/// <returns></returns>
-		public IDictionary Imports {
-			get { return imports; }
+		public IDictionary Imports 
+		{
+			get 
+			{ 
+				return imports; 
+			}
 		}
 	}
 }
