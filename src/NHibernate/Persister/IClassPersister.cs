@@ -126,12 +126,28 @@ namespace NHibernate.Persister
 		void SetPropertyValue( object obj, int i, object value );
 
 		/// <summary>
+		/// Set the value of a particular property
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void SetPropertyValue( object obj, string name, object value );
+
+		/// <summary>
 		/// Get the value of a particular property
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <param name="i"></param>
 		/// <returns></returns>
 		object GetPropertyValue( object obj, int i );
+
+		/// <summary>
+		/// Get the value of a particular property
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		object GetPropertyValue( object obj, string name );
 
 		/// <summary>
 		/// Get the type of a particular property

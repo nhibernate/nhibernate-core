@@ -715,8 +715,31 @@ namespace NHibernate.Cfg
 
 			secondPasses.Clear();
 
-			//TODO: Somehow add the newly created foreign keys to the internal collection
+			log.Info("processing one-to-one association property references");
 
+			foreach( Mappings.UniquePropertyReference upr in propertyReferences )
+			{
+				PersistentClass clazz = GetClassMapping( upr.ReferencedClass );
+				if ( clazz == null ) throw new MappingException( "property-ref to unmapped class: " + upr.ReferencedClass.Name );
+				bool found = false;
+
+				foreach( NHibernate.Mapping.Property prop in clazz.PropertyCollection )
+				{
+					if ( upr.PropertyName.Equals( prop.Name )  )
+					{
+						( (SimpleValue) prop.Value ).IsUnique = true;
+						found = true;
+						break;
+					}
+				}
+				if (!found) throw new MappingException( 
+								"property-ref not found: " + upr.PropertyName + 
+								" in class: " + upr.ReferencedClass.Name
+								);
+			}
+
+			//TODO: Somehow add the newly created foreign keys to the internal collection
+			
 			log.Info( "processing foreign key constraints" );
 
 			ISet done = new HashedSet();

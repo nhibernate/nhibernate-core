@@ -23,6 +23,9 @@ namespace NHibernate.DomainModel
 	/// </summary>
 	public D()
 	{
+		// try to induce an infinite loop in the lazy-loading machinery
+		Amount = 100.0f;
+		Double a = Amount;
 	}
 	
 	/// <summary>

@@ -133,6 +133,17 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// Get the <see cref="System.Type" /> for the named property of a type.
+		/// </summary>
+		/// <param name="theClass">The <see cref="System.Type"/> to find the property in.</param>
+		/// <param name="name">The name of the property/field to find in the class.</param>
+		/// <returns>The <see cref="System.Type" /> for the named property.</returns>
+		public static System.Type ReflectedPropertyClass( System.Type theClass, string name)
+		{
+			return GetGetter(theClass, name).ReturnType;
+		}
+
+		/// <summary>
 		/// Returns a reference to the Type.
 		/// </summary>
 		/// <param name="name">The name of the class.  Can be a name with the assembly included or just the name of the class.</param>

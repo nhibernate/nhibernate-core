@@ -42,7 +42,7 @@ namespace NHibernate.Test
 		#endregion
 
 		[Test]
-		//[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
+			//[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void Subclassing()
 		{
 			ISession s = sessions.OpenSession();
@@ -188,6 +188,74 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Delete(b);
 			t.Commit();
+		}
+
+		[Test]
+		public void OneToOne()
+		{
+			A a = new A();
+			E d1 = new E();
+			C1 c = new C1();
+			E d2 = new E();
+			a.Forward = d1;
+			d1.Reverse = a;
+			c.Forward = d2;
+			d2.Reverse = c;
+
+			object aid;
+			object d2id;
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				aid = s.Save(a);
+				d2id = s.Save(d2);
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				IList l = s.Find( "from E e, A a where e.Reverse = a.Forward and a = ?", a, NHibernateUtil.Entity (typeof(A)) );
+				Assert.AreEqual( 1, l.Count );
+				l = s.Find( "from E e join fetch e.Reverse" );
+				Assert.AreEqual( 2, l.Count );
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				IList l = s.Find( "from E e" );
+				Assert.AreEqual( 2, l.Count );
+				E e = (E) l[ 0 ];
+				Assert.AreSame( e, e.Reverse.Forward );
+				e = (E) l[ 1 ];
+				Assert.AreSame( e, e.Reverse.Forward );
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				a = (A) s.Load( typeof(A), aid );
+				d2 = (E) s.Load( typeof(E), d2id );
+				Assert.AreSame( a, a.Forward.Reverse );
+				Assert.AreSame( d2, d2.Reverse.Forward );
+				s.Delete( a );
+				s.Delete( a.Forward );
+				s.Delete( d2 );
+				s.Delete( d2.Reverse );
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				IList l = s.Find( "from E e" );
+				Assert.AreEqual( 0, l.Count ); 
+				t.Commit();
+			}
 		}
 	}
 }

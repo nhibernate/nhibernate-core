@@ -79,7 +79,7 @@ namespace NHibernate.Cfg
 			} 
 			catch ( Exception cnfe ) 
 			{
-				throw new MappingException( "persistent class not found", cnfe );
+				throw new MappingException( "persistent class " + className + " not found", cnfe );
 			}
 
 			//PROXY INTERFACE

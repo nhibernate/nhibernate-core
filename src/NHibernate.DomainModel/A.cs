@@ -3,12 +3,12 @@ using System;
 namespace NHibernate.DomainModel
 {
 
- /// <summary>
- /// POCO for A
- /// </summary>
- [Serializable]
- public class A
- {
+/// <summary>
+/// POCO for A
+/// </summary>
+[Serializable]
+public class A
+{
 
 	#region Fields
 	/// <summary>
@@ -20,7 +20,11 @@ namespace NHibernate.DomainModel
 	/// Holder for name
 	/// </summary>
 	private String _name;
-	
+
+	/// <summary>
+	/// Holder for forward
+	/// </summary>
+	private E _forward;
 	#endregion
 
 	#region Constructors
@@ -60,7 +64,13 @@ namespace NHibernate.DomainModel
 		get { return _name; }
 		set { _name = value; }
 	}
-	
+
+	public virtual E Forward
+	{
+		get { return _forward; }
+		set { _forward = value; }
+	}
+
 	#endregion
  }
 }

@@ -13,6 +13,7 @@ namespace NHibernate.DomainModel
 		private Foo[] _fooArray;
 		private Iesi.Collections.ISet _foos;// <set> mapping
 		private string _name;
+		private Holder _otherHolder;
 
 		
 		public string Id
@@ -39,6 +40,12 @@ namespace NHibernate.DomainModel
 			set { _foos = value; }
 		}
 		
+		public Holder OtherHolder
+		{
+			get { return _otherHolder; }
+			set { _otherHolder = value; }
+		}
+
 		#region INamed Members
 
 		public string Name

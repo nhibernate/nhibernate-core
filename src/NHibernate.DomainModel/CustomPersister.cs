@@ -176,6 +176,11 @@ namespace NHibernate.DomainModel
 			return ( (Custom)obj).Name;
 		}
 
+		public object GetPropertyValue(object obj, string name)
+		{
+			return ( (Custom)obj).Name;
+		}
+
 		public bool IsVersioned
 		{
 			get { return false; }
@@ -253,6 +258,11 @@ namespace NHibernate.DomainModel
 		}
 
 		public void SetPropertyValue(object obj, int i, object value)
+		{
+			( (Custom)obj).Name = (string)value;
+		}
+
+		public void SetPropertyValue(object obj, string name, object value)
 		{
 			( (Custom)obj).Name = (string)value;
 		}

@@ -45,8 +45,8 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override void CreateForeignKey()
 		{
-			//if( constrained && ReferencedPropertyName == null )
-			if( constrained )
+			if( constrained && ReferencedPropertyName == null )
+			//if( constrained )
 			{
 				// TODO: 2.1+ handle the case of a foreign key to something other than the pk
 				CreateForeignKeyOfClass( ( ( EntityType ) Type ).AssociatedClass );

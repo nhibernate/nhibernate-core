@@ -19,6 +19,7 @@ namespace NHibernate.DomainModel
 		private IList _moreFums;
 		private Qux _child;
 		private long _childKey;
+		private Holder _holder;
 
 		public Qux() { }
 	
@@ -182,6 +183,12 @@ namespace NHibernate.DomainModel
 		{
 			get { return _childKey;  }
 			set { _childKey = value; }
+		}
+
+		public virtual Holder Holder
+		{
+			get { return _holder; }
+			set { _holder = value; }
 		}
 	}
 }

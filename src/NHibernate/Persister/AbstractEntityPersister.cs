@@ -1335,7 +1335,7 @@ namespace NHibernate.Persister
 					}
 					// TODO: 2.1 - Change EntityLoader to handle this
 					//uniqueKeyLoaders.Add( propertyNames[ i ], new EntityLoader( this, columns, uniqueKeyType, factory ) );
-					//uniqueKeyLoaders.Add( propertyNames[ i ], new EntityLoader( this, columns, uniqueKeyType, factory ) );
+					uniqueKeyLoaders.Add( propertyNames[ i ], new EntityLoader( this, columns, uniqueKeyType, 1, factory ) );
 				}
 			}
 		}

@@ -622,6 +622,7 @@
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
 			<xs:attribute name="update" type="xs:boolean" default="true"/>
 			<xs:attribute name="insert" type="xs:boolean" default="true"/>
+			<xs:attribute name="property-ref" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="meta">
@@ -661,6 +662,7 @@
 			<xs:attribute name="cascade" type="cascadeStyle"/>
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
 			<xs:attribute name="constrained" type="xs:boolean" default="false"/>
+			<xs:attribute name="property-ref" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="param">

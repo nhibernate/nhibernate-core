@@ -87,7 +87,20 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		protected object GetIdentifier( object value, ISessionImplementor session )
 		{
-			return session.GetEntityIdentifierIfNotUnsaved( value );
+			if( uniqueKeyPropertyName==null )
+			{
+				return session.GetEntityIdentifierIfNotUnsaved( value ); //tolerates nulls
+			}
+			else if( value == null ) 
+			{
+				return null;
+			}
+			else 
+			{
+				return session.Factory
+					.GetPersister( AssociatedClass )
+					.GetPropertyValue( value, uniqueKeyPropertyName );
+			}
 		}
 
 		/// <summary>
@@ -223,9 +236,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					// TODO: Extend ISessionImplentor interface
-					//return session.LoadByUniqueKey( AssociatedClass, uniqueKeyPropertyName, id );
-					throw new NotImplementedException( "session.LoadByUniqueKey not implemented" );
+					return session.LoadByUniqueKey( AssociatedClass, uniqueKeyPropertyName, id );
 				}
 			}
 		}

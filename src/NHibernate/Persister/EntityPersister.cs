@@ -427,6 +427,8 @@ namespace NHibernate.Persister
 			SqlString selectForUpdateNoWaitString = Dialect.SupportsForUpdateNoWait ? GenerateSelectForUpdateNoWaitString() : selectForUpdate.Clone();
 			
 			loaders.Add( LockMode.UpgradeNoWait, new SimpleEntityLoader( this, selectForUpdateNoWaitString, LockMode.UpgradeNoWait, factory.Dialect ) );
+
+			CreateUniqueKeyLoaders( factory );
 		}
 
 		/// <summary>

@@ -36,5 +36,6 @@
 				class="NHibernate.DomainModel.Fum, NHibernate.DomainModel" 
 			/>
 		</list>
+		<many-to-one name="Holder" column="HOLDER_NAME" property-ref="Name" />
 	</class>
 </hibernate-mapping>

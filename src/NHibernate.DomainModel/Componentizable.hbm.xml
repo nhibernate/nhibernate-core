@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" namespace="NHibernate.DomainModel" assembly="NHibernate.Test">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" namespace="NHibernate.DomainModel" assembly="NHibernate.DomainModel">
 	<class name="NHibernate.DomainModel.Componentizable">
-		<id name="id">
+		<id name="Id">
 			<generator class="native"/>
 		</id>
-		<property name="nickName"/>
-		<component name="component" access="property" class="NHibernate.DomainModel.Component">
-			<property name="name"/>
-			<component name="subComponent" class="NHibernate.DomainModel.SubComponent">
-				<property name="subName"/>
-				<property name="subName1"/>
+		<property name="NickName"/>
+		<component name="Component" access="property" class="NHibernate.DomainModel.Component">
+			<property name="Name"/>
+			<component name="SubComponent" class="NHibernate.DomainModel.SubComponent">
+				<property name="SubName"/>
+				<property name="SubName1"/>
 			</component>
 		</component>
 	</class>

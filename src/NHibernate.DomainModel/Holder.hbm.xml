@@ -35,5 +35,6 @@
 				class="NHibernate.DomainModel.Foo, NHibernate.DomainModel" 
 			/>
 		</set>
+		<many-to-one name="OtherHolder" property-ref="Name" cascade="all" />
 	</class>
 </hibernate-mapping>

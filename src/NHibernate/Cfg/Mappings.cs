@@ -30,7 +30,7 @@ namespace NHibernate.Cfg
 		private IDictionary caches;
 		private INamingStrategy namingStrategy;
 
-		private class UniquePropertyReference
+		internal class UniquePropertyReference
 		{
 			public System.Type ReferencedClass;
 			public string PropertyName;

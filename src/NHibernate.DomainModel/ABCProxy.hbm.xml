@@ -10,6 +10,7 @@
 		</id>
 		<discriminator column="clazz" type="Int32" force="true" not-null="false" />
 		<property name="Name" />
+		<many-to-one name="Forward" class="NHibernate.DomainModel.E, NHibernate.DomainModel" cascade="save-update" />
 		<subclass 
 			name="NHibernate.DomainModel.B, NHibernate.DomainModel" 
 			proxy="NHibernate.DomainModel.B, NHibernate.DomainModel"
@@ -48,4 +49,17 @@
 		</id>
 		<property name="Amount" type="Double" />
 	</class>
+
+	<class 
+		name="NHibernate.DomainModel.E, NHibernate.DomainModel" 
+		proxy="NHibernate.DomainModel.E, NHibernate.DomainModel"
+		discriminator-value="0" 
+	>
+		<id name="Id" unsaved-value="0" type="Int64">
+			<generator class="native" /> <!-- Hibernate 2.1 has class="increment" here -->
+		</id>
+		<property name="Amount" type="Double" />
+		<one-to-one name="Reverse" class="NHibernate.DomainModel.A, NHibernate.DomainModel" property-ref="Forward" cascade="save-update" />
+	</class>
+
 </hibernate-mapping>
