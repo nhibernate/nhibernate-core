@@ -52,6 +52,25 @@ namespace NHibernate.Test {
 		}
 
 		[Test]
+		[Ignore("Code is incomplete")]
+		public void TestInverse() 
+		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			TestInsert();
+			Parent bobJones = (Parent)s.CreateCriteria(typeof(Parent))
+								.Add(Expression.Expression.Eq("AdultName", "Bob Jones"))
+								.List()[0];
+			
+			
+
+			t.Commit();
+			s.Close();
+		}
+
+
+		[Test]
 		public void TestSort() {
 			ISession s = sessions.OpenSession();
 			ITransaction t = s.BeginTransaction();
