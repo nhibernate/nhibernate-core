@@ -193,7 +193,7 @@ namespace NHibernate.Impl
 	/// NOT THREADSAFE
 	/// </remarks>
 	[Serializable]
-	internal class SessionImpl : ISessionImplementor
+	internal class SessionImpl : ISessionImplementor, ISerializable, IDeserializationCallback
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SessionImpl));
 
@@ -210,9 +210,10 @@ namespace NHibernate.Impl
 		private IDictionary entitiesByKey; //key=Key, value=Object
 		private IDictionary proxiesByKey; //key=Key, value=HibernateProxy
 		
-		[NonSerialized] private IdentityMap entries;//key=Object, value=Entry
-		[NonSerialized] private IdentityMap arrayHolders; //key=array, value=ArrayHolder
-		[NonSerialized] private IdentityMap collections; //key=PersistentCollection, value=CollectionEntry
+		//IdentityMaps are serializable in NH 
+		private IdentityMap entries;//key=Object, value=Entry
+		private IdentityMap arrayHolders; //key=array, value=ArrayHolder
+		private IdentityMap collections; //key=PersistentCollection, value=CollectionEntry
 		
 		private IDictionary nullifiables = new Hashtable();  //set of Keys of deleted objects
 
@@ -239,7 +240,6 @@ namespace NHibernate.Impl
 		// Note: we *could* treat updates the same way we treat collection actions
 		// (discarding them at the end of a "shortcircuited" auto-flush) and then
 		// we would keep them in a list
-		//[NonSerialized] private IDictionary updates;
 		[NonSerialized] private ArrayList updates;
 		// Actually the semantics of the next three are really "Bag"
 		// Note that, unlike objects, collection insertions, updates,
@@ -256,10 +256,7 @@ namespace NHibernate.Impl
 
 		[NonSerialized] private IBatcher batcher;
 
-		// For serialization
-		[NonSerialized] private SerializationInfo siInfo;
-
-		private IPreparer preparer;
+		[NonSerialized] private IPreparer preparer;
 
 		
 		/// <summary>
@@ -530,14 +527,50 @@ namespace NHibernate.Impl
 				get { return initialized && (snapshot==null); }
 			}
 		}
+		
+		
+		#region System.Runtime.Serialization.ISerializable Members 
 
-		SessionImpl(SerializationInfo info, StreamingContext context)
+		/// <summary>
+		/// Constructor used to recreate the Session during the deserialization.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		/// <remarks>
+		/// This is needed because we have to do some checking before the serialization process
+		/// begins.  I don't know how to add logic in ISerializable.GetObjectData and have .net
+		/// write all of the serializable fields out.
+		/// </remarks>
+		protected SessionImpl(SerializationInfo info, StreamingContext context)
 		{
-			//The graph is not valid until OnDeserialization() has been called.
-			siInfo = info; 
+			this.factory = (SessionFactoryImpl)info.GetValue( "factory", typeof(SessionFactoryImpl) );
+			this.autoClose = info.GetBoolean("autoClose");
+			this.timestamp = info.GetInt64("timestamp");
+			this.closed = info.GetBoolean("closed");
+			this.flushMode = (FlushMode)info.GetValue( "flushMode", typeof(FlushMode) );
+			this.callAfterTransactionCompletionFromDisconnect = info.GetBoolean("callAfterTransactionCompletionFromDisconnect");
+			this.entitiesByKey = (IDictionary)info.GetValue( "entitiesByKey", typeof(IDictionary) );
+			this.proxiesByKey = (IDictionary)info.GetValue( "proxiesByKey", typeof(IDictionary) );
+			this.nullifiables = (IDictionary)info.GetValue( "nullifiables", typeof(IDictionary) );
+			this.interceptor = (IInterceptor)info.GetValue( "interceptor", typeof(IInterceptor) );
+
+			this.entries = (IdentityMap)info.GetValue( "entries", typeof(IdentityMap) );
+			this.collections = (IdentityMap)info.GetValue( "collections", typeof(IdentityMap) );
+			this.arrayHolders = (IdentityMap)info.GetValue( "arrayHolders", typeof(IdentityMap) );
+
 		}
 
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		/// <summary>
+		/// Verify the ISession can be serialized and write the fields to the Serializer.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		/// <remarks>
+		/// The fields are marked with [NonSerializable] as just a point of reference.  This method
+		/// has complete control and what is serialized and those attributes are ignored.  However, 
+		/// this method should be in synch with the attributes for easy readability.
+		/// </remarks>
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			if ( IsConnected ) throw new InvalidOperationException("Cannot serialize a Session while connected");
 			if ( insertions.Count!=0 || deletions.Count!=0 )
@@ -545,17 +578,37 @@ namespace NHibernate.Impl
 					
 			log.Info("serializing session");
 
-			info.AddValue("entries", entries);
-			info.AddValue("collections", collections);
-			info.AddValue("arrayHolders", arrayHolders);
-		}
+			info.AddValue( "factory", factory, typeof(SessionFactoryImpl) );
+			info.AddValue( "autoClose", autoClose );
+			info.AddValue( "timestamp", timestamp );
+			info.AddValue( "closed", closed );
+			info.AddValue( "flushMode", flushMode );
+			info.AddValue( "callAfterTransactionCompletionFromDisconnect", callAfterTransactionCompletionFromDisconnect );
+			info.AddValue( "entitiesByKey", entitiesByKey, typeof(IDictionary) );
+			info.AddValue( "proxiesByKey", proxiesByKey, typeof(IDictionary) );
+			info.AddValue( "nullifiables", nullifiables, typeof(IDictionary) );
+			info.AddValue( "interceptor", interceptor, typeof(IInterceptor) );
 
-		public void OnDeserialization(Object sender)
+			info.AddValue( "entries", entries, typeof(IdentityMap) );
+			info.AddValue( "collections", collections, typeof(IdentityMap) );
+			info.AddValue( "arrayHolders", arrayHolders, typeof(IdentityMap) );
+		}
+		#endregion
+
+		#region System.Runtime.Serialization.IDeserializationCallback Members 
+
+		/// <summary>
+		/// Once the entire object graph has been deserialized then we can hook the
+		/// collections, proxies, and entities back up to the ISession.
+		/// </summary>
+		/// <param name="sender"></param>
+		void IDeserializationCallback.OnDeserialization(Object sender)
 		{
 			log.Info("deserializing session");
-			entries = (IdentityMap)siInfo.GetValue("entries", typeof(IdentityMap));
-			collections = (IdentityMap)siInfo.GetValue("collections", typeof(IdentityMap));
-			arrayHolders = (IdentityMap)siInfo.GetValue("arrayHolders", typeof(IdentityMap));
+			
+			// don't need any section for IdentityMaps because .net does not have a problem
+			// serializing them like java does.
+
 			InitTransientCollections();
 			foreach(DictionaryEntry e in collections)
 			{
@@ -572,18 +625,23 @@ namespace NHibernate.Impl
 				}
 			}
 			
-			IDictionary newProxiesByKey = new Hashtable(proxiesByKey);
-			foreach(object proxy in proxiesByKey)
-			{
-				if (proxy is HibernateProxy)
-					HibernateProxyHelper.GetLazyInitializer(proxy as HibernateProxy).SetSession(this);
-				else
-					newProxiesByKey.Remove(proxy);
-			}
-			proxiesByKey = newProxiesByKey;
-			newProxiesByKey = null;
+//			TODO: figure out why proxies are having problems.  The enumerator appears to be throwing
+//			a null reference exception when the proxiesByKey.Count==0
+//			foreach(object proxy in proxiesByKey.Values)
+//			{
+//				object proxy = proxyEnumer.Current;
+//				if (proxy is HibernateProxy) 
+//				{
+//					HibernateProxyHelper.GetLazyInitializer(proxy as HibernateProxy).SetSession(this);
+//				}
+//				else 
+//				{
+//					// the proxy was pruned during the serialization process
+//					proxiesByKey.Remove(proxy); 
+//				}
+//			}
 
-			foreach(EntityEntry e in entries)
+			foreach(EntityEntry e in entries.Values)
 			{
 				try
 				{
@@ -596,6 +654,7 @@ namespace NHibernate.Impl
 				}
 			}
 		}
+		#endregion
 
 		internal SessionImpl(IDbConnection connection, SessionFactoryImpl factory, bool autoClose, long timestamp, IInterceptor interceptor) 
 		{

@@ -1,10 +1,11 @@
 using System;
-using System.IO;
-using System.Xml;
-using System.Data;
 using System.Collections;
+using System.Data;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Xml;
 
 using NHibernate.Cache;
 using NHibernate.Connection;
@@ -24,10 +25,8 @@ using NHibernate.Util;
 
 using HibernateDialect = NHibernate.Dialect.Dialect;
 
-
-
-namespace NHibernate.Impl {
-	
+namespace NHibernate.Impl 
+{
 	/// <summary>
 	///  Concrete implementation of a SessionFactory.
 	/// </summary>
@@ -59,7 +58,8 @@ namespace NHibernate.Impl {
 	/// , but also highly concurrent.  Synchronization must be used extremely sparingly.
 	/// </para>
 	/// </remarks>
-	internal class SessionFactoryImpl : ISessionFactory, ISessionFactoryImplementor 
+	[Serializable]
+	internal class SessionFactoryImpl : ISessionFactory, ISessionFactoryImplementor, IObjectReference 
 	{
 		
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SessionFactoryImpl));
@@ -67,26 +67,27 @@ namespace NHibernate.Impl {
 		private string name;
 		private string uuid;
 
-		private IDictionary classPersisters;
-		private IDictionary classPersistersByName;
-		private IDictionary collectionPersisters;
-		private IDictionary namedQueries;
-		private IDictionary imports;
-		private IConnectionProvider connectionProvider;
-		private IDictionary properties;
-		private bool showSql;
-		private bool useOuterJoin;
-		//private Templates templates;
-		private IDictionary querySubstitutions;
-		private Dialect.Dialect dialect;
-		private PreparedStatementCache statementCache;
-		private ITransactionFactory transactionFactory;
-		private int adoBatchSize;
-		private bool useScrollableResultSets;
+		[NonSerialized] private IDictionary classPersisters;
+		[NonSerialized] private IDictionary classPersistersByName;
+		[NonSerialized] private IDictionary collectionPersisters;
+		[NonSerialized] private IDictionary namedQueries;
+		[NonSerialized] private IDictionary imports;
+		[NonSerialized] private IConnectionProvider connectionProvider;
+		[NonSerialized] private IDictionary properties;
+		[NonSerialized] private bool showSql;
+		[NonSerialized] private bool useOuterJoin;
+		// TODO: figure out why this is commented out in nh and not h2.0.3
+		//[NonSerialized] private Templates templates;
+		[NonSerialized] private IDictionary querySubstitutions;
+		[NonSerialized] private Dialect.Dialect dialect;
+		[NonSerialized] private PreparedStatementCache statementCache;
+		[NonSerialized] private ITransactionFactory transactionFactory;
+		[NonSerialized] private int adoBatchSize;
+		[NonSerialized] private bool useScrollableResultSets;
 
-		private string defaultSchema;
-		private object statementFetchSize;
-		private IInterceptor interceptor;
+		[NonSerialized] private string defaultSchema;
+		[NonSerialized] private object statementFetchSize;
+		[NonSerialized] private IInterceptor interceptor;
 
 		private static IIdentifierGenerator uuidgen = new UUIDHexGenerator();
 	
@@ -187,13 +188,14 @@ namespace NHibernate.Impl {
 				System.Type persisterClass = model.Persister;
 				IClassPersister cp;
 				//TODO: H2.0.3 created a PersisterFactory
-				if (persisterClass==null || persisterClass==typeof(EntityPersister)) {
-					cp = new EntityPersister(model, this);
-				} else if (persisterClass==typeof(NormalizedEntityPersister)) {
-					cp = new NormalizedEntityPersister(model, this);
-				} else {
-					cp = InstantiatePersister(persisterClass, model);
-				}
+				cp = PersisterFactory.Create(model, this);
+//				if (persisterClass==null || persisterClass==typeof(EntityPersister)) {
+//					cp = new EntityPersister(model, this);
+//				} else if (persisterClass==typeof(NormalizedEntityPersister)) {
+//					cp = new NormalizedEntityPersister(model, this);
+//				} else {
+//					cp = InstantiatePersister(persisterClass, model);
+//				}
 				classPersisters[model.PersistentClazz] = cp;
 				classPersistersByName[model.Name] = cp ;
 			}
@@ -220,6 +222,7 @@ namespace NHibernate.Impl {
 				throw new AssertionFailure("could not generate UUID");
 			}
 
+			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
 			// queries:
 
 			querySubstitutions = PropertiesHelper.ToDictionary(Cfg.Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties);
@@ -241,9 +244,9 @@ namespace NHibernate.Impl {
 		// Emulates constant time LRU/MRU algorithms for cache
 		// It is better to hold strong references on some (LRU/MRU) queries
 		private const int MaxStrongRefCount = 128;
-		private readonly object[] strongRefs = new object[MaxStrongRefCount];
-		private int strongRefIndex = 0;
-		private readonly IDictionary softQueryCache = new Hashtable(); //TODO: make soft reference map
+		[NonSerialized] private readonly object[] strongRefs = new object[MaxStrongRefCount];
+		[NonSerialized] private int strongRefIndex = 0;
+		[NonSerialized] private readonly IDictionary softQueryCache = new Hashtable(); //TODO: make soft reference map
 
 		//TODO: All
 		private static readonly QueryCacheKeyFactory QueryKeyFactory;
@@ -533,8 +536,45 @@ namespace NHibernate.Impl {
 		}
 
 		//TODO: Serialization stuff
+		// will have to do a diff serialization object and then deserialization
 		// private void readObject()
 		// private void writeObject()
+		#region System.Runtime.Serialization.IObjectReference Members
+
+		public object GetRealObject(StreamingContext context)
+		{
+			// the SessionFactory that was serialized only has values in the properties
+			// "name" and "uuid".  In here convert the serialized SessionFactory into
+			// an instance of the SessionFactory in the current AppDomain.
+			log.Debug("Resolving serialized SessionFactory");
+			
+			// look for the instance by uuid - this will work when a SessionFactory
+			// is serialized and deserialized in the same AppDomain.
+			ISessionFactory result = SessionFactoryObjectFactory.GetInstance(uuid);
+			if(result==null) 
+			{
+				// if we were deserialized into a different AppDomain, look for an instance with the
+				// same name.
+				result = SessionFactoryObjectFactory.GetNamedInstance(name);
+				if(result==null) 
+				{
+					throw new NullReferenceException("Could not find a SessionFactory named " + name + " or identified by uuid " + uuid );
+				}
+				else 
+				{
+					log.Debug("resolved SessionFactory by name");
+				}
+			}
+			else 
+			{
+				log.Debug("resolved SessionFactory by uuid");
+			}
+
+			return result;
+		}
+
+		#endregion
+
 
 		public IType[] GetReturnTypes(string queryString) 
 		{
@@ -560,20 +600,6 @@ namespace NHibernate.Impl {
 			if ( statementFetchSize!=null) 
 			{
 				// nothing to do in ADO.NET
-			}
-		}
-
-		//TODO: h2.0.3 - replace with PersisterFactory
-		private IClassPersister InstantiatePersister(System.Type persisterClass, PersistentClass model) {
-			
-			try {
-				return (IClassPersister) Activator.CreateInstance( persisterClass, new object[] { model, this } );
-			} catch (Exception e) {
-				if ( e is HibernateException ) {
-					throw (HibernateException) e;
-				} else {
-					throw new MappingException( "Could not instantiate persiser " + persisterClass.Name, e);
-				}
 			}
 		}
 
@@ -659,8 +685,7 @@ namespace NHibernate.Impl {
 			}
 			finally 
 			{
-				//TODO: H2.0.3
-				//SessionFactoryObjectFactory.removeInstance(uuid, name, properties);
+				SessionFactoryObjectFactory.RemoveInstance(uuid, name, properties);
 			} 
 		}
 
@@ -687,5 +712,6 @@ namespace NHibernate.Impl {
 			CollectionPersister p = GetCollectionPersister(roleName);
 			if(p.HasCache) p.CacheConcurrencyStrategy.Clear();
 		}
+		
 	}
 }
