@@ -23,16 +23,10 @@ namespace NHibernate.Mapping
 		{
 			return "f" + uniqueInteger.ToString() + StringHelper.Underscore;
 		}
-		public string Formul
+		public string FormulaString
 		{
-			get
-			{
-				return formula;
-			}
-			set
-			{
-				this.formula = value;
-			}
+			get { return formula; }
+			set { this.formula = value; }
 		}
 	}
 }
