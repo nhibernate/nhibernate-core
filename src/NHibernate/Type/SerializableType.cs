@@ -29,7 +29,10 @@ namespace NHibernate.Type {
 
 		private BinaryType binaryType;
 
-		public SerializableType(System.Type serializableClass) : this(serializableClass, SqlTypeFactory.GetBinary(255)) {
+		public SerializableType(System.Type serializableClass) 
+			//: this(serializableClass, SqlTypeFactory.GetBinary()) 
+			: this( serializableClass, new BinarySqlType() )
+		{
 			
 		}
 		

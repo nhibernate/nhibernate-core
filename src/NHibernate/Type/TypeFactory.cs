@@ -724,7 +724,7 @@ namespace NHibernate.Type
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
 			if(returnType==null) 
 			{
-				returnType = GetSerializableType(255);
+				returnType = new SerializableType( typeof(object) ); //GetSerializableType(255);
 				AddToTypeOfName(key, returnType);
 			}
 
@@ -758,7 +758,7 @@ namespace NHibernate.Type
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
 			if(returnType==null) 
 			{
-				returnType = GetSerializableType(serializableType, 255);
+				returnType = new SerializableType(serializableType); //GetSerializableType(serializableType, 255);
 				AddToTypeOfName(key, returnType);
 			}
 
