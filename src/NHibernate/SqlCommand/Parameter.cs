@@ -36,19 +36,56 @@ namespace NHibernate.SqlCommand
 			set {this.tableAlias = value;}
 		}
 		
+		[Obsolete("This does not handle quoted identifiers - going to use a number based name.")]
 		public string GetSqlName(IConnectionProvider provider){
 			
 			return provider.Driver.FormatNameForSql(tableAlias, name);
 		}
 
+		/// <summary>
+		/// Returns a string version of the Parameter that is in the correct
+		/// format for the SQL in the CommandText.
+		/// </summary>
+		/// <param name="provider">The ConnectionProvider that contains the Dialect.</param>
+		/// <param name="name">The name to format for SQL.</param>
+		/// <returns>A valid SQL string for this Parameter.</returns>
+		public string GetSqlName(IConnectionProvider provider, string name) 
+		{
+			return provider.Driver.FormatNameForSql(name);
+		}
+
+		[Obsolete("This does not handle quoted identifiers - going to use a number based name.")]
 		public string GetParameterName(IConnectionProvider provider){
 			return provider.Driver.FormatNameForParameter(tableAlias, name);
 		}
 
-		public virtual IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider) {
+		/// <summary>
+		/// Returns a string version of the Parameter that is in the correct
+		/// format for the IDbDataParameter.Name
+		/// </summary>
+		/// <param name="provider">The ConnectionProvider that contains the Dialect.</param>
+		/// <param name="name">The name to format for the IDbDataParameter.</param>
+		/// <returns>A valid IDbDataParameter Name for this  Parameter.</returns>
+		public string GetParameterName(IConnectionProvider provider, string name) 
+		{
+			return provider.Driver.FormatNameForParameter(name);
+		}
+
+		[Obsolete("This does not handle quoted identifiers - going to use a number based name.")]
+		public virtual IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider) 
+		{
 			IDbDataParameter param = command.CreateParameter();
 			param.DbType = dbType;
 			param.ParameterName = GetParameterName(provider);
+
+			return param;
+		}
+		
+		public virtual IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider, string name) 
+		{
+			IDbDataParameter param = command.CreateParameter();
+			param.DbType = dbType;
+			param.ParameterName = GetParameterName(provider, name);
 
 			return param;
 		}

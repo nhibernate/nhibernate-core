@@ -25,8 +25,19 @@ namespace NHibernate.SqlCommand {
 			set {scale = value;}
 		}
 
-		public override IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider) {
+		[Obsolete("This does not handle quoted identifiers - going to use a number based name.")]
+		public override IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider) 
+		{
 			IDbDataParameter param = base.GetIDbDataParameter (command, provider);
+			param.Precision = precision;
+			param.Scale = scale;
+
+			return param;
+		}
+
+		public override IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider, string name) 
+		{
+			IDbDataParameter param = base.GetIDbDataParameter (command, provider, name);
 			param.Precision = precision;
 			param.Scale = scale;
 

@@ -78,7 +78,9 @@ namespace NHibernate.Impl {
 		}
 
 
-		public IDbCommand BuildCommand(SqlString sqlString) {
+		public IDbCommand BuildCommand(SqlString sqlString) 
+		{
+			int paramIndex = 0;
 
 			if(builtCommands.ContainsKey(sqlString)) 
 				return (IDbCommand) builtCommands[sqlString];
@@ -86,15 +88,21 @@ namespace NHibernate.Impl {
 			IDbCommand cmd = factory.ConnectionProvider.Driver.CreateCommand();
 
 			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Length * 15);
-			foreach(object part in sqlString.SqlParts) {
+			foreach(object part in sqlString.SqlParts) 
+			{
 				Parameter parameter = part as Parameter;
 				
-				if(parameter!=null) {
-					builder.Append(parameter.GetSqlName(factory.ConnectionProvider));
-					IDbDataParameter dbParam = parameter.GetIDbDataParameter(cmd, factory.ConnectionProvider);
+				if(parameter!=null) 
+				{
+					string paramName = "p" + paramIndex;
+					builder.Append( parameter.GetSqlName(factory.ConnectionProvider, paramName) );
+					IDbDataParameter dbParam = parameter.GetIDbDataParameter(cmd, factory.ConnectionProvider, paramName);
 					cmd.Parameters.Add(dbParam);
+					
+					paramIndex++;
 				}
-				else {
+				else 
+				{
 					builder.Append((string)part);
 				}
 			}
@@ -104,7 +112,6 @@ namespace NHibernate.Impl {
 			builtCommands.Add(sqlString, cmd);
 			return cmd;
 			
-
 		}
 
 		/// <summary>
