@@ -104,5 +104,10 @@ namespace NHibernate.Metadata
 		/// <returns></returns>
 		object GetVersion(object obj);
 
+		/// <summary>
+		/// Gets the index of the version property
+		/// </summary>
+		int VersionProperty { get; }
+
 	}
 }
