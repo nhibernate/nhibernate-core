@@ -3,9 +3,12 @@ using System.Collections;
 using System.Data;
 using System.Text;
 
+using NHibernate.Engine;
+using NHibernate.Hql;
 using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Dialect 
@@ -29,7 +32,11 @@ namespace NHibernate.Dialect
 
 		static Dialect() 
 		{
-			//TODO: H2.0.3 - add QueryFunctions in here
+			aggregateFunctions["count"] = new Dialect.CountQueryFunctionInfo();
+			aggregateFunctions["avg"] = new Dialect.CountQueryFunctionInfo();
+			aggregateFunctions["max"] = new QueryFunctionStandard();
+			aggregateFunctions["min"] = new QueryFunctionStandard();
+			aggregateFunctions["sum"] = new QueryFunctionStandard();
 		}
 
 		protected Dialect() 
@@ -703,6 +710,72 @@ namespace NHibernate.Dialect
 		{
 			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
 		}
+
+		public class CountQueryFunctionInfo : IQueryFunctionInfo 
+		{
+			#region IQueryFunctionInfo Members
+
+			public IType QueryFunctionType(IType columnType, IMapping mapping)
+			{
+				return NHibernate.Int32;
+			}
+
+			public bool IsFunctionArgs
+			{
+				get { return true;}
+			}
+
+			public bool IsFunctionNoArgsUseParanthesis
+			{
+				get { return true;}
+			}
+
+			#endregion
+		}
+
+		public class AvgQueryFunctionInfo : IQueryFunctionInfo
+		{
+			#region IQueryFunctionInfo Members
+
+			public IType QueryFunctionType(IType columnType, IMapping mapping)
+			{
+				SqlType[] sqlTypes;
+				try 
+				{
+					sqlTypes = columnType.SqlTypes(mapping);
+				}
+				catch (MappingException me) 
+				{
+					throw new QueryException(me);
+				}
+
+				if(sqlTypes.Length!=1) throw new QueryException("multi-column type can not be in avg()");
+				
+				SqlType sqlType = sqlTypes[0];
+
+				if(sqlType.DbType==DbType.Int16 || sqlType.DbType==DbType.Int32 || sqlType.DbType==DbType.Int64)
+				{
+					return NHibernate.Single;
+				}
+				else 
+				{
+					return columnType;
+				}
+			}
+
+			public bool IsFunctionArgs
+			{
+				get { return true; }
+			}
+
+			public bool IsFunctionNoArgsUseParanthesis
+			{
+				get { return true; }
+			}
+
+			#endregion
+		}
+
 
 	}
 }

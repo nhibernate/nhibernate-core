@@ -480,6 +480,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\QueryFunctionStandard.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\SybaseDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -749,6 +754,11 @@
                 />
                 <File
                     RelPath = "Hql\IParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\IQueryFunctionInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
