@@ -187,15 +187,7 @@ namespace NHibernate.Impl
 			foreach(PersistentClass model in cfg.ClassMappings) {
 				System.Type persisterClass = model.Persister;
 				IClassPersister cp;
-				//TODO: H2.0.3 created a PersisterFactory
 				cp = PersisterFactory.Create(model, this);
-//				if (persisterClass==null || persisterClass==typeof(EntityPersister)) {
-//					cp = new EntityPersister(model, this);
-//				} else if (persisterClass==typeof(NormalizedEntityPersister)) {
-//					cp = new NormalizedEntityPersister(model, this);
-//				} else {
-//					cp = InstantiatePersister(persisterClass, model);
-//				}
 				classPersisters[model.PersistentClazz] = cp;
 				classPersistersByName[model.Name] = cp ;
 			}
@@ -535,10 +527,6 @@ namespace NHibernate.Impl
 			return GetPersister(objectClass).IdentifierType;
 		}
 
-		//TODO: Serialization stuff
-		// will have to do a diff serialization object and then deserialization
-		// private void readObject()
-		// private void writeObject()
 		#region System.Runtime.Serialization.IObjectReference Members
 
 		public object GetRealObject(StreamingContext context)
