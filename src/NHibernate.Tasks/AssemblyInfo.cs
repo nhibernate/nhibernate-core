@@ -16,8 +16,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCompanyAttribute("nhibernate.sourceforge.net")]
 [assembly: AssemblyProductAttribute("NHibernate.Tasks")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
-[assembly: AssemblyVersionAttribute("0.4.0.0")]
-[assembly: AssemblyInformationalVersionAttribute("0.4")]
-[assembly: AssemblyFileVersionAttribute("0.4.0.0")]
+[assembly: AssemblyVersionAttribute("0.5.0.0")]
+[assembly: AssemblyInformationalVersionAttribute("0.5")]
+[assembly: AssemblyFileVersionAttribute("0.5.0.0")]
 [assembly: AssemblyDelaySignAttribute(false)]
 
