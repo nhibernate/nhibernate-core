@@ -1710,11 +1710,10 @@ namespace NHibernate.Impl
 				{
 					throw new ADOException("Could not execute query", e);
 				}
-				//TODO: H2.0.3 - move from IEnumerable to some Interface that supports indexing
-//				if(many) 
-//				{
-//					results[i] = result;
-//				}
+				if(many) 
+				{
+					results[i] = result;
+				}
 			}
 
 			return many ? new JoinedEnumerable(results) : result;
