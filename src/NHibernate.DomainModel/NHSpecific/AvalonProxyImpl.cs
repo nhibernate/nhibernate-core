@@ -5,6 +5,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// <summary>
 	/// Summary description for AvalonProxyImpl.
 	/// </summary>
+	[Serializable]
 	public class AvalonProxyImpl : AvalonProxy
 	{
 		private int _id;
