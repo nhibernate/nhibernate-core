@@ -11,6 +11,7 @@ namespace NHibernate.SqlCommand
 	/// If you need to modify this object pass it to a <c>SqlStringBuilder</c> and
 	/// get a new object back from it.
 	/// </summary>
+	[Serializable]
 	public class SqlString : ICloneable 
 	{
 		readonly object[] sqlParts;

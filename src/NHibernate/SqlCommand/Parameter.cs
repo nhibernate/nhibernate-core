@@ -13,6 +13,7 @@ namespace NHibernate.SqlCommand
 	/// A lightweight object to hold what later will be converted into an IDbParameter
 	/// for an IDbCommand.
 	/// </summary>
+	[Serializable]
 	public class Parameter: ICloneable
 	{
 		private string tableAlias;

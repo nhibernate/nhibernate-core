@@ -11,6 +11,7 @@ namespace NHibernate.SqlCommand
 	/// a <c>type="String(200)"</c> because for some reason the default parameter
 	/// generation of <c>nvarchar(4000)</c> (MsSql specific) is not good enough.
 	/// </remarks>
+	[Serializable]
 	public class ParameterLength : Parameter
 	{
 		private int length;

@@ -11,6 +11,7 @@ namespace NHibernate.SqlCommand
 	/// a <c>type="Decimal(20,4)"</c> because for some reason the default parameter
 	/// generation of <c>decimal(19,5)</c> (MsSql specific) is not good enough.
 	/// </remarks>
+	[Serializable]
 	public class ParameterPrecisionScale : Parameter 
 	{
 		private byte precision;
