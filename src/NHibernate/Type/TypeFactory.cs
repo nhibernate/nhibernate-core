@@ -112,6 +112,7 @@ namespace NHibernate.Type
 			typeByTypeOfName[ NHibernateUtil.BinaryBlob.Name ] = NHibernateUtil.BinaryBlob;
 			typeByTypeOfName[ NHibernateUtil.Boolean.Name ] = NHibernateUtil.Boolean;
 			typeByTypeOfName[ NHibernateUtil.Byte.Name ] = NHibernateUtil.Byte;
+			typeByTypeOfName[ NHibernateUtil.SByte.Name ] = NHibernateUtil.SByte;
 			typeByTypeOfName[ NHibernateUtil.Character.Name ] = NHibernateUtil.Character;
 			typeByTypeOfName[ NHibernateUtil.StringClob.Name ] = NHibernateUtil.StringClob;
 			typeByTypeOfName[ NHibernateUtil.CultureInfo.Name ] = NHibernateUtil.CultureInfo;
@@ -574,7 +575,16 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetCharType()
+		public static NullableType GetSByteType() 
+		{
+			return NHibernateUtil.SByte;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public static NullableType GetCharType() 
 		{
 			return NHibernateUtil.Character;
 		}
