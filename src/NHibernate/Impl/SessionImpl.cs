@@ -1372,14 +1372,11 @@ namespace NHibernate.Impl
 				persister = entry.Persister;
 			}
 
-			if( !persister.IsMutable )
-			{
-				throw new HibernateException(
-					"attempted to delete an object of immutable class: " +
-						MessageHelper.InfoString( persister )
-					);
-			}
+			DoDelete( obj, entry, persister );
+		}
 
+		private void DoDelete( object obj, EntityEntry entry, IClassPersister persister )
+		{
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "deleting " + MessageHelper.InfoString( persister, entry.Id ) );
@@ -1389,114 +1386,117 @@ namespace NHibernate.Impl
 
 			object version = entry.Version;
 
+			object[] loadedState;
 			if( entry.LoadedState == null )
 			{
 				//ie the object came in from Update()
-				entry.DeletedState = persister.GetPropertyValues( obj );
+				loadedState = persister.GetPropertyValues( obj );
 			}
 			else
 			{
-				entry.DeletedState = new object[entry.LoadedState.Length];
-				TypeFactory.DeepCopy( entry.LoadedState, propTypes, persister.PropertyUpdateability, entry.DeletedState );
+				loadedState = entry.LoadedState;
 			}
+			entry.DeletedState = new object[ loadedState.Length ];
+			TypeFactory.DeepCopy( loadedState, propTypes, persister.PropertyUpdateability, entry.DeletedState );
 
 			interceptor.OnDelete( obj, entry.Id, entry.DeletedState, persister.PropertyNames, propTypes );
 
-			NullifyTransientReferences( entry.DeletedState, propTypes, false, obj );
+			entry.Status = Status.Deleted; // before cascade and Lifecycle callback, so we are circular-reference safe
+			Key key = new Key( entry.Id, persister );
 
-			ISet oldNullifiables = null;
-			ArrayList oldDeletions = null;
-			if( persister.HasCascades )
+			IList deletionsByOnDelete = null;
+			ISet nullifiablesAfterOnDelete = null;
+
+			// do Lifecycle callback before cascades, since this can veto
+			if ( persister.ImplementsLifecycle ) 
 			{
-				oldNullifiables = new HashedSet();
-				oldNullifiables.AddAll( nullifiables );
-				oldDeletions = ( ArrayList ) deletions.Clone();
-			}
+				ISet oldNullifiables = (ISet) nullifiables.Clone();
+				ArrayList oldDeletions = (ArrayList) deletions.Clone();
 
-			nullifiables.Add( new Key( entry.Id, persister ) );
-			entry.Status = Status.Deleted; // before any callbacks, etc, so subdeletions see that this deletion happend first
-			ScheduledDeletion delete = new ScheduledDeletion( entry.Id, version, obj, persister, this );
-			deletions.Add( delete ); // ensures that containing deletions happen before sub-deletions
+				nullifiables.Add( key ); //the deletion of the parent is actually executed BEFORE any deletion from onDelete()
 
-			try
-			{
-				// after nullify, because we don't want to nullify references to subdeletions
-				// try to do callback + cascade
-				if( persister.ImplementsLifecycle )
+				try
 				{
-					if( ( ( ILifecycle ) obj ).OnDelete( this ) == LifecycleVeto.Veto )
+					log.Debug( "calling onDelete()" );
+					if ( ( (ILifecycle) obj).OnDelete( this ) == LifecycleVeto.Veto )
 					{
 						//rollback deletion
-						RollbackDeletion( entry, delete );
-						return; //don't let it cascade
+						entry.Status = Status.Loaded;
+						entry.DeletedState = null;
+						nullifiables = oldNullifiables;
+						log.Debug( "deletion vetoed by onDelete()" );
+						return; // don't let it cascade
 					}
 				}
-
-				//BEGIN YUCKINESS:
-				if( persister.HasCascades )
+				catch ( Exception )
 				{
-					int start = deletions.Count;
-
-					ISet newNullifiables = nullifiables;
+					//rollback deletion
+					entry.Status = Status.Loaded;
+					entry.DeletedState = null;
 					nullifiables = oldNullifiables;
-
-					cascading++;
-					try
-					{
-						// cascade-delete to collections "BEFORE" the collection owner is deleted
-						Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeAfterInsertBeforeDelete, null );
-					}
-					finally
-					{
-						cascading--;
-						newNullifiables.AddAll( oldNullifiables );
-						nullifiables = newNullifiables;
-					}
-
-					int end = deletions.Count;
-
-					if( end != start )
-					{
-						//ie if any deletions occurred as a result of cascade
-
-						//move them earlier. this is yucky code:
-
-						// in h203 they used SubList where it takes the start and end indexes, in nh GetRange
-						// takes the start index and quantity to get.
-						IList middle = deletions.GetRange( oldDeletions.Count, ( start - oldDeletions.Count ) );
-						IList tail = deletions.GetRange( start, ( end - start ) );
-
-						oldDeletions.AddRange( tail );
-						oldDeletions.AddRange( middle );
-
-						if( oldDeletions.Count != end )
-						{
-							throw new AssertionFailure( "Bug cascading collection deletions" );
-						}
-
-						deletions = oldDeletions;
-					}
-				}
-				//END YUCKINESS
-
-				// cascade-save to many-to-one AFTER the parent was saved
-				Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeBeforeInsertAfterDelete, null );
-			}
-			catch( Exception e )
-			{
-				//mainly a CallbackException
-				RollbackDeletion( entry, delete );
-				if( e is HibernateException )
-				{
 					throw;
 				}
-				else
-				{
-					log.Error( "unexpected exception", e );
-					throw new HibernateException( "unexpected exception", e );
-				}
 
+				//note, the following assumes that onDelete() didn't cause the session to be flushed! 
+				// TODO: add a better check that it doesn't
+				if ( oldDeletions.Count > deletions.Count )
+				{
+					throw new HibernateException( "session was flushed during onDelete()" );
+				}
+				deletionsByOnDelete = Sublist( deletions, oldDeletions.Count, deletions.Count );
+				deletions = oldDeletions;
+				nullifiablesAfterOnDelete = nullifiables;
+				nullifiables = oldNullifiables;
 			}
+
+			cascading++;
+			try
+			{
+				// cascade-delete to collections "BEFORE" the collection owner is deleted
+				Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeAfterInsertBeforeDelete, null );
+			}
+			finally
+			{
+				cascading--;
+			}
+
+			NullifyTransientReferences( entry.DeletedState, propTypes, false, obj );
+			CheckNullability( entry.DeletedState, persister, true );
+			nullifiables.Add( key );
+
+			ScheduledDeletion delete = new ScheduledDeletion( entry.Id, version, obj, persister, this );
+			deletions.Add( delete ); // Ensures that containing deletions happen before sub-deletions
+
+			if ( persister.ImplementsLifecycle )
+			{
+				// after nullify, because we don't want to nullify references to subdeletions
+				nullifiables.AddAll( nullifiablesAfterOnDelete );
+				// after deletions.add(), to respect foreign key constraints
+				deletions.AddRange( deletionsByOnDelete );
+			}
+
+			cascading++;
+			try
+			{
+				// cascade-delete to many-to-one AFTER the parent was deleted
+				Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeBeforeInsertAfterDelete, null );
+			}
+			finally
+			{
+				cascading--;
+			}
+		}
+
+		private IList Sublist( IList list, int fromIx, int toIx )
+		{
+			IList newList = new ArrayList( toIx - fromIx );
+
+			for ( int i = fromIx; i < toIx; i++ )
+			{
+				newList.Add( list[ i ] );
+			}
+
+			return newList;
 		}
 
 		private void RollbackDeletion( EntityEntry entry, ScheduledDeletion delete )
