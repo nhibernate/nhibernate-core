@@ -84,12 +84,30 @@
         <Files>
             <Include>
                 <File
+                    RelPath = "A.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ABC.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ABCProxy.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "AssemblyInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "AuditComponent.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "B.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -101,6 +119,16 @@
                 <File
                     RelPath = "BasicClass.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "C1.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "C2.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Child.cs"
@@ -122,6 +150,11 @@
                 />
                 <File
                     RelPath = "CompositeId.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "D.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

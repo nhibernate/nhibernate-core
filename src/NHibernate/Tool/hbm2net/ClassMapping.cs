@@ -424,7 +424,11 @@ namespace NHibernate.Tool.hbm2net
 			
 			XmlAttribute att = classElement.Attributes["proxy"];
 			if (att != null)
+			{
 				proxyClass = att.Value;
+				if (proxyClass.IndexOf(",")>0)
+					proxyClass = proxyClass.Substring(0, proxyClass.IndexOf(","));
+			}
 			
 			Element id = classElement["id"];
 			

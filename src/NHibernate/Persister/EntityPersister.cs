@@ -834,7 +834,8 @@ namespace NHibernate.Persister {
 			string idProp = IdentifierPropertyName;
 			if (idProp!=null) InitPropertyPaths( idProp, IdentifierType, IdentifierColumnNames, mapping );
 			if ( hasEmbeddedIdentifier ) InitPropertyPaths( null, IdentifierType, IdentifierColumnNames, mapping );
-			InitPropertyPaths( PathExpressionParser.EntityID, IdentifierType, IdentifierColumnNames, mapping );
+			if (PathExpressionParser.EntityID != idProp)
+				InitPropertyPaths( PathExpressionParser.EntityID, IdentifierType, IdentifierColumnNames, mapping );
 		
 			if ( IsPolymorphic ) {
 				typesByPropertyPath.Add( PathExpressionParser.EntityClass, DiscriminatorType );

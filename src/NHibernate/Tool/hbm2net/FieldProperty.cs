@@ -8,6 +8,24 @@ namespace NHibernate.Tool.hbm2net
 	
 	public class FieldProperty:MappingElement
 	{
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+		public string fieldcase
+		{
+			get
+			{
+				if (fieldName.Substring(0,1) == fieldName.Substring(0,1).ToLower())
+					return "_" + fieldName;
+				return fieldName.Substring(0,1).ToLower() + fieldName.Substring(1);
+			}
+		}
+		public string propcase
+		{
+			get
+			{
+				return fieldName;
+			}
+		}
 		virtual public System.String FieldName
 		{
 			get
@@ -226,6 +244,8 @@ namespace NHibernate.Tool.hbm2net
 			this.foreignClass = foreignClass;
 			this.foreignKeys = foreignKeys;
 			MetaAttribs = metaattribs;
+			if (fieldName.Substring(0,1) == fieldName.Substring(0,1).ToLower())
+				log.Warn("Nonstandard naming convention found on " + fieldName);
 		}
 		
 		/// <summary> foo -> Foo

@@ -60,8 +60,12 @@ namespace NHibernate.Id
 		public void Configure(IType type, System.Collections.IDictionary parms, Dialect.Dialect d)
 		{
 			string table = PropertiesHelper.GetString("table", parms, (string)parms[IncrementGenerator.Table]);
+			if(table == null || table == string.Empty)
+				throw new MappingException("param named \"table\" is required for incrementgeneration strategy");
 
 			string column = PropertiesHelper.GetString("column", parms, (string)parms[IncrementGenerator.PK]);
+			if(column == null || column == string.Empty)
+				throw new MappingException("param named \"column\" is required for incrementgeneration strategy");
 
 			string schema = (string) parms[Schema];
 
@@ -88,11 +92,10 @@ namespace NHibernate.Id
 				rs = cmd.ExecuteReader();
 				if(rs.Read()) 
 				{
-					next = rs.GetInt64(0) + 1;
-				}
-				else 
-				{
-					next = 1;
+					if (rs.IsDBNull(0))
+						next = 1;
+					else
+						next = rs.GetInt64(0) + 1;
 				}
 				sql = null;
 				log.Debug("first free id: " + next);
