@@ -24,7 +24,7 @@ namespace NHibernate.Proxy {
 				return obj.GetType();
 			}
 		}
-		
+		/*
 		public static object Unproxy(object obj, ISessionImplementor session) {
 			HibernateProxy proxy = obj as HibernateProxy;
 			if (proxy != null) {
@@ -46,6 +46,6 @@ namespace NHibernate.Proxy {
 			// can we just see if it's an instance of HibernateProxy?
 			return false;
 		}
-
+*/
 	}
 }

@@ -367,8 +367,8 @@ namespace NHibernate.Impl {
 		}
 
 		public LockMode GetCurrentLockMode(object obj) {
-			if ( HibernateProxyHelper.IsProxy(obj) ) {
-				obj = (HibernateProxyHelper.GetHibernateProxy(obj)).GetImplementation(this);
+			if ( obj is HibernateProxy ) {
+				obj = (HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj)).GetImplementation(this);
 				if (obj==null) return LockMode.None;
 			}
 			EntityEntry e = GetEntry(obj);
@@ -667,15 +667,16 @@ namespace NHibernate.Impl {
 		/// <param name="self"></param>
 		/// <returns></returns>
 		private bool IsUnsaved(object obj, bool earlyInsert, object self) {
-			if ( HibernateProxyHelper.IsProxy(obj) ) {
+			if ( obj is HibernateProxy ) {
 				// if its an uninitialized proxy, it can't be transietn
-				if ( (HibernateProxyHelper.GetHibernateProxy(obj)).GetImplementation(this)==null ) {
+				LazyInitializer li = HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj );
+				if ( li.GetImplementation(this)==null ) {
 					return false;
 					// ie we never have to null out a reference to an uninitialized proxy
 				} else {
 					try {
 						//unwrap it
-						obj = (HibernateProxyHelper.GetHibernateProxy(obj)).GetImplementation(this);
+						obj = li.GetImplementation(this);
 					} catch (HibernateException he) {
 						//does not occur
 						throw new AssertionFailure("Unexpected HibernateException occurred in IsTransient()", he);
@@ -1946,7 +1947,7 @@ namespace NHibernate.Impl {
 		/// <param name="obj"></param>
 		/// <returns></returns>
 		public object GetIdentifier(object obj) {
-			if (HibernateProxyHelper.IsProxy(obj)) {
+			if (obj is HibernateProxy) {
 				LazyInitializer li = HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj );
 				if ( li.Session!=this ) throw new TransientObjectException("The proxy was not associated with this session");
 				return li.Identifier;
@@ -1964,8 +1965,8 @@ namespace NHibernate.Impl {
 		/// <param name="obj"></param>
 		/// <returns></returns>
 		public object GetEntityIdentifier(object obj) {
-			if (HibernateProxyHelper.IsProxy(obj)) {
-				return (HibernateProxyHelper.GetHibernateProxy(obj)).Identifier;
+			if (obj is HibernateProxy) {
+				return HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj ).Identifier;
 			} else {
 				EntityEntry entry = GetEntry(obj);
 				return (entry!=null) ? entry.id : null;
@@ -1983,8 +1984,8 @@ namespace NHibernate.Impl {
 		public object GetEntityIdentifierIfNotUnsaved(object obj) {
 			if (obj==null) return null;
 
-			if (HibernateProxyHelper.IsProxy(obj)) {
-				return (HibernateProxyHelper.GetHibernateProxy(obj)).Identifier;
+			if (obj is HibernateProxy) {
+				return HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj ).Identifier;
 			} else {
 				EntityEntry entry = GetEntry(obj);
 				if ( entry!=null) return entry.id;

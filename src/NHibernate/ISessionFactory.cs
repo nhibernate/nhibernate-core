@@ -90,6 +90,5 @@ namespace NHibernate {
 		/// <c>close()</c>. 
 		/// </summary>
 		void Close(); 
-
 	}
 }
