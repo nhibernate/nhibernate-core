@@ -68,24 +68,6 @@ namespace NHibernate.Dialect
 				.ToString();
 		}
 			
-		/// <summary>
-		/// The character used to close a Quoted identifier
-		/// </summary>
-		/// <value>MySql overrides Dialects default value with '`'</value>
-		public override char CloseQuote
-		{
-			get { return '`'; }
-		}
-
-		/// <summary>
-		/// The character used to open a Quoted identifier
-		/// </summary>
-		/// <value>MySql overrides Dialects default value with '`'</value>
-		public override char OpenQuote
-		{
-			get { return '`'; }
-		}
-
 		private string SqlTypeToString(string name, int length) 
 		{
 			return name + "(" + length + ")";

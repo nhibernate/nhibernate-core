@@ -24,7 +24,7 @@ namespace NHibernate.Sql
 			this.suffix = suffix;
 		}
 
-		public string ToAliasString(string sqlIdentifier) 
+		public string ToAliasString(string sqlIdentifier, Dialect.Dialect dialect) 
 		{
 			char begin = sqlIdentifier[0];
 			int quoteType = Dialect.Dialect.Quote.IndexOf(begin);
@@ -58,8 +58,7 @@ namespace NHibernate.Sql
 			}
 		}
 
-
-		public string ToUnquotedAliasString(string sqlIdentifier)
+		public string ToUnquotedAliasString(string sqlIdentifier, Dialect.Dialect dialect)
 		{
 			char begin = sqlIdentifier[0];
 			int quoteType = Dialect.Dialect.Quote.IndexOf(begin);
@@ -84,25 +83,25 @@ namespace NHibernate.Sql
 			return unquoted;
 		}
 
-		public string[] ToUnquotedAliasStrings(string[] sqlIdentifiers) 
+		public string[] ToUnquotedAliasStrings(string[] sqlIdentifiers, Dialect.Dialect dialect) 
 		{
 			string[] aliases = new string[sqlIdentifiers.Length];
 			for(int i = 0; i < sqlIdentifiers.Length; i++) 
 			{
-				aliases[i] = ToUnquotedAliasString(sqlIdentifiers[i]);
+				aliases[i] = ToUnquotedAliasString(sqlIdentifiers[i], dialect);
 			}
 
 			return aliases;
 		}
 
 		
-		public string[] ToAliasStrings(string[] sqlIdentifiers) 
+		public string[] ToAliasStrings(string[] sqlIdentifiers, Dialect.Dialect dialect) 
 		{
 			string[] aliases = new string[ sqlIdentifiers.Length ];
 
 			for ( int i=0; i<sqlIdentifiers.Length; i++ ) 
 			{
-				aliases[i] = ToAliasString(sqlIdentifiers[i]);
+				aliases[i] = ToAliasString(sqlIdentifiers[i], dialect);
 			}
 			return aliases;
 		}

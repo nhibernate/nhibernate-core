@@ -102,7 +102,7 @@ namespace NHibernate.Persister {
 		public virtual string IdentifierSelectFragment(string name, string suffix) {
 			//TODO: fix this once the interface is changed from a string to SqlString
 			// this works now because there are no parameters in the select fragment string
-			return new SqlCommand.SelectFragment()
+			return new SqlCommand.SelectFragment(dialect)
 				.SetSuffix(suffix)
 				.AddColumns( name, IdentifierColumnNames )
 				.ToSqlStringFragment(false)

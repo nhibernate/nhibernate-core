@@ -34,12 +34,10 @@ namespace NHibernate.Loader
 		
 		protected SqlString sqlString;
 		protected string[] suffixes;
-		private Dialect.Dialect dialect;
 
 		
-		public OuterJoinLoader(Dialect.Dialect dialect) 
+		public OuterJoinLoader(Dialect.Dialect dialect) : base(dialect)
 		{
-			this.dialect = dialect;
 		}
 
 		/// <summary>
@@ -441,7 +439,7 @@ namespace NHibernate.Loader
 			tableName = StringHelper.Unqualify(tableName); //TODO: this is broken if we have quoted identifier with a "."
 
 			//TODO: H2.0.3 - changes tableName to lower case - don't know why it is needed...
-			return (new Alias(10, n.ToString() + StringHelper.Underscore)).ToAliasString(tableName);
+			return (new Alias(10, n.ToString() + StringHelper.Underscore)).ToAliasString(tableName, dialect);
 		}
 
 		protected override CollectionPersister CollectionPersister 

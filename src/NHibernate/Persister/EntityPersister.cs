@@ -130,7 +130,7 @@ namespace NHibernate.Persister {
 				string[] colAliases = new string[span];
 				int j=0;
 				foreach(Column col in prop.ColumnCollection) {
-					colAliases[j] = col.Alias;
+					colAliases[j] = col.Alias(dialect);
 					colNames[j] = col.GetQuotedName(dialect);
 					j++;
 					if( prop.IsUpdateable ) foundColumn=true;
@@ -159,7 +159,7 @@ namespace NHibernate.Persister {
 				int l=0;
 				foreach( Column col in prop.ColumnCollection ) {
 					columns.Add( col.GetQuotedName(dialect) );
-					aliases.Add( col.Alias );
+					aliases.Add( col.Alias(dialect) );
 					cols[l++] = col.GetQuotedName(dialect);
 				}
 				propColumns.Add(cols);
@@ -292,8 +292,8 @@ namespace NHibernate.Persister {
 
 			loaders.Add( LockMode.None, loader );
 			loaders.Add( LockMode.Read, loader );
-			loaders.Add( LockMode.Upgrade, new SimpleEntityLoader(this, selectForUpdateString, LockMode.Upgrade));
-			loaders.Add( LockMode.UpgradeNoWait, new SimpleEntityLoader(this, selectForUpdateNoWaitString, LockMode.UpgradeNoWait));
+			loaders.Add( LockMode.Upgrade, new SimpleEntityLoader(this, selectForUpdateString, LockMode.Upgrade, factory.Dialect));
+			loaders.Add( LockMode.UpgradeNoWait, new SimpleEntityLoader(this, selectForUpdateNoWaitString, LockMode.UpgradeNoWait, factory.Dialect));
 
 		}
 
@@ -929,7 +929,7 @@ namespace NHibernate.Persister {
 		//public abstract string GetSubclassPropertyName(int i);
 
 		public override string PropertySelectFragment(string name, string suffix) {
-			SqlCommand.SelectFragment frag = new SqlCommand.SelectFragment()
+			SqlCommand.SelectFragment frag = new SqlCommand.SelectFragment(factory.Dialect)
 				.SetSuffix(suffix);
 			if ( HasSubclasses ) frag.AddColumn( name, DiscriminatorColumnName );
 			

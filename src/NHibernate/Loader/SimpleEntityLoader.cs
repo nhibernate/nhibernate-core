@@ -24,7 +24,7 @@ namespace NHibernate.Loader
 		
 		private string[] NoSuffix = new string[] { String.Empty };
 
-		public SimpleEntityLoader(ILoadable persister, SqlString sqlString, LockMode lockMode) 
+		public SimpleEntityLoader(ILoadable persister, SqlString sqlString, LockMode lockMode, Dialect.Dialect d) : base(d)
 		{
 			this.persister = new ILoadable[] { persister };
 			this.idType = new IType[] { persister.IdentifierType };

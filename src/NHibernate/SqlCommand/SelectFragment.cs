@@ -16,6 +16,12 @@ namespace NHibernate.SqlCommand
 		private IList columns = new ArrayList();
 		private IList aliases = new ArrayList();
 		private IList columnAliases = new ArrayList();
+		private Dialect.Dialect dialect;
+
+		public SelectFragment(Dialect.Dialect d)
+		{
+			this.dialect = d;
+		}
 
 		public SelectFragment SetSuffix(string suffix) 
 		{
@@ -82,7 +88,7 @@ namespace NHibernate.SqlCommand
 				string columnAlias = columnAliases[i] as string;
 				buf.Append(col)
 					.Append(" as ")
-					.Append( new Alias(suffix).ToAliasString(columnAlias) );
+					.Append( new Alias(suffix).ToAliasString(columnAlias, dialect) );
 			}
 			return new SqlString(buf.ToString());
 		}

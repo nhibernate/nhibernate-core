@@ -338,7 +338,7 @@ namespace NHibernate.Dialect
 		/// <returns></returns>
 		public virtual SqlCommand.CaseFragment CreateCaseFragment() 
 		{
-			return new SqlCommand.ANSICaseFragment();
+			return new SqlCommand.ANSICaseFragment(this);
 		}
 
 		/// <summary>

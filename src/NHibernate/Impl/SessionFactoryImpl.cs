@@ -326,7 +326,7 @@ namespace NHibernate.Impl {
 				Put(cacheKey, q);
 			}
 			*/
-			QueryTranslator q = new QueryTranslator();
+			QueryTranslator q = new QueryTranslator(dialect);
 			q.Compile(this, query, querySubstitutions, shallow);
 			
 			return q;
@@ -339,7 +339,7 @@ namespace NHibernate.Impl {
 			FilterTranslator q = (FilterTranslator) Get(cacheKey);
 			if ( q==null ) 
 			{
-				q = new FilterTranslator();
+				q = new FilterTranslator(dialect);
 				Put(cacheKey, q);
 			}
 			q.Compile(collectionRole, this, query, querySubstitutions, scalar);

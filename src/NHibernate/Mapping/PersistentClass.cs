@@ -193,18 +193,18 @@ namespace NHibernate.Mapping
 		public abstract RootClass RootClazz { get; }
 		public abstract Value Key { get; set; } 
 
-		public virtual void CreatePrimaryKey() 
-		{
-			PrimaryKey pk = new PrimaryKey();
-			pk.Table = table;
-			pk.Name = PKAlias.ToAliasString(table.Name); 
-			table.PrimaryKey = pk;
-
-			foreach(Column col in Key.ColumnCollection) 
-			{
-				pk.AddColumn(col);
-			}
-		}
+//		public virtual void CreatePrimaryKey() 
+//		{
+//			PrimaryKey pk = new PrimaryKey();
+//			pk.Table = table;
+//			pk.Name = PKAlias.ToAliasString(table.Name, dialect); 
+//			table.PrimaryKey = pk;
+//
+//			foreach(Column col in Key.ColumnCollection) 
+//			{
+//				pk.AddColumn(col);
+//			}
+//		}
 
 		public abstract string Where { get; set; }
 				

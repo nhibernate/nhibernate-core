@@ -58,18 +58,15 @@ namespace NHibernate.Mapping
 			return d.QuoteForColumnName(name);
 		}
 
-		public string Alias 
+		public string Alias(Dialect.Dialect d)
 		{
-			get 
-			{	
 				if(quoted) 
 					return "y" + uniqueInteger.ToString() + StringHelper.Underscore;
 				 
 				if ( name.Length < 11 )
 					return name;
 				else
-					return (new Alias(10, uniqueInteger.ToString() + StringHelper.Underscore)).ToAliasString(name);
-			}
+					return (new Alias(10, uniqueInteger.ToString() + StringHelper.Underscore)).ToAliasString(name, d);
 		}
 
 		public bool IsNullable 

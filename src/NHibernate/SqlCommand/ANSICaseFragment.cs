@@ -14,6 +14,12 @@ namespace NHibernate.SqlCommand
 	/// <remarks>This class looks StringHelper.SqlParameter safe...</remarks>
 	public class ANSICaseFragment : CaseFragment
 	{
+		private Dialect.Dialect dialect;
+
+		public ANSICaseFragment(Dialect.Dialect dialect)
+		{
+			this.dialect = dialect;
+		}
 
 		private string returnColumnName;
 
@@ -27,7 +33,7 @@ namespace NHibernate.SqlCommand
 
 		public override CaseFragment SetReturnColumnName(string returnColumnName, string suffix) 
 		{
-			return SetReturnColumnName( new Alias(suffix).ToAliasString( returnColumnName ) );
+			return SetReturnColumnName( new Alias(suffix).ToAliasString( returnColumnName, dialect ) );
 		}
 
 		public override CaseFragment AddWhenColumnNotNull(string alias, string columnName, string columnValue) 

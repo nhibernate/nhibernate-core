@@ -12,6 +12,13 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class DecodeCaseFragment : CaseFragment 
 	{
+		private Dialect.Dialect dialect;
+
+		public DecodeCaseFragment(Dialect.Dialect dialect)
+		{
+			this.dialect = dialect;
+		}
+
 		private string returnColumnName;
 		private IList cases = new ArrayList();
 
@@ -23,7 +30,7 @@ namespace NHibernate.SqlCommand
 
 		public override CaseFragment SetReturnColumnName(string returnColumnName, string suffix) 
 		{
-			return SetReturnColumnName( new Alias(suffix).ToAliasString(returnColumnName) );
+			return SetReturnColumnName( new Alias(suffix).ToAliasString(returnColumnName, dialect) );
 		}
 
 		public override CaseFragment AddWhenColumnNotNull(string alias, string columnName, string columnValue) 

@@ -24,6 +24,12 @@ namespace NHibernate.Loader
 	public abstract class Loader 
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Loader));
+		public Dialect.Dialect dialect;
+
+		protected Loader(Dialect.Dialect dialect)
+		{
+			this.dialect = dialect;
+		}
 
 		/// <summary>
 		/// The SQL query string to be called; implemented by all subclasses
@@ -878,7 +884,7 @@ namespace NHibernate.Loader
 
 		private string[] GetKeyAliases(string suffix, ILoadable persister) 
 		{
-			return new Alias(suffix).ToUnquotedAliasStrings(persister.IdentifierColumnNames);
+			return new Alias(suffix).ToUnquotedAliasStrings(persister.IdentifierColumnNames, dialect);
 		}
 
 		private string[][] GetPropertyAliases(string suffix, ILoadable persister) 
@@ -887,7 +893,7 @@ namespace NHibernate.Loader
 			string[][] result = new string[size][];
 			for(int i = 0; i < size; i++) 
 			{
-				result[i] = new Alias(suffix).ToUnquotedAliasStrings(persister.GetPropertyColumnNames(i));
+				result[i] = new Alias(suffix).ToUnquotedAliasStrings(persister.GetPropertyColumnNames(i), dialect);
 			}
 			return result;
 		}
@@ -895,7 +901,7 @@ namespace NHibernate.Loader
 		private string GetDiscriminatorAliases(string suffix, ILoadable persister) 
 		{
 			return persister.HasSubclasses ?
-				new Alias(suffix).ToUnquotedAliasString(persister.DiscriminatorColumnName) : null;
+				new Alias(suffix).ToUnquotedAliasString(persister.DiscriminatorColumnName, dialect) : null;
 		}
 
 		

@@ -8,6 +8,10 @@ namespace NHibernate.Hql {
 	
 	public class FilterTranslator : QueryTranslator {
 		
+		public FilterTranslator(Dialect.Dialect d) : base(d)
+		{
+		}
+
 		/// <summary> Compile a filter. This method may be called multiple
 		/// times. Subsequent invocations are no-ops.
 		/// </summary>

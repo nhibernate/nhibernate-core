@@ -50,7 +50,7 @@ namespace NHibernate.Hql {
 				else if (lcToken.Equals("where")) 
 				{
 					EndChild(q);
-					child = new WhereParser();
+					child = new WhereParser(q.dialect);
 					child.Start(q);
 				} 
 				else if (lcToken.Equals("order")) 
@@ -62,7 +62,7 @@ namespace NHibernate.Hql {
 				else if (lcToken.Equals("having")) 
 				{
 					EndChild(q);
-					child = new HavingParser();
+					child = new HavingParser(q.dialect);
 					child.Start(q);
 				} 
 				else if (lcToken.Equals("group")) 

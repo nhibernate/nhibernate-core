@@ -32,9 +32,11 @@ namespace NHibernate.Hql
 		private static StringCollection expressionOpeners = new StringCollection(); //tokens that open a sub expression
 		private static StringCollection booleanOperators = new StringCollection(); //tokens that would indicate a sub expression is a boolean expression
 		private static IDictionary negations = new Hashtable();
+		private Dialect.Dialect d;
 
-		public WhereParser()
+		public WhereParser(Dialect.Dialect d)
 		{
+			this.d = d;
 			pathExpressionParser.UseThetaStyleJoin = true;
 		}
 
@@ -243,7 +245,7 @@ namespace NHibernate.Hql
 				
 				if (bracketsSinceSelect == - 1) 
 				{
-					QueryTranslator subq = new QueryTranslator();
+					QueryTranslator subq = new QueryTranslator(d);
 					try 
 					{
 						subq.Compile(q, subselect.ToString());

@@ -83,7 +83,7 @@ namespace NHibernate.Hql
 		/// <summary> 
 		/// Construct a query translator
 		/// </summary>
-		public QueryTranslator() 
+		public QueryTranslator(Dialect.Dialect d) : base(d)
 		{
 		}
 

@@ -385,7 +385,7 @@ namespace NHibernate.Collection {
 		}
 
 		public string SelectClauseFragment(string alias) {
-			SqlCommand.SelectFragment frag = new SqlCommand.SelectFragment()
+			SqlCommand.SelectFragment frag = new SqlCommand.SelectFragment(factory.Dialect)
 				.SetSuffix(String.Empty)
 				.AddColumns(alias, elementColumnNames);
 			if (hasIndex) frag.AddColumns(alias, indexColumnNames);
