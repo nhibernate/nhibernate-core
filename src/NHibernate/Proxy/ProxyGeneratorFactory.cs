@@ -11,6 +11,11 @@ namespace NHibernate.Proxy
 
 		private static IProxyGenerator _generator = new CastleProxyGenerator();
 
+		private ProxyGeneratorFactory()
+		{
+			// should not be created.	
+		}
+
 		/// <summary></summary>
 		public static IProxyGenerator GetProxyGenerator()
 		{
