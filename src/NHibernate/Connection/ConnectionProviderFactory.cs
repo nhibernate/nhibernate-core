@@ -10,7 +10,7 @@ namespace NHibernate.Connection
 	/// <summary>
 	/// Instanciates a connection provider given configuration properties.
 	/// </summary>
-	public class ConnectionProviderFactory 
+	public sealed class ConnectionProviderFactory 
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ConnectionProviderFactory));
 		

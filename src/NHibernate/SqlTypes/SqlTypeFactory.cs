@@ -7,7 +7,7 @@ namespace NHibernate.SqlTypes
 	/// SqlTypeFactory provides Singleton access to the SqlTypes.
 	/// </summary>
 	[Serializable]
-	public class SqlTypeFactory 
+	public sealed class SqlTypeFactory 
 	{
 		// key = typeof(sqlType).Name : ie - BinarySqlType(l), BooleanSqlType, DecimalSqlType(p,s)
 		// value = SqlType

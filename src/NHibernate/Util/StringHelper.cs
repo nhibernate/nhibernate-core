@@ -2,10 +2,16 @@ using System;
 using System.Text;
 using System.Collections;
 
-namespace NHibernate.Util {
+namespace NHibernate.Util 
+{
 	
-	public sealed class StringHelper {
-		
+	public sealed class StringHelper 
+	{
+		private StringHelper() 
+		{
+			// not creatable
+		}
+
 		public const char Dot = '.';
 		public const char Underscore = '_';
 		public const string CommaSpace = ", ";

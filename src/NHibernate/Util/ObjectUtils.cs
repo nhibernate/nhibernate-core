@@ -55,13 +55,18 @@
 
 using System;
 
-namespace NHibernate.Util {
+namespace NHibernate.Util 
+{
 	/// <summary>
 	/// Summary description for ObjectUtils.
 	/// </summary>
-	public class ObjectUtils {
+	public sealed class ObjectUtils 
+	{
 
-		private ObjectUtils() {}
+		private ObjectUtils() 
+		{
+			// not creatable
+		}
 		
 		public static object DefaultIfNull(object obj, object defaultVal) {
 			return (obj != null ? obj : defaultVal);

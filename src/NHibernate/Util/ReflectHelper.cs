@@ -12,6 +12,11 @@ namespace NHibernate.Util
 	/// </summary>
 	public sealed class ReflectHelper
 	{
+		private ReflectHelper() 
+		{
+			// not creatable
+		}
+
 		private static System.Type[] NoClasses = new System.Type[0];
 		private static System.Type[] Object = new System.Type[] { typeof(object) };
 		
