@@ -272,10 +272,10 @@ namespace NHibernate.Engine
 		/// Return the existing proxy associated with the given <c>Key</c>, or the second
 		/// argument (the entity associated with the key) if no proxy exists.
 		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="key"></param>
+		/// <param name="persister">The <see cref="IClassPersister"/> to see if it should be Proxied.</param>
+		/// <param name="key">The <see cref="Key"/> that identifies the entity.</param>
 		/// <param name="impl"></param>
-		/// <returns></returns>
+		/// <returns>Returns a the Proxy for the class or the parameter impl.</returns>
 		object ProxyFor(IClassPersister persister, Key key, object impl);
 
 		/// <summary>
