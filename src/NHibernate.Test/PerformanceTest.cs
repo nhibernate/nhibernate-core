@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 
 using NHibernate.Cfg;
@@ -22,7 +23,20 @@ namespace NHibernate.Test
 	/// </para>
 	/// <para>
 	/// On a production machine, the finest level of detail you should log is WARN.  On my machines
-	/// test take 3 times the amount of time to run with a log level of DEBUG as WARN.
+	/// test take about 3 times the amount of time to run with a log level of DEBUG compared to WARN.
+	/// </para>
+	/// <para>
+	/// Currently (2004-05-26) NHibernate adds about 20% overhead versus a straight DataReader when
+	/// the exact same sql is issued.  NHibernate's DriverConnectionProvider has not implemented a 
+	/// Connection Cache or Prepared IDbCommand cache yet.  No cache was configured for the class Simple for
+	/// this test.  So there are optimizations that are yet to be made, even then it is performing
+	/// well compared to a DataReader.  I plan on making a seperate csproj to store Performance
+	/// Test because NProf has problems with getting performance figures from dlls running in NUnit - or
+	/// atleast I have not been able to get it to work. 
+	/// </para>
+	/// <para>
+	/// Also test with a larger amount of data in the tables so they can be compared to a DataSet & Type DataSet
+	/// will later be added.
 	/// </para>
 	/// </remarks>
 	[TestFixture]
@@ -46,6 +60,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
+		//[Ignore("User should comment this out if they want it to run.  Does not test any functions.")]
 		public void Many() 
 		{
 			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
@@ -53,7 +68,8 @@ namespace NHibernate.Test
 			long hiber = 0;
 			long adonet = 0;
 			
-			for(int n = 0; n < 5; n++) 
+			//for(int n = 0; n < 20; n++) 
+			for(int n = 0; n < 20; n++) 
 			{
 				Simple[] simples = new Simple[n];
 				object[] ids = new object[n];
@@ -116,6 +132,7 @@ namespace NHibernate.Test
 			}
 			System.Console.Out.Write("NHibernate: " + hiber + "ms / Direct ADO.NET: " + adonet + "ms = Ratio: " + (((float)hiber/adonet)).ToString() );
 			
+			//cp.Close();
 			System.GC.Collect();
 		}
 
@@ -137,18 +154,19 @@ namespace NHibernate.Test
 		{
 		}
 
-		private void Hibernate(ISession s, Simple[] simples, object[] ids, int n, string runname) 
+		private void Hibernate(ISession s, Simple[] simples, object[] ids, int N, string runname) 
 		{
 			ITransaction t = s.BeginTransaction();
 
-			for(int i = 0; i < n; i++) 
+			for(int i = 0; i < N; i++) 
 			{
 				s.Save(simples[i]); //, ids[i]);
 			}
+			s.Flush();
 
-			for(int i = 0; i < n; i++) 
+			for(int i = 0; i < N; i++) 
 			{
-				simples[i].Name = "NH - A Different Name!" + i + n + runname;
+				simples[i].Name = "NH - " + i + N + runname + " - " + System.DateTime.Now.Ticks;
 			}
 
 			s.Flush();
@@ -157,16 +175,19 @@ namespace NHibernate.Test
 
 			// hql is throwing perf way off...
 			//Assert.IsTrue( s.Delete("from s in class NHibernate.DomainModel.Simple") == n);
-			for(int i = 0; i < n; i++) 
+
+			IList simpleList = s.CreateCriteria(typeof(Simple)).List();
+
+			for(int i = 0; i < simpleList.Count; i++) 
 			{
-				s.Delete(simples[i]);
+				s.Delete((Simple)simpleList[i]);
 			}
 			s.Flush();
 			t.Commit();
 			
 		}
 
-		private void DirectAdoNet(IDbConnection c, Simple[] simples, object[] ids, int n, string runname) 
+		private void DirectAdoNet(IDbConnection c, Simple[] simples, object[] ids, int N, string runname) 
 		{
 			IDbCommand insert = InsertCommand();
 			IDbCommand delete = DeleteCommand();
@@ -190,7 +211,7 @@ namespace NHibernate.Test
 			select.Prepare();
 			update.Prepare();
 
-			for(int i = 0; i < n; i++) 
+			for(int i = 0; i < N; i++) 
 			{
 				((IDbDataParameter)insert.Parameters[0]).Value = simples[i].Name;
 				((IDbDataParameter)insert.Parameters[1]).Value = simples[i].Address;
@@ -202,9 +223,9 @@ namespace NHibernate.Test
 				insert.ExecuteNonQuery();
 			}
 			
-			for(int i = 0; i < n; i++) 
+			for(int i = 0; i < N; i++) 
 			{
-				((IDbDataParameter)update.Parameters[0]).Value = "DR - A Different Name!" + i + n + runname;
+				((IDbDataParameter)update.Parameters[0]).Value = "DR - " + i + N + runname + " - " + System.DateTime.Now.Ticks;
 				((IDbDataParameter)update.Parameters[1]).Value = simples[i].Address;
 				((IDbDataParameter)update.Parameters[2]).Value = simples[i].Count;
 				((IDbDataParameter)update.Parameters[3]).Value = simples[i].Date;
@@ -215,8 +236,8 @@ namespace NHibernate.Test
 			}
 
 			IDataReader reader = select.ExecuteReader();
-			long[] keys = new long[n];
-			Simple[] simplesFromReader = new Simple[n];
+			long[] keys = new long[N];
+			Simple[] simplesFromReader = new Simple[N];
 			int j = 0;
 
 			long other;
@@ -224,8 +245,8 @@ namespace NHibernate.Test
 			while(reader.Read()) 
 			{
 				//SELECT s.id_, s.name, s.address, s.count_, s.date_, s.other
-				simplesFromReader[j] = new Simple();
 				keys[j] = (long)reader[0];
+				simplesFromReader[j] = new Simple();
 				simplesFromReader[j].Key = keys[j];
 				simplesFromReader[j].Name = (string)reader[1];
 				simplesFromReader[j].Address = (string)reader[2];
@@ -242,7 +263,7 @@ namespace NHibernate.Test
 
 			reader.Close();
 
-			for(int i = 0; i < n; i++) 
+			for(int i = 0; i < N; i++) 
 			{
 				((IDbDataParameter)delete.Parameters[0]).Value = (long)keys[i];
 				delete.ExecuteNonQuery();
