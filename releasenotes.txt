@@ -1,4 +1,20 @@
-PreAlpah Build 5
+PreAlpha Build 6
+======================== 
+- Fixed Configuration so app.config/web.config behaives like hibernate.properties and a hibernate.cfg.xml.  Settings in app.confg/web.config are no longer required if a cfg.xml file is used.
+- Dialects now set default values for outer joins.  
+- Fixed bug in ArrayHolder with null elements.
+- Added IDisposable to ISession
+- Fixed bug with lazy loaded SortedSet during Flush().
+- Fixed problem with Loading using LockModes because of missing columns with Forumlas.
+- Added SetAnsiString to IQuery
+- Fixed bug with IDbCommands used in a Session that is Disconnected and Reconnected not being associated with the correct IDbTransaction.
+- Driver can disable calls to IDbCommand.Prepare() for Data Providers that don't support it.
+- Removed requirement to set length with type attribute - ie, can use type="String" instead of type="String(50)".
+- schema-export now functions just like it does with hibernate 2.0.3
+- Converting a SqlString to an IDbCommand is now a Driver specific function because different Driver's have different requirements for IDbCommands.
+- Added HashCodeProvider.dll to remove problems with RuntimeHelpers.GetHashCode causing MissingMethodException with App Domain reloading with ASP.NET and NUnit.
+
+PreAlpha Build 5
 ======================== 
 - Added check in Configuration for 1.1 version of runtime.
 - Removed reference in NHibernate.csproj to nunit.framework.dll.
