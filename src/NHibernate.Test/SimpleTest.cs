@@ -80,7 +80,7 @@ namespace NHibernate.Test
 			ISession s3 = sessions.OpenSession();
 			ITransaction t3 = s3.BeginTransaction();
 
-			Simple simple3 = (Simple)s3.Load(typeof(Simple), simple2.Key);
+			Simple simple3 = (Simple)s3.Load(typeof(Simple), key);
 			Simple otherSimple3;
 
 			Assertion.AssertEquals(simple2.Count, simple3.Count);
@@ -91,7 +91,6 @@ namespace NHibernate.Test
 			// note that the Other will not be the same object because
 			// they were loaded in 2 different sessions
 			otherSimple3 = simple3.Other;
-			Assertion.AssertEquals(simple2.Other.Key, otherSimple3.Key);
 
 			// the update worked - lets clear out the table
 			s3.Delete(simple3);
@@ -134,7 +133,6 @@ namespace NHibernate.Test
 			q.SetProperties(simple);
 			
 			Simple loadedSimple = (Simple)q.List()[0];
-			Assert.AreEqual(key, loadedSimple.Key);
 			Assert.AreEqual(99, loadedSimple.Count);
 			Assert.AreEqual("Simple 1", loadedSimple.Name);
 			Assert.AreEqual("Street 12", loadedSimple.Address);

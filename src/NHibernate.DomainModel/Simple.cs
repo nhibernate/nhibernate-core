@@ -4,7 +4,6 @@ namespace NHibernate.DomainModel
 {	
 	public class Simple 
 	{
-		private long key;
 		private string name;
 		private string address;
 		private int count;
@@ -23,12 +22,6 @@ namespace NHibernate.DomainModel
 			address="1234 some street, some city, victoria, 3000, austaya";
 			count=69;
 			date = DateTime.Now;
-		}
-
-		public long Key 
-		{
-			get {return key;}
-			set {key = value;}
 		}
 
 		public string Name 

@@ -60,7 +60,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("User should comment this out if they want it to run.  Does not test any functions.")]
+		//[Ignore("User should comment this out if they want it to run.  Does not test any functions.")]
 		public void Many() 
 		{
 			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
@@ -69,7 +69,7 @@ namespace NHibernate.Test
 			long adonet = 0;
 			
 			//for(int n = 0; n < 20; n++) 
-			for(int n = 0; n < 20; n++) 
+			for(int n = 0; n < 5; n++) 
 			{
 				Simple[] simples = new Simple[n];
 				object[] ids = new object[n];
@@ -79,7 +79,6 @@ namespace NHibernate.Test
 					simples[i] = new Simple();
 					simples[i].Init();
 					simples[i].Count = i;
-					simples[i].Key = (long)i;
 					ids[i] = (long)i;
 				}
 
@@ -160,7 +159,7 @@ namespace NHibernate.Test
 
 			for(int i = 0; i < N; i++) 
 			{
-				s.Save(simples[i]); //, ids[i]);
+				s.Save(simples[i], ids[i]);
 			}
 			s.Flush();
 
@@ -247,7 +246,6 @@ namespace NHibernate.Test
 				//SELECT s.id_, s.name, s.address, s.count_, s.date_, s.other
 				keys[j] = (long)reader[0];
 				simplesFromReader[j] = new Simple();
-				simplesFromReader[j].Key = keys[j];
 				simplesFromReader[j].Name = (string)reader[1];
 				simplesFromReader[j].Address = (string)reader[2];
 				simplesFromReader[j].Count = (int)reader[3];
