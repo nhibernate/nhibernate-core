@@ -11,7 +11,8 @@ namespace NHibernate.Type {
 	/// </summary>
 	public class ByteType : PrimitiveType, IDiscriminatorType {
 		
-		internal ByteType(ByteSqlType sqlType) : base(sqlType) {
+		internal ByteType() : base( new ByteSqlType() ) 
+		{
 		}
 
 		public override object Get(IDataReader rs, int index) {

@@ -12,7 +12,8 @@ namespace NHibernate.Type {
 	/// </summary>
 	public class CultureInfoType : ImmutableType, ILiteralType {
 
-		internal CultureInfoType(StringSqlType sqlType) : base(sqlType) {
+		internal CultureInfoType() : base( new StringSqlType(5) ) 
+		{
 		}
 
 		public override object Get(IDataReader rs, int index) {

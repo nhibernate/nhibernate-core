@@ -42,13 +42,13 @@ namespace NHibernate.Type {
 		private readonly IType identifierType;
 		private readonly IType metaType;
 
-		public ObjectType(IType metaType, IType identifierType) {
+		internal ObjectType(IType metaType, IType identifierType) {
 			this.identifierType = identifierType;
 			this.metaType = metaType;
 		}
 	
-		public ObjectType() : this(TypeFactory.GetTypeType(), TypeFactory.GetSerializableType()) {
-			//NHibernate.Class, NHibernate.Serializable) {
+		internal ObjectType() : this(NHibernate.Class, NHibernate.Serializable) 
+		{
 		}
 		
 		public override object DeepCopy(object value) {

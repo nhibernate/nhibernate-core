@@ -11,8 +11,12 @@ namespace NHibernate.Type {
 	/// <summary>
 	/// BinaryType.
 	/// </summary>
-	public class BinaryType : MutableType{
-		
+	public class BinaryType : MutableType
+	{
+		internal BinaryType() : this( new BinarySqlType() ) 
+		{
+		}
+
 		internal BinaryType(BinarySqlType sqlType) : base(sqlType) {
 		}
 

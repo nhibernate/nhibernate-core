@@ -10,7 +10,12 @@ namespace NHibernate.Type {
 	/// Maps the Assembly Qualified Name of a <see cref="System.Type"/> to a 
 	/// variable length string column.
 	/// </summary>
-	public class TypeType : ImmutableType {
+	public class TypeType : ImmutableType 
+	{
+
+		internal TypeType() : base( new StringSqlType() ) 
+		{
+		}
 
 		/// <summary>
 		/// Initialize a new instance of the TypeType class using a 
@@ -33,14 +38,18 @@ namespace NHibernate.Type {
 		public override object Get(IDataReader rs, int index) 
 		{
 			string str = (string) NHibernate.String.Get(rs, index);
-			if (str == null) {
+			if (str == null) 
+			{
 				return null;
 			}
-			else {
-				try {
+			else 
+			{
+				try 
+				{
 					return ReflectHelper.ClassForName(str);
 				}
-				catch (TypeLoadException) {
+				catch (TypeLoadException) 
+				{
 					throw new HibernateException("Class not found: " + str);
 				}
 			}
@@ -101,11 +110,13 @@ namespace NHibernate.Type {
 		/// <value>
 		/// A <see cref="System.Type"/> from the .NET framework.
 		/// </value>
-		public override System.Type ReturnedClass {
+		public override System.Type ReturnedClass 
+		{
 			get { return typeof(System.Type); }
 		}
 	
-		public override bool Equals(object x, object y) {
+		public override bool Equals(object x, object y) 
+		{
 			
 			if(x==null && y==null) 
 			{
@@ -120,7 +131,8 @@ namespace NHibernate.Type {
 			return x.Equals(y);
 		}
 	
-		public override string Name {
+		public override string Name 
+		{
 			get { return "Type"; }
 		}
 	}

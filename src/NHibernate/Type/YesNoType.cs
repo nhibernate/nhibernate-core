@@ -19,7 +19,7 @@ namespace NHibernate.Type
 	public class YesNoType : CharBooleanType 
 	{
 
-		internal YesNoType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType) 
+		internal YesNoType() : base( new AnsiStringFixedLengthSqlType(1) ) 
 		{
 		}
 

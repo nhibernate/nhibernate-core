@@ -11,6 +11,9 @@ namespace NHibernate.Type
 	/// </summary>
 	public class AnsiStringType : ImmutableType, IDiscriminatorType 
 	{
+		internal AnsiStringType() : base( new AnsiStringSqlType() ) 
+		{
+		}
 		internal AnsiStringType(AnsiStringSqlType sqlType) : base(sqlType) {}
 
 		public override object Get(IDataReader rs, int index) 

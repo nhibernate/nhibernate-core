@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	public class GuidType : PrimitiveType, IDiscriminatorType 
 	{
 	
-		internal GuidType(GuidSqlType sqlType) : base(sqlType) 
+		internal GuidType() : base( new GuidSqlType() ) 
 		{
 		}
 

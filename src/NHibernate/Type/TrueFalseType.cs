@@ -18,8 +18,8 @@ namespace NHibernate.Type
 	/// </remarks>
 	public class TrueFalseType: CharBooleanType 
 	{
-
-		internal TrueFalseType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType) {
+		internal TrueFalseType() : base( new AnsiStringFixedLengthSqlType(1) ) 
+		{
 		}
 
 		protected override sealed string TrueString {

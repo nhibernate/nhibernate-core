@@ -18,7 +18,7 @@ namespace NHibernate.Type
 	public class DateTimeType : MutableType, IIdentifierType, ILiteralType, IVersionType
 	{
 		
-		public DateTimeType(DateTimeSqlType sqlType) : base(sqlType) 
+		internal DateTimeType() : base( new DateTimeSqlType() ) 
 		{
 		}
 

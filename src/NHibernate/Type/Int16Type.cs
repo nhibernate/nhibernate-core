@@ -7,7 +7,8 @@ namespace NHibernate.Type {
 	
 	public class Int16Type : PrimitiveType, IDiscriminatorType, IVersionType {
 		
-		internal Int16Type(Int16SqlType sqlType) : base(sqlType) {
+		internal Int16Type() : base( new Int16SqlType() ) 
+		{
 		}
 
 		public override object Get(IDataReader rs, int index) {

@@ -30,8 +30,7 @@ namespace NHibernate.Type
 	/// </remarks>
 	public class TimestampType : MutableType, IVersionType, ILiteralType
 	{
-		
-		public TimestampType(DateTimeSqlType sqlType) : base(sqlType) 
+		internal TimestampType() : base( new DateTimeSqlType() ) 
 		{
 		}
 

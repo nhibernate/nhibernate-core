@@ -7,7 +7,8 @@ namespace NHibernate.Type {
 	
 	public class DoubleType : PrimitiveType {
 		
-		internal DoubleType(DoubleSqlType sqlType) : base(sqlType) {
+		internal DoubleType() : base( new DoubleSqlType() ) 
+		{
 		}
 
 		public override object Get(IDataReader rs, int index) {

@@ -20,12 +20,11 @@ namespace NHibernate.Type {
 		private static readonly string FALSE = "0";
 
 		/// <summary>
-		/// Initialize a new instance of the BooleanType class using a 
-		/// <see cref="BooleanSqlType"/>. 
+		/// Initialize a new instance of the BooleanType
 		/// </summary>
-		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
 		/// <remarks>This is used when the Property is mapped to a native boolean type.</remarks>
-		internal BooleanType(BooleanSqlType sqlType) : base(sqlType) {
+		internal BooleanType() : base( new BooleanSqlType() ) 
+		{
 		}
 
 		/// <summary>

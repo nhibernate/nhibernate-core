@@ -12,6 +12,10 @@ namespace NHibernate.Type {
 	/// </summary>
 	public class StringType : ImmutableType, IDiscriminatorType {
 		
+		internal StringType() : base( new StringSqlType() ) 
+		{
+		}
+
 		internal StringType(StringSqlType sqlType) : base(sqlType) {
 		}
 

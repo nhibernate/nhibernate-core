@@ -15,8 +15,7 @@ namespace NHibernate.Type
 	/// </remarks>
 	public class SingleType : PrimitiveType 
 	{
-		
-		internal SingleType(SingleSqlType sqlType) : base(sqlType) 
+		internal SingleType() : base( new SingleSqlType() ) 
 		{
 		}
 

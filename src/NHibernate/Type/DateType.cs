@@ -6,10 +6,9 @@ namespace NHibernate.Type {
 	
 	public class DateType : MutableType, IIdentifierType, ILiteralType, IVersionType {
 
-
-	    public DateType (DateSqlType sqlType) : base(sqlType)
-	    {
-	    }
+		internal DateType() : base( new DateSqlType() ) 
+		{
+		}
 
 	    public override object Get(IDataReader rs, int index) 
 		{

@@ -15,9 +15,7 @@ namespace NHibernate.Type
 	/// </remarks>
 	public class TimeType : MutableType, IIdentifierType, ILiteralType, IVersionType
 	{
-
-
-		public TimeType (TimeSqlType sqlType) : base(sqlType)
+		internal TimeType() : base( new TimeSqlType() ) 
 		{
 		}
 

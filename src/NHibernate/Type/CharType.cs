@@ -10,7 +10,8 @@ namespace NHibernate.Type {
 	/// </summary>
 	public class CharType : PrimitiveType , IDiscriminatorType	{
 
-		internal CharType(StringFixedLengthSqlType sqlType) : base(sqlType) {
+		internal CharType() : base( new StringFixedLengthSqlType(1) ) 
+		{
 		}
 
 		public override object Get(IDataReader rs, int index) {

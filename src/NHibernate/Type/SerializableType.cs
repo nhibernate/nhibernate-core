@@ -29,10 +29,14 @@ namespace NHibernate.Type {
 
 		private BinaryType binaryType;
 
-		public SerializableType(System.Type serializableClass) 
-			//: this(serializableClass, SqlTypeFactory.GetBinary()) 
-			: this( serializableClass, new BinarySqlType() )
+		internal SerializableType() : this( typeof(Object) ) 
 		{
+		}
+
+		internal SerializableType(System.Type serializableClass) : base( new BinarySqlType() )
+		{
+			this.serializableClass = serializableClass;
+			this.binaryType = (BinaryType)NHibernate.Binary;
 			
 		}
 		
@@ -70,7 +74,7 @@ namespace NHibernate.Type {
 			return (value==null) ? null : binaryType.ToXML( ToBytes(value) );
 		}
 		public override string Name {
-			get { return serializableClass.FullName; }
+			get { return "serializable - " + serializableClass.FullName; }
 		}
 		public override object DeepCopyNotNull(object value) {
 			return FromBytes( ToBytes(value) );
