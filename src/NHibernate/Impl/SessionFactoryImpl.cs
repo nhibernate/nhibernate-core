@@ -33,7 +33,7 @@ namespace NHibernate.Impl {
 	/// <remarks>
 	/// IMMUTABLE
 	/// </remarks>
-	public class SessionFactoryImpl : ISessionFactory, ISessionFactoryImplementor {
+	internal class SessionFactoryImpl : ISessionFactory, ISessionFactoryImplementor {
 		
 		private string name;
 		private string uuid;
@@ -43,7 +43,7 @@ namespace NHibernate.Impl {
 		private IDictionary collectionPersisters;
 		private IDictionary namedQueries;
 		private IDictionary imports;
-		private IConnectionProvider connections;
+		private IConnectionProvider connectionProvider;
 		private IDictionary properties;
 		private bool showSql;
 		private bool useOuterJoin;
@@ -94,10 +94,13 @@ namespace NHibernate.Impl {
 			dialect = dl;
 			supportsLocking = sl;
 
-			connections = ConnectionProviderFactory.NewConnectionProvider(properties);
+			connectionProvider = ConnectionProviderFactory.NewConnectionProvider(properties);
 
-			int cacheSize = PropertiesHelper.GetInt( Cfg.Environment.StatementCacheSize, properties, 0);
-			statementCache = ( cacheSize<1 || connections.IsStatementCache ) ? null : new PreparedStatementCache(cacheSize);
+			// TODO: DESIGNQUESTION: There are other points in the application that have questions about the
+			// statementCache - I just don't see this as being needed yet.  
+			//int cacheSize = PropertiesHelper.GetInt( Cfg.Environment.StatementCacheSize, properties, 0);
+			//statementCache = ( cacheSize<1 || connectionProvider.IsStatementCache ) ? null : new PreparedStatementCache(cacheSize);
+			statementCache = null;
 
 			//statementFetchSize = PropertiesHelper.GetInt( Cfg.Environment.StatementFetchSize, properties);
 			//if (statementFetchSize!=null) log.Info("ado result set fetch size: " + statementFetchSize);
@@ -109,12 +112,12 @@ namespace NHibernate.Impl {
 			//int batchSize = PropertiesHelper.GetInt(Cfg.Environment.statementBatchSize, properties, 0);
 
 			try {
-				IDbConnection conn = connections.GetConnection();
+				IDbConnection conn = connectionProvider.GetConnection();
 				try {
 					//get meta data
 					adoBatchSize = 0;
 				} finally {
-					connections.CloseConnection(conn);
+					connectionProvider.CloseConnection(conn);
 				}
 			} catch (Exception e) {
 				log.Warn("could not obtain connection metadata", e);
@@ -230,6 +233,10 @@ namespace NHibernate.Impl {
 			strongRefs[ ++strongRefIndex % MaxStrongRefCount ] = value;
 		}
 
+		public IConnectionProvider ConnectionProvider {
+			get {return this.connectionProvider;}
+		}
+
 		public QueryTranslator GetQuery(string query) {
 			return GetQuery(query, false);
 		}
@@ -276,7 +283,9 @@ namespace NHibernate.Impl {
 		}
 
 		public ISession OpenSession(IDbConnection connection, IInterceptor interceptor) {
-			return OpenSession( connection, false, long.MinValue, interceptor );
+			//TODO: figure out why autoClose was set to false - diff in JDBC vs ADO.NET???
+			return OpenSession( connection, true, long.MinValue, interceptor );
+			//return OpenSession( connection, false, long.MinValue, interceptor );
 		}
 
 		public ISession OpenSession(IInterceptor interceptor) {
@@ -294,7 +303,7 @@ namespace NHibernate.Impl {
 
 		public IDbConnection OpenConnection() {
 			try {
-				return connections.GetConnection();
+				return connectionProvider.GetConnection();
 			} catch (Exception sqle) {
 				throw new ADOException("cannot open connection", sqle);
 			}
@@ -302,7 +311,7 @@ namespace NHibernate.Impl {
 		
 		public void CloseConnection(IDbConnection conn) {
 			try {
-				connections.CloseConnection(conn);
+				connectionProvider.CloseConnection(conn);
 			} catch (Exception e) {
 				throw new ADOException("cannot close connection", e);
 			}
@@ -343,17 +352,26 @@ namespace NHibernate.Impl {
 			get { return transactionFactory; }
 		}
 
-		
+		//TODO: revisit if we want the SessionFactoryImpl to store the PreparedStatements considering
+		// that ADO.NET handles prepared Commands differently depending on the provider
 		public IDbCommand GetPreparedStatement(IDbConnection conn, string sql, bool scrollable) {
 
-			if ( log.IsDebugEnabled ) log.Debug(
-										  "prepared statement get: " + sql
-										  );
+			if ( log.IsDebugEnabled ) log.Debug("prepared statement get: " + sql);
 			if ( showSql ) Console.WriteLine("Hibernate: " + sql);
 
-			if ( statementCache != null ) {
+			//TODO: what would be the implications of hooking up the PreparedStatment (IDbCommand) to
+			// the IDbTransaction at this point.  I am a little nervous about this because the SessionFactory
+			// is not specific to a Session.  So would the IDbCommand object be shared among different sessions?
+			// Would that cause us to run into problems where one Session would be using the Transaction from 
+			// a different Session??
+			// NOTE: I have commented out the code that assigns the statement cache - so it will always
+			// be null and we will be creating a new command each time.
+					
+			if ( statementCache != null ) 
+			{
 				return statementCache.GetPreparedStatement(sql, conn);
-			} else {
+			} 
+			else {
 				try {
 					log.Debug("preparing statement");
 					IDbCommand retVal = conn.CreateCommand();
@@ -371,7 +389,8 @@ namespace NHibernate.Impl {
 					// end-of Hack
 
 					return retVal;
-				} catch (Exception e) {
+				} 
+				catch (Exception e) {
 					throw e;
 				}
 			}
@@ -384,7 +403,13 @@ namespace NHibernate.Impl {
 			} else {
 				try {
 					log.Debug("closing statement");
-					ps.Dispose();
+					//TODO: there is some missing logic about when this gets called - with the OleDb driver
+					// as soon as the Dispose is called the CommandText=="", with SqlServer driver that 
+					// is not occurring - don't know why not???  This prevents a command from being called
+					// more than 1 time in a row...
+					// In H2.0.3 this is a Close - not a dispose.  It looks like each Provider implements
+					// Dispose just a bit differently...
+					//ps.Dispose();
 				} catch (Exception e) {
 					throw e;
 				}

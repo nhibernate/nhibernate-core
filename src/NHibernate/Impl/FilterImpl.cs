@@ -5,7 +5,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Impl {
 	
-	public class FilterImpl : QueryImpl {
+	internal class FilterImpl : QueryImpl {
 		private object collection;
 
 		public FilterImpl(string queryString, object collection, ISessionImplementor session) : base(queryString, session) {

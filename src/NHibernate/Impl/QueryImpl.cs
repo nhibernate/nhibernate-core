@@ -9,7 +9,7 @@ using NHibernate.Proxy;
 
 namespace NHibernate.Impl {
 	
-	public class QueryImpl : IQuery {
+	internal class QueryImpl : IQuery {
 		private ISessionImplementor session;
 		private string queryString;
 
@@ -80,31 +80,31 @@ namespace NHibernate.Impl {
 			return this;
 		}
 		public IQuery SetCharacter(int position, char val) {
-			SetParameter(position, val, NHibernate.Character);
+			SetParameter(position, val, NHibernate.Character);// );
 			return this;
 		}
 		public IQuery SetBoolean(int position, bool val) {
-			SetParameter(position, val, NHibernate.Boolean);
+			SetParameter(position, val, NHibernate.Boolean); // );
 			return this;
 		}
 		public IQuery SetByte(int position, byte val) {
 			SetParameter(position, val, NHibernate.Byte);
 			return this;
 		}
-		public IQuery SetShort(int position, short val) {
-			SetParameter(position, val, NHibernate.Short);
+		public IQuery SetInt16(int position, short val) {
+			SetParameter(position, val, NHibernate.Int16);
 			return this;
 		}
-		public IQuery SetInteger(int position, int val) {
-			SetParameter(position, val, NHibernate.Integer);
+		public IQuery SetInt32(int position, int val) {
+			SetParameter(position, val, NHibernate.Int32);
 			return this;
 		}
-		public IQuery SetLong(int position, long val) {
-			SetParameter(position, val, NHibernate.Long);
+		public IQuery SetInt64(int position, long val) {
+			SetParameter(position, val, NHibernate.Int64);
 			return this;
 		}
-		public IQuery SetFloat(int position, float val) {
-			SetParameter(position, val, NHibernate.Float);
+		public IQuery SetSingle(int position, float val) {
+			SetParameter(position, val, NHibernate.Single);
 			return this;
 		}
 		public IQuery SetDouble(int position, double val) {
@@ -119,12 +119,12 @@ namespace NHibernate.Impl {
 			SetParameter(position, val, NHibernate.Decimal);
 			return this;
 		}
-		public IQuery SetDate(int position, DateTime val) {
-			SetParameter(position, val, NHibernate.Date);
+		public IQuery SetDateTime(int position, DateTime val) {
+			SetParameter(position, val, NHibernate.DateTime);
 			return this;
 		}
 		public IQuery SetTime(int position, DateTime val) {
-			SetParameter(position, val, NHibernate.Date); //TODO: change to time
+			SetParameter(position, val, NHibernate.DateTime); //TODO: change to time
 			return this;
 		}
 		public IQuery SetTimestamp(int position, DateTime val) {
@@ -157,20 +157,21 @@ namespace NHibernate.Impl {
 			SetParameter(name, val, NHibernate.Byte);
 			return this;
 		}
-		public IQuery SetShort(string name, short val) {
-			SetParameter(name, val, NHibernate.Short);
+		public IQuery SetInt16(string name, short val) {
+			SetParameter(name, val, NHibernate.Int16);
 			return this;
 		}
-		public IQuery SetInteger(string name, int val) {
-			SetParameter(name, val, NHibernate.Integer);
+		public IQuery SetInt32(string name, int val) {
+			SetParameter(name, val, NHibernate.Int32);
 			return this;
 		}
-		public IQuery SetLong(string name, long val) {
-			SetParameter(name, val, NHibernate.Long);
+		public IQuery SetInt64(string name, long val) {
+			SetParameter(name, val, NHibernate.Int64);
 			return this;
 		}
-		public IQuery SetFloat(string name, float val) {
-			SetParameter(name, val, NHibernate.Float);
+		
+		public IQuery SetSingle(string name, float val) {
+			SetParameter(name, val, NHibernate.Single);
 			return this;
 		}
 		public IQuery SetDouble(string name, double val) {
@@ -185,12 +186,12 @@ namespace NHibernate.Impl {
 			SetParameter(name, val, NHibernate.Decimal);
 			return this;
 		}
-		public IQuery SetDate(string name, DateTime val) {
-			SetParameter(name, val, NHibernate.Date);
+		public IQuery SetDateTime(string name, DateTime val) {
+			SetParameter(name, val, NHibernate.DateTime);
 			return this;
 		}
 		public IQuery SetTime(string name, DateTime val) {
-			SetParameter(name, val, NHibernate.Date); //TODO: change to time
+			SetParameter(name, val, NHibernate.DateTime); //TODO: change to time
 			return this;
 		}
 		public IQuery SetTimestamp(string name, DateTime val) {

@@ -8,7 +8,7 @@ namespace NHibernate.Impl {
 	/// <summary>
 	/// Implements enumerable
 	/// </summary>
-	public class EnumerableImpl : IEnumerable, IEnumerator{
+	internal class EnumerableImpl : IEnumerable, IEnumerator{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(EnumerableImpl));
 		
 		private IDataReader rs;

@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// helper methods for rendering log messages and exception messages
 	/// </summary>
-	public sealed class MessageHelper
+	internal sealed class MessageHelper
 	{
 		public static string InfoString(System.Type clazz, object id) {
 			StringBuilder s = new StringBuilder();

@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Summary description for ScrollableResultsImpl.
 	/// </summary>
-	public class ScrollableResultsImpl : IScrollableResults
+	internal class ScrollableResultsImpl : IScrollableResults
 	{
 		public ScrollableResultsImpl(IDataReader rs, ISessionImplementor sess, IType[] types)
 		{
@@ -137,23 +137,23 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Convenience method to read an <c>int</c>
 		/// </summary>
-		public int GetInteger(int col)
+		public int GetInt32(int col)
 		{
 			throw new NotImplementedException("Not ported yet");
 		}
 
 		/// <summary>
-		/// Convenience method to read a <c>long</c>
+		/// Convenience method to read a <c>System.Int64</c>
 		/// </summary>
-		public long GetLong(int col)
+		public long GetInt64(int col)
 		{
 			throw new NotImplementedException("Not ported yet");
 		}
 
 		/// <summary>
-		/// Convenience method to read a <c>float</c>
+		/// Convenience method to read a <c>System.Single</c>
 		/// </summary>
-		public float GetFloat(int col)
+		public float GetSingle(int col)
 		{
 			throw new NotImplementedException("Not ported yet");
 		}
@@ -175,9 +175,9 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Convenience method to read an <c>short</c>
+		/// Convenience method to read an <c>System.Int16</c>
 		/// </summary>
-		public short GetShort(int col)
+		public short GetInt16(int col)
 		{
 			throw new NotImplementedException("Not ported yet");
 		}

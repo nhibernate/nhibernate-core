@@ -11,7 +11,7 @@ namespace NHibernate.Impl {
 	/// A cached instance of a persistent class
 	/// </summary>
 	[Serializable]
-	public class CacheEntry {
+	internal class CacheEntry {
 	
 		object[] state;
 		System.Type subclass;

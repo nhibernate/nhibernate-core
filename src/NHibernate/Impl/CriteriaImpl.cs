@@ -1,14 +1,16 @@
 using System;
 using System.Collections;
 
-using NHibernate.Expression;
+using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Impl {
 	/// <summary>
 	/// Summary description for CriteriaImpl.
 	/// </summary>
-	public class CriteriaImpl : ICriteria {
+	internal class CriteriaImpl : ICriteria {
 		private IList expressions = new ArrayList();
+		private NExpression.Junction conjunction = NExpression.Expression.Conjunction();
+
 		private IList orderings = new ArrayList();
 		private int maxResults;
 		private int firstResult;
@@ -29,11 +31,17 @@ namespace NHibernate.Impl {
 			return this;
 		}
 	
-		public ICriteria Add(Expression.Expression expression) {
+		public ICriteria Add(NExpression.Expression expression) {
 			expressions.Add(expression);
+			conjunction.Add(expression);
 			return this;
 		}
 	
+		//ADDED this
+		public NExpression.Expression Expression {
+			get {return conjunction;}
+		}
+
 		public int MaxResults {
 			get { return maxResults; }
 		}
@@ -70,7 +78,7 @@ namespace NHibernate.Impl {
 			return expressions.ToString();
 		}
 
-		public ICriteria AddOrder(Order ordering) { 
+		public ICriteria AddOrder(NExpression.Order ordering) { 
 			orderings.Add(ordering); 
 			return this; 
 		}          
