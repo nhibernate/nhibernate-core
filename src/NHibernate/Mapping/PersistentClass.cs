@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Cache;
 using NHibernate.Util;
+using NHibernate.Sql;
 
 namespace NHibernate.Mapping {
 	
@@ -12,16 +13,16 @@ namespace NHibernate.Mapping {
 		private Table table;
 		private System.Type proxyInterface;
 		private bool dynamicUpdate;
-		private ArrayList subclasses = new ArrayList();
-		private ArrayList subclassProperties = new ArrayList();
-		private ArrayList subclassTables = new ArrayList();
+		private readonly ArrayList subclasses = new ArrayList();
+		private readonly ArrayList subclassProperties = new ArrayList();
+		private readonly ArrayList subclassTables = new ArrayList();
 
-		public bool DynamicUpdate {
+		public virtual bool DynamicUpdate {
 			get { return dynamicUpdate; }
 			set { dynamicUpdate = value ; }
 		}
 
-		public string DiscriminatorValue {
+		public virtual string DiscriminatorValue {
 			get { return discriminatorValue; }
 			set { discriminatorValue = value; }
 		}
@@ -30,11 +31,11 @@ namespace NHibernate.Mapping {
 			subclasses.Add(subclass);
 		}
 
-		public bool HasSubclasses {
+		public virtual bool HasSubclasses {
 			get { return subclasses.Count > 0; }
 		}
 
-		public int SubclassSpan {
+		public virtual int SubclassSpan {
 			get {
 				int n = subclasses.Count;
 				foreach(Subclass sc in subclasses) {
@@ -44,7 +45,7 @@ namespace NHibernate.Mapping {
 			}
 		}
 
-		public ICollection SubclassCollection {
+		public virtual ICollection SubclassCollection {
 			get { 
 				ArrayList retVal = new ArrayList();
 				foreach(Subclass sc in subclasses) {
@@ -54,7 +55,7 @@ namespace NHibernate.Mapping {
 			}
 		}
 
-		public ICollection DirectSubclasses {
+		public virtual ICollection DirectSubclasses {
 			get { return subclasses; }
 		}
 
@@ -67,16 +68,16 @@ namespace NHibernate.Mapping {
 			set { table = value; }
 		}
 
-		public ICollection PropertyCollection {
+		public virtual ICollection PropertyCollection {
 			get { return properties; }
 		}
 
-		public System.Type PersistentClazz {
+		public virtual System.Type PersistentClazz {
 			get { return persistentClass; }
 			set { persistentClass = value; }
 		}
 
-		public string Name {
+		public virtual string Name {
 			get { return persistentClass.Name; }
 		}
 
@@ -102,7 +103,7 @@ namespace NHibernate.Mapping {
 		public virtual void AddSubclassTable(Table table) {
 			subclassTables.Add(table);
 		}
-		public ICollection SubclassPropertyClosureCollection {
+		public virtual ICollection SubclassPropertyClosureCollection {
 			get {
 				ArrayList retVal = new ArrayList();
 				retVal.AddRange( PropertyClosureCollection );
@@ -110,7 +111,7 @@ namespace NHibernate.Mapping {
 				return retVal;
 			}
 		}
-		public ICollection SubclassTableClosureCollection {
+		public virtual ICollection SubclassTableClosureCollection {
 			get {
 				ArrayList retVal = new ArrayList();
 				retVal.AddRange( TableClosureCollection );
@@ -118,7 +119,7 @@ namespace NHibernate.Mapping {
 				return retVal;
 			}
 		}
-		public System.Type ProxyInterface {
+		public virtual System.Type ProxyInterface {
 			get { return proxyInterface; }
 			set { proxyInterface = value ; }
 		}
@@ -137,7 +138,7 @@ namespace NHibernate.Mapping {
 		public abstract RootClass RootClazz { get; }
 		public abstract Value Key { get; set; }
 
-		public void CreatePrimaryKey() {
+		public virtual void CreatePrimaryKey() {
 			PrimaryKey pk = new PrimaryKey();
 			pk.Table = table;
 			pk.Name = StringHelper.Suffix( table.Name, "PK" );
@@ -148,6 +149,6 @@ namespace NHibernate.Mapping {
 			}
 		}
 
-
+		private static readonly Alias PKAlias = new Alias(15, "PK");
 	}
 }
