@@ -26,11 +26,6 @@ namespace NHibernate.Transaction
 			this.session = session;
 		}
 
-		public IDbTransaction AdoTransaction 
-		{
-			get { return trans; }
-		}
-
 		public void Enlist(IDbCommand command) 
 		{
 			if( trans==null ) 
