@@ -176,25 +176,25 @@
 					proxy doesn't work yet
 					proxy="NHibernate.DomainModel.BarProxy, NHibernate.DomainModel"
 				-->
-			<many-to-one name="Baz"/>
-			<property name="BarString">
-				<column name="bar_String" length="24"/>
-			</property>
-			<property name="Name" column="name_name"/>
-			<component name="BarComponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
-				<parent name="Parent"/>
-				<property name="Count" column="bar_count"/>
-				<property name="Name" length="64"/>
-				<array name="ImportantDates">
-					<key column="id" />
-					<index column="i"/>
-					<element column="date_" type="DateTime"/>
-				</array>
-			</component>
-			<any name="Object" id-type="Int64" cascade="all">
-				<column name="clazz" length="100"/>
-				<column name="gen_id"/>
-			</any>
+				<many-to-one name="Baz"/>
+				<property name="BarString">
+					<column name="bar_String" length="24"/>
+				</property>
+				<property name="Name" column="name_name"/>
+				<component name="BarComponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
+					<parent name="Parent"/>
+					<property name="Count" column="bar_count"/>
+					<property name="Name" length="64"/>
+					<array name="ImportantDates">
+						<key column="id" />
+						<index column="i"/>
+						<element column="date_" type="DateTime"/>
+					</array>
+				</component>
+				<any name="Object" id-type="Int64" cascade="all">
+					<column name="clazz" length="100"/>
+					<column name="gen_id"/>
+				</any>
 			</subclass>
 		</subclass>
   </class>
