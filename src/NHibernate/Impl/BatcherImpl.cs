@@ -1,26 +1,28 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using Iesi.Collections;
-
+using log4net;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
-namespace NHibernate.Impl 
+namespace NHibernate.Impl
 {
 	/// <summary>
 	/// Manages prepared statements and batching. Class exists to enfores seperation of concerns
 	/// </summary>
-	internal abstract class BatcherImpl : IBatcher 
+	internal abstract class BatcherImpl : IBatcher
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(BatcherImpl));
+		private static readonly ILog log = LogManager.GetLogger( typeof( BatcherImpl ) );
 
 		private static int openCommandCount;
 		private static int openReaderCount;
 
+		/// <summary></summary>
 		protected readonly ISessionImplementor session;
+
+		/// <summary></summary>
 		protected readonly ISessionFactoryImplementor factory;
 
 		// batchCommand used to be called batchUpdate - that name to me implied that updates
@@ -36,7 +38,11 @@ namespace NHibernate.Impl
 		// value = IDbCommand
 		private IDictionary commands;
 
-		public BatcherImpl(ISessionImplementor session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		public BatcherImpl( ISessionImplementor session )
 		{
 			this.session = session;
 			this.factory = session.Factory;
@@ -46,16 +52,21 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Gets the current Command that is contained for this Batch
 		/// </summary>
-		protected IDbCommand GetCommand() 
+		protected IDbCommand GetCommand()
 		{
 			return batchCommand;
 		}
-		
-		public IDbCommand Generate(SqlString sqlString) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlString"></param>
+		/// <returns></returns>
+		public IDbCommand Generate( SqlString sqlString )
 		{
 			IDbCommand cmd = commands[ sqlString ] as IDbCommand;
 
-			if( cmd!=null )
+			if( cmd != null )
 			{
 				if( log.IsDebugEnabled )
 				{
@@ -66,15 +77,15 @@ namespace NHibernate.Impl
 			}
 
 			// need to build the IDbCommand from the sqlString bec
-			cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, sqlString);
-			if(log.IsDebugEnabled) 
+			cmd = factory.ConnectionProvider.Driver.GenerateCommand( factory.Dialect, sqlString );
+			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Building an IDbCommand object for the SqlString: " + sqlString.ToString() );
 			}
 
 			commands[ sqlString ] = cmd;
 			return cmd;
-			
+
 		}
 
 		/// <summary>
@@ -86,70 +97,86 @@ namespace NHibernate.Impl
 		/// and <see cref="IDbTransaction"/> if one exists.  It will call <c>Prepare</c> if the Driver
 		/// supports preparing commands.
 		/// </remarks>
-		private void Prepare(IDbCommand command) 
+		private void Prepare( IDbCommand command )
 		{
-			try 
+			try
 			{
-				if(log.IsInfoEnabled) 
+				if( log.IsInfoEnabled )
 				{
-					log.Info("Preparing " + command.CommandText);
+					log.Info( "Preparing " + command.CommandText );
 				}
 
-				if( command.Connection!=null ) 
+				if( command.Connection != null )
 				{
 					// make sure the commands connection is the same as the Sessions connection
 					// these can be different when the session is disconnected and then reconnected
-					if( command.Connection!=session.Connection ) 
+					if( command.Connection != session.Connection )
 					{
 						command.Connection = session.Connection;
 					}
 				}
-				else 
+				else
 				{
 					command.Connection = session.Connection;
 				}
 
-				if( session.Transaction!=null ) 
+				if( session.Transaction != null )
 				{
 					session.Transaction.Enlist( command );
 				}
 
-				if( factory.PrepareSql && factory.ConnectionProvider.Driver.SupportsPreparingCommands ) 
+				if( factory.PrepareSql && factory.ConnectionProvider.Driver.SupportsPreparingCommands )
 				{
 					command.Prepare();
 				}
 			}
-			catch(Exception e) 
+			catch( Exception e )
 			{
 				throw new ApplicationException(
 					"While preparing " + command.CommandText + " an error occurred"
-					, e);
+					, e );
 			}
 		}
 
-		public IDbCommand PrepareBatchCommand(SqlString sql) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sql"></param>
+		/// <returns></returns>
+		public IDbCommand PrepareBatchCommand( SqlString sql )
 		{
-			if ( !sql.Equals(batchCommandSql) ) 
+			if( !sql.Equals( batchCommandSql ) )
 			{
-				batchCommand = PrepareCommand(sql); // calls ExecuteBatch()
-				batchCommandSql=sql;
+				batchCommand = PrepareCommand( sql ); // calls ExecuteBatch()
+				batchCommandSql = sql;
 			}
 			return batchCommand;
 		}
 
-		public IDbCommand PrepareCommand(SqlString sql) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sql"></param>
+		/// <returns></returns>
+		public IDbCommand PrepareCommand( SqlString sql )
 		{
 			ExecuteBatch();
 			LogOpenPreparedCommands();
-			
+
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
 			return Generate( sql );
 		}
-		
-		public IDbCommand PrepareQueryCommand(SqlString sql, bool scrollable) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sql"></param>
+		/// <param name="scrollable"></param>
+		/// <returns></returns>
+		public IDbCommand PrepareQueryCommand( SqlString sql, bool scrollable )
 		{
 			//TODO: figure out what to do with scrollable - don't think it applies
 			// to ado.net since DataReader is forward only
@@ -159,14 +186,18 @@ namespace NHibernate.Impl
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			IDbCommand command = Generate( sql ); 
-			
-			commandsToClose.Add(command);
-			
+			IDbCommand command = Generate( sql );
+
+			commandsToClose.Add( command );
+
 			return command;
 		}
 
-		public void AbortBatch(Exception e) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="e"></param>
+		public void AbortBatch( Exception e )
 		{
 			// log the exception here
 			IDbCommand cmd = batchCommand;
@@ -175,7 +206,12 @@ namespace NHibernate.Impl
 			// close the statement closeStatement(cmd)
 		}
 
-		public int ExecuteNonQuery(IDbCommand cmd) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cmd"></param>
+		/// <returns></returns>
+		public int ExecuteNonQuery( IDbCommand cmd )
 		{
 			int rowsAffected = 0;
 
@@ -187,23 +223,29 @@ namespace NHibernate.Impl
 			return rowsAffected;
 		}
 
-		public IDataReader ExecuteReader(IDbCommand cmd) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cmd"></param>
+		/// <returns></returns>
+		public IDataReader ExecuteReader( IDbCommand cmd )
 		{
 			CheckReaders();
 
-			Prepare( cmd );;
+			Prepare( cmd );
+			;
 
 			IDataReader reader;
-			if( factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders==false ) 
+			if( factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders == false )
 			{
 				reader = new NHybridDataReader( cmd.ExecuteReader() );
 			}
-			else 
+			else
 			{
 				reader = cmd.ExecuteReader();
 			}
 
-			readersToClose.Add(reader);
+			readersToClose.Add( reader );
 			LogOpenReaders();
 			return reader;
 		}
@@ -211,22 +253,27 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Ensures that the Driver's rules for Multiple Open DataReaders are being followed.
 		/// </summary>
-		private void CheckReaders() 
+		private void CheckReaders()
 		{
 			// early exit because we don't need to move an open IDataReader into memory
 			// since the Driver supports mult open readers.
-			if( factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders ) 
+			if( factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders )
 			{
 				return;
 			}
 
-			foreach( NHybridDataReader reader in readersToClose ) 
+			foreach( NHybridDataReader reader in readersToClose )
 			{
 				reader.ReadIntoMemory();
 			}
 		}
 
-		public void CloseCommand(IDbCommand cmd, IDataReader reader) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cmd"></param>
+		/// <param name="reader"></param>
+		public void CloseCommand( IDbCommand cmd, IDataReader reader )
 		{
 			//TODO: fix this up a little bit - don't like it having the same name and just
 			// turning around and calling a diff method.
@@ -236,44 +283,47 @@ namespace NHibernate.Impl
 			//LogClosePreparedCommands(); 
 		}
 
-		public void CloseCommands() 
+		/// <summary>
+		/// 
+		/// </summary>
+		public void CloseCommands()
 		{
-			foreach( IDataReader reader in readersToClose ) 
+			foreach( IDataReader reader in readersToClose )
 			{
-				try 
+				try
 				{
 					LogCloseReaders();
 					reader.Close();
 				}
-				catch( Exception e ) 
+				catch( Exception e )
 				{
 					log.Warn( "Could not close IDataReader", e );
 				}
 			}
 			readersToClose.Clear();
 
-			foreach( IDbCommand cmd in commandsToClose ) 
+			foreach( IDbCommand cmd in commandsToClose )
 			{
-				try 
+				try
 				{
-					CloseQueryCommand(cmd);
-				} 
-				catch(Exception e) 
+					CloseQueryCommand( cmd );
+				}
+				catch( Exception e )
 				{
 					// no big deal
-					log.Warn("Could not close a JDBC statement", e);
+					log.Warn( "Could not close a JDBC statement", e );
 				}
 			}
 			commandsToClose.Clear();
 		}
 
-		private void CloseQueryCommand(IDbCommand cmd) 
+		private void CloseQueryCommand( IDbCommand cmd )
 		{
-			try 
+			try
 			{
 				// no equiv to the java code in here
 			}
-			catch( Exception e ) 
+			catch( Exception e )
 			{
 				log.Warn( "exception clearing maxRows/queryTimeout", e );
 				//cmd.close();  if there was a close method in command
@@ -283,93 +333,110 @@ namespace NHibernate.Impl
 			LogClosePreparedCommands();
 		}
 
-		public void CloseQueryCommand(IDbCommand st, IDataReader reader) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="reader"></param>
+		public void CloseQueryCommand( IDbCommand st, IDataReader reader )
 		{
-			commandsToClose.Remove(st);
-			if( reader!=null ) 
+			commandsToClose.Remove( st );
+			if( reader != null )
 			{
-				readersToClose.Remove(reader);
+				readersToClose.Remove( reader );
 			}
 
-			try 
+			try
 			{
-				if( reader!=null) 
+				if( reader != null )
 				{
 					LogCloseReaders();
 					reader.Close();
 				}
 			}
-			finally 
+			finally
 			{
-				CloseQueryCommand(st);
+				CloseQueryCommand( st );
 			}
 		}
 
-		public void ExecuteBatch() 
+		/// <summary></summary>
+		public void ExecuteBatch()
 		{
-			if ( batchCommand!=null ) 
+			if( batchCommand != null )
 			{
 				IDbCommand ps = batchCommand;
 				batchCommand = null;
 				batchCommandSql = null;
-				try 
+				try
 				{
-					DoExecuteBatch(ps);
+					DoExecuteBatch( ps );
 				}
-				finally 
+				finally
 				{
-					CloseCommand(ps, null);
+					CloseCommand( ps, null );
 				}
 			}
 		}
 
-		protected abstract void DoExecuteBatch(IDbCommand ps) ;
-		public abstract void AddToBatch(int expectedRowCount);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="ps"></param>
+		protected abstract void DoExecuteBatch( IDbCommand ps );
 
-		protected ISessionFactoryImplementor Factory 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="expectedRowCount"></param>
+		public abstract void AddToBatch( int expectedRowCount );
+
+		/// <summary></summary>
+		protected ISessionFactoryImplementor Factory
 		{
 			get { return factory; }
 		}
 
-		protected ISessionImplementor Session 
+		/// <summary></summary>
+		protected ISessionImplementor Session
 		{
 			get { return session; }
 		}
 
-		private static void LogOpenPreparedCommands() 
+		private static void LogOpenPreparedCommands()
 		{
-			if( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				log.Debug( "about to open: " + openCommandCount + " open IDbCommands, " + openReaderCount + " open DataReaders" );
 				openCommandCount++;
 			}
 		}
 
-		private static void LogClosePreparedCommands() 
+		private static void LogClosePreparedCommands()
 		{
-			if( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				openCommandCount--;
 				log.Debug( "done closing: " + openCommandCount + " open IDbCommands, " + openReaderCount + " open DataReaders" );
 			}
 		}
 
-		private static void LogOpenReaders() 
+		private static void LogOpenReaders()
 		{
-			if( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				openReaderCount++;
 			}
 		}
 
-		private static void LogCloseReaders() 
+		private static void LogCloseReaders()
 		{
-			if( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				openReaderCount--;
 			}
 		}
 
-		
+
 	}
 }

@@ -1,20 +1,18 @@
-using System;
-using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Persister;
 
-namespace NHibernate.Impl 
+namespace NHibernate.Impl
 {
 	/// <summary>
 	/// A scheduled update of an object.
 	/// </summary>
-	internal class ScheduledUpdate : ScheduledEntityAction 
+	internal class ScheduledUpdate : ScheduledEntityAction
 	{
-		private object[] _fields;
+		private object[ ] _fields;
 		private object _lastVersion;
 		private object _nextVersion;
-		private int[] _dirtyFields;
-		private object[] _updatedState;
+		private int[ ] _dirtyFields;
+		private object[ ] _updatedState;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ScheduledUpdate"/>.
@@ -28,8 +26,8 @@ namespace NHibernate.Impl
 		/// <param name="updatedState">A deep copy of the <c>fields</c> object array.</param>
 		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for the persisting the object.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledUpdate(object id, object[] fields, int[] dirtyProperties, object lastVersion, object nextVersion, object instance, object[] updatedState, IClassPersister persister, ISessionImplementor session) 
-			: base(session, id, instance, persister) 
+		public ScheduledUpdate( object id, object[ ] fields, int[ ] dirtyProperties, object lastVersion, object nextVersion, object instance, object[ ] updatedState, IClassPersister persister, ISessionImplementor session )
+			: base( session, id, instance, persister )
 		{
 			_fields = fields;
 			_lastVersion = lastVersion;
@@ -38,21 +36,23 @@ namespace NHibernate.Impl
 			_updatedState = updatedState;
 		}
 
-		public override void Execute() 
+		/// <summary></summary>
+		public override void Execute()
 		{
-			if ( Persister.HasCache ) 
+			if( Persister.HasCache )
 			{
-				Persister.Cache.Lock(Id);
+				Persister.Cache.Lock( Id );
 			}
 			Persister.Update( Id, _fields, _dirtyFields, _lastVersion, Instance, Session );
 			Session.PostUpdate( Instance, _updatedState, _nextVersion );
 		}
 
-		public override void AfterTransactionCompletion() 
+		/// <summary></summary>
+		public override void AfterTransactionCompletion()
 		{
-			if( Persister.HasCache ) 
+			if( Persister.HasCache )
 			{
-				Persister.Cache.Release( Id) ;
+				Persister.Cache.Release( Id );
 			}
 		}
 	}

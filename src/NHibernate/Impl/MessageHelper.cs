@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-
 using NHibernate.Collection;
 using NHibernate.Persister;
 
@@ -11,30 +10,36 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal sealed class MessageHelper
 	{
-		public static string InfoString(System.Type clazz, object id) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public static string InfoString( System.Type clazz, object id )
 		{
 			StringBuilder s = new StringBuilder();
-			s.Append('[');
-			if(clazz==null) 
+			s.Append( '[' );
+			if( clazz == null )
 			{
-				s.Append("<null Class>");
+				s.Append( "<null Class>" );
 			}
-			else 
+			else
 			{
 				s.Append( clazz.Name );
 			}
-			s.Append('#');
-		
-			if (id==null) 
+			s.Append( '#' );
+
+			if( id == null )
 			{
-				s.Append("<null>");
+				s.Append( "<null>" );
 			}
-			else 
+			else
 			{
-				s.Append(id);
+				s.Append( id );
 			}
-			s.Append(']');
-		
+			s.Append( ']' );
+
 			return s.ToString();
 		}
 
@@ -44,73 +49,84 @@ namespace NHibernate.Impl
 		/// <param name="persister">The persister for the class in question</param>
 		/// <param name="id">The id</param>
 		/// <returns>String on the form [FooBar#id]</returns>
-		public static string InfoString(IClassPersister persister, object id) 
+		public static string InfoString( IClassPersister persister, object id )
 		{
 			StringBuilder s = new StringBuilder();
-			s.Append('[');
-			if(persister==null) 
+			s.Append( '[' );
+			if( persister == null )
 			{
-				s.Append("<null ClassPersister>");
+				s.Append( "<null ClassPersister>" );
 			}
-			else 
-			{
-				s.Append(persister.ClassName);
-			}
-			s.Append('#');
-		
-			if (id==null) 
-			{
-				s.Append("<null>");
-			}
-			else 
-			{
-				s.Append(id);
-			}
-			
-			s.Append(']');
-			return s.ToString();
-		}
-
-		public static String InfoString(IClassPersister persister) 
-		{
-			StringBuilder s = new StringBuilder();
-			s.Append('[');
-			if (persister == null) 
-			{
-				s.Append("<null ClassPersister>");
-			}
-			else 
+			else
 			{
 				s.Append( persister.ClassName );
 			}
-			s.Append(']');
+			s.Append( '#' );
+
+			if( id == null )
+			{
+				s.Append( "<null>" );
+			}
+			else
+			{
+				s.Append( id );
+			}
+
+			s.Append( ']' );
 			return s.ToString();
 		}
 
-		public static String InfoString(CollectionPersister persister, object id) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <returns></returns>
+		public static String InfoString( IClassPersister persister )
 		{
 			StringBuilder s = new StringBuilder();
-			s.Append('[');
-			if(persister==null) 
+			s.Append( '[' );
+			if( persister == null )
 			{
-				s.Append("<unreferenced>");
+				s.Append( "<null ClassPersister>" );
 			}
-			else 
+			else
+			{
+				s.Append( persister.ClassName );
+			}
+			s.Append( ']' );
+			return s.ToString();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public static String InfoString( CollectionPersister persister, object id )
+		{
+			StringBuilder s = new StringBuilder();
+			s.Append( '[' );
+			if( persister == null )
+			{
+				s.Append( "<unreferenced>" );
+			}
+			else
 			{
 				s.Append( persister.Role );
-				s.Append('#');
-			
-				if (id==null) 
+				s.Append( '#' );
+
+				if( id == null )
 				{
-					s.Append("<null>");
+					s.Append( "<null>" );
 				}
-				else 
+				else
 				{
-					s.Append(id);
+					s.Append( id );
 				}
 			}
-			s.Append(']');
-		
+			s.Append( ']' );
+
 			return s.ToString();
 		}
 	}

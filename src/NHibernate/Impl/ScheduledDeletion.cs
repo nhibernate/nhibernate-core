@@ -1,15 +1,13 @@
-using System;
-using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Persister;
 
-namespace NHibernate.Impl 
+namespace NHibernate.Impl
 {
 	/// <summary>
 	/// A scheduled deletion of an object.
 	/// </summary>
-	internal class ScheduledDeletion : ScheduledEntityAction 
-	{		
+	internal class ScheduledDeletion : ScheduledEntityAction
+	{
 		private object _version;
 
 		/// <summary>
@@ -20,15 +18,16 @@ namespace NHibernate.Impl
 		/// <param name="instance">The actual object instance.</param>
 		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for the persisting the object.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledDeletion(object id, object version, object instance, IClassPersister persister, ISessionImplementor session) 
-			: base(session, id, instance, persister) 
+		public ScheduledDeletion( object id, object version, object instance, IClassPersister persister, ISessionImplementor session )
+			: base( session, id, instance, persister )
 		{
 			_version = version;
 		}
 
-		public override void Execute() 
+		/// <summary></summary>
+		public override void Execute()
 		{
-			if( Persister.HasCache ) 
+			if( Persister.HasCache )
 			{
 				Persister.Cache.Lock( Id );
 			}
@@ -36,9 +35,10 @@ namespace NHibernate.Impl
 			Session.PostDelete( Instance );
 		}
 
-		public override void AfterTransactionCompletion() 
+		/// <summary></summary>
+		public override void AfterTransactionCompletion()
 		{
-			if ( Persister.HasCache ) 
+			if( Persister.HasCache )
 			{
 				Persister.Cache.Release( Id );
 			}

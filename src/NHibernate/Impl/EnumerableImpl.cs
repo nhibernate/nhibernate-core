@@ -1,11 +1,10 @@
-using System;
 using System.Collections;
 using System.Data;
-
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Impl 
+namespace NHibernate.Impl
 {
 	/// <summary>
 	/// Provides an <see cref="IEnumerable"/> wrapper over the results of an <see cref="IQuery"/>.
@@ -15,15 +14,15 @@ namespace NHibernate.Impl
 	/// </remarks>
 	internal class EnumerableImpl : IEnumerable, IEnumerator
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(EnumerableImpl));
-		
+		private static readonly ILog log = LogManager.GetLogger( typeof( EnumerableImpl ) );
+
 		private IDataReader _reader;
 		private ISessionImplementor _sess;
-		private IType[] _types;
+		private IType[ ] _types;
 		private bool _single;
-		private object[] _currentResults;
+		private object[ ] _currentResults;
 		private bool _hasNext;
-		private string[][] _names;
+		private string[ ][ ] _names;
 		private IDbCommand _cmd;
 
 		// when we start enumerating through the DataReader we are positioned
@@ -44,7 +43,7 @@ namespace NHibernate.Impl
 		/// <remarks>
 		/// The <see cref="IDataReader"/> should already be positioned on the first record in <see cref="RowSelection"/>.
 		/// </remarks>
-		public EnumerableImpl(IDataReader reader, IDbCommand cmd, ISessionImplementor sess, IType[] types, string[][] columnNames, RowSelection selection) 
+		public EnumerableImpl( IDataReader reader, IDbCommand cmd, ISessionImplementor sess, IType[ ] types, string[ ][ ] columnNames, RowSelection selection )
 		{
 			_reader = reader;
 			_cmd = cmd;
@@ -53,38 +52,38 @@ namespace NHibernate.Impl
 			_names = columnNames;
 			_selection = selection;
 
-			_single = _types.Length==1;
+			_single = _types.Length == 1;
 		}
 
-		private void PostMoveNext(bool hasNext) 
+		private void PostMoveNext( bool hasNext )
 		{
 			_hasNext = hasNext;
 			_currentRow++;
-			if( _selection!=null && _selection.MaxRows!=RowSelection.NoValue ) 
+			if( _selection != null && _selection.MaxRows != RowSelection.NoValue )
 			{
 				_hasNext = _hasNext && ( _currentRow < _selection.MaxRows );
 			}
 			// there are no more records in the DataReader so clean up
-			if( !_hasNext ) 
+			if( !_hasNext )
 			{
-				log.Debug("exhausted results");
+				log.Debug( "exhausted results" );
 				_currentResults = null;
 				_sess.Batcher.CloseQueryCommand( _cmd, _reader );
-			} 
-			else 
+			}
+			else
 			{
-				log.Debug("retreiving next results");
+				log.Debug( "retreiving next results" );
 				_currentResults = new object[_types.Length];
-				
+
 				// move through each of the ITypes contained in the IDataReader and convert them
 				// to their objects.  
-				for (int i=0; i<_types.Length; i++) 
+				for( int i = 0; i < _types.Length; i++ )
 				{
 					// The IType knows how to extract its value out of the IDataReader.  If the IType
 					// is a value type then the value will simply be pulled out of the IDataReader.  If
 					// the IType is an Entity type then the IType will extract the id from the IDataReader
 					// and use the ISession to load an instance of the object.
-					_currentResults[i] = _types[i].NullSafeGet(_reader, _names[i], _sess, null);
+					_currentResults[ i ] = _types[ i ].NullSafeGet( _reader, _names[ i ], _sess, null );
 				}
 			}
 		}
@@ -95,7 +94,7 @@ namespace NHibernate.Impl
 		/// <returns>
 		/// An <see cref="IEnumerator" /> that can be used to iterate through the query results.
 		/// </returns>
-		public IEnumerator GetEnumerator() 
+		public IEnumerator GetEnumerator()
 		{
 			this.Reset();
 			return this;
@@ -113,15 +112,15 @@ namespace NHibernate.Impl
 		/// be returned.  If this is a multi-column resultset then an object array will be
 		/// returned.
 		/// </remarks>
-		public object Current 
+		public object Current
 		{
-			get 
+			get
 			{
-				if( _single ) 
+				if( _single )
 				{
-					return _currentResults[0];
-				} 
-				else 
+					return _currentResults[ 0 ];
+				}
+				else
 				{
 					return _currentResults;
 				}
@@ -135,14 +134,15 @@ namespace NHibernate.Impl
 		/// <c>true</c> if the enumerator was successfully advanced to the next query results
 		/// ; <c>false</c> if the enumerator has passed the end of the query results.
 		///</returns>
-		public bool MoveNext() 
+		public bool MoveNext()
 		{
 			PostMoveNext( _reader.Read() );
-			
+
 			return _hasNext;
 		}
 
-		public void Reset() 
+		/// <summary></summary>
+		public void Reset()
 		{
 			//can't reset the reader...we are SOL
 		}

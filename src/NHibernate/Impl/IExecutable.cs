@@ -1,13 +1,10 @@
-using System;
-
 namespace NHibernate.Impl
 {
-	
 	/// <summary>
 	/// An action that <see cref="ISession"/> can Execute during a
 	/// <c>Flush</c>.
 	/// </summary>
-	internal interface IExecutable 
+	internal interface IExecutable
 	{
 		/// <summary>
 		/// Execute the action required to write changes to the database.
@@ -30,7 +27,7 @@ namespace NHibernate.Impl
 		/// This is used to determine if the ISession needs to be flushed before
 		/// a query is executed so stale data is not returned.
 		/// </remarks>
-		object[] PropertySpaces { get; }
+		object[ ] PropertySpaces { get; }
 	}
 
 }

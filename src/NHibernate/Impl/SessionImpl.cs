@@ -2,11 +2,8 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Text.RegularExpressions;
-
 using Iesi.Collections;
-
+using log4net;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -18,9 +15,8 @@ using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Impl 
+namespace NHibernate.Impl
 {
-
 	/// <summary>
 	/// Concrete implementation of a Session, also the central, organizing component of
 	/// Hibernate's internal implementaiton.
@@ -33,7 +29,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	internal class SessionImpl : ISessionImplementor, ISerializable, IDeserializationCallback
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SessionImpl));
+		private static readonly ILog log = LogManager.GetLogger( typeof( SessionImpl ) );
 
 		private SessionFactoryImpl factory;
 
@@ -47,7 +43,7 @@ namespace NHibernate.Impl
 
 		private IDictionary entitiesByKey; //key=Key, value=Object
 		private IDictionary proxiesByKey; //key=Key, value=HibernateProxy
-		
+
 		// these are used to serialize the proxiesByKey Dictionary - I was not able to
 		// have a Hashtable serialize fully by the time that SessionImpl OnDeserialization
 		// was getting called - I think I'm not completely understanding the sequence of 
@@ -56,54 +52,73 @@ namespace NHibernate.Impl
 		private ArrayList tmpProxiesKey;
 		private ArrayList tmpProxiesProxy;
 
-		
+
 		//IdentityMaps are serializable in NH 
-		private IdentityMap entries;//key=Object, value=EntityEntry
+		private IdentityMap entries; //key=Object, value=EntityEntry
 		private IdentityMap arrayHolders; //key=array, value=ArrayHolder
 		private IdentityMap collections; //key=PersistentCollection, value=CollectionEntry
-		
-		private ISet nullifiables = new HashedSet();  //set of Keys of deleted objects
+
+		private ISet nullifiables = new HashedSet(); //set of Keys of deleted objects
 
 		private IInterceptor interceptor;
 
-		[NonSerialized] private IDbConnection connection;
-		[NonSerialized] private bool connect;
+		[NonSerialized]
+		private IDbConnection connection;
+
+		[NonSerialized]
+		private bool connect;
 
 		// TODO: find out if we want the reference to IDbTransaction or ITransaction - leaning
 		// towards an ITransaction because we can get the IDbTransaction from that.
-		[NonSerialized] private ITransaction transaction;
+		[NonSerialized]
+		private ITransaction transaction;
 
 		// We keep scheduled insertions, deletions and updates in collections
 		// and actually execute them as part of the flush() process. Actually,
 		// not every flush() ends in execution of the scheduled actions. Auto-
 		// flushes initiated by a query execution might be "shortcircuited".
-	
+
 		// Object insertions and deletions have list semantics because they
 		// must happen in the right order so as to respect referential integrity
-		[NonSerialized] private ArrayList insertions;
-		[NonSerialized] private ArrayList deletions;
+		[NonSerialized]
+		private ArrayList insertions;
+
+		[NonSerialized]
+		private ArrayList deletions;
+
 		// updates are kept in a Map because successive flushes might need to add
 		// extra, new changes for an object thats already scheduled for update.
 		// Note: we *could* treat updates the same way we treat collection actions
 		// (discarding them at the end of a "shortcircuited" auto-flush) and then
 		// we would keep them in a list
-		[NonSerialized] private ArrayList updates;
+		[NonSerialized]
+		private ArrayList updates;
+
 		// Actually the semantics of the next three are really "Bag"
 		// Note that, unlike objects, collection insertions, updates,
 		// deletions are not really remembered between flushes. We
 		// just re-use the same Lists for convenience.
-		[NonSerialized] private ArrayList collectionCreations;
-		[NonSerialized] private ArrayList collectionUpdates;
-		[NonSerialized] private ArrayList collectionRemovals;
+		[NonSerialized]
+		private ArrayList collectionCreations;
 
-		[NonSerialized] private ArrayList executions;
+		[NonSerialized]
+		private ArrayList collectionUpdates;
 
-		[NonSerialized] private int dontFlushFromFind = 0;
-		[NonSerialized] private int cascading = 0;
+		[NonSerialized]
+		private ArrayList collectionRemovals;
 
-		[NonSerialized] private IBatcher batcher;
-		
-		
+		[NonSerialized]
+		private ArrayList executions;
+
+		[NonSerialized]
+		private int dontFlushFromFind = 0;
+
+		[NonSerialized]
+		private int cascading = 0;
+
+		[NonSerialized]
+		private IBatcher batcher;
+
 		#region System.Runtime.Serialization.ISerializable Members 
 
 		/// <summary>
@@ -116,27 +131,27 @@ namespace NHibernate.Impl
 		/// begins.  I don't know how to add logic in ISerializable.GetObjectData and have .net
 		/// write all of the serializable fields out.
 		/// </remarks>
-		protected SessionImpl(SerializationInfo info, StreamingContext context)
+		protected SessionImpl( SerializationInfo info, StreamingContext context )
 		{
-			this.factory = (SessionFactoryImpl)info.GetValue( "factory", typeof(SessionFactoryImpl) );
-			this.autoClose = info.GetBoolean("autoClose");
-			this.timestamp = info.GetInt64("timestamp");
-			this.closed = info.GetBoolean("closed");
-			this.flushMode = (FlushMode)info.GetValue( "flushMode", typeof(FlushMode) );
-			this.callAfterTransactionCompletionFromDisconnect = info.GetBoolean("callAfterTransactionCompletionFromDisconnect");
-			this.entitiesByKey = (IDictionary)info.GetValue( "entitiesByKey", typeof(IDictionary) );
-			
+			this.factory = ( SessionFactoryImpl ) info.GetValue( "factory", typeof( SessionFactoryImpl ) );
+			this.autoClose = info.GetBoolean( "autoClose" );
+			this.timestamp = info.GetInt64( "timestamp" );
+			this.closed = info.GetBoolean( "closed" );
+			this.flushMode = ( FlushMode ) info.GetValue( "flushMode", typeof( FlushMode ) );
+			this.callAfterTransactionCompletionFromDisconnect = info.GetBoolean( "callAfterTransactionCompletionFromDisconnect" );
+			this.entitiesByKey = ( IDictionary ) info.GetValue( "entitiesByKey", typeof( IDictionary ) );
+
 			// we did not actually serializing the IDictionary but instead the proxies in an arraylist
 			//this.proxiesByKey = (IDictionary)info.GetValue( "proxiesByKey", typeof(IDictionary) );
-			tmpProxiesKey = (ArrayList)info.GetValue( "tmpProxiesKey", typeof(ArrayList) );
-			tmpProxiesProxy = (ArrayList)info.GetValue( "tmpProxiesProxy", typeof(ArrayList) );
-			
-			this.nullifiables = (ISet)info.GetValue( "nullifiables", typeof(ISet) );
-			this.interceptor = (IInterceptor)info.GetValue( "interceptor", typeof(IInterceptor) );
+			tmpProxiesKey = ( ArrayList ) info.GetValue( "tmpProxiesKey", typeof( ArrayList ) );
+			tmpProxiesProxy = ( ArrayList ) info.GetValue( "tmpProxiesProxy", typeof( ArrayList ) );
 
-			this.entries = (IdentityMap)info.GetValue( "entries", typeof(IdentityMap) );
-			this.collections = (IdentityMap)info.GetValue( "collections", typeof(IdentityMap) );
-			this.arrayHolders = (IdentityMap)info.GetValue( "arrayHolders", typeof(IdentityMap) );
+			this.nullifiables = ( ISet ) info.GetValue( "nullifiables", typeof( ISet ) );
+			this.interceptor = ( IInterceptor ) info.GetValue( "interceptor", typeof( IInterceptor ) );
+
+			this.entries = ( IdentityMap ) info.GetValue( "entries", typeof( IdentityMap ) );
+			this.collections = ( IdentityMap ) info.GetValue( "collections", typeof( IdentityMap ) );
+			this.arrayHolders = ( IdentityMap ) info.GetValue( "arrayHolders", typeof( IdentityMap ) );
 
 		}
 
@@ -150,50 +165,51 @@ namespace NHibernate.Impl
 		/// has complete control and what is serialized and those attributes are ignored.  However, 
 		/// this method should be in synch with the attributes for easy readability.
 		/// </remarks>
-		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+		void ISerializable.GetObjectData( SerializationInfo info, StreamingContext context )
 		{
 			log.Info( "writting session to serializer" );
 
-			if ( IsConnected ) 
+			if( IsConnected )
 			{
-				throw new InvalidOperationException("Cannot serialize a Session while connected");
+				throw new InvalidOperationException( "Cannot serialize a Session while connected" );
 			}
 
-			if ( insertions.Count!=0 || deletions.Count!=0 ) 
+			if( insertions.Count != 0 || deletions.Count != 0 )
 			{
-				throw new InvalidOperationException("Cannot serialize a Session which has work waiting to be flushed");
+				throw new InvalidOperationException( "Cannot serialize a Session which has work waiting to be flushed" );
 			}
-					
-			info.AddValue( "factory", factory, typeof(SessionFactoryImpl) );
+
+			info.AddValue( "factory", factory, typeof( SessionFactoryImpl ) );
 			info.AddValue( "autoClose", autoClose );
 			info.AddValue( "timestamp", timestamp );
 			info.AddValue( "closed", closed );
 			info.AddValue( "flushMode", flushMode );
 			info.AddValue( "callAfterTransactionCompletionFromDisconnect", callAfterTransactionCompletionFromDisconnect );
-			info.AddValue( "entitiesByKey", entitiesByKey, typeof(IDictionary) );
-			
+			info.AddValue( "entitiesByKey", entitiesByKey, typeof( IDictionary ) );
+
 			// the IDictionary should not be serialized because the objects inside of it are not
 			// fully deserialized until after the session is deserialized. Instead use two ArrayList 
 			// to hold the values because they don't have the deserialization complexities that
 			// hashtables do.
 			tmpProxiesKey = new ArrayList( proxiesByKey.Count );
 			tmpProxiesProxy = new ArrayList( proxiesByKey.Count );
-			foreach(DictionaryEntry de in proxiesByKey) 
+			foreach( DictionaryEntry de in proxiesByKey )
 			{
 				tmpProxiesKey.Add( de.Key );
 				tmpProxiesProxy.Add( de.Value );
 			}
-			
+
 			info.AddValue( "tmpProxiesKey", tmpProxiesKey );
 			info.AddValue( "tmpProxiesProxy", tmpProxiesProxy );
 
-			info.AddValue( "nullifiables", nullifiables, typeof(ISet) );
-			info.AddValue( "interceptor", interceptor, typeof(IInterceptor) );
+			info.AddValue( "nullifiables", nullifiables, typeof( ISet ) );
+			info.AddValue( "interceptor", interceptor, typeof( IInterceptor ) );
 
-			info.AddValue( "entries", entries, typeof(IdentityMap) );
-			info.AddValue( "collections", collections, typeof(IdentityMap) );
-			info.AddValue( "arrayHolders", arrayHolders, typeof(IdentityMap) );
+			info.AddValue( "entries", entries, typeof( IdentityMap ) );
+			info.AddValue( "collections", collections, typeof( IdentityMap ) );
+			info.AddValue( "arrayHolders", arrayHolders, typeof( IdentityMap ) );
 		}
+
 		#endregion
 
 		#region System.Runtime.Serialization.IDeserializationCallback Members 
@@ -203,34 +219,34 @@ namespace NHibernate.Impl
 		/// collections, proxies, and entities back up to the ISession.
 		/// </summary>
 		/// <param name="sender"></param>
-		void IDeserializationCallback.OnDeserialization(Object sender)
+		void IDeserializationCallback.OnDeserialization( Object sender )
 		{
-			log.Info("OnDeserialization of the session.");
-			
+			log.Info( "OnDeserialization of the session." );
+
 			// don't need any section for IdentityMaps because .net does not have a problem
 			// serializing them like java does.
 
 			InitTransientCollections();
-			foreach(DictionaryEntry e in collections)
+			foreach( DictionaryEntry e in collections )
 			{
 				try
 				{
-					((PersistentCollection)e.Key).SetSession(this);
-					CollectionEntry ce = (CollectionEntry)e.Value;
-					ce.loadedPersister = factory.GetCollectionPersister(ce.Role);
+					( ( PersistentCollection ) e.Key ).SetSession( this );
+					CollectionEntry ce = ( CollectionEntry ) e.Value;
+					ce.loadedPersister = factory.GetCollectionPersister( ce.Role );
 				}
-				catch (HibernateException he)
+				catch( HibernateException he )
 				{
 					// Different from h2.0.3
-					throw new InvalidOperationException(he.Message);
+					throw new InvalidOperationException( he.Message );
 				}
 			}
 
 			// recreate the proxiesByKey hashtable from the two arraylists.
 			proxiesByKey = new Hashtable( tmpProxiesKey.Count );
-			for(int i=0; i<tmpProxiesKey.Count; i++) 
+			for( int i = 0; i < tmpProxiesKey.Count; i++ )
 			{
-				proxiesByKey.Add( tmpProxiesKey[i], tmpProxiesProxy[i] );
+				proxiesByKey.Add( tmpProxiesKey[ i ], tmpProxiesProxy[ i ] );
 			}
 
 			// we can't remove an entry from an IDictionary while enumerating so store the ones
@@ -242,11 +258,11 @@ namespace NHibernate.Impl
 				object key = de.Key;
 				object proxy = de.Value;
 
-				if (proxy is INHibernateProxy) 
+				if( proxy is INHibernateProxy )
 				{
-					NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy)proxy ).Session = this;
+					NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) proxy ).Session = this;
 				}
-				else 
+				else
 				{
 					// the proxy was pruned during the serialization process because
 					// the target had been instantiated.
@@ -254,110 +270,124 @@ namespace NHibernate.Impl
 				}
 			}
 
-			for( int i=0; i<keysToRemove.Count; i++ ) 
+			for( int i = 0; i < keysToRemove.Count; i++ )
 			{
-				proxiesByKey.Remove( keysToRemove[i] );
+				proxiesByKey.Remove( keysToRemove[ i ] );
 			}
 
-			foreach(EntityEntry e in entries.Values)
+			foreach( EntityEntry e in entries.Values )
 			{
 				try
 				{
-					e.Persister = factory.GetPersister(e.ClassName);
+					e.Persister = factory.GetPersister( e.ClassName );
 				}
-				catch (MappingException me)
+				catch( MappingException me )
 				{
 					// Different from h2.0.3
-					throw new InvalidOperationException(me.Message);
+					throw new InvalidOperationException( me.Message );
 				}
 			}
 		}
+
 		#endregion
 
-		internal SessionImpl(IDbConnection connection, SessionFactoryImpl factory, bool autoClose, long timestamp, IInterceptor interceptor) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="connection"></param>
+		/// <param name="factory"></param>
+		/// <param name="autoClose"></param>
+		/// <param name="timestamp"></param>
+		/// <param name="interceptor"></param>
+		internal SessionImpl( IDbConnection connection, SessionFactoryImpl factory, bool autoClose, long timestamp, IInterceptor interceptor )
 		{
 			this.connection = connection;
-			connect = connection==null;
+			connect = connection == null;
 			this.interceptor = interceptor;
 
 			this.autoClose = autoClose;
 			this.timestamp = timestamp;
-			
+
 			this.factory = factory;
 
-			entitiesByKey = new Hashtable(50);
-			proxiesByKey = new Hashtable(10);
+			entitiesByKey = new Hashtable( 50 );
+			proxiesByKey = new Hashtable( 10 );
 			//TODO: hack with this cast
-			entries = (IdentityMap)IdentityMap.InstantiateSequenced();
-			collections = (IdentityMap)IdentityMap.InstantiateSequenced();
-			arrayHolders = (IdentityMap)IdentityMap.Instantiate();
+			entries = ( IdentityMap ) IdentityMap.InstantiateSequenced();
+			collections = ( IdentityMap ) IdentityMap.InstantiateSequenced();
+			arrayHolders = ( IdentityMap ) IdentityMap.Instantiate();
 
 			InitTransientCollections();
 
-			log.Debug("opened session");
+			log.Debug( "opened session" );
 		}
 
-		public IBatcher Batcher 
+		/// <summary></summary>
+		public IBatcher Batcher
 		{
-			get 
+			get
 			{
-				if (batcher==null) 
+				if( batcher == null )
 				{
-					batcher = new NonBatchingBatcher(this);
+					batcher = new NonBatchingBatcher( this );
 				}
 				return batcher;
 			}
 		}
 
-		public ISessionFactoryImplementor Factory 
+		/// <summary></summary>
+		public ISessionFactoryImplementor Factory
 		{
 			get { return factory; }
 		}
 
-		public long Timestamp 
+		/// <summary></summary>
+		public long Timestamp
 		{
 			get { return timestamp; }
 		}
 
-		public IDbConnection Close() 
+		/// <summary></summary>
+		public IDbConnection Close()
 		{
-			log.Debug("closing session");
+			log.Debug( "closing session" );
 
-			try 
+			try
 			{
-				return (connection==null) ? null : Disconnect();
-			} 
-			finally 
+				return ( connection == null ) ? null : Disconnect();
+			}
+			finally
 			{
 				Cleanup();
 			}
 		}
 
-		public void AfterTransactionCompletion() 
+		/// <summary></summary>
+		public void AfterTransactionCompletion()
 		{
-			log.Debug("transaction completion");
+			log.Debug( "transaction completion" );
 
 			// downgrade locks
-			foreach(EntityEntry entry in entries.Values) 
+			foreach( EntityEntry entry in entries.Values )
 			{
 				entry.LockMode = LockMode.None;
 			}
-			
+
 			// release cache softlocks
-			foreach(IExecutable executable in executions) 
+			foreach( IExecutable executable in executions )
 			{
-				try 
+				try
 				{
 					executable.AfterTransactionCompletion();
-				} 
-				catch (CacheException ce) 
+				}
+				catch( CacheException ce )
 				{
-					log.Error("could not release a cache lock", ce);
+					log.Error( "could not release a cache lock", ce );
 					// continue loop
-				} 
-				catch (Exception e) 
+				}
+				catch( Exception e )
 				{
-					throw new AssertionFailure("Exception releasing cache locks", e);
+					throw new AssertionFailure( "Exception releasing cache locks", e );
 				}
 			}
 			executions.Clear();
@@ -365,18 +395,18 @@ namespace NHibernate.Impl
 			callAfterTransactionCompletionFromDisconnect = true; //not really necessary
 		}
 
-		private void InitTransientCollections() 
+		private void InitTransientCollections()
 		{
-			insertions = new ArrayList(20);
-			deletions = new ArrayList(20);
-			updates = new ArrayList(20);
-			collectionCreations = new ArrayList(20);
-			collectionRemovals = new ArrayList(20);
-			collectionUpdates = new ArrayList(20);
-			executions = new ArrayList(50);
+			insertions = new ArrayList( 20 );
+			deletions = new ArrayList( 20 );
+			updates = new ArrayList( 20 );
+			collectionCreations = new ArrayList( 20 );
+			collectionRemovals = new ArrayList( 20 );
+			collectionUpdates = new ArrayList( 20 );
+			executions = new ArrayList( 50 );
 		}
 
-		private void Cleanup() 
+		private void Cleanup()
 		{
 			closed = true;
 			entitiesByKey.Clear();
@@ -387,96 +417,127 @@ namespace NHibernate.Impl
 			nullifiables.Clear();
 		}
 
-		public LockMode GetCurrentLockMode(object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public LockMode GetCurrentLockMode( object obj )
 		{
-			if ( obj is INHibernateProxy ) 
+			if( obj is INHibernateProxy )
 			{
-				obj = (NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj)).GetImplementation(this);
-				if( obj==null ) return LockMode.None;
+				obj = ( NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj ) ).GetImplementation( this );
+				if( obj == null )
+				{
+					return LockMode.None;
+				}
 			}
 
-			EntityEntry e = GetEntry(obj);
-			if (e==null) throw new TransientObjectException("Given object not associated with the session");
-			
-			if (e.Status!=Status.Loaded) throw new ObjectDeletedException("The given object was deleted", e.Id);
+			EntityEntry e = GetEntry( obj );
+			if( e == null )
+			{
+				throw new TransientObjectException( "Given object not associated with the session" );
+			}
+
+			if( e.Status != Status.Loaded )
+			{
+				throw new ObjectDeletedException( "The given object was deleted", e.Id );
+			}
 			return e.LockMode;
 		}
 
-		public LockMode GetLockMode(object entity) 	
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entity"></param>
+		/// <returns></returns>
+		public LockMode GetLockMode( object entity )
 		{
-			return GetEntry(entity).LockMode;
+			return GetEntry( entity ).LockMode;
 		}
 
-		private void AddEntity(Key key, object obj) 
+		private void AddEntity( Key key, object obj )
 		{
-			entitiesByKey[key] = obj;
+			entitiesByKey[ key ] = obj;
 		}
 
-		public object GetEntity(Key key) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		public object GetEntity( Key key )
 		{
-			return entitiesByKey[key];
+			return entitiesByKey[ key ];
 		}
 
-		private object RemoveEntity(Key key) 
+		private object RemoveEntity( Key key )
 		{
-			object retVal = entitiesByKey[key];
-			entitiesByKey.Remove(key);
+			object retVal = entitiesByKey[ key ];
+			entitiesByKey.Remove( key );
 			return retVal;
 		}
 
-		public void SetLockMode(object entity, LockMode lockMode) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entity"></param>
+		/// <param name="lockMode"></param>
+		public void SetLockMode( object entity, LockMode lockMode )
 		{
-			GetEntry(entity).LockMode = lockMode;
+			GetEntry( entity ).LockMode = lockMode;
 		}
 
 		private EntityEntry AddEntry(
 			object obj,
 			Status status,
-			object[] loadedState,
+			object[ ] loadedState,
 			object id,
 			object version,
 			LockMode lockMode,
 			bool existsInDatabase,
-			IClassPersister persister) 
+			IClassPersister persister )
 		{
-
-			EntityEntry e = new EntityEntry(status, loadedState, id, version, lockMode, existsInDatabase, persister);
-			entries[obj] = e;
+			EntityEntry e = new EntityEntry( status, loadedState, id, version, lockMode, existsInDatabase, persister );
+			entries[ obj ] = e;
 			return e;
 		}
 
-		private EntityEntry GetEntry(object obj) 
+		private EntityEntry GetEntry( object obj )
 		{
-			return (EntityEntry) entries[obj];
+			return ( EntityEntry ) entries[ obj ];
 		}
-		private EntityEntry RemoveEntry(object obj) 
+
+		private EntityEntry RemoveEntry( object obj )
 		{
-			object retVal = entries[obj];
-			entries.Remove(obj);
-			return (EntityEntry) retVal;
+			object retVal = entries[ obj ];
+			entries.Remove( obj );
+			return ( EntityEntry ) retVal;
 		}
-		private bool IsEntryFor(object obj)
+
+		private bool IsEntryFor( object obj )
 		{
-			return entries.Contains(obj);
+			return entries.Contains( obj );
 		}
 
 		/// <summary>
 		/// Add a new collection (ie an initialized one, instantiated by the application)
 		/// </summary>
 		/// <param name="collection"></param>
-		private void AddNewCollection(PersistentCollection collection) 
+		private void AddNewCollection( PersistentCollection collection )
 		{
 			CollectionEntry ce = new CollectionEntry();
-			collections[collection] = ce;
+			collections[ collection ] = ce;
 			collection.CollectionSnapshot = ce;
 		}
 
-		private CollectionEntry GetCollectionEntry(PersistentCollection coll) 
+		private CollectionEntry GetCollectionEntry( PersistentCollection coll )
 		{
-			return (CollectionEntry) collections[coll];
+			return ( CollectionEntry ) collections[ coll ];
 		}
 
-		public bool IsOpen 
+		/// <summary></summary>
+		public bool IsOpen
 		{
 			get { return !closed; }
 		}
@@ -486,23 +547,28 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public object Save(object obj) 
+		public object Save( object obj )
 		{
-			
-			if (obj==null) throw new NullReferenceException("attempted to save null");
-
-			if ( !NHibernate.IsInitialized(obj) ) throw new PersistentObjectException("uninitialized proxy passed to save()"); 
-			object theObj = UnproxyAndReassociate(obj); 
-
-
-			EntityEntry e = GetEntry(theObj);
-			if ( e!=null ) 
+			if( obj == null )
 			{
-				if ( e.Status==Status.Deleted) 
+				throw new NullReferenceException( "attempted to save null" );
+			}
+
+			if( !NHibernate.IsInitialized( obj ) )
+			{
+				throw new PersistentObjectException( "uninitialized proxy passed to save()" );
+			}
+			object theObj = UnproxyAndReassociate( obj );
+
+
+			EntityEntry e = GetEntry( theObj );
+			if( e != null )
+			{
+				if( e.Status == Status.Deleted )
 				{
 					Flush();
-				} 
-				else 
+				}
+				else
 				{
 					log.Debug( "object already associated with session" );
 					return e.Id;
@@ -510,20 +576,20 @@ namespace NHibernate.Impl
 			}
 
 			object id;
-			try 
+			try
 			{
-				id = GetPersister(theObj).IdentifierGenerator.Generate(this, theObj);
-				if( id == (object) IdentifierGeneratorFactory.ShortCircuitIndicator) 
+				id = GetPersister( theObj ).IdentifierGenerator.Generate( this, theObj );
+				if( id == (object) IdentifierGeneratorFactory.ShortCircuitIndicator )
 				{
-					return GetIdentifier(theObj); //TODO: yick!
+					return GetIdentifier( theObj ); //TODO: yick!
 				}
-			} 
-			catch (Exception ex) 
+			}
+			catch( Exception ex )
 			{
-				throw new ADOException("Could not save object", ex);
+				throw new ADOException( "Could not save object", ex );
 			}
 
-			return DoSave(theObj, id);
+			return DoSave( theObj, id );
 		}
 
 		/// <summary>
@@ -531,208 +597,232 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <param name="id"></param>
-		public void Save(object obj, object id) {
-
-			if (obj==null) throw new NullReferenceException("attemted to insert null");
-			if (id==null) throw new NullReferenceException("null identifier passed to insert()");
-
-			if ( !NHibernate.IsInitialized(obj) ) throw new PersistentObjectException("uninitialized proxy passed to save()"); 
-			object theObj = UnproxyAndReassociate(obj); 
-
-			EntityEntry e = GetEntry(theObj);
-			if ( e!=null ) 
+		public void Save( object obj, object id )
+		{
+			if( obj == null )
 			{
-				if ( e.Status==Status.Deleted ) 
+				throw new NullReferenceException( "attemted to insert null" );
+			}
+			if( id == null )
+			{
+				throw new NullReferenceException( "null identifier passed to insert()" );
+			}
+
+			if( !NHibernate.IsInitialized( obj ) )
+			{
+				throw new PersistentObjectException( "uninitialized proxy passed to save()" );
+			}
+			object theObj = UnproxyAndReassociate( obj );
+
+			EntityEntry e = GetEntry( theObj );
+			if( e != null )
+			{
+				if( e.Status == Status.Deleted )
 				{
 					Flush();
-				} 
-				else 
+				}
+				else
 				{
-					if ( !id.Equals(e.Id) ) 
+					if( !id.Equals( e.Id ) )
+					{
 						throw new PersistentObjectException(
-							"object passed to save() was already persistent: " + 
-							MessageHelper.InfoString(e.Persister, id)
+							"object passed to save() was already persistent: " +
+								MessageHelper.InfoString( e.Persister, id )
 							);
+					}
 					log.Debug( "object already associated with session" );
 				}
 			}
-			DoSave(theObj, id);
+			DoSave( theObj, id );
 		}
 
-		private object DoSave(object obj, object id) {
-			IClassPersister persister = GetPersister(obj);
+		private object DoSave( object obj, object id )
+		{
+			IClassPersister persister = GetPersister( obj );
 
 			Key key = null;
 			bool identityCol;
-			if (id==null) 
+			if( id == null )
 			{
-				if ( persister.IsIdentifierAssignedByInsert ) 
+				if( persister.IsIdentifierAssignedByInsert )
 				{
 					identityCol = true;
-				} 
-				else 
-				{
-					throw new AssertionFailure("null id");
 				}
-			} 
-			else 
+				else
+				{
+					throw new AssertionFailure( "null id" );
+				}
+			}
+			else
 			{
 				identityCol = false;
 			}
 
-			if ( log.IsDebugEnabled ) log.Debug( "saving " + MessageHelper.InfoString(persister, id) );
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "saving " + MessageHelper.InfoString( persister, id ) );
+			}
 
-			if (!identityCol) 
-			{ 
+			if( !identityCol )
+			{
 				// if the id is generated by the db, we assign the key later
-				key = new Key(id, persister);
+				key = new Key( id, persister );
 
-				object old = GetEntity(key);
-				if (old!=null) 
+				object old = GetEntity( key );
+				if( old != null )
 				{
-					if ( GetEntry(old).Status==Status.Deleted ) 
+					if( GetEntry( old ).Status == Status.Deleted )
 					{
 						Flush();
-					} 
-					else 
+					}
+					else
 					{
 						throw new HibernateException(
-							"The generated identifier is already in use: " + MessageHelper.InfoString(persister, id)
+							"The generated identifier is already in use: " + MessageHelper.InfoString( persister, id )
 							);
 					}
 				}
 
-				persister.SetIdentifier(obj, id);
+				persister.SetIdentifier( obj, id );
 			}
 
 			// sub-insertions should occur befoer containing insertions so
 			// try to do the callback now
-			if ( persister.ImplementsLifecycle ) 
+			if( persister.ImplementsLifecycle )
 			{
 				//TODO: H2.0.3 - verify this has same meaning as H2.0.3
-				if ( ( (ILifecycle) obj ).OnSave(this) == LifecycleVeto.Veto ) return id;
+				if( ( ( ILifecycle ) obj ).OnSave( this ) == LifecycleVeto.Veto )
+				{
+					return id;
+				}
 			}
 
-			if ( persister.ImplementsValidatable ) ( (IValidatable) obj ).Validate();
+			if( persister.ImplementsValidatable )
+			{
+				( ( IValidatable ) obj ).Validate();
+			}
 
 			// Put a placeholder in entries, so we don't recurse back and try to save() th
 			// same object again.
-			AddEntry(obj, Status.Saving, null, id, null, LockMode.Write, identityCol, persister);
+			AddEntry( obj, Status.Saving, null, id, null, LockMode.Write, identityCol, persister );
 
 			// cascade-save to many-to-one BEFORE the parent is saved
 			cascading++;
-			try 
+			try
 			{
-				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeBeforeInsertAfterDelete);
-			} 
-			finally 
+				Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeBeforeInsertAfterDelete );
+			}
+			finally
 			{
 				cascading--;
 			}
 
-			object[] values = persister.GetPropertyValues(obj);
-			IType[] types = persister.PropertyTypes;
+			object[ ] values = persister.GetPropertyValues( obj );
+			IType[ ] types = persister.PropertyTypes;
 
 			bool substitute = interceptor.OnSave( obj, id, values, persister.PropertyNames, types );
 
 			substitute = ( persister.IsVersioned && Versioning.SeedVersion(
 				values, persister.VersionProperty, persister.VersionType ) ) || substitute;
 
-			if ( Wrap( values, persister.PropertyTypes ) || substitute) 
-			{ 
+			if( Wrap( values, persister.PropertyTypes ) || substitute )
+			{
 				//substitutes into values by side-effect
-				persister.SetPropertyValues(obj, values);
+				persister.SetPropertyValues( obj, values );
 			}
 
-			TypeFactory.DeepCopy(values, types, persister.PropertyUpdateability, values);
-			NullifyTransientReferences(values, types, identityCol, obj);
+			TypeFactory.DeepCopy( values, types, persister.PropertyUpdateability, values );
+			NullifyTransientReferences( values, types, identityCol, obj );
 
-			if (identityCol) 
+			if( identityCol )
 			{
-				try 
+				try
 				{
-					id = persister.Insert(values, obj, this);
-				} 
-				catch (Exception e) 
+					id = persister.Insert( values, obj, this );
+				}
+				catch( Exception e )
 				{
-					throw new ADOException("Could not insert", e);
+					throw new ADOException( "Could not insert", e );
 				}
 
-				key = new Key(id, persister);
+				key = new Key( id, persister );
 
-				if ( GetEntity(key) != null ) throw new HibernateException("The natively generated ID is already in use " + MessageHelper.InfoString(persister, id));
+				if( GetEntity( key ) != null )
+				{
+					throw new HibernateException( "The natively generated ID is already in use " + MessageHelper.InfoString( persister, id ) );
+				}
 
-				persister.SetIdentifier(obj, id);
+				persister.SetIdentifier( obj, id );
 			}
 
-			AddEntity(key, obj);
-			AddEntry(obj, Status.Loaded, values, id, Versioning.GetVersion(values, persister), LockMode.Write, identityCol, persister);
-			
-			if (!identityCol) 
+			AddEntity( key, obj );
+			AddEntry( obj, Status.Loaded, values, id, Versioning.GetVersion( values, persister ), LockMode.Write, identityCol, persister );
+
+			if( !identityCol )
 			{
 				insertions.Add( new ScheduledInsertion( id, values, obj, persister, this ) );
 			}
 
 			// cascade-save to collections AFTER the collection owner was saved
 			cascading++;
-			try 
+			try
 			{
-				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeAfterInsertBeforeDelete);
-			} 
-			finally 
+				Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeAfterInsertBeforeDelete );
+			}
+			finally
 			{
 				cascading--;
 			}
-			
+
 			return id;
 		}
 
-		private void ReassociateProxy(Object value) 
-		{ 
-			INHibernateProxy proxy = (INHibernateProxy) value; 
-			LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy); 
-			ReassociateProxy(li, proxy); 
-		} 
-    
-		private object UnproxyAndReassociate(object maybeProxy) 
-		{ 
-			if ( maybeProxy is INHibernateProxy ) 
-			{ 
-				INHibernateProxy proxy = (INHibernateProxy) maybeProxy; 
-				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy); 
-				ReassociateProxy(li, proxy); 
+		private void ReassociateProxy( Object value )
+		{
+			INHibernateProxy proxy = ( INHibernateProxy ) value;
+			LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( proxy );
+			ReassociateProxy( li, proxy );
+		}
+
+		private object UnproxyAndReassociate( object maybeProxy )
+		{
+			if( maybeProxy is INHibernateProxy )
+			{
+				INHibernateProxy proxy = ( INHibernateProxy ) maybeProxy;
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( proxy );
+				ReassociateProxy( li, proxy );
 				return li.GetImplementation(); //initialize + unwrap the object 
-			} 
-			else 
-			{ 
-				return maybeProxy; 
-			} 
-		} 
-    
+			}
+			else
+			{
+				return maybeProxy;
+			}
+		}
+
 		/// <summary>
 		/// associate a proxy that was instantiated by another session with this session
 		/// </summary>
 		/// <param name="li"></param>
 		/// <param name="proxy"></param>
-		private void ReassociateProxy(LazyInitializer li, INHibernateProxy proxy) 
-		{ 
-			if ( li.Session!=this ) 
-			{ 
-				IClassPersister persister = GetPersister( li.PersistentClass ); 
-				Key key = new Key( li.Identifier, persister ); 
-				if ( !proxiesByKey.Contains(key) ) 
-				{
-					proxiesByKey[key] = proxy; // any earlier proxy takes precedence 
-				}
-				NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) proxy ).Session = this; 
-			} 
-		} 
-
-		private void NullifyTransientReferences(object[] values, IType[] types, bool earlyInsert, object self) 
+		private void ReassociateProxy( LazyInitializer li, INHibernateProxy proxy )
 		{
-			for (int i=0; i<types.Length; i++ ) 
+			if( li.Session != this )
 			{
-				values[i] = NullifyTransientReferences( values[i], types[i], earlyInsert, self );
+				IClassPersister persister = GetPersister( li.PersistentClass );
+				Key key = new Key( li.Identifier, persister );
+				if( !proxiesByKey.Contains( key ) )
+				{
+					proxiesByKey[ key ] = proxy; // any earlier proxy takes precedence 
+				}
+				NHibernateProxyHelper.GetLazyInitializer( proxy ).Session = this;
+			}
+		}
+
+		private void NullifyTransientReferences( object[ ] values, IType[ ] types, bool earlyInsert, object self )
+		{
+			for( int i = 0; i < types.Length; i++ )
+			{
+				values[ i ] = NullifyTransientReferences( values[ i ], types[ i ], earlyInsert, self );
 			}
 		}
 
@@ -745,35 +835,38 @@ namespace NHibernate.Impl
 		/// <param name="earlyInsert"></param>
 		/// <param name="self"></param>
 		/// <returns></returns>
-		private object NullifyTransientReferences(object value, IType type, bool earlyInsert, object self) 
+		private object NullifyTransientReferences( object value, IType type, bool earlyInsert, object self )
 		{
-			if ( value==null ) 
+			if( value == null )
 			{
 				return null;
-			} 
-			else if ( type.IsEntityType || type.IsObjectType ) 
+			}
+			else if( type.IsEntityType || type.IsObjectType )
 			{
-				return ( IsUnsaved(value, earlyInsert, self) ) ? null : value;
-			} 
-			else if ( type.IsComponentType ) 
+				return ( IsUnsaved( value, earlyInsert, self ) ) ? null : value;
+			}
+			else if( type.IsComponentType )
 			{
-				IAbstractComponentType actype = (IAbstractComponentType) type;
-				object[] subvalues = actype.GetPropertyValues(value, this);
-				IType[] subtypes = actype.Subtypes;
+				IAbstractComponentType actype = ( IAbstractComponentType ) type;
+				object[ ] subvalues = actype.GetPropertyValues( value, this );
+				IType[ ] subtypes = actype.Subtypes;
 				bool substitute = false;
-				for (int i=0; i<subvalues.Length; i++ ) 
+				for( int i = 0; i < subvalues.Length; i++ )
 				{
-					object replacement = NullifyTransientReferences( subvalues[i], subtypes[i], earlyInsert, self );
-					if ( replacement != subvalues[i] ) 
+					object replacement = NullifyTransientReferences( subvalues[ i ], subtypes[ i ], earlyInsert, self );
+					if( replacement != subvalues[ i ] )
 					{
 						substitute = true;
-						subvalues[i] = replacement;
+						subvalues[ i ] = replacement;
 					}
 				}
-				if (substitute) actype.SetPropertyValues(value, subvalues);
+				if( substitute )
+				{
+					actype.SetPropertyValues( value, subvalues );
+				}
 				return value;
-			} 
-			else 
+			}
+			else
 			{
 				return value;
 			}
@@ -786,28 +879,28 @@ namespace NHibernate.Impl
 		/// <param name="earlyInsert"></param>
 		/// <param name="self"></param>
 		/// <returns></returns>
-		private bool IsUnsaved(object obj, bool earlyInsert, object self) 
+		private bool IsUnsaved( object obj, bool earlyInsert, object self )
 		{
-			if ( obj is INHibernateProxy ) 
+			if( obj is INHibernateProxy )
 			{
 				// if its an uninitialized proxy, it can't be transient
-				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj );
-				if ( li.GetImplementation(this)==null ) 
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj );
+				if( li.GetImplementation( this ) == null )
 				{
 					return false;
 					// ie we never have to null out a reference to an uninitialized proxy
-				} 
-				else 
+				}
+				else
 				{
-					try 
+					try
 					{
 						//unwrap it
-						obj = li.GetImplementation(this);
-					} 
-					catch (HibernateException he) 
+						obj = li.GetImplementation( this );
+					}
+					catch( HibernateException he )
 					{
 						//does not occur
-						throw new AssertionFailure("Unexpected HibernateException occurred in IsTransient()", he);
+						throw new AssertionFailure( "Unexpected HibernateException occurred in IsTransient()", he );
 					}
 				}
 			}
@@ -815,48 +908,51 @@ namespace NHibernate.Impl
 			// if it was a reference to self, don't need to nullify
 			// unless we are using native id generation, in which
 			// case we definitely need to nullify
-			if (obj==self) return earlyInsert;
+			if( obj == self )
+			{
+				return earlyInsert;
+			}
 
 			// See if the entity is already bound to this session, if not look at the
 			// entity identifier and assume that the entity is persistent if the
 			// id is not "unsaved" (that is, we rely on foreign keys to keep
 			// database integrity)
 
-			EntityEntry e = GetEntry(obj);
-			if (e==null) 
+			EntityEntry e = GetEntry( obj );
+			if( e == null )
 			{
-				IClassPersister persister = GetPersister(obj);
-				if ( persister.HasIdentifierProperty ) 
+				IClassPersister persister = GetPersister( obj );
+				if( persister.HasIdentifierProperty )
 				{
 					object id = persister.GetIdentifier( obj );
-					if (id!=null) 
+					if( id != null )
 					{
 						// see if theres another object that *is* associated with the sesison for that id
-						e = GetEntry( GetEntity( new Key(id, persister) ) );
+						e = GetEntry( GetEntity( new Key( id, persister ) ) );
 
-						if (e==null) 
-						{ 
+						if( e == null )
+						{
 							// look at the id value
-							return persister.IsUnsaved(id);
+							return persister.IsUnsaved( id );
 						}
 						// else use the other object's entry...
-					} 
-					else 
-					{ 
+					}
+					else
+					{
 						// null id, so have to assume transient (because that's safer)
 						return true;
 					}
-				} 
-				else 
-				{ 
+				}
+				else
+				{
 					//can't determine the id, so assume transient (because that's safer)
 					return true;
 				}
 			}
 
-		
-			return e.Status==Status.Saving || (
-				earlyInsert ? !e.ExistsInDatabase : nullifiables.Contains( new Key(e.Id, e.Persister) )
+
+			return e.Status == Status.Saving || (
+				earlyInsert ? !e.ExistsInDatabase : nullifiables.Contains( new Key( e.Id, e.Persister ) )
 				);
 		}
 
@@ -864,119 +960,129 @@ namespace NHibernate.Impl
 		/// Delete a persistent object
 		/// </summary>
 		/// <param name="obj"></param>
-		public void Delete(object obj) 
+		public void Delete( object obj )
 		{
-			if (obj==null) throw new NullReferenceException("attempted to delete null");
+			if( obj == null )
+			{
+				throw new NullReferenceException( "attempted to delete null" );
+			}
 
 			//object theObj = UnproxyAndReassociate(obj);
-			obj = UnproxyAndReassociate(obj);
+			obj = UnproxyAndReassociate( obj );
 
-			EntityEntry entry = GetEntry(obj);
-			IClassPersister persister=null;
-			if (entry==null) 
+			EntityEntry entry = GetEntry( obj );
+			IClassPersister persister = null;
+			if( entry == null )
 			{
-				log.Debug("deleting a transient instance");
+				log.Debug( "deleting a transient instance" );
 
-				persister = GetPersister(obj);
-				object id = persister.GetIdentifier(obj);
+				persister = GetPersister( obj );
+				object id = persister.GetIdentifier( obj );
 
-				if (id==null) throw new HibernateException("the transient instance passed to Delete() has a null identifier");
+				if( id == null )
+				{
+					throw new HibernateException( "the transient instance passed to Delete() has a null identifier" );
+				}
 
-				object old = GetEntity( new Key(id, persister) );
+				object old = GetEntity( new Key( id, persister ) );
 
-				if (old!=null) 
+				if( old != null )
 				{
 					throw new HibernateException(
 						"another object with the same id was already associated with the session: " +
-						MessageHelper.InfoString(persister, id)
+							MessageHelper.InfoString( persister, id )
 						);
 				}
 
-				RemoveCollectionsFor(persister, id, obj);
+				RemoveCollectionsFor( persister, id, obj );
 
-				AddEntity( new Key(id, persister), obj);
+				AddEntity( new Key( id, persister ), obj );
 				entry = AddEntry(
-					obj, 
-					Status.Loaded, 
-					persister.GetPropertyValues(obj),
+					obj,
+					Status.Loaded,
+					persister.GetPropertyValues( obj ),
 					id,
-					persister.GetVersion(obj),
+					persister.GetVersion( obj ),
 					LockMode.None,
 					true,
 					persister
 					);
 				// not worth worrying about the proxy
 			}
-			else 
+			else
 			{
-				log.Debug("deleting a persistent instance");
+				log.Debug( "deleting a persistent instance" );
 
-				if ( entry.Status==Status.Deleted || entry.Status==Status.Gone) {
-					log.Debug("object was already deleted");
+				if( entry.Status == Status.Deleted || entry.Status == Status.Gone )
+				{
+					log.Debug( "object was already deleted" );
 					return;
 				}
 				persister = entry.Persister;
 			}
 
-			if ( !persister.IsMutable ) 
+			if( !persister.IsMutable )
 			{
 				throw new HibernateException(
-					"attempted to delete an object of immutable class: " + 
-					MessageHelper.InfoString(persister)
+					"attempted to delete an object of immutable class: " +
+						MessageHelper.InfoString( persister )
 					);
 			}
 
-			if ( log.IsDebugEnabled ) log.Debug( "deleting " + MessageHelper.InfoString(persister, entry.Id) );
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "deleting " + MessageHelper.InfoString( persister, entry.Id ) );
+			}
 
-			IType[] propTypes = persister.PropertyTypes;
+			IType[ ] propTypes = persister.PropertyTypes;
 
 			object version = entry.Version;
 
-			if (entry.LoadedState==null ) 
-			{ 
+			if( entry.LoadedState == null )
+			{
 				//ie the object came in from Update()
-				entry.DeletedState = persister.GetPropertyValues(obj);
-			} 
-			else 
+				entry.DeletedState = persister.GetPropertyValues( obj );
+			}
+			else
 			{
 				entry.DeletedState = new object[entry.LoadedState.Length];
-				TypeFactory.DeepCopy(entry.LoadedState, propTypes, persister.PropertyUpdateability, entry.DeletedState);
+				TypeFactory.DeepCopy( entry.LoadedState, propTypes, persister.PropertyUpdateability, entry.DeletedState );
 			}
 
-			interceptor.OnDelete(obj, entry.Id, entry.DeletedState, persister.PropertyNames, propTypes);
+			interceptor.OnDelete( obj, entry.Id, entry.DeletedState, persister.PropertyNames, propTypes );
 
-			NullifyTransientReferences(entry.DeletedState, propTypes, false, obj);
+			NullifyTransientReferences( entry.DeletedState, propTypes, false, obj );
 
 			ISet oldNullifiables = null;
 			ArrayList oldDeletions = null;
-			if ( persister.HasCascades ) 
+			if( persister.HasCascades )
 			{
-				oldNullifiables = new HashedSet( );
+				oldNullifiables = new HashedSet();
 				oldNullifiables.AddAll( nullifiables );
-				oldDeletions = (ArrayList) deletions.Clone();
+				oldDeletions = ( ArrayList ) deletions.Clone();
 			}
 
-			nullifiables.Add( new Key(entry.Id, persister) );
+			nullifiables.Add( new Key( entry.Id, persister ) );
 			entry.Status = Status.Deleted; // before any callbacks, etc, so subdeletions see that this deletion happend first
-			ScheduledDeletion delete = new ScheduledDeletion(entry.Id, version, obj, persister, this);
-			deletions.Add(delete); // ensures that containing deletions happen before sub-deletions
+			ScheduledDeletion delete = new ScheduledDeletion( entry.Id, version, obj, persister, this );
+			deletions.Add( delete ); // ensures that containing deletions happen before sub-deletions
 
-			try 
+			try
 			{
 				// after nullify, because we don't want to nullify references to subdeletions
 				// try to do callback + cascade
-				if ( persister.ImplementsLifecycle ) 
+				if( persister.ImplementsLifecycle )
 				{
-					if ( ( (ILifecycle)obj).OnDelete(this) == LifecycleVeto.Veto ) 
+					if( ( ( ILifecycle ) obj ).OnDelete( this ) == LifecycleVeto.Veto )
 					{
 						//rollback deletion
-						RollbackDeletion(entry, delete);
+						RollbackDeletion( entry, delete );
 						return; //don't let it cascade
 					}
 				}
 
 				//BEGIN YUCKINESS:
-				if ( persister.HasCascades ) 
+				if( persister.HasCascades )
 				{
 					int start = deletions.Count;
 
@@ -984,12 +1090,12 @@ namespace NHibernate.Impl
 					nullifiables = oldNullifiables;
 
 					cascading++;
-					try 
+					try
 					{
 						// cascade-delete to collections "BEFORE" the collection owner is deleted
-						Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeAfterInsertBeforeDelete);
-					} 
-					finally 
+						Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeAfterInsertBeforeDelete );
+					}
+					finally
 					{
 						cascading--;
 						newNullifiables.AddAll( oldNullifiables );
@@ -998,21 +1104,24 @@ namespace NHibernate.Impl
 
 					int end = deletions.Count;
 
-					if ( end!=start ) 
-					{ 
+					if( end != start )
+					{
 						//ie if any deletions occurred as a result of cascade
 
 						//move them earlier. this is yucky code:
-						
+
 						// in h203 they used SubList where it takes the start and end indexes, in nh GetRange
 						// takes the start index and quantity to get.
-						IList middle = deletions.GetRange( oldDeletions.Count, (start - oldDeletions.Count) );
-						IList tail = deletions.GetRange( start, (end - start) );
+						IList middle = deletions.GetRange( oldDeletions.Count, ( start - oldDeletions.Count ) );
+						IList tail = deletions.GetRange( start, ( end - start ) );
 
-						oldDeletions.AddRange(tail);
-						oldDeletions.AddRange(middle);
+						oldDeletions.AddRange( tail );
+						oldDeletions.AddRange( middle );
 
-						if ( oldDeletions.Count != end ) throw new AssertionFailure("Bug cascading collection deletions");
+						if( oldDeletions.Count != end )
+						{
+							throw new AssertionFailure( "Bug cascading collection deletions" );
+						}
 
 						deletions = oldDeletions;
 					}
@@ -1020,52 +1129,55 @@ namespace NHibernate.Impl
 				//END YUCKINESS
 
 				// cascade-save to many-to-one AFTER the parent was saved
-				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeBeforeInsertAfterDelete);
-			} 
-			catch (Exception e) 
-			{ 
+				Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeBeforeInsertAfterDelete );
+			}
+			catch( Exception e )
+			{
 				//mainly a CallbackException
-				RollbackDeletion(entry, delete);
-				if (e is HibernateException) 
+				RollbackDeletion( entry, delete );
+				if( e is HibernateException )
 				{
 					throw;
-				} 
-				else 
-				{
-					log.Error("unexpected exception", e);
-					throw new HibernateException("unexpected exception", e);
 				}
-				
+				else
+				{
+					log.Error( "unexpected exception", e );
+					throw new HibernateException( "unexpected exception", e );
+				}
+
 			}
 		}
 
-		private void RollbackDeletion(EntityEntry entry, ScheduledDeletion delete) 
+		private void RollbackDeletion( EntityEntry entry, ScheduledDeletion delete )
 		{
 			entry.Status = Status.Loaded;
 			entry.DeletedState = null;
-			deletions.Remove(delete);
+			deletions.Remove( delete );
 		}
 
-		private void RemoveCollectionsFor(IClassPersister persister, object id, object obj) 
+		private void RemoveCollectionsFor( IClassPersister persister, object id, object obj )
 		{
-			if ( persister.HasCollections ) 
+			if( persister.HasCollections )
 			{
-				IType[] types = persister.PropertyTypes;
-				for (int i=0; i<types.Length; i++) 
+				IType[ ] types = persister.PropertyTypes;
+				for( int i = 0; i < types.Length; i++ )
 				{
-					RemoveCollectionsFor( types[i], id, persister.GetPropertyValue(obj, i) );
+					RemoveCollectionsFor( types[ i ], id, persister.GetPropertyValue( obj, i ) );
 				}
 			}
 		}
 
-		private void RemoveCollection(CollectionPersister role, object id) 
+		private void RemoveCollection( CollectionPersister role, object id )
 		{
-			if ( log.IsDebugEnabled ) log.Debug( "collection dereferenced while transient " + MessageHelper.InfoString(role, id) ); 
-			if(role.HasOrphanDelete) 
+			if( log.IsDebugEnabled )
 			{
-				throw new HibernateException("You may not dereference a collection with cascade=\"all-delete-orphan\"");
+				log.Debug( "collection dereferenced while transient " + MessageHelper.InfoString( role, id ) );
 			}
-			collectionRemovals.Add( new ScheduledCollectionRemove(role, id, false, this) );
+			if( role.HasOrphanDelete )
+			{
+				throw new HibernateException( "You may not dereference a collection with cascade=\"all-delete-orphan\"" );
+			}
+			collectionRemovals.Add( new ScheduledCollectionRemove( role, id, false, this ) );
 		}
 
 		//TODO: rename this method - comment from H2.0.3
@@ -1080,327 +1192,394 @@ namespace NHibernate.Impl
 		/// <param name="type"></param>
 		/// <param name="id"></param>
 		/// <param name="value"></param>
-		private void RemoveCollectionsFor(IType type, object id, object value) 
+		private void RemoveCollectionsFor( IType type, object id, object value )
 		{
-			if ( type.IsPersistentCollectionType ) 
+			if( type.IsPersistentCollectionType )
 			{
-				CollectionPersister persister = GetCollectionPersister( ( (PersistentCollectionType) type).Role );
-				if ( value!=null && (value is PersistentCollection) ) 
+				CollectionPersister persister = GetCollectionPersister( ( ( PersistentCollectionType ) type ).Role );
+				if( value != null && ( value is PersistentCollection ) )
 				{
-					PersistentCollection coll = (PersistentCollection) value;
-					if ( coll.SetSession(this) ) 
+					PersistentCollection coll = ( PersistentCollection ) value;
+					if( coll.SetSession( this ) )
 					{
 						ICollectionSnapshot snapshot = coll.CollectionSnapshot;
 						if( snapshot != null &&
 							snapshot.Role.Equals( persister.Role ) &&
-							id.Equals(snapshot.Key)
-							) 
+							id.Equals( snapshot.Key )
+							)
 						{
 							// a transient collection that originally 
 							// belonged to the same entity
-							if(coll.WasInitialized) 
+							if( coll.WasInitialized )
 							{
-								AddInitializedCollection(coll, snapshot);
+								AddInitializedCollection( coll, snapshot );
 							}
-							else 
+							else
 							{
-								AddUninitializedCollection(coll, persister, id);
+								AddUninitializedCollection( coll, persister, id );
 							}
 						}
-						else 
+						else
 						{
 							// a "transient" collection that belonged to
 							// a different object
-							RemoveCollection(persister, id);
+							RemoveCollection( persister, id );
 						}
-					} 
-					else 
+					}
+					else
 					{
 						// a collection loaded in the current seession
 						// can not possibly be the collection belonging
 						// to the entity passed to update()
-						RemoveCollection(persister, id);
+						RemoveCollection( persister, id );
 					}
-				} 
-				else 
+				}
+				else
 				{
 					// null or brand new collection
-					RemoveCollection(persister, id);
+					RemoveCollection( persister, id );
 				}
 
-			} 
-			else if ( type.IsEntityType ) 
+			}
+			else if( type.IsEntityType )
 			{
-				if ( value!=null ) 
+				if( value != null )
 				{
-					IClassPersister persister = GetPersister( ( (EntityType) type).PersistentClass );
-					if ( persister.HasProxy && !NHibernate.IsInitialized(value) )
-						ReassociateProxy(value);
-				}
-			} 
-			else if ( type.IsComponentType ) 
-			{
-				if ( value!=null ) 
-				{
-					IAbstractComponentType actype = (IAbstractComponentType) type;
-					IType[] types = actype.Subtypes;
-					for (int i=0; i<types.Length; i++ ) 
+					IClassPersister persister = GetPersister( ( ( EntityType ) type ).PersistentClass );
+					if( persister.HasProxy && !NHibernate.IsInitialized( value ) )
 					{
-						RemoveCollectionsFor( types[i], id, actype.GetPropertyValue(value, i, this) );
+						ReassociateProxy( value );
+					}
+				}
+			}
+			else if( type.IsComponentType )
+			{
+				if( value != null )
+				{
+					IAbstractComponentType actype = ( IAbstractComponentType ) type;
+					IType[ ] types = actype.Subtypes;
+					for( int i = 0; i < types.Length; i++ )
+					{
+						RemoveCollectionsFor( types[ i ], id, actype.GetPropertyValue( value, i, this ) );
 					}
 				}
 			}
 		}
-		
-		public void Update(object obj) 
-		{
 
-			if (obj==null) throw new NullReferenceException("attempted to update null");
-			
-			if(!NHibernate.IsInitialized(obj)) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		public void Update( object obj )
+		{
+			if( obj == null )
 			{
-				ReassociateProxy(obj);
+				throw new NullReferenceException( "attempted to update null" );
+			}
+
+			if( !NHibernate.IsInitialized( obj ) )
+			{
+				ReassociateProxy( obj );
 				return;
 			}
 
-			object theObj = UnproxyAndReassociate(obj);
+			object theObj = UnproxyAndReassociate( obj );
 
-			IClassPersister persister = GetPersister(theObj);
+			IClassPersister persister = GetPersister( theObj );
 
-			if ( IsEntryFor(theObj) ) 
+			if( IsEntryFor( theObj ) )
 			{
-				log.Debug("object already associated with session");
+				log.Debug( "object already associated with session" );
 				// do nothing
-			} 
-			else 
+			}
+			else
 			{
 				// the object is transient
-				object id = persister.GetIdentifier(theObj);
+				object id = persister.GetIdentifier( theObj );
 
-				if (id==null) 
+				if( id == null )
 				{
 					// assume this is a newly instantiated transient object 
-					throw new HibernateException("The given object has a null identifier property " + MessageHelper.InfoString(persister));
-				} 
-				else 
+					throw new HibernateException( "The given object has a null identifier property " + MessageHelper.InfoString( persister ) );
+				}
+				else
 				{
-					DoUpdate(theObj, id);
+					DoUpdate( theObj, id );
 				}
 			}
 		}
 
-		public void SaveOrUpdate(object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		public void SaveOrUpdate( object obj )
 		{
-			if (obj==null) throw new NullReferenceException("attempted to update null");
-			
-			if ( !NHibernate.IsInitialized(obj) ) 
+			if( obj == null )
 			{
-				ReassociateProxy(obj);
+				throw new NullReferenceException( "attempted to update null" );
+			}
+
+			if( !NHibernate.IsInitialized( obj ) )
+			{
+				ReassociateProxy( obj );
 				return;
 			}
-			object theObj = UnproxyAndReassociate(obj);
+			object theObj = UnproxyAndReassociate( obj );
 
-			EntityEntry e = GetEntry(theObj);
-			if (e!=null && e.Status!=Status.Deleted) 
+			EntityEntry e = GetEntry( theObj );
+			if( e != null && e.Status != Status.Deleted )
 			{
 				// do nothing for persistent instances
-				log.Debug("SaveOrUpdate() persistent instance");
-			} 
-			else if (e!=null) 
-			{ 
+				log.Debug( "SaveOrUpdate() persistent instance" );
+			}
+			else if( e != null )
+			{
 				//ie status==DELETED
-				log.Debug("SaveOrUpdate() deleted instance");
-				Save(obj);
-			} 
-			else 
+				log.Debug( "SaveOrUpdate() deleted instance" );
+				Save( obj );
+			}
+			else
 			{
 				// the object is transient
-				object isUnsaved = interceptor.IsUnsaved(theObj);
-				if (isUnsaved==null)
+				object isUnsaved = interceptor.IsUnsaved( theObj );
+				if( isUnsaved == null )
 				{
 					// use unsaved-value
-					IClassPersister persister = GetPersister(theObj);
-					if ( persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier ) 
+					IClassPersister persister = GetPersister( theObj );
+					if( persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier )
 					{
-						object id = persister.GetIdentifier(theObj);
+						object id = persister.GetIdentifier( theObj );
 
-						if ( persister.IsUnsaved(id) ) 
+						if( persister.IsUnsaved( id ) )
 						{
-							if ( log.IsDebugEnabled ) log.Debug("SaveOrUpdate() unsaved instance with id: " + id);
-							Save(obj);
-						} 
-						else 
-						{
-							if ( log.IsDebugEnabled ) log.Debug("SaveOrUpdate() previously saved instance with id: " + id);
-							DoUpdate(theObj, id);
+							if( log.IsDebugEnabled )
+							{
+								log.Debug( "SaveOrUpdate() unsaved instance with id: " + id );
+							}
+							Save( obj );
 						}
-					} 
-					else 
+						else
+						{
+							if( log.IsDebugEnabled )
+							{
+								log.Debug( "SaveOrUpdate() previously saved instance with id: " + id );
+							}
+							DoUpdate( theObj, id );
+						}
+					}
+					else
 					{
 						// no identifier property ... default to save()
-						log.Debug("SaveOrUpdate() unsaved instance with no identifier property");
-						Save(obj);
+						log.Debug( "SaveOrUpdate() unsaved instance with no identifier property" );
+						Save( obj );
 					}
-				} 
-				else 
+				}
+				else
 				{
-					if ( true.Equals(isUnsaved) ) 
+					if( true.Equals( isUnsaved ) )
 					{
-						log.Debug("SaveOrUpdate() unsaved instance");
-						Save(obj);
-					} 
-					else 
+						log.Debug( "SaveOrUpdate() unsaved instance" );
+						Save( obj );
+					}
+					else
 					{
-						log.Debug("SaveOrUpdate() previously saved instance");
-						Update(obj);
+						log.Debug( "SaveOrUpdate() previously saved instance" );
+						Update( obj );
 					}
 				}
 			}
 		}
 
-		public void Update(object obj, object id) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="id"></param>
+		public void Update( object obj, object id )
 		{
-			if (id==null) throw new NullReferenceException("null is not a valid identifier");
-			if (obj==null) throw new NullReferenceException("attempted to update null");
-			
-			if ( obj is INHibernateProxy ) 
+			if( id == null )
 			{
-				object pid = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ).Identifier;
-				if( !id.Equals( pid ) ) 
+				throw new NullReferenceException( "null is not a valid identifier" );
+			}
+			if( obj == null )
+			{
+				throw new NullReferenceException( "attempted to update null" );
+			}
+
+			if( obj is INHibernateProxy )
+			{
+				object pid = NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj ).Identifier;
+				if( !id.Equals( pid ) )
 				{
-					throw new HibernateException("The given proxy had a different identifier value to the given identifier: " + pid + "!=" + id);
+					throw new HibernateException( "The given proxy had a different identifier value to the given identifier: " + pid + "!=" + id );
 				}
 			}
 
-			if( !NHibernate.IsInitialized(obj) ) 
+			if( !NHibernate.IsInitialized( obj ) )
 			{
-				ReassociateProxy(obj);
+				ReassociateProxy( obj );
 				return;
 			}
 
-			object theObj = UnproxyAndReassociate(obj);
+			object theObj = UnproxyAndReassociate( obj );
 
-			EntityEntry e = GetEntry(theObj);
-			if (e==null) 
+			EntityEntry e = GetEntry( theObj );
+			if( e == null )
 			{
-				DoUpdate(theObj, id);
-			} 
-			else 
+				DoUpdate( theObj, id );
+			}
+			else
 			{
-				if ( !e.Id.Equals(id) ) 
+				if( !e.Id.Equals( id ) )
+				{
 					throw new PersistentObjectException(
-							"The instance passed to Update() was already persistent: " +
-							MessageHelper.InfoString(e.Persister, id)
-							);
+						"The instance passed to Update() was already persistent: " +
+							MessageHelper.InfoString( e.Persister, id )
+						);
+				}
 			}
 		}
 
-		private void DoUpdate(object obj, object id) {
-			
-			IClassPersister persister = GetPersister(obj);
+		private void DoUpdate( object obj, object id )
+		{
+			IClassPersister persister = GetPersister( obj );
 
-			if ( !persister.IsMutable ) 
+			if( !persister.IsMutable )
+			{
 				throw new HibernateException(
-					"attempted to update an object of immutable class: " + 
-					MessageHelper.InfoString(persister)
+					"attempted to update an object of immutable class: " +
+						MessageHelper.InfoString( persister )
 					);
-			
-			if ( log.IsDebugEnabled ) log.Debug( "updating " + MessageHelper.InfoString(persister, id) );
+			}
 
-			Key key = new Key(id, persister);
-			object old = GetEntity(key);
-			if (old==obj) 
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "updating " + MessageHelper.InfoString( persister, id ) );
+			}
+
+			Key key = new Key( id, persister );
+			object old = GetEntity( key );
+			if( old == obj )
 			{
 				throw new AssertionFailure(
 					"Hibernate has a bug in Update() ... or you are using an illegal id type: " +
-					MessageHelper.InfoString(persister, id)
+						MessageHelper.InfoString( persister, id )
 					);
-			} 
-			else if ( old!=null ) 
+			}
+			else if( old != null )
 			{
 				throw new HibernateException(
 					"Another object was associated with this id ( the object with the given id was already loaded): " +
-					MessageHelper.InfoString(persister, id)
+						MessageHelper.InfoString( persister, id )
 					);
 			}
 
 			// this is a transient object with existing persistent state not loaded by the session
 
-			if ( persister.ImplementsLifecycle && ((ILifecycle) obj ).OnUpdate(this) == LifecycleVeto.Veto ) return; // do callback
+			if( persister.ImplementsLifecycle && ( ( ILifecycle ) obj ).OnUpdate( this ) == LifecycleVeto.Veto )
+			{
+				return;
+			} // do callback
 
-			RemoveCollectionsFor(persister, id, obj);
+			RemoveCollectionsFor( persister, id, obj );
 
-			AddEntity(key, obj);
-			AddEntry(obj, Status.Loaded, null, id, persister.GetVersion(obj), LockMode.None, true, persister);
+			AddEntity( key, obj );
+			AddEntry( obj, Status.Loaded, null, id, persister.GetVersion( obj ), LockMode.None, true, persister );
 
 			cascading++;
-			try 
+			try
 			{
-				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate); // do cascade
-			} 
-			finally 
+				Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate ); // do cascade
+			}
+			finally
 			{
 				cascading--;
 			}
 		}
 
-		private static object[] NoArgs = new object[0];
-		private static IType[] NoTypes = new IType[0];
+		private static object[ ] NoArgs = new object[0];
+		private static IType[ ] NoTypes = new IType[0];
 
-		public IList Find(string query) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		public IList Find( string query )
 		{
-			return Find(query, NoArgs, NoTypes);
+			return Find( query, NoArgs, NoTypes );
 		}
 
-		public IList Find(string query, object value, IType type) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="value"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IList Find( string query, object value, IType type )
 		{
-			return Find( query, new object[] { value }, new IType[] { type } );
+			return Find( query, new object[ ] {value}, new IType[ ] {type} );
 		}
 
-		public IList Find(string query, object[] values, IType[] types) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="values"></param>
+		/// <param name="types"></param>
+		/// <returns></returns>
+		public IList Find( string query, object[ ] values, IType[ ] types )
 		{
-			return Find(query, new QueryParameters( types, values ) ) ;
+			return Find( query, new QueryParameters( types, values ) );
 		}
 
-		public IList Find(string query, QueryParameters parameters) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public IList Find( string query, QueryParameters parameters )
 		{
-			if ( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
-				log.Debug( "find: " + query);
+				log.Debug( "find: " + query );
 				parameters.LogParameters();
 			}
 
 			parameters.ValidateParameters();
 
-			QueryTranslator[] q = GetQueries(query, false);
+			QueryTranslator[ ] q = GetQueries( query, false );
 
 			IList results = new ArrayList();
 
 			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 
 			//execute the queries and return all result lists as a single list
-			try 
+			try
 			{
-				for (int i=0; i<q.Length; i++ ) 
+				for( int i = 0; i < q.Length; i++ )
 				{
 					IList currentResults;
-					try 
+					try
 					{
-						currentResults = q[i].FindList(this, parameters, true);
-					} 
-					catch (Exception e) 
-					{
-						throw new ADOException("Could not execute query", e);
+						currentResults = q[ i ].FindList( this, parameters, true );
 					}
-					
-					for (int j=0;j<results.Count;j++) 
+					catch( Exception e )
 					{
-						currentResults.Add( results[j] );
+						throw new ADOException( "Could not execute query", e );
+					}
+
+					for( int j = 0; j < results.Count; j++ )
+					{
+						currentResults.Add( results[ j ] );
 					}
 					results = currentResults;
 				}
-			} 
-			finally 
+			}
+			finally
 			{
 				dontFlushFromFind--;
 			}
@@ -1408,161 +1587,263 @@ namespace NHibernate.Impl
 
 		}
 
-		private QueryTranslator[] GetQueries(string query, bool scalar) 
+		private QueryTranslator[ ] GetQueries( string query, bool scalar )
 		{
 			// a query that naemes an interface or unmapped class in the from clause
 			// is actually executed as multiple queries
-			string[] concreteQueries = QueryTranslator.ConcreteQueries(query, factory);
+			string[ ] concreteQueries = QueryTranslator.ConcreteQueries( query, factory );
 
 			// take the union of the query spaces (ie the queried tables)
-			QueryTranslator[] q = new QueryTranslator[concreteQueries.Length];
+			QueryTranslator[ ] q = new QueryTranslator[concreteQueries.Length];
 			HashedSet qs = new HashedSet();
-			for (int i=0; i<concreteQueries.Length; i++ ) 
+			for( int i = 0; i < concreteQueries.Length; i++ )
 			{
-				q[i] = scalar ? factory.GetShallowQuery( concreteQueries[i] ) : factory.GetQuery( concreteQueries[i] );
-				qs.AddAll( q[i].QuerySpaces );
+				q[ i ] = scalar ? factory.GetShallowQuery( concreteQueries[ i ] ) : factory.GetQuery( concreteQueries[ i ] );
+				qs.AddAll( q[ i ].QuerySpaces );
 			}
 
-			AutoFlushIfRequired(qs);
+			AutoFlushIfRequired( qs );
 
 			return q;
 		}
 
-		public IEnumerable Enumerable(string query) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		public IEnumerable Enumerable( string query )
 		{
-			return Enumerable(query, NoArgs, NoTypes);
+			return Enumerable( query, NoArgs, NoTypes );
 		}
 
-		public IEnumerable Enumerable(string query, object value, IType type) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="value"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable Enumerable( string query, object value, IType type )
 		{
-			return Enumerable( query, new object[] { value }, new IType[] { type } );
+			return Enumerable( query, new object[ ] {value}, new IType[ ] {type} );
 		}
 
-		public IEnumerable Enumerable(string query, object[] values, IType[] types) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="values"></param>
+		/// <param name="types"></param>
+		/// <returns></returns>
+		public IEnumerable Enumerable( string query, object[ ] values, IType[ ] types )
 		{
 			return Enumerable( query, new QueryParameters( types, values ) );
 		}
 
-		public IEnumerable Enumerable(string query, QueryParameters parameters) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public IEnumerable Enumerable( string query, QueryParameters parameters )
 		{
-			if ( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				log.Debug( "GetEnumerable: " + query );
 				parameters.LogParameters();
 			}
 
-			QueryTranslator[] q = GetQueries(query, true);
+			QueryTranslator[ ] q = GetQueries( query, true );
 
-			if (q.Length==0) return new ArrayList();
+			if( q.Length == 0 )
+			{
+				return new ArrayList();
+			}
 
 			IEnumerable result = null;
-			IEnumerable[] results = null;
-			bool many = q.Length>1;
-			if( many ) 
+			IEnumerable[ ] results = null;
+			bool many = q.Length > 1;
+			if( many )
 			{
 				results = new IEnumerable[q.Length];
 			}
 
 			//execute the queries and return all results as a single enumerable
-			for (int i=0; i<q.Length; i++) 
+			for( int i = 0; i < q.Length; i++ )
 			{
-				try 
+				try
 				{
-					result = q[i].GetEnumerable( parameters, this );
-				} 
-				catch (Exception e) 
-				{
-					throw new ADOException("Could not execute query", e);
+					result = q[ i ].GetEnumerable( parameters, this );
 				}
-				if(many) 
+				catch( Exception e )
 				{
-					results[i] = result;
+					throw new ADOException( "Could not execute query", e );
+				}
+				if( many )
+				{
+					results[ i ] = result;
 				}
 			}
 
-			return many ? new JoinedEnumerable(results) : result;
+			return many ? new JoinedEnumerable( results ) : result;
 		}
 
-		public int Delete(string query) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		public int Delete( string query )
 		{
-			return Delete(query, NoArgs, NoTypes);
+			return Delete( query, NoArgs, NoTypes );
 		}
 
-		public int Delete(string query, object value, IType type) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="value"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public int Delete( string query, object value, IType type )
 		{
-			return Delete( query, new object[] { value }, new IType[] { type } );
+			return Delete( query, new object[ ] {value}, new IType[ ] {type} );
 		}
 
-		public int Delete(string query, object[] values, IType[] types) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="values"></param>
+		/// <param name="types"></param>
+		/// <returns></returns>
+		public int Delete( string query, object[ ] values, IType[ ] types )
 		{
-			if ( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
-				log.Debug ( "delete: " + query );
-				if ( values.Length!=0 ) log.Debug( "parameters: " + StringHelper.ToString(values) );
+				log.Debug( "delete: " + query );
+				if( values.Length != 0 )
+				{
+					log.Debug( "parameters: " + StringHelper.ToString( values ) );
+				}
 			}
 
-			IList list = Find(query, values, types);
+			IList list = Find( query, values, types );
 			int count = list.Count;
-			for (int i=0; i<count; i++ ) Delete( list[i] );
+			for( int i = 0; i < count; i++ )
+			{
+				Delete( list[ i ] );
+			}
 			return count;
 		}
 
-		public void Lock(object obj, LockMode lockMode) {
-			
-			if (obj==null) throw new NullReferenceException("attempted to lock null");
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="lockMode"></param>
+		public void Lock( object obj, LockMode lockMode )
+		{
+			if( obj == null )
+			{
+				throw new NullReferenceException( "attempted to lock null" );
+			}
 
-			if (lockMode==LockMode.Write) throw new HibernateException("Invalid lock mode for Lock()");
+			if( lockMode == LockMode.Write )
+			{
+				throw new HibernateException( "Invalid lock mode for Lock()" );
+			}
 
-			obj = UnproxyAndReassociate(obj);
+			obj = UnproxyAndReassociate( obj );
 			//TODO: if object was an uninitialized proxy, this is inefficient, 
 			//resulting in two SQL selects 
 
-			EntityEntry e = GetEntry(obj);
-			if (e==null) throw new TransientObjectException("attempted to lock a transient instance");
+			EntityEntry e = GetEntry( obj );
+			if( e == null )
+			{
+				throw new TransientObjectException( "attempted to lock a transient instance" );
+			}
 			IClassPersister persister = e.Persister;
 
-			if ( lockMode.GreaterThan(e.LockMode) ) 
+			if( lockMode.GreaterThan( e.LockMode ) )
 			{
-				if (e.Status!=Status.Loaded) throw new TransientObjectException("attempted to lock a deleted instance");
-
-				if ( log.IsDebugEnabled ) log.Debug( "locking " + MessageHelper.InfoString(persister, e.Id) + " in mode: " + lockMode);
-
-				if ( persister.HasCache ) persister.Cache.Lock(e.Id);
-				try 
+				if( e.Status != Status.Loaded )
 				{
-					persister.Lock(e.Id, e.Version, obj, lockMode, this);
+					throw new TransientObjectException( "attempted to lock a deleted instance" );
+				}
+
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "locking " + MessageHelper.InfoString( persister, e.Id ) + " in mode: " + lockMode );
+				}
+
+				if( persister.HasCache )
+				{
+					persister.Cache.Lock( e.Id );
+				}
+				try
+				{
+					persister.Lock( e.Id, e.Version, obj, lockMode, this );
 					e.LockMode = lockMode;
-				} 
-				catch (Exception exp) 
+				}
+				catch( Exception exp )
 				{
-					throw new ADOException("could not lock object", exp);
-				} 
-				finally 
+					throw new ADOException( "could not lock object", exp );
+				}
+				finally
 				{
 					// the database now holds a lock + the object is flushed from the cache,
 					// so release the soft lock
-					if ( persister.HasCache ) persister.Cache.Release(e.Id);
+					if( persister.HasCache )
+					{
+						persister.Cache.Release( e.Id );
+					}
 				}
 			}
 		}
 
-		public IQuery CreateFilter(object collection, string queryString) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="queryString"></param>
+		/// <returns></returns>
+		public IQuery CreateFilter( object collection, string queryString )
 		{
-			return new FilterImpl(queryString, collection, this);
+			return new FilterImpl( queryString, collection, this );
 		}
 
-		public IQuery CreateQuery(string queryString) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="queryString"></param>
+		/// <returns></returns>
+		public IQuery CreateQuery( string queryString )
 		{
-			return new QueryImpl(queryString, this);
-		}
-		public IQuery GetNamedQuery(string queryName) 
-		{
-			return CreateQuery( factory.GetNamedQuery(queryName) );
+			return new QueryImpl( queryString, this );
 		}
 
-		public object Instantiate(System.Type clazz, object id) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="queryName"></param>
+		/// <returns></returns>
+		public IQuery GetNamedQuery( string queryName )
 		{
-			return Instantiate( factory.GetPersister(clazz), id );
+			return CreateQuery( factory.GetNamedQuery( queryName ) );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public object Instantiate( System.Type clazz, object id )
+		{
+			return Instantiate( factory.GetPersister( clazz ), id );
 		}
 
 		/// <summary>
@@ -1571,14 +1852,18 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public object Instantiate(IClassPersister persister, object id) 
+		public object Instantiate( IClassPersister persister, object id )
 		{
 			object result = interceptor.Instantiate( persister.MappedClass, id );
-			if (result==null) result = persister.Instantiate(id);
+			if( result == null )
+			{
+				result = persister.Instantiate( id );
+			}
 			return result;
 		}
 
-		public FlushMode FlushMode 
+		/// <summary></summary>
+		public FlushMode FlushMode
 		{
 			get { return flushMode; }
 			set { flushMode = value; }
@@ -1590,28 +1875,26 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="querySpaces"></param>
 		/// <returns></returns>
-		private bool AutoFlushIfRequired(ISet querySpaces) 
+		private bool AutoFlushIfRequired( ISet querySpaces )
 		{
-
-			if ( flushMode==FlushMode.Auto && dontFlushFromFind==0 ) 
+			if( flushMode == FlushMode.Auto && dontFlushFromFind == 0 )
 			{
-
 				int oldSize = collectionRemovals.Count;
 
 				FlushEverything();
 
-				if ( AreTablesToBeUpdated(querySpaces) ) 
+				if( AreTablesToBeUpdated( querySpaces ) )
 				{
-					log.Debug("Need to execute flush");
+					log.Debug( "Need to execute flush" );
 
 					Execute();
 					PostFlush();
 					// note: Execute() clears all collectionXxxxtion collections
 					return true;
-				} 
-				else 
+				}
+				else
 				{
-					log.Debug("dont need to execute flush");
+					log.Debug( "dont need to execute flush" );
 
 					// sort of don't like this: we re-use the same collections each flush
 					// even though their state is not kept between flushes. However, its
@@ -1622,9 +1905,9 @@ namespace NHibernate.Impl
 					updates.Clear();
 					// collection deletes are a special case since Update() can add
 					// deletions of collections not loaded by the session.
-					for (int i=collectionRemovals.Count-1; i>=oldSize; i-- ) 
+					for( int i = collectionRemovals.Count - 1; i >= oldSize; i-- )
 					{
-						collectionRemovals.RemoveAt(i);
+						collectionRemovals.RemoveAt( i );
 					}
 				}
 			}
@@ -1642,25 +1925,26 @@ namespace NHibernate.Impl
 		/// <param name="key"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public object NarrowProxy(object proxy, IClassPersister p, Key key, object obj) 
+		public object NarrowProxy( object proxy, IClassPersister p, Key key, object obj )
 		{
-
-			if ( !p.ConcreteProxyClass.IsAssignableFrom( proxy.GetType() ) ) 
+			if( !p.ConcreteProxyClass.IsAssignableFrom( proxy.GetType() ) )
 			{
-				if ( log.IsWarnEnabled ) 
-					log.Warn(
-						 "Narrowing proxy to " + p.ConcreteProxyClass + " - this operation breaks =="
-						 );
-
-				if (obj!=null) 
+				if( log.IsWarnEnabled )
 				{
-					proxiesByKey.Remove(key);
+					log.Warn(
+						"Narrowing proxy to " + p.ConcreteProxyClass + " - this operation breaks =="
+						);
+				}
+
+				if( obj != null )
+				{
+					proxiesByKey.Remove( key );
 					return obj;
-				} 
-				else 
+				}
+				else
 				{
 					IProxyGenerator generator = ProxyGeneratorFactory.GetProxyGenerator();
-					proxy = generator.GetProxy( 
+					proxy = generator.GetProxy(
 						p.MappedClass
 						, p.ConcreteProxyClass
 						, p.ProxyInterfaces
@@ -1668,43 +1952,54 @@ namespace NHibernate.Impl
 						, key.Identifier
 						, this );
 
-					proxiesByKey[key] = proxy;
+					proxiesByKey[ key ] = proxy;
 					return proxy;
 				}
-			} 
-			else 
+			}
+			else
 			{
 				return proxy;
 			}
 		}
 
-		// Grab the existing proxy for an instance, if one exists
-		public object ProxyFor(IClassPersister persister, Key key, object impl) 
+		/// <summary>
+		/// Grab the existing proxy for an instance, if one exists
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="key"></param>
+		/// <param name="impl"></param>
+		/// <returns></returns>
+		public object ProxyFor( IClassPersister persister, Key key, object impl )
 		{
-			if ( !persister.HasProxy || key==null ) 
+			if( !persister.HasProxy || key == null )
 			{
 				return impl;
 			}
 
-			object proxy = proxiesByKey[key];
-			if (proxy!=null) 
+			object proxy = proxiesByKey[ key ];
+			if( proxy != null )
 			{
-				return NarrowProxy(proxy, persister, key, impl);
-			} 
-			else 
+				return NarrowProxy( proxy, persister, key, impl );
+			}
+			else
 			{
 				return impl;
 			}
 		}
 
-		public object ProxyFor(object impl) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="impl"></param>
+		/// <returns></returns>
+		public object ProxyFor( object impl )
 		{
-			EntityEntry e = GetEntry(impl);
+			EntityEntry e = GetEntry( impl );
 
 			// can't use e.persister since it is null after addUninitializedEntity 
 			// (when this method is called)
-			IClassPersister p = GetPersister(impl);
-			return ProxyFor( p, new Key(e.Id, p), impl);
+			IClassPersister p = GetPersister( impl );
+			return ProxyFor( p, new Key( e.Id, p ), impl );
 		}
 
 		/// <summary>
@@ -1715,10 +2010,11 @@ namespace NHibernate.Impl
 		/// <param name="key"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
-		public void AddUninitializedEntity(Key key, object obj, LockMode lockMode) {
+		public void AddUninitializedEntity( Key key, object obj, LockMode lockMode )
+		{
 			//IClassPersister p = GetPersister(obj);
-			AddEntity(key, obj);
-			AddEntry(obj, Status.Loading, null, key.Identifier, null, lockMode, true, null); // p );
+			AddEntity( key, obj );
+			AddEntry( obj, Status.Loading, null, key.Identifier, null, lockMode, true, null ); // p );
 		}
 
 		/// <summary>
@@ -1731,30 +2027,54 @@ namespace NHibernate.Impl
 		/// <param name="values"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
-		public void PostHydrate(IClassPersister persister, object id, object[] values, object obj, LockMode lockMode) {
-			persister.SetIdentifier(obj, id);
-			object version = Versioning.GetVersion(values, persister);
-			AddEntry(obj, Status.Loaded, values, id, version, lockMode, true, persister);
+		public void PostHydrate( IClassPersister persister, object id, object[ ] values, object obj, LockMode lockMode )
+		{
+			persister.SetIdentifier( obj, id );
+			object version = Versioning.GetVersion( values, persister );
+			AddEntry( obj, Status.Loaded, values, id, version, lockMode, true, persister );
 
-			if ( log.IsDebugEnabled && version!=null) log.Debug("Version: " + version);
+			if( log.IsDebugEnabled && version != null )
+			{
+				log.Debug( "Version: " + version );
+			}
 		}
 
-		private void ThrowObjectNotFound(object o, object id, System.Type clazz) 
+		private void ThrowObjectNotFound( object o, object id, System.Type clazz )
 		{
-			if (o==null) throw new ObjectNotFoundException( "No row with the given identifier exists", id, clazz );
+			if( o == null )
+			{
+				throw new ObjectNotFoundException( "No row with the given identifier exists", id, clazz );
+			}
 		}
 
-		public void Load(object obj, object id) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="id"></param>
+		public void Load( object obj, object id )
 		{
-			if (id==null) throw new NullReferenceException("null is not a valid identifier");
-			DoLoadByObject(obj, id, true, LockMode.None);
+			if( id == null )
+			{
+				throw new NullReferenceException( "null is not a valid identifier" );
+			}
+			DoLoadByObject( obj, id, true, LockMode.None );
 		}
 
-		public object Load(System.Type clazz, object id) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public object Load( System.Type clazz, object id )
 		{
-			if (id==null) throw new NullReferenceException("null is not a valid identifier");
-			object result = DoLoadByClass(clazz, id, true, true);
-			ThrowObjectNotFound(result, id, clazz);
+			if( id == null )
+			{
+				throw new NullReferenceException( "null is not a valid identifier" );
+			}
+			object result = DoLoadByClass( clazz, id, true, true );
+			ThrowObjectNotFound( result, id, clazz );
 			return result;
 		}
 
@@ -1762,10 +2082,10 @@ namespace NHibernate.Impl
 		/// Load the data for the object with the specified id into a newly created object.
 		/// Do NOT return a proxy.
 		///</summary>
-		public object ImmediateLoad(System.Type clazz, object id) 
+		public object ImmediateLoad( System.Type clazz, object id )
 		{
-			object result = DoLoad(clazz, id, null, LockMode.None, false);
-			ThrowObjectNotFound(result, id, clazz);
+			object result = DoLoad( clazz, id, null, LockMode.None, false );
+			ThrowObjectNotFound( result, id, clazz );
 			return result;
 		}
 
@@ -1773,45 +2093,53 @@ namespace NHibernate.Impl
 		/// Return the object with the specified id or null if no row with that id exists. Do not defer the load
 		/// or return a new proxy (but do return an existing proxy). Do not check if the object was deleted.
 		///</summary>
-		public object InternalLoadOneToOne(System.Type clazz, object id) 
+		public object InternalLoadOneToOne( System.Type clazz, object id )
 		{
-			return DoLoadByClass(clazz, id, false, false);
+			return DoLoadByClass( clazz, id, false, false );
 		}
 
 		/**
 		* Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
 		* return a new proxy or return an existing proxy if possible. Do not check if the object was deleted.
 		*/
-		public object InternalLoad(System.Type clazz, object id) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public object InternalLoad( System.Type clazz, object id )
 		{
-			object result = DoLoadByClass(clazz, id, false, true);
-			ThrowObjectNotFound(result, id, clazz);
+			object result = DoLoadByClass( clazz, id, false, true );
+			ThrowObjectNotFound( result, id, clazz );
 			return result;
 		}
-		
+
 		/**
 		* Load the data for the object with the specified id into the supplied
 		* instance. A new key will be assigned to the object. If there is an
 		* existing uninitialized proxy, this will break identity equals as far
 		* as the application is concerned.
 		*/
-		private void DoLoadByObject(object obj, object id, bool checkDeleted, LockMode lockMode) 
+
+		private void DoLoadByObject( object obj, object id, bool checkDeleted, LockMode lockMode )
 		{
 			System.Type clazz = obj.GetType();
-			if ( GetEntry(obj)!=null ) 
+			if( GetEntry( obj ) != null )
 			{
 				throw new PersistentObjectException(
-					"attempted to load into an instance that was already associated with the Session: "+
-					MessageHelper.InfoString(clazz, id)
+					"attempted to load into an instance that was already associated with the Session: " +
+						MessageHelper.InfoString( clazz, id )
 					);
 			}
-			object result = DoLoad(clazz, id, obj, lockMode, checkDeleted);
-			ThrowObjectNotFound(result, id, clazz);
-			if (result!=obj) 
+			object result = DoLoad( clazz, id, obj, lockMode, checkDeleted );
+			ThrowObjectNotFound( result, id, clazz );
+			if( result != obj )
 			{
 				throw new HibernateException(
 					"The object with that id was already loaded by the Session: " +
-					MessageHelper.InfoString(clazz, id)
+						MessageHelper.InfoString( clazz, id )
 					);
 			}
 		}
@@ -1837,51 +2165,53 @@ namespace NHibernate.Impl
 		/// <c>true</c> and the object has been deleted then an <see cref="ObjectDeletedException"/> will be
 		/// thrown.
 		/// </remarks>
-		private object DoLoadByClass(System.Type clazz, object id, bool checkDeleted, bool allowProxyCreation) 
+		private object DoLoadByClass( System.Type clazz, object id, bool checkDeleted, bool allowProxyCreation )
 		{
-			if ( log.IsDebugEnabled ) log.Debug( "loading " + MessageHelper.InfoString(clazz, id) );
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "loading " + MessageHelper.InfoString( clazz, id ) );
+			}
 
-			IClassPersister persister = GetPersister(clazz);
-			if ( !persister.HasProxy ) 
+			IClassPersister persister = GetPersister( clazz );
+			if( !persister.HasProxy )
 			{
 				// this class has no proxies (so do a shortcut)
-				return DoLoad(clazz, id, null, LockMode.None, checkDeleted);
-			} 
-			else 
+				return DoLoad( clazz, id, null, LockMode.None, checkDeleted );
+			}
+			else
 			{
-				Key key = new Key(id, persister);
+				Key key = new Key( id, persister );
 				object proxy = null;
 
-				if ( GetEntity(key)!=null ) 
+				if( GetEntity( key ) != null )
 				{
 					// return existing object or initialized proxy (unless deleted)
 					return ProxyFor(
 						persister,
 						key,
-						DoLoad(clazz, id, null, LockMode.None, checkDeleted)
+						DoLoad( clazz, id, null, LockMode.None, checkDeleted )
 						);
-				} 
-				else if ( ( proxy = proxiesByKey[key] ) != null ) 
+				}
+				else if( ( proxy = proxiesByKey[ key ] ) != null )
 				{
 					// return existing uninitizlied proxy
-					return NarrowProxy(proxy, persister, key, null);
-				} 
-				else if ( allowProxyCreation ) 
+					return NarrowProxy( proxy, persister, key, null );
+				}
+				else if( allowProxyCreation )
 				{
-
 					// return new uninitailzed proxy
-					if ( persister.HasProxy ) 
+					if( persister.HasProxy )
 					{
 						IProxyGenerator generator = ProxyGeneratorFactory.GetProxyGenerator();
 						proxy = generator.GetProxy( clazz, persister.ConcreteProxyClass, persister.ProxyInterfaces, persister.ProxyIdentifierProperty, id, this );
 					}
-					proxiesByKey[key] = proxy;
+					proxiesByKey[ key ] = proxy;
 					return proxy;
-				} 
-				else 
+				}
+				else
 				{
 					// return a newly loaded object
-					return DoLoad(clazz, id, null, LockMode.None, checkDeleted);
+					return DoLoad( clazz, id, null, LockMode.None, checkDeleted );
 				}
 			}
 		}
@@ -1895,31 +2225,46 @@ namespace NHibernate.Impl
 		/// <param name="id"></param>
 		/// <param name="lockMode"></param>
 		/// <returns></returns>
-		public object Load(System.Type clazz, object id, LockMode lockMode) 
+		public object Load( System.Type clazz, object id, LockMode lockMode )
 		{
-			if ( lockMode==LockMode.Write ) throw new HibernateException("invalid lock mode for Load()");
-
-			if ( log.IsDebugEnabled ) log.Debug( "loading " + MessageHelper.InfoString(clazz, id) + " in lock mode: " + lockMode );
-			if (id==null) throw new NullReferenceException("null is not a valid identifier");
-
-			IClassPersister persister = GetPersister(clazz);
-			if ( persister.HasCache ) persister.Cache.Lock(id); //increments the lock
-			object result;
-			try 
+			if( lockMode == LockMode.Write )
 			{
-				result = DoLoad(clazz, id, null, lockMode, true);
-			} 
-			finally 
+				throw new HibernateException( "invalid lock mode for Load()" );
+			}
+
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "loading " + MessageHelper.InfoString( clazz, id ) + " in lock mode: " + lockMode );
+			}
+			if( id == null )
+			{
+				throw new NullReferenceException( "null is not a valid identifier" );
+			}
+
+			IClassPersister persister = GetPersister( clazz );
+			if( persister.HasCache )
+			{
+				persister.Cache.Lock( id );
+			} //increments the lock
+			object result;
+			try
+			{
+				result = DoLoad( clazz, id, null, lockMode, true );
+			}
+			finally
 			{
 				// the datbase now hold a lock + the object is flushed from the cache,
 				// so release the soft lock
-				if ( persister.HasCache ) persister.Cache.Release(id);
+				if( persister.HasCache )
+				{
+					persister.Cache.Release( id );
+				}
 			}
 
 			ThrowObjectNotFound( result, id, persister.MappedClass );
 
 			// retunr existing proxy (if one exists)
-			return ProxyFor(persister, new Key(id, persister), result );
+			return ProxyFor( persister, new Key( id, persister ), result );
 		}
 
 		/// <summary>
@@ -1936,123 +2281,156 @@ namespace NHibernate.Impl
 		/// 2. see if it is cached
 		/// 3. actually go to the database
 		/// </remarks>
-		private object DoLoad(System.Type theClass, object id, object optionalObject, LockMode lockMode, bool checkDeleted) 
+		private object DoLoad( System.Type theClass, object id, object optionalObject, LockMode lockMode, bool checkDeleted )
 		{
 			//DONT need to flush before a load by id
 
-			if ( log.IsDebugEnabled ) log.Debug( "attempting to resolve " + MessageHelper.InfoString(theClass, id) );
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "attempting to resolve " + MessageHelper.InfoString( theClass, id ) );
+			}
 
-			bool isOptionalObject = optionalObject!=null;
+			bool isOptionalObject = optionalObject != null;
 
-			IClassPersister persister = GetPersister(theClass);
-			Key key = new Key(id, persister);
+			IClassPersister persister = GetPersister( theClass );
+			Key key = new Key( id, persister );
 
 			// LOOK FOR LOADED OBJECT 
 			// Look for Status.Loaded object
-			object old = GetEntity(key);
-			if (old!=null) 
+			object old = GetEntity( key );
+			if( old != null )
 			{ //if this object was already loaded
-				Status status = GetEntry(old).Status;
-				if ( checkDeleted && ( status==Status.Deleted || status==Status.Gone) ) 
+				Status status = GetEntry( old ).Status;
+				if( checkDeleted && ( status == Status.Deleted || status == Status.Gone ) )
 				{
-					throw new ObjectDeletedException("The object with that id was deleted", id);
+					throw new ObjectDeletedException( "The object with that id was deleted", id );
 				}
-				Lock(old, lockMode);
-				if ( log.IsDebugEnabled ) log.Debug( "resolved object in session cache " + MessageHelper.InfoString(persister, id) );
+				Lock( old, lockMode );
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "resolved object in session cache " + MessageHelper.InfoString( persister, id ) );
+				}
 				return old;
-			
-			} 
-			else 
+
+			}
+			else
 			{
 				// LOOK IN CACHE
-				CacheEntry entry = persister.HasCache ? (CacheEntry) persister.Cache.Get(id, timestamp) : null;
-				if (entry!=null) 
+				CacheEntry entry = persister.HasCache ? ( CacheEntry ) persister.Cache.Get( id, timestamp ) : null;
+				if( entry != null )
 				{
-					if ( log.IsDebugEnabled ) log.Debug( "resolved object in JCS cache " + MessageHelper.InfoString(persister, id) );
+					if( log.IsDebugEnabled )
+					{
+						log.Debug( "resolved object in JCS cache " + MessageHelper.InfoString( persister, id ) );
+					}
 					IClassPersister subclassPersister = GetPersister( entry.Subclass );
-					object result = (isOptionalObject) ? optionalObject : Instantiate(subclassPersister, id);
-					AddEntry(result, Status.Loading, null, id, null, LockMode.None, true, subclassPersister);
-					AddEntity( new Key(id, persister), result );
-					object[] values = entry.Assemble(result, id, subclassPersister, this); // intializes result by side-effect
+					object result = ( isOptionalObject ) ? optionalObject : Instantiate( subclassPersister, id );
+					AddEntry( result, Status.Loading, null, id, null, LockMode.None, true, subclassPersister );
+					AddEntity( new Key( id, persister ), result );
+					object[ ] values = entry.Assemble( result, id, subclassPersister, this ); // intializes result by side-effect
 
-					IType[] types = subclassPersister.PropertyTypes;
-					TypeFactory.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values);
-					object version = Versioning.GetVersion(values, subclassPersister);
-					
-					if ( log.IsDebugEnabled ) log.Debug("Cached Version: " + version);
-					AddEntry(result, Status.Loaded, values, id, version, LockMode.None, true, subclassPersister);
-					
+					IType[ ] types = subclassPersister.PropertyTypes;
+					TypeFactory.DeepCopy( values, types, subclassPersister.PropertyUpdateability, values );
+					object version = Versioning.GetVersion( values, subclassPersister );
+
+					if( log.IsDebugEnabled )
+					{
+						log.Debug( "Cached Version: " + version );
+					}
+					AddEntry( result, Status.Loaded, values, id, version, LockMode.None, true, subclassPersister );
+
 					// upgrate lock if necessary;
-					Lock(result, lockMode);
+					Lock( result, lockMode );
 
 					return result;
-				
-				} 
-				else 
+
+				}
+				else
 				{
 					//GO TO DATABASE
-					if ( log.IsDebugEnabled ) log.Debug( "object not resolved in any cache " + MessageHelper.InfoString(persister, id) );
-					try 
+					if( log.IsDebugEnabled )
 					{
-						return persister.Load(id, optionalObject, lockMode, this);
+						log.Debug( "object not resolved in any cache " + MessageHelper.InfoString( persister, id ) );
+					}
+					try
+					{
+						return persister.Load( id, optionalObject, lockMode, this );
 					} 
 						//TODO: change to some kind of SqlException
-					catch (Exception e) 
+					catch( Exception e )
 					{
-						throw new ADOException("could not load object", e);
+						throw new ADOException( "could not load object", e );
 					}
 				}
 			}
 		}
 
-		public void Refresh(object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		public void Refresh( object obj )
 		{
-			Refresh(obj, LockMode.Read);
+			Refresh( obj, LockMode.Read );
 		}
 
-		public void Refresh(object obj, LockMode lockMode) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="lockMode"></param>
+		public void Refresh( object obj, LockMode lockMode )
 		{
-			if (obj==null) throw new NullReferenceException("attempted to refresh null");
-
-			if ( !NHibernate.IsInitialized(obj) ) 
-			{ 
-				ReassociateProxy(obj); 
-				return; 
-			} 
-
-			object theObj = UnproxyAndReassociate(obj);
-			EntityEntry e = RemoveEntry(theObj);
-
-			if(e==null) 
+			if( obj == null )
 			{
-				IClassPersister persister = GetPersister(theObj);
-				object id = persister.GetIdentifier(theObj);
-				if(log.IsDebugEnabled) 
-				{
-					log.Debug( "refreshing transient " + MessageHelper.InfoString(persister, id) );
-				}
-
-				DoLoadByObject(theObj, id, true, lockMode);
+				throw new NullReferenceException( "attempted to refresh null" );
 			}
-			else 
+
+			if( !NHibernate.IsInitialized( obj ) )
 			{
-				if ( log.IsDebugEnabled ) log.Debug( "refreshing " + MessageHelper.InfoString(e.Persister, e.Id) );
+				ReassociateProxy( obj );
+				return;
+			}
 
-				if ( !e.ExistsInDatabase ) throw new HibernateException("this instance does not yet exist as a row in the database");
+			object theObj = UnproxyAndReassociate( obj );
+			EntityEntry e = RemoveEntry( theObj );
 
-				Key key = new Key(e.Id, e.Persister);
-				RemoveEntity( key );
-				EvictCollections( e.Persister.GetPropertyValues(obj), e.Persister.PropertyTypes );
-
-				try 
+			if( e == null )
+			{
+				IClassPersister persister = GetPersister( theObj );
+				object id = persister.GetIdentifier( theObj );
+				if( log.IsDebugEnabled )
 				{
-					e.Persister.Load( e.Id, theObj, lockMode, this);
-				} 
-				catch (Exception exp) 
-				{
-					throw new ADOException("could not refresh object", exp);
+					log.Debug( "refreshing transient " + MessageHelper.InfoString( persister, id ) );
 				}
-				GetEntry(theObj).LockMode = e.LockMode;
+
+				DoLoadByObject( theObj, id, true, lockMode );
+			}
+			else
+			{
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "refreshing " + MessageHelper.InfoString( e.Persister, e.Id ) );
+				}
+
+				if( !e.ExistsInDatabase )
+				{
+					throw new HibernateException( "this instance does not yet exist as a row in the database" );
+				}
+
+				Key key = new Key( e.Id, e.Persister );
+				RemoveEntity( key );
+				EvictCollections( e.Persister.GetPropertyValues( obj ), e.Persister.PropertyTypes );
+
+				try
+				{
+					e.Persister.Load( e.Id, theObj, lockMode, this );
+				}
+				catch( Exception exp )
+				{
+					throw new ADOException( "could not refresh object", exp );
+				}
+				GetEntry( theObj ).LockMode = e.LockMode;
 			}
 		}
 
@@ -2062,54 +2440,65 @@ namespace NHibernate.Impl
 		/// "hydrated" into an array
 		/// </summary>
 		/// <param name="obj"></param>
-		public void InitializeEntity(object obj) 
+		public void InitializeEntity( object obj )
 		{
-			EntityEntry e = GetEntry(obj);
+			EntityEntry e = GetEntry( obj );
 			IClassPersister persister = e.Persister;
 			object id = e.Id;
-			object[] hydratedState = e.LoadedState;
-			IType[] types = persister.PropertyTypes;
+			object[ ] hydratedState = e.LoadedState;
+			IType[ ] types = persister.PropertyTypes;
 
-			if(log.IsDebugEnabled) 
+			if( log.IsDebugEnabled )
 			{
-				log.Debug("resolving associations for: " + MessageHelper.InfoString(persister, id) );
+				log.Debug( "resolving associations for: " + MessageHelper.InfoString( persister, id ) );
 			}
 
 			interceptor.OnLoad( obj, id, hydratedState, persister.PropertyNames, types );
 
-			for ( int i=0; i<hydratedState.Length; i++ ) 
+			for( int i = 0; i < hydratedState.Length; i++ )
 			{
-				hydratedState[i] = types[i].ResolveIdentifier( hydratedState[i], this, obj );
+				hydratedState[ i ] = types[ i ].ResolveIdentifier( hydratedState[ i ], this, obj );
 			}
 
-			persister.SetPropertyValues(obj, hydratedState);
-			TypeFactory.DeepCopy(hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState); 
+			persister.SetPropertyValues( obj, hydratedState );
+			TypeFactory.DeepCopy( hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState );
 
-			if ( persister.HasCache ) 
+			if( persister.HasCache )
 			{
-				if ( log.IsDebugEnabled ) log.Debug( "adding entity to JCS cache " + MessageHelper.InfoString(persister, id) );
-				persister.Cache.Put( id, new CacheEntry( obj, persister, this), timestamp );
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "adding entity to JCS cache " + MessageHelper.InfoString( persister, id ) );
+				}
+				persister.Cache.Put( id, new CacheEntry( obj, persister, this ), timestamp );
 			}
 
 			// reentrantCallback=true;
-			if ( persister.ImplementsLifecycle ) ((ILifecycle) obj).OnLoad(this, id);
+			if( persister.ImplementsLifecycle )
+			{
+				( ( ILifecycle ) obj ).OnLoad( this, id );
+			}
 
 			// reentrantCallback=false;
-			if ( log.IsDebugEnabled ) log.Debug( "done materializing entity " + MessageHelper.InfoString(persister, id) );
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "done materializing entity " + MessageHelper.InfoString( persister, id ) );
+			}
 		}
 
-		public ITransaction BeginTransaction() 
+		/// <summary></summary>
+		public ITransaction BeginTransaction()
 		{
 			callAfterTransactionCompletionFromDisconnect = false;
 
-			transaction = factory.TransactionFactory.BeginTransaction(this);
+			transaction = factory.TransactionFactory.BeginTransaction( this );
 
 			return transaction;
 		}
 
-		public ITransaction Transaction 
+		/// <summary></summary>
+		public ITransaction Transaction
 		{
-			get {return transaction;}
+			get { return transaction; }
 		}
 
 		/// <summary>
@@ -2133,9 +2522,9 @@ namespace NHibernate.Impl
 		/// holding. If they had a nonpersistable collection, substitute a persistable one
 		/// </para>
 		/// </remarks>
-		public void Flush() 
+		public void Flush()
 		{
-			if (cascading>0) 
+			if( cascading > 0 )
 			{
 				throw new HibernateException(
 					"Flush during cascade is dangerous - this might occur if an object as deleted and then re-saved by cascade"
@@ -2146,9 +2535,9 @@ namespace NHibernate.Impl
 			PostFlush();
 		}
 
-		private void FlushEverything() 
+		private void FlushEverything()
 		{
-			log.Debug("flushing session");
+			log.Debug( "flushing session" );
 
 			interceptor.PreFlush( entitiesByKey.Values );
 
@@ -2159,49 +2548,52 @@ namespace NHibernate.Impl
 
 			//some stats
 
-			if ( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Flushed: " +
 					insertions.Count + " insertions, " +
 					updates.Count + " updates, " +
 					deletions.Count + " deletions to " +
-					entries.Count + " objects");
+					entries.Count + " objects" );
 				log.Debug( "Flushed: " +
 					collectionCreations.Count + " (re)creations, " +
 					collectionUpdates.Count + " updates, " +
 					collectionRemovals.Count + " removals to " +
-					collections.Count + " collections");
+					collections.Count + " collections" );
 			}
 		}
 
-		private bool AreTablesToBeUpdated(ISet tables) 
+		private bool AreTablesToBeUpdated( ISet tables )
 		{
-			return AreTablesToUpdated( updates, tables) ||
-				AreTablesToUpdated( insertions, tables) ||
-				AreTablesToUpdated( deletions, tables) ||
-				AreTablesToUpdated( collectionUpdates, tables) ||
-				AreTablesToUpdated( collectionCreations, tables) ||
-				AreTablesToUpdated( collectionRemovals, tables);
+			return AreTablesToUpdated( updates, tables ) ||
+				AreTablesToUpdated( insertions, tables ) ||
+				AreTablesToUpdated( deletions, tables ) ||
+				AreTablesToUpdated( collectionUpdates, tables ) ||
+				AreTablesToUpdated( collectionCreations, tables ) ||
+				AreTablesToUpdated( collectionRemovals, tables );
 		}
 
-		private bool AreTablesToUpdated(ICollection coll, ISet theSet) 
+		private bool AreTablesToUpdated( ICollection coll, ISet theSet )
 		{
-			foreach( IExecutable executable in coll ) 
+			foreach( IExecutable executable in coll )
 			{
-				object[] spaces = executable.PropertySpaces;
-				for (int i=0; i<spaces.Length; i++) 
+				object[ ] spaces = executable.PropertySpaces;
+				for( int i = 0; i < spaces.Length; i++ )
 				{
-					if ( theSet.Contains( spaces[i] ) ) return true;
+					if( theSet.Contains( spaces[ i ] ) )
+					{
+						return true;
+					}
 				}
 			}
 			return false;
 		}
 
-		private void Execute() 
+		private void Execute()
 		{
-			log.Debug("executing flush");
+			log.Debug( "executing flush" );
 
-			try 
+			try
 			{
 				// see the comments in ExecuteAll for why the Clear() has been added here...
 				ExecuteAll( insertions );
@@ -2222,51 +2614,68 @@ namespace NHibernate.Impl
 				ExecuteAll( deletions );
 				deletions.Clear();
 
-			} 
-			catch (Exception e) 
+			}
+			catch( Exception e )
 			{
-				throw new ADOException("could not synchronize database state with session", e);
+				throw new ADOException( "could not synchronize database state with session", e );
 			}
 		}
 
-		public void PostInsert(object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		public void PostInsert( object obj )
 		{
-			GetEntry(obj).ExistsInDatabase = true;
+			GetEntry( obj ).ExistsInDatabase = true;
 		}
 
-		public void PostDelete(object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		public void PostDelete( object obj )
 		{
-			EntityEntry e = RemoveEntry(obj);
+			EntityEntry e = RemoveEntry( obj );
 			e.Status = Status.Gone;
-			Key key = new Key(e.Id, e.Persister);
-			RemoveEntity(key);
-			proxiesByKey.Remove(key);
+			Key key = new Key( e.Id, e.Persister );
+			RemoveEntity( key );
+			proxiesByKey.Remove( key );
 		}
 
-		public void PostUpdate(object obj, object[] updatedState, object nextVersion) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="updatedState"></param>
+		/// <param name="nextVersion"></param>
+		public void PostUpdate( object obj, object[ ] updatedState, object nextVersion )
 		{
-			EntityEntry e = GetEntry(obj);
+			EntityEntry e = GetEntry( obj );
 			e.LoadedState = updatedState;
 			e.LockMode = LockMode.Write;
-			if(e.Persister.IsVersioned) 
+			if( e.Persister.IsVersioned )
 			{
 				e.Version = nextVersion;
-				e.Persister.SetPropertyValue(obj, e.Persister.VersionProperty, nextVersion);
+				e.Persister.SetPropertyValue( obj, e.Persister.VersionProperty, nextVersion );
 			}
 		}
 
-		private void ExecuteAll(ICollection coll) 
+		private void ExecuteAll( ICollection coll )
 		{
-			foreach(IExecutable e in coll) 
+			foreach( IExecutable e in coll )
 			{
-				executions.Add(e);
+				executions.Add( e );
 				e.Execute();
 				// this was moved to Execute because there is no way to
 				// remove an item from an enumerator...
 				// iter.remove -> coll.Remove()??
 			}
-			
-			if ( batcher!=null ) batcher.ExecuteBatch();
+
+			if( batcher != null )
+			{
+				batcher.ExecuteBatch();
+			}
 		}
 
 		/// <summary>
@@ -2274,58 +2683,58 @@ namespace NHibernate.Impl
 		/// 2. schedule any entity updates
 		/// 3. search out any reachable collections
 		/// </summary>
-		private void FlushEntities() 
+		private void FlushEntities()
 		{
-			log.Debug("Flushing entities and processing referenced collections");
+			log.Debug( "Flushing entities and processing referenced collections" );
 
 			// Among other things, updateReachables() will recursively load all
 			// collections that are moving roles. This might cause entities to
 			// be loaded.
-		
+
 			// So this needs to be safe from concurrent modification problems.
 			// It is safe because of how IdentityMap implements entrySet()
-			
-			ICollection iterSafeCollection = IdentityMap.ConcurrentEntries(entries);
 
-			foreach(DictionaryEntry me in iterSafeCollection) 
-			{	
-				EntityEntry entry = (EntityEntry) me.Value;
+			ICollection iterSafeCollection = IdentityMap.ConcurrentEntries( entries );
+
+			foreach( DictionaryEntry me in iterSafeCollection )
+			{
+				EntityEntry entry = ( EntityEntry ) me.Value;
 				Status status = entry.Status;
 
-				if( status!=Status.Loading && status!=Status.Gone ) 
+				if( status != Status.Loading && status != Status.Gone )
 				{
 					object obj = me.Key;
 					IClassPersister persister = entry.Persister;
 
 					// make sure user didn't mangle the id
-					if ( persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier ) 
+					if( persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier )
 					{
-						object oid = persister.GetIdentifier(obj);
+						object oid = persister.GetIdentifier( obj );
 
-						if ( !entry.Id.Equals(oid) ) 
+						if( !entry.Id.Equals( oid ) )
 						{
 							throw new HibernateException(
 								"identiifier of an instance of " +
-								persister.ClassName +
-								" altered from " +
-								entry.Id + "(" + entry.Id.GetType().ToString() + ")" +
-								" to " + oid + "(" + oid.GetType().ToString() + ")"
+									persister.ClassName +
+									" altered from " +
+									entry.Id + "(" + entry.Id.GetType().ToString() + ")" +
+									" to " + oid + "(" + oid.GetType().ToString() + ")"
 								);
 						}
 					}
 
-					object[] values;
-					if( status==Status.Deleted ) 
+					object[ ] values;
+					if( status == Status.Deleted )
 					{
 						//grab its state saved at deletion
 						values = entry.DeletedState;
-					} 
-					else 
+					}
+					else
 					{
 						//grab its current state
-						values = persister.GetPropertyValues(obj);
+						values = persister.GetPropertyValues( obj );
 					}
-					IType[] types = persister.PropertyTypes;
+					IType[ ] types = persister.PropertyTypes;
 
 					// wrap up any new collections directly referenced by the object
 					// or its components
@@ -2335,24 +2744,24 @@ namespace NHibernate.Impl
 					// _them_ don't dirty the container. Also, for versioned
 					// data, we need to wrap before calling searchForDirtyCollections
 
-					bool substitute = Wrap(values, types); // substitutes into values by side-effect
+					bool substitute = Wrap( values, types ); // substitutes into values by side-effect
 
 					bool cannotDirtyCheck;
 					bool interceptorHandledDirtyCheck;
 
-					int[] dirtyProperties = interceptor.FindDirty(obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types);
+					int[ ] dirtyProperties = interceptor.FindDirty( obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types );
 
-					if( dirtyProperties==null ) 
+					if( dirtyProperties == null )
 					{
 						// interceptor returned null, so do the dirtycheck ourself, if possible
 						interceptorHandledDirtyCheck = false;
-						cannotDirtyCheck = entry.LoadedState==null; // object loaded by update()
-						if ( !cannotDirtyCheck ) 
+						cannotDirtyCheck = entry.LoadedState == null; // object loaded by update()
+						if( !cannotDirtyCheck )
 						{
-							dirtyProperties = persister.FindDirty(values, entry.LoadedState, obj, this);
+							dirtyProperties = persister.FindDirty( values, entry.LoadedState, obj, this );
 						}
-					} 
-					else 
+					}
+					else
 					{
 						// the interceptor handled the dirty checking
 						cannotDirtyCheck = false;
@@ -2360,80 +2769,86 @@ namespace NHibernate.Impl
 					}
 
 					// compare to cached state (ignoring nested collections)
-					if ( persister.IsMutable &&
-						(cannotDirtyCheck ||
-						(dirtyProperties!=null && dirtyProperties.Length!=0 ) ||
-						(status==Status.Loaded && persister.IsVersioned && persister.HasCollections && SearchForDirtyCollections(values, types) )
+					if( persister.IsMutable &&
+						( cannotDirtyCheck ||
+							( dirtyProperties != null && dirtyProperties.Length != 0 ) ||
+							( status == Status.Loaded && persister.IsVersioned && persister.HasCollections && SearchForDirtyCollections( values, types ) )
+							)
 						)
-						) 
 					{
 						// its dirty!
 
-						if ( log.IsDebugEnabled ) 
+						if( log.IsDebugEnabled )
 						{
-							if(status == Status.Deleted) 
-							{ 
-								log.Debug("Updating deleted entity: " + MessageHelper.InfoString(persister, entry.Id) );
-							}
-							else 
+							if( status == Status.Deleted )
 							{
-								log.Debug("Updating entity: " + MessageHelper.InfoString(persister, entry.Id) );
+								log.Debug( "Updating deleted entity: " + MessageHelper.InfoString( persister, entry.Id ) );
+							}
+							else
+							{
+								log.Debug( "Updating entity: " + MessageHelper.InfoString( persister, entry.Id ) );
 							}
 						}
 
 						// give the Interceptor a chance to modify property values
 						bool intercepted = interceptor.OnFlushDirty(
-							obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types);
+							obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types );
 
 						//now we might need to recalculate the dirtyProperties array
-						if(intercepted && !cannotDirtyCheck && !interceptorHandledDirtyCheck) 
+						if( intercepted && !cannotDirtyCheck && !interceptorHandledDirtyCheck )
 						{
-							dirtyProperties = persister.FindDirty(values, entry.LoadedState, obj, this);
+							dirtyProperties = persister.FindDirty( values, entry.LoadedState, obj, this );
 						}
 						// if the properties were modified by the Interceptor, we need to set them back to the object
 						substitute = substitute || intercepted;
 
 						// validate() instances of Validatable
-						if(status == Status.Loaded && persister.ImplementsValidatable) 
+						if( status == Status.Loaded && persister.ImplementsValidatable )
 						{
-							((IValidatable)obj).Validate();
+							( ( IValidatable ) obj ).Validate();
 						}
 
 						//increment the version number (if necessary)
 						object nextVersion = entry.Version;
-						if(persister.IsVersioned) 
+						if( persister.IsVersioned )
 						{
-							if(status!=Status.Deleted) nextVersion = Versioning.Increment(entry.Version, persister.VersionType);
-							Versioning.SetVersion(values, nextVersion, persister);
+							if( status != Status.Deleted )
+							{
+								nextVersion = Versioning.Increment( entry.Version, persister.VersionType );
+							}
+							Versioning.SetVersion( values, nextVersion, persister );
 						}
-						
+
 						// get the updated snapshot by cloning current state
-						object[] updatedState = null;
-						if(status==Status.Loaded)
+						object[ ] updatedState = null;
+						if( status == Status.Loaded )
 						{
 							updatedState = new object[values.Length];
-							TypeFactory.DeepCopy(values, types, persister.PropertyUpdateability, updatedState);
+							TypeFactory.DeepCopy( values, types, persister.PropertyUpdateability, updatedState );
 						}
-						
+
 						updates.Add(
-							new ScheduledUpdate(entry.Id, values, dirtyProperties, entry.Version, nextVersion, obj, updatedState, persister, this)
+							new ScheduledUpdate( entry.Id, values, dirtyProperties, entry.Version, nextVersion, obj, updatedState, persister, this )
 							);
 					}
-					
-					if(status==Status.Deleted) 
+
+					if( status == Status.Deleted )
 					{
 						//entry.status = Status.Gone;
 					}
-					else 
+					else
 					{
 						// now update the object... has to be outside the main if block above (because of collections)
-						if(substitute) persister.SetPropertyValues(obj, values);
-						
+						if( substitute )
+						{
+							persister.SetPropertyValues( obj, values );
+						}
+
 						// search for collections by reachability, updating their role.
 						// we don't want to touch collections reachable from a deleted object.
-						UpdateReachables(values, types, obj);
+						UpdateReachables( values, types, obj );
 					}
-					
+
 				}
 			}
 		}
@@ -2442,25 +2857,25 @@ namespace NHibernate.Impl
 		/// process cascade save/update at the start of a flush to discover
 		/// any newly referenced entity that must be passed to saveOrUpdate()
 		/// </summary>
-		private void PreFlushEntities() 
+		private void PreFlushEntities()
 		{
-			ICollection iterSafeCollection = IdentityMap.ConcurrentEntries(entries);
+			ICollection iterSafeCollection = IdentityMap.ConcurrentEntries( entries );
 
 			// so that we can be safe from the enumerator & concurrent modifications
-			foreach(DictionaryEntry me in iterSafeCollection) 
+			foreach( DictionaryEntry me in iterSafeCollection )
 			{
-				EntityEntry entry = (EntityEntry) me.Value;
+				EntityEntry entry = ( EntityEntry ) me.Value;
 				Status status = entry.Status;
 
-				if ( status!=Status.Loading && status!=Status.Gone && status!=Status.Deleted) 
+				if( status != Status.Loading && status != Status.Gone && status != Status.Deleted )
 				{
 					object obj = me.Key;
 					cascading++;
-					try 
+					try
 					{
-						Cascades.Cascade(this, entry.Persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate);
-					} 
-					finally 
+						Cascades.Cascade( this, entry.Persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate );
+					}
+					finally
 					{
 						cascading--;
 					}
@@ -2470,20 +2885,28 @@ namespace NHibernate.Impl
 
 		// this just does a table lookup, but cacheds the last result
 
-		[NonSerialized] private System.Type lastClass;
-		[NonSerialized] private IClassPersister lastResultForClass;
+		[NonSerialized]
+		private System.Type lastClass;
 
-		private IClassPersister GetPersister(System.Type theClass) 
+		[NonSerialized]
+		private IClassPersister lastResultForClass;
+
+		private IClassPersister GetPersister( System.Type theClass )
 		{
-			if ( lastClass!=theClass ) 
+			if( lastClass != theClass )
 			{
-				lastResultForClass = factory.GetPersister(theClass);
+				lastResultForClass = factory.GetPersister( theClass );
 				lastClass = theClass;
 			}
 			return lastResultForClass;
 		}
 
-		public IClassPersister GetPersister(object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public IClassPersister GetPersister( object obj )
 		{
 			return GetPersister( obj.GetType() );
 		}
@@ -2493,21 +2916,24 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public object GetIdentifier(object obj) 
+		public object GetIdentifier( object obj )
 		{
-			if (obj is INHibernateProxy) 
+			if( obj is INHibernateProxy )
 			{
-				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj );
-				if ( li.Session!=this ) 
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj );
+				if( li.Session != this )
 				{
-					throw new TransientObjectException("The proxy was not associated with this session");
+					throw new TransientObjectException( "The proxy was not associated with this session" );
 				}
 				return li.Identifier;
-			} 
-			else 
+			}
+			else
 			{
-				EntityEntry entry = GetEntry(obj);
-				if (entry==null) throw new TransientObjectException("the instance was not associated with this session");
+				EntityEntry entry = GetEntry( obj );
+				if( entry == null )
+				{
+					throw new TransientObjectException( "the instance was not associated with this session" );
+				}
 				return entry.Id;
 			}
 		}
@@ -2518,37 +2944,54 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public object GetEntityIdentifier(object obj) 
+		public object GetEntityIdentifier( object obj )
 		{
-			if( obj is INHibernateProxy ) 
+			if( obj is INHibernateProxy )
 			{
-				return NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ).Identifier;
-			} 
-			else 
+				return NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj ).Identifier;
+			}
+			else
 			{
-				EntityEntry entry = GetEntry(obj);
-				return (entry!=null) ? entry.Id : null;
+				EntityEntry entry = GetEntry( obj );
+				return ( entry != null ) ? entry.Id : null;
 			}
 		}
 
-		public bool IsSaved(object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public bool IsSaved( object obj )
 		{
-			if(obj is INHibernateProxy) return true;
+			if( obj is INHibernateProxy )
+			{
+				return true;
+			}
 
-			EntityEntry entry = GetEntry(obj);
-			if(entry!=null) return true;
+			EntityEntry entry = GetEntry( obj );
+			if( entry != null )
+			{
+				return true;
+			}
 
-			object isUnsaved = interceptor.IsUnsaved(obj);
-			if(isUnsaved!=null) return !(bool)isUnsaved;
+			object isUnsaved = interceptor.IsUnsaved( obj );
+			if( isUnsaved != null )
+			{
+				return !( bool ) isUnsaved;
+			}
 
-			IClassPersister persister = GetPersister(obj);
-			if(!persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier) return false; // I _think_ that this is reasonable!
+			IClassPersister persister = GetPersister( obj );
+			if( !persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier )
+			{
+				return false;
+			} // I _think_ that this is reasonable!
 
-			object id = persister.GetIdentifier(obj);
-			return !persister.IsUnsaved(id);
+			object id = persister.GetIdentifier( obj );
+			return !persister.IsUnsaved( id );
 		}
 
-		
+
 		/// <summary>
 		/// Used by OneToOneType and ManyToOneType to determine what id value
 		/// should be used for an object that may or may not be associated with
@@ -2557,35 +3000,44 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public object GetEntityIdentifierIfNotUnsaved(object obj) 
+		public object GetEntityIdentifierIfNotUnsaved( object obj )
 		{
-			if (obj==null) return null;
+			if( obj == null )
+			{
+				return null;
+			}
 
-			if (obj is INHibernateProxy) 
+			if( obj is INHibernateProxy )
 			{
-				return NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ).Identifier;
-			} 
-			else 
+				return NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj ).Identifier;
+			}
+			else
 			{
-				EntityEntry entry = GetEntry(obj);
-				if(entry!=null) 
+				EntityEntry entry = GetEntry( obj );
+				if( entry != null )
 				{
 					return entry.Id;
 				}
-				else 
+				else
 				{
-					object isUnsaved = interceptor.IsUnsaved(obj);
-					
-					if(isUnsaved!=null && ((bool)isUnsaved)) 
-						ThrowTransientObjectException(obj);
-				
-					IClassPersister persister = GetPersister(obj);
-					if(!persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier)
-						ThrowTransientObjectException(obj);
+					object isUnsaved = interceptor.IsUnsaved( obj );
 
-					object id = persister.GetIdentifier(obj);
-					if(persister.IsUnsaved(id)) 
-						ThrowTransientObjectException(obj);
+					if( isUnsaved != null && ( ( bool ) isUnsaved ) )
+					{
+						ThrowTransientObjectException( obj );
+					}
+
+					IClassPersister persister = GetPersister( obj );
+					if( !persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier )
+					{
+						ThrowTransientObjectException( obj );
+					}
+
+					object id = persister.GetIdentifier( obj );
+					if( persister.IsUnsaved( id ) )
+					{
+						ThrowTransientObjectException( obj );
+					}
 
 					return id;
 				}
@@ -2593,109 +3045,109 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private static void ThrowTransientObjectException(object obj) 
+		private static void ThrowTransientObjectException( object obj )
 		{
 			throw new TransientObjectException(
 				"object references an unsaved transient instance - save the transient instance before flushing: " +
-				obj.GetType().Name
+					obj.GetType().Name
 				);
 		}
+
 		/// <summary>
 		/// process any unreferenced collections and then inspect all known collections,
 		/// scheduling creates/removes/updates
 		/// </summary>
-		private void FlushCollections() 
+		private void FlushCollections()
 		{
-
 			int unreferencedCount = 0;
 			int scheduledCount = 0;
 			int recreateCount = 0;
 			int removeCount = 0;
 			int updateCount = 0;
 
-			log.Debug("Processing unreferenced collections");
+			log.Debug( "Processing unreferenced collections" );
 
-			foreach(DictionaryEntry e in IdentityMap.ConcurrentEntries(collections))
+			foreach( DictionaryEntry e in IdentityMap.ConcurrentEntries( collections ) )
 			{
-				if ( ! ( (CollectionEntry) e.Value ).reached ) 
+				if( ! ( ( CollectionEntry ) e.Value ).reached )
 				{
-					UpdateUnreachableCollection( (PersistentCollection) e.Key );
+					UpdateUnreachableCollection( ( PersistentCollection ) e.Key );
 					unreferencedCount++;
 				}
-					
+
 			}
-			log.Debug("Processed " + unreferencedCount + " unreachable collections.");
+			log.Debug( "Processed " + unreferencedCount + " unreachable collections." );
 
 			// schedule updates to collections:
 
-			log.Debug("scheduling collection removes/(re)creates/updates");
+			log.Debug( "scheduling collection removes/(re)creates/updates" );
 
-			foreach(DictionaryEntry me in IdentityMap.ConcurrentEntries(collections))
+			foreach( DictionaryEntry me in IdentityMap.ConcurrentEntries( collections ) )
 			{
-				PersistentCollection coll = (PersistentCollection) me.Key;
-				CollectionEntry ce = (CollectionEntry) me.Value;
+				PersistentCollection coll = ( PersistentCollection ) me.Key;
+				CollectionEntry ce = ( CollectionEntry ) me.Value;
 
 				// TODO: move this to the entry
 
-				if ( ce.dorecreate ) 
+				if( ce.dorecreate )
 				{
-					collectionCreations.Add( new ScheduledCollectionRecreate(coll, ce.currentPersister, ce.currentKey, this) );
+					collectionCreations.Add( new ScheduledCollectionRecreate( coll, ce.currentPersister, ce.currentKey, this ) );
 					recreateCount++;
 				}
-				if ( ce.doremove ) 
+				if( ce.doremove )
 				{
-					collectionRemovals.Add( new ScheduledCollectionRemove(ce.loadedPersister, ce.loadedKey, ce.SnapshotIsEmpty, this) );
+					collectionRemovals.Add( new ScheduledCollectionRemove( ce.loadedPersister, ce.loadedKey, ce.SnapshotIsEmpty, this ) );
 					removeCount++;
 				}
 
-				if ( ce.doupdate )
+				if( ce.doupdate )
 				{
-					collectionUpdates.Add( new ScheduledCollectionUpdate(coll, ce.loadedPersister, ce.loadedKey, ce.SnapshotIsEmpty, this) );
+					collectionUpdates.Add( new ScheduledCollectionUpdate( coll, ce.loadedPersister, ce.loadedKey, ce.SnapshotIsEmpty, this ) );
 					updateCount++;
 				}
 
 				scheduledCount++;
 			}
 
-			log.Debug("Processed " + scheduledCount + " for recreate (" + recreateCount + "), remove (" + removeCount + "), and update (" + updateCount + ")");
+			log.Debug( "Processed " + scheduledCount + " for recreate (" + recreateCount + "), remove (" + removeCount + "), and update (" + updateCount + ")" );
 		}
 
-		private void PostFlush() 
+		private void PostFlush()
 		{
-			log.Debug("post flush");
+			log.Debug( "post flush" );
 
-			foreach(DictionaryEntry de in IdentityMap.ConcurrentEntries(collections)) 
+			foreach( DictionaryEntry de in IdentityMap.ConcurrentEntries( collections ) )
 			{
-				((CollectionEntry) de.Value).PostFlush( (PersistentCollection) de.Key );
+				( ( CollectionEntry ) de.Value ).PostFlush( ( PersistentCollection ) de.Key );
 			}
 
 			interceptor.PostFlush( entitiesByKey.Values );
 		}
 
-		private void PreFlushCollections() 
+		private void PreFlushCollections()
 		{
 			// initialize dirty flags for arrays + collections with composte elements
 			// and reset reached, doupdate, etc
 
-			foreach(DictionaryEntry de in IdentityMap.ConcurrentEntries(collections))
+			foreach( DictionaryEntry de in IdentityMap.ConcurrentEntries( collections ) )
 			{
-				CollectionEntry ce = (CollectionEntry)de.Value;
-				PersistentCollection pc = (PersistentCollection)de.Key;
+				CollectionEntry ce = ( CollectionEntry ) de.Value;
+				PersistentCollection pc = ( PersistentCollection ) de.Key;
 
-				ce.PreFlush(pc);
+				ce.PreFlush( pc );
 			}
 		}
 
 		// Wrap all collections in an array of fields with PersistentCollections
-		private bool Wrap(object[] fields, IType[] types) 
+		private bool Wrap( object[ ] fields, IType[ ] types )
 		{
-			bool substitute=false;
-			for( int i=0; i<fields.Length; i++) 
+			bool substitute = false;
+			for( int i = 0; i < fields.Length; i++ )
 			{
-				object result = Wrap(fields[i], types[i]);
-				if ( result!=fields[i] ) 
+				object result = Wrap( fields[ i ], types[ i ] );
+				if( result != fields[ i ] )
 				{
-					fields[i] = result;
+					fields[ i ] = result;
 					substitute = true;
 				}
 			}
@@ -2712,73 +3164,85 @@ namespace NHibernate.Impl
 		/// <returns>
 		/// An <see cref="Object"/> that NHibernate has now been made aware of.
 		/// </returns>
-		private object Wrap(object obj, IType type) {
-
-			if (obj==null) return null;
-
-			if ( type.IsComponentType ) 
+		private object Wrap( object obj, IType type )
+		{
+			if( obj == null )
 			{
-				IAbstractComponentType componentType = (IAbstractComponentType) type;
-				object[] values = componentType.GetPropertyValues(obj, this);
-				if ( Wrap( values, componentType.Subtypes ) ) componentType.SetPropertyValues(obj, values);
+				return null;
 			}
 
-			if ( type.IsPersistentCollectionType ) 
+			if( type.IsComponentType )
+			{
+				IAbstractComponentType componentType = ( IAbstractComponentType ) type;
+				object[ ] values = componentType.GetPropertyValues( obj, this );
+				if( Wrap( values, componentType.Subtypes ) )
+				{
+					componentType.SetPropertyValues( obj, values );
+				}
+			}
+
+			if( type.IsPersistentCollectionType )
 			{
 				// a previously wrapped collection from another session has come back
 				// into NHibernate 
-				if ( obj is PersistentCollection ) 
+				if( obj is PersistentCollection )
 				{
-					PersistentCollection pc = (PersistentCollection) obj;
-					if ( pc.SetSession(this) ) 
+					PersistentCollection pc = ( PersistentCollection ) obj;
+					if( pc.SetSession( this ) )
 					{
 						ICollectionSnapshot snapshot = pc.CollectionSnapshot;
-						if(snapshot.IsInitialized) 
+						if( snapshot.IsInitialized )
 						{
-							AddNewCollection(pc); 
+							AddNewCollection( pc );
 						}
-						else 
+						else
 						{
 							object id = snapshot.Key;
-							if(id==null) throw new HibernateException("reference created to previously dereferenced uninitialized collection");
-							AddUninitializedCollection(pc, GetCollectionPersister(snapshot.Role), id);
+							if( id == null )
+							{
+								throw new HibernateException( "reference created to previously dereferenced uninitialized collection" );
+							}
+							AddUninitializedCollection( pc, GetCollectionPersister( snapshot.Role ), id );
 							pc.ForceLoad();
 							// commented out in h2.0.3 also
 							// ugly & inefficient little hack to force collection to be recreated
 							// after "disconnected" collection replaces the "connected" one
 							//GetCollectionEntry(pc).loadedKey = null;
 							//GetCollectionEntry(pc).loadedPersister = null;
-							AddNewCollection(pc);
-							
-						}	
+							AddNewCollection( pc );
+
+						}
 					}
 				} 
 
-				// used to be code here to see if the obj.GetType().IsArray but don't want it
-				// here because in .net an array is an IList - not true in java so NHibernate can
-				// have an array passed to a type that is a List.
+					// used to be code here to see if the obj.GetType().IsArray but don't want it
+					// here because in .net an array is an IList - not true in java so NHibernate can
+					// have an array passed to a type that is a List.
 
-				// this is a new collection that NHibernate is not aware of.
-				else 
+					// this is a new collection that NHibernate is not aware of.
+				else
 				{
 					// if the Type of the collection is an ArrayType then we need to add it 
 					// to an ArrayHolder - TODO: figure out if this is really necessary since
 					// Java and .NET treat arrays differently.
-					if( type is ArrayType ) 
+					if( type is ArrayType )
 					{
 						ArrayHolder ah = GetArrayHolder( obj );
-						if( ah==null ) 
+						if( ah == null )
 						{
 							ah = new ArrayHolder( this, obj );
 							AddNewCollection( ah );
 							AddArrayHolder( ah );
 						}
 					}
-					else 
+					else
 					{
-						PersistentCollection pc = ((PersistentCollectionType) type).Wrap(this, obj);
-						if ( log.IsDebugEnabled ) log.Debug( "Wrapped collection in role: " + ((PersistentCollectionType) type).Role);
-						AddNewCollection(pc);
+						PersistentCollection pc = ( ( PersistentCollectionType ) type ).Wrap( this, obj );
+						if( log.IsDebugEnabled )
+						{
+							log.Debug( "Wrapped collection in role: " + ( ( PersistentCollectionType ) type ).Role );
+						}
+						AddNewCollection( pc );
 						obj = pc;
 					}
 				}
@@ -2795,33 +3259,35 @@ namespace NHibernate.Impl
 		/// <param name="coll"></param>
 		/// <param name="type"></param>
 		/// <param name="owner"></param>
-		private void UpdateReachableCollection(PersistentCollection coll, IType type, object owner) 
+		private void UpdateReachableCollection( PersistentCollection coll, IType type, object owner )
 		{
-			CollectionEntry ce = GetCollectionEntry(coll);
+			CollectionEntry ce = GetCollectionEntry( coll );
 
-			if (ce == null)
-				throw new HibernateException("found reference to object that is not in session");
+			if( ce == null )
+			{
+				throw new HibernateException( "found reference to object that is not in session" );
+			}
 
-			if (ce.reached) 
+			if( ce.reached )
 			{
 				// we've been here before
-				throw new HibernateException("found shared references to a collection");
+				throw new HibernateException( "found shared references to a collection" );
 			}
 			ce.reached = true;
 
-			CollectionPersister persister = GetCollectionPersister( ((PersistentCollectionType)type).Role );
+			CollectionPersister persister = GetCollectionPersister( ( ( PersistentCollectionType ) type ).Role );
 			ce.currentPersister = persister;
-			ce.currentKey = GetEntityIdentifier(owner);
+			ce.currentKey = GetEntityIdentifier( owner );
 
-			if ( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
-				log.Debug (
-					"Collection found: " + MessageHelper.InfoString(persister, ce.currentKey) +
-					", was: " +MessageHelper.InfoString(ce.loadedPersister, ce.loadedKey)
+				log.Debug(
+					"Collection found: " + MessageHelper.InfoString( persister, ce.currentKey ) +
+						", was: " + MessageHelper.InfoString( ce.loadedPersister, ce.loadedKey )
 					);
 			}
 
-			PrepareCollectionForUpdate(coll, ce);
+			PrepareCollectionForUpdate( coll, ce );
 		}
 
 		/// <summary>
@@ -2831,31 +3297,34 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
 		/// <param name="type"></param>
 		/// <param name="owner"></param>
-		private void UpdateReachable(object obj, IType type, object owner) 
+		private void UpdateReachable( object obj, IType type, object owner )
 		{
 			// this method assmues wrap was already called on obj!
 
-			if ( obj!=null ) 
+			if( obj != null )
 			{
-				if ( type.IsPersistentCollectionType ) 
+				if( type.IsPersistentCollectionType )
 				{
-					if ( obj.GetType().IsArray ) 
+					if( obj.GetType().IsArray )
 					{
-						UpdateReachableCollection( GetArrayHolder(obj), type, owner );
-					} 
-					else 
+						UpdateReachableCollection( GetArrayHolder( obj ), type, owner );
+					}
+					else
 					{
-						UpdateReachableCollection( (PersistentCollection) obj, type, owner );
+						UpdateReachableCollection( ( PersistentCollection ) obj, type, owner );
 					}
 				}
 
-				else if ( type.IsComponentType ) 
+				else if( type.IsComponentType )
 				{
-					IAbstractComponentType componentType = (IAbstractComponentType) type;
-					object[] values = componentType.GetPropertyValues(obj, this);
-					IType[] types = componentType.Subtypes;
-					if ( Wrap(values, types) ) componentType.SetPropertyValues(obj, values);
-					UpdateReachables(values, types, owner);
+					IAbstractComponentType componentType = ( IAbstractComponentType ) type;
+					object[ ] values = componentType.GetPropertyValues( obj, this );
+					IType[ ] types = componentType.Subtypes;
+					if( Wrap( values, types ) )
+					{
+						componentType.SetPropertyValues( obj, values );
+					}
+					UpdateReachables( values, types, owner );
 				}
 			}
 		}
@@ -2864,31 +3333,31 @@ namespace NHibernate.Impl
 		/// record the fact that this collection was dereferenced
 		/// </summary>
 		/// <param name="coll"></param>
-		private void UpdateUnreachableCollection(PersistentCollection coll) 
+		private void UpdateUnreachableCollection( PersistentCollection coll )
 		{
-			CollectionEntry entry = GetCollectionEntry(coll);
-			
-			if ( log.IsDebugEnabled && entry.loadedPersister!=null ) 
+			CollectionEntry entry = GetCollectionEntry( coll );
+
+			if( log.IsDebugEnabled && entry.loadedPersister != null )
 			{
-				log.Debug("collection dereferenced: " + MessageHelper.InfoString(entry.loadedPersister, entry.loadedKey));
+				log.Debug( "collection dereferenced: " + MessageHelper.InfoString( entry.loadedPersister, entry.loadedKey ) );
 			}
 
-			if(entry.loadedPersister!=null && entry.loadedPersister.HasOrphanDelete) 
+			if( entry.loadedPersister != null && entry.loadedPersister.HasOrphanDelete )
 			{
-				EntityEntry e = GetEntry( new Key(entry.loadedKey, GetPersister(entry.loadedPersister.OwnerClass) ) );
+				EntityEntry e = GetEntry( new Key( entry.loadedKey, GetPersister( entry.loadedPersister.OwnerClass ) ) );
 
 				// only collections belonging to deleted entities are allowed to be dereferenced in 
 				// the case of orphan delete
-				if( e!=null && e.Status!=Status.Deleted && e.Status!=Status.Gone) 
+				if( e != null && e.Status != Status.Deleted && e.Status != Status.Gone )
 				{
-					throw new HibernateException("You may not dereference an collection with cascade=\"all-delete-orphan\"");
+					throw new HibernateException( "You may not dereference an collection with cascade=\"all-delete-orphan\"" );
 				}
 			}
-		
-			entry.currentPersister=null;
-			entry.currentKey=null;
 
-			PrepareCollectionForUpdate(coll, entry);
+			entry.currentPersister = null;
+			entry.currentKey = null;
+
+			PrepareCollectionForUpdate( coll, entry );
 		}
 
 		/// <summary>
@@ -2898,43 +3367,47 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="coll"></param>
 		/// <param name="entry"></param>
-		private void PrepareCollectionForUpdate(PersistentCollection coll, CollectionEntry entry) {
-
-			if ( entry.processed ) throw new AssertionFailure("hibernate has a bug processing collections");
+		private void PrepareCollectionForUpdate( PersistentCollection coll, CollectionEntry entry )
+		{
+			if( entry.processed )
+			{
+				throw new AssertionFailure( "hibernate has a bug processing collections" );
+			}
 
 			entry.processed = true;
 
 			// it is or was referenced _somewhere_
-			if ( entry.loadedPersister!=null || entry.currentPersister!=null ) { 
-
-				if (
-					entry.loadedPersister!=entry.currentPersister || //if either its role changed,
-					!entry.currentPersister.KeyType.Equals(entry.loadedKey, entry.currentKey) // or its key changed
-					) {
-
+			if( entry.loadedPersister != null || entry.currentPersister != null )
+			{
+				if(
+					entry.loadedPersister != entry.currentPersister || //if either its role changed,
+						!entry.currentPersister.KeyType.Equals( entry.loadedKey, entry.currentKey ) // or its key changed
+					)
+				{
 					// do a check
-					if( entry.loadedPersister!=null && entry.currentPersister!=null && entry.loadedPersister.HasOrphanDelete ) 
+					if( entry.loadedPersister != null && entry.currentPersister != null && entry.loadedPersister.HasOrphanDelete )
 					{
-						throw new HibernateException("You may not change the reference to a collection with cascade=\"all-delete-orphan\"");
+						throw new HibernateException( "You may not change the reference to a collection with cascade=\"all-delete-orphan\"" );
 					}
 
 					// do the work
-					if (entry.currentPersister!=null) 
+					if( entry.currentPersister != null )
 					{
 						entry.dorecreate = true; //we will need to create new entry
 					}
 
-					if (entry.loadedPersister!=null)
+					if( entry.loadedPersister != null )
 					{
 						entry.doremove = true; // we will need to remove the old entres
-						if (entry.dorecreate ) 
+						if( entry.dorecreate )
 						{
-							log.Debug("forcing collection initialization");
+							log.Debug( "forcing collection initialization" );
 							coll.ForceLoad();
 						}
 					}
-				} 
-				else if (entry.dirty ) { // else if it's elements changed
+				}
+				else if( entry.dirty )
+				{ // else if it's elements changed
 					entry.doupdate = true;
 				}
 			}
@@ -2947,13 +3420,13 @@ namespace NHibernate.Impl
 		/// <param name="types"></param>
 		/// <param name="owner"></param>
 		/// <remarks>This method assume Wrap was already called on fields.</remarks>
-		private void UpdateReachables(object[] fields, IType[] types, object owner) 
+		private void UpdateReachables( object[ ] fields, IType[ ] types, object owner )
 		{
 			// this method assumes wrap was already called on fields
 
-			for (int i=0; i<types.Length; i++ ) 
+			for( int i = 0; i < types.Length; i++ )
 			{
-				UpdateReachable(fields[i], types[i], owner);
+				UpdateReachable( fields[ i ], types[ i ], owner );
 			}
 		}
 
@@ -2963,11 +3436,11 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="coll"></param>
 		/// <returns></returns>
-		private bool CollectionIsDirty(PersistentCollection coll) 
-		{ 
-			CollectionEntry entry = GetCollectionEntry(coll); 
+		private bool CollectionIsDirty( PersistentCollection coll )
+		{
+			CollectionEntry entry = GetCollectionEntry( coll );
 			return entry.initialized && entry.dirty; //( entry.dirty || coll.hasQueuedAdds() ); 
-		} 
+		}
 
 		/// <summary>
 		/// Given an array of fields, search recursively for dirty collections. 
@@ -2975,11 +3448,14 @@ namespace NHibernate.Impl
 		/// <param name="fields"></param>
 		/// <param name="types"></param>
 		/// <returns>return true if we find one</returns>
-		private bool SearchForDirtyCollections(object[] fields, IType[] types) 
+		private bool SearchForDirtyCollections( object[ ] fields, IType[ ] types )
 		{
-			for (int i=0; i<types.Length; i++ ) 
+			for( int i = 0; i < types.Length; i++ )
 			{
-				if ( SearchForDirtyCollections( fields[i], types[i] ) ) return true;
+				if( SearchForDirtyCollections( fields[ i ], types[ i ] ) )
+				{
+					return true;
+				}
 			}
 			return false;
 		}
@@ -2993,38 +3469,41 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		private bool SearchForDirtyCollections(object obj, IType type) 
+		private bool SearchForDirtyCollections( object obj, IType type )
 		{
-			if ( obj!=null ) 
-			{				
-				if ( type.IsPersistentCollectionType ) 
+			if( obj != null )
+			{
+				if( type.IsPersistentCollectionType )
 				{
-					if ( obj.GetType().IsArray ) 
+					if( obj.GetType().IsArray )
 					{
-						PersistentCollection ah = GetArrayHolder(obj);
+						PersistentCollection ah = GetArrayHolder( obj );
 						// if no array holder we found an unwrappered array (this can't occur, 
 						//if no array holder we found an unwrappered array                                         // because we now always call wrap() before getting to here) 
 						//return (ah==null) ? true : SearchForDirtyCollections(ah, type);
-						return CollectionIsDirty(ah);
-					} 
-					else 
+						return CollectionIsDirty( ah );
+					}
+					else
 					{
 						// if not wrappered yet, its dirty (this can't occur, because 
 						// we now always call wrap() before getting to here) 
 						// return ( ! (obj is PersistentCollection) ) ?
 						//	true : SearchForDirtyCollections( (PersistentCollection) obj, type );
-						return CollectionIsDirty( (PersistentCollection) obj );
+						return CollectionIsDirty( ( PersistentCollection ) obj );
 					}
 				}
 
-				else if ( type.IsComponentType ) 
+				else if( type.IsComponentType )
 				{
-					IAbstractComponentType componentType = (IAbstractComponentType) type;
-					object[] values = componentType.GetPropertyValues(obj, this);
-					IType[] types = componentType.Subtypes;
-					for (int i=0; i<values.Length; i++) 
+					IAbstractComponentType componentType = ( IAbstractComponentType ) type;
+					object[ ] values = componentType.GetPropertyValues( obj, this );
+					IType[ ] types = componentType.Subtypes;
+					for( int i = 0; i < values.Length; i++ )
 					{
-						if ( SearchForDirtyCollections( values[i], types[i] ) ) return true;
+						if( SearchForDirtyCollections( values[ i ], types[ i ] ) )
+						{
+							return true;
+						}
 					}
 				}
 			}
@@ -3034,45 +3513,45 @@ namespace NHibernate.Impl
 		private IDictionary loadingCollections = new Hashtable();
 		private string loadingRole;
 
-		private sealed class LoadingCollectionEntry 
+		private sealed class LoadingCollectionEntry
 		{
 			private PersistentCollection _collection;
 			private bool _initialize;
 			private object _id;
 			private object _owner;
 
-			internal LoadingCollectionEntry(PersistentCollection collection, object id) 
+			internal LoadingCollectionEntry( PersistentCollection collection, object id )
 			{
 				_collection = collection;
 				_id = id;
 			}
 
-			internal LoadingCollectionEntry(PersistentCollection collection, object id, object owner) 
+			internal LoadingCollectionEntry( PersistentCollection collection, object id, object owner )
 			{
 				_collection = collection;
 				_id = id;
 				_owner = owner;
 			}
 
-			public PersistentCollection Collection 
+			public PersistentCollection Collection
 			{
-				get { return _collection;}
+				get { return _collection; }
 				set { _collection = value; }
 			}
 
-			public object Id 
+			public object Id
 			{
 				get { return _id; }
 				set { _id = value; }
 			}
 
-			
-			public object Owner 
+
+			public object Owner
 			{
 				get { return _owner; }
 				set { _owner = value; }
 			}
-			
+
 			public bool Initialize
 			{
 				get { return _initialize; }
@@ -3081,67 +3560,81 @@ namespace NHibernate.Impl
 		}
 
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		// TODO: replace with owner version of this method...
-		[Obsolete("Use the one with CollectionPersister, id, owner) instead")]
-		public PersistentCollection GetLoadingCollection(CollectionPersister persister, object id) 
+		[Obsolete( "Use the one with CollectionPersister, id, owner) instead" )]
+		public PersistentCollection GetLoadingCollection( CollectionPersister persister, object id )
 		{
-			LoadingCollectionEntry lce = (LoadingCollectionEntry)loadingCollections[id];
-			if(lce==null) 
+			LoadingCollectionEntry lce = ( LoadingCollectionEntry ) loadingCollections[ id ];
+			if( lce == null )
 			{
-				PersistentCollection pc = persister.CollectionType.Instantiate(this, persister);
-				pc.BeforeInitialize(persister);
+				PersistentCollection pc = persister.CollectionType.Instantiate( this, persister );
+				pc.BeforeInitialize( persister );
 				pc.BeginRead();
-				if(loadingRole!=null && !loadingRole.Equals(persister.Role)) 
+				if( loadingRole != null && !loadingRole.Equals( persister.Role ) )
 				{
-					throw new AssertionFailure("recursive collection load");
+					throw new AssertionFailure( "recursive collection load" );
 				}
 
-				loadingCollections[id] = new LoadingCollectionEntry(pc, id);
+				loadingCollections[ id ] = new LoadingCollectionEntry( pc, id );
 				loadingRole = persister.Role;
 				return pc;
 			}
-			else 
+			else
 			{
 				return lce.Collection;
 			}
 		}
 
 		//NEW overloaded version that should replace the 2 object without owner
-		public PersistentCollection GetLoadingCollection(CollectionPersister persister, object id, object owner) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="id"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public PersistentCollection GetLoadingCollection( CollectionPersister persister, object id, object owner )
 		{
-			LoadingCollectionEntry lce = (LoadingCollectionEntry)loadingCollections[id];
-			if(lce==null) 
+			LoadingCollectionEntry lce = ( LoadingCollectionEntry ) loadingCollections[ id ];
+			if( lce == null )
 			{
-				PersistentCollection pc = persister.CollectionType.Instantiate(this, persister);
-				pc.BeforeInitialize(persister);
+				PersistentCollection pc = persister.CollectionType.Instantiate( this, persister );
+				pc.BeforeInitialize( persister );
 				pc.BeginRead();
-				if(loadingRole!=null && !loadingRole.Equals(persister.Role)) 
+				if( loadingRole != null && !loadingRole.Equals( persister.Role ) )
 				{
-					throw new AssertionFailure("recursive collection load");
+					throw new AssertionFailure( "recursive collection load" );
 				}
 
-				loadingCollections[id]= new LoadingCollectionEntry(pc, id, owner);
+				loadingCollections[ id ] = new LoadingCollectionEntry( pc, id, owner );
 				loadingRole = persister.Role;
 				return pc;
 			}
-			else 
+			else
 			{
 				return lce.Collection;
 			}
 		}
 
-		public void EndLoadingCollections() 
+		/// <summary></summary>
+		public void EndLoadingCollections()
 		{
-			if(loadingRole!=null) 
+			if( loadingRole != null )
 			{
-				CollectionPersister persister = GetCollectionPersister(loadingRole);
-				foreach (LoadingCollectionEntry lce in loadingCollections.Values) 
+				CollectionPersister persister = GetCollectionPersister( loadingRole );
+				foreach( LoadingCollectionEntry lce in loadingCollections.Values )
 				{
-					if(lce.Initialize) 
+					if( lce.Initialize )
 					{
-						lce.Collection.EndRead(persister, lce.Owner);
-						AddInitializedCollection(lce.Collection, persister, lce.Id);
-						persister.Cache(lce.Id, lce.Collection, this);
+						lce.Collection.EndRead( persister, lce.Owner );
+						AddInitializedCollection( lce.Collection, persister, lce.Id );
+						persister.Cache( lce.Id, lce.Collection, this );
 					}
 				}
 
@@ -3150,22 +3643,28 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public PersistentCollection GetLoadingCollection(string role, object id) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public PersistentCollection GetLoadingCollection( string role, object id )
 		{
-			if(role.Equals(loadingRole)) 
+			if( role.Equals( loadingRole ) )
 			{
-				LoadingCollectionEntry lce = (LoadingCollectionEntry) loadingCollections[id];
-				if(lce==null) 
+				LoadingCollectionEntry lce = ( LoadingCollectionEntry ) loadingCollections[ id ];
+				if( lce == null )
 				{
 					return null;
 				}
-				else 
+				else
 				{
 					lce.Initialize = true;
 					return lce.Collection;
 				}
 			}
-			else 
+			else
 			{
 				return null;
 			}
@@ -3177,10 +3676,10 @@ namespace NHibernate.Impl
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		public void AddUninitializedCollection(PersistentCollection collection, CollectionPersister persister, object id) 
+		public void AddUninitializedCollection( PersistentCollection collection, CollectionPersister persister, object id )
 		{
-			CollectionEntry ce = new CollectionEntry(persister, id, false);
-			collections[collection] = ce;
+			CollectionEntry ce = new CollectionEntry( persister, id, false );
+			collections[ collection ] = ce;
 			collection.CollectionSnapshot = ce;
 		}
 
@@ -3190,11 +3689,11 @@ namespace NHibernate.Impl
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		public void AddInitializedCollection(PersistentCollection collection, CollectionPersister persister, object id) 
+		public void AddInitializedCollection( PersistentCollection collection, CollectionPersister persister, object id )
 		{
-			CollectionEntry ce = new CollectionEntry(persister, id, true);
-			ce.PostInitialize(collection);
-			collections[collection] = ce;
+			CollectionEntry ce = new CollectionEntry( persister, id, true );
+			ce.PostInitialize( collection );
+			collections[ collection ] = ce;
 			collection.CollectionSnapshot = ce;
 		}
 
@@ -3203,72 +3702,106 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="cs"></param>
-		private void AddInitializedCollection(PersistentCollection collection, ICollectionSnapshot cs) 
+		private void AddInitializedCollection( PersistentCollection collection, ICollectionSnapshot cs )
 		{
-			CollectionEntry ce = new CollectionEntry(cs, factory);
-			collections[collection] = ce;
+			CollectionEntry ce = new CollectionEntry( cs, factory );
+			collections[ collection ] = ce;
 			collection.CollectionSnapshot = ce;
 		}
 
-		public ArrayHolder GetArrayHolder(object array) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="array"></param>
+		/// <returns></returns>
+		public ArrayHolder GetArrayHolder( object array )
 		{
-			return (ArrayHolder) arrayHolders[array];
+			return ( ArrayHolder ) arrayHolders[ array ];
 		}
 
 		//must call after loading array (so array exists for key of map);
-		public void AddArrayHolder(ArrayHolder holder) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="holder"></param>
+		public void AddArrayHolder( ArrayHolder holder )
 		{
-			arrayHolders[holder.Array] = holder;
+			arrayHolders[ holder.Array ] = holder;
 		}
 
-		private CollectionPersister GetCollectionPersister(string role) 
+		private CollectionPersister GetCollectionPersister( string role )
 		{
-			return factory.GetCollectionPersister(role);
+			return factory.GetCollectionPersister( role );
 		}
 
-		public void Dirty(PersistentCollection coll) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="coll"></param>
+		public void Dirty( PersistentCollection coll )
 		{
-			GetCollectionEntry(coll).dirty = true;
+			GetCollectionEntry( coll ).dirty = true;
 		}
 
-		public object GetSnapshot(PersistentCollection coll) 
+		/// <summary>
+		///  
+		/// </summary>
+		/// <param name="coll"></param>
+		/// <returns></returns>
+		public object GetSnapshot( PersistentCollection coll )
 		{
-			return GetCollectionEntry(coll).snapshot;
+			return GetCollectionEntry( coll ).snapshot;
 		}
 
-		public object GetLoadedCollectionKey(PersistentCollection coll) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="coll"></param>
+		/// <returns></returns>
+		public object GetLoadedCollectionKey( PersistentCollection coll )
 		{
-			return GetCollectionEntry(coll).loadedKey;
+			return GetCollectionEntry( coll ).loadedKey;
 		}
 
-		public bool IsInverseCollection(PersistentCollection collection) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public bool IsInverseCollection( PersistentCollection collection )
 		{
-			CollectionEntry ce = GetCollectionEntry(collection);
-			return ce!=null && ce.loadedPersister.IsInverse;
+			CollectionEntry ce = GetCollectionEntry( collection );
+			return ce != null && ce.loadedPersister.IsInverse;
 		}
 
-		
-		private static readonly ICollection EmptyCollection = new ArrayList(0);
 
-		public ICollection GetOrphans(PersistentCollection coll) 
+		private static readonly ICollection EmptyCollection = new ArrayList( 0 );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="coll"></param>
+		/// <returns></returns>
+		public ICollection GetOrphans( PersistentCollection coll )
 		{
-			CollectionEntry ce = GetCollectionEntry(coll);
-			return ce.IsNew ? EmptyCollection : coll.GetOrphans(ce.Snapshot);
+			CollectionEntry ce = GetCollectionEntry( coll );
+			return ce.IsNew ? EmptyCollection : coll.GetOrphans( ce.Snapshot );
 		}
+
 		/// <summary>
 		/// called by a collection that wants to initialize itself
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="writing"></param>
-		public void Initialize(PersistentCollection collection, bool writing) 
+		public void Initialize( PersistentCollection collection, bool writing )
 		{
-			CollectionEntry ce = GetCollectionEntry(collection);
+			CollectionEntry ce = GetCollectionEntry( collection );
 
-			if ( !ce.initialized ) 
+			if( !ce.initialized )
 			{
-				if (log.IsDebugEnabled ) 
+				if( log.IsDebugEnabled )
 				{
-					log.Debug( "initializing collection " + MessageHelper.InfoString(ce.loadedPersister, ce.loadedKey) );
+					log.Debug( "initializing collection " + MessageHelper.InfoString( ce.loadedPersister, ce.loadedKey ) );
 				}
 
 				CollectionPersister persister = ce.loadedPersister;
@@ -3276,102 +3809,122 @@ namespace NHibernate.Impl
 
 				object owner = GetEntity( new Key( id, GetPersister( persister.OwnerClass ) ) );
 
-				collection.BeforeInitialize(persister);
-				try 
+				collection.BeforeInitialize( persister );
+				try
 				{
-					persister.Initializer.Initialize(id, collection, owner, this);
+					persister.Initializer.Initialize( id, collection, owner, this );
 				}
-				catch(ADOException sqle) 
+				catch( ADOException sqle )
 				{
-					throw new ADOException("SQLException initializing collection", sqle);
+					throw new ADOException( "SQLException initializing collection", sqle );
 				}
 
 				ce.initialized = true;
-				ce.PostInitialize(collection);
+				ce.PostInitialize( collection );
 
 				//removed this because it is not in h2.1 - I was having problems with Bags and 
 				// lazy additions and trying to cache uninitialized collections at this point.
 				// Collections are still written to the Cache in EndLoadingCollection and that 
 				// is probably the most appropriate place for that code anyway.
-//				if (!writing) persister.Cache(id, collection, this);
+				//				if (!writing) persister.Cache(id, collection, this);
 			}
 		}
 
-		public IDbConnection Connection 
+		/// <summary></summary>
+		public IDbConnection Connection
 		{
-			get 
+			get
 			{
-				if (connection==null) 
+				if( connection == null )
 				{
-					if (connect) 
+					if( connect )
 					{
 						connection = factory.OpenConnection();
 						connect = false;
-					} 
-					else 
+					}
+					else
 					{
-						throw new HibernateException("session is currently disconnected");
+						throw new HibernateException( "session is currently disconnected" );
 					}
 				}
 				return connection;
 			}
 		}
 
-		public bool IsConnected 
+		/// <summary></summary>
+		public bool IsConnected
 		{
-			get { return connection!=null || connect; }
+			get { return connection != null || connect; }
 		}
 
-		public IDbConnection Disconnect() 
+		/// <summary></summary>
+		public IDbConnection Disconnect()
 		{
-			log.Debug("disconnecting session");
+			log.Debug( "disconnecting session" );
 
-			try 
-			{ 
-				if (connect) 
+			try
+			{
+				if( connect )
 				{
 					connect = false;
 					return null;
-				} 
-				else 
+				}
+				else
 				{
-					if (connection==null) throw new HibernateException("session already disconnected");
-
-					if (batcher!=null) batcher.CloseCommands();
-					IDbConnection c = connection;
-					connection=null;
-					if (autoClose) 
+					if( connection == null )
 					{
-						factory.CloseConnection(c);
+						throw new HibernateException( "session already disconnected" );
+					}
+
+					if( batcher != null )
+					{
+						batcher.CloseCommands();
+					}
+					IDbConnection c = connection;
+					connection = null;
+					if( autoClose )
+					{
+						factory.CloseConnection( c );
 						return null;
-					} 
-					else 
+					}
+					else
 					{
 						return c;
 					}
 				}
-			} 
-			finally 
+			}
+			finally
 			{
-				if ( callAfterTransactionCompletionFromDisconnect ) 
+				if( callAfterTransactionCompletionFromDisconnect )
 				{
 					AfterTransactionCompletion();
 				}
 			}
 		}
 
-		public void Reconnect() 
+		/// <summary></summary>
+		public void Reconnect()
 		{
-			if ( IsConnected ) throw new HibernateException("session already connected");
+			if( IsConnected )
+			{
+				throw new HibernateException( "session already connected" );
+			}
 
-			log.Debug("reconnecting session");
+			log.Debug( "reconnecting session" );
 
 			connect = true;
 		}
 
-		public void Reconnect(IDbConnection conn) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="conn"></param>
+		public void Reconnect( IDbConnection conn )
 		{
-			if ( IsConnected ) throw new HibernateException("session already connected");
+			if( IsConnected )
+			{
+				throw new HibernateException( "session already connected" );
+			}
 			this.connection = conn;
 		}
 
@@ -3380,45 +3933,70 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Just in case the user forgot to Commit() or Close()
 		/// </summary>
-		void IDisposable.Dispose() 
+		void IDisposable.Dispose()
 		{
-			log.Debug("running ISession.Dispose()");
+			log.Debug( "running ISession.Dispose()" );
 
 			// it was never disconnected
-			if (connection!=null) 
+			if( connection != null )
 			{
 				AfterTransactionCompletion();
 
-				if ( connection.State == ConnectionState.Closed ) 
+				if( connection.State == ConnectionState.Closed )
 				{
-					log.Warn("finalizing unclosed session with closed connection");
-				} 
-				else 
+					log.Warn( "finalizing unclosed session with closed connection" );
+				}
+				else
 				{
-					log.Warn("unclosed connection");
-					if (autoClose) connection.Close();
+					log.Warn( "unclosed connection" );
+					if( autoClose )
+					{
+						connection.Close();
+					}
 				}
 			}
 		}
 
 		#endregion
 
-		public ICollection Filter(object collection, string filter) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="filter"></param>
+		/// <returns></returns>
+		public ICollection Filter( object collection, string filter )
 		{
 			QueryParameters qp = new QueryParameters( new IType[1], new object[1] );
 			return Filter( collection, filter, qp );
 		}
 
-		public ICollection Filter(object collection, string filter, object value, IType type) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="filter"></param>
+		/// <param name="value"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public ICollection Filter( object collection, string filter, object value, IType type )
 		{
-			QueryParameters qp = new QueryParameters( new IType[] { null, type }, new object[] { null, value } );
+			QueryParameters qp = new QueryParameters( new IType[ ] {null, type}, new object[ ] {null, value} );
 			return Filter( collection, filter, qp );
 		}
 
-		public ICollection Filter(object collection, string filter, object[] values, IType[] types) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="filter"></param>
+		/// <param name="values"></param>
+		/// <param name="types"></param>
+		/// <returns></returns>
+		public ICollection Filter( object collection, string filter, object[ ] values, IType[ ] types )
 		{
-			object[] vals = new object[ values.Length + 1 ];
-			IType[] typs = new IType[ values.Length + 1 ];
+			object[ ] vals = new object[values.Length + 1];
+			IType[ ] typs = new IType[values.Length + 1];
 			Array.Copy( values, 0, vals, 1, values.Length );
 			Array.Copy( types, 0, typs, 1, types.Length );
 			QueryParameters qp = new QueryParameters( typs, vals );
@@ -3435,233 +4013,283 @@ namespace NHibernate.Impl
 		/// <param name="parameters"></param>
 		/// <param name="scalar"></param>
 		/// <returns></returns>
-		private FilterTranslator GetFilterTranslator(object collection, string filter, QueryParameters parameters, bool scalar) 
+		private FilterTranslator GetFilterTranslator( object collection, string filter, QueryParameters parameters, bool scalar )
 		{
-			if ( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				log.Debug( "filter: " + filter );
 				parameters.LogParameters();
 			}
 
-			if ( !(collection is PersistentCollection) ) 
+			if( !( collection is PersistentCollection ) )
 			{
-				collection = GetArrayHolder(collection);
-				if (collection==null) throw new TransientObjectException("collection was not yet persistent");
+				collection = GetArrayHolder( collection );
+				if( collection == null )
+				{
+					throw new TransientObjectException( "collection was not yet persistent" );
+				}
 			}
 
-			PersistentCollection coll = (PersistentCollection) collection;
-			CollectionEntry e = GetCollectionEntry(coll);
-			if (e==null) throw new TransientObjectException("collection was not persistent in this session");
+			PersistentCollection coll = ( PersistentCollection ) collection;
+			CollectionEntry e = GetCollectionEntry( coll );
+			if( e == null )
+			{
+				throw new TransientObjectException( "collection was not persistent in this session" );
+			}
 
 			FilterTranslator q;
 			CollectionPersister roleBeforeFlush = e.loadedPersister;
-			if ( roleBeforeFlush==null ) 
+			if( roleBeforeFlush == null )
 			{ //ie. it was previously unreferenced
 				Flush();
-				if ( e.loadedPersister==null ) throw new QueryException("the collection was unreferenced");
-				q = factory.GetFilter( filter, e.loadedPersister.Role, scalar);
-			} 
-			else 
+				if( e.loadedPersister == null )
+				{
+					throw new QueryException( "the collection was unreferenced" );
+				}
+				q = factory.GetFilter( filter, e.loadedPersister.Role, scalar );
+			}
+			else
 			{
 				q = factory.GetFilter( filter, roleBeforeFlush.Role, scalar );
-				if ( AutoFlushIfRequired( q.QuerySpaces ) && roleBeforeFlush!=e.loadedPersister ) 
+				if( AutoFlushIfRequired( q.QuerySpaces ) && roleBeforeFlush != e.loadedPersister )
 				{
-					if ( e.loadedPersister==null ) throw new QueryException("the collection was dereferenced");
+					if( e.loadedPersister == null )
+					{
+						throw new QueryException( "the collection was dereferenced" );
+					}
 					// might need to recompile the query after the flush because the collection role may have changed.
-					q = factory.GetFilter( filter, e.loadedPersister.Role, scalar);
+					q = factory.GetFilter( filter, e.loadedPersister.Role, scalar );
 				}
 			}
-			
-			parameters.PositionalParameterValues[0] = e.loadedKey;
-			parameters.PositionalParameterTypes[0] = e.loadedPersister.KeyType;
+
+			parameters.PositionalParameterValues[ 0 ] = e.loadedKey;
+			parameters.PositionalParameterTypes[ 0 ] = e.loadedPersister.KeyType;
 
 			return q;
 
 		}
 
-		public IList Filter(object collection, string filter, QueryParameters parameters) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="filter"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public IList Filter( object collection, string filter, QueryParameters parameters )
 		{
-			string[] concreteFilters = QueryTranslator.ConcreteQueries(filter, factory);
-			FilterTranslator[] filters = new FilterTranslator[ concreteFilters.Length ];
+			string[ ] concreteFilters = QueryTranslator.ConcreteQueries( filter, factory );
+			FilterTranslator[ ] filters = new FilterTranslator[concreteFilters.Length];
 
-			for ( int i=0; i<concreteFilters.Length; i++ ) 
+			for( int i = 0; i < concreteFilters.Length; i++ )
 			{
-				filters[i] = GetFilterTranslator(
-					collection, 
-					concreteFilters[i], 
-					parameters, 
+				filters[ i ] = GetFilterTranslator(
+					collection,
+					concreteFilters[ i ],
+					parameters,
 					false );
-					
+
 			}
 
 			dontFlushFromFind++; // stops flush being called multiple times if this method is recursively called
 
 			IList results = new ArrayList();
-			try 
+			try
 			{
-				for (int i=0; i<concreteFilters.Length; i++ ) 
+				for( int i = 0; i < concreteFilters.Length; i++ )
 				{
 					IList currentResults;
-					try 
+					try
 					{
-						currentResults = filters[i].FindList( this, parameters, true );
-					} 
-					catch (Exception e) 
-					{
-						throw new ADOException("could not execute query", e);
+						currentResults = filters[ i ].FindList( this, parameters, true );
 					}
-					foreach(object res in results) 
+					catch( Exception e )
 					{
-						currentResults.Add(res);
+						throw new ADOException( "could not execute query", e );
+					}
+					foreach( object res in results )
+					{
+						currentResults.Add( res );
 					}
 					results = currentResults;
 				}
-			} 
-			finally 
+			}
+			finally
 			{
 				dontFlushFromFind--;
 			}
 			return results;
 		}
 
-		public IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="filter"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public IEnumerable EnumerableFilter( object collection, string filter, QueryParameters parameters )
 		{
-			string[] concreteFilters = QueryTranslator.ConcreteQueries(filter, factory);
-			FilterTranslator[] filters = new FilterTranslator[ concreteFilters.Length ];
+			string[ ] concreteFilters = QueryTranslator.ConcreteQueries( filter, factory );
+			FilterTranslator[ ] filters = new FilterTranslator[concreteFilters.Length];
 
-			for (int i=0; i<concreteFilters.Length; i++ ) 
+			for( int i = 0; i < concreteFilters.Length; i++ )
 			{
-				filters[i] = GetFilterTranslator(
-					collection, 
-					concreteFilters[i], 
+				filters[ i ] = GetFilterTranslator(
+					collection,
+					concreteFilters[ i ],
 					parameters,
-					true);
+					true );
 			}
 
-			if (filters.Length==0) return new ArrayList(0);
+			if( filters.Length == 0 )
+			{
+				return new ArrayList( 0 );
+			}
 
 			IEnumerable result = null;
-			IEnumerable[] results = null;
-			bool many = filters.Length>1;
-			if (many) results = new IEnumerable[filters.Length];
+			IEnumerable[ ] results = null;
+			bool many = filters.Length > 1;
+			if( many )
+			{
+				results = new IEnumerable[filters.Length];
+			}
 
 			// execute the queries and return all results as a single enumerable
-			for (int i=0; i<filters.Length; i++ ) 
+			for( int i = 0; i < filters.Length; i++ )
 			{
-				try 
-				{ 
-					result = filters[i].GetEnumerable( parameters, this );
-				} 
-				catch (Exception e) 
+				try
 				{
-					throw new ADOException("could not execute query", e);
+					result = filters[ i ].GetEnumerable( parameters, this );
 				}
-				if (many) 
+				catch( Exception e )
 				{
-					results[i] = result;
+					throw new ADOException( "could not execute query", e );
+				}
+				if( many )
+				{
+					results[ i ] = result;
 				}
 			}
 
-			return many ? new JoinedEnumerable(results) : result;
+			return many ? new JoinedEnumerable( results ) : result;
 		}
 
-		public ICriteria CreateCriteria(System.Type persistentClass) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <returns></returns>
+		public ICriteria CreateCriteria( System.Type persistentClass )
 		{
-			return new CriteriaImpl(persistentClass, this);
+			return new CriteriaImpl( persistentClass, this );
 		}
 
-		public IList Find(CriteriaImpl criteria) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="criteria"></param>
+		/// <returns></returns>
+		public IList Find( CriteriaImpl criteria )
 		{
 			System.Type persistentClass = criteria.PersistentClass;
 
-			if ( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				log.Debug( "search: " + persistentClass.Name );
 				log.Debug( "criteria: " + criteria );
 			}
 
-			ILoadable persister = (ILoadable) GetPersister(persistentClass);
-			CriteriaLoader loader = new CriteriaLoader(persister, factory, criteria);
-			object[] spaces = persister.PropertySpaces;
+			ILoadable persister = ( ILoadable ) GetPersister( persistentClass );
+			CriteriaLoader loader = new CriteriaLoader( persister, factory, criteria );
+			object[ ] spaces = persister.PropertySpaces;
 			HashedSet sett = new HashedSet();
-			for (int i=0; i<spaces.Length; i++) 
+			for( int i = 0; i < spaces.Length; i++ )
 			{
-				sett.Add( spaces[i] );
+				sett.Add( spaces[ i ] );
 			}
-			AutoFlushIfRequired(sett);
+			AutoFlushIfRequired( sett );
 
 			dontFlushFromFind++;
-			try 
+			try
 			{
-				return loader.List(this);
-			} 
-			catch (Exception e) 
+				return loader.List( this );
+			}
+			catch( Exception e )
 			{
-				throw new ADOException("problem in find", e);
-			} 
-			finally 
+				throw new ADOException( "problem in find", e );
+			}
+			finally
 			{
 				dontFlushFromFind--;
 			}
 		}
 
-		public bool Contains(object obj) 
-		{ 
-			if (obj is INHibernateProxy) 
-			{ 
-				return NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ).Session==this; 
-			} 
-			else 
-			{ 
-				return entries.Contains(obj); 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public bool Contains( object obj )
+		{
+			if( obj is INHibernateProxy )
+			{
+				return NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj ).Session == this;
+			}
+			else
+			{
+				return entries.Contains( obj );
 			}
 		}
-    
-       /// <summary>
+
+		/// <summary>
 		/// remove any hard references to the entity that are held by the infrastructure
 		/// (references held by application or other persistant instances are okay)
 		/// </summary>
 		/// <param name="obj"></param>
-        public void Evict(object obj) 
-		{ 
-            if (obj is INHibernateProxy) 
-			{ 
-                LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ); 
-                object id = li.Identifier; 
-                IClassPersister persister = GetPersister( li.PersistentClass ); 
-                Key key = new Key(id, persister); 
-                proxiesByKey.Remove(key); 
-                if ( !li.IsUninitialized ) 
-				{ 
-                    object entity = RemoveEntity(key); 
-                    if (entity!=null) 
-					{ 
-                        RemoveEntry(entity); 
-                        DoEvict(persister, entity); 
-                    } 
-                } 
-            } 
-            else 
-			{ 
-                EntityEntry e = (EntityEntry) RemoveEntry(obj); 
-                if (e!=null) 
-				{ 
-                    RemoveEntity( new Key(e.Id, e.Persister) ); 
-                    DoEvict(e.Persister, obj); 
-                } 
-            } 
-        } 
+		public void Evict( object obj )
+		{
+			if( obj is INHibernateProxy )
+			{
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj );
+				object id = li.Identifier;
+				IClassPersister persister = GetPersister( li.PersistentClass );
+				Key key = new Key( id, persister );
+				proxiesByKey.Remove( key );
+				if( !li.IsUninitialized )
+				{
+					object entity = RemoveEntity( key );
+					if( entity != null )
+					{
+						RemoveEntry( entity );
+						DoEvict( persister, entity );
+					}
+				}
+			}
+			else
+			{
+				EntityEntry e = RemoveEntry( obj );
+				if( e != null )
+				{
+					RemoveEntity( new Key( e.Id, e.Persister ) );
+					DoEvict( e.Persister, obj );
+				}
+			}
+		}
 
-        private void DoEvict(IClassPersister persister, object obj) 
-		{ 
-            if ( log.IsDebugEnabled ) log.Debug( "evicting " + MessageHelper.InfoString(persister) ); 
+		private void DoEvict( IClassPersister persister, object obj )
+		{
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "evicting " + MessageHelper.InfoString( persister ) );
+			}
 
-            //remove all collections for the entity 
-            EvictCollections( persister.GetPropertyValues(obj), persister.PropertyTypes ); 
-            Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionEvict, CascadePoint.CascadeOnEvict); 
-        } 
-    
-          
+			//remove all collections for the entity 
+			EvictCollections( persister.GetPropertyValues( obj ), persister.PropertyTypes );
+			Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionEvict, CascadePoint.CascadeOnEvict );
+		}
+
+
 		/// <summary>
 		/// Evict any collections referenced by the object from the session cache. This will NOT 
 		/// pick up any collections that were dereferenced, so they will be deleted (suboptimal 
@@ -3669,46 +4297,54 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="values"></param>
 		/// <param name="types"></param>
-		private void EvictCollections(Object[] values, IType[] types) 
-		{ 
-			for ( int i=0; i<types.Length; i++ ) 
-			{ 
-				if( values[i]==null) 
+		private void EvictCollections( Object[ ] values, IType[ ] types )
+		{
+			for( int i = 0; i < types.Length; i++ )
+			{
+				if( values[ i ] == null )
 				{
 					// do nothing
 				}
-				else if ( types[i].IsPersistentCollectionType ) 
-				{ 
-					object pc=null; 
-					if ( ( (PersistentCollectionType) types[i] ).IsArrayType ) 
-					{ 
-						pc = arrayHolders[ values[i] ];
-						arrayHolders.Remove( values[i] ); 
-					} 
-					else if ( values[i] is PersistentCollection ) 
-					{ 
-						pc = values[i]; 
-					} 
+				else if( types[ i ].IsPersistentCollectionType )
+				{
+					object pc = null;
+					if( ( ( PersistentCollectionType ) types[ i ] ).IsArrayType )
+					{
+						pc = arrayHolders[ values[ i ] ];
+						arrayHolders.Remove( values[ i ] );
+					}
+					else if( values[ i ] is PersistentCollection )
+					{
+						pc = values[ i ];
+					}
 
-					if (pc!=null) 
-					{ 
-						if ( ( (PersistentCollection) pc ).UnsetSession(this) ) collections.Remove(pc); 
-					} 
-				} 
-				else if ( types[i].IsComponentType ) 
-				{ 
-					IAbstractComponentType actype = (IAbstractComponentType) types[i]; 
-					EvictCollections( 
-						actype.GetPropertyValues( values[i], this ), 
-						actype.Subtypes 
-					); 
-				} 
-			} 
-        } 
-	
-		public object GetVersion(object entity) 
+					if( pc != null )
+					{
+						if( ( ( PersistentCollection ) pc ).UnsetSession( this ) )
+						{
+							collections.Remove( pc );
+						}
+					}
+				}
+				else if( types[ i ].IsComponentType )
+				{
+					IAbstractComponentType actype = ( IAbstractComponentType ) types[ i ];
+					EvictCollections(
+						actype.GetPropertyValues( values[ i ], this ),
+						actype.Subtypes
+						);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entity"></param>
+		/// <returns></returns>
+		public object GetVersion( object entity )
 		{
-			return GetEntry(entity).Version;
+			return GetEntry( entity ).Version;
 		}
 	}
 }

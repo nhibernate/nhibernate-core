@@ -1,25 +1,29 @@
-using System;
 using System.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Impl 
+namespace NHibernate.Impl
 {
-	
 	/// <summary>
 	/// Implementation of the <see cref="IQuery"/> interface for collection filters.
 	/// </summary>
-	internal class FilterImpl : QueryImpl 
+	internal class FilterImpl : QueryImpl
 	{
 		private object collection;
 
-		public FilterImpl(string queryString, object collection, ISessionImplementor session) : base(queryString, session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="queryString"></param>
+		/// <param name="collection"></param>
+		/// <param name="session"></param>
+		public FilterImpl( string queryString, object collection, ISessionImplementor session ) : base( queryString, session )
 		{
 			this.collection = collection;
 		}
 
-		public override IEnumerable Enumerable() 
+		/// <summary></summary>
+		public override IEnumerable Enumerable()
 		{
 			//TODO: see if there is a better way to implement
 			QueryParameters qp = new QueryParameters( TypeArray(), ValueArray() );
@@ -31,7 +35,8 @@ namespace NHibernate.Impl
 			return Session.EnumerableFilter( collection, query, qp );
 		}
 
-		public override IList List() 
+		/// <summary></summary>
+		public override IList List()
 		{
 			//TODO: see if there is a better way to implement
 			QueryParameters qp = new QueryParameters( TypeArray(), ValueArray() );
@@ -43,23 +48,27 @@ namespace NHibernate.Impl
 			return Session.Filter( collection, query, qp );
 		}
 
-		private IType[] TypeArray() 
+		private IType[ ] TypeArray()
 		{
 			IList typeList = Types;
 			int size = typeList.Count;
-			IType[] result = new IType[size+1];
-			for (int i=0; i<size; i++)
-				result[i+1] = (IType) typeList[i];
+			IType[ ] result = new IType[size + 1];
+			for( int i = 0; i < size; i++ )
+			{
+				result[ i + 1 ] = ( IType ) typeList[ i ];
+			}
 			return result;
 		}
 
-		private object[] ValueArray() 
+		private object[ ] ValueArray()
 		{
 			IList valueList = Values;
 			int size = valueList.Count;
-			object[] result = new object[size+1];
-			for (int i=0; i<size; i++)
-				result[i+1] = valueList[i];
+			object[ ] result = new object[size + 1];
+			for( int i = 0; i < size; i++ )
+			{
+				result[ i + 1 ] = valueList[ i ];
+			}
 			return result;
 		}
 	}

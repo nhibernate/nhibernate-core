@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using log4net;
 
 namespace NHibernate.Impl
 {
@@ -24,14 +24,15 @@ namespace NHibernate.Impl
 	{
 		// to stop this class from being unloaded - this is a comment
 		// from h2.0.3 - is this applicable to .net also???
-		private static readonly SessionFactoryObjectFactory Instance; 
-		private static readonly log4net.ILog log;
+		private static readonly SessionFactoryObjectFactory Instance; // not used !?!
+		private static readonly ILog log;
 
-		static SessionFactoryObjectFactory() 
+		/// <summary></summary>
+		static SessionFactoryObjectFactory()
 		{
-			log = log4net.LogManager.GetLogger( typeof(SessionFactoryObjectFactory) );
+			log = LogManager.GetLogger( typeof( SessionFactoryObjectFactory ) );
 			Instance = new SessionFactoryObjectFactory();
-			log.Debug("initializing class SessionFactoryObjectFactory");
+			log.Debug( "initializing class SessionFactoryObjectFactory" );
 		}
 
 		// in h2.0.3 these use a class called "FastHashMap"
@@ -46,28 +47,24 @@ namespace NHibernate.Impl
 		/// <param name="name">The name of the ISessionFactory.</param>
 		/// <param name="instance">The ISessionFactory.</param>
 		/// <param name="properties">The configured properties for the ISessionFactory.</param>
-		public static void AddInstance(string uid, string name, ISessionFactory instance, IDictionary properties) 
+		public static void AddInstance( string uid, string name, ISessionFactory instance, IDictionary properties )
 		{
-			if(log.IsDebugEnabled) 
+			if( log.IsDebugEnabled )
 			{
-				string nameMsg = "unnamed";
-				if(name!=null && name.Length > 0) 
-				{
-					nameMsg = name;
-				}
+				string nameMsg = ( ( name != null && name.Length > 0 ) ? name : "unnamed" );
 				
-				log.Debug( "registered: " + uid + "(" + name + ")" );
+				log.Debug( "registered: " + uid + "(" + nameMsg + ")" );
 			}
 
-			Instances[uid] = instance;
-			if(name!=null && name.Length > 0) 
+			Instances[ uid ] = instance;
+			if( name != null && name.Length > 0 )
 			{
-				log.Info("Factory name:" + name);
-				NamedInstances[name] = instance;
+				log.Info( "Factory name:" + name );
+				NamedInstances[ name ] = instance;
 			}
-			else 
+			else
 			{
-				log.Info("no name configured");
+				log.Info( "no name configured" );
 			}
 
 		}
@@ -78,16 +75,16 @@ namespace NHibernate.Impl
 		/// <param name="uid">The identifier of the ISessionFactory.</param>
 		/// <param name="name">The name of the ISessionFactory.</param>
 		/// <param name="properties">The configured properties for the ISessionFactory.</param>
-		public static void RemoveInstance(string uid, string name, IDictionary properties) 
+		public static void RemoveInstance( string uid, string name, IDictionary properties )
 		{
-			if(name!=null && name.Length > 0) 
+			if( name != null && name.Length > 0 )
 			{
-				log.Info("unbinding factory: " + name);
+				log.Info( "unbinding factory: " + name );
 
-				NamedInstances.Remove(name);
+				NamedInstances.Remove( name );
 			}
 
-			Instances.Remove(uid);
+			Instances.Remove( uid );
 		}
 
 		/// <summary>
@@ -95,11 +92,11 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="name">The name of the ISessionFactory.</param>
 		/// <returns>An instantiated ISessionFactory.</returns>
-		public static ISessionFactory GetNamedInstance(string name) 
+		public static ISessionFactory GetNamedInstance( string name )
 		{
-			log.Debug( "lookup: name=" + name);
-			ISessionFactory factory = NamedInstances[name] as ISessionFactory;
-			if(factory==null) 
+			log.Debug( "lookup: name=" + name );
+			ISessionFactory factory = NamedInstances[ name ] as ISessionFactory;
+			if( factory == null )
 			{
 				log.Warn( "Not found: " + name );
 			}
@@ -111,11 +108,11 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="uid">The identifier of the ISessionFactory.</param>
 		/// <returns>An instantiated ISessionFactory.</returns>
-		public static ISessionFactory GetInstance(string uid) 
+		public static ISessionFactory GetInstance( string uid )
 		{
 			log.Debug( "lookup: uid=" + uid );
-			ISessionFactory factory = Instances[uid] as ISessionFactory;
-			if(factory==null) 
+			ISessionFactory factory = Instances[ uid ] as ISessionFactory;
+			if( factory == null )
 			{
 				log.Warn( "Not found: " + uid );
 			}
