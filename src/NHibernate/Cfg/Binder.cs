@@ -102,7 +102,7 @@ namespace NHibernate.Cfg {
 			BindValue( keyNode, key, false, model.Name );
 
 			model.Key.Type = model.Identifier.Type;
-			model.CreatePrimaryKey();
+			model.CreatePrimaryKey(dialect);
 			ForeignKey fk = mytable.CreateForeignKey( model.Key.ConstraintColumns );
 			fk.ReferencedClass = model.Superclass.PersistentClazz;
 
@@ -145,7 +145,7 @@ namespace NHibernate.Cfg {
 			model.IsMutable = (mutableNode==null) || mutableNode.Value.Equals("true");
 
 			//POLYMORPHISM
-			XmlAttribute polyNode = node.Attributes["poylmorphism"];
+			XmlAttribute polyNode = node.Attributes["polymorphism"];
 			model.IsExplicitPolymorphism = (polyNode!=null) && polyNode.Value.Equals("explicit");
 
 			foreach(XmlNode subnode in node.ChildNodes) {
@@ -223,7 +223,7 @@ namespace NHibernate.Cfg {
 				}
 			}
 
-			model.CreatePrimaryKey();
+			model.CreatePrimaryKey(dialect);
 
 			PropertiesFromXML(node, model, mappings);
 		}
