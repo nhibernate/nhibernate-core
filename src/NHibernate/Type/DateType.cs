@@ -7,7 +7,7 @@ namespace NHibernate.Type {
 	public class DateType : MutableType, IIdentifierType, ILiteralType {
 
 
-	    public DateType (DateTimeSqlType sqlType) : base(sqlType)
+	    public DateType (DateSqlType sqlType) : base(sqlType)
 	    {
 	    }
 

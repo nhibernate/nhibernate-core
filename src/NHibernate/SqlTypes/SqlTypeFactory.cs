@@ -76,7 +76,24 @@ namespace NHibernate.SqlTypes {
 			return returnSqlType;
 		}
 
-		public static DateTimeSqlType GetDateTime() {
+		public static DateSqlType GetDate()
+		{
+		 
+		 	string key = typeof(DateSqlType).Name;
+		 	
+		 	DateSqlType returnSqlType = (DateSqlType)sqlTypes[key];
+		 	if(returnSqlType==null) 
+			{
+		 		returnSqlType = new DateSqlType();
+		 		sqlTypes.Add(key, returnSqlType);
+		 	}
+	 		
+	 		return returnSqlType;
+	 	}
+
+
+		public static DateTimeSqlType GetDateTime() 
+{
 
 			string key = typeof(DateTimeSqlType).Name;
 			

@@ -1393,6 +1393,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlTypes\DateSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlTypes\DateTimeSqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
