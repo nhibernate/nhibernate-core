@@ -565,7 +565,8 @@ namespace NHibernate.Loader {
 		protected void ClosePreparedStatement(IDbCommand st, RowSelection selection, ISessionImplementor session) {
 			try {
 				if (selection!=null) {
-					st.CommandTimeout = 0;
+					//TODO: figure out why this doesn't work for all drivers
+					//st.CommandTimeout = 0;
 				}
 			} finally {
 				session.Batcher.CloseQueryStatement(st);
