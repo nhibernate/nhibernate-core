@@ -654,22 +654,19 @@ namespace NHibernate.Impl {
 		public void Evict(System.Type persistentClass) 
 		{
 			IClassPersister p = GetPersister(persistentClass);
-			//TODO: H2.0.3 uncomment when Cache is synched
-			//if(p.HasCache) p.Cache.Clear();
+			if(p.HasCache) p.Cache.Clear();
 		}
 
 		public void EvictCollection(string roleName, object id) 
 		{
 			CollectionPersister p = GetCollectionPersister(roleName);
-			// TODO: H2.0.3 uncomment this when CollectionPersister has cache
-			//if(p.HasCache) p.Cache.Remove(id);
+			if(p.HasCache) p.Cache.Remove(id);
 		}
 
 		public void EvictCollection(string roleName) 
 		{
 			CollectionPersister p = GetCollectionPersister(roleName);
-			// TODO: H2.0.3 uncomment this when CollectionPersister has cache
-			//if(p.HasCache) p.Cache.Clear();
+			if(p.HasCache) p.Cache.Clear();
 		}
 	}
 }
