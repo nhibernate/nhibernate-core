@@ -3,7 +3,9 @@ using System.Reflection;
 
 namespace NHibernate.Property
 {
-	/// <summary></summary>
+	/// <summary>
+	/// An <see cref="ISetter"/> for a Property <c>set</c>.
+	/// </summary>
 	public sealed class BasicSetter : ISetter
 	{
 		private System.Type clazz;
@@ -11,11 +13,11 @@ namespace NHibernate.Property
 		private string propertyName;
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of <see cref="BasicSetter"/>.
 		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="property"></param>
-		/// <param name="propertyName"></param>
+		/// <param name="clazz">The <see cref="System.Type"/> that contains the Property <c>set</c>.</param>
+		/// <param name="property">The <see cref="PropertyInfo"/> for reflection.</param>
+		/// <param name="propertyName">The name of the Property.</param>
 		public BasicSetter( System.Type clazz, PropertyInfo property, string propertyName )
 		{
 			this.clazz = clazz;
@@ -26,10 +28,13 @@ namespace NHibernate.Property
 		#region ISetter Members
 
 		/// <summary>
-		/// 
+		/// Sets the value of the Property on the object.
 		/// </summary>
-		/// <param name="target"></param>
-		/// <param name="value"></param>
+		/// <param name="target">The object to set the Property value in.</param>
+		/// <param name="value">The value to set the Property to.</param>
+		/// <exception cref="PropertyAccessException">
+		/// Thrown when there is a problem setting the value in the target.
+		/// </exception>
 		public void Set( object target, object value )
 		{
 			try
@@ -42,13 +47,19 @@ namespace NHibernate.Property
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the name of the Property.
+		/// </summary>
+		/// <value>The name of the Property or <c>null</c>.</value>
 		public string PropertyName
 		{
 			get { return property.Name; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="PropertyInfo"/> for the Property.
+		/// </summary>
+		/// <value>The <see cref="PropertyInfo"/> for the Property.</value>
 		public PropertyInfo Property
 		{
 			get { return property; }
