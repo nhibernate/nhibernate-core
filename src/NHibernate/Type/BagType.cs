@@ -22,7 +22,7 @@ namespace NHibernate.Type
 
 		public override System.Type ReturnedClass 
 		{
-			get { return typeof(IList); }
+			get { return typeof(ICollection); }
 		}
 
 		public override PersistentCollection Wrap(ISessionImplementor session, object collection)
