@@ -45,5 +45,25 @@ namespace NHibernate.Test.NHSpecificTest
 					"Getting non-existent object should return null" );
 			}
 		}
+
+		[Test]
+		public void GetAndModify() 
+		{
+			A a = new A( "name" );
+			ISession s = sessions.OpenSession();
+			s.Save( a );
+			s.Close();
+
+			s = sessions.OpenSession();
+			a = s.Get( typeof(A), a.Id ) as A;
+			a.Name = "modified";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			a = s.Get( typeof(A), a.Id ) as A;
+			Assert.AreEqual( "modified", a.Name, "the name was modified" );
+			s.Close();
+		}
 	}
 }
