@@ -44,6 +44,9 @@ namespace NHibernate.Type {
 	/// </summary>
 	public interface IAssociationType {
 
+		/// <summary>
+		/// The foreign key directionality of this association
+		/// </summary>
 		ForeignKeyType ForeignKeyType { get; }
 
 	}
