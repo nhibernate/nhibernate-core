@@ -1496,8 +1496,9 @@ namespace NHibernate.Impl {
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
 		public void AddUninitializedEntity(Key key, object obj, LockMode lockMode) {
+			IClassPersister p = GetPersister(obj);
 			AddEntity(key, obj);
-			AddEntry(obj, LOADING, null, key.Identifier, null, lockMode, true, null );
+			AddEntry(obj, LOADING, null, key.Identifier, null, lockMode, true, p );
 		}
 
 		/// <summary>

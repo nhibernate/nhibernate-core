@@ -30,8 +30,11 @@ namespace NHibernate.Util {
 		}
 
 		public void Add(object key, object val) {
+			map[key] = val;
+			/* this causes a problem during the load
 			if( !map.ContainsKey(key) )
 				map.Add(key, val);
+				*/
 		}
 
 		public void Clear() {
