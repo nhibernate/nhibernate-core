@@ -73,13 +73,9 @@ namespace NHibernate.Collection
 		public override object ReadFrom(IDataReader reader, CollectionPersister persister, object owner)
 		{
 			object elementIdentifier = persister.ReadElementIdentifier(reader, owner, session);
-			int index = (int) persister.ReadIndex(reader, session);
-			for (int i=bag.Count; i<=index; i++) 
-			{
-				bag.Insert(i, null);
-				bagIdentifiers.Insert(i , null);
-			}
-			bagIdentifiers[index] = elementIdentifier;
+			int index = bag.Add(null);
+			bagIdentifiers.Insert(index, elementIdentifier);
+			
 			return elementIdentifier;
 		}
 
