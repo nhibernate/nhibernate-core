@@ -280,7 +280,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("ISession not fully serializable - http://jira.nhibernate.org:8080/browse/NH-60")]
 		public void Serialization() 
 		{
 			ISession s = sessions.OpenSession();
@@ -304,11 +303,12 @@ namespace NHibernate.Test
 			s.Disconnect();
 			System.IO.MemoryStream stream = new System.IO.MemoryStream();
 			System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-//			f.Serialize(stream, s);
-//			stream.Position = 0;
-//			Console.WriteLine(stream.Length);
-			//TODO
-//			s = (Session) new ObjectInputStream( new ByteArrayInputStream(bytes) ).readObject();
+			f.Serialize(stream, s);
+			stream.Position = 0;
+
+			s = (ISession)f.Deserialize(stream);
+			stream.Close();
+
 			s.Reconnect();
 			Master m2 = (Master) s.Load(typeof(Master), mid);
 			Assert.IsTrue( m2.Details.Count==2, "serialized state" );
@@ -320,7 +320,10 @@ namespace NHibernate.Test
 					s.GetIdentifier(d);
 					s.Delete(d);
 				}
-				catch (Exception e) {}
+				catch (Exception e) 
+				{
+					Assert.IsTrue( e is Exception, "just getting rid of a compiler warning." );
+				}
 			}
 			s.Delete(m2);
 			s.Flush();
@@ -331,12 +334,13 @@ namespace NHibernate.Test
 			object mid2 = s.Save( new Master() );
 			s.Flush();
 			s.Disconnect();
-//			stream = new System.IO.MemoryStream();
-//			f.Serialize(stream, s);
-//			stream.Position = 0;
-//			Console.WriteLine(stream.Length);
-			//TODO
-//			s = (Session) new ObjectInputStream( new ByteArrayInputStream(bytes) ).readObject();
+			stream = new System.IO.MemoryStream();
+			f.Serialize(stream, s);
+			stream.Position = 0;
+
+			s = (ISession)f.Deserialize(stream);
+			stream.Close();
+
 			s.Reconnect();
 			s.Delete( s.Load(typeof(Master), mid) );
 			s.Delete( s.Load(typeof(Master), mid2) );
@@ -355,6 +359,10 @@ namespace NHibernate.Test
 				Assert.IsTrue(e is InvalidOperationException, "illegal state" );
 				s.Close();
 				return;
+			}
+			finally 
+			{
+				stream.Close();
 			}
 			Assert.IsTrue(false, "serialization should have failed"); 
 		}
