@@ -15,7 +15,7 @@
 	
 	<!-- 
 		These are used to set the correct Attributes in AssemblyInfo.cs.  
-	 -->
+	-->
 	<property name="project.name" value="nhibernate" />
 	<property name="project.version.major" value="0" />
 	<property name="project.version.minor" value="3" />
@@ -25,10 +25,18 @@
 	
 	<!-- default configuration -->
 	<property name="project.config" value="debug" />
-	
+
 	<!-- debug|release -->
 	<property name="build.defines" value="" />
-	
+
+	<!-- platform specific properties. These are the defaults -->
+	<property name="current.build.defines" value="${build.defines}" />
+
+	<!-- properties used to connect to database for testing -->
+	<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2000Dialect" />
+	<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlClientDriver" />
+	<property name="nhibernate.connection.connection_string" value="Server=localhost;initial catalog=nhibernate;Integrated Security=SSPI" />
+
 	<!-- named project configurations -->
 	<target name="debug" description="Perform a 'debug' build">
 		<property name="project.config" value="debug" />
@@ -61,7 +69,7 @@
 	<target 
 		name="build-external" 
 		depends="init" 
-		description="Builds code that NHibernate depends on but is not a core peice of NHibernate.  The built dll/exes will be distributed in the external-bin folder so there should be no need for a user to build it."
+		description="Builds code that NHibernate depends on but is not a core peice of NHibernate.  The built dll/exes will be distributed in the lib folder so there should be no need for a user to build it."
 	>
 		<nant 
 			buildfile="src/HashCodeProvider/HashCodeProvider.build" 
@@ -79,44 +87,29 @@
 		
 		<!-- copy framework-nuetral libraries -->
 		<copy todir="${build.dir}/bin">
-			<fileset basedir="external-bin">
-				<includes name="log4net.*" />
-				<includes name="HashCodeProvider.*" />
-				<includes name="DotNetMock.*" />
-				<includes name="nunit.framework.*" />
+			<fileset basedir="lib">
 				<includes name="Commons.*" />
-				<includes name="NVelocity.*" />
+				<includes name="DotNetMock.*" />
+				<includes name="HashCodeProvider.*" />
 				<includes name="NAnt.Core.*" />
+				<includes name="NVelocity.*" />
 			</fileset>
 		</copy>
 		
 		<!-- copy framework-specific libraries -->
-		<!-- note that we are not targeting diff versions - only 1.1 and not mono yet -->
+		<copy todir="${build.dir}/bin">
+			<fileset basedir="${lib.dir}">
+				<includes name="log4net.*" />
+				<includes name="nunit.framework.*" />
+			</fileset>
+		</copy>
 		
-		<nant 
-			buildfile="src/NHibernate/NHibernate.build" 
-			target="build"
-		/>
-		<nant 
-			buildfile="src/NHibernate.DomainModel/NHibernate.DomainModel.build" 
-			target="build"
-		/>
-		<nant 
-			buildfile="src/NHibernate.Test/NHibernate.Test.build" 
-			target="build"
-		/>
-		<nant 
-			buildfile="src/NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" 
-			target="build"
-		/>
-		<nant 
-			buildfile="src/NHibernate.Tasks/NHibernate.Tasks.build" 
-			target="build"
-		/>
-		<nant 
-			buildfile="src/NHibernate.Examples/NHibernate.Examples.build" 
-			target="build"
-		/>
+		<nant target="build" buildfile="src/NHibernate/NHibernate.build" />
+		<nant target="build" buildfile="src/NHibernate.DomainModel/NHibernate.DomainModel.build" />
+		<nant target="build" buildfile="src/NHibernate.Test/NHibernate.Test.build" />
+		<nant target="build" buildfile="src/NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" />
+		<nant target="build" buildfile="src/NHibernate.Tasks/NHibernate.Tasks.build" />
+		<nant target="build" buildfile="src/NHibernate.Examples/NHibernate.Examples.build" />
 	</target>
 	
 	<target name="test" depends="build" description="Runs the tests contained in NHibernate.Test" >
@@ -127,93 +120,32 @@
 			Tell nhibernate how to connect to the test database.
 		-->
 		<xmlpoke
-            file="${build.dir}/bin/NHibernate.Test.dll.config"
-            xpath="/configuration/nhibernate/add[@key='hibernate.dialect']/@value"
-            value="${nhibernate.dialect}" 
-        />
-        <xmlpoke
-            file="${build.dir}/bin/NHibernate.Test.dll.config"
-            xpath="/configuration/nhibernate/add[@key='hibernate.connection.driver_class']/@value"
-            value="${nhibernate.connection.driver_class}" 
-        />
-        <xmlpoke
-            file="${build.dir}/bin/NHibernate.Test.dll.config"
-            xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
-            value="${nhibernate.connection.connection_string}" 
-        />
-
-		<nant 
-			buildfile="src/NHibernate.Test/NHibernate.Test.build" 
-			target="test"
+			file="${build.dir}/bin/NHibernate.Test.dll.config"
+			xpath="/configuration/nhibernate/add[@key='hibernate.dialect']/@value"
+			value="${nhibernate.dialect}" 
 		/>
+		<xmlpoke
+			file="${build.dir}/bin/NHibernate.Test.dll.config"
+			xpath="/configuration/nhibernate/add[@key='hibernate.connection.driver_class']/@value"
+			value="${nhibernate.connection.driver_class}" 
+		/>
+		<xmlpoke
+			file="${build.dir}/bin/NHibernate.Test.dll.config"
+			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
+			value="${nhibernate.connection.connection_string}" 
+		/>
+
+		<nant target="test" buildfile="src/NHibernate.Test/NHibernate.Test.build" />
 		
 		<!--
 			Remove the connnection string information that was just entered...
 		-->
-        <xmlpoke
-            file="${build.dir}/bin/NHibernate.Test.dll.config"
-            xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
-            value="conn string here" 
-        />
+		<xmlpoke
+			file="${build.dir}/bin/NHibernate.Test.dll.config"
+			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
+			value="conn string here" 
+		/>
 		
-	</target>
-	
-	<target name="set-runtime-configuration">
-        <!--
-			We are not building for anything but the .net 1.1 framework right now
-		-->
-	
-		<call target="set-net-1.1-runtime-configuration" />
-        <!--
-        <ifnot propertyexists="current.runtime.config">
-            <ifnot propertyexists="nant.settings.currentframework">
-                <fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
-            </ifnot>
-            <ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
-                <fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NAnt." />
-            </ifnot>
-            <call target="set-${nant.settings.currentframework}-runtime-configuration"/>
-        </ifnot>
-        <ifnot propertyexists="current.runtime.version">
-            <ifnot propertyexists="nant.settings.currentframework">
-                <fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
-            </ifnot>
-            <ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
-                <fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NDoc." />
-            </ifnot>
-            <call target="set-${nant.settings.currentframework}-runtime-configuration" />
-        </ifnot>
-        <ifnot targetexists="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration">
-            <fail message="The ${current.runtime.config}-${current.runtime.version} runtime is not supported by NDoc." />
-        </ifnot>
-        <call target="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration"/>
-        -->
-    </target>
-    
-	<target name="set-runtime-configuration-flags">
-        <property name="current.runtime.config.net" value="false" />
-        <property name="current.runtime.config.netcf" value="false" />
-        <property name="current.runtime.config.mono" value="false" />
-        <property name="current.runtime.config.sscli" value="false" />
-        <property name="current.runtime.config.${current.runtime.config}" value="true" />
-        <property name="current.runtime.net-1.0" value="false" />
-        <property name="current.runtime.net-1.1" value="false" />
-        <property name="current.runtime.net-1.2" value="false" />
-        <property name="current.runtime.netcf-1.0" value="false" />
-        <property name="current.runtime.mono-1.0" value="false" />
-        <property name="current.runtime.sscli-1.0" value="false" />
-        <property name="current.runtime.${current.runtime.config}-${current.runtime.version}" value="true" />
-    </target>
-    
-	<target name="set-net-1.1-runtime-configuration">
-		<property name="current.runtime.config" value="net" /> 
-		<property name="current.runtime.version" value="1.1" /> 
-		<property name="current.runtime.description" value="Microsoft .NET Framework 1.1" /> 
-		<property name="current.build.defines" value="${build.defines}NET,NET_1_1" /> 
-		<property name="link.sdkdoc.version" value="SDK_v1_1" /> 
-		<property name="lib.dir" value="lib/${current.runtime.config}/${current.runtime.version}" /> 
-		<property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" /> 
-		<call target="set-runtime-configuration-flags" /> 
 	</target>
 	
 	<target name="sdkdoc" depends="init" description="Generates MSDN sytle documentation">
@@ -266,12 +198,23 @@
 				</documenter>
 			</documenters> 
 		</ndoc>
+		
+		<delete>
+			<!-- remove all of the html, gif, etc... files and leave only the chm -->
+			<fileset basedir="${build.dir}/doc/sdk">
+				<includes name="*" />
+				<excludes name="*SDK.chm" />
+			</fileset>
+		</delete>
+		
 	</target>
 
 	<target name="package" depends="test sdkdoc" description="Creates Zip files for the File Release System on SourceForge">
 		<copy todir="${build.dir}">
 			<fileset>
-				<includes name="external-bin/**" />
+				<!-- copy framework nuetral dlls -->
+				<includes name="lib/*" />
+				<includes name="${lib.dir}/**" />
 				
 				<!-- exclude the UnitTesting project that is no longer used -->
 				<excludes name="src/UnitTesting/**" />
@@ -308,4 +251,76 @@
 		
 	</target>
 	
+	<!-- Framework specific configuration -->
+	<target name="set-runtime-configuration">
+		<!--
+			We are not building for anything but the .net 1.1 framework right now
+			I've been goofing around with mono but am having problems with nant 0.85
+			and nunit-2.2 related tasks. Probably something simple, but I think I've 
+			followed all the instructions to get that working...
+		-->
+		<call target="set-net-1.1-runtime-configuration" />
+		<!--
+		<ifnot propertyexists="current.runtime.config">
+			<ifnot propertyexists="nant.settings.currentframework">
+				<fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
+			</ifnot>
+			<ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
+				<fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NAnt." />
+			</ifnot>
+			<call target="set-${nant.settings.currentframework}-runtime-configuration"/>
+		</ifnot>
+		<ifnot propertyexists="current.runtime.version">
+			<ifnot propertyexists="nant.settings.currentframework">
+				<fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
+			</ifnot>
+			<ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
+				<fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NDoc." />
+			</ifnot>
+			<call target="set-${nant.settings.currentframework}-runtime-configuration" />
+		</ifnot>
+		<ifnot targetexists="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration">
+			<fail message="The ${current.runtime.config}-${current.runtime.version} runtime is not supported by NDoc." />
+		</ifnot>
+		<call target="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration"/>
+		-->
+	</target>
+
+	<target name="set-runtime-configuration-flags">
+		<property name="current.runtime.config.net" value="false" />
+		<property name="current.runtime.config.netcf" value="false" />
+		<property name="current.runtime.config.mono" value="false" />
+		<property name="current.runtime.config.sscli" value="false" />
+		<property name="current.runtime.config.${current.runtime.config}" value="true" />
+		<property name="current.runtime.net-1.0" value="false" />
+		<property name="current.runtime.net-1.1" value="false" />
+		<property name="current.runtime.net-1.2" value="false" />
+		<property name="current.runtime.netcf-1.0" value="false" />
+		<property name="current.runtime.mono-1.0" value="false" />
+		<property name="current.runtime.sscli-1.0" value="false" />
+		<property name="current.runtime.${current.runtime.config}-${current.runtime.version}" value="true" />
+	</target>
+
+	<target name="set-net-1.1-runtime-configuration">
+		<property name="current.runtime.config" value="net" /> 
+		<property name="current.runtime.version" value="1.1" /> 
+		<property name="current.runtime.description" value="Microsoft .NET Framework 1.1" /> 
+		<property name="current.build.defines" value="${build.defines}NET,NET_1_1" /> 
+		<property name="link.sdkdoc.version" value="SDK_v1_1" /> 
+		<property name="lib.dir" value="lib/${current.runtime.config}/${current.runtime.version}" /> 
+		<property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" /> 
+		<call target="set-runtime-configuration-flags" /> 
+	</target>
+
+	<target name="set-mono-1.0-runtime-configuration">
+		<property name="current.runtime.config" value="mono" />
+		<property name="current.runtime.version" value="1.0" />
+		<property name="current.runtime.description" value="Mono 1.0" />
+		<property name="current.build.defines" value="${build.defines}MONO,MONO_1_0" />
+		<property name="link.sdkdoc.version" value="MsdnOnline" />
+		<property name="lib.dir" value="lib/${current.runtime.config}/${current.runtime.version}" />
+		<property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
+		<call target="set-runtime-configuration-flags" />
+	</target>
+
 </project>
