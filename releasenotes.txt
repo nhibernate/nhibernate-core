@@ -14,6 +14,7 @@ Build 0.8.0.0
 - Modified Dialect to use Hibernate 2.1 methods.
 - Added "unsaved-value" to version/timestamp as DateTime can't support null, use 1/1/0001 to align with .NET default value for DateTime
 - Added SaveOrUpdateCopy which allows synchronisation for detached objects
+- Added "foreign-key" attribute to many-to-one, one-to-one, many-to-many, key allowing a different column to be the foreign key target
 
 Build 0.7.0.0
 ======================== 

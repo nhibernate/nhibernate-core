@@ -17,11 +17,8 @@ namespace NHibernate.DomainModel
 		private Iesi.Collections.ISet _incoming = new Iesi.Collections.HashedSet();
 		private Iesi.Collections.ISet _outgoing = new Iesi.Collections.HashedSet();
 		private string _name = "master";
-		// since this is a version column a value should be set.  NHibernate is unable
-		// to set it right now because it checks to see if value==null -> since this 
-		// is a struct it is not null...
-		private DateTime stamp = DateTime.Now;
-		// private BigDecimal bigDecimal = new BigDecimal("1234.123"); TODO: how to do in .net
+		private DateTime version;
+		//private BigDecimal bigDecimal = new BigDecimal("1234.123"); //TODO: how to do in .net
 		private int _x;
 		
 		public Master OtherMaster

@@ -1,26 +1,11 @@
 <?xml version="1.0"?>
-
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-
-	<class 
-		name="NHibernate.DomainModel.Master, NHibernate.DomainModel"
-	>
-		<id 
-			column="master_key" 
-			type="Int64"
-			unsaved-value="0"
-		>
+	<class name="NHibernate.DomainModel.Master, NHibernate.DomainModel">
+		<id column="master_key_column" type="Int64" unsaved-value="0">
 			<generator class="native"/>
 		</id>
-		
 		<!--TODO: make sure this type has an equiv .net type-->
-		<version 
-			name="stamp" 
-			type="Timestamp" 
-			column="ts_"
-			access="field"
-		/>
-		
+		<version name="version" type="Timestamp" column="ts_" access="field" unsaved-value="1/1/0001"/>
 		<property name="Name"/>
 		<property name="X"/>
 		<!--
@@ -35,102 +20,54 @@
 			column="big_dec"
 		/>
 		-->
-		
-		<set 
-			name="Details" 
-			inverse="true" 
-			lazy="true" 
-			order-by="i asc"
-		>
+		<set name="Details" inverse="true" lazy="true" order-by="i asc">
 			<key column="master_key"/>
 			<one-to-many class="NHibernate.DomainModel.Detail, NHibernate.DomainModel"/>
 		</set>
-		
-		<set 
-			name="MoreDetails" 
-			cascade="all" 
-			lazy="true" 
-			order-by="i desc"
-		>
+		<set name="MoreDetails" cascade="all" lazy="true" order-by="i desc">
 			<key column="more_master_key"/>
 			<one-to-many class="NHibernate.DomainModel.Detail, NHibernate.DomainModel"/>
 		</set>
-		
-		<set 
-			name="Incoming" 
-			lazy="true" 
-			table="mtm"
-		>
-			<key column="outgoingabcdef"/>
-			<many-to-many 
-				class="NHibernate.DomainModel.Master, NHibernate.DomainModel" 
-				column="incomingabcdef"
-			/>
+		<set name="Incoming" lazy="true" table="mtm">
+			<key foreign-key="AA" column="outgoingabcdef"/>
+			<many-to-many class="NHibernate.DomainModel.Master, NHibernate.DomainModel" foreign-key="BB">
+				<column name="incomingabcdef" index="IBB"/>
+			</many-to-many>
 		</set>
-		
-		<set 
-			name="Outgoing" 
-			lazy="true" 
-			table="mtm" 
-			inverse="true"
-		>
+		<set name="Outgoing" lazy="true" table="mtm" inverse="true">
 			<key column="incomingabcdef"/>
-			<many-to-many 
-				class="NHibernate.DomainModel.Master, NHibernate.DomainModel" 
-				column="outgoingabcdef"
-			/>
+			<many-to-many class="NHibernate.DomainModel.Master, NHibernate.DomainModel" column="outgoingabcdef"/>
 		</set>
-		
 		<many-to-one name="OtherMaster"/>
 	</class>
-	
-	<class 
-		name="NHibernate.DomainModel.Detail, NHibernate.DomainModel"
-	>
-		<id 
-			column="detail_key" 
-			type="Int64"
-			unsaved-value="0"
-		>
+	<class name="NHibernate.DomainModel.Detail, NHibernate.DomainModel">
+		<id column="detail_key" type="Int64" unsaved-value="0">
 			<generator class="native"/>
 		</id>
-		
 		<property name="X">
-			<column name="x" unique-key="uk"/>
+			<column name="x" unique-key="uk" not-null="true"/>
 		</property>
 		<property name="I">
-			<column name="i" unique-key="uk"/>
+			<column name="i" unique-key="uk" not-null="true"/>
 		</property>
-		<many-to-one name="Master"> 
-			<column name="master_key" unique-key="uk"/>
+		<many-to-one name="Master" foreign-key="CC">
+			<column name="master_key" unique-key="uk" not-null="true"/>
 		</many-to-one>
-		<set 
-			name="SubDetails" 
-			lazy="true" 
-			cascade="all"
-		>
+		<set name="SubDetails" lazy="true" cascade="all">
 			<key column="detail_key"/>
 			<one-to-many class="NHibernate.DomainModel.SubDetail, NHibernate.DomainModel"/>
 		</set>
 	</class>
-	
-	<class 
-		name="NHibernate.DomainModel.SubDetail, NHibernate.DomainModel"
-	>
-		<id 
-			column="subdetail_key" 
-			type="Int64"
-		>
+	<class name="NHibernate.DomainModel.SubDetail, NHibernate.DomainModel">
+		<id column="subdetail_key" type="Int64">
 			<generator class="native">
 				<param name="sequence">fooseq</param>
 			</generator>
 		</id>
 		<property name="Name"/>
 	</class>
-	
 	<query name="all_details"><![CDATA[
 		from d in class 
 			NHibernate.DomainModel.Detail
 	]]></query>
-
 </hibernate-mapping>

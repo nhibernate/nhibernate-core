@@ -1,11 +1,8 @@
 <?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	
-	<class 
-		name="NHibernate.DomainModel.Parent, NHibernate.DomainModel"
-	>
+	<class name="NHibernate.DomainModel.Parent, NHibernate.DomainModel">
 		<id name="Id" type="Int64" unsaved-value="0">
-			<generator class="native"> 
+			<generator class="native">
 				<!--seqhilo-->
 				<!--<param>foo_seq</param>-->
 			</generator>
@@ -13,22 +10,17 @@
 		<property name="X"/>
 		<property name="Count" column="count_"/>
 		<one-to-one name="Child"/>
-		
+		<property name="any" type="object">
+			<column name="any_id"/>
+			<column name="any_class"/>
+		</property>
 	</class>
-	
-	<class 
-		name="NHibernate.DomainModel.Child, NHibernate.DomainModel"
-	>
+	<class name="NHibernate.DomainModel.Child, NHibernate.DomainModel">
 		<id name="Id" type="Int64" unsaved-value="0">
 			<generator class="assigned"/>
 		</id>
 		<property name="X"/>
-		<one-to-one 
-			name="Parent" 
-			class="NHibernate.DomainModel.Parent, NHibernate.DomainModel" 
-			constrained="true"
-		/>
+		<one-to-one name="Parent" class="NHibernate.DomainModel.Parent, NHibernate.DomainModel" constrained="true" foreign-key="parentfk"/>
 		<property name="Count" column="count_"/>
 	</class>
-
 </hibernate-mapping>

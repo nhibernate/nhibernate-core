@@ -553,6 +553,7 @@
 			</xs:sequence>
 			<xs:attribute name="class" type="xs:string" use="required"/>
 			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="jcs-cache">
@@ -574,6 +575,7 @@
 				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="key-many-to-one">
@@ -585,6 +587,7 @@
 			<xs:attribute name="access" type="propertyAccess"/>
 			<xs:attribute name="class" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="key-property">
@@ -616,6 +619,7 @@
 			</xs:sequence>
 			<xs:attribute name="class" type="xs:string" use="required"/>
 			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
 		</xs:complexType>
 	</xs:element>
@@ -635,6 +639,7 @@
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
 			<xs:attribute name="update" type="xs:boolean" default="true"/>
 			<xs:attribute name="insert" type="xs:boolean" default="true"/>
+			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
 			<xs:attribute name="property-ref" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
@@ -675,6 +680,7 @@
 			<xs:attribute name="cascade" type="cascadeStyle"/>
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
 			<xs:attribute name="constrained" type="xs:boolean" default="false"/>
+			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
 			<xs:attribute name="property-ref" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
