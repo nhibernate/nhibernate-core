@@ -12,10 +12,6 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class BooleanTypeFixture : BaseTypeFixture
 	{
-		public BooleanTypeFixture()
-		{
-		}
-
 		/// <summary>
 		/// Test that Get(IDataReader, index) returns a boxed Boolean value that is what
 		/// we expect.

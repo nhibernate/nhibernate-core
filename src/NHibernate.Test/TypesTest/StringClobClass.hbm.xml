@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class 
-		name="NHibernate.DomainModel.NHSpecific.BlobberInMemory, NHibernate.DomainModel"
-		table="bim"
-		dynamic-update="true"
+		name="NHibernate.Test.TypesTest.StringClobClass, NHibernate.Test"
+		table="sclob"
 	>
-		<id 
-			name="Id" 
-			type="Int32"
-		>
+		<id name="Id" type="Int32">
 			<generator class="hilo" />
 		</id>
 		
@@ -16,7 +12,6 @@
 			setting it to 100000 to get past the length that most dialects
 			can hold in just a plain var binary column
 		-->
-		<property name="BinaryBlob" column="blob_" type="BinaryBlob" length="100000"/>
 		<property name="StringClob" column="clob_" type="StringClob" length="100000"/>
 		
 	</class>

@@ -1,17 +1,17 @@
 using System;
 
-namespace NHibernate.DomainModel.NHSpecific
+namespace NHibernate.Test.TypesTest
 {
 	/// <summary>
-	/// Summary description for BasicBinary.
+	/// Summary description for BinaryClass.
 	/// </summary>
-	public class BasicBinary
+	public class BinaryClass
 	{
 		int _id;
 		byte[] _defaultSize;
 		byte[] _withSize;
 
-		public BasicBinary()
+		public BinaryClass()
 		{
 		}
 

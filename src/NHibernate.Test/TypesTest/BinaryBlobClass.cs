@@ -1,11 +1,11 @@
 using System;
 
-namespace NHibernate.DomainModel.NHSpecific
+namespace NHibernate.Test.TypesTest
 {
 	/// <summary>
-	/// Summary description for BlobberInMemory.
+	/// Summary description for BinaryBlobClass.
 	/// </summary>
-	public class BlobberInMemory
+	public class BinaryBlobClass
 	{
 		private int _id;
 		private byte[] _blob;
@@ -22,14 +22,5 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return _blob; }
 			set { _blob = value; }
 		}
-
-		public string StringClob
-		{
-			get { return _clob; }
-			set { _clob = value; }
-		}
-
-
 	}
 }
-

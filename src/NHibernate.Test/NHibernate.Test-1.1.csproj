@@ -380,17 +380,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "NHSpecificTest\BasicBinaryFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "NHSpecificTest\BasicClassFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NHSpecificTest\BasicDoubleFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -406,11 +396,6 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\BasicTimeFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NHSpecificTest\BlobberInMemoryFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -592,6 +577,34 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TypesTest\BinaryBlobClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\BinaryBlobClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "TypesTest\BinaryBlobTypeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\BinaryClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\BinaryClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "TypesTest\BinaryTypeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TypesTest\BooleanTypeFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -608,6 +621,20 @@
                 />
                 <File
                     RelPath = "TypesTest\DecimalTypeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\DoubleClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\DoubleClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "TypesTest\DoubleTypeFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -638,6 +665,20 @@
                 />
                 <File
                     RelPath = "TypesTest\SByteTypeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\StringClobClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\StringClobClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "TypesTest\StringClobTypeFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

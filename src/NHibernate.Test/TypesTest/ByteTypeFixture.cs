@@ -12,10 +12,6 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class ByteTypeFixture : BaseTypeFixture
 	{
-		public ByteTypeFixture()
-		{
-		}
-
 		/// <summary>
 		/// Test that Get(IDataReader, index) returns a boxed Byte value that is what
 		/// we expect.

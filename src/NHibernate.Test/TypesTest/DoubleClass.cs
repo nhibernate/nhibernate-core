@@ -1,16 +1,16 @@
 using System;
 
-namespace NHibernate.DomainModel.NHSpecific
+namespace NHibernate.Test.TypesTest
 {
 	/// <summary>
-	/// Summary description for BasicDouble.
+	/// Summary description for DoubleClass.
 	/// </summary>
-	public class BasicDouble
+	public class DoubleClass
 	{
 		int _id;
 		Double _doubleValue;
 
-		public BasicDouble()
+		public DoubleClass()
 		{
 		}
 

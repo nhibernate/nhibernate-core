@@ -18,7 +18,7 @@ namespace NHibernate.Test
 		{
 		}
 
-		internal static void AssertEquals(Iesi.Collections.ISet expected, Iesi.Collections.ISet actual) 
+		internal static void AreEqual(Iesi.Collections.ISet expected, Iesi.Collections.ISet actual) 
 		{
 			Assert.AreEqual( expected.Count, actual.Count, "two sets are diff size" );
 			foreach( object obj in expected ) 
@@ -33,10 +33,10 @@ namespace NHibernate.Test
 		/// <param name="expected"></param>
 		/// <param name="actual"></param>
 		/// <remarks>The objects contained in the arrays must implement Equals correctly.</remarks>
-		internal static void AssertEquals(IList expected, IList actual) 
+		internal static void AreEqual(IList expected, IList actual) 
 		{
 
-			AssertEquals(expected, actual, true);
+			AreEqual(expected, actual, true);
 		}
 
 		/// <summary>
@@ -45,7 +45,7 @@ namespace NHibernate.Test
 		/// <param name="expected"></param>
 		/// <param name="actual"></param>
 		/// <param name="indexMatters">A boolean indicating if the List are compared at Index or by Contains.</param>
-		internal static void AssertEquals(IList expected, IList actual, bool indexMatters) 
+		internal static void AreEqual(IList expected, IList actual, bool indexMatters) 
 		{
 			Assert.AreEqual(expected.Count, actual.Count);
 			for(int i = 0; i < expected.Count; i++) 
@@ -67,7 +67,7 @@ namespace NHibernate.Test
 		/// <param name="expected"></param>
 		/// <param name="actual"></param>
 		/// <param name="compareValues">Set it to false when you only care about the keys, specifically with Sets.</param>
-		internal static void AssertEquals(IDictionary expected, IDictionary actual, bool compareValues) 
+		internal static void AreEqual(IDictionary expected, IDictionary actual, bool compareValues) 
 		{
 			Assert.AreEqual(expected.Count, actual.Count);
 
@@ -91,11 +91,11 @@ namespace NHibernate.Test
 			actualWithEqualValues["ZERO"] = "zero";
 			actualWithEqualValues["ONE"] = "one";
 
-			ObjectAssert.AssertEquals(expected, actualWithEqualValues, true);
+			ObjectAssert.AreEqual(expected, actualWithEqualValues, true);
 
 		}
 
-		public static void AssertEquals(DateTime expected, DateTime actual, bool useMilliseconds) 
+		public static void AreEqual(DateTime expected, DateTime actual, bool useMilliseconds) 
 		{
 			Assert.AreEqual(expected.Year, actual.Year, "Year");
 			Assert.AreEqual(expected.Month, actual.Month, "Month");

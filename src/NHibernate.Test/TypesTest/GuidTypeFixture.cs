@@ -12,10 +12,6 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class GuidTypeFixture : BaseTypeFixture
 	{
-		public GuidTypeFixture()
-		{
-		}
-
 		/// <summary>
 		/// Test that Get(IDataReader, index) returns a boxed Guid value that is what
 		/// we expect.

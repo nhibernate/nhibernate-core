@@ -906,12 +906,12 @@ namespace NHibernate.Test.NHSpecificTest
 			
 			if(includeCollections) 
 			{
-				ObjectAssert.AssertEquals(expected.StringArray, actual.StringArray);
-				ObjectAssert.AssertEquals(expected.Int32Array, actual.Int32Array);
-				ObjectAssert.AssertEquals(expected.StringBag, actual.StringBag, false);
-				ObjectAssert.AssertEquals(expected.StringList, actual.StringList);
-				ObjectAssert.AssertEquals(expected.StringMap, actual.StringMap, true);
-				ObjectAssert.AssertEquals(expected.StringSet, actual.StringSet );
+				ObjectAssert.AreEqual(expected.StringArray, actual.StringArray);
+				ObjectAssert.AreEqual(expected.Int32Array, actual.Int32Array);
+				ObjectAssert.AreEqual(expected.StringBag, actual.StringBag, false);
+				ObjectAssert.AreEqual(expected.StringList, actual.StringList);
+				ObjectAssert.AreEqual(expected.StringMap, actual.StringMap, true);
+				ObjectAssert.AreEqual(expected.StringSet, actual.StringSet );
 			}
 		}
 
