@@ -14,7 +14,7 @@ namespace NHibernate.SqlCommand {
 	/// </summary>
 	public class SqlString : ICloneable {
 
-		object[] sqlParts;
+		readonly object[] sqlParts;
 		
 		public SqlString(string sqlPart) : this(new object[] {sqlPart}) {
 		}
