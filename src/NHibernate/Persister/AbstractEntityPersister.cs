@@ -393,7 +393,7 @@ namespace NHibernate.Persister
 				}
 				catch( Exception e )
 				{
-					throw new InstantiationException( "Could not instantiate entity: ", mappedClass, e );
+					throw new InstantiationException( "Could not instantiate entity: ", e, mappedClass );
 				}
 			}
 		}
@@ -1043,7 +1043,7 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		protected string GetSQLWhereString( string alias )
 		{
-			return StringHelper.Replace( sqlWhereStringTemplate, Template.PlaceHolder, alias );
+			return StringHelper.Replace( sqlWhereStringTemplate, Template.Placeholder, alias );
 		}
 
 		/// <summary></summary>
