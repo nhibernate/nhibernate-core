@@ -70,8 +70,7 @@ namespace NHibernate.Hql
 		private string queryString;
 		private bool distinct = false;
 		protected bool compiled;
-		private string sqlString;
-		private SqlCommand.SqlString realSqlString;
+		private SqlCommand.SqlString sqlString;
 		private System.Type holderClass;
 		private ConstructorInfo holderConstructor;
 		private bool hasScalars;
@@ -255,23 +254,12 @@ namespace NHibernate.Hql
 			entitiesToFetch.Add(name);
 		}
 
-		[Obsolete("Should use Hql.QueryTranslator.SqlString property instead")]
-		public override string SQLString 
-		{
-			get 
-			{ 
-				LogQuery(queryString, sqlString); 
-				return sqlString; 
-			}
-		}
-
-
 		public override SqlString SqlString
 		{
 			get 
 			{
-				LogQuery( queryString, realSqlString.ToString() );
-				return realSqlString;
+				LogQuery( queryString, sqlString.ToString() );
+				return sqlString;
 			}
 		}
 
@@ -458,10 +446,9 @@ namespace NHibernate.Hql
 			}
 			else 
 			{
-				//TODO: HACKS with ToString() - fixed up
 				oldjoin.AddCondition( newjoin.ToWhereFragmentString );
 				//TODO: HACKS with ToString()
-				if ( oldjoin.ToFromFragmentString.ToString().IndexOf( newjoin.ToFromFragmentString.ToString().Trim()) < 0 ) 
+				if ( oldjoin.ToFromFragmentString.ToString().IndexOf( newjoin.ToFromFragmentString.Trim().ToString() ) < 0 ) 
 				{
 					throw new AssertionFailure("bug in query parser: " + queryString);
 					//TODO: what about the toFromFragmentString() ????
@@ -620,8 +607,7 @@ namespace NHibernate.Hql
 				AddIdentifierSpace( p.IdentifierSpace );
 			}
 
-//			sqlString = sql.ToQueryString();
-			realSqlString = sql.ToQuerySqlString();
+			sqlString = sql.ToQuerySqlString();
 
 
 			System.Type[] classes = new System.Type[types.Length];
@@ -650,8 +636,7 @@ namespace NHibernate.Hql
 			{
 				string name = (string) returnTypes[k];
 				string suffix = size==1 ? String.Empty : k.ToString() + StringHelper.Underscore;
-				//TODO: HACK with ToString()
-				sql.AddSelectFragmentString( persisters[k].IdentifierSelectFragment(name, suffix).ToString() );
+				sql.AddSelectFragmentString( persisters[k].IdentifierSelectFragment(name, suffix) );
 			}
 		}
 
@@ -679,8 +664,7 @@ namespace NHibernate.Hql
 			{
 				string suffix = (size==1) ? String.Empty : k.ToString() + StringHelper.Underscore;
 				string name = (string) returnTypes[k];
-				//TODO: HACK with ToString()
-				sql.AddSelectFragmentString( persisters[k].PropertySelectFragment(name, suffix).ToString() );
+				sql.AddSelectFragmentString( persisters[k].PropertySelectFragment(name, suffix) );
 			}
 		}
 
@@ -941,14 +925,7 @@ namespace NHibernate.Hql
 		public IEnumerable GetEnumerable(object[] values, IType[] types, RowSelection selection, 
 			IDictionary namedParams, IDictionary lockModes, ISessionImplementor session) 
 		{
-			//TODO: this is a major hack - apply locks is not working with a string of Sql so we need
-			// to give it a SqlString...
-			//http://jira.nhibernate.org:8080/browse/NH-64
-			// ApplyLocks(SqlString, lockModes, session.Factory.Dialect).ToString(),
-			// this works because it is just appending strings and not doing any 
-//			string sqlWithLock = ApplyLocks(new SqlString(SQLString), lockModes, session.Factory.Dialect).ToString();
 			SqlString sqlWithLock = ApplyLocks(SqlString, lockModes, session.Factory.Dialect);
-
 
 			IDbCommand st = PrepareQueryStatement(
 				sqlWithLock,
@@ -1105,8 +1082,6 @@ namespace NHibernate.Hql
 			IDictionary namedParams,
 			IDictionary lockModes) 
 		{
-
-			// TODO: fix the last parameter that is suppoesd to use lockModes
 			return base.Find(session, values, types, returnProxies, selection, namedParams, lockModes);
 		}
 
@@ -1356,21 +1331,12 @@ namespace NHibernate.Hql
 				paramValues = (object[]) paramValueList.ToArray( typeof(object) );
 			}
 
-			
-//			StringTokenizer tokenizer = new StringTokenizer(sql, StringHelper.SqlParameter, true);
-//			string[] tokens =  sql.Split(StringHelper.SqlParameter[0]);
-//
-//			SqlStringBuilder hqlToSqlBuilder = new SqlStringBuilder(types.Length * 2);
-			SqlStringBuilder hqlBuilder = new SqlStringBuilder(sql); //this.SqlString			
-//			IEnumerator tokenEnum = tokenizer.GetEnumerator();
-//			string previousToken = String.Empty;
-//			string token = String.Empty;
+		
+			SqlStringBuilder hqlBuilder = new SqlStringBuilder(sql); 
 			int paramIndex = 0;
-//
-//			while(tokenEnum.MoveNext()) 
+
 			for( int i=0; i<hqlBuilder.Count; i++ ) 
 			{
-//				token = (string)tokenEnum.Current;
 				Parameter partParam = hqlBuilder[i] as Parameter;
 				if(partParam!=null) 
 				{
@@ -1378,35 +1344,9 @@ namespace NHibernate.Hql
 					hqlBuilder[i] = param;
 					paramIndex++;
 				}
-//				if(token.Equals(StringHelper.SqlParameter) 
-//					&& ( EndsWithBoolOperator( previousToken ) ) ) //.EndsWith("=") || previousToken.EndsWith("= ") ) ) 
-//				{
-//					Parameter param = Parameter.GenerateParameters(session.Factory, new string[]{paramIndex.ToString()}, paramTypes[paramIndex])[0];
-//					hqlToSqlBuilder.Add(param);
-//					paramIndex++;
-//				}
-//				else 
-//				{
-//					hqlToSqlBuilder.Add(token);
-//				}
-//
-//				previousToken = token;
 			}
 			
-//			return PrepareCommand(hqlToSqlBuilder.ToSqlString(), paramValues, paramTypes, null, selection, scroll, session);
 			return PrepareCommand(hqlBuilder.ToSqlString(), paramValues, paramTypes, null, selection, scroll, session);
-		}
-
-		/// <summary>
-		/// Temp method to help us figure out if the string ends with character that indicate that
-		/// a parameter is likely to follow.
-		/// </summary>
-		/// <param name="sqlFragment">A string that contains sql.</param>
-		/// <returns>true when a Parameter might follow this sql.</returns>
-		private bool EndsWithBoolOperator(string sqlFragment) 
-		{
-			Regex r = new Regex(WhereParser.BooleanOperatorsAsRegEx, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-			return r.Match(sqlFragment).Success;
 		}
 	}
 }

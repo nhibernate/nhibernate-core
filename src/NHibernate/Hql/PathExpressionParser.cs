@@ -114,7 +114,6 @@ namespace NHibernate.Hql
 				if(!ignoreInitialJoin) 
 				{
 					JoinFragment ojf = q.GetPathJoin(path);
-					//TODO: HACK with ToString()
 					join.AddCondition( ojf.ToWhereFragmentString); //after reset!
 					// we don't need to worry about any condition in the ON clause
 					// here (toFromFragmentString), since anything in the ON condition 
@@ -349,7 +348,6 @@ namespace NHibernate.Hql
 					if ( memberPersister.IsOneToMany ) 
 					{
 						IQueryable persister = q.GetPersister( ( (EntityType) memberPersister.ElementType ).PersistentClass );
-						//TODO: HACK with ToString() - cleaned up
 						ojf.AddJoins(
 							persister.FromJoinFragment(collectionName, true, false),
 							persister.WhereJoinFragment(collectionName, true, false)
@@ -482,10 +480,9 @@ namespace NHibernate.Hql
 				/*.Append(collectionTable)
 				.Append(' ')
 				.Append(collectionName)*/
-				//TODO: HACK with ToString()
-				.Append(join.ToFromFragmentString.ToString().Substring(2)) //remove initial ", "
+				.Append(join.ToFromFragmentString.Substring(2)) //remove initial ", "
 				.Append(" WHERE ")
-				.Append(join.ToWhereFragmentString.ToString().Substring(5)) //TODO: HACK with ToString()
+				.Append(join.ToWhereFragmentString.Substring(5)) 
 				.ToString();
 		}
 

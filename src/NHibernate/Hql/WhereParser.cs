@@ -33,25 +33,7 @@ namespace NHibernate.Hql
 		private static StringCollection expressionOpeners = new StringCollection(); //tokens that open a sub expression
 		//TODO: HACK to make this internal for QueryTranslator...
 		private static StringCollection booleanOperators = new StringCollection(); //tokens that would indicate a sub expression is a boolean expression
-		private static string booleanOperatorsAsRegEx = string.Empty;
-		internal static string BooleanOperatorsAsRegEx
-		{
-			get
-			{
-				if (booleanOperatorsAsRegEx.Length != 0)
-					return booleanOperatorsAsRegEx;
-				StringBuilder sb = new StringBuilder(@"(?:\(|");
-				foreach(string s in booleanOperators)
-				{
-					sb.Append(s);
-					sb.Append("|");
-				}
-				sb.Remove(sb.Length-1, 1);
-				sb.Append(@")[^\w]*$");
-				booleanOperatorsAsRegEx = sb.ToString();
-				return booleanOperatorsAsRegEx;
-			}
-		}
+
 		private static IDictionary negations = new Hashtable();
 		private Dialect.Dialect d;
 
@@ -450,7 +432,6 @@ namespace NHibernate.Hql
 		private void AddJoin( SqlCommand.JoinFragment ojf, QueryTranslator q ) 
 		{
 			SqlCommand.JoinFragment fromClause = q.CreateJoinFragment(true);
-			//TODO: HACK with StringEmpty and SqlString
 			fromClause.AddJoins( ojf.ToFromFragmentString, new SqlCommand.SqlString(String.Empty) );
 			q.AddJoin( pathExpressionParser.Name, fromClause );
 			//TODO: HACK with ToString()
@@ -466,14 +447,12 @@ namespace NHibernate.Hql
 			else if (token.StartsWith(ParserHelper.HqlVariablePrefix)) //named query parameter
 			{
 				q.AddNamedParameter(token.Substring(1));
-//				AppendToken(q, StringHelper.SqlParameter);
 				AppendToken(q, new SqlCommand.SqlString( new object[] { new SqlCommand.Parameter() } ) );
 			}
 			else if ( token.Equals(StringHelper.SqlParameter) ) 
 			{
-				//TODO: this is all new code - I'm just looking for a way to find out when
-				// we are adding a parameter
-//				q.AppendWhereToken(token);
+				//if the token is a "?" then we have a Parameter so convert it to a SqlCommand.Parameter
+				// instead of appending a "?" to the WhereTokens
 				q.AppendWhereToken(new SqlCommand.SqlString( new object[] { new SqlCommand.Parameter() } ) );
 			}
 			else 
