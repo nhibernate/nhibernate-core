@@ -122,6 +122,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ICriteria.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "IDatabinder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -632,6 +637,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\CriteriaImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\FilterImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -708,6 +718,11 @@
                 />
                 <File
                     RelPath = "Loader\CollectionLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\CriteriaLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
