@@ -33,7 +33,7 @@ namespace NHibernate.Collection
 	/// 
 	/// </summary>
 	[Serializable]
-	public abstract class PersistentCollection 
+	public abstract class PersistentCollection : ICollection
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PersistentCollection));
 
@@ -367,6 +367,32 @@ namespace NHibernate.Collection
 
 		#endregion
 
+		#region ICollection Members
+
+		public abstract bool IsSynchronized
+		{
+			get;
+		}
+
+		public abstract int Count
+		{
+			get;
+		}
+
+		public abstract void CopyTo(Array array, int index);
+
+		public abstract object SyncRoot
+		{
+			get;
+		}
+
+		#endregion
+
+		#region IEnumerable Members
+
+		public abstract IEnumerator GetEnumerator();
+
+		#endregion
 	}
 
 	

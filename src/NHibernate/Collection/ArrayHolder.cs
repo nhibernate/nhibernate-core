@@ -264,7 +264,43 @@ namespace NHibernate.Collection
 		{
 			return entry!=null;
 		}
-			
+
+		public override void CopyTo(Array array, int index)
+		{
+			((System.Array)this.array).CopyTo(array, index);
+		}
+
+		public override int Count
+		{
+			get
+			{
+				return ((Array)array).Length;
+			}
+		}
+
+		public override IEnumerator GetEnumerator()
+		{
+			return ((Array)array).GetEnumerator();
+		}
+
+		public override bool IsSynchronized
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		public override object SyncRoot
+		{
+			get
+			{
+				return this;
+			}
+		}
+
+
+
 
 	}
 }

@@ -115,7 +115,7 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="ICollection.Count"/>
 		/// </summary>
-		public int Count {
+		public override int Count {
 			get {
 				Read();
 				return map.Count;
@@ -125,7 +125,7 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="ICollection.IsSynchronized"/>
 		/// </summary>
-		public bool IsSynchronized {
+		public override bool IsSynchronized {
 			get { return false; }
 		}
 
@@ -146,7 +146,7 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="ICollection.SyncRoot"/>
 		/// </summary>
-		public object SyncRoot {
+		public override object SyncRoot {
 			get { return this; }
 		}
 
@@ -177,7 +177,7 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="IEnumerable.GetEnumerator"/>
 		/// </summary>
-		public virtual IEnumerator GetEnumerator() {
+		public override IEnumerator GetEnumerator() {
 			Read();
 			return map.Keys.GetEnumerator();
 		}
@@ -201,7 +201,7 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="ICollection.CopyTo"/>
 		/// </summary>
-		public void CopyTo(System.Array array, int index) {
+		public override void CopyTo(System.Array array, int index) {
 			Read();
 			map.CopyTo(array, index);
 		}

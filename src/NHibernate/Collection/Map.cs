@@ -96,14 +96,14 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public int Count {
+		public override int Count {
 			get {
 				Read();
 				return map.Count;
 			}
 		}
 
-		public bool IsSynchronized {
+		public override bool IsSynchronized {
 			get { return false; }
 		}
 		public bool IsFixedSize {
@@ -112,7 +112,7 @@ namespace NHibernate.Collection
 		public bool IsReadOnly {
 			get { return false; }
 		}
-		public object SyncRoot {
+		public override object SyncRoot {
 			get { return this; }
 		}
 		public ICollection Keys 
@@ -132,7 +132,7 @@ namespace NHibernate.Collection
 			}
 			
 		}
-		public IEnumerator GetEnumerator() {
+		public override IEnumerator GetEnumerator() {
 			Read();
 			return map.GetEnumerator();
 			
@@ -149,7 +149,7 @@ namespace NHibernate.Collection
 			return map.GetEnumerator();
 		}
 
-		public void CopyTo(System.Array array, int index) {
+		public override void CopyTo(System.Array array, int index) {
 			Read();
 			map.CopyTo(array, index);
 		}

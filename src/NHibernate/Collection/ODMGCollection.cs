@@ -42,12 +42,5 @@ namespace NHibernate.Collection {
 			IEnumerator iter = Select(queryString);
 			return iter.MoveNext() ? iter.Current : null;
 		}
-
-		public abstract void CopyTo(Array a, int index);
-		public abstract int Count { get; }
-		public abstract bool IsSynchronized { get; }
-		public abstract object SyncRoot { get; }
-		public abstract IEnumerator GetEnumerator();
-
 	}
 }
