@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyFileVersionAttribute("0.0000.2")]
 
 [assembly: AssemblyDelaySignAttribute(false)]
+[assembly: AssemblyKeyFile("..\\..\\NHibernate.snk")]
 
 
 
