@@ -1,17 +1,18 @@
+//$Id$
 using System;
 
 namespace NHibernate.Hql
 {
-	/// <summary>
-	/// Summary description for HavingParser.
+	/// <summary> 
+	/// Parses the having clause of a hibernate query and translates it to an
+	/// SQL having clause.
 	/// </summary>
-	public class HavingParser
+	public class HavingParser : WhereParser
 	{
-		public HavingParser()
+		
+		protected override void AppendToken(QueryTranslator q, string token)
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+			q.AppendHavingToken(token);
 		}
 	}
 }

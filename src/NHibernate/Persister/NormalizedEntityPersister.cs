@@ -849,7 +849,15 @@ namespace NHibernate.Persister {
 		public override string WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses) {
 			return Outerjoin(alias, innerJoin, includeSubclasses).ToWhereFragmentString;
 		}
-		public override string QueryWhereFragment(string alias, bool innerJoin, bool includeSubclasses) {
+		
+		public override string QueryWhereFragment(string name, bool includeSubclasses) 
+		{
+#warning    QueryWhereFragment not yet ported
+			throw new NotImplementedException("Not ported yet");
+		}	
+
+		public override string QueryWhereFragment(string alias, bool innerJoin, bool includeSubclasses) 
+		{
 			return WhereJoinFragment(alias, innerJoin, includeSubclasses);
 		}
 				

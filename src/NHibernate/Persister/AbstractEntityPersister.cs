@@ -601,6 +601,7 @@ namespace NHibernate.Persister {
 		}
 
 
+		public abstract string QueryWhereFragment(string alias, bool includeSublcasses);
 		public abstract string QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
 		public abstract string DiscriminatorSQLString { get; }
 		public abstract void Delete(object id, object version, object obj, ISessionImplementor session);

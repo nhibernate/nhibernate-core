@@ -693,7 +693,14 @@ namespace NHibernate.Persister {
 			return TableName + ' ' + name;
 		}
 
-		public override string QueryWhereFragment(string name, bool innerJoin, bool includeSubclasses) {
+		public override string QueryWhereFragment(string name, bool includeSubclasses) 
+		{
+#warning    QueryWhereFragment not yet ported
+			throw new NotImplementedException("Not ported yet");
+		}	
+
+		public override string QueryWhereFragment(string name, bool innerJoin, bool includeSubclasses) 
+		{
 			if (innerJoin && IsInherited ) {
 				InFragment frag = new InFragment()
 					.SetColumn ( name, DiscriminatorColumnName );

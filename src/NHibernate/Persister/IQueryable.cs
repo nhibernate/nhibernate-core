@@ -43,6 +43,9 @@ namespace NHibernate.Persister {
 		/// <returns></returns>
 		IType GetIdentifierPropertyType(string path);
 
+		/// <summary> Get the where clause fragment, given a query alias
+		/// </summary>
+		string QueryWhereFragment(string alias, bool includeSublcasses);
 		/// <summary>
 		/// Get the where clause fragment, gine a query alias
 		/// </summary>
