@@ -1,41 +1,69 @@
 using System;
 using System.Collections;
 
-namespace NHibernate.Util {
+namespace NHibernate.Util 
+{
+	/// <summary>
+	/// Combines multiple objects implementing <see cref="IEnumerable"/> into one.
+	/// </summary>
+	public class JoinedEnumerable : IEnumerable, IEnumerator 
+	{
+		private IEnumerator[] _enumerators;
+		private int _current;
 
-	
-	public class JoinedEnumerable : IEnumerable, IEnumerator {
-		private IEnumerator[] enumerators;
-		private int current;
-
-		public JoinedEnumerable(IEnumerable[] enumerables) {
-			enumerators = new IEnumerator[enumerables.Length];
-			for (int i=0; i<enumerables.Length; i++) {
-				enumerators[i] = enumerables[i].GetEnumerator();
+		/// <summary>
+		/// Creates an IEnumerable object from multiple IEnumerables.
+		/// </summary>
+		/// <param name="enumerables">The IEnumerables to join together.</param>
+		public JoinedEnumerable(IEnumerable[] enumerables) 
+		{
+			_enumerators = new IEnumerator[enumerables.Length];
+			for (int i=0; i<enumerables.Length; i++) 
+			{
+				_enumerators[i] = enumerables[i].GetEnumerator();
 			}
-			this.current = 0;
+			_current = 0;
 		}
 
-		public bool MoveNext() {
-			for ( ; current<enumerators.Length; current++ ) {
-				if ( enumerators[current].MoveNext() ) return true;
+		#region System.Collections.IEnumerator Members
+
+		public bool MoveNext() 
+		{
+			for ( ; _current < _enumerators.Length; _current++ ) 
+			{
+				if ( _enumerators[_current].MoveNext() ) return true;
 			}
 			return false;
 		}
-		public void Reset() {
-			for (int i=0; i<enumerators.Length; i++) {
-				enumerators[i].Reset();
+		
+		public void Reset() 
+		{
+			for (int i=0; i<_enumerators.Length; i++) 
+			{
+				_enumerators[i].Reset();
 			}
 		}
-		public object Current {
-			get {
-				return enumerators[current].Current;
+
+		public object Current 
+		{
+			get 
+			{
+				return _enumerators[_current].Current;
 			}
 		}
-		public IEnumerator GetEnumerator() {
-			this.Reset();
+
+		#endregion
+
+		#region System.Collections.IEnumerable Members
+
+
+		public IEnumerator GetEnumerator() 
+		{
+			Reset();
 			return this;
 		}
+
+		#endregion
 
 
 	}
