@@ -132,20 +132,12 @@ namespace NHibernate.Type {
 					else if ( typeof(ILifecycle).IsAssignableFrom(typeClass) ) {
 						type = NHibernate.Association(typeClass);
 					}
-
-					/* Do we use standar enum instead of this?
-					 * 
-					else if ( typeof(PersistentEnum).IsAssignableFrom(typeClass) ) {
+					else if ( typeClass.IsEnum ) {
 						type = NHibernate.Enum(typeClass);
 					}
-					*/
-					
-					//TODO: Check Serializable Attribute????
-					/* 
-					else if  ( Serializable.class.isAssignableFrom(typeClass) ) {
-						type = NHibernate.Serializable(typeClass);
+					else if ( typeClass.IsSerializable ) {
+						type = NHibernate.GetSerializable(typeClass);
 					}
-					*/
 				}
 			}
 			return type;

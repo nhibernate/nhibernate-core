@@ -155,7 +155,7 @@ namespace NHibernate {
 		/// </summary>
 		private NHibernate() {																	  throw new NotSupportedException();											}
 		
-		/*
+		
 		/// <summary>
 		/// A NHibernate persistent enum type
 		/// </summary>
@@ -164,18 +164,16 @@ namespace NHibernate {
 		public static IType Enum(System.Type enumClass) {
 			return new PersistentEnumType(enumClass);
 		}
-		*/
 		
-		/*
+		
 		/// <summary>
 		/// A NHibernate serializable type
 		/// </summary>
 		/// <param name="serializableClass"></param>
 		/// <returns></returns>
-		public static IType Serializable(System.Type serializableClass) {
+		public static IType GetSerializable(System.Type serializableClass) {
 			return new SerializableType(serializableClass);
 		}
-		*/
 		
 		/// <summary>
 		/// A NHibernate persistent object (entity) type
