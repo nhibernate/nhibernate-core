@@ -131,6 +131,59 @@ namespace NHibernate.Cache
 			set { _cache = value; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="version"></param>
+		/// <param name="lock"></param>
+		public void AfterUpdate( object key, object value, object version, ISoftLock @lock )
+		{
+			log.Error( "Application attempted to edit read only item: " + key );
+			throw new InvalidOperationException( "Can't write to a readonly object" );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="version"></param>
+		public void AfterInsert( object key, object value, object version )
+		{
+			// Ignore
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Evict( object key )
+		{
+			// NOOP
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		public void Insert( object key, object value )
+		{
+			// NOOP
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		public void Update( object key, object value )
+		{
+			log.Error( "Application attempted to edit read only item: " + key );
+			throw new InvalidOperationException( "Can't write to a readonly object" );
+		}
 		#endregion
 	}
 }

@@ -199,6 +199,78 @@ namespace NHibernate.Cache
 			set { _cache = value; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="version"></param>
+		/// <param name="lock"></param>
+		public void AfterUpdate( object key, object value, object version, ISoftLock @lock )
+		{
+			lock( lockObject )
+			{
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "Updating: " + key );
+				}
+
+				_cache.Put( key, new CachedItem( value ) );
+
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "Updating: " + key );
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="version"></param>
+		public void AfterInsert( object key, object value, object version )
+		{
+			lock( lockObject )
+			{
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "Inserting: " + key );
+				}
+
+				_cache.Put( key, new CachedItem( value ) );
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Evict( object key )
+		{
+			// NOOP
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		public void Insert( object key, object value )
+		{
+			// NOOP
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		public void Update( object key, object value )
+		{
+			// NOOP
+		}
 		#endregion
 	}
 }

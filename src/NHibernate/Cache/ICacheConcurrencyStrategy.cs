@@ -25,7 +25,7 @@ namespace NHibernate.Cache
 		object Get( object key, long txTimestamp );
 
 		/// <summary>
-		/// Attempt to Cache an object 
+		/// Attempt to cache an object, after loading from the database
 		/// </summary>
 		/// <param name="key">The key (id) of the object to put in the Cache.</param>
 		/// <param name="value">The value</param>
@@ -44,6 +44,26 @@ namespace NHibernate.Cache
 		ISoftLock Lock( object key, object version );
 
 		/// <summary>
+		/// Called after an item has become stale (before the transaction completes).
+		/// </summary>
+		/// <param name="key"></param>
+		void Evict( object key );
+
+		/// <summary>
+		/// Called after an item has been updated (before the transaction completes), instead of calling Evict().
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		void Update( object key, object value );
+
+		/// <summary>
+		/// Called after an item has been inserted (before the transaction completes), instead of calling Evict().
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		void Insert( object key, object value );
+
+		/// <summary>
 		/// We have finished the attempted update/delete (which may or may not have been successful)
 		/// </summary>
 		/// <param name="key">The key</param>
@@ -51,16 +71,15 @@ namespace NHibernate.Cache
 		/// <exception cref="CacheException"></exception>
 		void Release( object key, ISoftLock @lock );
 
-		/*
 		/// <summary>
 		/// Called after an item has been updated (after the transaction completes), instead of calling Release().
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
 		/// <param name="version"></param>
-		/// <param name="?"></param>
+		/// <param name="lock"></param>
 		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
-		void AfterUpdate(object key, object value, object version, SoftLock lock) throws CacheException;
+		void AfterUpdate(object key, object value, object version, ISoftLock @lock );
 
 		/// <summary>
 		/// Called after an item has been inserted (after the transaction completes), instead of calling release().
@@ -69,24 +88,23 @@ namespace NHibernate.Cache
 		/// <param name="value"></param>
 		/// <param name="version"></param>
 		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
-		public void AfterInsert(object key, object value, object version) throws CacheException;
-		*/
+		void AfterInsert(object key, object value, object version );
 
 		/// <summary>
-		/// 
+		/// Evict an item from the cache immediately (without regard for transaction isolation).
 		/// </summary>
 		/// <param name="key"></param>
 		/// <exception cref="CacheException"></exception>
 		void Remove( object key );
 
 		/// <summary>
-		/// 
+		/// Evict all items from the cache immediately.
 		/// </summary>
 		/// <exception cref="CacheException"></exception>
 		void Clear();
 
 		/// <summary>
-		/// 
+		/// Clean up all resources.
 		/// </summary>
 		/// <exception cref="CacheException"></exception>
 		void Destroy();

@@ -131,6 +131,19 @@ namespace NHibernate.Cache
 			_cache.Remove( key );
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Evict( object key )
+		{
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Evicting: " + key );
+			}
+			_cache.Remove( key );
+		}
+
 		/// <summary></summary>
 		public void Clear()
 		{
@@ -154,6 +167,26 @@ namespace NHibernate.Cache
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		public void Update( object key, object value )
+		{
+			Evict( key );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		public void Insert( object key, object value )
+		{
+			// Do nothing;
+		}
+
 		/// <summary></summary>
 		public ICache Cache
 		{
@@ -161,6 +194,28 @@ namespace NHibernate.Cache
 			set { _cache = value; }
 		}
 
+		/// <summary>
+		/// Invalidate the item (again, for safety).
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="version"></param>
+		/// <param name="lock"></param>
+		public void AfterUpdate( object key, object value, object version, ISoftLock @lock )
+		{
+			Release( key, @lock );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="version"></param>
+		public void AfterInsert( object key, object value, object version )
+		{
+			// Do nothing
+		}
 		#endregion
 	}
 }
