@@ -39,7 +39,7 @@ namespace NHibernate.Expression
 				}
 			}
 		
-			return (TypedValue[]) typedValues.ToArray( typeof (TypedValue[]) );
+			return (TypedValue[]) typedValues.ToArray( typeof (TypedValue) );
 
 		}
 

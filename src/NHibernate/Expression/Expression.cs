@@ -251,7 +251,7 @@ namespace NHibernate.Expression
 
 			Conjunction conj = Conjunction();
 
-			foreach ( IDictionaryEnumerator item in propertyNameValues ) {
+			foreach ( DictionaryEntry item in propertyNameValues ) {
 				conj.Add( Eq( item.Key.ToString(), item.Value ) );
 			}
 
