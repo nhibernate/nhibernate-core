@@ -350,7 +350,6 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="coll"></param>
 		/// <returns></returns>
-		//TODO: write this code...
 		ICollection GetOrphans(PersistentCollection coll);
 
 	}

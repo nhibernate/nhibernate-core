@@ -108,9 +108,7 @@ namespace NHibernate.Impl {
 			
 			try 
 			{
-				//TODO: need to add ctor that takes properties
 				dl = HibernateDialect.GetDialect(properties);
-				//dl = HibernateDialect.GetDialect();
 				IDictionary temp = new Hashtable();
 				
 				foreach(DictionaryEntry de in dl.DefaultProperties) 

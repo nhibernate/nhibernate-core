@@ -281,9 +281,8 @@ namespace NHibernate.Persister
 			this.propertyColumnNameAliases = new string[this.hydrateSpan][];
 			this.propertyColumnSpans = new int[this.hydrateSpan];
 
-			// TODO: SYNCHISSUE: in latest Hibernate version this is a HashSet not an array list.  There are 
-			// some local variables to do with naturalOrderPropertyTables and naturalOrderTableNames
 			Hashtable thisClassProperties = new Hashtable();
+			// just a dummy object for the value so I can treat Hashtable like a Set
 			object thisClassPropertiesObject = new object();
 
 			int propertyIndex = 0;
@@ -993,7 +992,6 @@ namespace NHibernate.Persister
 			if(UseDynamicInsert) 
 			{
 				bool[] notNull = GetNotNullInsertableColumns(fields);
-				// TODO: this signature has not been built
 				return Insert(fields, notNull, GenerateInsertStrings(true, notNull), obj, session);
 			}
 			else 
