@@ -1,28 +1,35 @@
 using System;
 
-namespace NHibernate.Cache {
-
+namespace NHibernate.Cache 
+{
 	/// <summary>
 	/// Implementors manage transactional access to cached data.
 	/// </summary>
 	/// <remarks>
+	/// <para>
 	/// Transactions pass in a timestamp indicating transaction start time.
+	/// </para>
+	/// <para>
+	/// When used to Cache Entities and Collections the <c>key</c> is the <c>id</c> of the
+	/// Entity/Collection and the <c>value</c> should be set to the <see cref="Impl.CacheEntry"/> 
+	/// for an Entity and the results of <see cref="PeristentCollection"/>.Disassemble for a Collection.
+	/// </para>
 	/// </remarks>
-	public interface ICacheConcurrencyStrategy {
-		
+	public interface ICacheConcurrencyStrategy 
+	{		
 		/// <summary>
-		/// Attempt to cache an object
+		/// Attempt to retrieve an object from the Cache
 		/// </summary>
-		/// <param name="key">The key</param>
+		/// <param name="key">The key (id) of the object to get out of the Cache.</param>
 		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
 		/// <returns>The cached object or <c>null</c></returns>
 		/// <exception cref="CacheException"></exception>
 		object Get(object key, long txTimestamp);
 
 		/// <summary>
-		/// Attempt to retrieve an object from the cache
+		/// Attempt to Cache an object 
 		/// </summary>
-		/// <param name="key">The key</param>
+		/// <param name="key">The key (id) of the object to put in the Cache.</param>
 		/// <param name="value">The value</param>
 		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
 		/// <returns><c>true</c> if the object was successfully cached</returns>
@@ -42,5 +49,26 @@ namespace NHibernate.Cache {
 		/// <param name="key">The key</param>
 		/// <exception cref="CacheException"></exception>
 		void Release(object key);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <exception cref="CacheException"></exception>
+		void Remove(object key);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <exception cref="CacheException"></exception>
+		void Clear();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <exception cref="CacheException"></exception>
+		void Destroy();
 	}
 }

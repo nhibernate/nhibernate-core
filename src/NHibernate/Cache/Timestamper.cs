@@ -10,7 +10,7 @@ namespace NHibernate.Cache
 	/// Not valid across multiple application domains. Identifiers are not necessarily
 	/// strickly increasing, but usually are.
 	///	</remarks>
-	public class Timestamper 
+	public sealed class Timestamper 
 	{
 		private static short counter = 0;
 		private static long time;
