@@ -231,6 +231,7 @@
 				</bag>
 				<bag name="Floats" table="baz_floats_bag">
 					<key column="baz_compon_id"/>
+					<!-- TODO: fix this to a Single -->
 					<element type="Int64" column="float_value"/>
 				</bag>
 			</component>

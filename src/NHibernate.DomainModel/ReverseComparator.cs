@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace NHibernate.DomainModel
 {
+	[Serializable]
 	public class ReverseComparator : IComparer
 	{
 		#region IComparer Members

@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NHibernate.DomainModel
 {
-
+	//TODO: fix up property names 
 	public class Qux : ILifecycle 
 	{
 	
@@ -16,6 +16,8 @@ namespace NHibernate.DomainModel
 			stuff=s;
 		}
 	
+		#region ILifecycle members
+
 		public LifecycleVeto OnSave(ISession session) 
 		{
 			created=true;
@@ -52,7 +54,14 @@ namespace NHibernate.DomainModel
 			loaded=true;
 			this.session=session;
 		}
-	
+		
+		public LifecycleVeto OnUpdate(ISession s)
+		{
+			return LifecycleVeto.NoVeto;
+		}
+
+		#endregion
+
 		public void store() 
 		{
 		}
@@ -280,9 +289,6 @@ namespace NHibernate.DomainModel
 			}
 		}
 	
-		public LifecycleVeto OnUpdate(ISession s)
-		{
-			return LifecycleVeto.NoVeto;
-		}
+		
 	}
 }

@@ -388,6 +388,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "LessSimple.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Location.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
@@ -397,6 +402,11 @@
                 />
                 <File
                     RelPath = "Master.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MoreStuff.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -447,6 +457,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Po.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Qux.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -456,7 +471,17 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Result.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ReverseComparator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Several.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -488,12 +513,22 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Single.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Sortable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "StringComparator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Stuff.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
