@@ -12,7 +12,7 @@ namespace NHibernate.DomainModel
 		private string _stringId;
 		private int _intId;
 		// <bag> mapping
-		private ICollection _stuffs;
+		private IList _stuffs;
 		private string _name;
 		
 		
@@ -28,7 +28,7 @@ namespace NHibernate.DomainModel
 			set { _intId = value; }
 		}
 
-		public ICollection Stuffs
+		public IList Stuffs
 		{
 			get { return _stuffs; }
 			set { _stuffs = value; }

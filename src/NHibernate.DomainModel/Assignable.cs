@@ -9,7 +9,7 @@ namespace NHibernate.DomainModel
 	public class Assignable
 	{
 		private string _id;
-		private ICollection _categories;
+		private IList _categories;
 
 		public string Id 
 		{
@@ -17,7 +17,7 @@ namespace NHibernate.DomainModel
 			set { _id = value; }
 		}
 
-		public ICollection Categories 
+		public IList Categories 
 		{
 			get { return _categories; }
 			set { _categories = value; }
