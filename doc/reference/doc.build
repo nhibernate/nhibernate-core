@@ -1,5 +1,4 @@
 <?xml version="1.0" ?>
-
 <project 
 	name="doc" 
 	default="build" 
@@ -14,10 +13,12 @@
 			I have not figured out a way to modify the Path through NAnt so you
 			need to make sure that xsltproc is in the path
 		-->
-		<mkdir dir="html-single\${lang}" failonerror="false" />
+		<mkdir dir="html-single/${lang}" failonerror="false" />
+		<mkdir dir="html-single/${lang}/styles" failonerror="false" />
 		
 		<exec program="xsltproc" commandline="--output html-single\${lang}\reference.html ${lang}\styles\html.xsl ${lang}\master.xml" />
 		
-		
+		<copy file="${lang}/styles/html.css" tofile="html-single/${lang}/styles/html.css" />
 	</target>
+	
 </project>

@@ -37,9 +37,9 @@
                 <many-to-one name="Mate" column="mate_id"/>
                 <set name="Kittens">
                         <key column="mother_id"/>
-                        <one-to-many class="Cat"/>
+                        <one-to-many class="Eg.Cat, Eg"/>
                 </set>
-                <subclass name="DomesticCat" discriminator-value="D">
+                <subclass name="Eg.DomesticCat, Eg" discriminator-value="D">
                         <property name="Name" type="String"/>
                 </subclass>
         </class>
@@ -211,7 +211,6 @@
 						</para>
 					</callout>    
 					<callout arearefs="class9-co" id="class9">
-						
 						<para>
 							<literal>polymorphism</literal> (optional, defaults to <literal>implicit</literal>): 
 							Determines whether implicit or explicit query polymorphism is used.
@@ -283,6 +282,80 @@
 	        
 		</sect2>
 
+		<sect2 id="mapping-declaration_id">
+			<title>id</title>
+
+			<para>
+				Mapped classes <emphasis>must</emphasis> declare the primary key column of the database 
+				table. Most classes will also have a Property holding the unique identifier 
+				of an instance. The <literal>&lt;id&gt;</literal> element defines the mapping from that
+				property to the primary key column.
+			</para>
+	
+			<programlistingco>
+				<programlisting>&lt;id 
+        name="propertyName" <co id="id1-co" linkends="id1" />
+        type="typename" <co id="id2-co" linkends="id2" />
+        column="column_name" <co id="id3-co" linkends="id3" />
+        unsaved-value="any|none|null|id_value" <co id="id4-co" linkends="id4" />
+        access="field|property|nosetter|ClassName"&gt; <co id="id5-co" linkends="id5" />
+
+        &lt;generator class="generatorClass"/&gt;
+&lt;/id&gt;		</programlisting>
+				<calloutlist>
+					<callout arearefs="id1-co" id="id1">
+						<para>
+							<literal>name</literal> (optional): The name of the identifier property.
+						</para>
+					</callout>
+					<callout arearefs="id2-co" id="id2">
+						<para>
+							<literal>type</literal> (optional): A name that indicates the NHibernate type.
+						</para>
+					</callout>
+					<callout arearefs="id3-co" id="id3">
+						<para>
+							<literal>column</literal> (optional - defaults to the property name): The
+							name of the primary key column.
+						</para>
+					</callout>
+					<callout arearefs="id4-co" id="id4">
+						<para>
+							<literal>unsaved-value</literal> (optional - defaults to <literal>null</literal>): 
+							An identifier property value that indicates that an instance is newly instantiated
+							(unsaved), distinguishing it from transient instances that were saved or loaded
+							in a previous session.
+						</para>
+					</callout>            
+					<callout arearefs="id5-co" id="id5">
+						<para>
+							<literal>access</literal> (optional - defaults to <literal>property</literal>): The
+							strategy NHibernate should use for accessing the property value.
+						</para>
+					</callout>
+				</calloutlist>
+			</programlistingco>
+			
+			<para>
+				If the <literal>name</literal> attribute is missing, it is assumed that the class has no 
+				identifier property.
+			</para>
+	        
+			<para>
+				The <literal>unsaved-value</literal> attribute is important! If the identfier property of your 
+				class does not default to <literal>null</literal>, then you should specify the actual default.
+				This is especially important when using a <literal>System.ValueType</literal> such as 
+				<literal>System.Int32</literal> or <literal>System.Guid</literal> as your <literal>&lt;id&gt;</literal>
+				 property.  Make sure to explicity set this attribute because <literal>System.ValueType</literal> 
+				objects can not be <literal>null</literal>.
+			</para>
+
+			<para>
+				There is an alternative <literal>&lt;composite-id&gt;</literal> declaration to allow access to
+				legacy data with composite keys. We strongly discourage its use for anything else.
+			</para>
+            
+		</sect2>
 	</sect1>
 
 	
