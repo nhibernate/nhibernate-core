@@ -203,6 +203,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "nhibernate.build"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "NHibernate.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
