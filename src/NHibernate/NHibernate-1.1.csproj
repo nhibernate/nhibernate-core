@@ -1905,11 +1905,6 @@
                     BuildAction = "None"
                 />
                 <File
-                    RelPath = "Util\SequencedHashMapTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Util\StringHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
