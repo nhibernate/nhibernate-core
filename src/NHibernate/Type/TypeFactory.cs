@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 
 using NHibernate.Type;
 using NHibernate.Collection;
@@ -14,6 +15,53 @@ namespace NHibernate.Type {
 	public class TypeFactory {
 
 		private static readonly Hashtable basicTypes;
+
+		static TypeFactory() {
+			basicTypes = new Hashtable(41);
+
+			basicTypes.Add(typeof(bool).Name, NHibernate.Boolean);
+			//basicTypes.Add(typeof(long).Name, NHibernate.Long);
+			//basicTypes.Add(typeof(short).Name, NHibernate.Short);
+			basicTypes.Add(typeof(int).Name, NHibernate.Integer);
+			basicTypes.Add(typeof(byte).Name, NHibernate.Byte);
+			//basicTypes.Add(typeof(float).Name, NHibernate.Float);
+			//basicTypes.Add(typeof(double).Name, NHibernate.Double);
+			basicTypes.Add(typeof(char).Name, NHibernate.Character);
+			//basicTypes.Add(typeof(string).Name, NHibernate.String);
+			basicTypes.Add(NHibernate.Character.Name, NHibernate.Character);
+			basicTypes.Add(NHibernate.Integer.Name, NHibernate.Integer);
+			//basicTypes.Add(NHibernate.String.Name, NHibernate.String);
+			//basicTypes.Add(NHibernate.Date.Name, NHibernate.Date);
+			//basicTypes.Add(NHibernate.Time.Name, NHibernate.Time);
+			//basicTypes.Add(NHibernate.Timestamp.Name, NHibernate.Timestamp);
+			//basicTypes.Add(NHibernate.Locale.Name, NHibernate.Locale);
+			//basicTypes.Add(NHibernate.Calendar.Name, NHibernate.Calendar);
+			//basicTypes.Add(NHibernate.CalendarDate.Name, NHibernate.CalendarDate);
+			//basicTypes.Add(NHibernate.Currency.Name, NHibernate.Currency);
+			//basicTypes.Add(NHibernate.Timezone.Name, NHibernate.Timezone);
+			//basicTypes.Add(NHibernate.Class.Name, NHibernate.Class);
+			basicTypes.Add(NHibernate.TrueFalse.Name, NHibernate.TrueFalse);
+			basicTypes.Add(NHibernate.YesNo.Name, NHibernate.YesNo);
+			basicTypes.Add(NHibernate.Binary.Name, NHibernate.Binary);
+			//basicTypes.Add(NHibernate.Blob.Name, NHibernate.Blob);
+			//basicTypes.Add(NHibernate.Clob.Name, NHibernate.Clob);
+			//basicTypes.Add(NHibernate.BigDecimal.Name, NHibernate.BigDecimal);
+			//basicTypes.Add(NHibernate.Serializable.Name, NHibernate.Serializable);
+			//basicTypes.Add(NHibernate.Object.Name, NHibernate.Object);
+			basicTypes.Add(NHibernate.Boolean.Name, NHibernate.Boolean);
+			//basicTypes.Add(typeof(DateTime).Name, NHibernate.Timestamp);  //Is it correct?
+			//basicTypes.Add(typeof(CultureInfo).Name, NHibernate.Locale);
+			//basicTypes.Add(typeof(Calendar).Name, NHibernate.Calendar); //Is it correct?
+			// if ( CurrencyType.CURRENCY_CLASS!=null) basicTypes.put( CurrencyType.CURRENCY_CLASS.getName(), Hibernate.CURRENCY);
+			// basicTypes.put( TimeZone.class.getName(), Hibernate.TIMEZONE);
+			//basicTypes.Add(typeof(object).Name, NHibernate.Object);
+			//basicTypes.Add(typeof(System.Type).Name, NHibernate.Class);
+			basicTypes.Add(typeof(byte[]).Name, NHibernate.Binary);
+			//basicTypes.put( Blob.class.getName(), Hibernate.BLOB);
+			//basicTypes.put( Clob.class.getName(), Hibernate.CLOB);
+			//basicTypes.put( Serializable.class.getName(), Hibernate.SERIALIZABLE);
+		}
+	
 
 		private TypeFactory() { throw new NotSupportedException(); }
 		
