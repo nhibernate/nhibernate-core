@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 using NHibernate.Dialect;
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -140,7 +141,7 @@ namespace NHibernate.Id {
 		public string[] SqlCreateStrings(Dialect.Dialect dialect) 
 		{
 			return new string[] {
-						"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName(DbType.Int32) + " )",
+						"create table " + tableName + " ( " + columnName + " " + dialect.SqlTypeToString(SqlTypeFactory.GetInt32()) + " )",
 						"insert into " + tableName + " values ( 0 )"
 								};
 		}
