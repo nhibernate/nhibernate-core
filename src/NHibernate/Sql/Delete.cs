@@ -25,14 +25,14 @@ namespace NHibernate.Sql {
 				.Append(" where ")
 				.Append( string.Join("=? and ", primaryKeyColumnNames) )
 				.Append("=?");
+			if(where!=null) {
+				buf.Append(" and ")
+					.Append(where);
+			}
 			if (versionColumnName != null) {
 				buf.Append(" and ")
 					.Append(versionColumnName)
 					.Append("=?");
-				if(where!=null) {
-					buf.Append(" and ")
-						.Append(where);
-				}
 			}
 			return buf.ToString();
 		}
@@ -42,7 +42,7 @@ namespace NHibernate.Sql {
 			return this;
 		}
 
-		public Delete SetPrimaryKeyColumnNames(string[] primaryKeyColumnNames) {
+		public Delete SetPrimaryKeyColumnNames(params string[] primaryKeyColumnNames) {
 			this.primaryKeyColumnNames = primaryKeyColumnNames;
 			return this;
 		}
