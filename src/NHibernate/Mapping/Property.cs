@@ -111,9 +111,7 @@ namespace NHibernate.Mapping
 					}
 					else if( cascade.Equals( "all-delete-orphan" ) )
 					{
-						// TODO: 2.1 - Reintroduce when Loader porting completed
-						//return Cascades.CascadeStyle.StyleAllDeleteOrphan;
-						return Cascades.CascadeStyle.StyleAllGC;
+						return Cascades.CascadeStyle.StyleAllDeleteOrphan;
 					}
 					else if( cascade.Equals( "none" ) )
 					{
@@ -129,9 +127,7 @@ namespace NHibernate.Mapping
 					}
 					else if( cascade.Equals( "delete-orphan" ) )
 					{
-						// TODO: 2.1 - Reintroduce when Loader porting completed
-						//return Cascades.CascadeStyle.StyleDeleteOrphan;
-						return Cascades.CascadeStyle.StyleOnlyDelete;
+						return Cascades.CascadeStyle.StyleDeleteOrphan;
 					}
 					else
 					{
