@@ -107,7 +107,7 @@
 			</many-to-many>
 		</array>
 	
-		<bag name="fooBag" lazy="true" table="baz_foo" cascade="all-delete-orphan" inverse="false">
+		<bag name="fooBag" lazy="true" table="baz_foo" cascade="all" inverse="false">
 			<key column="baz"/>
 			<many-to-many class="NHibernate.DomainModel.Foo, NHibernate.DomainModel" column="foo" outer-join="true"/>
 		</bag>
@@ -164,7 +164,7 @@
 			<one-to-many class = "NHibernate.DomainModel.Bar, NHibernate.DomainModel"/>
 		</set>
 	
-		<set name="cascadingBars" cascade="all-delete-orphan">
+		<set name="cascadingBars" cascade="all">
 			<key column="idtopbar" />
 			<one-to-many class = "NHibernate.DomainModel.Bar, NHibernate.DomainModel"/>
 		</set>

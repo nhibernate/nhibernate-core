@@ -435,6 +435,15 @@ namespace NHibernate.Persister {
 				versionPropertyName = model.Version.Name;
 				versioned = true;
 				versionGetter = ReflectHelper.GetGetter(mappedClass, versionPropertyName);
+				if (!(model.Version.Type is IVersionType))
+				{
+					log.Warn(model.Name + " has version column " + model.Version.Name + ", but the column type " + model.Version.Type.Name + " is not versionable");
+					versionPropertyName = null;
+					versioned = false;
+					versionType = null;
+					versionGetter = null;
+				}
+				else
 				versionType = (IVersionType) model.Version.Type;
 			} else {
 				versionPropertyName = null;

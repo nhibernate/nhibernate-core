@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// date and time storage your provider can give you use the <see cref="TimestampType" />. 
 	/// or the <see cref="TicksType"/>
 	/// </remarks>
-	public class DateTimeType : MutableType, IIdentifierType, ILiteralType 
+	public class DateTimeType : MutableType, IIdentifierType, ILiteralType, IVersionType
 	{
 		
 		public DateTimeType(DateTimeSqlType sqlType) : base(sqlType) 
@@ -102,6 +102,16 @@ namespace NHibernate.Type
 		public string ObjectToSQLString(object value) 
 		{
 			return "'" + value.ToString() + "'";
+		}
+
+		public object Next(object current) 
+		{
+			return Seed;
+		}
+		
+		public object Seed 
+		{
+			get { return DateTime.Now; }
 		}
 	}
 }

@@ -4,7 +4,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
-	public class DateType : MutableType, IIdentifierType, ILiteralType {
+	public class DateType : MutableType, IIdentifierType, ILiteralType, IVersionType {
 
 
 	    public DateType (DateSqlType sqlType) : base(sqlType)
@@ -67,6 +67,16 @@ namespace NHibernate.Type {
 
 		public string ObjectToSQLString(object value) {
 			return "'" + value.ToString() + "'";
+		}
+
+		public object Next(object current) 
+		{
+			return Seed;
+		}
+		
+		public object Seed 
+		{
+			get { return DateTime.Now; }
 		}
 	}
 }

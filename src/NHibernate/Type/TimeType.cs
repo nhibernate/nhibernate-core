@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	/// This defaults the Year to 0001, the Month to 01, and the Day to 01 - that should not matter because
 	/// using this Type indicates that you don't care about the Date portion of the DateTime.
 	/// </remarks>
-	public class TimeType : MutableType, IIdentifierType, ILiteralType 
+	public class TimeType : MutableType, IIdentifierType, ILiteralType, IVersionType
 	{
 
 
@@ -85,6 +85,16 @@ namespace NHibernate.Type
 		public string ObjectToSQLString(object value) 
 		{
 			return "'" + value.ToString() + "'";
+		}
+
+		public object Next(object current) 
+		{
+			return Seed;
+		}
+		
+		public object Seed 
+		{
+			get { return DateTime.Now; }
 		}
 	}
 }

@@ -213,6 +213,8 @@ namespace NHibernate.Collection {
 			string[] tokens = sqlWhereString.Split( ' ', '=', '>', '<', '!' );
 			StringBuilder result = new StringBuilder();
 			foreach(string token in tokens) {
+				if (token.Length == 0)
+					continue;
 				if (char.IsLetter(token[0]) && !keywords.Contains(token) ) {
 					//todo: handle and, or, not
 					result.Append(alias).Append(StringHelper.Dot).Append(token);

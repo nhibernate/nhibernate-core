@@ -88,7 +88,7 @@ namespace NHibernate.Util {
 			if (type == typeof(object) || type == null) return null;
 
 			//PropertyInfo property = type.GetProperty(propertyName);
-			PropertyInfo property = type.GetProperty(propertyName, BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic);
+			PropertyInfo property = type.GetProperty(propertyName, BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly);
 
 			if (property != null) {
 				return new Setter(type, property, propertyName);
@@ -114,7 +114,7 @@ namespace NHibernate.Util {
 			if (type==typeof(object) || type==null) return null;
 
 			//PropertyInfo property = type.GetProperty(propertyName);
-			PropertyInfo property = type.GetProperty(propertyName, BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic);
+			PropertyInfo property = type.GetProperty(propertyName, BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly);
 
 			if (property != null) {
 				return new Getter(type, property, propertyName);

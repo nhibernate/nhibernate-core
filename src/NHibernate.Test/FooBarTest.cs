@@ -30,11 +30,11 @@ namespace NHibernate.Test
 										  //										  "Stuff.hbm.xml",
 										  //										  "Container.hbm.xml",
 										  //										  "XY.hbm.xml"});
-									  });
+									  }, false);
 		}
 
 		[Test]
-		//[Ignore("Maps haven't been converted yet")]
+		//[Ignore("Bugs in quoteing kills other tests too")]
 		public void FetchInitializedCollection()
 		{
 			ISession s = sessions.OpenSession();
