@@ -34,10 +34,10 @@ namespace NHibernate.Test
 					//"Vetoer.hbm.xml",
 					"Holder.hbm.xml",
 					"Location.hbm.xml",
-					"Stuff.hbm.xml"
-					//"Container.hbm.xml",
-					//"Simple.hbm.xml",
-					//"Middle.hbm.xml"
+					"Stuff.hbm.xml",
+					"Container.hbm.xml",
+					"Simple.hbm.xml",
+					"Middle.hbm.xml"
 				}, true);
 		}
 
