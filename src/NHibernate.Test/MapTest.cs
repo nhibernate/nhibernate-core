@@ -22,8 +22,9 @@ namespace NHibernate.Test {
 		}
 
 		[Test]
+		[Ignore("Have not written the Test yet.")]
 		public void TestDelete() {
-			System.Diagnostics.Debug.Write("testing some crap");
+			//System.Diagnostics.Debug.Write("testing some crap");
 		}
 
 		[Test]
