@@ -11,14 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.DomainModel-1.1"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.hbm2net-1.1", "NHibernate.Tool.hbm2net\NHibernate.Tool.hbm2net-1.1.csproj", "{136FFE16-EE3B-4556-90FB-E265113CB13F}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tasks-1.1", "NHibernate.Tasks\NHibernate.Tasks-1.1.csproj", "{C6F085E3-17FA-424A-9A09-143F3E177FEB}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -37,14 +29,6 @@ Global
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug.Build.0 = Debug|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.ActiveCfg = Release|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.Build.0 = Release|.NET
-		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Debug.ActiveCfg = Debug|.NET
-		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Debug.Build.0 = Debug|.NET
-		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Release.ActiveCfg = Release|.NET
-		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Release.Build.0 = Release|.NET
-		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Debug.ActiveCfg = Debug|.NET
-		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Debug.Build.0 = Debug|.NET
-		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Release.ActiveCfg = Release|.NET
-		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
