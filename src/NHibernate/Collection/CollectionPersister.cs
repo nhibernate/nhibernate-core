@@ -500,7 +500,7 @@ namespace NHibernate.Collection
 				.ToString();
 		}
 
-		public string MultiselectClauseFragment(string alias) 
+		public SqlString MultiselectClauseFragment(string alias) 
 		{
 			SelectFragment frag = new SelectFragment(dialect)
 				.SetSuffix(String.Empty)
@@ -509,7 +509,7 @@ namespace NHibernate.Collection
 			if (hasIndex) frag.AddColumns(alias, indexColumnNames, indexColumnAliases);
 			if (hasIdentifier) frag.AddColumn(alias, identifierColumnName, identifierColumnAlias);
 			
-			return frag.ToSqlStringFragment(false).ToString();	
+			return frag.ToSqlStringFragment(false);	
 		}
 
 		private SqlString GenerateSqlDeleteString() 

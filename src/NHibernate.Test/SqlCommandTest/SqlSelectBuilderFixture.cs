@@ -32,7 +32,7 @@ namespace NHibernate.Test.SqlCommandTest
 			
 			select.SetSelectClause("column1, column2");
 			select.SetFromClause("select_test", "select_test_alias");
-			select.SetOuterJoins(" LEFT OUTER JOIN before ON select_test_alias.column1 = before.column1", " LEFT OUTER JOIN after ON select_test_alias.column1 = after.column1");
+			select.SetOuterJoins( new SqlString(" LEFT OUTER JOIN before ON select_test_alias.column1 = before.column1"), new SqlString(" LEFT OUTER JOIN after ON select_test_alias.column1 = after.column1") );
 			select.SetOrderByClause("column1 DESC");
 
 			select.SetWhereClause("select_test_alias", new string[] {"identity_column"}, NHibernate.Int64);
