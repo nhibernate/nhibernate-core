@@ -82,15 +82,20 @@ namespace NHibernate.Tool.hbm2net
 		private String packageName = null;
 		
 		/// <summary>Two ClassName are equals if their fullyQualifiedName are the same/equals! </summary>
-		public  override bool Equals(Object other)
+		public  override bool Equals(object other)
 		{
 			ClassName otherClassName = (ClassName) other;
 			return otherClassName.fullyQualifiedName.Equals(fullyQualifiedName);
 		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode ();
+		}
 		
 		public virtual bool inJavaLang()
 		{
-			return "java.lang".Equals(packageName);
+			return "System".Equals(packageName);
 		}
 		
 		public virtual bool inSamePackage(ClassName other)
