@@ -21,9 +21,56 @@ namespace NHibernate.Cfg
 		private const string nsPrefix = "hbm";
 		internal static Dialect.Dialect dialect;
 
+		/// <summary>
+		/// Converts a partial class name into a fully qualified one
+		/// </summary>
+		/// <param name="className"></param>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		public static string FullClassName( string className, Mappings mapping )
+		{
+			if ( className == null )
+			{
+				return null;
+			}
+
+			// TODO: Make this stronger, assumes stuff about presence of culture, public key etc
+			// Split off the assembly reference if it's present
+			string[] parts = className.Split( ',' );
+			string name = parts[ 0 ];
+			if ( name.IndexOf( '.' ) == -1 && mapping.Namespace != null )
+			{
+				// No namespace - use the default
+				name = mapping.Namespace + "." + name;
+			}
+
+			string assm;
+			if ( parts.Length == 1 )
+			{
+				if ( mapping.Assembly == null )
+				{
+					// No default, let it try and find it automatically
+					assm = "";
+				}
+				else
+				{
+					// No assembly - use the default
+					assm = ", " + mapping.Assembly;
+				}
+			}
+			else
+			{
+				// Use the assembly reference provided
+				assm = ", " + parts[ 1 ];
+			}
+
+			// Rebuild the name
+			return name + assm;
+		}
+
 		public static void BindClass(XmlNode node, PersistentClass model, Mappings mapping) 
 		{
-			string className = node.Attributes["name"] == null ? null : node.Attributes["name"].Value;
+			string className = node.Attributes["name"] == null ? null : FullClassName( node.Attributes["name"].Value, mapping );
 			
 			//CLASS
 			try 
@@ -69,7 +116,7 @@ namespace NHibernate.Cfg
 
 			//IMPORT
 			
-			// we automattically want to add an import of the Assembly Qualified Name (includes version, 
+			// we automatically want to add an import of the Assembly Qualified Name (includes version, 
 			// culture, public-key) to the className supplied in the hbm.xml file.  The most common use-case
 			// will have it contain the "FullClassname, AssemblyName", it might contain version, culture, 
 			// public key, etc...) but should not assume it does.
@@ -530,7 +577,8 @@ namespace NHibernate.Cfg
 			{
 				try
 				{
-					model.CollectionPersisterClass = ReflectHelper.ClassForName( persisterNode.Value );
+					string persisterName = FullClassName( persisterNode.Value, mappings );
+					model.CollectionPersisterClass = ReflectHelper.ClassForName( persisterName );
 				}
 				catch (Exception)
 				{
@@ -553,7 +601,7 @@ namespace NHibernate.Cfg
 				//TABLE
 				XmlAttribute tableNode = node.Attributes["table"];
 				string tableName;
-				if ( tableNode!=null) 
+				if ( tableNode != null ) 
 				{
 					tableName = mappings.NamingStrategy.TableName( tableNode.Value );
 				} 
@@ -585,16 +633,16 @@ namespace NHibernate.Cfg
 			else 
 			{
 				model.IsSorted = true;
-				string comparatorClassName = sortedAtt.Value;
+				string comparatorClassName = FullClassName( sortedAtt.Value, mappings );
 				if ( !comparatorClassName.Equals("natural") ) 
 				{
 					try 
 					{
-						model.Comparer = (IComparer) Activator.CreateInstance( ReflectHelper.ClassForName(comparatorClassName) );
+						model.Comparer = (IComparer) Activator.CreateInstance( ReflectHelper.ClassForName( comparatorClassName ) );
 					} 
 					catch (Exception) 
 					{
-						throw new MappingException("could not instantiate comparer class: " + className);
+						throw new MappingException( "could not instantiate comparer class: " + comparatorClassName );
 					}
 				}
 			}
@@ -826,7 +874,7 @@ namespace NHibernate.Cfg
 			{
 				try 
 				{
-					model.ComponentClass = ReflectHelper.ClassForName( classNode.Value ) ; 
+					model.ComponentClass = ReflectHelper.ClassForName( FullClassName( classNode.Value, mappings ) ) ;
 				} 
 				catch (Exception e) 
 				{
@@ -1311,6 +1359,10 @@ namespace NHibernate.Cfg
 			model.DefaultAccess = (daNode==null) ? "property" : daNode.Value;
 			XmlAttribute aiNode = hmNode.Attributes["auto-import"];
 			model.IsAutoImport = (aiNode==null) ? true : "true".Equals( aiNode.Value );
+			XmlAttribute nsNode = hmNode.Attributes["namespace"];
+			model.Namespace = (nsNode==null) ? null : nsNode.Value ;
+			XmlAttribute assemblyNode = hmNode.Attributes["assembly"];
+			model.Assembly = (assemblyNode==null) ? null : assemblyNode.Value ;
 
 			nsmgr = new XmlNamespaceManager(doc.NameTable);
 			// note that the prefix has absolutely nothing to do with what the user
@@ -1377,10 +1429,10 @@ namespace NHibernate.Cfg
 
 			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":import", nsmgr) ) 
 			{
-				string className = n.Attributes["class"].Value;
-				XmlAttribute renameNode = n.Attributes["rename"];
-				string rename = (renameNode==null) ? StringHelper.GetClassname(className) : renameNode.Value;
-				log.Debug("Import: " + rename + " -> " + className);
+				string className = FullClassName( n.Attributes["class"].Value, model );
+				XmlAttribute renameNode = n.Attributes[ "rename" ];
+				string rename = (renameNode == null) ? StringHelper.GetClassname( className ) : renameNode.Value;
+				log.Debug( "Import: " + rename + " -> " + className );
 				model.AddImport(className, rename);
 			}
 		}
@@ -1413,12 +1465,12 @@ namespace NHibernate.Cfg
 
 		private static PersistentClass GetSuperclass( Mappings model, XmlNode subnode )
 		{
-			XmlAttribute extendsAttr = subnode.Attributes["extends"];
-			if( extendsAttr==null ) 
+			XmlAttribute extendsAttr = subnode.Attributes[ "extends" ];
+			if( extendsAttr == null ) 
 			{
 				throw new MappingException( "'extends' attribute is not found." );
 			}
-			String extendsValue = extendsAttr.Value;
+			String extendsValue = FullClassName( extendsAttr.Value, model );
 			System.Type superclass;
 			try
 			{

@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
@@ -83,7 +84,7 @@ namespace NHibernate.Cfg
 
 					while( xmlReader.Read() )
 					{
-						if( xmlReader.NodeType!=XmlNodeType.Element )
+						if( xmlReader.NodeType != XmlNodeType.Element )
 						{
 							continue;
 						}
@@ -91,18 +92,18 @@ namespace NHibernate.Cfg
 						if( xmlReader.Name=="class" )
 						{
 							xmlReader.MoveToAttribute("name");
-							string className = xmlReader.Value;
+							string className = StringHelper.GetClassname( xmlReader.Value );
 							ClassEntry ce = new ClassEntry( null, className, fileName );
 							_classes.Add(ce);
 						}
 						else if( xmlReader.Name=="joined-subclass" || xmlReader.Name=="subclass" )
 						{
 							xmlReader.MoveToAttribute("name");
-							string className = xmlReader.Value;
+							string className = StringHelper.GetClassname( xmlReader.Value );
 							if( xmlReader.MoveToAttribute("extends") )
 							{
 								containsExtends = true;
-								string baseClassName = xmlReader.Value;
+								string baseClassName = StringHelper.GetClassname( xmlReader.Value );
 								ClassEntry ce = new ClassEntry( baseClassName, className, fileName );
 								_classes.Add(ce);
 							}
@@ -168,7 +169,7 @@ namespace NHibernate.Cfg
 						
 						// base class was found - insert at the index 
 						// immediately following it
-						if( sce.ClassName==ce.BaseClassName )
+						if( sce.ClassName == ce.BaseClassName )
 						{
 							insertIndex = i + 1;
 							break;
