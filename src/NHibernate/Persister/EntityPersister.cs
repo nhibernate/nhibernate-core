@@ -726,19 +726,12 @@ namespace NHibernate.Persister
 						VersionType.NullSafeSet(st, version, IdentifierColumnNames.Length, session);
 					}
 
-//					IDataReader rs = st.ExecuteReader();
 					reader = session.Batcher.ExecuteReader( st );
-//					try 
-//					{
-						if ( reader.Read()==false ) 
-						{
-							throw new StaleObjectStateException( MappedClass, id);
-						}
-//					} 
-//					finally 
-//					{
-//						rs.Close();
-//					}
+
+					if ( reader.Read()==false ) 
+					{
+						throw new StaleObjectStateException( MappedClass, id);
+					}
 				} 
 				//TODO: add something to catch a sql exception and log it here
 				finally 
