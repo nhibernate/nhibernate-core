@@ -1,452 +1,356 @@
-<xs:schema targetNamespace='urn:nhibernate-mapping-2.0' xmlns='urn:nhibernate-mapping-2.0' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
-	<xs:element name='hibernate-mapping'>
+<xs:schema targetNamespace="urn:nhibernate-mapping-2.0" xmlns="urn:nhibernate-mapping-2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:simpleType name="propertyAccess">
 		<xs:annotation>
-			<xs:documentation>
-				hibernate-mapping is the document root. 
-			</xs:documentation>
+			<xs:documentation>Property access strategies</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="property"/>
+			<xs:enumeration value="field"/>
+			<xs:enumeration value="field.camelcase"/>
+			<xs:enumeration value="field.camelcase-underscore"/>
+			<xs:enumeration value="field.pascalcase-m-underscore"/>
+			<xs:enumeration value="field.lowercase-underscore"/>
+			<xs:enumeration value="nosetter.camelcase"/>
+			<xs:enumeration value="nosetter.camelcase-underscore"/>
+			<xs:enumeration value="nosetter.pascalcase-m-underscore"/>
+			<xs:enumeration value="nosetter.lowercase-underscore"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="polymorphismType">
+		<xs:annotation>
+			<xs:documentation>Types of polymorphism</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="implicit"/>
+			<xs:enumeration value="explicit"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="outerJoinStrategy">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="auto"/>
+			<xs:enumeration value="true"/>
+			<xs:enumeration value="false"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="cascadeStyle">
+		<xs:annotation>
+			<xs:documentation>Rule as to how to operate on child objects</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="all"/>
+			<xs:enumeration value="all-delete-orphan"/>
+			<xs:enumeration value="none"/>
+			<xs:enumeration value="save-update"/>
+			<xs:enumeration value="delete"/>
+			<xs:enumeration value="delete-orphan"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="hibernate-mapping">
+		<xs:annotation>
+			<xs:documentation>hibernate-mapping is the document root.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='import' minOccurs='0' maxOccurs='unbounded' />
-				<xs:choice minOccurs='0' maxOccurs='unbounded'>
-					<xs:element ref='class'/>
-					<xs:element ref='subclass'/>
-					<xs:element ref='joined-subclass'/>
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="import" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="class"/>
+					<xs:element ref="subclass"/>
+					<xs:element ref="joined-subclass"/>
 				</xs:choice>
-				<xs:element ref='query' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="query" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='schema'>
+			<xs:attribute name="schema" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>defaults to none used</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='default-cascade' default='none'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='none' />
-						<xs:enumeration value='save-update' />
-						<xs:enumeration value='all' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='default-access' default='property'>
+			<xs:attribute name="default-cascade" type="cascadeStyle" use="optional" default="none"/>
+			<xs:attribute name="default-access" type="propertyAccess" use="optional" default="property">
 				<xs:annotation>
 					<xs:documentation>
 					Can specify how the default access to Get/Set the values for the property
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='auto-import' default='true'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="auto-import" type="xs:boolean" use="optional" default="true"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='import'>
+	<xs:element name="import">
 		<xs:annotation>
 			<xs:documentation>An explicit query language "import"</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:attribute name='class' use='required' />
-			<xs:attribute name='rename' />
+			<xs:attribute name="class" type="xs:string" use="required"/>
+			<xs:attribute name="rename" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='class'>
+	<xs:element name="class">
 		<xs:annotation>
-			<xs:documentation>
-				Root of an entity class hierarchy. Entities have their own tables. 
-			</xs:documentation>
+			<xs:documentation>Root of an entity class hierarchy. Entities have their own tables.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='jcs-cache' minOccurs='0' />
-				<xs:choice minOccurs='1'>
-					<xs:element ref='id' />
-					<xs:element ref='composite-id' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:choice>
+					<xs:element ref="id"/>
+					<xs:element ref="composite-id"/>
 				</xs:choice>
-				<xs:element ref='discriminator' minOccurs='0' />
-				<xs:choice minOccurs='0'>
-					<xs:element ref='version' />
-					<xs:element ref='timestamp' />
+				<xs:element ref="discriminator" minOccurs="0"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="version"/>
+					<xs:element ref="timestamp"/>
 				</xs:choice>
-				<xs:choice minOccurs='0' maxOccurs='unbounded'>
-					<xs:element ref='property' />
-					<xs:element ref='many-to-one' />
-					<xs:element ref='one-to-one' />
-					<xs:element ref='component' />
-					<xs:element ref='any' />
-					<xs:element ref='map' />
-					<xs:element ref='set' />
-					<xs:element ref='list' />
-					<xs:element ref='bag' />
-					<xs:element ref='idbag' />
-					<xs:element ref='array' />
-					<xs:element ref='primitive-array' />
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="property"/>
+					<xs:element ref="many-to-one"/>
+					<xs:element ref="one-to-one"/>
+					<xs:element ref="component"/>
+					<xs:element ref="any"/>
+					<xs:element ref="map"/>
+					<xs:element ref="set"/>
+					<xs:element ref="list"/>
+					<xs:element ref="bag"/>
+					<xs:element ref="idbag"/>
+					<xs:element ref="array"/>
+					<xs:element ref="primitive-array"/>
 				</xs:choice>
 				<xs:choice>
-					<xs:element ref='subclass' minOccurs='0' maxOccurs='unbounded' />
-					<xs:element ref='joined-subclass' minOccurs='0' maxOccurs='unbounded' />
+					<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='table'>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="table" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>default: unqualified classname </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='schema'>
+			<xs:attribute name="schema" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>default: no value </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='proxy'>
+			<xs:attribute name="proxy" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>default: no proxy interface </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='discriminator-value'>
+			<xs:attribute name="discriminator-value" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>default: unqualified class name | none  </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='mutable' default='true'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='polymorphism' default='implicit'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='implicit' />
-						<xs:enumeration value='explicit' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='where'>
+			<xs:attribute name="mutable" type="xs:boolean" default="true"/>
+			<xs:attribute name="polymorphism" type="polymorphismType" default="implicit"/>
+			<xs:attribute name="where" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>default: none  </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='persister' />
-			<xs:attribute name='dynamic-update' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='dynamic-insert' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="persister" type="xs:string"/>
+			<xs:attribute name="dynamic-update" type="xs:boolean" default="false"/>
+			<xs:attribute name="dynamic-insert" type="xs:boolean" default="false"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='id'>
+	<xs:element name="id">
 		<xs:annotation>
-			<xs:documentation>
-				Declares the id type, column and generation algorithm for an entity class.
-				If a name attribut is given, the id is exposed to the application through the 
-				named property of the class. If not, the id is only exposed to the application 
-				via Session.getIdentifier()
-			</xs:documentation>
+			<xs:documentation>Declares the id type, column and generation algorithm for an entity class. If a name attribute is given, the id is exposed to the application through the named property of the class. If not, the id is only exposed to the application via Session.getIdentifier()</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='generator' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="generator"/>
 			</xs:sequence>
-			<xs:attribute name='name' />
-			<xs:attribute name='access' />
-			<xs:attribute name='column' />
-			<xs:attribute name='type' />
-			<xs:attribute name='length' />
-			<xs:attribute name='unsaved-value' default='null'>
+			<xs:attribute name="name" type="xs:string"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="type" type="xs:string"/>
+			<xs:attribute name="length" type="xs:positiveInteger"/>
+			<xs:attribute name="unsaved-value" type="xs:string" default="null">
 				<xs:annotation>
 					<xs:documentation>any|none|null|0|-1|... </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='composite-id'>
+	<xs:element name="composite-id">
 		<xs:annotation>
-			<xs:documentation>
-				A composite key may be modelled by a .NET class with a property for each 
-				key column. The class must be Serializable and override equals() 
-				and hashCode().
-			</xs:documentation>
+			<xs:documentation>A composite key may be modelled by a .NET class with a property for each key column. The class must be Serializable and override equals() and hashCode().</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:choice maxOccurs='unbounded'>
-					<xs:element ref='key-property' />
-					<xs:element ref='key-many-to-one' />
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="key-property"/>
+					<xs:element ref="key-many-to-one"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='class' />
-			<xs:attribute name='name' />
-			<xs:attribute name='access' />
-			<xs:attribute name='unsaved-value' default='none'>
+			<xs:attribute name="class" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="unsaved-value" default="none">
 				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='any' />
-						<xs:enumeration value='none' />
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="any"/>
+						<xs:enumeration value="none"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='discriminator'>
+	<xs:element name="discriminator">
 		<xs:annotation>
-			<xs:documentation>
-				Polymorphic data requires a column holding a class discriminator value. This
-				value is not directly exposed to the application.
-			</xs:documentation>
+			<xs:documentation>Polymorphic data requires a column holding a class discriminator value. This value is not directly exposed to the application.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='column' minOccurs='0'>
+				<xs:element ref="column" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>default: "class"|none </xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
-			<xs:attribute name='column' />
-			<xs:attribute name='type' default='String' />
-			<xs:attribute name='not-null' default='true'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='length' />
-			<xs:attribute name='force' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="type" type="xs:string" default="String"/>
+			<xs:attribute name="not-null" type="xs:boolean" default="true"/>
+			<xs:attribute name="length" type="xs:positiveInteger"/>
+			<xs:attribute name="force" type="xs:boolean" default="false"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='version'>
+	<xs:element name="version">
 		<xs:annotation>
-			<xs:documentation>
-				Versioned data requires a column holding a version number. This is exposed to the
-				application through a property of the .NET class. 
-			</xs:documentation>
+			<xs:documentation>Versioned data requires a column holding a version number. This is exposed to the application through a property of the .NET class.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='column' />
-			<xs:attribute name='type' default='Int32' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="type" type="xs:string" default="Int32"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='timestamp'>
+	<xs:element name="timestamp">
 		<xs:annotation>
-			<xs:documentation>
-				TODO: supply documentation 
-			</xs:documentation>
+			<xs:documentation>TODO: supply documentation</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='column' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="column" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='subclass'>
+	<xs:element name="subclass">
 		<xs:annotation>
-			<xs:documentation>
-				Subclass declarations are nested beneath the root class declaration to achieve
-				polymorphic persistence.
-			</xs:documentation>
+			<xs:documentation>Subclass declarations are nested beneath the root class declaration to achieve polymorphic persistence.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:choice minOccurs='0' maxOccurs='unbounded'>
-					<xs:element ref='property' />
-					<xs:element ref='many-to-one' />
-					<xs:element ref='one-to-one' />
-					<xs:element ref='component' />
-					<xs:element ref='any' />
-					<xs:element ref='map' />
-					<xs:element ref='set' />
-					<xs:element ref='list' />
-					<xs:element ref='bag' />
-					<xs:element ref='idbag' />
-					<xs:element ref='array' />
-					<xs:element ref='primitive-array' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="property"/>
+					<xs:element ref="many-to-one"/>
+					<xs:element ref="one-to-one"/>
+					<xs:element ref="component"/>
+					<xs:element ref="any"/>
+					<xs:element ref="map"/>
+					<xs:element ref="set"/>
+					<xs:element ref="list"/>
+					<xs:element ref="bag"/>
+					<xs:element ref="idbag"/>
+					<xs:element ref="array"/>
+					<xs:element ref="primitive-array"/>
 				</xs:choice>
-				<xs:element ref='subclass' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='proxy'>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="proxy" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>default: no proxy interface </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='discriminator-value'>
+			<xs:attribute name="discriminator-value" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>default: unqualified class name | none  </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='dynamic-update' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='dynamic-insert' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='extends' use='optional'>
-			</xs:attribute>
+			<xs:attribute name="dynamic-update" type="xs:boolean" use="optional" default="false"/>
+			<xs:attribute name="dynamic-insert" type="xs:boolean" use="optional" default="false"/>
+			<xs:attribute name="extends" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='joined-subclass'>
+	<xs:element name="joined-subclass">
 		<xs:annotation>
-			<xs:documentation>
-				Joined subclasses are used for the normalized table-per-subclass mapping strategy 
-			</xs:documentation>
+			<xs:documentation>Joined subclasses are used for the normalized table-per-subclass mapping strategy</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='key' />
-				<xs:choice minOccurs='0' maxOccurs='unbounded'>
-					<xs:element ref='property' />
-					<xs:element ref='many-to-one' />
-					<xs:element ref='one-to-one' />
-					<xs:element ref='component' />
-					<xs:element ref='any' />
-					<xs:element ref='map' />
-					<xs:element ref='set' />
-					<xs:element ref='list' />
-					<xs:element ref='bag' />
-					<xs:element ref='idbag' />
-					<xs:element ref='array' />
-					<xs:element ref='primitive-array' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="key"/>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="property"/>
+					<xs:element ref="many-to-one"/>
+					<xs:element ref="one-to-one"/>
+					<xs:element ref="component"/>
+					<xs:element ref="any"/>
+					<xs:element ref="map"/>
+					<xs:element ref="set"/>
+					<xs:element ref="list"/>
+					<xs:element ref="bag"/>
+					<xs:element ref="idbag"/>
+					<xs:element ref="array"/>
+					<xs:element ref="primitive-array"/>
 				</xs:choice>
-				<xs:element ref='joined-subclass' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='proxy'>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="proxy" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>default: no proxy interface </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='table'>
+			<xs:attribute name="table" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>default: unqualified classname </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name='schema' />
-			<xs:attribute name='dynamic-update' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='dynamic-insert' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='extends' use='optional'>
-			</xs:attribute>
+			<xs:attribute name="schema" type="xs:string"/>
+			<xs:attribute name="dynamic-update" type="xs:boolean" default="false"/>
+			<xs:attribute name="dynamic-insert" type="xs:boolean" default="false"/>
+			<xs:attribute name="extends" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='property'>
+	<xs:element name="property">
 		<xs:annotation>
-			<xs:documentation>
-				Property of an entity class or component, component-element, composite-id, etc. 
-				Class Properties (get_ and set_ methods) are mapped to table columns.
-			</xs:documentation>
+			<xs:documentation>Property of an entity class or component, component-element, composite-id, etc. Class Properties (get_ and set_ methods) are mapped to table columns.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='type' />
-			<xs:attribute name='column' />
-			<xs:attribute name='length' />
-			<xs:attribute name='not-null' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='unique' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='update' default='true'>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="type" type="xs:string"/>
+			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="length" type="xs:positiveInteger"/>
+			<xs:attribute name="not-null" type="xs:boolean" default="false"/>
+			<xs:attribute name="unique" type="xs:boolean" default="false"/>
+			<xs:attribute name="update" type="xs:boolean" default="true">
 				<xs:annotation>
 					<xs:documentation>
 						only supported for properties of a class (not component) 
 					</xs:documentation>
 				</xs:annotation>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name='insert' default='true'>
+			<xs:attribute name="insert" type="xs:boolean" default="true">
 				<xs:annotation>
 					<xs:documentation>
 						only supported for properties of a class (not component) 
 					</xs:documentation>
 				</xs:annotation>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name='formula'>
+			<xs:attribute name="formula" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>
 						only supported for properties of a class (not component) 
@@ -455,704 +359,444 @@
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='any'>
+	<xs:element name="any">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='column' />
-				<xs:element ref='column' maxOccurs='unbounded' />
+				<xs:element ref="column" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='id-type' use='required' />
-			<xs:attribute name='meta-type' />
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='cascade' default='none'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='none' />
-						<xs:enumeration value='save-update' />
-						<xs:enumeration value='all' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="cascade" type="cascadeStyle" default="none"/>
+			<xs:attribute name="meta-type" type="xs:string"/>
+			<xs:attribute name="id-type" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='array'>
+	<xs:element name="array">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='jcs-cache' minOccurs='0' />
-				<xs:element ref='key' />
-				<xs:element ref='index' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:element ref="key"/>
+				<xs:element ref="index"/>
 				<xs:choice>
-					<xs:element ref='element' />
-					<xs:element ref='one-to-many' />
-					<xs:element ref='many-to-many' />
-					<xs:element ref='composite-element' />
-					<xs:element ref='many-to-any' />
+					<xs:element ref="element"/>
+					<xs:element ref="one-to-many"/>
+					<xs:element ref="many-to-many"/>
+					<xs:element ref="composite-element"/>
+					<xs:element ref="many-to-any"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='table' />
-			<xs:attribute name='schema' />
-			<xs:attribute name='element-class' />
-			<xs:attribute name='cascade'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='none' />
-						<xs:enumeration value='all' />
-						<xs:enumeration value='save-update' />
-						<xs:enumeration value='delete' />
-						<xs:enumeration value='all-delete-orphan' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='where' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="table" type="xs:string"/>
+			<xs:attribute name="schema" type="xs:string"/>
+			<xs:attribute name="element-class" type="xs:string"/>
+			<xs:attribute name="cascade" type="cascadeStyle"/>
+			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='bag'>
+	<xs:element name="bag">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='jcs-cache' minOccurs='0' />
-				<xs:element ref='key' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:element ref="key"/>
 				<xs:choice>
-					<xs:element ref='element' />
-					<xs:element ref='one-to-many' />
-					<xs:element ref='many-to-many' />
-					<xs:element ref='composite-element' />
-					<xs:element ref='many-to-any' />
+					<xs:element ref="element"/>
+					<xs:element ref="one-to-many"/>
+					<xs:element ref="many-to-many"/>
+					<xs:element ref="composite-element"/>
+					<xs:element ref="many-to-any"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='table' />
-			<xs:attribute name='schema' />
-			<xs:attribute name='lazy' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='inverse' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='cascade'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='none' />
-						<xs:enumeration value='all' />
-						<xs:enumeration value='save-update' />
-						<xs:enumeration value='delete' />
-						<xs:enumeration value='all-delete-orphan' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='order-by' />
-			<xs:attribute name='where' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="table" type="xs:string"/>
+			<xs:attribute name="schema" type="xs:string"/>
+			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
+			<xs:attribute name="inverse" type="xs:boolean" default="false"/>
+			<xs:attribute name="cascade" type="cascadeStyle"/>
+			<xs:attribute name="order-by" type="xs:string"/>
+			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='collection-id'>
+	<xs:element name="collection-id">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='generator' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="generator"/>
 			</xs:sequence>
-			<xs:attribute name='column' use='required' />
-			<xs:attribute name='type' use='required' />
-			<xs:attribute name='length' />
+			<xs:attribute name="column" type="xs:string" use="required"/>
+			<xs:attribute name="type" type="xs:string" use="required"/>
+			<xs:attribute name="length" type="xs:positiveInteger"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='column'>
+	<xs:element name="column">
 		<xs:complexType>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='length' />
-			<xs:attribute name='not-null'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='unique'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='unique-key' />
-			<xs:attribute name='sql-type' />
-			<xs:attribute name='index' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="length" type="xs:positiveInteger"/>
+			<xs:attribute name="not-null" type="xs:boolean"/>
+			<xs:attribute name="unique" type="xs:boolean"/>
+			<xs:attribute name="unique-key" type="xs:string"/>
+			<xs:attribute name="sql-type" type="xs:string"/>
+			<xs:attribute name="index" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='component'>
+	<xs:element name="component">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='parent' minOccurs='0' />
-				<xs:choice minOccurs='0' maxOccurs='unbounded'>
-					<xs:element ref='property' />
-					<xs:element ref='many-to-one' />
-					<xs:element ref='one-to-one' />
-					<xs:element ref='component' />
-					<xs:element ref='any' />
-					<xs:element ref='map' />
-					<xs:element ref='set' />
-					<xs:element ref='list' />
-					<xs:element ref='bag' />
-					<xs:element ref='array' />
-					<xs:element ref='primitive-array' />
+				<xs:element ref="parent" minOccurs="0"/>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="property"/>
+					<xs:element ref="many-to-one"/>
+					<xs:element ref="one-to-one"/>
+					<xs:element ref="component"/>
+					<xs:element ref="any"/>
+					<xs:element ref="map"/>
+					<xs:element ref="set"/>
+					<xs:element ref="list"/>
+					<xs:element ref="bag"/>
+					<xs:element ref="array"/>
+					<xs:element ref="primitive-array"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='class' />
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='update' default='true'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='insert' default='true'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="class" type="xs:string"/>
+			<xs:attribute name="update" type="xs:boolean" default="true"/>
+			<xs:attribute name="insert" type="xs:boolean" default="true"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='composite-element'>
+	<xs:element name="composite-element">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='parent' minOccurs='0' />
-				<xs:choice minOccurs='0' maxOccurs='unbounded'>
-					<xs:element ref='property' />
-					<xs:element ref='many-to-one' />
-					<xs:element ref='nested-composite-element' />
+				<xs:element ref="parent" minOccurs="0"/>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="property"/>
+					<xs:element ref="many-to-one"/>
+					<xs:element ref="nested-composite-element"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='class' use='required' />
+			<xs:attribute name="class" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='composite-index'>
+	<xs:element name="composite-index">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:choice maxOccurs='unbounded'>
-					<xs:element ref='key-property' />
-					<xs:element ref='key-many-to-one' />
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="key-property"/>
+					<xs:element ref="key-many-to-one"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='class' use='required' />
+			<xs:attribute name="class" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='element'>
+	<xs:element name="element">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='column' />
-			<xs:attribute name='type' use='required' />
-			<xs:attribute name='length' />
-			<xs:attribute name='not-null' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='unique' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="type" type="xs:string" use="required"/>
+			<xs:attribute name="length" type="xs:positiveInteger"/>
+			<xs:attribute name="not-null" type="xs:boolean" default="false"/>
+			<xs:attribute name="unique" type="xs:boolean" default="false"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='generator'>
+	<xs:element name="generator">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='param' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='class' use='required' />
+			<xs:attribute name="class" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='idbag'>
+	<xs:element name="idbag">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='jcs-cache' minOccurs='0' />
-				<xs:element ref='collection-id' />
-				<xs:element ref='key' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:element ref="collection-id"/>
+				<xs:element ref="key"/>
 				<xs:choice>
-					<xs:element ref='element' />
-					<xs:element ref='many-to-many' />
-					<xs:element ref='composite-element' />
-					<xs:element ref='many-to-any' />
+					<xs:element ref="element"/>
+					<xs:element ref="many-to-many"/>
+					<xs:element ref="composite-element"/>
+					<xs:element ref="many-to-any"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='table' />
-			<xs:attribute name='schema' />
-			<xs:attribute name='lazy' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='cascade'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='none' />
-						<xs:enumeration value='all' />
-						<xs:enumeration value='save-update' />
-						<xs:enumeration value='delete' />
-						<xs:enumeration value='all-delete-orphan' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='order-by' />
-			<xs:attribute name='where' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="table" type="xs:string"/>
+			<xs:attribute name="schema" type="xs:string"/>
+			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
+			<xs:attribute name="cascade" type="cascadeStyle"/>
+			<xs:attribute name="order-by" type="xs:string"/>
+			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='index'>
+	<xs:element name="index">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='column' />
-			<xs:attribute name='type' />
-			<xs:attribute name='length' />
+			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="type" type="xs:string"/>
+			<xs:attribute name="length" type="xs:positiveInteger" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='index-many-to-any'>
+	<xs:element name="index-many-to-any">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='column' />
-				<xs:element ref='column' maxOccurs='unbounded' />
+				<xs:element ref="column" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='id-type' use='required' />
-			<xs:attribute name='meta-type' />
+			<xs:attribute name="id-type" type="xs:string" use="required"/>
+			<xs:attribute name="meta-type" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='index-many-to-many'>
+	<xs:element name="index-many-to-many">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='class' use='required' />
-			<xs:attribute name='column' />
+			<xs:attribute name="class" type="xs:string" use="required"/>
+			<xs:attribute name="column" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='jcs-cache'>
+	<xs:element name="jcs-cache">
 		<xs:complexType>
-			<xs:attribute name='usage' use='required'>
+			<xs:attribute name="usage" use="required">
 				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='read-only' />
-						<xs:enumeration value='read-write' />
-						<xs:enumeration value='nonstrict-read-write' />
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="read-only"/>
+						<xs:enumeration value="read-write"/>
+						<xs:enumeration value="nonstrict-read-write"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='key'>
+	<xs:element name="key">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='column' />
+			<xs:attribute name="column" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='key-many-to-one'>
+	<xs:element name="key-many-to-one">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='class' />
-			<xs:attribute name='column' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="class" type="xs:string"/>
+			<xs:attribute name="column" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='key-property'>
+	<xs:element name="key-property">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='type' />
-			<xs:attribute name='column' />
-			<xs:attribute name='length' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="type" type="xs:string"/>
+			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="length" type="xs:positiveInteger"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='list'>
+	<xs:element name="list">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='jcs-cache' minOccurs='0' />
-				<xs:element ref='key' />
-				<xs:element ref='index' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:element ref="key"/>
+				<xs:element ref="index"/>
 				<xs:choice>
-					<xs:element ref='element' />
-					<xs:element ref='one-to-many' />
-					<xs:element ref='many-to-many' />
-					<xs:element ref='composite-element' />
-					<xs:element ref='many-to-any' />
+					<xs:element ref="element"/>
+					<xs:element ref="one-to-many"/>
+					<xs:element ref="many-to-many"/>
+					<xs:element ref="composite-element"/>
+					<xs:element ref="many-to-any"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='table' />
-			<xs:attribute name='schema' />
-			<xs:attribute name='lazy' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='inverse' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='cascade'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='none' />
-						<xs:enumeration value='all' />
-						<xs:enumeration value='save-update' />
-						<xs:enumeration value='delete' />
-						<xs:enumeration value='all-delete-orphan' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='where' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="table" type="xs:string"/>
+			<xs:attribute name="schema" type="xs:string"/>
+			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
+			<xs:attribute name="inverse" type="xs:boolean" default="false"/>
+			<xs:attribute name="cascade" type="cascadeStyle"/>
+			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='many-to-any'>
+	<xs:element name="many-to-any">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='column' />
-				<xs:element ref='column' maxOccurs='unbounded' />
+				<xs:element ref="column" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='id-type' use='required' />
-			<xs:attribute name='meta-type' />
+			<xs:attribute name="id-type" type="xs:string" use="required"/>
+			<xs:attribute name="meta-type" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='many-to-many'>
+	<xs:element name="many-to-many">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='class' use='required' />
-			<xs:attribute name='column' />
-			<xs:attribute name='outer-join' default='auto'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-						<xs:enumeration value='auto' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="class" type="xs:string" use="required"/>
+			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='many-to-one'>
+	<xs:element name="many-to-one">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='class' />
-			<xs:attribute name='column' />
-			<xs:attribute name='not-null' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='unique' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='cascade'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='none' />
-						<xs:enumeration value='all' />
-						<xs:enumeration value='save-update' />
-						<xs:enumeration value='delete' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='outer-join' default='auto'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-						<xs:enumeration value='auto' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='update' default='true'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='insert' default='true'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="class" type="xs:string"/>
+			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="not-null" type="xs:boolean" default="false"/>
+			<xs:attribute name="unique" type="xs:boolean" default="false"/>
+			<xs:attribute name="cascade" type="cascadeStyle"/>
+			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
+			<xs:attribute name="update" type="xs:boolean" default="true"/>
+			<xs:attribute name="insert" type="xs:boolean" default="true"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='map'>
+	<xs:element name="map">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='jcs-cache' minOccurs='0' />
-				<xs:element ref='key' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:element ref="key"/>
 				<xs:choice>
-					<xs:element ref='index' />
-					<xs:element ref='composite-index' />
-					<xs:element ref='index-many-to-many' />
-					<xs:element ref='index-many-to-any' />
+					<xs:element ref="index"/>
+					<xs:element ref="composite-index"/>
+					<xs:element ref="index-many-to-many"/>
+					<xs:element ref="index-many-to-any"/>
 				</xs:choice>
 				<xs:choice>
-					<xs:element ref='element' />
-					<xs:element ref='one-to-many' />
-					<xs:element ref='many-to-many' />
-					<xs:element ref='composite-element' />
-					<xs:element ref='many-to-any' />
+					<xs:element ref="element"/>
+					<xs:element ref="one-to-many"/>
+					<xs:element ref="many-to-many"/>
+					<xs:element ref="composite-element"/>
+					<xs:element ref="many-to-any"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='table' />
-			<xs:attribute name='schema' />
-			<xs:attribute name='lazy' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='inverse' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='sort' default='unsorted' />
-			<xs:attribute name='cascade'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='none' />
-						<xs:enumeration value='all' />
-						<xs:enumeration value='save-update' />
-						<xs:enumeration value='delete' />
-						<xs:enumeration value='all-delete-orphan' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='order-by' />
-			<xs:attribute name='where' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="table" type="xs:string"/>
+			<xs:attribute name="schema" type="xs:string"/>
+			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
+			<xs:attribute name="inverse" type="xs:boolean" default="false"/>
+			<xs:attribute name="sort" type="xs:string" default="unsorted"/>
+			<xs:attribute name="cascade" type="cascadeStyle"/>
+			<xs:attribute name="order-by" type="xs:string"/>
+			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='meta'>
-		<xs:complexType mixed='true'>
-			<xs:attribute name='attribute' use='required' />
-			<xs:attribute name='inherit' default='true'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+	<xs:element name="meta">
+		<xs:complexType mixed="true">
+			<xs:attribute name="attribute" type="xs:string" use="required"/>
+			<xs:attribute name="inherit" type="xs:boolean" default="true"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='nested-composite-element'>
+	<xs:element name="nested-composite-element">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='parent' minOccurs='0' />
-				<xs:choice minOccurs='0' maxOccurs='unbounded'>
-					<xs:element ref='property' />
-					<xs:element ref='many-to-one' />
-					<xs:element ref='nested-composite-element' />
+				<xs:element ref="parent" minOccurs="0"/>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="property"/>
+					<xs:element ref="many-to-one"/>
+					<xs:element ref="nested-composite-element"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='class' use='required' />
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
+			<xs:attribute name="class" type="xs:string" use="required"/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='one-to-many'>
+	<xs:element name="one-to-many">
 		<xs:complexType>
-			<xs:attribute name='class' use='required' />
+			<xs:attribute name="class" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='one-to-one'>
+	<xs:element name="one-to-one">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='class' />
-			<xs:attribute name='cascade'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='none' />
-						<xs:enumeration value='all' />
-						<xs:enumeration value='save-update' />
-						<xs:enumeration value='delete' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='outer-join' default='auto'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-						<xs:enumeration value='auto' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='constrained' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="class" type="xs:string"/>
+			<xs:attribute name="cascade" type="cascadeStyle"/>
+			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
+			<xs:attribute name="constrained" type="xs:boolean" default="false"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='param'>
-		<xs:complexType mixed='true'>
-			<xs:attribute name='name' use='required' />
+	<xs:element name="param">
+		<xs:complexType mixed="true">
+			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='parent'>
+	<xs:element name="parent">
 		<xs:complexType>
-			<xs:attribute name='name' use='required' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='primitive-array'>
+	<xs:element name="primitive-array">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='jcs-cache' minOccurs='0' />
-				<xs:element ref='key' />
-				<xs:element ref='index' />
-				<xs:element ref='element' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:element ref="key"/>
+				<xs:element ref="index"/>
+				<xs:element ref="element"/>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='table' />
-			<xs:attribute name='schema' />
-			<xs:attribute name='where' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="table" type="xs:string"/>
+			<xs:attribute name="schema" type="xs:string"/>
+			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='query'>
-		<xs:complexType mixed='true'>
-			<xs:attribute name='name' use='required' />
+	<xs:element name="query">
+		<xs:complexType mixed="true">
+			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='set'>
+	<xs:element name="set">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='jcs-cache' minOccurs='0' />
-				<xs:element ref='key' />
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:element ref="key"/>
 				<xs:choice>
-					<xs:element ref='element' />
-					<xs:element ref='one-to-many' />
-					<xs:element ref='many-to-many' />
-					<xs:element ref='composite-element' />
-					<xs:element ref='many-to-any' />
+					<xs:element ref="element"/>
+					<xs:element ref="one-to-many"/>
+					<xs:element ref="many-to-many"/>
+					<xs:element ref="composite-element"/>
+					<xs:element ref="many-to-any"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='access' />
-			<xs:attribute name='table' />
-			<xs:attribute name='schema' />
-			<xs:attribute name='lazy' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='sort' default='unsorted' />
-			<xs:attribute name='inverse' default='false'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='cascade'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='none' />
-						<xs:enumeration value='all' />
-						<xs:enumeration value='save-update' />
-						<xs:enumeration value='delete' />
-						<xs:enumeration value='all-delete-orphan' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='order-by' />
-			<xs:attribute name='where' />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="table" type="xs:string"/>
+			<xs:attribute name="schema" type="xs:string"/>
+			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
+			<xs:attribute name="sort" type="xs:string" default="unsorted"/>
+			<xs:attribute name="inverse" type="xs:boolean" default="false"/>
+			<xs:attribute name="cascade" type="cascadeStyle"/>
+			<xs:attribute name="order-by" type="xs:string"/>
+			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
