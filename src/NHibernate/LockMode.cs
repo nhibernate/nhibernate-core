@@ -27,14 +27,12 @@ namespace NHibernate {
 		/// Is this lock mode more restrictive than the given lock mode?
 		/// </summary>
 		public bool GreaterThan(LockMode mode) {
-			if (mode == null) { return true; } // TODO: should be removed when LockMode is completed
 			return level > mode.level;
 		}
 		/// <summary>
 		/// Is this lock mode less restrictive than the given lock mode?
 		/// </summary>
 		public bool LessThan(LockMode mode) {
-			if (mode == null) { return false; } // TODO: should be removed when LockMode is completed
 			return level < mode.level;
 		}
 
@@ -71,7 +69,7 @@ namespace NHibernate {
 		/// <remarks>
 		/// The semantics of this lock mode, once obtained, are the same as <c>Upgrade</c>
 		/// </remarks>
-		public static LockMode UpgradeNoWait = new LockMode(10, "UpdadeNoWait");
+		public static LockMode UpgradeNoWait = new LockMode(10, "UpgradeNoWait");
 
 		/// <summary>
 		/// A <c>Write</c> lock is obtained when an object is updated or inserted.
@@ -81,6 +79,8 @@ namespace NHibernate {
 		/// </remarks>
 		public static LockMode Write = new LockMode(10, "Write");
 
+		//TODO: need to implement .NET equivalent of readResolve - believe it is
+		// the IObjectReference interface...
 		
 	}
 }
