@@ -1,11 +1,24 @@
 using System;
 using System.Data;
+
 using NHibernate.Engine;
 using NHibernate.Util;
+using NHibernate.Loader;
 
 namespace NHibernate.Type {
 	
-	public class ObjectType : AbstractType {
+	public class ObjectType : AbstractType, IAbstractComponentType, IAssociationType {
+
+		private readonly IType identifierType;
+		private readonly IType metaType;
+
+		public ObjectType(IType metaType, IType identifierType) {
+			this.identifierType = identifierType;
+			this.metaType = metaType;
+		}
+	
+		public ObjectType() : this(NHibernate.Class, NHibernate.Serializable) {
+		}
 		
 		public override object DeepCopy(object value) {
 			return value;
@@ -36,42 +49,44 @@ namespace NHibernate.Type {
 		}
 
 		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
-			string className = (string) NHibernate.String.NullSafeGet( rs, names[0] );
-			object id = NHibernate.Serializable.NullSafeGet( rs, names[1] );
-			if (className==null || id==null) {
+			//if ( names.length!=2 ) throw new HibernateException("object type mapping must specify exactly two columns");
+		
+			System.Type clazz = (System.Type) metaType.NullSafeGet(rs, names[0], session, owner);
+			object id = identifierType.NullSafeGet(rs, names[1], session, owner);
+			if (clazz==null || id==null) {
 				return null;
-			} else {
-				try {
-					return session.Load( System.Type.GetType(className), id );
-				} catch (Exception) {
-					throw new HibernateException("Class not found: " + className);
-				}
+			}
+			else {
+				return session.Load(clazz, id);
 			}
 		}
 
 		public override void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session) {
+			object id;
+			System.Type clazz;
+
 			if (value == null) {
-				IDataParameter parm = st.Parameters[index] as IDataParameter;
-				parm.DbType = DbType.String;
-				parm.Value = null;
-				parm = st.Parameters[index + 1] as IDataParameter;
-				parm.DbType = DbType.Binary;
-				parm.Value = null;
+				id = null;
+				clazz = null;
 			} else {
-				object id = session.GetEntityIdentifierIfNotUnsaved(value);
-				string className = value.GetType().FullName;
-				NHibernate.String.NullSafeSet(st, className, index, session);
-				NHibernate.Serializable.NullSafeSet(st, id, index+1, session);
+				id = session.GetEntityIdentifierIfNotUnsaved(value);
+				clazz = value.GetType();
 			}
+			metaType.NullSafeSet(st, clazz, index, session);
+			identifierType.NullSafeSet(st, id, index+1, session); // metaType must be single-column type
 		}
+
 		public override System.Type ReturnedClass {
 			get { return typeof(object); }
 		}
 
 		private static readonly DbType[] theSqlTypes = new DbType[] { DbType.String, DbType.Binary };
 
-		public override DbType[] SqlTypes(IMapping pi) {
-			return theSqlTypes;
+		public override DbType[] SqlTypes(IMapping mapping) {
+			return ArrayHelper.Join(
+				metaType.SqlTypes(mapping),
+				identifierType.SqlTypes(mapping)
+				);
 		}
 
 		public override string ToXML(object value, ISessionFactoryImplementor factory) {
@@ -101,5 +116,68 @@ namespace NHibernate.Type {
 			get { return true; }
 		}
 
+		public Cascades.CascadeStyle Cascade(int i) { 
+			return Cascades.CascadeStyle.StyleNone; 
+		} 
+    
+		public OuterJoinLoaderType EnableJoinedFetch(int i) { 
+			return OuterJoinLoaderType.Lazy; 
+		} 
+    
+		private static readonly string[] PROPERTY_NAMES = new string[] { "class", "id" }; 
+    
+		public string[] PropertyNames {
+			get {
+				return ObjectType.PROPERTY_NAMES; 
+			}
+		}
+
+		public object GetPropertyValue(Object component, int i, ISessionImplementor session) {    
+                   return (i==0) ? 
+                           component.GetType() : 
+                           Id(component, session); 
+        } 
+    
+        public object[] GetPropertyValues(Object component, ISessionImplementor session) { 
+                return new object[] { component.GetType(), Id(component, session) }; 
+        } 
+    
+		private object Id(object component, ISessionImplementor session) { 
+				try { 
+					return session.GetEntityIdentifierIfNotUnsaved(component); 
+				} 
+				catch (TransientObjectException) { 
+					return null; 
+				} 
+		} 
+	
+		public IType[] Subtypes {
+			get {
+				return new IType[] { metaType, identifierType };
+			}
+		} 
+    
+        public void SetPropertyValues(object component, object[] values) { 
+                throw new NotSupportedException(); 
+        } 
+  
+		public override bool IsComponentType {
+			get {
+				return true;
+			}
+		}
+
+		public ForeignKeyType ForeignKeyType { 
+			get {
+				//return AssociationType.FOREIGN_KEY_TO_PARENT; //TODO: this is better but causes a transient object exception... 
+				return ForeignKeyType.ForeignKeyFromParent; 
+			}
+		} 
+
+		public override bool IsAssociationType {
+			get {
+				return true;
+			}
+		}
 	}
 }

@@ -22,6 +22,8 @@ namespace NHibernate.Type {
 		private OuterJoinLoaderType[] joinedFetch;
 		private string parentProperty;
 		private ReflectHelper.Setter parentSetter;
+
+		//TODO: implement optimizer
 		
 		public override DbType[] SqlTypes(IMapping mapping) {
 			//not called at runtime so doesn't matter if its slow :)
@@ -152,8 +154,16 @@ namespace NHibernate.Type {
 			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
+		public object GetPropertyValue(object component, int i, ISessionImplementor session) {
+			return GetPropertyValue(component, i);
+		}
+
 		public object GetPropertyValue(object component, int i) {
 			return getters[i].Get(component);
+		}
+
+		public object[] GetPropertyValues(object component, ISessionImplementor session) {
+			return GetPropertyValues(component);
 		}
 
 		public object[] GetPropertyValues(object component) {
@@ -210,8 +220,7 @@ namespace NHibernate.Type {
 		public object Instantiate(object parent, ISessionImplementor session) {
 			object result = Instantiate();
 			try {
-				//TODO: Get the proxy
-				//if (parentSetter!=null && parent!=null) parentSetter.Set(result, session.ProxyFor(parent) );
+				if (parentSetter!=null && parent!=null) parentSetter.Set(result, session.ProxyFor(parent) );
 				return result;
 			} catch(Exception e) {
 				throw new InstantiationException("Could not set component parent for: ",  componentClass, e);

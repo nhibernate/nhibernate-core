@@ -124,6 +124,9 @@ namespace NHibernate.Type {
 							throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e);
 						}
 					}
+					else if ( typeof(ICompositeUserType).IsAssignableFrom(typeClass) ) {
+						type = new CompositeCustomType(typeClass);
+					}
 					else if ( typeof(IUserType).IsAssignableFrom(typeClass) ) {
 						type = new CustomType(typeClass);
 					}

@@ -17,6 +17,12 @@ namespace NHibernate.Type {
 		private readonly string name;
 		private readonly DbType[] types;
 
+		protected IUserType UserType {
+			get {
+				return userType;
+			}
+		}
+
 		public CustomType(System.Type userTypeClass) {
 			name = userTypeClass.Name;
 
