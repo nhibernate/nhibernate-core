@@ -48,5 +48,10 @@ namespace NHibernate.Engine {
 		public override int GetHashCode() {
 			return id.GetHashCode();
 		}
+
+		public override string ToString() { 
+			return id.ToString(); 
+		} 
+
 	}
 }

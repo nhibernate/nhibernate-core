@@ -30,7 +30,12 @@ namespace NHibernate.Engine {
 		/// <summary>
 		/// A cascade point that occurs just after the update of the parent entity
 		/// </summary>
-		CascadeOnUpdate = 0
+		CascadeOnUpdate = 0,
+		/// <summary>
+		/// A cascade point that occurs just after eviction of the parent entity from the
+		/// session cache
+		/// </summary>
+		CascadeOnEvict = -1
 	}
 
 	/// <summary>
@@ -67,19 +72,30 @@ namespace NHibernate.Engine {
 				}
 			}
 
+			public static CascadingAction ActionEvict = new ActionEvictClass();
+			private class ActionEvictClass : CascadingAction {
+				public override void Cascade(ISession session, object child) {
+					log.Debug("cascading to evict()");
+					session.Evict(child);
+				}
+				public override bool ShouldCascadeCollection(object collection) {
+					return CollectionIsInitialized(collection);
+				}
+			}
+
 			public static CascadingAction ActionSaveUpdate = new ActionSaveUpdateClass();
 			private class ActionSaveUpdateClass : CascadingAction {
 				public override void Cascade(ISession session, object child) {
-					HibernateProxy proxy = child as HibernateProxy;
-					if ( (proxy==null) || (!proxy.IsUninitialized) ) {
-						// saves / updates don't cascade to uninitialized 					
-						log.Debug("cascading to SaveOrUpdate()");
-						session.SaveOrUpdate(child);
-					}
+					log.Debug("cascading to SaveOrUpdate()");
+					session.SaveOrUpdate(child);
 				}
 				public override bool ShouldCascadeCollection(object collection) {
-					return !(collection is PersistentCollection) || ( (PersistentCollection) collection).WasInitialized;
+					return CollectionIsInitialized(collection);
 				}
+			}
+
+			private static bool CollectionIsInitialized( object collection ) {
+				return !(collection is PersistentCollection) || ( (PersistentCollection) collection).WasInitialized;
 			}
 		}
 
@@ -95,10 +111,10 @@ namespace NHibernate.Engine {
 					return true;
 				}
 			}
-			public static CascadeStyle StyleExceptDelete = new StyleExceptDeleteClass();
-			private class StyleExceptDeleteClass : CascadeStyle {
+			public static CascadeStyle StyleSaveUpdate = new StyleSaveUpdateClass();
+			private class StyleSaveUpdateClass : CascadeStyle {
 				public override bool DoCascade(CascadingAction action) {
-					return action != CascadingAction.ActionDelete;
+					return action == CascadingAction.ActionSaveUpdate;
 				}
 			}
 			public static CascadeStyle StyleOnlyDelete = new StyleOnlyDeleteClass();
@@ -170,7 +186,7 @@ namespace NHibernate.Engine {
 			if (child != null) {
 				if ( type.IsAssociationType ) {
 					if ( ((IAssociationType)type).ForeignKeyType.CascadeNow(cascadeTo) ) {
-						if ( type.IsEntityType ) {
+						if ( type.IsEntityType || type.IsObjectType ) {
 							action.Cascade(session, child);
 						} else if ( type.IsPersistentCollectionType ) {
 							CascadePoint cascadeVia;
@@ -198,15 +214,15 @@ namespace NHibernate.Engine {
 									iter = null;
 								}
 							} if (iter!=null) {
-								  foreach(object obj in iter) {
-									  Cascade(session, obj, elemType, action, cascadeVia);
-								  }
-							  }
+									foreach(object obj in iter) {
+										Cascade(session, obj, elemType, action, cascadeVia);
+									}
+								}
 						}
 					}
 				} else if (type.IsComponentType ) {
 					IAbstractComponentType ctype = ((IAbstractComponentType) type);
-					object[] children = ctype.GetPropertyValues(child);
+					object[] children = ctype.GetPropertyValues(child, session);
 					IType[] types = ctype.Subtypes;
 					for (int i=0; i<types.Length; i++) {
 						if (ctype.Cascade(i).DoCascade(action) )
@@ -227,10 +243,7 @@ namespace NHibernate.Engine {
 				}
 				if ( log.IsDebugEnabled ) log.Debug( "done processing cascades for: " + persister.ClassName );
 			}
-		}
-		
-
-
-		
+		}		
 	}
 }
+

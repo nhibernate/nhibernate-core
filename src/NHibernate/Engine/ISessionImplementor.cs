@@ -65,11 +65,11 @@ namespace NHibernate.Engine {
 		void Initialize(PersistentCollection coolection, bool writing);
 
 		/// <summary>
-		/// Is this the readonly end of a bidirectional association?
+		/// Is this the "inverse" end of a bidirectional association?
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		bool IsCollectionReadOnly(PersistentCollection collection);
+		bool IsInverseCollection(PersistentCollection collection);
 
 		/// <summary>
 		/// Load an instance without checking if it was deleted. If it does not exist, throw an exception.

@@ -11,7 +11,7 @@ namespace NHibernate.Engine {
 	/// Defines the internal contract between the <c>ISessionFactory</c> and other parts of NHibernate
 	/// such as implementors of <c>IType</c>.
 	/// </summary>
-	public interface ISessionFactoryImplementor : IMapping {
+	public interface ISessionFactoryImplementor : IMapping, ISessionFactory {
 		
 		/// <summary>
 		/// Get the persister for a class
