@@ -1,6 +1,7 @@
 using System;
 using System.Xml;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Configuration;
 using NHibernate.Util;
 
@@ -23,11 +24,11 @@ namespace NHibernate.Cfg {
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class Environment : IConfigurationSectionHandler {
+	public class Environment {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Environment));
 
-		private static IDictionary properties;
-		private IDictionary isolationLevels = new Hashtable();
+		private static IDictionary properties = new Hashtable();
+		private static IDictionary isolationLevels = new Hashtable();
 
 		private const string Version = "0.1 beta 1";
 
@@ -59,22 +60,18 @@ namespace NHibernate.Cfg {
 		public const string QueryImports = "hibernate.query.imports";
 
 		static Environment() {
-			Environment env = System.Configuration.ConfigurationSettings.GetConfig("nhibernate") as Environment;
-			if (env==null) throw new HibernateException("no nhibernate settings available");
-		}
-		
+			NameValueCollection props = System.Configuration.ConfigurationSettings.GetConfig("nhibernate") as NameValueCollection;
+			if (props==null) throw new HibernateException("no nhibernate settings available");
+			
+			foreach(string key in props.Keys) {
+				properties.Add(key, props[key]);
+			}
 
-
-		public object Create(object parent, object configContext, XmlNode section) {
 			isolationLevels.Add( System.Data.IsolationLevel.Chaos, "NONE" );
 			isolationLevels.Add( System.Data.IsolationLevel.ReadUncommitted, "READ_UNCOMMITTED" );
 			isolationLevels.Add( System.Data.IsolationLevel.ReadCommitted, "READ_COMMITTED" );
 			isolationLevels.Add( System.Data.IsolationLevel.RepeatableRead, "REPEATABLE_READ" );
 			isolationLevels.Add( System.Data.IsolationLevel.Serializable, "SERIALIZABLE" );
-
-			properties = PropertiesHelper.GetParams((XmlElement) section);
-
-			return null;
 		}
 
 		public static IDictionary Properties {
