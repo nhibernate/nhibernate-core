@@ -14,13 +14,13 @@
   	
   	<jcs-cache usage="nonstrict-read-write"/>
   
-    <id name="key" type="string">
+    <id name="key" type="String">
       <column name="`foo_id`" length="36"/>
       <generator class="uuid.hex">
         <param name="seperator">:</param>
       </generator>
     </id>
-    <discriminator column="`$foo_subclass^`" type="character"/>
+    <discriminator column="`$foo_subclass^`" type="Char"/>
     <version name="version"/>
     <!--<version name="versionCalendar" type="calendar"/>-->
     <!--<timestamp name="versionTimestamp"/>-->
@@ -42,11 +42,11 @@
 	<primitive-array name="bytes" table="foobytes">
 		<key column="id"/>
 		<index column="i"/>
-		<element column="byte_" type="byte"/>
+		<element column="byte_" type="Byte"/>
 	</primitive-array>
 
-    <property name="date" type="date" column="date_"/>
-    <property name="timestamp" type="timestamp" column="timestamp_"/>
+    <property name="date" type="DateTime" column="date_"/>
+    <property name="timestamp" type="Timestamp" column="timestamp_"/>
     <property name="boolean" column="boolean_"/>
     <property name="bool" column="bool_"/>
     <property name="null" column="null_"/>
@@ -54,8 +54,8 @@
     <property name="char" column="char_"/>
     <property name="zero" column="zero_"/>
     <property name="int" column="int_"/>
-    <property name="string">
-        <column name="string_" length="48" index="fbstridx"/>
+    <property name="String">
+        <column name="String_" length="48" index="fbstridx"/>
     </property>
     <property name="byte" column="byte_"/>
     <property name="yesno" type="yes_no"/>
@@ -85,14 +85,14 @@
         <array name="importantDates" table="foo_times">
           <key column="foo_id"/>
           <index column="i"/>
-          <element column="date_" type="time"/>
+          <element column="date_" type="DateTime"/>
         </array>
         <many-to-one name="fee" column="fee_sub" cascade="all" class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" outer-join="false"/>
       </component>
       <array name="importantDates" table="foo_dates">
         <key column="foo_id"/>
         <index column="i"/>
-        <element column="date_" type="date"/>
+        <element column="date_" type="DateTime"/>
       </array>
     </component>
     <component name="nullComponent">
@@ -117,7 +117,7 @@
         	discriminator-value="B">
           <many-to-one name="baz"/>
           <property name="barString">
-            <column name="bar_string" length="24"/>
+            <column name="bar_String" length="24"/>
           </property>
           <property name="name" column="name_name"/>
           <component name="barComponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
@@ -127,7 +127,7 @@
             <array name ="importantDates">
                 <key column="id" />
                 <index column="i"/>
-               <element column="date_" type="date"/>
+               <element column="date_" type="DateTime"/>
             </array>
           </component>
           <any name="object" id-type="long" cascade="all">

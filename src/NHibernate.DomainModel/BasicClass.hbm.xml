@@ -11,7 +11,7 @@
 		<property name="BinaryProperty" type="Byte[]" />
 		<property name="BooleanProperty" type="Boolean" />
 		<property name="ByteProperty" type="Byte" />
-		<property name="CharacterProperty" type="Character" />
+		<property name="CharacterProperty" type="Char" />
 		<property name="ClassProperty" type="Type" />
 		<property name="CultureInfoProperty" type="CultureInfo" />
 		<property name="DateTimeProperty" type="DateTime" />

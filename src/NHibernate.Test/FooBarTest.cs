@@ -16,6 +16,7 @@ namespace NHibernate.Test
 										  "Baz.hbm.xml",
 										  "Qux.hbm.xml",
 										  "Glarch.hbm.xml",
+										  "Simple.hbm.xml",
 										  "Fum.hbm.xml",
 										  "Fumm.hbm.xml",
 										  "Fo.hbm.xml",
@@ -37,29 +38,30 @@ namespace NHibernate.Test
 		public void FetchInitializedCollection()
 		{
 			ISession s = sessions.OpenSession();
-/*			Baz baz = new Baz();
-			ICollection fooBag = new ArrayList();
-			fooBag.add( new Foo() );
-			fooBag.add( new Foo() );
-			baz.setFooBag(fooBag);
-			s.save(baz);
-			fooBag = baz.getFooBag();
+			Baz baz = new Baz();
+			IList fooBag = new ArrayList();
+			fooBag.Add( new Foo() );
+			fooBag.Add( new Foo() );
+			baz.fooBag=fooBag;
+			s.Save(baz);
+			fooBag = baz.fooBag;
 			s.Find("from Baz baz left join fetch baz.fooBag");
 			Assert.IsTrue( NHibernate.IsInitialized(fooBag) );
-			Assert.IsTrue( fooBag==baz.getFooBag() );
-			Assert.IsTrue( baz.getFooBag().size()==2 );
+			Assert.IsTrue( fooBag==baz.fooBag );
+			Assert.IsTrue( baz.fooBag.Count==2 );
 			s.Close();
-		
-			s = sessions.OpenSession();
-			baz = (Baz) s.load( typeof(Baz), baz.getCode() );
-			Object bag = baz.getFooBag();
-			Assert.IsFalse( NHibernate.IsInitialized(bag) );
-			s.Find("from Baz baz left join fetch baz.fooBag");
-			Assert.IsFalse( NHibernate.IsInitialized(bag) );
-			Assert.IsTrue( bag==baz.getFooBag() );
-			Assert.IsTrue( baz.getFooBag().size()==2 );
-			s.Delete(baz);
-			s.Flush();*/
+			
+//			s = sessions.OpenSession();
+//			baz = (Baz) s.load( typeof(Baz), baz.getCode() );
+//			Object bag = baz.getFooBag();
+//			Assert.IsFalse( NHibernate.IsInitialized(bag) );
+//			s.Find("from Baz baz left join fetch baz.fooBag");
+//			Assert.IsFalse( NHibernate.IsInitialized(bag) );
+//			Assert.IsTrue( bag==baz.getFooBag() );
+//			Assert.IsTrue( baz.getFooBag().size()==2 );
+//			s.Delete(baz);
+//			s.Flush();
+
 			s.Close();
 		}
 

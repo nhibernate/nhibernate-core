@@ -171,7 +171,7 @@
 	
 		<map name="topGlarchez">
 			<key column="idtopglarch" />
-			<index column="mapkey" type="character"/>
+			<index column="mapkey" type="Char"/>
 			<one-to-many class = "NHibernate.DomainModel.Glarch, NHibernate.DomainModel"/>
 		</map>
 		

@@ -244,7 +244,7 @@
 		<xs:complexType>
 			<xs:attribute name='name' use='required' />
 			<xs:attribute name='column' />
-			<xs:attribute name='type' default='integer' />
+			<xs:attribute name='type' default='Int32' />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name='timestamp'>

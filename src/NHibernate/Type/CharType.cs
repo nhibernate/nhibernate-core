@@ -9,9 +9,9 @@ namespace NHibernate.Type {
 	/// <summary>
 	/// Summary description for CharacterType.
 	/// </summary>
-	public class CharacterType : PrimitiveType , IDiscriminatorType	{
+	public class CharType : PrimitiveType , IDiscriminatorType	{
 
-		internal CharacterType(StringFixedLengthSqlType sqlType) : base(sqlType) {
+		internal CharType(StringFixedLengthSqlType sqlType) : base(sqlType) {
 		}
 
 		public override object Get(IDataReader rs, int index) {
@@ -41,7 +41,7 @@ namespace NHibernate.Type {
 		}
 
 		public override string Name {
-			get { return "Character"; }
+			get { return "Char"; }
 		}
 	
 		public override string ObjectToSQLString(object value) {

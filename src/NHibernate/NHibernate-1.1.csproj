@@ -1568,12 +1568,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\CharacterType.cs"
+                    RelPath = "Type\CharBooleanType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\CharBooleanType.cs"
+                    RelPath = "Type\CharType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

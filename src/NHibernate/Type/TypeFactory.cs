@@ -87,7 +87,7 @@ namespace NHibernate.Type
 			TypeFactory.GetBinaryType(); 
 			TypeFactory.GetBooleanType();
 			TypeFactory.GetByteType();
-			TypeFactory.GetCharacterType();
+			TypeFactory.GetCharType();
 			TypeFactory.GetCultureInfoType();
 			TypeFactory.GetDateTimeType(); 
 			TypeFactory.GetDateType(); 
@@ -471,13 +471,13 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetCharacterType() 
+		public static NullableType GetCharType() 
 		{
-			string key = GetKeyForLengthBased(typeof(CharacterType).FullName, 1);
+			string key = GetKeyForLengthBased(typeof(CharType).FullName, 1);
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
 			if(returnType==null) 
 			{
-				returnType = new CharacterType(SqlTypeFactory.GetStringFixedLength(1));
+				returnType = new CharType(SqlTypeFactory.GetStringFixedLength(1));
 				AddToTypeOfName(key, returnType);
 			}
 

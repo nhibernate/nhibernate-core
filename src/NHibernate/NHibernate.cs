@@ -32,7 +32,7 @@ namespace NHibernate {
 		/// <summary>
 		/// NHibernate character type
 		/// </summary>
-		public static readonly NullableType Character = TypeFactory.GetCharacterType(); 
+		public static readonly NullableType Character = TypeFactory.GetCharType(); 
 		
 		/// <summary>
 		/// NHibernate class type
