@@ -46,7 +46,7 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		public static bool SeedVersion(object[] fields, int versionProperty, IVersionType versionType) 
 		{
-			if ( fields[versionProperty] == null ) 
+			if ( fields[versionProperty]==null ) 
 			{
 				fields[versionProperty] = Seed(versionType);
 				return true;

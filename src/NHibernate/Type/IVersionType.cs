@@ -8,6 +8,12 @@ namespace NHibernate.Type
 	/// </summary>
 	public interface IVersionType : IType 
 	{
+		/// <summary>
+		/// When implemented by a class, increments the version.
+		/// </summary>
+		/// <param name="current">The current version</param>
+		/// <returns>an instance of the <see cref="IType"/> that has been incremented.</returns>
+		object Next(object current);
 
 		/// <summary>
 		/// When implemented by a class, gets an initial version.
@@ -15,11 +21,6 @@ namespace NHibernate.Type
 		/// <value>Returns an instance of the <see cref="IType"/></value>
 		object Seed { get; }
 
-		/// <summary>
-		/// When implemented by a class, increments the version.
-		/// </summary>
-		/// <param name="current">The current version</param>
-		/// <returns>an instance of the <see cref="IType"/> that has been incremented.</returns>
-		object Next(object current);
+		
 	}
 }

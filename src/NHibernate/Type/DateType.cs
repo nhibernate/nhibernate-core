@@ -2,9 +2,11 @@ using System;
 using System.Data;
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type {
+namespace NHibernate.Type 
+{
 	
-	public class DateType : ValueTypeType, IIdentifierType, ILiteralType, IVersionType {
+	public class DateType : ValueTypeType, IIdentifierType, ILiteralType 
+	{
 
 		internal DateType() : base( new DateSqlType() ) 
 		{
@@ -70,16 +72,6 @@ namespace NHibernate.Type {
 
 		public override string ObjectToSQLString(object value) {
 			return "'" + ((DateTime)value).ToShortDateString() + "'";
-		}
-
-		public object Next(object current) 
-		{
-			return Seed;
-		}
-		
-		public object Seed 
-		{
-			get { return DateTime.Now; }
 		}
 	}
 }

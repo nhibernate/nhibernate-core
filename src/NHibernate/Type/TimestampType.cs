@@ -95,6 +95,8 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
+		#region IVersionType Members
+
 		public object Next(object current) 
 		{
 			return Seed;
@@ -104,6 +106,8 @@ namespace NHibernate.Type
 		{
 			get { return DateTime.Now; }
 		}
+
+		#endregion
 
 		public override string ObjectToSQLString(object value) 
 		{

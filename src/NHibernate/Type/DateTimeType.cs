@@ -97,6 +97,8 @@ namespace NHibernate.Type
 			return "'" + value.ToString() + "'";
 		}
 
+		#region IVersionType Members
+
 		public object Next(object current) 
 		{
 			return Seed;
@@ -106,5 +108,8 @@ namespace NHibernate.Type
 		{
 			get { return DateTime.Now; }
 		}
+
+		#endregion
+
 	}
 }

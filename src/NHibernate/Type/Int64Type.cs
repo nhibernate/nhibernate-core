@@ -5,7 +5,8 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
-	public class Int64Type : ValueTypeType, IIdentifierType, IVersionType {
+	public class Int64Type : ValueTypeType, IIdentifierType, IVersionType 
+	{
 		
 		internal Int64Type() : base( new Int64SqlType() ) 
 		{
@@ -36,7 +37,10 @@ namespace NHibernate.Type {
 			return long.Parse(xml);
 		}
 
-		public object Next(object current) {
+		#region IVersionType Members
+
+		public object Next(object current) 
+		{
 			return ((long)current) + 1;
 		}
 
@@ -44,7 +48,10 @@ namespace NHibernate.Type {
 			get { return 0; }
 		}
 
-		public override string ObjectToSQLString(object value) {
+		#endregion
+
+		public override string ObjectToSQLString(object value) 
+		{
 			return value.ToString();
 		}
 	}

@@ -61,6 +61,8 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
+		#region IVersionType Members
+
 		public object Next(object current) 
 		{
 			return Seed;
@@ -68,8 +70,10 @@ namespace NHibernate.Type
 		
 		public object Seed 
 		{
-			get { return DateTime.Now.Ticks; }
+			get { return new TimeSpan( DateTime.Now.Ticks ); }
 		}
+
+		#endregion
 
 		public override string ObjectToSQLString(object value) 
 		{

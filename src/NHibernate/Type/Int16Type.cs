@@ -38,11 +38,19 @@ namespace NHibernate.Type {
 			return short.Parse(xml);
 		}
 
-		public object Next(object current) {
+		#region IVersionType Members
+
+		public object Next(object current) 
+		{
 			return ((short)current) + 1;
 		}
-		public object Seed {
+		
+		public object Seed 
+		{
 			get { return 0; }
 		}
+
+		#endregion
+
 	}
 }

@@ -40,12 +40,18 @@ namespace NHibernate.Type {
 			return int.Parse(xml);
 		}
 
-		public virtual object Next(object current) {
+		#region IVersionType Members
+
+		public virtual object Next(object current) 
+		{
 			return ((int) current) + 1;
 		}
 
 		public virtual object Seed {
 			get	{ return 0; }
 		}
+
+		#endregion
+
 	}
 }
