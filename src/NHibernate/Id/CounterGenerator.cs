@@ -4,7 +4,7 @@ using NHibernate.Engine;
 namespace NHibernate.Id
 {
 	/// <summary>
-	/// An <c>IIdentifierGenerator</c> that returns a <c>Int64</c> constructed from the system
+	/// An <see cref="IIdentifierGenerator" /> that returns a <c>Int64</c> constructed from the system
 	/// time and a counter value. Not safe for use in a clustser!
 	/// </summary>
 	public class CounterGenerator : IIdentifierGenerator

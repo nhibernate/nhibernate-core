@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+
 using NHibernate.Type;
 
 namespace NHibernate.Id
@@ -8,18 +9,82 @@ namespace NHibernate.Id
 	/// <summary>
 	/// Factory methods for <c>IdentifierGenerator</c> framework.
 	/// </summary>
+	/// <remarks>
+	/// <p>The built in strategies for identifier generation in NHibernate are:</p>
+	/// <list type="table">
+	///		<listheader>
+	///			<term>strategy</term>
+	///			<description>Implementation of strategy</description>
+	///		</listheader>
+	///		<item>
+	///			<term>assigned</term>
+	///			<description><see cref="Assigned"/></description>
+	///		</item>
+	///		<item>
+	///			<term>foreign</term>
+	///			<description><see cref="ForeignGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>guid</term>
+	///			<description><see cref="GuidGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>guid.comb</term>
+	///			<description><see cref="GuidCombGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>hilo</term>
+	///			<description><see cref="TableHiLoGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>identity</term>
+	///			<description><see cref="IdentityGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>native</term>
+	///			<description>
+	///				Chooses between <see cref="IdentityGenerator"/>, <see cref="SequenceGenerator"/>
+	///				, and <see cref="TableHiLoGenerator"/> based on the 
+	///				<see cref="Dialect.Dialect"/>'s capabilities.
+	///			</description>
+	///		</item>
+	///		<item>
+	///			<term>seqhilo</term>
+	///			<description><see cref="SequenceHiLoGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>sequence</term>
+	///			<description><see cref="SequenceGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>uuid.hex</term>
+	///			<description><see cref="UUIDHexGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>uuid.string</term>
+	///			<description><see cref="UUIDStringGenerator"/></description>
+	///		</item>
+	/// </list>
+	/// </remarks>
 	public sealed class IdentifierGeneratorFactory
 	{
 		/// <summary>
-		/// 
+		/// Gets the value of the identifier from the <see cref="IDataReader"/> and
+		/// ensures it is the correct <see cref="System.Type"/>.
 		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="clazz"></param>
-		/// <returns></returns>
+		/// <param name="rs">The <see cref="IDataReader"/> to read the identifier value from.</param>
+		/// <param name="clazz">The <see cref="System.Type"/> the value should be converted to.</param>
+		/// <returns>
+		/// The value for the identifier.
+		/// </returns>
+		/// <exception cref="IdentifierGenerationException">
+		/// Thrown if there is any problem getting the value from the <see cref="IDataReader"/>
+		/// or with converting it to the <see cref="System.Type"/>.
+		/// </exception>
 		public static object Get( IDataReader rs, System.Type clazz )
 		{
 			// here is an interesting one: 
-			// - MsSql's @@identity returns a numeric - which translates to a C# decimal type.  
+			// - MsSql's @@identity returns a Decimal
 			// - MySql LAST_IDENITY() returns an Int64 			
 			try
 			{
@@ -32,12 +97,24 @@ namespace NHibernate.Id
 			}
 		}
 
+		/// <summary>
+		/// An <see cref="Hashtable"/> where the <c>key</c> is the strategy and 
+		/// the <c>value</c> is the <see cref="System.Type"/> for the strategy.
+		/// </summary>
 		private static readonly Hashtable idgenerators = new Hashtable();
 
-		/// <summary></summary>
+		/// <summary>
+		/// When this is returned by <c>Generate()</c> it indicates that the object
+		/// has already been saved.
+		/// </summary>
+		/// <value>
+		/// <see cref="String.Empty">String.Empty</see>
+		/// </value>
 		public static readonly string ShortCircuitIndicator = String.Empty;
 
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes the static fields in <see cref="IdentifierGeneratorFactory"/>.
+		/// </summary>
 		static IdentifierGeneratorFactory()
 		{
 			idgenerators.Add( "uuid.hex", typeof( UUIDHexGenerator ) );
@@ -55,16 +132,26 @@ namespace NHibernate.Id
 
 		private IdentifierGeneratorFactory()
 		{
-		} //cannot be instantiated
+			//cannot be instantiated
+		} 
 
 		/// <summary>
-		/// 
+		/// Creates an <see cref="IIdentifierGenerator"/> from the named strategy.
 		/// </summary>
-		/// <param name="strategy"></param>
-		/// <param name="type"></param>
-		/// <param name="parms"></param>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
+		/// <param name="strategy">
+		/// The name of the generator to create.  This can be one of the NHibernate abbreviations (ie - <c>native</c>, 
+		/// <c>sequence</c>, <c>guid.comb</c>, etc...), a full class name if the Type is in the NHibernate assembly, or
+		/// a full type name if the strategy is in an external assembly.
+		/// </param>
+		/// <param name="type">The <see cref="IType"/> that the retured identifier should be.</param>
+		/// <param name="parms">An <see cref="IDictionary"/> of <c>&lt;param&gt;</c> values from the mapping.</param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
+		/// <returns>
+		/// An instantiated and configured <see cref="IIdentifierGenerator"/>.
+		/// </returns>
+		/// <exception cref="MappingException">
+		/// Thrown if there are any exceptions while creating the <see cref="IIdentifierGenerator"/>.
+		/// </exception>
 		public static IIdentifierGenerator Create( string strategy, IType type, IDictionary parms, Dialect.Dialect dialect )
 		{
 			try
@@ -89,11 +176,16 @@ namespace NHibernate.Id
 				{
 					clazz = System.Type.GetType( strategy );
 				}
+				
 				IIdentifierGenerator idgen = ( IIdentifierGenerator ) Activator.CreateInstance( clazz );
-				if( idgen is IConfigurable )
+				
+				// configure if the generator supports it.
+				IConfigurable configurable = idgen as IConfigurable;
+				if( configurable!=null )
 				{
-					( ( IConfigurable ) idgen ).Configure( type, parms, dialect );
+					configurable.Configure( type, parms, dialect );
 				}
+
 				return idgen;
 			}
 			catch( Exception e )
@@ -103,11 +195,17 @@ namespace NHibernate.Id
 		}
 
 		/// <summary>
-		/// 
+		/// Create the correct boxed <see cref="System.Type"/> for the identifier.
 		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
+		/// <param name="value">The value of the new identifier.</param>
+		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
+		/// <returns>
+		/// The identifier value converted to the <see cref="System.Type"/>.
+		/// </returns>
+		/// <exception cref="IdentifierGenerationException">
+		/// The <c>type</c> parameter must be an <see cref="Int16"/>, <see cref="Int32"/>,
+		/// or <see cref="Int64"/>.
+		/// </exception>
 		internal static object CreateNumber( long value, System.Type type )
 		{
 			if( type == typeof( long ) )

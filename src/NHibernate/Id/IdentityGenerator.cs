@@ -3,21 +3,25 @@ using NHibernate.Engine;
 namespace NHibernate.Id
 {
 	/// <summary>
-	/// Indicates to the <see cref="ISession"/> that identity
+	/// An <see cref="IIdentifierGenerator" /> that indicates to the <see cref="ISession"/> that identity
 	/// (ie. identity/autoincrement column) key generation should be used.
 	/// </summary>
 	/// <remarks>
-	/// <para>
+	/// <p>
 	///	This id generation strategy is specified in the mapping file as 
-	///	<c>&lt;generator class="identity"&gt;</c>
-	/// </para>
-	/// <para>
+	///	<code>&lt;generator class="identity" /&gt;</code> 
+	///	or if the database natively supports identity columns 
+	///	<code>&lt;generator class="native" /&gt;</code>
+	/// </p>
+	/// <p>
 	/// This indicates to NHibernate that the database generates the id when
 	/// the entity is inserted.
-	/// </para>
+	/// </p>
 	/// </remarks>
 	public class IdentityGenerator : IIdentifierGenerator
 	{
+		#region IIdentifierGenerator Members
+
 		/// <summary>
 		/// This class can not generate the <c>id</c>.  It has to get the 
 		/// value from the database.
@@ -33,5 +37,7 @@ namespace NHibernate.Id
 		{
 			return null;
 		}
+
+		#endregion
 	}
 }

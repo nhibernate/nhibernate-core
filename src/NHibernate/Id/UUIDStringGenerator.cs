@@ -5,12 +5,16 @@ using NHibernate.Engine;
 namespace NHibernate.Id
 {
 	/// <summary>
-	/// An <c>IIdentifierGenerator</c> that returns a string of length
+	/// An <see cref="IIdentifierGenerator" /> that returns a string of length
 	/// 16.  
 	/// </summary>
 	/// <remarks>
+	/// <p>
+	///	This id generation strategy is specified in the mapping file as 
+	///	<code>&lt;generator class="uuid.string" /&gt;</code>
+	/// </p>
 	/// <para>
-	/// This string will NOT consist of only alphanumeric characters.  Use
+	/// The identifier string will NOT consist of only alphanumeric characters.  Use
 	/// this only if you don't mind unreadable identifiers.
 	/// </para>
 	/// <para>
@@ -19,13 +23,15 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class UUIDStringGenerator : IIdentifierGenerator
 	{
+		#region IIdentifierGenerator Members
+
 		/// <summary>
-		/// 
+		/// Generate a new <see cref="String"/> for the identifier using the "uuid.string" algorithm.
 		/// </summary>
-		/// <param name="cache"></param>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		public object Generate( ISessionImplementor cache, object obj )
+		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
+		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <returns>The new identifier as a <see cref="String"/>.</returns>
+		public object Generate( ISessionImplementor session, object obj )
 		{
 			byte[ ] guidInBytes = new byte[16];
 			StringBuilder guidBuilder = new StringBuilder( 16, 16 );
@@ -40,5 +46,7 @@ namespace NHibernate.Id
 
 			return guidBuilder.ToString();
 		}
+
+		#endregion
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using log4net;
@@ -12,20 +13,32 @@ namespace NHibernate.Id
 	/// oracle-style sequence that generates hi values.
 	/// </summary>
 	/// <remarks>
-	/// <para>
-	/// The user may specify a maximum lo value to determine how often new hi values are
+	/// <p>
+	///	This id generation strategy is specified in the mapping file as 
+	///	<code>
+	///	&lt;generator class="seqhilo"&gt;
+	///		&lt;param name="sequence"&gt;uid_sequence&lt;/param&gt;
+	///		&lt;param name="max_lo"&gt;max_lo_value&lt;/param&gt;
+	///		&lt;param name="schema"&gt;db_schema&lt;/param&gt;
+	///	&lt;/generator&gt;
+	///	</code>
+	/// </p>
+	/// <p>
+	/// The <c>sequence</c> parameter is required, the <c>max_lo</c> and <c>schema</c> are optional.
+	/// </p>
+	/// <p>
+	/// The user may specify a <c>max_lo</c> value to determine how often new hi values are
 	/// fetched. If sequences are not avaliable, <c>TableHiLoGenerator</c> might be an
 	/// alternative.
-	/// </para>
-	/// <para>
-	/// The mapping parameters supported are: <c>sequence</c>, <c>max_lo</c>
-	/// </para>
+	/// </p>
 	/// </remarks>
 	public class SequenceHiLoGenerator : SequenceGenerator
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( SequenceHiLoGenerator ) );
 
-		/// <summary></summary>
+		/// <summary>
+		/// The name of the maximum low value parameter.
+		/// </summary>
 		public const string MaxLo = "max_lo";
 
 		private int maxLo;
@@ -33,26 +46,34 @@ namespace NHibernate.Id
 		private long hi;
 		private System.Type returnClass;
 
+		#region IConfigurable Members
+
 		/// <summary>
-		/// 
+		/// Configures the SequenceHiLoGenerator by reading the value of <c>sequence</c>, <c>max_lo</c>, 
+		/// and <c>schema</c> from the <c>parms</c> parameter.
 		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="parms"></param>
-		/// <param name="d"></param>
-		public override void Configure( IType type, IDictionary parms, Dialect.Dialect d )
+		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
+		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
+		public override void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
 		{
-			base.Configure( type, parms, d );
+			base.Configure( type, parms, dialect );
 			maxLo = PropertiesHelper.GetInt32( MaxLo, parms, 9 );
 			lo = maxLo + 1; // so we "clock over" on the first invocation
 			returnClass = type.ReturnedClass;
 		}
 
+		#endregion
+
+		#region IIdentifierGenerator Members
+
 		/// <summary>
-		/// 
+		/// Generate an <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/> 
+		/// for the identifier by using a database sequence.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
+		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
 		[MethodImpl( MethodImplOptions.Synchronized )]
 		public override object Generate( ISessionImplementor session, object obj )
 		{
@@ -65,5 +86,7 @@ namespace NHibernate.Id
 			}
 			return IdentifierGeneratorFactory.CreateNumber( hi + lo++, returnClass );
 		}
+		#endregion
+
 	}
 }

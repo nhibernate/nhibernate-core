@@ -12,35 +12,41 @@ using NHibernate.Util;
 namespace NHibernate.Id
 {
 	/// <summary>
-	/// An <c>IIdentifierGenerator</c> that uses a database table to store the last
+	/// An <see cref="IIdentifierGenerator" /> that uses a database table to store the last
 	/// generated value.
 	/// </summary>
 	/// <remarks>
-	/// <para>
+	/// <p>
 	/// It is not intended that applications use this strategy directly. However,
 	/// it may be used to build other (efficient) strategies. The return type is
 	/// <c>System.Int32</c>
-	/// </para>
-	/// <para>
+	/// </p>
+	/// <p>
 	/// The hi value MUST be fetched in a seperate transaction to the <c>ISession</c>
 	/// transaction so the generator must be able to obtain a new connection and commit it.
 	/// Hence this implementation may not be used when the user is supplying connections.
-	/// </para>
-	/// <para>
-	/// Mapping parameters supported are: <c>table</c>, <c>column</c>
-	/// </para>
+	/// </p>
+	/// <p>
+	/// The mapping parameters <c>table</c> and <c>column</c> are required.
+	/// </p>
 	/// </remarks>
 	public class TableGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( TableGenerator ) );
 
-		/// <summary></summary>
+		/// <summary>
+		/// The name of the column parameter.
+		/// </summary>
 		public const string Column = "column";
 		
-		/// <summary></summary>
+		/// <summary>
+		/// The name of the table parameter.
+		/// </summary>
 		public const string Table = "table";
 		
-		/// <summary></summary>
+		/// <summary>
+		/// The name of the schema parameter.
+		/// </summary>
 		public const string Schema = "schema";
 
 		private string tableName;
@@ -49,12 +55,15 @@ namespace NHibernate.Id
 
 		private SqlString updateSql;
 
+		#region IConfigurable Members
+
 		/// <summary>
-		/// 
+		/// Configures the TableGenerator by reading the value of <c>table</c>, 
+		/// <c>column</c>, and <c>schema</c> from the <c>parms</c> parameter.
 		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="parms"></param>
-		/// <param name="dialect"></param>
+		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
+		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
 		public virtual void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
 		{
 			this.tableName = PropertiesHelper.GetString( Table, parms, "hibernate_unique_key" );
@@ -93,13 +102,18 @@ namespace NHibernate.Id
 			updateSql = builder.ToSqlString();
 
 		}
+		
+		#endregion
+
+		#region IIdentifierGenerator Members
 
 		/// <summary>
-		/// 
+		/// Generate a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/> 
+		/// for the identifier by selecting and updating a value in a table.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
+		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
 		[MethodImpl( MethodImplOptions.Synchronized )]
 		public virtual object Generate( ISessionImplementor session, object obj )
 		{
@@ -180,6 +194,8 @@ namespace NHibernate.Id
 				session.Factory.CloseConnection( conn );
 			}
 		}
+
+		#endregion
 
 		/// <summary>
 		/// 

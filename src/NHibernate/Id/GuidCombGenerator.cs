@@ -4,29 +4,42 @@ using NHibernate.Engine;
 namespace NHibernate.Id
 {
 	/// <summary>
-	/// Generates <see cref="System.Guid"/> values using a strategy suggested Jimmy Nilsson's 
+	/// An <see cref="IIdentifierGenerator" /> that generates <see cref="System.Guid"/> values 
+	/// using a strategy suggested Jimmy Nilsson's 
 	/// <a href="http://www.informit.com/articles/article.asp?p=25862">article</a>
 	/// on <a href="http://www.informit.com">informit.com</a>. 
 	/// </summary>
 	/// <remarks>
+	/// <p>
+	///	This id generation strategy is specified in the mapping file as 
+	///	<code>&lt;generator class="guid.comb" /&gt;</code>
+	/// </p>
+	/// <p>
+	/// The <c>comb</c> algorithm is designed to make the use of GUIDs as Primary Keys, Foreign Keys, 
+	/// and Indexes nearly as efficient as ints.
+	/// </p>
+	/// <p>
 	/// This code was contributed by Donald Mull.
+	/// </p>
 	/// </remarks>
 	public class GuidCombGenerator : IIdentifierGenerator
 	{
 		#region IIdentifierGenerator Members
 
 		/// <summary>
-		/// 
+		/// Generate a new <see cref="Guid"/> using the comb algorithm.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
+		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <returns>The new identifier as a <see cref="Guid"/>.</returns>
 		public object Generate( ISessionImplementor session, object obj )
 		{
 			return GenerateComb();
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Generate a new <see cref="Guid"/> using the comb algorithm.
+		/// </summary>
 		private Guid GenerateComb()
 		{
 			byte[ ] guidArray = Guid.NewGuid().ToByteArray();

@@ -1,9 +1,9 @@
 namespace NHibernate.Id
 {
 	/// <summary>
-	/// An <c>IIdentifierGenerator</c> that requires creation of database objects
-	/// All <c>IPersistentIdentifierGenerator</c>s that also implement 
-	/// <c>IConfigurable</c> have access to a special mapping parameter: schema
+	/// An <see cref="IIdentifierGenerator" /> that requires creation of database objects
+	/// All <see cref="IPersistentIdentifierGenerator"/>s that also implement 
+	/// An <see cref="IConfigurable" />  have access to a special mapping parameter: schema
 	/// </summary>
 	public interface IPersistentIdentifierGenerator : IIdentifierGenerator
 	{

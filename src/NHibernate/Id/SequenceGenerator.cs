@@ -10,31 +10,51 @@ using NHibernate.Util;
 namespace NHibernate.Id
 {
 	/// <summary>
-	/// Generates <c>Int64</c> values using an oracle-style sequence. A higher performance
-	/// algorithm is <see cref="SequenceHiLoGenerator"/>
+	/// An <see cref="IIdentifierGenerator" /> that generates <c>Int64</c> values using an 
+	/// oracle-style sequence. A higher performance algorithm is 
+	/// <see cref="SequenceHiLoGenerator"/>.
 	/// </summary>
+	/// <remarks>
+	/// <p>
+	///	This id generation strategy is specified in the mapping file as 
+	///	<code>
+	///	&lt;generator class="sequence"&gt;
+	///		&lt;param name="sequence"&gt;uid_sequence&lt;/param&gt;
+	///		&lt;param name="schema"&gt;db_schema&lt;/param&gt;
+	///	&lt;/generator&gt;
+	///	</code>
+	/// </p>
+	/// <p>
+	/// The <c>sequence</c> parameter is required while the <c>schema</c> is optional.
+	/// </p>
+	/// </remarks>
 	public class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( SequenceGenerator ) );
 
 		/// <summary>
-		/// The sequence parameter
+		/// The name of the sequence parameter.
 		/// </summary>
 		public const string Sequence = "sequence";
 
-		/// <summary></summary>
+		/// <summary>
+		/// The name of the schema parameter.
+		/// </summary>
 		public const string Schema = "schema";
 
 		private string sequenceName;
 		private System.Type returnClass;
 		private string sql;
 
+		#region IConfigurable Members
+
 		/// <summary>
-		/// 
+		/// Configures the SequenceGenerator by reading the value of <c>sequence</c> and
+		/// <c>schema</c> from the <c>parms</c> parameter.
 		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="parms"></param>
-		/// <param name="dialect"></param>
+		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
+		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
 		public virtual void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
 		{
 			this.sequenceName = PropertiesHelper.GetString( Sequence, parms, "hibernate_sequence" );
@@ -47,12 +67,17 @@ namespace NHibernate.Id
 			sql = dialect.GetSequenceNextValString( sequenceName );
 		}
 
+		#endregion
+
+		#region IIdentifierGenerator Members
+
 		/// <summary>
-		/// 
+		/// Generate an <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/> 
+		/// for the identifier by using a database sequence.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
+		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
 		public virtual object Generate( ISessionImplementor session, object obj )
 		{
 			IDbCommand cmd = session.Batcher.PrepareCommand( new SqlString( sql ) );
@@ -79,6 +104,8 @@ namespace NHibernate.Id
 				session.Batcher.CloseCommand( cmd, reader );
 			}
 		}
+
+		#endregion
 
 		/// <summary>
 		/// 

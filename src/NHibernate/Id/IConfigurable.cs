@@ -13,9 +13,9 @@ namespace NHibernate.Id
 		/// specified by the user as <c>&lt;param&gt;</c> elements.
 		/// This method is called just once, followed by instantiation.
 		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="parms">Param values that are keyed by parameter name.</param>
-		/// <param name="d"></param>
+		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
+		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
+		/// <param name="d">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
 		void Configure( IType type, IDictionary parms, Dialect.Dialect d );
 	}
 }
