@@ -10,10 +10,34 @@
             * build.dir             - (path) root level to build to, assemblies will go in ${build.dir}/bin
             * build.debug           - (true|false) debug build?
             * current.build.defines - framework-specific build defines
+			* project.version		- full project version
+			* project.version.major	- the major number of the build
+			* project.version.minor - the minor number of the build
+			* project.version.build - the build number
     -->
     
 	<target name="build">
-	
+		<!-- ensure the AssemblyInfo is writable -->
+		<attrib file="AssemblyInfo.cs" readonly="false" />
+		
+		<asminfo output="AssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import name="System.Reflection" />
+				<import name="System.Runtime.CompilerServices" />
+			</imports>
+			<attributes>
+				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
+				<attribute type="AssemblyDescriptionAttribute" value="The Unit Tests for NHibernate." />
+				<attribute type="AssemblyCompanyAttribute" value="nhibernate.sourceforge.net" />
+				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
+				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
+				<attribute type="AssemblyVersionAttribute" value="${project.version}" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="${project.version.major}.${project.version.minor}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${project.version}" />
+				<attribute type="AssemblyDelaySignAttribute" value="false" />
+			</attributes>
+		</asminfo>
+		
 		<csc 
 			target="library" 
 			define="${current.build.defines}"

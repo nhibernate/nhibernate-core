@@ -5,10 +5,23 @@
 	default="build"
 	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
 >
-
-	<!-- global project settings -->
+	<!-- 
+		Use this to determine if the key file NHibernate.key should be used to 
+		sign the Assemblies.  This defaults to false since users doing their own
+		build have _no_ copy of the private key.  If they do their own private
+		builds then they should make their own key 
+	-->
+	<property name="sign" value="false" />
+	
+	<!-- 
+		These are used to set the correct Attributes in AssemblyInfo.cs.  
+	 -->
 	<property name="project.name" value="nhibernate" />
-	<property name="project.version" value="0.0.5000.6" />
+	<property name="project.version.major" value="0" />
+	<property name="project.version.minor" value="1" />
+	<property name="project.version.build" value="0" />
+	<property name="project.version.revision" value="0" />
+	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
 	
 	<!-- default configuration -->
 	<property name="project.config" value="debug" />
@@ -21,14 +34,14 @@
 		<property name="project.config" value="debug" />
 		<property name="build.debug" value="true" />
 		<property name="build.name" value="${project.name}-${project.version}-${project.config}" />
-		<property name="build.dir" value="${nant.project.basedir}/build/${build.name}" />
+		<property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
 	</target>
 	
 	<target name="release" description="Perform a 'release' build">
 		<property name="project.config" value="release" />
 		<property name="build.debug" value="false" />
 		<property name="build.name" value="${project.name}-${project.version}" />
-		<property name="build.dir" value="${nant.project.basedir}/build/${build.name}" />
+		<property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
 	</target>
 	
 	<target name="init" description="Initializes build properties">
@@ -255,7 +268,6 @@
 		</ndoc>
 	</target>
 
-
 	<target name="package" depends="test sdkdoc" description="Creates Zip files for the File Release System on SourceForge">
 		<copy todir="${build.dir}">
 			<fileset>
@@ -275,6 +287,9 @@
 				<excludes name="**/*j.user" />
 				<excludes name="**/bin/**" />
 				<excludes name="**/obj/**" />
+				
+				<!-- exclude any keys that exist on the build machine -->
+				<excludes name="**/*.snk" />
 			
 			</fileset>
 		</copy>
@@ -285,6 +300,9 @@
 				<includes name="**/*" />
 			</fileset>
 		</zip>
+		
+		<!-- delete the directory that was used to create the zip -->
+		<delete dir="${build.dir}" />
 		
 		<echo message="Create a '${project.config}' package as file://${project.zip-path}" />
 		
