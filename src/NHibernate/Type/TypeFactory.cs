@@ -100,6 +100,7 @@ namespace NHibernate.Type
 			TypeFactory.GetSingleType(); 
 			TypeFactory.GetStringType();  
 			TypeFactory.GetTimestampType(); 
+			TypeFactory.GetTimeType();
 			TypeFactory.GetTrueFalseType(); 
 			TypeFactory.GetTypeType(); 
 			TypeFactory.GetYesNoType(); 
@@ -866,6 +867,25 @@ namespace NHibernate.Type
 			if(returnType==null) 
 			{
 				returnType = new TimestampType(SqlTypeFactory.GetDateTime());
+				AddToTypeOfName(key, returnType);
+			}
+
+			return returnType;
+			
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public static NullableType GetTimeType()
+		{
+			string key = typeof(TimeType).FullName;
+			
+			NullableType returnType = (NullableType)typeByTypeOfName[key];
+			if(returnType==null) 
+			{
+				returnType = new TimeType(SqlTypeFactory.GetTime());
 				AddToTypeOfName(key, returnType);
 			}
 

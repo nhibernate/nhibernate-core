@@ -1752,6 +1752,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\TimeType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\TrueFalseType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
