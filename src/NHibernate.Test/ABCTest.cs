@@ -28,6 +28,8 @@ namespace NHibernate.Test
 			C1 c1 = new C1();
 			D d = new D();
 			d.Amount =213.34f;
+			// id used to be a increment
+			c1.Id = 1;
 			c1.Address = "foo bar";
 			c1.Count = 23432;
 			c1.Name ="c1";
