@@ -591,7 +591,7 @@ namespace NHibernate.Test
 				"select bar, b " +
 				"from Bar bar " + 
 				"inner join bar.Baz baz inner join baz.CascadingBars b " +
-				"where bar.Name ilike 'bar%'" );
+				"where bar.Name like 'Bar%'" );
 			list = q.List();
 			Assert.AreEqual( 1, list.Count );
 
