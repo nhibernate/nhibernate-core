@@ -88,7 +88,14 @@ namespace NHibernate.Engine {
 		/// <summary>
 		/// Get the list of query imports
 		/// </summary>
-		string[] Imports { get; }
+		//string[] Imports { get; }
+
+		/// <summary>
+		/// Get a class name, using query language imports
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		string GetImportedClassName(string name);
 
 		/// <summary>
 		/// Dispose of a prepared statement

@@ -15,6 +15,11 @@ namespace NHibernate.Hql {
 	/// involving two less table joins than there are path components.
 	/// </summary>
 	public class PathExpressionParser : IParser {
+
+		//TODO: this class does too many things! we need a different 
+		//kind of path expression parser for each of the different 
+		//ways in which path expressions can occur 
+
 		public const string EntityID = "id";
 		public const string EntityClass = "class";
 		public const string CollectionSize = "size";
@@ -39,6 +44,7 @@ namespace NHibernate.Hql {
 		protected IType type;
 		private string path;
 		private bool skippedId;
+		private bool ignoreInitialJoin;
 		private bool continuation;
 		private JoinType joinType = JoinType.InnerJoin; //default mode
 
@@ -62,6 +68,10 @@ namespace NHibernate.Hql {
 			return currentName;
 		}
 
+		public void IgnoreInitialJoin() { 
+			ignoreInitialJoin = true; 
+		} 
+
 		public void Token(string token, QueryTranslator q) {
 
 			if (token!=null) path += token;
@@ -70,8 +80,10 @@ namespace NHibernate.Hql {
 			if (alias != null) {
 				Reset(q); //reset the dotcount (but not the path)
 				currentName = alias; //after reset!
-				JoinFragment ojf = q.GetPathJoin(path);
-				join.AddCondition( ojf.ToWhereFragmentString ); //after reset!
+				if(!ignoreInitialJoin) {
+					JoinFragment ojf = q.GetPathJoin(path);
+					join.AddCondition( ojf.ToWhereFragmentString ); //after reset!
+				}
 			} else if (".".Equals(token)) {
 				dotcount++;
 			} else {
@@ -99,7 +111,7 @@ namespace NHibernate.Hql {
 						throw new QueryException("unresolved property: " + currentProperty);
 					}
 					
-					if (propertyType.IsComponentType) {
+					if (propertyType.IsComponentType || propertyType.IsObjectType) {
 						if (componentPath == null) {
 							componentPath = token;
 						} else {
@@ -181,7 +193,10 @@ namespace NHibernate.Hql {
 		protected IType GetPropertyType(QueryTranslator q) {
 			string path = PropertyPath;
 			IType type = q.GetPersisterForName(currentName).GetPropertyType(path);
-			if (type==null) throw new QueryException("could not resolve property type: " + path);
+
+			if (type==null)
+				throw new QueryException("could not resolve property type: " + path);
+
 			return type;
 		}
 
@@ -219,6 +234,7 @@ namespace NHibernate.Hql {
 		}
 
 		public virtual void End(QueryTranslator q) {
+			ignoreInitialJoin = false;
 			if ( IsCollectionValued ) {
 				columns = collectionElementColumns;
 				type = collectionElementType;
@@ -329,9 +345,10 @@ namespace NHibernate.Hql {
 			return new StringBuilder("SELECT ")
 				.Append(String.Join(", ", collectionElementColumns))
 				.Append(" FROM ")
-				.Append(collectionTable)
+				/*.Append(collectionTable)
 				.Append(' ')
-				.Append(collectionName)
+				.Append(collectionName)*/
+				.Append(join.ToFromFragmentString.Substring(2)) //remove initial ", "
 				.Append(" WHERE ")
 				.Append(join.ToWhereFragmentString.Substring(5))
 				.ToString();
@@ -340,9 +357,11 @@ namespace NHibernate.Hql {
 		public bool IsCollectionValued {
 			get { return collectionElementColumns!=null; }
 		}
+		
 		public void AddAssociation(QueryTranslator q) {
 			q.AddJoin( Name, join );
 		}
+		
 		public string AddFromAssociation(QueryTranslator q) {
 			q.AddFrom(currentName, join);
 			return currentName;

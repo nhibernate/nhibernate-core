@@ -13,15 +13,17 @@ namespace NHibernate.Cfg {
 		private IDictionary collections;
 		private IDictionary tables;
 		private IDictionary queries;
+		private IDictionary imports;
 		private IList secondPasses;
 		private string schemaName;
 		private string defaultCascade;
 
-		internal Mappings(IDictionary classes, IDictionary collections, IDictionary tables, IDictionary queries, IList secondPasses) {
+		internal Mappings(IDictionary classes, IDictionary collections, IDictionary tables, IDictionary queries, IDictionary imports, IList secondPasses) {
 			this.classes = classes;
 			this.collections = collections;
 			this.queries = queries;
 			this.tables = tables;
+			this.imports = imports;
 			this.secondPasses = secondPasses;
 		}
 
@@ -30,17 +32,27 @@ namespace NHibernate.Cfg {
 			if (old!=null) log.Warn ( "duplicate class mapping: " + persistentClass.PersistentClazz.Name );
 			classes[persistentClass.PersistentClazz] = persistentClass;
 		}
+
 		public void AddCollection(Mapping.Collection collection) {
 			object old = collections[collection.Role];
 			if (old!=null) log.Warn ( "duplicate collection role: " + collection.Role );
 			collections[collection.Role] = collection;
 		}
+
 		public PersistentClass GetClass(System.Type type) {
 			return (PersistentClass) classes[type];
 		}
+
 		public Mapping.Collection GetCollection(string role) {
 			return (Mapping.Collection) collections[role];
 		}
+
+		public void AddImport(string className, string rename) {
+			if ( (string)imports[rename] != className)
+				throw new MappingException("duplicate import: " + rename);
+			imports.Add(rename, className); 
+		}
+
 		public Table AddTable(string schema, string name) {
 			string key = schema != null ? schema + "." + name : name;
 			Table table = (Table) tables[key];

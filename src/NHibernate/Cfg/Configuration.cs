@@ -30,6 +30,7 @@ namespace NHibernate.Cfg {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Configuration));
 
 		private Hashtable classes = new Hashtable();
+		private Hashtable imports = new Hashtable();
 		private Hashtable collections = new Hashtable();
 		private Hashtable tables = new Hashtable();
 		private Hashtable namedQueries = new Hashtable();
@@ -149,7 +150,7 @@ namespace NHibernate.Cfg {
 		/// </summary>
 		/// <returns></returns>
 		public Mappings CreateMappings() {
-			return new Mappings(classes, collections, tables, namedQueries, secondPasses);
+			return new Mappings(classes, collections, tables, namedQueries, imports, secondPasses);
 		}
 
 		public Configuration AddInputStream(Stream xmlInputStream) {
@@ -444,8 +445,14 @@ namespace NHibernate.Cfg {
 			log.Debug("properties: " + properties);
 
 			return this;
-						
+		}
 
+		/// <summary>
+		/// Get the query language imports
+		/// </summary>
+		/// <returns></returns>
+		public IDictionary Imports {
+			get { return imports; }
 		}
 	}
 }

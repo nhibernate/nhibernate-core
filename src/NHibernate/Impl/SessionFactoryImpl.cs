@@ -40,6 +40,7 @@ namespace NHibernate.Impl {
 		private IDictionary classPersistersByName;
 		private IDictionary collectionPersisters;
 		private IDictionary namedQueries;
+		private IDictionary imports;
 		private IConnectionProvider connections;
 		private IDictionary properties;
 		private bool showSql;
@@ -174,6 +175,7 @@ namespace NHibernate.Impl {
 			if ( queryImports.Length!=0 ) log.Info( "Query language imports: " + StringHelper.ToString(queryImports) );
 
 			namedQueries = cfg.NamedQueries;
+			imports = new Hashtable( cfg.Imports );
 
 			log.Debug("Instantiated session factory");
 
@@ -451,8 +453,12 @@ namespace NHibernate.Impl {
 			return (string[]) results.ToArray(typeof(string));
 		}
 
-		public string[] Imports {
+		/*public string[] Imports {
 			get { return queryImports; }
+		}*/
+		public string GetImportedClassName(string name) {
+			string result = (string) imports[name];
+			return (result==null) ? name : result;
 		}
 
 		public IDictionary GetAllClassMetadata() {

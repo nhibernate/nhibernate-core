@@ -11,15 +11,15 @@ namespace NHibernate.Expression {
 	/// </summary>
 	public class SQLExpression : Expression {
 
-		private string sql;
-		private TypedValue[] typedValues;
+		private readonly string sql;
+		private readonly TypedValue[] typedValues;
 
 		internal SQLExpression(string sql, object[] values, IType[] types) {
+			this.sql = sql;
 			typedValues = new TypedValue[values.Length];
 			for ( int i=0; i<typedValues.Length; i++ ) {
 				typedValues[i] = new TypedValue( types[i], values[i] );
 			}
-			this.sql = sql;
 		}
 
 		public override string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {

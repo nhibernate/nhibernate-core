@@ -49,6 +49,7 @@ namespace NHibernate.Hql {
 			booleanOperators.Add("#");
 			booleanOperators.Add("~");
 			booleanOperators.Add("like");
+			booleanOperators.Add("ilike");
 			booleanOperators.Add("is");
 			booleanOperators.Add("in");
 			booleanOperators.Add("any");
@@ -68,6 +69,7 @@ namespace NHibernate.Hql {
 			booleanOperators.Add("!>");
 			booleanOperators.Add("is not");
 			booleanOperators.Add("not like");
+			booleanOperators.Add("not ilike");
 			booleanOperators.Add("not in");
 			booleanOperators.Add("not between");
 			booleanOperators.Add("not exists");
@@ -80,6 +82,7 @@ namespace NHibernate.Hql {
 			negations.Add("#", "!#");
 			negations.Add("~", "!~");
 			negations.Add("like", "not like");
+			negations.Add("ilike", "not ilike");
 			negations.Add("is", "is not");
 			negations.Add("in", "not in");
 			negations.Add("exists", "not exists");
@@ -322,9 +325,28 @@ namespace NHibernate.Hql {
 			if (!StringHelper.OpenParen.Equals(lcToken)) AppendToken(q, StringHelper.OpenParen);
 		}
 		
-		
+		private void Preprocess(string token, QueryTranslator q) { 
+			// ugly hack for cases like "foo.bar.collection.elements" 
+			// (multi-part path expression ending in elements or indices) 
+			string[] tokens = StringHelper.Split(".", token, true); 
+			if ( tokens.Length>5 && 
+				( "elements".Equals( tokens[tokens.Length-1] ) || "indices".Equals( tokens[tokens.Length-1] ) ) ) { 
+				pathExpressionParser.Start(q); 
+				for( int i=0; i<tokens.Length-3; i++ ) { 
+					pathExpressionParser.Token( tokens[i], q); 
+				} 
+				pathExpressionParser.Token(null, q); 
+				pathExpressionParser.End(q); 
+				AddJoin( pathExpressionParser.WhereJoin, q ); 
+				pathExpressionParser.IgnoreInitialJoin(); 
+			} 
+		} 
+    
+
 		private void DoPathExpression(string token, QueryTranslator q) {
-			q.Unalias(token);
+
+			Preprocess( token, q );
+
 			Util.StringTokenizer tokens = new Util.StringTokenizer(token, ".", true);
 			pathExpressionParser.Start(q);
 			foreach(string tok in tokens) {
@@ -340,14 +362,17 @@ namespace NHibernate.Hql {
 				if (pathExpressionParser.IsExpectingCollectionIndex) {
 					expectingIndex++;
 				} else {
-					JoinFragment ojf = pathExpressionParser.WhereJoin;
-					JoinFragment fromClause = q.CreateJoinFragment();
-					fromClause.AddJoins( ojf.ToFromFragmentString, StringHelper.EmptyString );
-					q.AddJoin( pathExpressionParser.Name, fromClause );
-					AddToCurrentJoin( ojf.ToWhereFragmentString );
+					AddJoin( pathExpressionParser.WhereJoin, q );
 					AppendToken( q, pathExpressionParser.WhereColumn );
 				}
 			}
+		}
+
+		private void AddJoin( JoinFragment ojf, QueryTranslator q ) {
+			JoinFragment fromClause = q.CreateJoinFragment();
+			fromClause.AddJoins( ojf.ToFromFragmentString, StringHelper.EmptyString );
+			q.AddJoin( pathExpressionParser.Name, fromClause );
+			AddToCurrentJoin( ojf.ToWhereFragmentString );		
 		}
 		
 		private void DoToken(string token, QueryTranslator q) {
