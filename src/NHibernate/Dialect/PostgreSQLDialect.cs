@@ -82,6 +82,11 @@ namespace NHibernate.Dialect
 			get	{ return true; }
 		}
 
+		public override bool BindLimitParametersInReverseOrder               
+		{
+			get { return true; }
+		}
+
 		public override SqlString GetLimitString(SqlString querySqlString)
 		{
 			Parameter p1 = new Parameter();
