@@ -146,7 +146,9 @@ namespace NHibernate.Type
 		private static TypeClassification GetTypeClassification(string typeName) 
 		{
 			int indexOfOpenParen = typeName.IndexOf("(");
-			int indexOfComma = typeName.IndexOf(",", indexOfOpenParen);
+			int indexOfComma = 0;
+			if (indexOfOpenParen >= 0)
+				indexOfComma = typeName.IndexOf(",", indexOfOpenParen);
 
 			if(indexOfOpenParen >= 0) 
 			{
