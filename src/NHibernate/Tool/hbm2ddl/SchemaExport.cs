@@ -91,14 +91,14 @@ namespace NHibernate.Tool.hbm2ddl
 			IDictionary props = new Hashtable();
 			foreach(DictionaryEntry de in dialect.DefaultProperties) 
 			{
-				props.Add( de.Key, de.Value );
+				props[de.Key] = de.Value ;
 			}
 			
 			if (connectionProperties!=null) 
 			{
 				foreach(DictionaryEntry de in connectionProperties) 
 				{
-					props.Add( de.Key, de.Value );
+					props[de.Key] = de.Value;
 				}
 			}
 	
