@@ -12,25 +12,26 @@ namespace NHibernate.Test
 		[SetUp]
 		public void SetUp()
 		{
-			ExportSchema(new string[] {   "FooBar.hbm.xml",
-										  "Glarch.hbm.xml",
-										  "Fee.hbm.xml",
-										  "Qux.hbm.xml",
-										  "Fum.hbm.xml",
-										  "Baz.hbm.xml",
-										  //										  "Simple.hbm.xml",
-										  //										  "Fumm.hbm.xml",
-										  //										  "Fo.hbm.xml",
-										  //										  "One.hbm.xml",
-										  //										  "Many.hbm.xml",
-										  "Immutable.hbm.xml"
-										  //										  "Vetoer.hbm.xml",
-										  //										  "Holder.hbm.xml",
-										  //										  "Location.hbm.xml",
-										  //										  "Stuff.hbm.xml",
-										  //										  "Container.hbm.xml",
-										  //										  "XY.hbm.xml"});
-									  }, true);
+			ExportSchema(new string[] {   
+				"FooBar.hbm.xml",
+				"Glarch.hbm.xml",
+				"Fee.hbm.xml",
+				"Qux.hbm.xml",
+				"Fum.hbm.xml",
+				"Baz.hbm.xml",
+				"Simple.hbm.xml",
+				"Fumm.hbm.xml",
+				"Fo.hbm.xml",
+				"One.hbm.xml",
+				"Many.hbm.xml",
+				"Immutable.hbm.xml" ,
+				//"Vetoer.hbm.xml",
+				"Holder.hbm.xml",
+				"Location.hbm.xml",
+				"Stuff.hbm.xml",
+				//"Container.hbm.xml",
+				"XY.hbm.xml"
+				}, true);
 		}
 
 		[TearDown]

@@ -20,25 +20,25 @@ namespace NHibernate.Test
 		{
 
 			ExportSchema(new string[] {  
-										  "FooBar.hbm.xml",
-										  "Baz.hbm.xml",
-										  "Qux.hbm.xml",
-										  "Glarch.hbm.xml",
-										  "Fum.hbm.xml",
-										  "Fumm.hbm.xml",
-										  //"Fo.hbm.xml",
-										  //"One.hbm.xml",
-										  //"Many.hbm.xml",
-										  //"Immutable.hbm.xml",
-										  "Fee.hbm.xml"
-										  //"Vetoer.hbm.xml",
-										  //"Holder.hbm.xml",
-										  //"Location.hbm.xml",
-										  //"Stuff.hbm.xml",
-										  //"Container.hbm.xml",
-										  //"Simple.hbm.xml",
-										  //"Middle.hbm.xml"
-									  }, true);
+					"FooBar.hbm.xml",
+					"Baz.hbm.xml",
+					"Qux.hbm.xml",
+					"Glarch.hbm.xml",
+					"Fum.hbm.xml",
+					"Fumm.hbm.xml",
+					"Fo.hbm.xml",
+					"One.hbm.xml",
+					"Many.hbm.xml",
+					"Immutable.hbm.xml",
+					"Fee.hbm.xml",
+					//"Vetoer.hbm.xml",
+					"Holder.hbm.xml",
+					"Location.hbm.xml",
+					"Stuff.hbm.xml"
+					//"Container.hbm.xml",
+					//"Simple.hbm.xml",
+					//"Middle.hbm.xml"
+				}, true);
 		}
 
 
@@ -69,17 +69,17 @@ namespace NHibernate.Test
 //												  }
 //			else 
 //			{
-			id.date = new DateTime(2004, 4, 29, 9, 0, 0, 0);
+			id.Date = new DateTime(2004, 4, 29, 9, 0, 0, 0);
 //				 }
-			id.@string = str;
+			id.String = str;
 		
 			if (aCompositeQueryTest) 
 			{
-				id.@short = fumKeyShort++ ;
+				id.Short = fumKeyShort++ ;
 			}
 			else 
 			{
-				id.@short = (short)12 ;
+				id.Short = (short)12 ;
 			}
 		
 			return id;
