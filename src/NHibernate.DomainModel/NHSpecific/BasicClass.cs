@@ -3,8 +3,6 @@ using System.Collections;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
-
-	
 	/// <summary>
 	/// Summary description for BasicClass.
 	/// </summary>
@@ -21,7 +19,6 @@ namespace NHibernate.DomainModel.NHSpecific
 		private System.Globalization.CultureInfo _cultureInfoProperty;
 		private DateTime _dateTimeProperty;
 		private decimal _decimalProperty;
-		private double _doubleProperty;
 		private short _int16Property;
 		private int _int32Property;
 		private long _int64Property;
@@ -90,12 +87,6 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			get {return _decimalProperty;}
 			set {_decimalProperty = value;}
-		}
-
-		public double DoubleProperty 
-		{
-			get {return _doubleProperty;}
-			set {_doubleProperty = value;}
 		}
 
 		public short Int16Property 

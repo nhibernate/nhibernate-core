@@ -17,7 +17,6 @@
 		<property name="CultureInfoProperty" type="CultureInfo" column="cinfo_p"/>
 		<property name="DateTimeProperty" type="DateTime" column="dtm_p"/>
 		<property name="DecimalProperty" type="Decimal(19,5)" column="decm_p"/>
-		<property name="DoubleProperty" type="Double" column="dbl_p"/>
 		<property name="Int16Property" type="Int16" column="shrt_p" />
 		<property name="Int32Property" type="Int32" column="int_p"/>
 		<property name="Int64Property" type="Int64" column="lng_p"/>

@@ -45,7 +45,7 @@
 			<column name="float_" unique-key="abc" not-null="true"/>
 		</property>
 		<property name="X"/>
-		<property name="Double" column="double_" type="double"/>
+		<!--<property name="Double" column="double_" type="double"/>-->
 
 		<primitive-array name="Bytes" table="foobytes">
 			<key column="id"/>

@@ -170,21 +170,6 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index-1], bc[index]);
 
-			bc[index].DoubleProperty = 6458946;
-			s[index].Update(bc[index]);
-
-			t[index].Commit();
-			s[index].Close();
-
-			index++;
-
-			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
-			t[index] = s[index].BeginTransaction();
-
-			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
-			AssertPropertiesEqual(bc[index-1], bc[index]);
-
 			bc[index].Int16Property = Int16.MinValue;
 			s[index].Update(bc[index]);
 
@@ -834,7 +819,7 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual(expected.DateTimeProperty, actual.DateTimeProperty, "DateTimeProperty");
 			Assert.AreEqual(expected.DecimalProperty, actual.DecimalProperty, "DecimalProperty using Assert should be AreEqual");
 			Assertion.Assert("DecimalProperty", expected.DecimalProperty.Equals(actual.DecimalProperty));
-			Assert.AreEqual(expected.DoubleProperty, actual.DoubleProperty, 0, "DoubleProperty");
+//			Assert.AreEqual(expected.DoubleProperty, actual.DoubleProperty, 0, "DoubleProperty");
 			Assert.AreEqual(expected.Int16Property, actual.Int16Property, "Int16Property");
 			Assert.AreEqual(expected.Int32Property, actual.Int32Property, "Int32Property");
 			Assert.AreEqual(expected.Int64Property, actual.Int64Property, "Int64Property");
@@ -868,7 +853,6 @@ namespace NHibernate.Test.NHSpecificTest
 			basicClass.CultureInfoProperty = System.Globalization.CultureInfo.CurrentCulture;
 			basicClass.DateTimeProperty = DateTime.Parse("2003-12-01 10:45:21 AM");
 			basicClass.DecimalProperty = 5.64351M;
-			basicClass.DoubleProperty = 456343;
 			basicClass.Int16Property = Int16.MaxValue;
 			basicClass.Int32Property = Int32.MaxValue;
 			basicClass.Int64Property = Int64.MaxValue;

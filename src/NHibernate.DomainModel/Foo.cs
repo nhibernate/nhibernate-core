@@ -32,7 +32,7 @@ namespace NHibernate.DomainModel
 		private int _integer;
 		private float _float;
 		private int _x;
-		private double _double;
+//		private double _double;
 		private DateTime _date;
 		private DateTime _timestamp;
 		private bool _boolean;
@@ -112,14 +112,14 @@ namespace NHibernate.DomainModel
 			set { _x = value; }
 		}
 	
-		/// <summary>
-		/// Get/set for double
-		/// </summary>
-		public double Double
-		{
-			get { return _double; }
-			set { _double = value; }
-		}
+//		/// <summary>
+//		/// Get/set for double
+//		/// </summary>
+//		public double Double
+//		{
+//			get { return _double; }
+//			set { _double = value; }
+//		}
 	
 		/// <summary>
 		/// Get/set for date
@@ -336,7 +336,7 @@ namespace NHibernate.DomainModel
 			_short = 42;
 			_float = 6666.66f;
 			//_double = new Double( 1.33e-69 );  // this double is too big for the sap db jdbc driver
-			_double = 1.12e-36;
+//			_double = 1.12e-36;
 			_boolean = true;
 			_byte = 127;
 			_int = 2;
@@ -380,12 +380,13 @@ namespace NHibernate.DomainModel
 					if ( _bytes[i] != other.Bytes[i] ) return false;
 				}
 			}
-		
+
+
 			return ( _bool == other.Bool )
 				&& ( ( _boolean == other.Boolean ) || ( _boolean.Equals(other.Boolean) ) )
 				&& ( ( _byte == other.Byte ) || ( _byte.Equals(other.Byte) ) )
 				//&& ( ( this._date == other._date ) || ( this._date.getDate() == other._date.getDate() && this._date.getMonth() == other._date.getMonth() && this._date.getYear() == other._date.getYear() ) )
-				&& ( ( _double == other.Double ) || ( _double.Equals(other.Double) ) )
+//				&& ( ( _double == other.Double ) || ( _double.Equals(other.Double) ) )
 				&& ( ( _float == other.Float ) || ( _float.Equals(other.Float) ) )
 				&& ( _int == other.Int )
 				&& ( ( _integer == other.Integer ) || ( _integer.Equals(other.Integer) ) )

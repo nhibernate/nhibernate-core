@@ -231,6 +231,29 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ForumQuestions\T1128288\AgentManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ForumQuestions\T1128288\AgentManager.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ForumQuestions\T1128288\CustomerRep.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ForumQuestions\T1128288\CustomerRep.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ForumQuestions\T1128288\DDLFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QuickStart\User.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

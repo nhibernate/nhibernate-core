@@ -243,12 +243,12 @@ namespace NHibernate.Test
 			while(reader.Read()) 
 			{
 				//SELECT s.id_, s.name, s.address, s.count_, s.date_, s.other
-				keys[j] = (long)reader[0];
+				keys[j] = Convert.ToInt64( reader[0] );
 				simplesFromReader[j] = new Simple();
 				simplesFromReader[j].Name = (string)reader[1];
 				simplesFromReader[j].Address = (string)reader[2];
-				simplesFromReader[j].Count = (int)reader[3];
-				simplesFromReader[j].Date = (DateTime)reader[4];
+				simplesFromReader[j].Count = Convert.ToInt32( reader[3] );
+				simplesFromReader[j].Date = Convert.ToDateTime( reader[4] );
 				
 				if(reader.IsDBNull(5)==false) 
 				{

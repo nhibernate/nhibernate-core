@@ -316,6 +316,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NHSpecificTest\BasicDoubleFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHSpecificTest\BasicObjectFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
