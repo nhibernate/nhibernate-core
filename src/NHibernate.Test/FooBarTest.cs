@@ -46,7 +46,7 @@ namespace NHibernate.Test
 			baz.FooBag=fooBag;
 			s.Save(baz);
 			fooBag = baz.FooBag;
-			s.Find("from Baz baz left join fetch fooBag");
+			s.Find("from Baz baz left join fetch baz.FooBag");
 			Assert.IsTrue( NHibernate.IsInitialized(fooBag) );
 			Assert.IsTrue( fooBag==baz.FooBag );
 			Assert.IsTrue( baz.FooBag.Count==2 );
@@ -106,7 +106,7 @@ namespace NHibernate.Test
 
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
-			result = s.CreateQuery("from Baz baz left join fetch sortablez order by baz.Name asc")
+			result = s.CreateQuery("from Baz baz left join fetch baz.Sortablez order by baz.Name asc")
 				.List();
 			b = (Baz) result[0];
 			Assert.IsTrue( b.Sortablez.Count==3 );
@@ -156,7 +156,7 @@ namespace NHibernate.Test
 				list.Add(fee);
 			}
 			baz.Fees = list;
-			list = s.Find("from Foo foo, Baz baz left join fetch fees");
+			list = s.Find("from Foo foo, Baz baz left join fetch baz.Fees");
 			Assert.IsTrue( NHibernate.IsInitialized( ( (Baz) ( (object[]) list[0] )[1] ).Fees ) );
 			s.Delete(foo);
 			s.Delete(foo2);
