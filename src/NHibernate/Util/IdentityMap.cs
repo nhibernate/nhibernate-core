@@ -154,7 +154,8 @@ namespace NHibernate.Util {
 		/// </summary>
 		public ICollection Keys {
 			//TODO: fix this because it will return the IdentityKeys, not 
-			// the Keys - maybe?????
+			// the Keys - probably should be an IList of the Keys encapsulated
+			// by the IdentityKeys
 			get { return map.Keys; }
 		}
 
@@ -173,7 +174,6 @@ namespace NHibernate.Util {
 			get { 
 				IdentityKey identityKey = new IdentityMap.IdentityKey(key);
 				return map[identityKey];
-			
 			}
 			set {
 				IdentityKey identityKey = new IdentityMap.IdentityKey(key);
