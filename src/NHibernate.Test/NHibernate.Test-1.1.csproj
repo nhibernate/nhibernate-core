@@ -222,6 +222,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "CacheTest\CacheFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "DialectTest\DialectFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
