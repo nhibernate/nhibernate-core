@@ -150,9 +150,9 @@ namespace NHibernate.Impl
 		/// <param name="ignore">A boolean indicating whether to ignore the collection during current (or next) flush.</param>
 		public CollectionEntry( CollectionPersister loadedPersister, object loadedID, bool ignore )
 		{
-			// dirty is initialized to false by runtime
+			// dirty & initialized are set to false by the runtime
 			//this.dirty = false;
-			this.initialized = false;
+			//this.initialized = false;
 			this.loadedKey = loadedID;
 			SetLoadedPersister( loadedPersister );
 			this.ignore = ignore;

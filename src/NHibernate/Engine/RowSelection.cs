@@ -11,7 +11,8 @@ namespace NHibernate.Engine
 		/// </summary>
 		public static readonly int NoValue = -1;
 
-		private int firstRow = 0;
+		// framework defaults value to 0
+		private int firstRow;
 		private int maxRows = RowSelection.NoValue;
 		private int timeout = RowSelection.NoValue;
 

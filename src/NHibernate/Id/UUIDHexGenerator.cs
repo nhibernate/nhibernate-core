@@ -54,7 +54,7 @@ namespace NHibernate.Id
 		private static readonly ILog log = LogManager.GetLogger( typeof( UUIDHexGenerator ) );
 
 		private string format = FormatWithDigitsOnly;
-		private string sep = null;
+		private string sep;
 
 		//"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 		private const string FormatWithDigitsOnly = "N";
