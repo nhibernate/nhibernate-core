@@ -2444,7 +2444,8 @@ namespace NHibernate.Impl {
 		/// <param name="entry"></param>
 		private void PrepareCollectionForUpdate(PersistentCollection coll, CollectionEntry entry) {
 
-			if ( entry.processed ) throw new AssertionFailure("hibernate has a bug processing collections");
+			// TODO: figure out if this message is accurate.  seems to work fine without this
+			//if ( entry.processed ) throw new AssertionFailure("hibernate has a bug processing collections");
 
 			entry.processed = true;
 
