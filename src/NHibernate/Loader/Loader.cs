@@ -82,7 +82,7 @@ namespace NHibernate.Loader {
 		/// <param name="lockModes"></param>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		protected virtual string ApplyLocks(string sql, IDictionary lockModes, Dialect.Dialect dialect) {
+		protected virtual SqlString ApplyLocks(SqlString sql, IDictionary lockModes, Dialect.Dialect dialect) {
 			return sql;
 		}
 
