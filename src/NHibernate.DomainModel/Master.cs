@@ -43,7 +43,11 @@ namespace NHibernate.DomainModel
 		public Iesi.Collections.ISet Details
 		{
 			get { return _details; }
-			set { _details = value; }
+			set 
+			{ 
+				System.Diagnostics.Trace.WriteLine( "Details assigned" );
+				_details = value; 
+			}
 		}
 		
 		public Iesi.Collections.ISet MoreDetails

@@ -17,7 +17,6 @@ namespace NHibernate.DomainModel
 	/// </summary>
 	public class CustomPersister : IClassPersister
 	{
-
 		private static readonly Hashtable Instances = new Hashtable();
 		private static readonly IIdentifierGenerator Generator = new CounterGenerator();
 
@@ -59,6 +58,11 @@ namespace NHibernate.DomainModel
 			}
 		}
 
+		public int[] FindModified(object[] x, object[] y, object owner, ISessionImplementor session)
+		{
+			return FindDirty( x, y, owner, session );
+		}
+
 		public bool[] PropertyUpdateability
 		{
 			get { return Mutability; }
@@ -70,6 +74,11 @@ namespace NHibernate.DomainModel
 		}
 
 		public bool IsBatchLoadable
+		{
+			get { return false; }
+		}
+
+		public bool IsCacheInvalidationRequired
 		{
 			get { return false; }
 		}
@@ -228,7 +237,7 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
-		public void Update(object id, object[] fields, int[] dirtyFields, object oldVersion, object obj, ISessionImplementor session)
+		public void Update(object id, object[] fields, int[] dirtyFields, object[] oldFields, object oldVersion, object obj, ISessionImplementor session)
 		{
 			Instances[id] = ( (Custom)obj).Clone();
 		}
@@ -298,11 +307,41 @@ namespace NHibernate.DomainModel
 			get { return null; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="version"></param>
+		/// <param name="obj"></param>
+		/// <param name="lockMode"></param>
+		/// <param name="session"></param>
 		public void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session)
 		{
 			throw new NotSupportedException("CustomPersister.Lock is not implemented");
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="version"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object[] GetCurrentPersistentState( object id, object version, ISessionImplementor session )
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object CurrentVersion( object id, ISessionImplementor session )
+		{
+			return this;
+		}
 		#endregion
 	}
 }
