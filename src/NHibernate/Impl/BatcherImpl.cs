@@ -100,7 +100,19 @@ namespace NHibernate.Impl
 					log.Info("Preparing " + command.CommandText);
 				}
 
-				command.Connection = session.Connection;
+				if( command.Connection!=null ) 
+				{
+					if( command.Connection!=session.Connection ) 
+					{
+						throw new AssertionFailure("The IDbCommand for " + command.CommandText + " has a different connection " +
+												"than the Connection the Session is providing.");
+					}
+				}
+				else 
+				{
+					command.Connection = session.Connection;
+				}
+
 				if( session.Transaction!=null ) 
 				{
 					session.Transaction.Enlist( command );
