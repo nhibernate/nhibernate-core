@@ -26,6 +26,11 @@ namespace NHibernate {
 		public static readonly NullableType Binary = new BinaryType(); 
 		
 		/// <summary>
+		/// NHibernate binary blob type
+		/// </summary>
+		public static readonly NullableType BinaryBlob = new BinaryBlobType();
+
+		/// <summary>
 		/// NHibernate boolean type
 		/// </summary>
 		public static readonly NullableType Boolean = new BooleanType(); 
@@ -41,7 +46,7 @@ namespace NHibernate {
 		public static readonly NullableType Character = new CharType(); 
 		
 		/// <summary>
-		/// NHibernate CultureInfo type
+		/// NHibernate clob type
 		/// </summary>
 		public static readonly NullableType CultureInfo = new CultureInfoType(); 
 		
@@ -94,6 +99,11 @@ namespace NHibernate {
 		/// NHibernate String type
 		/// </summary>
 		public static readonly NullableType String = new StringType(); 
+		
+		/// <summary>
+		/// NHibernate string clob type
+		/// </summary>
+		public static readonly NullableType StringClob = new StringClobType(); 
 		
 		/// <summary>
 		/// NHibernate Time type

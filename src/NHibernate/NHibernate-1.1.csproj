@@ -1558,6 +1558,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlTypes\BinaryBlobSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlTypes\BinarySqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1633,6 +1638,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlTypes\StringClobSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlTypes\StringFixedLengthSqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1694,6 +1704,11 @@
                 />
                 <File
                     RelPath = "Type\BagType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\BinaryBlobType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1923,6 +1938,11 @@
                 />
                 <File
                     RelPath = "Type\SortedSetType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\StringClobType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
