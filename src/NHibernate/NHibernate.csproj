@@ -731,12 +731,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Impl\FilterImpl.cs"
+                    RelPath = "Impl\EnumerableImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Impl\IteratorImpl.cs"
+                    RelPath = "Impl\FilterImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1027,41 +1027,6 @@
                 />
                 <File
                     RelPath = "Persister\NormalizedEntityPersister.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Portable\IIterator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Portable\ISet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Portable\ISetTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Portable\LinkedList.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Portable\ListSet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Portable\StringTokenizer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Portable\StringTokenizerTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

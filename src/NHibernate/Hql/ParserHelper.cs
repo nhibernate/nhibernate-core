@@ -1,6 +1,6 @@
 using System;
 using NHibernate;
-using NHibernate.Portable;
+using NHibernate.Util;
 
 namespace NHibernate.Hql {
 	public class ParserHelper {
@@ -21,8 +21,8 @@ namespace NHibernate.Hql {
 		public static void Parse(IParser p, string text, string seperators, QueryTranslator q) {
 			StringTokenizer tokens = new StringTokenizer(text, seperators, true);
 			p.Start(q);
-			while (tokens.HasMoreTokens()) {
-				p.Token(tokens.NextToken(), q);
+			foreach(string token in tokens) {
+				p.Token(token, q);
 			}
 			p.End(q);
 		}

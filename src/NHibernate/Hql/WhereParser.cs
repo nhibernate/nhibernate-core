@@ -136,10 +136,12 @@ namespace NHibernate.Hql {
 		// The following variables are stacks that keep information about each subexpression
 		// in the list of nested subexpressions we are currently processing.
 		
-		private Portable.LinkedList nots = new Portable.LinkedList(); //were an odd or even number of NOTs encountered
-		private Portable.LinkedList joins = new Portable.LinkedList(); //the join string built up by compound paths inside this expression
-		private Portable.LinkedList booleanTests = new Portable.LinkedList();//a flag indicating if the subexpression is known to be boolean		
+		private ArrayList nots = new ArrayList(); //were an odd or even number of NOTs encountered
+		private ArrayList joins = new ArrayList(); //the join string built up by compound paths inside this expression
+		private ArrayList booleanTests = new ArrayList();//a flag indicating if the subexpression is known to be boolean		
 		
+
+
 		private string GetElementName(PathExpressionParser.CollectionElement element, QueryTranslator q) {
 			string name;
 			if (element.IsOneToMany) {
@@ -242,12 +244,12 @@ namespace NHibernate.Hql {
 			//take note when this is a boolean expression
 			
 			if (booleanOperators.Contains(lcToken)) {
-				booleanTests.RemoveLast();
-				booleanTests.AddLast(true);
+				booleanTests.RemoveAt(booleanTests.Count-1);
+				booleanTests.Add(true);
 			}
 			
 			if (lcToken.Equals("not")) {
-				nots.AddLast(!((System.Boolean) nots.RemoveLast()));
+				nots[nots.Count-1] = !((bool) nots[nots.Count-1]);
 				negated = !negated;
 				return ; //NOTE: early return
 			}
@@ -284,33 +286,39 @@ namespace NHibernate.Hql {
 		}
 		
 		private void CloseExpression(QueryTranslator q, string lcToken) {
-			if (((bool) booleanTests.RemoveLast())) {
+			bool lastBoolTest = (bool) booleanTests[booleanTests.Count-1];
+			booleanTests.RemoveAt(booleanTests.Count-1);
+			if (lastBoolTest) {
 				//it was a boolean expression
 				if (booleanTests.Count > 0) {
 					// the next one up must also be
-					booleanTests.RemoveLast();
-					booleanTests.AddLast(true);
+					booleanTests[booleanTests.Count-1] = true;
 				}
 				
 				// Add any joins
-				AppendToken(q, ((StringBuilder) joins.RemoveLast()).ToString());
+				StringBuilder lastJoin = (StringBuilder) joins[joins.Count-1];
+				joins.RemoveAt(joins.Count-1);
+				AppendToken(q, lastJoin.ToString());
 				
 				
 			} else {
 				//unaryCounts.removeLast(); //check that its zero? (As an assertion)
-				StringBuilder join = (StringBuilder) joins.RemoveLast();
-				((StringBuilder) joins.GetLast()).Append(join.ToString());
+				StringBuilder join = (StringBuilder) joins[joins.Count-1];
+				joins.RemoveAt(joins.Count-1);
+				((StringBuilder) joins[joins.Count-1]).Append(join.ToString());
 			}
 			
-			if (((bool) nots.RemoveLast())) negated = !negated;
+			bool lastNots = (bool) nots[nots.Count-1];
+			nots.RemoveAt(nots.Count-1);
+			if (lastNots) negated = !negated;
 			
 			if (!StringHelper.ClosedParen.Equals(lcToken)) AppendToken(q, StringHelper.ClosedParen);
 		}
 		
 		private void OpenExpression(QueryTranslator q, string lcToken) {
-			nots.AddLast(false);
-			booleanTests.AddLast(false);
-			joins.AddLast(new StringBuilder());
+			nots.Add(false);
+			booleanTests.Add(false);
+			joins.Add(new StringBuilder());
 			if (!StringHelper.OpenParen.Equals(lcToken)) AppendToken(q, StringHelper.OpenParen);
 		}
 		
@@ -385,7 +393,7 @@ namespace NHibernate.Hql {
 		}
 		
 		private void  AddToCurrentJoin(string sql) {
-			((StringBuilder) joins.GetLast()).Append(sql);
+			((StringBuilder) joins[joins.Count-1]).Append(sql);
 		}
 
 		private void AddToCurrentJoin(PathExpressionParser.CollectionElement ce) {

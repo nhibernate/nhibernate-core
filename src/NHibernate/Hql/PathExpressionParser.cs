@@ -7,7 +7,6 @@ using NHibernate.Collection;
 using NHibernate.Persister;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Portable;
 using NHibernate.Sql;
 
 namespace NHibernate.Hql {
@@ -256,7 +255,7 @@ namespace NHibernate.Hql {
 					elem.IsOneToMany = memberPersister.IsOneToMany;
 					elem.Alias = collectionName;
 					elem.Join = join;
-					collectionElements.AddLast(elem);
+					collectionElements.Add(elem); //addlast
 					SetExpectingCollectionIndex();
 					
 					q.AddCollection(collectionName, collectionRole);
@@ -285,14 +284,17 @@ namespace NHibernate.Hql {
 		}
 
 		private bool expectingCollectionIndex;
-		private LinkedList collectionElements = new LinkedList();
+		private ArrayList collectionElements = new ArrayList();
 
 		public CollectionElement LastCollectionElement() {
-			return (CollectionElement) collectionElements.RemoveLast();
+			CollectionElement ce = (CollectionElement) collectionElements[collectionElements.Count-1];
+			collectionElements.RemoveAt(collectionElements.Count-1);
+			return ce; //remove last
 		}
 		public string LastCollectionElementIndexValue {
 			set {
-				((CollectionElement) collectionElements.GetLast()).IndexValue.Append(value);
+
+				((CollectionElement) collectionElements[collectionElements.Count-1]).IndexValue.Append(value); //getlast
 			}
 		}
 		public bool IsExpectingCollectionIndex {

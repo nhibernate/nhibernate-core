@@ -12,7 +12,6 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister;
-using NHibernate.Portable;
 using NHibernate.Sql;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -647,8 +646,7 @@ namespace NHibernate.Hql {
 				SetMaxRows(st, selection);
 				IDataReader rs = st.ExecuteReader();
 				Advance(rs, selection, session);
-				//TODO: Return enumerable
-				return null;
+				return new EnumerableImpl(rs, session, ReturnTypes, ScalarColumnNames );
 			} catch (Exception e) {
 				ClosePreparedStatement(st, selection, session);
 				throw e;
