@@ -516,17 +516,22 @@ namespace NHibernate.Impl
 
 		public IClassPersister GetPersister(string className) 
 		{
-			//(IClassPersister) was replaced by as
+			return GetPersister( className, true );
+		}
+
+		public IClassPersister GetPersister(string className, bool throwException) 
+		{
 			IClassPersister result = classPersistersByName[className] as IClassPersister;
-			//TODO: not throwing this exception results in a 50% perf gain with hql - not sure
-			// where else this code is being used and expecting an exception...
-//			if ( result==null) throw new MappingException( "No persister for: " + className );
+			
+			if ( result==null && throwException ) 
+			{
+				throw new MappingException( "No persister for: " + className );
+			}
 			return result;
 		}
 
 		public IClassPersister GetPersister(System.Type theClass) 
 		{
-			//IClassPersister result = (IClassPersister) classPersisters[theClass];
 			IClassPersister result = classPersisters[theClass] as IClassPersister;
 			if ( result==null) throw new MappingException( "No persisters for: " + theClass.FullName );
 			return result;
@@ -534,7 +539,6 @@ namespace NHibernate.Impl
 
 		public CollectionPersister GetCollectionPersister(string role) 
 		{
-			//CollectionPersister result = (CollectionPersister) collectionPersisters[role];
 			CollectionPersister result = collectionPersisters[role] as CollectionPersister;
 			if ( result==null ) throw new MappingException( "No persisters for collection role: " + role );
 			return result;
