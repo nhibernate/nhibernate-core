@@ -420,7 +420,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public ISession OpenSession( IDbConnection connection, IInterceptor interceptor )
 		{
-			//TODO: figure out why autoClose was set to false - diff in JDBC vs ADO.NET???
+			// specify false for autoClose because the user has passed in an IDbConnection
+			// and they assume responsibility for it.
 			return OpenSession( connection, false, long.MinValue, interceptor );
 		}
 
@@ -432,6 +433,8 @@ namespace NHibernate.Impl
 		public ISession OpenSession( IInterceptor interceptor )
 		{
 			long timestamp = Timestamper.Next();
+			// specify true for autoClose because NHibernate has responsibility for
+			// the IDbConnection.
 			return OpenSession( null, true, timestamp, interceptor );
 		}
 
