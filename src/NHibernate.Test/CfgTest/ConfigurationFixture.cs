@@ -12,19 +12,6 @@ namespace NHibernate.Test.CfgTest
 	[TestFixture]
 	public class ConfigurationFixture
 	{
-		
-		[SetUp]
-		public void SetUp() 
-		{
-			System.IO.File.Copy("..\\..\\hibernate.cfg.xml", "hibernate.cfg.xml", true);
-		}
-
-		[TearDown]
-		public void TearDown() 
-		{
-			System.IO.File.Delete("hibernate.cfg.xml");
-		}
-		
 		/// <summary>
 		/// Verify that NHibernate can read the configuration from a hibernate.cfg.xml
 		/// file and that the values override what is in the app.config.
