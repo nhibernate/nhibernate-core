@@ -88,16 +88,17 @@ namespace NHibernate.Dialect
 		/// <returns>A new SqlString with <c>; SELECT SCOPE_IDENTITY()</c> at the end.</returns>
 		public override SqlString AddIdentitySelectToInsert(SqlString insertSql)
 		{
-			return insertSql.Append( "; SELECT SCOPE_IDENTITY()" );
+			return insertSql.Append( "; " + IdentitySelectString );
 		}
 
 		public override bool SupportsIdentityColumns 
 		{
 			get { return true; }
 		}
+
 		public override string IdentitySelectString 
 		{
-			get { return "select @@identity"; }
+			get { return "select SCOPE_IDENTITY()"; }
 		}
 		public override string IdentityColumnString 
 		{

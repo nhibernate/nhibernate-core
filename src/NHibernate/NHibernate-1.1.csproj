@@ -480,6 +480,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\MsSql7Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\MySQLDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
