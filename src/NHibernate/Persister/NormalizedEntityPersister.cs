@@ -943,7 +943,6 @@ namespace NHibernate.Persister
 				}
 
 				IDbCommand st = session.Batcher.PrepareCommand( (SqlString)lockers[lockMode] );
-
 				try 
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
@@ -1206,7 +1205,6 @@ namespace NHibernate.Persister
 					// Do the key. The key is immutable so we can use the _current_ object state
 					IdentifierType.NullSafeSet( statements[i], id, 0, session );
 
-					// TODO: see if we want to synch this design up with EntityPersister, inconsistent right now...
 					Check( statements[i].ExecuteNonQuery(), id );
 				}
 			} 
