@@ -1093,6 +1093,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Mapping\IdentifierBag.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Mapping\IdentifierCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Mapping\Index.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
