@@ -1,5 +1,8 @@
 using System;
+using System.Data;
 using System.Text;
+
+using NHibernate.Driver;
 
 namespace NHibernate.SqlCommand 
 {
@@ -48,7 +51,44 @@ namespace NHibernate.SqlCommand
 			return new SqlString(temp);
 		}
 
-		#region object Members
+		/// <summary>
+		/// Builds an IDbCommand using the Driver to help format the Sql and Parameters
+		/// </summary>
+		/// <param name="driver">The Driver to use to create the Sql and Parameters.</param>
+		/// <returns>An IDbCommand with its CommandText and ParametersCollection populated.</returns>
+		public IDbCommand BuildCommand(IDriver driver) 
+		{
+			int paramIndex = 0;
+			IDbCommand cmd = driver.CreateCommand();
+
+			StringBuilder builder = new StringBuilder(sqlParts.Length * 15);
+			for(int i = 0; i < sqlParts.Length; i++) 
+			{
+				object part = sqlParts[i];
+				Parameter parameter = part as Parameter;
+				
+				if(parameter!=null) 
+				{
+					string paramName = "p" + paramIndex;
+					builder.Append( parameter.GetSqlName(driver, paramName) );
+					IDbDataParameter dbParam = parameter.GetIDbDataParameter(cmd, driver, paramName);
+					cmd.Parameters.Add(dbParam);
+					
+					paramIndex++;
+				}
+				else 
+				{
+					builder.Append((string)part);
+				}
+			}
+
+			cmd.CommandText = builder.ToString();
+
+			return cmd;
+		}
+
+
+		#region System.Object Members
 		
 		
 		public override bool Equals(object obj)

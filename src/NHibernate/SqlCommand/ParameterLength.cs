@@ -1,46 +1,40 @@
 using System;
 using System.Data;
 
-using NHibernate.Connection;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.SqlCommand {
-	
+namespace NHibernate.SqlCommand 
+{	
 	/// <summary>
 	/// Extension to the Parameter class that supports Parameters with
 	/// a Length
 	/// </summary>
-	public class ParameterLength : Parameter {
+	public class ParameterLength : Parameter
+	{
 		private int length;
 
-		public int Length {
+		public int Length
+		{
 			get {return length;}
 			set {length = value;}
 		}
 
-		[Obsolete("This does not handle quoted identifiers - going to use a number based name.")]
-		public override IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider) 
+		public override IDbDataParameter GetIDbDataParameter(IDbCommand command, IDriver driver, string name) 
 		{
-			IDbDataParameter param = base.GetIDbDataParameter (command, provider);
-			param.Size = length;
-
-			return param;
-		}
-
-		public override IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider, string name) 
-		{
-			IDbDataParameter param = base.GetIDbDataParameter (command, provider, name);
+			IDbDataParameter param = base.GetIDbDataParameter (command, driver, name);
 			param.Size = length;
 
 			return param;
 		}
 		
-		#region object Members
+		#region System.Object Members
 		
 		public override bool Equals(object obj) 
 		{
-			if(base.Equals(obj)) {
+			if(base.Equals(obj)) 
+			{
 				ParameterLength rhs;
 			
 				// Step	2: Instance of check
@@ -50,7 +44,8 @@ namespace NHibernate.SqlCommand {
 				//Step 3: Check each important field
 				return this.Length.Equals(rhs.Length);
 			}
-			else {
+			else 
+			{
 				return false;
 			}
 		}

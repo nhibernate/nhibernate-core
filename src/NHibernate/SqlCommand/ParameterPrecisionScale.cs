@@ -1,54 +1,48 @@
 using System;
 using System.Data;
 
-using NHibernate.Connection;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.SqlCommand {
-	
+namespace NHibernate.SqlCommand 
+{	
 	/// <summary>
 	/// Extension to the Parameter class that supports Parameters with
 	/// a Precision and a Scale
 	/// </summary>
-	public class ParameterPrecisionScale : Parameter {
+	public class ParameterPrecisionScale : Parameter 
+	{
 		private byte precision;
 		private byte scale;
 
-		public byte Precision {
+		public byte Precision 
+		{
 			get {return precision;}
 			set {precision = value;}
 		}
 
-		public byte Scale {
+		public byte Scale 
+		{
 			get {return scale;}
 			set {scale = value;}
 		}
 
-		[Obsolete("This does not handle quoted identifiers - going to use a number based name.")]
-		public override IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider) 
+		public override IDbDataParameter GetIDbDataParameter(IDbCommand command, IDriver driver, string name) 
 		{
-			IDbDataParameter param = base.GetIDbDataParameter (command, provider);
+			IDbDataParameter param = base.GetIDbDataParameter (command, driver, name);
 			param.Precision = precision;
 			param.Scale = scale;
 
 			return param;
 		}
 
-		public override IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider, string name) 
-		{
-			IDbDataParameter param = base.GetIDbDataParameter (command, provider, name);
-			param.Precision = precision;
-			param.Scale = scale;
-
-			return param;
-		}
-
-		#region object Members
+		#region System.Object Members
 		
 		public override bool Equals(object obj) 
 		{
-			if(base.Equals(obj)) {
+			if(base.Equals(obj)) 
+			{
 				ParameterPrecisionScale rhs;
 			
 				// Step	2: Instance of check
@@ -59,7 +53,8 @@ namespace NHibernate.SqlCommand {
 				return this.Precision==rhs.Precision
 					&& this.Scale==rhs.Scale;
 			}
-			else {
+			else 
+			{
 				return false;
 			}
 		}
