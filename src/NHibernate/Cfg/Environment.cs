@@ -35,28 +35,21 @@ namespace NHibernate.Cfg {
 		public const string ConnectionProvider = "hibernate.connection.provider";
 		public const string ConnectionString = "hibernate.connection.connection_string";
 		public const string Isolation = "hibernate.connection.isolation";
-
 		public const string StatementCacheSize = "hibernate.statement_cache.size";
-
 		public const string SessionFactoryName = "hibernate.session_factory_name";
-
 		public const string Dialect = "hibernate.dialect";
-
 		public const string DefaultSchema = "hibernate.default_schema";
-
 		public const string ShowSql = "hibernate.show_sql";
-
 		public const string OuterJoin = "hibernate.use_outer_join";
-
 		public const string OutputStylesheet = "hibernate.xml.output_stylesheet";
-
 		public const string TransactionStrategy = "hibernate.transaction.factory_class";
 		public const string TransactionManagerStrategy = "hibernate.transaction.manager_lookup_class";
-
 		public const string QuerySubstitutions = "hibernate.query.substitutions";
 		public const string QueryImports = "hibernate.query.imports";
 
 		static Environment() {
+			log4net.Config.DOMConfigurator.Configure();
+
 			NameValueCollection props = System.Configuration.ConfigurationSettings.GetConfig("nhibernate") as NameValueCollection;
 			if (props==null) throw new HibernateException("no nhibernate settings available");
 			

@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Xml.Schema;
+
 using System.Reflection;
 using System.Collections;
 using NHibernate.Id;
@@ -38,6 +40,11 @@ namespace NHibernate.Cfg {
 		private IInterceptor interceptor = EmptyInterceptor;
 		private IDictionary properties = Environment.Properties;
 
+		private XmlSchema mappingSchema;
+
+		public readonly static string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.0";
+		private readonly static string MappingSchemaResource = "NHibernate.nhibernate-mapping-2.0.xsd";
+
 		protected void Reset() {
 			classes = new Hashtable();
 			collections = new Hashtable();
@@ -50,6 +57,8 @@ namespace NHibernate.Cfg {
 
 		public Configuration() {
 			Reset();
+			mappingSchema = XmlSchema.Read(Assembly.GetExecutingAssembly().GetManifestResourceStream(MappingSchemaResource), null);
+
 		}
 
 		/// <summary>
@@ -94,13 +103,20 @@ namespace NHibernate.Cfg {
 			return (Mapping.Collection) collections[role];
 		}
 
-		public Configuration AddFile(string xmlFile) {
+		/// <summary>
+		/// Adds the Mappings contained in the file specified.
+		/// </summary>
+		/// <param name="xmlFile">The name of the file (url or file system) that contains the Xml.</param>
+		/// <returns>This Configuration object.</returns>
+		public Configuration AddXmlFile(string xmlFile) {
 			log.Debug("Mapping file: " + xmlFile);
 			try {
-				XmlDocument doc = new XmlDocument();
-				doc.Load(xmlFile);
-				Add ( doc );
-			} catch (Exception e) {
+				AddXmlReader(new XmlTextReader(xmlFile));
+//				XmlDocument doc = new XmlDocument();
+//				doc.Load(xmlFile);
+//				Add ( doc );
+			} 
+			catch (Exception e) {
 				log.Error("Could not configure datastore from file: " + xmlFile, e);
 				throw new MappingException(e);
 			}
@@ -108,38 +124,57 @@ namespace NHibernate.Cfg {
 		}
 
 		/// <summary>
-		/// Read mappings from a <c>String</c>
+		/// Adds the Mappings from a <c>String</c>
 		/// </summary>
-		public Configuration AddXML(string xml) {
+		/// <param name="xml">A string that contains the Mappings for the Xml</param>
+		/// <returns>This Configuration object.</returns>
+		public Configuration AddXmlString(string xml) {
 			if ( log.IsDebugEnabled ) log.Debug("Mapping XML:\n" + xml);
 			try {
-				XmlDocument doc = new XmlDocument();
-				doc.LoadXml(xml);
-				Add ( doc );
-			} catch (Exception e) {
+				
+				// make a StringReader for the string passed in - the StringReader
+				// inherits from TextReader.  We can use the XmlTextReader.ctor that
+				// takes the TextReader to build from a string...
+				AddXmlReader(new XmlTextReader(new StringReader(xml)));
+
+//				XmlDocument doc = new XmlDocument();
+//				doc.LoadXml(xml);
+//				Add ( doc );
+			} 
+			catch (Exception e) {
 				log.Error("Could not configure datastore from XML", e);
 			}
 			return this;
 		}
 
 		/// <summary>
-		/// Read mappings from an XML Document
+		/// Adds the Mappings in the XML Document
 		/// </summary>
+		/// <param name="doc">A loaded XmlDocument that contains the Mappings.</param>
+		/// <returns>This Configuration object.</returns>
 		public Configuration AddDocument(XmlDocument doc) {
 			if ( log.IsDebugEnabled ) log.Debug("Mapping XML:\n" + doc.OuterXml);
 			try {
-				Add ( doc );
-			} catch (Exception e) {
+				AddXmlReader(new XmlNodeReader(doc));
+//				Add ( doc );
+			} 
+			catch (Exception e) {
 				log.Error("Could not configure datastore from XML document", e);
 				throw new MappingException(e);
 			}
 			return this;
 		}
 
+		/// <summary>
+		/// Takes the validated XmlDocument and has the Binder do its work of
+		/// creating Mapping objects from the Mapping Xml.
+		/// </summary>
+		/// <param name="doc">The validated XmlDocument that contains the Mappings.</param>
 		private void Add(XmlDocument doc) {
 			try {
 				Binder.BindRoot( doc, CreateMappings() );
-			} catch (MappingException me) {
+			} 
+			catch (MappingException me) {
 				log.Error("Could not compile the mapping document", me);
 				throw me;
 			}
@@ -153,20 +188,54 @@ namespace NHibernate.Cfg {
 			return new Mappings(classes, collections, tables, namedQueries, imports, secondPasses);
 		}
 
+		/// <summary>
+		/// Adds the Xml Mappings from the Stream.
+		/// </summary>
+		/// <param name="xmlInputStream">The Stream to read Xml from.</param>
+		/// <returns>This Configuration object.</returns>
 		public Configuration AddInputStream(Stream xmlInputStream) {
 			try {
-				XmlDocument doc = new XmlDocument();
-				doc.Load(xmlInputStream);
-				Add( doc );
+				AddXmlReader(new XmlTextReader(xmlInputStream));
+				
+//				XmlDocument doc = new XmlDocument();
+//				doc.Load(xmlInputStream);
+//				Add( doc );
 				return this;
-			} catch (MappingException me) {
+			} 
+			catch (MappingException me) {
 				throw me;
-			} catch (Exception e) {
+			} 
+			catch (Exception e) {
 				log.Error("Could not configure datastore from input stream", e);
 				throw new MappingException(e);
 			}
 		}
 		
+		/// <summary>
+		/// Adds the Mappings in the XmlReader after validating it against the
+		/// nhibernate-mapping-2.0 schema.
+		/// </summary>
+		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
+		/// <returns>This Configuration object.</returns>
+		public Configuration AddXmlReader(XmlReader hbmReader) {
+			
+			XmlValidatingReader validatingReader = new XmlValidatingReader(hbmReader);
+			validatingReader.ValidationType = ValidationType.Schema;
+			validatingReader.Schemas.Add(mappingSchema);
+
+			XmlDocument hbmDocument = new XmlDocument();
+			hbmDocument.Load(validatingReader);
+			Add(hbmDocument);
+
+			return this;
+		}
+
+		/// <summary>
+		/// Adds the Mappings in the Resource of the Assembly.
+		/// </summary>
+		/// <param name="path">The path to the Resource file in the Assembly</param>
+		/// <param name="assembly">The Assembly that contains the Resource file.</param>
+		/// <returns>This Configuration object.</returns>
 		public Configuration AddResource(string path, Assembly assembly) {
 			log.Info("mapping resource: " + path);
 			Stream rsrc = assembly.GetManifestResourceStream(path);
@@ -174,6 +243,16 @@ namespace NHibernate.Cfg {
 			return AddInputStream(rsrc);
 		}
 
+		/// <summary>
+		/// Adds the Class' Mapping by appending an ".hbm.xml" to the end of the Full Class Name
+		/// and looking in the Class' Assembly.
+		/// </summary>
+		/// <param name="persistentClass">The Type to Map.</param>
+		/// <returns>This Configuration object.</returns>
+		/// <remarks>
+		/// If the Mappings and Classes are defined in different Assemblies or don't follow
+		/// the same naming convention then this can not be used.
+		/// </remarks>
 		public Configuration AddClass(System.Type persistentClass) {
 			string fileName = persistentClass.FullName + ".hbm.xml";
 			log.Info("Mapping resource: " + fileName);
@@ -182,13 +261,23 @@ namespace NHibernate.Cfg {
 			return AddInputStream(rsrc);
 		}
 
+		/// <summary>
+		/// Adds all of the Assembly's Resource files that end with "hbm.xml" 
+		/// </summary>
+		/// <param name="assemblyName">The name of the Assembly to load.</param>
+		/// <returns>This Configuration object.</returns>
+		/// <remarks>
+		/// The Assembly must be in the local bin, probing path, or GAC so that the
+		/// Assembly can be loaded by name.
+		/// </remarks>
 		public Configuration AddAssembly(string assemblyName) {
-			log.Info("searching for mapped documents in jar: " + assemblyName);
+			log.Info("searching for mapped documents in assembly: " + assemblyName);
 
 			Assembly assembly = null;
 			try {
 				assembly = Assembly.Load(assemblyName);
-			} catch (Exception e) {
+			} 
+			catch (Exception e) {
 				log.Error("Could not configure datastore from assembly", e);
 				throw new MappingException(e);
 			}
@@ -197,9 +286,11 @@ namespace NHibernate.Cfg {
 					log.Info( "Found mapping documents in assembly: " + fileName );
 					try {
 						AddInputStream( assembly.GetManifestResourceStream(fileName) );
-					} catch (MappingException me) {
+					} 
+					catch (MappingException me) {
 						throw me;
-					} catch (Exception e) {
+					} 
+					catch (Exception e) {
 						log.Error("Could not configure datastore from assembly", e);
 						throw new MappingException(e);
 					}
@@ -436,7 +527,7 @@ namespace NHibernate.Cfg {
 					} else {
 						if (file==null) throw new MappingException("<mapping> element in configuration specifies no attributes");
 						log.Debug(name + "<-" + file);
-						AddFile( file.Value );
+						AddXmlFile( file.Value );
 					}
 				}
 			}
