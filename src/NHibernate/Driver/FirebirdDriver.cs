@@ -1,18 +1,28 @@
 namespace NHibernate.Driver
 {
 	/// <summary>
-	/// Summary description for FirebirdDriver.
+	/// A NHibernate Driver for using the FirebirdSql.Data.Firebird DataProvider.
 	/// </summary>
 	public class FirebirdDriver : DriverBase
 	{
 		private System.Type connectionType;
 		private System.Type commandType;
 
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FirebirdDriver"/> class.
+		/// </summary>
+		/// <exception cref="HibernateException">
+		/// Thrown when the <c>FirebirdSql.Data.Firebird</c> assembly is not and can not be loaded.
+		/// </exception>
 		public FirebirdDriver()
 		{
-			connectionType = System.Type.GetType( "FirebirdSql.Data.Firebird.FbConnection, FirebirdSql.Data.Firebird" );
-			commandType = System.Type.GetType( "FirebirdSql.Data.Firebird.FbCommand, FirebirdSql.Data.Firebird" );
+			string assemblyName = "FirebirdSql.Data.Firebird";
+			string connectionClassName = "FirebirdSql.Data.Firebird.FbConnection";
+			string commandClassName = "FirebirdSql.Data.Firebird.FbCommand";
+
+			// try to get the Types from an already loaded assembly
+			connectionType = Util.ReflectHelper.TypeFromAssembly( connectionClassName, assemblyName );
+			commandType = Util.ReflectHelper.TypeFromAssembly( commandClassName, assemblyName );
 
 			if( connectionType == null || commandType == null )
 			{

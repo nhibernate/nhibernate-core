@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.SqlClient;
+
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -10,48 +11,81 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class SqlClientDriver : DriverBase
 	{
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SqlClientDriver"/> class.
+		/// </summary>
 		public SqlClientDriver()
 		{
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="System.Type"/> from the System.Data assembly
+		/// that implements <see cref="IDbCommand"/>
+		/// </summary>
+		/// <value>The <see cref="System.Data.SqlClient.SqlCommand"/> type.</value>
 		public override System.Type CommandType
 		{
 			get { return typeof( System.Data.SqlClient.SqlCommand ); }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="System.Type"/> from the System.Data assembly
+		/// that implements <see cref="IDbConnection"/>
+		/// </summary>
+		/// <value>The <see cref="System.Data.SqlClient.SqlConnection"/> type.</value>
 		public override System.Type ConnectionType
 		{
-			get { return typeof( SqlConnection ); }
+			get { return typeof( System.Data.SqlClient.SqlConnection ); }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Creates an uninitialized <see cref="IDbConnection" /> object for 
+		/// the SqlClientDriver.
+		/// </summary>
+		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlConnection"/> object.</value>
 		public override IDbConnection CreateConnection()
 		{
-			return new SqlConnection();
+			return new System.Data.SqlClient.SqlConnection();
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Creates an uninitialized <see cref="IDbCommand" /> object for 
+		/// the SqlClientDriver.
+		/// </summary>
+		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlCommand"/> object.</value>
 		public override IDbCommand CreateCommand()
 		{
 			return new System.Data.SqlClient.SqlCommand();
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// MsSql requires the use of a Named Prefix in the SQL statement.  
+		/// </summary>
+		/// <remarks>
+		/// <c>true</c> because MsSql uses "<c>@</c>".
+		/// </remarks>
 		public override bool UseNamedPrefixInSql
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// MsSql requires the use of a Named Prefix in the Parameter.  
+		/// </summary>
+		/// <remarks>
+		/// <c>true</c> because MsSql uses "<c>@</c>".
+		/// </remarks>
 		public override bool UseNamedPrefixInParameter
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// The Named Prefix for parameters.  
+		/// </summary>
+		/// <value>
+		/// Sql Server uses <c>"@"</c>.
+		/// </value>
 		public override string NamedPrefix
 		{
 			get { return "@"; }

@@ -1,3 +1,6 @@
+using System;
+using System.Reflection;
+
 namespace NHibernate.Driver
 {
 	/// <summary>
@@ -20,11 +23,21 @@ namespace NHibernate.Driver
 		private System.Type connectionType;
 		private System.Type commandType;
 
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MySqlDataDriver"/> class.
+		/// </summary>
+		/// <exception cref="HibernateException">
+		/// Thrown when the MySql.Data assembly is not and can not be loaded.
+		/// </exception>
 		public MySqlDataDriver()
 		{
-			connectionType = System.Type.GetType( "MySql.Data.MySqlClient.MySqlConnection, MySql.Data" );
-			commandType = System.Type.GetType( "MySql.Data.MySqlClient.MySqlCommand, MySql.Data" );
+			string assemblyName = "MySql.Data";
+			string connectionClassName = "MySql.Data.MySqlClient.MySqlConnection";
+			string commandClassName = "MySql.Data.MySqlClient.MySqlCommand";
+
+			// try to get the Types from an already loaded assembly
+			connectionType = Util.ReflectHelper.TypeFromAssembly( connectionClassName, assemblyName );
+			commandType = Util.ReflectHelper.TypeFromAssembly( commandClassName, assemblyName );
 
 			if( connectionType == null || commandType == null )
 			{
@@ -37,13 +50,21 @@ namespace NHibernate.Driver
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="System.Type"/> from the MySql.Data assembly
+		/// that implements <see cref="IDbCommand"/>
+		/// </summary>
+		/// <value>The <see cref="MySql.Data.MySqlClient.MySqlCommand"/> type.</value>
 		public override System.Type CommandType
 		{
 			get { return commandType; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="System.Type"/> from the MySql.Data assembly
+		/// that implements <see cref="IDbCommand"/>
+		/// </summary>
+		/// <value>The <see cref="MySql.Data.MySqlClient.MySqlConnection"/> type.</value>
 		public override System.Type ConnectionType
 		{
 			get { return connectionType; }
@@ -84,10 +105,13 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// With the Gamma MySql.Data provider it is throwing an exception with the 
-		/// message "Expected End of data packet" when a select command is prepared.
+		/// MySql.Data does not support preparing of commands.
 		/// </summary>
 		/// <value><c>false</c> - it is not supported.</value>
+		/// <remarks>
+		/// With the Gamma MySql.Data provider it is throwing an exception with the 
+		/// message "Expected End of data packet" when a select command is prepared.
+		/// </remarks>
 		public override bool SupportsPreparingCommands
 		{
 			get { return false; }

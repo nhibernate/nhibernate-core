@@ -26,11 +26,21 @@ namespace NHibernate.Driver
 		private System.Type connectionType;
 		private System.Type commandType;
 
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NpgsqlDriver"/> class.
+		/// </summary>
+		/// <exception cref="HibernateException">
+		/// Thrown when the <c>Npgsql</c> assembly is not and can not be loaded.
+		/// </exception>
 		public NpgsqlDriver()
 		{
-			connectionType = System.Type.GetType( "Npgsql.NpgsqlConnection, Npgsql" );
-			commandType = System.Type.GetType( "Npgsql.NpgsqlCommand, Npgsql" );
+			string assemblyName = "Npgsql";
+			string connectionClassName = "Npgsql.NpgsqlConnection";
+			string commandClassName = "Npgsql.NpgsqlCommand";
+
+			// try to get the Types from an already loaded assembly
+			connectionType = Util.ReflectHelper.TypeFromAssembly( connectionClassName, assemblyName );
+			commandType = Util.ReflectHelper.TypeFromAssembly( commandClassName, assemblyName );
 
 			if( connectionType == null || commandType == null )
 			{

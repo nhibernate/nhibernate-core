@@ -23,13 +23,20 @@ namespace NHibernate.Driver
 		System.Type _commandType;
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of <see cref="SQLiteDriver"/>.
 		/// </summary>
+		/// <exception cref="HibernateException">
+		/// Thrown when the <c>SQLite.NET</c> assembly is not and can not be loaded.
+		/// </exception>
 		public SQLiteDriver()
 		{
-			_connectionType = System.Type.GetType("Finisar.SQLite.SQLiteConnection, SQLite.NET");
-			_commandType = System.Type.GetType("Finisar.SQLite.SQLiteCommand, SQLite.NET");
-			
+			string assemblyName = "SQLite.NET";
+			string connectionClassName = "Finisar.SQLite.SQLiteConnection";
+			string commandClassName = "Finisar.SQLite.SQLiteCommand";
+
+			// try to get the Types from an already loaded assembly
+			_connectionType = Util.ReflectHelper.TypeFromAssembly( connectionClassName, assemblyName );
+			_commandType = Util.ReflectHelper.TypeFromAssembly( commandClassName, assemblyName );
 
 			if( _connectionType == null || _commandType == null )
 			{

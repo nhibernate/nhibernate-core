@@ -18,11 +18,19 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Initializes a new instance of <see cref="OracleDataClientDriver"/>.
 		/// </summary>
+		/// <exception cref="HibernateException">
+		/// Thrown when the <c>Oracle.DataAccess</c> assembly is not and can not be loaded.
+		/// </exception>
 		public OracleDataClientDriver()
 		{
-			connectionType = System.Type.GetType( "Oracle.DataAccess.Client.OracleConnection, Oracle.DataAccess" );
-			commandType =System. Type.GetType( "Oracle.DataAccess.Client.OracleCommand, Oracle.DataAccess" );
-			
+			string assemblyName = "Oracle.DataAccess";
+			string connectionClassName = "Oracle.DataAccess.Client.OracleConnection";
+			string commandClassName = "Oracle.DataAccess.Client.OracleCommand";
+
+			// try to get the Types from an already loaded assembly
+			connectionType = Util.ReflectHelper.TypeFromAssembly( connectionClassName, assemblyName );
+			commandType = Util.ReflectHelper.TypeFromAssembly( commandClassName, assemblyName );
+
 			if( connectionType == null || commandType == null )
 			{
 				throw new HibernateException(
