@@ -35,6 +35,7 @@ namespace NHibernate.Collection {
 		public List(ISessionImplementor session, IList list) : base(session) {
 			this.list = list;
 			initialized = true;
+			directlyAccessible = true;
 		}
 
 		public override void BeforeInitialize(CollectionPersister persister) {
