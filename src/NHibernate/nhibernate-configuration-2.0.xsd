@@ -45,10 +45,18 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name='mapping'>
+		<xs:annotation>
+			<xs:documentation>
+			There are 3 possible combinations of mapping attributes
+			1 - resource & assembly:  NHibernate will read the mapping resource from the specified assembly
+			2 - file only: NHibernate will read the mapping from the file.
+			3 - assembly only: NHibernate will find all the resources ending in hbm.xml from the assembly.
+			</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name='resource' />
 			<xs:attribute name='file' />
-			<xs:attribute name='jar' />
+			<xs:attribute name='assembly' />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name='property'>
