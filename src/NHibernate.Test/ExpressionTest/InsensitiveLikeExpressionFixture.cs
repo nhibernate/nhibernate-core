@@ -29,6 +29,10 @@ namespace NHibernate.Test.ExpressionTest
 			SqlString sqlString = expression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
 			
 			string expectedSql = "lower(simple_alias.address) like :simple_alias.address";
+			if ((factory as ISessionFactoryImplementor).Dialect is Dialect.PostgreSQLDialect)
+			{
+				expectedSql = "simple_alias.address ilike :simple_alias.address";
+			}
 			Parameter[] expectedParams = new Parameter[1];
 
 			Parameter firstParam = new Parameter( "address", "simple_alias", new SqlTypes.StringSqlType() );
