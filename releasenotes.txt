@@ -1,25 +1,59 @@
-PreAlpha BUild 3
+PreAlpha Build 4
+======================== 
+- Implemented most DomainModel classes and hbms for testing 
+- Implemented more TestFixtures (both migrated and new)
+- Added Oracle Dialects and Drivers (thanks to feilng for contributing those!)
+- Modified classes in Type namespace to support reading values from Oracle Driver
+- Added DotNetMock.dll to NHibernate.Test assembly to help with testing Type namesapce
+- Fixed parameter parsing so both Named Params (:name) and ? can be used in HQL
+- Fixed problem with joins in HQL
+- Fixed problem with <set>, <map>, and <bag> where lazy="true"
+- Fixed problem with <idbag> being bound to a Bag instead of IdentifierBag
+- Fixed problem with CollectionPersister.WriteRowSelect and IdentifierBags 
+- Fixed problem with <array> when a null value was in the array
+- Fixed problem with sending an unneeded Update before a Delete
+- Fixed problem with null aliases and Parameter.Equals()
+- Cleaned up HQL parsing so it internally throws fewer exceptions 
+- ConnectionProvider's now provide internal IDbConnection cache like h2.0.3 - not on by default
+- Fixed problem with StringHelper.Replace being passed a null template
+- <property forumla="some sql forumla" ... /> is now supported
+- <class dynamic-insert="true"> is now supported
+- read only <property> and a read-write <property> can now refer to the same column without problems.
+- changed value of Dialect.SupportForUpdateOf to false, like h2.0.3 has it
+- Id generation strategies that use TableGenerator now work for all Drivers
+- Modified IdentityMap to use SequencedHashMap instead of ListDictionary (thanks to feling for finding the performance problems that ListDictionary was causing)
+- Fixed problem with Expresion.Juction.GetTypedValues() not returning correct TypedValue[]
+
+
+PreAlpha Build 3 
+======================== 
+- Synched Cache Namespace with cache package in H2.0.3 
+- Synched CollectionPersister with H2.0.3 
+- Synched Config Namespace with config package in H2.0.3. 
+- Synched Cascade strategies with H2.0.3 
+- Synched Dialect Namespace with dialect package in H2.0.3 
+- Started HQL Namespace synch with hql package in H2.0.3. There are still some issues in there. 
+- Synched Id Namespace with id package in H2.0.3 
+- Synched Mapping namespace with mapping package in H2.0.3. 
+- Added ForUpdateFragment 
+- hbm2net created. 
+- Added AnsiStringType. 
+- Added GuidType. 
+- Fixed problem with IdentityMap that caused <set lazy="true"> to not work. 
+- Added support for <bag> and <id-bag> mappings. 
+- Implemented sorted collections. 
+- Build files rewritten. 
+- MsSql Dialect now issues one statement to Insert and retrieve identity value. 
+- Fixed a bug with <generator class="sequence"> 
+- Implemented SqlExpression for Criteria queries. 
+- Initial fix of Multiple IDataReaders being opened with Entities that contain <component> mappings. 
+- Fixed problems with Alias and Ms Sql Server. 
+
+PreAlpha Build 2 
 ========================
-Synched Cache Namespace with cache package in H2.0.3
-Synched CollectionPersister with H2.0.3
-Synched Config Namespace with config package in H2.0.3.
-Synched Cascade strategies with H2.0.3
-Synched Dialect Namespace with dialect package in H2.0.3
-Started HQL Namespace synch with hql package in H2.0.3.  There are still some issues in there.
-Synched Id Namespace with id package in H2.0.3
-Synched Mapping namespace with mapping package in H2.0.3.
-
-Added ForUpdateFragment
-hbm2net created.
-Added AnsiStringType.
-Added GuidType.
-Fixed problem with IdentityMap that caused <set lazy="true"> to not work.
-Added support for <bag> and <id-bag> mappings.
-Implemented sorted collections.
-Build files rewritten.
-MsSql Dialect now issues one statement to Insert and retrieve identity value.
-Fixed a bug with <generator class="sequence">
-Implemented SqlExpression for Criteria queries.
-Initial fix of Multiple IDataReaders being opened with Entities that contain <component> mappings.
-Fixed problems with Alias and Ms Sql Server.
-
+- Continued to synchronize NHibernate with Hibernate 2.0.3's features. 
+- Modifed BooleanType to use GetBoolean instead of GetByte 
+- Modified MsSqlServer2000Dialect to maps a BooleanSqlType to a bit column type. 
+- Fixed bug with IdentityMap that caused problems with Session.Flush() loading lazy collections 
+- Added TicksType to TypeFactory 
+- Fixed bug with SchemaExport committing a non existing IDbTransaction 
