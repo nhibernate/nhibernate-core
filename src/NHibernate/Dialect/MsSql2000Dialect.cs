@@ -67,6 +67,25 @@ namespace NHibernate.Dialect
 			get { return "@"; }
 		}						
 			
+		/// <summary>
+		/// The character used to close a Quoted identifier
+		/// </summary>
+		/// <value>MsSql2000 overrides Dialects default value with ']'</value>
+		public override char CloseQuote
+		{
+			get { return ']'; }
+		}
+
+		/// <summary>
+		/// The character used to open a Quoted identifier
+		/// </summary>
+		/// <value>MsSql2000 overrides Dialects default value with '['</value>
+		public override char OpenQuote
+		{
+			get { return '['; }
+		}
+
+
 		private string SqlTypeToString(string name, int length) 
 		{
 			return name + "(" + length + ")";

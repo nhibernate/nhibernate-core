@@ -20,6 +20,7 @@ namespace NHibernate.Mapping {
 		private bool nullable = true;
 		private bool unique = false;
 		private string sqlType;
+		private bool quoted = false;
 		internal int uniqueInteger;
 
 		public int Length {
@@ -34,9 +35,26 @@ namespace NHibernate.Mapping {
 
 		public string Name {
 			get { return name; }
-			set { name = value; }
+			set 
+			{ 
+				if (value[0] == '`') 
+				{
+					quoted = true;
+					name = value.Substring(1, value.Length - 2);
+				}
+				else 
+				{
+					name = value; 
+				}
+			}
 		}
 
+		public string GetQuotedName(Dialect.Dialect d) 
+		{
+			return quoted ?
+				d.OpenQuote + name + d.CloseQuote :
+				name;
+		}
 		public string Alias {
 			get {
 				if ( name.Length < 11 )

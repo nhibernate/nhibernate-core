@@ -37,6 +37,7 @@ namespace NHibernate.Dialect
 			aggregateFunctions["max"] = new QueryFunctionStandard();
 			aggregateFunctions["min"] = new QueryFunctionStandard();
 			aggregateFunctions["sum"] = new QueryFunctionStandard();
+			
 		}
 
 		protected Dialect() 
@@ -415,7 +416,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// The opening quote for a quoted identifier.
 		/// </summary>
-		public char OpenQuote 
+		public virtual char OpenQuote 
 		{
 			get { return '"'; }
 		}
@@ -423,7 +424,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// The closing quote for a quoted identifier.
 		/// </summary>
-		public char CloseQuote 
+		public virtual char CloseQuote 
 		{
 			get { return '"'; }
 		}

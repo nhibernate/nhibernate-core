@@ -15,6 +15,7 @@ namespace NHibernate.Mapping {
 	public class Table : IRelationalModel {
 		
 		private string name;
+		private bool quoted;
 		private string schema;
 		private SequencedHashMap columns = new SequencedHashMap();
 		private Value idValue;
@@ -29,28 +30,53 @@ namespace NHibernate.Mapping {
 			uniqueInteger = tableCounter++;
 		}
 
-		/// <summary>
-		/// Returns the QualifiedName for the table by combining the Schema and Name property.
-		/// </summary>
-		public string QualifiedName {
-			get { return (schema == null) ? name : schema + StringHelper.Dot + name; }
+		public string GetQualifiedName(Dialect.Dialect dialect) 
+		{
+			string quotedName = GetQuotedName(dialect);
+			return schema==null ? quotedName : schema + StringHelper.Dot + quotedName;
 		}
 
+//		/// <summary>
+//		/// Returns the QualifiedName for the table by combining the Schema and Name property.
+//		/// </summary>
+//		public string QualifiedName {
+//			get { return (schema == null) ? name : schema + StringHelper.Dot + name; }
+//		}
+
+		
 		/// <summary>
 		/// Returns the QualifiedName for the table using the specified Qualifier
 		/// </summary>
 		/// <param name="defaultQualifier">The Qualifier to use when accessing the table.</param>
 		/// <returns>A String representing the Qualified name.</returns>
 		/// <remarks>If this were used with MSSQL it would return a dbo.table_name.</remarks>
-		public string GetQualifiedName(string defaultQualifier) {
-			return (schema==null) ? ( (defaultQualifier==null) ? name : defaultQualifier + StringHelper.Dot + name ) : QualifiedName;
+		public string GetQualifiedName(Dialect.Dialect dialect, string defaultQualifier) {
+			string quotedName = GetQuotedName(dialect);
+			return (schema==null) ? ( (defaultQualifier==null) ? quotedName : defaultQualifier + StringHelper.Dot + name ) : GetQualifiedName(dialect);
 		}
 
 		public string Name {
 			get { return name; }
-			set { name = value; }
+			set 
+			{ 
+				if (value[0]=='`') 
+				{
+					quoted = true;
+					name = value.Substring(1, value.Length-2);
+				}
+				else 
+				{
+					name = value; 
+				}
+			}
 		}
 
+		public string GetQuotedName(Dialect.Dialect dialect) 
+		{
+			return quoted ? 
+				dialect.OpenQuote + name + dialect.CloseQuote :
+				name;
+		}
 		public Column GetColumn(int n) {
 			IEnumerator iter = columns.Values.GetEnumerator();
 			for (int i=0; i<n; i++) iter.MoveNext();
@@ -91,7 +117,9 @@ namespace NHibernate.Mapping {
 					// the column doesnt exist at all
 					if (buf.Length != 0)
 						buf.Append(StringHelper.CommaSpace);
-					buf.Append(col.Name).Append(' ').Append(col.GetSqlType(dialect, p));
+						buf.Append(col.GetQuotedName(dialect))
+							.Append(' ')
+							.Append(col.GetSqlType(dialect, p));
 					if (col.IsUnique && dialect.SupportsUnique) {
 						buf.Append(" unique");
 					}
@@ -101,13 +129,13 @@ namespace NHibernate.Mapping {
 			if (buf.Length == 0)
 				return null;
 
-			return new StringBuilder("alter table ").Append(QualifiedName).Append(" add ").Append(buf).ToString();
+			return new StringBuilder("alter table ").Append(GetQualifiedName(dialect)).Append(" add ").Append(buf).ToString();
 
 		}
 
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p) {
 			StringBuilder buf = new StringBuilder("create table ")
-				.Append( QualifiedName )
+				.Append( GetQualifiedName(dialect) )
 				.Append( " (");
 
 			bool identityColumn = idValue!=null && idValue.CreateIdentifierGenerator(dialect) is IdentityGenerator;
@@ -116,17 +144,17 @@ namespace NHibernate.Mapping {
 			string pkname = null;
 			if (primaryKey != null && identityColumn ) {
 				foreach(Column col in primaryKey.ColumnCollection) {
-					pkname = col.Name; //should only go through this loop once
+					pkname = col.GetQuotedName(dialect); //should only go through this loop once
 				}
 			}
 			int i = 0;
 			foreach(Column col in ColumnCollection) {
 				i++;
-				buf.Append( col.Name)
+				buf.Append( col.GetQuotedName(dialect) )
 					.Append(' ')
 					.Append( col.GetSqlType(dialect, p) );
 
-				if ( identityColumn && col.Name.Equals(pkname) ) {
+				if ( identityColumn && col.GetQuotedName(dialect).Equals(pkname) ) {
 					buf.Append(' ')
 						.Append( dialect.IdentityColumnString);
 				} else {
@@ -160,7 +188,7 @@ namespace NHibernate.Mapping {
 		}
 
 		public string SqlDropString(Dialect.Dialect dialect) {
-			return "drop table " + QualifiedName + dialect.CascadeConstraintsString;
+			return "drop table " + GetQualifiedName(dialect) + dialect.CascadeConstraintsString;
 		}
 
 		public PrimaryKey PrimaryKey {
@@ -210,26 +238,18 @@ namespace NHibernate.Mapping {
 		}
 
 		public string UniqueColumnString(ICollection col) {
-			string uniqueName;
+			
 			int result = 0;
+			
 			foreach(object obj in col) {
-				result += obj.GetHashCode();
+				
+				// this is marked as unchecked because the GetHashCode could potentially
+				// cause an integer overflow.  This way if there is an overflow it will
+				// just roll back over.
+				unchecked{ result += obj.GetHashCode(); }
 			}
-			/*
-			 * I was running into the problem of FKs being genrated with negative numbers.
-			 * So the sql being sent to generate the FK was "FK-1234" - SqlServer2000 does
-			 * not like that.  So I'll change the "-" to an "_" to try and workaround that 
-			 * problem
-			 */
-			//return ( Integer.toHexString( name.hashCode() ) + Integer.toHexString(result) ).toUpperCase();
-			if(result < 0) {
-				result = result * -1;
-				uniqueName = name + "_" + result.ToString();
-			}
-			else {
-				uniqueName = name + result.ToString();
-			}
-			return uniqueName; //name + result.ToString();
+			
+			return ( name.GetHashCode().ToString("X") + result.GetHashCode().ToString("X") );
 		}
 
 		public string Schema {

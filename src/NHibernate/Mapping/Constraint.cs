@@ -35,12 +35,12 @@ namespace NHibernate.Mapping {
 		}
 
 		public string SqlDropString(Dialect.Dialect dialect) {
-			return "alter table " + Table.QualifiedName + " drop constraint " + Name;
+			return "alter table " + Table.GetQualifiedName(dialect)+ " drop constraint " + Name;
 		}
 
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p) {
 			StringBuilder buf = new StringBuilder("alter table ")
-				.Append( Table.QualifiedName )
+				.Append( Table.GetQualifiedName(dialect) )
 				.Append( SqlConstraintString( dialect, Name ) );
 			return buf.ToString();
 		}

@@ -16,10 +16,10 @@ namespace NHibernate.Mapping {
 			StringBuilder buf = new StringBuilder("create index ")
 				.Append( dialect.QualifyIndexName ? name : StringHelper.Unqualify(name) )
 				.Append(" on ")
-				.Append( table.QualifiedName )
+				.Append( table.GetQualifiedName(dialect))
 				.Append(" (");
 			for(int i=0; i<columns.Count; i++) {
-				buf.Append( ((Column)columns[i]).Name);
+				buf.Append( ((Column)columns[i]).GetQuotedName(dialect) );
 				if (i<columns.Count-1) buf.Append(StringHelper.CommaSpace);
 			}
 			buf.Append(StringHelper.ClosedParen);
@@ -27,7 +27,7 @@ namespace NHibernate.Mapping {
 		}
 
 		public string SqlDropString(Dialect.Dialect dialect) {
-			return "drop index " + table.QualifiedName + StringHelper.Dot + name;
+			return "drop index " + table.GetQualifiedName(dialect) + StringHelper.Dot + name;
 		}
 
 		public Table Table {

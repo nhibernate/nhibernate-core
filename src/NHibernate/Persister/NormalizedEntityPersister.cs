@@ -157,7 +157,7 @@ namespace NHibernate.Persister {
 
 			this.factory = factory;
 			Table table = model.RootTable;
-			this.qualifiedTableName = table.GetQualifiedName( factory.DefaultSchema );
+			this.qualifiedTableName = table.GetQualifiedName( dialect, factory.DefaultSchema );
 
 			// DISCRIMINATOR
 
@@ -202,12 +202,12 @@ namespace NHibernate.Persister {
 			
 			// move through each table that contains the data for this entity.
 			foreach(Table tab in model.TableClosureCollection) {
-				string tabname = tab.GetQualifiedName( factory.DefaultSchema );
+				string tabname = tab.GetQualifiedName( dialect, factory.DefaultSchema );
 				if ( !tabname.Equals(qualifiedTableName) ) {
 					tables.Add( tabname );
 					string[] key = new string[idColumnSpan];
 					int k=0;
-					foreach(Column col in tab.PrimaryKey.ColumnCollection ) key[k++] = col.Name;
+					foreach(Column col in tab.PrimaryKey.ColumnCollection ) key[k++] = col.GetQuotedName(dialect);
 					keyColumns.Add(key);
 				}
 			}
@@ -223,12 +223,12 @@ namespace NHibernate.Persister {
 			subtables.Add( this.qualifiedTableName );
 			keyColumns.Add( IdentifierColumnNames );
 			foreach(Table tab in model.SubclassTableClosureCollection ) {
-				string tabname = tab.GetQualifiedName(factory.DefaultSchema);
+				string tabname = tab.GetQualifiedName(dialect, factory.DefaultSchema);
 				if ( !tabname.Equals(qualifiedTableName) ) {
 					subtables.Add(tabname);
 					string[] key = new string[idColumnSpan];
 					int k=0;
-					foreach(Column col in tab.PrimaryKey.ColumnCollection ) key[k++] = col.Name;
+					foreach(Column col in tab.PrimaryKey.ColumnCollection ) key[k++] = col.GetQuotedName(dialect);
 					keyColumns.Add(key);
 				}
 			}
@@ -261,7 +261,7 @@ namespace NHibernate.Persister {
 				
 				thisClassProperties.Add(prop);
 				Table tab = prop.Value.Table;
-				string tabname = tab.GetQualifiedName( factory.DefaultSchema );
+				string tabname = tab.GetQualifiedName(dialect, factory.DefaultSchema );
 				
 				this.propertyTables[propertyIndex] = GetTableId(tabname, this.tableNames);
 				this.propertyColumnSpans[propertyIndex] = prop.ColumnSpan;
@@ -271,7 +271,7 @@ namespace NHibernate.Persister {
 				
 				int columnIndex = 0;
 				foreach(Column col in prop.ColumnCollection ) {
-					propCols[columnIndex] = col.Name;
+					propCols[columnIndex] = col.GetQuotedName(dialect);
 					propAliases[columnIndex] = col.Alias + tab.UniqueInteger + StringHelper.Underscore;
 					columnIndex++;
 				}
@@ -301,16 +301,16 @@ namespace NHibernate.Persister {
 			foreach(Property prop in model.SubclassPropertyClosureCollection) {
 				definedBySubclass.Add( !thisClassProperties.Contains(prop) );
 				Table tab = prop.Value.Table;
-				string tabname = tab.GetQualifiedName( factory.DefaultSchema );
+				string tabname = tab.GetQualifiedName( dialect, factory.DefaultSchema );
 				string[] cols = new string[ prop.ColumnSpan ];
 				types.Add( prop.Type );
 				int tabnum = GetTableId(tabname, subclassTableNameClosure);
 				propTables.Add(tabnum);
 				int l=0;
 				foreach(Column col in prop.ColumnCollection) {
-					columns.Add( col.Name );
+					columns.Add( col.GetQuotedName(dialect) );
 					coltables.Add(tabnum);
-					cols[l++] = col.Name;
+					cols[l++] = col.GetQuotedName(dialect);
 					aliases.Add( col.Alias + tab.UniqueInteger + StringHelper.Underscore );
 				}
 				propColumns.Add(cols);
@@ -345,12 +345,12 @@ namespace NHibernate.Persister {
 				
 				this.tableNumbers = new int[subclassSpan];
 				this.tableNumbers[subclassSpan-1] = GetTableId(
-					model.Table.GetQualifiedName( factory.DefaultSchema ), 
+					model.Table.GetQualifiedName( dialect, factory.DefaultSchema ), 
 					this.subclassTableNameClosure);
 				
 				this.notNullColumns = new string[subclassSpan];
 				foreach(Column col in model.Table.PrimaryKey.ColumnCollection) {
-					notNullColumns[subclassSpan-1] = col.Name; //only once
+					notNullColumns[subclassSpan-1] = col.GetQuotedName(dialect); //only once
 				}
 
 			} 
@@ -370,10 +370,10 @@ namespace NHibernate.Persister {
 						subclassesByDiscriminatorValue.Add( disc, sc.PersistentClazz );
 						discriminators[p] = disc.ToString();
 						tableNumbers[p] = GetTableId(
-							sc.Table.GetQualifiedName( factory.DefaultSchema ),
+							sc.Table.GetQualifiedName( dialect, factory.DefaultSchema ),
 							subclassTableNameClosure);
 						foreach(Column col in sc.Table.PrimaryKey.ColumnCollection) {
-							notNullColumns[p] = col.Name; //only once;
+							notNullColumns[p] = col.GetQuotedName(dialect); //only once;
 						}
 					}
 				} catch (Exception e) {

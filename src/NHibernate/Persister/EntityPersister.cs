@@ -74,7 +74,7 @@ namespace NHibernate.Persister {
 			System.Type mappedClass = model.PersistentClazz;
 			this.factory = factory;
 			Table table = model.RootTable;
-			qualifiedTableName = table.GetQualifiedName( factory.DefaultSchema );
+			qualifiedTableName = table.GetQualifiedName( dialect, factory.DefaultSchema );
 			tableNames = new string[] { qualifiedTableName };
 
 			// DISCRIMINATOR
@@ -87,7 +87,7 @@ namespace NHibernate.Persister {
 				
 				// the discriminator will have only one column 
 				foreach(Column discColumn in d.ColumnCollection) {
-					discriminatorColumnName = discColumn.Name;
+					discriminatorColumnName = discColumn.GetQuotedName(dialect);
 				}
 				try {
 					discriminatorType = (IDiscriminatorType) model.Discriminator.Type;
@@ -131,7 +131,7 @@ namespace NHibernate.Persister {
 				int j=0;
 				foreach(Column col in prop.ColumnCollection) {
 					colAliases[j] = col.Alias;
-					colNames[j] = col.Name;
+					colNames[j] = col.GetQuotedName(dialect);
 					j++;
 					if( prop.IsUpdateable ) foundColumn=true;
 				}
@@ -158,9 +158,9 @@ namespace NHibernate.Persister {
 				types.Add( prop.Type );
 				int l=0;
 				foreach( Column col in prop.ColumnCollection ) {
-					columns.Add( col.Name );
+					columns.Add( col.GetQuotedName(dialect) );
 					aliases.Add( col.Alias );
-					cols[l++] = col.Name;
+					cols[l++] = col.GetQuotedName(dialect);
 				}
 				propColumns.Add(cols);
 				joinedFetchesList.Add( prop.Value.OuterJoinFetchSetting );

@@ -32,8 +32,10 @@ namespace NHibernate.Collection {
 		private SqlString sqlUpdateRowString;
 		private SqlString sqlDeleteRowString;
 
-		private string sqlOrderByString;
+		private string sqlOrderByString;		
+		private string sqlOrderByStringTemplate;
 		private string sqlWhereString;
+		private string sqlWhereStringTemplate;
 
 		private bool hasOrder;
 		private bool hasWhere;
@@ -77,6 +79,7 @@ namespace NHibernate.Collection {
 			ownerClass = collection.OwnerClass;
 
 			sqlOrderByString = collection.OrderBy;
+			
 			hasOrder = sqlOrderByString!=null;
 			sqlWhereString = collection.Where;
 			hasWhere = sqlWhereString!=null;
@@ -88,7 +91,7 @@ namespace NHibernate.Collection {
 			keyColumnNames = new string[span];
 			int k=0;
 			foreach(Column col in collection.Key.ColumnCollection) {
-				keyColumnNames[k] = col.Name;
+				keyColumnNames[k] = col.GetQuotedName(dialect);
 				k++;
 			}
 
@@ -105,15 +108,15 @@ namespace NHibernate.Collection {
 				elementColumnNames = new string[span];
 				int j=0;
 				foreach(Column col in associatedClass.Key.ColumnCollection) {
-					elementColumnNames[j] = col.Name;
+					elementColumnNames[j] = col.GetQuotedName(dialect);
 					j++;
 				}
 				Table table = associatedClass.Table;
-				qualifiedTableName = table.GetQualifiedName( factory.DefaultSchema );
+				qualifiedTableName = table.GetQualifiedName( dialect, factory.DefaultSchema );
 				enableJoinedFetch = OuterJoinLoaderType.Eager;
 			} else {
 				Table table = collection.Table;
-				qualifiedTableName = table.GetQualifiedName( factory.DefaultSchema );
+				qualifiedTableName = table.GetQualifiedName( dialect, factory.DefaultSchema );
 				elementType = collection.Element.Type;
 				span = collection.Element.ColumnSpan;
 				elementColumnNames = new string[span];
@@ -121,7 +124,7 @@ namespace NHibernate.Collection {
 
 				int i=0;
 				foreach(Column col in collection.Element.ColumnCollection) {
-					elementColumnNames[i] = col.Name;
+					elementColumnNames[i] = col.GetQuotedName(dialect);
 					i++;
 				}
 			}
@@ -135,7 +138,7 @@ namespace NHibernate.Collection {
 				indexColumnNames = new string[indexSpan];
 				int i=0;
 				foreach(Column indexCol in indexedMap.Index.ColumnCollection) {
-					indexColumnNames[i++] = indexCol.Name;
+					indexColumnNames[i++] = indexCol.GetQuotedName(dialect);
 				}
 				rowSelectColumnNames = indexColumnNames;
 				rowSelectType = indexType;
@@ -209,43 +212,56 @@ namespace NHibernate.Collection {
 			}
 		}
 
-		public string GetSQLWhereString(string alias) {
-			string[] tokens = sqlWhereString.Split( ' ', '=', '>', '<', '!' );
-			StringBuilder result = new StringBuilder();
-			foreach(string token in tokens) {
-				if (token.Length == 0)
-					continue;
-				if (char.IsLetter(token[0]) && !keywords.Contains(token) ) {
-					//todo: handle and, or, not
-					result.Append(alias).Append(StringHelper.Dot).Append(token);
-				} else {
-					result.Append(token);
-				}
-			}
-			return result.ToString();
+		public string GetSQLWhereString(string alias) 
+		{
+			if(sqlWhereStringTemplate!=null)
+				return StringHelper.Replace(sqlWhereStringTemplate, Template.PlaceHolder, alias);
+			else
+				return null;
+
+
+//			string[] tokens = sqlWhereString.Split( ' ', '=', '>', '<', '!' );
+//			StringBuilder result = new StringBuilder();
+//			foreach(string token in tokens) {
+//				if (token.Length == 0)
+//					continue;
+//				if (char.IsLetter(token[0]) && !keywords.Contains(token) ) {
+//					//todo: handle and, or, not
+//					result.Append(alias).Append(StringHelper.Dot).Append(token);
+//				} else {
+//					result.Append(token);
+//				}
+//			}
+//			return result.ToString();
 		}
 
-		private static readonly IList keywords = new ArrayList();
+//		private static readonly IList keywords = new ArrayList();
+//
+//		static CollectionPersister() {
+//			keywords.Add("and");
+//			keywords.Add("or");
+//			keywords.Add("not");
+//			keywords.Add("like");
+//			keywords.Add("is");
+//			keywords.Add("null");
+//		}
 
-		static CollectionPersister() {
-			keywords.Add("and");
-			keywords.Add("or");
-			keywords.Add("not");
-			keywords.Add("like");
-			keywords.Add("is");
-			keywords.Add("null");
-		}
+		public string GetSQLOrderByString(string alias) 
+		{
+			if(sqlOrderByStringTemplate!=null)
+				return StringHelper.Replace(sqlOrderByStringTemplate, Template.PlaceHolder, alias);
+			else
+				return null;
 
-		public string GetSQLOrderByString(string alias) {
-			string[] tokens = sqlOrderByString.Split(',');
-			StringBuilder result = new StringBuilder();
-			int i=0;
-			foreach(string token in tokens) {
-				i++;
-				result.Append(alias).Append(StringHelper.Dot).Append( token.Trim() );
-				if (i<tokens.Length) result.Append(StringHelper.CommaSpace);
-			}
-			return result.ToString();
+//			string[] tokens = sqlOrderByString.Split(',');
+//			StringBuilder result = new StringBuilder();
+//			int i=0;
+//			foreach(string token in tokens) {
+//				i++;
+//				result.Append(alias).Append(StringHelper.Dot).Append( token.Trim() );
+//				if (i<tokens.Length) result.Append(StringHelper.CommaSpace);
+//			}
+//			return result.ToString();
 		}
 
 		public OuterJoinLoaderType EnableJoinFetch {

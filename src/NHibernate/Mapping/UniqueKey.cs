@@ -4,30 +4,46 @@ using System.Collections;
 using NHibernate.Util;
 using NHibernate.Dialect;
 
-
-namespace NHibernate.Mapping {
+namespace NHibernate.Mapping 
+{
 	
-	public class UniqueKey : Constraint {
+	public class UniqueKey : Constraint 
+	{
 		
-		public string SqlConstraintString(Dialect.Dialect d) {
+		public string SqlConstraintString(Dialect.Dialect d) 
+		{
 			StringBuilder buf = new StringBuilder(" unique (");
-			int i=0;
-			foreach(Column col in ColumnCollection) {
-				buf.Append( col.Name);
-				if (i < ColumnCollection.Count-1) buf.Append(StringHelper.CommaSpace);
+			bool commaNeeded = false;
+			
+			foreach(Column col in ColumnCollection) 
+			{
+				if(commaNeeded) buf.Append( StringHelper.CommaSpace );
+				commaNeeded = true;
+				
+				buf.Append( col.GetQuotedName(d) );
+				
 			}
+			
 			return buf.Append(StringHelper.ClosedParen).ToString();
 		}
 
-		public override string SqlConstraintString(Dialect.Dialect d, string constraintName) {
+		public override string SqlConstraintString(Dialect.Dialect d, string constraintName) 
+		{
 			StringBuilder buf = new StringBuilder(
 				d.GetAddPrimaryKeyConstraintString(constraintName))
 				.Append('(');
-			int i=0;
-			foreach(Column col in ColumnCollection) {
-				buf.Append( col.Name);
-				if (i < ColumnCollection.Count - 1) buf.Append(StringHelper.CommaSpace);
+			
+			bool commaNeeded = false;
+
+			foreach(Column col in ColumnCollection) 
+			{
+				if(commaNeeded) buf.Append( StringHelper.CommaSpace );
+				commaNeeded = true;
+				
+				buf.Append( col.GetQuotedName(d) );
+				
 			}
+			
 			return StringHelper.Replace( buf.Append(StringHelper.ClosedParen).ToString(), "primary key", "unique" );
 		}
 	}

@@ -13,15 +13,15 @@ namespace NHibernate.Mapping {
 			string[] refcols = new string[ ColumnSpan ];
 			int i=0;
 			foreach(Column col in referencedTable.PrimaryKey.ColumnCollection) {
-				refcols[i] = col.Name;
+				refcols[i] = col.GetQuotedName(d);
 				i++;
 			}
 			i=0;
 			foreach(Column col in ColumnCollection) {
-				cols[i] = col.Name;
+				cols[i] = col.GetQuotedName(d);
 				i++;
 			}
-			return d.GetAddForeignKeyConstraintString(constraintName, cols, referencedTable.QualifiedName, refcols);
+			return d.GetAddForeignKeyConstraintString(constraintName, cols, referencedTable.GetQualifiedName(d), refcols);
 		}
 
 		public Table ReferencedTable {

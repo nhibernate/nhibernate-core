@@ -390,7 +390,7 @@ namespace NHibernate.Persister {
 
 			int i=0;
 			foreach(Column col in idValue.ColumnCollection) {
-				identifierColumnNames[i] = col.Name;
+				identifierColumnNames[i] = col.GetQuotedName(dialect);
 				i++;
 			}
 
@@ -425,7 +425,7 @@ namespace NHibernate.Persister {
 
 			if (model.IsVersioned) {
 				foreach(Column col in model.Version.ColumnCollection) {
-					versionColumnName = col.Name; //only hapens once
+					versionColumnName = col.GetQuotedName(dialect); //only hapens once
 				}
 			} else {
 				versionColumnName = null;
