@@ -1,45 +1,44 @@
 using System;
 using System.Data;
 
-using DotNetMock.Framework.Data;
-
 using NHibernate.Type;
-
 using NUnit.Framework;
-
 
 namespace NHibernate.Test.TypesTest 
 {
 	/// <summary>
-	/// The Unit Test for the DecimalType
+	/// The Unit Tests for the DecimalType
 	/// </summary>
 	[TestFixture]
-	public class DecimalTypeFixture 
+	public class DecimalTypeFixture : BaseTypeFixture
 	{
 
 		/// <summary>
-		/// Test that a System.Decimal created with an extra <c>0</c> will still be equal
-		/// to the System.Decimal without the last <c>0</c>
+		/// Test that two decimal fields that are exactly equal are returned
+		/// as Equal by the DecimalType.
 		/// </summary>
-		/// <remarks>
-		/// A decimal variable initialized to <c>5.643510M</c> should be 
-		/// equal to a <c>5.64351M</c> read from a IDataReader.
-		/// </remarks>
 		[Test]
-		public void GetDiffPrecision() 
+		public void Equals() 
 		{
-			NullableType decimalType = TypeFactory.GetDecimalType(19, 5);
-			IDataReader reader = GetReader();
+			decimal lhs = 5.64351M;
+			decimal rhs = 5.64351M;
 
-			decimal expected = 5.643510M;
-			
-			// move to the first record
-			reader.Read();
+			NullableType type = NHibernate.Decimal;
+			Assert.IsTrue(type.Equals(lhs, rhs));
+		}
 
-			object actualValue = decimalType.Get(reader, 1);
-			Assertion.Assert("Expected double equals Actual", expected.Equals(actualValue));
-			Assertion.Assert("Actual double equals Expected", actualValue.Equals(expected));
-			
+		/// <summary>
+		/// Test that two decimal fields that are equal except one has a higher precision than
+		/// the other one are returned as Equal by the DecimalType.
+		/// </summary>
+		[Test]
+		public void EqualsWithDiffPrecision() 
+		{
+			decimal lhs = 5.64351M;
+			decimal rhs = 5.643510M;
+
+			NullableType type = NHibernate.Decimal;
+			Assert.IsTrue(type.Equals(lhs, rhs));
 		}
 
 		/// <summary>
@@ -53,38 +52,42 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Get() 
 		{
-			NullableType decimalType = TypeFactory.GetDecimalType(19, 5);
-			IDataReader reader = GetReader();
+			NullableType type = TypeFactory.GetDecimalType(19, 5);
 
 			decimal expected = 5.64351M;
 			
 			// move to the first record
 			reader.Read();
 
-			object actualValue = decimalType.Get(reader, 1);
-			Assertion.Assert("Expected double equals Actual", expected.Equals(actualValue));
-			Assertion.Assert("Actual double equals Expected", actualValue.Equals(expected));
-		}
+			decimal actualValue = (decimal)type.Get(reader, DecimalTypeColumnIndex);
+			Assert.AreEqual(expected, actualValue);
 
-		private IDataReader GetReader() 
+		}
+		
+		/// <summary>
+		/// Test that a System.Decimal created with an extra <c>0</c> will still be equal
+		/// to the System.Decimal without the last <c>0</c>
+		/// </summary>
+		/// <remarks>
+		/// A decimal variable initialized to <c>5.643510M</c> should be 
+		/// equal to a <c>5.64351M</c> read from a IDataReader.
+		/// </remarks>
+		[Test]
+		public void GetWithDiffPrecision() 
 		{
-			MockDataReader mockReader = new MockDataReader();
+			NullableType type = TypeFactory.GetDecimalType(19, 5);
+
+			decimal expected = 5.643510M;
 			
-			DataTable dataTable = new DataTable();
-			dataTable.Columns.Add(new DataColumn("ID", typeof(int)));
-			dataTable.Columns.Add(new DataColumn("DecimalValue", typeof(decimal)));
-			mockReader.SetSchemaTable(dataTable);
+			// move to the first record
+			reader.Read();
 
-			object[,] rowValues = new object[2,2];
-			rowValues[0,0] = 0;
-			rowValues[0,1] = 5.64351M;
-			rowValues[1,0] = 1;
-			rowValues[1,1] = 5.6435101M;
+			decimal actualValue = (decimal)type.Get(reader, DecimalTypeColumnIndex);
+			Assert.AreEqual(expected, actualValue, "Expected double equals Actual");
 			
-			mockReader.SetRows(rowValues);
-
-			return mockReader;
-
+			
 		}
+
+
 	}
 }
