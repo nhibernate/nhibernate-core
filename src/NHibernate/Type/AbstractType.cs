@@ -13,27 +13,19 @@ namespace NHibernate.Type {
 	public abstract class AbstractType : IType {
 		
 		public virtual bool IsAssociationType {
-			get {
-				return false;
-			}
+			get { return false;	}
 		}
 	
 		public virtual bool IsPersistentCollectionType {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 	
 		public virtual bool IsComponentType {
-			get {
-				return false;
-			}
+			get { return false;	}
 		}
 	
 		public virtual bool IsEntityType {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 
 		public virtual object Disassemble(object value, ISessionImplementor session) {
@@ -45,7 +37,6 @@ namespace NHibernate.Type {
 			}
 		}
 	
-		
 		public virtual object Assemble(object cached, ISessionImplementor session, object owner) {
 			if ( cached==null ) {
 				return null;

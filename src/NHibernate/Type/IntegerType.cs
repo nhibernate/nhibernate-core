@@ -5,19 +5,10 @@ using NHibernate.Engine;
 
 namespace NHibernate.Type {
 
-	/// <summary>
-	/// IntegerType.
-	/// </summary>
 	public class IntegerType : PrimitiveType, IDiscriminatorType, IVersionType {
 	
-		// In C# boxing and unboxing is automatic. No System.Number.Integer is needed.
-		// Is it correct?
-
 		public override object Get(IDataReader rs, string name) {
-            return (int)rs[name];
-
-			//For performance reason should be better read cursor by int index
-			//ie  return re.GetInt32(index);
+            return rs[name];
 		}
 
 		public override System.Type PrimitiveClass {
@@ -29,7 +20,9 @@ namespace NHibernate.Type {
 		}
 		
 		public override void Set(IDbCommand cmd, object value, int index) {
-			( (IDataParameter)cmd.Parameters[index] ).Value = (int) value;
+			IDataParameter parm = cmd.Parameters[index] as IDataParameter;
+			parm.DbType = DbType.Int32;
+			parm.Value = value;
 		}
 
 		public override DbType SqlType {
@@ -44,7 +37,7 @@ namespace NHibernate.Type {
             return value.ToString();
 		}
 
-		public virtual object StringToObject(string xml) {
+		public object StringToObject(string xml) {
             return int.Parse(xml);
 		}
 

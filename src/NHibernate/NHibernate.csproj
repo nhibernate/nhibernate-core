@@ -1017,6 +1017,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\TimestampType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\TrueFalseType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1040,6 +1045,15 @@
                     RelPath = "Util\IdentityMap.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\ObjectUtils.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\ObjectUtils.java"
+                    BuildAction = "None"
                 />
                 <File
                     RelPath = "Util\PropertiesHelper.cs"

@@ -20,6 +20,10 @@ namespace NHibernate.Mapping {
 		private string nullValue;
 		private Table table;
 
+		public Value(Table table) {
+			this.table = table;
+		}
+
 		public void AddColumn(Column column) {
 			if ( !columns.Contains(column) ) columns.Add(column);
 		}
@@ -32,7 +36,7 @@ namespace NHibernate.Mapping {
 		public IList ConstraintColumns {
 			get { return columns; }
 		}
-		public IType Type {
+		public virtual IType Type {
 			get { return type; }
 			set {
 				this.type = type;

@@ -1,17 +1,11 @@
 using System;
 
-namespace NHibernate.Type
-{
+namespace NHibernate.Type {
 	/// <summary>
-	/// Summary description for SerializationException.
+	/// Thrown when a property cannot be serialized/deserialized
 	/// </summary>
-	public class SerializationException
-	{
-		public SerializationException()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
-		}
+	public class SerializationException : HibernateException {
+		
+		public SerializationException(string msg, Exception root) : base(msg, root) { }
 	}
 }

@@ -51,7 +51,7 @@ namespace NHibernate {
 		/// <summary>
 		/// NHibernate string type
 		/// </summary>
-		//public static readonly NullableType String = new StringType();
+		public static readonly NullableType String = new StringType();
 		
 		/// <summary>
 		/// NHibernate time type
@@ -66,7 +66,7 @@ namespace NHibernate {
 		/// <summary>
 		/// NHibernate timestamp type
 		/// </summary>
-		//public static readonly NullableType Timestamp = new TimestampType();
+		public static readonly NullableType Timestamp = new TimestampType();
 		
 		/// <summary>
 		/// NHibernate boolean type
@@ -138,12 +138,12 @@ namespace NHibernate {
 		/// </summary>
 		//public static readonly IType Object = new ObjectType();
 		
-		/*
+		
 		/// <summary>
 		/// NHibernate serializable type
 		/// </summary>
-		public static readonly NullableType Serializable = new SerializableType(Serializable.Name);
-		*/
+		public static readonly NullableType Serializable = new SerializableType(typeof(object));
+
 		
 		/// <summary>
 		/// Cannot be instantiated.

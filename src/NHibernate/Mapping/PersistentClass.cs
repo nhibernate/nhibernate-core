@@ -26,7 +26,7 @@ namespace NHibernate.Mapping {
 			set { discriminatorValue = value; }
 		}
 
-		public void AddSubclass(Subclass subclass) {
+		public virtual void AddSubclass(Subclass subclass) {
 			subclasses.Add(subclass);
 		}
 
@@ -80,18 +80,18 @@ namespace NHibernate.Mapping {
 			get { return persistentClass.Name; }
 		}
 
-		public abstract bool IsMutable { get; }
+		public abstract bool IsMutable { get; set;}
 		public abstract bool HasIdentifierProperty { get; }
-		public abstract Property IdentifierProperty { get; }
-		public abstract Value Identifier { get; }
-		public abstract Property Version { get; }
-		public abstract Value Discriminator { get; }
-		public abstract bool IsInherited { get; }
-		public abstract bool IsPolymorphic { get; }
-		public abstract bool IsVersioned { get; }
-		public abstract ICacheConcurrencyStrategy Cache { get; }
+		public abstract Property IdentifierProperty { get; set; }
+		public abstract Value Identifier { get; set; }
+		public abstract Property Version { get; set; }
+		public abstract Value Discriminator { get; set; }
+		public abstract bool IsInherited { get;  }
+		public abstract bool IsPolymorphic { get; set; }
+		public abstract bool IsVersioned { get;}
+		public abstract ICacheConcurrencyStrategy Cache { get; set;}
 		public abstract PersistentClass Superclass { get; set; }
-		public abstract bool IsExplicitPolymorphism { get; }
+		public abstract bool IsExplicitPolymorphism { get; set;}
 
 		public abstract ICollection PropertyClosureCollection { get; }
 		public abstract ICollection TableClosureCollection { get; }
@@ -123,10 +123,10 @@ namespace NHibernate.Mapping {
 			set { proxyInterface = value ; }
 		}
 
-		public abstract bool HasEmbeddedIdentifier { get; }
-		public abstract System.Type Persister { get; }
+		public abstract bool HasEmbeddedIdentifier { get; set;}
+		public abstract System.Type Persister { get; set;}
 		public abstract Table RootTable { get; }
-		public abstract RootClass RootClass { get; }
+		public abstract RootClass RootClazz { get; }
 		public abstract Value Key { get; set; }
 
 		public void CreatePrimaryKey() {

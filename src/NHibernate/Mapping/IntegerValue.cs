@@ -1,17 +1,14 @@
 using System;
+using NHibernate.Type;
 
-namespace NHibernate.Mapping
-{
-	/// <summary>
-	/// Summary description for IntegerValue.
-	/// </summary>
-	public class IntegerValue
-	{
-		public IntegerValue()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
+namespace NHibernate.Mapping {
+	
+	public class IntegerValue : Value{
+		
+		public IntegerValue(Table table) : base(table) { }
+
+		public override IType Type {
+			get { return NHibernate.Integer; }
 		}
 	}
 }

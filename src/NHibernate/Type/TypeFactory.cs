@@ -5,6 +5,7 @@ using System.Globalization;
 using NHibernate.Type;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Type {
 
@@ -99,10 +100,9 @@ namespace NHibernate.Type {
 			if (type==null) {
 				System.Type typeClass;
 				try {
-					typeClass = null; //HACK: need ReflectHelper implementation
-					//TODO: typeClass = ReflectHelper.classForName(typeName);
+					typeClass = ReflectHelper.ClassForName(typeName);
 				}
-				catch (TypeLoadException tle) {
+				catch (Exception) {
 					typeClass = null;
 				}
 				if (typeClass!=null) {
@@ -145,7 +145,7 @@ namespace NHibernate.Type {
 	
 		/*
 		public static PersistentCollectionType Array(string role, Class elementClass) {
-			return new ArrayType(role, elementClass);
+			return new ArrayTyperole, elementClass);
 		}
 		public static PersistentCollectionType List(string role) {
 			return new ListType(role);

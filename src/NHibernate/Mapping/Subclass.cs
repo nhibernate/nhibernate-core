@@ -16,10 +16,11 @@ namespace NHibernate.Mapping {
 
 		public override ICacheConcurrencyStrategy Cache {
 			get { return Superclass.Cache; }
+			set { Superclass.Cache = value; }
 		}
 
-		public override RootClass RootClass {
-			get { return Superclass.RootClass; }
+		public override RootClass RootClazz {
+			get { return Superclass.RootClazz; }
 		}
 
 		public override PersistentClass Superclass {
@@ -29,24 +30,29 @@ namespace NHibernate.Mapping {
 
 		public override Property IdentifierProperty {
 			get { return Superclass.IdentifierProperty; }
+			set { Superclass.IdentifierProperty = value; }
 		}
 		public override Value Identifier {
 			get { return Superclass.Identifier; }
+			set { Superclass.Identifier = value; }
 		}
 		public override bool HasIdentifierProperty {
 			get { return Superclass.HasIdentifierProperty; }
 		}
 		public override Value Discriminator {
 			get { return Superclass.Discriminator; }
+			set { Superclass.Discriminator = value; }
 		}
 		public override bool IsMutable {
 			get { return Superclass.IsMutable; }
+			set { Superclass.IsMutable = value; }
 		}
 		public override bool IsInherited {
 			get { return true; }
 		}
 		public override bool IsPolymorphic {
 			get { return true; }
+			set { throw new InvalidOperationException(); }
 		}
 		public override void AddProperty(Property p) {
 			base.AddProperty(p);
@@ -88,12 +94,15 @@ namespace NHibernate.Mapping {
 		}
 		public override Property Version {
 			get { return Superclass.Version; }
+			set { Superclass.Version = value; }
 		}
 		public override bool HasEmbeddedIdentifier {
 			get { return Superclass.HasEmbeddedIdentifier; }
+			set { Superclass.HasEmbeddedIdentifier = value; }
 		}
 		public override System.Type Persister {
 			get { return Superclass.Persister; }
+			set { Superclass.Persister = value; }
 		}
 		public override Table RootTable {
 			get { return Superclass.RootTable; }
@@ -110,6 +119,7 @@ namespace NHibernate.Mapping {
 		}
 		public override bool IsExplicitPolymorphism {
 			get { return Superclass.IsExplicitPolymorphism; }
+			set { Superclass.IsExplicitPolymorphism = value; }
 		}
 
 	}

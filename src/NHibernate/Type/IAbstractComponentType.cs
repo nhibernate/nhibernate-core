@@ -19,9 +19,7 @@ namespace NHibernate.Type {
 		
 		object GetPropertyValue(object component, int i);
 		
-		object Instantiate(object parent, ISessionImplementor session);
-		
-		//Cascades.CascadeStyle Cascade(int i);
+		Cascades.CascadeStyle Cascade(int i);
 		
 		int EnableJoinedFetch(int i);
 	}

@@ -1,17 +1,15 @@
 using System;
+using NHibernate.Type;
 
-namespace NHibernate.Mapping
-{
+namespace NHibernate.Mapping {
+	
 	/// <summary>
-	/// Summary description for List.
+	/// A list has a primary key consisting of the key columns + index column
 	/// </summary>
-	public class List
-	{
-		public List()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
-		}
+	public abstract class List : IndexedCollection {
+		
+		public List(PersistentClass owner) : base(owner) { }
+
+		
 	}
 }

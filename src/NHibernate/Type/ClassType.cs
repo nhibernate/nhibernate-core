@@ -1,17 +1,11 @@
 using System;
+using System.Data;
+using NHibernate.Util;
 
-namespace NHibernate.Type
-{
-	/// <summary>
-	/// Summary description for ClassType.
-	/// </summary>
-	public class ClassType
-	{
-		public ClassType()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
-		}
+namespace NHibernate.Type {
+	
+	public class ClassType { //: ImmutableType {
+		
+
 	}
 }
