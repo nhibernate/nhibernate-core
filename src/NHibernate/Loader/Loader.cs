@@ -9,7 +9,6 @@ using NHibernate.Persister;
 using NHibernate.Type;
 using NHibernate.Sql;
 
-
 namespace NHibernate.Loader {
 	/// <summary>
 	/// Abstract superclass of object loading (and querying) strategies.
@@ -111,8 +110,14 @@ namespace NHibernate.Loader {
 
 			IList results = new ArrayList();
 
-#warning this will fail because the SQL has "WHERE .. = ?" and there is no parameter collection (see SimpleTest)
 			IDbCommand st = PrepareQueryStatement( SQLString, values, types, namedParams, selection, false, session );
+
+			// Hack: save created transaction
+			// the actual problem is the TransactionManager approach.
+			// Ideally it should register the current AdoTransaction at the Session instance.
+			Impl.AdoHack.JoinTx(st);
+			// end-of Hack
+
 			IDataReader rs = GetResultSet(st, selection, session);
 
 			try {
@@ -385,7 +390,12 @@ namespace NHibernate.Loader {
 
 			IDbCommand st = session.Batcher.PrepareQueryStatement(sql);
 
-			try {
+			// Hack: force parameters to be created
+			Impl.AdoHack.ReplaceHqlParameters(session.Factory.Dialect, st);
+			// end-of Hack
+
+			try 
+			{
 				
 				if (selection!=null && selection.Timeout!=0) st.CommandTimeout = selection.Timeout;
 

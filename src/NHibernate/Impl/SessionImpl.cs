@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Text;
 using System.Collections;
+using System.Text.RegularExpressions;
 using NHibernate.Type;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -14,7 +15,130 @@ using NHibernate.Util;
 using NHibernate.Id;
 
 namespace NHibernate.Impl {
-	
+
+	#warning Hack transaction and parameters
+	// Put all hacks to get SimpleTest to work into this class so we can trace it
+	public class AdoHack {
+		private static ITransaction transaction = null;
+
+		// need to couple active IDbTransaction to IDbCommand
+		// right no we have a disconnected ITransaction and ISession
+		public static ITransaction Tx 
+		{
+			get { return transaction; }
+			set { transaction = value; }
+		}
+
+		public static void JoinTx(IDbCommand cmd)
+		{
+			cmd.Transaction = ((Transaction.Transaction)transaction).AdoTransaction;
+		}
+
+		// Force parametercollection to be created
+		// Of course this is not the right place, this really means the entire concept
+		// of named parameters should be revised!!!
+		public static void CreateParameters(Dialect.Dialect dialect, IDbCommand cmd) 
+		{
+			string sql = cmd.CommandText;
+
+			if (sql == null)
+				return;
+			if (dialect.UseNamedParameters)
+			{
+				Regex parser = new Regex("(?<param>" + dialect.NamedParametersPrefix + "\\w*\\b)", RegexOptions.None); //.Compiled);
+				string[] tokens = parser.Split(sql);
+				if  (tokens.Length > 0)	
+				{
+					for (int idx=0; idx < tokens.Length; idx++)	
+					{
+						string token = tokens[idx];
+
+						if (token != null && token.Length > 1 && token.Substring(0, 1).Equals(dialect.NamedParametersPrefix)) 
+						{
+							IDbDataParameter param;
+
+							param = cmd.CreateParameter();
+							param.ParameterName = token;
+							cmd.Parameters.Add(param);
+						}
+					}
+				}
+			}
+			else 
+			{
+				int idx      = 0;
+				int paramIdx = 0;
+
+				while((idx=sql.IndexOf("?", idx)) != -1) 
+				{
+					IDbDataParameter param;
+
+					param = cmd.CreateParameter();
+					param.ParameterName = paramIdx.ToString();
+					cmd.Parameters.Add(param);
+					paramIdx++;
+					idx++;
+				}
+			}
+		}
+
+		public static void ReplaceHqlParameters(Dialect.Dialect dialect, IDbCommand cmd) 
+		{
+			Regex parser = new Regex("(?<param>\\[<\\w*>\\])", RegexOptions.Compiled);
+			string[] tokens;
+			string sql = cmd.CommandText;
+			
+			if (sql == null)
+				return;
+			tokens = parser.Split(sql);
+			if  (tokens.Length > 0)	
+			{
+				StringBuilder sb = new StringBuilder();
+
+				for (int idx=0; idx < tokens.Length; idx++)	
+				{
+					string token = tokens[idx];
+
+					if (token != null && token.Length > 1 && token.Substring(0, 2).Equals("[<")) 
+					{
+						if (dialect.UseNamedParameters) 
+						{
+							IDbDataParameter param;
+
+							param = cmd.CreateParameter();
+							param.ParameterName = dialect.NamedParametersPrefix + token.Substring(2, token.Length - 4);
+							cmd.Parameters.Add(param);
+							sb.Append(param.ParameterName);
+						}
+						else 
+						{
+							throw new NotImplementedException("Hack not complete for this dialect");
+						}
+					}
+					else 
+					{
+						sb.Append(token);
+					}
+				}
+				cmd.CommandText = sb.ToString();
+			}
+		}
+
+		// parametercollection starts at 0
+		public static int ParameterPos(int pos)
+		{
+			return pos - 1;
+		}
+
+	}
+	// -- end of Hack
+
+
+
+
+
+
+
 	/// <summary>
 	/// Concrete implementation of a Session, also the central, organizing component of
 	/// Hibernate's internal implementaiton.
@@ -45,10 +169,6 @@ namespace NHibernate.Impl {
 		[NonSerialized] private IDictionary collections; //key=PersistentCollection, value=CollectionEntry
 
 		private IList nullifiables = new ArrayList();
-
-		#region Hack transaction: need to couple active IDbTransaction to IDbCommand
-		private ITransaction transaction = null;
-		#endregion
 
 		private IInterceptor interceptor;
 
@@ -1633,6 +1753,9 @@ namespace NHibernate.Impl {
 			IClassPersister persister = e.persister;
 			object id = e.id;
 			object[] hydratedState = e.loadedState;
+
+#warning SimpleTest runs until this point: persister is null somehow!!!!
+
 			IType[] types = persister.PropertyTypes;
 
 			if(log.IsDebugEnabled)
@@ -1663,15 +1786,12 @@ namespace NHibernate.Impl {
 		public ITransaction BeginTransaction() {
 			callAfterTransactionCompletionFromDisconnect = false;
 
-			#region Hack transaction: store transaction 
-			transaction = factory.TransactionFactory.BeginTransaction(this);
-			return transaction;
-			#endregion
-		}
+			// Hack: save created transaction
+			AdoHack.Tx = factory.TransactionFactory.BeginTransaction(this);
+			
 
-		#region Hack transaction: need to couple active IDbTransaction to IDbCommand
-		internal ITransaction Transaction { get { return transaction; } }
-		#endregion
+			return AdoHack.Tx;
+		}
 
 		/// <summary>
 		/// 

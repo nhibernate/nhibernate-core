@@ -636,9 +636,9 @@ namespace NHibernate.Hql {
 					int[] locs = GetNamedParameterLocs(name);
 					for (int i = 0; i < locs.Length; i++) {
 
-						#warning this will fail because the SQL has "WHERE .. = ?" and there is no parameter collection (see SimpleTest)
-						// the problem with the parametercollection shows up again...
-						typedval.Type.NullSafeSet(ps, typedval.Value, locs[i] + start, session);
+						// Hack: parametercollection starts at 0
+						typedval.Type.NullSafeSet(ps, typedval.Value, Impl.AdoHack.ParameterPos(locs[i] + start), session);
+						// end-of Hack
 					}
 				}
 			}

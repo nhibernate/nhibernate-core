@@ -21,8 +21,10 @@ namespace NHibernate.Test {
 			s.Save(simple, 10);
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 			q.SetProperties(simple);
-			// The INSERT and UPDATE are performed, but the SELECT will fail due
-			// to parameter problems in Loader and QueryTranslator
+			// The INSERT, UPDATE amd SELECT are performed due to some hacks, 
+			// see Impl\SessionImpl.cs class AdoHack
+			// After loading the resultset, the code breaks at SessionImpl.InitializeEntity(...).
+			// Also the transaction remains opened ;-)
 			//
 			Assertion.Assert( q.List()[0]==simple );
 			s.Delete(simple);

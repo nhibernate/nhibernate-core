@@ -4,9 +4,6 @@ using System.Xml;
 using System.Data;
 using System.Collections;
 using System.Runtime.CompilerServices;
-#region Hack parameters
-using System.Text.RegularExpressions;
-#endregion
 
 using NHibernate.Cache;
 using NHibernate.Connection;
@@ -363,13 +360,15 @@ namespace NHibernate.Impl {
 					retVal.CommandText = sql;
 					retVal.CommandType = CommandType.Text;
 
-					#region Hack parameters
-					CreateParameters(retVal);
+					// Hack: force parameters to be created
+					Impl.AdoHack.CreateParameters(dialect, retVal);
+					// end-of Hack
 
-					// Disable Prepare() as long as the parameters have no datatypes!!
-
-					//	retVal.Prepare();
-					#endregion
+					// Hack: disable Prepare() as long as the parameters have no datatypes!!
+#if FALSE
+					retVal.Prepare();
+#endif
+					// end-of Hack
 
 					return retVal;
 				} catch (Exception e) {
@@ -377,54 +376,6 @@ namespace NHibernate.Impl {
 				}
 			}
 		}
-
-		#region Hack parameters: temporary hack to get parameters working
-		// Force parametercollection to be created
-		// Of course this is not the right place, this really means the entire concept
-		// of named parameters should be revised!!!
-		private void CreateParameters(IDbCommand cmd) 
-		{
-			string sql = cmd.CommandText;
-
-			if (sql == null)
-				return;
-			if (dialect.UseNamedParameters)
-			{
-				Regex parser = new Regex("(?<param>" + dialect.NamedParametersPrefix + "\\w*\\b)", RegexOptions.None); //.Compiled);
-				string[] tokens = parser.Split(sql);
-				if  (tokens.Length > 0)	{
-					for (int idx=0; idx < tokens.Length; idx++)	{
-						string token = tokens[idx];
-
-						if (token != null && token.Length > 1 && token.Substring(0, 1).Equals(dialect.NamedParametersPrefix)) {
-							IDbDataParameter param;
-
-							param = cmd.CreateParameter();
-							param.ParameterName = token;
-							cmd.Parameters.Add(param);
-						}
-					}
-				}
-			}
-			else {
-				int idx      = 0;
-				int paramIdx = 0;
-
-				while((idx=sql.IndexOf("?", idx)) != -1) {
-					IDbDataParameter param;
-
-					param = cmd.CreateParameter();
-					param.ParameterName = paramIdx.ToString();
-					cmd.Parameters.Add(param);
-					paramIdx++;
-					idx++;
-				}
-			}
-		}
-		#endregion
-
-
-
 
 		public void ClosePreparedStatement(IDbCommand ps) 
 		{

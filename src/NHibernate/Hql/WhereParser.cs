@@ -381,7 +381,7 @@ namespace NHibernate.Hql {
 			} else if (token.StartsWith(ParserHelper.HqlVariablePrefix)) {
 				//named query parameter
 				q.AddNamedParameter(token.Substring(1));
-				AppendToken(q, "?");
+				AppendToken(q, "[<" + token.Substring(1) + ">]"); // THEO
 			} else {
 				IQueryable p = q.GetPersisterUsingImports(token);
 				if (p != null) { // the name of a class

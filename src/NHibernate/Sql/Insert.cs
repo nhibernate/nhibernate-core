@@ -14,9 +14,11 @@ namespace NHibernate.Sql {
 		private string tableName;
 		private SortedList columns = new SortedList();
 
-		#region Hack parameters: need original order, refactor the entire approach
+
+		// Hack parameters: need original order, refactor the entire approach
+		#warning Hack transaction and parameters
 		private ArrayList columnOrder = new ArrayList(); 
-		#endregion
+		// end-of Hack
 
 		public Insert(Dialect.Dialect dialect) 
 		{

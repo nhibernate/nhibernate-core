@@ -1,9 +1,6 @@
 using System;
 using System.Data;
 using NHibernate.Engine;
-#region Hack transaction
-using Tx = NHibernate.Transaction;
-#endregion
 namespace NHibernate.Impl 
 {
 	/// <summary>
@@ -17,11 +14,9 @@ namespace NHibernate.Impl
 
 			IDbCommand s = GetStatement();
 
-			#region Hack transaction: see remarks at Impl\SessionImpl
-			// the actual problem is the TransactionManager approach.
-			// Ideally it should register the current AdoTransaction at the Session instance.
-			s.Transaction =  ((Tx.Transaction)((Impl.SessionImpl)session).Transaction).AdoTransaction;
-			#endregion
+			// Hack: join transaction
+			Impl.AdoHack.JoinTx(s);
+			// end-of Hack
 
 			int rowCount = s.ExecuteNonQuery();
 
