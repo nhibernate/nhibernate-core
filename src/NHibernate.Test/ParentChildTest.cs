@@ -93,21 +93,132 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
 		public void ParentChild() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Parent p = new Parent();
+			Child c = new Child();
+			c.Parent = p;
+			p.Child = c;
+			s.Save(p);
+			s.Save(c);
+			t.Commit();
+			s.Flush();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			c = (Child)s.Load( typeof(Child), c.Id );
+			p = c.Parent;
+			Assert.IsNotNull( p, "1-1 parent" );
+			c.Count = 32;
+			p.Count = 66;
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			c = (Child)s.Load( typeof(Child), c.Id );
+			p = c.Parent;
+			Assert.AreEqual( 66, p.Count, "1-1 update" );
+			Assert.AreEqual( 32, c.Count, "1-1 update" );
+			Assert.AreEqual( 1, s.Find("from c in class NHibernate.DomainModel.Child where c.Parent.Count=66").Count, "1-1 query" );
+			Assert.AreEqual( 2, ((object[])s.Find("from Parent p join p.Child c where p.Count=66")[0]).Length, "1-1 query" );
+
+			s.Find("select c, c.Parent from c in class NHibernate.DomainModel.Child order by c.Parent.Count");
+			s.Find("select c, c.Parent from c in class NHibernate.DomainModel.Child where c.Parent.Count=66 order by c.Parent.Count");
+			s.Enumerable("select c, c.Parent, c.Parent.Count from c in class NHibernate.DomainModel.Child order by c.Parent.Count");
+			Assert.AreEqual( 1, s.Find("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?", (int)66, NHibernate.Int32).Count, "1-1 query" );
+			s.Delete(c);
+			s.Delete(p);
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
 		public void ParentNullChild() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Parent p = new Parent();
+			s.Save(p);
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			p = (Parent)s.Load( typeof(Parent), p.Id );
+			Assert.IsNull( p.Child );
+			p.Count = 66;
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			p = (Parent)s.Load( typeof(Parent), p.Id );
+			Assert.AreEqual( 66, p.Count, "null 1-1 update" );
+			Assert.IsNull( p.Child );
+			s.Delete(p);
+			t.Commit();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
 		public void ManyToMany() 
 		{
+			// if( dialect is Dialect.HSQLDialect) return;
+
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Container c = new Container();
+			c.ManyToMany = new ArrayList();
+			c.Bag = new ArrayList();
+			Simple s1 = new Simple();
+			Simple s2 = new Simple();
+			s1.Count = 123;
+			s2.Count = 654;
+			Contained c1 = new Contained();
+			c1.Bag = new ArrayList();
+			c1.Bag.Add(c);
+			c.Bag.Add(c1);
+			c.ManyToMany.Add(s1);
+			c.ManyToMany.Add(s2);
+			object cid = s.Save(c);
+			s.Save( s1, (long)12 );
+			s.Save( s2, (long)-1 );
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			c = (Container) s.Load( typeof(Container), cid );
+			Assert.AreEqual( 1, c.Bag.Count );
+			Assert.AreEqual( 2, c.ManyToMany.Count );
+			foreach(object obj in c.Bag) 
+			{
+				c1 = (Contained)obj;
+				break;
+			}
+			c.Bag.Remove(c1);
+			c1.Bag.Remove(c);
+			Assert.IsNotNull( c.ManyToMany[0] );
+			c.ManyToMany.RemoveAt(0);
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			c = (Container) s.Load( typeof(Container), cid );
+			Assert.AreEqual( 0, c.Bag.Count );
+			Assert.AreEqual( 1, c.ManyToMany.Count );
+			c1 = (Contained) s.Load( typeof(Contained), c1.Id );
+			Assert.AreEqual( 0, c1.Bag.Count );
+			Assert.AreEqual( 1, s.Delete("from c in class ContainerX") );
+			Assert.AreEqual( 1, s.Delete("from c in class Contained") );
+			Assert.AreEqual( 2, s.Delete("from s in class Simple") );
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
@@ -117,9 +228,67 @@ namespace NHibernate.Test
 		}
 		
 		[Test]
-		[Ignore("Test not yet written")]
+		//[Ignore("Test not yet written")]
 		public void CascadeCompositeElements() 
 		{
+			Container c = new Container();
+			IList list = new ArrayList();
+			c.Cascades = list;
+			Container.ContainerInnerClass cic = new Container.ContainerInnerClass();
+			cic.Many = new Many();
+			cic.One = new One();
+			list.Add(cic);
+			ISession s = sessions.OpenSession();
+			s.Save(c);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			foreach(Container obj in s.Enumerable("from c in class ContainerX")) 
+			{
+				c = obj;
+				break;
+			}
+			foreach(Container.ContainerInnerClass obj in c.Cascades) 
+			{
+				cic = obj;
+				break;
+			}
+			Assert.IsNotNull(cic.Many);
+			Assert.IsNotNull(cic.One);
+			Assert.AreEqual( 1, c.Cascades.Count );
+			s.Delete(c);
+			s.Flush();
+			s.Close();
+
+			c = new Container();
+			s = sessions.OpenSession();
+			s.Save(c);
+			list = new ArrayList();
+			c.Cascades = list;
+			cic = new Container.ContainerInnerClass();
+			cic.Many = new Many();
+			cic.One = new One();
+			list.Add(cic);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			foreach( Container obj in s.Enumerable("from c in class ContainerX") ) 
+			{
+				c = obj;
+			}
+			foreach( Container.ContainerInnerClass obj in c.Cascades ) 
+			{
+				cic = obj;
+			}
+			Assert.IsNotNull( cic.Many );
+			Assert.IsNotNull( cic.One );
+			Assert.AreEqual( 1, c.Cascades.Count );
+			s.Delete(c);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
