@@ -244,15 +244,15 @@ namespace NHibernate {
 		/// <param name="proxy">a persistable object, proxy, persistent collection or null</param>
 		/// <exception cref="HibernateException">if we can't initialize the proxy at this time, eg. the Session was closed</exception>
 		public static void Initialize(object proxy) {
-			if (proxy==null)
+			if( proxy==null )
 			{
 				return;
 			}
-			else if ( proxy is HibernateProxy )
+			else if( proxy is INHibernateProxy )
 			{
-				HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) proxy ).Initialize();
+				NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) proxy ).Initialize();
 			}
-			else if ( proxy is PersistentCollection )
+			else if( proxy is PersistentCollection )
 			{
 				( (PersistentCollection) proxy ).ForceLoad();
 			}
@@ -265,9 +265,9 @@ namespace NHibernate {
 		/// <returns>true if the argument is already initialized, or is not a proxy or collection</returns>
 		public static bool IsInitialized(object proxy)
 		{
-			if ( proxy is HibernateProxy ) 
+			if ( proxy is INHibernateProxy ) 
 			{
-				return !HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) proxy ).IsUninitialized;
+				return !NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) proxy ).IsUninitialized;
 			} 
 			else if ( proxy is PersistentCollection ) 
 			{
@@ -287,9 +287,9 @@ namespace NHibernate {
 		/// <returns>the true class of the instance</returns>
 		public System.Type GetClass(object proxy) 
 		{
-			if(proxy is HibernateProxy) 
+			if(proxy is INHibernateProxy) 
 			{
-				return HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) proxy ).GetImplementation().GetType();
+				return NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) proxy ).GetImplementation().GetType();
 			}
 			else 
 			{

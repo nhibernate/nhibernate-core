@@ -1364,17 +1364,27 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Proxy\HibernateProxy.cs"
+                    RelPath = "Proxy\INHibernateProxy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Proxy\HibernateProxyHelper.cs"
+                    RelPath = "Proxy\IProxyGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Proxy\LazyInitializer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Proxy\NHibernateProxyHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Proxy\ProxyGeneratorFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

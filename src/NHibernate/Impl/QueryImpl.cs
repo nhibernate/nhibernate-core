@@ -162,10 +162,13 @@ namespace NHibernate.Impl {
 			SetParameter(position, val, NHibernate.Timestamp);
 			return this;
 		}
-		public IQuery SetEntity(int position, object val) {
-			SetParameter(position, val, NHibernate.Entity( HibernateProxyHelper.GetClass(val)));
+
+		public IQuery SetEntity(int position, object val) 
+		{
+			SetParameter( position, val, NHibernate.Entity( NHibernateProxyHelper.GetClass( val ) ) );
 			return this;
 		}
+
 		public IQuery SetEnum(int position, System.Enum val) {
 			SetParameter(position, val, NHibernate.Enum( val.GetType() ) );
 			return this;
@@ -235,7 +238,7 @@ namespace NHibernate.Impl {
 			return this;
 		}
 		public IQuery SetEntity(string name, object val) {
-			SetParameter(name, val, NHibernate.Entity( HibernateProxyHelper.GetClass( val ) ) );
+			SetParameter(name, val, NHibernate.Entity( NHibernateProxyHelper.GetClass( val ) ) );
 			return this;
 		}
 		public IQuery SetEnum(string name, System.Enum val) {
@@ -254,7 +257,7 @@ namespace NHibernate.Impl {
 		}
 		
 		private IType GuessType(object param) {
-			System.Type clazz = HibernateProxyHelper.GetClass(param); 
+			System.Type clazz = NHibernateProxyHelper.GetClass(param); 
 			return GuessType(clazz);
 		}
 

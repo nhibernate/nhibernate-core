@@ -48,6 +48,15 @@ namespace NHibernate.Impl
 		private IDictionary entitiesByKey; //key=Key, value=Object
 		private IDictionary proxiesByKey; //key=Key, value=HibernateProxy
 		
+		// these are used to serialize the proxiesByKey Dictionary - I was not able to
+		// have a Hashtable serialize fully by the time that SessionImpl OnDeserialization
+		// was getting called - I think I'm not completely understanding the sequence of 
+		// deserialization events.  When SessionImpl was getting the OnDeserialization called
+		// the proxies were not fully deserialized. 
+		private ArrayList tmpProxiesKey;
+		private ArrayList tmpProxiesProxy;
+
+		
 		//IdentityMaps are serializable in NH 
 		private IdentityMap entries;//key=Object, value=EntityEntry
 		private IdentityMap arrayHolders; //key=array, value=ArrayHolder
@@ -627,7 +636,12 @@ namespace NHibernate.Impl
 			this.flushMode = (FlushMode)info.GetValue( "flushMode", typeof(FlushMode) );
 			this.callAfterTransactionCompletionFromDisconnect = info.GetBoolean("callAfterTransactionCompletionFromDisconnect");
 			this.entitiesByKey = (IDictionary)info.GetValue( "entitiesByKey", typeof(IDictionary) );
-			this.proxiesByKey = (IDictionary)info.GetValue( "proxiesByKey", typeof(IDictionary) );
+			
+			// we did not actually serializing the IDictionary but instead the proxies in an arraylist
+			//this.proxiesByKey = (IDictionary)info.GetValue( "proxiesByKey", typeof(IDictionary) );
+			tmpProxiesKey = (ArrayList)info.GetValue( "tmpProxiesKey", typeof(ArrayList) );
+			tmpProxiesProxy = (ArrayList)info.GetValue( "tmpProxiesProxy", typeof(ArrayList) );
+			
 			this.nullifiables = (ISet)info.GetValue( "nullifiables", typeof(ISet) );
 			this.interceptor = (IInterceptor)info.GetValue( "interceptor", typeof(IInterceptor) );
 
@@ -649,12 +663,18 @@ namespace NHibernate.Impl
 		/// </remarks>
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			if ( IsConnected ) throw new InvalidOperationException("Cannot serialize a Session while connected");
-			if ( insertions.Count!=0 || deletions.Count!=0 )
-				throw new InvalidOperationException("Cannot serialize a Session which has work waiting to be flushed");
-					
-			log.Info("serializing session");
+			log.Info( "writting session to serializer" );
 
+			if ( IsConnected ) 
+			{
+				throw new InvalidOperationException("Cannot serialize a Session while connected");
+			}
+
+			if ( insertions.Count!=0 || deletions.Count!=0 ) 
+			{
+				throw new InvalidOperationException("Cannot serialize a Session which has work waiting to be flushed");
+			}
+					
 			info.AddValue( "factory", factory, typeof(SessionFactoryImpl) );
 			info.AddValue( "autoClose", autoClose );
 			info.AddValue( "timestamp", timestamp );
@@ -662,7 +682,22 @@ namespace NHibernate.Impl
 			info.AddValue( "flushMode", flushMode );
 			info.AddValue( "callAfterTransactionCompletionFromDisconnect", callAfterTransactionCompletionFromDisconnect );
 			info.AddValue( "entitiesByKey", entitiesByKey, typeof(IDictionary) );
-			info.AddValue( "proxiesByKey", proxiesByKey, typeof(IDictionary) );
+			
+			// the IDictionary should not be serialized because the objects inside of it are not
+			// fully deserialized until after the session is deserialized. Instead use two ArrayList 
+			// to hold the values because they don't have the deserialization complexities that
+			// hashtables do.
+			tmpProxiesKey = new ArrayList( proxiesByKey.Count );
+			tmpProxiesProxy = new ArrayList( proxiesByKey.Count );
+			foreach(DictionaryEntry de in proxiesByKey) 
+			{
+				tmpProxiesKey.Add( de.Key );
+				tmpProxiesProxy.Add( de.Value );
+			}
+			
+			info.AddValue( "tmpProxiesKey", tmpProxiesKey );
+			info.AddValue( "tmpProxiesProxy", tmpProxiesProxy );
+
 			info.AddValue( "nullifiables", nullifiables, typeof(ISet) );
 			info.AddValue( "interceptor", interceptor, typeof(IInterceptor) );
 
@@ -681,7 +716,7 @@ namespace NHibernate.Impl
 		/// <param name="sender"></param>
 		void IDeserializationCallback.OnDeserialization(Object sender)
 		{
-			log.Info("deserializing session");
+			log.Info("OnDeserialization of the session.");
 			
 			// don't need any section for IdentityMaps because .net does not have a problem
 			// serializing them like java does.
@@ -701,22 +736,39 @@ namespace NHibernate.Impl
 					throw new InvalidOperationException(he.Message);
 				}
 			}
-			
-//			TODO: figure out why proxies are having problems.  The enumerator appears to be throwing
-//			a null reference exception when the proxiesByKey.Count==0
-//			foreach(object proxy in proxiesByKey.Values)
-//			{
-//				object proxy = proxyEnumer.Current;
-//				if (proxy is HibernateProxy) 
-//				{
-//					HibernateProxyHelper.GetLazyInitializer(proxy as HibernateProxy).SetSession(this);
-//				}
-//				else 
-//				{
-//					// the proxy was pruned during the serialization process
-//					proxiesByKey.Remove(proxy); 
-//				}
-//			}
+
+			// recreate the proxiesByKey hashtable from the two arraylists.
+			proxiesByKey = new Hashtable( tmpProxiesKey.Count );
+			for(int i=0; i<tmpProxiesKey.Count; i++) 
+			{
+				proxiesByKey.Add( tmpProxiesKey[i], tmpProxiesProxy[i] );
+			}
+
+			// we can't remove an entry from an IDictionary while enumerating so store the ones
+			// to remove in this list
+			ArrayList keysToRemove = new ArrayList();
+
+			foreach( DictionaryEntry de in proxiesByKey )
+			{
+				object key = de.Key;
+				object proxy = de.Value;
+
+				if (proxy is INHibernateProxy) 
+				{
+					NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy)proxy ).Session = this;
+				}
+				else 
+				{
+					// the proxy was pruned during the serialization process because
+					// the target had been instantiated.
+					keysToRemove.Add( key );
+				}
+			}
+
+			for( int i=0; i<keysToRemove.Count; i++ ) 
+			{
+				proxiesByKey.Remove( keysToRemove[i] );
+			}
 
 			foreach(EntityEntry e in entries.Values)
 			{
@@ -848,10 +900,10 @@ namespace NHibernate.Impl
 
 		public LockMode GetCurrentLockMode(object obj) 
 		{
-			if ( obj is HibernateProxy ) 
+			if ( obj is INHibernateProxy ) 
 			{
-				obj = (HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj)).GetImplementation(this);
-				if (obj==null) return LockMode.None;
+				obj = (NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj)).GetImplementation(this);
+				if( obj==null ) return LockMode.None;
 			}
 
 			EntityEntry e = GetEntry(obj);
@@ -972,7 +1024,10 @@ namespace NHibernate.Impl
 			try 
 			{
 				id = GetPersister(theObj).IdentifierGenerator.Generate(this, theObj);
-				if( id == (object) IdentifierGeneratorFactory.ShortCircuitIndicator) return GetIdentifier(theObj); //TODO: yick!
+				if( id == (object) IdentifierGeneratorFactory.ShortCircuitIndicator) 
+				{
+					return GetIdentifier(theObj); //TODO: yick!
+				}
 			} 
 			catch (Exception ex) 
 			{
@@ -1046,7 +1101,7 @@ namespace NHibernate.Impl
 				object old = GetEntity(key);
 				if (old!=null) 
 				{
-					if ( GetEntry(old).Status==Status.Deleted) 
+					if ( GetEntry(old).Status==Status.Deleted ) 
 					{
 						Flush();
 					} 
@@ -1124,7 +1179,10 @@ namespace NHibernate.Impl
 			AddEntity(key, obj);
 			AddEntry(obj, Status.Loaded, values, id, Versioning.GetVersion(values, persister), LockMode.Write, identityCol, persister);
 			
-			if (!identityCol) insertions.Add( new ScheduledInsertion( id, values, obj, persister, this ) );
+			if (!identityCol) 
+			{
+				insertions.Add( new ScheduledInsertion( id, values, obj, persister, this ) );
+			}
 
 			// cascade-save to collections AFTER the collection owner was saved
 			cascading++;
@@ -1142,17 +1200,17 @@ namespace NHibernate.Impl
 
 		private void ReassociateProxy(Object value) 
 		{ 
-			HibernateProxy proxy = (HibernateProxy) value; 
-			LazyInitializer li = HibernateProxyHelper.GetLazyInitializer(proxy); 
+			INHibernateProxy proxy = (INHibernateProxy) value; 
+			LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy); 
 			ReassociateProxy(li, proxy); 
 		} 
     
 		private object UnproxyAndReassociate(object maybeProxy) 
 		{ 
-			if ( maybeProxy is HibernateProxy ) 
+			if ( maybeProxy is INHibernateProxy ) 
 			{ 
-				HibernateProxy proxy = (HibernateProxy) maybeProxy; 
-				LazyInitializer li = HibernateProxyHelper.GetLazyInitializer(proxy); 
+				INHibernateProxy proxy = (INHibernateProxy) maybeProxy; 
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy); 
 				ReassociateProxy(li, proxy); 
 				return li.GetImplementation(); //initialize + unwrap the object 
 			} 
@@ -1167,14 +1225,17 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="li"></param>
 		/// <param name="proxy"></param>
-		private void ReassociateProxy(LazyInitializer li, HibernateProxy proxy) 
+		private void ReassociateProxy(LazyInitializer li, INHibernateProxy proxy) 
 		{ 
 			if ( li.Session!=this ) 
 			{ 
 				IClassPersister persister = GetPersister( li.PersistentClass ); 
 				Key key = new Key( li.Identifier, persister ); 
-				if ( !proxiesByKey.Contains(key) ) proxiesByKey[key] = proxy; // any earlier proxy takes precedence 
-				HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) proxy ).SetSession(this); 
+				if ( !proxiesByKey.Contains(key) ) 
+				{
+					proxiesByKey[key] = proxy; // any earlier proxy takes precedence 
+				}
+				NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) proxy ).Session = this; 
 			} 
 		} 
 
@@ -1238,10 +1299,10 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		private bool IsUnsaved(object obj, bool earlyInsert, object self) 
 		{
-			if ( obj is HibernateProxy ) 
+			if ( obj is INHibernateProxy ) 
 			{
-				// if its an uninitialized proxy, it can't be transietn
-				LazyInitializer li = HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj );
+				// if its an uninitialized proxy, it can't be transient
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj );
 				if ( li.GetImplementation(this)==null ) 
 				{
 					return false;
@@ -1713,11 +1774,13 @@ namespace NHibernate.Impl
 			if (id==null) throw new NullReferenceException("null is not a valid identifier");
 			if (obj==null) throw new NullReferenceException("attempted to update null");
 			
-			if ( obj is HibernateProxy ) 
+			if ( obj is INHibernateProxy ) 
 			{
-				object pid = HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj ).Identifier;
-				if( !id.Equals(pid) )
+				object pid = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ).Identifier;
+				if( !id.Equals( pid ) ) 
+				{
 					throw new HibernateException("The given proxy had a different identifier value to the given identifier: " + pid + "!=" + id);
+				}
 			}
 
 			if( !NHibernate.IsInitialized(obj) ) 
@@ -2107,8 +2170,14 @@ namespace NHibernate.Impl
 				} 
 				else 
 				{
-					//TODO: Get the proxy - there is some CGLIB code here
-					proxy = null; 
+					IProxyGenerator generator = ProxyGeneratorFactory.GetProxyGenerator();
+					proxy = generator.GetProxy( 
+						p.MappedClass
+						, p.ConcreteProxyClass
+						, p.ProxyInterfaces
+						, p.ProxyIdentifierProperty
+						, key.Identifier
+						, this );
 
 					proxiesByKey[key] = proxy;
 					return proxy;
@@ -2308,16 +2377,10 @@ namespace NHibernate.Impl
 				{
 
 					// return new uninitailzed proxy
-					//TODO: commented this out so we could get all of the test running - this basically makes
-					// the proxy of a class be ignored - which is fine until we have it working.
 					if ( persister.HasProxy ) 
 					{
-						proxy = null; //TODO: Create the proxy
-						// this is the spot that is causing the problems with FooBarTest.FetchInitializedCollection
-						// when the following code "Assert.IsTrue( baz.fooBag.Count==2 );" is being executed.  This
-						// is causing a null value to be returned when a "Proxied" version of the class is expected.
-						// So the method ThrowObjectNotFound is throwing an exception because it is given a null object
-						// - hence the error looks like it can't find a row in the DB.
+						IProxyGenerator generator = ProxyGeneratorFactory.GetProxyGenerator();
+						proxy = generator.GetProxy( clazz, persister.ConcreteProxyClass, persister.ProxyInterfaces, persister.ProxyIdentifierProperty, id, this );
 					}
 					proxiesByKey[key] = proxy;
 					return proxy;
@@ -2736,7 +2799,7 @@ namespace NHibernate.Impl
 				EntityEntry entry = (EntityEntry) me.Value;
 				Status status = entry.Status;
 
-				if (status != Status.Loading && status != Status.Gone) 
+				if( status!=Status.Loading && status!=Status.Gone ) 
 				{
 					object obj = me.Key;
 					IClassPersister persister = entry.Persister;
@@ -2759,7 +2822,7 @@ namespace NHibernate.Impl
 					}
 
 					object[] values;
-					if ( status==Status.Deleted) 
+					if( status==Status.Deleted ) 
 					{
 						//grab its state saved at deletion
 						values = entry.DeletedState;
@@ -2786,7 +2849,7 @@ namespace NHibernate.Impl
 
 					int[] dirtyProperties = interceptor.FindDirty(obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types);
 
-					if ( dirtyProperties==null ) 
+					if( dirtyProperties==null ) 
 					{
 						// interceptor returned null, so do the dirtycheck ourself, if possible
 						interceptorHandledDirtyCheck = false;
@@ -2829,7 +2892,7 @@ namespace NHibernate.Impl
 						bool intercepted = interceptor.OnFlushDirty(
 							obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types);
 
-						//no we might need to recalculate the dirtyProperties array
+						//now we might need to recalculate the dirtyProperties array
 						if(intercepted && !cannotDirtyCheck && !interceptorHandledDirtyCheck) 
 						{
 							dirtyProperties = persister.FindDirty(values, entry.LoadedState, obj, this);
@@ -2939,10 +3002,13 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object GetIdentifier(object obj) 
 		{
-			if (obj is HibernateProxy) 
+			if (obj is INHibernateProxy) 
 			{
-				LazyInitializer li = HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj );
-				if ( li.Session!=this ) throw new TransientObjectException("The proxy was not associated with this session");
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj );
+				if ( li.Session!=this ) 
+				{
+					throw new TransientObjectException("The proxy was not associated with this session");
+				}
 				return li.Identifier;
 			} 
 			else 
@@ -2961,9 +3027,9 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object GetEntityIdentifier(object obj) 
 		{
-			if (obj is HibernateProxy) 
+			if( obj is INHibernateProxy ) 
 			{
-				return HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj ).Identifier;
+				return NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ).Identifier;
 			} 
 			else 
 			{
@@ -2974,7 +3040,7 @@ namespace NHibernate.Impl
 
 		public bool IsSaved(object obj) 
 		{
-			if(obj is HibernateProxy) return true;
+			if(obj is INHibernateProxy) return true;
 
 			EntityEntry entry = GetEntry(obj);
 			if(entry!=null) return true;
@@ -3002,9 +3068,9 @@ namespace NHibernate.Impl
 		{
 			if (obj==null) return null;
 
-			if (obj is HibernateProxy) 
+			if (obj is INHibernateProxy) 
 			{
-				return HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj ).Identifier;
+				return NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ).Identifier;
 			} 
 			else 
 			{
@@ -4048,9 +4114,9 @@ namespace NHibernate.Impl
 
 		public bool Contains(object obj) 
 		{ 
-			if (obj is HibernateProxy) 
+			if (obj is INHibernateProxy) 
 			{ 
-				return HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj ).Session==this; 
+				return NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ).Session==this; 
 			} 
 			else 
 			{ 
@@ -4065,9 +4131,9 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
         public void Evict(object obj) 
 		{ 
-            if (obj is HibernateProxy) 
+            if (obj is INHibernateProxy) 
 			{ 
-                LazyInitializer li = HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj ); 
+                LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj ); 
                 object id = li.Identifier; 
                 IClassPersister persister = GetPersister( li.PersistentClass ); 
                 Key key = new Key(id, persister); 
