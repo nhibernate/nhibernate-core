@@ -42,7 +42,7 @@ namespace NHibernate.Collection
 		/// <see cref="PersistentCollection.Snapshot"/>
 		/// </summary>
 		/// <param name="persister"></param>
-		protected override object Snapshot( CollectionPersister persister )
+		protected override object Snapshot( ICollectionPersister persister )
 		{
 			Hashtable clonedMap = new Hashtable( internalSet.Count );
 			foreach( object obj in internalSet )
@@ -96,6 +96,16 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public override bool IsWrapper( object collection )
+		{
+			return internalSet == collection;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="session"></param>
 		internal Set( ISessionImplementor session ) : base( session )
 		{
@@ -122,7 +132,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the Set.</param>
 		/// <param name="disassembled">The disassembled Set.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
+		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
 			BeforeInitialize( persister );
 			object[ ] array = ( object[ ] ) disassembled;
@@ -137,7 +147,7 @@ namespace NHibernate.Collection
 		/// <see cref="PersistentCollection.BeforeInitialize"/>
 		/// </summary>
 		/// <param name="persister"></param>
-		public override void BeforeInitialize( CollectionPersister persister )
+		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			if( persister.HasOrdering )
 			{
@@ -378,7 +388,7 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <param name="writeOrder"></param>
-		public override void WriteTo( IDbCommand st, CollectionPersister persister, object entry, int i, bool writeOrder )
+		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
 			persister.WriteElement( st, entry, writeOrder, session );
 		}
@@ -390,7 +400,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object ReadFrom( IDataReader rs, CollectionPersister persister, object owner )
+		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
 		{
 			object element = persister.ReadElement(rs, owner, session);
 			tempList.Add( element );
@@ -435,7 +445,7 @@ namespace NHibernate.Collection
 		/// <see cref="PersistentCollection.Disassemble"/>
 		/// </summary>
 		/// <param name="persister"></param>
-		public override object Disassemble( CollectionPersister persister )
+		public override object Disassemble( ICollectionPersister persister )
 		{
 			object[ ] result = new object[internalSet.Count];
 			int i = 0;

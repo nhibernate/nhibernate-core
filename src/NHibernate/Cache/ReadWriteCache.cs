@@ -69,8 +69,9 @@ namespace NHibernate.Cache
 		/// 
 		/// </summary>
 		/// <param name="key"></param>
-		public void Lock( object key )
+		public ISoftLock Lock( object key )
 		{
+			// TODO: Differs from the 2.1 implementation
 			lock( lockObject )
 			{
 				if( log.IsDebugEnabled )
@@ -86,6 +87,8 @@ namespace NHibernate.Cache
 				item.Lock();
 				_cache.Put( key, item );
 			}
+
+			return null;
 		}
 
 		/// <summary>
@@ -132,7 +135,8 @@ namespace NHibernate.Cache
 		/// 
 		/// </summary>
 		/// <param name="key"></param>
-		public void Release( object key )
+		/// <param name="lock"></param>
+		public void Release( object key, ISoftLock @lock )
 		{
 			lock( lockObject )
 			{

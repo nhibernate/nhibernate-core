@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Util;
 
@@ -8,6 +9,11 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class InFragment
 	{
+		/// <summary></summary>
+		public static readonly object Null = new object();
+		/// <summary></summary>
+		public static readonly object NotNull = new object();
+
 		private string columnName;
 		private ArrayList values = new ArrayList();
 
@@ -20,7 +26,6 @@ namespace NHibernate.SqlCommand
 		{
 			values.Add( value );
 			return this;
-
 		}
 
 		/// <summary>
@@ -65,9 +70,13 @@ namespace NHibernate.SqlCommand
 				buf.Add( " in (" );
 				for( int i = 0; i < values.Count; i++ )
 				{
-					if( "null".Equals( values[ i ] ) )
+					if( "null".Equals( values[ i ] ) || Null.Equals( values[ i ] ) )
 					{
 						allowNull = true;
+					}
+					else if ( "not null".Equals( values[ i ] ) || NotNull.Equals( values[ i ] ) )
+					{
+						throw new ArgumentOutOfRangeException( "not null makes no sense for in expression" ) ;
 					}
 					else
 					{

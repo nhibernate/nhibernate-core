@@ -92,17 +92,21 @@ namespace NHibernate.Cache
 		/// 
 		/// </summary>
 		/// <param name="key"></param>
-		public void Lock( object key )
+		public ISoftLock Lock( object key )
 		{
+			// TODO: Differs from the 2.1 implemenation
 			// in case the server crashes, we need the lock to timeout
 			_cache.Put( key, ( timeout + Timestamper.Next()/Timestamper.OneMs ) );
+
+			return null;
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="key"></param>
-		public void Release( object key )
+		/// <param name="lock"></param>
+		public void Release( object key, ISoftLock @lock )
 		{
 			if( log.IsDebugEnabled )
 			{

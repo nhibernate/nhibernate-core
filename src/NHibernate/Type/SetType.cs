@@ -22,7 +22,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="session"></param>
-		public override PersistentCollection Instantiate( ISessionImplementor session, CollectionPersister persister )
+		public override PersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
 			return new Set( session );
 		}

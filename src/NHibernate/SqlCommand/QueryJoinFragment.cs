@@ -199,9 +199,15 @@ namespace NHibernate.SqlCommand
 
 				afterWhere.Add( condition );
 			}
-
 		}
 
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fromFragmentString"></param>
+		public override void AddFromFragmentString( SqlString fromFragmentString )
+		{
+			afterFrom.Add( fromFragmentString );
+		}
 	}
 }

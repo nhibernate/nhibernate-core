@@ -25,30 +25,22 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public override IEnumerable Enumerable()
 		{
-			//TODO: see if there is a better way to implement
-			QueryParameters qp = new QueryParameters( TypeArray(), ValueArray() );
-			qp.NamedParameters = new Hashtable( NamedParams );
-			qp.RowSelection = Selection;
-			qp.LockModes = LockModes;
-
-			string query = BindParameterLists( qp.NamedParameters );
-			return Session.EnumerableFilter( collection, query, qp );
+			// HACK: Reintroduce once Filter parsing bug resolved
+			//VerifyParameters();
+			IDictionary namedParams = NamedParams;
+			return Session.EnumerableFilter( collection, BindParameterLists( namedParams ), QueryParams( namedParams ) );
 		}
 
 		/// <summary></summary>
 		public override IList List()
 		{
-			//TODO: see if there is a better way to implement
-			QueryParameters qp = new QueryParameters( TypeArray(), ValueArray() );
-			qp.NamedParameters = new Hashtable( NamedParams );
-			qp.RowSelection = Selection;
-			qp.LockModes = LockModes;
-
-			string query = BindParameterLists( qp.NamedParameters );
-			return Session.Filter( collection, query, qp );
+			// HACK: Reintroduce once Filter parsing bug resolved
+			//VerifyParameters();
+			IDictionary namedParams = NamedParams;
+			return Session.Filter( collection, BindParameterLists( namedParams ), QueryParams( namedParams ) );
 		}
 
-		private IType[ ] TypeArray()
+		protected override IType[ ] TypeArray()
 		{
 			IList typeList = Types;
 			int size = typeList.Count;
@@ -60,7 +52,7 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		private object[ ] ValueArray()
+		protected override object[ ] ValueArray()
 		{
 			IList valueList = Values;
 			int size = valueList.Count;

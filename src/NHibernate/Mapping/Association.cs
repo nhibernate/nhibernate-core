@@ -5,7 +5,7 @@ namespace NHibernate.Mapping
 	/// <summary></summary>
 	public abstract class Association : Value
 	{
-		private OuterJoinLoaderType joinedFetch;
+		private OuterJoinFetchStrategy joinedFetch;
 
 		/// <summary>
 		/// 
@@ -16,7 +16,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public override OuterJoinLoaderType OuterJoinFetchSetting
+		public override OuterJoinFetchStrategy OuterJoinFetchSetting
 		{
 			get { return joinedFetch; }
 			set { joinedFetch = value; }

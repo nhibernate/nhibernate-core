@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.Loader;
+using NHibernate.Persister;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -268,9 +269,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public OuterJoinLoaderType EnableJoinedFetch( int i )
+		public OuterJoinFetchStrategy EnableJoinedFetch( int i )
 		{
-			return OuterJoinLoaderType.Lazy;
+			return OuterJoinFetchStrategy.Lazy;
 		}
 
 		private static readonly string[ ] PROPERTY_NAMES = new string[ ] {"class", "id"};
@@ -360,6 +361,44 @@ namespace NHibernate.Type
 		public override bool IsAssociationType
 		{
 			get { return true; }
+		}
+
+		/// <summary>
+		/// Not really relevant to ObjectType, since it cannot be "joined"
+		/// </summary>
+		public bool UsePrimaryKeyAsForeignKey
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
+		{
+			throw new InvalidOperationException( "any types do not have a unique referenced persister" );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
+		{
+			throw new InvalidOperationException( "any types do not have a unique referenced persister" );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public string[] GetReferencedColumns( ISessionFactoryImplementor factory )
+		{
+			throw new InvalidOperationException( "any types do not have unique referenced columns" );
 		}
 	}
 }

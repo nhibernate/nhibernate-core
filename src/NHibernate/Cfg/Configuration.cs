@@ -38,10 +38,14 @@ namespace NHibernate.Cfg
 		private Hashtable collections = new Hashtable();
 		private Hashtable tables = new Hashtable();
 		private Hashtable namedQueries = new Hashtable();
+		private Hashtable namedSqlQueries = new Hashtable();
 		private ArrayList secondPasses = new ArrayList();
+		private ArrayList propertyReferences = new ArrayList();
 		private IInterceptor interceptor = emptyInterceptor;
 		private IDictionary properties = Environment.Properties;
 		private IDictionary caches = new Hashtable();
+
+		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
 
 		private XmlSchema mappingSchema;
 		private XmlSchema cfgSchema;
@@ -69,6 +73,7 @@ namespace NHibernate.Cfg
 			collections = new Hashtable();
 			tables = new Hashtable();
 			namedQueries = new Hashtable();
+			namedSqlQueries = new Hashtable();
 			secondPasses = new ArrayList();
 			interceptor = emptyInterceptor;
 			properties = Environment.Properties;
@@ -140,7 +145,7 @@ namespace NHibernate.Cfg
 		/// <returns></returns>
 		public Mappings CreateMappings()
 		{
-			return new Mappings( classes, collections, tables, namedQueries, imports, caches, secondPasses );
+			return new Mappings( classes, collections, tables, namedQueries, namedSqlQueries, imports, caches, secondPasses, propertyReferences, namingStrategy );
 		}
 
 		/// <summary>
@@ -691,6 +696,22 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
+		/// The named SQL queries
+		/// </summary>
+		public IDictionary NamedSQLQueries
+		{
+			get { return namedSqlQueries; }
+		}
+
+		/// <summary>
+		/// Naming strategy for tables and columns
+		/// </summary>
+		public INamingStrategy NamingStrategy
+		{
+			get { return namingStrategy; }
+		}
+
+		/// <summary>
 		/// Instantitate a new <c>ISessionFactory</c>, using the properties and mappings in this
 		/// configuration. The <c>ISessionFactory</c> will be immutable, so changes made to the
 		/// <c>Configuration</c> after building the <c>ISessionFactory</c> will not affect it.
@@ -832,7 +853,17 @@ namespace NHibernate.Cfg
 					reader.Close();
 				}
 			}
-			
+		}
+
+		/// <summary>
+		/// Set a custom naming strategy
+		/// </summary>
+		/// <param name="namingStrategy">the NamingStrategy to set</param>
+		/// <returns></returns>
+		public Configuration SetNamingStrategy( INamingStrategy namingStrategy )
+		{
+			this.namingStrategy = namingStrategy;
+			return this;
 		}
 
 		/// <summary>
@@ -1005,5 +1036,29 @@ namespace NHibernate.Cfg
 		{
 			get { return imports; }
 		}
+
+		// HACK: SHould really implement IMapping, but simpler than dealing with the cascades
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="objectClass"></param>
+		/// <returns></returns>
+		public string GetIdentifierPropertyName( System.Type objectClass )
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public IType GetPropertyType( System.Type persistentClass, string propertyName )
+		{
+			return null;
+		}
+
 	}
 }

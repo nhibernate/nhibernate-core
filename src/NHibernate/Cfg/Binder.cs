@@ -23,20 +23,19 @@ namespace NHibernate.Cfg
 
 		public static void BindClass(XmlNode node, PersistentClass model, Mappings mapping) 
 		{
-			
 			string className = node.Attributes["name"] == null ? null : node.Attributes["name"].Value;
 			
-			// class
+			//CLASS
 			try 
 			{
-				model.PersistentClazz = ReflectHelper.ClassForName(className);
+				model.MappedClass = ReflectHelper.ClassForName(className);
 			} 
 			catch ( Exception cnfe ) 
 			{
 				throw new MappingException( "persistent class not found", cnfe );
 			}
 
-			//proxy interface
+			//PROXY INTERFACE
 			XmlAttribute proxyNode = node.Attributes["proxy"];
 			if (proxyNode!=null) 
 			{
@@ -50,48 +49,88 @@ namespace NHibernate.Cfg
 				}
 			}
 			
-			//discriminator
+			//DISCRIMINATOR
 			XmlAttribute discriminatorNode = node.Attributes["discriminator-value"];
 			model.DiscriminatorValue = (discriminatorNode==null)
 				? model.Name
 				: discriminatorNode.Value;
 			
-			//dynamic update
+			//DYNAMIC UPDATE
 			XmlAttribute dynamicNode = node.Attributes["dynamic-update"];
 			model.DynamicUpdate = (dynamicNode==null)
 				? false :
 				"true".Equals( dynamicNode.Value );
 			
-			//dynamic insert
+			//DYNAMIC INSERT
 			XmlAttribute insertNode = node.Attributes["dynamic-insert"];
 			model.DynamicInsert = (insertNode==null) ? 
 				false : 
 				"true".Equals( insertNode.Value	);
 
-			//import
+			//IMPORT
 			
 			// we automattically want to add an import of the Assembly Qualified Name (includes version, 
 			// culture, public-key) to the className supplied in the hbm.xml file.  The most common use-case
 			// will have it contain the "FullClassname, AssemblyName", it might contain version, culture, 
 			// public key, etc...) but should not assume it does.
-			mapping.AddImport( model.PersistentClazz.AssemblyQualifiedName, StringHelper.GetFullClassname(className) );
+			mapping.AddImport( model.MappedClass.AssemblyQualifiedName, StringHelper.GetFullClassname(className) );
 
 			// if we are supposed to auto-import the Class then add an import to get from the Classname
 			// to the Assembly Qualified Class Name
 			if (mapping.IsAutoImport) 
 			{
-				mapping.AddImport( model.PersistentClazz.AssemblyQualifiedName, StringHelper.GetClassname(className) );
+				mapping.AddImport( model.MappedClass.AssemblyQualifiedName, StringHelper.GetClassname(className) );
+			}
+
+			//BATCH SIZE
+			XmlAttribute batchNode = node.Attributes["batch-size"];
+			if ( batchNode != null )
+			{
+				model.BatchSize = int.Parse( batchNode.Value ) ;
+			}
+
+			//SELECT BEFORE UPDATE
+			/*
+			XmlAttribute sbuNode = node.Attributes["select-before-update"];
+			if ( sbuNode != null )
+			{
+				model.SelectBeforeUpdate = "true".Equals( sbuNode.Value ) ;
+			}
+
+			//OPTIMISTIC LOCK MODE
+			XmlAttribute olNode = node.Attributes["optimistic-lock"];
+			model.OptimisticLockMode = GetOptimisticLockMode( olNode );
+
+			//META ATTRIBUTES
+			model.MetaAttributes = GetMetas( node );
+			*/
+
+			//PERSISTER
+			XmlAttribute persisterNode = node.Attributes["persister"];
+			if ( persisterNode == null )
+			{
+				//persister = CollectionPersisterImpl.class;
+			}
+			else
+			{
+				try
+				{
+					model.ClassPersisterClass = ReflectHelper.ClassForName( persisterNode.Value );
+				}
+				catch (Exception)
+				{
+					throw new MappingException("could not instantiate persister class: " + persisterNode.Value );
+				}
 			}
 		}
 
 		public static void BindSubclass(XmlNode node, Subclass model, Mappings mappings) 
 		{
-
 			BindClass(node, model, mappings);
 
-			if ( model.Persister==null ) 
+			if ( model.ClassPersisterClass == null ) 
 			{
-				model.RootClazz.Persister = typeof(EntityPersister);
+				model.RootClazz.ClassPersisterClass = typeof(EntityPersister);
 			}
 
 			model.Table = model.Superclass.Table;
@@ -102,40 +141,52 @@ namespace NHibernate.Cfg
 			PropertiesFromXML(node, model, mappings);
 		}
 
+		private static string GetClassTableName( PersistentClass model, XmlNode node, Mappings mappings )
+		{
+			XmlAttribute tableNameNode = node.Attributes["table"];
+			if (tableNameNode==null)
+			{
+				return mappings.NamingStrategy.ClassToTableName( model.Name );
+			}
+			else
+			{
+				return mappings.NamingStrategy.TableName( tableNameNode.Value );
+			}
+		}
+
 		public static void BindJoinedSubclass(XmlNode node, Subclass model, Mappings mappings) 
 		{
-
 			BindClass(node, model, mappings);
 
 			// joined subclass
-			if ( model.Persister==null ) 
+			if ( model.ClassPersisterClass == null ) 
 			{
-				model.RootClazz.Persister = typeof(NormalizedEntityPersister);
+				model.RootClazz.ClassPersisterClass = typeof(NormalizedEntityPersister);
 			}
 
-			//table
-			XmlAttribute tableNameNode = node.Attributes["table"];
-			string tableName = (tableNameNode==null)
-				? StringHelper.Unqualify( model.PersistentClazz.Name )
-				: tableNameNode.Value;
-
-			//schema
+			//table + schema names
 			XmlAttribute schemaNode = node.Attributes["schema"];
-			string schema = schemaNode==null ? mappings.SchemaName : schemaNode.Value;
-			Table mytable = mappings.AddTable(schema, tableName);
+			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
+			Table mytable = mappings.AddTable(schema, GetClassTableName( model, node, mappings ) );
 			model.Table = mytable;
 
 			log.Info("Mapping joined-subclass: " + model.Name + " -> " + model.Table.Name );
 
 			XmlNode keyNode = node.SelectSingleNode(nsPrefix + ":key", nsmgr);
-			Value key = new Value(mytable);
+			SimpleValue key = new SimpleValue(mytable);
 			model.Key = key;
-			BindValue( keyNode, key, false, model.Name );
+			BindSimpleValue( keyNode, key, false, model.Name, mappings );
 
 			model.Key.Type = model.Identifier.Type;
-			model.CreatePrimaryKey(dialect);
-			ForeignKey fk = mytable.CreateForeignKey( model.Key.ConstraintColumns );
-			fk.ReferencedClass = model.Superclass.PersistentClazz;
+			model.CreatePrimaryKey( dialect );
+			model.CreateForeignKey( );
+
+			// CHECK
+			XmlAttribute chNode = node.Attributes["check"];
+			if ( chNode != null )
+			{
+				mytable.AddCheckConstraint( chNode.Value );
+			}
 
 			// properties
 			PropertiesFromXML(node, model, mappings);
@@ -143,47 +194,27 @@ namespace NHibernate.Cfg
 
 		public static void BindRootClass(XmlNode node, RootClass model, Mappings mappings) 
 		{
-
 			BindClass(node, model, mappings);
 
 			//TABLENAME
-			XmlAttribute tableNameNode = node.Attributes["table"];
-			string tableName = (tableNameNode==null)
-				? StringHelper.Unqualify( model.PersistentClazz.Name )
-				: tableNameNode.Value;
-
 			XmlAttribute schemaNode = node.Attributes["schema"];
 			string schema = schemaNode==null ? mappings.SchemaName : schemaNode.Value;
-			Table table = mappings.AddTable(schema, tableName);
+			Table table = mappings.AddTable(schema, GetClassTableName( model, node, mappings ) );
 			model.Table = table;
 
 			log.Info("Mapping class: " + model.Name + " -> " + model.Table.Name );
 
-			//persister
-			XmlAttribute persisterNode = node.Attributes["persister"];
-			if ( persisterNode==null ) 
-			{
-				//persister = typeof(EntityPersister);
-			} 
-			else 
-			{
-				try 
-				{
-					model.Persister = ReflectHelper.ClassForName( persisterNode.Value );
-				} 
-				catch (Exception) 
-				{
-					throw new MappingException("could not find persister class: " + persisterNode.Value );
-				}
-			}
-
-			//mutable
+			//MUTABLE
 			XmlAttribute mutableNode = node.Attributes["mutable"];
 			model.IsMutable = (mutableNode==null) || mutableNode.Value.Equals("true");
 
 			//WHERE
 			XmlAttribute whereNode = node.Attributes["where"];
 			if (whereNode!=null) model.Where = whereNode.Value;
+
+			//CHECK
+			XmlAttribute checkNode = node.Attributes["check"];
+			if (checkNode!=null) table.AddCheckConstraint( checkNode.Value );
 
 			//POLYMORPHISM
 			XmlAttribute polyNode = node.Attributes["polymorphism"];
@@ -200,19 +231,19 @@ namespace NHibernate.Cfg
 				switch( name ) 
 				{
 					case "id":
-						Value id = new Value(table);
+						SimpleValue id = new SimpleValue(table);
 						model.Identifier = id;
 						
 						if ( propertyName==null) 
 						{
-							BindValue(subnode, id, false, RootClass.DefaultIdentifierColumnName);
-							if ( id.Type==null ) throw new MappingException("must specify an identifier type: " + model.PersistentClazz.Name );
+							BindSimpleValue(subnode, id, false, RootClass.DefaultIdentifierColumnName, mappings);
+							if ( id.Type==null ) throw new MappingException("must specify an identifier type: " + model.MappedClass.Name );
 							model.IdentifierProperty = null;
 						} 
 						else 
 						{
-							BindValue(subnode, id, false, propertyName);
-							id.SetTypeByReflection( model.PersistentClazz, propertyName);
+							BindSimpleValue(subnode, id, false, propertyName, mappings);
+							id.SetTypeByReflection( model.MappedClass, propertyName);
 							Mapping.Property prop = new Mapping.Property(id);
 							BindProperty(subnode, prop, mappings);
 							model.IdentifierProperty = prop;
@@ -229,14 +260,14 @@ namespace NHibernate.Cfg
 						model.Identifier = compId;
 						if (propertyName==null) 
 						{
-							BindComponent(subnode, compId, null, model.Name + ".id", false, mappings);
+							BindComponent(subnode, compId, null, model.Name, "id", false, mappings);
 							model.HasEmbeddedIdentifier = compId.IsEmbedded;
 							model.IdentifierProperty = null;
 						} 
 						else 
 						{
-							System.Type reflectedClass = ReflectHelper.GetGetter( model.PersistentClazz, propertyName ).ReturnType;
-							BindComponent(subnode, compId, reflectedClass, model.Name + StringHelper.Dot + propertyName, false, mappings);
+							System.Type reflectedClass = ReflectHelper.GetGetter( model.MappedClass, propertyName ).ReturnType;
+							BindComponent(subnode, compId, reflectedClass, model.Name, propertyName, false, mappings);
 							Mapping.Property prop = new Mapping.Property(compId);
 							BindProperty(subnode, prop, mappings);
 							model.IdentifierProperty = prop;
@@ -247,8 +278,8 @@ namespace NHibernate.Cfg
 					case "version":
 					case "timestamp":
 						//version
-						Value val = new Value(table);
-						BindValue(subnode, val, false, propertyName);
+						SimpleValue val = new SimpleValue(table);
+						BindSimpleValue(subnode, val, false, propertyName, mappings);
 						if ( val.Type==null ) val.Type = ( ("version".Equals(name)) ? NHibernateUtil.Int32 : NHibernateUtil.Timestamp );
 						Mapping.Property timestampProp = new Mapping.Property(val);
 						BindProperty(subnode, timestampProp, mappings);
@@ -257,9 +288,9 @@ namespace NHibernate.Cfg
 						break;
 
 					case "discriminator":
-						Value discrim = new Value(table);
+						SimpleValue discrim = new SimpleValue(table);
 						model.Discriminator = discrim;
-						BindValue(subnode, discrim, false, RootClass.DefaultDiscriminatorColumnName);
+						BindSimpleValue(subnode, discrim, false, RootClass.DefaultDiscriminatorColumnName, mappings);
 						if ( discrim.Type==null ) 
 						{
 							discrim.Type = NHibernateUtil.String;
@@ -276,7 +307,7 @@ namespace NHibernate.Cfg
 						break;
 
 					case "jcs-cache":
-						string className = model.PersistentClazz.FullName;
+						string className = model.MappedClass.FullName;
 						ICacheConcurrencyStrategy cache = CacheFactory.CreateCache( subnode, className, model.IsMutable );
 						mappings.AddCache( className, cache );
 						model.Cache = cache;
@@ -290,7 +321,7 @@ namespace NHibernate.Cfg
 			PropertiesFromXML(node, model, mappings);
 		}
 
-		public static void BindColumns(XmlNode node, Value model, bool isNullable, bool autoColumn, string defaultColumnName) 
+		public static void BindColumns(XmlNode node, SimpleValue model, bool isNullable, bool autoColumn, string propertyPath, Mappings mappings) 
 		{
 			//COLUMN(S)
 			XmlAttribute columnNode = node.Attributes["column"];
@@ -302,7 +333,9 @@ namespace NHibernate.Cfg
 					Table table = model.Table;
 					Column col = new Column( model.Type, count++ );
 					BindColumn(subnode, col, isNullable);
-					col.Name = (subnode.Attributes["name"]==null) ? String.Empty : subnode.Attributes["name"].Value;
+					// TODO: Check, isn't the name attribute mandatory in the schema?
+					string name = (subnode.Attributes["name"]==null) ? String.Empty : subnode.Attributes["name"].Value;
+					col.Name = mappings.NamingStrategy.ColumnName( name );
 					if (table!=null) table.AddColumn(col); //table=null -> an association, fill it in later
 					model.AddColumn(col);
 					//column index
@@ -322,22 +355,29 @@ namespace NHibernate.Cfg
 			{
 				Column col = new Column( model.Type, 0 );
 				BindColumn(node, col, isNullable);
-				col.Name = columnNode.Value;
+				col.Name = mappings.NamingStrategy.ColumnName( columnNode.Value );
 				Table table = model.Table;
 				if (table!=null) table.AddColumn(col); //table=null -> an association - fill it in later
 				model.AddColumn(col);
+				//column group index (although can serve as a separate column index)
+				XmlAttribute indexAttr = node.Attributes["unique-key"];
+				if ( indexAttr != null && table != null )
+				{
+					table.GetIndex( indexAttr.Value ).AddColumn( col );
+				}
 			}
 
 			if ( autoColumn && model.ColumnSpan==0 ) 
 			{
 				Column col = new Column( model.Type, 0 );
 				BindColumn(node, col, isNullable);
-				col.Name = defaultColumnName;
+				col.Name = mappings.NamingStrategy.PropertyToColumnName( propertyPath );
 				model.Table.AddColumn(col);
 				model.AddColumn(col);
 			}
 		}
 
+		/*
 		/// <remarks>
 		/// Does _not_ automatically make a column if none is specifed by XML
 		/// </remarks>
@@ -347,7 +387,34 @@ namespace NHibernate.Cfg
 			model.Type = GetTypeFromXML(node);
 			BindColumns(node, model, isNullable, false, null);
 		}
+		*/
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="node"></param>
+		/// <param name="model"></param>
+		/// <param name="isNullable"></param>
+		/// <param name="path"></param>
+		/// <param name="mappings"></param>
+		public static void BindSimpleValue( XmlNode node, SimpleValue model, bool isNullable, string path, Mappings mappings )
+		{
+			model.Type = GetTypeFromXML(node);
+
+			XmlAttribute formulaNode = node.Attributes["formula"];
+			if (formulaNode != null)
+			{
+				Formula f = new Formula();
+				f.FormulaString = formulaNode.InnerText;
+				model.Formula = f;
+			}
+			else
+			{
+				BindColumns(node, model, isNullable, true, path, mappings);
+			}
+		}
+
+		/*
 		/// <remarks>
 		/// automatically makes a column with the default name if none is specifed by XML
 		/// </remarks>
@@ -366,7 +433,14 @@ namespace NHibernate.Cfg
 				BindColumns(node, model, isNullable, true, defaultColumnName);
 			}
 		}
+		*/
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="node"></param>
+		/// <param name="model"></param>
+		/// <param name="mappings"></param>
 		public static void BindProperty(XmlNode node, Mapping.Property model, Mappings mappings) 
 		{
 			model.Name = GetPropertyName(node);
@@ -399,10 +473,9 @@ namespace NHibernate.Cfg
 				if ( model.Type !=null ) msg += ", type: " + model.Type.Name;
 				log.Debug(msg);
 			}
-
 		}
 		
-		private static string Columns(Value val) 
+		private static string Columns(IValue val) 
 		{
 			StringBuilder columns = new StringBuilder();
 			bool first = true;
@@ -420,11 +493,10 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// Called for all collections
 		/// </remarks>
-		public static void BindCollection(XmlNode node, Mapping.Collection model, string prefix, Mappings mappings) 
+		public static void BindCollection(XmlNode node, Mapping.Collection model, string className, string path, Mappings mappings) 
 		{
 			//ROLENAME
-			string propertyName = node.Attributes["name"].Value;
-			model.Role = prefix + StringHelper.Dot + propertyName;
+			model.Role = StringHelper.Qualify( className, path ) ;
 
 			XmlAttribute inverseNode = node.Attributes["inverse"];
 			if ( inverseNode!=null ) model.IsInverse = StringHelper.BooleanValue( inverseNode.Value );
@@ -439,13 +511,38 @@ namespace NHibernate.Cfg
 			{
 				model.Where = whereNode.Value;
 			}
+			XmlAttribute batchNode = node.Attributes["batch-size"];
+			if ( batchNode!=null ) 
+			{
+				model.BatchSize = Int32.Parse( batchNode.Value );
+			}
+
+			//PERSISTER
+			XmlAttribute persisterNode = node.Attributes["persister"];
+			if ( persisterNode == null )
+			{
+				//persister = CollectionPersisterImpl.class;
+			}
+			else
+			{
+				try
+				{
+					model.CollectionPersisterClass = ReflectHelper.ClassForName( persisterNode.Value );
+				}
+				catch (Exception)
+				{
+					throw new MappingException("could not instantiate collection persister class: " + className);
+				}
+			}
+
+			InitOuterJoinFetchSetting( node, model );
 
 			XmlNode oneToManyNode = node.SelectSingleNode(nsPrefix + ":one-to-many", nsmgr);
 			if ( oneToManyNode!=null ) 
 			{
-				model.IsOneToMany = true;
-				model.OneToMany = new OneToMany( model.Owner );
-				BindOneToMany( oneToManyNode, model.OneToMany );
+				OneToMany oneToMany = new OneToMany( model.Owner );
+				model.Element = oneToMany;
+				BindOneToMany( oneToManyNode, oneToMany, mappings );
 				//we have to set up the table later!! yuck
 			} 
 			else 
@@ -455,26 +552,27 @@ namespace NHibernate.Cfg
 				string tableName;
 				if ( tableNode!=null) 
 				{
-					tableName = tableNode.Value;
+					tableName = mappings.NamingStrategy.TableName( tableNode.Value );
 				} 
 				else 
 				{
-					tableName = propertyName;
+					tableName = mappings.NamingStrategy.PropertyToTableName( className, path );
 				}
 				XmlAttribute schemaNode = node.Attributes["schema"];
 				string schema = schemaNode==null ? mappings.SchemaName : schemaNode.Value;
-				model.Table = mappings.AddTable(schema, tableName);
+				model.CollectionTable = mappings.AddTable(schema, tableName);
 
-				log.Info("Mapping collection: " + model.Role + " -> " + model.Table.Name );
+				log.Info("Mapping collection: " + model.Role + " -> " + model.CollectionTable.Name );
 			}
-			//laziness
+
+			//LAZINESS
 			XmlAttribute lazyNode = node.Attributes["lazy"];
 			if (lazyNode!=null) 
 			{
 				model.IsLazy = StringHelper.BooleanValue( lazyNode.Value );
 			}
 
-			//sort
+			//SORT
 			XmlAttribute sortedAtt = node.Attributes["sort"];
 			// unsorted, natural, comparator.class.name
 			if (sortedAtt==null || sortedAtt.Value.Equals("unsorted") ) 
@@ -484,12 +582,12 @@ namespace NHibernate.Cfg
 			else 
 			{
 				model.IsSorted = true;
-				string className = sortedAtt.Value;
-				if ( !className.Equals("natural") ) 
+				string comparatorClassName = sortedAtt.Value;
+				if ( !comparatorClassName.Equals("natural") ) 
 				{
 					try 
 					{
-						model.Comparer = (IComparer) Activator.CreateInstance( ReflectHelper.ClassForName(className) );
+						model.Comparer = (IComparer) Activator.CreateInstance( ReflectHelper.ClassForName(comparatorClassName) );
 					} 
 					catch (Exception) 
 					{
@@ -525,10 +623,9 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindIntegerValue(XmlNode node, IntegerValue model, string defaultColumnName, bool isNullable) 
+		public static void BindIntegerValue(XmlNode node, IntegerValue model, string defaultColumnName, bool isNullable, Mappings mappings) 
 		{
-
-			BindValue(node, model, isNullable, defaultColumnName);
+			BindSimpleValue(node, model, isNullable, defaultColumnName, mappings);
 
 			if (model.ColumnCollection.Count > 1)
 				log.Error("This shouldn't happen, check BindIntegerValue");
@@ -540,10 +637,10 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindManyToOne(XmlNode node, ManyToOne model, string defaultColumnName, bool isNullable) 
+		public static void BindManyToOne(XmlNode node, ManyToOne model, string defaultColumnName, bool isNullable, Mappings mappings)
 		{
-			BindColumns(node, model, isNullable, true, defaultColumnName);
-			InitOuterJoinFetchSettings(node, model);
+			BindColumns(node, model, isNullable, true, defaultColumnName, mappings);
+			InitOuterJoinFetchSetting(node, model);
 
 			XmlAttribute typeNode = node.Attributes["class"];
 			
@@ -551,8 +648,7 @@ namespace NHibernate.Cfg
 			{
 				try 
 				{
-					model.Type = 
-						TypeFactory.ManyToOne( ReflectHelper.ClassForName( typeNode.Value)); 
+					model.Type = TypeFactory.ManyToOne( ReflectHelper.ClassForName( typeNode.Value ) ); 
 				} 
 				catch 
 				{
@@ -561,7 +657,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindAny(XmlNode node, Any model, bool isNullable) 
+		public static void BindAny(XmlNode node, Any model, bool isNullable, Mappings mappings) 
 		{
 			model.IdentifierType = GetTypeFromXML(node);
 
@@ -573,13 +669,13 @@ namespace NHibernate.Cfg
 				model.MetaType = metaType;
 			}
 
-			BindColumns(node, model, isNullable, false, null);
+			BindColumns(node, model, isNullable, false, null, mappings);
 		}
 
-		public static void BindOneToOne(XmlNode node, OneToOne model, bool isNullable) 
+		public static void BindOneToOne(XmlNode node, OneToOne model, bool isNullable, Mappings mappings) 
 		{
-			BindColumns(node, model, isNullable, false, null);
-			InitOuterJoinFetchSettings(node, model);
+			BindColumns(node, model, isNullable, false, null, mappings);
+			InitOuterJoinFetchSetting(node, model);
 
 			XmlAttribute constrNode = node.Attributes["constrained"];
 			bool constrained = constrNode!=null && constrNode.Value.Equals("true");
@@ -587,24 +683,21 @@ namespace NHibernate.Cfg
 
 			model.ForeignKeyType = (constrained ? ForeignKeyType.ForeignKeyFromParent : ForeignKeyType.ForeignKeyToParent);
 
-			XmlAttribute typeNode = node.Attributes["class"];			
-			
-			if (typeNode!=null) 
+			XmlAttribute classNode = node.Attributes["class"];
+			if (classNode!=null) 
 			{
 				try 
 				{
-					model.Type = 
-						TypeFactory.OneToOne( ReflectHelper.ClassForName( typeNode.Value ), model.ForeignKeyType);
-					
+					model.Type = TypeFactory.OneToOne( ReflectHelper.ClassForName( classNode.Value ), model.ForeignKeyType);
 				} 
 				catch (Exception) 
 				{
-					throw new MappingException("could not find class: " + typeNode.Value);
+					throw new MappingException("could not find class: " + classNode.Value);
 				}
 			}
 		}
 
-		public static void BindOneToMany(XmlNode node, OneToMany model) 
+		public static void BindOneToMany(XmlNode node, OneToMany model, Mappings mappings) 
 		{
 			try 
 			{
@@ -635,10 +728,9 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// Called for arrays and primitive arrays
 		/// </remarks>
-		public static void BindArray(XmlNode node, Mapping.Array model, string prefix, Mappings mappings) 
+		public static void BindArray(XmlNode node, Mapping.Array model, string prefix, string path, Mappings mappings) 
 		{
-			
-			BindCollection(node, model, prefix, mappings);
+			BindCollection(node, model, prefix, path, mappings);
 
 			XmlAttribute att = node.Attributes["element-class"];
 
@@ -689,26 +781,20 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindComponent(XmlNode node, Component model, System.Type reflectedClass, string path, bool isNullable, Mappings mappings) 
+		public static void BindComponent(XmlNode node, Component model, System.Type reflectedClass, string className, string path, bool isNullable, Mappings mappings) 
 		{
-
 			XmlAttribute classNode = node.Attributes["class"];
-			XmlAttribute dynaclassNode = node.Attributes["dynaclass"];
 			
-			string className;
-			
-			if (dynaclassNode!=null) 
+			if ( "dynamic-component".Equals( node.Name ) ) 
 			{
-				className = dynaclassNode.Value;
 				model.IsEmbedded = false;
+				model.IsDynamic = true;
 			} 
-			else if (classNode!=null) 
+			else if ( classNode != null ) 
 			{
-				className = classNode.Value;
-				
 				try 
 				{
-					model.ComponentClass = ReflectHelper.ClassForName(className); 
+					model.ComponentClass = ReflectHelper.ClassForName( classNode.Value ) ; 
 				} 
 				catch (Exception e) 
 				{
@@ -716,69 +802,64 @@ namespace NHibernate.Cfg
 				}
 				model.IsEmbedded = false;
 			} 
-			else if (reflectedClass!=null) 
+			else if ( reflectedClass != null )
 			{
 				model.ComponentClass = reflectedClass;
-				className = model.ComponentClass.Name;
 				model.IsEmbedded = false;
 			} 
 			else 
 			{
 				// an "embedded" component (ids only)
-				model.ComponentClass = model.Owner.PersistentClazz;
-				className = model.Owner.Name;
+				model.ComponentClass = model.Owner.MappedClass;
 				model.IsEmbedded = true;
 			}
 
 			foreach(XmlNode subnode in node.ChildNodes) 
 			{
 				//I am only concerned with elements that are from the nhibernate namespace
-				if(subnode.NamespaceURI!=Configuration.MappingSchemaXMLNS) continue;
+				if ( subnode.NamespaceURI != Configuration.MappingSchemaXMLNS ) continue;
 
 				string name = subnode.LocalName; //.Name;
 				string propertyName = GetPropertyName(subnode);
-				string subpath = path + StringHelper.Dot + propertyName;
+				string subpath = propertyName == null ? null : StringHelper.Qualify( path, propertyName ) ;
 
 				CollectionType collectType = CollectionType.CollectionTypeFromString(name);
-				Value value = null;
+				IValue value = null;
 				if ( collectType!=null ) 
 				{
-					Mapping.Collection collection = collectType.Create( subnode, path, model.Owner, mappings );
+					Mapping.Collection collection = collectType.Create( subnode, className, subpath, model.Owner, mappings );
 					mappings.AddCollection(collection);
-					value = new Value( model.Table );
-					BindValue(subnode, value, isNullable);
-					value.Type = collection.Type;
+					value = collection;
 				} 
 				else if ( "many-to-one".Equals(name) || "key-many-to-one".Equals(name) ) 
 				{
 					value = new ManyToOne( model.Table);
-					BindManyToOne(subnode, (ManyToOne) value, propertyName, isNullable);
+					BindManyToOne(subnode, (ManyToOne) value, subpath, isNullable, mappings);
 				} 
 				else if ( "one-to-one".Equals(name) ) 
 				{
 					value = new OneToOne( model.Table, model.Owner.Identifier );
-					BindOneToOne(subnode, (OneToOne) value, isNullable);
+					BindOneToOne(subnode, (OneToOne) value, isNullable, mappings);
 				} 
 				else if ( "any".Equals(name) ) 
 				{
 					value = new Any( model.Table );
-					BindAny(subnode, (Any) value, isNullable);
+					BindAny(subnode, (Any) value, isNullable, mappings);
 				} 
 				else if ( "property".Equals(name) || "key-property".Equals(name) ) 
 				{
-					value = new Value( model.Table );
-					if ( value.Formula!=null ) throw new MappingException("properties of components do not support formula: " + propertyName);
-					BindValue(subnode, value, isNullable, propertyName);
+					value = new SimpleValue( model.Table );
+					BindSimpleValue(subnode, (SimpleValue) value, isNullable, subpath, mappings);
 				} 
-				else if ( "component".Equals(name) || "nested-composite-element".Equals(name) ) 
+				else if ( "component".Equals(name) || "dynamic-component".Equals(name) || "nested-composite-element".Equals(name) ) 
 				{
-					System.Type subreflectedClass = (model.ComponentClass==null) ?
+					System.Type subreflectedClass = (model.ComponentClass == null) ?
 						null :
 						ReflectHelper.GetGetter( model.ComponentClass, propertyName ).ReturnType;
 					value = ( model.Owner!=null ) ?
 						new Component( model.Owner ) : // a class component
-						new Component( model.Table ); // a composite element
-					BindComponent(subnode, (Component) value, subreflectedClass, subpath, isNullable, mappings);
+						new Component( model.Table );  // a composite element
+					BindComponent(subnode, (Component) value, subreflectedClass, className, subpath, isNullable, mappings);
 				} 
 				else if ( "parent".Equals(name) ) 
 				{
@@ -787,12 +868,7 @@ namespace NHibernate.Cfg
 
 				if ( value!=null ) 
 				{
-					System.Type componentClass = model.ComponentClass;
-					if (componentClass!=null) value.SetTypeByReflection(componentClass, propertyName);
-					value.CreateForeignKey();
-					Mapping.Property prop = new Mapping.Property(value);
-					BindProperty(subnode, prop, mappings);
-					model.AddProperty(prop);
+					model.AddProperty( CreateProperty( value, propertyName, model.ComponentClass, subnode, mappings ) );
 				}
 			}
 
@@ -800,28 +876,68 @@ namespace NHibernate.Cfg
 			string[] names = new string[span];
 			IType[] types = new IType[span];
 			Cascades.CascadeStyle[] cascade = new Cascades.CascadeStyle[span];
-			OuterJoinLoaderType[] joinedFetch = new OuterJoinLoaderType[span];
-			Property.IGetter[] getters = new Property.IGetter[span];
-			Property.ISetter[] setters = new Property.ISetter[span];
-			bool foundCustomAccessor = false;
+			OuterJoinFetchStrategy[] joinedFetch = new OuterJoinFetchStrategy[span];
 			
 			int i=0;
-			foreach(Mapping.Property prop in model.PropertyCollection) 
+			foreach( Mapping.Property prop in model.PropertyCollection ) 
 			{
 				names[i] = prop.Name;
 				types[i] = prop.Type;
 				cascade[i] = prop.CascadeStyle;
 				joinedFetch[i] = prop.Value.OuterJoinFetchSetting;
-				
-				// the setters is new code added for field access
-				setters[i] = prop.GetSetter( model.ComponentClass );
-				getters[i] = prop.GetGetter( model.ComponentClass );
-				if( !prop.IsBasicPropertyAccessor ) foundCustomAccessor = true;
 				i++;
 			}
 
-			model.Type = 
-				(IType) new ComponentType( model.ComponentClass, names, getters, setters, foundCustomAccessor, types, joinedFetch, cascade, model.ParentProperty, model.IsEmbedded );
+			IType componentType;
+			if ( model.IsDynamic )
+			{
+				// TODO: Implement DynamicComponentType
+				//componentType = new DynamicComponentType( names, types, joinedFetch, cascade );
+				componentType = null;
+			}
+			else
+			{
+				Property.IGetter[] getters = new Property.IGetter[span];
+				Property.ISetter[] setters = new Property.ISetter[span];
+				bool foundCustomAccessor = false;
+				i = 0;
+				foreach( Mapping.Property prop in model.PropertyCollection ) 
+				{
+					// the setters is new code added for field access
+					setters[i] = prop.GetSetter( model.ComponentClass );
+					getters[i] = prop.GetGetter( model.ComponentClass );
+					if( !prop.IsBasicPropertyAccessor ) foundCustomAccessor = true;
+					i++;
+				}
+
+				componentType = new ComponentType( model.ComponentClass, names, getters, setters, foundCustomAccessor, types, joinedFetch, cascade, model.ParentProperty, model.IsEmbedded );
+			}
+			model.Type = componentType;	
+		}
+
+		private static Mapping.Property CreateProperty( IValue value, string propertyName, System.Type parentClass, XmlNode subnode, Mappings mappings )
+		{
+			if ( parentClass != null && value.IsSimpleValue )
+			{
+				( (SimpleValue) value).SetTypeByReflection( parentClass, propertyName );
+			}
+
+			// This is done here 'cos we might only know the type here (ugly!)
+			if ( value is ToOne )
+			{
+				string propertyRef = ( (ToOne) value).ReferencedPropertyName;
+				if ( propertyRef != null )
+				{
+					mappings.AddUniquePropertyReference( ( (EntityType) value.Type).AssociatedClass, propertyRef );
+				}
+			}
+
+			value.CreateForeignKey( );
+			Mapping.Property prop = new Mapping.Property();
+			prop.Value = value;
+			BindProperty(subnode, prop, mappings);
+
+			return prop;
 		}
 
 		private static IType GetTypeFromXML(XmlNode node) 
@@ -842,29 +958,29 @@ namespace NHibernate.Cfg
 			return type;
 		}
 
-		private static void InitOuterJoinFetchSettings(XmlNode node, Association model) 
+		private static void InitOuterJoinFetchSetting(XmlNode node, IFetchable model) 
 		{
 			XmlAttribute jfNode = node.Attributes["outer-join"];
 			if ( jfNode==null ) 
 			{
-				model.OuterJoinFetchSetting = OuterJoinLoaderType.Auto;
+				model.OuterJoinFetchSetting = OuterJoinFetchStrategy.Auto;
 			} 
 			else 
 			{
 				string eoj = jfNode.Value;
 				if ( "auto".Equals(eoj) ) 
 				{
-					model.OuterJoinFetchSetting = OuterJoinLoaderType.Auto;
+					model.OuterJoinFetchSetting = OuterJoinFetchStrategy.Auto;
 				} 
 				else 
 				{
 					model.OuterJoinFetchSetting = ("true".Equals(eoj)) ?
-						OuterJoinLoaderType.Eager : OuterJoinLoaderType.Lazy;
+						OuterJoinFetchStrategy.Eager : OuterJoinFetchStrategy.Lazy;
 				}
 			}
 		}
 
-		private static void MakeIdentifier(XmlNode node, Value model, Mappings mappings) 
+		private static void MakeIdentifier(XmlNode node, SimpleValue model, Mappings mappings) 
 		{
 			//GENERATOR
 
@@ -915,7 +1031,6 @@ namespace NHibernate.Cfg
 
 		protected static void PropertiesFromXML(XmlNode node, PersistentClass model, Mappings mappings) 
 		{
-			string path = model.Name;
 			Table table = model.Table;
 
 			foreach(XmlNode subnode in node.ChildNodes) 
@@ -927,41 +1042,38 @@ namespace NHibernate.Cfg
 				string propertyName = GetPropertyName(subnode);
 
 				CollectionType collectType = CollectionType.CollectionTypeFromString(name);
-				Value value = null;
+				IValue value = null;
 				if (collectType!=null) 
 				{
-					Mapping.Collection collection = collectType.Create(subnode, path, model, mappings);
+					Mapping.Collection collection = collectType.Create(subnode, model.Name, propertyName, model, mappings);
 					mappings.AddCollection(collection);
-					value = new Value(table);
-					BindValue(subnode, value, true);
-					value.Type = collection.Type;
+					value = collection;
 				} 
 				else if ( "many-to-one".Equals(name) ) 
 				{
 					value = new ManyToOne(table);
-					BindManyToOne(subnode, (ManyToOne) value, propertyName, true);
+					BindManyToOne(subnode, (ManyToOne) value, propertyName, true, mappings);
 				} 
 				else if ( "any".Equals(name) ) 
 				{
 					value = new Any(table);
-					BindAny(subnode, (Any) value, true);
+					BindAny(subnode, (Any) value, true, mappings);
 				}
 				else if ( "one-to-one".Equals(name) ) 
 				{
 					value = new OneToOne(table, model.Identifier );
-					BindOneToOne(subnode, (OneToOne) value, true);
+					BindOneToOne(subnode, (OneToOne) value, true, mappings);
 				} 
 				else if ( "property".Equals(name) ) 
 				{
-					value = new Value(table);
-					BindValue(subnode, value, true, propertyName);
+					value = new SimpleValue(table);
+					BindSimpleValue(subnode, (SimpleValue) value, true, propertyName, mappings);
 				} 
-				else if ( "component".Equals(name) ) 
+				else if ( "component".Equals(name) || "dynamic-component".Equals(name) ) 
 				{
-					string subpath = path + StringHelper.Dot + propertyName;
-					System.Type reflectedClass = ReflectHelper.GetGetter( model.PersistentClazz, propertyName ).ReturnType;
+					System.Type reflectedClass = ReflectHelper.GetGetter( model.MappedClass, propertyName ).ReturnType;
 					value = new Component(model);
-					BindComponent(subnode, (Component) value, reflectedClass, subpath, true, mappings);
+					BindComponent(subnode, (Component) value, reflectedClass, model.Name, propertyName, true, mappings);
 				} 
 				else if ( "subclass".Equals(name) ) 
 				{
@@ -973,11 +1085,7 @@ namespace NHibernate.Cfg
 				}
 				if ( value!=null) 
 				{
-					value.SetTypeByReflection( model.PersistentClazz, propertyName );
-					value.CreateForeignKey();
-					Mapping.Property prop = new Mapping.Property(value);
-					BindProperty(subnode, prop, mappings);
-					model.AddProperty(prop);
+					model.AddNewProperty( CreateProperty( value, propertyName, model.MappedClass, subnode, mappings ) );
 				}
 			}
 		}
@@ -997,74 +1105,64 @@ namespace NHibernate.Cfg
 			BindCollectionSecondPass(node, model, classes, mappings);
 
 			XmlNode subnode = node.SelectSingleNode(nsPrefix + ":index", nsmgr);
-			IntegerValue iv = new IntegerValue( model.Table );
-			BindIntegerValue( subnode, iv, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany );
+			IntegerValue iv = new IntegerValue( model.CollectionTable );
+			BindIntegerValue( subnode, iv, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany, mappings );
 			model.Index = iv;
-
-			if ( !model.IsOneToMany ) model.CreatePrimaryKey();
-
-			AddIndexForIndexedCollection( model );
 		}
 
 		public static void BindIdentifierCollectionSecondPass(XmlNode node, IdentifierCollection model, IDictionary persitentClasses, Mappings mappings) 
 		{
 			BindCollectionSecondPass(node, model, persitentClasses, mappings);
 
-			XmlNode subnode = node.SelectSingleNode(nsPrefix + ":collection-id", nsmgr);
-			Value id = new Value(model.Table);
-			BindValue(subnode, id, false, IdentifierCollection.DefaultIdentifierColumnName);
+			XmlNode subnode = node.SelectSingleNode( nsPrefix + ":collection-id", nsmgr );
+			SimpleValue id = new SimpleValue( model.CollectionTable );
+			BindSimpleValue( subnode, id, false, IdentifierCollection.DefaultIdentifierColumnName, mappings);
 			model.Identifier = id;
-			MakeIdentifier(subnode, id, mappings);
-			if ( !model.IsOneToMany ) model.CreatePrimaryKey();
-
+			MakeIdentifier( subnode, id, mappings );
 		}
 
 		//map binding
 
 		public static void BindMapSecondPass(XmlNode node, Mapping.Map model, IDictionary classes, Mappings mappings) 
 		{
-			BindCollectionSecondPass(node, model, classes, mappings);
+			BindCollectionSecondPass( node, model, classes, mappings );
 
-			foreach(XmlNode subnode in node.ChildNodes) 
+			foreach( XmlNode subnode in node.ChildNodes ) 
 			{
 				//I am only concerned with elements that are from the nhibernate namespace
-				if(subnode.NamespaceURI!=Configuration.MappingSchemaXMLNS) continue;
+				if( subnode.NamespaceURI != Configuration.MappingSchemaXMLNS ) continue;
 
 				string name = subnode.LocalName; //.Name;
 
 				if ( "index".Equals(name) ) 
 				{
-					Value value = new Value( model.Table );
-					BindValue(subnode, value, model.IsOneToMany, IndexedCollection.DefaultIndexColumnName);
+					SimpleValue value = new SimpleValue( model.CollectionTable );
+					BindSimpleValue( subnode, value, model.IsOneToMany, IndexedCollection.DefaultIndexColumnName, mappings );
 					model.Index = value;
 					if ( model.Index.Type==null ) throw new MappingException("map index element must specify a type");
 				} 
 				else if ( "index-many-to-many".Equals(name) ) 
 				{
-					ManyToOne mto = new ManyToOne( model.Table );
-					BindManyToOne(subnode, mto, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany);
+					ManyToOne mto = new ManyToOne( model.CollectionTable );
+					BindManyToOne(subnode, mto, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany, mappings);
 					model.Index = mto;
 				} 
 				else if ( "composite-index".Equals(name) ) 
 				{
-					Component component = new Component( model.Table );
-					BindComponent(subnode, component, null, model.Role + ".index", model.IsOneToMany, mappings);
+					Component component = new Component( model.CollectionTable );
+					BindComponent(subnode, component, null, model.Role, "index", model.IsOneToMany, mappings);
 					model.Index = component;
 				}
 				else if ( "index-many-to-any".Equals(name) ) 
 				{
-					Any any = new Any( model.Table );
-					BindAny( subnode, any, model.IsOneToMany );
+					Any any = new Any( model.CollectionTable );
+					BindAny( subnode, any, model.IsOneToMany, mappings );
 					model.Index = any;
 				} 
 			}
-			if ( !model.IsInverse ) model.Index.CreateForeignKey();
-
-			if ( !model.IsOneToMany ) model.CreatePrimaryKey();
-
-			AddIndexForIndexedCollection( model );
 		}
 
+		/*
 		private static void AddIndexForIndexedCollection(IndexedCollection model)
 		{
 			//TODO: Find out why this is commented out
@@ -1076,6 +1174,7 @@ namespace NHibernate.Cfg
 //				while ( cols.hasNext() ) uniqueKey.addColumn( (Column) cols.next() );
 //			}
 		}
+		*/
 
 		/// <remarks>
 		/// Called for all collections
@@ -1084,13 +1183,24 @@ namespace NHibernate.Cfg
 		{
 			if ( model.IsOneToMany ) 
 			{
-				System.Type assocClass = model.OneToMany.Type.PersistentClass;
+				OneToMany oneToMany = (OneToMany) model.Element;
+				System.Type assocClass = oneToMany.EntityType.AssociatedClass;
 				PersistentClass persistentClass = (PersistentClass) persistentClasses[assocClass];
-				if ( persistentClass==null) throw new MappingException(
-												"Association references unmapped class: " + assocClass.Name);
-				model.Table = persistentClass.Table;
+				if ( persistentClass==null) 
+				{
+					throw new MappingException(	"Association references unmapped class: " + assocClass.Name);
+				}
+				oneToMany.AssociatedClass = persistentClass;
+				model.CollectionTable = persistentClass.Table;
 
-				log.Info("mapping collection: " + model.Role + " -> " + model.Table.Name);
+				log.Info("mapping collection: " + model.Role + " -> " + model.CollectionTable.Name);
+			}
+
+			// CHECK
+			XmlAttribute chNode = node.Attributes["check"];
+			if ( chNode != null )
+			{
+				model.CollectionTable.AddCheckConstraint( chNode.Value );
 			}
 
 			foreach(XmlNode subnode in node.ChildNodes) 
@@ -1102,8 +1212,8 @@ namespace NHibernate.Cfg
 
 				if ( "key".Equals(name) || "generated-key".Equals(name) ) 
 				{
-					Value key = new Value( model.Table );
-					BindValue(subnode, key, model.IsOneToMany, Mapping.Collection.DefaultKeyColumnName);
+					SimpleValue key = new SimpleValue( model.CollectionTable );
+					BindSimpleValue(subnode, key, model.IsOneToMany, Mapping.Collection.DefaultKeyColumnName, mappings);
 					key.Type = model.Owner.Identifier.Type;
 					if ( key.Type.ReturnedClass.IsArray ) 
 					{
@@ -1113,27 +1223,27 @@ namespace NHibernate.Cfg
 				} 
 				else if ( "element".Equals(name) ) 
 				{
-					Value elt = new Value( model.Table );
+					SimpleValue elt = new SimpleValue( model.CollectionTable );
 					model.Element = elt;
-					BindValue(subnode, elt, true, Mapping.Collection.DefaultElementColumnName);
+					BindSimpleValue(subnode, elt, true, Mapping.Collection.DefaultElementColumnName, mappings);
 				} 
 				else if ( "many-to-many".Equals(name) ) 
 				{
-					ManyToOne element = new ManyToOne( model.Table );
+					ManyToOne element = new ManyToOne( model.CollectionTable );
 					model.Element = element;
-					BindManyToOne(subnode, element, Mapping.Collection.DefaultElementColumnName, true);
+					BindManyToOne(subnode, element, Mapping.Collection.DefaultElementColumnName, true, mappings);
 				} 
 				else if ( "composite-element".Equals(name) ) 
 				{
-					Component element = new Component( model.Table );
+					Component element = new Component( model.CollectionTable );
 					model.Element = element;
-					BindComponent(subnode, element, null, model.Role + ".element", true, mappings);
+					BindComponent(subnode, element, null, model.Role, "element", true, mappings);
 				}
 				else if ( "many-to-any".Equals(name) ) 
 				{
-					Any element = new Any( model.Table );				
+					Any element = new Any( model.CollectionTable );				
 					model.Element = element;
-					BindAny(subnode, element, true);
+					BindAny(subnode, element, true, mappings);
 				} 
 				else if ( "jcs-cache".Equals(name) )
 				{
@@ -1154,7 +1264,7 @@ namespace NHibernate.Cfg
 					model.Element.CreateForeignKey();
 				}
 
-				model.Key.CreateForeignKeyOfClass( model.Owner.PersistentClazz );
+				model.Key.CreateForeignKeyOfClass( model.Owner.MappedClass );
 			}
 		}
 
@@ -1202,6 +1312,31 @@ namespace NHibernate.Cfg
 				string query = n.FirstChild.Value;
 				log.Debug("Named query: " + qname + " -> " + query);
 				model.AddQuery(qname, query);
+			}
+
+			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":sql-query", nsmgr) ) 
+			{
+				string qname = n.Attributes["name"].Value;
+				NamedSQLQuery namedQuery = new NamedSQLQuery( n.FirstChild.Value );
+
+				foreach(XmlNode returns in n.SelectNodes(nsPrefix + ":return", nsmgr) )
+				{
+					string alias = returns.Attributes["alias"].Value;
+					object clazz;
+					try
+					{
+						//clazz = ReflectorHelper.ClassForName( returns.Attributes["class"] );
+						clazz = null;
+					}
+					catch (Exception)
+					{
+						throw new MappingException( string.Format( "class not found for alias:", alias ) );
+					}
+					namedQuery.AddAliasedClass( alias, clazz );
+				}
+
+				log.Debug("Named sql query: " + qname + " -> " + namedQuery.QueryString );
+				model.AddSQLQuery(qname, namedQuery);
 			}
 
 			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":import", nsmgr) ) 
@@ -1289,7 +1424,7 @@ namespace NHibernate.Cfg
 					if ( collection.IsIndexed ) msg+= ", index: " + Columns( ( (IndexedCollection) collection ).Index );
 					if ( collection.IsOneToMany ) 
 					{
-						msg += ", one-to-many: " + collection.OneToMany.Type.Name;
+						msg += ", one-to-many: " + collection.Element.Type.Name;
 					}
 					else 
 					{
@@ -1368,7 +1503,7 @@ namespace NHibernate.Cfg
 		private abstract class CollectionType 
 		{
 			private string xmlTag;
-			public abstract Mapping.Collection Create(XmlNode node, string prefix, PersistentClass owner, Mappings mappings);
+			public abstract Mapping.Collection Create(XmlNode node, string className, string path, PersistentClass owner, Mappings mappings);
 
 			public CollectionType(string xmlTag) 
 			{
@@ -1384,10 +1519,10 @@ namespace NHibernate.Cfg
 			private class CollectionTypeMap : CollectionType 
 			{
 				public CollectionTypeMap(string xmlTag) : base(xmlTag) { }
-				public override Mapping.Collection Create(XmlNode node, string prefix, PersistentClass owner, Mappings mappings) 
+				public override Mapping.Collection Create(XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings) 
 				{
 					Map map = new Map(owner);
-					Binder.BindCollection(node, map, prefix, mappings);
+					Binder.BindCollection(node, map, prefix, path, mappings);
 					return map;
 				}
 			}
@@ -1396,10 +1531,10 @@ namespace NHibernate.Cfg
 			private class CollectionTypeSet : CollectionType 
 			{
 				public CollectionTypeSet(string xmlTag) : base(xmlTag) {}
-				public override Mapping.Collection Create(XmlNode node, string prefix, PersistentClass owner, Mappings mappings) 
+				public override Mapping.Collection Create(XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings) 
 				{
 					Set setCollection = new Set(owner);
-					Binder.BindCollection(node, setCollection, prefix, mappings);
+					Binder.BindCollection(node, setCollection, prefix, path, mappings);
 					return setCollection;
 				}
 			}
@@ -1408,10 +1543,10 @@ namespace NHibernate.Cfg
 			private class CollectionTypeList : CollectionType 
 			{
 				public CollectionTypeList(string xmlTag) : base(xmlTag) { }
-				public override Mapping.Collection Create(XmlNode node, string prefix, PersistentClass owner, Mappings mappings) 
+				public override Mapping.Collection Create(XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings) 
 				{
 					List list = new List(owner);
-					Binder.BindCollection(node, list, prefix, mappings);
+					Binder.BindCollection(node, list, prefix, path, mappings);
 					return list;
 				}
 			}		
@@ -1420,10 +1555,10 @@ namespace NHibernate.Cfg
 			private class CollectionTypeBag : CollectionType 
 			{
 				public CollectionTypeBag(string xmlTag) : base(xmlTag) {}
-				public override Mapping.Collection Create(XmlNode node, string prefix, PersistentClass owner, Mappings mappings)
+				public override Mapping.Collection Create(XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings)
 				{
 					Bag bag = new Bag(owner);
-					Binder.BindCollection(node, bag, prefix, mappings);
+					Binder.BindCollection(node, bag, prefix, path, mappings);
 					return bag;
 				}
 
@@ -1433,10 +1568,10 @@ namespace NHibernate.Cfg
 			private class CollectionTypeIdBag : CollectionType 
 			{
 				public CollectionTypeIdBag(string xmlTag) : base(xmlTag) {}
-				public override Mapping.Collection Create(XmlNode node, string prefix, PersistentClass owner, Mappings mappings)
+				public override Mapping.Collection Create(XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings)
 				{
 					IdentifierBag bag = new IdentifierBag(owner);
-					Binder.BindCollection(node, bag, prefix, mappings);
+					Binder.BindCollection(node, bag, prefix, path, mappings);
 					return bag;
 				}
 
@@ -1446,10 +1581,10 @@ namespace NHibernate.Cfg
 			private class CollectionTypeArray : CollectionType 
 			{
 				public CollectionTypeArray(string xmlTag) : base(xmlTag) { }
-				public override Mapping.Collection Create(XmlNode node, string prefix, PersistentClass owner, Mappings mappings) 
+				public override Mapping.Collection Create(XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings) 
 				{
 					Mapping.Array array = new Mapping.Array(owner);
-					Binder.BindArray(node, array, prefix, mappings);
+					Binder.BindArray(node, array, prefix, path, mappings);
 					return array;
 				}
 			}		
@@ -1458,10 +1593,10 @@ namespace NHibernate.Cfg
 			private class CollectionTypePrimitiveArray : CollectionType 
 			{
 				public CollectionTypePrimitiveArray(string xmlTag) : base(xmlTag) { }
-				public override Mapping.Collection Create(XmlNode node, string prefix, PersistentClass owner, Mappings mappings) 
+				public override Mapping.Collection Create(XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings) 
 				{
 					PrimitiveArray array = new PrimitiveArray(owner);
-					Binder.BindArray(node, array, prefix, mappings);
+					Binder.BindArray(node, array, prefix, path, mappings);
 					return array;
 				}
 			}	

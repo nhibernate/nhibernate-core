@@ -4,7 +4,7 @@ using NHibernate.Type;
 namespace NHibernate.Mapping
 {
 	/// <summary></summary>
-	public class Any : Value
+	public class Any : SimpleValue
 	{
 		private IType identifierType;
 		private IType metaType = TypeFactory.GetTypeType();

@@ -15,7 +15,7 @@ namespace NHibernate.Hql
 		{
 			if( !IsCollectionValued )
 			{
-				IType type = GetPropertyType( q );
+				IType type = PropertyType;
 				if( type.IsEntityType )
 				{
 					// "finish off" the join

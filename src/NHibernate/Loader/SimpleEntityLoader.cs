@@ -19,8 +19,6 @@ namespace NHibernate.Loader
 		private SqlString sqlString;
 		private LockMode[ ] lockMode;
 
-		private string[ ] NoSuffix = new string[ ] {String.Empty};
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -52,7 +50,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary></summary>
-		protected override CollectionPersister CollectionPersister
+		protected override ICollectionPersister CollectionPersister
 		{
 			get { return null; }
 		}

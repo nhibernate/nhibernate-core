@@ -14,39 +14,33 @@ namespace NHibernate.Loader
 	/// </summary>
 	public class OneToManyLoader : OuterJoinLoader, ICollectionInitializer
 	{
-		private CollectionPersister collectionPersister;
+		private IQueryableCollection collectionPersister;
 		private IType idType;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mappingDefault"></param>
-		/// <param name="path"></param>
-		/// <param name="table"></param>
-		/// <param name="foreignKeyColumns"></param>
-		/// <returns></returns>
-		protected override bool EnableJoinedFetch( bool mappingDefault, string path, string table, string[ ] foreignKeyColumns )
-		{
-			return mappingDefault && (
-				!table.Equals( collectionPersister.QualifiedTableName ) ||
-					!ArrayHelper.Equals( foreignKeyColumns, collectionPersister.KeyColumnNames )
-				);
-		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="collPersister"></param>
 		/// <param name="factory"></param>
-		public OneToManyLoader( CollectionPersister collPersister, ISessionFactoryImplementor factory ) : base( factory.Dialect )
+		public OneToManyLoader( IQueryableCollection collPersister, ISessionFactoryImplementor factory ) : this( collPersister, 1, factory )
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collPersister"></param>
+		/// <param name="batchSize"></param>
+		/// <param name="factory"></param>
+		public OneToManyLoader( IQueryableCollection collPersister, int batchSize, ISessionFactoryImplementor factory ) : base( factory.Dialect )
 		{
 			collectionPersister = collPersister;
 			idType = collectionPersister.KeyType;
 
-			ILoadable persister = ( ILoadable ) factory.GetPersister(
-				( ( EntityType ) collPersister.ElementType ).PersistentClass );
+			//ILoadable persister = ( ILoadable ) factory.GetPersister( ( ( EntityType ) collPersister.ElementType ).AssociatedClass );
+			ILoadable persister = ( ILoadable ) collPersister.ElementPersister;
 
-			string alias = ToAlias( collectionPersister.QualifiedTableName, 0 );
+			string alias = ToAlias( collectionPersister.TableName, 0 );
 
 			SqlString whereSqlString = null;
 
@@ -64,13 +58,12 @@ namespace NHibernate.Loader
 				Suffixes[ i ] = ( joins == 0 ) ? String.Empty : i.ToString() + StringHelper.Underscore;
 			}
 
-
 			JoinFragment ojf = OuterJoins( associations );
 
 			SqlSelectBuilder selectBuilder = new SqlSelectBuilder( factory );
 
 			selectBuilder.SetSelectClause(
-				collectionPersister.SelectClauseFragment( alias ) +
+				collectionPersister.SelectFragment( alias ).ToString() +
 					( joins == 0 ? String.Empty : "," + SelectString( associations ) ) +
 					", " +
 					SelectString( persister, alias, Suffixes[ joins ] )
@@ -115,8 +108,24 @@ namespace NHibernate.Loader
 			PostInstantiate();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mappingDefault"></param>
+		/// <param name="path"></param>
+		/// <param name="table"></param>
+		/// <param name="foreignKeyColumns"></param>
+		/// <returns></returns>
+		protected override bool EnableJoinedFetch( bool mappingDefault, string path, string table, string[ ] foreignKeyColumns )
+		{
+			return mappingDefault && (
+				!table.Equals( collectionPersister.TableName ) ||
+				!ArrayHelper.Equals( foreignKeyColumns, collectionPersister.KeyColumnNames )
+				);
+		}
+
 		/// <summary></summary>
-		protected override CollectionPersister CollectionPersister
+		protected override ICollectionPersister CollectionPersister
 		{
 			get { return collectionPersister; }
 		}

@@ -7,7 +7,7 @@ namespace NHibernate.Mapping
 	{
 		/// <summary></summary>
 		public static readonly string DefaultIdentifierColumnName = "id";
-		private Value identifier;
+		private SimpleValue identifier;
 
 		/// <summary>
 		/// 
@@ -18,7 +18,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public Value Identifier
+		public SimpleValue Identifier
 		{
 			get { return identifier; }
 			set { identifier = value; }
@@ -31,15 +31,19 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public void CreatePrimaryKey()
+		public override void CreatePrimaryKey()
 		{
-			PrimaryKey pk = new PrimaryKey();
-			foreach( Column col in Identifier.ColumnCollection )
+			if ( !IsOneToMany )
 			{
-				pk.AddColumn( col );
+				PrimaryKey pk = new PrimaryKey();
+				foreach( Column col in Identifier.ColumnCollection )
+				{
+					pk.AddColumn( col );
+				}
+				CollectionTable.PrimaryKey = pk;
 			}
+			//else  // Create an index on the key columns?
 
-			Table.PrimaryKey = pk;
 		}
 
 	}

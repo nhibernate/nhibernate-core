@@ -25,7 +25,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( CollectionPersister persister )
+		protected override object Snapshot( ICollectionPersister persister )
 		{
 			SortedList clonedMap = new SortedList( comparer );
 			foreach( DictionaryEntry de in map )
@@ -80,7 +80,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
-		public override void BeforeInitialize( CollectionPersister persister )
+		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			this.map = new SortedList( comparer );
 		}

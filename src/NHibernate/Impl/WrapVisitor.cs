@@ -50,7 +50,7 @@ namespace NHibernate.Impl
 				return null;
 			}
 
-			CollectionPersister persister = Session.GetCollectionPersister( collectionType.Role );
+			ICollectionPersister persister = Session.GetCollectionPersister( collectionType.Role );
 
 			if( collectionType.IsArrayType )
 			{

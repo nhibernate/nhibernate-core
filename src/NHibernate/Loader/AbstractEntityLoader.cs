@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.SqlCommand;
@@ -11,7 +12,10 @@ namespace NHibernate.Loader
 	public class AbstractEntityLoader : OuterJoinLoader
 	{
 		private ILoadable persister;
+		private ICollectionPersister collectionPersister;
+		private int collectionOwner;
 		private string alias;
+		private string[] aliases;
 
 		/// <summary>
 		/// 
@@ -173,5 +177,85 @@ namespace NHibernate.Loader
 			get { return false; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="associations"></param>
+		protected void InitClassPersisters( IList associations )
+		{
+			int joins = CountClassPersisters( associations );
+
+			collectionOwner = -1;	// if no collection found
+			classPersisters = new ILoadable[ joins + 1 ];
+			owners = new int[ joins + 1 ];
+			aliases = new string[ joins + 1 ];
+			LockModeArray = CreateLockModeArray( joins + 1, LockMode.None );
+			int i = 0;
+			foreach( OuterJoinableAssociation oj in associations )
+			{
+				object subpersister = oj.Joinable;
+				if ( subpersister is ILoadable )
+				{
+					classPersisters[ i ] = (ILoadable) subpersister;
+					owners[ i ] = ToOwner( oj, joins, oj.IsOneToOne );
+					aliases[ i ] = oj.Subalias;
+					if ( oj.JoinType == JoinType.InnerJoin )
+					{
+						AddAllToPropertySpaces( classPersisters[ i ].PropertySpaces );
+					}
+					i++;
+				}
+				else 
+				{
+					IQueryableCollection collPersister = (IQueryableCollection) subpersister;
+					// TODO: ?? suppress initialization of collections with a where condition
+					if ( oj.JoinType == JoinType.LeftOuterJoin )
+					{
+						collectionPersister = collPersister;
+						collectionOwner = ToOwner( oj, joins, true );
+					}
+					else
+					{
+						AddToPropertySpaces( collPersister.CollectionSpace ) ;
+					}
+
+					if ( collPersister.IsOneToMany )
+					{
+						classPersisters[ i ] = (ILoadable) collPersister.ElementPersister;
+						aliases[ i ] = oj.Subalias;
+						i++;
+					}
+				}
+			}
+			classPersisters[ joins ] = persister;
+			owners[ joins ] = -1;
+			aliases[ joins ] = alias;
+
+			if ( ArrayHelper.IsAllNegative( owners ) )
+			{
+				owners = null;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="spaces"></param>
+		protected void AddAllToPropertySpaces( object[] spaces )
+		{
+			for ( int i = 0; i < spaces.Length; i++ )
+			{
+				AddToPropertySpaces( spaces[ i ] );
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="space"></param>
+		protected void AddToPropertySpaces( object space )
+		{
+			throw new NotSupportedException( "only criteria queries need to autoflush" );
+		}
 	}
 }

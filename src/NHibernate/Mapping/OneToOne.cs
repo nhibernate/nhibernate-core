@@ -5,18 +5,18 @@ using NHibernate.Util;
 namespace NHibernate.Mapping
 {
 	/// <summary></summary>
-	public class OneToOne : Association
+	public class OneToOne : ToOne
 	{
 		private bool constrained;
 		private ForeignKeyType foreignKeyType;
-		private Value identifier;
+		private SimpleValue identifier;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="table"></param>
 		/// <param name="identifier"></param>
-		public OneToOne( Table table, Value identifier ) : base( table )
+		public OneToOne( Table table, SimpleValue identifier ) : base( table )
 		{
 			this.identifier = identifier;
 		}
@@ -44,9 +44,10 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override void CreateForeignKey()
 		{
+			//if( constrained && ReferencedPropertyName == null )
 			if( constrained )
 			{
-				CreateForeignKeyOfClass( ( ( EntityType ) Type ).PersistentClass );
+				CreateForeignKeyOfClass( ( ( EntityType ) Type ).AssociatedClass );
 			}
 		}
 
@@ -79,12 +80,16 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public Value Identifier
+		public IValue Identifier
 		{
 			get { return identifier; }
-			set { identifier = value; }
+			set { identifier = (SimpleValue) value; }
 		}
 
-
+		/// <summary></summary>
+		public override bool IsNullable
+		{
+			get { return !IsConstrained; }
+		}
 	}
 }

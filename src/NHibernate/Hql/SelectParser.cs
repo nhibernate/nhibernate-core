@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Iesi.Collections;
+using NHibernate.Dialect;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -38,6 +39,7 @@ namespace NHibernate.Hql
 		private bool first;
 		private bool afterNew;
 		private bool insideNew;
+		private bool aggregateAddSelectScalar;
 		private System.Type holderClass;
 
 		private SelectPathExpressionParser pathExpressionParser = new SelectPathExpressionParser();
@@ -144,13 +146,15 @@ namespace NHibernate.Hql
 					q.AddSelectScalar( NHibernateUtil.Int32 );
 				} //special case
 			}
-			else if( aggregateFunctions.Contains( lctoken ) )
+			else if ( GetFunction( lctoken, q ) != null && token == q.Unalias( token ) )
 			{
+				// the name of an SQL function
 				if( !ready )
 				{
 					throw new QueryException( ", expected before aggregate function in SELECT: " + token );
 				}
 				aggregate = true;
+				aggregateAddSelectScalar = true;
 				aggregateFuncTokenList.Insert( 0, lctoken );
 				ready = false;
 				q.AppendScalarSelectToken( token );
@@ -171,25 +175,43 @@ namespace NHibernate.Hql
 						}
 					}
 				}
-
 			}
 			else if( aggregate )
 			{
+				bool constantToken = false;
 				if( !ready )
 				{
 					throw new QueryException( "( expected after aggregate function in SELECT" );
 				}
-				ParserHelper.Parse( aggregatePathExpressionParser, q.Unalias( token ), ParserHelper.PathSeparators, q );
-
-				if( aggregatePathExpressionParser.IsCollectionValued )
+				try
 				{
-					q.AddCollection(
-						aggregatePathExpressionParser.CollectionName,
-						aggregatePathExpressionParser.CollectionRole );
+					ParserHelper.Parse( aggregatePathExpressionParser, q.Unalias( token ), ParserHelper.PathSeparators, q );
 				}
-				q.AppendScalarSelectToken( aggregatePathExpressionParser.WhereColumn );
-				q.AddSelectScalar( AggregateType( aggregateFuncTokenList, aggregatePathExpressionParser.WhereColumnType, q ) );
-				aggregatePathExpressionParser.AddAssociation( q );
+				catch (QueryException)
+				{
+					constantToken = true;
+				}
+
+				if( constantToken )
+				{
+					q.AppendScalarSelectToken( token );
+				}
+				else
+				{
+					if( aggregatePathExpressionParser.IsCollectionValued )
+					{
+						q.AddCollection(
+							aggregatePathExpressionParser.CollectionName,
+							aggregatePathExpressionParser.CollectionRole );
+					}
+					q.AppendScalarSelectToken( aggregatePathExpressionParser.WhereColumn );
+					if( aggregateAddSelectScalar )
+					{
+						q.AddSelectScalar( AggregateType( aggregateFuncTokenList, aggregatePathExpressionParser.WhereColumnType, q ) );
+						aggregateAddSelectScalar = false;
+					}
+					aggregatePathExpressionParser.AddAssociation( q );
+				}
 			}
 			else
 			{
@@ -225,9 +247,7 @@ namespace NHibernate.Hql
 		/// <returns></returns>
 		public bool AggregateHasArgs( String funcToken, QueryTranslator q )
 		{
-			IDictionary funcMap = q.AggregateFunctions;
-			IQueryFunctionInfo funcInfo = ( IQueryFunctionInfo ) funcMap[ funcToken ];
-			return funcInfo.IsFunctionArgs;
+			return GetFunction( funcToken, q ).HasArguments;
 		}
 
 		/// <summary>
@@ -236,11 +256,9 @@ namespace NHibernate.Hql
 		/// <param name="funcToken"></param>
 		/// <param name="q"></param>
 		/// <returns></returns>
-		public bool AggregateFuncNoArgsHasParenthesis( String funcToken, QueryTranslator q )
+		public bool AggregateFuncNoArgsHasParenthesis( string funcToken, QueryTranslator q )
 		{
-			IDictionary funcMap = q.AggregateFunctions;
-			IQueryFunctionInfo funcInfo = ( IQueryFunctionInfo ) funcMap[ funcToken ];
-			return funcInfo.IsFunctionNoArgsUseParanthesis;
+			return GetFunction( funcToken, q ).HasParenthesesIfNoArguments;
 		}
 
 		/// <summary>
@@ -252,17 +270,20 @@ namespace NHibernate.Hql
 		/// <returns></returns>
 		public IType AggregateType( ArrayList funcTokenList, IType type, QueryTranslator q )
 		{
-			IDictionary funcMap = q.AggregateFunctions;
 			IType argType = type;
 			IType retType = type;
 			for( int i = 0; i < funcTokenList.Count; i++ )
 			{
 				argType = retType;
-				String funcToken = ( String ) funcTokenList[ i ];
-				IQueryFunctionInfo funcInfo = ( IQueryFunctionInfo ) funcMap[ funcToken ];
-				retType = funcInfo.QueryFunctionType( argType, q.factory );
+				string funcToken = ( string ) funcTokenList[ i ];
+				retType = GetFunction( funcToken, q ).ReturnType( argType, q.factory ) ;
 			}
 			return retType;
+		}
+
+		private ISQLFunction GetFunction( string name, QueryTranslator q ) 
+		{
+			return (ISQLFunction) q.Functions[ name ];
 		}
 
 		/// <summary>
@@ -277,7 +298,6 @@ namespace NHibernate.Hql
 			afterNew = false;
 			holderClass = null;
 			aggregateFuncTokenList.Clear();
-			aggregateFunctions = q.AggregateFunctions;
 		}
 
 		/// <summary>

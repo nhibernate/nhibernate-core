@@ -39,14 +39,37 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="key">The key</param>
 		/// <exception cref="CacheException"></exception>
-		void Lock( object key );
+		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
+		ISoftLock Lock( object key );
 
 		/// <summary>
 		/// We have finished the attempted update/delete (which may or may not have been successful)
 		/// </summary>
 		/// <param name="key">The key</param>
+		/// <param name="lock">The soft lock</param>
 		/// <exception cref="CacheException"></exception>
-		void Release( object key );
+		void Release( object key, ISoftLock @lock );
+
+		/*
+		/// <summary>
+		/// Called after an item has been updated (after the transaction completes), instead of calling Release().
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="version"></param>
+		/// <param name="?"></param>
+		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
+		void AfterUpdate(object key, object value, object version, SoftLock lock) throws CacheException;
+
+		/// <summary>
+		/// Called after an item has been inserted (after the transaction completes), instead of calling release().
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="version"></param>
+		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
+		public void AfterInsert(object key, object value, object version) throws CacheException;
+		*/
 
 		/// <summary>
 		/// 

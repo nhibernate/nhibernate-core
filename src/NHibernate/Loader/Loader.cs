@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using log4net;
+using Iesi.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
@@ -23,6 +24,9 @@ namespace NHibernate.Loader
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( Loader ) );
 		private Dialect.Dialect dialect;
+
+		/// <summary></summary>
+		protected static readonly string[] NoSuffix = { string.Empty };
 
 		/// <summary>
 		/// 
@@ -81,7 +85,7 @@ namespace NHibernate.Loader
 		/// An (optional) persister for a collection to be initialized; only collection loaders
 		/// return a non-null value
 		/// </summary>
-		protected abstract CollectionPersister CollectionPersister { get; }
+		protected abstract ICollectionPersister CollectionPersister { get; }
 
 		/// <summary>
 		/// It should be overridden in Hql.QueryTranslator and an actual value placed in there.
@@ -122,6 +126,18 @@ namespace NHibernate.Loader
 			return false;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="queryParameters"></param>
+		/// <returns></returns>
+		protected IList DoList( ISessionImplementor session, QueryParameters queryParameters )
+		{
+			// HACK Call DoFind as DoQuery is 2.1
+			return DoFindAndInitializeNonLazyCollections( session, queryParameters, null, null, null, null, true );
+		}
+
 		// This method is called DoQueryAndInitializeNonLazyCollections in H2.1,
 		// since DoFind is called DoQuery and is split into several smaller methods.
 		private IList DoFindAndInitializeNonLazyCollections(
@@ -150,6 +166,37 @@ namespace NHibernate.Loader
 
 			session.InitializeNonLazyCollections();
 			return result;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="resultSet"></param>
+		/// <param name="session"></param>
+		/// <param name="queryParameters"></param>
+		/// <param name="returnProxies"></param>
+		/// <returns></returns>
+		protected object LoadSingleRow( IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, bool returnProxies )
+		{
+			int cols = Persisters.Length;
+			IList hydratedObjects = cols == 0 ? null : new ArrayList();
+			object result = GetRowFromResultSet( resultSet, session, queryParameters, hydratedObjects, null, null, new Key[cols], returnProxies );
+
+			InitializeEntitiesAndCollections( hydratedObjects, resultSet, session );
+			session.InitializeNonLazyCollections( );
+			return result;
+		}
+
+		private object GetRowFromResultSet( IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, IList hydratedObjects, object optionalObject, object optionalId, Key[] keys, bool returnProxies )
+		{
+			ILoadable[] persisters = Persisters;
+			int cols = persisters.Length;
+			ICollectionPersister collectionPersister = CollectionPersister;
+			int collectionOwner = CollectionOwner;
+			string[] suffixes = Suffixes;
+			LockMode[] lockModeArray = GetLockModes( queryParameters.LockModes );
+
+			return null;
 		}
 
 		/// <summary>
@@ -182,7 +229,7 @@ namespace NHibernate.Loader
 
 			ILoadable[ ] persisters = Persisters;
 			int cols = persisters.Length;
-			CollectionPersister collectionPersister = this.CollectionPersister;
+			ICollectionPersister collectionPersister = this.CollectionPersister;
 			int collectionOwner = this.CollectionOwner;
 			bool returnsEntities = cols > 0;
 			string[ ] suffixes = Suffixes;
@@ -320,7 +367,38 @@ namespace NHibernate.Loader
 				optionalCollection.EndRead();
 			}
 
+			return results;
+		}
 
+		private void InitializeEntitiesAndCollections( IList hydratedObjects, object resultSetId, ISessionImplementor session )
+		{
+			if ( Persisters.Length > 0 )
+			{
+				int hydratedObjectsSize = hydratedObjects.Count;
+				if ( log.IsInfoEnabled )
+				{
+					log.Info( string.Format( "total objects hydrated: ", hydratedObjectsSize ) );
+				}
+				for ( int i = 0; i < hydratedObjectsSize; i++ )
+				{
+					session.InitializeEntity( hydratedObjects[ i ] );	
+				}
+			}
+			ICollectionPersister collectionPersister = CollectionPersister;
+			if ( collectionPersister != null )
+			{
+				// this is a query and we are loading multiple instances of the same collection role
+				//session.EndLoadingCollections( collectionPersister, resultSetId );
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="results"></param>
+		/// <returns></returns>
+		protected IList ResultList( IList results )
+		{
 			return results;
 		}
 
@@ -851,6 +929,49 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="queryParameters"></param>
+		/// <param name="querySpaces"></param>
+		/// <param name="resultTypes"></param>
+		/// <returns></returns>
+		protected IList List(
+			ISessionImplementor session,
+			QueryParameters queryParameters,
+			ISet querySpaces,
+			IType[] resultTypes )
+		{
+			ISessionFactoryImplementor factory = session.Factory;
+			// TODO: Uncomment when QueryCache implemented
+			/*
+			bool cacheable = factory.IsQueryCacheable && queryParameters.IsCacheable;
+
+			if ( cacheable )
+			{
+				QueryCache queryCache = factory.GetQueryCache( queryParameters.CacheRegion ) ;
+				QueryKey key = new QueryKey( SqlString, queryParameters );
+				IList result = null;
+				if ( !queryParameters.IsForceCacheRefresh )
+				{
+					result = queryCache.Get( key, resultTypes, querySpaces, session );
+				}
+				if ( result == null )
+				{
+					result = DoList( session, queryParameters );
+					queryCache.Add( key, resultTypes, result, session );
+				}
+			}
+			else
+			{
+				return DoList( session, queryParameters );
+			}
+			*/
+
+			return Find( session, queryParameters, true );
+		}
+
+		/// <summary>
 		/// Called by subclasses that implement queries.
 		/// </summary>
 		/// <param name="session"></param>
@@ -914,6 +1035,42 @@ namespace NHibernate.Loader
 				new Alias( suffix ).ToUnquotedAliasString( persister.DiscriminatorColumnName, dialect ) : null;
 		}
 
+		/// <summary>
+		/// Generate a nice alias for the given class name or collection role
+		/// name and unique integer. Subclasses do <em>not</em> have to use
+		/// aliases of this form.
+		/// </summary>
+		/// <param name="length"></param>
+		/// <returns>an alias of the form <c>foo1_</c></returns>
+		protected static string[] GenerateSuffixes(int length) 
+		{
+			if (length==0) return NoSuffix;
+		
+			string[] suffixes = new string[ length ];
+			for ( int i = 0; i< length; i++ ) 
+			{
+				suffixes[ i ] = i.ToString( ) + StringHelper.Underscore;
+			}
+			return suffixes;
+		}
 
+		/// <summary>
+		/// Generate a nice alias for the given class name or collection role
+		/// name and unique integer. Subclasses do <em>not</em> have to use
+		/// aliases of this form.
+		/// </summary>
+		/// <param name="description"></param>
+		/// <param name="unique"></param>
+		/// <returns>an alias of the form <c>foo1_</c></returns>
+		protected static string GenerateAlias( string description, int unique )
+		{
+			//return new Alias( 10, unique.ToString() + StringHelper.Underscore )
+			//	.ToAliasString( StringHelper.Unqualify( description ).ToLower(), Dialect );
+			
+			string alias = StringHelper.Unqualify( description ).ToLower().Replace( "$", "_" );
+			int len = Math.Min( 10, alias.Length );
+			
+			return alias.Substring( 0, len ) + unique.ToString() + StringHelper.Underscore;
+		}
 	}
 }

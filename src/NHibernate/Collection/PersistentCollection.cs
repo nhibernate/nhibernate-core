@@ -285,7 +285,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Initialize the collection, if possible, wrapping any exceptions in a runtime exception
 		/// </summary>
 		/// <param name="writing"></param>
 		protected void Initialize( bool writing )
@@ -401,7 +401,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="disassembled"></param>
 		/// <param name="owner"></param>
-		public abstract void InitializeFromCache(CollectionPersister persister, object disassembled, object owner);
+		public abstract void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner );
 
 		
 		/// <summary>
@@ -411,7 +411,19 @@ namespace NHibernate.Collection
 		/// <param name="role">The persister for this Collection.</param>
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <returns>The value of the Identifier.</returns>
-		public abstract object ReadFrom( IDataReader reader, CollectionPersister role, object owner );
+		public abstract object ReadFrom( IDataReader reader, ICollectionPersister role, object owner );
+
+		/*
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="role"></param>
+		/// <param name="entry"></param>
+		/// <param name="i"></param>
+		/// <param name="writeOrder"></param>
+		public abstract void WriteTo( IDbCommand st, ICollectionPersister role, object entry, int i, bool writeOrder );
+		*/
 
 		/// <summary>
 		/// 
@@ -421,7 +433,17 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <param name="writeOrder"></param>
-		public abstract void WriteTo( IDbCommand st, CollectionPersister role, object entry, int i, bool writeOrder );
+		/// <remarks>This is the 2.1 version, should be abstract, but trying to avoid lots of cascading changes</remarks>
+		public virtual void WriteTo( IDbCommand st, ICollectionPersister role, object entry, int i, bool writeOrder )
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public abstract bool IsWrapper( object collection );
 
 		/// <summary>
 		/// 
@@ -435,7 +457,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
-		public abstract void BeforeInitialize( CollectionPersister persister );
+		public abstract void BeforeInitialize( ICollectionPersister persister );
 
 		/// <summary>
 		/// 
@@ -449,26 +471,26 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected abstract object Snapshot( CollectionPersister persister );
+		protected abstract object Snapshot( ICollectionPersister persister );
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public abstract object Disassemble( CollectionPersister persister );
+		public abstract object Disassemble( ICollectionPersister persister );
 
 		/// <summary>
 		/// Gets a <see cref="Boolean"/> indicating if the rows for this collection
 		/// need to be recreated in the table.
 		/// </summary>
-		/// <param name="persister">The <see cref="CollectionPersister"/> for this Collection.</param>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
 		/// <c>false</c> by default since most collections can determine which rows need to be
 		/// individually updated/inserted/deleted.  Currently only <see cref="Bag"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>
-		public virtual bool NeedsRecreate( CollectionPersister persister )
+		public virtual bool NeedsRecreate( ICollectionPersister persister )
 		{
 			return false;
 		}
@@ -478,7 +500,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public object GetSnapshot( CollectionPersister persister )
+		public object GetSnapshot( ICollectionPersister persister )
 		{
 			return ( persister == null ) ? null : Snapshot( persister );
 		}
@@ -568,13 +590,31 @@ namespace NHibernate.Collection
 		/// By default, no operation is performed.  This provides a hook to get an identifer of the
 		/// collection row for <see cref="IdentifierBag"/>.
 		/// </summary>
-		/// <param name="persister">The <see cref="CollectionPersister"/> for this Collection.</param>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <param name="entry">
 		/// The entry to preInsert.  If this is a Map this will be a DictionaryEntry.  If this is
 		/// a List then it will be the object at that index.
 		/// </param>
 		/// <param name="i">The index of the Entry while enumerating through the Collection.</param>
-		public virtual void PreInsert( CollectionPersister persister, object entry, int i )
+		public virtual void PreInsert( ICollectionPersister persister, object entry, int i )
+		{
+		}
+
+		/// <summary>
+		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
+		/// </summary>
+		/// <param name="persister"></param>
+		public virtual void PreInsert( ICollectionPersister persister )
+		{
+		}
+
+		/// <summary>
+		/// Called after inserting a row, to fetch the natively generated id
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="entry"></param>
+		/// <param name="i"></param>
+		public virtual void AfterRowInsert( ICollectionPersister persister, object entry, int i )
 		{
 		}
 

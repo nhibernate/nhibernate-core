@@ -3,7 +3,7 @@ using NHibernate.Type;
 namespace NHibernate.Mapping
 {
 	/// <summary></summary>
-	public class IntegerValue : Value
+	public class IntegerValue : SimpleValue
 	{
 		/// <summary>
 		/// 

@@ -33,19 +33,19 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public MsSql2000Dialect() : base()
 		{
-			Register( DbType.AnsiStringFixedLength, "CHAR(255)" );
-			Register( DbType.AnsiStringFixedLength, 8000, "CHAR($1)" );
-			Register( DbType.AnsiString, "VARCHAR(255)" );
-			Register( DbType.AnsiString, 8000, "VARCHAR($1)" );
-			Register( DbType.AnsiString, 2147483647, "TEXT" );
-			Register( DbType.Binary, "VARBINARY(8000)" );
-			Register( DbType.Binary, 8000, "VARBINARY($1)" );
-			Register( DbType.Binary, 2147483647, "IMAGE" );
-			Register( DbType.Boolean, "BIT" );
-			Register( DbType.Byte, "TINYINT" );
-			Register( DbType.Currency, "MONEY" );
-			Register( DbType.Date, "DATETIME" );
-			Register( DbType.DateTime, "DATETIME" );
+			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(255)" );
+			RegisterColumnType( DbType.AnsiStringFixedLength, 8000, "CHAR($1)" );
+			RegisterColumnType( DbType.AnsiString, "VARCHAR(255)" );
+			RegisterColumnType( DbType.AnsiString, 8000, "VARCHAR($1)" );
+			RegisterColumnType( DbType.AnsiString, 2147483647, "TEXT" );
+			RegisterColumnType( DbType.Binary, "VARBINARY(8000)" );
+			RegisterColumnType( DbType.Binary, 8000, "VARBINARY($1)" );
+			RegisterColumnType( DbType.Binary, 2147483647, "IMAGE" );
+			RegisterColumnType( DbType.Boolean, "BIT" );
+			RegisterColumnType( DbType.Byte, "TINYINT" );
+			RegisterColumnType( DbType.Currency, "MONEY" );
+			RegisterColumnType( DbType.Date, "DATETIME" );
+			RegisterColumnType( DbType.DateTime, "DATETIME" );
 			// TODO: figure out if this is the good way to fix the problem
 			// with exporting a DECIMAL column
 			// NUMERIC(precision, scale) has a hardcoded precision of 19, even though it can range from 1 to 38
@@ -53,20 +53,92 @@ namespace NHibernate.Dialect
 			// I think how I might handle it is keep the type="Decimal(29,5)" and make them specify a 
 			// sql-type="decimal(20,5)" if they need to do that.  The Decimal parameter and ddl will get generated
 			// correctly with minimal work.
-			Register( DbType.Decimal, "DECIMAL(19,5)" );
-			Register( DbType.Decimal, 19, "DECIMAL(19, $1)" );
-			Register( DbType.Double, "DOUBLE PRECISION" ); //synonym for FLOAT(53)
-			Register( DbType.Guid, "UNIQUEIDENTIFIER" );
-			Register( DbType.Int16, "SMALLINT" );
-			Register( DbType.Int32, "INT" );
-			Register( DbType.Int64, "BIGINT" );
-			Register( DbType.Single, "REAL" ); //synonym for FLOAT(24) 
-			Register( DbType.StringFixedLength, "NCHAR(255)" );
-			Register( DbType.StringFixedLength, 4000, "NCHAR($1)" );
-			Register( DbType.String, "NVARCHAR(255)" );
-			Register( DbType.String, 4000, "NVARCHAR($1)" );
-			Register( DbType.String, 1073741823, "NTEXT" );
-			Register( DbType.Time, "DATETIME" );
+			RegisterColumnType( DbType.Decimal, "DECIMAL(19,5)" );
+			RegisterColumnType( DbType.Decimal, 19, "DECIMAL(19, $1)" );
+			RegisterColumnType( DbType.Double, "DOUBLE PRECISION" ); //synonym for FLOAT(53)
+			RegisterColumnType( DbType.Guid, "UNIQUEIDENTIFIER" );
+			RegisterColumnType( DbType.Int16, "SMALLINT" );
+			RegisterColumnType( DbType.Int32, "INT" );
+			RegisterColumnType( DbType.Int64, "BIGINT" );
+			RegisterColumnType( DbType.Single, "REAL" ); //synonym for FLOAT(24) 
+			RegisterColumnType( DbType.StringFixedLength, "NCHAR(255)" );
+			RegisterColumnType( DbType.StringFixedLength, 4000, "NCHAR($1)" );
+			RegisterColumnType( DbType.String, "NVARCHAR(255)" );
+			RegisterColumnType( DbType.String, 4000, "NVARCHAR($1)" );
+			RegisterColumnType( DbType.String, 1073741823, "NTEXT" );
+			RegisterColumnType( DbType.Time, "DATETIME" );
+
+			RegisterFunction("abs", new StandardSQLFunction() );
+			RegisterFunction("absval", new StandardSQLFunction() );
+			RegisterFunction("sign", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+
+			RegisterFunction("ceiling", new StandardSQLFunction() );
+			RegisterFunction("ceil", new StandardSQLFunction() );
+			RegisterFunction("floor", new StandardSQLFunction() );
+			RegisterFunction("round", new StandardSQLFunction() );
+
+			RegisterFunction("acos", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("asin", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("atan", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("cos", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("cot", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("degrees", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("exp", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("float", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("hex", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction("ln", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("log", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("log10", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("radians", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("rand", new NoArgSQLFunction( NHibernateUtil.Double ));
+			RegisterFunction("sin", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("soundex", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction("sqrt", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("stddev", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("tan", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("variance", new StandardSQLFunction( NHibernateUtil.Double ) );
+
+			/*
+			RegisterFunction("julian_day", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("microsecond", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("midnight_seconds", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("minute", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("month", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("monthname", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction("quarter", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("hour", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("second", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("date", new StandardSQLFunction(Hibernate.DATE) );
+			RegisterFunction("day", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("dayname", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction("dayofweek", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("dayofweek_iso", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("dayofyear", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("days", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("time", new StandardSQLFunction( NHibernateUtil.Time ) );
+			RegisterFunction("timestamp", new StandardSQLFunction( NHibernateUtil.Timestamp ) );
+			RegisterFunction("timestamp_iso", new StandardSQLFunction( NHibernateUtil.Timestamp ) );
+			RegisterFunction("week", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("week_iso", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("year", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+
+			RegisterFunction("double", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("varchar", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction("real", new StandardSQLFunction( NHibernateUtil.Single ) );
+			RegisterFunction("bigint", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("char", new StandardSQLFunction( NHibernateUtil.Character ) );
+			RegisterFunction("integer", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("smallint", new StandardSQLFunction( NHibernateUtil.Int16 ) );
+			*/
+
+			RegisterFunction("digits", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction("chr", new StandardSQLFunction( NHibernateUtil.Character ) );
+			RegisterFunction("upper", new StandardSQLFunction() );
+			RegisterFunction("ucase", new StandardSQLFunction() );
+			RegisterFunction("lcase", new StandardSQLFunction() );
+			RegisterFunction("lower", new StandardSQLFunction() );
+			RegisterFunction("length", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("ltrim", new StandardSQLFunction() );
 
 			DefaultProperties[ Environment.OuterJoin ] = "true";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.SqlClientDriver";

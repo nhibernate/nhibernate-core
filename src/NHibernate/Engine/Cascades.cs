@@ -382,7 +382,7 @@ namespace NHibernate.Engine
 							}
 
 							PersistentCollectionType pctype = ( PersistentCollectionType ) type;
-							CollectionPersister persister = session.Factory.GetCollectionPersister( pctype.Role );
+							ICollectionPersister persister = session.Factory.GetCollectionPersister( pctype.Role );
 							IType elemType = persister.ElementType;
 
 							// cascade to current collection elements

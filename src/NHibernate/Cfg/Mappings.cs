@@ -17,13 +17,22 @@ namespace NHibernate.Cfg
 		private IDictionary collections;
 		private IDictionary tables;
 		private IDictionary queries;
+		private IDictionary sqlqueries;
 		private IList secondPasses;
 		private IDictionary imports;
 		private string schemaName;
 		private string defaultCascade;
 		private bool autoImport;
+		private IList propertyReferences;
 		private string defaultAccess;
 		private IDictionary caches;
+		private INamingStrategy namingStrategy;
+
+		private class UniquePropertyReference
+		{
+			public System.Type ReferencedClass;
+			public string PropertyName;
+		}
 
 		/// <summary>
 		/// 
@@ -32,18 +41,24 @@ namespace NHibernate.Cfg
 		/// <param name="collections"></param>
 		/// <param name="tables"></param>
 		/// <param name="queries"></param>
+		/// <param name="sqlqueries"></param>
 		/// <param name="imports"></param>
 		/// <param name="caches"></param>
 		/// <param name="secondPasses"></param>
-		internal Mappings( IDictionary classes, IDictionary collections, IDictionary tables, IDictionary queries, IDictionary imports, IDictionary caches, IList secondPasses )
+		/// <param name="propertyReferences"></param>
+		/// <param name="namingStrategy"></param>
+		internal Mappings( IDictionary classes, IDictionary collections, IDictionary tables, IDictionary queries, IDictionary sqlqueries, IDictionary imports, IDictionary caches, IList secondPasses, IList propertyReferences, INamingStrategy namingStrategy )
 		{
 			this.classes = classes;
 			this.collections = collections;
 			this.queries = queries;
+			this.sqlqueries = sqlqueries;
 			this.tables = tables;
 			this.imports = imports;
 			this.caches = caches;
 			this.secondPasses = secondPasses;
+			this.propertyReferences = propertyReferences;
+			this.namingStrategy = namingStrategy;
 		}
 
 		/// <summary>
@@ -68,12 +83,12 @@ namespace NHibernate.Cfg
 		/// <param name="persistentClass"></param>
 		public void AddClass( PersistentClass persistentClass )
 		{
-			object old = classes[ persistentClass.PersistentClazz ];
+			object old = classes[ persistentClass.MappedClass ];
 			if( old != null )
 			{
-				log.Warn( "duplicate class mapping: " + persistentClass.PersistentClazz.Name );
+				log.Warn( "duplicate class mapping: " + persistentClass.MappedClass.Name );
 			}
-			classes[ persistentClass.PersistentClazz ] = persistentClass;
+			classes[ persistentClass.MappedClass ] = persistentClass;
 		}
 
 		/// <summary>
@@ -93,11 +108,33 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="referencedClass"></param>
+		/// <param name="propertyName"></param>
+		public void AddUniquePropertyReference( System.Type referencedClass, string propertyName )
+		{
+			UniquePropertyReference upr = new UniquePropertyReference();
+			upr.ReferencedClass = referencedClass;
+			upr.PropertyName = propertyName;
+
+			propertyReferences.Add( upr );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public PersistentClass GetClass( System.Type type )
 		{
 			return ( PersistentClass ) classes[ type ];
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public INamingStrategy NamingStrategy
+		{
+			get { return namingStrategy; }
 		}
 
 		/// <summary>
@@ -184,6 +221,14 @@ namespace NHibernate.Cfg
 			set { defaultAccess = value; }
 		}
 
+		private void CheckQueryExists( string name )
+		{
+			if ( queries.Contains( name ) || sqlqueries.Contains( name ) )
+			{
+				throw new MappingException( string.Format( "Duplicate query named: {0}", name ) );
+			}
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -191,12 +236,19 @@ namespace NHibernate.Cfg
 		/// <param name="query"></param>
 		public void AddQuery( string name, string query )
 		{
-			object old = queries[ name ];
-			if( old != null )
-			{
-				log.Warn( "duplicate query name: " + name );
-			}
+			CheckQueryExists( name );
 			queries[ name ] = query;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="query"></param>
+		public void AddSQLQuery( string name, NamedSQLQuery query )
+		{
+			CheckQueryExists( name );
+			sqlqueries[ name ] = query;
 		}
 
 		/// <summary>

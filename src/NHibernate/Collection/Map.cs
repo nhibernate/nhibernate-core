@@ -22,7 +22,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( CollectionPersister persister )
+		protected override object Snapshot( ICollectionPersister persister )
 		{
 			Hashtable clonedMap = new Hashtable( map.Count );
 			foreach( DictionaryEntry e in map )
@@ -69,6 +69,16 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public override bool IsWrapper( object collection )
+		{
+			return map == collection;
+		}
+
+		/// <summary>
 		/// Construct an uninitialized Map.
 		/// </summary>
 		/// <param name="session">The ISession the Map should be a part of.</param>
@@ -92,7 +102,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
-		public override void BeforeInitialize( CollectionPersister persister )
+		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			if( persister.HasOrdering )
 			{
@@ -277,7 +287,7 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <param name="writeOrder"></param>
-		public override void WriteTo( IDbCommand st, CollectionPersister persister, object entry, int i, bool writeOrder )
+		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
 			DictionaryEntry e = ( DictionaryEntry ) entry;
 			persister.WriteElement( st, e.Value, writeOrder, session );
@@ -291,7 +301,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object ReadFrom( IDataReader rs, CollectionPersister persister, object owner )
+		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
 		{
 			object element = persister.ReadElement(rs, owner, session);
 			object index = persister.ReadIndex( rs, session );
@@ -317,7 +327,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the Map.</param>
 		/// <param name="disassembled">The disassembled Map.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
+		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
 			BeforeInitialize( persister );
 			object[ ] array = ( object[ ] ) disassembled;
@@ -334,7 +344,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override object Disassemble( CollectionPersister persister )
+		public override object Disassemble( ICollectionPersister persister )
 		{
 			object[ ] result = new object[map.Count*2];
 			int i = 0;

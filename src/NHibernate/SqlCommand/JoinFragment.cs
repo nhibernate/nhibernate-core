@@ -91,6 +91,12 @@ namespace NHibernate.SqlCommand
 		/// <param name="condition"></param>
 		public abstract void AddCondition( SqlString condition );
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fromFragmentString"></param>
+		public abstract void AddFromFragmentString( SqlString fromFragmentString );
+
 		/// <summary></summary>
 		public abstract JoinFragment Copy();
 

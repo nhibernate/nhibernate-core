@@ -92,7 +92,6 @@
 			<test 
 				assemblyname="${build.dir}/bin/${nant.project.name}.dll" 
 				appconfig="${build.dir}/bin/${nant.project.name}.dll.config" 
-				failonerror="false"
 			/>
 		</nunit2>
 		

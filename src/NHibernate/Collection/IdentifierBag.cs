@@ -71,7 +71,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the IdentifierBag.</param>
 		/// <param name="disassembled">The disassembled IdentifierBag.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
+		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
 			
 			BeforeInitialize( persister );
@@ -87,6 +87,15 @@ namespace NHibernate.Collection
 			SetInitialized();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public override bool IsWrapper( object collection )
+		{
+			return values == collection;
+		}
 
 		#region IList Members
 
@@ -243,7 +252,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
-		public override void BeforeInitialize( CollectionPersister persister )
+		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			identifiers = new Hashtable();
 			values = new ArrayList();
@@ -254,7 +263,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override object Disassemble( CollectionPersister persister )
+		public override object Disassemble( ICollectionPersister persister )
 		{
 			object[ ] result = new object[values.Count*2];
 
@@ -410,7 +419,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object ReadFrom( IDataReader reader, CollectionPersister persister, object owner )
+		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, object owner )
 		{
 			object element = persister.ReadElement( reader, owner, session );
 			values.Add( element );
@@ -423,7 +432,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( CollectionPersister persister )
+		protected override object Snapshot( ICollectionPersister persister )
 		{
 			IDictionary map = new Hashtable( values.Count );
 
@@ -457,7 +466,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
-		public override void PreInsert( CollectionPersister persister, object entry, int i )
+		public override void PreInsert( ICollectionPersister persister, object entry, int i )
 		{
 			try
 			{
@@ -479,7 +488,7 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <param name="writeOrder"></param>
-		public override void WriteTo( IDbCommand st, CollectionPersister persister, object entry, int i, bool writeOrder )
+		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
 			persister.WriteElement( st, entry, writeOrder, session );
 			persister.WriteIdentifier( st, identifiers[ i ], writeOrder, session );

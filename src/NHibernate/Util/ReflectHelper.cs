@@ -151,6 +151,34 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public static object GetConstantValue( string name )
+		{
+			System.Type clazz;
+
+			try
+			{
+				clazz = ClassForName( StringHelper.Qualifier( name ) );
+			}
+			catch( Exception )
+			{
+				return null;
+			}
+
+			try
+			{
+				return clazz.GetField( StringHelper.Unqualify( name ) ).GetValue( null );
+			}
+			catch( Exception )
+			{
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Gets the default no arg constructor for the <see cref="System.Type"/>.
 		/// </summary>
 		/// <param name="type">The <see cref="System.Type"/> to find the constructor for.</param>

@@ -145,5 +145,13 @@ namespace NHibernate.SqlCommand
 			throw new NotSupportedException();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fromFragmentString"></param>
+		public override void AddFromFragmentString( SqlString fromFragmentString )
+		{
+			afterFrom.Add( fromFragmentString );
+		}
 	}
 }

@@ -28,7 +28,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override PersistentCollection Instantiate( ISessionImplementor session, CollectionPersister persister )
+		public override PersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
 			SortedSet sortedSet = new SortedSet( session, comparer );
 			return sortedSet;

@@ -22,7 +22,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( CollectionPersister persister )
+		protected override object Snapshot( ICollectionPersister persister )
 		{
 			SortedList clonedSet = new SortedList( comparer, internalSet.Count );
 			foreach( object obj in internalSet )
@@ -44,7 +44,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
-		public override void BeforeInitialize( CollectionPersister persister )
+		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			internalSet = new Iesi.Collections.SortedSet( Comparer );
 		}

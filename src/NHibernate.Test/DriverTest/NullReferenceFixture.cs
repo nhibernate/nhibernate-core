@@ -24,7 +24,8 @@ namespace NHibernate.Test.DriverTest
 		/// at the line "dbParam.DbType = parameter.SqlType.DbType;" because "parameter" existed
 		/// but all properties were null.
 		/// </remarks>
-		[Test]
+		/// TODO: I think this fixture is redundant now due to the QueryTest fixtures, just mark it so that it catches the new exception type for now
+		[Test, ExpectedException(typeof(NHibernate.QueryException))]
 		public void NoParameterNameNullReference()
 		{
 			ISession s = null;

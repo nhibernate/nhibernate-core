@@ -50,6 +50,6 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		OuterJoinLoaderType EnableJoinedFetch( int i );
+		OuterJoinFetchStrategy EnableJoinedFetch( int i );
 	}
 }

@@ -22,6 +22,9 @@ namespace NHibernate.Driver
 		System.Type _connectionType;
 		System.Type _commandType;
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public SQLiteDriver()
 		{
 			_connectionType = System.Type.GetType("Finisar.SQLite.SQLiteConnection, SQLite.NET");
@@ -39,26 +42,41 @@ namespace NHibernate.Driver
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public override System.Type CommandType
 		{
 			get { return _commandType; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public override System.Type ConnectionType
 		{
 			get { return _connectionType; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public override bool UseNamedPrefixInSql 
 		{
 			get { return true; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public override bool UseNamedPrefixInParameter 
 		{
 			get { return true; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public override string NamedPrefix 	
 		{
 			get { return "@"; }

@@ -4,10 +4,9 @@ using NHibernate.Type;
 namespace NHibernate.Persister
 {
 	/// <summary>
-	/// Extends the generic <c>IClassPersister</c> contract to add operations required
-	/// by the query language
+	/// Extends the generic <c>ILoadable</c> contract to add operations required by HQL
 	/// </summary>
-	public interface IQueryable : ILoadable
+	public interface IQueryable : ILoadable, IPropertyMapping, IJoinable
 	{
 		/// <summary>
 		/// Is this class mapped as a subclass of another class?
@@ -31,13 +30,6 @@ namespace NHibernate.Persister
 		string DiscriminatorSQLString { get; }
 
 		/// <summary>
-		/// Given a component path expression, get the type of the property
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
-		IType GetPropertyType( string path );
-
-		/// <summary>
 		/// Get the where clause fragment, give a query alias
 		/// </summary>
 		/// <param name="alias"></param>
@@ -46,6 +38,7 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSublcasses );
 
+		/*
 		/// <summary>
 		/// Given a query alias and a property path, return the qualified column name
 		/// </summary>
@@ -53,5 +46,6 @@ namespace NHibernate.Persister
 		/// <param name="property"></param>
 		/// <returns></returns>
 		string[ ] ToColumns( string alias, string property );
+		*/
 	}
 }

@@ -23,7 +23,7 @@ namespace NHibernate.Type
 		private string[ ] propertyNames;
 		private int propertySpan;
 		private Cascades.CascadeStyle[ ] cascade;
-		private OuterJoinLoaderType[ ] joinedFetch;
+		private OuterJoinFetchStrategy[ ] joinedFetch;
 		private string parentProperty; // not used !?!
 		private ISetter parentSetter;
 		//TODO: This is new...
@@ -84,7 +84,7 @@ namespace NHibernate.Type
 		                      ISetter[ ] propertySetters,
 		                      bool foundCustomAcessor, // not used !?!
 		                      IType[ ] types,
-		                      OuterJoinLoaderType[ ] joinedFetch,
+		                      OuterJoinFetchStrategy[ ] joinedFetch,
 		                      Cascades.CascadeStyle[ ] cascade,
 		                      string parentProperty,
 		                      bool embedded ) // not used !?!
@@ -511,7 +511,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public OuterJoinLoaderType EnableJoinedFetch( int i )
+		public OuterJoinFetchStrategy EnableJoinedFetch( int i )
 		{
 			return joinedFetch[ i ];
 		}

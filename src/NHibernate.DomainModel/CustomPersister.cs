@@ -237,6 +237,12 @@ namespace NHibernate.DomainModel
 			( (Custom)obj).Name = (string)value;
 		}
 
+		public IType GetPropertyType( string propertyName )
+		{
+			// TODO: Implement this
+			return null;
+		}
+
 		public object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session)
 		{
 			Custom clone = null;

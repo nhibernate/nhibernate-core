@@ -25,6 +25,12 @@ namespace NHibernate.Util
 		/// <summary></summary>
 		public const string ClosedParen = ")";
 		/// <summary></summary>
+		public const char SingleQuote = '\'';
+
+		// TODO: Semantically these belong elsewhere as they are NHibernate specific
+		/// <summary></summary>
+		public const string NamePrefix = ":";
+		/// <summary></summary>
 		public const string SqlParameter = "?";
 
 		/// <summary>
@@ -324,6 +330,91 @@ namespace NHibernate.Util
 				}
 			}
 			return results;
+		}
+
+		/// <summary>
+		/// Counts the unquoted instances of the character.
+		/// </summary>
+		/// <param name="str"></param>
+		/// <param name="character"></param>
+		/// <returns></returns>
+		public static int CountUnquoted( string str, char character )
+		{
+			if ( SingleQuote == character )
+				throw new ArgumentOutOfRangeException("Unquoted count of quotes is invalid") ;
+
+			// Impl note: takes advantage of the fact that an escaped single quote
+			// embedded within a quote-block can really be handled as two seperate
+			// quote-blocks for the purposes of this method...
+			int count = 0;
+			char[] chars = str.ToCharArray();
+			int stringLength = str == null ? 0 : chars.Length;
+			bool inQuote = false;
+			for ( int indx = 0; indx < stringLength; indx++ ) 
+			{
+				if ( inQuote ) 
+				{
+					if ( SingleQuote == chars[indx] ) 
+					{
+						inQuote = false;
+					}
+				}
+				else if ( SingleQuote == chars[indx] ) 
+				{
+					inQuote = true;
+				}
+				else if ( chars[indx] == character ) 
+				{
+					count++;
+				}
+			}
+			return count;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="prefix"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public static string Qualify( string prefix, string name )
+		{
+			char first = name.Substring( 0, 1 ).ToCharArray()[ 0 ];
+
+			// Should we check for prefix == string.Empty rather than a length check?
+			if ( prefix != null && prefix.Length > 0 && first != StringHelper.SingleQuote && !char.IsDigit( first ) )
+			{
+				return prefix + StringHelper.Dot + name;
+			}
+			else
+			{
+				return name;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="prefix"></param>
+		/// <param name="names"></param>
+		/// <returns></returns>
+		public static string[] Qualify( string prefix, string[] names )
+		{
+			// Should we check for prefix == string.Empty rather than a length check?
+			if ( prefix != null && prefix.Length > 0 )
+			{
+				int len = names.Length;
+				string[] qualified = new string[ len ];
+				for ( int i = 0; i < len; i++ )
+				{
+					qualified[ i ] = Qualify( prefix, names[ i ] );
+				}
+				return qualified;
+			}
+			else
+			{
+				return names;
+			}
 		}
 	}
 }

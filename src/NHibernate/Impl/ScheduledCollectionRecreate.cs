@@ -14,10 +14,10 @@ namespace NHibernate.Impl
 		/// Initializes a new instance of <see cref="ScheduledCollectionRecreate"/>.
 		/// </summary>
 		/// <param name="collection">The <see cref="PersistentCollection"/> to recreate.</param>
-		/// <param name="persister">The <see cref="CollectionPersister"/> that is responsible for the persisting the Collection.</param>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> that is responsible for the persisting the Collection.</param>
 		/// <param name="id">The identifier of the Collection owner.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledCollectionRecreate( PersistentCollection collection, CollectionPersister persister, object id, ISessionImplementor session )
+		public ScheduledCollectionRecreate( PersistentCollection collection, ICollectionPersister persister, object id, ISessionImplementor session )
 			: base( persister, id, session )
 		{
 			_collection = collection;
@@ -26,8 +26,9 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public override void Execute()
 		{
-			Persister.Softlock( Id );
 			Persister.Recreate( _collection, Id, Session );
+			// TODO: Commented out as isn't in the 2.1 implementation - test
+			//Persister.Softlock( Id );
 		}
 	}
 }

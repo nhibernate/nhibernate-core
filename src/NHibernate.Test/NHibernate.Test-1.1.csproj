@@ -225,11 +225,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "CfgTest\HbmOrderingFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "CompositeId\ClassWithCompositeId.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -581,6 +576,21 @@
                 />
                 <File
                     RelPath = "ProxyTest\NHibernateProxyHelperFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QueryTest\NamedParametersFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QueryTest\PositionalParametersFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommandTest\InFragmentFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

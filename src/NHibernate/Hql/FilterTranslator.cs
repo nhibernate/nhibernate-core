@@ -25,7 +25,7 @@ namespace NHibernate.Hql
 			if( !Compiled )
 			{
 				this.factory = factory; // yick!
-				AddFromCollection( "this", collectionRole );
+				AddFromAssociation( "this", collectionRole );
 				base.Compile( factory, queryString, replacements, scalar );
 			}
 		}

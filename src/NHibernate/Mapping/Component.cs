@@ -4,12 +4,13 @@ using System.Collections;
 namespace NHibernate.Mapping
 {
 	/// <summary></summary>
-	public class Component : Value
+	public class Component : SimpleValue
 	{
 		private ArrayList properties = new ArrayList();
 		private System.Type componentClass;
 		// TODO: H2.0.3 - make sure this is gone from the mapping file...
 		//private BasicDynaClass dynaClass
+		private bool dynamic;
 		private bool embedded;
 		private string parentProperty;
 		private PersistentClass owner;
@@ -104,6 +105,13 @@ namespace NHibernate.Mapping
 		{
 			get { return embedded; }
 			set { embedded = value; }
+		}
+
+		/// <summary></summary>
+		public bool IsDynamic
+		{
+			get { return dynamic; }
+			set { dynamic = value; }
 		}
 
 		/// <summary></summary>

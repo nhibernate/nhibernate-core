@@ -32,8 +32,6 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class Oracle9Dialect : Dialect
 	{
-		private readonly IDictionary aggregateFunctions = new Hashtable();
-
 		/// <summary></summary>
 		public Oracle9Dialect() : base()
 		{
@@ -41,61 +39,100 @@ namespace NHibernate.Dialect
 			DefaultProperties[ Environment.OuterJoin ] = "true";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.OracleClientDriver";
 
-			Register( DbType.AnsiStringFixedLength, "CHAR(255)" );
-			Register( DbType.AnsiStringFixedLength, 2000, "CHAR($1)" );
-			Register( DbType.AnsiString, "VARCHAR2(255)" );
-			Register( DbType.AnsiString, 2000, "VARCHAR2($1)" );
-			Register( DbType.AnsiString, 2147483647, "CLOB" ); // should use the IType.ClobType
-			Register( DbType.Binary, "RAW(2000)" );
-			Register( DbType.Binary, 2000, "RAW($1)" );
-			Register( DbType.Binary, 2147483647, "BLOB" );
-			Register( DbType.Boolean, "NUMBER(1,0)" );
-			Register( DbType.Byte, "NUMBER(3,0)" );
-			Register( DbType.Currency, "NUMBER(19,1)" );
-			Register( DbType.Date, "DATE" );
-			Register( DbType.DateTime, "DATE" );
-			Register( DbType.Decimal, "NUMBER(19,5)" );
-			Register( DbType.Decimal, 19, "NUMBER(19, $1)" );
+			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(255)" );
+			RegisterColumnType( DbType.AnsiStringFixedLength, 2000, "CHAR($1)" );
+			RegisterColumnType( DbType.AnsiString, "VARCHAR2(255)" );
+			RegisterColumnType( DbType.AnsiString, 2000, "VARCHAR2($1)" );
+			RegisterColumnType( DbType.AnsiString, 2147483647, "CLOB" ); // should use the IType.ClobType
+			RegisterColumnType( DbType.Binary, "RAW(2000)" );
+			RegisterColumnType( DbType.Binary, 2000, "RAW($1)" );
+			RegisterColumnType( DbType.Binary, 2147483647, "BLOB" );
+			RegisterColumnType( DbType.Boolean, "NUMBER(1,0)" );
+			RegisterColumnType( DbType.Byte, "NUMBER(3,0)" );
+			RegisterColumnType( DbType.Currency, "NUMBER(19,1)" );
+			RegisterColumnType( DbType.Date, "DATE" );
+			RegisterColumnType( DbType.DateTime, "DATE" );
+			RegisterColumnType( DbType.Decimal, "NUMBER(19,5)" );
+			RegisterColumnType( DbType.Decimal, 19, "NUMBER(19, $1)" );
 			// having problems with both ODP and OracleClient from MS not being able
 			// to read values out of a field that is DOUBLE PRECISION
-			Register( DbType.Double, "DOUBLE PRECISION" ); //"FLOAT(53)" );
+			RegisterColumnType( DbType.Double, "DOUBLE PRECISION" ); //"FLOAT(53)" );
 			//Oracle does not have a guid datatype
-			//Register( DbType.Guid, "UNIQUEIDENTIFIER" );
-			Register( DbType.Int16, "NUMBER(5,0)" );
-			Register( DbType.Int32, "NUMBER(10,0)" );
-			Register( DbType.Int64, "NUMBER(20,0)" );
-			Register( DbType.Single, "FLOAT(24)" );
-			Register( DbType.StringFixedLength, "NCHAR(255)" );
-			Register( DbType.StringFixedLength, 2000, "NCHAR($1)" );
-			Register( DbType.String, "NVARCHAR2(255)" );
-			Register( DbType.String, 2000, "NVARCHAR2($1)" );
-			Register( DbType.String, 1073741823, "NCLOB" );
-			Register( DbType.Time, "DATE" );
+			//RegisterColumnType( DbType.Guid, "UNIQUEIDENTIFIER" );
+			RegisterColumnType( DbType.Int16, "NUMBER(5,0)" );
+			RegisterColumnType( DbType.Int32, "NUMBER(10,0)" );
+			RegisterColumnType( DbType.Int64, "NUMBER(20,0)" );
+			RegisterColumnType( DbType.Single, "FLOAT(24)" );
+			RegisterColumnType( DbType.StringFixedLength, "NCHAR(255)" );
+			RegisterColumnType( DbType.StringFixedLength, 2000, "NCHAR($1)" );
+			RegisterColumnType( DbType.String, "NVARCHAR2(255)" );
+			RegisterColumnType( DbType.String, 2000, "NVARCHAR2($1)" );
+			RegisterColumnType( DbType.String, 1073741823, "NCLOB" );
+			RegisterColumnType( DbType.Time, "DATE" );
 
-			// add all the functions from the base into this instance
-			foreach( DictionaryEntry de in base.AggregateFunctions )
-			{
-				aggregateFunctions[ de.Key ] = de.Value;
-			}
-			aggregateFunctions[ "trunc" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "round" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "abs" ] = new QueryFunctionStandard( NHibernateUtil.Int32 );
-			aggregateFunctions[ "sign" ] = new QueryFunctionStandard( NHibernateUtil.Int32 );
-			aggregateFunctions[ "ceil" ] = new QueryFunctionStandard( NHibernateUtil.Int32 );
-			aggregateFunctions[ "floor" ] = new QueryFunctionStandard( NHibernateUtil.Int32 );
-			aggregateFunctions[ "sqrt" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "exp" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "ln" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "sin" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "sinh" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "cos" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "cosh" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "tan" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "tanh" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "stddev" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "variance" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "sysdate" ] = new SysdateQueryFunctionInfo();
-			aggregateFunctions[ "lastday" ] = new QueryFunctionStandard( NHibernateUtil.Date );
+			RegisterFunction( "abs", new StandardSQLFunction() );
+			RegisterFunction( "sign", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+
+			RegisterFunction( "acos", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "asin", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "atan", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "cos", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "cosh", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "exp", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "ln", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "sin", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "sinh", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "stddev", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "sqrt", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "tan", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "tanh", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "variance", new StandardSQLFunction( NHibernateUtil.Double ) );
+
+			RegisterFunction( "round", new StandardSQLFunction() );
+			RegisterFunction( "trunc", new StandardSQLFunction() );
+			RegisterFunction( "ceil", new StandardSQLFunction() );
+			RegisterFunction( "floor", new StandardSQLFunction() );
+
+			RegisterFunction( "chr", new StandardSQLFunction( NHibernateUtil.Character ) );
+			RegisterFunction( "initcap", new StandardSQLFunction() );
+			RegisterFunction( "lower", new StandardSQLFunction() );
+			RegisterFunction( "ltrim", new StandardSQLFunction() );
+			RegisterFunction( "rtrim", new StandardSQLFunction() );
+			RegisterFunction( "soundex", new StandardSQLFunction() );
+			RegisterFunction( "upper", new StandardSQLFunction() );
+			RegisterFunction( "ascii", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction( "length", new StandardSQLFunction( NHibernateUtil.Int64 ) );
+
+			RegisterFunction( "to_char", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "to_date", new StandardSQLFunction( NHibernateUtil.Timestamp ) );
+
+			RegisterFunction( "lastday", new StandardSQLFunction( NHibernateUtil.Date ) );
+			RegisterFunction( "sysdate", new NoArgSQLFunction( NHibernateUtil.Date, false) );
+			RegisterFunction( "uid", new NoArgSQLFunction( NHibernateUtil.Int32, false) );
+			RegisterFunction( "user", new NoArgSQLFunction( NHibernateUtil.String, false) );
+
+			// Multi-param string dialect functions...
+			RegisterFunction( "concat", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "instr", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "instrb", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "lpad", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "replace", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "rpad", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "substr", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "substrb", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "translate", new StandardSQLFunction( NHibernateUtil.String ) );
+
+			// Multi-param numeric dialect functions...
+			RegisterFunction( "atan2", new StandardSQLFunction( NHibernateUtil.Single ) );
+			RegisterFunction( "log", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction( "mod", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction( "nvl", new StandardSQLFunction() );
+			RegisterFunction( "power", new StandardSQLFunction( NHibernateUtil.Single ) );
+
+			// Multi-param date dialect functions...
+			RegisterFunction( "add_months", new StandardSQLFunction( NHibernateUtil.Date ) );
+			RegisterFunction( "months_between", new StandardSQLFunction( NHibernateUtil.Single ) );
+			RegisterFunction( "next_day", new StandardSQLFunction( NHibernateUtil.Date ) );
 		}
 
 		/// <summary></summary>
@@ -185,46 +222,9 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override IDictionary AggregateFunctions
-		{
-			get { return aggregateFunctions; }
-		}
-
-		/// <summary></summary>
 		public override bool UseMaxForLimit
 		{
 			get { return true; }
-		}
-
-		/// <summary></summary>
-		public class SysdateQueryFunctionInfo : IQueryFunctionInfo
-		{
-			#region IQueryFunctionInfo Members
-
-			/// <summary>
-			/// 
-			/// </summary>
-			/// <param name="columnType"></param>
-			/// <param name="mapping"></param>
-			/// <returns></returns>
-			public IType QueryFunctionType( IType columnType, IMapping mapping )
-			{
-				return NHibernateUtil.Date;
-			}
-
-			/// <summary></summary>
-			public bool IsFunctionArgs
-			{
-				get { return false; }
-			}
-
-			/// <summary></summary>
-			public bool IsFunctionNoArgsUseParanthesis
-			{
-				get { return false; }
-			}
-
-			#endregion
 		}
 	}
 }

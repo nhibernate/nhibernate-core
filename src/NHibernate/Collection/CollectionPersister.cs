@@ -10,6 +10,7 @@ using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
+using NHibernate.Persister;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -24,7 +25,7 @@ namespace NHibernate.Collection
 	/// <remarks>
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
-	public sealed class CollectionPersister : ICollectionMetadata
+	public sealed class CollectionPersister : ICollectionMetadata, IQueryableCollection
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( CollectionPersister ) );
 
@@ -64,7 +65,7 @@ namespace NHibernate.Collection
 		private readonly System.Type elementClass;
 		private readonly ICacheConcurrencyStrategy cache;
 		private readonly PersistentCollectionType collectionType;
-		private readonly OuterJoinLoaderType enableJoinedFetch;
+		private readonly OuterJoinFetchStrategy enableJoinedFetch;
 		private readonly System.Type ownerClass;
 
 		private readonly IIdentifierGenerator identifierGenerator;
@@ -80,6 +81,8 @@ namespace NHibernate.Collection
 
 		private readonly Dialect.Dialect dialect;
 		private readonly ISessionFactoryImplementor factory;
+		private readonly IPropertyMapping elementPropertyMapping;
+		private readonly IClassPersister elementPersister;
 
 		/// <summary>
 		/// 
@@ -91,7 +94,7 @@ namespace NHibernate.Collection
 		{
 			this.factory = factory;
 			this.dialect = factory.Dialect;
-			collectionType = collection.Type;
+			collectionType = collection.CollectionType;
 			role = collection.Role;
 			ownerClass = collection.OwnerClass;
 			Alias alias = new Alias( "__" );
@@ -99,12 +102,13 @@ namespace NHibernate.Collection
 			sqlOrderByString = collection.OrderBy;
 			hasOrder = sqlOrderByString != null;
 			sqlOrderByStringTemplate = hasOrder ? Template.RenderOrderByStringTemplate( sqlOrderByString, dialect ) : null;
-
 			sqlWhereString = collection.Where;
 			hasWhere = sqlWhereString != null;
 			sqlWhereStringTemplate = hasWhere ? Template.RenderWhereStringTemplate( sqlWhereString, dialect ) : null;
 
 			hasOrphanDelete = collection.OrphanDelete;
+
+			//batchSize = collection.BatchSize;
 
 			cache = collection.Cache;
 
@@ -130,25 +134,35 @@ namespace NHibernate.Collection
 			Table table;
 			ICollection iter;
 
-			if( isOneToMany )
+			elementType = collection.Element.Type;
+
+			if ( elementType.IsEntityType )
 			{
-				EntityType type = collection.OneToMany.Type;
-				elementType = type;
-				PersistentClass associatedClass = datastore.GetClassMapping( type.PersistentClass );
-				span = associatedClass.Identifier.ColumnSpan;
-				iter = associatedClass.Key.ColumnCollection;
-				table = associatedClass.Table;
-				enableJoinedFetch = OuterJoinLoaderType.Eager;
+				elementPersister = factory.GetPersister( ( (EntityType) elementType).AssociatedClass );
 			}
 			else
 			{
-				table = collection.Table;
+				elementPersister = null;
+			}
+
+			if( isOneToMany )
+			{
+				EntityType type = (EntityType) collection.Element.Type;
+				elementType = type;
+				PersistentClass associatedClass = datastore.GetClassMapping( type.AssociatedClass );
+				span = associatedClass.Identifier.ColumnSpan;
+				iter = associatedClass.Key.ColumnCollection;
+				table = associatedClass.Table;
+				enableJoinedFetch = OuterJoinFetchStrategy.Eager;
+			}
+			else
+			{
+				table = collection.CollectionTable;
 				elementType = collection.Element.Type;
 				span = collection.Element.ColumnSpan;
 				enableJoinedFetch = collection.Element.OuterJoinFetchSetting;
 				iter = collection.Element.ColumnCollection;
 				CheckColumnDuplication( distinctColumns, collection.Element.ColumnCollection );
-
 			}
 
 			qualifiedTableName = table.GetQualifiedName( dialect, factory.DefaultSchema );
@@ -256,6 +270,44 @@ namespace NHibernate.Collection
 				elementClass = null;
 			}
 			loader = CreateCollectionQuery( factory );
+
+			if ( elementType.IsComponentType )
+			{
+				elementPropertyMapping = new CompositeElementPropertyMapping( elementColumnNames, (IAbstractComponentType) elementType, factory );
+			}
+			else if ( !elementType.IsEntityType )
+			{
+				elementPropertyMapping = new ElementPropertyMapping( elementColumnNames, elementType );
+			}
+			else
+			{
+				IClassPersister persister = factory.GetPersister( ( (EntityType) elementType).AssociatedClass );
+				// Not all classpersisters implement IPropertyMapping!
+				if ( persister is IPropertyMapping )
+				{
+					elementPropertyMapping = (IPropertyMapping) persister;
+				}
+				else
+				{
+					elementPropertyMapping = new ElementPropertyMapping( elementColumnNames, elementType );
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public ICollectionMetadata CollectionMetadata
+		{
+			get { return this; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public object CollectionSpace
+		{
+			get { return QualifiedTableName; }
 		}
 
 		/// <summary>
@@ -281,6 +333,17 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="owner"></param>
+		/// <param name="session"></param>
+		public void Initialize( object key, object owner, ISessionImplementor session )
+		{
+			Initializer.Initialize( key, null, owner, session );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		public ICacheConcurrencyStrategy Cache
 		{
 			get { return cache; }
@@ -292,30 +355,6 @@ namespace NHibernate.Collection
 		public bool HasCache
 		{
 			get { return cache != null; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		public void Softlock( object id )
-		{
-			if( cache != null )
-			{
-				cache.Lock( id );
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		public void ReleaseSoftlock( object id )
-		{
-			if( cache != null )
-			{
-				cache.Release( id );
-			}
 		}
 
 		/// <summary>
@@ -364,7 +403,13 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// 
 		/// </summary>
-		public OuterJoinLoaderType EnableJoinFetch
+		public OuterJoinFetchStrategy EnableJoinFetch
+		{
+			get { return enableJoinedFetch; }
+		}
+
+		/// <summary></summary>
+		public OuterJoinFetchStrategy EnableJoinedFetch
 		{
 			get { return enableJoinedFetch; }
 		}
@@ -590,6 +635,14 @@ namespace NHibernate.Collection
 			get { return primitiveArray; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool IsCollection
+		{
+			get { return true; }
+		}
+
 		/// <summary></summary>
 		public bool IsArray
 		{
@@ -603,21 +656,9 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public string SelectClauseFragment( string alias )
 		{
-			SelectFragment frag = new SelectFragment( factory.Dialect )
-				.SetSuffix( String.Empty )
-				.AddColumns( alias, elementColumnNames, elementColumnAliases );
-			if( hasIndex )
-			{
-				frag.AddColumns( alias, indexColumnNames, indexColumnAliases );
-			}
-			if( hasIdentifier )
-			{
-				frag.AddColumn( alias, identifierColumnName, identifierColumnAlias );
-			}
 			// TODO: fix this once the interface is changed from a String to a SqlString
 			// this works for now because there are no parameters in the select string.
-			return frag.ToSqlStringFragment( false )
-				.ToString();
+			return SelectFragment( alias).ToString();
 		}
 
 		/// <summary>
@@ -824,6 +865,12 @@ namespace NHibernate.Collection
 		public bool IsInverse
 		{
 			get { return isInverse; }
+		}
+
+		/// <summary></summary>
+		public string TableName
+		{
+			get { return qualifiedTableName; }
 		}
 
 		/// <summary></summary>
@@ -1219,5 +1266,160 @@ namespace NHibernate.Collection
 			}
 		}
 
+		#region IJoinable 2.1 bits
+		/// <summary>
+		/// 
+		/// </summary>
+		public string Name
+		{
+			get { return Role; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public bool ConsumesAlias( )
+		{
+			return false;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool IsManyToMany
+		{
+			get { return ElementType.IsEntityType; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string[] JoinKeyColumns
+		{
+			get { return KeyColumnNames; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="suffix"></param>
+		/// <param name="includeCollectionColumns"></param>
+		/// <returns></returns>
+		public SqlString SelectFragment( string alias, string suffix, bool includeCollectionColumns )
+		{
+			return includeCollectionColumns ? SelectFragment( alias ) : null;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="innerJoin"></param>
+		/// <param name="includeSubclasses"></param>
+		/// <returns></returns>
+		public SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="innerJoin"></param>
+		/// <param name="includeSubclasses"></param>
+		/// <returns></returns>
+		public SqlString WhereJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
+		{
+			return null;
+		}
+		#endregion
+
+		#region IPropertyMapping 2.1 bits
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public string[] ToColumns( string alias, string propertyName )
+		{
+			if ( "index".Equals( propertyName ) )
+			{
+				if ( IsManyToMany )
+				{
+					throw new QueryException( "index() function not supported for many-to-many association" );
+				}
+				return StringHelper.Qualify( alias, indexColumnNames );
+			}
+			return elementPropertyMapping.ToColumns( alias, propertyName );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public IType ToType( string propertyName )
+		{
+			if ( "index".Equals( propertyName ) )
+			{
+				return indexType;
+			}
+			return elementPropertyMapping.ToType( propertyName );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public IType Type
+		{
+			get { return elementPropertyMapping.Type; }
+		}
+		#endregion
+
+		#region IQueryableCollection 2.1 bits
+		/// <summary>
+		/// 
+		/// </summary>
+		public IClassPersister ElementPersister
+		{
+			get 
+			{
+				if ( elementPersister == null )
+				{
+					throw new AssertionFailure( "Not an association" );
+				}
+
+				return (ILoadable) elementPersister;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		public SqlString SelectFragment( string alias )
+		{
+			SelectFragment frag = new SelectFragment( factory.Dialect )
+				.SetSuffix( String.Empty )
+				.AddColumns( alias, elementColumnNames, elementColumnAliases );
+			if( hasIndex )
+			{
+				frag.AddColumns( alias, indexColumnNames, indexColumnAliases );
+			}
+			if( hasIdentifier )
+			{
+				frag.AddColumn( alias, identifierColumnName, identifierColumnAlias );
+			}
+			// TODO: fix this once the interface is changed from a String to a SqlString
+			// this works for now because there are no parameters in the select string.
+			return frag.ToSqlStringFragment( false );
+		}
+		#endregion
 	}
 }

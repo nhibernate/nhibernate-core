@@ -18,8 +18,21 @@ namespace NHibernate.Loader
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
+		/// <param name="batchSize"></param>
 		/// <param name="factory"></param>
-		public EntityLoader( ILoadable persister, ISessionFactoryImplementor factory ) : base( persister, factory )
+		public EntityLoader( ILoadable persister, int batchSize, ISessionFactoryImplementor factory ) : this( persister, persister.IdentifierColumnNames, persister.IdentifierType, batchSize, factory )
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="uniqueKey"></param>
+		/// <param name="uniqueKeyType"></param>
+		/// <param name="batchSize"></param>
+		/// <param name="factory"></param>
+		public EntityLoader( ILoadable persister, string[] uniqueKey, IType uniqueKeyType, int batchSize, ISessionFactoryImplementor factory ) : base( persister, factory )
 		{
 			idType = new IType[ ] {persister.IdentifierType};
 
@@ -37,11 +50,35 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="id"></param>
+		/// <returns></returns>
+		public object LoadByUniqueKey( ISessionImplementor session, object id )
+		{
+			return Load( session, id, null, null );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="id"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
 		public object Load( ISessionImplementor session, object id, object obj )
 		{
-			IList list = LoadEntity( session, new object[ ] {id}, idType, obj, id, false );
+			return Load( session, id, obj, id );
+		}
+	
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="id"></param>
+		/// <param name="obj"></param>
+		/// <param name="optionalId"></param>
+		/// <returns></returns>
+		public object Load( ISessionImplementor session, object id, object obj, object optionalId )
+		{
+			IList list = LoadEntity( session, new object[ ] {id}, idType, obj, optionalId, false );
 			if( list.Count == 1 )
 			{
 				return list[ 0 ];
@@ -52,11 +89,18 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				throw new HibernateException(
-					"More than one row with the given identifier was found: " +
+				if ( CollectionOwner > -1 )
+				{
+					return list[ 0 ];
+				}
+				else
+				{
+					throw new HibernateException(
+						"More than one row with the given identifier was found: " +
 						id +
 						", for class: " +
 						Persister.ClassName );
+				}
 			}
 		}
 

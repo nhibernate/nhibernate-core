@@ -24,7 +24,6 @@ namespace NHibernate.Hql
 	{
 		private PathExpressionParser pathExpressionParser = new PathExpressionParser();
 
-
 		private static ISet expressionTerminators = new HashedSet(); //tokens that close a sub expression
 		private static ISet expressionOpeners = new HashedSet(); //tokens that open a sub expression
 		private static ISet booleanOperators = new HashedSet(); //tokens that would indicate a sub expression is a boolean expression
@@ -176,7 +175,7 @@ namespace NHibernate.Hql
 				if( type.IsEntityType )
 				{
 					//ie. a many-to-many
-					clazz = ( ( EntityType ) type ).PersistentClass;
+					clazz = ( ( EntityType ) type ).AssociatedClass;
 					name = pathExpressionParser.ContinueFromManyToMany( clazz, element.ElementColumns, q );
 				}
 				else
@@ -217,40 +216,10 @@ namespace NHibernate.Hql
 			//Cope with a continued path expression (ie. ].baz)
 			if( expectingPathContinuation )
 			{
-				expectingPathContinuation = false;
-
-				PathExpressionParser.CollectionElement element = pathExpressionParser.LastCollectionElement();
-
-				if( token.StartsWith( "." ) )
-				{ // the path expression continues after a ]
-
-					DoPathExpression( GetElementName( element, q ) + token, q ); // careful with this!
-
-					AddToCurrentJoin( element );
-					return; //NOTE: EARLY EXIT!
-
-				}
-				else if( token.Equals( "[" ) )
-				{
-					DoPathExpression( GetElementName( element, q ), q );
-					AddToCurrentJoin( element );
-					return; //NOTE: EARLY EXIT!
-				}
-				else
-				{
-					// the path expression ends at the ]
-					if( element.ElementColumns.Length != 1 )
-					{
-						throw new QueryException( "path expression ended in composite collection element" );
-					}
-					AppendToken( q, element.ElementColumns[ 0 ] );
-					AddToCurrentJoin( element );
-				}
-
+				if ( ContinuePathExpression( token, q ) ) return;
 			}
 
 			//Cope with a subselect
-
 			if( !inSubselect && ( lcToken.Equals( "select" ) || lcToken.Equals( "from" ) ) )
 			{
 				inSubselect = true;
@@ -260,7 +229,7 @@ namespace NHibernate.Hql
 			{
 				bracketsSinceSelect--;
 
-				if( bracketsSinceSelect == - 1 )
+				if( bracketsSinceSelect == -1 )
 				{
 					QueryTranslator subq = new QueryTranslator( d );
 					try
@@ -312,7 +281,6 @@ namespace NHibernate.Hql
 			}
 
 			//process a token, mapping OO path expressions to SQL expressions
-
 			DoToken( token, q );
 
 			//Open any extra brackets we might need.
@@ -323,9 +291,7 @@ namespace NHibernate.Hql
 			}
 
 			//Cope with special cases of AND, NOT, )
-
 			SpecialCasesAfter( lcToken );
-
 		}
 
 		/// <summary>
@@ -374,8 +340,6 @@ namespace NHibernate.Hql
 				StringBuilder lastJoin = ( StringBuilder ) joins[ joins.Count - 1 ];
 				joins.RemoveAt( joins.Count - 1 );
 				AppendToken( q, lastJoin.ToString() );
-
-
 			}
 			else
 			{
@@ -429,7 +393,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-
 		private void DoPathExpression( string token, QueryTranslator q )
 		{
 			Preprocess( token, q );
@@ -441,12 +404,14 @@ namespace NHibernate.Hql
 				pathExpressionParser.Token( tok, q );
 			}
 			pathExpressionParser.End( q );
+
 			if( pathExpressionParser.IsCollectionValued )
 			{
-				OpenExpression( q, String.Empty );
+				OpenExpression( q, string.Empty );
 				AppendToken( q, pathExpressionParser.GetCollectionSubquery() );
-				q.AddIdentifierSpace( pathExpressionParser.CollectionTable );
-				CloseExpression( q, String.Empty );
+				CloseExpression( q, string.Empty );
+				// this is ugly here, but needed because its a subquery
+				q.AddQuerySpace( q.GetCollectionPersister( pathExpressionParser.CollectionRole ).CollectionSpace );
 			}
 			else
 			{
@@ -493,10 +458,10 @@ namespace NHibernate.Hql
 			}
 			else
 			{
-				IQueryable p = q.GetPersisterUsingImports( token );
-				if( p != null ) // the name of a class
+				IQueryable persister = q.GetPersisterUsingImports( token );
+				if( persister != null ) // the name of a class
 				{
-					AppendToken( q, p.DiscriminatorSQLString );
+					AppendToken( q, persister.DiscriminatorSQLString );
 				}
 				else
 				{
@@ -508,6 +473,8 @@ namespace NHibernate.Hql
 					int indexOfDot = token.IndexOf( StringHelper.Dot );
 					// don't even bother to do the lookups if the indexOfDot is not 
 					// greater than -1.  This will save all the string modifications.
+
+					// This allows us to resolve to the full type before obtaining the value e.g. FooStatus.OFF -> NHibernate.Model.FooStatus.OFF
 					if( indexOfDot > -1 )
 					{
 						fieldName = StringHelper.Unqualify( token );
@@ -528,6 +495,11 @@ namespace NHibernate.Hql
 						catch( MappingException me )
 						{
 							throw new QueryException( me );
+						}
+
+						if ( type == null )
+						{
+							throw new QueryException( string.Format( "Could not determin the type of: {0}", token ) );
 						}
 
 						try
@@ -620,6 +592,34 @@ namespace NHibernate.Hql
 			else
 			{
 				q.AppendWhereToken( token );
+			}
+		}
+
+		private bool ContinuePathExpression( string token, QueryTranslator q )
+		{
+			expectingPathContinuation = false;
+
+			PathExpressionParser.CollectionElement element = pathExpressionParser.LastCollectionElement();
+
+			if( token.StartsWith( "." ) )
+			{ // the path expression continues after a ]
+
+				DoPathExpression( GetElementName( element, q ) + token, q ); // careful with this!
+
+				AddToCurrentJoin( element );
+				return true; //NOTE: EARLY EXIT!
+
+			}
+			else
+			{
+				// the path expression ends at the ]
+				if( element.ElementColumns.Length != 1 )
+				{
+					throw new QueryException( "path expression ended in composite collection element" );
+				}
+				AppendToken( q, element.ElementColumns[ 0 ] );
+				AddToCurrentJoin( element );
+				return false;
 			}
 		}
 	}

@@ -109,7 +109,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public static String InfoString( CollectionPersister persister, object id )
+		public static String InfoString( ICollectionPersister persister, object id )
 		{
 			StringBuilder s = new StringBuilder();
 			s.Append( '[' );

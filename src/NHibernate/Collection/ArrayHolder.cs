@@ -47,7 +47,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( CollectionPersister persister )
+		protected override object Snapshot( ICollectionPersister persister )
 		{
 			int length = /*(array==null) ? temp.Count :*/ array.Length;
 			Array result = System.Array.CreateInstance( persister.ElementClass, length );
@@ -94,7 +94,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="persister"></param>
-		public ArrayHolder( ISessionImplementor session, CollectionPersister persister )
+		public ArrayHolder( ISessionImplementor session, ICollectionPersister persister )
 			: base( session )
 		{
 			elementClass = persister.ElementClass;
@@ -106,6 +106,16 @@ namespace NHibernate.Collection
 		public object Array
 		{
 			get { return array; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public override bool IsWrapper( object collection )
+		{
+			return array == collection;
 		}
 
 		/// <summary>
@@ -164,7 +174,7 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <param name="writeOrder"></param>
-		public override void WriteTo( IDbCommand st, CollectionPersister persister, object entry, int i, bool writeOrder )
+		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
 			persister.WriteElement( st, entry, writeOrder, session );
 			persister.WriteIndex( st, i, writeOrder, session );
@@ -177,7 +187,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object ReadFrom( IDataReader rs, CollectionPersister persister, object owner )
+		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
 		{
 			object element = persister.ReadElement(rs, owner, session);
 			int index = ( int ) persister.ReadIndex( rs, session );
@@ -234,7 +244,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
-		public override void BeforeInitialize( CollectionPersister persister )
+		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 		}
 
@@ -260,7 +270,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the Array.</param>
 		/// <param name="disassembled">The disassembled Array.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
+		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
 			object[] cached = ( object[] ) disassembled;
 
@@ -278,7 +288,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override object Disassemble( CollectionPersister persister )
+		public override object Disassemble( ICollectionPersister persister )
 		{
 			int length = array.Length;
 			object[ ] result = new object[length];

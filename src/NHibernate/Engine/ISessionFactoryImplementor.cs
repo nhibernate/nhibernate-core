@@ -53,7 +53,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="role"></param>
 		/// <returns></returns>
-		CollectionPersister GetCollectionPersister( string role );
+		ICollectionPersister GetCollectionPersister( string role );
 
 		/// <summary>
 		/// Is outerjoin fetching enabled?

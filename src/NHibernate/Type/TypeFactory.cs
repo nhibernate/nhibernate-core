@@ -907,7 +907,19 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static IType OneToOne( System.Type persistentClass, ForeignKeyType foreignKeyType )
 		{
-			return new OneToOneType( persistentClass, foreignKeyType );
+			return OneToOne( persistentClass, foreignKeyType, null );
+		}
+
+		/// <summary>
+		/// A one-to-one association type for the given class and cascade style.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="foreignKeyType"></param>
+		/// <param name="uniqueKeyPropertyName"></param>
+		/// <returns></returns>
+		public static IType OneToOne( System.Type persistentClass, ForeignKeyType foreignKeyType, string uniqueKeyPropertyName )
+		{
+			return new OneToOneType( persistentClass, foreignKeyType, uniqueKeyPropertyName );
 		}
 
 		/// <summary>
@@ -917,7 +929,18 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static IType ManyToOne( System.Type persistentClass )
 		{
-			return new ManyToOneType( persistentClass );
+			return ManyToOne( persistentClass, null );
+		}
+
+		/// <summary>
+		/// A many-to-one association type for the given class and cascade style.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="uniqueKeyPropertyName"></param>
+		/// <returns></returns>
+		public static IType ManyToOne( System.Type persistentClass, string uniqueKeyPropertyName )
+		{
+			return new ManyToOneType( persistentClass, uniqueKeyPropertyName );
 		}
 
 		// Collection Types:

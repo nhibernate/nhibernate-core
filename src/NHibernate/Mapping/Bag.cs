@@ -16,7 +16,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public override PersistentCollectionType Type
+		public override PersistentCollectionType CollectionType
 		{
 			get { return TypeFactory.Bag( Role ); }
 		}
@@ -27,5 +27,12 @@ namespace NHibernate.Mapping
 			get { return typeof( NHibernate.Collection.Bag ); }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <remarks>Should we create an index on the key columns?</remarks>
+		public override void CreatePrimaryKey( )
+		{
+		}
 	}
 }

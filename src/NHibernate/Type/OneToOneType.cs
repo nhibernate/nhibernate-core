@@ -39,7 +39,8 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <param name="foreignKeyType"></param>
-		public OneToOneType( System.Type persistentClass, ForeignKeyType foreignKeyType ) : base( persistentClass )
+		/// <param name="uniqueKeyPropertyName"></param>
+		public OneToOneType( System.Type persistentClass, ForeignKeyType foreignKeyType, string uniqueKeyPropertyName ) : base( persistentClass, uniqueKeyPropertyName )
 		{
 			this.foreignKeyType = foreignKeyType;
 		}
@@ -74,8 +75,14 @@ namespace NHibernate.Type
 			return false;
 		}
 
+		/// <summary></summary>		
+		public override bool UsePrimaryKeyAsForeignKey
+		{
+			get { return true; }
+		}
+
 		/// <summary></summary>
-		public virtual ForeignKeyType ForeignKeyType
+		public override ForeignKeyType ForeignKeyType
 		{
 			get { return foreignKeyType; }
 		}
@@ -98,16 +105,10 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <param name="session"></param>
-		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object ResolveIdentifier( object value, ISessionImplementor session, Object owner )
+		protected override object ResolveIdentifier( object value, ISessionImplementor session )
 		{
-			if( value == null )
-			{
-				return null;
-			}
-
-			System.Type clazz = PersistentClass;
+			System.Type clazz = AssociatedClass;
 
 			return IsNullable ?
 				session.InternalLoadOneToOne( clazz, value ) :

@@ -61,6 +61,17 @@ namespace NHibernate.Collection
 			get { return bag.Count == 0; }
 		}
 
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public override bool IsWrapper( object collection )
+		{
+			return bag == collection;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -77,7 +88,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object ReadFrom( IDataReader reader, CollectionPersister persister, object owner )
+		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, object owner )
 		{
 			object element = persister.ReadElement( reader, owner, session );
 			bag.Add( element );
@@ -92,7 +103,7 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <param name="writeOrder"></param>
-		public override void WriteTo( IDbCommand st, CollectionPersister persister, object entry, int i, bool writeOrder )
+		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
 			persister.WriteElement( st, entry, writeOrder, session );
 		}
@@ -101,7 +112,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
-		public override void BeforeInitialize( CollectionPersister persister )
+		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			this.bag = new ArrayList();
 		}
@@ -156,7 +167,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( CollectionPersister persister )
+		protected override object Snapshot( ICollectionPersister persister )
 		{
 			ArrayList clonedList = new ArrayList( bag.Count );
 			foreach( object obj in bag )
@@ -185,7 +196,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override object Disassemble( CollectionPersister persister )
+		public override object Disassemble( ICollectionPersister persister )
 		{
 			int length = bag.Count;
 			object[ ] result = new object[length];
@@ -204,7 +215,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the Bag.</param>
 		/// <param name="disassembled">The disassembled Bag.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
+		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
 			BeforeInitialize( persister );
 			object[] array = ( object[] ) disassembled;
@@ -227,7 +238,7 @@ namespace NHibernate.Collection
 		/// that permits duplicates it is not possible to determine what has changed in a
 		/// <c>many-to-many</c> so it is just recreated.
 		/// </returns>
-		public override bool NeedsRecreate( CollectionPersister persister )
+		public override bool NeedsRecreate( ICollectionPersister persister )
 		{
 			return !persister.IsOneToMany;
 		}

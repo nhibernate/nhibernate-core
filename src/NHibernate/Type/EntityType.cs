@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.Persister;
@@ -8,10 +9,13 @@ namespace NHibernate.Type
 	/// <summary>
 	/// A reference to an entity class
 	/// </summary>
-	public abstract class EntityType : AbstractType
+	public abstract class EntityType : AbstractType, IAssociationType
 	{
-		private readonly System.Type persistentClass;
+		private readonly System.Type associatedClass;
 		private readonly bool niceEquals;
+
+		/// <summary></summary>
+		protected readonly string uniqueKeyPropertyName;
 
 		/// <summary></summary>
 		public override sealed bool IsEntityType
@@ -20,9 +24,15 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
-		public System.Type PersistentClass
+		public System.Type AssociatedClass
 		{
-			get { return persistentClass; }
+			get { return associatedClass; }
+		}
+
+		/// <summary></summary>
+		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
+		{
+			return associatedClass;
 		}
 
 		/// <summary>
@@ -40,10 +50,12 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="persistentClass"></param>
-		protected EntityType( System.Type persistentClass )
+		/// <param name="uniqueKeyPropertyName"></param>
+		protected EntityType( System.Type persistentClass, string uniqueKeyPropertyName )
 		{
-			this.persistentClass = persistentClass;
+			this.associatedClass = persistentClass;
 			this.niceEquals = !ReflectHelper.OverridesEquals( persistentClass );
+			this.uniqueKeyPropertyName = uniqueKeyPropertyName;
 		}
 
 		/// <summary>
@@ -64,7 +76,7 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		public override sealed System.Type ReturnedClass
 		{
-			get { return persistentClass; }
+			get { return associatedClass; }
 		}
 
 		/// <summary>
@@ -86,14 +98,14 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override string ToXML( object value, ISessionFactoryImplementor factory )
 		{
-			IClassPersister persister = factory.GetPersister( persistentClass );
+			IClassPersister persister = factory.GetPersister( associatedClass );
 			return ( value == null ) ? null : persister.IdentifierType.ToXML( persister.GetIdentifier( value ), factory );
 		}
 
 		/// <summary></summary>
 		public override string Name
 		{
-			get { return persistentClass.Name; }
+			get { return associatedClass.Name; }
 		}
 
 		/// <summary>
@@ -145,7 +157,77 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		protected IType GetIdentifierType( ISessionImplementor session )
 		{
-			return session.Factory.GetIdentifierType( persistentClass );
+			return session.Factory.GetIdentifierType( associatedClass );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public IType GetIdentifierOrUniqueKeyType( ISessionFactoryImplementor factory )
+		{
+			if ( uniqueKeyPropertyName == null )
+			{
+				return factory.GetIdentifierType( associatedClass );
+			}
+			else
+			{
+				return factory.GetPersister( associatedClass ).GetPropertyType( uniqueKeyPropertyName );
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public string GetIdentifierOrUniqueKeyPropertyName( ISessionFactoryImplementor factory )
+		{
+			if ( uniqueKeyPropertyName == null )
+			{
+				return factory.GetIdentifierPropertyName( associatedClass );
+			}
+			else
+			{
+				return uniqueKeyPropertyName;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		protected abstract object ResolveIdentifier( object id, ISessionImplementor session );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object ResolveIdentifier( object id, ISessionImplementor session, object owner )
+		{
+			if ( id == null )
+			{
+				return null;
+			}
+			else
+			{
+				if ( uniqueKeyPropertyName == null )
+				{
+					return ResolveIdentifier( id, session );
+				}
+				else
+				{
+					// TODO: Extend ISessionImplentor interface
+					//return session.LoadByUniqueKey( AssociatedClass, uniqueKeyPropertyName, id );
+					throw new NotImplementedException( "session.LoadByUniqueKey not implemented" );
+				}
+			}
 		}
 
 		/// <summary>
@@ -172,6 +254,12 @@ namespace NHibernate.Type
 		public override bool IsAssociationType
 		{
 			get { return true; }
+		}
+
+		/// <summary></summary>
+		public bool IsUniqueKeyReference
+		{
+			get { return uniqueKeyPropertyName != null; }
 		}
 
 		/// <summary>
@@ -217,5 +305,46 @@ namespace NHibernate.Type
 			object newid = GetIdentifier( current, session );
 			return !GetIdentifierType( session ).Equals( oldid, newid );
 		}
+
+		#region IAssociationType Members
+		/// <summary>
+		/// When implemented by a class, gets the type of foreign key directionality 
+		/// of this association.
+		/// </summary>
+		/// <value>The <see cref="ForeignKeyType"/> of this association.</value>
+		public abstract ForeignKeyType ForeignKeyType { get; }
+
+		/// <summary>
+		/// Is the foreign key the primary key of the table?
+		/// </summary>
+		public abstract bool UsePrimaryKeyAsForeignKey { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
+		{
+			return (IJoinable) factory.GetPersister( associatedClass );
+		}
+
+		/// <summary></summary>
+		public string[] GetReferencedColumns( ISessionFactoryImplementor factory )
+		{
+			//I really, really don't like the fact that a Type now knows about column mappings!
+			//bad seperation of concerns ... could we move this somehow to Joinable interface??
+			IJoinable joinable = GetJoinable( factory );
+
+			if ( uniqueKeyPropertyName == null ) 
+			{
+				return joinable.JoinKeyColumns ;
+			}
+			else 
+			{
+				return ( (IUniqueKeyLoadable) joinable ).GetUniqueKeyColumnNames( uniqueKeyPropertyName );
+			}
+		}
+		#endregion
 	}
 }

@@ -1285,7 +1285,7 @@ namespace NHibernate.Impl
 			deletions.Remove( delete );
 		}
 
-		internal void RemoveCollection( CollectionPersister role, object id )
+		internal void RemoveCollection( ICollectionPersister role, object id )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -1305,7 +1305,7 @@ namespace NHibernate.Impl
 				snapshot.Key != null;
 		}
 
-		internal static bool IsOwnerUnchanged( ICollectionSnapshot snapshot, CollectionPersister persister, object id )
+		internal static bool IsOwnerUnchanged( ICollectionSnapshot snapshot, ICollectionPersister persister, object id )
 		{
 			return IsCollectionSnapshotValid( snapshot ) &&
 				persister.Role.Equals( snapshot.Role ) &&
@@ -1883,6 +1883,7 @@ namespace NHibernate.Impl
 			}
 
 			IClassPersister persister = e.Persister;
+			ISoftLock myLock = null;
 
 			if( lockMode.GreaterThan( e.LockMode ) )
 			{
@@ -1898,7 +1899,7 @@ namespace NHibernate.Impl
 
 				if( persister.HasCache )
 				{
-					persister.Cache.Lock( e.Id );
+					myLock = persister.Cache.Lock( e.Id );
 				}
 				try
 				{
@@ -1915,7 +1916,7 @@ namespace NHibernate.Impl
 					// so release the soft lock
 					if( persister.HasCache )
 					{
-						persister.Cache.Release( e.Id );
+						persister.Cache.Release( e.Id, myLock );
 					}
 				}
 			}
@@ -2349,6 +2350,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		private object DoLoad( System.Type clazz, object id, LockMode lockMode, bool allowNull )
 		{
+			ISoftLock myLock = null;
+
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "loading " + MessageHelper.InfoString( clazz, id ) + " in lock mode: " + lockMode );
@@ -2361,7 +2364,7 @@ namespace NHibernate.Impl
 			IClassPersister persister = GetPersister( clazz );
 			if( persister.HasCache )
 			{
-				persister.Cache.Lock( id );
+				myLock = persister.Cache.Lock( id );
 			} //increments the lock
 			object result;
 			try
@@ -2374,7 +2377,7 @@ namespace NHibernate.Impl
 				// so release the soft lock
 				if( persister.HasCache )
 				{
-					persister.Cache.Release( id );
+					persister.Cache.Release( id, myLock );
 				}
 			}
 
@@ -3406,7 +3409,7 @@ namespace NHibernate.Impl
 			}
 			ce.reached = true;
 
-			CollectionPersister persister = GetCollectionPersister( ( ( PersistentCollectionType ) type ).Role );
+			ICollectionPersister persister = GetCollectionPersister( ( ( PersistentCollectionType ) type ).Role );
 			ce.currentPersister = persister;
 			ce.currentKey = GetEntityIdentifier( owner );
 
@@ -3565,7 +3568,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public PersistentCollection GetLoadingCollection( CollectionPersister persister, object id )
+		public PersistentCollection GetLoadingCollection( ICollectionPersister persister, object id )
 		{
 			LoadingCollectionEntry lce = ( LoadingCollectionEntry ) loadingCollections[ id ];
 			if( lce == null )
@@ -3593,7 +3596,7 @@ namespace NHibernate.Impl
 		{
 			if( loadingRole != null )
 			{
-				CollectionPersister persister = GetCollectionPersister( loadingRole );
+				ICollectionPersister persister = GetCollectionPersister( loadingRole );
 				foreach( LoadingCollectionEntry lce in loadingCollections.Values )
 				{
 					if( lce.Initialize )
@@ -3644,7 +3647,7 @@ namespace NHibernate.Impl
 		{
 			collectionEntries[collection] = entry;
 
-			CollectionKey ck = new CollectionKey(entry.loadedPersister, key);
+			CollectionKey ck = new CollectionKey( entry.loadedPersister, key);
 			PersistentCollection old = (PersistentCollection) collectionsByKey[ck];
 			collectionsByKey[ck] = collection;
 
@@ -3704,14 +3707,14 @@ namespace NHibernate.Impl
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		private void AddUninitializedCollection( PersistentCollection collection, CollectionPersister persister, object id )
+		private void AddUninitializedCollection( PersistentCollection collection, ICollectionPersister persister, object id )
 		{
 			CollectionEntry ce = new CollectionEntry( persister, id, flushing );
 			collection.CollectionSnapshot = ce;
 			AddCollection(collection, ce, id);
 		}
 
-		private void AddUninitializedDetachedCollection( PersistentCollection collection, CollectionPersister persister, object id )
+		private void AddUninitializedDetachedCollection( PersistentCollection collection, ICollectionPersister persister, object id )
 		{
 			CollectionEntry ce = new CollectionEntry( persister, id );
 			collection.CollectionSnapshot = ce;
@@ -3724,7 +3727,7 @@ namespace NHibernate.Impl
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		public void AddInitializedCollection( PersistentCollection collection, CollectionPersister persister, object id )
+		public void AddInitializedCollection( PersistentCollection collection, ICollectionPersister persister, object id )
 		{
 			CollectionEntry ce = new CollectionEntry( persister, id, flushing );
 			ce.PostInitialize( collection );
@@ -3746,7 +3749,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
-		internal void AddNewCollection(PersistentCollection collection, CollectionPersister persister)
+		internal void AddNewCollection(PersistentCollection collection, ICollectionPersister persister)
 		{
 			CollectionEntry ce = AddCollection(collection);
 			if ( persister.HasOrphanDelete ) ce.InitSnapshot(collection, persister);
@@ -3793,7 +3796,7 @@ namespace NHibernate.Impl
 			arrayHolders[ holder.Array ] = holder;
 		}
 
-		internal CollectionPersister GetCollectionPersister( string role )
+		internal ICollectionPersister GetCollectionPersister( string role )
 		{
 			return factory.GetCollectionPersister( role );
 		}
@@ -3879,15 +3882,14 @@ namespace NHibernate.Impl
 				else 
 				{
 					log.Debug("collection not cached");
-					CollectionPersister persister = ce.loadedPersister;
+					ICollectionPersister persister = ce.loadedPersister;
 					object id = ce.loadedKey;
-
 					object owner = GetEntity( new Key( id, GetPersister( persister.OwnerClass ) ) );
 
 					collection.BeforeInitialize( persister );
 					try
 					{
-						persister.Initializer.Initialize( id, collection, owner, this );
+						((CollectionPersister) persister).Initializer.Initialize( id, collection, owner, this );						
 					}
 					catch( ADOException sqle )
 					{
@@ -3910,6 +3912,15 @@ namespace NHibernate.Impl
 						}
 					}
 					log.Debug("collection initialized");
+
+					/*
+					log.Debug("collection not cached");
+					ICollectionPersister persister = ce.loadedPersister;
+					object id = ce.loadedKey;
+					object owner = GetEntity( new Key( id, GetPersister( persister.OwnerClass ) ) );
+					persister.Initialize( id, owner, this );						
+					log.Debug("collection initialized");
+					*/
 				}
 			}
 		}
@@ -3919,7 +3930,7 @@ namespace NHibernate.Impl
 			return GetCollectionOwner(ce.loadedKey, ce.loadedPersister);
 		}
 
-		public object GetCollectionOwner(object key, CollectionPersister collectionPersister)
+		public object GetCollectionOwner(object key, ICollectionPersister collectionPersister)
 		{
 			//TODO:give collection persister a reference to the owning class persister
 			return GetEntity( new Key(key, factory.GetPersister( collectionPersister.OwnerClass ) ) );
@@ -4219,7 +4230,7 @@ namespace NHibernate.Impl
 			}
 
 			FilterTranslator q;
-			CollectionPersister roleBeforeFlush = e.loadedPersister;
+			ICollectionPersister roleBeforeFlush = e.loadedPersister;
 			if( roleBeforeFlush == null )
 			{ //ie. it was previously unreferenced
 				Flush();
@@ -4560,7 +4571,7 @@ namespace NHibernate.Impl
 			// because this method is called while first loading the entity
 			// that references it
 
-			CollectionPersister persister = factory.GetCollectionPersister(role);
+			ICollectionPersister persister = factory.GetCollectionPersister(role);
 			PersistentCollection collection = GetLoadingCollection(role, id);
 
 			if (collection != null)
@@ -4601,7 +4612,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="collection"></param>
 		/// <returns><c>true</c> if the collection was initialized from the cache, otherwise <c>false</c>.</returns>
-		private bool InitializeCollectionFromCache(object id, object owner, CollectionPersister persister, PersistentCollection collection)
+		private bool InitializeCollectionFromCache(object id, object owner, ICollectionPersister persister, PersistentCollection collection)
 		{
 			if( persister.HasCache==false )
 			{

@@ -13,6 +13,24 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="array"></param>
+		/// <returns></returns>
+		public static bool IsAllNegative( int[] array )
+		{
+			for ( int i = 0; i < array.Length; i++ )
+			{
+				if ( array[ i ] >= 0 )
+				{
+					return false;
+				}
+			}
+			
+			return true;
+		}
+
+		/// <summary>
 		/// Compares two byte[] arrays for equality.
 		/// </summary>
 		/// <param name="lhs">The byte[] array on the Left Hand Side </param>

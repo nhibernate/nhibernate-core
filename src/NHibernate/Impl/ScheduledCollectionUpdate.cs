@@ -19,11 +19,11 @@ namespace NHibernate.Impl
 		/// Initializes a new instance of <see cref="ScheduledCollectionUpdate"/>.
 		/// </summary>
 		/// <param name="collection">The <see cref="PersistentCollection"/> to update.</param>
-		/// <param name="persister">The <see cref="CollectionPersister"/> that is responsible for the persisting the Collection.</param>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> that is responsible for the persisting the Collection.</param>
 		/// <param name="id">The identifier of the Collection owner.</param>
 		/// <param name="emptySnapshot">Indicates if the Collection was empty when it was loaded.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledCollectionUpdate( PersistentCollection collection, CollectionPersister persister, object id, bool emptySnapshot, ISessionImplementor session )
+		public ScheduledCollectionUpdate( PersistentCollection collection, ICollectionPersister persister, object id, bool emptySnapshot, ISessionImplementor session )
 			: base( persister, id, session )
 		{
 			_collection = collection;
@@ -33,7 +33,10 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public override void Execute()
 		{
-			Persister.Softlock( Id );
+			if ( Persister.HasCache )
+			{
+				Persister.Cache.Remove( Id );
+			}
 			if( !_collection.WasInitialized )
 			{
 				if( !_collection.HasQueuedAdds )

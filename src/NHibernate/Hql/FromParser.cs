@@ -261,25 +261,14 @@ namespace NHibernate.Hql
 						peParser.UseThetaStyleJoin = q.IsSubquery;
 
 						ParserHelper.Parse( peParser, q.Unalias( token ), ParserHelper.PathSeparators, q );
-						if( peParser.IsCollectionValued )
-						{
-							entityName = peParser.AddFromCollection( q );
-						}
-						else
-						{
-							entityName = peParser.AddFromAssociation( q );
-						}
+						entityName = peParser.AddFromAssociation( q );
+
 						joinType = JoinType.None;
 						peParser.JoinType = JoinType.InnerJoin;
 
 						if( afterFetch )
 						{
-							if( peParser.IsCollectionValued )
-							{
-								q.SetCollectionToFetch( peParser.CollectionRole, peParser.CollectionName, peParser.CollectionOwnerName );
-							}
-							q.AddEntityToFetch( entityName );
-
+							peParser.Fetch( q, entityName );
 							afterFetch = false;
 						}
 

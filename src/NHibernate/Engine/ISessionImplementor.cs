@@ -62,7 +62,7 @@ namespace NHibernate.Engine
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		PersistentCollection GetLoadingCollection( CollectionPersister persister, object id );
+		PersistentCollection GetLoadingCollection( ICollectionPersister persister, object id );
 
 		/// <summary>
 		/// new in h2.0.3 and no javadoc

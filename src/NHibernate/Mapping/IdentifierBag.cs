@@ -17,7 +17,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public override PersistentCollectionType Type
+		public override PersistentCollectionType CollectionType
 		{
 			get { return TypeFactory.IdBag( Role ); }
 		}

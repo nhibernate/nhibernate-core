@@ -26,17 +26,18 @@ namespace NHibernate.Mapping
 		public const string DefaultDiscriminatorColumnName = "class";
 
 		private Property identifierProperty;
-		private Value identifier;
+		private SimpleValue identifier;
 		private Property version;
 		private bool polymorphic;
 		private ICacheConcurrencyStrategy cache;
-		private Value discriminator;
+		private SimpleValue discriminator;
 		private bool mutable;
 		private bool embeddedIdentifier = false;
 		private bool explicitPolymorphism;
-		private System.Type persister;
+		private System.Type classPersisterClass;
 		private bool forceDiscriminator;
 		private string where;
+		private bool discriminatorInsertable;
 
 		/// <summary>
 		/// Gets or sets the <see cref="Property"/> that is used as the <c>id</c>.
@@ -51,10 +52,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="Value"/> that contains information about the identifier.
+		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the identifier.
 		/// </summary>
-		/// <value>The <see cref="Value"/> that contains information about the identifier.</value>
-		public override Value Identifier
+		/// <value>The <see cref="SimpleValue"/> that contains information about the identifier.</value>
+		public override SimpleValue Identifier
 		{
 			get { return identifier; }
 			set { identifier = value; }
@@ -70,10 +71,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="Value"/> that contains information about the discriminator.
+		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the discriminator.
 		/// </summary>
-		/// <value>The <see cref="Value"/> that contains information about the discriminator.</value>
-		public override Value Discriminator
+		/// <value>The <see cref="SimpleValue"/> that contains information about the discriminator.</value>
+		public override SimpleValue Discriminator
 		{
 			get { return discriminator; }
 			set { discriminator = value; }
@@ -234,10 +235,10 @@ namespace NHibernate.Mapping
 		/// Gets or sets the <see cref="System.Type"/> of the Persister.
 		/// </summary>
 		/// <value>The <see cref="System.Type"/> of the Persister.</value>
-		public override System.Type Persister
+		public override System.Type ClassPersisterClass
 		{
-			get { return persister; }
-			set { persister = value; }
+			get { return classPersisterClass; }
+			set { classPersisterClass = value; }
 		}
 
 		/// <summary>
@@ -269,10 +270,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="Value"/> that contains information about the Key.
+		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the Key.
 		/// </summary>
-		/// <value>The <see cref="Value"/> that contains information about the Key.</value>
-		public override Value Key
+		/// <value>The <see cref="SimpleValue"/> that contains information about the Key.</value>
+		public override SimpleValue Key
 		{
 			get { return Identifier; }
 			set { throw new InvalidOperationException(); }
@@ -301,5 +302,21 @@ namespace NHibernate.Mapping
 			set { where = value; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public override bool IsJoinedSubclass
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public override bool IsDiscriminatorInsertable
+		{
+			get { return discriminatorInsertable; }
+			set { discriminatorInsertable = value; }
+		}
 	}
 }

@@ -16,7 +16,7 @@ namespace NHibernate.Mapping
 		private string name;
 		private string schema;
 		private SequencedHashMap columns = new SequencedHashMap();
-		private Value idValue;
+		private SimpleValue idValue;
 		private PrimaryKey primaryKey;
 		private IDictionary indexes = new Hashtable();
 		private IDictionary foreignKeys = new Hashtable();
@@ -24,6 +24,7 @@ namespace NHibernate.Mapping
 		private int uniqueInteger;
 		private bool quoted;
 		private static int tableCounter = 0;
+		private IList checkConstraints = new ArrayList();
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="Table"/>.
@@ -495,8 +496,8 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Sets the Identifier of the Table.
 		/// </summary>
-		/// <param name="idValue">The <see cref="Value"/> that represents the Identifier.</param>
-		public void SetIdentifierValue( Value idValue )
+		/// <param name="idValue">The <see cref="SimpleValue"/> that represents the Identifier.</param>
+		public void SetIdentifierValue( SimpleValue idValue )
 		{
 			this.idValue = idValue;
 		}
@@ -511,6 +512,13 @@ namespace NHibernate.Mapping
 			set { quoted = value; }
 		}
 
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="constraint"></param>
+		public void AddCheckConstraint( string constraint )
+		{
+			checkConstraints.Add( constraint );
+		}
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using NHibernate.Collection;
+using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.SqlCommand;
@@ -11,7 +12,7 @@ using NHibernate.Util;
 namespace NHibernate.Loader
 {
 	/// <summary></summary>
-	public enum OuterJoinLoaderType
+	public enum OuterJoinFetchStrategy
 	{
 		/// <summary></summary>
 		Lazy = -1,
@@ -36,11 +37,17 @@ namespace NHibernate.Loader
 		/// <summary></summary>
 		protected static readonly ILoadable[ ] NoPersisters = new ILoadable[0];
 
-		private ILoadable[ ] classPersisters;
+		/// <summary></summary>
+		protected ILoadable[ ] classPersisters;
+
 		private LockMode[ ] lockModeArray;
+
+		/// <summary></summary>
+		protected int[] owners;
 
 		private SqlString sqlString;
 		private string[ ] suffixes;
+		private Dialect.Dialect dialect;
 
 		/// <summary>
 		/// 
@@ -67,11 +74,23 @@ namespace NHibernate.Loader
 		public sealed class OuterJoinableAssociation // struct?
 		{
 			/// <summary></summary>
-			public ILoadable Subpersister;
+			public IJoinable Joinable;
+			/// <summary></summary>
+			public IQueryable Subpersister;
 			/// <summary></summary>
 			public string[ ] ForeignKeyColumns;
 			/// <summary></summary>
 			public string Subalias;
+			/// <summary></summary>
+			public string[] PrimaryKeyColumns;
+			/// <summary></summary>
+			public string TableName;
+			/// <summary></summary>
+			public int Owner;
+			/// <summary></summary>
+			public JoinType JoinType;
+			/// <summary></summary>
+			public bool IsOneToOne;
 		}
 
 		/// <summary>
@@ -95,7 +114,7 @@ namespace NHibernate.Loader
 		/// <param name="alias"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected IList WalkCollectionTree( CollectionPersister persister, string alias, ISessionFactoryImplementor session )
+		protected IList WalkCollectionTree( IQueryableCollection persister, string alias, ISessionFactoryImplementor session )
 		{
 			IList associations = new ArrayList();
 
@@ -106,7 +125,7 @@ namespace NHibernate.Loader
 				{
 					EntityType etype = ( EntityType ) type;
 					// we do NOT need to call this.EnableJoinedFetch() here
-					if( AutoEager( persister.EnableJoinFetch, etype, session ) )
+					if( AutoEager( persister.EnableJoinedFetch, etype, session ) )
 					{
 						string[ ] columns = StringHelper.Prefix( persister.ElementColumnNames, alias + StringHelper.Dot );
 						WalkAssociationTree( etype, columns, persister, alias, associations, new ArrayList(), String.Empty, session );
@@ -142,7 +161,7 @@ namespace NHibernate.Loader
 			string path,
 			ISessionFactoryImplementor session )
 		{
-			ILoadable subpersister = ( ILoadable ) session.GetPersister( type.PersistentClass );
+			IQueryable subpersister = ( IQueryable ) session.GetPersister( type.AssociatedClass );
 
 			// to avoid navigating back up bidirectional associations (and circularities) 
 			if( !classPersisters.Contains( subpersister ) )
@@ -352,7 +371,7 @@ namespace NHibernate.Loader
 		private void WalkCompositeElementTree(
 			IAbstractComponentType act,
 			string[ ] cols,
-			CollectionPersister persister,
+			IQueryableCollection persister,
 			string alias,
 			IList associations,
 			IList classPersisters,
@@ -378,7 +397,7 @@ namespace NHibernate.Loader
 					EntityType etype = ( EntityType ) types[ i ];
 					string subpath = SubPath( path, propertyNames[ i ] );
 					bool autoEager = AutoEager( act.EnableJoinedFetch( i ), etype, session );
-					bool enable = EnableJoinedFetch( autoEager, subpath, persister.QualifiedTableName, range );
+					bool enable = EnableJoinedFetch( autoEager, subpath, persister.TableName, range );
 
 					if( enable )
 					{
@@ -413,17 +432,17 @@ namespace NHibernate.Loader
 		/// <param name="type"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected bool AutoEager( OuterJoinLoaderType config, EntityType type, ISessionFactoryImplementor session )
+		protected bool AutoEager( OuterJoinFetchStrategy config, EntityType type, ISessionFactoryImplementor session )
 		{
-			if( config == OuterJoinLoaderType.Eager )
+			if( config == OuterJoinFetchStrategy.Eager )
 			{
 				return true;
 			}
-			if( config == OuterJoinLoaderType.Lazy )
+			if( config == OuterJoinFetchStrategy.Lazy )
 			{
 				return false;
 			}
-			IClassPersister persister = session.GetPersister( type.PersistentClass );
+			IClassPersister persister = session.GetPersister( type.AssociatedClass );
 			return !persister.HasProxy || ( type.IsOneToOne && ( ( OneToOneType ) type ).IsNullable );
 		}
 
@@ -523,7 +542,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary></summary>
-		protected override CollectionPersister CollectionPersister
+		protected override ICollectionPersister CollectionPersister
 		{
 			get { return null; }
 		}
@@ -547,8 +566,8 @@ namespace NHibernate.Loader
 					);
 
 				outerjoin.AddJoins(
-					oj.Subpersister.FromJoinFragment( oj.Subalias, false, true ),
-					oj.Subpersister.WhereJoinFragment( oj.Subalias, false, true )
+					( (IJoinable) oj.Subpersister).FromJoinFragment( oj.Subalias, false, true ),
+					( (IJoinable) oj.Subpersister).WhereJoinFragment( oj.Subalias, false, true )
 					);
 			}
 			return outerjoin;
@@ -592,5 +611,42 @@ namespace NHibernate.Loader
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="associations"></param>
+		/// <returns></returns>
+		protected static int CountClassPersisters( IList associations )
+		{
+			int result = 0;
+			foreach ( OuterJoinableAssociation oj in associations )
+			{
+				if ( oj.Joinable.ConsumesAlias() ) 
+				{
+					result++;
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="oj"></param>
+		/// <param name="joins"></param>
+		/// <param name="dontIgnore"></param>
+		/// <returns></returns>
+		protected int ToOwner( OuterJoinableAssociation oj, int joins, bool dontIgnore )
+		{
+			if ( dontIgnore )
+			{
+				return oj.Owner == -1 ? joins : oj.Owner;  //TODO: UGLY AS SIN!
+			}
+			else
+			{
+				return -1;
+			}
+		}
 	}
 }

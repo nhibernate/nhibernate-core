@@ -30,6 +30,14 @@ namespace NHibernate.Hql
 				q.AppendOrderByToken( pathExpressionParser.WhereColumn );
 				pathExpressionParser.AddAssociation( q );
 			}
+			else if ( token.StartsWith( ParserHelper.HqlVariablePrefix ) )
+			{
+				q.AddNamedParameter( token.Substring( 1 ) );
+				// this is only a temporary parameter to help with the parsing of hql - 
+				// when the type becomes known then this will be converted to its real
+				// parameter type.
+				//AppendToken( q, new SqlString( new object[ ] {new Parameter( StringHelper.SqlParameter )} ) );
+			}
 			else
 			{
 				q.AppendOrderByToken( token );

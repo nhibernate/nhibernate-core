@@ -1,3 +1,5 @@
+using NHibernate.Engine;
+
 namespace NHibernate.Mapping
 {
 	/// <summary>
@@ -9,7 +11,7 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public const string DefaultIndexColumnName = "idx";
 
-		private Value index;
+		private SimpleValue index;
 
 		/// <summary>
 		/// 
@@ -20,7 +22,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public Value Index
+		public SimpleValue Index
 		{
 			get { return index; }
 			set { index = value; }
@@ -33,20 +35,38 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public void CreatePrimaryKey()
+		public override void CreatePrimaryKey()
 		{
-			PrimaryKey pk = new PrimaryKey();
-
-			foreach( Column col in Key.ColumnCollection )
+			if ( !IsOneToMany )
 			{
-				pk.AddColumn( col );
-			}
-			foreach( Column col in Index.ColumnCollection )
-			{
-				pk.AddColumn( col );
-			}
+				PrimaryKey pk = new PrimaryKey();
 
-			Table.PrimaryKey = pk;
+				foreach( Column col in Key.ColumnCollection )
+				{
+					pk.AddColumn( col );
+				}
+
+				// Index should be last column listed
+				foreach( Column col in Index.ColumnCollection )
+				{
+					pk.AddColumn( col );
+				}
+
+				CollectionTable.PrimaryKey = pk;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		public override void Validate( IMapping mapping )
+		{
+			base.Validate( mapping );
+			if ( !Index.IsValid( mapping ) )
+			{
+				throw new MappingException( string.Format( "collection index mapping has wrong number of columns: {0} type: {1}", Role, Index.Type.Name ) );
+			}
 		}
 	}
 }

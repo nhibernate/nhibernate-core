@@ -31,7 +31,7 @@ namespace NHibernate.Impl
 	/// Caches configuration settings (immutably)</item>
 	/// <item>
 	/// Caches "compiled" mappings - ie. <see cref="IClassPersister"/> 
-	/// and <see cref="CollectionPersister"/>
+	/// and <see cref="ICollectionPersister"/>
 	/// </item>
 	/// <item>
 	/// Caches "compiled" queries (memory sensitive cache)
@@ -120,10 +120,10 @@ namespace NHibernate.Impl
 
 			foreach( PersistentClass model in cfg.ClassMappings )
 			{
-				System.Type persisterClass = model.Persister; // not used !?!
+				System.Type persisterClass = model.ClassPersisterClass; // not used !?!
 				IClassPersister cp;
 				cp = PersisterFactory.Create( model, this );
-				classPersisters[ model.PersistentClazz ] = cp;
+				classPersisters[ model.MappedClass ] = cp;
 
 				// Adds the "Namespace.ClassName" (FullClassname) as a lookup to get to the Persiter.
 				// Most of the internals of NHibernate use this method to get to the Persister since
@@ -134,13 +134,14 @@ namespace NHibernate.Impl
 				// Add in the AssemblyQualifiedName (includes version) as a lookup to get to the Persister.  
 				// In HQL the Imports are used to get from the Classname to the Persister.  The
 				// Imports provide the ability to jump from the Classname to the AssemblyQualifiedName.
-				classPersistersByName[ model.PersistentClazz.AssemblyQualifiedName ] = cp;
+				classPersistersByName[ model.MappedClass.AssemblyQualifiedName ] = cp;
 			}
 
 			collectionPersisters = new Hashtable();
 			foreach( Mapping.Collection map in cfg.CollectionMappings )
 			{
-				collectionPersisters[ map.Role ] = new CollectionPersister( map, cfg, this );
+				//collectionPersisters[ map.Role ] = new CollectionPersister( map, cfg, this );
+				collectionPersisters[ map.Role ] = PersisterFactory.CreateCollectionPersister( cfg, map, this );
 			}
 
 			foreach( IClassPersister persister in classPersisters.Values )
@@ -530,9 +531,9 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="role"></param>
 		/// <returns></returns>
-		public CollectionPersister GetCollectionPersister( string role )
+		public ICollectionPersister GetCollectionPersister( string role )
 		{
-			CollectionPersister result = collectionPersisters[ role ] as CollectionPersister;
+			ICollectionPersister result = collectionPersisters[ role ] as ICollectionPersister;
 			if( result == null )
 			{
 				throw new MappingException( "No persisters for collection role: " + role );
@@ -596,6 +597,27 @@ namespace NHibernate.Impl
 		public IType GetIdentifierType( System.Type objectClass )
 		{
 			return GetPersister( objectClass ).IdentifierType;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="objectClass"></param>
+		/// <returns></returns>
+		public string GetIdentifierPropertyName( System.Type objectClass )
+		{
+			return GetPersister( objectClass ).IdentifierPropertyName;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public IType GetPropertyType( System.Type persistentClass, string propertyName )
+		{
+			return GetPersister( persistentClass ).GetPropertyType( propertyName );
 		}
 
 		#region System.Runtime.Serialization.IObjectReference Members
@@ -666,7 +688,7 @@ namespace NHibernate.Impl
 			{
 				throw new HibernateException( "Query does not refer to any persistent classes: " + queryString );
 			}
-			return GetShallowQuery( queries[ 0 ] ).NamedParameters;
+			return GetQuery( queries[ 0 ] ).NamedParameters;
 		}
 
 		/// <summary></summary>
@@ -700,7 +722,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public ICollectionMetadata GetCollectionMetadata( string roleName )
 		{
-			return GetCollectionPersister( roleName );
+			return GetCollectionPersister( roleName ) as ICollectionMetadata;
 		}
 
 		/// <summary>
@@ -779,7 +801,7 @@ namespace NHibernate.Impl
 				}
 			}
 
-			foreach( CollectionPersister p in collectionPersisters.Values )
+			foreach( ICollectionPersister p in collectionPersisters.Values )
 			{
 				if( p.HasCache )
 				{
@@ -831,7 +853,7 @@ namespace NHibernate.Impl
 		/// <param name="id"></param>
 		public void EvictCollection( string roleName, object id )
 		{
-			CollectionPersister p = GetCollectionPersister( roleName );
+			ICollectionPersister p = GetCollectionPersister( roleName );
 			if( p.HasCache )
 			{
 				p.Cache.Remove( id );
@@ -844,7 +866,7 @@ namespace NHibernate.Impl
 		/// <param name="roleName"></param>
 		public void EvictCollection( string roleName )
 		{
-			CollectionPersister p = GetCollectionPersister( roleName );
+			ICollectionPersister p = GetCollectionPersister( roleName );
 			if( p.HasCache )
 			{
 				p.Cache.Clear();

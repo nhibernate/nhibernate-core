@@ -27,8 +27,9 @@ namespace NHibernate.Dialect
 
 		private TypeNames typeNames = new TypeNames( "$1" );
 		private IDictionary properties = new Hashtable();
+		private IDictionary sqlFunctions;
 
-		private static readonly IDictionary aggregateFunctions = new Hashtable();
+		private static readonly IDictionary standardAggregateFunctions = new Hashtable();
 
 		/// <summary></summary>
 		protected const string DefaultBatchSize = "15";
@@ -38,11 +39,11 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		static Dialect()
 		{
-			aggregateFunctions[ "count" ] = new CountQueryFunctionInfo();
-			aggregateFunctions[ "avg" ] = new AvgQueryFunctionInfo();
-			aggregateFunctions[ "max" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "min" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "sum" ] = new QueryFunctionStandard();
+			standardAggregateFunctions[ "count" ] = new CountQueryFunctionInfo();
+			standardAggregateFunctions[ "avg" ] = new AvgQueryFunctionInfo();
+			standardAggregateFunctions[ "max" ] = new StandardSQLFunction();
+			standardAggregateFunctions[ "min" ] = new StandardSQLFunction();
+			standardAggregateFunctions[ "sum" ] = new StandardSQLFunction();
 
 		}
 
@@ -62,6 +63,7 @@ namespace NHibernate.Dialect
 		protected Dialect()
 		{
 			log.Info( "Using dialect: " + this );
+			sqlFunctions = new Hashtable( standardAggregateFunctions ) ;
 		}
 
 
@@ -107,6 +109,16 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="function"></param>
+		protected void RegisterFunction( string name, ISQLFunction function )
+		{
+			sqlFunctions.Add( name, function );
+		}
+
+		/// <summary>
 		/// Subclasses register a typename for the given type code and maximum
 		/// column length. <c>$1</c> in the type name will be replaced by the column
 		/// length (if appropriate)
@@ -114,7 +126,7 @@ namespace NHibernate.Dialect
 		/// <param name="code">The typecode</param>
 		/// <param name="capacity">Maximum length of database type</param>
 		/// <param name="name">The database type name</param>
-		protected void Register( DbType code, int capacity, string name )
+		protected void RegisterColumnType( DbType code, int capacity, string name )
 		{
 			typeNames.Put( code, capacity, name );
 		}
@@ -125,7 +137,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="code">The typecode</param>
 		/// <param name="name">The database type name</param>
-		protected void Register( DbType code, string name )
+		protected void RegisterColumnType( DbType code, string name )
 		{
 			typeNames.Put( code, name );
 		}
@@ -558,9 +570,9 @@ namespace NHibernate.Dialect
 		/// The results of this method should be integrated with the 
 		/// specialization's data.
 		/// </remarks>
-		public virtual IDictionary AggregateFunctions
+		public virtual IDictionary Functions
 		{
-			get { return aggregateFunctions; }
+			get { return sqlFunctions; }
 		}
 
 		/// <summary>
@@ -824,9 +836,9 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// 
 		/// </summary>
-		public class CountQueryFunctionInfo : IQueryFunctionInfo
+		public class CountQueryFunctionInfo : ISQLFunction
 		{
-			#region IQueryFunctionInfo Members
+			#region ISQLFunction Members
 
 			/// <summary>
 			/// 
@@ -834,19 +846,23 @@ namespace NHibernate.Dialect
 			/// <param name="columnType"></param>
 			/// <param name="mapping"></param>
 			/// <returns></returns>
-			public IType QueryFunctionType( IType columnType, IMapping mapping )
+			public IType ReturnType(IType columnType, IMapping mapping)
 			{
 				return NHibernateUtil.Int32;
 			}
 
-			/// <summary></summary>
-			public bool IsFunctionArgs
+			/// <summary>
+			/// 
+			/// </summary>
+			public bool HasArguments
 			{
 				get { return true; }
 			}
 
-			/// <summary></summary>
-			public bool IsFunctionNoArgsUseParanthesis
+			/// <summary>
+			/// 
+			/// </summary>
+			public bool HasParenthesesIfNoArguments
 			{
 				get { return true; }
 			}
@@ -855,9 +871,9 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public class AvgQueryFunctionInfo : IQueryFunctionInfo
+		public class AvgQueryFunctionInfo : ISQLFunction
 		{
-			#region IQueryFunctionInfo Members
+			#region ISQLFunction Members
 
 			/// <summary>
 			/// 
@@ -865,7 +881,7 @@ namespace NHibernate.Dialect
 			/// <param name="columnType"></param>
 			/// <param name="mapping"></param>
 			/// <returns></returns>
-			public IType QueryFunctionType( IType columnType, IMapping mapping )
+			public IType ReturnType(IType columnType, IMapping mapping)
 			{
 				SqlType[ ] sqlTypes;
 				try
@@ -894,14 +910,18 @@ namespace NHibernate.Dialect
 				}
 			}
 
-			/// <summary></summary>
-			public bool IsFunctionArgs
+			/// <summary>
+			/// 
+			/// </summary>
+			public bool HasArguments
 			{
 				get { return true; }
 			}
 
-			/// <summary></summary>
-			public bool IsFunctionNoArgsUseParanthesis
+			/// <summary>
+			/// 
+			/// </summary>
+			public bool HasParenthesesIfNoArguments
 			{
 				get { return true; }
 			}

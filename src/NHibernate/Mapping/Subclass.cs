@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Cache;
+using NHibernate.Engine;
 
 namespace NHibernate.Mapping
 {
@@ -11,7 +12,8 @@ namespace NHibernate.Mapping
 	public class Subclass : PersistentClass
 	{
 		private PersistentClass superclass;
-		private Value key;
+		private SimpleValue key;
+		private System.Type classPersisterClass;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Subclass"/> class.
@@ -57,6 +59,28 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		public override System.Type ClassPersisterClass
+		{
+			get
+			{
+				if ( classPersisterClass == null )
+				{
+					return Superclass.ClassPersisterClass;
+				}
+				else
+				{
+					return classPersisterClass;
+				}
+			}
+			set
+			{
+				classPersisterClass = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the <see cref="Property"/> that is used as the <c>id</c>.
 		/// </summary>
 		/// <value>
@@ -69,10 +93,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="Value"/> that contains information about the identifier.
+		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the identifier.
 		/// </summary>
-		/// <value>The <see cref="Value"/> from the Superclass that contains information about the identifier.</value>
-		public override Value Identifier
+		/// <value>The <see cref="SimpleValue"/> from the Superclass that contains information about the identifier.</value>
+		public override SimpleValue Identifier
 		{
 			get { return Superclass.Identifier; }
 			set { Superclass.Identifier = value; }
@@ -88,10 +112,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="Value"/> that contains information about the discriminator.
+		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the discriminator.
 		/// </summary>
-		/// <value>The <see cref="Value"/> from the Superclass that contains information about the discriminator.</value>
-		public override Value Discriminator
+		/// <value>The <see cref="SimpleValue"/> from the Superclass that contains information about the discriminator.</value>
+		public override SimpleValue Discriminator
 		{
 			get { return Superclass.Discriminator; }
 			set { Superclass.Discriminator = value; }
@@ -280,16 +304,6 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="System.Type"/> of the Persister.
-		/// </summary>
-		/// <value>The <see cref="System.Type"/> of the Persister for the Superclass.</value>
-		public override System.Type Persister
-		{
-			get { return Superclass.Persister; }
-			set { Superclass.Persister = value; }
-		}
-
-		/// <summary>
 		/// Gets the <see cref="Table"/> of the class
 		/// that is mapped in the <c>class</c> element.
 		/// </summary>
@@ -302,10 +316,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="Value"/> that contains information about the Key.
+		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the Key.
 		/// </summary>
-		/// <value>The <see cref="Value"/> that contains information about the Key.</value>
-		public override Value Key
+		/// <value>The <see cref="SimpleValue"/> that contains information about the Key.</value>
+		public override SimpleValue Key
 		{
 			get
 			{
@@ -349,6 +363,47 @@ namespace NHibernate.Mapping
 			set { throw new InvalidOperationException( "The Where string can not be set on the Subclass - use the RootClass instead." ); }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public override bool IsJoinedSubclass
+		{
+			get { return Table != RootTable; }
+		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public override bool IsDiscriminatorInsertable
+		{
+			get { return Superclass.IsDiscriminatorInsertable ; }
+			set { throw new InvalidOperationException( "The DiscriminatorInsertable property can not be set on the Subclass - use the Superclass instead." ); }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		public override void Validate( IMapping mapping )
+		{
+			base.Validate( mapping );
+			if ( Key != null && !Key.IsValid( mapping ) )
+			{
+				throw new MappingException( string.Format( "subclass key has wrong number of columns: {0} type: {1}", MappedClass.Name, Key.Type.Name ) );
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public void CreateForeignKey( )
+		{
+			if ( !IsJoinedSubclass )
+			{
+				throw new AssertionFailure( "Not a joined-subclass" );
+			}
+
+			Key.CreateForeignKeyOfClass( Superclass.MappedClass );
+		}
 	}
 }

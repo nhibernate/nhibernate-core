@@ -9,17 +9,25 @@ namespace NHibernate.Mapping
 	public class Property
 	{
 		private string name;
-		private Value propertyValue;
+		private IValue propertyValue;
 		private string cascade;
-		private bool updateable;
-		private bool insertable;
+		private bool updateable = true;
+		private bool insertable = true;
 		private string propertyAccessorName;
+		private IDictionary metaAttributes;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public Property( )
+		{
+		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="propertyValue"></param>
-		public Property( Value propertyValue )
+		public Property( IValue propertyValue )
 		{
 			this.propertyValue = propertyValue;
 		}
@@ -69,7 +77,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public Value Value
+		public IValue Value
 		{
 			get { return propertyValue; }
 			set { this.propertyValue = value; }
@@ -152,6 +160,13 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
+		public bool IsNullable
+		{
+			// Approximate
+			get { return propertyValue != null && propertyValue.IsNullable; }
+		}
+
+		/// <summary></summary>
 		public string PropertyAccessorName
 		{
 			get { return propertyAccessorName; }
@@ -188,6 +203,32 @@ namespace NHibernate.Mapping
 		public bool IsBasicPropertyAccessor
 		{
 			get { return propertyAccessorName == null || propertyAccessorName.Equals( "property" ); }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		public bool IsValid( IMapping mapping )
+		{
+			return IsFormula ? ColumnSpan == 0 : Value.IsValid( mapping );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string NullValue
+		{
+			get 
+			{
+				if ( propertyValue is SimpleValue )
+				{
+					return ( (SimpleValue) propertyValue).NullValue;
+				}
+				else
+					return null;
+			}
 		}
 	}
 }

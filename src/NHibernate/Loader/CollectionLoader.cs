@@ -14,7 +14,7 @@ namespace NHibernate.Loader
 	/// </summary>
 	public class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{
-		private CollectionPersister collectionPersister;
+		private ICollectionPersister collectionPersister;
 		private IType idType;
 
 		/// <summary>
@@ -22,11 +22,11 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="factory"></param>
-		public CollectionLoader( CollectionPersister persister, ISessionFactoryImplementor factory ) : base( factory.Dialect )
+		public CollectionLoader( IQueryableCollection persister, ISessionFactoryImplementor factory ) : base( factory.Dialect )
 		{
 			idType = persister.KeyType;
 
-			string alias = ToAlias( persister.QualifiedTableName, 0 );
+			string alias = ToAlias( persister.TableName, 0 );
 
 			//TODO: H2.0.3 the whereString is appended with the " and " - I don't think
 			// that is needed because we are building SqlStrings differently and the Builder
@@ -50,10 +50,10 @@ namespace NHibernate.Loader
 
 			SqlSelectBuilder selectBuilder = new SqlSelectBuilder( factory );
 			selectBuilder.SetSelectClause(
-				persister.SelectClauseFragment( alias ) +
+				persister.SelectFragment( alias ).ToString() +
 					( joins == 0 ? String.Empty : ", " + SelectString( associations ) )
 				)
-				.SetFromClause( persister.QualifiedTableName, alias )
+				.SetFromClause( persister.TableName, alias )
 				.SetWhereClause( alias, persister.KeyColumnNames, persister.KeyType )
 				.SetOuterJoins( ojf.ToFromFragmentString, ojf.ToWhereFragmentString );
 
@@ -82,7 +82,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary></summary>
-		protected override CollectionPersister CollectionPersister
+		protected override ICollectionPersister CollectionPersister
 		{
 			get { return collectionPersister; }
 		}

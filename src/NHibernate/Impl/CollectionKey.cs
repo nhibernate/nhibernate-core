@@ -10,14 +10,14 @@ namespace NHibernate.Impl
 		private string role;
 		private object key;
 
-		public CollectionKey(string role, object key)
+		public CollectionKey( string role, object key )
 		{
 			this.role = role;
 			this.key  = key;
 		}
 
-		public CollectionKey(CollectionPersister persister, object key)
-			: this(persister.Role, key)
+		public CollectionKey( ICollectionPersister persister, object key )
+			: this( persister.Role, key )
 		{
 		}
 

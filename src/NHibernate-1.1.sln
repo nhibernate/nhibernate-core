@@ -3,15 +3,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate-1.1", "NHibernat
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test-1.1", "NHibernate.Test\NHibernate.Test-1.1.csproj", "{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.DomainModel-1.1", "NHibernate.DomainModel\NHibernate.DomainModel-1.1.csproj", "{E3482030-5828-4112-9906-D4C5153DCE3F}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test-1.1", "NHibernate.Test\NHibernate.Test-1.1.csproj", "{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release
@@ -21,14 +24,14 @@ Global
 		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Debug.Build.0 = Debug|.NET
 		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Release.ActiveCfg = Release|.NET
 		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Release.Build.0 = Release|.NET
-		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.ActiveCfg = Debug|.NET
-		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.Build.0 = Debug|.NET
-		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.ActiveCfg = Release|.NET
-		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.Build.0 = Release|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug.ActiveCfg = Debug|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug.Build.0 = Debug|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.ActiveCfg = Release|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.Build.0 = Release|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.ActiveCfg = Debug|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.Build.0 = Debug|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.ActiveCfg = Release|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

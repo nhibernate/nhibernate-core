@@ -13,25 +13,31 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class SQLiteDialect : Dialect
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public SQLiteDialect()
 		{
-			Register(DbType.Binary, "BLOB");
-			Register(DbType.Byte, "INTEGER");
-			Register(DbType.Int16, "INTEGER");
-			Register(DbType.Int32, "INTEGER");
-			Register(DbType.Int64, "INTEGER");
-			Register(DbType.SByte, "INTEGER");
-			Register(DbType.UInt16, "INTEGER");
-			Register(DbType.UInt32, "INTEGER");
-			Register(DbType.UInt64, "INTEGER");
-			Register(DbType.Currency, "NUMERIC");
-			Register(DbType.Decimal, "NUMERIC");
-			Register(DbType.Double, "NUMERIC");
-			Register(DbType.Single, "NUMERIC");
-			Register(DbType.VarNumeric, "NUMERIC");
-			Register(DbType.String, "TEXT");
+			RegisterColumnType(DbType.Binary, "BLOB");
+			RegisterColumnType(DbType.Byte, "INTEGER");
+			RegisterColumnType(DbType.Int16, "INTEGER");
+			RegisterColumnType(DbType.Int32, "INTEGER");
+			RegisterColumnType(DbType.Int64, "INTEGER");
+			RegisterColumnType(DbType.SByte, "INTEGER");
+			RegisterColumnType(DbType.UInt16, "INTEGER");
+			RegisterColumnType(DbType.UInt32, "INTEGER");
+			RegisterColumnType(DbType.UInt64, "INTEGER");
+			RegisterColumnType(DbType.Currency, "NUMERIC");
+			RegisterColumnType(DbType.Decimal, "NUMERIC");
+			RegisterColumnType(DbType.Double, "NUMERIC");
+			RegisterColumnType(DbType.Single, "NUMERIC");
+			RegisterColumnType(DbType.VarNumeric, "NUMERIC");
+			RegisterColumnType(DbType.String, "TEXT");
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public override string IdentitySelectString
 		{
 			get { return "select last_insert_rowid()"; }

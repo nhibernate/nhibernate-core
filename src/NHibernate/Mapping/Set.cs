@@ -28,7 +28,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// <see cref="Collection.Type"/>
 		/// </summary>
-		public override PersistentCollectionType Type
+		public override PersistentCollectionType CollectionType
 		{
 			get
 			{
@@ -52,29 +52,36 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public void CreatePrimaryKey()
+		public override void CreatePrimaryKey()
 		{
-			PrimaryKey pk = new PrimaryKey();
-			foreach( Column col in Key.ColumnCollection )
+			if ( !IsOneToMany )
 			{
-				pk.AddColumn( col );
-			}
-
-			bool nullable = false;
-			foreach( Column col in Element.ColumnCollection )
-			{
-				if( col.IsNullable )
+				PrimaryKey pk = new PrimaryKey();
+				foreach( Column col in Key.ColumnCollection )
 				{
-					nullable = true;
+					pk.AddColumn( col );
 				}
-				pk.AddColumn( col );
-			}
 
-			// some databases (Postgres) will tolerate nullable
-			// column in a primary key - others (DB2) won't
-			if( !nullable )
+				bool nullable = false;
+				foreach( Column col in Element.ColumnCollection )
+				{
+					if( col.IsNullable )
+					{
+						nullable = true;
+					}
+					pk.AddColumn( col );
+				}
+
+				// some databases (Postgres) will tolerate nullable
+				// column in a primary key - others (DB2) won't
+				if( !nullable )
+				{
+					CollectionTable.PrimaryKey = pk;
+				}
+			}
+			else
 			{
-				Table.PrimaryKey = pk;
+				// Create an index on the key columns?
 			}
 		}
 	}

@@ -120,9 +120,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public virtual OuterJoinLoaderType EnableJoinedFetch( int i )
+		public virtual OuterJoinFetchStrategy EnableJoinedFetch( int i )
 		{
-			return OuterJoinLoaderType.Auto;
+			return OuterJoinFetchStrategy.Auto;
 		}
 
 		/// <summary></summary>

@@ -4,7 +4,7 @@ using NHibernate.Util;
 namespace NHibernate.Mapping
 {
 	/// <summary></summary>
-	public class ManyToOne : Association
+	public class ManyToOne : ToOne
 	{
 		/// <summary>
 		/// 
@@ -37,7 +37,11 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override void CreateForeignKey()
 		{
-			CreateForeignKeyOfClass( ( ( EntityType ) Type ).PersistentClass );
+			// TODO: Handle the case of a foreign key to something other than the pk
+			if ( ReferencedPropertyName == null )
+			{
+				CreateForeignKeyOfClass( ( ( EntityType ) Type ).AssociatedClass );
+			}
 		}
 	}
 }

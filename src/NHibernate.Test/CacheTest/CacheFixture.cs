@@ -58,7 +58,7 @@ namespace NHibernate.Test.CacheTest {
 
 			System.Threading.Thread.Sleep(15);
 
-			ccs.Release("foo");
+			ccs.Release("foo", null);
 
 			Assert.IsNull( ccs.Get("foo", after) );
 			Assert.IsNull( ccs.Get("foo", longBefore) );
@@ -94,7 +94,7 @@ namespace NHibernate.Test.CacheTest {
 
 			System.Threading.Thread.Sleep(15);
 
-			ccs.Release("foo");
+			ccs.Release("foo", null);
 
 			System.Threading.Thread.Sleep(15);
 
@@ -105,7 +105,7 @@ namespace NHibernate.Test.CacheTest {
 
 			System.Threading.Thread.Sleep(15);
 
-			ccs.Release("foo");
+			ccs.Release("foo", null);
 
 			Assert.IsFalse( ccs.Put("foo", "bar", whileLocked) );
 

@@ -144,9 +144,9 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public virtual OuterJoinLoaderType OuterJoinFetchSetting
+		public virtual OuterJoinFetchStrategy OuterJoinFetchSetting
 		{
-			get { return OuterJoinLoaderType.Lazy; }
+			get { return OuterJoinFetchStrategy.Lazy; }
 			set { throw new NotSupportedException(); }
 		}
 

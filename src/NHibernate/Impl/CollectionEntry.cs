@@ -82,7 +82,7 @@ namespace NHibernate.Impl
 		internal bool initialized;
 
 		/// <summary>
-		/// The <see cref="CollectionPersister"/> that is currently responsible
+		/// The <see cref="ICollectionPersister"/> that is currently responsible
 		/// for the Collection.
 		/// </summary>
 		/// <remarks>
@@ -90,17 +90,17 @@ namespace NHibernate.Impl
 		/// unreachable collection.
 		/// </remarks>
 		[NonSerialized]
-		internal CollectionPersister currentPersister;
+		internal ICollectionPersister currentPersister;
 
 		/// <summary>
-		/// The <see cref="CollectionPersister"/> when the Collection was loaded.
+		/// The <see cref="ICollectionPersister"/> when the Collection was loaded.
 		/// </summary>
 		/// <remarks>
 		/// This can be <c>null</c> if the Collection was not loaded by NHibernate and 
 		/// was passed in along with a transient object.
 		/// </remarks>
 		[NonSerialized]
-		internal CollectionPersister loadedPersister;
+		internal ICollectionPersister loadedPersister;
 
 		/// <summary></summary>
 		[NonSerialized]
@@ -135,7 +135,7 @@ namespace NHibernate.Impl
 			//this.ignore = false;
 		}
 
-		public CollectionEntry( CollectionPersister loadedPersister, object loadedID )
+		public CollectionEntry( ICollectionPersister loadedPersister, object loadedID )
 			// Detached collection wrappers that get found and reattached
 			// during flush shouldn't be ignored
 			: this( loadedPersister, loadedID, false )
@@ -145,10 +145,10 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Initializes a new instance of <see cref="CollectionEntry"/>. 
 		/// </summary>
-		/// <param name="loadedPersister">The <see cref="CollectionPersister"/> that persists this Collection type.</param>
+		/// <param name="loadedPersister">The <see cref="ICollectionPersister"/> that persists this Collection type.</param>
 		/// <param name="loadedID">The identifier of the Entity that is the owner of this Collection.</param>
 		/// <param name="ignore">A boolean indicating whether to ignore the collection during current (or next) flush.</param>
-		public CollectionEntry( CollectionPersister loadedPersister, object loadedID, bool ignore )
+		public CollectionEntry( ICollectionPersister loadedPersister, object loadedID, bool ignore )
 		{
 			// dirty & initialized are set to false by the runtime
 			//this.dirty = false;
@@ -286,7 +286,7 @@ namespace NHibernate.Impl
 
 		#region Engine.ICollectionSnapshot Members
 
-		internal void InitSnapshot(PersistentCollection collection, CollectionPersister persister)
+		internal void InitSnapshot(PersistentCollection collection, ICollectionPersister persister)
 		{
 			snapshot = collection.GetSnapshot( persister );
 		}
@@ -332,13 +332,13 @@ namespace NHibernate.Impl
 
 		/// <summary>
 		/// Sets the information in this CollectionEntry that is specific to the
-		/// <see cref="CollectionPersister"/>.
+		/// <see cref="ICollectionPersister"/>.
 		/// </summary>
 		/// <param name="persister">
-		/// The <see cref="CollectionPersister"/> that is 
+		/// The <see cref="ICollectionPersister"/> that is 
 		/// responsible for the Collection.
 		/// </param>
-		internal void SetLoadedPersister( CollectionPersister persister )
+		internal void SetLoadedPersister( ICollectionPersister persister )
 		{
 			loadedPersister = persister;
 			if( persister != null )

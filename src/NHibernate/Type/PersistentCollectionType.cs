@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Persister;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -53,7 +55,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public abstract PersistentCollection Instantiate( ISessionImplementor session, CollectionPersister persister );
+		public abstract PersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister );
 
 		/// <summary>
 		/// 
@@ -247,6 +249,36 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
+		public bool UsePrimaryKeyAsForeignKey
+		{
+			get { return true; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
+		{
+			// TODO: Uncomment once CollectionPersister knows about IJoinable
+			//return (IJoinable) factory.GetCollectionPersister( role );
+			return null;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public string[] GetReferencedColumns( ISessionFactoryImplementor factory )
+		{
+			//I really, really don't like the fact that a Type now knows about column mappings!
+			//bad seperation of concerns ... could we move this somehow to Joinable interface??
+			return GetJoinable( factory ).JoinKeyColumns ;
+		}
+
+		/// <summary></summary>
 		public virtual ForeignKeyType ForeignKeyType
 		{
 			get { return ForeignKeyType.ForeignKeyToParent; }
@@ -288,6 +320,31 @@ namespace NHibernate.Type
 		public virtual bool IsArrayType
 		{
 			get { return false; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
+		{
+			try
+			{
+				// TODO: Uncomment once CollectionPersister knows about IQueryableCollection
+				//IQueryableCollection collectionPersister = (IQueryableCollection) factory.GetCollectionPersister( role );
+				IQueryableCollection collectionPersister = null;
+				if ( collectionPersister.ElementType.IsEntityType )
+				{
+					throw new MappingException( string.Format( "collection was not an association: {0}", collectionPersister.Role ) ) ;
+				}
+				return collectionPersister.ElementPersister.MappedClass;
+			}
+			catch ( InvalidCastException )
+			{
+				// TODO: Change to a mapping error
+				throw;
+			}
 		}
 	}
 }

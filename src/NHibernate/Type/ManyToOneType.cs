@@ -16,7 +16,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override int GetColumnSpan( IMapping session )
 		{
-			return session.GetIdentifierType( PersistentClass ).GetColumnSpan( session );
+			return session.GetIdentifierType( AssociatedClass ).GetColumnSpan( session );
 		}
 
 		/// <summary>
@@ -26,14 +26,15 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override SqlType[ ] SqlTypes( IMapping session )
 		{
-			return session.GetIdentifierType( PersistentClass ).SqlTypes( session );
+			return session.GetIdentifierType( AssociatedClass ).SqlTypes( session );
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="persistentClass"></param>
-		public ManyToOneType( System.Type persistentClass ) : base( persistentClass )
+		/// <param name="uniqueKeyPropertyName"></param>
+		public ManyToOneType( System.Type persistentClass, string uniqueKeyPropertyName ) : base( persistentClass, uniqueKeyPropertyName )
 		{
 		}
 
@@ -46,7 +47,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
 		{
-			session.Factory.GetIdentifierType( PersistentClass )
+			session.Factory.GetIdentifierType( AssociatedClass )
 				.NullSafeSet( cmd, GetIdentifier( value, session ), index, session );
 		}
 
@@ -57,7 +58,13 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
-		public virtual ForeignKeyType ForeignKeyType
+		public override bool UsePrimaryKeyAsForeignKey
+		{
+			get { return false; }
+		}
+
+		/// <summary></summary>
+		public override ForeignKeyType ForeignKeyType
 		{
 			get { return ForeignKeyType.ForeignKeyFromParent; }
 		}
@@ -74,30 +81,19 @@ namespace NHibernate.Type
 		/// </returns>
 		public override object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
 		{
-			return session.Factory.GetIdentifierType( PersistentClass )
+			return session.Factory.GetIdentifierType( AssociatedClass )
 				.NullSafeGet( rs, names, session, owner );
 		}
 
 		/// <summary>
 		/// Resolves the Identifier to the actual object.
 		/// </summary>
-		/// <param name="value">The identifier object.</param>
-		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
-		/// <param name="owner"></param>
-		/// <returns>
-		/// The object that is identified by the parameter <c>value</c> or <c>null</c> if the parameter
-		/// <c>value</c> is also <c>null</c>. 
-		/// </returns>
-		public override object ResolveIdentifier( object value, ISessionImplementor session, object owner )
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		protected override object ResolveIdentifier( object id, ISessionImplementor session )
 		{
-			if( value == null )
-			{
-				return null;
-			}
-			else
-			{
-				return session.InternalLoad( PersistentClass, value );
-			}
+			return session.InternalLoad( AssociatedClass, id );
 		}
 	}
 }

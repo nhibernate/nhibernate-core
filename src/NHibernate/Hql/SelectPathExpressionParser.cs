@@ -9,7 +9,7 @@ namespace NHibernate.Hql
 		/// <param name="q"></param>
 		public override void End( QueryTranslator q )
 		{
-			if( currentProperty != null && !q.IsShallowQuery )
+			if( CurrentProperty != null && !q.IsShallowQuery )
 			{
 				// "finish off" the join
 				Token( ".", q );
@@ -27,7 +27,7 @@ namespace NHibernate.Hql
 		/// <summary></summary>
 		public string SelectName
 		{
-			get { return currentName; }
+			get { return CurrentName; }
 		}
 	}
 }

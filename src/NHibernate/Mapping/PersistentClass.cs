@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using NHibernate.Cache;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -14,9 +16,18 @@ namespace NHibernate.Mapping
 	{
 		private static readonly Alias PKAlias = new Alias( 15, "PK" );
 
-		private System.Type persistentClass;
+		/// <summary>
+		/// 
+		/// </summary>
+		public static readonly string NullDiscriminatorMapping = "null";
+		/// <summary>
+		/// 
+		/// </summary>
+		public static readonly string NotNullDiscriminatorMapping = "not null";
+
+		private System.Type mappedClass;
 		private string discriminatorValue;
-		private ArrayList properties = new ArrayList();
+		private Hashtable properties = new Hashtable();
 		private Table table;
 		private System.Type proxyInterface;
 		private readonly ArrayList subclasses = new ArrayList();
@@ -24,6 +35,10 @@ namespace NHibernate.Mapping
 		private readonly ArrayList subclassTables = new ArrayList();
 		private bool dynamicInsert;
 		private bool dynamicUpdate;
+		private int batchSize = 1;
+		//private bool selectBeforeUpdate;
+		//private int optimisticLockMode;
+		//private IDictionary metaAttributes;
 
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
@@ -74,6 +89,16 @@ namespace NHibernate.Mapping
 		/// <param name="subclass">The <see cref="Subclass"/> to add to the hierarchy.</param>
 		public virtual void AddSubclass( Subclass subclass )
 		{
+			// Inheritable cycle detection (paranoid check)
+			PersistentClass superclass = Superclass;
+			while ( superclass != null )
+			{
+				if ( subclass.Name == superclass.Name )
+				{
+					throw new MappingException( string.Format( "Circular inheritance mapping detected {0} will have itself as superclass when extending {1}", subclass.Name, Name ) );
+				}
+				superclass = superclass.Superclass;
+			}
 			subclasses.Add( subclass );
 		}
 
@@ -145,12 +170,28 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="p"></param>
+		public void AddNewProperty( Property p )
+		{
+			if ( properties.Contains( p.Name ) )
+			{
+				throw new MappingException( string.Format( "Duplication mapping for property: {0}", StringHelper.Qualify( Name, p.Name ) ) );
+			}
+			else
+			{
+				AddProperty( p );
+			}
+		}
+
+		/// <summary>
 		/// Add the <see cref="Property"/> to this PersistentClass.
 		/// </summary>
 		/// <param name="p">The <see cref="Property"/> to add.</param>
 		public virtual void AddProperty( Property p )
 		{
-			properties.Add( p );
+			properties.Add( p.Name, p );
 		}
 
 		/// <summary>
@@ -174,7 +215,7 @@ namespace NHibernate.Mapping
 		/// </value>
 		public virtual ICollection PropertyCollection
 		{
-			get { return properties; }
+			get { return properties.Values; }
 		}
 
 		/// <summary>
@@ -185,10 +226,10 @@ namespace NHibernate.Mapping
 		/// The value of this is set by the <c>name</c> attribute on the <c>&lt;class&gt;</c> 
 		/// element.
 		/// </remarks>
-		public virtual System.Type PersistentClazz
+		public virtual System.Type MappedClass
 		{
-			get { return persistentClass; }
-			set { persistentClass = value; }
+			get { return mappedClass; }
+			set { mappedClass = value; }
 		}
 
 		/// <summary>
@@ -197,7 +238,7 @@ namespace NHibernate.Mapping
 		/// <value>The fully qualified name of the type being persisted.</value>
 		public virtual string Name
 		{
-			get { return persistentClass.FullName; }
+			get { return mappedClass.FullName; }
 		}
 
 		/// <summary>
@@ -227,11 +268,11 @@ namespace NHibernate.Mapping
 		public abstract Property IdentifierProperty { get; set; }
 
 		/// <summary>
-		/// When implemented by a class, gets or sets the <see cref="Value"/>
+		/// When implemented by a class, gets or sets the <see cref="SimpleValue"/>
 		/// that contains information about the identifier.
 		/// </summary>
-		/// <value>The <see cref="Value"/> that contains information about the identifier.</value>
-		public abstract Value Identifier { get; set; }
+		/// <value>The <see cref="SimpleValue"/> that contains information about the identifier.</value>
+		public abstract SimpleValue Identifier { get; set; }
 
 		/// <summary>
 		/// When implemented by a class, gets or sets the <see cref="Property"/>
@@ -241,11 +282,11 @@ namespace NHibernate.Mapping
 		public abstract Property Version { get; set; }
 
 		/// <summary>
-		/// When implemented by a class, gets or sets the <see cref="Value"/>
+		/// When implemented by a class, gets or sets the <see cref="SimpleValue"/>
 		/// that contains information about the discriminator.
 		/// </summary>
-		/// <value>The <see cref="Value"/> that contains information about the discriminator.</value>
-		public abstract Value Discriminator { get; set; }
+		/// <value>The <see cref="SimpleValue"/> that contains information about the discriminator.</value>
+		public abstract SimpleValue Discriminator { get; set; }
 
 		/// <summary>
 		/// When implemented by a class, gets a boolean indicating if this
@@ -412,6 +453,22 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		public bool IsDiscriminatorValueNotNull
+		{
+			get { return NotNullDiscriminatorMapping.Equals( DiscriminatorValue ); }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool IsDiscriminatorValueNull
+		{
+			get { return NullDiscriminatorMapping.Equals( DiscriminatorValue ); }
+		}
+
+		/// <summary>
 		/// When implemented by a class, gets or sets a boolean indicating if the identifier is 
 		/// embedded in the class.
 		/// </summary>
@@ -424,12 +481,9 @@ namespace NHibernate.Mapping
 		public abstract bool HasEmbeddedIdentifier { get; set; }
 
 		/// <summary>
-		/// When implemented by a class, gets or sets the <see cref="System.Type"/> of 
-		/// the Persister.
+		/// When implemented by a class, gets or sets the <see cref="System.Type"/> of the Persister.
 		/// </summary>
-		/// <value>The <see cref="System.Type"/> of the Persister.</value>
-		/// <remarks>The value of this is set by the <c>persister</c> attribute.</remarks>
-		public abstract System.Type Persister { get; set; }
+		public abstract System.Type ClassPersisterClass { get; set; }
 
 		/// <summary>
 		/// When implemented by a class, gets the <see cref="Table"/> of the class
@@ -450,11 +504,11 @@ namespace NHibernate.Mapping
 		public abstract RootClass RootClazz { get; }
 
 		/// <summary>
-		/// When implemented by a class, gets or sets the <see cref="Value"/>
+		/// When implemented by a class, gets or sets the <see cref="SimpleValue"/>
 		/// that contains information about the Key.
 		/// </summary>
-		/// <value>The <see cref="Value"/> that contains information about the Key.</value>
-		public abstract Value Key { get; set; }
+		/// <value>The <see cref="SimpleValue"/> that contains information about the Key.</value>
+		public abstract SimpleValue Key { get; set; }
 
 		/// <summary>
 		/// Creates the <see cref="PrimaryKey"/> for the <see cref="Table"/>
@@ -475,6 +529,15 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		public int BatchSize
+		{
+			get { return batchSize; }
+			set { batchSize = value; }
+		}
+
+		/// <summary>
 		/// When implemented by a class, gets or sets the sql string that should 
 		/// be a part of the where clause.
 		/// </summary>
@@ -486,5 +549,29 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public abstract string Where { get; set; }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public abstract bool IsJoinedSubclass { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public abstract bool IsDiscriminatorInsertable { get; set; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		public virtual void Validate( IMapping mapping )
+		{
+			foreach( Mapping.Property prop in PropertyCollection )
+			{
+				if ( !prop.IsValid( mapping ) )
+				{
+					throw new MappingException( string.Format( "property mapping has wrong number of columns: {0} type: {1}", StringHelper.Qualify( MappedClass.Name, Name ), prop.Type.Name ) ) ;
+				}
+			}
+		}
 	}
 }

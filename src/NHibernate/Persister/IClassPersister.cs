@@ -134,6 +134,13 @@ namespace NHibernate.Persister
 		object GetPropertyValue( object obj, int i );
 
 		/// <summary>
+		/// Get the type of a particular property
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		IType GetPropertyType( string propertyName );
+
+		/// <summary>
 		/// Compare two snapshots of the state of an instance to determine if the persistent state
 		/// was modified
 		/// </summary>
@@ -327,6 +334,31 @@ namespace NHibernate.Persister
 		/// </summary>
 		IClassMetadata ClassMetadata { get; }
 
+		/* Hibernate 2.1 features - not sure if we need for SQL loading
 
+		/// <summary>
+		/// Get the proxy interface that instances of <em>this</em> concrete class will be cast to (optional operation).
+		/// </summary>
+		object ConcreteProxyClass { get; }
+
+		/// <summary>
+		/// Get the current database state of the object, in a "hydrated" form, without resolving identifiers
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="version"></param>
+		/// <param name="session"></param>
+		/// <returns><c>null</c> if select-before-update is not enabled or not supported</returns>
+		object[] GetCurrentPersistentState( object id, object version, ISessionImplementor session );
+
+		/// <summary>
+		/// Get the current version of the object, or return null if there is no row for
+		/// the given identifier. In the case of unversioned data, return any object
+		/// if the row exists.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		object CurrentVersion( object id, ISessionImplementor session );
+		*/
 	}
 }

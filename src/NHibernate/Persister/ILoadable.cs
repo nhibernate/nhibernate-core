@@ -16,21 +16,6 @@ namespace NHibernate.Persister
 		bool HasSubclasses { get; }
 
 		/// <summary>
-		/// The fully-qualified tablename used to persist this class
-		/// </summary>
-		string TableName { get; }
-
-		/// <summary>
-		/// The names of columns used to persist the identifier
-		/// </summary>
-		string[ ] IdentifierColumnNames { get; }
-
-		/// <summary>
-		/// The name of the column used as a discriminator
-		/// </summary>
-		string DiscriminatorColumnName { get; }
-
-		/// <summary>
 		/// The discriminator type
 		/// </summary>
 		IDiscriminatorType DiscriminatorType { get; }
@@ -43,14 +28,28 @@ namespace NHibernate.Persister
 		System.Type GetSubclassForDiscriminatorValue( object value );
 
 		/// <summary>
-		/// Get the column names for the numbered property of <c>this</c> class
+		/// Get the result set aliases used for the identifier columns, given a suffix
 		/// </summary>
+		/// <param name="suffix"></param>
+		/// <returns></returns>
+		string[] GetIdentifierAliases( string suffix );
+
+		/// <summary>
+		/// Get the result set aliases used for the property columns, given a suffix (properties of this class, only).
+		/// </summary>
+		/// <param name="suffix"></param>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		string[ ] GetPropertyColumnNames( int i );
+		string[] GetPropertyAliases( string suffix, int i );
 
+		/// <summary>
+		/// Get the alias used for the discriminator column, given a suffix
+		/// </summary>
+		/// <param name="suffix"></param>
+		/// <returns></returns>
+		string GetDiscriminatorAlias( string suffix );
 
-		//USED BY OuterJoinLoader + subclasses
+		// 2.03 features required currently by loader
 
 		/// <summary>
 		/// How many properties are there, for this class and all subclasses? (optional operation)
@@ -59,11 +58,37 @@ namespace NHibernate.Persister
 		int CountSubclassProperties();
 
 		/// <summary>
+		/// The name of the column used as a discriminator
+		/// </summary>
+		string DiscriminatorColumnName { get; }
+
+		/// <summary>
 		/// May this property be fetched using an SQL outerjoin?
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		OuterJoinLoaderType EnableJoinedFetch( int i );
+		OuterJoinFetchStrategy EnableJoinedFetch( int i );
+
+		/// <summary>
+		/// Get the from clause part of any joins (optional operation)
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="innerJoin"></param>
+		/// <param name="includeSubclasses"></param>
+		/// <returns></returns>
+		SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses );
+
+		/// <summary>
+		/// Get the column names for the numbered property of <c>this</c> class
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		string[ ] GetPropertyColumnNames( int i );
+
+		/// <summary>
+		/// The names of columns used to persist the identifier
+		/// </summary>
+		string[ ] IdentifierColumnNames { get; }
 
 		/// <summary>
 		/// Is this property defined on a subclass of the mapped class?
@@ -142,14 +167,12 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		SqlString WhereJoinFragment( string alias, bool innerJoin, bool includeSubclasses );
 
+		/*
+		/// These are in 2.03, but we can use IJoinables now
 		/// <summary>
-		/// Get the from clause part of any joins (optional operation)
+		/// The fully-qualified tablename used to persist this class
 		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="innerJoin"></param>
-		/// <param name="includeSubclasses"></param>
-		/// <returns></returns>
-		SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses );
-
+		string TableName { get; }
+		*/
 	}
 }

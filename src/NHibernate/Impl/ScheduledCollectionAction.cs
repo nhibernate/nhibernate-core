@@ -1,3 +1,4 @@
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 
@@ -9,17 +10,18 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal abstract class ScheduledCollectionAction : IExecutable
 	{
-		private CollectionPersister _persister;
+		private ICollectionPersister _persister;
 		private object _id;
 		private ISessionImplementor _session;
+		private ISoftLock _lock = null;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ScheduledCollectionAction"/>.
 		/// </summary>
-		/// <param name="persister">The <see cref="CollectionPersister"/> that is responsible for the persisting the Collection.</param>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> that is responsible for the persisting the Collection.</param>
 		/// <param name="id">The identifier of the Collection owner.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledCollectionAction( CollectionPersister persister, object id, ISessionImplementor session )
+		public ScheduledCollectionAction( ICollectionPersister persister, object id, ISessionImplementor session )
 		{
 			_persister = persister;
 			_session = session;
@@ -27,9 +29,9 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Gets the <see cref="CollectionPersister"/> that is responsible for persisting the Collection.
+		/// Gets the <see cref="ICollectionPersister"/> that is responsible for persisting the Collection.
 		/// </summary>
-		public CollectionPersister Persister
+		public ICollectionPersister Persister
 		{
 			get { return _persister; }
 		}
@@ -55,7 +57,10 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public void AfterTransactionCompletion()
 		{
-			_persister.ReleaseSoftlock( _id );
+			if ( _persister.HasCache )
+			{
+				_persister.Cache.Release( _id, _lock );
+			}
 		}
 
 		public abstract void Execute();
@@ -63,7 +68,7 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public object[ ] PropertySpaces
 		{
-			get { return new string[ ] {_persister.QualifiedTableName}; } //TODO: cache the array on the persister
+			get { return new object[ ] {_persister.CollectionSpace}; } //TODO: cache the array on the persister
 		}
 
 		#endregion

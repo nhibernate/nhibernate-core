@@ -1,3 +1,4 @@
+using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Persister;
 
@@ -13,6 +14,7 @@ namespace NHibernate.Impl
 		private object _nextVersion;
 		private int[ ] _dirtyFields;
 		private object[ ] _updatedState;
+		private ISoftLock _lock;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ScheduledUpdate"/>.
@@ -41,7 +43,7 @@ namespace NHibernate.Impl
 		{
 			if( Persister.HasCache )
 			{
-				Persister.Cache.Lock( Id );
+				_lock = Persister.Cache.Lock( Id );
 			}
 			Persister.Update( Id, _fields, _dirtyFields, _lastVersion, Instance, Session );
 			Session.PostUpdate( Instance, _updatedState, _nextVersion );
@@ -52,7 +54,7 @@ namespace NHibernate.Impl
 		{
 			if( Persister.HasCache )
 			{
-				Persister.Cache.Release( Id );
+				Persister.Cache.Release( Id, _lock );
 			}
 		}
 	}
