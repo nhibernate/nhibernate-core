@@ -91,7 +91,7 @@ namespace NHibernate.Mapping {
 		}
 
 		public virtual string Name {
-			get { return persistentClass.Name; }
+			get { return persistentClass.FullName; }
 		}
 
 		public abstract bool IsMutable { get; set;}
