@@ -16,6 +16,7 @@ namespace NHibernate.Impl
 		private static readonly ILog log = LogManager.GetLogger( typeof( CollectionEntry ) );
 
 		/// <summary></summary>
+		// false by default
 		internal bool dirty;
 
 		/// <summary>
@@ -114,7 +115,8 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public CollectionEntry()
 		{
-			this.dirty = false;
+			// dirty is initialized to false by runtime
+			//this.dirty = false;
 			this.initialized = true;
 		}
 
@@ -126,7 +128,8 @@ namespace NHibernate.Impl
 		/// <param name="initialized">A boolean indicating if the collection has been initialized.</param>
 		public CollectionEntry( CollectionPersister loadedPersister, object loadedID, bool initialized )
 		{
-			this.dirty = false;
+			// dirty is initialized to false by runtime
+			//this.dirty = false;
 			this.initialized = initialized;
 			this.loadedKey = loadedID;
 			SetLoadedPersister( loadedPersister );
