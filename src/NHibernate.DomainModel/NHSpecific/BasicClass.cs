@@ -11,13 +11,10 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private int _id;
 
-		private bool _booleanProperty;
-		private byte _byteProperty;
 		private char _characterProperty;
 		private System.Type _classProperty;
 		private System.Globalization.CultureInfo _cultureInfoProperty;
 		private DateTime _dateTimeProperty;
-		private decimal _decimalProperty;
 		private short _int16Property;
 		private int _int32Property;
 		private long _int64Property;
@@ -48,18 +45,6 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _id = value;}
 		}
 
-		public bool BooleanProperty 
-		{
-			get {return _booleanProperty;}
-			set {_booleanProperty = value;}
-		}
-
-		public byte ByteProperty 
-		{
-			get {return _byteProperty;}
-			set {_byteProperty = value;}
-		}
-
 		public char CharacterProperty 
 		{
 			get {return _characterProperty ;}
@@ -82,12 +67,6 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			get {return _dateTimeProperty;}
 			set {_dateTimeProperty = value;}
-		}
-
-		public decimal DecimalProperty 
-		{
-			get {return _decimalProperty;}
-			set {_decimalProperty = value;}
 		}
 
 		public short Int16Property 

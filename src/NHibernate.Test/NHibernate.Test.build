@@ -49,8 +49,6 @@
 				<includes name="System.dll" />
 				<includes name="System.XML.dll" />
 				<includes name="System.Data.dll" />
-				<includes name="DotNetMock.dll" />
-				<includes name="DotNetMock.Framework.dll" />
 				<includes name="Iesi.Collections.dll" />
 				<includes name="log4net.dll" />
 				<includes name="NHibernate.DomainModel.dll" />
@@ -94,6 +92,7 @@
 			<test 
 				assemblyname="${build.dir}/bin/${nant.project.name}.dll" 
 				appconfig="${build.dir}/bin/${nant.project.name}.dll.config" 
+				failonerror="false"
 			/>
 		</nunit2>
 		

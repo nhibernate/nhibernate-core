@@ -25,7 +25,7 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Test for the PersistentEnum Type.
 	/// </summary>
 	[TestFixture]
-	public class PersistentEnumTypeFixture : BaseTypeFixture
+	public class PersistentEnumTypeFixture
 	{	
 		[Test]
 		public void EqualsTrue() 

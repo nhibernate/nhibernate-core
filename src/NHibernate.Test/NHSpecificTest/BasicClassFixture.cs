@@ -80,37 +80,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index].Close();
 
 			index++;
-
-			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
-			t[index] = s[index].BeginTransaction();
-
-			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
-			AssertPropertiesEqual(bc[index-1], bc[index]);
-
-			bc[index].BooleanProperty = false;
-			s[index].Update(bc[index]);
-
-			t[index].Commit();
-			s[index].Close();
-
-			index++;
 			
-			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
-			t[index] = s[index].BeginTransaction();
-
-			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
-			AssertPropertiesEqual(bc[index-1], bc[index]);
-
-			bc[index].ByteProperty = Byte.MinValue;
-			s[index].Update(bc[index]);
-
-			t[index].Commit();
-			s[index].Close();
-
-			index++;
-
 			// make sure the previous updates went through
 			s[index] = sessions.OpenSession();
 			t[index] = s[index].BeginTransaction();
@@ -166,21 +136,6 @@ namespace NHibernate.Test.NHSpecificTest
 			AssertPropertiesEqual(bc[index-1], bc[index]);
 
 			bc[index].DateTimeProperty = DateTime.Parse("2004-02-15 08:00:00 PM");
-			s[index].Update(bc[index]);
-
-			t[index].Commit();
-			s[index].Close();
-
-			index++;
-
-			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
-			t[index] = s[index].BeginTransaction();
-
-			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
-			AssertPropertiesEqual(bc[index-1], bc[index]);
-
-			bc[index].DecimalProperty = 5.55555M;
 			s[index].Update(bc[index]);
 
 			t[index].Commit();
@@ -886,15 +841,10 @@ namespace NHibernate.Test.NHSpecificTest
 		internal void AssertPropertiesEqual(BasicClass expected, BasicClass actual, bool includeCollections) 
 		{
 			Assert.AreEqual(expected.Id, actual.Id, "Id");
-			Assert.AreEqual(expected.BooleanProperty, actual.BooleanProperty, "BooleanProperty");
-			Assert.AreEqual(expected.ByteProperty, actual.ByteProperty, "ByteProperty");
 			Assert.AreEqual(expected.CharacterProperty, actual.CharacterProperty, "CharacterProperty");
 			Assert.AreEqual(expected.ClassProperty, actual.ClassProperty, "ClassProperty");
 			Assert.AreEqual(expected.CultureInfoProperty, actual.CultureInfoProperty, "CultureInfoProperty");
 			Assert.AreEqual(expected.DateTimeProperty, actual.DateTimeProperty, "DateTimeProperty");
-			Assert.AreEqual(expected.DecimalProperty, actual.DecimalProperty, "DecimalProperty using Assert should be AreEqual");
-			Assert.IsTrue(expected.DecimalProperty.Equals(actual.DecimalProperty), "DecimalProperty");
-//			Assert.AreEqual(expected.DoubleProperty, actual.DoubleProperty, 0, "DoubleProperty");
 			Assert.AreEqual(expected.Int16Property, actual.Int16Property, "Int16Property");
 			Assert.AreEqual(expected.Int32Property, actual.Int32Property, "Int32Property");
 			Assert.AreEqual(expected.Int64Property, actual.Int64Property, "Int64Property");
@@ -920,14 +870,10 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			basicClass.Id = id;
 
-			
-			basicClass.BooleanProperty = true;
-			basicClass.ByteProperty = Byte.MaxValue;  
 			basicClass.CharacterProperty = 'a';
 			basicClass.ClassProperty = typeof(object);
 			basicClass.CultureInfoProperty = System.Globalization.CultureInfo.CurrentCulture;
 			basicClass.DateTimeProperty = DateTime.Parse("2003-12-01 10:45:21 AM");
-			basicClass.DecimalProperty = 5.64351M;
 			basicClass.Int16Property = Int16.MaxValue;
 			basicClass.Int32Property = Int32.MaxValue;
 			basicClass.Int64Property = Int64.MaxValue;

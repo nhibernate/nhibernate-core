@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+    <class 
+		name="NHibernate.Test.TypesTest.DecimalClass, NHibernate.Test" 
+		table="bc_dub">
+		
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="DecimalValue" type="Decimal" column="dec"/>
+	</class>
+</hibernate-mapping>

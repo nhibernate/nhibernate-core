@@ -100,16 +100,6 @@
                     HintPath = "..\..\lib\net\1.1\log4net.dll"
                 />
                 <Reference
-                    Name = "DotNetMock.Framework"
-                    AssemblyName = "DotNetMock.Framework"
-                    HintPath = "..\..\lib\DotNetMock.Framework.dll"
-                />
-                <Reference
-                    Name = "DotNetMock"
-                    AssemblyName = "DotNetMock"
-                    HintPath = "..\..\lib\DotNetMock.dll"
-                />
-                <Reference
                     Name = "Iesi.Collections"
                     AssemblyName = "Iesi.Collections"
                     HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
@@ -619,11 +609,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TypesTest\BaseTypeFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "TypesTest\BinaryBlobClass.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -652,9 +637,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TypesTest\BooleanClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\BooleanClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "TypesTest\BooleanTypeFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\ByteClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\ByteClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TypesTest\ByteTypeFixture.cs"
@@ -665,6 +668,15 @@
                     RelPath = "TypesTest\DateTimeTypeFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\DecimalClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\DecimalClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TypesTest\DecimalTypeFixture.cs"
@@ -684,6 +696,15 @@
                     RelPath = "TypesTest\DoubleTypeFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\GuidClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\GuidClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TypesTest\GuidTypeFixture.cs"

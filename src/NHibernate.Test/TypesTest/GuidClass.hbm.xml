@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+    <class 
+		name="NHibernate.Test.TypesTest.GuidClass, NHibernate.Test" 
+		table="bc_guid"
+	>
+		
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="GuidValue" type="Guid" column="guidc"/>
+	</class>
+</hibernate-mapping>
