@@ -70,25 +70,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index].Close();
 
 			index++;
-			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
-			t[index] = s[index].BeginTransaction();
-
-			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
-			AssertPropertiesEqual(bc[index-1], bc[index]);
-
-			// update the Binary property to make sure it picks up that it is dirty
-			BinaryFormatter bf = new BinaryFormatter();
-			MemoryStream stream = new MemoryStream();
-			bf.Serialize(stream, 4);
-			bc[index].BinaryProperty = stream.ToArray();
-			s[index].Update(bc[index]);
-
-			t[index].Commit();
-			s[index].Close();
-
-			index++;
-
+			
 			// make sure the previous updates went through
 			s[index] = sessions.OpenSession();
 			t[index] = s[index].BeginTransaction();
@@ -860,7 +842,6 @@ namespace NHibernate.Test.NHSpecificTest
 		internal void AssertPropertiesEqual(BasicClass expected, BasicClass actual, bool includeCollections) 
 		{
 			Assert.AreEqual(expected.Id, actual.Id, "Id");
-			ObjectAssertion.AssertEquals(expected.BinaryProperty, actual.BinaryProperty);
 			Assert.AreEqual(expected.BooleanProperty, actual.BooleanProperty, "BooleanProperty");
 			Assert.AreEqual(expected.ByteProperty, actual.ByteProperty, "ByteProperty");
 			Assert.AreEqual(expected.CharacterProperty, actual.CharacterProperty, "CharacterProperty");
@@ -896,11 +877,7 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			basicClass.Id = id;
 
-			BinaryFormatter bf = new BinaryFormatter();
-			MemoryStream stream = new MemoryStream();
-			bf.Serialize(stream, 5);
-			basicClass.BinaryProperty = stream.ToArray();
-
+			
 			basicClass.BooleanProperty = true;
 			basicClass.ByteProperty = Byte.MaxValue;  
 			basicClass.CharacterProperty = 'a';
