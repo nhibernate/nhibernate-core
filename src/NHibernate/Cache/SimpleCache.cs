@@ -10,8 +10,17 @@ namespace NHibernate.Cache {
 		private Hashtable cache = new Hashtable();
 
 		public object this[object key] {
-			get { return cache[key]; }
-			set { cache[key] = value; }
+			get {
+				WeakReference wr = cache[key] as WeakReference;
+				if (wr == null || !wr.IsAlive) {
+					cache[key] = null;
+					return null;
+				}
+				return wr.Target; 
+			}
+			set { 
+				cache[key] = new WeakReference(value); 
+			}
 		}
 	}
 }

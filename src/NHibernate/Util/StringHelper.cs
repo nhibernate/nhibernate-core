@@ -54,7 +54,7 @@ namespace NHibernate.Util {
 			} else {
 				return new StringBuilder( template.Substring(0, loc) )
 					.Append(replacement)
-					.Append( template.Substring( loc + placeholder.Length() ) )
+					.Append( template.Substring( loc + placeholder.Length ) )
 					.ToString();
 			}
 		}
@@ -76,22 +76,8 @@ namespace NHibernate.Util {
 			}
 		}
 
-		public static string[] Suffix(string[] columns, string suffix) {
-			if (suffix==null)
-				return columns;
-			string[] qualified = new string[columns.Length];
-			for (int i=0; i<columns.Length; i++) {
-				qualified[i] = Suffix(columns[i], suffix);
-			}
-			return qualified;
-		}
 		
-		public static string Suffix(string name, string suffix) {
-			if (suffix==null)
-				return name;
-
-			char quote = name[0];
-			bool nameEscaped = Dialect.
+		
 
 	}
 }
