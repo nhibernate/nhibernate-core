@@ -411,16 +411,16 @@ namespace NHibernate.Tool.hbm2net
 			
 			// get the properties defined for this class
 			SupportClass.ListCollectionSupport propertyList = new SupportClass.ListCollectionSupport();
-			propertyList.AddAll(classElement.GetElementsByTagName("property"));
-			propertyList.AddAll(classElement.GetElementsByTagName("version"));
-			propertyList.AddAll(classElement.GetElementsByTagName("timestamp"));
-			propertyList.AddAll(classElement.GetElementsByTagName("key-property"));
-			propertyList.AddAll(classElement.GetElementsByTagName("any"));
+			propertyList.AddAll(classElement.SelectNodes("urn:property", CodeGenerator.nsmgr));
+			propertyList.AddAll(classElement.SelectNodes("urn:version", CodeGenerator.nsmgr));
+			propertyList.AddAll(classElement.SelectNodes("urn:timestamp", CodeGenerator.nsmgr));
+			propertyList.AddAll(classElement.SelectNodes("urn:key-property", CodeGenerator.nsmgr));
+			propertyList.AddAll(classElement.SelectNodes("urn:any", CodeGenerator.nsmgr));
 			
 			// get all many-to-one associations defined for the class
 			SupportClass.ListCollectionSupport manyToOneList = new SupportClass.ListCollectionSupport();
-			manyToOneList.AddAll(classElement.GetElementsByTagName("many-to-one"));
-			manyToOneList.AddAll(classElement.GetElementsByTagName("key-many-to-one"));
+			manyToOneList.AddAll(classElement.SelectNodes("urn:many-to-one", CodeGenerator.nsmgr));
+			manyToOneList.AddAll(classElement.SelectNodes("urn:key-many-to-one", CodeGenerator.nsmgr));
 			
 			XmlAttribute att = classElement.Attributes["proxy"];
 			if (att != null)
@@ -445,8 +445,8 @@ namespace NHibernate.Tool.hbm2net
 				{
 					//Embedded composite id
 					//implementEquals();
-					propertyList.AddAll(0, cmpid.GetElementsByTagName("key-property"));
-					manyToOneList.AddAll(0, cmpid.GetElementsByTagName("key-many-to-one"));
+					propertyList.AddAll(0, cmpid.SelectNodes("urn:key-property", CodeGenerator.nsmgr));
+					manyToOneList.AddAll(0, cmpid.SelectNodes("urn:key-many-to-one", CodeGenerator.nsmgr));
 				}
 				else
 				{
@@ -547,7 +547,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 			// one to ones
-			for (System.Collections.IEnumerator onetoones = classElement.GetElementsByTagName("one-to-one").GetEnumerator(); onetoones.MoveNext(); )
+			for (System.Collections.IEnumerator onetoones = classElement.SelectNodes("urn:one-to-one", CodeGenerator.nsmgr).GetEnumerator(); onetoones.MoveNext(); )
 			{
 				Element onetoone = (Element) onetoones.Current;
 				
@@ -609,7 +609,7 @@ namespace NHibernate.Tool.hbm2net
 			
 			//components
 			
-			for (System.Collections.IEnumerator iter = classElement.GetElementsByTagName("component").GetEnumerator(); iter.MoveNext(); )
+			for (System.Collections.IEnumerator iter = classElement.SelectNodes("urn:component", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
 			{
 				Element cmpe = (Element) iter.Current;
 				MultiMap metaForComponent = MetaAttributeHelper.loadAndMergeMetaMap(cmpe, MetaAttribs);
@@ -636,14 +636,14 @@ namespace NHibernate.Tool.hbm2net
 			
 			//    subclasses (done last so they can access this superclass for info)
 			
-			for (System.Collections.IEnumerator iter = classElement.GetElementsByTagName("subclass").GetEnumerator(); iter.MoveNext(); )
+			for (System.Collections.IEnumerator iter = classElement.SelectNodes("urn:subclass", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
 			{
 				Element subclass = (Element) iter.Current;
 				ClassMapping subclassMapping = new ClassMapping(classPackage, this, name, this, subclass, MetaAttribs);
 				addSubClass(subclassMapping);
 			}
 			
-			for (System.Collections.IEnumerator iter = classElement.GetElementsByTagName("joined-subclass").GetEnumerator(); iter.MoveNext(); )
+			for (System.Collections.IEnumerator iter = classElement.SelectNodes("urn:joined-subclass", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
 			{
 				Element subclass = (Element) iter.Current;
 				ClassMapping subclassMapping = new ClassMapping(classPackage, this, name, this, subclass, MetaAttribs);
@@ -717,7 +717,7 @@ namespace NHibernate.Tool.hbm2net
 			System.String originalInterface = interfaceClass;
 			System.String originalImplementation = implementingClass;
 			
-			for (System.Collections.IEnumerator collections = classElement.GetElementsByTagName(xmlName).GetEnumerator(); collections.MoveNext(); )
+			for (System.Collections.IEnumerator collections = classElement.SelectNodes("urn:" + xmlName, CodeGenerator.nsmgr).GetEnumerator(); collections.MoveNext(); )
 			{
 				
 				Element collection = (Element) collections.Current;
@@ -736,8 +736,8 @@ namespace NHibernate.Tool.hbm2net
 					}
 					else if ("set".Equals(xmlName))
 					{
-						interfaceClass = typeof(System.Collections.Specialized.NameValueCollection).FullName;
-						implementingClass = typeof(System.Collections.Specialized.NameValueCollection).FullName;
+						interfaceClass = typeof(System.Collections.IDictionary).FullName;
+						implementingClass = typeof(System.Collections.IDictionary).FullName;
 					}
 				}
 				else
@@ -760,11 +760,11 @@ namespace NHibernate.Tool.hbm2net
 				ClassName foreignClass = null;
 				SupportClass.SetSupport foreignKeys = null;
 				// Collect bidirectional data
-				if (collection.GetElementsByTagName("one-to-many").Count != 0)
+				if (collection.SelectNodes("urn:one-to-many", CodeGenerator.nsmgr).Count != 0)
 				{
 					foreignClass = new ClassName(collection["one-to-many"].Attributes["class"].Value);
 				}
-				else if (collection.GetElementsByTagName("many-to-many").Count != 0)
+				else if (collection.SelectNodes("urn:many-to-many", CodeGenerator.nsmgr).Count != 0)
 				{
 					foreignClass = new ClassName(collection["many-to-many"].Attributes["class"].Value);
 				}
@@ -776,7 +776,7 @@ namespace NHibernate.Tool.hbm2net
 					foreignKeys = new SupportClass.HashSetSupport();
 					foreignKeys.Add(collection["key"].Attributes["column"].Value);
 					
-					for (System.Collections.IEnumerator iter = collection["key"].GetElementsByTagName("column").GetEnumerator(); iter.MoveNext(); )
+					for (System.Collections.IEnumerator iter = collection["key"].SelectNodes("urn:column", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
 					{
 						foreignKeys.Add(((Element) iter.Current).Attributes["name"].Value);
 					}
@@ -785,9 +785,9 @@ namespace NHibernate.Tool.hbm2net
 				}
 				FieldProperty cf = new FieldProperty(collection, this, propertyName, interfaceClassName, implementationClassName, false, foreignClass, foreignKeys, metaForCollection);
 				addFieldProperty(cf);
-				if (collection.GetElementsByTagName("composite-element").Count != 0)
+				if (collection.SelectNodes("urn:composite-element", CodeGenerator.nsmgr).Count != 0)
 				{
-					for (System.Collections.IEnumerator compositeElements = collection.GetElementsByTagName("composite-element").GetEnumerator(); compositeElements.MoveNext(); )
+					for (System.Collections.IEnumerator compositeElements = collection.SelectNodes("urn:composite-element", CodeGenerator.nsmgr).GetEnumerator(); compositeElements.MoveNext(); )
 					{
 						Element compositeElement = (Element) compositeElements.Current;
 						System.String compClass = compositeElement.Attributes["class"].Value;
@@ -814,7 +814,7 @@ namespace NHibernate.Tool.hbm2net
 		
 		private void  doArrays(Element classElement, System.String type, MultiMap inheritedMeta)
 		{
-			for (System.Collections.IEnumerator arrays = classElement.GetElementsByTagName(type).GetEnumerator(); arrays.MoveNext(); )
+			for (System.Collections.IEnumerator arrays = classElement.SelectNodes(type).GetEnumerator(); arrays.MoveNext(); )
 			{
 				Element array = (Element) arrays.Current;
 				MultiMap metaForArray = MetaAttributeHelper.loadAndMergeMetaMap(array, inheritedMeta);

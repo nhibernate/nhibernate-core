@@ -45,15 +45,16 @@ namespace NHibernate.Tool.hbm2net
 		{
 			MultiMap result = new MultiHashMap();
 			SupportClass.ListCollectionSupport metaAttributeList = new SupportClass.ListCollectionSupport();
-			metaAttributeList.AddAll(element.GetElementsByTagName("meta"));
+			metaAttributeList.AddAll(element.SelectNodes("meta", CodeGenerator.nsmgr));
+			metaAttributeList.AddAll(element.SelectNodes("urn:meta", CodeGenerator.nsmgr));
 			
 			for (System.Collections.IEnumerator iter = metaAttributeList.GetEnumerator(); iter.MoveNext(); )
 			{
 				Element metaAttrib = (Element) iter.Current;
 				// does not use getTextNormalize() or getTextTrim() as that would remove the formatting in new lines in items like description for javadocs.
-				System.String attribute = metaAttrib.Attributes["attribute"].Value;
+				System.String attribute = (metaAttrib.Attributes["attribute"] == null?string.Empty:metaAttrib.Attributes["attribute"].Value);
 				System.String value_Renamed = metaAttrib.InnerText;
-				System.String inheritStr = metaAttrib.Attributes["inherit"].Value;
+				System.String inheritStr = (metaAttrib.Attributes["inherit"] == null?null:metaAttrib.Attributes["inherit"].Value);
 				bool inherit = true;
 				if ((System.Object) inheritStr != null)
 				{
@@ -65,10 +66,10 @@ namespace NHibernate.Tool.hbm2net
 				}
 				
 				MetaAttribute ma = new MetaAttribute(value_Renamed, inherit);
-				object tempObject;
-				tempObject = ma;
-				result[attribute] = tempObject;
-				System.Object generatedAux2 = tempObject;
+				if (result[attribute] == null)
+					result[attribute] = new SupportClass.ListCollectionSupport();
+
+				((SupportClass.ListCollectionSupport)result[attribute]).Add(ma);
 			}
 			return result;
 		}
@@ -104,10 +105,10 @@ namespace NHibernate.Tool.hbm2net
 							MetaAttribute element = (MetaAttribute) iterator.Current;
 							if (element.inheritable)
 							{
-								object tempObject;
-								tempObject = element;
-								result[key] = tempObject;
-								System.Object generatedAux = tempObject;
+								if (result[key] == null)
+									result[key] = new SupportClass.ListCollectionSupport();
+
+								((SupportClass.ListCollectionSupport)result[key]).Add(element);
 							}
 						}
 					}

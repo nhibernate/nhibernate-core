@@ -212,7 +212,7 @@ namespace NHibernate.Tool.hbm2net
 				{
 					interfaces.AddAll(cmap.getMeta("implements"));
 				}
-				interfaces.Add(typeof(System.Runtime.Serialization.ISerializable).FullName);
+				//interfaces.Add(typeof(System.Runtime.Serialization.ISerializable).FullName);
 			}
 			else
 			{
@@ -251,7 +251,7 @@ namespace NHibernate.Tool.hbm2net
 				else
 					buf.Append(", ");
 				FieldProperty field = (FieldProperty) fields.Current;
-				buf.Append(JavaTool.shortenType(JavaTool.getTrueTypeName(field, class2classmap), classMapping.Imports) + " " + field.FieldName);
+				buf.Append(JavaTool.shortenType(field.FullyQualifiedTypeName, classMapping.Imports) + " " + field.FieldName);
 			}
 			return buf.ToString();
 		}

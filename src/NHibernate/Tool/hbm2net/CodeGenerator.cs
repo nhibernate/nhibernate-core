@@ -14,10 +14,15 @@ namespace NHibernate.Tool.hbm2net
 	public class CodeGenerator
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+		internal static System.Xml.XmlNamespaceManager nsmgr;
 	
 		[STAThread]
 		public static void  Main(System.String[] args)
 		{
+			nsmgr = new System.Xml.XmlNamespaceManager(new System.Xml.NameTable());
+			nsmgr.AddNamespace("urn", "urn:nhibernate-mapping-2.0");
+			
 			System.IO.File.Delete("error-log.txt");
 			log4net.Config.DOMConfigurator.Configure(new System.IO.FileInfo("hbm2net.exe.config"));
 			
@@ -47,7 +52,7 @@ namespace NHibernate.Tool.hbm2net
 							Document document = new System.Xml.XmlDocument();
 							document.Load(args[i].Substring(9));
 							globalMetas = MetaAttributeHelper.loadAndMergeMetaMap((System.Xml.XmlElement)(document["codegen"]), null);
-							System.Collections.IEnumerator generateElements = document.GetElementsByTagName("generate").GetEnumerator();
+							System.Collections.IEnumerator generateElements = document["codegen"].SelectNodes("generate").GetEnumerator();
 							
 							while (generateElements.MoveNext())
 							{
@@ -95,14 +100,14 @@ namespace NHibernate.Tool.hbm2net
 							pkg = a.Value;
 						}
 						MappingElement me = new MappingElement(rootElement, null);
-						System.Collections.IEnumerator classElements = rootElement.GetElementsByTagName("class").GetEnumerator();
+						System.Collections.IEnumerator classElements = rootElement.SelectNodes("urn:class", nsmgr).GetEnumerator();
 						MultiMap mm = MetaAttributeHelper.loadAndMergeMetaMap(rootElement, globalMetas);
 						handleClass(pkg, me, classMappings, classElements, mm, false);
 					
-						classElements = rootElement.GetElementsByTagName("subclass").GetEnumerator();
+						classElements = rootElement.SelectNodes("urn:subclass", nsmgr).GetEnumerator();
 						handleClass(pkg, me, classMappings, classElements, mm, true);
 					
-						classElements = rootElement.GetElementsByTagName("joined-subclass").GetEnumerator();
+						classElements = rootElement.SelectNodes("urn:joined-subclass", nsmgr).GetEnumerator();
 						handleClass(pkg, me, classMappings, classElements, mm, true);
 					}
 					catch(Exception exc)

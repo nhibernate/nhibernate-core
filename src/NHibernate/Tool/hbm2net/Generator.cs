@@ -96,7 +96,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			catch{}
 			
-			System.Collections.IEnumerator iter = generateElement.GetElementsByTagName("param").GetEnumerator();
+			System.Collections.IEnumerator iter = generateElement.SelectNodes("param").GetEnumerator();
 			while (iter.MoveNext())
 			{
 				Element childNode = (Element) iter.Current;
