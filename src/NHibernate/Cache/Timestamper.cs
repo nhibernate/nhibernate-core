@@ -5,7 +5,7 @@ namespace NHibernate.Cache {
 	/// Geterates increasing identifiers. 
 	/// </summary>
 	/// <remarks>
-	/// Not valida acress multiple application domains. Identifiers are not necessarily
+	/// Not valid across multiple application domains. Identifiers are not necessarily
 	/// strickly increasing, but usually are.
 	///	</remarks>
 	public class Timestamper {
@@ -14,7 +14,7 @@ namespace NHibernate.Cache {
 
 		public static long Next() {
 			lock(typeof(Timestamper)) {
-				long newTime = System.DateTime.Now.Ticks << 16;
+				long newTime = System.DateTime.Now.Ticks << 16; //is this right?
 				if (time < newTime) {
 					time = newTime;
 					counter = 0;

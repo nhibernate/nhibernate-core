@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Collections;
 
 namespace NHibernate.Util {
 	
@@ -76,8 +77,104 @@ namespace NHibernate.Util {
 			}
 		}
 
-		
-		
+		public static string[] Suffix(string[] columns, string suffix) {
+			if (suffix == null)
+				return columns;
+			string[] qualified = new string[columns.Length];
+			for ( int i=0; i<columns.Length; i++) {
+				qualified[i] = Suffix(columns[i], suffix);
+			}
+			return qualified;
+		}
 
+		public static string Suffix(string name, string suffix) {
+			if (suffix == null)
+				return name;
+
+			char quote = name[0];
+			bool nameEscaped = Dialect.Dialect.Quote.IndexOf(quote) > -1;
+			StringBuilder nameBuffer = new StringBuilder(30);
+
+			if (nameEscaped) {
+				nameBuffer.Append( name.Substring(1, name.Length-1) ).Append(suffix);
+			} else {
+				nameBuffer.Append(name).Append(suffix);
+			}
+
+			if (nameEscaped) {
+				nameBuffer.Insert(0, quote);
+				nameBuffer.Append(quote);
+			}
+			return nameBuffer.ToString();
+		}
+
+		public static string[] Prefix(string [] columns, string prefix) {
+			if (prefix == null)
+				return columns;
+			string[] qualified = new string[columns.Length];
+			for (int i=0; i<columns.Length; i++) {
+				qualified[i] = prefix + columns[i];
+			}
+			return qualified;
+		}
+
+		public static string Root(string qualifiedName) {
+			int loc = qualifiedName.IndexOf(".");
+			return (loc<0)
+				? qualifiedName
+				: qualifiedName.Substring(0, loc);
+		}
+
+		public static bool BooleanValue(string tfString) {
+			string trimmed = tfString.Trim().ToLower();
+			return trimmed.Equals("true") || trimmed.Equals("t");
+		}
+
+		public static string ToString(object[] array) {
+			int len = array.Length;
+			StringBuilder buf = new StringBuilder(len * 12);
+			for (int i=0; i<len - 1; i++) {
+				buf.Append( array[i] ).Append(StringHelper.CommaSpace);
+			}
+			return buf.Append( array[len-1]).ToString();
+		}
+
+		public static string[] Multiply(string str, IEnumerator placeholders, IEnumerator replacements) {
+			string[] result = new string[] { str };
+			while( placeholders.MoveNext() ) {
+				replacements.MoveNext();
+				result = Multiply( result, placeholders.Current as string, replacements.Current as string[]);
+			}
+			return result;
+		}
+
+		public static string[] Multiply(string[] strings, string placeholder, string[] replacements) {
+			string[] results = new string[replacements.Length * strings.Length ];
+			int n=0;
+			for ( int i=0; i<replacements.Length; i++ ) {
+				for (int j=0; j<strings.Length; j++) {
+					results[n++] = ReplaceOnce(strings[j], placeholder, replacements[i]);
+				}
+			}
+			return results;
+		}
+
+		public static string UnQuote(string name) {
+			return ( Dialect.Dialect.Quote.IndexOf( name[0] ) > -1 )
+				? name.Substring(1, name.Length-1)
+				: name;
+		}
+
+		public static void UnQuoteInPlace(string[] names) {
+			for (int i=0; i<names.Length; i++)
+				names[i] = UnQuote(names[i]);
+		}
+
+		public static string[] UnQuote(string[] names) {
+			string[] unquoted = new string[ names.Length ];
+			for (int i=0; i<names.Length; i++)
+				unquoted[i] = UnQuote(names[i]);
+			return unquoted;
+		}
 	}
 }

@@ -8,7 +8,7 @@ namespace NHibernate.Connection {
 	/// A connection provider for connection to sql server databases
 	/// </summary>
 	public class SqlServerConnectionProvider : IConnectionProvider{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ConnectionProviderSettings));
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SqlServerConnectionProvider));
 		private string connString = null;
 		
 		public void CloseConnection(IDbConnection conn) {
