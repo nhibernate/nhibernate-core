@@ -51,11 +51,11 @@ namespace NHibernate.DomainModel
 	{
 		get
 		{
-			return this._id;
+			return _id;
 		}
 		set
 		{
-			this._id = value;
+			_id = value;
 		}
 	}
 	
@@ -66,11 +66,11 @@ namespace NHibernate.DomainModel
 	{
 		get
 		{
-			return this._name;
+			return _name;
 		}
 		set
 		{
-			this._name = value;
+			_name = value;
 		}
 	}
 	

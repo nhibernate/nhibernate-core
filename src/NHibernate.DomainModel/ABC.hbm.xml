@@ -59,13 +59,13 @@
 		proxy="NHibernate.DomainModel.D, NHibernate.DomainModel"
 	>
 		<id 
-			name="id" 
+			name="Id" 
 			unsaved-value="null"
 		>
 			<generator class="assigned" />
 		</id>
 		<property 
-			name="amount" 
+			name="Amount" 
 			type="Double" 
 		/>
 	</class>

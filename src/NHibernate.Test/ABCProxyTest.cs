@@ -25,13 +25,13 @@ namespace NHibernate.Test
 			ITransaction t = s.BeginTransaction();
 			C1 c1 = new C1();
 			D d = new D();
-			d.amount =213.34f;
+			d.Amount =213.34f;
 			c1.Address = "foo bar";
 			c1.Count = 23432;
 			c1.Name = "c1";
 			c1.D = d;
 			s.Save(c1);
-			d.id = c1.Id;
+			d.Id = c1.Id;
 			s.Save(d);
 			t.Commit();
 			s.Close();
@@ -55,88 +55,88 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-/*			s = sessions.openSession();
-			t = s.beginTransaction();
-			c1 = (C1) s.load( C1.class, c1.getId() );
-			assertTrue(
-				c1.getAddress().equals("foo bar") &&
-				(c1.getCount()==23432) &&
-				c1.getName().equals("c1") &&
-				c1.getD().getAmount()>213.3f
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			c1 = (C1) s.Load( typeof(C1), c1.Id );
+			Assert.IsTrue(
+				c1.Address.Equals("foo bar") &&
+				(c1.Count==23432) &&
+				c1.Name.Equals("c1") &&
+				c1.D.Amount>213.3f
 				);
-			t.commit();
-			s.close();
+			t.Commit();
+			s.Close();
 		
-			s = sessions.openSession();
-			t = s.beginTransaction();
-			c1a = (A) s.load( A.class, c1.getId() );
-			assertTrue( c1a.getName().equals("c1") );
-			c1 = (C1) s.load( C1.class, c1.getId() );
-			assertTrue(
-				c1.getAddress().equals("foo bar") &&
-				(c1.getCount()==23432) &&
-				c1.getName().equals("c1") &&
-				c1.getD().getAmount()>213.3f
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			c1a = (A) s.Load( typeof(A), c1.Id );
+			Assert.IsTrue( c1a.Name.Equals("c1") );
+			c1 = (C1) s.Load( typeof(C1), c1.Id );
+			Assert.IsTrue(
+				c1.Address.Equals("foo bar") &&
+				(c1.Count==23432) &&
+				c1.Name.Equals("c1") &&
+				c1.D.Amount>213.3f
 				);
-			c1b = (B) s.load( B.class, c1.getId() );
-			assertTrue(
-				(c1b.getCount()==23432) &&
-				c1b.getName().equals("c1")
+			c1b = (B) s.Load( typeof(B), c1.Id );
+			Assert.IsTrue(
+				(c1b.Count==23432) &&
+				c1b.Name.Equals("c1")
 				);
-			assertTrue( c1a.getName().equals("c1") );
-			t.commit();
-			s.close();
+			Assert.IsTrue( c1a.Name.Equals("c1") );
+			t.Commit();
+			s.Close();
 		
-			s = sessions.openSession();
-			t = s.beginTransaction();
-			c1a = (A) s.load( A.class, c1.getId() );
-			assertTrue( c1a.getName().equals("c1") );
-			c1 = (C1) s.load( C1.class, c1.getId(), LockMode.UPGRADE );
-			assertTrue(
-				c1.getAddress().equals("foo bar") &&
-				(c1.getCount()==23432) &&
-				c1.getName().equals("c1") &&
-				c1.getD().getAmount()>213.3f
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			c1a = (A) s.Load( typeof(A), c1.Id );
+			Assert.IsTrue( c1a.Name.Equals("c1") );
+			c1 = (C1) s.Load( typeof(C1), c1.Id, LockMode.Upgrade );
+			Assert.IsTrue(
+				c1.Address.Equals("foo bar") &&
+				(c1.Count==23432) &&
+				c1.Name.Equals("c1") &&
+				c1.D.Amount>213.3f
 				);
-			c1b = (B) s.load( B.class, c1.getId(), LockMode.UPGRADE );
-			assertTrue(
-				(c1b.getCount()==23432) &&
-				c1b.getName().equals("c1")
+			c1b = (B) s.Load( typeof(B), c1.Id, LockMode.Upgrade);
+			Assert.IsTrue(
+				(c1b.Count==23432) &&
+				c1b.Name.Equals("c1")
 				);
-			assertTrue( c1a.getName().equals("c1") );
-			t.commit();
-			s.close();
+			Assert.IsTrue( c1a.Name.Equals("c1") );
+			t.Commit();
+			s.Close();
 		
-			s = sessions.openSession();
-			t = s.beginTransaction();
-			c1a = (A) s.load( A.class, c1.getId() );
-			c1 = (C1) s.load( C1.class, c1.getId() );
-			c1b = (B) s.load( B.class, c1.getId() );
-			assertTrue( c1a.getName().equals("c1") );
-			assertTrue(
-				c1.getAddress().equals("foo bar") &&
-				(c1.getCount()==23432) &&
-				c1.getName().equals("c1") &&
-				c1.getD().getAmount()>213.3f
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			c1a = (A) s.Load( typeof(A), c1.Id );
+			c1 = (C1) s.Load( typeof(C1), c1.Id );
+			c1b = (B) s.Load( typeof(B), c1.Id );
+			Assert.IsTrue( c1a.Name.Equals("c1") );
+			Assert.IsTrue(
+				c1.Address.Equals("foo bar") &&
+				(c1.Count==23432) &&
+				c1.Name.Equals("c1") &&
+				c1.D.Amount>213.3f
 				);
-			assertTrue(
-				(c1b.getCount()==23432) &&
-				c1b.getName().equals("c1")
+			Assert.IsTrue(
+				(c1b.Count==23432) &&
+				c1b.Name.Equals("c1")
 				);
-			System.out.println( s.delete("from a in class A") );
-			t.commit();
-			s.close();
+			System.Console.Out.WriteLine( s.Delete("from a in class A") );
+			t.Commit();
+			s.Close();
 		
-			s = sessions.openSession();
-			t = s.beginTransaction();
-			s.save( new B() );
-			s.save( new A() );
-			assertTrue( s.find("from b in class B").size()==1 );
-			assertTrue( s.find("from a in class A").size()==2 );
-			s.delete("from a in class A");
-			t.commit();
-			s.close();
-*/
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			s.Save( new B() );
+			s.Save( new A() );
+			Assert.IsTrue( s.Find("from b in class B").Count==1 );
+			Assert.IsTrue( s.Find("from a in class A").Count==2 );
+			s.Delete("from a in class A");
+			t.Commit();
+			s.Close();
+
 		}
 
 		[Test]

@@ -28,9 +28,9 @@
 	</class>
 	<class name="NHibernate.DomainModel.D, NHibernate.DomainModel" discriminator-value="0"
 		proxy="NHibernate.DomainModel.D, NHibernate.DomainModel">
-		<id name="id" unsaved-value="null" type="Int64">
+		<id name="Id" unsaved-value="null" type="Int64">
 			<generator class="assigned" />
 		</id>
-		<property name="amount" type="Double" />
+		<property name="Amount" type="Double" />
 	</class>
 </hibernate-mapping>

@@ -27,13 +27,13 @@ namespace NHibernate.Test
 			ITransaction t = s.BeginTransaction();
 			C1 c1 = new C1();
 			D d = new D();
-			d.amount =213.34f;
+			d.Amount =213.34f;
 			c1.Address = "foo bar";
 			c1.Count = 23432;
 			c1.Name ="c1";
 			c1.D = d;
 			s.Save(c1);
-			d.id = c1.Id;
+			d.Id = c1.Id;
 			s.Save(d);
 		
 			Assert.IsTrue( s.Find("from c in class C2 where 1=1 or 1=1").Count ==0 );
@@ -48,7 +48,7 @@ namespace NHibernate.Test
 				c1.Address.Equals("foo bar") &&
 				(c1.Count==23432) &&
 				c1.Name.Equals("c1") &&
-				c1.D.amount>213.3f
+				c1.D.Amount>213.3f
 				);
 			t.Commit();
 			s.Close();
@@ -60,7 +60,7 @@ namespace NHibernate.Test
 				c1.Address.Equals("foo bar") &&
 				(c1.Count==23432) &&
 				c1.Name.Equals("c1") &&
-				c1.D.amount>213.3f
+				c1.D.Amount>213.3f
 				);
 			t.Commit();
 			s.Close();
@@ -72,7 +72,7 @@ namespace NHibernate.Test
 				c1.Address.Equals("foo bar") &&
 				(c1.Count==23432) &&
 				c1.Name.Equals("c1") &&
-				c1.D.amount>213.3f
+				c1.D.Amount>213.3f
 				);
 			t.Commit();
 			s.Close();
