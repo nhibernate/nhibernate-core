@@ -604,6 +604,15 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NHSpecific\BasicBinary.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\BasicBinary.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "NHSpecific\BasicClass.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

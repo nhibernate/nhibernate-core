@@ -80,12 +80,6 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _id = value;}
 		}
 
-		public byte[] BinaryProperty 
-		{
-			get {return _binaryProperty;}
-			set {_binaryProperty = value;}
-		}
-
 		public bool BooleanProperty 
 		{
 			get {return _booleanProperty;}

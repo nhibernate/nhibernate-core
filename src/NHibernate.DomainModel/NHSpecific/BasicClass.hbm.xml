@@ -10,7 +10,6 @@
 			<generator class="assigned" />
 		</id>
 		
-		<property name="BinaryProperty" type="Byte[]" column="bin_p"/>
 		<property name="BooleanProperty" type="Boolean" column="bool_p"/>
 		<property name="ByteProperty" type="Byte" column="byte_p"/>
 		<property name="CharacterProperty" type="Char" column="char_p"/>
