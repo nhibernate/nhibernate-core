@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Data;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Runtime.Serialization;
 using NHibernate;
@@ -1348,14 +1349,8 @@ namespace NHibernate.Hql
 		/// <returns>true when a Parameter might follow this sql.</returns>
 		private bool EndsWithBoolOperator(string sqlFragment) 
 		{
-			string sql = sqlFragment.Trim();
-
-			for(int i = 0; i < WhereParser.booleanOperators.Count; i++) 
-			{
-				if( sql.EndsWith(WhereParser.booleanOperators[i]) ) return true;
-			}
-
-			return false;
+			Regex r = new Regex(WhereParser.BooleanOperatorsAsRegEx, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+			return r.Match(sqlFragment).Success;
 		}
 	}
 }
