@@ -7,9 +7,14 @@ Build 0.5.0.0
 - Fixed IQuery.SetParameter() when the value is an Enum
 - Updated to latest MySql Data Provider and changed classes to MySqlDataDriver.  Removed binaries from CVS since they are GPL now.
 - Isolated test and classes that use DbType.Time into their own fixtures.  Data Drivers don't implement this consistently.
-- Fixed problem where HQL was not parsing Fully Qualified Enums correctly. (Peter Smulovics)
+- Fixed problem where HQL was not parsing Enums correctly. (Peter Smulovics)
 - Fixed Int16 not working as a <version> Property.
-- Modified NHibernate and Iesi.Collections to have the attribute CLSCompliantAttribute(true).
+- Added CLSCompliantAttribute(true) attribute to NHibernate and Iesi.Collections.
+- Fixed how Exceptions are rethrown to not lose the stack trace.
+- Added more comments around ISession.Find and ISession.Enumerate to explain Cache usage.
+- Fixed bug with dynamic-update generating SQL for all properties. (Sergey Koshcheyev)
+- Add Clover.NET into NHibernate build process thanks to license donated by Cenqua (www.cenqua.com).
+- Modified TableGenerator to default first id to "1" instead of "0" to work better with unsaved-value. (Karl Andersson)
 
 Alpha Build 0.4.0.0
 ======================== 

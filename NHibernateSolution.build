@@ -30,7 +30,7 @@
 	-->
 	<property name="project.name" value="nhibernate" />
 	<property name="project.version.major" value="0" />
-	<property name="project.version.minor" value="4" />
+	<property name="project.version.minor" value="5" />
 	<property name="project.version.build" value="0" />
 	<property name="project.version.revision" value="0" />
 	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
@@ -247,8 +247,8 @@
 		</delete>
 		
 	</target>
-
-	<target name="package" depends="test sdkdoc" description="Creates Zip files for the File Release System on SourceForge">
+	<!--depends="test sdkdoc" -->
+	<target name="package" description="Creates Zip files for the File Release System on SourceForge">
 		<copy todir="${build.dir}">
 			<fileset>
 				<!-- copy framework nuetral dlls -->
@@ -285,6 +285,7 @@
 		<zip zipfile="${project.zip-path}">
 			<fileset basedir="${build.dir}">
 				<includes name="**/*" />
+				<excludes name="bin/log.txt" />
 			</fileset>
 		</zip>
 		
