@@ -59,7 +59,8 @@
 			</references>
 			
 			<resources prefix="NHibernate.Test" dynamicprefix="true">
-				<includes name="hibernate.cfg.xml" />
+				<includes name="**/*.xml" />
+				<excludes name="bin/**/*.xml" />
 			</resources>
 			
 			<sources>

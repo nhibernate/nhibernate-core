@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 
 using NUnit.Framework;
+
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.NHSpecific;
 
@@ -15,20 +16,6 @@ namespace NHibernate.Test
 	{
 		public ObjectAssert()
 		{
-		}
-
-		internal static void AssertPropertiesEqual(JoinedSubclassBase expected, JoinedSubclassBase actual) 
-		{
-			Assert.AreEqual(expected.Id, actual.Id);
-			Assert.AreEqual(expected.TestDateTime, actual.TestDateTime);
-			Assert.AreEqual(expected.TestLong, actual.TestLong);
-			Assert.AreEqual(expected.TestString, actual.TestString);
-		}
-
-		internal static void AssertPropertiesEqual(JoinedSubclassOne expected, JoinedSubclassOne actual) 
-		{
-			ObjectAssert.AssertPropertiesEqual((JoinedSubclassBase)expected, (JoinedSubclassBase)actual);
-			Assert.AreEqual(expected.OneTestLong, actual.OneTestLong);
 		}
 
 		internal static void AssertEquals(Iesi.Collections.ISet expected, Iesi.Collections.ISet actual) 

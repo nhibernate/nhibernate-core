@@ -310,6 +310,52 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "JoinedSubclass\Address.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "JoinedSubclass\Customer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "JoinedSubclass\Employee.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "JoinedSubclass\JoinedSubclass.Customer.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "JoinedSubclass\JoinedSubclass.Employee.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "JoinedSubclass\JoinedSubclass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "JoinedSubclass\JoinedSubclass.Person.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "JoinedSubclass\JoinedSubclassExtendsFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "JoinedSubclass\JoinedSubclassFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "JoinedSubclass\Person.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MappingTest\TableFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -355,11 +401,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "NHSpecificTest\JoinedSubclassFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "NHSpecificTest\MapFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -376,11 +417,6 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\SimpleComponentFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NHSpecificTest\SubclassFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -496,6 +532,43 @@
                 />
                 <File
                     RelPath = "SqlCommandTest\TemplateFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Subclass\Subclass.Base.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Subclass\Subclass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Subclass\Subclass.One.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Subclass\SubclassAssert.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Subclass\SubclassBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Subclass\SubclassExtendsFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Subclass\SubclassFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Subclass\SubclassOne.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -965,17 +965,11 @@ namespace NHibernate.Cfg
 				} 
 				else if ( "subclass".Equals(name) ) 
 				{
-					Subclass subclass = new Subclass(model);
-					BindSubclass( subnode, subclass, mappings );
-					model.AddSubclass(subclass);
-					mappings.AddClass(subclass);
+					HandleSubclass( model, mappings, subnode );
 				} 
 				else if ( "joined-subclass".Equals(name) ) 
 				{
-					Subclass subclass = new Subclass(model);
-					BindJoinedSubclass( subnode, subclass, mappings);
-					model.AddSubclass(subclass);
-					mappings.AddClass(subclass);
+					HandleJoinedSubclass( model, mappings, subnode );
 				}
 				if ( value!=null) 
 				{
@@ -1188,6 +1182,18 @@ namespace NHibernate.Cfg
 				model.AddClass(rootclass);
 			}
 
+			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":subclass", nsmgr) ) 
+			{
+				PersistentClass superModel = GetSuperclass(model, n);
+				HandleSubclass(superModel, model, n);
+			}
+
+			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":joined-subclass", nsmgr) ) 
+			{
+				PersistentClass superModel = GetSuperclass(model, n);
+				HandleJoinedSubclass(superModel, model, n);
+			}
+
 			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":query", nsmgr) ) 
 			{
 				string qname = n.Attributes["name"].Value;
@@ -1214,6 +1220,46 @@ namespace NHibernate.Cfg
 				return (propertyNameNode==null) ? null : propertyNameNode.Value;
 			}
 			return null;
+		}
+
+		private static void HandleJoinedSubclass( PersistentClass model, Mappings mappings, XmlNode subnode )
+		{
+			Subclass subclass = new Subclass( model );
+			BindJoinedSubclass( subnode, subclass, mappings );
+			model.AddSubclass( subclass );
+			mappings.AddClass( subclass );
+		}
+
+		private static void HandleSubclass( PersistentClass model, Mappings mappings, XmlNode subnode )
+		{
+			Subclass subclass = new Subclass( model );
+			BindSubclass( subnode, subclass, mappings );
+			model.AddSubclass( subclass );
+			mappings.AddClass( subclass );
+		}
+
+		private static PersistentClass GetSuperclass( Mappings model, XmlNode subnode )
+		{
+			XmlAttribute extendsAttr = subnode.Attributes["extends"];
+			if( extendsAttr == null )
+				throw new MappingException( "'extends' attribute is not found." );
+			String extendsValue = extendsAttr.Value;
+			System.Type superclass;
+			try
+			{
+				superclass = ReflectHelper.ClassForName( extendsValue );
+			}
+			catch( Exception e )
+			{
+				throw new MappingException( "extended class not found: " + extendsValue, e );
+			}
+			PersistentClass superModel = model.GetClass( superclass );
+
+			if( superModel == null )
+			{
+				throw new MappingException( "Cannot extend unmapped class: " + extendsValue );
+			}
+			return superModel;
 		}
 
 		public abstract class SecondPass 

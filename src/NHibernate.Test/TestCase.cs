@@ -1,9 +1,10 @@
 using System;
-using System.Reflection;
+using System.Collections;
 using System.Data;
-using System.Data.SqlClient;
+using System.Reflection;
 
 using NHibernate.DomainModel;
+
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Tool.hbm2ddl;
@@ -34,18 +35,23 @@ namespace NHibernate.Test
 			DropSchema();
 		}
 
-		public void ExportSchema(string[] files) 
+		public void ExportSchema(IList files) 
 		{
 			ExportSchema(files, true);
 		}
 
-		public void ExportSchema(string[] files, bool exportSchema) 
+		public void ExportSchema(IList files, bool exportSchema) 
+		{
+			ExportSchema( files, exportSchema, "NHibernate.DomainModel" );
+		}
+
+		public void ExportSchema(IList files, bool exportSchema, string assemblyName) 
 		{
 			cfg = new Configuration();
 
-			for (int i=0; i<files.Length; i++) 
+			for (int i=0; i<files.Count; i++) 
 			{
-				cfg.AddResource("NHibernate.DomainModel." + files[i], Assembly.Load("NHibernate.DomainModel"));
+				cfg.AddResource( assemblyName + "." + files[i].ToString(), Assembly.Load( assemblyName ) );
 			}
 
 			if(exportSchema) new SchemaExport(cfg).Create(true, true);

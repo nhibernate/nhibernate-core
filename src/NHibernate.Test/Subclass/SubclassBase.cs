@@ -1,18 +1,18 @@
 using System;
 
-namespace NHibernate.DomainModel.NHSpecific
+namespace NHibernate.Test.Subclass
 {
 	/// <summary>
-	/// Summary description for JoinedSubclassBase.
+	/// Summary description for SubclassBase.
 	/// </summary>
-	public class JoinedSubclassBase
+	public class SubclassBase
 	{
 		private int _id = 0;
 		private long _testLong;
 		private string _testString;
 		private System.DateTime _testDate;
 
-		public JoinedSubclassBase()
+		public SubclassBase()
 		{
 		}
 

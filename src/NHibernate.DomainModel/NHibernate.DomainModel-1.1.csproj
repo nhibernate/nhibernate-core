@@ -712,20 +712,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "NHSpecific\JoinedSubclass.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "NHSpecific\JoinedSubclassBase.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NHSpecific\JoinedSubclassOne.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "NHSpecific\Node.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -769,10 +755,6 @@
                 />
                 <File
                     RelPath = "NHSpecific\SimpleComponent.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "NHSpecific\Subclass.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File

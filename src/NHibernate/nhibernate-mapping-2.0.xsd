@@ -9,7 +9,11 @@
 			<xs:sequence>
 				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
 				<xs:element ref='import' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='class' minOccurs='0' maxOccurs='unbounded' />
+				<xs:choice minOccurs='0' maxOccurs='unbounded'>
+					<xs:element ref='class'/>
+					<xs:element ref='subclass'/>
+					<xs:element ref='joined-subclass'/>
+				</xs:choice>
 				<xs:element ref='query' minOccurs='0' maxOccurs='unbounded' />
 			</xs:sequence>
 			<xs:attribute name='schema'>
@@ -321,6 +325,8 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
+			<xs:attribute name='extends' use='optional'>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name='joined-subclass'>
@@ -376,6 +382,8 @@
 						<xs:enumeration value='false' />
 					</xs:restriction>
 				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name='extends' use='optional'>
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>

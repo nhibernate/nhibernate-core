@@ -1,0 +1,33 @@
+﻿<?xml version="1.0"?>
+<!-- 
+	This is the a mapping for the base class in a joined-subclasses where the
+	subclasses are spread out in different hbm.xml files.  It is used by the 
+	JoinedSubclassExtendsFixture.
+-->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class 
+		name="NHibernate.Test.JoinedSubclass.Person, NHibernate.Test" 
+		table="j_sc"	
+	>
+		<id 
+			name="Id" 
+			type="Int32" 
+			unsaved-value="0" 
+			column="joined_subclass_id" 
+			access="nosetter.camelcase-underscore"
+		>
+			<generator class="native" />
+		</id>
+		
+		<property name="Name" column="test_string" type="String" />
+		<property name="Sex" column="sex" />
+		
+		<component name="Address">
+			<property name="Street"/>
+			<property name="Zip"/>
+			<property name="Country"/>
+		</component>
+		
+	</class>
+	
+</hibernate-mapping>

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!-- 
+
+  This mapping demonstrates 
+
+     (1) a table-per-subclass mapping strategy
+         
+     (2) a simple component mapping
+     
+     (3) recursive associations withing an inheritance tree
+     
+-->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class 
+		name="NHibernate.Test.JoinedSubclass.Person, NHibernate.Test" 
+		table="person"	
+	>
+		<id 
+			name="Id" 
+			type="Int32" 
+			unsaved-value="0" 
+			column="person_id" 
+			access="nosetter.camelcase-underscore"
+		>
+			<generator class="native" />
+		</id>
+		
+		<property name="Name" column="name" />
+		<property name="Sex" column="sex" />
+		
+		<component name="Address">
+			<property name="Street"/>
+			<property name="Zip"/>
+			<property name="Country"/>
+		</component>
+		
+		<joined-subclass 
+			name="NHibernate.Test.JoinedSubclass.Employee, NHibernate.Test" 
+			table="empl"
+		>
+			<key column="person_id"/>
+			<property name="Title" not-null="true"  length="20"/>
+			<property name="Salary" length="0"/>
+			<many-to-one name="Manager"/>
+		</joined-subclass>
+		
+		<joined-subclass 
+			name="NHibernate.Test.JoinedSubclass.Customer, NHibernate.Test"
+			table="cust"
+		>
+			<key column="person_id"/>
+			<property name="Comments"/>
+			<many-to-one name="Salesperson"/>
+		</joined-subclass>
+		
+	</class>
+	
+</hibernate-mapping>

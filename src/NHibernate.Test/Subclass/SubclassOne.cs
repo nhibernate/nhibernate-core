@@ -1,15 +1,15 @@
 using System;
 
-namespace NHibernate.DomainModel.NHSpecific
+namespace NHibernate.Test.Subclass
 {
 	/// <summary>
 	/// Summary description for JoinedSubclassOne.
 	/// </summary>
-	public class JoinedSubclassOne: JoinedSubclassBase
+	public class SubclassOne: SubclassBase
 	{
 		private long _oneTestLong;
 
-		public JoinedSubclassOne() {}
+		public SubclassOne() {}
 
 		public long OneTestLong {
 			get {return _oneTestLong;}

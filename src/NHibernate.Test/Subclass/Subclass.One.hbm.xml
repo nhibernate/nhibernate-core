@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<!-- 
+	This is the a mapping for the subclass  where it
+	is mapped in different hbm.xml file through the use of the "extends" 
+	attribute.  The order the hbm.xml files are added to 
+	nhibernate are important.  The base class must be added first and then the 
+	subclass can be added.  It is used by the SubclassExtendsFixture.
+-->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+	<subclass 
+		extends="NHibernate.Test.Subclass.SubclassBase, NHibernate.Test"
+		name="NHibernate.Test.Subclass.SubclassOne, NHibernate.Test" 
+		discriminator-value="SUB"
+	>
+		<property name="OneTestLong" column="one_test_long" type="Int64" />
+	</subclass>
+	
+</hibernate-mapping>
