@@ -309,7 +309,7 @@ namespace NHibernate.Cfg
 			catch (Exception e) 
 			{
 				log.Error("Could not configure datastore from assembly", e);
-				throw new MappingException(e);
+				throw new MappingException( "Could not add assembly named: " + assemblyName, e );
 			}
 			
 			return this.AddAssembly(assembly);

@@ -33,7 +33,7 @@ namespace NHibernate.Cfg
 			} 
 			catch ( Exception cnfe ) 
 			{
-				throw new MappingException( "persistent class not found", cnfe);
+				throw new MappingException( "persistent class not found", cnfe );
 			}
 
 			//proxy interface
@@ -46,7 +46,7 @@ namespace NHibernate.Cfg
 				} 
 				catch (Exception cnfe) 
 				{
-					throw new MappingException(cnfe);
+					throw new MappingException( "proxy class not found", cnfe );
 				}
 			}
 			
@@ -1105,8 +1105,10 @@ namespace NHibernate.Cfg
 					Value key = new Value( model.Table );
 					BindValue(subnode, key, model.IsOneToMany, Mapping.Collection.DefaultKeyColumnName);
 					key.Type = model.Owner.Identifier.Type;
-					if ( key.Type.ReturnedClass.IsArray ) throw new MappingException(
-															  "illegal use of an array as an identifier (arrays don't reimplement equals)");
+					if ( key.Type.ReturnedClass.IsArray ) 
+					{
+						throw new MappingException("illegal use of an array as an identifier (arrays don't reimplement equals)");
+					}
 					model.Key = key;
 				} 
 				else if ( "element".Equals(name) ) 
@@ -1241,8 +1243,10 @@ namespace NHibernate.Cfg
 		private static PersistentClass GetSuperclass( Mappings model, XmlNode subnode )
 		{
 			XmlAttribute extendsAttr = subnode.Attributes["extends"];
-			if( extendsAttr == null )
+			if( extendsAttr==null ) 
+			{
 				throw new MappingException( "'extends' attribute is not found." );
+			}
 			String extendsValue = extendsAttr.Value;
 			System.Type superclass;
 			try

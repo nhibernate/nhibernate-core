@@ -83,13 +83,18 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="className">The name of the class that is being renamed.</param>
 		/// <param name="rename">The new name to use in Hql for the class.</param>
+		/// <exception cref="MappingException">Thrown when the rename already identifies another Class.</exception>
 		public void AddImport(string className, string rename) 
 		{
-			if ( imports.Contains(rename) && (string)imports[rename] != className) 
+			// if the imports dictionary already contains the rename, then make sure 
+			// the rename is not for a different className.  If it is a different className
+			// then we probably have 2 classes with the same name in a different namespace.  To 
+			// prevent this error one of the classes needs to have the attribute "
+			if( imports.Contains(rename) && (string)imports[rename]!=className ) 
 			{
 				throw new MappingException("duplicate import: " + rename);
 			}
-			imports.Add(rename, className); 
+			imports[rename] = className; 
 		}
 
 		public Table AddTable(string schema, string name) 
@@ -147,16 +152,22 @@ namespace NHibernate.Cfg
 			secondPasses.Add(sp);
 		}
 
+		/// <summary>
+		/// Gets or sets a boolean indicating if the Fully Qualified Type name should
+		/// automattically have an import added as the class name.
+		/// </summary>
+		/// <value><c>true</c> if the class name should be used as an import.</value>
+		/// <remarks>
+		/// AutoImport is used to shorten the string used to refer to Types to just their
+		/// class.  So if the type <c>MyAssembly.MyNamespace.MyClass, MyAssembly</c> has an <c>auto-import="false"</c>
+		/// then all use of in HQL would need to be the fully qualified version <c>MyAssembly.MyNamespace.MyClass</c>.
+		/// If <c>auto-import="true"</c> the the Type could be referred to in hql by just the class
+		/// name of <c>MyClass</c>.
+		/// </remarks>
 		public bool IsAutoImport 
 		{
-			get 
-			{ 
-				return autoImport; 
-			}
-			set 
-			{ 
-				autoImport = value; 
-			}
+			get { return autoImport;  }
+			set { autoImport = value; }
 		}
 	}
 }
