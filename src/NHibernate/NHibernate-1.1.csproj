@@ -320,6 +320,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cache\HashtableCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cache\ICache.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -330,7 +335,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Cache\ICacheTest.cs"
+                    RelPath = "Cache\NonstrictReadWriteCache.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -341,11 +346,6 @@
                 />
                 <File
                     RelPath = "Cache\ReadWriteCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Cache\SimpleCache.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

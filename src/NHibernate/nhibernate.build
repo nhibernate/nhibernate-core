@@ -21,7 +21,6 @@
 			</resources>
 			<sources>
 				<includes name="**/*.cs" />
-				<excludes name="Cache/*Test.cs" />
 				<excludes name="Eg/**" />
 				<excludes name="InternalTest/**/*.cs" />
 				<excludes name="Test/**/*.cs" />
@@ -61,7 +60,6 @@
 			</resources>
 			<sources>
 				<includes name="**/*.cs" />
-				<excludes name="Cache/*Test.cs" />
 				<excludes name="Eg/**" />
 				<excludes name="InternalTest/**/*.cs" />
 				<excludes name="Test/**/*.cs" />
