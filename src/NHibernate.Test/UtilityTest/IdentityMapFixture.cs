@@ -42,6 +42,10 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 
+		/// <summary>
+		/// Verify that the object being added as the Key does not have it's GetHashCode
+		/// method called.
+		/// </summary>
 		[Test]
 		public void AddNoHashCode()
 		{
@@ -51,6 +55,10 @@ namespace NHibernate.Test.UtilityTest
 			Assert.AreEqual(1, map.Count, "The item was added succesfully");
 		}
 
+		/// <summary>
+		/// Verify that ConcurrentEntities returns an ICollection that contains the same
+		/// Keys/Values as originally added into the IdentityMap.
+		/// </summary>
 		[Test]
 		public void ConcurrentEntries() 
 		{
@@ -71,6 +79,38 @@ namespace NHibernate.Test.UtilityTest
 
 				Assert.IsTrue(map.Contains(noCode), "The Key in the concurrent map should have been in the original map's Keys");
 				Assert.IsTrue(noCodeValue==map[noCode], "The Value identified by the Key in concurrent map should be the same as the IdentityMap");
+			}
+
+		}
+
+		/// <summary>
+		/// Tests that it is safe to modify the IdentityMap while iterating through the
+		/// ConcurrentEntities.
+		/// </summary>
+		[Test]
+		public void ConcurrentEntitiesModification()
+		{
+			NoHashCode noHashCode3 = new NoHashCode();
+			object value3 = new object();
+
+			NoHashCode noHashCode4 = new NoHashCode();
+			object value4 = new object();
+
+			IDictionary map = IdentityMap.Instantiate();
+			map.Add(noHashCode1, value1);
+			map.Add(noHashCode2, value2);
+
+			ICollection concurrent = IdentityMap.ConcurrentEntries(map);
+			int i = 0;
+
+			foreach(DictionaryEntry de in concurrent)
+			{
+				if(i==0) map.Add(noHashCode3, value3);
+				if(i==1) map.Add(noHashCode4, value4);
+
+				i++;
+				Assert.AreEqual(2, concurrent.Count, "Should still be 2 items in the concurrent ICollection");
+				Assert.AreEqual(2 + i, map.Count, "Should be " + (2 + i) + " items in the IdentityMap"); 
 			}
 
 		}
@@ -277,7 +317,7 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		/// <summary>
-		/// The IdentityMap should not ever call the object.GetHashCode() because that
+		/// The IdentityMap should not ever call the GetHashCode() because that
 		/// will have side effects on Collections/Entities.
 		/// </summary>
 		protected class NoHashCode 
