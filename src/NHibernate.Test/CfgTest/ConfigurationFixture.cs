@@ -28,7 +28,7 @@ namespace NHibernate.Test.CfgTest
 			cfg.Configure();
 			
 			Assert.AreEqual( "true 1, false 0, yes 'Y', no 'N'", cfg.Properties[Cfg.Environment.QuerySubstitutions]);
-			Assert.AreEqual( "Server=localhost;initial catalog=nhibernate;Integrated Security=SSPI", cfg.Properties[Cfg.Environment.ConnectionString]);
+			Assert.AreEqual( "Server=localhost;initial catalog=nhibernate;User Id=;Password=", cfg.Properties[Cfg.Environment.ConnectionString]);
 		}
 
 		/// <summary>
