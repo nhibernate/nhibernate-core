@@ -788,7 +788,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Test not written yet.")]
 		public void CascadeSave() 
 		{
 			ISession s = sessions.OpenSession();
@@ -809,9 +808,8 @@ namespace NHibernate.Test
 			Assert.AreEqual(2, baz.Fees.Count);
 			s.Delete(baz);
 
-			//TODO: don't have an s.iterate() equivalent built
-			IList fees = s.Find("from fee in class Fee");
-			Assert.AreEqual(0, fees.Count);
+			IEnumerable enumerable = s.Enumerable("from fee in class Fee");
+			Assert.IsFalse( enumerable.GetEnumerator().MoveNext() );
 			t.Commit();
 			s.Close();
 		}
@@ -931,9 +929,75 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void NewFlushing() 
 		{
+			ISession s = sessions.OpenSession();
+			Baz baz = new Baz();
+			baz.SetDefaults();
+			s.Save(baz);
+			s.Flush();
+
+			baz.StringArray[0] = "a new value";
+			IEnumerator enumer = s.Enumerable("from baz in class Baz").GetEnumerator(); // no flush
+			Assert.IsTrue( enumer.MoveNext() );
+			Assert.AreSame( baz, enumer.Current );
+
+			enumer = s.Enumerable("select baz.StringArray.elements from baz in class Baz").GetEnumerator();
+			bool found = false;
+			while (enumer.MoveNext() ) 
+			{
+				if ( enumer.Current.Equals("a new value") ) 
+				{
+					found = true;
+				}
+			}
+			Assert.IsTrue(found);
+
+			baz.StringArray = null;
+			s.Enumerable("from baz in class Baz"); // no flush
+			enumer = s.Enumerable("select baz.StringArray.elements from baz in class Baz").GetEnumerator();
+			Assert.IsFalse( enumer.MoveNext() );
+
+			baz.StringList.Add("1E1");
+			enumer = s.Enumerable("from foo in class Foo").GetEnumerator(); // no flush
+			Assert.IsFalse( enumer.MoveNext() );
+
+			enumer = s.Enumerable("select baz.StringList.elements from baz in class Baz").GetEnumerator();
+			found = false;
+			while( enumer.MoveNext() ) 
+			{
+				if( enumer.Current.Equals("1E1") ) 
+				{
+					found = true;
+				}
+			}
+			Assert.IsTrue(found);
+
+			baz.StringList.Remove("1E1");
+			s.Enumerable("select baz.StringArray.elements from baz in class Baz");//no flush
+			enumer = s.Enumerable("select baz.StringList.elements from baz in class Baz").GetEnumerator();
+			found = false;
+			while( enumer.MoveNext() ) 
+			{
+				if( enumer.Current.Equals("1E1") ) 
+				{
+					found = true;
+				}
+			}
+			Assert.IsFalse(found);
+
+			IList newList = new ArrayList();
+			newList.Add("value");
+			baz.StringList = newList;
+			enumer = s.Enumerable("from foo in class Foo").GetEnumerator(); //no flush
+			baz.StringList = null;
+			enumer = s.Enumerable("select baz.StringList.elements from baz in class Baz").GetEnumerator();
+			Assert.IsFalse( enumer.MoveNext() );
+
+			s.Delete(baz);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
@@ -943,9 +1007,22 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void SaveFlush() 
 		{
+			ISession s = sessions.OpenSession();
+			Fee fee = new Fee();
+			s.Save( fee, "key" );
+			fee.Fi = "blah";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			fee = (Fee)s.Load( typeof(Fee), fee.Key );
+			Assert.AreEqual( "blah", fee.Fi );
+			Assert.AreEqual( "key", fee.Key );
+			s.Delete(fee);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
