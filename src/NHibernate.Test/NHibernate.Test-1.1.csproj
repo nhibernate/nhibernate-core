@@ -80,25 +80,25 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
                 <Reference
-                    Name = "NHibernate-1.0"
-                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "log4net"
                     AssemblyName = "log4net"
                     HintPath = "..\..\external-bin\log4net.dll"
-                />
-                <Reference
-                    Name = "NHibernate.DomainModel-1.1"
-                    Project = "{E3482030-5828-4112-9906-D4C5153DCE3F}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
                     HintPath = "C:\Program Files\OSS.NET\NUnit V2.1\\bin\nunit.framework.dll"
                     AssemblyFolderKey = "hklm\dn\nunit.framework"
+                />
+                <Reference
+                    Name = "NHibernate-1.1"
+                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "NHibernate.DomainModel-1.1"
+                    Project = "{E3482030-5828-4112-9906-D4C5153DCE3F}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>
