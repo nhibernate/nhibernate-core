@@ -2376,6 +2376,33 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			foo = (FooProxy)s.Load( typeof(Foo), id);
 			Assert.AreEqual( FooStatus.OFF, foo.Status );
+			s.Close();
+
+			// verify that SetEnum with named params works correctly
+			s = sessions.OpenSession();
+			IQuery q = s.CreateQuery( "from Foo as f where f.Status = :status" );
+			q.SetEnum( "status", FooStatus.OFF );
+			IList results = q.List();
+			Assert.AreEqual( 1, results.Count, "should have found 1" );
+			foo = (Foo)results[0];
+			
+			q = s.CreateQuery( "from Foo as f where f.Status = :status" );
+			q.SetEnum( "status", FooStatus.ON );
+			results = q.List();
+			Assert.AreEqual( 0, results.Count, "no foo with status of ON" );
+
+			// try to have the Query guess the enum type
+			q = s.CreateQuery( "from Foo as f where f.Status = :status" );
+			q.SetParameter( "status", FooStatus.OFF );
+			results = q.List();
+			Assert.AreEqual( 1, results.Count, "found the 1 result" );
+
+			// have the query guess the enum type in a ParameterList.
+			q = s.CreateQuery( "from Foo as f where f.Status in (:status)" );
+			q.SetParameterList( "status", new FooStatus[] { FooStatus.OFF, FooStatus.ON } );
+			results = q.List();
+			Assert.AreEqual( 1, results.Count, "should have found the 1 foo" );
+
 			s.Delete(foo);
 			s.Flush();
 			s.Close();

@@ -258,24 +258,32 @@ namespace NHibernate.Impl {
 			return GuessType(clazz);
 		}
 
-		private IType GuessType(System.Type clazz) {
-			string typename = clazz.Name;
-			IType type = TypeFactory.HueristicType(typename);
+		private IType GuessType(System.Type clazz) 
+		{
+			string typename = clazz.AssemblyQualifiedName;
+			IType type = TypeFactory.HueristicType( typename ); 
 			bool serializable = type!=null && type is SerializableType;
-			if ( type==null || serializable ) {
-				try {
+			if ( type==null || serializable ) 
+			{
+				try 
+				{
 					session.Factory.GetPersister(clazz);
-				} catch (MappingException) {
-					if (serializable) { 
+				} 
+				catch (MappingException) 
+				{
+					if (serializable) 
+					{ 
 						return type; 
 					} 
-					else { 
+					else 
+					{ 
 						throw new HibernateException("Could not determine a type for class: " + typename);
 					}
 				}
 				return NHibernate.Entity(clazz);
 			}
-			else {
+			else 
+			{
 				return type;
 			}
 		}

@@ -2,41 +2,38 @@ using System;
 using System.Collections;
 using NHibernate.Type;
 
-namespace NHibernate {
+namespace NHibernate 
+{
 	/// <summary>
-	/// An object-oriented representation of a Hibernate query.
+	/// An object-oriented representation of a NHibernate query.
 	/// </summary>
 	/// <remarks>
-	/// A <c>Query</c> instance is obtained by calling <c>ISession.CreateQuery()</c>. This interface
+	/// An <c>IQuery</c> instance is obtained by calling <c>ISession.CreateQuery()</c>. This interface
 	/// exposes some extra functionality beyond that provided by <c>ISession.Iterate()</c> and
 	/// <c>ISession.Find()</c>;
 	/// <list>
 	///		<item>A particulare page of the result set may be selected by calling 
 	///		<c>SetMaxResults()</c>, <c>SetFirstResult</c></item>
 	///		<item>Named query parameters may be used</item>
-	///		<item>The results may be returned as an instance of <c>ScrollableResults</c></item>
 	/// </list>
 	/// <para>
-	/// Use of <c>SetFirstResult()</c> requires that the ADO driver implements scrollable record sets
-	/// </para>
-	/// <para>
 	/// Named query parameters are tokens of the form <c>:name</c> in the query string. A value is bound
-	/// to the <c>integer</c> parameter <c>:foo</c> by calling
+	/// to the <c>Int32</c> parameter <c>:foo</c> by calling
 	/// <code>
-	///		SetParameter("foo", foo, Hibernate.Int32);
+	///		SetParameter("foo", foo, NHibernate.Int32);
 	/// </code>
 	/// for example. A name may appear multiple times in the query string.
 	/// </para>
 	/// <para>
 	///	JDBC-stype <c>?</c> parameters are also supported. To bind a value to a JDBC-style
-	///	parameter use a set method that accepts an <c>int</c> positional argument (numbered from
-	///	zero, contrary to JDBC).
+	///	parameter use a set method that accepts an <c>int</c> positional argument - numbered from
+	///	zero.
 	/// </para>
 	/// <para>
 	/// You may not mix and match JDBC-style parameters and named parameters in the same query.
 	/// </para>
 	/// <para>
-	/// Queries are executed by calling <c>List()</c>, <c>Scroll()</c>, or <c>Iterate()</c>. A query
+	/// Queries are executed by calling <c>List()</c> or <c>Iterate()</c>. A query
 	/// may be re-executed by subsequent invocations. Its lifespan is, however, bounded by the lifespan
 	/// of the <c>ISession</c> that created it.
 	/// </para>
@@ -44,30 +41,23 @@ namespace NHibernate {
 	/// Implementors are not intended to be threadsafe.
 	/// </para>
 	/// </remarks>
-	public interface IQuery {
-		
-
+	public interface IQuery 
+	{
 		/// <summary>
 		/// The query string
 		/// </summary>
-		string QueryString {
-			get;
-		}
+		string QueryString { get; }
 
 		/// <summary>
 		/// The Hibernate types of the query result set.
 		/// </summary>
-		IType[] ReturnTypes {
-			get;
-		}
+		IType[] ReturnTypes { get; }
 
 		/// <summary>
 		/// The names of all named parameters of the query
 		/// </summary>
 		/// <value>The parameter names, in no particular order</value>
-		string[] NamedParameters {
-			get;
-		}
+		string[] NamedParameters { get; }
 
 		/// <summary>
 		/// Return the query results as an <c>ICollection</c>. If the query contains multiple results
@@ -78,16 +68,6 @@ namespace NHibernate {
 		/// identifiers only.
 		/// </remarks>
 		IEnumerable Enumerable();
-
-		/// <summary>
-		/// Return the query results as <c>ScrollableResults</c>. The scrollability of the returned
-		/// results depends upon the ADO support for scrollable <c>ResultSet</c>
-		/// </summary>
-		/// <remarks>
-		/// Entities returned as results are initialized on demand. The first SQL query returns
-		/// identifier only.
-		/// </remarks>
-		//IScrollableResults GetScrollableResults();
 
 		/// <summary>
 		/// Return the query results as a <c>IList</c>. If the query contains multiple results per row,
