@@ -33,14 +33,14 @@ namespace NHibernate.Driver
 			commandType = System.Type.GetType("ByteFX.Data.MySqlClient.MySqlCommand, ByteFX.Data");
 		}
 
-		public override IDbConnection CreateConnection()
+		public override System.Type CommandType
 		{
-			return (IDbConnection) Activator.CreateInstance(connectionType);
+			get	{ return commandType; }
 		}
 
-		public override IDbCommand CreateCommand() 
+		public override System.Type ConnectionType
 		{
-			return (IDbCommand) Activator.CreateInstance(commandType);
+			get	{ return connectionType; }
 		}
 
 		public override bool UseNamedPrefixInSql 

@@ -5,17 +5,18 @@ using System.Reflection;
 namespace NHibernate.Driver
 {
 	/// <summary>
-	/// Summary description for FirebirdDriver.
+	/// A NHibernate Driver for using the Oracle DataProvider	
+	/// <see cref="System.Data.OracleClient.OracleConnection"/>.
 	/// </summary>
-	public class FirebirdDriver : DriverBase
+	public class OracleClientDriver: DriverBase
 	{
 		private System.Type connectionType;
 		private System.Type commandType;
 
-		public FirebirdDriver()
+		public OracleClientDriver()
 		{
-			connectionType = System.Type.GetType("FirebirdSql.Data.Firebird.FbConnection, FirebirdSql.Data.Firebird");
-			commandType = System.Type.GetType("FirebirdSql.Data.Firebird.FbCommand, FirebirdSql.Data.Firebird");
+			connectionType = System.Type.GetType("System.Data.OracleClient.OracleConnection, System.Data.OracleClient, version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+			commandType = System.Type.GetType("System.Data.OracleClient.OracleCommand, System.Data.OracleClient, version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 		}
 
 		public override System.Type CommandType
@@ -40,7 +41,8 @@ namespace NHibernate.Driver
 
 		public override string NamedPrefix 	
 		{
-			get {return "@";}
+			get {return ":";}
 		}
 	}
 }
+

@@ -12,6 +12,16 @@ namespace NHibernate.Driver
 		{
 		}
 		
+		public override System.Type CommandType
+		{
+			get	{ return typeof(System.Data.SqlClient.SqlCommand); }
+		}
+
+		public override System.Type ConnectionType
+		{
+			get	{ return typeof(System.Data.SqlClient.SqlConnection); }
+		}
+
 		public override IDbConnection CreateConnection()
 		{
 			return new System.Data.SqlClient.SqlConnection();

@@ -37,6 +37,16 @@ namespace NHibernate.Driver
 	{
 
 		/// <summary>
+		/// The Type used to create an IDbConnection
+		/// </summary>
+		System.Type ConnectionType { get; }
+
+		/// <summary>
+		/// The Type used to create an IDbCommand
+		/// </summary>
+		System.Type CommandType { get; }
+
+		/// <summary>
 		/// Creates an uninitialized IDbConnection object for the specific Driver
 		/// </summary>
 		IDbConnection CreateConnection();

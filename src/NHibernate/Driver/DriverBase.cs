@@ -16,9 +16,18 @@ namespace NHibernate.Driver
 
 		#region IDriver Members
 
-		public abstract IDbConnection CreateConnection();
+		public abstract System.Type CommandType {get; }
+		public abstract System.Type ConnectionType {get; }
 
-		public abstract IDbCommand CreateCommand();
+		public virtual IDbConnection CreateConnection() 
+		{
+			return (IDbConnection) Activator.CreateInstance(ConnectionType);
+		}
+
+		public virtual IDbCommand CreateCommand()
+		{
+			return (IDbCommand) Activator.CreateInstance(CommandType);
+		}
 
 		public abstract bool UseNamedPrefixInSql {get;}
 

@@ -15,6 +15,16 @@ namespace NHibernate.Driver
 		{
 		}
 		
+		public override System.Type CommandType
+		{
+			get	{ return typeof(System.Data.OleDb.OleDbCommand); }
+		}
+
+		public override System.Type ConnectionType
+		{
+			get	{ return typeof(System.Data.OleDb.OleDbConnection); }
+		}
+
 		public override IDbConnection CreateConnection()
 		{
 			return new System.Data.OleDb.OleDbConnection();

@@ -15,6 +15,16 @@ namespace NHibernate.Driver
 		{
 		}
 		
+		public override System.Type CommandType
+		{
+			get	{ return typeof(System.Data.Odbc.OdbcCommand); }
+		}
+
+		public override System.Type ConnectionType
+		{
+			get	{ return typeof(System.Data.Odbc.OdbcConnection); }
+		}
+
 		public override IDbConnection CreateConnection()
 		{
 			return new System.Data.Odbc.OdbcConnection();
