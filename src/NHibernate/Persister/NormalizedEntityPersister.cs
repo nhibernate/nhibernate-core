@@ -17,55 +17,73 @@ namespace NHibernate.Persister {
 	/// </summary>
 	public class NormalizedEntityPersister : AbstractEntityPersister {
 		
-		private ISessionFactoryImplementor factory;
+		private readonly ISessionFactoryImplementor factory;
+		
+		// the class hierarchy structure
+		private readonly string qualifiedTableName;
+		private readonly string[] tableNames;
+		private readonly string[][] tableKeyColumns;
+		
+		private readonly System.Type[] subclassClosure;
+		private readonly string[] subclassTableNameClosure;
+		private readonly string[][] subclassTableKeyColumns;
+		private readonly bool[] isClassOrSuperclassTable;
 
-		private string qualifiedTableName;
-		private string[] tableNames;
-		private string[][] tableKeyColumns;
-		private string[] subclassTableNameClosure;
-		private string[][] subclassTableKeyColumns;
-		private bool[] isClassOrSuperclassTable;
+		// SQL strings
+		private readonly string[] sqlDeleteStrings;
+		private readonly string[] sqlInsertStrings;
+		private readonly string[] sqlIdentityInsertStrings;
+		private readonly string[] sqlUpdateStrings;
 
-		private string[] deleteStrings;
-		private string[] insertStrings;
-		private string[] identityInsertStrings;
-		private string[] updateStrings;
+		// properties of this class, including inherited properties
+		private readonly int[] propertyColumnSpans;
+		private readonly int[] propertyTables;
+		private readonly bool[] propertyHasColumns;
+		private readonly string[][] propertyColumnNames;
+		private readonly string[][] propertyColumnNameAliases;
 
-		private OuterJoinLoaderType[] joinedFetch;
-		private int[] propertyColumnSpans;
-		private int[] propertyTables;
-		private bool[] hasColumns;
-		private string[][] propertyColumnNames;
-		private string[][] propertyColumnNameAliases;
-		private bool[] definedOnSubclass;
-		private string[][] subclassPropertyColumnNameClosure;
-		private int[] subclassPropertyTableNumberClosure;
+		// the closure of all properties in the entire hierarchy including
+		// subclasses and superclasses of this class
+		private readonly string[][] subclassPropertyColumnNameClosure;
+		private readonly int[] subclassPropertyTableNumberClosure;
+		private readonly IType[] subclassPropertyTypeClosure;
+		private readonly OuterJoinLoaderType[] subclassPropertyEnableJoinedFetch;
+		private readonly bool[] propertyDefinedOnSubclass;
+		private readonly Hashtable tableNumberByPropertyPath = new Hashtable();
 
-		private string[] subclassColumnClosure;
-		private string[] subclassColumnClosureAliases;
-		private int[] subclassColumnTableNumberClosure;
-		private IType[] subclassPropertyTypeClosure;
-		private System.Type[] subclassClosure;
+		// the closure of all columns used by the entire hierarchy including
+		// subclasses and superclasses of this class
+		private readonly string[] subclassColumnClosure;
+		private readonly string[] subclassColumnClosureAliases;
+		private readonly int[] subclassColumnTableNumberClosure;
+		
+		// subclass discrimination works by assigning particular
+		// values to certain combinations of null primary key
+		// values in the outer join using an SQL CASE
+		private readonly Hashtable subclassesByDiscriminatorValue = new Hashtable();
+		private readonly string[] discriminators;
+		private readonly string[] notNullColumns;
+		private readonly int[] tableNumbers;
 
-		private Hashtable tableNumberByPropertyPath = new Hashtable();
-
-		private Hashtable subclassesByDiscriminatorValue = new Hashtable();
-		private string[] discriminators;
-		private string[] notNullColumns;
-		private int[] tableNumbers;
-
-		private IDiscriminatorType discriminatorType;
-		private string discriminatorSQLString;
-		private string discriminatorColumnName;
+		private readonly IDiscriminatorType discriminatorType;
+		private readonly string discriminatorSQLString;
+		private readonly string discriminatorColumnName;
 
 		protected IUniqueEntityLoader loader;
-		protected IDictionary lockers = new Hashtable();
+		protected readonly IDictionary lockers = new Hashtable();
+		
+		private readonly bool[] allProperties;
 
+		private static readonly string[] StringArray = {};
+		private static readonly IType[] TypeArray = {};
 
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(NormalizedEntityPersister)); 
 
 		public override void PostInstantiate(ISessionFactoryImplementor factory) {
 
+			InitPropertyPaths(factory); 
+    
+			//TODO: move into InitPropertyPaths 
 			Hashtable mods = new Hashtable();
 			foreach( DictionaryEntry e in typesByPropertyPath ) {
 				IType type = (IType) e.Value;
@@ -85,7 +103,7 @@ namespace NHibernate.Persister {
 					mods.Add( idpath, idType);
 					columnNamesByPropertyPath.Add( idpath, columns );
 					tableNumberByPropertyPath.Add( idpath, table );
-					if ( idType.IsComponentType ) {
+					if ( idType.IsComponentType || idType.IsObjectType ) {
 						IAbstractComponentType actype = (IAbstractComponentType) idType;
 						string[] props = actype.PropertyNames;
 						if (props.Length!=columns.Length) throw new MappingException("broken mapping for: " + ClassName + StringHelper.Dot + path);
@@ -106,7 +124,7 @@ namespace NHibernate.Persister {
 		}
 
 		public override bool IsDefinedOnSubclass(int i) {
-			return definedOnSubclass[i];
+			return propertyDefinedOnSubclass[i];
 		}
 		public override string TableName {
 			get { return qualifiedTableName; }
@@ -139,31 +157,53 @@ namespace NHibernate.Persister {
 			return (System.Type) subclassesByDiscriminatorValue[value];
 		}
 		public override OuterJoinLoaderType EnableJoinedFetch(int i) {
-			return joinedFetch[i];
+			return subclassPropertyEnableJoinedFetch[i];
 		}
 		public override object IdentifierSpace {
 			get { return qualifiedTableName; }
 		}
 		public override object[] PropertySpaces {
-			get { return tableNames; }
+			get {
+				return tableNames; // don't need subclass tables, because they can't appear in conditions
+			}
 		}
 
 		//Access cached SQL
 
-		protected string[] SqlDelete {
-			get { return deleteStrings; }
+		/// <summary>
+		/// The queries that delete rows by id (and version)
+		/// </summary>
+		protected string[] SqlDeleteStrings {
+			get { return sqlDeleteStrings; }
 		}
-		protected string[] SqlInsert {
-			get { return insertStrings; }
+
+		/// <summary>
+		/// The queries that insert rows with a given id
+		/// </summary>
+		protected string[] SqlInsertStrings {
+			get { return sqlInsertStrings; }
 		}
-		protected string[] SqlIdentityInsert {
-			get { return identityInsertStrings; }
+
+		/// <summary>
+		/// The queries that insert rows, letting the database generate an id
+		/// </summary>
+		protected string[] SqlIdentityInsertStrings {
+			get { return sqlIdentityInsertStrings; }
 		}
-		protected string[] SqlUpdate {
-			get { return updateStrings; }
+
+		/// <summary>
+		/// The queries that update rows by id (and version)
+		/// </summary>
+		protected string[] SqlUpdateStrings {
+			get { return sqlUpdateStrings; }
 		}
 
 		// Generate all the SQL
+
+		/// <summary>
+		/// Generate the SQL that deletes rows by id (and version)
+		/// </summary>
+		/// <returns></returns>
 		protected string[] GenerateDeleteStrings() {
 			string[] result = new string[ tableNames.Length ];
 			for (int i=0; i<tableNames.Length; i++ ) {
@@ -176,6 +216,12 @@ namespace NHibernate.Persister {
 			return result;
 		}
 
+		/// <summary>
+		/// Generate the SQL that inserts rows
+		/// </summary>
+		/// <param name="identityInsert"></param>
+		/// <param name="includeProperty"></param>
+		/// <returns></returns>
 		protected string[] GenerateInsertStrings(bool identityInsert, bool[] includeProperty) {
 			string[] result = new string[tableNames.Length];
 			for (int j=0; j<tableNames.Length; j++) {
@@ -199,6 +245,11 @@ namespace NHibernate.Persister {
 			return result;
 		}
 
+		/// <summary>
+		/// Generate the SQL that updates rows by id (and version)
+		/// </summary>
+		/// <param name="includeProperty"></param>
+		/// <returns></returns>
 		protected string[] GenerateUpdateStrings(bool[] includeProperty) {
 			string[] result = new string[ tableNames.Length ];
 			for (int j=0; j<tableNames.Length; j++ ) {
@@ -326,14 +377,6 @@ namespace NHibernate.Persister {
 			}
 		}
 
-		private bool[] AllProperties {
-			get {
-				bool[] result = new bool[hydrateSpan];
-				for (int i=0; i< result.Length; i++) result[i] = true;
-				return result;
-			}
-		}
-
 		/// <summary>
 		/// Persist an object
 		/// </summary>
@@ -351,7 +394,7 @@ namespace NHibernate.Persister {
 			IDbCommand[] statements = new IDbCommand[ tableNames.Length ];
 			try {
 				for (int i=0; i<tableNames.Length; i++ ) {
-					statements[i] = session.Batcher.PrepareStatement( SqlInsert[i] );
+					statements[i] = session.Batcher.PrepareStatement( SqlInsertStrings[i] );
 				}
 
 				// write the value of fields onto the prepared statements - we MUST use the state at the time
@@ -382,11 +425,11 @@ namespace NHibernate.Persister {
 				if ( IsVersioned ) log.Debug( "Version: " + Versioning.GetVersion(fields, this) );
 			}
 
-			string[] sql = SqlIdentityInsert;
+			string[] sql = SqlIdentityInsertStrings;
 
 			IDbCommand statement = session.Batcher.PrepareStatement( sql[0] );
 			try {
-				Dehydrate(null, fields, AllProperties, 0, statement, session);
+				Dehydrate(null, fields, allProperties, 0, statement, session);
 				statement.ExecuteNonQuery();
 			} catch (Exception e) {
 				throw e;
@@ -415,7 +458,7 @@ namespace NHibernate.Persister {
 			for (int i=1; i<tableNames.Length; i++ ) {
 				statement = session.Batcher.PrepareStatement( sql[i] );
 				try {
-					Dehydrate(id, fields, AllProperties, i, statement, session);
+					Dehydrate(id, fields, allProperties, i, statement, session);
 					statement.ExecuteNonQuery();
 				} catch ( Exception e) {
 					throw e;
@@ -435,7 +478,7 @@ namespace NHibernate.Persister {
 			try {
 
 				for (int i=0; i<tableNames.Length; i++) {
-					statements[i] = session.Batcher.PrepareStatement( SqlDelete[i] );
+					statements[i] = session.Batcher.PrepareStatement( SqlDeleteStrings[i] );
 				} 
 
 				if ( IsVersioned ) VersionType.NullSafeSet( statements[0], version, IdentifierColumnNames.Length + 1, session );
@@ -459,7 +502,7 @@ namespace NHibernate.Persister {
 		public override void Update(object id, object[] fields, int[] dirtyFields, object oldVersion, object obj, ISessionImplementor session) {
 			bool[] tableUpdateNeeded;
 			if (dirtyFields ==null) {
-				tableUpdateNeeded = hasColumns; //for object that came in via update()
+				tableUpdateNeeded = propertyHasColumns; //for object that came in via update()
 			} else {
 				tableUpdateNeeded = new bool[tableNames.Length];
 				for (int i=0; i<dirtyFields.Length; i++ ) {
@@ -479,7 +522,7 @@ namespace NHibernate.Persister {
 				}
 				Update(id, fields, propsToUpdate, tableUpdateNeeded, oldVersion, obj, GenerateUpdateStrings(propsToUpdate), session);
 			} else {
-				Update(id, fields, PropertyUpdateability, tableUpdateNeeded, oldVersion, obj, SqlUpdate, session);
+				Update(id, fields, PropertyUpdateability, tableUpdateNeeded, oldVersion, obj, SqlUpdateStrings, session);
 			}
 		}
 
@@ -614,12 +657,7 @@ namespace NHibernate.Persister {
 				propertyColumnNames[i] = propCols;
 				propertyColumnNameAliases[i] = propAliases;
 
-				InitPropertyPaths(prop, StringHelper.EmptyString);
 				i++;
-			}
-
-			if (model.HasIdentifierProperty && model.IdentifierProperty.IsComposite) {
-				InitPropertyPaths( model.IdentifierProperty, StringHelper.EmptyString );
 			}
 
 			ArrayList columns = new ArrayList();
@@ -657,15 +695,15 @@ namespace NHibernate.Persister {
 
 			subclassPropertyColumnNameClosure = (string[][]) propColumns.ToArray( typeof(string[]) );
 
-			joinedFetch = (OuterJoinLoaderType[]) joinedFetchesList.ToArray( typeof(OuterJoinLoaderType) );
-			definedOnSubclass = (bool[]) definedBySubclass.ToArray( typeof(bool) );
+			subclassPropertyEnableJoinedFetch  = (OuterJoinLoaderType[]) joinedFetchesList.ToArray( typeof(OuterJoinLoaderType) );
+			propertyDefinedOnSubclass = (bool[]) definedBySubclass.ToArray( typeof(bool) );
 
-			deleteStrings = GenerateDeleteStrings();
-			insertStrings = GenerateInsertStrings(false, PropertyInsertability );
-			identityInsertStrings = IsIdentifierAssignedByInsert ?
+			sqlDeleteStrings = GenerateDeleteStrings();
+			sqlInsertStrings = GenerateInsertStrings(false, PropertyInsertability );
+			sqlIdentityInsertStrings = IsIdentifierAssignedByInsert ?
 				GenerateInsertStrings(true, PropertyInsertability) :
 				null;
-			updateStrings = GenerateUpdateStrings( PropertyUpdateability );
+			sqlUpdateStrings = GenerateUpdateStrings( PropertyUpdateability );
 
 			string lockString = GenerateLockString();
 			lockers.Add( LockMode.Read, lockString);
@@ -720,36 +758,57 @@ namespace NHibernate.Persister {
 				p++;
 			}
 
-			hasColumns = new bool[updateStrings.Length];
-			for (int m=0; m<updateStrings.Length; m++) {
-				hasColumns[m] = updateStrings[m]!=null;
+			propertyHasColumns = new bool[sqlUpdateStrings.Length];
+			for (int m=0; m<sqlUpdateStrings.Length; m++) {
+				propertyHasColumns[m] = sqlUpdateStrings[m]!=null;
 			}
+
+			allProperties = new bool[hydrateSpan];
+			for(int t=0; t<allProperties.Length; t++)
+				allProperties[t] = true;
 		}
 
-		private void InitPropertyPaths(Property prop, string path) {
-			path += prop.Name;
-			if (prop.IsComposite ) {
-				foreach(Property subProp in ((Component)prop.Value).PropertyCollection) {
-					typesByPropertyPath.Add( path, prop.Type);
-					InitPropertyPaths( subProp, path + "." );
+		private void InitPropertyPaths(IMapping mapping) {
+		
+			IType[] propertyTypes = PropertyTypes;
+			string[] propertyNames = PropertyNames;
+			for ( int i=0; i<propertyNames.Length; i++ ) {
+				InitPropertyPaths( propertyNames[i], propertyTypes[i], propertyColumnNames[i], propertyTables[i], mapping );
+			}
+		
+			string idProp = IdentifierPropertyName;
+			if (idProp!=null) InitPropertyPaths( idProp, IdentifierType, IdentifierColumnNames, 0, mapping );
+			if ( hasEmbeddedIdentifier ) InitPropertyPaths( null, IdentifierType, IdentifierColumnNames, 0, mapping );
+			InitPropertyPaths( PathExpressionParser.EntityID, IdentifierType, IdentifierColumnNames, 0, mapping );
+
+			typesByPropertyPath.Add( PathExpressionParser.EntityClass, DiscriminatorType );
+			columnNamesByPropertyPath.Add( PathExpressionParser.EntityClass, new string[] { DiscriminatorColumnName } );
+			tableNumberByPropertyPath.Add( PathExpressionParser.EntityClass, (int)0 );
+		}
+	
+		private void InitPropertyPaths(string propertyName, IType propertyType, string[] columns, int table, IMapping mapping) {
+		
+			if ( propertyName!=null ) {
+				typesByPropertyPath.Add(propertyName, propertyType);
+				columnNamesByPropertyPath.Add(propertyName, columns);
+				tableNumberByPropertyPath.Add( propertyName, (int)table );
+			}
+	
+			if ( propertyType.IsComponentType ) {
+				IAbstractComponentType compType = (IAbstractComponentType) propertyType; 
+				string[] props = compType.PropertyNames;
+				IType[] types = compType.Subtypes;
+				int count=0;
+				for ( int k=0; k<props.Length; k++ ) {
+					int len = types[k].GetColumnSpan(mapping);
+					string[] slice = new string[len];
+					for ( int j=0; j<len; j++ ) {
+						slice[j] = columns[count++];
+					}
+					string path = (propertyName==null) ? props[k] : propertyName + '.' + props[k];
+					InitPropertyPaths(path, types[k], slice, table, mapping);
 				}
 			}
-
-			string[] names = new string[ prop.ColumnSpan ];
-			int k=0;
-			foreach( Column col in prop.ColumnCollection ) {
-				names[k] = col.Name;
-				k++;
-			}
-
-			tableNumberByPropertyPath.Add(
-				path,
-				GetTableId( prop.Value.Table.GetQualifiedName( factory.DefaultSchema ), subclassTableNameClosure) );
-
-			IType type = prop.Type;
-			typesByPropertyPath.Add(path, type);
-
-			columnNamesByPropertyPath.Add(path, names);
 		}
 
 		public override string FromTableFragment(string alias) {
@@ -779,8 +838,15 @@ namespace NHibernate.Persister {
 		}
 
 		public override string[] ToColumns(string alias, string property) {
-			string[] idcols = base.ToColumns(alias, property);
-			if (idcols!=null) return idcols;
+			if(PathExpressionParser.EntityClass.Equals(property) ) {
+				// This doesn't actually seem to work but it *might* 
+				// work on some dbs. Also it doesn't work if there 
+				// are multiple columns of results because it 
+				// is not accounting for the suffix: 
+				// return new String[] { getDiscriminatorColumnName() }; 
+
+				return new string[] { DiscriminatorFragment(alias).ToFragmentString() };
+			}
 
 			string[] cols = GetPropertyColumnNames(property);
 			if (cols==null) throw new QueryException("unresolved property: " + property);
@@ -816,21 +882,28 @@ namespace NHibernate.Persister {
 			}
 
 			if (HasSubclasses) {
-				CaseFragment cases = dialect.CreateCaseFragment()
-					.SetReturnColumnName( DiscriminatorColumnName, suffix );
+				return ", " + 
+					DiscriminatorFragment(alias) 
+					.SetReturnColumnName( DiscriminatorColumnName, suffix ) 
+					.ToFragmentString() + 
+					frag.ToFragmentString(); 
+			} 
+			else { 
+				return frag.ToFragmentString(); 
+			} 
+		} 
 
-				for (int i=0; i<discriminators.Length; i++) {
-					cases.AddWhenColumnNotNull(
-						Alias( alias, tableNumbers[i] ),
-						notNullColumns[i],
-						discriminators[i]
-						);
-				}
-
-				return ", " + cases.ToFragmentString() + frag.ToFragmentString();
-			} else {
-				return frag.ToFragmentString();
+		private CaseFragment DiscriminatorFragment(string alias) {
+			CaseFragment cases = dialect.CreateCaseFragment();
+				
+			for (int i=0; i<discriminators.Length; i++) {
+				cases.AddWhenColumnNotNull(
+					Alias( alias, tableNumbers[i] ),
+					notNullColumns[i],
+					discriminators[i]
+					);
 			}
+			return cases;
 		}
 
 		private string Alias(string name, int tableNumber) {

@@ -53,7 +53,7 @@ namespace NHibernate.Persister {
 		private System.Type[] proxyInterfaces; //not array?
 		private System.Type concreteProxyClass;
 		private bool hasProxy;
-		private bool hasEmbeddedIdentifier;
+		protected bool hasEmbeddedIdentifier;
 
 		private string[] identifierColumnNames;
 		private Cascades.IdentifierValue unsavedIdentifierValue;
@@ -107,50 +107,10 @@ namespace NHibernate.Persister {
 				.Substring(2); //string leading ", "
 		}
 
-		public virtual string[] ToColumns(string name, string path) {
-			string[] cols = null;
-
-			if ( path.Equals(PathExpressionParser.EntityClass) ) {
-				cols = new string[] { DiscriminatorColumnName };
-			} else {
-				string idprop = IdentifierPropertyName;
-				if (PathExpressionParser.EntityID.Equals(path) ||
-								( idprop!=null && path.Equals(idprop) ) ) {
-					cols = IdentifierColumnNames;
-				} else if (path.StartsWith(PathExpressionParser.EntityID + StringHelper.Dot) ||
-								( idprop!=null && path.StartsWith(idprop + StringHelper.Dot) ) ) {
-					int loc = path.IndexOf(".");
-					string componentPath = path.Substring(loc+1);
-
-					if (IdentifierType.IsComponentType) {
-						cols = GetIdentifierPropertyColumnNames(componentPath);
-						if (cols==null) throw new QueryException("composite id path not found (or dereferenced a <key-many-to-one>)");
-					} else {
-						throw new QueryException("unresolved id property: " + path);
-					}
-				} else {
-					return null;
-				}
-			}
-			return StringHelper.Prefix(cols, name + StringHelper.Dot);
-		}
+		public abstract string[] ToColumns(string name, string path) ;
 
 		public IType GetPropertyType(string path) {
-			if (path.Equals(PathExpressionParser.EntityClass)) {
-				return DiscriminatorType;
-			} else {
-				string idprop = IdentifierPropertyName;
-
-				if ( PathExpressionParser.EntityID.Equals(path) ||
-					(idprop!=null && path.Equals(idprop)) ) {
-					return IdentifierType;
-				} else if ( path.StartsWith(PathExpressionParser.EntityID + StringHelper.Dot) ||
-					(idprop != null && path.StartsWith(idprop + StringHelper.Dot) ) ) {
-					return GetIdentifierPropertyType( path.Substring(PathExpressionParser.EntityID.Length+1) );
-				} else {
-					return (IType) typesByPropertyPath[path];
-				}
-			}
+			return (IType) typesByPropertyPath[path];
 		}
 
 		public Cascades.CascadeStyle[] PropertyCascadeStyles {
@@ -158,11 +118,13 @@ namespace NHibernate.Persister {
 		}
 
 		public void SetPropertyValues(object obj, object[] values) {
+			//TODO: optimizer implementation
 			for (int j=0; j<hydrateSpan; j++)
 				Setters[j].Set(obj, values[j]);
 		}
 
 		public object[] GetPropertyValues(object obj) {
+			//TODO: optimizer implementation
 			object[] result = new object[hydrateSpan];
 			for (int j=0;j<hydrateSpan; j++)
 				result[j] = Getters[j].Get(obj);
@@ -208,16 +170,21 @@ namespace NHibernate.Persister {
 		}
 
 		public void SetIdentifier(object obj, object id) {
-			if (identifierSetter!=null) {
+			if(hasEmbeddedIdentifier) {
+				ComponentType copier = (ComponentType) identifierType;
+				copier.SetPropertyValues(obj, copier.GetPropertyValues(id));
+			}
+			else if (identifierSetter!=null) {
 				identifierSetter.Set(obj, id);
 			}
 		}
 
 		public object Instantiate(object id) {
-			if (hasEmbeddedIdentifier) {
+			if (hasEmbeddedIdentifier && id.GetType() == mappedClass) {
 				return id;
 			} else {
 				if (abstractClass) throw new HibernateException("Cannot instantiate abstract class or interface: " + className);
+				//TODO: optimizer implementation
 				try {
 					return constructor.Invoke(null);
 				} catch (Exception e) {
@@ -304,14 +271,6 @@ namespace NHibernate.Persister {
 
 		public string VersionColumnName {
 			get { return versionColumnName; }
-		}
-
-		public string[] GetIdentifierPropertyColumnNames(string path) {
-			return (string[]) idColumnNamesByPropertyPath[path];
-		}
-
-		public IType GetIdentifierPropertyType(string path) {
-			return (IType) idTypesByPropertyPath[path];
 		}
 
 		public string[] GetPropertyColumnNames(string path) {
@@ -403,7 +362,8 @@ namespace NHibernate.Persister {
 
 				PropertyInfo proxyGetter = identifierGetter.Property;
 				try {
-					proxyGetter = ReflectHelper.GetGetter( model.ProxyInterface, identifierPropertyName ).Property;
+					System.Type proxy = model.ProxyInterface;
+					if(proxy != null) proxyGetter = ReflectHelper.GetGetter( proxy, identifierPropertyName ).Property;
 				} catch (Exception) {}
 				proxyIdentifierProperty = proxyGetter;
 			} else {
@@ -427,43 +387,30 @@ namespace NHibernate.Persister {
 				i++;
 			}
 
-			if (idValue.IsComposite) {
-				foreach(Property prop in ((Component)idValue).PropertyCollection) {
-					idTypesByPropertyPath[prop.Name] = prop.Type;
-					
-					string[] cols = new string[prop.ColumnSpan];
-					int j=0;
-					foreach(Column col in prop.ColumnCollection) {
-						cols[j++] = col.Name;
-					}
-
-					idColumnNamesByPropertyPath[ prop.Name ] = cols;
-					if (model.HasEmbeddedIdentifier) {
-						columnNamesByPropertyPath[ prop.Name ] = cols;
-						typesByPropertyPath[ prop.Name ] = prop.Type;
-					}
-				}
-			}
-
 			// GENERATOR
 			idgen = model.Identifier.CreateIdentifierGenerator(dialect);
 			useIdentityColumn = idgen is IdentityGenerator;
-			identitySelectString = (useIdentityColumn) ? dialect.IdentitySelectString : null;
+			identitySelectString = useIdentityColumn ? dialect.IdentitySelectString : null;
 
 			// UNSAVED-VALUE:
 
-			string cts = model.Identifier.NullValue;
-			if (cts==null || "any".Equals(cts) ) {
+			string unsavedValue = model.Identifier.NullValue;
+			if (unsavedValue==null || "any".Equals(unsavedValue) ) {
 				unsavedIdentifierValue = Cascades.IdentifierValue.SaveAny;
-			} else if ( "none".Equals(cts) ) {
+			} else if ( "none".Equals(unsavedValue) ) {
 				unsavedIdentifierValue = Cascades.IdentifierValue.SaveNone;
-			} else if ( "null".Equals(cts) ) {
+			} else if ( "null".Equals(unsavedValue) ) {
 				unsavedIdentifierValue = Cascades.IdentifierValue.SaveNull;
 			} else {
+				IType idType = model.Identifier.Type;
 				try {
-					unsavedIdentifierValue = new Cascades.IdentifierValue( ((IIdentifierType)model.Identifier.Type ).StringToObject(cts) );
-				} catch (Exception) {
-					throw new MappingException("Could not parse unsaved-value: " + cts);
+					unsavedIdentifierValue = new Cascades.IdentifierValue( ((IIdentifierType)idType ).StringToObject(unsavedValue) );
+				}
+				catch (InvalidCastException) {
+					throw new MappingException("Bad identifier type: " + idType.GetType().Name );
+				}
+				catch (Exception) {
+					throw new MappingException("Could not parse unsaved-value: " + unsavedValue);
 				}
 			}
 
@@ -514,14 +461,20 @@ namespace NHibernate.Persister {
 				getterNames[i] = getters[i].Property.Name;
 				setterNames[i] = setters[i].Property.Name;
 				types[i] = getters[i].Property.PropertyType;
+				//propertyTypes[i] = getters[i].Property.MemberType;
 				propertyUpdateability[i] = prop.IsUpdateable;
 				propertyInsertability[i] = prop.IsInsertable;
+
+				gettersByPropertyName.Add( propertyNames[i], getters[i] );
+				settersByPropertyName.Add( propertyNames[i], setters[i] );
 
 				cascadeStyles[i] = prop.CascadeStyle;
 				if ( cascadeStyles[i] != Cascades.CascadeStyle.StyleNone ) foundCascade = true;
 
 				i++;
 			}
+
+			//TODO: optimizer implementation
 
 			hasCascades = foundCascade;
 			versionProperty = tempVersionProperty;

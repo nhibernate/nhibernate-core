@@ -123,6 +123,14 @@ namespace NHibernate.Mapping {
 			set { proxyInterface = value ; }
 		}
 
+		public virtual bool IsForceDiscriminator {
+			get {
+				return false;
+			}
+			set {
+			}
+		}
+
 		public abstract bool HasEmbeddedIdentifier { get; set;}
 		public abstract System.Type Persister { get; set;}
 		public abstract Table RootTable { get; }

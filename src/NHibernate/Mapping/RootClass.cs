@@ -110,9 +110,9 @@ namespace NHibernate.Mapping {
 			set { throw new InvalidOperationException(); }
 		}
 
-		public bool IsForceDiscriminator {
+		public override bool IsForceDiscriminator {
 			get { return forceDiscriminator; }
-			set { forceDiscriminator = value; }
+			set { this.forceDiscriminator = value; }
 		}
 	}
 }

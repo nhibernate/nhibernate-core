@@ -37,13 +37,6 @@ namespace NHibernate.Persister {
 		IType GetPropertyType(string path);
 
 		/// <summary>
-		/// Given a component path expression, get the type of the composite identifier property
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
-		IType GetIdentifierPropertyType(string path);
-
-		/// <summary>
 		/// Get the where clause fragment, give a query alias
 		/// </summary>
 		/// <param name="alias"></param>
@@ -51,7 +44,7 @@ namespace NHibernate.Persister {
 		/// <param name="includeSublcasses"></param>
 		/// <returns></returns>
 		string QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
-
+		
 		/// <summary>
 		/// Given a query alias and a property path, return the qualified column name
 		/// </summary>
