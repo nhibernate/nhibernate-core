@@ -229,7 +229,7 @@ namespace NHibernate.Loader
 				} 
 				finally 
 				{
-					ClosePreparedStatement(st, rs, session);
+					ClosePreparedCommand(st, rs, session);
 				}
 			}
 
@@ -558,22 +558,6 @@ namespace NHibernate.Loader
 				( dialect.PreferLimit || GetFirstRow(selection)!=0);
 		}
 
-		[Obsolete("Use PrepareCommand instead")]
-		protected virtual IDbCommand PrepareQueryStatement(string sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
-		{
-			// TODO: this is just a hack because I moved it to Hql.QueryTranslator.  It will be removed
-			// once everything is converted to SqlString instead of strings holding sql...
-			return null;
-		}
-
-		[Obsolete("Use PrepareCommand instead")]
-		protected virtual IDbCommand PrepareQueryStatement(SqlString sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
-		{
-			// TODO: this is just a hack because I moved it to Hql.QueryTranslator.  It will be removed
-			// once everything is converted to SqlString instead of strings holding sql...
-			return null;
-		}
-
 		/// <summary>
 		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
 		/// database to Load an Entity.
@@ -638,7 +622,7 @@ namespace NHibernate.Loader
 			//TODO: fix up the Exception handling here...
 			catch(Exception sqle) 
 			{
-				ClosePreparedStatement(command, null, session);
+				ClosePreparedCommand(command, null, session);
 				throw sqle;
 			}
 
@@ -715,14 +699,19 @@ namespace NHibernate.Loader
 			} 
 			catch (Exception sqle) 
 			{
-				ClosePreparedStatement(st, rs, session);
+				ClosePreparedCommand(st, rs, session);
 				throw sqle;
 			}
 		}
 
 		
-		//TODO: H2.0.3 - synch with CloseQueryStatement in the Batcher also
-		protected void ClosePreparedStatement(IDbCommand st, IDataReader reader, ISessionImplementor session) 
+		/// <summary>
+		/// Cleans up the resources used by this Loader.
+		/// </summary>
+		/// <param name="st">The <see cref="IDbCommand"/> to close.</param>
+		/// <param name="reader">The <see cref="IDataReader"/> to close.</param>
+		/// <param name="session">The <see cref="ISession"/> this Loader is using.</param>
+		protected void ClosePreparedCommand(IDbCommand st, IDataReader reader, ISessionImplementor session) 
 		{
 			session.Batcher.CloseQueryCommand(st, reader);
 		}
@@ -730,9 +719,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Bind named parameters to the <c>IDbCommand</c>
 		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="namedParams"></param>
-		/// <param name="session"></param>
+		/// <param name="st">The <see cref="IDbCommand"/> that contains the parameters.</param>
+		/// <param name="namedParams">The named parameters (key) and the values to set.</param>
+		/// <param name="session">The <see cref="ISession"/> this Loader is using.</param>
 		/// <remarks>
 		/// This has an empty implementation on this superclass and should be implemented by
 		/// sublcasses (queries) which allow named parameters.
