@@ -311,6 +311,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NHSpecificTest\BlobberInMemoryFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHSpecificTest\ClassWithCompositeIdFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

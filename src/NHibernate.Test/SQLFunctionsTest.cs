@@ -16,8 +16,8 @@ namespace NHibernate.Test
 		[SetUp]
 		public void SetUp() 
 		{
-			ExportSchema( new string[] { "Simple.hbm.xml"//,
-										   //"Blobber.hbm.xml"
+			ExportSchema( new string[] { "Simple.hbm.xml",
+										"Blobber.hbm.xml"
 									   } );
 		}
 
@@ -64,7 +64,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("HQL 'IN' keyword problems - http://jira.nhibernate.org:8080/browse/NH-84, IScrollableResults - http://jira.nhibernate.org:8080/browse/NH-37")]
+		[Ignore("IScrollableResults - http://jira.nhibernate.org:8080/browse/NH-37")]
 		public void SQLFunctions() 
 		{
 			ISession s = sessions.OpenSession();
@@ -195,8 +195,6 @@ namespace NHibernate.Test
 			q.SetParameter("s", simple);
 			Assert.AreEqual( 1, q.List().Count );
 
-			/*
-			 * http://jira.nhibernate.org:8080/browse/NH-84
 			q = s.CreateQuery("from s in class Simple where s.Name in (:name_list) and s.Count > :count");
 			IList list = new ArrayList(2);
 			list.Add("Simple 1");
@@ -204,7 +202,7 @@ namespace NHibernate.Test
 			q.SetParameterList( "name_list", list );
 			q.SetParameter( "count", (int)-1 );
 			Assert.AreEqual( 1, q.List().Count );
-			*/
+			
 
 			/*
 			 * http://jira.nhibernate.org:8080/browse/NH-37
@@ -225,11 +223,11 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("No BLOB/CLOB support yet - http://jira.nhibernate.org:8080/browse/NH-19")]
+		[Ignore("BLOB/CLOB not implmented like h2.0.3 - http://jira.nhibernate.org:8080/browse/NH-19")]
 		public void BlobClob() 
 		{
 		}
 
-
+		
 	}
 }

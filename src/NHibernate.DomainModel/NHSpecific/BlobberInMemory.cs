@@ -1,11 +1,11 @@
 using System;
 
-namespace NHibernate.DomainModel
+namespace NHibernate.DomainModel.NHSpecific
 {
 	/// <summary>
-	/// Summary description for Blobber.
+	/// Summary description for BlobberInMemory.
 	/// </summary>
-	public class Blobber
+	public class BlobberInMemory
 	{
 		private int _id;
 		private byte[] _blob;
@@ -17,13 +17,13 @@ namespace NHibernate.DomainModel
 			set { _id = value; }
 		}
 
-		public byte[] Blob
+		public byte[] BinaryBlob
 		{
 			get { return _blob; }
 			set { _blob = value; }
 		}
 
-		public string Clob
+		public string StringClob
 		{
 			get { return _clob; }
 			set { _clob = value; }
@@ -32,3 +32,4 @@ namespace NHibernate.DomainModel
 
 	}
 }
+

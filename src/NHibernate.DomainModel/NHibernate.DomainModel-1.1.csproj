@@ -156,6 +156,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Blobber.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "C1.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -623,6 +627,15 @@
                 />
                 <File
                     RelPath = "NHSpecific\BasicClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\BlobberInMemory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\BlobberInMemory.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
