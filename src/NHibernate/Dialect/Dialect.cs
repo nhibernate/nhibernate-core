@@ -15,7 +15,7 @@ namespace NHibernate.Dialect
 {
 	/// <summary>
 	/// Represents a dialect of SQL implemented by a particular RDBMS. Sublcasses
-	/// implement Hibernate compatibility with differen systems
+	/// implement NHibernate compatibility with different systems.
 	/// </summary>
 	/// <remarks>
 	/// Subclasses should provide a public default constructor that <c>Register()</c>
