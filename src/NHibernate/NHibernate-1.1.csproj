@@ -500,6 +500,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\TypeNames.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Driver\ByteFXDataDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
