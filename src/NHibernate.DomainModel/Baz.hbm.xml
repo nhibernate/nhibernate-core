@@ -191,7 +191,11 @@
 			<one-to-many class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel"/>
 		</map>
 		
-		<set name="StringSet" lazy="true" sort="NHibernate.DomainModel.StringComparator, NHibernate.DomainModel">
+		<set 
+			name="StringSet" 
+			lazy="true" 
+			sort="NHibernate.DomainModel.StringComparator, NHibernate.DomainModel" 
+		>
 			<!--<jcs-cache usage="read-write"/>-->
 			<!-- commented out in h2.0.3 also -->
 			<key column="id_"/>

@@ -27,7 +27,7 @@ namespace NHibernate.Test
 				"Many.hbm.xml",
 				"Immutable.hbm.xml" ,
 				"Fee.hbm.xml",
-				//"Vetoer.hbm.xml",
+				"Vetoer.hbm.xml",
 				"Holder.hbm.xml",
 				"Location.hbm.xml",
 				"Stuff.hbm.xml",
@@ -1978,21 +1978,194 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void MultiColumnQueries() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			s.Save(foo);
+			Foo foo1 = new Foo();
+			s.Save(foo1);
+			foo.TheFoo = foo1;
+			IList l = s.Find("select parent, child from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child");
+			Assert.AreEqual( 1, l.Count, "multi-column find" );
+
+			IEnumerator rs = s.Enumerable("select count(distinct child.id), count(distinct parent.id) from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child").GetEnumerator();
+			Assert.IsTrue( rs.MoveNext() );
+			object[] row = (object[]) rs.Current;
+			Assert.AreEqual( 1, row[0], "multi-column count" );
+			Assert.AreEqual( 1, row[1], "multi-column count" );
+			Assert.IsFalse( rs.MoveNext() );
+
+			rs = s.Enumerable("select child.id, parent.id, child.Long from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child").GetEnumerator();
+			Assert.IsTrue( rs.MoveNext() );
+			row = (object[]) rs.Current;
+			Assert.AreEqual( foo.TheFoo.Key, row[0], "multi-column id" );
+			Assert.AreEqual( foo.Key, row[1], "multi-column id" );
+			Assert.AreEqual( foo.TheFoo.Long, row[2], "multi-column property" );
+			Assert.IsFalse( rs.MoveNext() );
+
+			rs = s.Enumerable("select child.id, parent.id, child.Long, child, parent.TheFoo from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child").GetEnumerator();
+			Assert.IsTrue( rs.MoveNext() );
+			row = (object[]) rs.Current;
+			Assert.AreEqual( foo.TheFoo.Key, row[0], "multi-column id" );
+			Assert.AreEqual( foo.Key, row[1], "multi-column id" );
+			Assert.AreEqual( foo.TheFoo.Long, row[2], "multi-column property" );
+			Assert.AreSame( foo.TheFoo, row[3], "multi-column object" );
+			Assert.AreSame( row[3], row[4], "multi-column same object" );
+			Assert.IsFalse( rs.MoveNext() );
+
+			row = (object[])l[0];
+			Assert.AreSame( foo, row[0], "multi-column find" );
+			Assert.AreSame( foo.TheFoo, row[1], "multi-column find" );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			IEnumerator enumer = s.Enumerable("select parent, child from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child and parent.String='a string'").GetEnumerator();
+			int deletions = 0;
+			while( enumer.MoveNext() ) 
+			{
+				object[] pnc = (object[]) enumer.Current;
+				s.Delete(pnc[0]);
+				s.Delete(pnc[1]);
+				deletions++;
+			}
+			Assert.AreEqual( 1, deletions, "multi-column enumerate");
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void DeleteTransient() 
 		{
+			Fee fee = new Fee();
+			ISession s = sessions.OpenSession();
+			ITransaction tx = s.BeginTransaction();
+			s.Save(fee);
+			s.Flush();
+			fee.Count = 123;
+			tx.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			tx = s.BeginTransaction();
+			s.Delete(fee);
+			tx.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			tx = s.BeginTransaction();
+			Assert.AreEqual( 0, s.Find("from fee in class Fee").Count );
+			tx.Commit();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void UpdateFromTransient() 
 		{
+			ISession s = sessions.OpenSession();
+			Fee fee1 = new Fee();
+			s.Save(fee1);
+			Fee fee2 = new Fee();
+			fee1.TheFee = fee2;
+			fee2.TheFee = fee1;
+			fee2.Fees = new Hashtable();
+			Fee fee3 = new Fee();
+			fee3.TheFee = fee1;
+			fee3.AnotherFee = fee2;
+			fee2.AnotherFee = fee3;
+			s.Save(fee3);
+			s.Save(fee2);
+			s.Flush();
+			s.Close();
+
+			fee1.Fi = "changed";
+			s = sessions.OpenSession();
+			s.SaveOrUpdate(fee1);
+			s.Flush();
+			s.Close();
+
+			Qux q = new Qux("quxxy");
+			//TODO: not sure the test will work with this because unsaved-value="0"
+			// and in h2.0.3 it is unsaved-value="null"
+			q.TheKey = 0;
+			fee1.Qux = q;
+			s = sessions.OpenSession();
+			s.SaveOrUpdate(fee1);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			fee1 = (Fee)s.Load( typeof(Fee), fee1.Key );
+			Assert.AreEqual( "changed", fee1.Fi, "updated from transient" );
+			Assert.IsNotNull( fee1.Qux, "unsaved-value" );
+			s.Delete( fee1.Qux );
+			fee1.Qux = null;
+			s.Flush();
+			s.Close();
+
+			fee2.Fi = "CHANGED";
+			fee2.Fees.Add( "an element", new object() );
+			fee1.Fi = "changed again";
+			s = sessions.OpenSession();
+			s.SaveOrUpdate(fee2);
+			s.Update( fee1, fee1.Key );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			Fee fee = new Fee();
+			s.Load( fee, fee2.Key );
+			fee1 = (Fee)s.Load( typeof(Fee), fee1.Key );
+			Assert.AreEqual("changed again", fee1.Fi, "updated from transient" );
+			Assert.AreEqual("CHANGED", fee.Fi, "updated from transient" );
+			Assert.IsTrue( fee.Fees.Contains("an element"), "updated collection" );
+			s.Flush();
+			s.Close();
+
+			fee.Fees.Clear();
+			fee.Fees.Add("new element", new object() );
+			fee1.TheFee = null;
+			s = sessions.OpenSession();
+			s.SaveOrUpdate(fee);
+			s.SaveOrUpdate(fee1);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			s.Load( fee, fee.Key );
+			Assert.IsNotNull( fee.AnotherFee, "update" );
+			Assert.IsNotNull( fee.TheFee, "update" );
+			Assert.AreSame( fee.AnotherFee.TheFee, fee.TheFee, "update" );
+			Assert.IsTrue( fee.Fees.Contains("new element"), "updated collection" );
+			Assert.IsFalse( fee.Fees.Contains("an element"), "updated collection" );
+			s.Flush();
+			s.Close();
+
+			fee.Qux = new Qux("quxy");
+			s = sessions.OpenSession();
+			s.SaveOrUpdate(fee);
+			s.Flush();
+			s.Close();
+
+			fee.Qux.Stuff = "xxx";
+			s = sessions.OpenSession();
+			s.SaveOrUpdate(fee);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			s.Load( fee, fee.Key );
+			Assert.IsNotNull( fee.Qux, "cascade update" );
+			Assert.AreEqual( "xxx", fee.Qux.Stuff, "cascade update" );
+			Assert.IsNotNull( fee.AnotherFee, "update" );
+			Assert.IsNotNull( fee.TheFee, "update" );
+			Assert.AreSame( fee.AnotherFee.TheFee, fee.TheFee, "update" );
+			fee.AnotherFee.AnotherFee = null;
+			s.Delete(fee);
+			s.Delete("from fee in class NHibernate.DomainModel.Fee");
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
@@ -2008,21 +2181,95 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Components() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			foo.Component = new FooComponent( "foo", 69, null, new FooComponent("bar", 96, null, null) );
+			s.Save(foo);
+			foo.Component.Name = "IFA";
+			s.Flush();
+			s.Close();
+
+			foo.Component = null;
+			s = sessions.OpenSession();
+			s.Load( foo, foo.Key );
+
+			Assert.AreEqual( "IFA", foo.Component.Name, "save components" );
+			Assert.AreEqual( "bar", foo.Component.Subcomponent.Name, "save subcomponent" );
+			Assert.IsNotNull( foo.Component.Glarch, "cascades save via component");
+			foo.Component.Subcomponent.Name = "baz";
+			s.Flush();
+			s.Close();
+
+			foo.Component = null;
+			s = sessions.OpenSession();
+			s.Load( foo, foo.Key );
+			Assert.AreEqual( "IFA", foo.Component.Name, "update components" );
+			Assert.AreEqual( "baz", foo.Component.Subcomponent.Name, "update subcomponent" );
+			s.Delete(foo);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			foo = new Foo();
+			s.Save(foo);
+			foo.Custom = new string[] {"one", "two"};
+			
+			// Custom.s1 uses the first column under the <property name="Custom"...>
+			// which is first_name
+			Assert.AreSame( foo, s.Find("from Foo foo where foo.Custom.s1 = 'one'")[0] );
+			s.Delete(foo);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Enum() 
 		{
+			ISession s = sessions.OpenSession();
+			FooProxy foo = new Foo();
+			object id = s.Save(foo);
+			foo.Status = FooStatus.ON;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			foo = (FooProxy)s.Load( typeof(Foo), id );
+			Assert.AreEqual( FooStatus.ON, foo.Status );
+			foo.Status = FooStatus.OFF;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			foo = (FooProxy)s.Load( typeof(Foo), id);
+			Assert.AreEqual( FooStatus.OFF, foo.Status );
+			s.Delete(foo);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void NoForeignKeyViolations() 
 		{
+			ISession s = sessions.OpenSession();
+			Glarch g1 = new Glarch();
+			Glarch g2 = new Glarch();
+			g1.Next = g2;
+			g2.Next = g1;
+			s.Save(g1);
+			s.Save(g2);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			IList l = s.Find("from g in class NHibernate.DomainModel.Glarch where g.Next is not null");
+			s.Delete( l[0] );
+			s.Delete( l[1] );
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
@@ -2073,15 +2320,92 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void NewSessionLifecycle() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			object fid = null;
+			try 
+			{
+				Foo f = new Foo();
+				s.Save(f);
+				fid = s.GetIdentifier(f);
+				//s.Flush();
+				t.Commit();
+			}
+			catch (Exception e) 
+			{
+				t.Rollback();
+				throw e;
+			}
+			finally 
+			{
+				s.Close();
+			}
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			try 
+			{
+				Foo f = new Foo();
+				s.Delete(f);
+				//s.Flush();
+				t.Commit();
+			}
+			catch (Exception e) 
+			{
+				t.Rollback();
+			}
+			finally 
+			{
+				s.Close();
+			}
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			try 
+			{
+				Foo f = (Foo)s.Load( typeof(Foo), fid, LockMode.Upgrade );
+				s.Delete(f);
+				// s.Flush();
+				t.Commit();
+			}
+			catch(Exception e) 
+			{
+				t.Rollback();
+				throw e;
+			}
+			finally 
+			{
+				Assert.IsNull( s.Close() );
+			}
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Disconnect() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			Foo foo2 = new Foo();
+			s.Save(foo);
+			s.Save(foo2);
+			foo2.TheFoo = foo;
+			s.Flush();
+			s.Disconnect();
+			
+			s.Reconnect();
+			s.Delete(foo);
+			foo2.TheFoo = null;
+			s.Flush();
+			s.Disconnect();
+
+			s.Reconnect();
+			s.Delete(foo2);
+			s.Flush();
+			s.Close();
+
+
 		}
 
 		[Test]
@@ -2091,13 +2415,34 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void ManyToOne() 
 		{
+			ISession s = sessions.OpenSession();
+			One one = new One();
+			s.Save(one);
+			one.Value = "yada";
+			Many many = new Many();
+			many.One = one;
+			s.Save(many);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			one = (One)s.Load( typeof(One), one.Key );
+			int count = one.Manies.Count;
+			s.Close();
+
+			s = sessions.OpenSession();
+			many = (Many)s.Load( typeof(Many), many.Key );
+			Assert.IsNotNull( many.One, "many-to-one assoc" );
+			s.Delete( many.One );
+			s.Delete(many);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("won't work without proxy")]
 		public void SaveDelete()
 		{
 			ISession s = sessions.OpenSession();
@@ -2145,27 +2490,96 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void FindLoad() 
 		{
+			ISession s = sessions.OpenSession();
+			FooProxy foo = new Foo();
+			s.Save(foo);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			foo = (FooProxy)s.Find("from foo in class NHibernate.DomainModel.Foo")[0];
+			FooProxy foo2 = (FooProxy)s.Load( typeof(Foo), foo.Key );
+			Assert.AreSame( foo, foo2, "find returns same object as load" );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			foo2 = (FooProxy)s.Load( typeof(Foo), foo.Key );
+			foo = (FooProxy)s.Find("from foo in class NHibernate.DomainModel.Foo")[0];
+			Assert.AreSame( foo2, foo, "find returns same object as load" );
+			s.Delete("from foo in class NHibernate.DomainModel.Foo");
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Refresh() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			s.Save(foo);
+			s.Flush();
+
+			IDbCommand cmd = s.Connection.CreateCommand();
+			cmd.CommandText = "update " + dialect.QuoteForTableName("foos") + " set long_ = -3";
+			cmd.ExecuteNonQuery();
+			s.Refresh(foo);
+			Assert.AreEqual( (long)-3, foo.Long ) ;
+			s.Delete(foo);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void AutoFlush() 
 		{
+			ISession s = sessions.OpenSession();
+			FooProxy foo = new Foo();
+			s.Save(foo);
+			Assert.AreEqual( 1, s.Find("from foo in class NHibernate.DomainModel.Foo").Count, "autoflush inserted row" );
+			foo.Char = 'X';
+			Assert.AreEqual( 1, s.Find("from foo in class NHibernate.DomainModel.Foo where foo.Char='X'").Count, "autflush updated row" );
+			s.Close();
+
+			s = sessions.OpenSession();
+			foo = (FooProxy)s.Load( typeof(Foo), foo.Key );
+			
+			if( !(dialect is Dialect.MySQLDialect) 
+				// && !(dialect is Dialect.HSQLDialect)
+				// && !(dialect is Dialect.PointbaseDialect)
+				)
+			{
+				foo.Bytes = System.Text.UnicodeEncoding.Unicode.GetBytes("osama");
+				Assert.AreEqual( 1, s.Find("from foo in class NHibernate.DomainModel.Foo where 111 in foo.Bytes.elements").Count, "autoflush collection update" );
+				foo.Bytes[0] = 69;
+				Assert.AreEqual( 1, s.Find("from foo in class NHibernate.DomainModel.Foo where 69 in foo.Bytes.elements").Count, "autoflush collection update" );
+			}
+
+			s.Delete(foo);
+			Assert.AreEqual( 0, s.Find("from foo in class NHibernate.DomainModel.Foo").Count, "autoflush delete" );
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Veto() 
 		{
+			ISession s = sessions.OpenSession();
+			Vetoer v = new Vetoer();
+			s.Save(v);
+			object id = s.Save(v);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			s.Update(v, id);
+			s.Update(v, id);
+			s.Delete(v);
+			s.Delete(v);
+			s.Close();
 		}
 
 		[Test]
