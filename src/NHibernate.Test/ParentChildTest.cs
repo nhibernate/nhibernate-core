@@ -13,8 +13,11 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class ParentChildTest : TestCase
 	{
-		[SetUp]
-		public void SetUp() 
+		
+		#region NUnit.Framework.TestFixture Members
+
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp() 
 		{
 			ExportSchema( new string[] { "FooBar.hbm.xml",
 										   "Baz.hbm.xml",
@@ -36,6 +39,27 @@ namespace NHibernate.Test
 										   "Stuff.hbm.xml"
 									   } );
 		}
+
+		[SetUp]
+		public void SetUp() 
+		{
+			// there are test in here where we don't need to resetup the 
+			// tables - so only set the tables up once
+		}
+
+		[TearDown]
+		public override void TearDown() 
+		{
+			// do nothing except not let the base TearDown get called
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown() 
+		{
+			base.TearDown();
+		}
+
+		#endregion
 
 		[Test]
 		public void CollectionQuery() 
