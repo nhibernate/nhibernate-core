@@ -555,34 +555,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Eg\Edge.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Eg\Edge.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Eg\NetworkDemo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Eg\Source.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Eg\Vertex.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Eg\Vertex.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Engine\Cascades.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
