@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 
 namespace NHibernate.DomainModel
 {
@@ -8,11 +9,26 @@ namespace NHibernate.DomainModel
 	{
 		public int classId;
 		public string classString;
+
+		public override bool Equals(object obj)
+		{
+			SerializableClass lhs = obj as SerializableClass;
+			if(lhs==null) return false;
+
+			if(this==lhs) return true;
+
+			if(this.classId.Equals(lhs.classId) 
+				&& this.classString.Equals(this.classString)) return true;
+
+			return false;
+		}
+
 	}
 
 	/// <summary>
 	/// Summary description for BasicClass.
 	/// </summary>
+	[Serializable]
 	public class BasicClass
 	{
 		private int id;
@@ -32,13 +48,16 @@ namespace NHibernate.DomainModel
 		private SerializableClass serializableProperty;
 		private float singleProperty;
 		private string stringProperty;
-		private DateTime timestampProperty;
+		private DateTime ticksProperty;
 		private bool trueFalseProperty;
 		private bool yesNoProperty;
 
 		private string[] stringArray;
 		private int[] int32Array;
-
+		private IList stringList;
+		private IDictionary stringMap;
+		private IDictionary stringSet;
+		private object dummyObject = new object();
 
 		public BasicClass()
 		{
@@ -143,10 +162,10 @@ namespace NHibernate.DomainModel
 			set {stringProperty = value;}
 		}
 
-		public DateTime TimestampProperty 
+		public DateTime TicksProperty 
 		{
-			get {return timestampProperty;}
-			set {timestampProperty = value;}
+			get {return ticksProperty;}
+			set {ticksProperty = value;}
 		}
 
 		public bool TrueFalseProperty 
@@ -172,5 +191,30 @@ namespace NHibernate.DomainModel
 			get { return int32Array; }
 			set { int32Array = value; }
 		}
+
+		public IList StringList
+		{
+			get { return stringList; }
+			set { stringList = value; }
+		}
+
+		public IDictionary StringMap 
+		{
+			get { return stringMap; }
+			set { stringMap = value; }
+		}
+
+		public IDictionary StringSet 
+		{
+			get { return stringSet; }
+			set { stringSet = value; }
+		}
+		
+		public void AddToStringSet(string stringValue) 
+		{
+			if(StringSet==null) StringSet = new Hashtable();
+			StringSet[stringValue] = dummyObject;
+		}
+
 	}
 }

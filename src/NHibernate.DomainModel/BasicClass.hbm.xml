@@ -3,7 +3,8 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
     <class name="NHibernate.DomainModel.BasicClass" 
-		assemblyName="NHibernate.DomainModel">
+		assemblyName="NHibernate.DomainModel" >
+		
 		<id name="Id" column="id">
 			<generator class="assigned" />
 		</id>
@@ -15,7 +16,7 @@
 		<property name="ClassProperty" type="Type" />
 		<property name="CultureInfoProperty" type="CultureInfo" />
 		<property name="DateTimeProperty" type="DateTime" />
-		<property name="DecimalProperty" type="Decimal" />
+		<property name="DecimalProperty" type="Decimal(19,5)" />
 		<property name="DoubleProperty" type="Double" />
 		<property name="Int16Property" type="Int16" />
 		<property name="Int32Property" type="Int32" />
@@ -23,7 +24,7 @@
 		<property name="SerializableProperty" type="NHibernate.DomainModel.SerializableClass, NHibernate.DomainModel(1000)" />
 		<property name="SingleProperty" type="Single" />
 		<property name="StringProperty" type="String" />
-		<property name="TimestampProperty" type="Timestamp" />
+		<property name="TicksProperty" type="Ticks" />
 		<property name="TrueFalseProperty" type="TrueFalse" />
 		<property name="YesNoProperty" type="YesNo" />
 		
@@ -40,6 +41,22 @@
 			<element column="int32_value" type="Int32" />
 		</primitive-array>
 		
+		<list name="StringList" table="BasicClass_StringList">
+			<key column="BasicClass_id" />
+			<index column="StringList_index" />
+			<element column="string_value" type="String(300)" />
+		</list>
+		
+		<map name="StringMap" table="BasicClass_StringMap">
+			<key column="BasicClass_id"/>
+			<index column="StringMap_index" type="String(10)" />
+			<element column="string_value" type="String(50)" />
+		</map>
+		
+		<set name="StringSet" table="BasicClass_StringSet">
+			<key column="BasicClass_id" />
+			<element column="string_value" type="String(25)"/>
+		</set>
 		
 		
 	</class>
