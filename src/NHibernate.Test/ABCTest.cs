@@ -21,7 +21,7 @@ namespace NHibernate.Test
 		[TearDown]
 		public void TearDown() 
 		{
-			DropSchema(new string[] { "ABC.hbm.xml"});
+			DropSchema();
 		}
 
 		[Test]

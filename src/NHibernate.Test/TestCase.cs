@@ -38,10 +38,14 @@ namespace NHibernate.Test
 			sessions = cfg.BuildSessionFactory( );
 		}
 
-		public void DropSchema(string[] files) 
+		/// <summary>
+		/// Drops the schema that was built with the TestCase's Configuration.
+		/// </summary>
+		public void DropSchema() 
 		{
 			new SchemaExport(cfg).Drop(true, true);
 		}
+
 		public void ExecuteStatement(string sql)
 		{
 			ExecuteStatement(sql, true);
