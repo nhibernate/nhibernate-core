@@ -24,7 +24,11 @@
 				<param name="seperator">:</param>
 			</generator>
 		</id>
-		<discriminator column="`$foo_subclass^`" type="Char"/>
+		<discriminator column="`$foo_subclass^`" type="Char" length="1"/>
+		<!-- 
+			added length for NH because a Char does not have a direct DbType.Char but instead
+			uses DbType.String so it defaults to 255 if 1 is not found.
+		-->
 		<version name="Version"/>
 		<!--<version name="versionCalendar" type="calendar"/>-->
 		<!--<timestamp name="versionTimestamp"/>-->

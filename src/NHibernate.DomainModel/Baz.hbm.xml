@@ -281,7 +281,11 @@
 	
 		<map name="TopGlarchez">
 			<key column="idtopglarch" />
-			<index column="mapkey" type="Char"/>
+			<index column="mapkey" type="Char" length="1"/> 
+			<!-- 
+				added length for NH because a Char does not have a direct DbType.Char but instead
+				uses DbType.String so it defaults to 255 if 1 is not found.
+			-->
 			<one-to-many class = "NHibernate.DomainModel.Glarch, NHibernate.DomainModel"/>
 		</map>
 		
