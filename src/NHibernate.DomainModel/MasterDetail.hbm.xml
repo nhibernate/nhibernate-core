@@ -15,20 +15,25 @@
 		
 		<!--TODO: make sure this type has an equiv .net type-->
 		<version 
-			type="Timestamp" name="stamp" column="ts_"
+			name="Stamp" 
+			type="Timestamp" 
+			column="ts_"
 		/>
 		
-		<property name="name"/>
-		<property name="x"/>
+		<property name="Name"/>
+		<property name="X"/>
 		<!--
 			length="5" 
 			<column name="big_dec" sql-type="DECIMAL(5,3)"/>
 		-->
+		<!--
+		TODO: Find .net equiv
 		<property 
 			name="BigDecimal" 
 			type="Decimal(5,3)" 
 			column="big_dec"
 		/>
+		-->
 		
 		<set 
 			name="Details" 

@@ -11,7 +11,7 @@ namespace NHibernate.DomainModel
 	{
 		private string _id;
 		private string _prop;
-		private float _single;
+		private Single _single;
 		private string _string;
 		
 		public string Id
@@ -26,7 +26,7 @@ namespace NHibernate.DomainModel
 			set { _prop = value; }
 		}
 
-		public float Single
+		public Single Single
 		{
 			get { return _single; }
 			set { _single = value; }

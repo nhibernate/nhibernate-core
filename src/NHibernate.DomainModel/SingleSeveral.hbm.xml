@@ -60,7 +60,7 @@
 		</composite-id>
 		
 		<many-to-one 
-			name="single"
+			name="Single"
 		>
 			<column 
 				name="single_id" 

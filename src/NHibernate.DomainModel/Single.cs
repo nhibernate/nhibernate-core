@@ -12,7 +12,8 @@ namespace NHibernate.DomainModel
 		private string _id;
 		private string _prop;
 		private string _string;
-		private IDictionary _several;
+		//<bag>
+		private IList _several;
 
 		public string Id
 		{
@@ -32,7 +33,7 @@ namespace NHibernate.DomainModel
 			set { _string = value; }
 		}
 
-		public IDictionary Several
+		public IList Several
 		{
 			get { return _several; }
 			set { _several = value; }
