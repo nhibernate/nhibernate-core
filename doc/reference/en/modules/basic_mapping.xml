@@ -1069,7 +1069,7 @@
         outer-join="true|false|auto"<co id="manytoone5-co" />
         update="true|false"<co id="manytoone6-co" />
         insert="true|false"<co id="manytoone7-co" />
-        access="field|property|ClassName"<co id="manytoone7-co" />
+        access="field|property|ClassName"<co id="manytoone8-co" />
 /&gt;</programlisting>
 			<calloutlist>
 				<callout arearefs="manytoone1-co" id="manytoone1">
@@ -1110,7 +1110,7 @@
 						property that maps to the same colum(s) or by a trigger or other application.
 					</para>   
 				</callout>
-				<callout arearefs="manytoone7-co" id="manytoone7">
+				<callout arearefs="manytoone8-co" id="manytoone8">
 					<para>
 						<literal>access</literal> (optional - defaults to
 						<literal>property</literal>): The strategy NHibernate should use for
@@ -1158,7 +1158,55 @@
 			A one-to-one association to another persistent class is declared using a 
 			<literal>one-to-one</literal> element.
 		</para>
-		<para>TODO: mapping sample</para>
+		<programlisting>&lt;one-to-one
+	name="propertyName"<co id="onetoone1-co" />
+	class="ClassName"<co id="onetoone2-co" />
+	cascade="all|none|save-update|delete"<co id="onetoone3-co" />
+	constrained="true|false"<co id="onetoone4-co" />
+	outer-join="true|false|auto"<co id="onetoone5-co" />
+	access="field|property|ClassName"<co id="onetoone6-co" />
+/&gt;</programlisting>
+		<calloutlist>
+			<callout arearefs="onetoone1-co" id="onetoone1">
+				<para>
+					<literal>name</literal>: The name of the property.
+				</para>     
+			</callout>
+			<callout arearefs="onetoone2-co" id="onetoone2">
+				<para>
+					<literal>class</literal> (optional - defaults to the property type
+					determined by reflection): The name of the associated class.
+				</para>  
+			</callout>
+			<callout arearefs="onetoone3-co" id="onetoone3">
+				<para>
+					<literal>cascade</literal> (optional) specifies which operations should
+					be cascaded from the parent object to the associated object.
+				</para>
+			</callout>
+			<callout arearefs="onetoone4-co" id="onetoone4">
+				<para>
+					<literal>contstrainted</literal> (optional) specifies that a foreign key constraint
+					on the primary key of the mapped table references the table of the associated 
+					class.  This options affects the order in which <literal>Save()</literal> and 
+					<literal>Delete()</literal> are cascaded (and is also used by the schema export tool).
+				</para>
+			</callout>
+			<callout arearefs="onetoone5-co" id="onetoone5">
+				<para>
+					<literal>outer-join</literal> (optional - defaults to <literal>auto</literal>): 
+					Enable outer-join fetching for this association when <literal>hibernate.use_outer_join</literal>
+					is set.
+				</para>
+			</callout>
+			<callout arearefs="onetoone6-co" id="onetoone6">
+				<para>
+					<literal>access</literal> (optional - defaults to <literal>property</literal>): The
+					strategy NHibernate should use for accessing the property value.
+				</para>
+			</callout>
+		</calloutlist>
+		<!-- TODO: add details about the new property-ref attribute that Paul added -->
 	</sect2>
 	<sect2 id="mapping-declaration-component">
 		<title>component, dynamic-component</title>
@@ -1176,37 +1224,37 @@
 	update="true|false"<co id="component4-co" />
 	access="field|property|ClassName"<co id="component5-co" />
 /&gt;</programlisting>
-<calloutlist>
-	<callout arearefs="component1-co" id="component1">
-		<para>
-			<literal>name</literal>: The name of the property.
-		</para>     
-	</callout>
-	<callout arearefs="component2-co" id="component2">
-		<para>
-			<literal>class</literal> (optional - defaults to the property type
-			determined by reflection): The name of the component (child) class.
-		</para>  
-	</callout>
-	<callout arearefs="component3-co" id="component3">
-		<para>
-			<literal>insert</literal>: Do the mapped columns appear in SQL 
-			<literal>INSERT</literal>s?
-		</para>
-	</callout>
-	<callout arearefs="component4-co" id="component4">
-		<para>
-			<literal>update</literal>: Do the mapped columns appear in SQL 
-			<literal>UPDATE</literal>s?
-		</para>
-	</callout>
-	<callout arearefs="component5-co" id="component5">
-		<para>
-			<literal>access</literal> (optional - defaults to <literal>property</literal>): The
-			strategy Hibernate should use for accessing the property value.
-		</para>
-	</callout>
-</calloutlist>
+		<calloutlist>
+			<callout arearefs="component1-co" id="component1">
+				<para>
+					<literal>name</literal>: The name of the property.
+				</para>     
+			</callout>
+			<callout arearefs="component2-co" id="component2">
+				<para>
+					<literal>class</literal> (optional - defaults to the property type
+					determined by reflection): The name of the component (child) class.
+				</para>  
+			</callout>
+			<callout arearefs="component3-co" id="component3">
+				<para>
+					<literal>insert</literal>: Do the mapped columns appear in SQL 
+					<literal>INSERT</literal>s?
+				</para>
+			</callout>
+			<callout arearefs="component4-co" id="component4">
+				<para>
+					<literal>update</literal>: Do the mapped columns appear in SQL 
+					<literal>UPDATE</literal>s?
+				</para>
+			</callout>
+			<callout arearefs="component5-co" id="component5">
+				<para>
+					<literal>access</literal> (optional - defaults to <literal>property</literal>): The
+					strategy Hibernate should use for accessing the property value.
+				</para>
+			</callout>
+		</calloutlist>
 	</sect2>
 	<sect2 id="mapping-declaration-subclass">
 		<title>subclass</title>
@@ -1216,7 +1264,43 @@
 			the root persistent class. For the (recommended) table-per-class-hierarchy
 			mapping strategy, the <literal>&lt;subclass&gt;</literal> declaration is used.
 		</para>
-		<para>TODO: mapping sample</para>
+		<programlisting>&lt;subclass
+	name="ClassName"<co id="subclass1-co" />
+	discriminator-value="discriminator_value"<co id="subclass2-co" />
+	proxy="ProxyInterface"<co id="subclass3-co" />
+	dynamic-update="true|false"
+	dynamic-insert="true|false"
+	extends="BaseMappedClassName"&gt; <co id="subclass4-co" />
+	
+	&lt;property ... / &gt;
+	...
+&lt;subclass/&gt;</programlisting>
+		<calloutlist>
+			<callout arearefs="subclass1-co" id="subclass1">
+				<para>
+					<literal>name</literal>: The fully qualified .NET Type name of the persistent class. 
+				</para>
+			</callout>	
+			<callout arearefs="subclass2-co" id="subclass2">
+				<para>
+					<literal>discriminator-value</literal> (optional - defaults to the class name): A 
+					value that distinguishes individual subclasses.
+				</para>
+			</callout>	
+			<callout arearefs="subclass3-co" id="subclass3">
+				<para>
+					<literal>proxy</literal> (optional): Specifies a class or interface to use 
+					for lazy initializing proxies.
+				</para>
+			</callout>	
+			<callout arearefs="subclass4-co" id="subclass4">
+				<para>
+					<literal>extends</literal> (optional): Specifies the mapped class that this
+					subclass is extending.  This is only needed if <link linkend="mapping-modularfiles">
+					Modular Mapping Files</link> are used.
+				</para>
+			</callout>		
+		</calloutlist>
 	</sect2>
 	<sect2 id="mapping-declaration-joinedsubclass">
 		<title>joined-subclass</title>
@@ -1226,7 +1310,50 @@
 			mapping strategy) is declared using a <literal>&lt;joined-subclass&gt;</literal>
 			element.
 		</para>
-		<para>TODO: mapping sample</para>
+		
+		<programlisting>&lt;joined-subclass
+	name="ClassName"<co id="joinedsubclass1-co" />
+	table="tableName" <co id="joinedsubclass2-co" />
+	proxy="ProxyInterface"<co id="joinedsubclass3-co" />
+	dynamic-update="true|false"
+	dynamic-insert="true|false"
+	extends="BaseMappedClassName"&gt; <co id="joinedsubclass4-co" />
+	
+	&lt;key ... &gt;
+	
+	&lt;property ... / &gt;
+	...
+&lt;joined-subclass/&gt;</programlisting>
+		<calloutlist>
+			<callout arearefs="joinedsubclass1-co" id="joinedsubclass1">
+				<para>
+					<literal>name</literal>: The fully qualified .NET Type name of the persistent class. 
+				</para>
+			</callout>
+			<callout arearefs="joinedsubclass2-co" id="joinedsubclass2">
+				<para>
+					<literal>table</literal>: The name of the table that holds the data specific to this class.
+				</para>
+			</callout>	
+			<callout arearefs="joinedsubclass3-co" id="joinedsubclass3">
+				<para>
+					<literal>proxy</literal> (optional): Specifies a class or interface to use 
+					for lazy initializing proxies.
+				</para>
+			</callout>	
+			<callout arearefs="joinedsubclass4-co" id="joinedsubclass4">
+				<para>
+					<literal>extends</literal> (optional): Specifies the mapped class that this
+					joined-subclass is extending.  This is only needed if 
+					<link linkend="mapping-modularfiles">Modular Mapping Files</link> are used.
+				</para>
+			</callout>	
+		</calloutlist>
+		<para>
+			No discriminator column is required for this mapping strategy.  Each sublcass must, 
+			however, declare a table column holding the object identifier using the 
+			<literal>&lt;key&gt;</literal> element.
+		</para>
 		</sect2>
 		<sect2 id="mapping-declaration-collections">
 			<title>map, set, list, bag</title>
@@ -1238,7 +1365,32 @@
 		
 		<sect2 id="mapping-declaration-import">
 			<title>import</title>
-			<para>TODO: mapping sample</para>
+			<para>
+				If your application has two persistent class with the same name, and you don't want to 
+				specify the fully qualified name in NHibernate queries, then classes may be "imported"
+				explicity, rather than relying on <literal>auto-import="true"</literal>.  Classes and interfaces
+				that are not explicity mapped can be imported also.  This is useful when you want to query for
+				classes that implement a certain interface or want to use an unmapped class to put the results
+				of the hql in.
+			</para>
+			<programlisting>&lt;import class="System.Object, System" /&gt;</programlisting>
+			<programlisting>&lt;import 
+	class="className" <co id="import1-co" />
+	rename="newName"  <co id="import2-co" />
+/&gt;</programlisting>
+			<calloutlist>
+				<callout arearefs="import1-co" id="import1">
+					<para>
+						<literal>class</literal>:  The fully qualified .NET Type name of the persistent class (or interface).
+					</para>
+				</callout>
+				<callout arearefs="import2-co" id="import2">
+					<para>
+						<literal>rename</literal> (optional - defaults to the unqualified class name): A
+						name that may be used in the query language.
+					</para>
+				</callout>
+			</calloutlist>
 		</sect2>
 	</sect1>
 	<sect1 id="mapping-types">
