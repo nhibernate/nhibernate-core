@@ -13,6 +13,13 @@ namespace NHibernate.Test.UtilityTest
 	public class ReflectHelperFixture
 	{
 		[Test]
+		public void GetConstantValueEnum() 
+		{
+			object result = ReflectHelper.GetConstantValue( "NHibernate.DomainModel.FooStatus, NHibernate.DomainModel", "ON" );
+			Assert.AreEqual( 1, (int)result, "Should have found value of 1" );
+		}
+
+		[Test]
 		public void OverridesEquals() 
 		{
 			Assert.IsFalse( ReflectHelper.OverridesEquals( this.GetType() ), "ReflectHelperFixture does not override equals" );

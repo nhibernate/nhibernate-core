@@ -2538,6 +2538,12 @@ namespace NHibernate.Test
 			q.SetParameterList( "status", new FooStatus[] { FooStatus.OFF, FooStatus.ON } );
 			results = q.List();
 			Assert.AreEqual( 1, results.Count, "should have found the 1 foo" );
+			
+			q = s.CreateQuery( "from Foo as f where f.Status = FooStatus.OFF" );
+			Assert.AreEqual( 1, q.List().Count, "Enum in string - should have found OFF" );
+
+			q = s.CreateQuery( "from Foo as f where f.Status = FooStatus.ON" );
+			Assert.AreEqual( 0, q.List().Count, "Enum in string - should not have found ON" );
 
 			s.Delete(foo);
 			s.Flush();
