@@ -12,6 +12,9 @@ namespace NHibernate.DomainModel
 		private FooProxy _foo;
 		private MoreStuff _moreStuff;
 		//private TimeZone property;  TODO - does this exists in .net???
+		// yes, but it does not have a ctor (or static method) to get anything but the current TimeZone
+		// so I'm not sure how if we persist something diff than the current TimeZone we could retreive
+		// it...
 		
 		public long Id
 		{
