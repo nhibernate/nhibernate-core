@@ -164,11 +164,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "IScrollableResults.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "ISession.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -996,11 +991,6 @@
                 />
                 <File
                     RelPath = "Impl\ScheduledUpdate.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\ScrollableResultsImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

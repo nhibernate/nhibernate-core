@@ -458,23 +458,10 @@ namespace NHibernate.Impl
 			get { return settings.TransactionFactory; }
 		}
 
-//		public bool UseAdoBatch 
-//		{
-//			get { return adoBatchSize > 0; }
-//		}
-
-//		public int ADOBatchSize {
-//			get { return adoBatchSize; }
-//		}
-
 		public bool EnableJoinedFetch 
 		{
 			get { return settings.IsOuterJoinFetchEnabled; }
 		}
-
-//		public bool UseScrollableResultSets {
-//			get { return useScrollableResultSets; }
-//		}
 
 		public string GetNamedQuery(string name) 
 		{

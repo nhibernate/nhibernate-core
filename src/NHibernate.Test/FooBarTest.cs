@@ -2119,12 +2119,6 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 		}
-		
-		[Test]
-		[Ignore("IScrollableResults - http://jira.nhibernate.org:8080/browse/NH-37")]
-		public void ScrollableIterator() 
-		{
-		}
 
 		[Test]
 		public void MultiColumnQueries() 

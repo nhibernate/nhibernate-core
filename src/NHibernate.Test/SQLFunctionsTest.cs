@@ -64,7 +64,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("IScrollableResults - http://jira.nhibernate.org:8080/browse/NH-37")]
 		public void SQLFunctions() 
 		{
 			ISession s = sessions.OpenSession();
@@ -203,17 +202,6 @@ namespace NHibernate.Test
 			q.SetParameter( "count", (int)-1 );
 			Assert.AreEqual( 1, q.List().Count );
 			
-
-			/*
-			 * http://jira.nhibernate.org:8080/browse/NH-37
-			IScrollableResults sr = s.CreateQuery("from Simple s").Scroll();
-			sr.Next();
-			sr.GetInt64(0);
-			long lid = sr.Get(0, NHibernate.Int64);
-			Assert.AreEqual( lid, s.GetIdentifier( sr.Get(0, NHibernate.Entity(typeof(Simple)) ) ) );
-			sr.Close();
-			*/
-
 			s.Delete(other);
 			s.Delete(simple);
 			s.Delete(min);

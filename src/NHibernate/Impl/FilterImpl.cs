@@ -33,11 +33,6 @@ namespace NHibernate.Impl
 			return Session.Filter( collection, query, ValueArray(), TypeArray(), Selection, namedParams, LockModes);
 		}
 
-		public IScrollableResults Scroll() 
-		{
-			throw new NotImplementedException("Can't Scroll Filters");
-		}
-
 		private IType[] TypeArray() 
 		{
 			IList typeList = Types;

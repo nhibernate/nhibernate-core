@@ -62,11 +62,6 @@ namespace NHibernate.Engine
 		/// </summary>
 		bool EnableJoinedFetch { get; }
 
-//		/// <summary>
-//		/// Are scrollable <c>ResultSet</c>s supported
-//		/// </summary>
-//		bool UseScrollableResultSets { get; } //TODO: Depricate, as there is no such thing
-
 		/// <summary>
 		/// Get the database schema specified in <c>hibernate.default_schema</c>
 		/// </summary>
@@ -116,16 +111,5 @@ namespace NHibernate.Engine
 		/// <param name="name"></param>
 		/// <returns></returns>
 		string GetImportedClassName(string name);
-
-//		/// <summary>
-//		/// The ADO.NET batch size 
-//		/// </summary>
-//		int ADOBatchSize { get; } //TODO: Depricate, should always be 0
-
-//		/// <summary>
-//		/// Set the fetch size
-//		/// </summary>
-//		/// <param name="command"></param>
-//		void SetFetchSize(IDbCommand command);
 	}
 }
