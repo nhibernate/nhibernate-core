@@ -705,7 +705,7 @@ namespace NHibernate.DomainModel
 			_foo=null;
 		}
 
-		public override bool Equals(object obj)
+		public bool EqualsFoo(Foo obj)
 		{
 			Foo other = (Foo)obj;
 			if ( _bytes!=other._bytes ) 
@@ -741,10 +741,10 @@ namespace NHibernate.DomainModel
 				&& ( this.locale.Equals(other.locale) )
 				&& ( ( this.custom == other.custom ) || ( this.custom[0].Equals(other.custom[0]) && this.custom[1].Equals(other.custom[1]) ) );
 		}
-		public override int GetHashCode()
-		{
-			return key.GetHashCode() - _string.GetHashCode();
-		}
+//		public override int GetHashCode()
+//		{
+//			return key.GetHashCode() - _string.GetHashCode();
+//		}
 		public FooComponent nullComponent
 		{
 			get

@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 
 namespace NHibernate.DomainModel
 {
@@ -200,7 +201,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Holder for stringDateMap
 	/// </summary>
-	private System.Collections.SortedList _stringDateMap;
+	private System.Collections.IDictionary _stringDateMap;
 	
 	/// <summary>
 	/// Holder for topGlarchez
@@ -210,7 +211,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Holder for cachedMap
 	/// </summary>
-	private System.Collections.SortedList _cachedMap;
+	private System.Collections.IDictionary _cachedMap;
 	
 	/// <summary>
 	/// Holder for stringGlarchMap
@@ -230,7 +231,8 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Holder for stringSet
 	/// </summary>
-	private System.Collections.IList _stringSet;
+	//private System.Collections.IList _stringSet;
+	 private System.Collections.IDictionary _stringSet;
 	
 	/// <summary>
 	/// Holder for topFoos
@@ -245,7 +247,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Holder for cached
 	/// </summary>
-	private System.Collections.IList _cached;
+	private System.Collections.IDictionary _cached;
 	
 	/// <summary>
 	/// Holder for sortablez
@@ -459,7 +461,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for stringDateMap
 	/// </summary>
-	public System.Collections.SortedList stringDateMap
+	public System.Collections.IDictionary stringDateMap
 	{
 		get
 		{
@@ -489,7 +491,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for cachedMap
 	/// </summary>
-	public System.Collections.SortedList cachedMap
+	public System.Collections.IDictionary cachedMap
 	{
 		get
 		{
@@ -549,7 +551,8 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for stringSet
 	/// </summary>
-	public System.Collections.IList stringSet
+	//public System.Collections.IList stringSet
+	public System.Collections.IDictionary stringSet
 	{
 		get
 		{
@@ -594,7 +597,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for cached
 	/// </summary>
-	public System.Collections.IList cached
+	public System.Collections.IDictionary cached
 	{
 		get
 		{
@@ -700,14 +703,19 @@ namespace NHibernate.DomainModel
 
 	 public void setDefaults() 
 	 {
-		 stringSet = new ArrayList();
-		 stringSet.Add("foo"); stringSet.Add("bar"); stringSet.Add("baz");
+//		 stringSet = new ArrayList();
+//		 stringSet.Add("foo"); stringSet.Add("bar"); stringSet.Add("baz");
+		 stringSet = new Hashtable();
+		 stringSet.Add("foo", new object());
+		 stringSet.Add("bar", new object());
+		 stringSet.Add("baz", new object());
+
 		 stringDateMap = new SortedList();
 		 stringDateMap.Add( "now", DateTime.Now );
 		 stringDateMap.Add( "never", null );
 		 stringDateMap.Add( "big bang", new DateTime(0) );
 		 ArrayList list = new ArrayList();
-		 list.AddRange(stringSet);
+		 list.AddRange(stringSet.Keys); // stringSet);
 		 stringList = list;
 		 intArray = new int[] { 1,3,3,7 };
 		 fooArray =new Foo[0];
@@ -735,15 +743,17 @@ namespace NHibernate.DomainModel
 		 bag.Add("duplicate");
 		 bag.Add("duplicate");
 		 bag.Add("unique");
-		 cached = new ArrayList();
+		 //cached = new ArrayList();
+		 cached = new SortedList();
+
 		 CompositeElement ce = new CompositeElement();
 		 ce.foo = "foo";
 		 ce.bar = "bar";
 		 CompositeElement ce2 = new CompositeElement();
 		 ce2.foo = "fooxxx";
 		 ce2.bar = "barxxx";
-		 cached.Add(ce);
-		 cached.Add(ce2);
+		 cached.Add(ce, new object());
+		 cached.Add(ce2, new object());
 		 cachedMap = new SortedList();
 		 cachedMap.Add(this, ce);
 	 }
