@@ -139,6 +139,7 @@
 					of NHibernate.  It is in the lib folder for vs.net convenience
 				-->
 				<excludes name="Iesi.Collections.*" />
+				<includes name="Castle.DynamicProxy.*" />
 				<includes name="log4net.*" />
 				<includes name="nunit.framework.*" />
 			</fileset>
