@@ -57,8 +57,5 @@ namespace NHibernate.Loader {
 			get { return true; }
 		}
 
-
-
-
-		}
+	}
 }

@@ -82,6 +82,11 @@
                     AssemblyName = "log4net"
                     HintPath = "..\..\..\log4net1.2.0-beta5\build\bin\ReleaseStrong\log4net.dll"
                 />
+                <Reference
+                    Name = "System.Runtime.Remoting"
+                    AssemblyName = "System.Runtime.Remoting"
+                    HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Runtime.Remoting.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -779,12 +784,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Proxy\HibernateProxyHelper.cs"
+                    RelPath = "Proxy\HibernateProxy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Proxy\IHibernateProxy.cs"
+                    RelPath = "Proxy\HibernateProxyHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -70,7 +70,9 @@ namespace NHibernate.Engine {
 			public static CascadingAction ActionSaveUpdate = new ActionSaveUpdateClass();
 			private class ActionSaveUpdateClass : CascadingAction {
 				public override void Cascade(ISession session, object child) {
-					if ( ! (child is IHibernateProxy) ) { //TODO: Add proxy test (see hibernate) || !HibernateProxyHelper.
+					HibernateProxy proxy = child as HibernateProxy;
+					if ( (proxy==null) || (!proxy.IsUninitialized) ) {
+						// saves / updates don't cascade to uninitialized 					
 						log.Debug("cascading to SaveOrUpdate()");
 						session.SaveOrUpdate(child);
 					}

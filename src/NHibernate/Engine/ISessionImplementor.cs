@@ -121,6 +121,15 @@ namespace NHibernate.Engine {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		object InternalLoadOneToOne(System.Type persistentClass, object id);
+		
+		/// <summary>
+		/// Load an instance immediately. Do not return a proxy.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		object ImmediateLoad(System.Type persistentClass, object id);
+		
 
 		/// <summary>
 		/// Load an instance immediately. Do not return a proxy
@@ -138,6 +147,13 @@ namespace NHibernate.Engine {
 		/// Get the prepared statement <c>Batcher</c> for this session
 		/// </summary>
 		IBatcher Batcher { get; }
+
+		/// <summary>
+		/// Get the entity instance associated with the given <c>Key</c>
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		object GetEntity(Key key);
 	
 	}
 }
