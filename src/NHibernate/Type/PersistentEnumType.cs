@@ -51,31 +51,6 @@ namespace NHibernate.Type {
 		
 		}
 
-//		protected DbType UnderlyingDbType { //Not overridable. These are the DbTypes.
-//			get {
-//				switch( Enum.GetUnderlyingType(enumClass).FullName ) {
-//					case "System.Byte":
-//						return DbType.Byte;
-//					case "System.Int16":
-//						return DbType.Int16;
-//					case "System.Int32":
-//						return DbType.Int32;
-//					case "System.Int64":
-//						return DbType.Int64;
-//					case "System.SByte":
-//						return DbType.SByte;
-//					case "System.UInt16":
-//						return DbType.UInt16;
-//					case "System.UInt32":
-//						return DbType.UInt32;
-//					case "System.UInt64":
-//						return DbType.UInt64;
-//					default:
-//						throw new HibernateException( "Unknown UnderlyingDbType for Enum"); //Impossible exception
-//				}
-//			}
-//		}
-
 		public virtual object GetInstance(object code) {
 			try {
 				return Enum.ToObject(enumClass, code);
@@ -112,7 +87,8 @@ namespace NHibernate.Type {
 		}
 		
 		public override bool Equals(object x, object y) {
-			return (x==y) || ( x!=null && y!=null && x.GetType()==y.GetType() && x.ToString()==y.ToString() );
+			//return (x==y) || ( x!=null && y!=null && x.GetType()==y.GetType() && x.ToString()==y.ToString() );
+			return (x==y) || ( x!=null && y!=null && x.Equals(y) ) ;
 		}
 	
 		public override System.Type ReturnedClass {

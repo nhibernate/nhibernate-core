@@ -337,6 +337,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TypesTest\PersistentEnumTypeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TypesTest\TypeFactoryFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
