@@ -44,8 +44,7 @@ namespace NHibernate.Type {
 		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner) {
 			if (value==null) {
 				return null;
-			}
-			else {
+			} else {
 				return session.InternalLoad( PersistentClass, value );
 			}
 		}

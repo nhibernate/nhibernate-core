@@ -79,9 +79,7 @@ namespace NHibernate.Type {
 		}
 	
 		public override string Name {
-			get {
-				return ReturnedClass.Name;
-			}
+			get { return ReturnedClass.Name; }
 		}
 
 		//Is it correct?

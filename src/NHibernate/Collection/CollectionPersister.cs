@@ -61,7 +61,15 @@ namespace NHibernate.Collection {
 
 		private string role;
 
-		//TODO: Finish
+		public ICollectionInitializer Initializer {
+			get { return loader; }
+		}
+
+		//public ICollectionInitializer CreateCollectionQuery(ISessionFactoryImplementor factory) {
+		//	return isOneToMany ?
+		//		(ICollectionInitializer) new OneToManyLoader(this, factory) :
+		//		(ICollectionInitializer) new CollectionLoader(this, factory);
+		//}
 
 
 		public string QualifiedTableName {

@@ -40,9 +40,7 @@ namespace NHibernate.Type {
 		}
 	
 		public virtual ForeignKeyType ForeignKeyType {
-			get {
-				return foreignKeyType;
-			}
+			get { return foreignKeyType; }
 		}
 	
 		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
@@ -60,9 +58,7 @@ namespace NHibernate.Type {
 		}
 	
 		public virtual bool IsNullable {
-			get {
-				return foreignKeyType==ForeignKeyType.ForeignKeyToParent;
-			}
+			get { return foreignKeyType==ForeignKeyType.ForeignKeyToParent; }
 		}
 		
 	}
