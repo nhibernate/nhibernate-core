@@ -13,12 +13,17 @@ namespace NHibernate.Loader
 	public class AbstractEntityLoader : OuterJoinLoader 
 	{
 		protected ILoadable persister;
-		protected string alias;
+		private string alias;
 
 		public AbstractEntityLoader(ILoadable persister, ISessionFactoryImplementor factory) : base(factory.Dialect) 
 		{
 			this.persister = persister;
-			alias = Alias(persister.ClassName, 0);
+			alias = ToAlias(persister.ClassName, 0);
+		}
+
+		protected string Alias 
+		{
+			get { return alias; }
 		}
 
 		protected void RenderStatement(SqlSelectBuilder selectBuilder, ISessionFactoryImplementor factory) 
@@ -31,14 +36,14 @@ namespace NHibernate.Loader
 			IList associations = WalkTree(persister, alias, factory);
 
 			int joins=associations.Count;
-			suffixes = new string[joins+1];
-			for (int i=0; i<=joins; i++) suffixes[i] = (joins==0) ? String.Empty : i.ToString() + StringHelper.Underscore;
+			Suffixes = new string[joins+1];
+			for (int i=0; i<=joins; i++) Suffixes[i] = (joins==0) ? String.Empty : i.ToString() + StringHelper.Underscore;
 
 			JoinFragment ojf = OuterJoins(associations);
 
 			selectBuilder.SetSelectClause(
 				(joins==0 ? String.Empty : SelectString(associations) + ",") +
-				SelectString(persister, alias, suffixes[joins] )
+				SelectString(persister, alias, Suffixes[joins] )
 				)
 				.SetFromClause
 				(
@@ -76,13 +81,13 @@ namespace NHibernate.Loader
 			IList associations = WalkTree(persister, alias, factory);
 
 			int joins=associations.Count;
-			suffixes = new string[joins+1];
-			for (int i=0; i<=joins; i++) suffixes[i] = (joins==0) ? String.Empty : i.ToString() + StringHelper.Underscore;
+			Suffixes = new string[joins+1];
+			for (int i=0; i<=joins; i++) Suffixes[i] = (joins==0) ? String.Empty : i.ToString() + StringHelper.Underscore;
 
 			JoinFragment ojf = OuterJoins(associations);
 			sqlBuilder.SetSelectClause(
 				(joins==0 ? String.Empty : SelectString(associations) + ",") +
-				SelectString(persister, alias, suffixes[joins] )
+				SelectString(persister, alias, Suffixes[joins] )
 				);
 
 			sqlBuilder.SetFromClause(
@@ -104,7 +109,7 @@ namespace NHibernate.Loader
 
 			sqlBuilder.SetOrderByClause(orderBy);
 
-			this.sqlString = sqlBuilder.ToSqlString();
+			this.SqlString = sqlBuilder.ToSqlString();
 
 			classPersisters = new ILoadable[joins+1];
 			lockModeArray = CreateLockModeArray(joins+1, LockMode.None);

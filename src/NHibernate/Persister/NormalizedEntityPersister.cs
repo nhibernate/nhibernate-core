@@ -161,7 +161,7 @@ namespace NHibernate.Persister
 
 			this.factory = factory;
 			Table table = model.RootTable;
-			this.qualifiedTableName = table.GetQualifiedName( dialect, factory.DefaultSchema );
+			this.qualifiedTableName = table.GetQualifiedName( Dialect, factory.DefaultSchema );
 
 			// DISCRIMINATOR
 
@@ -205,7 +205,7 @@ namespace NHibernate.Persister
 			// move through each table that contains the data for this entity.
 			foreach(Table tab in model.TableClosureCollection) 
 			{
-				string tabname = tab.GetQualifiedName( dialect, factory.DefaultSchema );
+				string tabname = tab.GetQualifiedName( Dialect, factory.DefaultSchema );
 				if ( !tabname.Equals(qualifiedTableName) ) 
 				{
 					tables.Add( tabname );
@@ -213,7 +213,7 @@ namespace NHibernate.Persister
 					int k=0;
 					foreach(Column col in tab.PrimaryKey.ColumnCollection ) 
 					{
-						key[k++] = col.GetQuotedName(dialect);
+						key[k++] = col.GetQuotedName( Dialect );
 					}
 					keyColumns.Add(key);
 				}
@@ -234,14 +234,14 @@ namespace NHibernate.Persister
 			keyColumns.Add( IdentifierColumnNames );
 			foreach(Table tab in model.SubclassTableClosureCollection ) 
 			{
-				string tabname = tab.GetQualifiedName(dialect, factory.DefaultSchema);
+				string tabname = tab.GetQualifiedName( Dialect, factory.DefaultSchema );
 				if ( !tabname.Equals(qualifiedTableName) ) {
 					subtables.Add(tabname);
 					string[] key = new string[idColumnSpan];
 					int k=0;
 					foreach(Column col in tab.PrimaryKey.ColumnCollection ) 
 					{
-						key[k++] = col.GetQuotedName(dialect);
+						key[k++] = col.GetQuotedName( Dialect );
 					}
 					keyColumns.Add(key);
 				}
@@ -281,7 +281,7 @@ namespace NHibernate.Persister
 			{
 				thisClassProperties.Add(prop, thisClassPropertiesObject);
 				Table tab = prop.Value.Table;
-				string tabname = tab.GetQualifiedName(dialect, factory.DefaultSchema );
+				string tabname = tab.GetQualifiedName( Dialect, factory.DefaultSchema );
 				
 				this.propertyTables[propertyIndex] = GetTableId(tabname, this.tableNames);
 				this.naturalOrderPropertyTables[propertyIndex] = GetTableId(tabname, this.naturalOrderTableNames);
@@ -293,9 +293,9 @@ namespace NHibernate.Persister
 				int columnIndex = 0;
 				foreach(Column col in prop.ColumnCollection ) 
 				{
-					string colname = col.GetQuotedName(dialect);
+					string colname = col.GetQuotedName( Dialect );
 					propCols[columnIndex] = colname;
-					propAliases[columnIndex] = col.Alias(dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore);
+					propAliases[columnIndex] = col.Alias( Dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore );
 					columnIndex++;
 				}
 				
@@ -333,7 +333,7 @@ namespace NHibernate.Persister
 				names.Add(prop.Name);
 				definedBySubclass.Add( !thisClassProperties.Contains(prop) );
 				Table tab = prop.Value.Table;
-				string tabname = tab.GetQualifiedName( dialect, factory.DefaultSchema );
+				string tabname = tab.GetQualifiedName( Dialect, factory.DefaultSchema );
 				string[] cols = new string[ prop.ColumnSpan ];
 				types.Add( prop.Type );
 				int tabnum = GetTableId(tabname, subclassTableNameClosure);
@@ -342,10 +342,10 @@ namespace NHibernate.Persister
 				int l=0;
 				foreach(Column col in prop.ColumnCollection) 
 				{
-					columns.Add( col.GetQuotedName(dialect) );
+					columns.Add( col.GetQuotedName( Dialect ) );
 					coltables.Add(tabnum);
-					cols[l++] = col.GetQuotedName(dialect);
-					aliases.Add( col.Alias(dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore ) );
+					cols[l++] = col.GetQuotedName( Dialect );
+					aliases.Add( col.Alias( Dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore ) );
 				}
 				propColumns.Add(cols);
 				joinedFetchesList.Add( prop.Value.OuterJoinFetchSetting );
@@ -396,13 +396,13 @@ namespace NHibernate.Persister
 				
 				this.tableNumbers = new int[subclassSpan];
 				this.tableNumbers[subclassSpan-1] = GetTableId(
-					model.Table.GetQualifiedName( dialect, factory.DefaultSchema ), 
+					model.Table.GetQualifiedName( Dialect, factory.DefaultSchema ), 
 					this.subclassTableNameClosure);
 				
 				this.notNullColumns = new string[subclassSpan];
 				foreach(Column col in model.Table.PrimaryKey.ColumnCollection) 
 				{
-					notNullColumns[subclassSpan-1] = col.GetQuotedName(dialect); //only once
+					notNullColumns[subclassSpan-1] = col.GetQuotedName( Dialect ); //only once
 				}
 			} 
 			else 
@@ -424,12 +424,12 @@ namespace NHibernate.Persister
 						subclassesByDiscriminatorValue.Add( disc, sc.PersistentClazz );
 						discriminatorValues[p] = disc.ToString();
 						tableNumbers[p] = GetTableId(
-							sc.Table.GetQualifiedName( dialect, factory.DefaultSchema ),
+							sc.Table.GetQualifiedName( Dialect, factory.DefaultSchema ),
 							subclassTableNameClosure
 							);
 						foreach(Column col in sc.Table.PrimaryKey.ColumnCollection) 
 						{
-							notNullColumns[p] = col.GetQuotedName(dialect); //only once;
+							notNullColumns[p] = col.GetQuotedName( Dialect ); //only once;
 						}
 					}
 				} 
@@ -520,10 +520,10 @@ namespace NHibernate.Persister
 			sqlUpdateStrings = GenerateUpdateStrings(PropertyUpdateability);
 
 			SqlString lockString = GenerateLockString(null, null);
-			SqlString lockExclusiveString = dialect.SupportsForUpdate ? 
+			SqlString lockExclusiveString = Dialect.SupportsForUpdate ? 
 				GenerateLockString(lockString, " FOR UPDATE") :
 				GenerateLockString(lockString, null);
-			SqlString lockExclusiveNowaitString = dialect.SupportsForUpdateNoWait ? 
+			SqlString lockExclusiveNowaitString = Dialect.SupportsForUpdateNoWait ? 
 				GenerateLockString(lockString, " FOR UPDATE NOWAIT") :
 				GenerateLockString(lockString, null);
 
@@ -739,10 +739,10 @@ namespace NHibernate.Persister
 				{					
 					// make sure the Dialect has an identity insert string because we don't want
 					// to add the column when there is no value to supply the SqlBuilder
-					if(dialect.IdentityInsertString!=null) 
+					if( Dialect.IdentityInsertString!=null ) 
 					{
 						// only 1 column if there is IdentityInsert enabled.
-						builder.AddColumn(naturalOrderTableKeyColumns[j][0], dialect.IdentityInsertString);
+						builder.AddColumn( naturalOrderTableKeyColumns[j][0], Dialect.IdentityInsertString );
 					}
 				}
 				else 
@@ -1087,9 +1087,9 @@ namespace NHibernate.Persister
 
 			object id;
 			
-			if(dialect.SupportsIdentitySelectInInsert) 
+			if( Dialect.SupportsIdentitySelectInInsert ) 
 			{
-				statement = session.Batcher.PrepareCommand( dialect.AddIdentitySelectToInsert(sql[0]) );
+				statement = session.Batcher.PrepareCommand( Dialect.AddIdentitySelectToInsert( sql[0] ) );
 				idSelect = statement;
 			}
 			else 
@@ -1114,7 +1114,7 @@ namespace NHibernate.Persister
 			{
 				// if it doesn't support identity select in insert then we have to issue the Insert
 				// as a seperate command here
-				if(dialect.SupportsIdentitySelectInInsert==false) 
+				if( Dialect.SupportsIdentitySelectInInsert==false ) 
 				{
 					session.Batcher.ExecuteNonQuery( statement );
 				}
@@ -1136,7 +1136,7 @@ namespace NHibernate.Persister
 			} 
 			finally 
 			{
-				if( dialect.SupportsIdentitySelectInInsert==false ) 
+				if( Dialect.SupportsIdentitySelectInInsert==false ) 
 				{
 					session.Batcher.CloseCommand( statement, null );
 				}
@@ -1339,7 +1339,7 @@ namespace NHibernate.Persister
 		
 			string idProp = IdentifierPropertyName;
 			if (idProp!=null) InitPropertyPaths( idProp, IdentifierType, IdentifierColumnNames, 0, mapping );
-			if ( hasEmbeddedIdentifier ) InitPropertyPaths( null, IdentifierType, IdentifierColumnNames, 0, mapping );
+			if ( HasEmbeddedIdentifier ) InitPropertyPaths( null, IdentifierType, IdentifierColumnNames, 0, mapping );
 			InitPropertyPaths( PathExpressionParser.EntityID, IdentifierType, IdentifierColumnNames, 0, mapping );
 
 			typesByPropertyPath[PathExpressionParser.EntityClass] = DiscriminatorType ;
@@ -1510,7 +1510,7 @@ namespace NHibernate.Persister
 
 		private CaseFragment DiscriminatorFragment(string alias) 
 		{
-			CaseFragment cases = dialect.CreateCaseFragment();
+			CaseFragment cases = Dialect.CreateCaseFragment();
 			
 			for (int i=0; i<discriminatorValues.Length; i++) 
 			{
@@ -1526,7 +1526,7 @@ namespace NHibernate.Persister
 		private string Alias(string name, int tableNumber) 
 		{
 			if (tableNumber==0) return name;
-			return dialect.QuoteForAliasName(dialect.UnQuote(name) + StringHelper.Underscore + tableNumber);
+			return Dialect.QuoteForAliasName( Dialect.UnQuote(name) + StringHelper.Underscore + tableNumber );
 		}
 
 		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)

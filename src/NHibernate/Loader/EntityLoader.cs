@@ -23,10 +23,10 @@ namespace NHibernate.Loader
 			idType = new IType[] { persister.IdentifierType };
 		
 			SqlSelectBuilder selectBuilder = new SqlSelectBuilder(factory);
-			selectBuilder.SetWhereClause(alias, persister.IdentifierColumnNames, persister.IdentifierType);
+			selectBuilder.SetWhereClause( Alias, persister.IdentifierColumnNames, persister.IdentifierType );
 			
 			RenderStatement(selectBuilder, factory);
-			this.sqlString = selectBuilder.ToSqlString();
+			this.SqlString = selectBuilder.ToSqlString();
 			
 			PostInstantiate();
 		}

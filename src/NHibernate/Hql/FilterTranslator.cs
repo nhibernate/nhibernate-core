@@ -20,7 +20,7 @@ namespace NHibernate.Hql
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Compile(string collectionRole, ISessionFactoryImplementor factory, string queryString, IDictionary replacements, bool scalar) 
 		{
-			if (!compiled) 
+			if (!Compiled) 
 			{
 				this.factory = factory; // yick!
 				AddFromCollection("this", collectionRole);

@@ -19,11 +19,7 @@ namespace NHibernate.Type
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(NullableType) );
 
-		/// <summary>
-		/// The underlying <see cref="SqlType"/> used to retrieve and store the value.
-		/// </summary>
-		/// <value>The underlying <see cref="SqlType"/>.</value>
-		protected SqlType sqlType;
+		private SqlType _sqlType;
 
 		/// <summary>
 		/// Initialize a new instance of the NullableType class using a 
@@ -33,7 +29,7 @@ namespace NHibernate.Type
 		/// <remarks>This is used when the Property is mapped to a single column.</remarks>
 		protected NullableType(SqlType sqlType) 
 		{
-			this.sqlType = sqlType;
+			_sqlType = sqlType;
 		}
 
 		/// <summary>
@@ -278,7 +274,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public virtual SqlType SqlType 
 		{
-			get {return this.sqlType;}
+			get {return _sqlType;}
 		}
 
 		/// <include file='IType.cs.xmldoc' 

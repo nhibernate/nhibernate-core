@@ -31,8 +31,8 @@ namespace NHibernate.Loader
 		protected ILoadable[] classPersisters;
 		protected LockMode[] lockModeArray;
 		
-		protected SqlString sqlString;
-		protected string[] suffixes;
+		private SqlString sqlString;
+		private string[] suffixes;
 
 		
 		public OuterJoinLoader(Dialect.Dialect dialect) : base(dialect)
@@ -135,7 +135,7 @@ namespace NHibernate.Loader
 				classPersisters.Add(persister);
 				assoc.Subpersister = subpersister;
 				assoc.ForeignKeyColumns = columns;
-				string subalias = Alias(subpersister.ClassName, associations.Count);
+				string subalias = ToAlias(subpersister.ClassName, associations.Count);
 				assoc.Subalias = subalias;
 
 				WalkClassTree(subpersister, subalias, associations, classPersisters, path, session);
@@ -373,11 +373,11 @@ namespace NHibernate.Loader
 			return !persister.HasProxy || ( type.IsOneToOne && ((OneToOneType) type).IsNullable );
 		}
 
-		public override SqlString SqlString 
+		protected internal override SqlString SqlString 
 		{
-			get { return sqlString;}
+			get { return sqlString; }
+			set { sqlString = value; }
 		}
-
 
 		public override ILoadable[] Persisters 
 		{
@@ -432,14 +432,19 @@ namespace NHibernate.Loader
 		protected override string[] Suffixes 
 		{
 			get { return suffixes; }
+			set { suffixes = value; }
 		}
 
-		protected string Alias(string tableName, int n) 
+		protected string ToAlias(string tableName, int n) 
 		{
-			tableName = StringHelper.Unqualify(tableName); //TODO: this is broken if we have quoted identifier with a "."
+			// H2.0.3 - was called Alias, but changed it to ToAlias because I wanted to have
+			// a protected property named Alias
+		
+			//TODO: this is broken if we have quoted identifier with a "."
+			tableName = StringHelper.Unqualify(tableName); 
 
 			//TODO: H2.0.3 - changes tableName to lower case - don't know why it is needed...
-			return (new Alias(10, n.ToString() + StringHelper.Underscore)).ToAliasString(tableName, dialect);
+			return ( new Alias(10, n.ToString() + StringHelper.Underscore) ).ToAliasString( tableName, dialect );
 		}
 
 		protected override CollectionPersister CollectionPersister 

@@ -43,7 +43,7 @@ namespace NHibernate.Hql
 		protected QueryJoinFragment join;
 		protected string[] columns;
 		protected string[] collectionElementColumns;
-		protected string collectionName;
+		private string collectionName; //protected
 		private string collectionOwnerName;
 		private string collectionRole;
 		private string collectionTable;

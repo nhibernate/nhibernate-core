@@ -40,14 +40,18 @@ namespace NHibernate.Type {
             return "'" + ( ( (bool) value ) ? TrueString : FalseString ) + "'";
 		}
 
-		public Object stringToObject(String xml) {
-            if ( TrueString.Equals(xml) ) {
+		public override object StringToObject(String xml) 
+		{
+            if( TrueString.Equals(xml) ) 
+			{
 				return true;
 			}
-			else if ( FalseString.Equals(xml) ) {
+			else if( FalseString.Equals(xml) ) 
+			{
 				return false;
 			}
-			else {
+			else 
+			{
 				throw new HibernateException("Could not interpret: " + xml);
 			}
 		}

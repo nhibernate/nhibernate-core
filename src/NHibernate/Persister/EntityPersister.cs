@@ -79,7 +79,7 @@ namespace NHibernate.Persister
 			System.Type mappedClass = model.PersistentClazz;
 			this.factory = factory;
 			Table table = model.RootTable;
-			qualifiedTableName = table.GetQualifiedName( dialect, factory.DefaultSchema );
+			qualifiedTableName = table.GetQualifiedName( Dialect, factory.DefaultSchema );
 			tableNames = new string[] { qualifiedTableName };
 
 			// detect mapping errors
@@ -99,7 +99,7 @@ namespace NHibernate.Persister
 				// the discriminator will have only one column 
 				foreach(Column discColumn in d.ColumnCollection) 
 				{
-					discriminatorColumnName = discColumn.GetQuotedName(dialect);
+					discriminatorColumnName = discColumn.GetQuotedName( Dialect );
 				}
 
 				try 
@@ -162,8 +162,8 @@ namespace NHibernate.Persister
 					int j=0;
 					foreach(Column col in prop.ColumnCollection) 
 					{
-						colAliases[j] = col.Alias(dialect);
-						colNames[j] = col.GetQuotedName(dialect);
+						colAliases[j] = col.Alias( Dialect );
+						colNames[j] = col.GetQuotedName( Dialect );
 						j++;
 						if( prop.IsUpdateable ) foundColumn=true;
 					}
@@ -200,7 +200,7 @@ namespace NHibernate.Persister
 				if( prop.IsFormula ) 
 				{
 					formulas.Add( prop.Formula.FormulaString );
-					formulaTemplates.Add( prop.Formula.GetTemplate(dialect) );
+					formulaTemplates.Add( prop.Formula.GetTemplate( Dialect ) );
 					propColumns.Add( new string[0] );
 					formulaAliases.Add( prop.Formula.Alias );
 					types.Add( prop.Type );
@@ -212,9 +212,9 @@ namespace NHibernate.Persister
 					int l=0;
 					foreach( Column col in prop.ColumnCollection ) 
 					{
-						columns.Add( col.GetQuotedName(dialect) );
-						aliases.Add( col.Alias(dialect) );
-						cols[l++] = col.GetQuotedName(dialect);
+						columns.Add( col.GetQuotedName( Dialect ) );
+						aliases.Add( col.Alias( Dialect ) );
+						cols[l++] = col.GetQuotedName( Dialect );
 					}
 					propColumns.Add(cols);
 				}
@@ -353,10 +353,10 @@ namespace NHibernate.Persister
 			sqlUpdateString = GenerateUpdateString(PropertyUpdateability);
 
 			SqlString lockString = GenerateLockString(null, null);
-			SqlString lockExclusiveString = dialect.SupportsForUpdate ? 
+			SqlString lockExclusiveString = Dialect.SupportsForUpdate ? 
 				GenerateLockString(lockString, " FOR UPDATE") :
 				GenerateLockString(lockString, null);
-			SqlString lockExclusiveNowaitString = dialect.SupportsForUpdateNoWait ? 
+			SqlString lockExclusiveNowaitString = Dialect.SupportsForUpdateNoWait ? 
 				GenerateLockString(lockString, " FOR UPDATE NOWAIT") :
 				GenerateLockString(lockString, null);
 
@@ -531,10 +531,10 @@ namespace NHibernate.Persister
 			{
 				// make sure the Dialect has an identity insert string because we don't want
 				// to add the column when there is no value to supply the SqlBuilder
-				if(dialect.IdentityInsertString!=null) 
+				if( Dialect.IdentityInsertString!=null ) 
 				{
 					// only 1 column if there is IdentityInsert enabled.
-					builder.AddColumn(IdentifierColumnNames[0], dialect.IdentityInsertString);
+					builder.AddColumn( IdentifierColumnNames[0], Dialect.IdentityInsertString );
 				}
 			}
 
@@ -831,9 +831,9 @@ namespace NHibernate.Persister
 			IDbCommand idSelect = null;
 			IDataReader rs = null;
 
-			if(dialect.SupportsIdentitySelectInInsert) 
+			if( Dialect.SupportsIdentitySelectInInsert ) 
 			{
-				statement = session.Batcher.PrepareCommand( dialect.AddIdentitySelectToInsert(sql) );
+				statement = session.Batcher.PrepareCommand( Dialect.AddIdentitySelectToInsert(sql) );
 				idSelect = statement;
 			}
 			else 
@@ -858,7 +858,7 @@ namespace NHibernate.Persister
 			{
 				// if it doesn't support identity select in insert then we have to issue the Insert
 				// as a seperate command here
-				if(dialect.SupportsIdentitySelectInInsert==false) 
+				if( Dialect.SupportsIdentitySelectInInsert==false ) 
 				{
 					session.Batcher.ExecuteNonQuery( statement );
 				}
@@ -883,7 +883,7 @@ namespace NHibernate.Persister
 			} 
 			finally 
 			{
-				if( dialect.SupportsIdentitySelectInInsert==false ) 
+				if( Dialect.SupportsIdentitySelectInInsert==false ) 
 				{
 					session.Batcher.CloseCommand( statement, null );
 				}
@@ -1068,7 +1068,7 @@ namespace NHibernate.Persister
 		
 			string idProp = IdentifierPropertyName;
 			if (idProp!=null) InitPropertyPaths( idProp, IdentifierType, IdentifierColumnNames, mapping );
-			if ( hasEmbeddedIdentifier ) InitPropertyPaths( null, IdentifierType, IdentifierColumnNames, mapping );
+			if ( HasEmbeddedIdentifier ) InitPropertyPaths( null, IdentifierType, IdentifierColumnNames, mapping );
 			InitPropertyPaths( PathExpressionParser.EntityID, IdentifierType, IdentifierColumnNames, mapping );
 		
 			if ( IsPolymorphic ) 

@@ -68,7 +68,7 @@ namespace NHibernate.Hql
 		private int parameterCount = 0;
 		private string queryString;
 		private bool distinct = false;
-		protected bool compiled;
+		private bool compiled; //protected 
 		private SqlCommand.SqlString sqlString;
 		private System.Type holderClass;
 		private ConstructorInfo holderConstructor;
@@ -116,7 +116,7 @@ namespace NHibernate.Hql
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Compile(ISessionFactoryImplementor factory, string queryString, IDictionary replacements, bool scalar) 
 		{
-			if (!compiled) 
+			if (!Compiled) 
 			{
 				this.factory = factory;
 				this.replacements = replacements;
@@ -253,13 +253,20 @@ namespace NHibernate.Hql
 			entitiesToFetch.Add(name);
 		}
 
-		public override SqlString SqlString
+		protected internal override SqlString SqlString
 		{
+			// this needs internal access because the WhereParser needs to be able to "get" it.
 			get 
 			{
 				LogQuery( queryString, sqlString.ToString() );
 				return sqlString;
 			}
+			set 
+			{ 
+				throw new NotSupportedException( "SqlString can not be set by class outside of QueryTranslator" );
+				//sqlString = value; }
+			}
+
 		}
 
 		private int NextCount() 
@@ -833,10 +840,8 @@ namespace NHibernate.Hql
 
 		protected override string[] Suffixes 
 		{
-			get 
-			{ 
-				return suffixes; 
-			}
+			get { return suffixes; }
+			set { suffixes = value; }
 		}
 
 		protected void AddFromCollection(string elementName, string collectionRole) 

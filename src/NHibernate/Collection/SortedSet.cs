@@ -21,8 +21,8 @@ namespace NHibernate.Collection
 
 		protected override object Snapshot(CollectionPersister persister) 
 		{
-			SortedList clonedSet = new SortedList(comparer, _set.Count);
-			foreach(object obj in _set) 
+			SortedList clonedSet = new SortedList(comparer, internalSet.Count);
+			foreach(object obj in internalSet) 
 			{
 				object copy = persister.ElementType.DeepCopy( obj );
 				clonedSet.Add(copy, copy);
@@ -39,7 +39,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize(CollectionPersister persister) 
 		{
-			_set = new Iesi.Collections.SortedSet( Comparer ); 
+			internalSet = new Iesi.Collections.SortedSet( Comparer ); 
 			// an ArrayList of the identifiers is what Set uses because there is not
 			// both a Key & Value to worry about - just the Key.
 			this.tempIdentifierList = new ArrayList();
@@ -74,7 +74,7 @@ namespace NHibernate.Collection
 			for(int i = 0; i < array.Length; i++) 
 			{
 				object newObject = persister.ElementType.Assemble(array[i], session, owner);
-				_set.Add( newObject );
+				internalSet.Add( newObject );
 			}
 
 			initialized = true;

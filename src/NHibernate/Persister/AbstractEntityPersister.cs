@@ -32,7 +32,7 @@ namespace NHibernate.Persister
 		protected static readonly System.Type[] NoClasses = new System.Type[0];
 
 		private System.Type mappedClass;
-		[NonSerialized] protected Dialect.Dialect dialect;
+		[NonSerialized] private Dialect.Dialect dialect;
 		[NonSerialized] private ConstructorInfo constructor;
 
 		[NonSerialized] private IIdentifierGenerator idgen;
@@ -59,7 +59,7 @@ namespace NHibernate.Persister
 		[NonSerialized] private readonly System.Type[] proxyInterfaces;
 		[NonSerialized] private System.Type concreteProxyClass;
 		[NonSerialized] private bool hasProxy;
-		[NonSerialized] protected bool hasEmbeddedIdentifier;
+		[NonSerialized] private bool hasEmbeddedIdentifier;
 
 		[NonSerialized] private string[] identifierColumnNames;
 		[NonSerialized] private Cascades.IdentifierValue unsavedIdentifierValue;
@@ -110,7 +110,7 @@ namespace NHibernate.Persister
 
 		public virtual SqlString IdentifierSelectFragment(string name, string suffix) 
 		{
-			return new SelectFragment(dialect)
+			return new SelectFragment( Dialect )
 				.SetSuffix(suffix)
 				.AddColumns( name, IdentifierColumnNames )
 				.ToSqlStringFragment(false);
@@ -188,7 +188,7 @@ namespace NHibernate.Persister
 		public virtual object GetIdentifier(object obj) 
 		{
 			object id;
-			if (hasEmbeddedIdentifier) 
+			if ( HasEmbeddedIdentifier ) 
 			{
 				id = obj;
 			} 
@@ -208,7 +208,7 @@ namespace NHibernate.Persister
 
 		public virtual void SetIdentifier(object obj, object id) 
 		{
-			if(hasEmbeddedIdentifier) 
+			if( HasEmbeddedIdentifier ) 
 			{
 				ComponentType copier = (ComponentType) identifierType;
 				copier.SetPropertyValues(obj, copier.GetPropertyValues(id));
@@ -226,7 +226,7 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public virtual object Instantiate(object id) 
 		{
-			if (hasEmbeddedIdentifier && id.GetType()==mappedClass) 
+			if ( HasEmbeddedIdentifier && id.GetType()==mappedClass ) 
 			{
 				return id;
 			} 
@@ -426,7 +426,7 @@ namespace NHibernate.Persister
 
 		protected AbstractEntityPersister(PersistentClass model, ISessionFactoryImplementor factory) 
 		{
-			this.dialect = factory.Dialect;
+			dialect = factory.Dialect;
 
 			// CLASS
 
@@ -440,7 +440,7 @@ namespace NHibernate.Persister
 			sqlWhereString = model.Where;
 			sqlWhereStringTemplate = sqlWhereString==null ?
 				null :
-				Template.RenderWhereStringTemplate(sqlWhereString, dialect);
+				Template.RenderWhereStringTemplate(sqlWhereString, Dialect);
 
 			polymorphic = model.IsPolymorphic;
 			explicitPolymorphism = model.IsExplicitPolymorphism;
@@ -512,14 +512,14 @@ namespace NHibernate.Persister
 			int i=0;
 			foreach(Column col in idValue.ColumnCollection) 
 			{
-				identifierColumnNames[i] = col.GetQuotedName(dialect);
+				identifierColumnNames[i] = col.GetQuotedName( Dialect );
 				i++;
 			}
 
 			// GENERATOR
-			idgen = model.Identifier.CreateIdentifierGenerator(dialect);
+			idgen = model.Identifier.CreateIdentifierGenerator( Dialect );
 			useIdentityColumn = idgen is IdentityGenerator;
-			identitySelectString = useIdentityColumn ? dialect.IdentitySelectString : null;
+			identitySelectString = useIdentityColumn ? Dialect.IdentitySelectString : null;
 
 			// UNSAVED-VALUE:
 
@@ -558,7 +558,7 @@ namespace NHibernate.Persister
 			{
 				foreach(Column col in model.Version.ColumnCollection) 
 				{
-					versionColumnName = col.GetQuotedName(dialect); //only hapens once
+					versionColumnName = col.GetQuotedName( Dialect ); //only hapens once
 				}
 			} 
 			else 
@@ -785,7 +785,7 @@ namespace NHibernate.Persister
 
 		public virtual bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier 
 		{
-			get { return HasIdentifierProperty || hasEmbeddedIdentifier;}
+			get { return HasIdentifierProperty || HasEmbeddedIdentifier; }
 		}
 
 		// IDictionary was a Set in h2.0.3

@@ -10,12 +10,12 @@ namespace NHibernate.Proxy {
 	public class HibernateProxy : RealProxy {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(HibernateProxy));
 
-		protected object target = null;
-		protected object id;
-		protected ISessionImplementor session;
-		protected System.Type persistentClass;
-		protected PropertyInfo identifierProperty;
-		protected bool overridesEquals;
+		private object target = null;
+		private object id;
+		private ISessionImplementor session;
+		private System.Type persistentClass;
+		private PropertyInfo identifierProperty;
+		private bool overridesEquals;
 
 		private HibernateProxy(System.Type type, object id, PropertyInfo identifierProperty, ISessionImplementor session ) : base(type) {
 			this.id = id;

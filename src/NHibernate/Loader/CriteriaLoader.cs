@@ -43,10 +43,10 @@ namespace NHibernate.Loader
 				if(commaNeeded) orderByBuilder.Append(StringHelper.CommaSpace); 
 				commaNeeded = true;
 				
-				orderByBuilder.Append(ord.ToStringForSql(factory, criteria.PersistentClass, alias));
+				orderByBuilder.Append(ord.ToStringForSql(factory, criteria.PersistentClass, Alias));
 			} 
 
-			RenderStatement(criteria.Expression.ToSqlString(factory, criteria.PersistentClass, alias), orderByBuilder.ToString(), factory);
+			RenderStatement(criteria.Expression.ToSqlString(factory, criteria.PersistentClass, Alias), orderByBuilder.ToString(), factory);
 			
 			PostInstantiate();
 			

@@ -14,7 +14,7 @@ namespace NHibernate.Connection
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ConnectionProvider));
 		private string connString = null;
-		protected IDriver driver = null;
+		private IDriver driver = null;
 
 		public virtual void CloseConnection(IDbConnection conn) 
 		{

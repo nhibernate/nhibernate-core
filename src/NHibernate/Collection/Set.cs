@@ -19,7 +19,7 @@ namespace NHibernate.Collection
 	[Serializable]
 	public class Set : PersistentCollection, Iesi.Collections.ISet	
 	{
-		protected Iesi.Collections.ISet _set;
+		protected Iesi.Collections.ISet internalSet;
 		
 		[NonSerialized] protected IList tempIdentifierList;
 
@@ -30,8 +30,8 @@ namespace NHibernate.Collection
 		/// </summary>
 		protected override object Snapshot(CollectionPersister persister) 
 		{
-			Hashtable clonedMap = new Hashtable( _set.Count );
-			foreach( object obj in _set )
+			Hashtable clonedMap = new Hashtable( internalSet.Count );
+			foreach( object obj in internalSet )
 			{
 				object copied = persister.ElementType.DeepCopy( obj );
 				clonedMap[ copied ] = copied;
@@ -44,7 +44,7 @@ namespace NHibernate.Collection
 			IDictionary sn = (IDictionary)snapshot;
 			ArrayList result = new ArrayList(sn.Keys.Count);
 			result.AddRange(sn.Keys);
-			PersistentCollection.IdentityRemoveAll( result,_set, session );
+			PersistentCollection.IdentityRemoveAll( result, internalSet, session );
 			return result;
 		}
 
@@ -54,13 +54,13 @@ namespace NHibernate.Collection
 		public override bool EqualsSnapshot(IType elementType) 
 		{
 			IDictionary snapshot = (IDictionary) GetSnapshot();
-			if ( snapshot.Count!= _set.Count ) 
+			if ( snapshot.Count!= internalSet.Count ) 
 			{
 				return false;
 			}
 			else 
 			{
-				foreach( object obj in _set ) 
+				foreach( object obj in internalSet ) 
 				{
 					object oldValue = snapshot[ obj ];
 					if ( oldValue==null || elementType.IsDirty( oldValue, obj, session)) 
@@ -85,7 +85,7 @@ namespace NHibernate.Collection
 		/// </remarks>
 		public Set(ISessionImplementor session, Iesi.Collections.ISet collection) : base(session) 
 		{
-			_set = collection;
+			internalSet = collection;
 			initialized = true;
 			directlyAccessible = true;
 		}
@@ -97,7 +97,7 @@ namespace NHibernate.Collection
 			object[] array = (object[]) disassembled;
 			for (int i=0; i<array.Length; i+=2)
 			{
-				_set.Add( persister.ElementType.Assemble( array[i], session, owner ) );
+				internalSet.Add( persister.ElementType.Assemble( array[i], session, owner ) );
 			}
 			initialized = true;
 		}
@@ -109,11 +109,11 @@ namespace NHibernate.Collection
 			
 			if(persister.HasOrdering) 
 			{
-				_set = new Iesi.Collections.ListSet();
+				internalSet = new Iesi.Collections.ListSet();
 			}
 			else 
 			{
-				_set = new Iesi.Collections.HashedSet();
+				internalSet = new Iesi.Collections.HashedSet();
 			}
 		}
 		
@@ -127,7 +127,7 @@ namespace NHibernate.Collection
 		public override void CopyTo(System.Array array, int index) 
 		{
 			Read();
-			_set.CopyTo( array, index );
+			internalSet.CopyTo( array, index );
 		}
 
 		/// <summary>
@@ -138,7 +138,7 @@ namespace NHibernate.Collection
 			get 
 			{
 				Read();
-				return _set.Count;
+				return internalSet.Count;
 			}
 		}
 
@@ -165,37 +165,37 @@ namespace NHibernate.Collection
 		public bool Add(object value) 
 		{
 			Write();
-			return _set.Add( value );
+			return internalSet.Add( value );
 		}
 		
 		public void Clear() 
 		{
 			Write();
-			_set.Clear();
+			internalSet.Clear();
 		}
 
 		public bool Contains(object key) 
 		{
 			Read();
-			return _set.Contains( key );
+			return internalSet.Contains( key );
 		}
 
 		public bool ContainsAll(ICollection c) 
 		{
 			Read();
-			return _set.ContainsAll( c );
+			return internalSet.ContainsAll( c );
 		}
 		
 		public Iesi.Collections.ISet ExclusiveOr(Iesi.Collections.ISet a) 
 		{
 			Read();
-			return _set.ExclusiveOr( a );
+			return internalSet.ExclusiveOr( a );
 		}
 
 		public Iesi.Collections.ISet Intersect(Iesi.Collections.ISet a) 
 		{
 			Read();
-			return _set.Intersect( a );
+			return internalSet.Intersect( a );
 		}
 
 		public bool IsEmpty 
@@ -203,57 +203,41 @@ namespace NHibernate.Collection
 			get 
 			{
 				Read();
-				return _set.IsEmpty;
+				return internalSet.IsEmpty;
 			}
 		}
 
 		public Iesi.Collections.ISet Minus(Iesi.Collections.ISet a) 
 		{
 			Read();
-			return _set.Minus( a );
+			return internalSet.Minus( a );
 		}
 
 		public bool Remove(object key) 
 		{
 			Write();
-			return _set.Remove( key );
+			return internalSet.Remove( key );
 		}
 
 		public bool RemoveAll(ICollection c) 
 		{
 			Write();
-			return _set.RemoveAll( c );
+			return internalSet.RemoveAll( c );
 		}
 
 		public bool RetainAll(ICollection c) 
 		{
 			Write();
-			return _set.RetainAll( c );
+			return internalSet.RetainAll( c );
 		}
 
 		public Iesi.Collections.ISet Union(Iesi.Collections.ISet a) 
 		{
 			Read();
-			return _set.Union( a );
+			return internalSet.Union( a );
 		}
 
 		#endregion
-
-//		/// <summary>
-//		/// <see cref="IDictionary.IsFixedSize"/>
-//		/// </summary>
-//		public bool IsFixedSize 
-//		{
-//			get { return false; }
-//		}
-//
-//		/// <summary>
-//		/// <see cref="IDictionary.IsReadOnly"/>
-//		/// </summary>
-//		public bool IsReadOnly 
-//		{
-//			get { return false; }
-//		}
 
 		#region System.Collections.IEnumerable Members
 
@@ -263,7 +247,7 @@ namespace NHibernate.Collection
 		public override IEnumerator GetEnumerator() 
 		{
 			Read();
-			return _set.GetEnumerator();
+			return internalSet.GetEnumerator();
 		}
 
 		#endregion
@@ -274,7 +258,7 @@ namespace NHibernate.Collection
 		public object Clone() 
 		{
 			Read();
-			return _set.Clone();
+			return internalSet.Clone();
 		}
 
 		#endregion
@@ -284,7 +268,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override ICollection Elements() 
 		{
-			return _set;
+			return internalSet;
 		}
 
 		/// <summary>
@@ -292,13 +276,13 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override bool Empty 
 		{
-			get { return _set.Count==0; }
+			get { return internalSet.Count==0; }
 		}
 		
 		public override string ToString() 
 		{
 			Read();
-			return _set.ToString();
+			return internalSet.ToString();
 		}
 
 		
@@ -307,7 +291,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override void WriteTo(IDbCommand st, CollectionPersister persister, object entry, int i, bool writeOrder) 
 		{
-			persister.WriteElement(st, entry, writeOrder, session);
+			persister.WriteElement( st, entry, writeOrder, session );
 		}
 		
 		/// <summary>
@@ -341,7 +325,7 @@ namespace NHibernate.Collection
 			foreach(object identifier in tempIdentifierList) 
 			{
 				object element = persister.ElementType.ResolveIdentifier(identifier, session, owner);
-				_set.Add( element );
+				internalSet.Add( element );
 			}
 				
 		}
@@ -351,7 +335,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override ICollection Entries() 
 		{
-			return _set;
+			return internalSet;
 		}
 
 
@@ -360,10 +344,10 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override object Disassemble(CollectionPersister persister) 
 		{
-			object[] result = new object[ _set.Count ];
+			object[] result = new object[ internalSet.Count ];
 			int i=0;
 
-			foreach( object obj in _set ) 
+			foreach( object obj in internalSet ) 
 			{
 				result[i++] = persister.ElementType.Disassemble( obj, session );
 			}
@@ -382,14 +366,14 @@ namespace NHibernate.Collection
 			{
 				object test = e.Key;
 				
-				if( _set.Contains( test )==false ) 
+				if( internalSet.Contains( test )==false ) 
 				{
 					deletes.Add( test );
 				}
 
 			}
 
-			foreach(object obj in _set) 
+			foreach(object obj in internalSet) 
 			{
 				//object testKey = e.Key;
 				object oldKey = snapshot[ obj ];

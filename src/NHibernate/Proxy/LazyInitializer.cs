@@ -11,14 +11,16 @@ namespace NHibernate.Proxy
 	/// <summary>
 	/// Summary description for LazyInitializer.
 	/// </summary>
-	public abstract class LazyInitializer {
+	public abstract class LazyInitializer 
+	{
 		protected static readonly object INVOKE_IMPLEMENTATION = new object();
-		protected object target = null;
-		protected object id;
-		protected ISessionImplementor session;
-		protected System.Type persistentClass;
-		protected MethodInfo getIdentifierMethod;
-		protected bool overridesEquals;
+		
+		private object target = null;
+		private object id;
+		private ISessionImplementor session;
+		private System.Type persistentClass;
+		private MethodInfo getIdentifierMethod;
+		private bool overridesEquals;
 
 		public LazyInitializer(System.Type persistentClass, object id, MethodInfo getIdentifierMethod, ISessionImplementor session) {
 			this.id = id;

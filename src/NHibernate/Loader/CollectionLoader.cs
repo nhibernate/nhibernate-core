@@ -23,7 +23,7 @@ namespace NHibernate.Loader
 		{
 			idType = persister.KeyType;
 
-			string alias = Alias( persister.QualifiedTableName, 0);
+			string alias = ToAlias( persister.QualifiedTableName, 0);
 
 			//TODO: H2.0.3 the whereString is appended with the " and " - I don't think
 			// that is needed because we are building SqlStrings differently and the Builder
@@ -35,8 +35,8 @@ namespace NHibernate.Loader
 			IList associations = WalkCollectionTree(persister, alias, factory);
 
 			int joins = associations.Count;
-			suffixes = new string[joins];
-			for (int i=0; i<joins; i++) suffixes[i] = i.ToString() + StringHelper.Underscore;
+			Suffixes = new string[joins];
+			for (int i=0; i<joins; i++) Suffixes[i] = i.ToString() + StringHelper.Underscore;
 
 			JoinFragment ojf = OuterJoins(associations);
 			
@@ -53,7 +53,7 @@ namespace NHibernate.Loader
 				
 			if(persister.HasOrdering) selectBuilder.SetOrderByClause(persister.GetSQLOrderByString(alias));
 
-			this.sqlString = selectBuilder.ToSqlString();
+			this.SqlString = selectBuilder.ToSqlString();
 
 			classPersisters = new ILoadable[joins];
 			lockModeArray = CreateLockModeArray(joins, LockMode.None);

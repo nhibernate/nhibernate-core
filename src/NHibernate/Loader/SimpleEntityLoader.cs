@@ -33,9 +33,10 @@ namespace NHibernate.Loader
 			PostInstantiate();
 		}
 
-		public override SqlString SqlString 
+		protected internal override SqlString SqlString 
 		{
-			get {return sqlString;}
+			get { return sqlString; }
+			set { sqlString = value; }
 		}
 
 		public override ILoadable[] Persisters 
@@ -49,6 +50,7 @@ namespace NHibernate.Loader
 		protected override string[] Suffixes 
 		{
 			get { return NoSuffix; }
+			set { throw new NotSupportedException( "A SimpleEntityLoader has no Suffixes" ); }
 		}
 
 		public object Load(ISessionImplementor session, object id, object obj) 

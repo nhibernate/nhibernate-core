@@ -35,7 +35,7 @@ namespace NHibernate.Loader
 			ILoadable persister = (ILoadable) factory.GetPersister(
 				((EntityType) collPersister.ElementType).PersistentClass);
 
-			string alias = Alias(collectionPersister.QualifiedTableName, 0);
+			string alias = ToAlias(collectionPersister.QualifiedTableName, 0);
 			
 			SqlString whereSqlString = null;
 
@@ -45,8 +45,8 @@ namespace NHibernate.Loader
 			IList associations = WalkTree(persister, alias, factory);
 
 			int joins=associations.Count;
-			suffixes = new string[joins+1];
-			for (int i=0; i<=joins; i++) suffixes[i] = (joins==0) ? String.Empty : i.ToString() + StringHelper.Underscore;
+			Suffixes = new string[joins+1];
+			for (int i=0; i<=joins; i++) Suffixes[i] = (joins==0) ? String.Empty : i.ToString() + StringHelper.Underscore;
 
 
 			JoinFragment ojf = OuterJoins(associations);
@@ -57,7 +57,7 @@ namespace NHibernate.Loader
 				collectionPersister.SelectClauseFragment(alias) +
 				(joins==0 ? String.Empty : "," + SelectString(associations) ) +
 				", " +
-				SelectString( persister, alias, suffixes[joins] )
+				SelectString( persister, alias, Suffixes[joins] )
 				);
 
 
@@ -79,7 +79,7 @@ namespace NHibernate.Loader
 
 			if(collectionPersister.HasOrdering) selectBuilder.SetOrderByClause( collectionPersister.GetSQLOrderByString(alias) );
 
-			this.sqlString = selectBuilder.ToSqlString();
+			this.SqlString = selectBuilder.ToSqlString();
 
 
 			classPersisters = new ILoadable[joins+1];

@@ -34,7 +34,8 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// The SqlString to be called; implemented by all subclasses
 		/// </summary>
-		public abstract SqlString SqlString {get;}
+		/// <remarks>TODO: add something about internal</remarks>
+		protected internal abstract SqlString SqlString {get; set;}
 
 		/// <summary>
 		/// An array of persisters of entity classes contained in each row of results;
@@ -46,7 +47,8 @@ namespace NHibernate.Loader
 		/// The suffix identifies a particular column of results in the SQL <c>IDataReader</c>;
 		/// implemented by all subclasses
 		/// </summary>
-		protected abstract string[] Suffixes { get; }
+		/// added set
+		protected abstract string[] Suffixes { get; set; }
 
 		/// <summary>
 		/// An (optional) persister for a collection to be initialized; only collection loaders
@@ -538,14 +540,6 @@ namespace NHibernate.Loader
 				( selection!=null && selection.MaxRows!=RowSelection.NoValue ) && // there is a max rows
 				( dialect.PreferLimit || GetFirstRow(selection)!=0);
 		}
-
-//		[Obsolete("use QueryParameters instead.")]
-//		protected virtual IDbCommand PrepareCommand(SqlString sqlString, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
-//		{
-//			QueryParameters qp = new QueryParameters( types, values, namedParams, null, selection );
-//			return PrepareCommand( sqlString, qp, scroll, session );
-// 
-//		}
 
 		/// <summary>
 		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
