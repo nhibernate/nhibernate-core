@@ -151,10 +151,6 @@ namespace NHibernate.Impl
 				dbCommand.Connection = this.DbConnection;
 				dbCommand = JoinTransaction(dbCommand);
 			
-				// TODO: remove this comment for Prepare() once we have fixed up the SqlTypes
-				// and are able to differentiate between a Command that can be prepared and 
-				// one that cannot.
-				// for example - with SqlServer2000 a Command with a binary type 
 				if(factory.ConnectionProvider.Driver.SupportsPreparingCommands) 
 				{
 					dbCommand.Prepare();
