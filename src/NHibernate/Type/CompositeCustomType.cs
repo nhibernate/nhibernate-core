@@ -39,19 +39,19 @@ namespace NHibernate.Type {
 			}
 		}			
 
-		public IType[] Subtypes {
+		public virtual IType[] Subtypes {
 			get {
 				return userType.PropertyTypes;
 			}
 		}
 
-		public string[] PropertyNames {
+		public virtual string[] PropertyNames {
 			get {
 				return userType.PropertyNames;
 			}
 		}
 
-		public object[] GetPropertyValues(object component, ISessionImplementor session) {
+		public virtual object[] GetPropertyValues(object component, ISessionImplementor session) {
 			int len = Subtypes.Length;
 			object[] result = new object[len];
 			for ( int i=0; i<len; i++ ) {
@@ -60,22 +60,22 @@ namespace NHibernate.Type {
 			return result;
 		}
 
-		public void SetPropertyValues(Object component, Object[] values) {
+		public virtual void SetPropertyValues(Object component, Object[] values) {
 			for (int i=0; i<values.Length; i++) {
 				userType.SetPropertyValue( component, i, values[i] );
 			}
 		}
 
-		public object GetPropertyValue(object component, int i, ISessionImplementor session) {
+		public virtual object GetPropertyValue(object component, int i, ISessionImplementor session) {
 			return userType.GetPropertyValue(component, i);
 		}
 
-		public Cascades.CascadeStyle Cascade(int i) {
+		public virtual Cascades.CascadeStyle Cascade(int i) {
 			return Cascades.CascadeStyle.StyleNone;
 		}
 
 
-		public OuterJoinLoaderType EnableJoinedFetch(int i) {
+		public virtual OuterJoinLoaderType EnableJoinedFetch(int i) {
 			return OuterJoinLoaderType.Auto;
 		}
 
