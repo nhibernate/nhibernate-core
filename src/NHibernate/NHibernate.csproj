@@ -302,6 +302,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cfg\Mappings.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Collection\ArrayHolder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
