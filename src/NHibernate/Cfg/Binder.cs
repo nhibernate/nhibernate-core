@@ -38,16 +38,16 @@ namespace NHibernate.Cfg
 			// Split off the assembly reference if it's present
 			string[] parts = className.Split( ',' );
 			string name = parts[ 0 ];
-			if ( name.IndexOf( '.' ) == -1 && mapping.Namespace != null )
+			if ( name.IndexOf( '.' ) == -1 && mapping.DefaultNamespace != null )
 			{
 				// No namespace - use the default
-				name = mapping.Namespace + "." + name;
+				name = mapping.DefaultNamespace + "." + name;
 			}
 
 			string assm;
 			if ( parts.Length == 1 )
 			{
-				if ( mapping.Assembly == null )
+				if ( mapping.DefaultAssembly == null )
 				{
 					// No default, let it try and find it automatically
 					assm = "";
@@ -55,7 +55,7 @@ namespace NHibernate.Cfg
 				else
 				{
 					// No assembly - use the default
-					assm = ", " + mapping.Assembly;
+					assm = ", " + mapping.DefaultAssembly;
 				}
 			}
 			else
@@ -1368,9 +1368,9 @@ namespace NHibernate.Cfg
 			XmlAttribute aiNode = hmNode.Attributes["auto-import"];
 			model.IsAutoImport = (aiNode==null) ? true : "true".Equals( aiNode.Value );
 			XmlAttribute nsNode = hmNode.Attributes["namespace"];
-			model.Namespace = (nsNode==null) ? null : nsNode.Value ;
+			model.DefaultNamespace = (nsNode==null) ? null : nsNode.Value ;
 			XmlAttribute assemblyNode = hmNode.Attributes["assembly"];
-			model.Assembly = (assemblyNode==null) ? null : assemblyNode.Value ;
+			model.DefaultAssembly = (assemblyNode==null) ? null : assemblyNode.Value ;
 
 			nsmgr = new XmlNamespaceManager(doc.NameTable);
 			// note that the prefix has absolutely nothing to do with what the user
@@ -1498,6 +1498,8 @@ namespace NHibernate.Cfg
 			return superModel;
 		}
 
+		// TODO: rename this to something like SecondPassBase so we can rename the
+		// method secondPass(...) to .net conventions.
 		public abstract class SecondPass 
 		{
 			internal XmlNode node;
@@ -1515,6 +1517,7 @@ namespace NHibernate.Cfg
 			{
 				if ( log.IsDebugEnabled ) log.Debug("Second pass for collection: " + collection.Role );
 				secondPass(persistentClasses);
+				//TODO: h2.1 has a call to collection.createAllKeys(); here
 				if ( log.IsDebugEnabled ) 
 				{
 					string msg = "Mapped collection key: " + Columns( collection.Key );

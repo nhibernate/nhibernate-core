@@ -25,8 +25,8 @@ namespace NHibernate.Cfg
 		private bool autoImport;
 		private IList propertyReferences;
 		private string defaultAccess;
-		private string @namespace;
-		private string assembly;
+		private string defaultNamespace;
+		private string defaultAssembly;
 		private IDictionary caches;
 		private INamingStrategy namingStrategy;
 
@@ -142,19 +142,19 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// The default namespace for persistent classes
 		/// </summary>
-		public string Namespace
+		public string DefaultNamespace
 		{
-			get { return @namespace; }
-			set { @namespace = value; }
+			get { return defaultNamespace; }
+			set { defaultNamespace = value; }
 		}
 
 		/// <summary>
 		/// The default assembly for persistent classes
 		/// </summary>
-		public string Assembly
+		public string DefaultAssembly
 		{
-			get { return assembly; }
-			set { assembly = value; }
+			get { return defaultAssembly; }
+			set { defaultAssembly = value; }
 		}
 
 		/// <summary>
