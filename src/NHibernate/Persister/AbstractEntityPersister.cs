@@ -309,6 +309,10 @@ namespace NHibernate.Persister {
 			get { return hasProxy; }
 		}
 
+		/// <summary>
+		/// Returns the SQL used to get the Identity value from the last insert.
+		/// </summary>
+		/// <remarks>This is not a NHibernate Command because there are no parameters.</remarks>
 		public string SqlIdentitySelect {
 			get { return identitySelectString; }
 		}
@@ -592,5 +596,7 @@ namespace NHibernate.Persister {
 		public abstract string WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 		public abstract string DiscriminatorColumnName { get; }
 		public abstract string[] GetSubclassPropertyColumnNames(int i);
+		public abstract string GetSubclassPropertyTableName(int i) ;
+		public abstract string GetSubclassPropertyName(int i);
 	}
 }

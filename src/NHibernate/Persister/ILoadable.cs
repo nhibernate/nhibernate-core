@@ -49,6 +49,8 @@ namespace NHibernate.Persister {
 		/// </summary>
 		string TableName { get; }
 
+		//USED BY OuterJoinLoader + subclasses
+		
 		/// <summary>
 		/// How many properties are there, for this class and all subclasses? (optional operation)
 		/// </summary>
@@ -77,10 +79,25 @@ namespace NHibernate.Persister {
 		IType GetSubclassPropertyType(int i);
 
 		/// <summary>
+		/// Get the name of the numbered property of the class or a subclass
+		/// (optional operation)
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		string GetSubclassPropertyName(int i);
+
+		/// <summary>
 		/// Return the column names used to persist all properties of all sublasses of the persistent class
 		/// (optional operation)
 		/// </summary>
 		string[] GetSubclassPropertyColumnNames(int i);
+
+		/// <summary>
+		/// Return the table name used to persist the numbered property of 
+		/// the class or a subclass
+		/// (optional operation)
+		/// </summary>
+		string GetSubclassPropertyTableName(int i);
 
 		/// <summary>
 		/// Given the number of a property of a subclass, and a table alias, return the aliased column names
@@ -96,6 +113,7 @@ namespace NHibernate.Persister {
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <returns></returns>
+		//TODO:H2.0.3 not in h2.0.3 - where is it used...
 		string GetConcreteClassAlias(string alias);
 
 		/// <summary>

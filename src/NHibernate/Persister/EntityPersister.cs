@@ -2,11 +2,13 @@ using System;
 using System.Text;
 using System.Data;
 using System.Collections;
+
 using NHibernate.Util;
 using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.Hql;
 using NHibernate.Sql;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -26,11 +28,11 @@ namespace NHibernate.Persister {
 		private readonly bool hasUpdateableColumns;
 		private readonly System.Type[] subclassClosure;
 
-		//SQL strings
-		private readonly string sqlDeleteString;
-		private readonly string sqlInsertString;
-		private readonly string sqlUpdateString;
-		private readonly string sqlIdentityInsertString;
+		// SQL strings
+		private SqlString sqlDeleteString;
+		private SqlString sqlInsertString;
+		private SqlString sqlUpdateString;
+		private SqlString sqlIdentityInsertString;
 
 		// properties of this class, including inherited properties
 		private readonly int[] propertyColumnSpans;
@@ -46,6 +48,7 @@ namespace NHibernate.Persister {
 		// the closure of all properties in the entire hierarchy including
 		// subclasses and superclasses of this class
 		private readonly string[][] subclassPropertyColumnNameClosure;
+		private readonly string[] subclassPropertyNameClosure;
 		private readonly IType[] subclassPropertyTypeClosure;
 		private readonly OuterJoinLoaderType[] subclassPropertyEnableJoinedFetch;
 
@@ -64,6 +67,154 @@ namespace NHibernate.Persister {
 
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(EntityPersister));
 
+		public EntityPersister(PersistentClass model, ISessionFactoryImplementor factory) : base(model, factory) {
+
+			// CLASS + TABLE
+
+			System.Type mappedClass = model.PersistentClazz;
+			this.factory = factory;
+			Table table = model.RootTable;
+			qualifiedTableName = table.GetQualifiedName( factory.DefaultSchema );
+			tableNames = new string[] { qualifiedTableName };
+
+			// DISCRIMINATOR
+
+			object discriminatorValue;
+			if ( model.IsPolymorphic ) {
+				Value d = model.Discriminator;
+				if (d==null) throw new MappingException("discriminator mapping required for polymorphic persistence");
+				forceDiscriminator = model.IsForceDiscriminator;
+				
+				// the discriminator will have only one column 
+				foreach(Column discColumn in d.ColumnCollection) {
+					discriminatorColumnName = discColumn.Name;
+				}
+				try {
+					discriminatorType = (IDiscriminatorType) model.Discriminator.Type;
+					if ( "null".Equals( model.DiscriminatorValue)) {
+						discriminatorValue = null;
+						discriminatorSQLString = "null";
+					} 
+					else {
+						discriminatorValue = discriminatorType.StringToObject( model.DiscriminatorValue );
+						discriminatorSQLString = discriminatorType.ObjectToSQLString(discriminatorValue);
+					}
+				} 
+				catch (Exception e) {
+					throw new MappingException("Could not format discriminator value to sql string", e);
+				}
+			} 
+			else {
+				forceDiscriminator = false;
+				discriminatorColumnName = null;
+				discriminatorValue = null;
+				discriminatorType = null;
+				discriminatorSQLString = null;
+			}
+
+			// PROPERTIES
+
+			propertyColumnNames = new string[hydrateSpan][];
+			propertyColumnAliases = new string[hydrateSpan][];
+			propertyColumnSpans = new int[hydrateSpan];
+			ArrayList thisClassProperties = new ArrayList();
+
+			int i=0;
+			bool foundColumn = false;
+			foreach(Property prop in model.PropertyClosureCollection) {
+				int span = prop.ColumnSpan;
+				propertyColumnSpans[i] = span;
+				thisClassProperties.Add(prop);
+
+				string[] colNames = new string[span];
+				string[] colAliases = new string[span];
+				int j=0;
+				foreach(Column col in prop.ColumnCollection) {
+					colAliases[j] = col.Alias;
+					colNames[j] = col.Name;
+					j++;
+					if( prop.IsUpdateable ) foundColumn=true;
+				}
+				propertyColumnNames[i] = colNames;
+				propertyColumnAliases[i] = colAliases;
+
+				i++;
+			}
+
+			hasUpdateableColumns = foundColumn;
+
+			ArrayList columns = new ArrayList();
+			ArrayList types = new ArrayList();
+			ArrayList names = new ArrayList();
+			ArrayList propColumns = new ArrayList();
+			ArrayList aliases = new ArrayList();
+			ArrayList joinedFetchesList = new ArrayList();
+			ArrayList definedBySubclass = new ArrayList();
+
+			foreach(Property prop in model.SubclassPropertyClosureCollection) {
+				names.Add( prop.Name );
+				definedBySubclass.Add( !thisClassProperties.Contains(prop) );
+				string[] cols = new string[ prop.ColumnSpan ];
+				types.Add( prop.Type );
+				int l=0;
+				foreach( Column col in prop.ColumnCollection ) {
+					columns.Add( col.Name );
+					aliases.Add( col.Alias );
+					cols[l++] = col.Name;
+				}
+				propColumns.Add(cols);
+				joinedFetchesList.Add( prop.Value.OuterJoinFetchSetting );
+			}
+			subclassColumnClosure = (string[]) columns.ToArray(typeof(string));
+			subclassPropertyTypeClosure = (IType[]) types.ToArray(typeof(IType));
+			subclassColumnAliasClosure = (string[]) aliases.ToArray(typeof(string));
+			subclassPropertyNameClosure = (string[]) names.ToArray(typeof(string));
+			subclassPropertyColumnNameClosure = (string[][]) propColumns.ToArray( typeof(string[]));
+
+			subclassPropertyEnableJoinedFetch = new OuterJoinLoaderType[ joinedFetchesList.Count ];
+			int m=0;
+			foreach(OuterJoinLoaderType qq in joinedFetchesList) {
+				subclassPropertyEnableJoinedFetch[m++] = qq;
+			}
+			propertyDefinedOnSubclass = new bool[definedBySubclass.Count];
+			m=0;
+			foreach( bool val in definedBySubclass) {
+				propertyDefinedOnSubclass[m++] = val;
+			}
+
+			int subclassSpan = model.SubclassSpan + 1;
+			subclassClosure = new System.Type[subclassSpan];
+			subclassClosure[0] = mappedClass;
+			if ( model.IsPolymorphic ) {
+				if (discriminatorValue==null) {
+					subclassesByDiscriminatorValue.Add( ObjectUtils.Null, mappedClass);
+				} else {
+					subclassesByDiscriminatorValue.Add( discriminatorValue, mappedClass);
+				}
+
+			}
+
+			// SUBCLASSES
+			if ( model.IsPolymorphic ) {
+				int k=1;
+				foreach(Subclass sc in model.SubclassCollection) {
+					subclassClosure[k++] = sc.PersistentClazz;
+					if ("null".Equals( sc.DiscriminatorValue ) ) {
+						subclassesByDiscriminatorValue.Add ( ObjectUtils.Null, sc.PersistentClazz );
+					} else {
+						try {
+							subclassesByDiscriminatorValue.Add (
+								discriminatorType.StringToObject( sc.DiscriminatorValue ),
+								sc.PersistentClazz);
+						} catch (Exception e) {
+							throw new MappingException("Error parsing discriminator value", e);
+						}
+					}
+				}
+			}
+		}
+
+		
 		public override void PostInstantiate(ISessionFactoryImplementor factory) {
 
 			InitPropertyPaths(factory);
@@ -107,24 +258,42 @@ namespace NHibernate.Persister {
 
 			IUniqueEntityLoader loader = new EntityLoader(this, factory);
 
+			// initialize the SqlStrings - these are in the PostInstantiate method because we need
+			// to have every other IClassPersister loaded so we can resolve the IType for the 
+			// relationships.  In Hibernate they are able to just use ? and not worry about Parameters until
+			// the statement is actually called.  We need to worry about Parameters when we are building
+			// the IClassPersister...
+			sqlDeleteString = GenerateDeleteString();
+			sqlInsertString = GenerateInsertString(false, PropertyInsertability);
+			sqlIdentityInsertString = IsIdentifierAssignedByInsert ?
+				GenerateInsertString(true, PropertyInsertability):
+				null;
+
+			sqlUpdateString = GenerateUpdateString(PropertyInsertability);
+
+			SqlString lockString = GenerateLockString(null, null);
+			SqlString lockExclusiveString = dialect.SupportsForUpdate ? 
+				GenerateLockString(lockString, " FOR UPDATE") :
+				GenerateLockString(lockString, null);
+			SqlString lockExclusiveNowaitString = dialect.SupportsForUpdate ? 
+				GenerateLockString(lockString, " FOR UPDATE NOWAIT") :
+				GenerateLockString(lockString, null);
+
+			lockers.Add(LockMode.Read, lockString);
+			lockers.Add(LockMode.Upgrade, lockExclusiveString);
+			lockers.Add(LockMode.UpgradeNoWait, lockExclusiveNowaitString);
+
+			SqlString selectForUpdateString = factory.Dialect.SupportsForUpdate ?
+				GenerateSelectForUpdateString(" FOR UPDATE") : GenerateSelectForUpdateString(null);
+
+			SqlString selectForUpdateNoWaitString = factory.Dialect.SupportsForUpdateNoWait ?
+				GenerateSelectForUpdateString(" FOR UPDATE NO WAIT") : 
+				selectForUpdateString.Clone();
+
 			loaders.Add( LockMode.None, loader );
 			loaders.Add( LockMode.Read, loader );
-
-			string selectForUpdate = factory.Dialect.SupportsForUpdate ?
-				GenerateSelectForUpdateString() : GenerateSelectString();
-
-			loaders.Add(
-				LockMode.Upgrade,
-				new SimpleEntityLoader ( this, selectForUpdate, LockMode.Upgrade )
-				);
-
-			string selectForUpdateNoWait = factory.Dialect.SupportsForUpdateNoWait ?
-				GenerateSelectForUpdateNowaitString() : selectForUpdate;
-
-			loaders.Add(
-				LockMode.UpgradeNoWait,
-				new SimpleEntityLoader( this, selectForUpdateNoWait, LockMode.UpgradeNoWait )
-				);
+			loaders.Add( LockMode.Upgrade, new SimpleEntityLoader(this, selectForUpdateString, LockMode.Upgrade));
+			loaders.Add( LockMode.UpgradeNoWait, new SimpleEntityLoader(this, selectForUpdateNoWaitString, LockMode.UpgradeNoWait));
 
 		}
 
@@ -186,92 +355,180 @@ namespace NHibernate.Persister {
 			get { return tableNames; }
 		}
 
-		protected string SqlDeleteString {
-			get { return sqlDeleteString; }
+		/// <summary>
+		/// The SqlString do Delete this Entity.
+		/// </summary>
+		protected SqlString SqlDeleteString {
+			get { return sqlDeleteString;}
 		}
-
-		protected string SqlInsertString {
-			get { return sqlInsertString; }
-		}
-
-		protected string SqlIdentityInsertString {
-			get { return sqlIdentityInsertString; }
-		}
-
-		protected string SqlUpdateString {
-			get { return sqlUpdateString; }
-		}
-
-		protected virtual string GenerateDeleteString() {
-			return new Delete(dialect)
-				.SetTableName( TableName )
-				.SetPrimaryKeyColumnNames( IdentifierColumnNames )
-				.SetVersionColumnName( VersionColumnName )
-				.ToStatementString();
-		}
-
-		protected virtual string GenerateInsertString(bool identityInsert, bool[] includeProperty) {
-			Insert insert = new Insert(dialect)
-				.SetTableName( TableName );
-			for (int i=0; i<hydrateSpan; i++) {
-				if ( includeProperty[i] ) insert.AddColumns( propertyColumnNames[i] );
-			}
-			if ( IsPolymorphic ) insert.AddColumn ( DiscriminatorColumnName, discriminatorSQLString );
-			if (!identityInsert) {
-				insert.AddColumns( IdentifierColumnNames );
-			} else {
-				insert.AddIdentityColumn( IdentifierColumnNames[0] );
-			}
-			return insert.ToStatementString();
+		/// <summary>
+		/// The SqlString to Insert this Entity
+		/// </summary>
+		protected SqlString SqlInsertString {
+			get { return sqlInsertString;}
 		}
 
 		/// <summary>
-		/// Generate the SQL that selects a row by id using <c>FOR UPDATE</c>
+		/// The SqlString to Insert this Entity using a natively generated Id.
 		/// </summary>
-		/// <returns></returns>
-		protected virtual string GenerateSelectForUpdateString() {
-			return GenerateSelectString() + " for update";
+		protected SqlString SqlIdentityInsertString {
+			get {return sqlIdentityInsertString;}
 		}
 
 		/// <summary>
-		/// Generate the SQL taht selects a row by id using <c>FOR UPDATE</c>
+		/// The SqlString to Update this Entity.
 		/// </summary>
-		/// <returns></returns>
-		protected virtual string GenerateSelectForUpdateNowaitString() {
-			return GenerateSelectString() + " for update nowait";
+		protected SqlString SqlUpdateString {
+			get {return sqlUpdateString;}
 		}
 
-		protected virtual string GenerateSelectString() {
-			SimpleSelect select = new SimpleSelect()
-				.SetTableName( TableName )
-				.AddColumns( IdentifierColumnNames )
-				.AddColumns( subclassColumnClosure, subclassColumnAliasClosure );
-			if ( HasSubclasses ) select.AddColumn( DiscriminatorColumnName );
-			return select.AddCondition( IdentifierColumnNames, "=?" ).ToStatementString();
+		/// <summary>
+		/// Generates an SqlString that encapsulates what later will be translated
+		/// to an ADO.NET IDbCommand to Delete this Entity.
+		/// </summary>
+		/// <returns>A SqlString for a Delete</returns>
+		protected virtual SqlString GenerateDeleteString() {
+			SqlDeleteBuilder deleteBuilder = new SqlDeleteBuilder(factory);
+			deleteBuilder.SetTableName(TableName)
+				.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
+
+			if(IsVersioned) deleteBuilder.SetVersionColumn(new string[] {VersionColumnName}, VersionType);
+
+			return deleteBuilder.ToSqlString();
+
 		}
 
-		protected virtual string GenerateUpdateString(bool[] includeProperty) {
-			Update update = new Update(dialect)
-				.SetTableName( TableName )
-				.SetPrimaryKeyColumnNames( IdentifierColumnNames )
-				.SetVersionColumnName( VersionColumnName );
-			for (int i=0; i<hydrateSpan; i++) {
-				if ( includeProperty[i] ) update.AddColumns( propertyColumnNames[i] );
+		/// <summary>
+		/// Generates an SqlString that encapsulates what later will be translated
+		/// to an ADO.NET IDbCommand to Insert this Entity.
+		/// </summary>
+		/// <returns>A SqlString for an Insert</returns>
+		protected virtual SqlString GenerateInsertString(bool identityInsert, bool[] includeProperty) {
+			
+			SqlInsertBuilder builder = new SqlInsertBuilder(factory);
+			builder.SetTableName(TableName);
+
+			for(int i = 0 ; i < hydrateSpan; i++) {
+				if(includeProperty[i]) builder.AddColumn(propertyColumnNames[i], PropertyTypes[i]);
+			}		  
+
+			if (IsPolymorphic) builder.AddColumn(DiscriminatorColumnName, DiscriminatorSQLString);
+
+			if(identityInsert==false) {
+				builder.AddColumn(IdentifierColumnNames, IdentifierType);
 			}
-			return update.ToStatementString();
+			else {
+				// make sure the Dialect has an identity insert string because we don't want
+				// to add the column when there is no value to supply the SqlBuilder
+				if(dialect.IdentityInsertString!=null) {
+					// only 1 column if there is IdentityInsert enabled.
+					builder.AddColumn(IdentifierColumnNames[0], dialect.IdentityInsertString);
+				}
+			}
+
+			return builder.ToSqlString();
+
 		}
 
-		protected virtual string GenerateLockString() {
-			SimpleSelect select = new SimpleSelect()
-				.SetTableName( TableName )
-				.AddColumn( IdentifierColumnNames[0])
-				.AddCondition( IdentifierColumnNames, "=?" );
-			if ( IsVersioned ) {
-				select.AddWhereToken("and")
-					.AddCondition( VersionColumnName, "=?" );
+		
+		/// <summary>
+		/// Generates an SqlString that encapsulates what later will be translated
+		/// to an ADO.NET IDbCommand to Update this Entity.
+		/// </summary>
+		/// <returns>A SqlString for an Update</returns>
+		protected virtual SqlString GenerateUpdateString(bool[] includeProperty) {
+			SqlUpdateBuilder updateBuilder = new SqlUpdateBuilder(factory);
+
+			updateBuilder.SetTableName(TableName);
+
+			for (int i = 0; i < hydrateSpan; i++) {
+				if (includeProperty[i]) updateBuilder.AddColumns(propertyColumnNames[i], PropertyTypes[i]);
 			}
-			return select.ToStatementString();
+
+			updateBuilder.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
+			if(IsVersioned) updateBuilder.SetVersionColumn(new string[] {VersionColumnName}, VersionType);
+		
+			return updateBuilder.ToSqlString();
+
 		}
+
+
+		/// <summary>
+		/// Generates a SqlString that will append the forUpdateFragment to the sql.
+		/// </summary>
+		/// <param name="forUpdateFragment"></param>
+		/// <returns>A new SqlString</returns>
+		protected virtual SqlString GenerateSelectForUpdateString(string forUpdateFragment) {
+			
+			SqlString forUpdateSqlString = null;
+			
+			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(factory);
+				
+			// set the table name and add the columns to select
+			builder.SetTableName(TableName)
+				.AddColumns(IdentifierColumnNames)
+				.AddColumns(subclassColumnClosure, subclassColumnAliasClosure);
+
+			if (HasSubclasses) builder.AddColumn(DiscriminatorColumnName);
+
+			// add the parameters to use in the WHERE clause
+			// TODO: find out why version isn't used here
+			builder.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
+
+			forUpdateSqlString = builder.ToSqlString();
+			
+
+			// add any special text that is contained in the forUpdateFragment
+			if(forUpdateFragment!=null && forUpdateFragment!=String.Empty) {
+				SqlStringBuilder sqlBuilder = new SqlStringBuilder(forUpdateSqlString);	
+				sqlBuilder.Add(forUpdateFragment);
+				forUpdateSqlString = sqlBuilder.ToSqlString();
+			}
+
+			return forUpdateSqlString;
+		
+		}
+
+		
+		/// <summary>
+		/// Generates a SqlString that will append the forUpdateFragment to the sql.
+		/// </summary>
+		/// <param name="sqlString">An existing SqlString to copy for then new SqlString.</param>
+		/// <param name="forUpdateFragment"></param>
+		/// <returns>A new SqlString</returns>
+		/// <remarks>
+		/// The parameter <c>sqlString</c> does not get modified.  It is Cloned to make a new SqlString.
+		/// If the parameter<c>sqlString</c> is null a new one will be created.
+		/// </remarks>
+		protected virtual SqlString GenerateLockString(SqlString sqlString, string forUpdateFragment) {
+			
+			SqlStringBuilder sqlBuilder = null;
+
+			if(sqlString==null) {
+				SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(factory);
+				
+				// set the table name and add the columns to select
+				builder.SetTableName(TableName)
+					.AddColumns(IdentifierColumnNames);
+
+				// add the parameters to use in the WHERE clause
+				builder.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
+				if(IsVersioned) builder.SetVersionColumn(new string[]{VersionColumnName}, VersionType);
+				
+				sqlBuilder = new SqlStringBuilder(builder.ToSqlString());
+			}
+			else {
+				sqlBuilder = new SqlStringBuilder(sqlString);
+			}
+
+			// add any special text that is contained in the forUpdateFragment
+			if(forUpdateFragment!=null) sqlBuilder.Add(forUpdateFragment);
+			
+			return sqlBuilder.ToSqlString();
+		
+
+		}
+
 
 		/// <summary>
 		/// Marshall the fields of a persistent instance to a prepared statement
@@ -287,12 +544,10 @@ namespace NHibernate.Persister {
 
 			int index = 1;
 
-			#region Hack parameter: parametercollection in .Net starts with 0
 			// there's a pretty strong coupling between the order of the SQL parameter 
 			// construction and the actual order of the parameter collection. 
 			index = 0;
-			#endregion
-
+			
 			for (int j=0; j<hydrateSpan; j++) 
 			{
 				if ( includeProperty[j] ) {
@@ -340,19 +595,21 @@ namespace NHibernate.Persister {
 					if ( IsVersioned ) log.Debug("Version: " + version);
 				}
 
-				IDbCommand st = session.Batcher.PrepareStatement( (string) lockers[lockMode] );
+				IDbCommand st = session.Preparer.PrepareCommand((SqlString)lockers[lockMode]);
+
 				try {
-					IdentifierType.NullSafeSet(st, id, 1, session);
-					if ( IsVersioned ) VersionType.NullSafeSet(st, version, 2, session);
+					IdentifierType.NullSafeSet(st, id, 0, session);
+					
+					if ( IsVersioned ) VersionType.NullSafeSet(st, version, IdentifierColumnNames.Length, session);
 
 					IDataReader rs = st.ExecuteReader();
 					try {
-						if ( rs.Read() ) throw new StaleObjectStateException( MappedClass, id);
+						if ( rs.Read()==false ) throw new StaleObjectStateException( MappedClass, id);
 					} finally {
 						rs.Close();
 					}
 				} finally {
-					session.Batcher.CloseStatement(st);
+					//session.Batcher.CloseStatement(st);
 				}
 			}
 		}
@@ -371,7 +628,7 @@ namespace NHibernate.Persister {
 			}
 
 			// Render the SQL query
-			IDbCommand statement = session.Batcher.PrepareBatchStatement( SqlInsertString );
+			IDbCommand insertCmd = session.Preparer.PrepareCommand(SqlInsertString);
 
 			try {
 
@@ -379,10 +636,18 @@ namespace NHibernate.Persister {
 				// state at the time the insert was issued (cos of foreign key constraints)
 				// not necessarily the obect's current state
 
-				Dehydrate(id, fields, PropertyInsertability, statement, session);
+				Dehydrate(id, fields, PropertyInsertability, insertCmd, session);
+				
+				// IDbCommand REFACTOR 
+				// session.Batcher.AddToBatch(1);
+				int rowCount = insertCmd.ExecuteNonQuery();
 
-				session.Batcher.AddToBatch(1);
-			} catch (Exception e ) {
+				//negative expected row count means we don't know how many rows to expect
+				if ( rowCount > 0 && rowCount != 1)
+					throw new HibernateException("SQL update or deletion failed (row not found)");
+
+			} 
+			catch (Exception e ) {
 				throw e;
 			}
 		}
@@ -401,46 +666,52 @@ namespace NHibernate.Persister {
 				if ( IsVersioned ) log.Debug( "Version: " + Versioning.GetVersion(fields, this) );
 			}
 
-			IDbCommand statement = session.Batcher.PrepareBatchStatement( SqlIdentityInsertString );
+			IDbCommand statement = session.Preparer.PrepareCommand(SqlIdentityInsertString);
+
 
 			try {
 				Dehydrate(null, fields, PropertyInsertability, statement, session);
 				statement.ExecuteNonQuery();
-			} catch (Exception e) {
+			} 
+			catch (Exception e) {
 				throw e;
-			} finally {
-				session.Batcher.CloseStatement(statement);
+			} 
+			finally {
+				//session.Batcher.CloseStatement(statement);
 			}
 
 			// fetch the generated id:
-			IDbCommand idselect = session.Batcher.PrepareStatement( SqlIdentitySelect );
+			IDbCommand idSelect = session.Preparer.PrepareCommand(SqlIdentitySelect);
 
 			try {
-				IDataReader rs = idselect.ExecuteReader();
+				IDataReader rs = idSelect.ExecuteReader();
 				object id;
 				try {
 					if ( !rs.Read() ) throw new HibernateException("The database returned no natively generated identity value");
 					id = IdentifierGeneratorFactory.Get( rs, IdentifierType.ReturnedClass );
-				} finally {
+				} 
+				finally {
 					rs.Close();
 				}
 				log.Debug("Natively generated identity: " + id);
 
 				return id;
-			} catch (Exception e) {
+			} 
+			catch (Exception e) {
 				throw e;
-			} finally {
-				session.Batcher.CloseStatement(idselect);
+			} 
+			finally {
+				//session.Batcher.CloseStatement(idselect);
 			}
 		}
 
 		/// <summary>
-		/// Delete an object
+		/// Perform a Deletion of the Entity from the Database.
 		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="version"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
+		/// <param name="id">The id of the Object to Delete.</param>
+		/// <param name="version">The version of the Object to Delete.</param>
+		/// <param name="obj">The Object to Delete.</param>
+		/// <param name="session">The Session to perform the Deletion in.</param>
 		public override void Delete(object id, object version, object obj, ISessionImplementor session) {
 			
 			if ( log.IsDebugEnabled ) {
@@ -448,35 +719,42 @@ namespace NHibernate.Persister {
 				if ( IsVersioned ) log.Debug( "Version: " + version );
 			}
 
-			IDbCommand statement;
-			if ( IsVersioned ) {
-				statement = session.Batcher.PrepareStatement( SqlDeleteString );
-			} else {
-				statement = session.Batcher.PrepareBatchStatement( SqlDeleteString );
-			}
-
+			
+			int actualCount = 0;
+			IDbCommand deleteCmd = session.Preparer.PrepareCommand(SqlDeleteString);
+			
 			try {
-
-				// Do the key. The key is immutable so we can use the current object state -
-				// not necessarily the state at the time the delete was issued
-
-				IdentifierType.NullSafeSet( statement, id, 1, session );
-
-				// We should use the current object state
-
-				if ( IsVersioned ) {
-					VersionType.NullSafeSet( statement, version, IdentifierColumnNames.Length + 1, session );
-					Check( statement.ExecuteNonQuery(), id );
-				} else {
-					session.Batcher.AddToBatch(1);
+				IdentifierType.NullSafeSet(deleteCmd, id, 0, session);
+ 
+				if(IsVersioned) {
+					VersionType.NullSafeSet(deleteCmd, version, IdentifierColumnNames.Length + 1, session);
 				}
-			} catch (Exception e) {
-				throw e;
-			} finally {
-				if ( IsVersioned ) session.Batcher.CloseStatement(statement);
+
+				actualCount = deleteCmd.ExecuteNonQuery();
 			}
+			catch (Exception e) {
+				throw e;
+			}
+			
+			
+			if (actualCount < 1) {
+				throw new StaleObjectStateException( MappedClass, id );
+			} 
+			else if (actualCount > 1) {
+				throw new HibernateException("Duplicate identifier in table for " + ClassName + ": " + id);
+			}
+
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="fields"></param>
+		/// <param name="dirtyFields"></param>
+		/// <param name="oldVersion"></param>
+		/// <param name="obj"></param>
+		/// <param name="session"></param>
 		public override void Update(object id, object[] fields, int[] dirtyFields, object oldVersion, object obj, ISessionImplementor session) {
 			if (UseDynamicUpdate && dirtyFields!=null ) {
 				bool[] propsToUpdate = new bool[hydrateSpan];
@@ -488,12 +766,24 @@ namespace NHibernate.Persister {
 					propsToUpdate[i] = dirty || VersionProperty==i;
 				}
 				Update(id, fields, propsToUpdate, oldVersion, obj, GenerateUpdateString(propsToUpdate), session);
-			} else {
+			} 
+			else {
 				Update(id, fields, PropertyUpdateability, oldVersion, obj, SqlUpdateString, session);
 			}
 		}
 
-		protected virtual void Update(object id, object[] fields, bool[] includeProperty, object oldVersion, object obj, string sql, ISessionImplementor session) {
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="fields"></param>
+		/// <param name="includeProperty"></param>
+		/// <param name="oldVersion"></param>
+		/// <param name="obj"></param>
+		/// <param name="sqlUpdateString"></param>
+		/// <param name="session"></param>
+		protected virtual void Update(object id, object[] fields, bool[] includeProperty, object oldVersion, object obj, SqlString sqlUpdateString, ISessionImplementor session) {
 			if (log.IsDebugEnabled ) {
 				log.Debug("Updating entity: " + ClassName + '#' + id);
 				if ( IsVersioned ) log.Debug( "Existing version: " + oldVersion + " -> New Version: " + fields[ VersionProperty ] );
@@ -501,182 +791,38 @@ namespace NHibernate.Persister {
 
 			if (!hasUpdateableColumns) return;
 
-			IDbCommand statement;
-			if (IsVersioned) {
-				statement = session.Batcher.PrepareStatement(sql);
-			} else {
-				statement = session.Batcher.PrepareBatchStatement(sql);
-			}
+			
+			int actualCount = 0;
+			
+			IDbCommand statement = session.Preparer.PrepareCommand(sqlUpdateString);
 
 			try {
 
-				// now write the values of fields onto the prepared statement
+				// now write the values of fields onto the command
 
-				int versionParam = Dehydrate(id, fields, includeProperty, statement, session);
+				int versionParamIndex = Dehydrate(id, fields, includeProperty, statement, session);
 
 				if ( IsVersioned ) {
-					VersionType.NullSafeSet( statement, oldVersion, versionParam, session);
-					Check( statement.ExecuteNonQuery(), id );
-				} else {
-					session.Batcher.AddToBatch(1);
-				}
-			} catch (Exception e) {
+					VersionType.NullSafeSet( statement, oldVersion, versionParamIndex, session);
+					// I have moved the contents of the Check() out to inside this statement...
+					//Check( statement.ExecuteNonQuery(), id );
+				} 
+				
+				actualCount = statement.ExecuteNonQuery();
+
+			} 
+			catch (Exception e) {
 				throw e;
-			} finally {
-				if ( IsVersioned ) session.Batcher.CloseStatement(statement);
+			} 
+			
+			if (actualCount < 1) {
+				throw new StaleObjectStateException( MappedClass, id );
+			} 
+			else if (actualCount > 1) {
+				throw new HibernateException("Duplicate identifier in table for " + ClassName + ": " + id);
 			}
 		}
-
-		public EntityPersister(PersistentClass model, ISessionFactoryImplementor factory) : base(model, factory) {
-
-			// CLASS + TABLE
-
-			System.Type mappedClass = model.PersistentClazz;
-			this.factory = factory;
-			Table table = model.RootTable;
-			qualifiedTableName = table.GetQualifiedName( factory.DefaultSchema );
-			tableNames = new string[] { qualifiedTableName };
-
-			// DISCRIMINATOR
-
-			object discriminatorValue;
-			if ( model.IsPolymorphic ) {
-				Value d = model.Discriminator;
-				if (d==null) throw new MappingException("discriminator mapping required for polymorphic persistence");
-				forceDiscriminator = model.IsForceDiscriminator;
-				discriminatorColumnName = ( (Column) d.ColumnCollection.GetEnumerator() ).Name;
-				try {
-					discriminatorType = (IDiscriminatorType) model.Discriminator.Type;
-					if ( "null".Equals( model.DiscriminatorValue)) {
-						discriminatorValue = null;
-						discriminatorSQLString = "null";
-					} else {
-						discriminatorValue = discriminatorType.StringToObject( model.DiscriminatorValue );
-						discriminatorSQLString = discriminatorType.ObjectToSQLString(discriminatorValue);
-					}
-				} catch (Exception e) {
-					throw new MappingException("Could not format discriminator value to sql string", e);
-				}
-			} else {
-				forceDiscriminator = false;
-				discriminatorColumnName = null;
-				discriminatorValue = null;
-				discriminatorType = null;
-				discriminatorSQLString = null;
-			}
-
-			// PROPERTIES
-
-			propertyColumnNames = new string[hydrateSpan][];
-			propertyColumnAliases = new string[hydrateSpan][];
-			propertyColumnSpans = new int[hydrateSpan];
-			ArrayList thisClassProperties = new ArrayList();
-
-			int i=0;
-			bool foundColumn = false;
-			foreach(Property prop in model.PropertyClosureCollection) {
-				int span = prop.ColumnSpan;
-				propertyColumnSpans[i] = span;
-				thisClassProperties.Add(prop);
-
-				string[] colNames = new string[span];
-				string[] colAliases = new string[span];
-				int j=0;
-				foreach(Column col in prop.ColumnCollection) {
-					colAliases[j] = col.Alias;
-					colNames[j] = col.Name;
-					j++;
-					if( prop.IsUpdateable ) foundColumn=true;
-				}
-				propertyColumnNames[i] = colNames;
-				propertyColumnAliases[i] = colAliases;
-
-				i++;
-			}
-
-			hasUpdateableColumns = foundColumn;
-
-			ArrayList columns = new ArrayList();
-			ArrayList types = new ArrayList();
-			ArrayList propColumns = new ArrayList();
-			ArrayList aliases = new ArrayList();
-			ArrayList joinedFetchesList = new ArrayList();
-			ArrayList definedBySubclass = new ArrayList();
-
-			foreach(Property prop in model.SubclassPropertyClosureCollection) {
-				definedBySubclass.Add( !thisClassProperties.Contains(prop) );
-				string[] cols = new string[ prop.ColumnSpan ];
-				types.Add( prop.Type );
-				int l=0;
-				foreach( Column col in prop.ColumnCollection ) {
-					columns.Add( col.Name );
-					aliases.Add( col.Alias );
-					cols[l++] = col.Name;
-				}
-				propColumns.Add(cols);
-				joinedFetchesList.Add( prop.Value.OuterJoinFetchSetting );
-			}
-			subclassColumnClosure = (string[]) columns.ToArray(typeof(string));
-			subclassPropertyTypeClosure = (IType[]) types.ToArray(typeof(IType));
-			subclassPropertyColumnNameClosure = (string[][]) propColumns.ToArray( typeof(string[]));
-			subclassColumnAliasClosure = (string[]) aliases.ToArray(typeof(string));
-
-			subclassPropertyEnableJoinedFetch = new OuterJoinLoaderType[ joinedFetchesList.Count ];
-			int m=0;
-			foreach(OuterJoinLoaderType qq in joinedFetchesList) {
-				subclassPropertyEnableJoinedFetch[m++] = qq;
-			}
-			propertyDefinedOnSubclass = new bool[definedBySubclass.Count];
-			m=0;
-			foreach( bool val in definedBySubclass) {
-				propertyDefinedOnSubclass[m++] = val;
-			}
-
-			sqlDeleteString = GenerateDeleteString();
-			sqlInsertString = GenerateInsertString( false, PropertyInsertability );
-			sqlIdentityInsertString = IsIdentifierAssignedByInsert ?
-				GenerateInsertString( true, PropertyInsertability ) :
-				null;
-			sqlUpdateString = GenerateUpdateString( PropertyUpdateability );
-
-			string lockString = GenerateLockString();
-			lockers.Add( LockMode.Read, lockString );
-			string lockExclusiveString = dialect.SupportsForUpdate ? lockString + " for update" : lockString;
-			lockers.Add( LockMode.Upgrade, lockExclusiveString);
-			string lockExclusiveNowaitString = dialect.SupportsForUpdateNoWait ? lockString + " for update nowait" : lockExclusiveString;
-			lockers.Add( LockMode.UpgradeNoWait, lockExclusiveNowaitString);
-
-			int subclassSpan = model.SubclassSpan + 1;
-			subclassClosure = new System.Type[subclassSpan];
-			subclassClosure[0] = mappedClass;
-			if ( model.IsPolymorphic ) {
-				if (discriminatorValue==null) {
-					subclassesByDiscriminatorValue.Add( ObjectUtils.Null, mappedClass);
-				} else {
-					subclassesByDiscriminatorValue.Add( discriminatorValue, mappedClass);
-				}
-
-			}
-
-			// SUBCLASSES
-			if ( model.IsPolymorphic ) {
-				int k=1;
-				foreach(Subclass sc in model.SubclassCollection) {
-					subclassClosure[k++] = sc.PersistentClazz;
-					if ("null".Equals( sc.DiscriminatorValue ) ) {
-						subclassesByDiscriminatorValue.Add ( ObjectUtils.Null, sc.PersistentClazz );
-					} else {
-						try {
-							subclassesByDiscriminatorValue.Add (
-								discriminatorType.StringToObject( sc.DiscriminatorValue ),
-								sc.PersistentClazz);
-						} catch (Exception e) {
-							throw new MappingException("Error parsing discriminator value", e);
-						}
-					}
-				}
-			}
-		}
+		
 
 		private void InitPropertyPaths(IMapping mapping) {
 			IType[] propertyTypes = PropertyTypes;
@@ -739,7 +885,7 @@ namespace NHibernate.Persister {
 				}
 				return " and " + frag.ToFragmentString();
 			} else {
-				return StringHelper.EmptyString;
+				return String.Empty;
 			}
 		}
 
@@ -749,17 +895,37 @@ namespace NHibernate.Persister {
 
 			if (cols==null) throw new QueryException("unresolved property: " + property);
 
-			if (cols.Length==0) {
+			if (cols.Length==0) 
+			{
 				// ie a nested collection or a one-to-one
 				cols = IdentifierColumnNames;
 			}
 
-			return StringHelper.Prefix(cols, name + StringHelper.Dot);
+			// make sure an Alias was actually passed into the statement
+			if(name!=null && name!=String.Empty) 
+			{
+				return StringHelper.Prefix(cols, name + StringHelper.Dot);
+			}
+			else 
+			{
+				return cols;
+			}
 		}
 
 		public override string[] ToColumns(string name, int i) {
 			return StringHelper.Prefix( subclassPropertyColumnNameClosure[i], name + StringHelper.Dot );
 		}
+
+		public override string GetSubclassPropertyTableName(int i) {
+			return qualifiedTableName;
+		}
+
+		public override string GetSubclassPropertyName(int i) {
+			return this.subclassPropertyNameClosure[i];
+		}
+
+		//public abstract string GetSubclassPropertyTableName(int i) ;
+		//public abstract string GetSubclassPropertyName(int i);
 
 		public override string PropertySelectFragment(string name, string suffix) {
 			SelectFragment frag = new SelectFragment()
@@ -774,11 +940,11 @@ namespace NHibernate.Persister {
 		}
 
 		public override string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses) {
-			return StringHelper.EmptyString;
+			return String.Empty;
 		}
 
 		public override string WhereJoinFragment(string alias, bool innerJoin, bool includeSublasses) {
-			return StringHelper.EmptyString;
+			return String.Empty;
 		}
 
 
