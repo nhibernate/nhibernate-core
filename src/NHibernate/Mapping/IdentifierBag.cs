@@ -1,6 +1,4 @@
 using NHibernate.Type;
-using Collection_IdentifierBag = NHibernate.Collection.IdentifierBag;
-using NHCollection = NHibernate.Collection;
 
 namespace NHibernate.Mapping
 {
@@ -27,7 +25,7 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override System.Type WrapperClass
 		{
-			get { return typeof( Collection_IdentifierBag ); }
+			get { return typeof( NHibernate.Collection.IdentifierBag ); }
 		}
 
 	}

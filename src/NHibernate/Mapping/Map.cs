@@ -1,7 +1,4 @@
-using NHibernate.Collection;
 using NHibernate.Type;
-using Collection_Map = NHibernate.Collection.Map;
-using NHCollection = NHibernate.Collection;
 
 namespace NHibernate.Mapping
 {
@@ -33,8 +30,8 @@ namespace NHibernate.Mapping
 			get
 			{
 				return IsSorted ?
-					typeof( SortedMap ) :
-					typeof( Collection_Map );
+					typeof( NHibernate.Collection.SortedMap ) :
+					typeof( NHibernate.Collection.Map );
 			}
 		}
 	}
