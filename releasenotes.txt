@@ -1,0 +1,25 @@
+PreAlpha BUild 3
+========================
+Synched Cache Namespace with cache package in H2.0.3
+Synched CollectionPersister with H2.0.3
+Synched Config Namespace with config package in H2.0.3.
+Synched Cascade strategies with H2.0.3
+Synched Dialect Namespace with dialect package in H2.0.3
+Started HQL Namespace synch with hql package in H2.0.3.  There are still some issues in there.
+Synched Id Namespace with id package in H2.0.3
+Synched Mapping namespace with mapping package in H2.0.3.
+
+Added ForUpdateFragment
+hbm2net created.
+Added AnsiStringType.
+Added GuidType.
+Fixed problem with IdentityMap that caused <set lazy="true"> to not work.
+Added support for <bag> and <id-bag> mappings.
+Implemented sorted collections.
+Build files rewritten.
+MsSql Dialect now issues one statement to Insert and retrieve identity value.
+Fixed a bug with <generator class="sequence">
+Implemented SqlExpression for Criteria queries.
+Initial fix of Multiple IDataReaders being opened with Entities that contain <component> mappings.
+Fixed problems with Alias and Ms Sql Server.
+
