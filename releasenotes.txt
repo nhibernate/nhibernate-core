@@ -1,3 +1,26 @@
+PreAlpha Build 0.1.0.0
+======================== 
+- Many more Tests implemented.
+- Added Examples into CVS and zip.
+- ConnectionProvider use settings passed to it by ConnectionProviderFactory instead of default settings.
+- Hbm2Net moved from NHibernate folder to its own folder and NAnt Tasks for it contributed by Kevin Williams.
+- Adding properties to Cfg instead of using app.config/web.config or hbm.cfg.xml now supported.
+- In hbm.cfg.xml, an assembly where the resource can be found is now needed - ie: <mapping resource="" assembly="" />.
+- nhibernate-configuration-2.0.xsd schema was updated to .net friendly names and all cfg.xml files are now validated.
+- Fixed bug with classes having dynamic-insert and dynamic-update causing IndexOutOfRangeExceptions.
+- Modified length of string for CultureInfoType.
+- Added Firebird fixes contributed by Carlos Guzmán Álvarez.
+- Changed TimestampType.Set to behaive like hibernate.  Will not write a null value anymore - instead replaces it with DateTime.Now.
+- Removed IVersionType interface from DecimalType.
+- Add PropertyExpressions contributed by Carlos Guzmán Álvarez.
+- Fixed bug with referencing joined classes properties in hql.
+- Fixed IndexOutOfRangeException with NormalizedEntityPersister for versioned entities.
+- Added ObjectType to TypeFactory and NHibernate.
+- Fixed problem with hql subselects referencing a class in main query.
+- Session is now Serializable.  
+- Fixed bug with sending a one-to-many collection to be updated that involves inserting a new row.
+
+
 PreAlpha Build 6
 ======================== 
 - Fixed Configuration so app.config/web.config behaives like hibernate.properties and a hibernate.cfg.xml.  Settings in app.confg/web.config are no longer required if a cfg.xml file is used.
