@@ -1,17 +1,15 @@
 using System;
-using System.Data;
 using System.Collections;
+using System.Data;
 using System.Runtime.CompilerServices;
-
-using NHibernate.Dialect;
+using log4net;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
-
-namespace NHibernate.Id 
+namespace NHibernate.Id
 {
 	/// <summary>
 	/// An <c>IIdentifierGenerator</c> that uses a database table to store the last
@@ -32,56 +30,78 @@ namespace NHibernate.Id
 	/// Mapping parameters supported are: <c>table</c>, <c>column</c>
 	/// </para>
 	/// </remarks>
-	public class TableGenerator : IPersistentIdentifierGenerator, IConfigurable 
+	public class TableGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(TableGenerator));
+		private static readonly ILog log = LogManager.GetLogger( typeof( TableGenerator ) );
 
+		/// <summary></summary>
 		public const string Column = "column";
+		
+		/// <summary></summary>
 		public const string Table = "table";
+		
+		/// <summary></summary>
 		public const string Schema = "schema";
 
 		private string tableName;
 		private string columnName;
 		private string query;
-		
+
 		private SqlString updateSql;
 
-		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="parms"></param>
+		/// <param name="dialect"></param>
+		public virtual void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
 		{
-			this.tableName = PropertiesHelper.GetString(Table, parms, "hibernate_unique_key");
-			this.columnName = PropertiesHelper.GetString(Column, parms, "next_hi");
-			string schemaName = (string) parms[Schema];
-			if(schemaName!=null && tableName.IndexOf(StringHelper.Dot)<0)
+			this.tableName = PropertiesHelper.GetString( Table, parms, "hibernate_unique_key" );
+			this.columnName = PropertiesHelper.GetString( Column, parms, "next_hi" );
+			string schemaName = ( string ) parms[ Schema ];
+			if( schemaName != null && tableName.IndexOf( StringHelper.Dot ) < 0 )
+			{
 				tableName = schemaName + "." + tableName;
+			}
 
 			query = "select " + columnName + " from " + tableName;
-			if ( dialect.SupportsForUpdate ) query += " for update";
-			
+			if( dialect.SupportsForUpdate )
+			{
+				query += " for update";
+			}
+
 			// build the sql string for the Update since it uses parameters
 			Parameter setParam = new Parameter();
 			setParam.Name = columnName;
 			setParam.SqlType = new Int32SqlType();
-		
+
 			Parameter whereParam = new Parameter();
 			whereParam.Name = columnName;
 			whereParam.SqlType = new Int32SqlType();
 
 			SqlStringBuilder builder = new SqlStringBuilder();
-			builder.Add("update " + tableName + " set ")
-				.Add(columnName)
-				.Add(" = ")
-				.Add(setParam)
-				.Add(" where ")
-				.Add(columnName)
-				.Add(" = ")
-				.Add(whereParam);
+			builder.Add( "update " + tableName + " set " )
+				.Add( columnName )
+				.Add( " = " )
+				.Add( setParam )
+				.Add( " where " )
+				.Add( columnName )
+				.Add( " = " )
+				.Add( whereParam );
 
 			updateSql = builder.ToSqlString();
-				
+
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual object Generate(ISessionImplementor session, object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.Synchronized )]
+		public virtual object Generate( ISessionImplementor session, object obj )
 		{
 			//this has to be done using a different connection to the containing
 			//transaction becase the new hi value must remain valid even if the
@@ -89,10 +109,12 @@ namespace NHibernate.Id
 			IDbConnection conn = session.Factory.OpenConnection();
 			int result;
 			int rows;
-			try {
+			try
+			{
 				IDbTransaction trans = conn.BeginTransaction();
 
-				do {
+				do
+				{
 					//the loop ensure atomicitiy of the 
 					//select + uspdate even for no transaction
 					//or read committed isolation level (needed for .net?)
@@ -101,80 +123,93 @@ namespace NHibernate.Id
 					qps.CommandText = query;
 					qps.CommandType = CommandType.Text;
 					qps.Transaction = trans;
-					try 
+					try
 					{
 						IDataReader rs = qps.ExecuteReader();
-						if ( !rs.Read() ) 
+						if( !rs.Read() )
 						{
 							string err = "could not read a hi value - you need to populate the table: " + tableName;
-							log.Error(err);
-							throw new IdentifierGenerationException(err);
+							log.Error( err );
+							throw new IdentifierGenerationException( err );
 						}
 
-						result = rs.GetInt32(0);
+						result = rs.GetInt32( 0 );
 						rs.Close();
 					} 
-					// TODO: change to SqlException
-					catch (Exception e) 
+						// TODO: change to SqlException
+					catch( Exception e )
 					{
-						log.Error("could not read a hi value", e);
+						log.Error( "could not read a hi value", e );
 						throw;
-					} 
-					finally 
+					}
+					finally
 					{
 					}
 
-					IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand(session.Factory.Dialect, updateSql);
+					IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand( session.Factory.Dialect, updateSql );
 					ups.Connection = conn;
 					ups.Transaction = trans;
 
-					try 
+					try
 					{
-						((IDbDataParameter)ups.Parameters[0]).Value = result + 1;
-						((IDbDataParameter)ups.Parameters[1]).Value = result;
+						( ( IDbDataParameter ) ups.Parameters[ 0 ] ).Value = result + 1;
+						( ( IDbDataParameter ) ups.Parameters[ 1 ] ).Value = result;
 
 						rows = ups.ExecuteNonQuery();
 					} 
-					// TODO: change to SqlException
-					catch (Exception e) 
+						// TODO: change to SqlException
+					catch( Exception e )
 					{
-						log.Error("could not update hi value in: " + tableName, e);
+						log.Error( "could not update hi value in: " + tableName, e );
 						throw;
-					} 
-					finally 
+					}
+					finally
 					{
 					}
 
-				} while (rows==0);
+				}
+				while( rows == 0 );
 
 				trans.Commit();
 
 				return result;
 
-			} 
-			finally 
+			}
+			finally
 			{
-				session.Factory.CloseConnection(conn);
+				session.Factory.CloseConnection( conn );
 			}
 		}
 
-		public string[] SqlCreateStrings(Dialect.Dialect dialect) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		public string[ ] SqlCreateStrings( Dialect.Dialect dialect )
 		{
 			// changed the first value to be "1" by default since an uninitialized Int32 is 0 - leaving
 			// it at 0 would cause problems with an unsaved-value="0" which is what most people are 
 			// defaulting <id>'s with Int32 types at.
-			return new string[] {
-						"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName( SqlTypeFactory.GetInt32() ) + " )",
-						"insert into " + tableName + " values ( 1 )"
-								};
+			return new string[ ]
+				{
+					"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName( SqlTypeFactory.GetInt32() ) + " )",
+					"insert into " + tableName + " values ( 1 )"
+				};
 		}
 
-		public string SqlDropString(Dialect.Dialect dialect) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		public string SqlDropString( Dialect.Dialect dialect )
 		{
 			return "drop table " + tableName + dialect.CascadeConstraintsString;
 		}
 
-		public object GeneratorKey() 
+		/// <summary></summary>
+		public object GeneratorKey()
 		{
 			return tableName;
 		}

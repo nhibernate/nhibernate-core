@@ -1,15 +1,28 @@
 using System;
 
-namespace NHibernate.Id 
+namespace NHibernate.Id
 {
 	/// <summary>
 	/// Thrown by <c>IIdentifierGenerator</c> implementation class when ID generation fails
 	/// </summary>
 	[Serializable]
-	public class IdentifierGenerationException : HibernateException 
+	public class IdentifierGenerationException : HibernateException
 	{
-		public IdentifierGenerationException(string message) : base(message) {}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		public IdentifierGenerationException( string message ) : base( message )
+		{
+		}
 
-		public IdentifierGenerationException(string message, Exception e) : base(message, e) {}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="e"></param>
+		public IdentifierGenerationException( string message, Exception e ) : base( message, e )
+		{
+		}
 	}
 }

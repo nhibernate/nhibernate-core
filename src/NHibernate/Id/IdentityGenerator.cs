@@ -1,7 +1,6 @@
-using System;
 using NHibernate.Engine;
 
-namespace NHibernate.Id 
+namespace NHibernate.Id
 {
 	/// <summary>
 	/// Indicates to the <see cref="ISession"/> that identity
@@ -17,7 +16,7 @@ namespace NHibernate.Id
 	/// the entity is inserted.
 	/// </para>
 	/// </remarks>
-	public class IdentityGenerator : IIdentifierGenerator 
+	public class IdentityGenerator : IIdentifierGenerator
 	{
 		/// <summary>
 		/// This class can not generate the <c>id</c>.  It has to get the 
@@ -30,7 +29,7 @@ namespace NHibernate.Id
 		/// an id.  The entity must be inserted into the database to get the database 
 		/// generated id.
 		/// </returns>
-		public object Generate(ISessionImplementor s, object obj) 
+		public object Generate( ISessionImplementor s, object obj )
 		{
 			return null;
 		}

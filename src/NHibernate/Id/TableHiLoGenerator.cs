@@ -1,15 +1,11 @@
-using System;
-using System.Data;
 using System.Collections;
 using System.Runtime.CompilerServices;
-
-using NHibernate.Dialect;
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
 
-
-namespace NHibernate.Id 
+namespace NHibernate.Id
 {
 	/// <summary>
 	/// An <c>IIdentifierGenerator</c> that returns an <c>Int64</c>, constructed using
@@ -27,10 +23,11 @@ namespace NHibernate.Id
 	/// Mapping parameters supported are: <c>table</c>, <c>column</c>, and <c>max_lo</c>
 	/// </para>
 	/// </remarks>
-	public class TableHiLoGenerator : TableGenerator 
+	public class TableHiLoGenerator : TableGenerator
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(TableHiLoGenerator));
+		private static readonly ILog log = LogManager.GetLogger( typeof( TableHiLoGenerator ) );
 
+		/// <summary></summary>
 		public const string MaxLo = "max_lo";
 
 		private long hi;
@@ -38,23 +35,35 @@ namespace NHibernate.Id
 		private int maxLo;
 		private System.Type returnClass;
 
-		public override void Configure(IType type, IDictionary parms, Dialect.Dialect d) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="parms"></param>
+		/// <param name="d"></param>
+		public override void Configure( IType type, IDictionary parms, Dialect.Dialect d )
 		{
-			base.Configure(type, parms, d);
-			maxLo = PropertiesHelper.GetInt32(MaxLo, parms, short.MaxValue);
+			base.Configure( type, parms, d );
+			maxLo = PropertiesHelper.GetInt32( MaxLo, parms, short.MaxValue );
 			lo = maxLo + 1; // so we "clock over" on the first invocation
 			returnClass = type.ReturnedClass;
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		public override object Generate(ISessionImplementor session, object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.Synchronized )]
+		public override object Generate( ISessionImplementor session, object obj )
 		{
-			if (lo > maxLo) 
+			if( lo > maxLo )
 			{
-				int hival = ( (int) base.Generate(session, obj) );
+				int hival = ( ( int ) base.Generate( session, obj ) );
 				lo = 1;
-				hi = hival * (maxLo+1);
-				log.Debug("new hi value: " + hival);
+				hi = hival*( maxLo + 1 );
+				log.Debug( "new hi value: " + hival );
 			}
 
 			return IdentifierGeneratorFactory.CreateNumber( hi + lo++, returnClass );

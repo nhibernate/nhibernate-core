@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -23,7 +23,7 @@ namespace NHibernate.Id
 	/// </para>
 	/// <para>
 	/// <c>format</c> is either "N", "D", "B", or "P".  These formats are described in
-	/// the <see cref="System.Guid.ToString(String)">Guid.ToString(String)</see> method.
+	/// the <see cref="System.Guid.ToString(string)">Guid.ToString(String)</see> method.
 	/// If no <c>format</c> is specified the default is "N".
 	/// </para>
 	/// <para>
@@ -36,13 +36,13 @@ namespace NHibernate.Id
 	/// This class is based on <see cref="System.Guid"/>
 	/// </para>
 	/// </remarks>
-	public class UUIDHexGenerator : IIdentifierGenerator, IConfigurable	 
+	public class UUIDHexGenerator : IIdentifierGenerator, IConfigurable
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(UUIDHexGenerator));
+		private static readonly ILog log = LogManager.GetLogger( typeof( UUIDHexGenerator ) );
 
 		private string format = FormatWithDigitsOnly;
 		private string sep = null;
-		
+
 		//"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 		private const string FormatWithDigitsOnly = "N";
 		//xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -52,28 +52,41 @@ namespace NHibernate.Id
 		//(xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
 		private const string FormatWithEnclosingParens = "P";
 
-		public object Generate(ISessionImplementor cache, object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cache"></param>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public object Generate( ISessionImplementor cache, object obj )
 		{
-			string guidString = Guid.NewGuid().ToString(format);
+			string guidString = Guid.NewGuid().ToString( format );
 
-			if(format!=FormatWithDigitsOnly && sep!=null) 
+			if( format != FormatWithDigitsOnly && sep != null )
 			{
-				return StringHelper.Replace(guidString, "-", sep);
+				return StringHelper.Replace( guidString, "-", sep );
 			}
-			
+
 			return guidString;
 		}
 
-		
 		#region IConfigurable Members
 
-		public void Configure(IType type, IDictionary parms, Dialect.Dialect dialect) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="parms"></param>
+		/// <param name="dialect"></param>
+		public void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
 		{
-			format = PropertiesHelper.GetString("format", parms, FormatWithDigitsOnly);
-			
-			if(format!=FormatWithDigitsOnly)
-				sep = PropertiesHelper.GetString("seperator", parms, null);
-			
+			format = PropertiesHelper.GetString( "format", parms, FormatWithDigitsOnly );
+
+			if( format != FormatWithDigitsOnly )
+			{
+				sep = PropertiesHelper.GetString( "seperator", parms, null );
+			}
+
 		}
 
 		#endregion

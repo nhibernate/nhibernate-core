@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Engine;
-
 
 namespace NHibernate.Id
 {
@@ -10,10 +8,15 @@ namespace NHibernate.Id
 	/// </summary>
 	public class GuidGenerator : IIdentifierGenerator
 	{
-		
 		#region IIdentifierGenerator Members
 
-		public object Generate(ISessionImplementor session, object obj)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public object Generate( ISessionImplementor session, object obj )
 		{
 			return Guid.NewGuid();
 		}

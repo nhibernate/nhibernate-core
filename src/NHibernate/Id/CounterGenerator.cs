@@ -1,30 +1,39 @@
 using System;
 using NHibernate.Engine;
 
-namespace NHibernate.Id 
+namespace NHibernate.Id
 {
 	/// <summary>
 	/// An <c>IIdentifierGenerator</c> that returns a <c>Int64</c> constructed from the system
 	/// time and a counter value. Not safe for use in a clustser!
 	/// </summary>
-	public class CounterGenerator : IIdentifierGenerator 
+	public class CounterGenerator : IIdentifierGenerator
 	{
-		
-		private static short counter = (short)0;
+		private static short counter = ( short ) 0;
 
-		protected short Count 
+		/// <summary></summary>
+		protected short Count
 		{
-			get 
+			get
 			{
-				lock(typeof(CounterGenerator)) 
+				lock( typeof( CounterGenerator ) )
 				{
-					if (counter<0) counter=0;
+					if( counter < 0 )
+					{
+						counter = 0;
+					}
 					return counter++;
 				}
 			}
 		}
 
-		public object Generate(ISessionImplementor cache, object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cache"></param>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public object Generate( ISessionImplementor cache, object obj )
 		{
 			return ( DateTime.Now.Ticks << 16 ) + Count;
 		}
