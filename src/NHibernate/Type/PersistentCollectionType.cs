@@ -87,16 +87,17 @@ namespace NHibernate.Type {
 			get { return ReturnedClass.Name; }
 		}
 
-		//Is it correct?
-		//Was:
-		//public Iterator getElementsIterator(Object collection) {
-		//	return ( (java.util.Collection) collection ).iterator();
-		//}
+		
 		/// <summary>
-		/// Returns a reference to the underlying ICollection
+		/// Returns a reference to the elements in the collection.  
 		/// </summary>
 		/// <param name="collection">The object that holds the ICollection.</param>
-		/// <returns>An ICollection.</returns>
+		/// <returns>An ICollection of the Elements(classes) in the Collection.</returns>
+		/// <remarks>
+		/// By default the parameter <c>collection</c> is just cast to an ICollection.  Collections
+		/// such as Maps and Sets should override this so that the Elements are returned - not a
+		/// DictionaryEntry.
+		/// </remarks>
 		public virtual ICollection GetElementsCollection(object collection) {
 			return ( (ICollection)collection );
 		}

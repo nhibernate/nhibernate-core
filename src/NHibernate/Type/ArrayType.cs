@@ -27,7 +27,7 @@ namespace NHibernate.Type {
 			base.NullSafeSet(st, session.GetArrayHolder(value), index, session);
 		}
 
-		public ICollection ElementsCollection(object collection) {
+		public override ICollection GetElementsCollection(object collection) {
 			return ((object[])collection);
 		}
 

@@ -19,11 +19,13 @@ namespace NHibernate.Type {
 			get { return typeof(IDictionary); }
 		}
 
-		public ICollection ElementsCollection(object collection) {
+		public override ICollection GetElementsCollection(object collection)
+		{
 			return ((IDictionary) collection).Values;
 		}
 
-		public override PersistentCollection Wrap(ISessionImplementor session, object collection) {
+		public override PersistentCollection Wrap(ISessionImplementor session, object collection) 
+		{
 			return new Map( session, (IDictionary) collection );
 		}
 
