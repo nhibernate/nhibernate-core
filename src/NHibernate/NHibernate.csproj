@@ -462,6 +462,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\BetweenExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\EqExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -478,6 +483,11 @@
                 />
                 <File
                     RelPath = "Expression\GtExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\InExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -503,6 +513,21 @@
                 />
                 <File
                     RelPath = "Expression\NotExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\NotNullExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\NullExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\Order.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

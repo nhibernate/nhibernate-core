@@ -9,6 +9,7 @@ namespace NHibernate.Impl {
 	/// </summary>
 	public class CriteriaImpl : ICriteria {
 		private IList expressions = new ArrayList();
+		private IList orderings = new ArrayList();
 		private int maxResults;
 		private int firstResult;
 		private int timeout;
@@ -63,6 +64,10 @@ namespace NHibernate.Impl {
 			return expressions.GetEnumerator();
 		}
 	
+		public IEnumerator IterateOrderings() { 
+			return orderings.GetEnumerator(); 
+		} 
+    
 		public System.Type PersistentClass {
 			get { return persistentClass; }
 		}
@@ -70,5 +75,10 @@ namespace NHibernate.Impl {
 		public override string ToString() {
 			return expressions.ToString();
 		}
+
+		public ICriteria AddOrder(Order ordering) { 
+			orderings.Add(ordering); 
+			return this; 
+		}          
 	}
 }

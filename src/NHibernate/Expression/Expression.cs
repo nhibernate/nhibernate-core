@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 
 using NHibernate.Engine;
 using NHibernate.Persister;
@@ -76,6 +77,56 @@ namespace NHibernate.Expression
 		/// <returns></returns>
 		public static Expression Ge(string propertyName, object value) {
 			return new GtExpression(propertyName, value);
+		}
+
+		/// <summary>
+		/// Apply a "between" constraint to the named property
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <param name="lo"></param>
+		/// <param name="hi"></param>
+		/// <returns></returns>
+		public static Expression Between(string propertyName, object lo, object hi) { 
+			return new BetweenExpression(propertyName, lo, hi); 
+		} 
+		
+		/// <summary>
+		/// Apply an "in" constraint to the named property 
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <param name="values"></param>
+		/// <returns></returns>
+		public static Expression In(string propertyName, object[] values) { 
+			return new InExpression(propertyName, values); 
+		} 
+	
+		/// <summary>
+		/// Apply an "in" constraint to the named property
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <param name="values"></param>
+		/// <returns></returns>
+		public static Expression In(String propertyName, ICollection values) { 
+			ArrayList ary = new ArrayList(values); //HACK
+			return new InExpression( propertyName, ary.ToArray() );
+		} 
+	
+		/// <summary>
+		/// Apply an "is null" constraint to the named property
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public static Expression IsNull(string propertyName) { 
+			return new NullExpression(propertyName); 
+		} 
+	
+		/// <summary>
+		/// Apply an "is not null" constraint to the named property
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public static Expression IsNotNull(string propertyName) { 
+			return new NotNullExpression(propertyName); 
 		}
 
 		/// <summary>
@@ -161,11 +212,15 @@ namespace NHibernate.Expression
 		/// <returns></returns>
 		public abstract override string ToString();
 
-		protected virtual string[] GetColumns(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string property, string alias) {
+		// --- PORT NOTE ---
+		// Access modifier was protected.
+		// I modified it to internal because Order use it.
+		// ---
+		internal static string[] GetColumns(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string property, string alias) {
 			return ( (IQueryable) sessionFactory.GetPersister(persistentClass) ).ToColumns(alias, property);
 		}
 
-		protected virtual TypedValue GetTypedValue(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string propertyName, object value) {
+		protected static TypedValue GetTypedValue(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string propertyName, object value) {
 			return new TypedValue( ( (IQueryable) sessionFactory.GetPersister(persistentClass) ).GetPropertyType(propertyName), value );
 		}
 	}

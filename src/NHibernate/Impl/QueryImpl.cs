@@ -311,5 +311,14 @@ namespace NHibernate.Impl {
 		internal IDictionary NamedParams {
 			get { return namedParameters; }
 		}
+
+		public IQuery SetParameterList(string name, object[] vals, IType type) { 
+			return SetParameterList(name, vals, type); 
+		} 
+    
+		public IQuery SetParameterList(string name, object[] vals) { 
+			return SetParameterList( name, vals ); 
+		} 
+
 	}
 }

@@ -40,6 +40,15 @@ namespace NHibernate.Loader {
 			}
 			condition.Remove(condition.Length-5,5); //remove last " and "
 			
+			iter = criteria.IterateOrderings(); 
+			if ( !iter.MoveNext() ) condition.Append(" order by "); 
+			iter.Reset();
+			while ( iter.MoveNext() ) { 
+				Order ord = (Order) iter.Current; 
+				condition.Append( ord.ToSqlString(factory, criteria.PersistentClass, alias) ); 
+				condition.Append(", ");
+			} 
+			condition.Remove(condition.Length-2,2); //remove last ", "
 			//---
 
 			RenderStatement( condition.ToString(), factory );

@@ -2,6 +2,7 @@ using System;
 
 using NHibernate.Engine;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Expression {
 
@@ -21,7 +22,7 @@ namespace NHibernate.Expression {
 		}
 
 		public override string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
-			return sql;
+			return StringHelper.Replace(sql, "$alias", alias);
 		}
 
 		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {
