@@ -42,13 +42,13 @@ namespace NHibernate.Test
 				}, true);
 		}
 
-		static FumCompositeID FumKey(String str) 
+		public static FumCompositeID FumKey(String str) 
 		{
 		
 			return FumKey(str,false);
 		}
 	
-		static FumCompositeID FumKey(String str, bool aCompositeQueryTest) 
+		public static FumCompositeID FumKey(String str, bool aCompositeQueryTest) 
 		{
 			FumCompositeID id = new FumCompositeID();
 //			if( dialect is Dialect.MckoiDialect ) 

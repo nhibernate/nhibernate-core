@@ -2666,7 +2666,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Test not written yet.")]
 		public void UserProvidedConnection() 
 		{
 			Connection.IConnectionProvider prov = Connection.ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
@@ -2687,27 +2686,127 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void CachedCollection() 
 		{
+			ISession s = sessions.OpenSession();
+			Baz baz = new Baz();
+			baz.SetDefaults();
+			s.Save(baz);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz)s.Load( typeof(Baz), baz.Code );
+			( (FooComponent)baz.TopComponents[0]).Count = 99;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz)s.Load( typeof(Baz), baz.Code );
+			Assert.AreEqual( 99,  ( (FooComponent)baz.TopComponents[0]).Count );
+			s.Delete(baz);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void ComplicatedQuery() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			object id = s.Save(foo);
+			Assert.IsNotNull(id);
+			Qux q = new Qux("q");
+			foo.Dependent.Qux = q;
+			s.Save(q);
+			q.Foo.String = "foo2";
+
+			IEnumerator enumer = s.Enumerable("from foo in class Foo where foo.Dependent.Qux.Foo.String = 'foo2'").GetEnumerator();
+			Assert.IsTrue( enumer.MoveNext() );
+			s.Delete(foo);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Test depends on Proxies being implemented.")]
 		public void LoadAfterDelete() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			object id = s.Save(foo);
+			s.Flush();
+			s.Delete(foo);
+
+			bool err = false;
+			try 
+			{
+				s.Load( typeof(Foo), id );
+			}
+			catch(ObjectDeletedException ode) 
+			{
+				err = true;
+			}
+			Assert.IsTrue(err);
+			s.Flush();
+			err = false;
+
+			try 
+			{
+				bool somevalue = ( (FooProxy)s.Load( typeof(Foo), id )).Boolean;
+			}
+			// this won't work until Proxies are implemented because now it throws an 
+			// ObjectNotFoundException
+			catch(LazyInitializationException lie) 
+			{
+				err = true;
+			}
+			Assert.IsTrue(err);
+
+			Fo fo = Fo.NewFo();
+			id = FumTest.FumKey("abc"); //yuck!
+			s.Save(fo, id);
+			s.Flush();
+			s.Delete(fo);
+			err = false;
+
+			try 
+			{
+				s.Load( typeof(Fo), id );
+			}
+			catch(ObjectDeletedException ode) 
+			{
+				err = true;
+			}
+
+			Assert.IsTrue(err);
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void ObjectType() 
 		{
+			ISession s = sessions.OpenSession();
+			GlarchProxy g = new Glarch();
+			Foo foo = new Foo();
+			g.Any = foo;
+			object gid = s.Save(g);
+			object fid = s.Save(foo);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+			Assert.IsNotNull( g.Any );
+			Assert.IsTrue( g.Any is FooProxy );
+			Assert.AreEqual( fid, ((FooProxy)g.Any).Key );
+			s.Delete(g.Any);
+			s.Delete(g);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
