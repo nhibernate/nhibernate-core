@@ -1155,7 +1155,6 @@ namespace NHibernate.Hql
 			set { holderClass = value; }
 		}
 
-		//TODO: implement this method - in here for compilation
 		protected override LockMode[] GetLockModes(IDictionary lockModes) 
 		{
 			IDictionary nameLockModes = new Hashtable();
@@ -1216,7 +1215,7 @@ namespace NHibernate.Hql
 			}
 		}
 
-		protected bool upgradeLocks() 
+		protected override bool UpgradeLocks() 
 		{
 			return true;
 		}
