@@ -942,7 +942,7 @@ namespace NHibernate.Persister
 					if (IsVersioned) log.Debug("Version: " + version);
 				}
 
-				IDbCommand st = session.Preparer.PrepareCommand((SqlString)lockers[lockMode]);
+				IDbCommand st = session.Batcher.PrepareCommand( (SqlString)lockers[lockMode] );
 
 				try 
 				{
@@ -972,7 +972,7 @@ namespace NHibernate.Persister
 				} 
 				finally 
 				{
-					session.Batcher.CloseStatement(st);
+					session.Batcher.CloseCommand(st);
 				}
 			}
 		}
@@ -1040,7 +1040,7 @@ namespace NHibernate.Persister
 			{
 				for (int i=0; i<tableNames.Length; i++ ) 
 				{					
-					insertCmds[i] = session.Preparer.PrepareCommand(sql[i]);
+					insertCmds[i] = session.Batcher.PrepareCommand(sql[i]);
 				}
 
 				// write the value of fields onto the prepared statements - we MUST use the state at the time
@@ -1054,15 +1054,18 @@ namespace NHibernate.Persister
 
 			} 
 				//TODO: change this to SQLException catching and log it
-			catch (Exception e) 
+			catch( Exception e ) 
 			{
 				throw e;
 			} 
 			finally 
 			{
-				for (int i=0; i<tableNames.Length; i++) 
+				for( int i=0; i<tableNames.Length; i++ ) 
 				{
-					//if (statements[i]!=null) session.Batcher.CloseStatement( statements[i] );
+					if( insertCmds[i]!=null ) 
+					{
+						session.Batcher.CloseCommand( insertCmds[i] );
+					}
 				}
 			}
 		}
@@ -1086,7 +1089,11 @@ namespace NHibernate.Persister
 			IDbCommand idSelect = null;
 
 			object id;
-			//TODO: something is really different here.  Believe it has to do with Ms Sql Identity Select patch
+			
+			// still using the Preparer instead of Batcher because the Batcher won't work 
+			// with 2 commands being Prepared back to back - when the second SqlString gets
+			// prepared that would cause it to execute the first SqlString - which is not
+			// what we want because no values have been put into the parameter.
 			if(dialect.SupportsIdentitySelectInInsert) 
 			{
 				statement = session.Preparer.PrepareCommand( dialect.AddIdentitySelectToInsert(sql[0]) );
@@ -1185,7 +1192,7 @@ namespace NHibernate.Persister
 			{
 				for (int i=0; i<naturalOrderTableNames.Length; i++) 
 				{
-					statements[i] = session.Preparer.PrepareCommand(SqlDeleteStrings[i]);
+					statements[i] = session.Batcher.PrepareCommand( SqlDeleteStrings[i] ); 
 				} 
 
 				if ( IsVersioned ) 
@@ -1211,7 +1218,7 @@ namespace NHibernate.Persister
 			{
 				for (int i=0; i<naturalOrderTableNames.Length; i++) 
 				{
-//					if (statements[i]!=null ) session.Batcher.CloseStatement( statements[i] );
+					if (statements[i]!=null ) session.Batcher.CloseCommand( statements[i] );
 				}
 			}
 		}
@@ -1284,7 +1291,7 @@ namespace NHibernate.Persister
 				{
 					if ( includeTable[i] ) 
 					{
-						statements[i] = session.Preparer.PrepareCommand(sql[i]);
+						statements[i] = session.Batcher.PrepareCommand( sql[i] );
 					}
 				}
 
@@ -1306,9 +1313,13 @@ namespace NHibernate.Persister
 			} 
 			finally 
 			{
-//				for (int i=0; i<tables; i++ ) {
-//					if ( statements[i]!=null ) session.Batcher.CloseStatement( statements[i] );
-//				}
+				for (int i=0; i<tables; i++ ) 
+				{
+					if ( statements[i]!=null ) 
+					{
+						session.Batcher.CloseCommand( statements[i] );
+					}
+				}
 			}
 		}
 

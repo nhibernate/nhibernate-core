@@ -714,7 +714,7 @@ namespace NHibernate.Persister
 					if ( IsVersioned ) log.Debug("Version: " + version);
 				}
 
-				IDbCommand st = session.Preparer.PrepareCommand((SqlString)lockers[lockMode]);
+				IDbCommand st = session.Batcher.PrepareCommand( (SqlString)lockers[lockMode] );
 
 				try 
 				{
@@ -738,7 +738,7 @@ namespace NHibernate.Persister
 				//TODO: add something to catch a sql exception and log it here
 				finally 
 				{
-					//session.Batcher.CloseStatement(st);
+					session.Batcher.CloseCommand(st);
 				}
 			}
 		}
@@ -792,7 +792,7 @@ namespace NHibernate.Persister
 			}
 
 			// Render the SQL query
-			IDbCommand insertCmd = session.Preparer.PrepareCommand(sql);
+			IDbCommand insertCmd = session.Batcher.PrepareBatchCommand( sql ); 
 
 			try 
 			{
@@ -838,6 +838,10 @@ namespace NHibernate.Persister
 			IDbCommand statement = null;
 			IDbCommand idSelect = null;
 
+			// still using the Preparer instead of Batcher because the Batcher won't work 
+			// with 2 commands being Prepared back to back - when the second SqlString gets
+			// prepared that would cause it to execute the first SqlString - which is not
+			// what we want because no values have been put into the parameter.
 			if(dialect.SupportsIdentitySelectInInsert) 
 			{
 				statement = session.Preparer.PrepareCommand( dialect.AddIdentitySelectToInsert(sql) );
@@ -845,8 +849,8 @@ namespace NHibernate.Persister
 			}
 			else 
 			{
-				statement = session.Preparer.PrepareCommand(sql);
-				idSelect = session.Preparer.PrepareCommand(SqlIdentitySelect);
+				statement = session.Preparer.PrepareCommand( sql );
+				idSelect = session.Preparer.PrepareCommand( SqlIdentitySelect );
 			}
 
 			try 
@@ -910,7 +914,17 @@ namespace NHibernate.Persister
 				if ( IsVersioned ) log.Debug( "Version: " + version );
 			}
 
-			IDbCommand deleteCmd = session.Preparer.PrepareCommand(SqlDeleteString);
+			IDbCommand deleteCmd = null; 
+			
+			if( IsVersioned ) 
+			{
+				deleteCmd = session.Batcher.PrepareCommand( SqlDeleteString );
+			}
+			else 
+			{
+				deleteCmd = session.Batcher.PrepareBatchCommand( SqlDeleteString );
+			}
+			
 			
 			try 
 			{
@@ -922,17 +936,24 @@ namespace NHibernate.Persister
 				if(IsVersioned) 
 				{
 					VersionType.NullSafeSet(deleteCmd, version, IdentifierColumnNames.Length, session);
+					Check(deleteCmd.ExecuteNonQuery(), id);
 				}
-				// when Batcher is brought back to life there is some synch points here...
-				
-				Check(deleteCmd.ExecuteNonQuery(), id);
-
-			
+				else 
+				{
+					session.Batcher.AddToBatch(1);
+				}
 			}
-			// TODO: h2.0.3 - add some Sql Exception logging here
+				// TODO: h2.0.3 - add some Sql Exception logging here
 			catch (Exception e) 
 			{
 				throw e;
+			}
+			finally 
+			{
+				if( IsVersioned ) 
+				{
+					session.Batcher.CloseCommand( deleteCmd );
+				}
 			}
 
 		}
@@ -990,7 +1011,16 @@ namespace NHibernate.Persister
 
 			if (!hasUpdateableColumns) return;
 
-			IDbCommand statement = session.Preparer.PrepareCommand(sqlUpdateString);
+
+			IDbCommand statement = null; 
+			if( IsVersioned ) 
+			{
+				statement = session.Batcher.PrepareCommand( sqlUpdateString );
+			}
+			else 
+			{
+				statement = session.Batcher.PrepareBatchCommand( sqlUpdateString );
+			}
 
 			try 
 			{
@@ -1001,16 +1031,36 @@ namespace NHibernate.Persister
 				if ( IsVersioned ) 
 				{
 					VersionType.NullSafeSet( statement, oldVersion, versionParamIndex, session);
+					Check( statement.ExecuteNonQuery(), id );
 				} 
+				else 
+				{
+					session.Batcher.AddToBatch(1);
+				}
 				
-				Check( statement.ExecuteNonQuery(), id );
 
 			} 
-			// TODO: h2.0.3 - add some sql exception logging here
+				// TODO: h2.0.3 - add some sql exception logging here
 			catch (Exception e) 
 			{
+				if( IsVersioned ) 
+				{
+					// log an exception here
+				}
+				else 
+				{
+					session.Batcher.AbortBatch(e);
+				}
+
 				throw e;
 			} 
+			finally 
+			{
+				if( IsVersioned ) 
+				{
+					session.Batcher.CloseCommand( statement );
+				}
+			}
 		}
 		
 
