@@ -8,6 +8,11 @@ namespace NHibernate
 	[Serializable]
 	public class AssertionFailure : ApplicationException 
 	{
+		public AssertionFailure() : base(String.Empty)
+		{
+			log4net.LogManager.GetLogger( typeof(AssertionFailure) ).Error("An AssertionFailure occured - this may indicate a bug in NHibernate");
+		}
+
 		public AssertionFailure(string s) : base(s) 
 		{
 			log4net.LogManager.GetLogger( typeof(AssertionFailure) ).Error("An AssertionFailure occured - this may indicate a bug in NHibernate", this);

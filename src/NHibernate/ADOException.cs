@@ -11,6 +11,8 @@ namespace NHibernate
 	{
 		private Exception sqle;
 
+		public ADOException() : this("DataException occured", new InvalidOperationException("Invalid Operation")) { }
+
 		public ADOException(DataException root) : this("DataException occurred", root) { }
 
 		public ADOException(string str, Exception root) : base(str, root) 

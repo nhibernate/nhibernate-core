@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace NHibernate 
 {
@@ -10,10 +11,14 @@ namespace NHibernate
 	[Serializable]
 	public class HibernateException : ApplicationException 
 	{
+		public HibernateException() : base (String.Empty) { }
+
 		public HibernateException(Exception e) : base(String.Empty, e) { }
 
 		public HibernateException(string str, Exception e) : base(str, e) { }
 
 		public HibernateException(string str) : base(str) { }
+
+		protected HibernateException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }
