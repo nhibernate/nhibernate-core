@@ -27,12 +27,11 @@ namespace NHibernate.Loader {
 				((EntityType) collPersister.ElementType).PersistentClass);
 
 			string alias = Alias(collectionPersister.QualifiedTableName, 0);
-			string collAlias = persister.GetConcreteClassAlias(alias);
-
+			
 			SqlString whereSqlString = null;
 
 			if (collectionPersister.HasWhere) 
-				whereSqlString = new SqlString(collectionPersister.GetSQLWhereString(collAlias));
+				whereSqlString = new SqlString(collectionPersister.GetSQLWhereString(alias));
 				
 			IList associations = WalkTree(persister, alias, factory);
 
@@ -45,7 +44,7 @@ namespace NHibernate.Loader {
 
 			SqlSelectBuilder selectBuilder = new SqlSelectBuilder(factory);
 			
-			selectBuilder.SetSelectClause(collectionPersister.SelectClauseFragment(collAlias) +
+			selectBuilder.SetSelectClause(collectionPersister.SelectClauseFragment(alias) +
 				(joins==0 ? String.Empty : "," + SelectString(associations) ) +
 				", " +
 				SelectString( persister, alias, suffixes[joins] )
@@ -57,7 +56,7 @@ namespace NHibernate.Loader {
 				persister.FromJoinFragment(alias, true, true)
 				);
 
-			selectBuilder.SetWhereClause(collAlias, collectionPersister.KeyColumnNames, collectionPersister.KeyType);
+			selectBuilder.SetWhereClause(alias, collectionPersister.KeyColumnNames, collectionPersister.KeyType);
 			if(collectionPersister.HasWhere) selectBuilder.AddWhereClause(whereSqlString);
 
 			selectBuilder.SetOuterJoins(
@@ -66,7 +65,7 @@ namespace NHibernate.Loader {
 				persister.WhereJoinFragment(alias, true, true)
 				);
 
-			if(collectionPersister.HasOrdering) selectBuilder.SetOrderByClause( collectionPersister.GetSQLOrderByString(collAlias) );
+			if(collectionPersister.HasOrdering) selectBuilder.SetOrderByClause( collectionPersister.GetSQLOrderByString(alias) );
 
 			this.sqlString = selectBuilder.ToSqlString();
 
