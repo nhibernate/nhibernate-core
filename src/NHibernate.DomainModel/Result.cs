@@ -13,6 +13,9 @@ namespace NHibernate.DomainModel
 		
 		public Result(string name, long amount, int count) 
 		{
+			_name = name;
+			_amount = amount;
+			_count = count;
 		}
 		
 		public string Name
