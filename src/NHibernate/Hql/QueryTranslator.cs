@@ -927,7 +927,7 @@ namespace NHibernate.Hql
 		{
 			SqlString sqlWithLock = ApplyLocks(SqlString, lockModes, session.Factory.Dialect);
 
-			IDbCommand st = PrepareQueryStatement(
+			IDbCommand st = PrepareCommand(
 				sqlWithLock,
 				values, types, namedParams, selection, false, session);
 			try 
@@ -1251,102 +1251,134 @@ namespace NHibernate.Hql
 			}
 		}
 
+		
 		/// <summary>
-		/// Obtain an <see cref="IDbCommand"/> and bind the parameters.
+		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
+		/// database to Load an Entity.
 		/// </summary>
-		/// <param name="sql">A string containing the Sql statement</param>
-		/// <param name="values">The values to put in the Parameters.</param>
-		/// <param name="types">The IType to use to put the values in the Parameters.</param>
-		/// <param name="selection"></param>
-		/// <param name="scroll"></param>
-		/// <param name="session">The ISession currently in.</param>
-		/// <returns>An IDbCommand that is ready for execution.</returns>
+		/// <param name="sqlString">The SqlString to convert into a prepared IDbCommand.</param>
+		/// <param name="values">The values that should be bound to the parameters in the IDbCommand</param>
+		/// <param name="types">The IType for the value</param>
+		/// <param name="namedParams">The HQL named parameters.</param>
+		/// <param name="selection">The RowSelection to help setup the CommandTimeout</param>
+		/// <param name="scroll">TODO: find out where this is used...</param>
+		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
+		/// <returns>An IDbCommand that is ready to be executed.</returns>
 		/// <remarks>
-		/// <para>
-		/// This is used to convert an Hql sql string into a SqlString and then finally into an IDbCommand
-		/// that has been prepared.
-		/// </para>
-		/// <para>
-		/// This should not be considered a permanent solution.  While parsing the HQL we should be building
-		/// a SqlString, not a string that contains sql...
-		/// </para>
-		/// <para>
-		/// This used to be in the Loader, but since the only use of this right now is in the QueryTranslator
-		/// I moved it into here.
-		/// </para>
+		/// This ensures that the SqlString does not contained any parameters that don't have a SqlType
+		/// set.  During Hql parsing the SqlType is not set and a Parameter "placeholder" is added to
+		/// the SqlString.  If there are any untyped parameters this replaces them using the types and
+		/// namedParams parameters.
 		/// </remarks>
-		protected override IDbCommand PrepareQueryStatement(string sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
+		protected override IDbCommand PrepareCommand(SqlString sqlString, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
 		{
-			return PrepareQueryStatement( new SqlString(sql), values, types, namedParams, selection, scroll, session);
-		}
+			SqlString sql = null;
 
-		protected override IDbCommand PrepareQueryStatement(SqlString sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
-		{
-            IType[] paramTypes = null;
-			object[] paramValues = null;
-
-			if(namedParams==null || namedParams.Count==0) 
+			// when there is no untyped Parameters then we can avoid the need to create
+			// a new sql string and just return the existing one because it is ready 
+			// to be prepared and executed.
+			if(sqlString.ContainsUntypedParameter==false) 
 			{
-				paramTypes = types;
-				paramValues = values;
+				sql = sqlString;
 			}
 			else 
 			{
-				// convert the named parameters to an array of values and types
-				ArrayList paramTypeList = new ArrayList(namedParams.Keys.Count);
-				ArrayList paramValueList = new ArrayList(namedParams.Keys.Count);
-				
-				// assumes that types are all of span 1
-				foreach (DictionaryEntry e in namedParams) 
+
+				// holds the index of the sqlPart that should be replaced
+				int sqlPartIndex = 0;
+
+				// holds the index of the paramIndexes array that is the current position
+				int paramIndex = 0;
+
+				sql = sqlString.Clone();
+				int[] paramIndexes = sql.ParameterIndexes;
+
+				// if there are no Parameters in the SqlString then there is no reason to 
+				// bother with this code.
+				if( paramIndexes.Length > 0 ) 
 				{
-					string name = (string) e.Key;
-					TypedValue typedval = (TypedValue) e.Value;
-					int[] locs = GetNamedParameterLocs(name);
-
-					for (int i = 0; i < locs.Length; i++) 
+				
+					for( int i=0; i<types.Length; i++ ) 
 					{
-						int lastInsertedIndex = paramTypeList.Count;
-
-						int insertAt = locs[i];
-						
-						// need to make sure that the ArrayList is populated with null objects
-						// up to the index we are about to add the values into.  An Index Out 
-						// of Range exception will be thrown if we add an element at an index
-						// that is greater than the Count.
-						if(insertAt >= lastInsertedIndex)
+						string[] colNames = new string[types[i].GetColumnSpan(factory)];
+						for( int j=0; j<colNames.Length; j++ ) 
 						{
-							for(int j = lastInsertedIndex; j <= insertAt; j++) 
+							colNames[j] = "p" + paramIndex.ToString() + j.ToString();
+						}
+
+						Parameter[] parameters = Parameter.GenerateParameters( factory, colNames , types[i] );
+
+						foreach(Parameter param in parameters) 
+						{
+							sqlPartIndex = paramIndexes[paramIndex];
+							sql.SqlParts[sqlPartIndex] = param;
+						
+							paramIndex++;
+						}
+					}
+
+					if( namedParams!=null && namedParams.Count > 0 ) 
+					{
+						// convert the named parameters to an array of types
+						ArrayList paramTypeList = new ArrayList();
+				
+						foreach( DictionaryEntry e in namedParams ) 
+						{
+							string name = (string) e.Key;
+							TypedValue typedval = (TypedValue) e.Value;
+							int[] locs = GetNamedParameterLocs(name);
+
+							for( int i=0; i<locs.Length; i++ ) 
 							{
-								paramTypeList.Add(null);
-								paramValueList.Add(null);
+								int lastInsertedIndex = paramTypeList.Count;
+
+								int insertAt = locs[i];
+						
+								// need to make sure that the ArrayList is populated with null objects
+								// up to the index we are about to add the values into.  An Index Out 
+								// of Range exception will be thrown if we add an element at an index
+								// that is greater than the Count.
+								if(insertAt >= lastInsertedIndex)
+								{
+									for(int j=lastInsertedIndex; j<=insertAt; j++) 
+									{
+										paramTypeList.Add(null);
+									}
+								}
+						
+								paramTypeList[insertAt] = typedval.Type; 
 							}
 						}
+
+						for( int i=0; i<paramTypeList.Count; i++ ) 
+						{
+							IType type = (IType)paramTypeList[i];
+							string[] colNames = new string[type.GetColumnSpan(factory)];
+
+							for( int j=0; j<colNames.Length; j++ ) 
+							{
+								colNames[j] = "p" + paramIndex.ToString() + j.ToString();
+							}
+
+							Parameter[] parameters = Parameter.GenerateParameters( factory, colNames , type );
+
+							foreach(Parameter param in parameters) 
+							{
+								sqlPartIndex = paramIndexes[paramIndex];
+								sql.SqlParts[sqlPartIndex] = param;
 						
-						paramTypeList[insertAt] = typedval.Type; 
-						paramValueList[insertAt] = typedval.Value;
+								paramIndex++;
+							}
+						}
 					}
-					
-				}
-				paramTypes = (IType[]) paramTypeList.ToArray( typeof(IType) );
-				paramValues = (object[]) paramValueList.ToArray( typeof(object) );
-			}
-
-		
-			SqlStringBuilder hqlBuilder = new SqlStringBuilder(sql); 
-			int paramIndex = 0;
-
-			for( int i=0; i<hqlBuilder.Count; i++ ) 
-			{
-				Parameter partParam = hqlBuilder[i] as Parameter;
-				if(partParam!=null) 
-				{
-					Parameter param = Parameter.GenerateParameters(session.Factory, new string[] {paramIndex.ToString()}, paramTypes[paramIndex])[0];
-					hqlBuilder[i] = param;
-					paramIndex++;
 				}
 			}
-			
-			return PrepareCommand(hqlBuilder.ToSqlString(), paramValues, paramTypes, null, selection, scroll, session);
+
+			// replace the local field used by the SqlString property with the one we just built 
+			// that has the correct parameters
+			this.sqlString = sql;
+
+			return base.PrepareCommand(sql, values, types, namedParams, selection, scroll, session);
 		}
 	}
 }

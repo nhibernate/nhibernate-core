@@ -160,26 +160,12 @@ namespace NHibernate.Loader
 
 			IList results = new ArrayList();
 
-			// TODO: this point would be where we build the Command object - need to look at the
-			// other classes to see what there sql building looks like...
-			//HACK: this is here until we get every loader moved over to commands...
 			IDbCommand st = null;
-			if( this.GetType()!=typeof(Hql.QueryTranslator) && this.GetType()!=typeof(Hql.FilterTranslator) ) 
-			{
-				st = PrepareCommand(
-					ApplyLocks(SqlString, lockModes, session.Factory.Dialect), 
-					values, types, namedParams, selection, false, session);
-			}
-			else 
-			{
-				// it is okay to convert to and from a string to SqlString and back to a string
-				// because there are no parameters in the SqlString - even though there are parameters
-				// in the string that contains sql.  SqlString will not parse out parameters - it assumes
-				// a string passed to it is a string.
-				st = PrepareQueryStatement( 
-					ApplyLocks(SqlString, lockModes, session.Factory.Dialect)
-					, values, types, namedParams, selection, false, session );
-			}
+
+			st = PrepareCommand(
+				ApplyLocks(SqlString, lockModes, session.Factory.Dialect), 
+				values, types, namedParams, selection, false, session);
+
 			IDataReader rs = GetResultSet(st, selection, session);
 
 			try 
@@ -571,6 +557,7 @@ namespace NHibernate.Loader
 				( dialect.PreferLimit || GetFirstRow(selection)!=0);
 		}
 
+		[Obsolete("Use PrepareCommand instead")]
 		protected virtual IDbCommand PrepareQueryStatement(string sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
 		{
 			// TODO: this is just a hack because I moved it to Hql.QueryTranslator.  It will be removed
@@ -578,6 +565,7 @@ namespace NHibernate.Loader
 			return null;
 		}
 
+		[Obsolete("Use PrepareCommand instead")]
 		protected virtual IDbCommand PrepareQueryStatement(SqlString sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
 		{
 			// TODO: this is just a hack because I moved it to Hql.QueryTranslator.  It will be removed
@@ -597,10 +585,10 @@ namespace NHibernate.Loader
 		/// <param name="scroll">TODO: find out where this is used...</param>
 		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
 		/// <returns>An IDbCommand that is ready to be executed.</returns>
-		protected IDbCommand PrepareCommand(SqlString sqlString, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
+		protected virtual IDbCommand PrepareCommand(SqlString sqlString, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
 		{
 			Dialect.Dialect dialect = session.Factory.Dialect;
-
+			
 			bool useLimit = UseLimit(selection, dialect);
 			bool scrollable = session.Factory.UseScrollableResultSets && (
 				scroll ||
