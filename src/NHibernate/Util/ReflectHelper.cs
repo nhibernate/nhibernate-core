@@ -87,7 +87,8 @@ namespace NHibernate.Util {
 		private static Setter GetSetterOrNull(System.Type type, string propertyName) {
 			if (type == typeof(object) || type == null) return null;
 
-			PropertyInfo property = type.GetProperty(propertyName);
+			//PropertyInfo property = type.GetProperty(propertyName);
+			PropertyInfo property = type.GetProperty(propertyName, BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic);
 
 			if (property != null) {
 				return new Setter(type, property, propertyName);
@@ -112,7 +113,8 @@ namespace NHibernate.Util {
 		private static Getter GetGetterOrNull(System.Type type, string propertyName) {
 			if (type==typeof(object) || type==null) return null;
 
-			PropertyInfo property = type.GetProperty(propertyName);
+			//PropertyInfo property = type.GetProperty(propertyName);
+			PropertyInfo property = type.GetProperty(propertyName, BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic);
 
 			if (property != null) {
 				return new Getter(type, property, propertyName);
@@ -133,8 +135,24 @@ namespace NHibernate.Util {
 			return TypeFactory.HueristicType( GetGetter(theClass, name).ReturnType.Name );
 		}
 
+		/// <summary>
+		/// Returns a reference to the Type.
+		/// </summary>
+		/// <param name="name">The name of the class.  Can be a name with the assembly included or just the name of the class.</param>
+		/// <returns>The Type for the Class.</returns>
 		public static System.Type ClassForName(string name) {
-			return System.Type.GetType(name);
+			return System.Type.GetType(name, true);
+		}
+
+		/// <summary>
+		/// Returns a reference to the Type.
+		/// </summary>
+		/// <param name="name">The name of the class.</param>
+		/// <param name="assemblyName">The name of the Assembly to find the class in.</param>
+		/// <returns>The Type for the Class.</returns>
+		public static System.Type ClassForName(string name, string assemblyName) {
+			string className = assemblyName==null ? name: name + ", " + assemblyName;
+			return System.Type.GetType(className, true);
 		}
 
 		public static object GetConstantValue(string name) {
@@ -156,7 +174,7 @@ namespace NHibernate.Util {
 			if (IsAbstractClass(type)) return null;
 			
 			try {
-				ConstructorInfo contructor = type.GetConstructor(NoClasses);
+				ConstructorInfo contructor = type.GetConstructor(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic, null, CallingConventions.HasThis, NoClasses, null);
 				return contructor;
 			} catch (Exception) {
 				throw new PropertyNotFoundException(

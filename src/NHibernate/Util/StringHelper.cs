@@ -6,13 +6,13 @@ namespace NHibernate.Util {
 	
 	public sealed class StringHelper {
 		
-		public const string EmptyString = "";
 		public const char Dot = '.';
 		public const char Underscore = '_';
 		public const string CommaSpace = ", ";
 		public const string Comma = ",";
 		public const string OpenParen = "(";
 		public const string ClosedParen = ")";
+		public const string SqlParameter = "?";
 
 		[Obsolete("Use String.Join() instead of this method. It does the same thing")]
 		public static string Join(string separator, string[] strings) {
@@ -85,7 +85,7 @@ namespace NHibernate.Util {
 		public static string Qualifier(string qualifiedName) {
 			int loc = qualifiedName.LastIndexOf(".");
 			if ( loc< 0 ) {
-				return EmptyString;
+				return String.Empty;
 			} else {
 				return qualifiedName.Substring(0, loc);
 			}
@@ -146,6 +146,10 @@ namespace NHibernate.Util {
 
 		public static string ToString(object[] array) {
 			int len = array.Length;
+			
+			// if there is no value in the array then return no string...
+			if(len==0) return String.Empty;
+
 			StringBuilder buf = new StringBuilder(len * 12);
 			for (int i=0; i<len - 1; i++) {
 				buf.Append( array[i] ).Append(StringHelper.CommaSpace);

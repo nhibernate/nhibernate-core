@@ -31,7 +31,7 @@ namespace NHibernate.Util {
 				while ( en.MoveNext() ) {
 					string key = (string) en.Current;
 					
-					string value = en.MoveNext() ? (string) en.Current : StringHelper.EmptyString;
+					string value = en.MoveNext() ? (string) en.Current : String.Empty;
 					map.Add( key, value );
 				}
 			}
