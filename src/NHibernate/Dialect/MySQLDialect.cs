@@ -79,12 +79,6 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override bool DropConstraints
-		{
-			get { return false; }
-		}
-
-		/// <summary></summary>
 		public override bool QualifyIndexName
 		{
 			get { return false; }
@@ -177,5 +171,35 @@ namespace NHibernate.Dialect
 				.Append( ')' )
 				.ToString();
 		}
+
+		/// <summary>
+ 		/// Create the SQL string to drop a foreign key constraint.
+ 		/// </summary>
+ 		/// <param name="constraintName">The name of the foreign key to drop.</param>
+ 		/// <returns>The SQL string to drop the foreign key constraint.</returns>
+ 		public override string GetDropForeignKeyConstraintString(string constraintName)
+		{
+ 			return " drop foreign key " + constraintName;
+ 		}
+ 	
+ 		/// <summary>
+ 		/// Create the SQL string to drop a primary key constraint.
+ 		/// </summary>
+ 		/// <param name="constraintName">The name of the primary key to drop.</param>
+ 		/// <returns>The SQL string to drop the primary key constraint.</returns>
+ 		public override string GetDropPrimaryKeyConstraintString(string constraintName)
+ 		{
+ 			return " drop primary key " + constraintName;
+ 		}
+ 	
+ 		/// <summary>
+ 		/// Create the SQL string to drop an index.
+ 		/// </summary>
+ 		/// <param name="constraintName">The name of the index to drop.</param>
+ 		/// <returns>The SQL string to drop the index constraint.</returns>
+ 		public override string GetDropIndexConstraintString(string constraintName)
+		{
+ 			return " drop index " + constraintName;
+ 		}
 	}
 }

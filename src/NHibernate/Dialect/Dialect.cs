@@ -216,6 +216,18 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// The syntax used to drop a foreign key constraint from a table.
+ 		/// </summary>
+ 		/// <param name="constraintName">The name of the foreign key constraint to drop.</param>
+ 		/// <returns>
+ 		/// The SQL string to drop the foreign key constraint.
+ 		/// </returns>
+ 		public virtual string GetDropForeignKeyConstraintString( string constraintName )
+ 		{
+			return " drop constraint " + constraintName;
+ 		}
+		
+		/// <summary>
 		/// The syntax used to add a primary key constraint to a table
 		/// </summary>
 		/// <param name="constraintName"></param>
@@ -223,6 +235,30 @@ namespace NHibernate.Dialect
 		{
 			return " add constraint " + constraintName + " primary key ";
 		}
+
+		/// <summary>
+		/// The syntax used to drop a primary key constraint from a table.
+ 		/// </summary>
+ 		/// <param name="constraintName">The name of the primary key constraint to drop.</param>
+ 		/// <returns>
+ 		/// The SQL string to drop the primary key constraint.
+ 		/// </returns>
+ 		public virtual string GetDropPrimaryKeyConstraintString( string constraintName )
+		{
+ 			return " drop constraint " + constraintName;
+ 		}
+
+		/// <summary>
+ 		/// The syntax used to drop an index constraint from a table.
+ 		/// </summary>
+ 		/// <param name="constraintName">The name of the index constraint to drop.</param>
+ 		/// <returns>
+ 		/// The SQL string to drop the primary key constraint.
+ 		/// </returns>
+ 		public virtual string GetDropIndexConstraintString( string constraintName ) 		
+		{
+ 			return " drop constraint " + constraintName;
+ 		}
 
 		/// <summary>
 		/// The keyword used to specify a nullable column

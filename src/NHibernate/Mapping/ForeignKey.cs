@@ -88,5 +88,21 @@ namespace NHibernate.Mapping
 			get { return referencedClass; }
 			set { referencedClass = value; }
 		}
+
+		#region IRelationalModel Memebers
+
+		/// <summary>
+ 		/// Get the SQL string to drop this Constraint in the database.
+ 		/// </summary>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+ 		/// <returns>
+ 		/// A string that contains the SQL to drop this Constraint.
+ 		/// </returns>
+ 		public override string SqlDropString(NHibernate.Dialect.Dialect dialect)		
+		{
+ 			return "alter table " + Table.GetQualifiedName( dialect ) + dialect.GetDropForeignKeyConstraintString( Name );
+ 		}
+
+		#endregion
 	}
 }

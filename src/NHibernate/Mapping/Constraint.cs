@@ -79,7 +79,7 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that contains the SQL to drop this Constraint.
 		/// </returns>
-		public string SqlDropString( Dialect.Dialect dialect )
+		public virtual string SqlDropString( Dialect.Dialect dialect )
 		{
 			return "alter table " + Table.GetQualifiedName( dialect ) + " drop constraint " + Name;
 		}

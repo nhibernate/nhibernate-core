@@ -56,5 +56,20 @@ namespace NHibernate.Mapping
 			}
 			return buf.Append( StringHelper.ClosedParen ).ToString();
 		}
+
+		#region IRelationalModel Members
+		
+		/// <summary>
+ 		/// Get the SQL string to drop this Constraint in the database.
+ 		/// </summary>
+ 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+ 		/// <returns>
+		/// A string that contains the SQL to drop this Constraint.
+ 		/// </returns>
+ 		public override string SqlDropString(NHibernate.Dialect.Dialect dialect)
+		{
+ 			return "alter table " + Table.GetQualifiedName( dialect ) + dialect.GetDropPrimaryKeyConstraintString( Name );
+ 		}
+		#endregion
 	}
 }
