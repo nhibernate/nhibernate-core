@@ -527,7 +527,7 @@ namespace NHibernate.Type
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
 			if(returnType==null) 
 			{
-				returnType = new DateType(SqlTypeFactory.GetDate());
+				returnType = new DateType(SqlTypeFactory.GetDateTime());
 				AddToTypeOfName(key, returnType);
 			}
 

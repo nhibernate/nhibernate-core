@@ -89,21 +89,6 @@ namespace NHibernate.SqlTypes {
 			return returnSqlType;
 		}
 
-		public static DateSqlType GetDate() 
-		{
-
-			string key = typeof(DateSqlType).Name;
-			
-			DateSqlType returnSqlType = (DateSqlType)sqlTypes[key];
-			if(returnSqlType==null) 
-			{
-				returnSqlType = new DateSqlType();
-				sqlTypes.Add(key, returnSqlType);
-			}
-			
-			return returnSqlType;
-		}
-
 		public static DecimalSqlType GetDecimal(byte precision, byte scale) 
 		{
 			string key = GetKeyForPrecisionScaleBased(typeof(DecimalSqlType).Name, precision, scale);

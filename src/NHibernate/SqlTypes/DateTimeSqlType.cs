@@ -3,7 +3,7 @@ using System.Data;
 
 namespace NHibernate.SqlTypes {
 	/// <summary>
-	/// Summary description for DateSqlType.
+	/// Summary description for DateTimeSqlType.
 	/// </summary>
 	public class DateTimeSqlType : SqlType 	{
 		
