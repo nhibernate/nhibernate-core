@@ -1614,6 +1614,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlTypes\SByteSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlTypes\SingleSqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

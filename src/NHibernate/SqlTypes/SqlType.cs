@@ -4,13 +4,20 @@ using System.Data;
 namespace NHibernate.SqlTypes 
 {	
 	/// <summary>
-	/// This is the base class that describes the DbType in further detail so we 
-	/// can prepare the IDbCommands.  Certain SqlTypes have a default length or
-	/// precision/scale that can get overriden in the hbm files.
-	/// 
-	/// It is expected that each Dialect will be the one responsible for converting these
-	/// objects to the sql string when using SchemaExport.
+	/// This is the base class that adds information to the <see cref="DbType" /> 
+	/// for the <see cref="Driver.IDriver"/> and <see cref="Dialect.Dialect"/>
+	/// to use.
 	/// </summary>
+	/// <remarks>
+	/// <p>
+	/// The <see cref="Driver.IDriver"/> uses the SqlType to get enough
+	/// information to create an <see cref="IDbDataParameter"/>.  
+	/// </p>
+	/// <p>
+	/// The <see cref="Dialect.Dialect"/> use the SqlType to convert the <see cref="DbType"/>
+	/// to the appropriate sql type for SchemaExport.
+	/// </p>
+	/// </remarks>
 	[Serializable]
 	public abstract class SqlType
 	{
@@ -72,7 +79,7 @@ namespace NHibernate.SqlTypes
 			get { return _precisionDefined;}
 		}
 
-		#region overrides of Object methods
+		#region System.Object Members
 
 		public override int GetHashCode() 
 		{
