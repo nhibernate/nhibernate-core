@@ -148,5 +148,33 @@ namespace NHibernate.Test.NHSpecificTest
 
 		}
 
+		[Test]
+		public void Criteria() 
+		{
+			CompositeId id = new CompositeId("stringKey", 3, firstDateTime);
+			ClassWithCompositeId cId = new ClassWithCompositeId();
+			cId.Id = id;
+			cId.OneProperty = 5;
+
+			// add the new instance to the session so I have something to get results 
+			// back for
+			ISession s = sessions.OpenSession();
+			s.Save(cId);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			ICriteria c = s.CreateCriteria(typeof(ClassWithCompositeId));
+			c.Add( Expression.Expression.Eq("Id", id) );
+
+			// right now just want to see if the Criteria is valid
+			IList results = c.List();
+
+			Assert.AreEqual(1, results.Count);
+
+			s.Close();
+		}
+
+
 	}
 }
