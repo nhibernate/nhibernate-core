@@ -520,6 +520,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Driver\NDataReader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Driver\OdbcDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
