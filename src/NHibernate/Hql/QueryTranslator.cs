@@ -235,7 +235,7 @@ namespace NHibernate.Hql
 		internal string Unalias(string path) 
 		{
 			string alias = StringHelper.Root(path);
-			string name = (string) aliasNames[alias];
+			string name = GetAliasName(alias);
 			if (name!=null) 
 			{
 				return name + path.Substring( alias.Length );
