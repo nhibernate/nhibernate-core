@@ -66,9 +66,9 @@ namespace NHibernate.Driver
 			}
 		}
 
-		public bool SupportsMultipleOpenReaders 
+		public virtual bool SupportsMultipleOpenReaders 
 		{
-			get { return false;}
+			get { return true;}
 		}
 
 		#endregion
