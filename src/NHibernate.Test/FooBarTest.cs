@@ -1287,9 +1287,37 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void CollectionOfSelf() 
 		{
+			ISession s = sessions.OpenSession();
+			Bar bar = new Bar();
+			s.Save(bar);
+			// h2.0.3 was a set
+			bar.Abstracts = new Hashtable();
+			bar.Abstracts.Add( bar, new object() );
+			Bar bar2 = new Bar();
+			bar.Abstracts.Add( bar2, new object() );
+			bar.TheFoo = bar;
+			s.Save(bar2);
+			s.Flush();
+			s.Close();
+
+			bar.Abstracts = null;
+			s = sessions.OpenSession();
+			s.Load( bar, bar.Key );
+
+			Assert.AreEqual( 2, bar.Abstracts.Count);
+			Assert.IsTrue(bar.Abstracts.Contains(bar), "collection contains self");
+			Assert.AreSame(bar, bar.TheFoo, "association to self");
+
+			foreach(object obj in bar.Abstracts.Keys) 
+			{
+				s.Delete(obj);
+			}
+
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
@@ -1305,15 +1333,142 @@ namespace NHibernate.Test
 		}
 	
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void DeleteRecursive() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo x = new Foo();
+			Foo y = new Foo();
+			x.TheFoo = y;
+			y.TheFoo = x;
+			s.Save(x);
+			s.Save(y);
+			s.Flush();
+			s.Delete(y);
+			s.Delete(x);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Reachability() 
 		{
+			// first for unkeyed collections
+			ISession s = sessions.OpenSession();
+			Baz baz1 = new Baz();
+			s.Save(baz1);
+			Baz baz2 = new Baz();
+			s.Save(baz2);
+			baz1.IntArray = new int[] {1, 2, 3, 4};
+			baz1.FooSet = new Hashtable();
+			Foo foo = new Foo();
+			s.Save(foo);
+			baz1.FooSet.Add( foo, new object() );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz2 = (Baz) s.Load( typeof(Baz), baz2.Code );
+			baz1 = (Baz) s.Load( typeof(Baz), baz1.Code );
+			baz2.FooSet = baz1.FooSet;
+			baz1.FooSet = null;
+			baz2.IntArray = baz1.IntArray;
+			baz1.IntArray = null;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
+			baz1 = (Baz)s.Load( typeof(Baz), baz1.Code );
+			Assert.AreEqual(4, baz2.IntArray.Length, "unkeyed reachability - baz2.IntArray");
+			Assert.AreEqual(1, baz2.FooSet.Count, "unkeyed reachability - baz2.FooSet");
+			Assert.AreEqual(0, baz1.IntArray.Length, "unkeyed reachability - baz1.IntArray");
+			Assert.AreEqual(0, baz1.FooSet.Count, "unkeyed reachability - baz1.FooSet");
+
+			foreach(object obj in baz2.FooSet.Keys) 
+			{
+				s.Delete( (FooProxy)obj );
+			}
+
+			s.Delete(baz1);
+			s.Delete(baz2);
+			s.Flush();
+			s.Close();
+
+			// now for collections of collections
+			s = sessions.OpenSession();
+			baz1 = new Baz();
+			s.Save(baz1);
+			baz2 = new Baz();
+			s.Save(baz2);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
+			baz1 = (Baz)s.Load( typeof(Baz), baz1.Code );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
+			baz1 = (Baz)s.Load( typeof(Baz), baz1.Code );
+			s.Delete(baz1);
+			s.Delete(baz2);
+			s.Flush();
+			s.Close();
+
+			// now for keyed collections
+			s = sessions.OpenSession();
+			baz1 = new Baz();
+			s.Save(baz1);
+			baz2 = new Baz();
+			s.Save(baz2);
+			Foo foo1 = new Foo();
+			Foo foo2 = new Foo();
+
+			s.Save(foo1);
+			s.Save(foo2);
+			baz1.FooArray = new Foo[] { foo1, null, foo2 };
+			baz1.StringDateMap = new Hashtable();
+			baz1.StringDateMap["today"] = DateTime.Today;
+			baz1.StringDateMap["tomm"] = new DateTime(DateTime.Today.Ticks +  (new TimeSpan(1, 0, 0, 0, 0)).Ticks);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
+			baz1 = (Baz)s.Load( typeof(Baz), baz1.Code );
+			baz2.FooArray = baz1.FooArray;
+			baz1.FooArray = null;
+			baz2.StringDateMap = baz1.StringDateMap;
+			baz1.StringDateMap = null;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
+			baz1 = (Baz)s.Load( typeof(Baz), baz1.Code );
+			Assert.AreEqual( 2, baz2.StringDateMap.Count, "baz2.StringDateMap count - reachability");
+			Assert.AreEqual( 3, baz2.FooArray.Length, "baz2.FooArray length - reachability");
+			Assert.AreEqual( 0, baz1.StringDateMap.Count, "baz1.StringDateMap count - reachability");
+			Assert.AreEqual( 0, baz1.FooArray.Length, "baz1.FooArray length - reachability");
+
+			Assert.IsNull(baz2.FooArray[1], "null element");
+			Assert.IsNotNull(baz2.StringDateMap["today"], "today non-null element");
+			Assert.IsNotNull(baz2.StringDateMap["tomm"], "tomm non-null element");
+			Assert.IsNull(baz2.StringDateMap["foo"], "foo is null element");
+
+			s.Delete(baz2.FooArray[0]);
+			s.Delete(baz2.FooArray[2]);
+			s.Delete(baz1);
+			s.Delete(baz2);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
