@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" ?>
+<?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
     <class name="NHibernate.DomainModel.Child" assemblyName="NHibernate.DomainModel">
@@ -11,7 +11,6 @@
 		
 		<many-to-one name="Sex" class="NHibernate.DomainModel.SexType" assemblyName="NHibernate.DomainModel" column="sex_type_id"/>
 		
-		<!--<many-to-one name="Parent" class="NHibernate.DomainModel.Parent" assemblyName="NHibernate.DomainModel" column="parent_id"/> -->
 		<map name="Parents" table="child_parent" lazy="true">
 			<key column="child_id" />
 			<index column="which_parent" type="String" />
