@@ -1961,8 +1961,13 @@ namespace NHibernate.Impl
 					// retunr new uninitailzed proxy
 					if ( persister.HasProxy ) {
 						proxy = null; //TODO: Create the proxy
+						// this is the spot that is causing the problems with FooBarTest.FetchInitializedCollection
+						// when the following code "Assert.IsTrue( baz.fooBag.Count==2 );" is being executed.  This
+						// is causing a null value to be returned when a "Proxied" version of the class is expected.
+						// So the method ThrowObjectNotFound is throwing an exception because it is given a null object
+						// - hence the error looks like it can't find a row in the DB.
 					}
-					proxiesByKey.Add(key, proxy);
+					proxiesByKey[key] = proxy;
 					return proxy;
 				} else {
 					// return a newly loaded object
