@@ -496,6 +496,10 @@ namespace NHibernate.Cfg {
 			{
 				mappings.AddSecondPass( new SetSecondPass(node, mappings, (Set) model) );
 			}
+			else if (model is IdentifierCollection) 
+			{
+				mappings.AddSecondPass( new IdentifierCollectionSecondPass(node, mappings, (IdentifierCollection) model) );
+			}
 			else 
 			{
 				mappings.AddSecondPass( new CollectionSecondPass(node, mappings, model) );
@@ -986,6 +990,19 @@ namespace NHibernate.Cfg {
 			AddIndexForIndexedCollection( model );
 		}
 
+		public static void BindIdentifierCollectionSecondPass(XmlNode node, IdentifierCollection model, IDictionary persitentClasses, Mappings mappings) 
+		{
+			BindCollectionSecondPass(node, model, persitentClasses, mappings);
+
+			XmlNode subnode = node.SelectSingleNode(nsPrefix + ":collection-id", nsmgr);
+			Value id = new Value(model.Table);
+			BindValue(subnode, id, false, IdentifierCollection.DefaultIdentifierColumnName);
+			model.Identifier = id;
+			MakeIdentifier(subnode, id, mappings);
+			if ( !model.IsOneToMany ) model.CreatePrimaryKey();
+
+		}
+
 		//map binding
 
 		public static void BindMapSecondPass(XmlNode node, Mapping.Map model, IDictionary classes, Mappings mappings) 
@@ -1222,9 +1239,22 @@ namespace NHibernate.Cfg {
 			}
 		}
 
+		private class IdentifierCollectionSecondPass : SecondPass 
+		{
+			public IdentifierCollectionSecondPass(XmlNode node, Mappings mappings, Mapping.IdentifierCollection collection) 
+				: base(node, mappings, collection)
+			{
+			}
+
+			public override void secondPass(IDictionary persistentClasses)
+			{
+				Binder.BindIdentifierCollectionSecondPass( node, (Mapping.IdentifierCollection) collection, persistentClasses, mappings);
+			}
+		}
+
 		private class MapSecondPass : SecondPass 
 		{
-			public MapSecondPass(XmlNode node, Mappings mappings, Mapping.Collection collection)
+			public MapSecondPass(XmlNode node, Mappings mappings, Mapping.Map collection)
 				: base(node, mappings, collection) 
 			{ 
 			}
@@ -1236,7 +1266,7 @@ namespace NHibernate.Cfg {
 
 		private class SetSecondPass : SecondPass 
 		{
-			public SetSecondPass(XmlNode node, Mappings mappings, Mapping.Collection collection)
+			public SetSecondPass(XmlNode node, Mappings mappings, Mapping.Set collection)
 				: base(node, mappings, collection) 
 			{ 
 			}
@@ -1248,7 +1278,7 @@ namespace NHibernate.Cfg {
 
 		private class ListSecondPass : SecondPass 
 		{
-			public ListSecondPass(XmlNode node, Mappings mappings, Mapping.Collection collection)
+			public ListSecondPass(XmlNode node, Mappings mappings, Mapping.List collection)
 				: base(node, mappings, collection) 
 			{ 
 			}
@@ -1322,7 +1352,7 @@ namespace NHibernate.Cfg {
 
 			}
 
-			private static CollectionType IDBAG = new CollectionTypeBag("idbag");
+			private static CollectionType IDBAG = new CollectionTypeIdBag("idbag");
 			private class CollectionTypeIdBag : CollectionType 
 			{
 				public CollectionTypeIdBag(string xmlTag) : base(xmlTag) {}
