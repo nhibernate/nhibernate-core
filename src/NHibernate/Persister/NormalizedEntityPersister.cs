@@ -529,7 +529,7 @@ namespace NHibernate.Persister
 			SqlString lockExclusiveString = dialect.SupportsForUpdate ? 
 				GenerateLockString(lockString, " FOR UPDATE") :
 				GenerateLockString(lockString, null);
-			SqlString lockExclusiveNowaitString = dialect.SupportsForUpdate ? 
+			SqlString lockExclusiveNowaitString = dialect.SupportsForUpdateNoWait ? 
 				GenerateLockString(lockString, " FOR UPDATE NOWAIT") :
 				GenerateLockString(lockString, null);
 

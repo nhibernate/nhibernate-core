@@ -356,7 +356,7 @@ namespace NHibernate.Persister
 			SqlString lockExclusiveString = dialect.SupportsForUpdate ? 
 				GenerateLockString(lockString, " FOR UPDATE") :
 				GenerateLockString(lockString, null);
-			SqlString lockExclusiveNowaitString = dialect.SupportsForUpdate ? 
+			SqlString lockExclusiveNowaitString = dialect.SupportsForUpdateNoWait ? 
 				GenerateLockString(lockString, " FOR UPDATE NOWAIT") :
 				GenerateLockString(lockString, null);
 
@@ -374,7 +374,7 @@ namespace NHibernate.Persister
 			loaders.Add( LockMode.Upgrade, new SimpleEntityLoader(this, selectForUpdateString, LockMode.Upgrade, factory.Dialect));
 			
 			SqlString selectForUpdateNoWaitString = factory.Dialect.SupportsForUpdateNoWait ?
-				GenerateSelectForUpdateString(" FOR UPDATE NO WAIT") : 
+				GenerateSelectForUpdateString(" FOR UPDATE NOWAIT") : 
 				selectForUpdateString.Clone();
 
 			loaders.Add( LockMode.UpgradeNoWait, new SimpleEntityLoader(this, selectForUpdateNoWaitString, LockMode.UpgradeNoWait, factory.Dialect));
