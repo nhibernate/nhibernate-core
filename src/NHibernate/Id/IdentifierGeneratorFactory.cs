@@ -8,13 +8,25 @@ namespace NHibernate.Id {
 	
 	public sealed class IdentifierGeneratorFactory {
 		public static object Get(IDataReader rs, System.Type clazz) {
+			// here is an interesting one - MsSql's @@identity returns a
+			// numeric - which translates to a C# decimal type.  I don't know
+			// if this is specific to the SqlServer provider or other providers
+			
+			decimal identityValue = rs.GetDecimal(0);
+
 			if (clazz==typeof(long)) {
-				return rs.GetInt64(0);
-			} else if (clazz==typeof(int)) {
-				return rs.GetInt32(0);
-			} else if (clazz==typeof(short)) {
-				return rs.GetInt16(0);
-			} else {
+				return (long)identityValue;
+				//return rs.GetInt64(0);
+			} 
+			else if (clazz==typeof(int)) {
+				return (int)identityValue;
+				//return rs.GetInt32(0);
+			} 
+			else if (clazz==typeof(short)) {
+				return (short)identityValue;
+				//return rs.GetInt16(0);
+			} 
+			else {
 				throw new IdentifierGenerationException("this id generator generates long, integer, short");
 			}
 		}
