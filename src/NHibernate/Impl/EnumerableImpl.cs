@@ -1,6 +1,7 @@
 using System;
-using System.Data;
 using System.Collections;
+using System.Data;
+
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -16,46 +17,69 @@ namespace NHibernate.Impl
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(EnumerableImpl));
 		
-		private IDataReader rs;
-		private ISessionImplementor sess;
-		private IType[] types;
-		private bool single;
-		private object[] currentResults;
-		private bool hasNext;
-		private string[][] names;
-		private IDbCommand cmd;
+		private IDataReader _reader;
+		private ISessionImplementor _sess;
+		private IType[] _types;
+		private bool _single;
+		private object[] _currentResults;
+		private bool _hasNext;
+		private string[][] _names;
+		private IDbCommand _cmd;
 
-		public EnumerableImpl(IDataReader rs, IDbCommand cmd, ISessionImplementor sess, IType[] types, string[][] columnNames) 
+		// when we start enumerating through the DataReader we are positioned
+		// before the first record we need
+		private int _currentRow = -1;
+
+		private RowSelection _selection;
+
+		/// <summary>
+		/// Create an <see cref="IEnumerable"/> wrapper over an <see cref="IDataReader"/>.
+		/// </summary>
+		/// <param name="reader">The <see cref="IDataReader"/> to enumerate over.</param>
+		/// <param name="cmd">TODO: is this needed?</param>
+		/// <param name="sess">The <see cref="ISession"/> to use to load objects.</param>
+		/// <param name="types">The <see cref="IType"/>s contained in the <see cref="IDataReader"/>.</param>
+		/// <param name="columnNames">The names of the columns in the <see cref="IDataReader"/>.</param>
+		/// <param name="selection">The <see cref="RowSelection"/> that should be applied to the <see cref="IDataReader"/>.</param>
+		/// <remarks>
+		/// The <see cref="IDataReader"/> should already be positioned on the first record in <see cref="RowSelection"/>.
+		/// </remarks>
+		public EnumerableImpl(IDataReader reader, IDbCommand cmd, ISessionImplementor sess, IType[] types, string[][] columnNames, RowSelection selection) 
 		{
-			this.rs = rs;
-			this.cmd = cmd;
-			this.sess = sess;
-			this.types = types;
-			this.names = columnNames;
+			_reader = reader;
+			_cmd = cmd;
+			_sess = sess;
+			_types = types;
+			_names = columnNames;
+			_selection = selection;
 
-			single = types.Length==1;
+			_single = _types.Length==1;
 		}
 
 		private void PostMoveNext(bool hasNext) 
 		{
-			this.hasNext = hasNext;
-			
+			_hasNext = hasNext;
+			_currentRow++;
+			if( _selection!=null && _selection.MaxRows!=RowSelection.NoValue ) 
+			{
+				_hasNext = _hasNext && ( _currentRow < _selection.MaxRows );
+			}
 			// there are no more records in the DataReader so clean up
-			if (!hasNext) 
+			if( !_hasNext ) 
 			{
 				log.Debug("exhausted results");
-				currentResults = null;
-				rs.Close();
+				_currentResults = null;
+				_reader.Close();
 				//TODO: H2.0.3 code to synch here to close the QueryStatement
 				//sess.Batcher.CloseQueryStatement( cmd, rs );
 			} 
 			else 
 			{
 				log.Debug("retreiving next results");
-				currentResults = new object[types.Length];
-				for (int i=0; i<types.Length; i++) 
+				_currentResults = new object[_types.Length];
+				for (int i=0; i<_types.Length; i++) 
 				{
-					currentResults[i] = types[i].NullSafeGet(rs, names[i], sess, null);
+					_currentResults[i] = _types[i].NullSafeGet(_reader, _names[i], _sess, null);
 				}
 			}
 		}
@@ -71,22 +95,22 @@ namespace NHibernate.Impl
 		{
 			get 
 			{
-				if (single) 
+				if( _single ) 
 				{
-					return currentResults[0];
+					return _currentResults[0];
 				} 
 				else 
 				{
-					return currentResults;
+					return _currentResults;
 				}
 			}
 		}
 
 		public bool MoveNext() 
 		{
-			PostMoveNext( rs.Read() );
-
-			return hasNext;
+			PostMoveNext( _reader.Read() );
+			
+			return _hasNext;
 		}
 
 		public void Reset() 

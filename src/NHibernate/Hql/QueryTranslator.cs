@@ -922,7 +922,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		//TODO: H2.0.3: iterate and scroll instead of getenumerable
 		public IEnumerable GetEnumerable(object[] values, IType[] types, RowSelection selection, 
 			IDictionary namedParams, IDictionary lockModes, ISessionImplementor session) 
 		{
@@ -933,7 +932,7 @@ namespace NHibernate.Hql
 				values, types, namedParams, selection, false, session);
 			
 			IDataReader rs = GetResultSet( st, selection, session );
-			return new EnumerableImpl(rs, st, session, ReturnTypes, ScalarColumnNames );
+			return new EnumerableImpl(rs, st, session, ReturnTypes, ScalarColumnNames, selection );
 			
 		}
 

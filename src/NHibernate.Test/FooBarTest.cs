@@ -433,7 +433,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("IQuery.SetMaxResults() - http://jira.nhibernate.org:8080/browse/NH-93")]
 		public void Limit() 
 		{
 			ISession s = sessions.OpenSession();
@@ -2815,7 +2814,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		public void AuotFlushCollections() 
+		public void AutoFlushCollections() 
 		{
 			ISession s = sessions.OpenSession();
 			ITransaction tx = s.BeginTransaction();

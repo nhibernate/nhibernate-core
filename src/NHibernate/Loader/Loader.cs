@@ -679,10 +679,10 @@ namespace NHibernate.Loader
 		/// Fetch a <c>IDbCommand</c>, call <c>SetMaxRows</c> and then execute it,
 		/// advance to the first result and return an SQL <c>IDataReader</c>
 		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="selection"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
+		/// <param name="st">The <see cref="IDbCommand" /> to execute.</param>
+		/// <param name="selection">The <see cref="RowSelection"/> to apply to the <see cref="IDbCommand"/> and <see cref="IDataReader"/>.</param>
+		/// <param name="session">The <see cref="ISession" /> to load in.</param>
+		/// <returns>An IDataReader advanced to the first record in RowSelection.</returns>
 		protected IDataReader GetResultSet(IDbCommand st, RowSelection selection, ISessionImplementor session) 
 		{
 			IDataReader rs = null;
