@@ -10,7 +10,7 @@ namespace NHibernate.Expression
 		internal LikeExpression(string propertyName, object value) : base (propertyName, value) {}
 
 		protected override string Op {
-			get { return "like"; }
+			get { return " like "; }
 		}
 	}
 }

@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// Summary description for Conjunction.
+	/// An Expression that represents a "between" constraint.
 	/// </summary>
 	public class Conjunction : Junction
 	{

@@ -22,6 +22,7 @@ namespace NHibernate.Expression {
 			this.ascending = ascending;
 		}
 	
+		
 		/// <summary>
 		/// Render the SQL fragment
 		/// </summary>
@@ -29,7 +30,7 @@ namespace NHibernate.Expression {
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
+		public string ToStringForSql(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
 			string[] columns = Expression.GetColumns(sessionFactory, persistentClass, propertyName, alias);
 			if (columns.Length!=1) throw new HibernateException("Cannot order by multi-column property: " + propertyName);
 			return columns[0] + ( ascending ? " asc" : " desc" );

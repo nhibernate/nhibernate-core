@@ -3,12 +3,13 @@ using System.Text;
 using System.Collections;
 
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Util;
 
 namespace NHibernate.Expression {
 
 	/// <summary>
-	/// Summary description for Junction.
+	/// An Expression that Junctions together multiple Expressions.
 	/// </summary>
 	public abstract class Junction : Expression	{
 		
@@ -37,20 +38,31 @@ namespace NHibernate.Expression {
 
 		}
 
-		public override string ToSqlString( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
-			if ( expressions.Count==0 ) return "1=1";
+		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) {
 			
-			StringBuilder buffer = new StringBuilder()
-				.Append('(');
-
-			for( int i=0; i<expressions.Count-1 ; i++ ) {
-
-				buffer.Append( ( (Expression) expressions[i] ).ToSqlString(sessionFactory, persistentClass, alias) );
-				buffer.Append( Op );
+			//TODO: add default capacity
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
+			
+			if(expressions.Count==0) {
+				return new SqlString(new object[] {"1=1"});
 			}
-			buffer.Append( ( (Expression) expressions[expressions.Count] ).ToSqlString(sessionFactory, persistentClass, alias) );
 
-			return buffer.Append(')').ToString();
+			
+			sqlBuilder.Add("(");
+
+			for(int i = 0; i < expressions.Count - 1; i++) {
+				sqlBuilder.Add(
+					((Expression)expressions[i]).ToSqlString(factory, persistentClass, alias));
+				sqlBuilder.Add(Op);
+			}
+
+			sqlBuilder.Add(
+				((Expression)expressions[expressions.Count - 1]).ToSqlString(factory, persistentClass, alias));
+
+
+			sqlBuilder.Add(")");
+
+			return sqlBuilder.ToSqlString();
 		}
 
 		public override string ToString() {

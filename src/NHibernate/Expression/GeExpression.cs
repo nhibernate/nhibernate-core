@@ -8,7 +8,7 @@ namespace NHibernate.Expression {
 		}
 
 		protected override string Op {
-			get { return ">="; }
+			get { return " >= "; }
 		}
 	}
 }

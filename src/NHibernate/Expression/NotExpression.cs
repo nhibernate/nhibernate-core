@@ -1,7 +1,9 @@
 using System;
 
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Expression {
 	/// <summary>
@@ -14,8 +16,13 @@ namespace NHibernate.Expression {
 			this.expression = expression;
 		}
 
-		public override string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
-			return "not " + expression.ToSqlString(sessionFactory, persistentClass, alias);
+		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) {
+			//TODO: set default capacity
+			SqlStringBuilder builder = new SqlStringBuilder();
+			builder.Add("not ");
+			builder.Add(expression.ToSqlString(factory, persistentClass, alias));
+
+			return builder.ToSqlString();
 		}
 
 		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {

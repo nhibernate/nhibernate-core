@@ -1,33 +1,77 @@
 using System;
+using System.Text;
 
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
+using NHibernate.Persister;
+using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Expression {
+namespace NHibernate.Expression 
+{
 
 	/// <summary>
-	/// BetweenExpression
+	/// An Expression that represents a "between" constraint.
 	/// </summary>
-	public class BetweenExpression : Expression {
+	public class BetweenExpression : Expression 
+	{
 
 		private readonly string propertyName;
 		private readonly object lo;
 		private readonly object hi;
 	
-		internal BetweenExpression(string propertyName, object lo, object hi) {
+		
+		/// <summary>
+		/// Initialize a new instance of the BetweenExpression class for
+		/// the named Property.
+		/// </summary>
+		/// <param name="propertyName">The name of the Property of the Class.</param>
+		/// <param name="lo">The low value for the BetweenExpression.</param>
+		/// <param name="hi">The high value for the BetweenExpression.</param>
+		internal BetweenExpression(string propertyName, object lo, object hi) 
+		{
 			this.propertyName = propertyName;
 			this.lo = lo;
 			this.hi = hi;
 		}
 
-		
-		public override string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
-			return string.Join(
-				" and ", 
-				StringHelper.Suffix( GetColumns(sessionFactory, persistentClass, propertyName, alias), " between ? and ?" )
-				);
-		
-			// TODO: get SQL rendering out of this package!
+		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) 
+		{
+			//TODO: add a default capacity
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
+
+			IType propertyType = ((IQueryable)factory.GetPersister(persistentClass)).GetPropertyType(propertyName);
+			string[] columnNames = GetColumns(factory, persistentClass, propertyName, alias);
+			string[] paramColumnNames = GetColumns(factory, persistentClass, propertyName , null);
+			string[] loParamColumnNames = new string[paramColumnNames.Length];
+			string[] hiParamColumnNames = new string[paramColumnNames.Length];
+
+			// we need to create a _lo and _hi parameter for each column.  The 	columnNames
+			// doesn't return a seperate column for the _lo and _hi so we need to...
+			for(int i = 0; i < paramColumnNames.Length; i++){
+				loParamColumnNames[i] = paramColumnNames[i] + "_lo";
+				hiParamColumnNames[i] = paramColumnNames[i] + "_hi";
+			}
+
+			Parameter[] parameters = new Parameter[paramColumnNames.Length * 2];
+			Parameter[] loParameters = Parameter.GenerateParameters(factory, alias, loParamColumnNames, propertyType);
+			Parameter[] hiParameters = Parameter.GenerateParameters(factory, alias, hiParamColumnNames, propertyType);
+			
+			
+			bool andNeeded = false;
+			
+			for(int i = 0; i < columnNames.Length; i++){
+				if(andNeeded) sqlBuilder.Add(" AND ");
+				andNeeded = true;
+
+				sqlBuilder.Add(columnNames[i])
+					.Add(" between ")
+					.Add(loParameters[i])
+					.Add(" and ")
+					.Add(hiParameters[i]);	
+			}
+
+			return sqlBuilder.ToSqlString();
 		}
 	
 		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {

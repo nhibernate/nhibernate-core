@@ -1,39 +1,97 @@
 using System;
+using System.Text;
 
-using NHibernate.Type;
 using NHibernate.Engine;
+using NHibernate.Persister;
+using NHibernate.SqlCommand;
+using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Expression {
-
+namespace NHibernate.Expression 
+{
 	/// <summary>
-	/// SimpleExpression
+	/// The base class for an Expression that compares a single Property
+	/// to a value.
 	/// </summary>
-	public abstract class SimpleExpression : Expression {
+	public abstract class SimpleExpression : Expression 
+	{
 
 		private readonly string propertyName;
 
-		private readonly object value;
+		private readonly object expressionValue;
 
-		internal SimpleExpression(string propertyName, object value) {
+		/// <summary>
+		/// Initialize a new instance of the SimpleExpression class for a named
+		/// Property and its value.
+		/// </summary>
+		/// <param name="propertyName">The name of the Property in the class.</param>
+		/// <param name="expressionValue">The value for the Property.</param>
+		internal SimpleExpression(string propertyName, object expressionValue) 
+		{
 			this.propertyName = propertyName;
-			this.value = value;
+			this.expressionValue = expressionValue;
 		}
 
-		public override string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
-			return string.Join(
-				" and ", 
-				StringHelper.Suffix( GetColumns(sessionFactory, persistentClass, propertyName, alias), Op + "?" )
-			);
-			// TODO: get SQL rendering out of this package!
+		/// <summary>
+		/// Gets the named Property for the Expression.
+		/// </summary>
+		/// <value>A string that is the name of the Property.</value>
+		public string PropertyName 
+		{
+			get {return propertyName;}
 		}
 
-		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {
-			return new TypedValue[] { GetTypedValue(sessionFactory, persistentClass, propertyName, value) };
+		/// <summary>
+		/// Gets the Value for the Expression.
+		/// </summary>
+		/// <value>An object that is the value for the Expression.</value>
+		public object Value 
+		{
+			get {return expressionValue;}
 		}
 
-		public override string ToString() {
-			return propertyName + Op + value;
+		/// <summary>
+		/// Converts the SimpleExpression to a <see cref="SqlString"/>.
+		/// </summary>
+		/// <param name="factory">The ISessionFactory that contains the mapping for the Type.</param>
+		/// <param name="persistentClass">The Class the Expression is being built for.</param>
+		/// <param name="alias">The alias to use for the table.</param>
+		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
+		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) 
+		{
+			
+			//TODO: add default capacity
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
+
+			IType propertyType = ((IQueryable)factory.GetPersister(persistentClass)).GetPropertyType(propertyName);
+			string[] columnNames = GetColumns(factory, persistentClass, propertyName, alias);
+			string[] paramColumnNames = GetColumns(factory, persistentClass, propertyName , null);
+			Parameter[] parameters = Parameter.GenerateParameters(factory, alias, paramColumnNames, propertyType);
+
+			
+			bool andNeeded = false;
+			
+			for(int i = 0; i < columnNames.Length; i++){
+				if(andNeeded) sqlBuilder.Add(" AND ");
+				andNeeded = true;
+
+				sqlBuilder.Add(columnNames[i])
+					.Add(Op)
+					.Add(parameters[i]);
+
+			}
+			return sqlBuilder.ToSqlString();
+		}
+
+
+		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) 
+		{
+			return new TypedValue[] { GetTypedValue(sessionFactory, persistentClass, propertyName, expressionValue) };
+		}
+
+		public override string ToString() 
+		{
+			return propertyName + Op + expressionValue;
 		}
 
 		protected abstract string Op { get; } //protected ???

@@ -1,6 +1,12 @@
 using System;
-using NHibernate.Engine;
+using System.Text;
+
 using NHibernate.Dialect;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
+using NHibernate.Persister;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Expression
 {
@@ -9,39 +15,49 @@ namespace NHibernate.Expression
 	/// </summary>
 	public class InsensitiveLikeExpression: Expression {
 
-		private readonly string _propertyName;
-		private readonly object _value;
+		private readonly string propertyName;
+		private readonly object expressionValue;
 
-		internal InsensitiveLikeExpression(string propertyName, object value) {		
-			this._propertyName = propertyName;
-			this._value = value;
+		internal InsensitiveLikeExpression(string propertyName, object expressionValue) {		
+			this.propertyName = propertyName;
+			this.expressionValue = expressionValue;
 		}
 
-		public override string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
-			Dialect.Dialect dialect = sessionFactory.Dialect;
+		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) {
+			//TODO: add default capacity
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			string[] columns = Expression.GetColumns(sessionFactory, persistentClass, _propertyName, alias);
+			IType propertyType = ((IQueryable)factory.GetPersister(persistentClass)).GetPropertyType(propertyName);
+			string[] columnNames = GetColumns(factory, persistentClass, propertyName, alias);
+			string[] paramColumnNames = GetColumns(factory, persistentClass, propertyName , null);
+			Parameter[] parameters = Parameter.GenerateParameters(factory, alias, paramColumnNames, propertyType);
 
-			if (columns.Length!=1) throw new HibernateException("InsentiveLike may only be used with single-column properties");
-
-			if ( dialect is PostgreSQLDialect ) {
-				return columns[0] + " ilike ?";
+			
+			if(factory.Dialect is PostgreSQLDialect) {
+				sqlBuilder.Add(columnNames[0]);
+				sqlBuilder.Add(" ilike ");
 			}
 			else {
-				return dialect.LowercaseFunction + '(' + columns[0] + ") like ?";
+				sqlBuilder.Add(factory.Dialect.LowercaseFunction)
+					.Add("(")
+					.Add(columnNames[0])
+					.Add(")")
+					.Add(" like ");
 			}
 
-			//TODO: get SQL rendering out of this package!
+			sqlBuilder.Add(parameters[0]);
 
+			return sqlBuilder.ToSqlString();
 		}
 
+
 		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {
-			return new TypedValue[] { Expression.GetTypedValue( sessionFactory, persistentClass, _propertyName, _value.ToString().ToLower() ) };
+			return new TypedValue[] { Expression.GetTypedValue( sessionFactory, persistentClass, propertyName, expressionValue.ToString().ToLower() ) };
 		}
 
 
 		public override string ToString() {
-			return _propertyName + " ilike " + _value;
+			return propertyName + " ilike " + expressionValue;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 using System;
 
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -22,8 +23,9 @@ namespace NHibernate.Expression {
 			}
 		}
 
-		public override string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
-			return StringHelper.Replace(sql, "$alias", alias);
+
+		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) {
+			throw new NotImplementedException("Need to implement ToSqlString for SqlExpression");
 		}
 
 		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {

@@ -1,6 +1,10 @@
 using System;
+using System.Text;
 
 using NHibernate.Engine;
+using NHibernate.Persister;
+using NHibernate.SqlCommand;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Expression {
@@ -18,13 +22,26 @@ namespace NHibernate.Expression {
 			this.propertyName = propertyName;
 		}
 
-		public override string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
-			return string.Join(
-				" and ", 
-				StringHelper.Suffix( GetColumns(sessionFactory, persistentClass, propertyName, alias), " is null" )
-				);
-		
-			// TODO: get SQL rendering out of this package!
+		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) {
+			//TODO: add default capacity
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
+			
+			IType propertyType = ((IQueryable)factory.GetPersister(persistentClass)).GetPropertyType(propertyName);
+			string[] columnNames = GetColumns(factory, persistentClass, propertyName, alias);
+			
+			
+			bool andNeeded = false;
+			
+			for(int i = 0; i < columnNames.Length; i++){
+				if(andNeeded) sqlBuilder.Add(" AND ");
+				andNeeded = true;
+
+				sqlBuilder.Add(columnNames[i])
+					.Add(" IS NULL");
+
+			}
+
+			return sqlBuilder.ToSqlString();
 		}
 	
 		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {
