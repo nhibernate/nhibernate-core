@@ -27,15 +27,14 @@ namespace NHibernate.Impl
 
 		protected override object ProcessCollection(object collection, PersistentCollectionType collectionType)
 		{
-			PersistentCollection coll = collection as PersistentCollection;
-			if( coll!=null )
+			if( collection != null && (collection is PersistentCollection) )
 			{
+				PersistentCollection coll = collection as PersistentCollection;
 				if( coll.SetCurrentSession( Session ) )
 				{
 					Session.ReattachCollection( coll, coll.CollectionSnapshot );
 				}
 				return null;
-
 			}
 			else
 			{
