@@ -407,7 +407,7 @@ namespace NHibernate.Type
 			}
 			catch( Exception e )
 			{
-				throw new InstantiationException( "Could not instantiate component: ", componentClass, e );
+				throw new InstantiationException( "Could not instantiate component: ", e, componentClass );
 			}
 		}
 
@@ -430,7 +430,7 @@ namespace NHibernate.Type
 			}
 			catch( Exception e )
 			{
-				throw new InstantiationException( "Could not set component parent for: ", componentClass, e );
+				throw new InstantiationException( "Could not set component parent for: ", e, componentClass );
 			}
 		}
 

@@ -10,8 +10,8 @@ namespace NHibernate.Type
 	/// </summary>
 	public class BooleanType : ValueTypeType, IDiscriminatorType
 	{
-		private static readonly string TRUE = "1";
-		private static readonly string FALSE = "0";
+		private const string TRUE = "1";
+		private const string FALSE = "0";
 
 		/// <summary>
 		/// Initialize a new instance of the BooleanType
