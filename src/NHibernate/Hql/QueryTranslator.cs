@@ -168,12 +168,15 @@ namespace NHibernate.Hql
 		/// <summary>
 		/// Persisters for the return values of a <c>Find</c> style query
 		/// </summary>
-		public override ILoadable[] Persisters 
+		/// <remarks>
+		/// The <c>Persisters</c> stored by QueryTranslator have to be <see cref="IQueryable"/>.  The
+		/// <c>setter</c> will attempt to cast the <c>ILoadable</c> array passed in into an 
+		/// <c>IQueryable</c> array.
+		/// </remarks>
+		protected override ILoadable[] Persisters 
 		{
-			get	
-			{ 
-				return persisters; 
-			}			
+			get { return persisters; }	
+			set { persisters = (IQueryable[])value; }
 		}
 		
 		/// <summary>
@@ -280,7 +283,7 @@ namespace NHibernate.Hql
 			// aliasing SQL identifiers ... but it does what
 			// we want!
 			return new SqlCommand.Alias(10, NextCount().ToString() + StringHelper.Underscore)
-				.ToAliasString(StringHelper.Unqualify(description).ToLower(), dialect);
+				.ToAliasString(StringHelper.Unqualify(description).ToLower(), Dialect );
 		}
 
 		internal string CreateNameFor(System.Type type) 

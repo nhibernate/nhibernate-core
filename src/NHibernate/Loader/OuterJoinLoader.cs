@@ -28,8 +28,9 @@ namespace NHibernate.Loader
 		protected static readonly string[][] NoStringArrays = new string[0][];
 		protected static readonly string[] NoStrings = new string[0];
 		protected static readonly ILoadable[] NoPersisters = new ILoadable[0];
-		protected ILoadable[] classPersisters;
-		protected LockMode[] lockModeArray;
+		
+		private ILoadable[] classPersisters;
+		private LockMode[] lockModeArray;
 		
 		private SqlString sqlString;
 		private string[] suffixes;
@@ -379,9 +380,16 @@ namespace NHibernate.Loader
 			set { sqlString = value; }
 		}
 
-		public override ILoadable[] Persisters 
+		protected override ILoadable[] Persisters 
 		{
 			get { return classPersisters; } 
+			set { classPersisters = value; }
+		}
+
+		protected LockMode[] LockModeArray 
+		{
+			get { return lockModeArray; }
+			set { lockModeArray = value; }
 		}
 
 		/// <summary>
@@ -444,7 +452,7 @@ namespace NHibernate.Loader
 			tableName = StringHelper.Unqualify(tableName); 
 
 			//TODO: H2.0.3 - changes tableName to lower case - don't know why it is needed...
-			return ( new Alias(10, n.ToString() + StringHelper.Underscore) ).ToAliasString( tableName, dialect );
+			return ( new Alias(10, n.ToString() + StringHelper.Underscore) ).ToAliasString( tableName, Dialect );
 		}
 
 		protected override CollectionPersister CollectionPersister 
@@ -459,7 +467,7 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		public JoinFragment OuterJoins(IList associations) 
 		{
-			JoinFragment outerjoin = dialect.CreateOuterJoinFragment();
+			JoinFragment outerjoin = Dialect.CreateOuterJoinFragment();
 			foreach(OuterJoinLoader.OuterJoinableAssociation oj in associations) 
 			{
 				outerjoin.AddJoin(

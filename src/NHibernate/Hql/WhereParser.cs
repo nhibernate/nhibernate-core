@@ -259,7 +259,7 @@ namespace NHibernate.Hql
 					{
 						throw new QueryException("MappingException occurred compiling subquery", me);
 					}
-//					AppendToken( q, subq.SQLString);
+
 					AppendToken(q, subq.SqlString);
 					inSubselect = false;
 					bracketsSinceSelect = 0;

@@ -12,7 +12,7 @@ namespace NHibernate.Loader
 	
 	public class AbstractEntityLoader : OuterJoinLoader 
 	{
-		protected ILoadable persister;
+		private ILoadable persister;
 		private string alias;
 
 		public AbstractEntityLoader(ILoadable persister, ISessionFactoryImplementor factory) : base(factory.Dialect) 
@@ -24,6 +24,14 @@ namespace NHibernate.Loader
 		protected string Alias 
 		{
 			get { return alias; }
+		}
+
+		/// <summary>
+		/// Gets the <see cref="ILoadable"/> Persister.
+		/// </summary>
+		protected ILoadable Persister 
+		{
+			get { return persister; }
 		}
 
 		protected void RenderStatement(SqlSelectBuilder selectBuilder, ISessionFactoryImplementor factory) 
@@ -62,11 +70,14 @@ namespace NHibernate.Loader
 				)	
 				.SetOrderByClause(orderBy);
 
-
-			classPersisters = new ILoadable[joins+1];
-			lockModeArray = CreateLockModeArray(joins+1, LockMode.None);
-			for (int i=0; i<joins; i++) classPersisters[i] = ((OuterJoinableAssociation)associations[i]).Subpersister;
-			classPersisters[joins] = persister;
+			Persisters = new ILoadable[joins+1];
+//			classPersisters = new ILoadable[joins+1];
+			LockModeArray = CreateLockModeArray(joins+1, LockMode.None);
+			for (int i=0; i<joins; i++) 
+			{
+				Persisters[i] = ((OuterJoinableAssociation)associations[i]).Subpersister;
+			}
+			Persisters[joins] = persister;
 		}
 
 		protected void RenderStatement(SqlString condition, ISessionFactoryImplementor factory) 
@@ -111,10 +122,13 @@ namespace NHibernate.Loader
 
 			this.SqlString = sqlBuilder.ToSqlString();
 
-			classPersisters = new ILoadable[joins+1];
-			lockModeArray = CreateLockModeArray(joins+1, LockMode.None);
-			for (int i=0; i<joins; i++) classPersisters[i] = ((OuterJoinableAssociation)associations[i]).Subpersister;
-			classPersisters[joins] = persister;
+			Persisters = new ILoadable[joins+1];
+			LockModeArray = CreateLockModeArray(joins+1, LockMode.None);
+			for (int i=0; i<joins; i++) 
+			{
+				Persisters[i] = ((OuterJoinableAssociation)associations[i]).Subpersister;
+			}
+			Persisters[joins] = persister;
 		}
 
 		/// <summary>

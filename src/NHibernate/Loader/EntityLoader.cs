@@ -48,7 +48,7 @@ namespace NHibernate.Loader
 					"More than one row with the given identifier was found: " +
 					id +
 					", for class: " +
-					persister.ClassName);
+					Persister.ClassName);
 			}
 		}
 

@@ -39,14 +39,17 @@ namespace NHibernate.Loader
 			set { sqlString = value; }
 		}
 
-		public override ILoadable[] Persisters 
+		protected override ILoadable[] Persisters 
 		{
 			get { return persister; }
+			set { persister = value; }
 		}
+
 		protected override CollectionPersister CollectionPersister 
 		{
 			get { return null; }
 		}
+
 		protected override string[] Suffixes 
 		{
 			get { return NoSuffix; }

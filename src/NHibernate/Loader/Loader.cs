@@ -19,12 +19,12 @@ namespace NHibernate.Loader
 	/// <remarks>
 	/// This class implements useful common funtionality that concrete loaders would delegate to.
 	/// It is not intended that this functionality would be directly accessed by client code (Hence,
-	/// all methods of this class will eventually be declared <c>protected</c>
+	/// all methods of this class are declared <c>protected</c>.)
 	/// </remarks>
 	public abstract class Loader 
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Loader));
-		public Dialect.Dialect dialect;
+		private Dialect.Dialect dialect;
 
 		protected Loader(Dialect.Dialect dialect)
 		{
@@ -32,16 +32,41 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
+		/// Gets a reference to the <see cref="Dialect.Dialect"/> to use
+		/// when building the <see cref="SqlString"/>.
+		/// </summary>
+		protected internal Dialect.Dialect Dialect 
+		{
+			get { return dialect; }
+		}
+
+		/// <summary>
 		/// The SqlString to be called; implemented by all subclasses
 		/// </summary>
-		/// <remarks>TODO: add something about internal</remarks>
+		/// <remarks>
+		/// <p>
+		/// The <c>setter</c> was added so that class inheriting from Loader could write a 
+		/// value using the Property instead of directly to the field.
+		/// </p>
+		/// <p>
+		/// The scope is <c>internal</c> because the <see cref="Hql.WhereParser"/> needs to
+		/// be able to <c>get</c> the SqlString of the <see cref="Hql.QueryTranslator"/> when
+		/// it is parsing a subquery.
+		/// </p>
+		/// </remarks>
 		protected internal abstract SqlString SqlString {get; set;}
 
 		/// <summary>
 		/// An array of persisters of entity classes contained in each row of results;
 		/// implemented by all subclasses
 		/// </summary>
-		public abstract ILoadable[] Persisters { get; }
+		/// <remarks>
+		/// <p>
+		/// The <c>setter</c> was added so that classes inheriting from Loader could write a 
+		/// value using the Property instead of directly to the field.
+		/// </p>
+		/// </remarks>
+		protected abstract ILoadable[] Persisters { get; set; }
 
 		/// <summary>
 		/// The suffix identifies a particular column of results in the SQL <c>IDataReader</c>;

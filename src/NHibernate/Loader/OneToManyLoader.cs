@@ -82,10 +82,13 @@ namespace NHibernate.Loader
 			this.SqlString = selectBuilder.ToSqlString();
 
 
-			classPersisters = new ILoadable[joins+1];
-			lockModeArray = CreateLockModeArray(joins+1, LockMode.None);
-			for (int i=0; i<joins; i++) classPersisters[i] = ((OuterJoinableAssociation) associations[i]).Subpersister;
-			classPersisters[joins] = persister;
+			Persisters = new ILoadable[joins+1];
+			LockModeArray = CreateLockModeArray(joins+1, LockMode.None);
+			for (int i=0; i<joins; i++) 
+			{
+				Persisters[i] = ((OuterJoinableAssociation) associations[i]).Subpersister;
+			}
+			Persisters[joins] = persister;
 			
 			PostInstantiate();
 		}
