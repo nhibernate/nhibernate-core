@@ -44,6 +44,7 @@ namespace NHibernate.Test
 			AssertPropertiesEqual(bc[index-1], bc[index]);
 
 			bc[index].Int32Array[1] = 15;
+			bc[index].StringBag[0] = "Replaced Spot 0";
 			bc[index].StringArray[2] = "Replaced Spot 2";
 			bc[index].StringList[0] = "Replaced Spot 0";
 			bc[index].StringMap["keyZero"] = "Replaced Key 0";
@@ -628,6 +629,91 @@ namespace NHibernate.Test
 		}
 
 		[Test]
+		public void TestBagCRUD() 
+		{
+			int maxIndex = 5;
+			ISession[] s = new ISession[maxIndex];
+			ITransaction[] t = new ITransaction[maxIndex];
+			BasicClass[] bc = new BasicClass[maxIndex];
+
+			int index = 0;
+			int id = 1;
+
+			bc[index] = InsertBasicClass(id);
+
+			index++;
+
+			// modify the bag so it is updated - should not be recreated
+			s[index] = sessions.OpenSession();
+			t[index] = s[index].BeginTransaction();
+
+			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
+			AssertPropertiesEqual(bc[index-1], bc[index]);
+			
+			// remove the last one and update another
+			bc[index].StringBag.RemoveAt(bc[index].StringBag.Count-1);
+			bc[index].StringBag[1] = "modified string 1";
+			s[index].Update(bc[index]);
+
+			t[index].Commit();
+			s[index].Close();
+
+			index++;
+
+			// add an item to the list
+			s[index] = sessions.OpenSession();
+			t[index] = s[index].BeginTransaction();
+
+			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
+			AssertPropertiesEqual(bc[index-1], bc[index]);
+			
+			// remove the last one and update another
+			bc[index].StringBag.Add("inserted into the bag");
+			s[index].Update(bc[index]);
+
+			t[index].Commit();
+			s[index].Close();
+
+			index++;
+
+			// change the List to a new List so it is recreated
+			s[index] = sessions.OpenSession();
+			t[index] = s[index].BeginTransaction();
+
+			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
+			AssertPropertiesEqual(bc[index-1], bc[index]);
+			
+			bc[index].StringBag = new ArrayList();
+			bc[index].StringBag.Add("new bag zero");
+			bc[index].StringBag.Add("new bag one");
+			s[index].Update(bc[index]);
+
+			t[index].Commit();
+			s[index].Close();
+
+			index++;
+			
+
+			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
+			s[index] = sessions.OpenSession();
+			t[index] = s[index].BeginTransaction();
+
+			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
+			AssertPropertiesEqual(bc[index-1], bc[index]);
+			
+			// test the delete method
+			s[index].Delete(bc[index]);
+			
+			t[index].Commit();
+			s[index].Close();
+
+			index++;
+
+			// verify the delete went through
+			AssertDelete(id);
+		}
+
+		[Test]
 		public void TestListCRUD() 
 		{
 			int maxIndex = 5;
@@ -793,11 +879,12 @@ namespace NHibernate.Test
 			Assert.AreEqual(expected.TicksProperty, actual.TicksProperty, "TicksProperty");
 			Assert.AreEqual(expected.TrueFalseProperty, actual.TrueFalseProperty, "TrueFalseProperty");
 			Assert.AreEqual(expected.YesNoProperty, actual.YesNoProperty, "YesNoProperty");
-
+			
 			if(includeCollections) 
 			{
 				ObjectAssertion.AssertEquals(expected.StringArray, actual.StringArray);
 				ObjectAssertion.AssertEquals(expected.Int32Array, actual.Int32Array);
+				ObjectAssertion.AssertEquals(expected.StringBag, actual.StringBag);
 				ObjectAssertion.AssertEquals(expected.StringList, actual.StringList);
 				ObjectAssertion.AssertEquals(expected.StringMap, actual.StringMap, true);
 				ObjectAssertion.AssertEquals(expected.StringSet, actual.StringSet, false);
@@ -837,9 +924,16 @@ namespace NHibernate.Test
 			basicClass.TicksProperty = DateTime.Now;
 			basicClass.TrueFalseProperty = true;
 			basicClass.YesNoProperty = true;
-
+			
 			basicClass.StringArray = new string[] {"3 string", "2 string", "1 string"};
 			basicClass.Int32Array = new int[] {5,4,3,2,1};
+
+			IList stringBag = new ArrayList(3);
+			stringBag.Add("string 0");
+			stringBag.Add("string 1");
+			stringBag.Add("string 2");
+
+			basicClass.StringBag = stringBag;
 
 			IList stringList = new ArrayList(5);
 			stringList.Add("new string zero");
