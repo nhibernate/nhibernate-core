@@ -190,10 +190,27 @@ namespace NHibernate.Impl {
 		private int strongRefIndex = 0;
 		private readonly IDictionary softQueryCache = new Hashtable(); //TODO: make soft reference map
 
-		private static QueryCacheKeyFactory keyFactory = null; //TODO: ???
+		//TODO: All
+		private static readonly QueryCacheKeyFactory QueryKeyFactory;
+		private static readonly FilterCacheKeyFactory FilterKeyFactory;
+		static SessionFactoryImpl() {
+			/*
+			QueryKeyFactory = (QueryCacheKeyFactory) KeyFactory.Create(QueryCacheKeyFactory.GetType(), QueryCacheKeyFactory......);
+			FilterKeyFactory = (FilterCacheKeyFactory) KeyFactory.Create(
+			FilterCacheKeyFactory.class, FilterCacheKeyFactory.class.getClassLoader() 				);*/
+			
+			QueryKeyFactory = null;
+			FilterKeyFactory = null;
+		}
+																												
 
 		//returns generated class instance
 		interface QueryCacheKeyFactory {
+			// will not recalculate hashKey for constant queries
+			object NewInstance(string query, bool scalar);
+		}
+																								//returns generated class instance
+		interface FilterCacheKeyFactory {
 			// will not recalculate hashKey for constant queries
 			object NewInstance(string query, bool scalar);
 		}
@@ -222,7 +239,7 @@ namespace NHibernate.Impl {
 		}
 
 		private QueryTranslator GetQuery(string query, bool shallow) {
-			object cacheKey = keyFactory.NewInstance(query, shallow);
+			object cacheKey = QueryKeyFactory.NewInstance(query, shallow);
 
 			// have to be careful to ensure that if the JVM does out-of-order execution
 			// then another thread can't get an uncompiled QueryTranslator from the cache
@@ -240,7 +257,7 @@ namespace NHibernate.Impl {
 		}
 
 		public FilterTranslator GetFilter(string query, string collectionRole, bool scalar) {
-			object cacheKey = keyFactory.NewInstance( query, scalar );
+			object cacheKey = FilterKeyFactory.NewInstance( query, scalar );
 
 			FilterTranslator q = (FilterTranslator) Get(cacheKey);
 			if ( q==null ) {
