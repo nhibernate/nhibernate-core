@@ -12,7 +12,6 @@ namespace NHibernate.Impl
 	/// <remarks>
 	/// This is the IteratorImpl in H2.0.3
 	/// </remarks>
-	//TODO: revisit this class and make sure the port is what is intended
 	internal class EnumerableImpl : IEnumerable, IEnumerator
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(EnumerableImpl));
@@ -21,44 +20,42 @@ namespace NHibernate.Impl
 		private ISessionImplementor sess;
 		private IType[] types;
 		private bool single;
-		private object[] nextResults;
 		private object[] currentResults;
 		private bool hasNext;
 		private string[][] names;
-		private IDbCommand ps;
+		private IDbCommand cmd;
 
-		//TODO: H2.0.3 change ctor to include ps
-		public EnumerableImpl(IDataReader rs, ISessionImplementor sess, IType[] types, string[][] columnNames) 
+		public EnumerableImpl(IDataReader rs, IDbCommand cmd, ISessionImplementor sess, IType[] types, string[][] columnNames) 
 		{
 			this.rs = rs;
-			//this.ps = ps;
+			this.cmd = cmd;
 			this.sess = sess;
 			this.types = types;
 			this.names = columnNames;
 
 			single = types.Length==1;
-
-			//TODO: find out if we do need to move to the NextResult right away.
-			//PostNext(rs.NextResult());
 		}
 
-		private void PostNext(bool hasNext) 
+		private void PostMoveNext(bool hasNext) 
 		{
 			this.hasNext = hasNext;
+			
+			// there are no more records in the DataReader so clean up
 			if (!hasNext) 
 			{
 				log.Debug("exhausted results");
-				nextResults = null;
+				currentResults = null;
 				rs.Close();
 				//TODO: H2.0.3 code to synch here to close the QueryStatement
+				//sess.Batcher.CloseQueryStatement( cmd, rs );
 			} 
 			else 
 			{
 				log.Debug("retreiving next results");
-				nextResults = new object[types.Length];
+				currentResults = new object[types.Length];
 				for (int i=0; i<types.Length; i++) 
 				{
-					nextResults[i] = types[i].NullSafeGet(rs, names[i], sess, null);
+					currentResults[i] = types[i].NullSafeGet(rs, names[i], sess, null);
 				}
 			}
 		}
@@ -76,23 +73,24 @@ namespace NHibernate.Impl
 			{
 				if (single) 
 				{
-					return nextResults[0];
+					return currentResults[0];
 				} 
 				else 
 				{
-					return nextResults;
+					return currentResults;
 				}
 			}
 		}
 
 		public bool MoveNext() 
 		{
-			PostNext(rs.Read());
+			PostMoveNext( rs.Read() );
 
 			return hasNext;
 		}
 
-		public void Reset() {
+		public void Reset() 
+		{
 			//can't reset the reader...we are SOL
 		}
 
