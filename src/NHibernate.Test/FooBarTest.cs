@@ -1662,7 +1662,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Test not written yet.")]
 		public void RecursiveLoad() 
 		{
 			// Non polymorphisc class (there is an implementation optimization
@@ -1698,10 +1697,78 @@ namespace NHibernate.Test
 			Assert.AreEqual( 5, list.Count, "exclude the null next" );
 			s.Flush();
 			s.Close();
-//			TODO: resume here
-//			s = sessions.OpenSession();
-//			enumer = s.Enumerable("from g in class NHibernate.DomainModel.Glarch order by g.Order asc").GetEnumerator();
-//			while (
+
+			s = sessions.OpenSession();
+			enumer = s.Enumerable("from g in class NHibernate.DomainModel.Glarch order by g.Order asc").GetEnumerator();
+			while ( enumer.MoveNext() ) 
+			{
+				GlarchProxy g = (GlarchProxy)enumer.Current;
+				Assert.IsNotNull( g, "not null");
+				// no equiv in .net - so ran a delete query
+				// iter.remove();
+			}
+
+			s.Delete("from NHibernate.DomainModel.Glarch as g");
+			s.Flush();
+			s.Close();
+
+			// same thing bug using polymorphic class (no optimization possible)
+			s = sessions.OpenSession();
+			FooProxy flast = new Bar();
+			s.Save(flast);
+			for( int i=0; i<5; i++ ) 
+			{
+				FooProxy foo = new Bar();
+				s.Save(foo);
+				flast.TheFoo = foo;
+				flast = flast.TheFoo;
+				flast.String = "foo" + (i+1);
+			}
+
+			enumer = s.Enumerable("from foo in class NHibernate.DomainModel.Foo").GetEnumerator();
+			while( enumer.MoveNext() ) 
+			{
+				object obj = enumer.Current;
+			}
+
+			list = s.Find("from foo in class NHibernate.DomainModel.Foo");
+			Assert.AreEqual( 6, list.Count, "recursive find");
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			list = s.Find("from foo in class NHibernate.DomainModel.Foo");
+			Assert.AreEqual( 6, list.Count, "recursive iter" );
+			enumer = list.GetEnumerator();
+			while( enumer.MoveNext() ) 
+			{
+				Assert.IsTrue( enumer.Current is BarProxy, "polymorphic recursive load" );
+			}
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			enumer = s.Enumerable("from foo in class NHibernate.DomainModel.Foo order by foo.String asc").GetEnumerator();
+			string currentString = String.Empty;
+
+			while( enumer.MoveNext() ) 
+			{
+				
+				BarProxy bar = (BarProxy)enumer.Current;
+				string theString = bar.String;
+				Assert.IsNotNull( bar, "not null");
+				if(currentString!=String.Empty) 
+				{
+					Assert.IsTrue( theString.CompareTo(currentString) >= 0 , "not in asc order" );
+				}
+				currentString = theString;
+				// no equiv in .net - so made a hql delete
+				// iter.remove();
+			}
+
+			s.Delete("from NHibernate.DomainModel.Foo as foo");
+			s.Flush();
+			s.Close();
 		}
 		
 		[Test]
@@ -1759,9 +1826,50 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void LazyCollections() 
 		{
+			ISession s = sessions.OpenSession();
+			Qux q = new Qux();
+			s.Save(q);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			q = (Qux)s.Load( typeof(Qux), q.Key );
+			s.Flush();
+			s.Close();
+
+			// two exceptions are supposed to occur:")
+			bool ok = false;
+			try 
+			{
+				int i = q.MoreFums.Count;
+			}
+			catch (LazyInitializationException lie) 
+			{
+				System.Diagnostics.Debug.WriteLine("caught expected " + lie.ToString());
+				ok = true;
+			}
+			Assert.IsTrue( ok, "lazy collection with one-to-many" );
+
+			ok = false;
+			try 
+			{
+				int j = q.Fums.Count;
+			}
+			catch (LazyInitializationException lie) 
+			{
+				System.Diagnostics.Debug.WriteLine("caught expected " + lie.ToString());
+				ok = true;
+			}
+
+			Assert.IsTrue( ok, "lazy collection with many-to-many" );
+
+			s = sessions.OpenSession();
+			q = (Qux)s.Load( typeof(Qux), q.Key );
+			s.Delete(q);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
