@@ -9,16 +9,17 @@ namespace NHibernate.Test
 {
 	
 	[TestFixture]
-	public class CriteriaTest : TestCase {
-
+	public class CriteriaTest : TestCase 
+	{
 		[SetUp]
-		public void SetUp() {
-			ExportSchema( new string[] { "Simple.hbm.xml"}, true );
+		public void SetUp() 
+		{
+			ExportSchema( new string[] { "Simple.hbm.xml"});
 		}
 
 		[Test]
-		public void SimpleSelectTest() {
-			
+		public void SimpleSelectTest() 
+		{			
 			// create the objects to search on
 			ISession s1 = sessions.OpenSession();
 			ITransaction t1 = s1.BeginTransaction();
@@ -65,8 +66,5 @@ namespace NHibernate.Test
 			t2.Commit();
 			s2.Close();
 		}
-	
-
-
 	}
 }
