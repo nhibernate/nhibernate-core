@@ -538,7 +538,7 @@ namespace NHibernate.Cfg
 		private static readonly IInterceptor EmptyInterceptor = new EmptyInterceptorClass();
 
 		[Serializable]
-			private class EmptyInterceptorClass : IInterceptor 
+		private class EmptyInterceptorClass : IInterceptor 
 		{
 			
 			public void OnDelete(object entity, object id, object[] state, string[] propertyNames, IType[] types) 
