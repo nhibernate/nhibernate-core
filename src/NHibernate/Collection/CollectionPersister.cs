@@ -716,14 +716,7 @@ namespace NHibernate.Collection
 								collection.PreInsert(this, entry, i); //TODO: (Big): this here screws up batch - H2.0.3 comment
 								WriteKey(st, id, false, session);
 								collection.WriteTo(st, this, entry, i, false);
-								//TODO: this is hackish for expected row count
-								int expectedRowCount = 1;
-								int rowCount = st.ExecuteNonQuery();
-
-								//negative expected row count means we don't know how many rows to expect
-								if ( expectedRowCount>0 && expectedRowCount!=rowCount )
-									throw new HibernateException("SQL update or deletion failed (row not found)");
-								//session.Batcher.AddToBatch(1);
+								session.Batcher.AddToBatch(1);
 							}
 							i++;
 						}
