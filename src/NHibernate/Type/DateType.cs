@@ -28,8 +28,16 @@ namespace NHibernate.Type {
 
 		public override void Set(IDbCommand st, object value, int index) {
 			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			parm.DbType = DbType.Date;
-			parm.Value = value;
+			if((DateTime)value<new DateTime(1753,1,1))
+			{
+				parm.Value = DBNull.Value;
+			}
+			else 
+			{
+
+				parm.DbType = DbType.Date;
+				parm.Value = value;
+			}
 		}
 
 		public override bool Equals(object x, object y) {

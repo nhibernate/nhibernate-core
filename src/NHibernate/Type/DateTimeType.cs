@@ -43,7 +43,7 @@ namespace NHibernate.Type
 			IDataParameter parm = st.Parameters[index] as IDataParameter;
 			parm.DbType = DbType.DateTime;
 			//TODO: figure out if this is a good solution for NULL DATES
-			if(value.Equals(System.DateTime.MinValue)) 
+			if((DateTime)value<new DateTime(1753,1,1))
 			{
 				parm.Value = DBNull.Value;
 			}
