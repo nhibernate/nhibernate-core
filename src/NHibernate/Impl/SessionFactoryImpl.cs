@@ -660,13 +660,13 @@ namespace NHibernate.Impl {
 		public void EvictCollection(string roleName, object id) 
 		{
 			CollectionPersister p = GetCollectionPersister(roleName);
-			if(p.HasCache) p.Cache.Remove(id);
+			if(p.HasCache) p.CacheConcurrencyStrategy.Remove(id);
 		}
 
 		public void EvictCollection(string roleName) 
 		{
 			CollectionPersister p = GetCollectionPersister(roleName);
-			if(p.HasCache) p.Cache.Clear();
+			if(p.HasCache) p.CacheConcurrencyStrategy.Clear();
 		}
 	}
 }
