@@ -174,6 +174,7 @@ namespace NHibernate.Collection
 
 		public override IEnumerator GetEnumerator()
 		{
+			Read();
 			return values.GetEnumerator();
 		}
 
