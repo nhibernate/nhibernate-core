@@ -188,6 +188,8 @@ namespace NHibernate.Test.UtilityTest
 		/// Framework.
 		/// </summary>
 		[Test]
+		[Ignore("I just wanted to verify that an Exception would occur without the NHibernate related code.  " + 
+			 "The Exception only occurs the 2nd Time the Test is run in the same NUnit session.")]
 		public void MethodMissingException() 
 		{
 			System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(new object());
