@@ -24,7 +24,13 @@ namespace NHibernate.Mapping
 		private bool forceDiscriminator;
 		private string where;
 
-		public bool Polymorphic;
+		public bool Polymorphic
+		{
+			set
+			{
+				polymorphic = value;
+			}
+		}
 
 		public override Property IdentifierProperty 
 		{
