@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class name="NHibernate.DomainModel.NHSpecific.SimpleComponent, NHibernate.DomainModel" 
+		table="simp_com" 
+	>
+		<id name="Key" type="Int64" column="`i[d]_`"  >
+			<generator class="assigned" />
+		</id>
+		<property name="Name" />
+		<property name="Address" />
+		<property name="Count" column="count_" not-null="true" unique="true" />
+		<property name="Date" column="`d[at]e_`" />
+		<component name="Audit" class="NHibernate.DomainModel.NHSpecific.AuditComponent, NHibernate.DomainModel">
+			<property name="CreatedUserId" column="created_user_id" />
+			<property name="CreatedDate" column="created_date" />
+			<property name="UpdatedUserId" column="updated_user_id" />
+			<property name="UpdatedDate" column="updated_date" />
+		</component>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+    <class 
+		name="NHibernate.DomainModel.NHSpecific.SexType, NHibernate.DomainModel"
+		table="s_type"	
+	>
+		<id name="Id" column="id">
+			<generator class="identity" />
+		</id>
+		<property name="TypeName" type="String" column="type_name" />
+		<property name="NonpublicString" type="String" column="nonpublic_string" />
+	</class>
+</hibernate-mapping>

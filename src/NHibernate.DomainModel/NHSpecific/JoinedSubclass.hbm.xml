@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class 
+		name="NHibernate.DomainModel.NHSpecific.JoinedSubclassBase, NHibernate.DomainModel" 
+		table="j_sc"	
+	>
+		<id name="Id" type="Int32" unsaved-value="null" column="joined_subclass_id" >
+			<generator class="native" />
+		</id>
+		
+		<property name="TestLong" column="test_long" type="Int64" />
+		<property name="TestString" column="test_string" type="String" />
+		<property name="TestDateTime" column="test_date_time" type="DateTime" />
+		
+		<joined-subclass 
+			name="NHibernate.DomainModel.NHSpecific.JoinedSubclassOne, NHibernate.DomainModel" 
+			table="j_sc_one"
+		>
+			<key column="joined_subclass_id" />
+			<property name="OneTestLong" column="one_test_long" type="Int64" />
+		</joined-subclass>
+	</class>
+	
+</hibernate-mapping>
