@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="net.sf.hibernate.test.Immutable" table="immut" mutable="false">
+	<class name="NHibernate.DomainModel.Immutable, NHibernate.DomainModel" table="immut" mutable="false">
 		<jcs-cache usage="read-only" />
-		<id name="id" column="id_" length="64">
+		<id name="Id" column="id_" length="64">
 			<generator class="uuid.hex" />
 		</id>
-		<property name="foo" />
-		<property name="bar" />
+		<property name="Foo" />
+		<property name="Bar" />
 	</class>
 </hibernate-mapping>

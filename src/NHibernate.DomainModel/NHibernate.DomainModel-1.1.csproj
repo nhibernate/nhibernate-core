@@ -290,6 +290,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Immutable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Immutable.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
