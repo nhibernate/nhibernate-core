@@ -39,6 +39,7 @@ namespace NHibernate.Dialect
 			Register( DbType.Time, "time" );
 
 			DefaultProperties[ Environment.OuterJoin ] = "true";
+			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.NpgsqlDriver";
 		}
 
 		/// <summary></summary>

@@ -40,6 +40,7 @@ namespace NHibernate.Dialect
 			Register( DbType.Time, "TIME" );
 
 			DefaultProperties[ Environment.OuterJoin ] = "true";
+			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.DB2Driver";
 		}
 
 		/// <summary></summary>

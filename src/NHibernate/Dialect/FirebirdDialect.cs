@@ -1,4 +1,5 @@
 using System.Data;
+using NHibernate.Cfg;
 
 namespace NHibernate.Dialect
 {
@@ -34,6 +35,8 @@ namespace NHibernate.Dialect
 			Register( DbType.String, 4000, "VARCHAR($1)" );
 			Register( DbType.String, 1073741823, "BLOB SUB_TYPE 1" ); // should use the IType.ClobType
 			Register( DbType.Time, "TIME" );
+
+			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.FirebirdDriver";
 		}
 
 		/// <summary></summary>

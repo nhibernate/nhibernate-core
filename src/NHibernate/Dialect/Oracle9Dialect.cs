@@ -22,6 +22,7 @@ namespace NHibernate.Dialect
 		{
 //			DefaultProperties[Cfg.Environment.UseStreamsForBinary] = "true";
 			DefaultProperties[ Environment.OuterJoin ] = "true";
+			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.OracleClientDriver";
 
 			Register( DbType.AnsiStringFixedLength, "CHAR(255)" );
 			Register( DbType.AnsiStringFixedLength, 2000, "CHAR($1)" );
