@@ -305,6 +305,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cache\CacheFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cache\HashtableCache.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -366,6 +371,16 @@
                 />
                 <File
                     RelPath = "Cfg\Mappings.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cfg\Settings.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cfg\SettingsFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
