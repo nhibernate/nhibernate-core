@@ -721,7 +721,7 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			XmlAttribute fkNode = node.Attributes["foreign-key"];
+			XmlAttribute fkNode = node.Attributes[ "foreign-key" ];
 			if ( fkNode != null )
 			{
 				model.ForeignKeyName = fkNode.Value;

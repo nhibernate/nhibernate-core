@@ -26,7 +26,7 @@ namespace NHibernate.Cfg
 	/// client requests.
 	/// <para>
 	/// The <c>Configuration</c> is meant only as an initialization-time object. <c>ISessionFactory</c>s
-	/// are immutable and do not retain any assoication back to the <c>Configuration</c>
+	/// are immutable and do not retain any association back to the <c>Configuration</c>
 	/// </para>
 	/// </remarks>
 	public class Configuration : IMapping
