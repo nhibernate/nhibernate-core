@@ -3,8 +3,11 @@ using System.Collections;
 using System.Data;
 using System.Text;
 
+using NHibernate.Engine;
+using NHibernate.Hql;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Dialect 
@@ -48,7 +51,7 @@ namespace NHibernate.Dialect
 			aggregateFunctions["tanh"] = new QueryFunctionStandard();
 			aggregateFunctions["stddev"] = new QueryFunctionStandard();
 			aggregateFunctions["variance"] = new QueryFunctionStandard();
-			//TODO: aggregateFunctions["sysdate"] = new TODO;
+			aggregateFunctions["sysdate"] = new SysdateQueryFunctionInfo();
 			aggregateFunctions["lastday"] = new QueryFunctionStandard(NHibernate.Date);
 		}
 	
@@ -268,6 +271,28 @@ namespace NHibernate.Dialect
 			{
 				return string.Empty; // should use the IType.ClobType
 			}					
+		}
+
+		public class SysdateQueryFunctionInfo : IQueryFunctionInfo	
+		{
+			#region IQueryFunctionInfo Members
+
+			public IType QueryFunctionType(IType columnType, IMapping mapping)
+			{
+				return NHibernate.Date;
+			}
+
+			public bool IsFunctionArgs
+			{
+				get { return false; }
+			}
+
+			public bool IsFunctionNoArgsUseParanthesis
+			{
+				get { return false; }
+			}
+
+			#endregion
 		}
 	}
 }
