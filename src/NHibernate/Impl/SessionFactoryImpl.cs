@@ -31,10 +31,38 @@ namespace NHibernate.Impl {
 	///  Concrete implementation of a SessionFactory.
 	/// </summary>
 	/// <remarks>
-	/// IMMUTABLE
+	/// Has the following responsibilities:
+	/// <list type="">
+	/// <item>
+	/// Caches configuration settings (immutably)</item>
+	/// <item>
+	/// Caches "compiled" mappings - ie. <see cref="IClassPersisters"/> 
+	/// and <see cref="CollectionPersisters"/>
+	/// </item>
+	/// <item>
+	/// Caches "compiled" queries (memory sensitive cache)
+	/// </item>
+	/// <item>
+	/// Manages <c>PreparedStatements/IDbCommands</c> - how true in NH?
+	/// </item>
+	/// <item>
+	/// Delegates <c>IDbConnection</c> management to the <see cref="IConnectionProvider"/>
+	/// </item>
+	/// <item>
+	/// Factory for instances of <see cref="ISession"/>
+	/// </item>
+	/// </list>
+	/// <para>
+	/// This class must appear immutable to clients, even if it does all kinds of caching
+	/// and pooling under the covers.  It is crucial that the class is not only thread safe
+	/// , but also highly concurrent.  Synchronization must be used extremely sparingly.
+	/// </para>
 	/// </remarks>
-	internal class SessionFactoryImpl : ISessionFactory, ISessionFactoryImplementor {
+	internal class SessionFactoryImpl : ISessionFactory, ISessionFactoryImplementor 
+	{
 		
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SessionFactoryImpl));
+
 		private string name;
 		private string uuid;
 
@@ -47,82 +75,94 @@ namespace NHibernate.Impl {
 		private IDictionary properties;
 		private bool showSql;
 		private bool useOuterJoin;
-		private bool supportsLocking;
+		//private Templates templates;
 		private IDictionary querySubstitutions;
-		private string[] queryImports;
 		private Dialect.Dialect dialect;
 		private PreparedStatementCache statementCache;
 		private ITransactionFactory transactionFactory;
 		private int adoBatchSize;
+		private bool useScrollableResultSets;
 
 		private string defaultSchema;
-		//private object statementFetchSize;
+		private object statementFetchSize;
 		private IInterceptor interceptor;
 
-		private static IIdentifierGenerator uuidgen = new UUIDStringGenerator();
-
-		private static System.Type[] PersisterConstructorArgs = new System.Type[] {
-																					  typeof(PersistentClass), typeof(ISessionFactoryImplementor) };
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CollectionPersister));
-
+		private static IIdentifierGenerator uuidgen = new UUIDHexGenerator();
 	
-		public SessionFactoryImpl(Configuration cfg, IDictionary properties, IInterceptor interceptor) {
+		public SessionFactoryImpl(Configuration cfg, IDictionary properties, IInterceptor interceptor) 
+		{
 
+			log.Info("building session factory");
 			if ( log.IsDebugEnabled ) log.Debug("instantiating session factory with properties: " + properties);
 
 			this.interceptor = interceptor;
 
 			Dialect.Dialect dl = null;
-			bool sl = false;
-			try {
-				//TODO: make this work
-				//dl = Dialect.Dialect.GetDialect(properties);
-				dl = HibernateDialect.GetDialect();
+			
+			try 
+			{
+				//TODO: need to add ctor that takes properties
+				dl = HibernateDialect.GetDialect(properties);
+				//dl = HibernateDialect.GetDialect();
 				IDictionary temp = new Hashtable();
-
-				foreach(DictionaryEntry de in dl.DefaultProperties) {
-					temp.Add(de.Key, de.Value);
+				
+				foreach(DictionaryEntry de in dl.DefaultProperties) 
+				{
+					temp[de.Key] = de.Value;
 				}
-				foreach(DictionaryEntry de in properties) {
-					temp.Add(de.Key, de.Value);
+				foreach(DictionaryEntry de in properties) 
+				{
+					temp[de.Key] = de.Value;
 				}
 				properties = temp;
-			} catch (HibernateException he) {
+			} 
+			catch (HibernateException he) 
+			{
 				log.Warn( "No dialect set - using GenericDialect: " + he.Message );
 				dl = new GenericDialect();
 			}
 			dialect = dl;
-			supportsLocking = sl;
-
+			
 			connectionProvider = ConnectionProviderFactory.NewConnectionProvider(properties);
 
 			// TODO: DESIGNQUESTION: There are other points in the application that have questions about the
 			// statementCache - I just don't see this as being needed yet.  
-			//int cacheSize = PropertiesHelper.GetInt( Cfg.Environment.StatementCacheSize, properties, 0);
-			//statementCache = ( cacheSize<1 || connectionProvider.IsStatementCache ) ? null : new PreparedStatementCache(cacheSize);
-			statementCache = null;
+			int cacheSize = PropertiesHelper.GetInt( Cfg.Environment.StatementCacheSize, properties, 0);
+			statementCache = ( cacheSize<1 || connectionProvider.IsStatementCache ) ? null : new PreparedStatementCache(cacheSize);
+			//statementCache = null;
 
-			//statementFetchSize = PropertiesHelper.GetInt( Cfg.Environment.StatementFetchSize, properties);
-			//if (statementFetchSize!=null) log.Info("ado result set fetch size: " + statementFetchSize);
+			statementFetchSize = PropertiesHelper.GetInt( Cfg.Environment.StatementFetchSize, properties, -1);
+			if((int)statementFetchSize==-1) statementFetchSize = null;
+			if (statementFetchSize!=null) log.Info("ado result set fetch size: " + statementFetchSize);
 
 			useOuterJoin = PropertiesHelper.GetBoolean(Cfg.Environment.OuterJoin, properties);
 			log.Info("use outer join fetching: " + useOuterJoin);
 
-			//bool usrs = PropertiesHelper.GetBoolean(Cfg.Environment.UseScrollableResultSet, properties);
-			//int batchSize = PropertiesHelper.GetInt(Cfg.Environment.statementBatchSize, properties, 0);
+			bool usrs = PropertiesHelper.GetBoolean(Cfg.Environment.UseScrollableResultSet, properties);
+			int batchSize = PropertiesHelper.GetInt(Cfg.Environment.StatementBatchSize, properties, 0);
 
-			try {
+			try 
+			{
 				IDbConnection conn = connectionProvider.GetConnection();
-				try {
+				try 
+				{
 					//get meta data
-					adoBatchSize = 0;
-				} finally {
+					usrs = false; // no scrollable results sets in .net -> forward only readers...
+					batchSize = 0; // is this
+				} 
+				finally 
+				{
 					connectionProvider.CloseConnection(conn);
 				}
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				log.Warn("could not obtain connection metadata", e);
 			}
 			
+			useScrollableResultSets = usrs;
+			adoBatchSize = batchSize;
+
 			defaultSchema = properties[Cfg.Environment.DefaultSchema] as string;
 			if ( defaultSchema!=null) log.Info ("Default schema set to: " + defaultSchema);
 
@@ -141,6 +181,7 @@ namespace NHibernate.Impl {
 			foreach(PersistentClass model in cfg.ClassMappings) {
 				System.Type persisterClass = model.Persister;
 				IClassPersister cp;
+				//TODO: H2.0.3 created a PersisterFactory
 				if (persisterClass==null || persisterClass==typeof(EntityPersister)) {
 					cp = new EntityPersister(model, this);
 				} else if (persisterClass==typeof(NormalizedEntityPersister)) {
@@ -148,13 +189,13 @@ namespace NHibernate.Impl {
 				} else {
 					cp = InstantiatePersister(persisterClass, model);
 				}
-				classPersisters.Add( model.PersistentClazz, cp);
-				classPersistersByName.Add( model.Name, cp );
+				classPersisters[model.PersistentClazz] = cp;
+				classPersistersByName[model.Name] = cp ;
 			}
 
 			collectionPersisters = new Hashtable();
 			foreach( Mapping.Collection map in cfg.CollectionMappings ) {
-				collectionPersisters.Add( map.Role, new CollectionPersister(map, cfg, this) );
+				collectionPersisters[map.Role] = new CollectionPersister(map, cfg, this) ;
 			}
 
 			foreach(IClassPersister persister in classPersisters.Values) {
@@ -165,9 +206,12 @@ namespace NHibernate.Impl {
 
 			name = (string) properties[ Cfg.Environment.SessionFactoryName ];
 
-			try {
+			try 
+			{
 				uuid = (string) uuidgen.Generate(null, null);
-			} catch (Exception) {
+			} 
+			catch (Exception) 
+			{
 				throw new AssertionFailure("could not generate UUID");
 			}
 
@@ -175,9 +219,6 @@ namespace NHibernate.Impl {
 
 			querySubstitutions = PropertiesHelper.ToDictionary(Cfg.Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties);
 			log.Info("Query language substitutions: " + querySubstitutions);
-
-			queryImports = PropertiesHelper.ToStringArray(Cfg.Environment.QueryImports, " ,=;:\n\t\r\f", properties);
-			if ( queryImports.Length!=0 ) log.Info( "Query language imports: " + StringHelper.ToString(queryImports) );
 
 			namedQueries = cfg.NamedQueries;
 			imports = new Hashtable( cfg.Imports );
@@ -196,56 +237,69 @@ namespace NHibernate.Impl {
 		//TODO: All
 		private static readonly QueryCacheKeyFactory QueryKeyFactory;
 		private static readonly FilterCacheKeyFactory FilterKeyFactory;
-		static SessionFactoryImpl() {
+		static SessionFactoryImpl() 
+		{
 			/*
+			 * KeyFactory is a CGLIB item.
 			QueryKeyFactory = (QueryCacheKeyFactory) KeyFactory.Create(QueryCacheKeyFactory.GetType(), QueryCacheKeyFactory......);
 			FilterKeyFactory = (FilterCacheKeyFactory) KeyFactory.Create(
-			FilterCacheKeyFactory.class, FilterCacheKeyFactory.class.getClassLoader() 				);*/
+			FilterCacheKeyFactory.class, FilterCacheKeyFactory.class.getClassLoader() 				);
+			*/
 			
 			QueryKeyFactory = null;
 			FilterKeyFactory = null;
 		}
 																												
 
-		//returns generated class instance
-		interface QueryCacheKeyFactory {
+		
+		interface QueryCacheKeyFactory 
+		{
 			// will not recalculate hashKey for constant queries
 			object NewInstance(string query, bool scalar);
 		}
-																								//returns generated class instance
-		interface FilterCacheKeyFactory {
+		
+		interface FilterCacheKeyFactory 
+		{
 			// will not recalculate hashKey for constant queries
-			object NewInstance(string query, bool scalar);
+			object NewInstance(string role, string query, bool scalar);
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private object Get(object key) {		
+		private object Get(object key) 
+		{		
 			object result = softQueryCache[key];
-			if ( result != null ) {
+			if ( result != null ) 
+			{
 				strongRefs[ ++strongRefIndex % MaxStrongRefCount ] = result;
 			}
 			return result;
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private void Put(object key, object value) {
+		private void Put(object key, object value) 
+		{
 			softQueryCache[key] = value;
 			strongRefs[ ++strongRefIndex % MaxStrongRefCount ] = value;
 		}
 
-		public IConnectionProvider ConnectionProvider {
+		public IConnectionProvider ConnectionProvider 
+		{
 			get {return this.connectionProvider;}
 		}
 
-		public QueryTranslator GetQuery(string query) {
+		public QueryTranslator GetQuery(string query) 
+		{
 			return GetQuery(query, false);
 		}
 
-		public QueryTranslator GetShallowQuery(string query) {
+		public QueryTranslator GetShallowQuery(string query) 
+		{
 			return GetQuery(query, true);
 		}
 
-		private QueryTranslator GetQuery(string query, bool shallow) {
+		//TODO: h2.0.3 synch
+		private QueryTranslator GetQuery(string query, bool shallow) 
+		{
 			/*object cacheKey = QueryKeyFactory.NewInstance(query, shallow);
 
 			// have to be careful to ensure that if the JVM does out-of-order execution
@@ -265,11 +319,13 @@ namespace NHibernate.Impl {
 			return q;
 		}
 
-		public FilterTranslator GetFilter(string query, string collectionRole, bool scalar) {
-			object cacheKey = FilterKeyFactory.NewInstance( query, scalar );
+		public FilterTranslator GetFilter(string query, string collectionRole, bool scalar) 
+		{
+			object cacheKey = FilterKeyFactory.NewInstance(collectionRole, query, scalar );
 
 			FilterTranslator q = (FilterTranslator) Get(cacheKey);
-			if ( q==null ) {
+			if ( q==null ) 
+			{
 				q = new FilterTranslator();
 				Put(cacheKey, q);
 			}
@@ -278,77 +334,98 @@ namespace NHibernate.Impl {
 			return q;
 		}
 
-		private ISession OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor interceptor) {
+		private ISession OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor interceptor) 
+		{
 			return new SessionImpl( connection, this, autoClose, timestamp, interceptor );
 		}
 
-		public ISession OpenSession(IDbConnection connection, IInterceptor interceptor) {
+		public ISession OpenSession(IDbConnection connection, IInterceptor interceptor) 
+		{
 			//TODO: figure out why autoClose was set to false - diff in JDBC vs ADO.NET???
-			return OpenSession( connection, true, long.MinValue, interceptor );
-			//return OpenSession( connection, false, long.MinValue, interceptor );
+			return OpenSession( connection, false, long.MinValue, interceptor );
 		}
 
-		public ISession OpenSession(IInterceptor interceptor) {
+		public ISession OpenSession(IInterceptor interceptor) 
+		{
 			long timestamp = Timestamper.Next();
 			return OpenSession( null, true, timestamp, interceptor );
 		}
 
-		public ISession OpenSession(IDbConnection connection) {
+		public ISession OpenSession(IDbConnection connection) 
+		{
 			return OpenSession(connection, interceptor);
 		}
 
-		public ISession OpenSession() {
+		public ISession OpenSession() 
+		{
 			return OpenSession(interceptor);
 		}
 
-		public IDbConnection OpenConnection() {
-			try {
+		public IDbConnection OpenConnection() 
+		{
+			try 
+			{
 				return connectionProvider.GetConnection();
-			} catch (Exception sqle) {
+			} 
+			catch (Exception sqle) 
+			{
 				throw new ADOException("cannot open connection", sqle);
 			}
 		}
 		
-		public void CloseConnection(IDbConnection conn) {
-			try {
+		public void CloseConnection(IDbConnection conn) 
+		{
+			try 
+			{
 				connectionProvider.CloseConnection(conn);
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				throw new ADOException("cannot close connection", e);
 			}
 		}
 
-		public IClassPersister GetPersister(string className) {
-			IClassPersister result = (IClassPersister) classPersistersByName[className];
+		public IClassPersister GetPersister(string className) 
+		{
+			//(IClassPersister) was replaced by as
+			IClassPersister result = classPersistersByName[className] as IClassPersister;
 			if ( result==null) throw new MappingException( "No persister for: " + className );
 			return result;
 		}
 
-		public IClassPersister GetPersister(System.Type theClass) {
-			IClassPersister result = (IClassPersister) classPersisters[theClass];
+		public IClassPersister GetPersister(System.Type theClass) 
+		{
+			//IClassPersister result = (IClassPersister) classPersisters[theClass];
+			IClassPersister result = classPersisters[theClass] as IClassPersister;
 			if ( result==null) throw new MappingException( "No persisters for: " + theClass.FullName );
 			return result;
 		}
 
-		public CollectionPersister GetCollectionPersister(string role) {
-			CollectionPersister result = (CollectionPersister) collectionPersisters[role];
+		public CollectionPersister GetCollectionPersister(string role) 
+		{
+			//CollectionPersister result = (CollectionPersister) collectionPersisters[role];
+			CollectionPersister result = collectionPersisters[role] as CollectionPersister;
 			if ( result==null ) throw new MappingException( "No persisters for collection role: " + role );
 			return result;
 		}
 
-		public IDatabinder OpenDatabinder() {
-			return null;
-			//TODO: this has to be implemented
+		public IDatabinder OpenDatabinder() 
+		{
+			throw new NotImplementedException("Have not coded Databinder yet.");
 		}
 
-		public Dialect.Dialect Dialect {
+		public Dialect.Dialect Dialect 
+		{
 			get { return dialect; }
 		}
 
-		private ITransactionFactory BuildTransactionFactory(IDictionary transactionProps) {
+		private ITransactionFactory BuildTransactionFactory(IDictionary transactionProps) 
+		{
 			return new TransactionFactory();
 		}
 
-		public ITransactionFactory TransactionFactory {
+		public ITransactionFactory TransactionFactory 
+		{
 			get { return transactionFactory; }
 		}
 
@@ -429,41 +506,53 @@ namespace NHibernate.Impl {
 		}
 
 		public bool UseScrollableResultSets {
-			get { return false; }
+			get { return useScrollableResultSets; }
 		}
 
-		public string GetNamedQuery(string name) {
-			string queryString = (string) namedQueries[name];
+		public string GetNamedQuery(string name) 
+		{
+			string queryString = namedQueries[name] as string;
 			if (queryString==null) throw new MappingException("Named query not known: " + name);
 			return queryString;
 		}
 
-		public IType GetIdentifierType(System.Type objectClass) {
+		public IType GetIdentifierType(System.Type objectClass) 
+		{
 			return GetPersister(objectClass).IdentifierType;
 		}
 
 		//TODO: Serialization stuff
+		// private void readObject()
+		// private void writeObject()
 
-		public IType[] GetReturnTypes(string queryString) {
+		public IType[] GetReturnTypes(string queryString) 
+		{
 			string[] queries = QueryTranslator.ConcreteQueries(queryString, this);
 			if ( queries.Length==0 ) throw new HibernateException("Query does not refer to any persistent classes: " + queryString);
 			return GetShallowQuery( queries[0] ).ReturnTypes;
 		}
 
-		public ICollection GetNamedParameters(string queryString) {
+		public ICollection GetNamedParameters(string queryString) 
+		{
 			string[] queries = QueryTranslator.ConcreteQueries(queryString, this);
 			if ( queries.Length==0 ) throw new HibernateException("Query does not refer to any persistent classes: " + queryString);
 			return GetShallowQuery( queries[0] ).NamedParameters;
 		}
 
-		public string DefaultSchema {
+		public string DefaultSchema 
+		{
 			get { return defaultSchema; }
 		}
 
-		public void SetFetchSize(IDbCommand statement) {
-			//if ( statementFetchSize!=null) s
+		public void SetFetchSize(IDbCommand statement) 
+		{
+			if ( statementFetchSize!=null) 
+			{
+				// nothing to do in ADO.NET
+			}
 		}
 
+		//TODO: h2.0.3 - replace with PersisterFactory
 		private IClassPersister InstantiatePersister(System.Type persisterClass, PersistentClass model) {
 			
 			try {
@@ -477,29 +566,40 @@ namespace NHibernate.Impl {
 			}
 		}
 
-		public IClassMetadata GetClassMetadata(System.Type persistentClass) {
+		public IClassMetadata GetClassMetadata(System.Type persistentClass) 
+		{
 			return GetPersister(persistentClass).ClassMetadata;
 		}
 
-		public ICollectionMetadata GetCollectionMetadata(string roleName) {
+		public ICollectionMetadata GetCollectionMetadata(string roleName) 
+		{
 			return (ICollectionMetadata) GetCollectionPersister(roleName);
 		}
 
-		public string[] GetImplementors(System.Type clazz) {
+		public string[] GetImplementors(System.Type clazz) 
+		{
 			ArrayList results = new ArrayList();
-			foreach(IClassPersister p in classPersisters.Values) {
-				if ( p is IQueryable ) {
+			foreach(IClassPersister p in classPersisters.Values) 
+			{
+				if ( p is IQueryable ) 
+				{
 					IQueryable q = (IQueryable) p;
 					string name = q.ClassName;
 					bool isMappedClass = clazz.Equals( q.MappedClass );
-					if ( q.IsExplicitPolymorphism ) {
+					if ( q.IsExplicitPolymorphism ) 
+					{
 						if (isMappedClass) return new string[] { name };
-					} else {
-						if ( isMappedClass ) {
+					} 
+					else 
+					{
+						if ( isMappedClass ) 
+						{
 							results.Add(name);
-						} else if (
+						} 
+						else if (
 							clazz.IsAssignableFrom( q.MappedClass ) &&
-							( !q.IsInherited || !clazz.IsAssignableFrom( q.MappedSuperclass ) ) ) {
+							( !q.IsInherited || !clazz.IsAssignableFrom( q.MappedSuperclass ) ) ) 
+						{
 
 							results.Add(name);
 						}
@@ -509,26 +609,54 @@ namespace NHibernate.Impl {
 			return (string[]) results.ToArray(typeof(string));
 		}
 
-		/*public string[] Imports {
-			get { return queryImports; }
-		}*/
-		public string GetImportedClassName(string name) {
-			string result = (string) imports[name];
+		
+		public string GetImportedClassName(string name) 
+		{
+			string result = imports[name] as string;
 			return (result==null) ? name : result;
 		}
 
-		public IDictionary GetAllClassMetadata() {
+		public IDictionary GetAllClassMetadata() 
+		{
 			return classPersisters;
 		}
 
-		public IDictionary GetAllCollectionMetadata() {
+		public IDictionary GetAllCollectionMetadata() 
+		{
 			 return collectionPersisters;
 		}
 
-		public void Close() {
-		//	if ( statementCache!= null ) 
-				
-				//
+		public void Close() 
+		{
+			log.Info("Closing");
+			// nothing else to do unitl we get the caches working.
+		}
+
+		public void Evict(System.Type persistentClass, object id) 
+		{
+			IClassPersister p = GetPersister(persistentClass);
+			if(p.HasCache) p.Cache.Release(id);
+		}
+
+		public void Evict(System.Type persistentClass) 
+		{
+			IClassPersister p = GetPersister(persistentClass);
+			//TODO: H2.0.3 uncomment when Cache is synched
+			//if(p.HasCache) p.Cache.Clear();
+		}
+
+		public void EvictCollection(string roleName, object id) 
+		{
+			CollectionPersister p = GetCollectionPersister(roleName);
+			// TODO: H2.0.3 uncomment this when CollectionPersister has cache
+			//if(p.HasCache) p.Cache.Remove(id);
+		}
+
+		public void EvictCollection(string roleName) 
+		{
+			CollectionPersister p = GetCollectionPersister(roleName);
+			// TODO: H2.0.3 uncomment this when CollectionPersister has cache
+			//if(p.HasCache) p.Cache.Clear();
 		}
 	}
 }

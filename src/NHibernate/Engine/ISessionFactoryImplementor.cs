@@ -93,11 +93,6 @@ namespace NHibernate.Engine {
 		string[] GetImplementors(System.Type clazz);
 
 		/// <summary>
-		/// Get the list of query imports
-		/// </summary>
-		//string[] Imports { get; }
-
-		/// <summary>
 		/// Get a class name, using query language imports
 		/// </summary>
 		/// <param name="name"></param>

@@ -90,5 +90,40 @@ namespace NHibernate {
 		/// <c>close()</c>. 
 		/// </summary>
 		void Close(); 
+
+		/// <summary>
+		/// Evict all entries from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		void Evict(System.Type persistentClass);
+
+		/// <summary>
+		/// Evict an entry from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="id"></param>
+		void Evict(System.Type persistentClass, object id);
+
+		
+		/// <summary>
+		/// Evict all entries from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="roleName"></param>
+		void EvictCollection(string roleName);
+
+		/// <summary>
+		/// Evict an entry from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="id"></param>
+		void EvictCollection(string roleName, object id);
 	}
 }
