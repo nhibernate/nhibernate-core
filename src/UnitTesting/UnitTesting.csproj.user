@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP>
         <Build>
-            <Settings ReferencePath = "C:\Program Files\NUnit V2.0\bin\" >
+            <Settings ReferencePath = "C:\Program Files\NUnit V2.0\bin\;C:\Archivos de programa\NUnit V2.0\bin\" >
                 <Config
                     Name = "Debug"
                     EnableASPDebugging = "false"

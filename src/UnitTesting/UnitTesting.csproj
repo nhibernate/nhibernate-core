@@ -73,14 +73,14 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
                 <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "C:\Program Files\NUnit V2.0\bin\nunit.framework.dll"
-                />
-                <Reference
                     Name = "NHibernate"
                     Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\..\Archivos de programa\NUnit V2.0\bin\nunit.framework.dll"
                 />
             </References>
         </Build>

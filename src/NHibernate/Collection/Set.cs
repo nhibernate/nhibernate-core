@@ -1,17 +1,13 @@
 using System;
 
+using NHibernate.Odmg;
+using NHibernate.JCollections;
+
 namespace NHibernate.Collection
 {
 	/// <summary>
 	/// Summary description for Set.
 	/// </summary>
-	public class Set
-	{
-		public Set()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
-		}
+	public class Set /*: ODMGCollection, ISet, IDSet */{
 	}
 }

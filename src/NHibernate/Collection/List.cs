@@ -41,7 +41,7 @@ namespace NHibernate.Collection {
 			this.list = new ArrayList();
 		}
 
-		public int Count {
+		public override int Count {
 			get { 
 				Read();
 				return list.Count;
@@ -55,14 +55,14 @@ namespace NHibernate.Collection {
 			}
 		}
 
-		public void CopyTo(System.Array array, int index) {
+		public override void CopyTo(System.Array array, int index) {
 			Read();
 			list.CopyTo(array, index);
 		}
-		public object SyncRoot {
+		public override object SyncRoot {
 			get { return this; }
 		}
-		public bool IsSynchronized {
+		public override bool IsSynchronized {
 			get { return false; }
 		}
 		public bool IsFixedSize {
@@ -77,7 +77,7 @@ namespace NHibernate.Collection {
 			return list.Contains(obj);
 		}
 
-		public IEnumerator GetEnumerator() {
+		public override IEnumerator GetEnumerator() {
 			Read();
 			return new EnumeratorProxy(list.GetEnumerator());
 		}

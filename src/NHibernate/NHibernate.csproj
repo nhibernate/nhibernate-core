@@ -78,14 +78,15 @@
                     HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Runtime.Remoting.dll"
                 />
                 <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "bin\nunit.framework.dll"
-                />
-                <Reference
                     Name = "log4net"
                     AssemblyName = "log4net"
-                    HintPath = "..\..\..\..\..\..\..\Program Files\log4net1.2.0-beta5\build\bin\ReleaseStrong\log4net.dll"
+                    HintPath = "..\..\..\log4net1.2.0-beta5\build\bin\Debug\log4net.dll"
+                    Private = "False"
+                />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\..\Archivos de programa\NUnit V2.0\bin\nunit.framework.dll"
                 />
             </References>
         </Build>
@@ -1015,6 +1016,16 @@
                 />
                 <File
                     RelPath = "Metadata\ICollectionMetadata.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Odmg\IDCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Odmg\IDSet.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
