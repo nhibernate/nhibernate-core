@@ -69,5 +69,26 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Close();
 		}
 
+		[Test]
+		public void SerializeNotFoundProxy() 
+		{
+			ISession s = sessions.OpenSession();
+			// this does not actually exists in db
+			AvalonProxy notThere = (AvalonProxy)s.Load( typeof(AvalonProxyImpl), 5 ); 
+			Assert.AreEqual( 5, notThere.Id );
+			s.Disconnect();
+				
+			// serialize and then deserialize the session.
+			System.IO.Stream stream = new System.IO.MemoryStream();
+			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter( );
+			formatter.Serialize(stream, s);
+			stream.Position = 0;
+			s = (ISession)formatter.Deserialize(stream);
+			stream.Close();
+
+			Assert.IsNotNull( s.Load( typeof(AvalonProxyImpl), 5 ), "should be proxy - even though it doesn't exists in db" );			
+			s.Close();
+		}
+
 	}
 }
