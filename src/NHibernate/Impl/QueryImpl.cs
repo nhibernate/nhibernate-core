@@ -148,7 +148,7 @@ namespace NHibernate.Impl {
 			SetParameter(position, val, NHibernate.Association( HibernateProxyHelper.GetClass(val)));
 			return this;
 		}
-		public IQuery SetEnum(int position, IPersistentEnum val) {
+		public IQuery SetEnum(int position, System.Enum val) {
 			SetParameter(position, val, NHibernate.Enum( val.GetType() ) );
 			return this;
 		}
@@ -215,7 +215,7 @@ namespace NHibernate.Impl {
 			SetParameter(name, val, NHibernate.Association( HibernateProxyHelper.GetClass( val ) ) );
 			return this;
 		}
-		public IQuery SetEnum(string name, IPersistentEnum val) {
+		public IQuery SetEnum(string name, System.Enum val) {
 			SetParameter(name, val, NHibernate.Enum( val.GetType() ) );
 			return this;
 		}

@@ -208,7 +208,7 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a persistent enumeration</param>
-		IQuery SetEnum(int position, IPersistentEnum val);
+		IQuery SetEnum(int position, System.Enum val);
 
 		/// <summary>
 		/// Bind an instance of a mapped persistent class to a named query parameter.
@@ -222,7 +222,7 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a persistent enumeration</param>
-		IQuery SetEnum(string name, IPersistentEnum val);
+		IQuery SetEnum(string name, System.Enum val);
 
 		/// <summary>
 		/// Set the lockmode for the objects idententified by the
