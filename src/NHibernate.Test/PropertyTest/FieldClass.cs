@@ -8,24 +8,55 @@ namespace NHibernate.Test.PropertyTest
 	public class FieldClass 
 	{
 		private int Id;
-		private int _id;
-		private int m_Id;
-		private int id;
+		private int _camelUnderscoreFoo;
+		private int m_Blah;
+		private int camelBaz;
 
-		public FieldClass(int Id, int underscoreId, int mUnderscoreId, int camelId ) 
+		public bool CamelUnderscoreFooGetterCalled = false;
+		public bool BlahGetterCalled = false;
+		public bool CamelBazGetterCalled = false;
+
+		public FieldClass(int Id, int _camelUnderscoreFoo, int m_Blah, int camelBaz ) 
 		{
 			this.Id = Id;
-			_id = underscoreId;
-			m_Id = mUnderscoreId;
-			id = camelId;
+			this._camelUnderscoreFoo = _camelUnderscoreFoo;
+			this.m_Blah = m_Blah;
+			this.camelBaz = camelBaz;
 		}
 
 		public void Increment() 
 		{
 			Id++;
-			_id++;
-			m_Id++;
-			id++;
+			_camelUnderscoreFoo++;
+			m_Blah++;
+			camelBaz++;
+		}
+
+		public int CamelUnderscoreFoo
+		{
+			get 
+			{ 
+				CamelUnderscoreFooGetterCalled = true;
+				return _camelUnderscoreFoo; 
+			}
+		}
+
+		public int Blah 
+		{
+			get 
+			{ 
+				BlahGetterCalled = true;
+				return m_Blah; 
+			}
+		}
+
+		public int CamelBaz 
+		{
+			get 
+			{ 
+				CamelBazGetterCalled = true;
+				return camelBaz; 
+			}
 		}
 	}
 }

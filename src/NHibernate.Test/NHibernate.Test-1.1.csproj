@@ -376,6 +376,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "PropertyTest\NoSetterAccessorFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\NoSetterCamelCaseFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\NoSetterCamelCaseUnderscoreFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\NoSetterPascalCaseMUnderscoreFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "PropertyTest\PascalCaseMUnderscoreFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

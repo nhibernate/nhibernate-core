@@ -16,8 +16,8 @@ namespace NHibernate.Test.PropertyTest
 		public override void SetUp() 
 		{
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("field.camelcase-underscore");
-			_getter = _accessor.GetGetter( typeof(FieldClass), "Id" );
-			_setter = _accessor.GetSetter( typeof(FieldClass), "Id" );
+			_getter = _accessor.GetGetter( typeof(FieldClass), "CamelUnderscoreFoo" );
+			_setter = _accessor.GetSetter( typeof(FieldClass), "CamelUnderscoreFoo" );
 			_instance = new FieldClass(2, 0 , -4, 3 );
 		}
 	}

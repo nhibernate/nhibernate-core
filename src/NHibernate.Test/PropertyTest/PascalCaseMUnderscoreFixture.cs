@@ -16,8 +16,8 @@ namespace NHibernate.Test.PropertyTest
 		public override void SetUp() 
 		{
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("field.pascalcase-m-underscore");
-			_getter = _accessor.GetGetter( typeof(FieldClass), "Id" );
-			_setter = _accessor.GetSetter( typeof(FieldClass), "Id" );
+			_getter = _accessor.GetGetter( typeof(FieldClass), "Blah" );
+			_setter = _accessor.GetSetter( typeof(FieldClass), "Blah" );
 			_instance = new FieldClass( 6, -12 , 0, 13);
 		}
 	}

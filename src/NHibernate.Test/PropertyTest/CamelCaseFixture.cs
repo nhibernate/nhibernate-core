@@ -16,8 +16,8 @@ namespace NHibernate.Test.PropertyTest
 		public override void SetUp() 
 		{
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("field.camelcase");
-			_getter = _accessor.GetGetter( typeof(FieldClass), "Id" );
-			_setter = _accessor.GetSetter( typeof(FieldClass), "Id" );
+			_getter = _accessor.GetGetter( typeof(FieldClass), "CamelBaz" );
+			_setter = _accessor.GetSetter( typeof(FieldClass), "CamelBaz" );
 			_instance = new FieldClass(2, -4, 3, 0 );
 		}
 	}

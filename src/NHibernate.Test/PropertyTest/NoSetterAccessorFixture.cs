@@ -7,15 +7,19 @@ using NUnit.Framework;
 namespace NHibernate.Test.PropertyTest
 {
 	/// <summary>
-	/// Base test fixture for the Field Accessors.
+	/// Base test fixture for the NoSetter Accessors.
 	/// </summary>
 	[TestFixture]
-	public class FieldAccessorFixture
+	public abstract class NoSetterAccessorFixture
 	{
 		protected IPropertyAccessor _accessor;
 		protected IGetter _getter;
 		protected ISetter _setter;
 		protected FieldClass _instance;
+
+		protected bool _expectedBlahGetterCalled = false;
+		protected bool _expectedCamelBazGetterCalled = false;
+		protected bool _expectedCamelUnderscoreFooGetterCalled = false;
 
 		/// <summary>
 		/// SetUp the local fields for the test cases.
@@ -26,13 +30,7 @@ namespace NHibernate.Test.PropertyTest
 		/// going to be reflected upon is initialized to 0.
 		/// </remarks>
 		[SetUp]
-		public virtual void SetUp() 
-		{
-			_accessor = PropertyAccessorFactory.GetPropertyAccessor("field");
-			_getter = _accessor.GetGetter( typeof(FieldClass), "Id" );
-			_setter = _accessor.GetSetter( typeof(FieldClass), "Id" );
-			_instance = new FieldClass( 0, 6, -1, 2 );
-		}
+		public abstract void SetUp();
 
 		[Test]
 		public void GetValue() 
@@ -41,10 +39,9 @@ namespace NHibernate.Test.PropertyTest
 			Assert.AreEqual( 0, _getter.Get(_instance) );
 			_instance.Increment();
 			Assert.AreEqual( 1, _getter.Get(_instance) );
-			
-			Assert.IsFalse( _instance.BlahGetterCalled );
-			Assert.IsFalse( _instance.CamelBazGetterCalled );
-			Assert.IsFalse( _instance.CamelUnderscoreFooGetterCalled );
+			Assert.AreEqual( _expectedBlahGetterCalled, _instance.BlahGetterCalled );
+			Assert.AreEqual( _expectedCamelBazGetterCalled, _instance.CamelBazGetterCalled );
+			Assert.AreEqual( _expectedCamelUnderscoreFooGetterCalled, _instance.CamelUnderscoreFooGetterCalled );
 		}
 
 		[Test]
