@@ -702,6 +702,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Proxy\HibernateProxyHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Proxy\IHibernateProxy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
