@@ -19,7 +19,17 @@ namespace NHibernate.Collection {
 			return clonedMap;
 		}
 
-		public override bool EqualsSnapshot(IType elementType) {
+		public override ICollection GetOrphans(object snapshot)
+		{
+			IDictionary sn = (IDictionary)snapshot;
+			ArrayList result = new ArrayList(sn.Values.Count);
+			result.AddRange(sn.Values);
+			PersistentCollection.IdentityRemoveAll(result, map.Values, session);
+			return result;
+		}
+
+		public override bool EqualsSnapshot(IType elementType) 
+		{
 			IDictionary xmap = (IDictionary) GetSnapshot();
 			if ( xmap.Count!=this.map.Count ) return false;
 			foreach(DictionaryEntry entry in map) {
@@ -185,7 +195,9 @@ namespace NHibernate.Collection {
 			return entries;
 		}
 
-		public override void ReadEntries(ICollection entries) {
+		[Obsolete("See PersistentCollection.ReadEntries for reason")]
+		public override void ReadEntries(ICollection entries) 
+		{
 			foreach(DictionaryEntry entry in entries) {
 				map[entry.Key] = entry.Value;
 			}

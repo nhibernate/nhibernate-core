@@ -43,6 +43,17 @@ namespace NHibernate.Collection
 			return result;
 		}
 
+		public override ICollection GetOrphans(object snapshot)
+		{
+			object[] sn = (object[])snapshot;
+			object[] arr = (object[])array;
+			ArrayList result = new ArrayList(sn.Length);
+			for(int i = 0 ; i < sn.Length; i++) result.Add(sn[i]);
+			for(int i = 0 ; i < sn.Length; i++) PersistentCollection.IdentityRemove(result, arr[i], session);
+			return result;
+		}
+
+
 		public ArrayHolder(ISessionImplementor session, CollectionPersister persister) : base(session) 
 		{
 			elementClass = persister.ElementClass;
@@ -108,6 +119,7 @@ namespace NHibernate.Collection
 			return Elements();
 		}
 
+		[Obsolete("See PersistentCollection.ReadEntries for reason")]
 		public override void ReadEntries(ICollection entries) 
 		{
 			ArrayList list = new ArrayList();
@@ -124,6 +136,7 @@ namespace NHibernate.Collection
 			tempListIdentifier = new ArrayList();
 		}
 		
+		[Obsolete("See PersistentCollection.EndRead for reason.")]
 		public override void EndRead() 
 		{
 			array = ((ArrayList)tempList).ToArray(elementClass);

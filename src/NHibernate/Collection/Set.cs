@@ -44,10 +44,20 @@ namespace NHibernate.Collection {
 			return clonedMap;
 		}
 
+		public override ICollection GetOrphans(object snapshot)
+		{
+			IDictionary sn = (IDictionary)snapshot;
+			ArrayList result = new ArrayList(sn.Keys.Count);
+			result.AddRange(sn.Keys);
+			PersistentCollection.IdentityRemoveAll(result, map.Keys, session);
+			return result;
+		}
+
 		/// <summary>
 		/// <see cref="PersistentCollection.EqualsSnapshot"/>
 		/// </summary>
-		public override bool EqualsSnapshot(IType elementType) {
+		public override bool EqualsSnapshot(IType elementType) 
+		{
 			
 			IDictionary snapshot = (IDictionary) GetSnapshot();
 			if ( snapshot.Count!=this.map.Count ) return false;
@@ -296,6 +306,7 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="PersistentCollection.ReadEntries"/>
 		/// </summary>
+		[Obsolete("See PersistentCollection for why it is obsolete")]
 		public override void ReadEntries(ICollection entries) {
 			foreach(DictionaryEntry entry in entries) {
 				map[entry.Key] = entry.Value;

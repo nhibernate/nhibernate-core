@@ -25,7 +25,17 @@ namespace NHibernate.Collection {
 			return clonedList;
 		}
 
-		public override bool EqualsSnapshot(IType elementType) {
+		public override ICollection GetOrphans(object snapshot)
+		{
+			IList sn = (IList)snapshot;
+			ArrayList result = new ArrayList(sn.Count);
+			result.AddRange(sn);
+			PersistentCollection.IdentityRemoveAll(result, list, session);
+			return result;
+		}
+
+		public override bool EqualsSnapshot(IType elementType) 
+		{
 			IList sn = (IList) GetSnapshot();
 			if (sn.Count != this.list.Count) return false;
 			for(int i=0; i<list.Count; i++) {
@@ -176,7 +186,9 @@ namespace NHibernate.Collection {
 			return list;
 		}
 
-		public override void ReadEntries(ICollection entries) {
+		[Obsolete("See PersistentCollection.ReadEntries for reason")]
+		public override void ReadEntries(ICollection entries) 
+		{
 			foreach(object obj in entries) {
 				list.Add(obj);
 			}
