@@ -17,25 +17,31 @@ namespace NHibernate.Cfg {
 		private static readonly string nsPrefix = "hbm";
 		internal static Dialect.Dialect dialect;
 
-		public static void BindClass(XmlNode node, PersistentClass model, Mappings mapping) {
+		public static void BindClass(XmlNode node, PersistentClass model, Mappings mapping) 
+		{
 			
 			string className = node.Attributes["name"] == null ? null : node.Attributes["name"].Value;
 			
 			// class
-			try {
+			try 
+			{
 				model.PersistentClazz = ReflectHelper.ClassForName(className);
 			} 
-			catch ( Exception cnfe ) {
+			catch ( Exception cnfe ) 
+			{
 				throw new MappingException( "persistent class not found", cnfe);
 			}
 
 			//proxy interface
 			XmlAttribute proxyNode = node.Attributes["proxy"];
-			if (proxyNode!=null) {
-				try {
+			if (proxyNode!=null) 
+			{
+				try 
+				{
 					model.ProxyInterface = ReflectHelper.ClassForName( proxyNode.Value );
 				} 
-				catch (Exception cnfe) {
+				catch (Exception cnfe) 
+				{
 					throw new MappingException(cnfe);
 				}
 			}
@@ -52,17 +58,26 @@ namespace NHibernate.Cfg {
 				? false :
 				"true".Equals( dynamicNode.Value );
 			
+			//dynamic insert
+			XmlAttribute insertNode = node.Attributes["dynamic-insert"];
+			model.DynamicInsert = (insertNode==null) ? 
+				false : 
+				"true".Equals( insertNode.Value	);
+
 			//import
-			if (mapping.IsAutoImport) {
+			if (mapping.IsAutoImport) 
+			{
 				mapping.AddImport( StringHelper.GetFullClassname(className), StringHelper.GetClassname(className) );
 			}
 		}
 
-		public static void BindSubclass(XmlNode node, Subclass model, Mappings mappings) {
+		public static void BindSubclass(XmlNode node, Subclass model, Mappings mappings) 
+		{
 
 			BindClass(node, model, mappings);
 
-			if ( model.Persister==null ) {
+			if ( model.Persister==null ) 
+			{
 				model.RootClazz.Persister = typeof(EntityPersister);
 			}
 
@@ -74,19 +89,21 @@ namespace NHibernate.Cfg {
 			PropertiesFromXML(node, model, mappings);
 		}
 
-		public static void BindJoinedSubclass(XmlNode node, Subclass model, Mappings mappings) {
+		public static void BindJoinedSubclass(XmlNode node, Subclass model, Mappings mappings) 
+		{
 
 			BindClass(node, model, mappings);
 
 			// joined subclass
-			if ( model.Persister==null ) {
+			if ( model.Persister==null ) 
+			{
 				model.RootClazz.Persister = typeof(NormalizedEntityPersister);
 			}
 
 			//table
 			XmlAttribute tableNameNode = node.Attributes["table"];
 			string tableName = (tableNameNode==null)
-				? model.PersistentClazz.Name 
+				? StringHelper.Unqualify( model.PersistentClazz.Name )
 				: tableNameNode.Value;
 
 			//schema
@@ -107,17 +124,19 @@ namespace NHibernate.Cfg {
 			ForeignKey fk = mytable.CreateForeignKey( model.Key.ConstraintColumns );
 			fk.ReferencedClass = model.Superclass.PersistentClazz;
 
+			// properties
 			PropertiesFromXML(node, model, mappings);
 		}
 
-		public static void BindRootClass(XmlNode node, RootClass model, Mappings mappings) {
+		public static void BindRootClass(XmlNode node, RootClass model, Mappings mappings) 
+		{
 
 			BindClass(node, model, mappings);
 
 			//TABLENAME
 			XmlAttribute tableNameNode = node.Attributes["table"];
 			string tableName = (tableNameNode==null)
-				? model.PersistentClazz.Name
+				? StringHelper.Unqualify( model.PersistentClazz.Name )
 				: tableNameNode.Value;
 
 			XmlAttribute schemaNode = node.Attributes["schema"];
@@ -129,14 +148,18 @@ namespace NHibernate.Cfg {
 
 			//persister
 			XmlAttribute persisterNode = node.Attributes["persister"];
-			if ( persisterNode==null ) {
+			if ( persisterNode==null ) 
+			{
 				//persister = typeof(EntityPersister);
 			} 
-			else {
-				try {
+			else 
+			{
+				try 
+				{
 					model.Persister = ReflectHelper.ClassForName( persisterNode.Value );
 				} 
-				catch (Exception) {
+				catch (Exception) 
+				{
 					throw new MappingException("could not find persister class: " + persisterNode.Value );
 				}
 			}
@@ -145,28 +168,36 @@ namespace NHibernate.Cfg {
 			XmlAttribute mutableNode = node.Attributes["mutable"];
 			model.IsMutable = (mutableNode==null) || mutableNode.Value.Equals("true");
 
+			//WHERE
+			XmlAttribute whereNode = node.Attributes["where"];
+			if (whereNode!=null) model.Where = whereNode.Value;
+
 			//POLYMORPHISM
 			XmlAttribute polyNode = node.Attributes["polymorphism"];
 			model.IsExplicitPolymorphism = (polyNode!=null) && polyNode.Value.Equals("explicit");
 
-			foreach(XmlNode subnode in node.ChildNodes) {
+			foreach(XmlNode subnode in node.ChildNodes) 
+			{
 				string name = subnode.LocalName; //Name;
 				string propertyName = GetPropertyName(subnode);
 
 				//I am only concerned with elements that are from the nhibernate namespace
 				if(subnode.NamespaceURI!=Configuration.MappingSchemaXMLNS) continue;
 
-				switch( name ) {
+				switch( name ) 
+				{
 					case "id":
 						Value id = new Value(table);
 						model.Identifier = id;
 						
-						if ( propertyName==null) {
+						if ( propertyName==null) 
+						{
 							BindValue(subnode, id, false, RootClass.DefaultIdentifierColumnName);
 							if ( id.Type==null ) throw new MappingException("must specify an identifier type: " + model.PersistentClazz.Name );
 							model.IdentifierProperty = null;
 						} 
-						else {
+						else 
+						{
 							BindValue(subnode, id, false, propertyName);
 							id.SetTypeByReflection( model.PersistentClazz, propertyName);
 							Property prop = new Property(id);
@@ -183,11 +214,14 @@ namespace NHibernate.Cfg {
 					case "composite-id":
 						Component compId = new Component(model);
 						model.Identifier = compId;
-						if (propertyName==null) {
+						if (propertyName==null) 
+						{
 							BindComponent(subnode, compId, null, model.Name + ".id", false, mappings);
 							model.HasEmbeddedIdentifier = compId.IsEmbedded;
 							model.IdentifierProperty = null;
-						} else {
+						} 
+						else 
+						{
 							System.Type reflectedClass = ReflectHelper.GetGetter( model.PersistentClazz, propertyName ).ReturnType;
 							BindComponent(subnode, compId, reflectedClass, model.Name + StringHelper.Dot + propertyName, false, mappings);
 							Property prop = new Property(compId);
@@ -196,6 +230,7 @@ namespace NHibernate.Cfg {
 						}
 						MakeIdentifier(subnode, compId, mappings);
 						break;
+
 					case "version":
 					case "timestamp":
 						//version
@@ -207,17 +242,22 @@ namespace NHibernate.Cfg {
 						model.Version = timestampProp;
 						model.AddProperty(timestampProp);
 						break;
+
 					case "discriminator":
 						Value discrim = new Value(table);
 						model.Discriminator = discrim;
 						BindValue(subnode, discrim, false, RootClass.DefaultDiscriminatorColumnName);
-						if ( discrim.Type==null ) {
+						if ( discrim.Type==null ) 
+						{
 							discrim.Type = NHibernate.String;
-							foreach(Column col in discrim.ColumnCollection) {
+							foreach(Column col in discrim.ColumnCollection) 
+							{
 								col.Type = NHibernate.String;
 							}
 						}
-						if ( subnode.Attributes["force"] != null && "true".Equals( subnode.Attributes["force"].Value ) ) {
+						model.Polymorphic = true;
+						if ( subnode.Attributes["force"] != null && "true".Equals( subnode.Attributes["force"].Value ) ) 
+						{
 							model.IsForceDiscriminator = true;
 						}
 						break;
@@ -229,13 +269,15 @@ namespace NHibernate.Cfg {
 			PropertiesFromXML(node, model, mappings);
 		}
 
-		public static void BindColumns(XmlNode node, Value model, bool isNullable, bool autoColumn, string defaultColumnName) {
+		public static void BindColumns(XmlNode node, Value model, bool isNullable, bool autoColumn, string defaultColumnName) 
+		{
 			//COLUMN(S)
 			XmlAttribute columnNode = node.Attributes["column"];
-			if ( columnNode==null ) {
+			if ( columnNode==null ) 
+			{
 				int count=0;
-				//foreach(XmlNode subnode in node.SelectNodes("column")) {
-				foreach(XmlNode subnode in node.SelectNodes(nsPrefix + ":column", nsmgr)) {
+				foreach(XmlNode subnode in node.SelectNodes(nsPrefix + ":column", nsmgr)) 
+				{
 					Table table = model.Table;
 					Column col = new Column( model.Type, count++ );
 					BindColumn(subnode, col, isNullable);
@@ -244,25 +286,31 @@ namespace NHibernate.Cfg {
 					model.AddColumn(col);
 					//column index
 					XmlAttribute indexNode = subnode.Attributes["index"];
-					if ( indexNode!=null && table!=null ) {
+					if ( indexNode!=null && table!=null ) 
+					{
+						//TODO: what do you do about associations?? (second pass compile)
 						table.GetIndex( indexNode.Value ).AddColumn(col);
 					}
 					XmlAttribute uniqueNode = subnode.Attributes["unique-key"];
-					if ( uniqueNode!=null && table!=null ) {
+					if ( uniqueNode!=null && table!=null ) 
+					{
+						//TODO: what do you do about associations?? (second pass compile)
 						table.GetUniqueKey( uniqueNode.Value ).AddColumn(col);
 					}
 				}
 			} 
-			else {
+			else 
+			{
 				Column col = new Column( model.Type, 0 );
 				BindColumn(node, col, isNullable);
 				col.Name = columnNode.Value;
 				Table table = model.Table;
-				if (table!=null) table.AddColumn(col);
+				if (table!=null) table.AddColumn(col); //table=null -> an association - fill it in later
 				model.AddColumn(col);
 			}
 
-			if ( autoColumn && model.ColumnSpan==0 ) {
+			if ( autoColumn && model.ColumnSpan==0 ) 
+			{
 				Column col = new Column( model.Type, 0 );
 				BindColumn(node, col, isNullable);
 				col.Name = defaultColumnName;
@@ -271,15 +319,33 @@ namespace NHibernate.Cfg {
 			}
 		}
 
-		public static void BindValue(XmlNode node, Value model, bool isNullable) {
+		/// <remarks>
+		/// Does _not_ automatically make a column if none is specifed by XML
+		/// </remarks>
+		public static void BindValue(XmlNode node, Value model, bool isNullable) 
+		{
 			//TYPE
 			model.Type = GetTypeFromXML(node);
 			BindColumns(node, model, isNullable, false, null);
 		}
 
-		public static void BindValue(XmlNode node, Value model, bool isNullable, string defaultColumnName) {
+		/// <remarks>
+		/// automatically makes a column with the default name if none is specifed by XML
+		/// </remarks>
+		public static void BindValue(XmlNode node, Value model, bool isNullable, string defaultColumnName) 
+		{
 			model.Type = GetTypeFromXML(node);
-			BindColumns(node, model, isNullable, true, defaultColumnName);
+			XmlAttribute formulaNode = node.Attributes["formula"];
+			if (formulaNode != null)
+			{
+				Formula f = new Formula();
+				f.FormulaString = formulaNode.InnerText;
+				model.Formula = f;
+			}
+			else
+			{
+				BindColumns(node, model, isNullable, true, defaultColumnName);
+			}
 		}
 
 		public static void BindProperty(XmlNode node, Property model, Mappings mappings) {

@@ -24,6 +24,8 @@ namespace NHibernate.Mapping
 		private bool forceDiscriminator;
 		private string where;
 
+		public bool Polymorphic;
+
 		public override Property IdentifierProperty 
 		{
 			get { return identifierProperty; }
