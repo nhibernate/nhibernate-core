@@ -245,17 +245,17 @@ namespace NHibernate.Util
 
 		#region System.Collections.IDictionary Members
 
-		public bool IsFixedSize 
+		public virtual bool IsFixedSize 
 		{
 			get { return false; }
 		}
 		
-		public bool IsReadOnly 
+		public virtual bool IsReadOnly 
 		{
 			get { return false; }
 		}
 
-		public object this [ object o ] 
+		public virtual object this [ object o ] 
 		{
 			get 
 			{
@@ -284,22 +284,22 @@ namespace NHibernate.Util
 			}
 		}
 
-		public ICollection Keys 
+		public virtual ICollection Keys 
 		{
 			get { return new KeyCollection(this); }
 		}
 		
-		public ICollection Values 
+		public virtual ICollection Values 
 		{
 			get { return new ValuesCollection(this); }
 		}
 		
-		public void Add(object key, object value) 
+		public virtual void Add(object key, object value) 
 		{
 			this[key] = value; 
 		}
 
-		public void Clear() 
+		public virtual void Clear() 
 		{
 			_modCount++;
 
@@ -309,17 +309,17 @@ namespace NHibernate.Util
 			_sentinel.Prev = _sentinel;
 		}
 
-		public bool Contains(object key) 
+		public virtual bool Contains(object key) 
 		{
 			return ContainsKey(key);
 		}
 
-		public IDictionaryEnumerator GetEnumerator() 
+		public virtual IDictionaryEnumerator GetEnumerator() 
 		{
 			return new OrderedEnumerator(this, ReturnType.ReturnEntry); 
 		}
 
-		public void Remove(object key) 
+		public virtual void Remove(object key) 
 		{
 			RemoveImpl(key);
 		}
@@ -328,22 +328,22 @@ namespace NHibernate.Util
 
 		#region System.Collections.ICollection Members
 		
-		public int Count 
+		public virtual int Count 
 		{
 			get { return _entries.Count; }
 		}
 
-		public bool IsSynchronized 
+		public virtual bool IsSynchronized 
 		{
 			get { return false; }
 		}
 
-		public object SyncRoot 
+		public virtual object SyncRoot 
 		{
 			get { return this; }
 		}
 
-		public void CopyTo(Array array, int index) 
+		public virtual void CopyTo(Array array, int index) 
 		{
 			foreach(DictionaryEntry de in this) 
 			{
@@ -369,12 +369,12 @@ namespace NHibernate.Util
 			get { return _sentinel.Next == _sentinel; }
 		}
 
-		public bool ContainsKey(object key) 
+		public virtual bool ContainsKey(object key) 
 		{
 			return _entries.ContainsKey(key);
 		}
 
-		public bool ContainsValue(object value) 
+		public virtual bool ContainsValue(object value) 
 		{
 			if (value == null) 
 			{
@@ -399,12 +399,12 @@ namespace NHibernate.Util
 			get { return (IsEmpty) ? null : _sentinel.Next; }
 		}
 
-		public object FirstKey 
+		public virtual object FirstKey 
 		{
 			get { return (First==null) ? null : First.Key; }
 		}
 
-		public object FirstValue 
+		public virtual object FirstValue 
 		{
 			get { return (First==null) ? null : First.Value; }
 		}
@@ -414,12 +414,12 @@ namespace NHibernate.Util
 			get { return (IsEmpty) ? null : _sentinel.Prev; }
 		}
 
-		public object LastKey 
+		public virtual object LastKey 
 		{
 			get { return (Last==null) ? null : Last.Key; }
 		}
 
-		public object LastValue 
+		public virtual object LastValue 
 		{
 			get { return (Last==null) ? null : Last.Value; }
 		}
