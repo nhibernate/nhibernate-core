@@ -164,6 +164,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NH47.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHibernate.Test.build"
                     BuildAction = "None"
                 />
@@ -292,6 +297,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlCommandTest\TemplateFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TypesTest\BaseTypeFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -313,6 +323,11 @@
                 />
                 <File
                     RelPath = "UtilityTest\IdentityMapFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UtilityTest\StringHelperFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
