@@ -229,7 +229,7 @@ namespace NHibernate.Type
 				catch( InvalidCastException ice )
 				{
 					throw new ADOException(
-						"Could not cast the value in field " + name + " to the Type " + this.GetType().Name +
+						"Could not cast the value in field " + name + " of type " + rs[index].GetType().Name + " to the Type " + this.GetType().Name +
 							".  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.", ice );
 				}
 
