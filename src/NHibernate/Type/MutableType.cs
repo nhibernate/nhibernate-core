@@ -3,15 +3,16 @@ using System;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// Summary description for MutableType.
+	/// Superclass for mutable nullable types.
 	/// </summary>
-	public class MutableType
+	public abstract class MutableType : NullableType
 	{
-		public MutableType()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
+		public override sealed bool IsMutable {
+			get { return true; }
+		}
+		
+		public virtual bool HasNiceEquals {
+			get { return false; } //default ... may be overridden
 		}
 	}
 }

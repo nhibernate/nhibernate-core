@@ -7,12 +7,12 @@ namespace NHibernate.Type {
 	/// </summary>
 	public abstract class ImmutableType : NullableType {
 
-		public override object DeepCopyNotNull(object val) {
+		public override sealed object DeepCopyNotNull(object val) {
 			return val;
 		}
 
-		public override bool IsMutable {
-			get {return false; }
+		public override sealed bool IsMutable {
+			get { return false; }
 		}
 
 		public bool HasNiceEquals {

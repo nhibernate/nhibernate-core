@@ -88,17 +88,17 @@ namespace NHibernate.Type
 		}
 		*/
 	
-		public override int GetColumnSpan(IMapping session) {
+		public override sealed int GetColumnSpan(IMapping session) {
 			return 1;
 		}
 	
-		public override Types[] SqlTypes(IMapping session) {
+		public override sealed Types[] SqlTypes(IMapping session) {
 			return new Types[] { SqlType };
 		}
 	
 		public abstract object DeepCopyNotNull(object val);
 	
-		public override object DeepCopy(object val) {
+		public override sealed object DeepCopy(object val) {
 			return (val==null) ? null : DeepCopyNotNull(val);
 		}
 	}
