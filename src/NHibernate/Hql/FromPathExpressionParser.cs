@@ -1,39 +1,41 @@
-using System;
-
 using NHibernate.Type;
 
-namespace NHibernate.Hql 
+namespace NHibernate.Hql
 {
 	/// <summary>
 	/// FromPathExpressionParser
 	/// </summary>
-	public class FromPathExpressionParser : PathExpressionParser 
+	public class FromPathExpressionParser : PathExpressionParser
 	{
-
-		public override void End(QueryTranslator q) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="q"></param>
+		public override void End( QueryTranslator q )
 		{
-			if ( !IsCollectionValued ) 
+			if( !IsCollectionValued )
 			{
-				IType type = GetPropertyType(q);
-				if ( type.IsEntityType ) 
+				IType type = GetPropertyType( q );
+				if( type.IsEntityType )
 				{
 					// "finish off" the join
-					Token(".", q);
-					Token(null, q);
+					Token( ".", q );
+					Token( null, q );
 				}
-				else if ( type.IsPersistentCollectionType ) 
+				else if( type.IsPersistentCollectionType )
 				{
 					// default to element set if no elements() specified
-					Token(".", q);
-					Token(CollectionElements, q);
+					Token( ".", q );
+					Token( CollectionElements, q );
 				}
 			}
-			base.End(q);
+			base.End( q );
 		}
-		
-		protected override void SetExpectingCollectionIndex() 
+
+		/// <summary></summary>
+		protected override void SetExpectingCollectionIndex()
 		{
-			throw new QueryException("expecting .elements or .indices after collection path expression in from");
+			throw new QueryException( "expecting .elements or .indices after collection path expression in from" );
 		}
 	}
 }

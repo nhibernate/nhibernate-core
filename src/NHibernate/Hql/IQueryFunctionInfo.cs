@@ -1,5 +1,3 @@
-using System;
-
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -16,10 +14,22 @@ namespace NHibernate.Hql
 	/// </remarks>
 	public interface IQueryFunctionInfo
 	{
-		IType QueryFunctionType(IType columnType, IMapping mapping);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="columnType"></param>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		IType QueryFunctionType( IType columnType, IMapping mapping );
 
+		/// <summary>
+		/// 
+		/// </summary>
 		bool IsFunctionArgs { get; }
 
-		bool IsFunctionNoArgsUseParanthesis { get; } 
+		/// <summary>
+		/// 
+		/// </summary>
+		bool IsFunctionNoArgsUseParanthesis { get; }
 	}
 }

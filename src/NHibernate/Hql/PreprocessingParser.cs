@@ -1,21 +1,18 @@
-using System;
 using System.Collections;
 using System.Text;
-
 using Iesi.Collections;
-
 using NHibernate.Util;
 
-namespace NHibernate.Hql 
+namespace NHibernate.Hql
 {
-	/// <summary>
-	/// </summary>
-	public class PreprocessingParser : IParser 
+	/// <summary></summary>
+	public class PreprocessingParser : IParser
 	{
 		private static ISet operators;
 		private static IDictionary collectionProps;
 
-		static PreprocessingParser() 
+		/// <summary></summary>
+		static PreprocessingParser()
 		{
 			operators = new HashedSet();
 			operators.Add( "<=" );
@@ -33,121 +30,145 @@ namespace NHibernate.Hql
 			operators.Add( "not in" );
 			operators.Add( "not between" );
 			operators.Add( "not exists" );
-			
+
 			collectionProps = new Hashtable();
-			collectionProps.Add("elements", "elements");
-			collectionProps.Add("indices", "indices");
-			collectionProps.Add("size", "size");
-			collectionProps.Add("maxindex", "maxIndex");
-			collectionProps.Add("minindex", "minIndex");
-			collectionProps.Add("maxelement", "maxElement");
-			collectionProps.Add("minelement", "minElement");
+			collectionProps.Add( "elements", "elements" );
+			collectionProps.Add( "indices", "indices" );
+			collectionProps.Add( "size", "size" );
+			collectionProps.Add( "maxindex", "maxIndex" );
+			collectionProps.Add( "minindex", "minIndex" );
+			collectionProps.Add( "maxelement", "maxElement" );
+			collectionProps.Add( "minelement", "minElement" );
 		}
-		
+
 		private IDictionary replacements;
 		private bool quoted;
 		private StringBuilder quotedString;
 		private ClauseParser parser = new ClauseParser();
 		private string lastToken;
 		private string currentCollectionProp;
-		
-		
-		public PreprocessingParser(IDictionary replacements) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="replacements"></param>
+		public PreprocessingParser( IDictionary replacements )
 		{
 			this.replacements = replacements;
 		}
-		
-		public void  Token(string token, QueryTranslator q) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="token"></param>
+		/// <param name="q"></param>
+		public void Token( string token, QueryTranslator q )
 		{
-			
 			//handle quoted strings
-			if (quoted) 
+			if( quoted )
 			{
-				quotedString.Append(token);
+				quotedString.Append( token );
 			}
-			if ("'".Equals(token)) 
+			if( "'".Equals( token ) )
 			{
-				if (quoted) 
+				if( quoted )
 				{
 					token = quotedString.ToString();
-				} 
-				else 
+				}
+				else
 				{
-					quotedString = new StringBuilder(20).Append(token);
+					quotedString = new StringBuilder( 20 ).Append( token );
 				}
 				quoted = !quoted;
 			}
-			if (quoted) return;
-			
-			//ignore whitespace
-			if (ParserHelper.IsWhitespace(token)) return;
-			
-			//do replacements
-			string substoken = (string) replacements[token];
-			token = (substoken == null) ? token : substoken;
-			
-			//handle HQL2 collection syntax
-			if (currentCollectionProp != null) 
+			if( quoted )
 			{
-				if (StringHelper.OpenParen.Equals(token)) 
+				return;
+			}
+
+			//ignore whitespace
+			if( ParserHelper.IsWhitespace( token ) )
+			{
+				return;
+			}
+
+			//do replacements
+			string substoken = ( string ) replacements[ token ];
+			token = ( substoken == null ) ? token : substoken;
+
+			//handle HQL2 collection syntax
+			if( currentCollectionProp != null )
+			{
+				if( StringHelper.OpenParen.Equals( token ) )
 				{
 					return;
-				} 
-				else if (StringHelper.ClosedParen.Equals(token)) 
+				}
+				else if( StringHelper.ClosedParen.Equals( token ) )
 				{
 					currentCollectionProp = null;
-					return ;
-				} 
-				else 
+					return;
+				}
+				else
 				{
 					token += StringHelper.Dot + currentCollectionProp;
 				}
 			}
-			else 
+			else
 			{
-				string prop = (string) collectionProps[token.ToLower()];
-				if (prop != null) 
+				string prop = ( string ) collectionProps[ token.ToLower() ];
+				if( prop != null )
 				{
 					currentCollectionProp = prop;
-					return ;
+					return;
 				}
 			}
-			
-			
+
+
 			//handle <=, >=, !=, is not, not between, not in
-			if (lastToken == null) 
+			if( lastToken == null )
 			{
 				lastToken = token;
-			} 
-			else 
+			}
+			else
 			{
-				string doubleToken = (token.Length > 1)? 
-					lastToken + ' ' + token : 
+				string doubleToken = ( token.Length > 1 ) ?
+					lastToken + ' ' + token :
 					lastToken + token;
-				if (operators.Contains(doubleToken.ToLower())) 
+				if( operators.Contains( doubleToken.ToLower() ) )
 				{
-					parser.Token(doubleToken, q);
+					parser.Token( doubleToken, q );
 					lastToken = null;
-				} 
-				else 
+				}
+				else
 				{
-					parser.Token(lastToken, q);
+					parser.Token( lastToken, q );
 					lastToken = token;
 				}
 			}
-			
+
 		}
-		
-		public virtual void  Start(QueryTranslator q) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="q"></param>
+		public virtual void Start( QueryTranslator q )
 		{
 			quoted = false;
-			parser.Start(q);
+			parser.Start( q );
 		}
-		
-		public virtual void  End(QueryTranslator q) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="q"></param>
+		public virtual void End( QueryTranslator q )
 		{
-			if (lastToken != null) parser.Token(lastToken, q);
-			parser.End(q);
+			if( lastToken != null )
+			{
+				parser.Token( lastToken, q );
+			}
+			parser.End( q );
 			lastToken = null;
 			currentCollectionProp = null;
 		}

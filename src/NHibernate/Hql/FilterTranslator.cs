@@ -1,15 +1,17 @@
-using System;
 using System.Collections;
-using NHibernate;
-using NHibernate.Engine;
 using System.Runtime.CompilerServices;
+using NHibernate.Engine;
 
-namespace NHibernate.Hql 
+namespace NHibernate.Hql
 {
-	
-	public class FilterTranslator : QueryTranslator 
+	/// <summary></summary>
+	public class FilterTranslator : QueryTranslator
 	{
-		public FilterTranslator(Dialect.Dialect d) : base(d)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="d"></param>
+		public FilterTranslator( Dialect.Dialect d ) : base( d )
 		{
 		}
 
@@ -17,14 +19,14 @@ namespace NHibernate.Hql
 		/// Compile a filter. This method may be called multiple
 		/// times. Subsequent invocations are no-ops.
 		/// </summary>
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void Compile(string collectionRole, ISessionFactoryImplementor factory, string queryString, IDictionary replacements, bool scalar) 
+		[MethodImpl( MethodImplOptions.Synchronized )]
+		public void Compile( string collectionRole, ISessionFactoryImplementor factory, string queryString, IDictionary replacements, bool scalar )
 		{
-			if (!Compiled) 
+			if( !Compiled )
 			{
 				this.factory = factory; // yick!
-				AddFromCollection("this", collectionRole);
-				base.Compile(factory, queryString, replacements, scalar);
+				AddFromCollection( "this", collectionRole );
+				base.Compile( factory, queryString, replacements, scalar );
 			}
 		}
 	}

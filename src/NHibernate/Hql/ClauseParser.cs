@@ -1,139 +1,153 @@
-using System;
 using System.Collections;
-using NHibernate;
 using NHibernate.Util;
 
-namespace NHibernate.Hql {
-	
+namespace NHibernate.Hql
+{
 	/// <summary> 
 	/// Parses the hibernate query into its constituent clauses.
 	/// </summary>
-	public class ClauseParser : IParser {
-		
+	public class ClauseParser : IParser
+	{
 		private IParser child;
-		private IList   selectTokens;
-		private bool    cacheSelectTokens = false;
-		private bool    byExpected = false;
+		private IList selectTokens;
+		private bool cacheSelectTokens = false;
+		private bool byExpected = false;
 		private int parenCount = 0;
-		
-		public virtual void Token(string token, QueryTranslator q) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="token"></param>
+		/// <param name="q"></param>
+		public virtual void Token( string token, QueryTranslator q )
 		{
 			string lcToken = token.ToLower();
-			
-			if ( token.Equals(StringHelper.OpenParen ) )
+
+			if( token.Equals( StringHelper.OpenParen ) )
 			{
 				parenCount++;
 			}
-			else if ( token.Equals(StringHelper.ClosedParen ) )
+			else if( token.Equals( StringHelper.ClosedParen ) )
 			{
 				parenCount--;
 			}
 
-			if (byExpected && !lcToken.Equals("by")) 
+			if( byExpected && !lcToken.Equals( "by" ) )
 			{
-				throw new QueryException("BY expected after GROUP or ORDER: " + token);
+				throw new QueryException( "BY expected after GROUP or ORDER: " + token );
 			}
-			
-			bool isClauseStart = parenCount==0; //ignore subselect keywords
 
-			if (isClauseStart) 
+			bool isClauseStart = parenCount == 0; //ignore subselect keywords
+
+			if( isClauseStart )
 			{
-				if (lcToken.Equals("select")) 
+				if( lcToken.Equals( "select" ) )
 				{
 					selectTokens = new ArrayList();
 					cacheSelectTokens = true;
-				} 
-				else if (lcToken.Equals("from")) 
+				}
+				else if( lcToken.Equals( "from" ) )
 				{
 					child = new FromParser();
-					child.Start(q);
+					child.Start( q );
 					cacheSelectTokens = false;
-				} 
-				else if (lcToken.Equals("where")) 
+				}
+				else if( lcToken.Equals( "where" ) )
 				{
-					EndChild(q);
+					EndChild( q );
 					child = new WhereParser( q.Dialect );
-					child.Start(q);
-				} 
-				else if (lcToken.Equals("order")) 
+					child.Start( q );
+				}
+				else if( lcToken.Equals( "order" ) )
 				{
-					EndChild(q);
+					EndChild( q );
 					child = new OrderByParser();
 					byExpected = true;
-				} 
-				else if (lcToken.Equals("having")) 
+				}
+				else if( lcToken.Equals( "having" ) )
 				{
-					EndChild(q);
+					EndChild( q );
 					child = new HavingParser( q.Dialect );
-					child.Start(q);
-				} 
-				else if (lcToken.Equals("group")) 
+					child.Start( q );
+				}
+				else if( lcToken.Equals( "group" ) )
 				{
-					EndChild(q);
+					EndChild( q );
 					child = new GroupByParser();
 					byExpected = true;
-				} 
-				else if (lcToken.Equals("by")) 
+				}
+				else if( lcToken.Equals( "by" ) )
 				{
-					if (!byExpected) throw new QueryException("GROUP or ORDER expected before BY");
-					child.Start(q);
+					if( !byExpected )
+					{
+						throw new QueryException( "GROUP or ORDER expected before BY" );
+					}
+					child.Start( q );
 					byExpected = false;
-				} 
-				else 
+				}
+				else
 				{
 					isClauseStart = false;
 				}
 			}
 
-			if (!isClauseStart)
+			if( !isClauseStart )
 			{
-				if (cacheSelectTokens) 
+				if( cacheSelectTokens )
 				{
-					selectTokens.Add(token);
-				} 
-				else 
+					selectTokens.Add( token );
+				}
+				else
 				{
-					if (child == null) 
+					if( child == null )
 					{
-						throw new QueryException("query must begin with SELECT or FROM: " + token);
+						throw new QueryException( "query must begin with SELECT or FROM: " + token );
 					}
-					else 
+					else
 					{
-						child.Token(token, q);
+						child.Token( token, q );
 					}
 				}
 			}
 		}
-		
-		private void  EndChild(QueryTranslator q) 
+
+		private void EndChild( QueryTranslator q )
 		{
-			if (child == null) 
+			if( child == null )
 			{
 				//null child could occur for no from clause in a filter
 				cacheSelectTokens = false;
-			} 
-			else 
+			}
+			else
 			{
-				child.End(q);
+				child.End( q );
 			}
 		}
-		
-		public virtual void  Start(QueryTranslator q) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="q"></param>
+		public virtual void Start( QueryTranslator q )
 		{
 		}
-		
-		public virtual void  End(QueryTranslator q) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="q"></param>
+		public virtual void End( QueryTranslator q )
 		{
-			EndChild(q);
-			if (selectTokens != null) 
+			EndChild( q );
+			if( selectTokens != null )
 			{
 				child = new SelectParser();
-				child.Start(q);
-				foreach (string item in selectTokens) 
+				child.Start( q );
+				foreach( string item in selectTokens )
 				{
-					Token(item, q);
+					Token( item, q );
 				}
-				child.End(q);
+				child.End( q );
 			}
 			byExpected = false;
 			parenCount = 0;

@@ -1,33 +1,30 @@
 using System;
 using System.Collections;
-using System.Data;
-
 using Iesi.Collections;
-
-using NHibernate;
-using NHibernate.Util;
 using NHibernate.Type;
+using NHibernate.Util;
 
-namespace NHibernate.Hql 
+namespace NHibernate.Hql
 {
-	
 	/// <summary>
 	/// Parsers the select clause of a hibernate query, looking
 	/// for a table (well, really class) alias.
 	/// </summary>
-	public class SelectParser : IParser 
+	public class SelectParser : IParser
 	{
 		private ArrayList aggregateFuncTokenList = new ArrayList();
 		private static IDictionary aggregateFunctions = new Hashtable();
 		private static ISet countArguments = new HashedSet();
-		
-		static SelectParser() 
+
+		/// <summary></summary>
+		static SelectParser()
 		{
 			countArguments.Add( "distinct" );
 			countArguments.Add( "all" );
 			countArguments.Add( "*" );
 		}
 
+		/// <summary></summary>
 		public SelectParser()
 		{
 			//TODO: would be nice to use false, but issues with MS SQL
@@ -35,7 +32,7 @@ namespace NHibernate.Hql
 			pathExpressionParser.UseThetaStyleJoin = true;
 			aggregatePathExpressionParser.UseThetaStyleJoin = true;
 		}
-		
+
 		private bool ready;
 		private bool aggregate;
 		private bool first;
@@ -44,187 +41,235 @@ namespace NHibernate.Hql
 		private System.Type holderClass;
 
 		private SelectPathExpressionParser pathExpressionParser = new SelectPathExpressionParser();
-		private PathExpressionParser aggregatePathExpressionParser = new PathExpressionParser();		
-		
-		public void Token(string token, QueryTranslator q) 
+		private PathExpressionParser aggregatePathExpressionParser = new PathExpressionParser();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="token"></param>
+		/// <param name="q"></param>
+		public void Token( string token, QueryTranslator q )
 		{
-			
 			string lctoken = token.ToLower();
-			
-			if (first) 
+
+			if( first )
 			{
 				first = false;
-				if (lctoken.Equals("distinct")) 
+				if( lctoken.Equals( "distinct" ) )
 				{
 					q.Distinct = true;
-					return ;
-				} 
-				else if (lctoken.Equals("all")) 
+					return;
+				}
+				else if( lctoken.Equals( "all" ) )
 				{
 					q.Distinct = false;
-					return ;
+					return;
 				}
 			}
-			
-			if (afterNew) 
+
+			if( afterNew )
 			{
-				afterNew=false;
-				holderClass = q.GetImportedClass(token);
-				if (holderClass==null) throw new QueryException("class not found: " + token);
+				afterNew = false;
+				holderClass = q.GetImportedClass( token );
+				if( holderClass == null )
+				{
+					throw new QueryException( "class not found: " + token );
+				}
 				q.HolderClass = holderClass;
 				insideNew = true;
-			} 
-			else if (token.Equals(StringHelper.Comma)) 
+			}
+			else if( token.Equals( StringHelper.Comma ) )
 			{
-				if (ready) throw new QueryException("alias or expression expected in SELECT");
-				q.AppendScalarSelectToken(StringHelper.CommaSpace);
+				if( ready )
+				{
+					throw new QueryException( "alias or expression expected in SELECT" );
+				}
+				q.AppendScalarSelectToken( StringHelper.CommaSpace );
 				ready = true;
-			} 
-			else if ( "new".Equals(lctoken) ) 
+			}
+			else if( "new".Equals( lctoken ) )
 			{
-				afterNew=true;
-				ready=false;
-			} 
-			else if (StringHelper.OpenParen.Equals(token)) 
+				afterNew = true;
+				ready = false;
+			}
+			else if( StringHelper.OpenParen.Equals( token ) )
 			{
-				if (!aggregate && holderClass!=null && !ready) 
+				if( !aggregate && holderClass != null && !ready )
 				{
 					//opening paren in new Foo ( ... )
-					ready=true;
-				} 
-				else if (aggregate) 
+					ready = true;
+				}
+				else if( aggregate )
 				{
-					q.AppendScalarSelectToken(token);
-				} 
-				else 
+					q.AppendScalarSelectToken( token );
+				}
+				else
 				{
-					throw new QueryException("aggregate function expected before ( in SELECT");
+					throw new QueryException( "aggregate function expected before ( in SELECT" );
 				}
 				ready = true;
-			} 
-			else if (StringHelper.ClosedParen.Equals(token)) 
+			}
+			else if( StringHelper.ClosedParen.Equals( token ) )
 			{
-				if (insideNew && !aggregate && !ready) 
-				{ 
+				if( insideNew && !aggregate && !ready )
+				{
 					//if we are inside a new Result(), but not inside a nested function
 					insideNew = false;
 				}
-				else if (aggregate && ready) 
+				else if( aggregate && ready )
 				{
-					q.AppendScalarSelectToken(token);
-					aggregateFuncTokenList.RemoveAt(0);
-					if (aggregateFuncTokenList.Count < 1) 
+					q.AppendScalarSelectToken( token );
+					aggregateFuncTokenList.RemoveAt( 0 );
+					if( aggregateFuncTokenList.Count < 1 )
 					{
 						aggregate = false;
 						ready = false;
 					}
 
-				} 
-				else 
-				{
-					throw new QueryException("( expected before ) in select");
 				}
-			} 
-			else if (countArguments.Contains(lctoken)) 
-			{
-				if (!ready || !aggregate) throw new QueryException(token + " only allowed inside aggregate function in SELECT");
-				q.AppendScalarSelectToken(token);
-				if ( "*".Equals(token) ) q.AddSelectScalar(NHibernate.Int32); //special case
-			} 
-			else if (aggregateFunctions.Contains(lctoken)) 
-			{
-				if (!ready) throw new QueryException(", expected before aggregate function in SELECT: " + token);
-				aggregate = true;
-				aggregateFuncTokenList.Insert(0, lctoken);
-				ready = false;
-				q.AppendScalarSelectToken(token);
-				if( !AggregateHasArgs(lctoken, q) ) 
+				else
 				{
-					q.AddSelectScalar( AggregateType(aggregateFuncTokenList, null, q) );
-					if ( !AggregateFuncNoArgsHasParenthesis(lctoken, q) ) 
+					throw new QueryException( "( expected before ) in select" );
+				}
+			}
+			else if( countArguments.Contains( lctoken ) )
+			{
+				if( !ready || !aggregate )
+				{
+					throw new QueryException( token + " only allowed inside aggregate function in SELECT" );
+				}
+				q.AppendScalarSelectToken( token );
+				if( "*".Equals( token ) )
+				{
+					q.AddSelectScalar( NHibernate.Int32 );
+				} //special case
+			}
+			else if( aggregateFunctions.Contains( lctoken ) )
+			{
+				if( !ready )
+				{
+					throw new QueryException( ", expected before aggregate function in SELECT: " + token );
+				}
+				aggregate = true;
+				aggregateFuncTokenList.Insert( 0, lctoken );
+				ready = false;
+				q.AppendScalarSelectToken( token );
+				if( !AggregateHasArgs( lctoken, q ) )
+				{
+					q.AddSelectScalar( AggregateType( aggregateFuncTokenList, null, q ) );
+					if( !AggregateFuncNoArgsHasParenthesis( lctoken, q ) )
 					{
-						aggregateFuncTokenList.RemoveAt(0);
-						if (aggregateFuncTokenList.Count < 1) 
+						aggregateFuncTokenList.RemoveAt( 0 );
+						if( aggregateFuncTokenList.Count < 1 )
 						{
 							aggregate = false;
 							ready = false;
 						}
-						else 
+						else
 						{
 							ready = true;
 						}
 					}
 				}
 
-			} 
-			else if (aggregate) 
+			}
+			else if( aggregate )
 			{
-				if (!ready) throw new QueryException("( expected after aggregate function in SELECT");
-				ParserHelper.Parse(aggregatePathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
-				
-				if (aggregatePathExpressionParser.IsCollectionValued) 
+				if( !ready )
+				{
+					throw new QueryException( "( expected after aggregate function in SELECT" );
+				}
+				ParserHelper.Parse( aggregatePathExpressionParser, q.Unalias( token ), ParserHelper.PathSeparators, q );
+
+				if( aggregatePathExpressionParser.IsCollectionValued )
 				{
 					q.AddCollection(
-						aggregatePathExpressionParser.CollectionName, 
-						aggregatePathExpressionParser.CollectionRole);
+						aggregatePathExpressionParser.CollectionName,
+						aggregatePathExpressionParser.CollectionRole );
 				}
-				q.AppendScalarSelectToken(aggregatePathExpressionParser.WhereColumn);
-				q.AddSelectScalar( AggregateType(aggregateFuncTokenList, aggregatePathExpressionParser.WhereColumnType, q) );
-				aggregatePathExpressionParser.AddAssociation(q);
-			} 
-			else 
+				q.AppendScalarSelectToken( aggregatePathExpressionParser.WhereColumn );
+				q.AddSelectScalar( AggregateType( aggregateFuncTokenList, aggregatePathExpressionParser.WhereColumnType, q ) );
+				aggregatePathExpressionParser.AddAssociation( q );
+			}
+			else
 			{
-				if (!ready) throw new QueryException(", expected in SELECT");
-				
-				ParserHelper.Parse(pathExpressionParser, q.Unalias( token ), ParserHelper.PathSeparators, q);
-				if (pathExpressionParser.IsCollectionValued) 
+				if( !ready )
+				{
+					throw new QueryException( ", expected in SELECT" );
+				}
+
+				ParserHelper.Parse( pathExpressionParser, q.Unalias( token ), ParserHelper.PathSeparators, q );
+				if( pathExpressionParser.IsCollectionValued )
 				{
 					q.AddCollection(
-						pathExpressionParser.CollectionName, 
-						pathExpressionParser.CollectionRole);
-				} 
-				else if (pathExpressionParser.WhereColumnType.IsEntityType) 
-				{
-					q.AddSelectClass(pathExpressionParser.SelectName);
+						pathExpressionParser.CollectionName,
+						pathExpressionParser.CollectionRole );
 				}
-				q.AppendScalarSelectTokens(pathExpressionParser.WhereColumns);
-				q.AddSelectScalar(pathExpressionParser.WhereColumnType);
-				pathExpressionParser.AddAssociation(q);
-				
+				else if( pathExpressionParser.WhereColumnType.IsEntityType )
+				{
+					q.AddSelectClass( pathExpressionParser.SelectName );
+				}
+				q.AppendScalarSelectTokens( pathExpressionParser.WhereColumns );
+				q.AddSelectScalar( pathExpressionParser.WhereColumnType );
+				pathExpressionParser.AddAssociation( q );
+
 				ready = false;
 			}
 		}
 
-		public bool AggregateHasArgs(String funcToken, QueryTranslator q) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="funcToken"></param>
+		/// <param name="q"></param>
+		/// <returns></returns>
+		public bool AggregateHasArgs( String funcToken, QueryTranslator q )
 		{
 			IDictionary funcMap = q.AggregateFunctions;
-			IQueryFunctionInfo funcInfo = (IQueryFunctionInfo)funcMap[funcToken];
+			IQueryFunctionInfo funcInfo = ( IQueryFunctionInfo ) funcMap[ funcToken ];
 			return funcInfo.IsFunctionArgs;
 		}
 
-		public bool AggregateFuncNoArgsHasParenthesis(String funcToken, QueryTranslator q) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="funcToken"></param>
+		/// <param name="q"></param>
+		/// <returns></returns>
+		public bool AggregateFuncNoArgsHasParenthesis( String funcToken, QueryTranslator q )
 		{
 			IDictionary funcMap = q.AggregateFunctions;
-			IQueryFunctionInfo funcInfo = (IQueryFunctionInfo)funcMap[funcToken];
+			IQueryFunctionInfo funcInfo = ( IQueryFunctionInfo ) funcMap[ funcToken ];
 			return funcInfo.IsFunctionNoArgsUseParanthesis;
 		}
 
-		public IType AggregateType( ArrayList funcTokenList, IType type, QueryTranslator q) 
-		{ 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="funcTokenList"></param>
+		/// <param name="type"></param>
+		/// <param name="q"></param>
+		/// <returns></returns>
+		public IType AggregateType( ArrayList funcTokenList, IType type, QueryTranslator q )
+		{
 			IDictionary funcMap = q.AggregateFunctions;
 			IType argType = type;
 			IType retType = type;
-			for (int i=0; i<funcTokenList.Count; i++) 
+			for( int i = 0; i < funcTokenList.Count; i++ )
 			{
 				argType = retType;
-				String funcToken = (String) funcTokenList[i];
-				IQueryFunctionInfo funcInfo = (IQueryFunctionInfo)funcMap[funcToken];
+				String funcToken = ( String ) funcTokenList[ i ];
+				IQueryFunctionInfo funcInfo = ( IQueryFunctionInfo ) funcMap[ funcToken ];
 				retType = funcInfo.QueryFunctionType( argType, q.factory );
 			}
-			return retType;			
-		} 
+			return retType;
+		}
 
-		public void Start(QueryTranslator q) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="q"></param>
+		public void Start( QueryTranslator q )
 		{
 			ready = true;
 			first = true;
@@ -234,8 +279,12 @@ namespace NHibernate.Hql
 			aggregateFuncTokenList.Clear();
 			aggregateFunctions = q.AggregateFunctions;
 		}
-		
-		public void End(QueryTranslator q) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="q"></param>
+		public void End( QueryTranslator q )
 		{
 		}
 	}

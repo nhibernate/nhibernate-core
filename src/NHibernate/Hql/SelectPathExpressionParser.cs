@@ -1,34 +1,33 @@
-using System;
-using System.Collections;
-
-namespace NHibernate.Hql 
-{	
-	public class SelectPathExpressionParser : PathExpressionParser 
+namespace NHibernate.Hql
+{
+	/// <summary></summary>
+	public class SelectPathExpressionParser : PathExpressionParser
 	{
-		
-		
-		public override void End(QueryTranslator q) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="q"></param>
+		public override void End( QueryTranslator q )
 		{
-			if (currentProperty != null && !q.IsShallowQuery) 
+			if( currentProperty != null && !q.IsShallowQuery )
 			{
 				// "finish off" the join
-				Token(".", q);
-				Token(null, q);
+				Token( ".", q );
+				Token( null, q );
 			}
-			base.End(q);
-		}
-		
-		protected override void SetExpectingCollectionIndex() 
-		{
-			throw new QueryException("expecting .elements or .indices after collection path expression in select");
+			base.End( q );
 		}
 
-		public string SelectName 
+		/// <summary></summary>
+		protected override void SetExpectingCollectionIndex()
 		{
-			get	
-			{ 
-				return currentName; 
-			}
+			throw new QueryException( "expecting .elements or .indices after collection path expression in select" );
+		}
+
+		/// <summary></summary>
+		public string SelectName
+		{
+			get { return currentName; }
 		}
 	}
 }
