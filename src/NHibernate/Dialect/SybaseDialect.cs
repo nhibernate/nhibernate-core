@@ -30,7 +30,7 @@ namespace NHibernate.Dialect
 			Types.CLOB, "TEXT" );
 			*/
 
-			DefaultProperties[ Environment.OuterJoin ] = "true";
+			DefaultProperties[ Environment.UseOuterJoin ] = "true";
 		}
 
 		/// <summary></summary>

@@ -9,8 +9,8 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal class ScheduledDeletion : ScheduledEntityAction
 	{
-		private object _version;
-		private ISoftLock _lock;
+		private object version;
+		private ISoftLock lck;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ScheduledDeletion"/>.
@@ -23,7 +23,7 @@ namespace NHibernate.Impl
 		public ScheduledDeletion( object id, object version, object instance, IClassPersister persister, ISessionImplementor session )
 			: base( session, id, instance, persister )
 		{
-			_version = version;
+			this.version = version;
 		}
 
 		/// <summary></summary>
@@ -31,9 +31,9 @@ namespace NHibernate.Impl
 		{
 			if( Persister.HasCache )
 			{
-				_lock = Persister.Cache.Lock( Id );
+				lck = Persister.Cache.Lock( Id, version );
 			}
-			Persister.Delete( Id, _version, Instance, Session );
+			Persister.Delete( Id, version, Instance, Session );
 			Session.PostDelete( Instance );
 		}
 
@@ -42,7 +42,7 @@ namespace NHibernate.Impl
 		{
 			if( Persister.HasCache )
 			{
-				Persister.Cache.Release( Id, _lock );
+				Persister.Cache.Release( Id, lck );
 			}
 		}
 	}

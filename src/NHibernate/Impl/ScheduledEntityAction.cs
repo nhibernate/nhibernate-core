@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Engine;
 using NHibernate.Persister;
 
@@ -9,10 +10,10 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal abstract class ScheduledEntityAction : IExecutable
 	{
-		private readonly ISessionImplementor _session;
-		private readonly object _id;
-		private readonly IClassPersister _persister;
-		private readonly object _instance;
+		private readonly ISessionImplementor session;
+		private readonly object id;
+		private readonly IClassPersister persister;
+		private readonly object instance;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ScheduledEntityAction"/>.
@@ -23,10 +24,10 @@ namespace NHibernate.Impl
 		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for the persisting the object.</param>
 		protected ScheduledEntityAction( ISessionImplementor session, object id, object instance, IClassPersister persister )
 		{
-			_session = session;
-			_id = id;
-			_persister = persister;
-			_instance = instance;
+			this.session = session;
+			this.id = id;
+			this.persister = persister;
+			this.instance = instance;
 		}
 
 
@@ -35,7 +36,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		protected ISessionImplementor Session
 		{
-			get { return _session; }
+			get { return session; }
 		}
 
 		/// <summary>
@@ -43,7 +44,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		protected object Id
 		{
-			get { return _id; }
+			get { return id; }
 		}
 
 		/// <summary>
@@ -51,7 +52,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		protected IClassPersister Persister
 		{
-			get { return _persister; }
+			get { return persister; }
 		}
 
 		/// <summary>
@@ -59,10 +60,27 @@ namespace NHibernate.Impl
 		/// </summary>
 		protected object Instance
 		{
-			get { return _instance; }
+			get { return instance; }
 		}
 
 		#region SessionImpl.IExecutable Members
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <remarks>Not supported for a non-collection entity</remarks>
+		public void BeforeExecutions( )
+		{
+			throw new NotSupportedException( "BeforeExecutions() called for non-collection method" );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public virtual bool HasAfterTransactionCompletion
+		{
+			get { return persister.HasCache; }
+		}
 
 		/// <summary>
 		/// Called when the Transaction this action occurred in has completed.
@@ -77,7 +95,7 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public object[ ] PropertySpaces
 		{
-			get { return _persister.PropertySpaces; }
+			get { return persister.PropertySpaces; }
 		}
 
 		#endregion

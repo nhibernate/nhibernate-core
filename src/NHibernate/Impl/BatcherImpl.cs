@@ -14,7 +14,7 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal abstract class BatcherImpl : IBatcher
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( BatcherImpl ) );
+		protected static readonly ILog log = LogManager.GetLogger( typeof( BatcherImpl ) );
 
 		private static int openCommandCount;
 		private static int openReaderCount;

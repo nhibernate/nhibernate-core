@@ -100,7 +100,6 @@ namespace NHibernate.Engine
 				{
 					return true;
 				}
-
 			}
 
 			/// <summary></summary>
@@ -123,7 +122,6 @@ namespace NHibernate.Engine
 				{
 					return false;
 				}
-
 			}
 
 			/// <summary></summary>
@@ -161,15 +159,38 @@ namespace NHibernate.Engine
 
 				public override bool ShouldCascadeCollection( object collection )
 				{
-					return CollectionIsInitialized( collection );
 					// saves/updates don't cascade to uninitialized collections
+					return CollectionIsInitialized( collection );
 				}
 
 				public override bool DeleteOrphans()
 				{
 					return true;
 				}
+			}
 
+			/// <summary></summary>
+			public static CascadingAction ActionReplicate = new ActionReplicateClass();
+
+			private class ActionReplicateClass : CascadingAction
+			{
+				public override void Cascade( ISessionImplementor session, object child, object anything )
+				{
+					log.Debug( "cascading to Replicate()" );
+					// TODO: 2.1 implement replication
+					//session.Replicate( child, (ReplicationMode) anything );
+				}
+
+				public override bool ShouldCascadeCollection( object collection )
+				{
+					// replicate does cascade to uninitialized collections
+					return true;
+				}
+
+				public override bool DeleteOrphans()
+				{
+					return false; // I suppose?
+				}
 			}
 
 			private static bool CollectionIsInitialized( object collection )

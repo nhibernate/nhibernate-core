@@ -36,7 +36,7 @@ namespace NHibernate.Dialect
 		public Oracle9Dialect() : base()
 		{
 //			DefaultProperties[Cfg.Environment.UseStreamsForBinary] = "true";
-			DefaultProperties[ Environment.OuterJoin ] = "true";
+			DefaultProperties[ Environment.UseOuterJoin ] = "true";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.OracleClientDriver";
 
 			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(255)" );

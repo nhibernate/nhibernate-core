@@ -14,17 +14,27 @@ namespace NHibernate.Loader
 	/// </summary>
 	public class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{
-		private ICollectionPersister collectionPersister;
-		private IType idType;
+		private IQueryableCollection collectionPersister;
+		private IType keyType;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="factory"></param>
-		public CollectionLoader( IQueryableCollection persister, ISessionFactoryImplementor factory ) : base( factory.Dialect )
+		public CollectionLoader( IQueryableCollection persister, ISessionFactoryImplementor factory ) : this( persister, 1, factory )
 		{
-			idType = persister.KeyType;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="batchSize"></param>
+		/// <param name="factory"></param>
+		public CollectionLoader( IQueryableCollection persister, int batchSize, ISessionFactoryImplementor factory ) : base( factory.Dialect )
+		{
+			keyType = persister.KeyType;
 
 			string alias = ToAlias( persister.TableName, 0 );
 
@@ -96,7 +106,17 @@ namespace NHibernate.Loader
 		/// <param name="session"></param>
 		public void Initialize( object id, PersistentCollection collection, object owner, ISessionImplementor session )
 		{
-			LoadCollection( session, id, idType, owner, collection );
+			LoadCollection( session, id, keyType, owner, collection );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		public void Initialize( object id, ISessionImplementor session )
+		{
+			LoadCollection( session, id, keyType );
 		}
 	}
 }

@@ -69,7 +69,8 @@ namespace NHibernate.Cache
 		/// 
 		/// </summary>
 		/// <param name="key"></param>
-		public ISoftLock Lock( object key )
+		/// <param name="version"></param>
+		public ISoftLock Lock( object key, object version )
 		{
 			// TODO: Differs from the 2.1 implementation
 			lock( lockObject )

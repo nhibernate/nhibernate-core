@@ -55,7 +55,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType( DbType.String, 1073741823, "text" ); //
 			RegisterColumnType( DbType.Time, "time" );
 
-			DefaultProperties[ Environment.OuterJoin ] = "true";
+			DefaultProperties[ Environment.UseOuterJoin ] = "true";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.NpgsqlDriver";
 		}
 

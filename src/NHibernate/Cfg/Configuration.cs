@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
 using log4net;
+using Iesi.Collections;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -30,9 +31,6 @@ namespace NHibernate.Cfg
 	/// </remarks>
 	public class Configuration : IMapping
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( Configuration ) );
-		private static readonly IInterceptor emptyInterceptor = new EmptyInterceptor();
-
 		private Hashtable classes = new Hashtable();
 		private Hashtable imports = new Hashtable();
 		private Hashtable collections = new Hashtable();
@@ -49,6 +47,45 @@ namespace NHibernate.Cfg
 
 		private XmlSchema mappingSchema;
 		private XmlSchema cfgSchema;
+
+		private static readonly ILog log = LogManager.GetLogger( typeof( Configuration ) );
+		private static readonly IInterceptor emptyInterceptor = new EmptyInterceptor();
+
+		private class Mapping : IMapping
+		{
+			private Hashtable classes;
+
+			public Mapping( Hashtable classes )
+			{
+				this.classes = classes;
+			}
+
+			public Hashtable Classes
+			{
+				set { classes = value; }
+			}
+
+			#region IMapping Members
+
+			public IType GetIdentifierType( System.Type persistentClass )
+			{
+				return ( (PersistentClass) classes[ persistentClass ] ).Identifier.Type;
+			}
+
+			public string GetIdentifierPropertyName( System.Type persistentClass )
+			{
+				return ( (PersistentClass) classes[ persistentClass ] ).IdentifierProperty.Name;
+			}
+
+			public IType GetPropertyType( System.Type persistentClass, string propertyName )
+			{
+				return ( (PersistentClass) classes[ persistentClass ] ).GetProperty( propertyName ).Type;
+			}
+
+			#endregion
+		}
+
+		private Mapping mapping;
 
 		/// <summary>
 		/// The XML Namespace for the nhibernate-mapping
@@ -77,6 +114,7 @@ namespace NHibernate.Cfg
 			secondPasses = new ArrayList();
 			interceptor = emptyInterceptor;
 			properties = Environment.Properties;
+			mapping = new Mapping( classes );
 		}
 
 		/// <summary>
@@ -134,9 +172,9 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="role">role a collection role</param>
 		/// <returns>collection</returns>
-		public Mapping.Collection GetCollectionMapping( string role )
+		public NHibernate.Mapping.Collection GetCollectionMapping( string role )
 		{
-			return ( Mapping.Collection ) collections[ role ];
+			return ( NHibernate.Mapping.Collection ) collections[ role ];
 		}
 
 		/// <summary>
@@ -560,16 +598,16 @@ namespace NHibernate.Cfg
 
 			foreach( Table table in TableMappings )
 			{
+				foreach( Index index in table.IndexCollection )
+				{
+					script.Add( index.SqlCreateString( dialect, this ) );
+				}
 				if( dialect.HasAlterTable )
 				{
 					foreach( ForeignKey fk in table.ForeignKeyCollection )
 					{
 						script.Add( fk.SqlCreateString( dialect, this ) );
 					}
-				}
-				foreach( Index index in table.IndexCollection )
-				{
-					script.Add( index.SqlCreateString( dialect, this ) );
 				}
 			}
 
@@ -585,63 +623,83 @@ namespace NHibernate.Cfg
 			return ArrayHelper.ToStringArray( script );
 		}
 
-		//		///<summary>
-		//		/// Generate DDL for altering tables
-		//		///</summary>
-		//		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata) 
-		//		{
-		//			secondPassCompile();
-		//		
-		//			ArrayList script = new ArrayList(50);
-		//
-		//			foreach(Table table in TableMappings)
-		//			{
-		//				TableMetadata tableInfo = databaseMetadata.getTableMetadata( table.Name );
-		//				if (tableInfo==null) 
-		//				{
-		//					script.Add( table.SqlCreateString(dialect, this) );
-		//				}
-		//				else 
-		//				{
-		//					foreach(string alterString in table.SqlAlterStrings(dialect, this, tableInfo))
-		//						script.Add(alterString);
-		//				}
-		//			}
-		//		
-		//			foreach(Table table in TableMappings)
-		//			{
-		//				TableMetadata tableInfo = databaseMetadata.getTableMetadata( table.Name );
-		//			
-		//				if ( dialect.HasAlterTable)
-		//				{
-		//					foreach(ForeignKey fk in table.ForeignKeyCollection)
-		//						if ( tableInfo==null || tableInfo.getForeignKeyMetadata( fk.Name ) == null ) 
-		//						{
-		//							script.Add( fk.SqlCreateString(dialect, mapping) );
-		//						}
-		//				}
-		//				foreach(Index index in table.IndexCollection)
-		//				{
-		//					if ( tableInfo==null || tableInfo.getIndexMetadata( index.Name ) == null ) 
-		//					{
-		//						script.Add( index.SqlCreateString(dialect, mapping) );
-		//					}
-		//				}
-		//			}
-		//
-		//			foreach(IPersistentIdentifierGenerator generator in CollectionGenerators(dialect))
-		//			{
-		//				object key = generator.GeneratorKey();
-		//				if ( !databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key) ) 
-		//				{
-		//					string[] lines = generator.SqlCreateStrings(dialect);
-		//					for (int i = 0; i < lines.Length; i++) script.Add( lines[i] );
-		//				}
-		//			}
-		//		
-		//			return ArrayHelper.ToStringArray(script);
-		//		}
-		//TODO: H2.0.3 After DatabaseMetadata is completed
+		/*
+		///<summary>
+		/// Generate DDL for altering tables
+		///</summary>
+		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata) 
+		{
+			secondPassCompile();
+				
+			ArrayList script = new ArrayList(50);
+		
+			foreach(Table table in TableMappings)
+			{
+				TableMetadata tableInfo = databaseMetadata.GetTableMetadata( table.Name, table.Schema, null );
+				if (tableInfo == null) 
+				{
+					script.Add( table.SqlCreateString( dialect, this ) );
+				}
+				else 
+				{
+					foreach(string alterString in table.SqlAlterStrings(dialect, this, tableInfo))
+					{
+						script.Add( alterString );
+					}
+				}
+			}
+				
+			foreach(Table table in TableMappings)
+			{
+				TableMetadata tableInfo = databaseMetadata.GetTableMetadata( table.Name, table.Schema, null );
+					
+				if ( dialect.HasAlterTable)
+				{
+					foreach(ForeignKey fk in table.ForeignKeyCollection)
+					{
+						bool create = tableInfo == null || ( tableInfo.getForeignKeyMetadata( fk.Name ) == null && (
+							// Icky workaround for MySQL bug:
+							!( dialect is NHibernate.Dialect.MySQLDialect ) || table.GetIndex( fk.Name ) == null )
+						);
+						if ( create ) 
+						{
+							script.Add( fk.SqlCreateString(dialect, mapping) );
+						}
+					}
+				}
+
+				// Broken 'cos we don't generate these with names in SchemaExport
+				foreach(Index index in table.IndexCollection)
+				{
+					if ( tableInfo == null || tableInfo.GetIndexMetadata( index.Name ) == null ) 
+					{
+						script.Add( index.SqlCreateString( dialect, mapping ) );
+					}
+				}
+
+				// Broken 'cos we don't generate these with names in SchemaExport
+				foreach(UniqueKey uk in table.UniqueKeyCollection)
+				{
+					if ( tableInfo == null || tableInfo.GetIndexMetadata( uk.Name ) == null ) 
+					{
+						script.Add( uk.SqlCreateString( dialect, mapping ) );
+					}
+				}
+			}
+		
+			foreach(IPersistentIdentifierGenerator generator in CollectionGenerators(dialect))
+			{
+				object key = generator.GeneratorKey();
+				if ( !databaseMetadata.IsSequence( key ) && !databaseMetadata.IsTable(key) ) 
+				{
+					string[] lines = generator.SqlCreateStrings( dialect );
+					for (int i = 0; i < lines.Length; i++) script.Add( lines[i] );
+				}
+			}
+				
+			return ArrayHelper.ToStringArray(script);
+		}
+		*/
 
 		/// <remarks>
 		/// This method may be called many times!!
@@ -661,28 +719,39 @@ namespace NHibernate.Cfg
 
 			log.Info( "processing foreign key constraints" );
 
+			ISet done = new HashedSet();
 			foreach( Table table in TableMappings )
 			{
-				foreach( ForeignKey fk in table.ForeignKeyCollection )
+				SecondPassCompileForeignKeys( table, done );
+			}
+		}
+
+		private void SecondPassCompileForeignKeys( Table table, ISet done )
+		{
+			foreach( ForeignKey fk in table.ForeignKeyCollection )
+			{
+				if ( !done.Contains( fk ) )
 				{
-					if( fk.ReferencedTable == null )
+					done.Add( fk );
+					if( log.IsDebugEnabled )
 					{
-						if( log.IsDebugEnabled )
-						{
-							log.Debug( "resolving reference to class: " + fk.ReferencedClass.Name );
-						}
-						PersistentClass referencedClass = ( PersistentClass ) classes[ fk.ReferencedClass ];
-						if( referencedClass == null )
-						{
-							throw new MappingException(
-								"An association from the table " +
-									fk.Table.Name +
-									" refers to an unmapped class: " +
-									fk.ReferencedClass.Name
-								);
-						}
-						fk.ReferencedTable = referencedClass.Table;
+						log.Debug( "resolving reference to class: " + fk.ReferencedClass.Name );
 					}
+					PersistentClass referencedClass = ( PersistentClass ) classes[ fk.ReferencedClass ];
+					if( referencedClass == null )
+					{
+						throw new MappingException(
+							"An association from the table " +
+							fk.Table.Name +
+							" refers to an unmapped class: " +
+							fk.ReferencedClass.Name
+							);
+					}
+					if ( referencedClass.IsJoinedSubclass )
+					{
+						SecondPassCompileForeignKeys( referencedClass.Superclass.Table, done );
+					}
+					fk.ReferencedTable = referencedClass.Table;
 				}
 			}
 		}
@@ -720,12 +789,26 @@ namespace NHibernate.Cfg
 		public ISessionFactory BuildSessionFactory()
 		{
 			SecondPassCompile();
+			Validate();
+			Environment.VerifyProperties( properties );
 			Hashtable copy = new Hashtable( properties );
-
 			Settings settings = BuildSettings();
 			ConfigureCaches( settings );
 
-			return new SessionFactoryImpl( this, copy, interceptor, settings );
+			return new SessionFactoryImpl( this, settings );
+		}
+
+		private void Validate()
+		{
+			foreach( PersistentClass clazz in classes.Values )
+			{
+				clazz.Validate( mapping );
+			}
+
+			foreach( NHibernate.Mapping.Collection col in collections.Values )
+			{
+				col.Validate( mapping );
+			}
 		}
 
 		/// <summary>
@@ -901,7 +984,6 @@ namespace NHibernate.Cfg
 					stream.Close();
 				}
 			}
-
 		}
 
 		/// <summary>
@@ -1024,7 +1106,6 @@ namespace NHibernate.Cfg
 				}
 
 				strategy.Cache = cache;
-
 			}
 		}
 

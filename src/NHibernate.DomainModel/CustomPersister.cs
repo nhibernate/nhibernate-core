@@ -24,6 +24,7 @@ namespace NHibernate.DomainModel
 		private static readonly IType[] Types = new IType[] { NHibernateUtil.String };
 		private static readonly string[] Names = new string[] { "name" };
 		private static readonly bool[] Mutability = new bool[] { true };
+		private static readonly bool[] Nullability = new bool[] { true };
 
 		public CustomPersister(PersistentClass model, ISessionFactory factory )
 		{
@@ -60,7 +61,17 @@ namespace NHibernate.DomainModel
 
 		public bool[] PropertyUpdateability
 		{
-			get  { return Mutability; }
+			get { return Mutability; }
+		}
+
+		public bool[] PropertyNullability
+		{
+			get { return Nullability; }
+		}
+
+		public bool IsBatchLoadable
+		{
+			get { return false; }
 		}
 
 		public bool HasCascades

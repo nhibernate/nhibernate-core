@@ -14,19 +14,6 @@ namespace NHibernate.Engine
 	public interface ISessionFactoryImplementor : IMapping, ISessionFactory
 	{
 		/// <summary>
-		/// TODO: determine if this is more appropriate for ISessionFactory
-		/// </summary>
-		IConnectionProvider ConnectionProvider { get; }
-
-		/// <summary>
-		/// Gets the IsolationLevel an IDbTransaction should be set to.
-		/// </summary>
-		/// <remarks>
-		/// This is only applicable to manually controlled NHibernate Transactions.
-		/// </remarks>
-		IsolationLevel Isolation { get; }
-
-		/// <summary>
 		/// Get the persister for a class
 		/// </summary>
 		IClassPersister GetPersister( System.Type clazz );
@@ -58,7 +45,17 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Is outerjoin fetching enabled?
 		/// </summary>
-		bool EnableJoinedFetch { get; }
+		bool IsOuterJoinedFetchEnabled { get; }
+		
+		/// <summary>
+		/// Are scrollable <tt>ResultSet</tt>s supported?
+		/// </summary>
+		bool IsScrollableResultSetsEnabled { get; }
+
+		/// <summary>
+		/// Get the database schema specified in <tt>hibernate.default_schema</tt>
+		/// </summary>
+		bool IsGetGeneratedKeysEnabled { get; }
 
 		/// <summary>
 		/// Get the database schema specified in <c>hibernate.default_schema</c>
@@ -71,17 +68,45 @@ namespace NHibernate.Engine
 		Dialect.Dialect Dialect { get; }
 
 		/// <summary>
-		/// Gets a boolean indicating if the sql statement should be prepared.  The value
-		/// is read from <c>hibernate.prepare_sql</c>.
-		/// </summary>
-		bool PrepareSql { get; }
-
-		/// <summary>
 		/// Get the return types of a query
 		/// </summary>
 		/// <param name="queryString"></param>
 		/// <returns></returns>
 		IType[ ] GetReturnTypes( string queryString );
+
+		/// <summary>
+		/// TODO: determine if this is more appropriate for ISessionFactory
+		/// </summary>
+		IConnectionProvider ConnectionProvider { get; }
+
+		/// <summary>
+		/// Get the names of all persistent classes that implement/extend the given interface/class
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <returns></returns>
+		string[ ] GetImplementors( System.Type clazz );
+
+		/// <summary>
+		/// Get a class name, using query language imports
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		string GetImportedClassName( string name );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		int BatchSize { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		int FetchSize { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		int MaximumFetchDepth { get; }
 
 		/// <summary>
 		/// Get the named parameter names for a query
@@ -103,17 +128,18 @@ namespace NHibernate.Engine
 		void CloseConnection( IDbConnection conn );
 
 		/// <summary>
-		/// Get the names of all persistent classes that implement/extend the given interface/class
+		/// Gets the IsolationLevel an IDbTransaction should be set to.
 		/// </summary>
-		/// <param name="clazz"></param>
-		/// <returns></returns>
-		string[ ] GetImplementors( System.Type clazz );
+		/// <remarks>
+		/// This is only applicable to manually controlled NHibernate Transactions.
+		/// </remarks>
+		IsolationLevel Isolation { get; }
+
 
 		/// <summary>
-		/// Get a class name, using query language imports
+		/// Gets a boolean indicating if the sql statement should be prepared.  The value
+		/// is read from <c>hibernate.prepare_sql</c>.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		string GetImportedClassName( string name );
+		bool PrepareSql { get; }
 	}
 }

@@ -25,9 +25,8 @@ namespace NHibernate.Cfg
 	/// </remarks>
 	public sealed class Environment
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
-
-		private static IDictionary properties = new Hashtable();
+		/// <summary></summary>
+		public const string Version = "0.8.0.0";
 
 		/// <summary></summary>
 		public const string ConnectionProvider = "hibernate.connection.provider";
@@ -46,7 +45,17 @@ namespace NHibernate.Cfg
 		/// <summary></summary>
 		public const string ShowSql = "hibernate.show_sql";
 		/// <summary></summary>
-		public const string OuterJoin = "hibernate.use_outer_join";
+		public const string UseOuterJoin = "hibernate.use_outer_join";
+		/// <summary></summary>
+		public const string MaxFetchDepth = "hibernate.max_fetch_depth";
+		/// <summary></summary>
+		public const string UseGetGeneratedKeys = "hibernate.jdbc.use_get_generated_keys";
+		/// <summary></summary>
+		public const string StatementFetchSize = "hibernate.jdbc.fetch_size";
+		/// <summary></summary>
+		public const string StatementBatchSize = "hibernate.jdbc.batch_size";
+		/// <summary></summary>
+		public const string BatchVersionedData = "hibernate.jdbc.batch_versioned_data";
 		/// <summary></summary>
 		public const string OutputStylesheet = "hibernate.xml.output_stylesheet";
 		/// <summary></summary>
@@ -61,6 +70,10 @@ namespace NHibernate.Cfg
 		public const string CacheProvider = "hibernate.cache.provider_class";
 		/// <summary></summary>
 		public const string PrepareSql = "hibernate.prepare_sql";
+
+		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
+
+		private static IDictionary properties = new Hashtable();
 
 		/// <summary></summary>
 		static Environment()
@@ -78,8 +91,6 @@ namespace NHibernate.Cfg
 			{
 				properties[ key ] = props[ key ];
 			}
-
-
 		}
 
 		private Environment()
@@ -110,6 +121,16 @@ namespace NHibernate.Cfg
 		public static bool UseStreamsForBinary
 		{
 			get { return true; }
+		}
+
+		/// <summary>
+		/// Issue warnings to user when any obsolete property names are used.
+		/// </summary>
+		/// <param name="props"></param>
+		/// <returns></returns>
+		public static bool VerifyProperties( IDictionary props )
+		{
+			return false;
 		}
 	}
 }

@@ -110,7 +110,12 @@ namespace NHibernate.Id
 		/// <value>
 		/// <see cref="String.Empty">String.Empty</see>
 		/// </value>
-		public static readonly string ShortCircuitIndicator = String.Empty;
+		public static readonly object ShortCircuitIndicator = new object();
+
+		/// <summary>
+		/// When this is return
+		/// </summary>
+		public static readonly object IdentityColumnIndicator = new object();
 
 		/// <summary>
 		/// Initializes the static fields in <see cref="IdentifierGeneratorFactory"/>.

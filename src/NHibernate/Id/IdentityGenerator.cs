@@ -23,19 +23,18 @@ namespace NHibernate.Id
 		#region IIdentifierGenerator Members
 
 		/// <summary>
-		/// This class can not generate the <c>id</c>.  It has to get the 
-		/// value from the database.
+		/// The IdentityGenerator for autoincrement/identity key generation.
+		/// 
 		/// </summary>
 		/// <param name="s">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity the id is being generated for.</param>
 		/// <returns>
-		/// <c>null</c> because this <see cref="IIdentifierGenerator"/> can not generate
-		/// an id.  The entity must be inserted into the database to get the database 
-		/// generated id.
+		/// <c>IdentityColumnIndicator</c> Indicates to the Session that identity (i.e. identity/autoincrement column)
+		/// key generation should be used.
 		/// </returns>
 		public object Generate( ISessionImplementor s, object obj )
 		{
-			return null;
+			return IdentifierGeneratorFactory.IdentityColumnIndicator;
 		}
 
 		#endregion

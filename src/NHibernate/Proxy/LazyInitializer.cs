@@ -118,6 +118,7 @@ namespace NHibernate.Proxy
 		public object Identifier
 		{
 			get { return _id; }
+			set { _id = value; }
 		}
 
 		/// <summary></summary>

@@ -1268,7 +1268,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindRoot(XmlDocument doc, Mappings model) 
+		public static void BindRoot( XmlDocument doc, Mappings model ) 
 		{
 			XmlNode hmNode = doc.DocumentElement;
 			XmlAttribute schemaNode = hmNode.Attributes["schema"];
@@ -1285,28 +1285,28 @@ namespace NHibernate.Cfg
 			// selects as their prefix in the document.  It is the prefix we use to 
 			// build the XPath and the nsmgr takes care of translating our prefix into
 			// the user defined prefix...
-			nsmgr.AddNamespace(nsPrefix, Configuration.MappingSchemaXMLNS);
+			nsmgr.AddNamespace( nsPrefix, Configuration.MappingSchemaXMLNS );
 			
-			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":class", nsmgr) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":class", nsmgr ) ) 
 			{
 				RootClass rootclass = new RootClass();
-				Binder.BindRootClass(n, rootclass, model);
-				model.AddClass(rootclass);
+				Binder.BindRootClass( n, rootclass, model );
+				model.AddClass( rootclass );
 			}
 
-			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":subclass", nsmgr) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":subclass", nsmgr ) ) 
 			{
-				PersistentClass superModel = GetSuperclass(model, n);
+				PersistentClass superModel = GetSuperclass( model, n );
 				HandleSubclass(superModel, model, n);
 			}
 
-			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":joined-subclass", nsmgr) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":joined-subclass", nsmgr ) ) 
 			{
 				PersistentClass superModel = GetSuperclass(model, n);
 				HandleJoinedSubclass(superModel, model, n);
 			}
 
-			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":query", nsmgr) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":query", nsmgr ) ) 
 			{
 				string qname = n.Attributes["name"].Value;
 				string query = n.FirstChild.Value;
@@ -1314,25 +1314,29 @@ namespace NHibernate.Cfg
 				model.AddQuery(qname, query);
 			}
 
-			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":sql-query", nsmgr) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":sql-query", nsmgr ) ) 
 			{
 				string qname = n.Attributes["name"].Value;
 				NamedSQLQuery namedQuery = new NamedSQLQuery( n.FirstChild.Value );
 
-				foreach(XmlNode returns in n.SelectNodes(nsPrefix + ":return", nsmgr) )
+				foreach(XmlNode returns in n.SelectNodes( nsPrefix + ":return", nsmgr ) )
 				{
 					string alias = returns.Attributes["alias"].Value;
-					object clazz;
+					System.Type clazz;
 					try
 					{
-						//clazz = ReflectorHelper.ClassForName( returns.Attributes["class"] );
-						clazz = null;
+						clazz = ReflectHelper.ClassForName( returns.Attributes["class"].Value );
 					}
 					catch (Exception)
 					{
 						throw new MappingException( string.Format( "class not found for alias:", alias ) );
 					}
 					namedQuery.AddAliasedClass( alias, clazz );
+				}
+
+				foreach( XmlNode table in n.SelectNodes( nsPrefix + ":synchronise", nsmgr ) )
+				{
+					namedQuery.AddSynchronizedTable( table.Attributes["table"].Value );
 				}
 
 				log.Debug("Named sql query: " + qname + " -> " + namedQuery.QueryString );

@@ -141,5 +141,15 @@ namespace NHibernate.Loader
 		{
 			LoadCollection( session, id, idType, owner, collection );
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		public void Initialize( object id, ISessionImplementor session )
+		{
+			LoadCollection( session, id, idType );
+		}
 	}
 }

@@ -16,14 +16,10 @@ namespace NHibernate.Mapping
 	{
 		private static readonly Alias PKAlias = new Alias( 15, "PK" );
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public static readonly string NullDiscriminatorMapping = "null";
-		/// <summary>
-		/// 
-		/// </summary>
-		public static readonly string NotNullDiscriminatorMapping = "not null";
+		/// <summary></summary>
+		public const string NullDiscriminatorMapping = "null";
+		/// <summary></summary>
+		public const string NotNullDiscriminatorMapping = "not null";
 
 		private System.Type mappedClass;
 		private string discriminatorValue;
@@ -36,9 +32,9 @@ namespace NHibernate.Mapping
 		private bool dynamicInsert;
 		private bool dynamicUpdate;
 		private int batchSize = 1;
-		//private bool selectBeforeUpdate;
-		//private int optimisticLockMode;
-		//private IDictionary metaAttributes;
+		private bool selectBeforeUpdate;
+		private int optimisticLockMode;
+		private IDictionary metaAttributes;
 
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
@@ -535,6 +531,41 @@ namespace NHibernate.Mapping
 		{
 			get { return batchSize; }
 			set { batchSize = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool SelectBeforeUpdate
+		{
+			get { return selectBeforeUpdate; }
+			set { selectBeforeUpdate = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public Property GetProperty( string propertyName )
+		{
+			foreach( Property prop in PropertyClosureCollection )
+			{
+				if ( prop.Name == propertyName )
+				{
+					return prop;
+				}
+			}
+			throw new MappingException( string.Format( "property not found: {0}", propertyName ) );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public int OptimisticLockMode
+		{
+			get { return optimisticLockMode; }
+			set { optimisticLockMode = value; }
 		}
 
 		/// <summary>

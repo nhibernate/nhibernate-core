@@ -17,6 +17,7 @@ using NHibernate.Metadata;
 using NHibernate.Persister;
 using NHibernate.Transaction;
 using NHibernate.Type;
+using NHibernate.Tool.hbm2ddl;
 using HibernateDialect = NHibernate.Dialect.Dialect;
 
 namespace NHibernate.Impl
@@ -55,50 +56,66 @@ namespace NHibernate.Impl
 	[Serializable]
 	internal class SessionFactoryImpl : ISessionFactory, ISessionFactoryImplementor, IObjectReference
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( SessionFactoryImpl ) );
+		private readonly string name;
+		private readonly string uuid;
 
 		[NonSerialized]
-		private Settings settings;
-
-		private string name;
-		private string uuid;
+		private readonly IDictionary classPersisters;
 
 		[NonSerialized]
-		private IDictionary classPersisters;
+		private readonly IDictionary classPersistersByName;
 
 		[NonSerialized]
-		private IDictionary classPersistersByName;
+		private readonly IDictionary classMetadata;
 
 		[NonSerialized]
-		private IDictionary collectionPersisters;
+		private readonly IDictionary collectionPersisters;
 
 		[NonSerialized]
-		private IDictionary namedQueries;
+		private readonly IDictionary collectionMetadata;
 
 		[NonSerialized]
-		private IDictionary imports;
+		private readonly IDictionary namedQueries;
 
 		[NonSerialized]
-		private IDictionary properties;
+		private readonly IDictionary namedSqlQueries;
+
+		[NonSerialized]
+		private readonly IDictionary imports;
 
 		// templates are related to XmlDatabinder - nothing like that yet 
 		// in NHibernate.
 		//[NonSerialized] private Templates templates;
-		[NonSerialized]
-		private IInterceptor interceptor;
 
-		private static IIdentifierGenerator uuidgen = new UUIDHexGenerator();
+		[NonSerialized]
+		private readonly IInterceptor interceptor;
+
+		[NonSerialized]
+		private readonly Settings settings;
+
+		[NonSerialized]
+		private readonly IDictionary properties;
+
+		[NonSerialized]
+		private SchemaExport schemaExport;
+
+		private static readonly IIdentifierGenerator uuidgen = new UUIDHexGenerator();
+
+		private static readonly ILog log = LogManager.GetLogger( typeof( SessionFactoryImpl ) );
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="cfg"></param>
-		/// <param name="properties"></param>
-		/// <param name="interceptor"></param>
 		/// <param name="settings"></param>
-		public SessionFactoryImpl( Configuration cfg, IDictionary properties, IInterceptor interceptor, Settings settings )
+		public SessionFactoryImpl( Configuration cfg, Settings settings )
 		{
 			log.Info( "building session factory" );
+
+			this.properties = cfg.Properties;
+			this.interceptor = cfg.Interceptor;
+			this.settings = settings;
+
 			if( log.IsDebugEnabled )
 			{
 				StringBuilder sb = new StringBuilder( "instantiating session factory with properties: " );
@@ -109,14 +126,11 @@ namespace NHibernate.Impl
 				log.Debug( sb.ToString() );
 			}
 
-			this.interceptor = interceptor;
-			this.properties = properties;
-			this.settings = settings;
-
 			// Persisters:
 
 			classPersisters = new Hashtable();
 			classPersistersByName = new Hashtable();
+			IDictionary classMeta = new Hashtable();
 
 			foreach( PersistentClass model in cfg.ClassMappings )
 			{
@@ -135,15 +149,19 @@ namespace NHibernate.Impl
 				// In HQL the Imports are used to get from the Classname to the Persister.  The
 				// Imports provide the ability to jump from the Classname to the AssemblyQualifiedName.
 				classPersistersByName[ model.MappedClass.AssemblyQualifiedName ] = cp;
+
+				classMeta[ model.MappedClass ] = cp.ClassMetadata;
 			}
+			classMetadata = new Hashtable( classMeta );
 
 			collectionPersisters = new Hashtable();
 			foreach( Mapping.Collection map in cfg.CollectionMappings )
 			{
-				//collectionPersisters[ map.Role ] = new CollectionPersister( map, cfg, this );
 				collectionPersisters[ map.Role ] = PersisterFactory.CreateCollectionPersister( cfg, map, this );
 			}
+			collectionMetadata = new Hashtable( collectionPersisters );
 
+			// after *all* persisters are registered
 			foreach( IClassPersister persister in classPersisters.Values )
 			{
 				persister.PostInstantiate( this );
@@ -165,11 +183,36 @@ namespace NHibernate.Impl
 
 			SessionFactoryObjectFactory.AddInstance( uuid, name, this, properties );
 
-			namedQueries = cfg.NamedQueries;
+			// Named queries:
+			// TODO: precompile and cache named queries
+			namedQueries = new Hashtable( cfg.NamedQueries );
+			namedSqlQueries = new Hashtable( cfg.NamedSQLQueries.Count  );
+			foreach ( NamedSQLQuery nsq in cfg.NamedSQLQueries )
+			{
+				namedSqlQueries[ nsq.QueryString ] = new InternalNamedSQLQuery( nsq.QueryString, nsq.ReturnAliases, nsq.ReturnClasses, nsq.SynchronizedTables );
+			}
+
+
 			imports = new Hashtable( cfg.Imports );
 
 			log.Debug( "Instantiated session factory" );
 
+			if ( settings.IsAutoCreateSchema )
+			{
+				new SchemaExport( cfg ).Create( false, true );
+			}
+
+			/*
+			if ( settings.IsAutoUpdateSchema )
+			{
+				new SchemaUpdate( cfg ).Execute( false, true );
+			}
+			*/
+
+			if ( settings.IsAutoDropSchema )
+			{
+				schemaExport = new SchemaExport( cfg );
+			}
 		}
 
 		// Emulates constant time LRU/MRU algorithms for cache
@@ -324,6 +367,24 @@ namespace NHibernate.Impl
 		{
 			softQueryCache[ key ] = value;
 			strongRefs[ ++strongRefIndex%MaxStrongRefCount ] = value;
+		}
+
+		/// <summary></summary>
+		public int MaximumFetchDepth
+		{
+			get { return settings.MaximumFetchDepth; }
+		}
+
+		/// <summary></summary>
+		public bool IsShowSqlEnabled
+		{
+			get { return settings.IsShowSqlEnabled; }
+		}
+
+		/// <summary></summary>
+		public int FetchSize
+		{
+			get { return settings.StatementFetchSize; }
 		}
 
 		/// <summary></summary>
@@ -569,7 +630,31 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public bool EnableJoinedFetch
+		public bool IsBatchUpdateEnabled
+		{
+			get { return settings.BatchSize > 0; }
+		}
+
+		/// <summary></summary>
+		public int BatchSize
+		{
+			get { return settings.BatchSize; }
+		}
+
+		/// <summary></summary>
+		public bool IsScrollableResultSetsEnabled
+		{
+			get { return settings.IsScrollableResultSetsEnabled; }
+		}
+
+		/// <summary></summary>
+		public bool IsGetGeneratedKeysEnabled
+		{
+			get { return settings.IsGetGeneratedKeysEnabled; }
+		}
+
+		/// <summary></summary>
+		public bool IsOuterJoinedFetchEnabled
 		{
 			get { return settings.IsOuterJoinFetchEnabled; }
 		}
@@ -587,6 +672,16 @@ namespace NHibernate.Impl
 				throw new MappingException( "Named query not known: " + name );
 			}
 			return queryString;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="queryName"></param>
+		/// <returns></returns>
+		public InternalNamedSQLQuery GetNamedSQLQuery( string queryName )
+		{
+			return namedSqlQueries[ queryName ] as InternalNamedSQLQuery;
 		}
 
 		/// <summary>
@@ -863,6 +958,21 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// 
 		/// </summary>
+		public void EvictQueries( )
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cacheRegion"></param>
+		public void EvictQueries( string cacheRegion )
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="roleName"></param>
 		public void EvictCollection( string roleName )
 		{
@@ -873,5 +983,41 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// TODO: a better way to normalised the NamedSQLQUery aspect
+		internal class InternalNamedSQLQuery
+		{
+			private readonly string queryString;
+			private readonly string[] returnAliases;
+			private readonly System.Type[] returnClasses;
+			private readonly IList querySpaces;
+
+			public InternalNamedSQLQuery( string query, string[] aliases, System.Type[] clazz, IList querySpaces )
+			{
+				this.returnClasses = clazz;
+				this.returnAliases = aliases;
+				this.queryString = query;
+				this.querySpaces = querySpaces;
+			}
+
+			public string[] ReturnAliases
+			{
+				get { return returnAliases; }
+			}
+
+			public System.Type[] ReturnClasses
+			{
+				get { return returnClasses; }
+			}
+
+			public string QueryString
+			{
+				get { return queryString; }
+			}
+
+			public ICollection QuerySpaces
+			{
+				get { return querySpaces; }
+			}
+		}
 	}
 }

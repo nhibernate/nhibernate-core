@@ -143,6 +143,14 @@ namespace NHibernate.Persister
 			get { return hydrateSpan; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool IsBatchLoadable
+		{
+			get { return batchSize > 1; }
+		}
+
 		/// <summary></summary>
 		public string Name
 		{
@@ -1136,6 +1144,12 @@ namespace NHibernate.Persister
 		}
 
 		/// <summary></summary>
+		public virtual bool[ ] PropertyNullability
+		{
+			get { return propertyNullability; }
+		}
+
+		/// <summary></summary>
 		protected virtual bool UseDynamicUpdate
 		{
 			get { return dynamicUpdate; }
@@ -1286,7 +1300,7 @@ namespace NHibernate.Persister
 						System.Type clazz = ( (EntityType) uniqueKeyType).AssociatedClass;
 						uniqueKeyType = factory.GetPersister( clazz ).IdentifierType;
 					}
-					// TODO: Change EntityLoader to handle this
+					// TODO: 2.1 - Change EntityLoader to handle this
 					//uniqueKeyLoaders.Add( propertyNames[ i ], new EntityLoader( this, columns, uniqueKeyType, factory ) );
 					//uniqueKeyLoaders.Add( propertyNames[ i ], new EntityLoader( this, columns, uniqueKeyType, factory ) );
 				}

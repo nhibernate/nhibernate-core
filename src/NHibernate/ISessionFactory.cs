@@ -107,7 +107,6 @@ namespace NHibernate
 		/// <param name="id"></param>
 		void Evict( System.Type persistentClass, object id );
 
-
 		/// <summary>
 		/// Evict all entries from the process-level cache.  This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
@@ -124,5 +123,16 @@ namespace NHibernate
 		/// <param name="roleName"></param>
 		/// <param name="id"></param>
 		void EvictCollection( string roleName, object id );
+
+		/// <summary>
+		/// Evict any query result sets cached in the default query cache region.
+		/// </summary>
+		void EvictQueries( );
+
+		/// <summary>
+		/// Evict any query result sets cached in the named query cache region.
+		/// </summary>
+		/// <param name="cacheRegion"></param>
+		void EvictQueries( string cacheRegion );
 	}
 }

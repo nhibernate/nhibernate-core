@@ -52,7 +52,8 @@ namespace NHibernate.Cache
 		/// 
 		/// </summary>
 		/// <param name="key"></param>
-		public ISoftLock Lock( object key )
+		/// <param name="version"></param>
+		public ISoftLock Lock( object key, object version )
 		{
 			log.Error( "Application attempted to edit read only item: " + key );
 			throw new InvalidOperationException( "Can't write to a readonly object" );

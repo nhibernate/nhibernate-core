@@ -10,10 +10,11 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal abstract class ScheduledCollectionAction : IExecutable
 	{
-		private ICollectionPersister _persister;
-		private object _id;
-		private ISessionImplementor _session;
-		private ISoftLock _lock = null;
+		private ICollectionPersister persister;
+		private object id;
+		private ISessionImplementor session;
+		private ISoftLock lck = null;
+		private string collectionRole;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ScheduledCollectionAction"/>.
@@ -23,9 +24,10 @@ namespace NHibernate.Impl
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
 		public ScheduledCollectionAction( ICollectionPersister persister, object id, ISessionImplementor session )
 		{
-			_persister = persister;
-			_session = session;
-			_id = id;
+			this.persister = persister;
+			this.session = session;
+			this.id = id;
+			this.collectionRole = persister.Role;
 		}
 
 		/// <summary>
@@ -33,7 +35,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		public ICollectionPersister Persister
 		{
-			get { return _persister; }
+			get { return persister; }
 		}
 
 		/// <summary>
@@ -41,7 +43,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		public object Id
 		{
-			get { return _id; }
+			get { return id; }
 		}
 
 		/// <summary>
@@ -49,7 +51,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		public ISessionImplementor Session
 		{
-			get { return _session; }
+			get { return session; }
 		}
 
 		#region SessionImpl.IExecutable Members
@@ -57,18 +59,40 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public void AfterTransactionCompletion()
 		{
-			if ( _persister.HasCache )
+			if ( persister.HasCache )
 			{
-				_persister.Cache.Release( _id, _lock );
+				persister.Cache.Release( id, lck );
 			}
+		}
+
+		public bool HasAfterTransactionCompletion
+		{
+			get { return persister.HasCache; }
 		}
 
 		public abstract void Execute();
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public void BeforeExecutions( )
+		{
+			// we need to obtain the lock before any actions are
+			// executed, since this may be an inverse="true"
+			// bidirectional association and it is one of the
+			// earlier entity actions which actually updates
+			// the database (this action is resposible for
+			// second-level cache invalidation only)
+			if ( persister.HasCache ) 
+			{
+				lck = persister.Cache.Lock( id, null ); //collections don't have version numbers :-(
+			}
+		}
+
 		/// <summary></summary>
 		public object[ ] PropertySpaces
 		{
-			get { return new object[ ] {_persister.CollectionSpace}; } //TODO: cache the array on the persister
+			get { return new object[ ] { persister.CollectionSpace }; } //TODO: cache the array on the persister
 		}
 
 		#endregion

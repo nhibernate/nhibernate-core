@@ -908,6 +908,7 @@ namespace NHibernate.Loader
 			return DoFindAndInitializeNonLazyCollections( session, qp, optionalObject, optionalID, null, null, returnProxies );
 		}
 
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -926,6 +927,48 @@ namespace NHibernate.Loader
 		{
 			QueryParameters qp = new QueryParameters( new IType[ ] {type}, new object[ ] {id} );
 			return DoFindAndInitializeNonLazyCollections( session, qp, null, null, collection, owner, true );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="id"></param>
+		/// <param name="type"></param>
+		internal void LoadCollection(
+			ISessionImplementor session,
+			object id,
+			IType type )
+		{
+			LoadCollection( session, new object[] { id }, new IType[] { type } );
+		}
+			
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="ids"></param>
+		/// <param name="type"></param>
+		internal void LoadCollectionBatch(
+			ISessionImplementor session,
+			object[] ids,
+			IType type )
+		{
+			IType[] idTypes = new IType[ ids.Length ];
+			for( int i = 0; i < idTypes.Length; i++ )
+			{
+				idTypes[ i ] = type;
+			}
+			LoadCollection( session, ids, idTypes );
+		}
+
+		private void LoadCollection(
+			ISessionImplementor session,
+			object[] ids,
+			IType[] types )
+		{
+			QueryParameters qp = new QueryParameters( types, ids );
+			DoFindAndInitializeNonLazyCollections( session, qp, null, null, null, ids, true );
 		}
 
 		/// <summary>

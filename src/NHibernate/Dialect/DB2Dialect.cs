@@ -126,7 +126,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("length", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction("ltrim", new StandardSQLFunction() );
 
-			DefaultProperties[ Environment.OuterJoin ] = "true";
+			DefaultProperties[ Environment.UseOuterJoin ] = "true";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.DB2Driver";
 		}
 

@@ -13,16 +13,17 @@ namespace NHibernate.Impl
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(EntityEntry) );
 
-		private LockMode _lockMode;
-		private Status _status;
-		private object _id;
-		private object[] _loadedState;
-		private object[] _deletedState;
-		private bool _existsInDatabase;
-		private object _version;
+		private LockMode lockMode;
+		private Status status;
+		private object id;
+		private object[] loadedState;
+		private object[] deletedState;
+		private bool existsInDatabase;
+		private object version;
 		// for convenience to save some lookups
-		[NonSerialized] private IClassPersister _persister;
-		private string _className;
+		[NonSerialized] private IClassPersister persister;
+		private string className;
+		private bool isBeingReplicated;
 			
 		/// <summary>
 		/// Initializes a new instance of EntityEntry.
@@ -34,16 +35,21 @@ namespace NHibernate.Impl
 		/// <param name="lockMode">The <see cref="LockMode"/> for the Entity.</param>
 		/// <param name="existsInDatabase">A boolean indicating if the Entity exists in the database.</param>
 		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for this Entity.</param>
-		public EntityEntry(Status status, object[] loadedState, object id, object version, LockMode lockMode, bool existsInDatabase, IClassPersister persister) 
+		/// <param name="disableVersionIncrement"></param>
+		public EntityEntry(Status status, object[] loadedState, object id, object version, LockMode lockMode, bool existsInDatabase, IClassPersister persister, bool disableVersionIncrement ) 
 		{
-			_status = status;
-			_loadedState = loadedState;
-			_id = id;
-			_existsInDatabase = existsInDatabase;
-			_version = version;
-			_lockMode = lockMode;
-			_persister = persister;
-			if (_persister!=null) _className = _persister.ClassName;
+			this.status = status;
+			this.loadedState = loadedState;
+			this.id = id;
+			this.existsInDatabase = existsInDatabase;
+			this.version = version;
+			this.lockMode = lockMode;
+			this.isBeingReplicated = disableVersionIncrement;
+			this.persister = persister;
+			if ( persister != null ) 
+			{
+				className = persister.ClassName;
+			}
 		}
 
 		/// <summary>
@@ -52,8 +58,8 @@ namespace NHibernate.Impl
 		/// <value>The <see cref="LockMode"/> of the Entity.</value>
 		public LockMode LockMode
 		{
-			get { return _lockMode; }
-			set { _lockMode = value; }
+			get { return lockMode; }
+			set { lockMode = value; }
 		}
 
 		/// <summary>
@@ -63,8 +69,8 @@ namespace NHibernate.Impl
 		/// <value>The <see cref="Status"/> of this Entity.</value>
 		public Status Status
 		{
-			get { return _status; }
-			set { _status = value; }
+			get { return status; }
+			set { status = value; }
 		}
 
 		/// <summary>
@@ -75,8 +81,8 @@ namespace NHibernate.Impl
 		/// <see cref="Impl.Status.Saving"/> and the database generates the id.</remarks>
 		public object Id
 		{
-			get { return _id; }
-			set { _id = value; }
+			get { return id; }
+			set { id = value; }
 		}
 
 		/// <summary>
@@ -88,8 +94,8 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public object[] LoadedState
 		{
-			get { return _loadedState; }
-			set { _loadedState = value; }
+			get { return loadedState; }
+			set { loadedState = value; }
 		}
 
 		/// <summary>
@@ -99,8 +105,8 @@ namespace NHibernate.Impl
 		/// <remarks>This will be <c>null</c> if the Entity is not being deleted.</remarks>
 		public object[] DeletedState
 		{
-			get { return _deletedState; }
-			set { _deletedState = value; }
+			get { return deletedState; }
+			set { deletedState = value; }
 		}
 
 		/// <summary>
@@ -113,8 +119,8 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public bool ExistsInDatabase
 		{
-			get { return _existsInDatabase; }
-			set { _existsInDatabase = value; }
+			get { return existsInDatabase; }
+			set { existsInDatabase = value; }
 		}
 
 		/// <summary>
@@ -123,8 +129,8 @@ namespace NHibernate.Impl
 		/// <value>The version of the Entity.</value>
 		public object Version
 		{
-			get { return _version; }
-			set { _version = value; }
+			get { return version; }
+			set { version = value; }
 		}
 
 		/// <summary>
@@ -133,8 +139,8 @@ namespace NHibernate.Impl
 		/// <value>The <see cref="IClassPersister"/> that is reponsible for this Entity.</value>
 		public IClassPersister Persister
 		{
-			get { return _persister; }
-			set { _persister = value; }
+			get { return persister; }
+			set { persister = value; }
 		}
 
 		/// <summary>
@@ -143,9 +149,15 @@ namespace NHibernate.Impl
 		/// <value>The Fully Qualified Name of the class this Entity is an instance of.</value>
 		public string ClassName
 		{
-			get { return _className; }
+			get { return className; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool IsBeingReplicated
+		{
+			get { return isBeingReplicated; }
+		}
 	}
-		
 }

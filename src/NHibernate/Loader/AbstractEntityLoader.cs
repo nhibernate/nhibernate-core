@@ -9,7 +9,7 @@ using NHibernate.Util;
 namespace NHibernate.Loader
 {
 	/// <summary></summary>
-	public class AbstractEntityLoader : OuterJoinLoader
+	public abstract class AbstractEntityLoader : OuterJoinLoader
 	{
 		private ILoadable persister;
 		private ICollectionPersister collectionPersister;

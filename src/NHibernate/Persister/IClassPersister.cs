@@ -295,6 +295,11 @@ namespace NHibernate.Persister
 		bool[ ] PropertyUpdateability { get; }
 
 		/// <summary>
+		/// Get the nullability of the properties of this class
+		/// </summary>
+		bool[ ] PropertyNullability { get; }
+
+		/// <summary>
 		/// Gets if the Property is insertable.
 		/// </summary>
 		/// <value><c>true</c> if the Property's value can be inserted.</value>
@@ -334,7 +339,12 @@ namespace NHibernate.Persister
 		/// </summary>
 		IClassMetadata ClassMetadata { get; }
 
-		/* Hibernate 2.1 features - not sure if we need for SQL loading
+		/// <summary>
+		/// Is batch loading enabled?
+		/// </summary>
+		bool IsBatchLoadable { get; }
+
+		/* TODO : 2.1 features - not sure if we need for SQL loading
 
 		/// <summary>
 		/// Get the proxy interface that instances of <em>this</em> concrete class will be cast to (optional operation).

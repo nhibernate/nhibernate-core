@@ -44,7 +44,7 @@ namespace NHibernate.Test.CacheTest {
 
 			// update it;
 
-			ccs.Lock("foo");
+			ccs.Lock("foo", null);
 
 			Assert.IsNull( ccs.Get("foo", after) );
 			Assert.IsNull( ccs.Get("foo", longBefore) );
@@ -81,8 +81,8 @@ namespace NHibernate.Test.CacheTest {
 
 			// update it again, with multiple locks
 
-			ccs.Lock("foo");
-			ccs.Lock("foo");
+			ccs.Lock("foo", null);
+			ccs.Lock("foo", null);
 
 			Assert.IsNull( ccs.Get("foo", longLongAfter) );
 

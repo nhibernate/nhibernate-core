@@ -279,6 +279,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ReplicationMode.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "StaleObjectStateException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1059,6 +1064,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\BatchingBatcher.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\CacheEntry.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1129,6 +1139,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\OnReplicateVisitor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\OnUpdateVisitor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1179,6 +1194,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\ScheduledIdentityInsertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\ScheduledInsertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1204,6 +1224,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\SqlQueryImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\Status.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1215,6 +1240,11 @@
                 />
                 <File
                     RelPath = "Loader\AbstractEntityLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\BatchingCollectionInitializer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

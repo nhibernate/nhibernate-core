@@ -7,9 +7,19 @@ namespace NHibernate.Impl
 	internal interface IExecutable
 	{
 		/// <summary>
+		/// 
+		/// </summary>
+		void BeforeExecutions();
+
+		/// <summary>
 		/// Execute the action required to write changes to the database.
 		/// </summary>
 		void Execute();
+
+		/// <summary>
+		/// Does the executable have an AfterTransactionCompletion process
+		/// </summary>
+		bool HasAfterTransactionCompletion { get; }
 
 		/// <summary>
 		/// Called after the Transaction has been completed.

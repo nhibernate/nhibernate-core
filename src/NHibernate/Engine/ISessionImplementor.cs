@@ -40,6 +40,7 @@ namespace NHibernate.Engine
 		/// Set the "shallow dirty" status of the collection. Called when the collection detects
 		/// that the client is modifying it
 		/// </summary>
+		/// TODO: (2.1) This method no longer required.
 		void Dirty( PersistentCollection collection );
 
 		/// <summary>
@@ -132,12 +133,14 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		object ImmediateLoad( System.Type persistentClass, object id );
 
-//		/// <summary>
-//		/// Load an instance immediately. Do not return a proxy
-//		/// </summary>
-//		/// <param name="persistentClass"></param>
-//		/// <param name="id"></param>
-//		/// <returns></returns>
+		/// <summary>
+		/// Load an instance by a unique key that is not the primary key.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="uniqueKeyPropertyName"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		object LoadByUniqueKey( System.Type persistentClass, string uniqueKeyPropertyName, object id );
 
 		/// <summary>
 		/// System time before the start of the transaction
@@ -150,7 +153,6 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <returns></returns>
 		ISessionFactoryImplementor Factory { get; }
-
 
 		/// <summary>
 		/// Get the prepared statement <c>Batcher</c> for this session
@@ -333,5 +335,62 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		ICollection GetOrphans( PersistentCollection coll );
 
+		/// <summary>
+		/// Get a batch of uninitialized collection keys for this role
+		/// </summary>
+		/// <param name="collectionPersister"></param>
+		/// <param name="id"></param>
+		/// <param name="batchSize"></param>
+		/// <returns></returns>
+		object[] GetCollectionBatch( ICollectionPersister collectionPersister, object id, int batchSize );
+
+		/// <summary>
+		/// Get a batch of unloaded identifiers for this class
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <param name="batchSize"></param>
+		/// <returns></returns>
+		object[] GetClassBatch( System.Type clazz, object id, int batchSize );
+
+		/// <summary>
+		/// Register the entity as batch loadable, if enabled
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		void ScheduleBatchLoad( System.Type clazz, object id );
+
+		/// <summary>
+		/// Execute an SQL Query
+		/// </summary>
+		/// <param name="sqlQuery"></param>
+		/// <param name="aliases"></param>
+		/// <param name="classes"></param>
+		/// <param name="queryParameters"></param>
+		/// <param name="querySpaces"></param>
+		/// <returns></returns>
+		IList FindBySQL( string sqlQuery, string[] aliases, System.Type[] classes, QueryParameters queryParameters, ICollection querySpaces );
+
+		/// <summary>
+		/// new in 2.1 no javadoc
+		/// </summary>
+		/// <param name="key"></param>
+		void AddNonExist( Key key );
+
+		/// <summary>
+		/// new in 2.1 no javadoc
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="copiedAlready"></param>
+		/// <returns></returns>
+		object Copy( object obj, IDictionary copiedAlready );
+
+		/// <summary>
+		/// new in 2.1 no javadoc
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="collectionPersister"></param>
+		/// <returns></returns>
+		object GetCollectionOwner( object key, ICollectionPersister collectionPersister );
 	}
 }

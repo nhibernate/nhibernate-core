@@ -36,9 +36,9 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// 
 		/// </summary>
-		public string[] ReturnClasses
+		public System.Type[] ReturnClasses
 		{
-			get { return (string[]) aliasedClasses.ToArray( typeof( string[ ] ) ); }
+			get { return (System.Type[]) aliasedClasses.ToArray( typeof( string[ ] ) ); }
 		}
 
 		/// <summary>
@@ -71,7 +71,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <param name="clazz"></param>
-		public void AddAliasedClass( string alias, object clazz)
+		public void AddAliasedClass( string alias, System.Type clazz)
 		{
 			aliases.Add( alias );
 			aliasedClasses.Add( clazz );

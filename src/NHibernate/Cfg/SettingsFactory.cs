@@ -55,7 +55,7 @@ namespace NHibernate.Cfg
 			}
 
 
-			bool useOuterJoin = PropertiesHelper.GetBoolean( Environment.OuterJoin, properties, true );
+			bool useOuterJoin = PropertiesHelper.GetBoolean( Environment.UseOuterJoin, properties, true );
 			log.Info( "use outer join fetching: " + useOuterJoin );
 
 			IConnectionProvider connectionProvider = ConnectionProviderFactory.NewConnectionProvider( properties );

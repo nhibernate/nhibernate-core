@@ -118,7 +118,7 @@ namespace NHibernate.Loader
 		{
 			IList associations = new ArrayList();
 
-			if( session.EnableJoinedFetch )
+			if( session.IsOuterJoinedFetchEnabled )
 			{
 				IType type = persister.ElementType;
 				if( type.IsEntityType )
@@ -241,7 +241,7 @@ namespace NHibernate.Loader
 		/// <param name="session"></param>
 		private void WalkClassTree( ILoadable persister, string alias, IList associations, IList classPersisters, string path, ISessionFactoryImplementor session )
 		{
-			if( !session.EnableJoinedFetch )
+			if( !session.IsOuterJoinedFetchEnabled )
 			{
 				return;
 			}
@@ -311,7 +311,7 @@ namespace NHibernate.Loader
 			string path,
 			ISessionFactoryImplementor session )
 		{
-			if( !session.EnableJoinedFetch )
+			if( !session.IsOuterJoinedFetchEnabled )
 			{
 				return;
 			}
@@ -378,7 +378,7 @@ namespace NHibernate.Loader
 			string path,
 			ISessionFactoryImplementor session )
 		{
-			if( !session.EnableJoinedFetch )
+			if( !session.IsOuterJoinedFetchEnabled )
 			{
 				return;
 			}

@@ -10,17 +10,21 @@ namespace NHibernate.Engine
 	[Serializable]
 	public sealed class Key
 	{
-		private object id;
-		private object identifierSpace;
+		private readonly object identifier;
+		private readonly object identifierSpace;
+		private readonly System.Type clazz;
+		private readonly bool isBatchLoadable;
 
-		private Key( object id, object identifierSpace )
+		private Key( object id, object identifierSpace, System.Type clazz, bool isBatchLoadable )
 		{
 			if( id == null )
 			{
 				throw new ArgumentException( "null identifier", "id" );
 			}
-			this.id = id;
+			this.identifier = id;
 			this.identifierSpace = identifierSpace;
+			this.clazz = clazz;
+			this.isBatchLoadable = isBatchLoadable;
 		}
 
 		/// <summary>
@@ -28,7 +32,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="p"></param>
-		public Key( object id, IClassPersister p ) : this( id, p.IdentifierSpace )
+		public Key( object id, IClassPersister p ) : this( id, p.IdentifierSpace, p.MappedClass, p.IsBatchLoadable )
 		{
 		}
 
@@ -37,7 +41,23 @@ namespace NHibernate.Engine
 		/// </summary>
 		public object Identifier
 		{
-			get { return id; }
+			get { return identifier; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public System.Type MappedClass
+		{
+			get { return clazz; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool IsBatchLoadable
+		{
+			get { return isBatchLoadable; }
 		}
 
 		/// <summary>
@@ -52,19 +72,22 @@ namespace NHibernate.Engine
 			{
 				return false;
 			}
-			return otherKey.identifierSpace.Equals( this.identifierSpace ) && otherKey.id.Equals( this.id );
+			return otherKey.identifierSpace.Equals( this.identifierSpace ) && otherKey.Identifier.Equals( this.identifier );
 		}
 
 		/// <summary></summary>
 		public override int GetHashCode()
 		{
-			return id.GetHashCode();
+			int result = 17;
+			result = 37 * result + identifierSpace.GetHashCode();
+			result = 37 * result + identifier.GetHashCode();
+			return result;
 		}
 
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return id.ToString();
+			return identifier.ToString();
 		}
 
 	}

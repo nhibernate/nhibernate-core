@@ -43,7 +43,7 @@ namespace NHibernate.Impl
 		{
 			if( Persister.HasCache )
 			{
-				_lock = Persister.Cache.Lock( Id );
+				_lock = Persister.Cache.Lock( Id, _lastVersion );
 			}
 			Persister.Update( Id, _fields, _dirtyFields, _lastVersion, Instance, Session );
 			Session.PostUpdate( Instance, _updatedState, _nextVersion );

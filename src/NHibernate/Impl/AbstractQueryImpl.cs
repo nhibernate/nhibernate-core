@@ -661,7 +661,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public IType[ ] ReturnTypes
+		public virtual IType[ ] ReturnTypes
 		{
 			get { return session.Factory.GetReturnTypes( queryString ); }
 		}

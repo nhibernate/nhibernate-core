@@ -38,9 +38,10 @@ namespace NHibernate.Cache
 		/// We are going to attempt to update/delete the keyed object
 		/// </summary>
 		/// <param name="key">The key</param>
+		/// <param name="version"></param>
 		/// <exception cref="CacheException"></exception>
 		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
-		ISoftLock Lock( object key );
+		ISoftLock Lock( object key, object version );
 
 		/// <summary>
 		/// We have finished the attempted update/delete (which may or may not have been successful)
