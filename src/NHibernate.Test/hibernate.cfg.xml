@@ -11,6 +11,7 @@
 		<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
 		<!-- mapping files -->
 		<mapping file="ABC.hbm.xml" />
+		<mapping resource="NHibernate.DomainModel.Simple.hbm.xml" assembly="NHibernate.DomainModel" />
 	</session-factory>
 	
 </hibernate-configuration>
