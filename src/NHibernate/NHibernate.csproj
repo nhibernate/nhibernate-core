@@ -412,6 +412,29 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Eg\Edge.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eg\Edge.hbm.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Eg\Source.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eg\Vertex.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eg\Vertex.hbm.xml"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "Engine\Cascades.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

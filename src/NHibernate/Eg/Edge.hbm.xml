@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" ?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+        "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
+<hibernate-mapping>
+	<class name="NHibernate.Eg.Edge" table="edge">
+		<!--<jcs-cache usage="read-write"/>-->
+		<id column="edge_id" name="Key">
+			<generator class="hilo" />
+		</id>
+		<property name="Name" unique="true" not-null="true" length="50" />
+		<many-to-one name="Source" not-null="true" />
+		<many-to-one name="Sink" not-null="true" />
+		<property name="Length" column="edge_length" />
+		<property name="Capacity" column="edge_cpcty" />
+		<property name="CreationDate" type="date" />
+	</class>
+</hibernate-mapping>
