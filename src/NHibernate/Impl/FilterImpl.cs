@@ -12,16 +12,16 @@ namespace NHibernate.Impl {
 			this.collection = collection;
 		}
 
-		public override ICollection GetCollection() {
+		public override IEnumerable Enumerable() {
 			Values[0] = null;
 			Types[0] = null;
-			return Session.FilterCollection(collection, QueryString, (object[]) Values.ToArray(typeof(object)), (IType[]) Types.ToArray(typeof(IType)), Selection, NamedParams );
+			return Session.EnumerableFilter(collection, QueryString, (object[]) Values.ToArray(typeof(object)), (IType[]) Types.ToArray(typeof(IType)), Selection, NamedParams );
 		}
 
-		public override IList GetList() {
+		public override IList List() {
 			Values[0] = null;
 			Types[0] = null;
-			return Session.FilterList(collection, QueryString, (object[]) Values.ToArray(typeof(object)), (IType[]) Types.ToArray(typeof(IType)), Selection, NamedParams );
+			return Session.Filter(collection, QueryString, (object[]) Values.ToArray(typeof(object)), (IType[]) Types.ToArray(typeof(IType)), Selection, NamedParams );
 		}
 	}
 }

@@ -5,7 +5,7 @@ using NHibernate.Cache;
 
 namespace NHibernate.Impl {
 	
-	internal abstract class ScheduledCollectionAction : SessionImpl.Executable {
+	internal abstract class ScheduledCollectionAction : SessionImpl.IExecutable {
 		protected CollectionPersister persister;
 		protected object id;
 		protected ISessionImplementor session;

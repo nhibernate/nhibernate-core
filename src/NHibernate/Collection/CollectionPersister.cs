@@ -22,7 +22,7 @@ namespace NHibernate.Collection {
 	/// <remarks>
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
-	public sealed class CollectionPersister { //: ICollectionMetadata {
+	public sealed class CollectionPersister : ICollectionMetadata {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CollectionPersister));
 
 		private string sqlSelectString;

@@ -77,7 +77,7 @@ namespace NHibernate {
 		/// Entities returned as results are initialized on demand. The first SQL query returns
 		/// identifiers only.
 		/// </remarks>
-		ICollection GetCollection();
+		IEnumerable Enumerable();
 
 		/// <summary>
 		/// Return the query results as <c>ScrollableResults</c>. The scrollability of the returned
@@ -93,7 +93,7 @@ namespace NHibernate {
 		/// Return the query results as a <c>IList</c>. If the query contains multiple results per row,
 		/// the results are returned in an instance of <c>object[]</c>.
 		/// </summary>
-		IList GetList();
+		IList List();
 
 		/// <summary>
 		/// The maximum number of rows to retrieve

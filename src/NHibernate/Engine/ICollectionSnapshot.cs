@@ -5,7 +5,7 @@ namespace NHibernate.Engine {
 	public interface ICollectionSnapshot {
 		object Key { get; }
 		string Role { get; }
-		object GetSnapshot();
+		object Snapshot { get; }
 		bool Dirty { get; }
 		void SetDirty();
 	}

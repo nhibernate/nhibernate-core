@@ -50,14 +50,8 @@ namespace NHibernate.Impl {
 		}
 	
 		public IList List() {
-#if PORTED
 			return session.Find(this);
-#else
-#warning SessionImpl.Find has not been ported
-
-			throw new NotImplementedException("Not ported yet");
-#endif
-			
+	
 		}
 	
 		public IEnumerator IterateExpressions() {

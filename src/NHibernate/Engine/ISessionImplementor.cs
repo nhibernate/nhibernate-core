@@ -144,7 +144,7 @@ namespace NHibernate.Engine {
 		/// <param name="selection"></param>
 		/// <param name="namedParams"></param>
 		/// <returns></returns>
-		IList FindList(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+		IList Find(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
 	
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
@@ -155,7 +155,7 @@ namespace NHibernate.Engine {
 		/// <param name="selection"></param>
 		/// <param name="namedParams"></param>
 		/// <returns></returns>
-		ICollection FindCollection(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+		IEnumerable Enumerable(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
 
 		/// <summary>
 		/// Execute a filter
@@ -167,7 +167,7 @@ namespace NHibernate.Engine {
 		/// <param name="selection"></param>
 		/// <param name="namedParams"></param>
 		/// <returns></returns>
-		IList FilterList(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+		IList Filter(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
 
 		/// <summary>
 		/// Collection from a filter
@@ -179,7 +179,7 @@ namespace NHibernate.Engine {
 		/// <param name="selection"></param>
 		/// <param name="namedParams"></param>
 		/// <returns></returns>
-		ICollection FilterCollection(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+		IEnumerable EnumerableFilter(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
 		
 		/// <summary>
 		/// Get the <c>IClassPersister</c> for an object
@@ -195,7 +195,7 @@ namespace NHibernate.Engine {
 		/// <param name="key"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
-		void AddUninitializeEntity(Key key, object obj, LockMode lockMode);
+		void AddUninitializedEntity(Key key, object obj, LockMode lockMode);
 
 		/// <summary>
 		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading

@@ -66,14 +66,14 @@ namespace NHibernate {
 		/// Called before a flush
 		/// </summary>
 		/// <param name="entities">The entities</param>
-		void PreFlush(IEnumerator entities);
+		void PreFlush(ICollection entities);
 
 		/// <summary>
 		/// Called after a flush that actually ends in execution of the SQL statements required to
 		/// synchronize in-memory state with the database.
 		/// </summary>
 		/// <param name="entities">The entitites</param>
-		void PostFlush(IEnumerator entities);
+		void PostFlush(ICollection entities);
 
 		/// <summary>
 		/// Called when a transient entity is passed to <c>SaveOrUpdate</c>.

@@ -259,7 +259,7 @@ namespace NHibernate.Loader {
 						hydrate[i] = true;
 
 						// so that code is circular-ref safe:
-						session.AddUninitializeEntity(key, obj, LockMode );
+						session.AddUninitializedEntity(key, obj, LockMode );
 					}
 				}
 

@@ -12,12 +12,11 @@ namespace NHibernate.Collection {
 	public abstract class PersistentCollection {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PersistentCollection));
 
-		[NonSerialized]
-		protected ISessionImplementor session;
+		[NonSerialized] protected ISessionImplementor session;
 		protected bool initialized;
-		[NonSerialized]
-		private ArrayList additions;
+		[NonSerialized] private ArrayList additions;
 		private ICollectionSnapshot collectionSnapshot;
+		[NonSerialized] protected bool directlyAccessible;
 
 		//careful: these methods do not initialize the collection
 		public abstract ICollection Elements();
@@ -122,6 +121,10 @@ namespace NHibernate.Collection {
 					return true;
 				}
 			}
+		}
+
+		public bool IsDirectlyAccessible {
+			get { return directlyAccessible; }
 		}
 
 		public virtual bool IsArrayHolder {

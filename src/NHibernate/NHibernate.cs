@@ -194,8 +194,7 @@ namespace NHibernate {
 			return new CustomType(userTypeClass);
 		}
 				
-		/* Needs HybernateProxyHelper and PersistentCollection implementation
-		 *
+		
 		/// <summary>
 		/// Force initialization of a proxy or persistent collection.
 		/// </summary>
@@ -205,14 +204,23 @@ namespace NHibernate {
 			if (proxy==null) {
 				return;
 			}
-			else if ( proxy is IHibernateProxy ) {
-				HibernateProxyHelper.GetLazyInitializer( (IHibernateProxy) proxy ).Initialize();
+			else if ( proxy is HibernateProxy ) {
+				((HibernateProxy) proxy).Initialize();
 			}
 			else if ( proxy is PersistentCollection ) {
 				( (PersistentCollection) proxy ).ForceLoad();
 			}
 		}
-		*/
+
+		public static bool IsInitialized(object proxy) {
+			if ( proxy is HibernateProxy ) {
+				return ((HibernateProxy) proxy).IsUninitialized;
+			} else if ( proxy is PersistentCollection ) {
+				return ( (PersistentCollection) proxy).WasInitialized;
+			} else {
+				return true;
+			}
+		}
 	
 		/*
 		/// <summary>

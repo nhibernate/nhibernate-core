@@ -732,6 +732,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\SessionFactoryImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\SessionImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1393,6 +1398,11 @@
                 />
                 <File
                     RelPath = "Util\IdentityMap.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\JoinedEnumerable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

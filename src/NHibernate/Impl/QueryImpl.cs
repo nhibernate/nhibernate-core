@@ -24,18 +24,18 @@ namespace NHibernate.Impl {
 			selection = new RowSelection();
 		}
 
-		public virtual ICollection GetCollection() {
+		public virtual IEnumerable Enumerable() {
 			IDictionary namedParams = new Hashtable();
 			foreach(DictionaryEntry de in namedParameters) namedParams.Add( de.Key, de.Value );
 			string query = BindParameterLists(namedParams);
-			return session.FindCollection(query, (object[]) values.ToArray(typeof(object)), (IType[]) types.ToArray(typeof(IType)), selection, namedParams);
+			return session.Enumerable(query, (object[]) values.ToArray(typeof(object)), (IType[]) types.ToArray(typeof(IType)), selection, namedParams);
 		}
 
-		public virtual IList GetList() {
+		public virtual IList List() {
 			IDictionary namedParams = new Hashtable();
 			foreach(DictionaryEntry de in namedParameters) namedParams.Add( de.Key, de.Value );
 			string query = BindParameterLists(namedParams);
-			return session.FindList(query, (object[]) values.ToArray(typeof(object)), (IType[]) types.ToArray(typeof(IType)), selection, namedParams);
+			return session.Find(query, (object[]) values.ToArray(typeof(object)), (IType[]) types.ToArray(typeof(IType)), selection, namedParams);
 		}
 
 		public IQuery SetMaxResults(int maxResults) {

@@ -278,7 +278,7 @@ namespace NHibernate {
 		/// </remarks>
 		/// <param name="query">The query string</param>
 		/// <returns>An enumerator</returns>
-		IEnumerable GetEnumerable(string query);
+		IEnumerable Enumerable(string query);
 
 		/// <summary>
 		/// Execute a query and return the results in an interator, 
@@ -299,7 +299,7 @@ namespace NHibernate {
 		/// <param name="value">A value to be written to a "?" placeholder in the query string</param>
 		/// <param name="type">The hibernate type of the value</param>
 		/// <returns>An enumerator</returns>
-		IEnumerable GetEnumerable(string query, object value, IType type);
+		IEnumerable Enumerable(string query, object value, IType type);
 
 		/// <summary>
 		/// Execute a query and return the results in an interator, 
@@ -320,7 +320,7 @@ namespace NHibernate {
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of hibernate types of the values</param>
 		/// <returns>An enumerator</returns>
-		IEnumerable GetEnumerable(string query, object[] values, IType[] types);
+		IEnumerable Enumerable(string query, object[] values, IType[] types);
 
 		/// <summary>
 		/// Apply a filter to a persistent collection.
@@ -333,7 +333,7 @@ namespace NHibernate {
 		/// <param name="collection">A persistent collection to filter</param>
 		/// <param name="filter">A filter query string</param>
 		/// <returns>The resulting collection</returns>
-		IEnumerable Filter(object collection, string filter);
+		ICollection Filter(object collection, string filter);
 
 		/// <summary>
 		/// Apply a filter to a persistent collection, binding the given parameter to a "?" placeholder
@@ -348,7 +348,7 @@ namespace NHibernate {
 		/// <param name="value">A value to be written to a "?" placeholder in the query</param>
 		/// <param name="type">The hibernate type of value</param>
 		/// <returns>A collection</returns>
-		IEnumerable Filter(object collection, string filter, object value, IType type);
+		ICollection Filter(object collection, string filter, object value, IType type);
 
 		/// <summary>
 		/// Apply a filter to a persistent collection, binding the given parameters to "?" placeholders.
@@ -363,7 +363,7 @@ namespace NHibernate {
 		/// <param name="values">The values to be written to "?" placeholders in the query</param>
 		/// <param name="types">The hibernate types of the values</param>
 		/// <returns>A collection</returns>
-		IEnumerable Filter(object collection, string filter, object[] values, IType[] types);
+		ICollection Filter(object collection, string filter, object[] values, IType[] types);
 		
 		/// <summary>
 		/// Delete all objects returned by the query.
