@@ -172,6 +172,25 @@ namespace NHibernate.Test.SqlCommandTest
 		}
 
 		[Test]
+		public void Replace() 
+		{
+			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", new Parameter(), " and c = ", new Parameter() } );
+			
+			SqlString replacedSql = sql.Replace( "table", "replacedTable" );
+			Assert.AreEqual( "select from replacedTable where a = ", replacedSql.SqlParts[0], "replaced single instance" );
+
+			replacedSql = sql.Replace( "not found", "not in here" );
+			Assert.AreEqual( sql.ToString(), replacedSql.ToString(), "replace no found string" );
+
+			replacedSql = sql.Replace( "le", "LE" );
+			Assert.AreEqual( "seLEct from tabLE where a = ", replacedSql.SqlParts[0], "multi-match replace" );
+			Assert.IsTrue( replacedSql.SqlParts[1] is Parameter, "multi-match replace - Param 1" );
+			Assert.AreEqual(" and c = ", replacedSql.SqlParts[2], "multi-match replace" );
+			Assert.IsTrue( replacedSql.SqlParts[3] is Parameter, "multi-match replace - Param 2" );
+			
+		}
+		
+		[Test]
 		public void StartsWith() 
 		{
 			SqlString sql = new SqlString( new string[] {"select", " from table" } );

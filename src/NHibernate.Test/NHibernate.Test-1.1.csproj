@@ -301,6 +301,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ExpressionTest\SQLExpressionFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHSpecificTest\BasicBinaryFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
