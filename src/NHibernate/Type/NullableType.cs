@@ -1,8 +1,6 @@
 using System;
 using System.Data;
 
-using log4net;
-
 using NHibernate.Sql;
 using NHibernate.Engine;
 using NHibernate.Ps;
@@ -15,8 +13,7 @@ namespace NHibernate.Type
 	/// Superclass of single-column nullable types.
 	/// </summary>
 	public abstract class NullableType : AbstractType {
-
-		private static readonly ILog log = LogManager.GetLogger(StringHelper.Qualifier((typeof(IType)).ToString()));  //Is it correct?
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(NullableType));
 
 		public abstract void Set(IDbCommand cmd, object value, int index);
 
@@ -37,14 +34,14 @@ namespace NHibernate.Type
 		public void NullSafeSet(IDbCommand cmd, object value, int index) {
 			if (value==null) {
 				if ( log.IsDebugEnabled )
-					LogManager.GetLogger(GetType()).Debug("binding null to parameter: " + index.ToString());
+					log.Debug("binding null to parameter: " + index.ToString());
 				
 				//Do we check IsNullable?
 				( (IDataParameter)cmd.Parameters[index]).Value = DBNull.Value;
 			}
 			else {
 				if ( log.IsDebugEnabled )
-					LogManager.GetLogger(GetType()).Debug("binding '" + ToXML(value) + "' to parameter: " + index);
+					log.Debug("binding '" + ToXML(value) + "' to parameter: " + index);
 				
 				Set(cmd, value, index);
 			}
@@ -62,12 +59,12 @@ namespace NHibernate.Type
 			object val = rs[name];
 			if ( val==null || val==DBNull.Value ) {
 				if ( log.IsDebugEnabled )
-					LogManager.GetLogger(GetType()).Debug("returning null as column: " + name);
+					log.Debug("returning null as column: " + name);
 				return null;
 			}
 			else {
 				if ( log.IsDebugEnabled )
-					LogManager.GetLogger(GetType()).Debug("returning '" + ToXML(val) + "' as column: " + name);
+					log.Debug("returning '" + ToXML(val) + "' as column: " + name);
 				return val;
 			}
 		}

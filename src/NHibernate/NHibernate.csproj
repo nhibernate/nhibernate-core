@@ -582,6 +582,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Mapping\IRelationalModel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Mapping\List.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -623,11 +628,6 @@
                 />
                 <File
                     RelPath = "Mapping\Property.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Mapping\RelationalModel.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

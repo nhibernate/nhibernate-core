@@ -1,17 +1,12 @@
 using System;
+using System.Collections;
 
-namespace NHibernate.Mapping
-{
-	/// <summary>
-	/// Summary description for PersistentClass.
-	/// </summary>
-	public class PersistentClass
-	{
-		public PersistentClass()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
-		}
+namespace NHibernate.Mapping {
+	
+	public abstract class PersistentClass {
+		private System.Type persistentClass;
+		private string discriminatorValue;
+		private ArrayList properties = new ArrayList();
+		private Table table;
 	}
 }

@@ -1,57 +1,50 @@
 using System;
 
-// using NHibernate.Engine;
+using NHibernate.Engine;
 
 namespace NHibernate.Type {
+
+	/// <summary>
+	/// Represents directionality of the foreign key constraint
+	/// </summary>
+	public abstract class ForeignKeyType {
+		protected ForeignKeyType() { }
+
+		private class ForeignKeyToParentClass : ForeignKeyType {
+			public override bool CascadeNow(CascadePoint cascadePoint) {
+				return cascadePoint != CascadePoint.CascadeBeforeInsertAfterDelete;
+			}
+		}
+
+		private class ForeignKeyFromParentClass : ForeignKeyType {
+			public override bool CascadeNow(CascadePoint cascadePoint) {
+				return cascadePoint != CascadePoint.CascadeAfterInsertBeforeDelete;
+			}
+		}
+
+		/// <summary>
+		/// Should we cascade at this cascade point?
+		/// </summary>
+		public abstract bool CascadeNow(CascadePoint cascadePoint);
+
+		/// <summary>
+		/// A foreign key from child to parent
+		/// </summary>
+		public static ForeignKeyType ForeignKeyToParent = new ForeignKeyToParentClass();
+
+		/// <summary>
+		/// A foreign key from parent to child
+		/// </summary>
+		public static ForeignKeyType ForeignKeyFromParent = new ForeignKeyFromParentClass();
+
+	}
 
 	/// <summary>
 	/// A type that represents some kind of association between entities.
 	/// </summary>
 	public interface IAssociationType {
 
-		// TODO: there's some compilation problem to solve here
+		ForeignKeyType ForeignKeyType { get; }
 
-		/*
-		public static abstract class ForeignKeyType {
-			
-			protected ForeignKeyType() {}
-
-			/// <summary>
-			/// Should we cascade at this cascade point?
-			/// </summary>
-			/// <param name="cascadePoint"></param>
-			/// <returns></returns>
-			public abstract bool CascadeNow(int cascadePoint);
-		}
-		*/
-
-		/*
-		 * TODO: Translate in correct C# this code! Do we need a static constructor?
-		 * 
-		/// <summary>
-		/// A foreign key from child to parent
-		/// </summary>
-		public static readonly ForeignKeyType ForeignKeyToParent = new ForeignKeyType() {
-			public bool CascadeNow(int cascadePoint) {													return cascadePoint != Cascades.CascadeBeforeInsertAfterDelete;
-			}
-		}
-		*/
-
-		/*
-		 * TODO: idem
-		 * 
-		/// <summary>
-		/// A foreign key from parent to child
-		/// </summary>
-		public static readonly ForeignKeyType ForeignKeyFromParent = new ForeignKeyType() {
-			public bool CascadeNow(int cascadePoint) {													return cascadePoint != Cascades.CascadeAfterInsertBeforeDelete;
-			}
-		}
-		*/
-		
-		/// <summary>
-		/// Get the foreign key directionality of this association
-		/// </summary>
-		// ForeignKeyType ForeignKeyType { get; }
 	}
 }
