@@ -11,7 +11,7 @@ namespace NHibernate.DomainModel
 		private string _id;
 		private IList _ones;
 		private Foo[] _fooArray;
-		private IDictionary _foos;// <set> mapping
+		private Iesi.Collections.ISet _foos;// <set> mapping
 		private string _name;
 
 		
@@ -33,7 +33,7 @@ namespace NHibernate.DomainModel
 			set { _fooArray = value; }
 		}
 
-		public IDictionary Foos
+		public Iesi.Collections.ISet Foos
 		{
 			get { return _foos; }
 			set { _foos = value; }

@@ -19,16 +19,16 @@ namespace NHibernate.Collection
 	/// element.
 	/// </remarks>
 	[Serializable]
-	public class SortedSet : Set, IDictionary  
+	public class SortedSet : Set, Iesi.Collections.ISet  
 	{
 		private IComparer comparer;
 
 		protected override object Snapshot(CollectionPersister persister) 
 		{
-			SortedList clonedSet = new SortedList(comparer, map.Count);
-			foreach(DictionaryEntry de in map) 
+			SortedList clonedSet = new SortedList(comparer, _set.Count);
+			foreach(object obj in _set) 
 			{
-				object copy = persister.ElementType.DeepCopy(de.Key);
+				object copy = persister.ElementType.DeepCopy( obj );
 				clonedSet.Add(copy, copy);
 			}
 
@@ -43,7 +43,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize(CollectionPersister persister) 
 		{
-			this.map = new SortedList(comparer); 
+			_set = new Iesi.Collections.SortedSet( Comparer ); 
 			// an ArrayList of the identifiers is what Set uses because there is not
 			// both a Key & Value to worry about - just the Key.
 			this.tempIdentifierList = new ArrayList();
@@ -65,7 +65,8 @@ namespace NHibernate.Collection
 		/// <param name="session">The Session to be bound to.</param>
 		/// <param name="map">The initial values.</param>
 		/// <param name="comparer">The IComparer to use for Sorting.</param>
-		public SortedSet(ISessionImplementor session, IDictionary map, IComparer comparer) : base(session, new SortedList(map, comparer)) 
+		public SortedSet(ISessionImplementor session, Iesi.Collections.ISet map, IComparer comparer) 
+			: base( session, new Iesi.Collections.SortedSet( map, comparer ) )
 		{
 			this.comparer = comparer;
 		}
@@ -77,7 +78,7 @@ namespace NHibernate.Collection
 			for(int i = 0; i < array.Length; i++) 
 			{
 				object newObject = persister.ElementType.Assemble(array[i], session, owner);
-				map.Add(newObject, newObject);
+				_set.Add( newObject );
 			}
 
 			initialized = true;

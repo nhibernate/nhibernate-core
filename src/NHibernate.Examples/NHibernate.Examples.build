@@ -25,6 +25,7 @@
 				<includes name="System.dll" />
 				<includes name="System.XML.dll" />
 				<includes name="System.Data.dll" />
+				<includes name="Iesi.Collections.dll" />
 				<includes name="NHibernate.dll" />
 				<includes name="nunit.framework.dll" />
 			</references>

@@ -5,7 +5,7 @@ namespace NHibernate.DomainModel
 {
 	public interface AbstractProxy : FooProxy 
 	{
-		IDictionary Abstracts
+		Iesi.Collections.ISet Abstracts
 		{
 			get;
 			set;

@@ -10,7 +10,7 @@ namespace NHibernate.DomainModel
 	{
 		private long _id;
 		// <set> mapping
-		private IDictionary _zeds;
+		private Iesi.Collections.ISet _zeds;
 		
 		public long Id
 		{
@@ -18,7 +18,7 @@ namespace NHibernate.DomainModel
 			set { _id = value; }
 		}
 
-		public IDictionary Zeds
+		public Iesi.Collections.ISet Zeds
 		{
 			get { return _zeds; }
 			set { _zeds = value; }

@@ -89,6 +89,11 @@
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
                 />
+                <Reference
+                    Name = "Iesi.Collections"
+                    AssemblyName = "Iesi.Collections"
+                    HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
+                />
             </References>
         </Build>
         <Files>

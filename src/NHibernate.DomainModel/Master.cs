@@ -12,10 +12,10 @@ namespace NHibernate.DomainModel
 		private static object _emptyObject = new object();
 
 		private Master _otherMaster;
-		private IDictionary _details = new Hashtable();
-		private IDictionary _moreDetails = new Hashtable();
-		private IDictionary _incoming = new Hashtable();
-		private IDictionary _outgoing = new Hashtable();
+		private Iesi.Collections.ISet _details = new Iesi.Collections.HashedSet();
+		private Iesi.Collections.ISet _moreDetails = new Iesi.Collections.HashedSet();
+		private Iesi.Collections.ISet _incoming = new Iesi.Collections.HashedSet();
+		private Iesi.Collections.ISet _outgoing = new Iesi.Collections.HashedSet();
 		private string _name = "master";
 		// since this is a version column a value should be set.  NHibernate is unable
 		// to set it right now because it checks to see if value==null -> since this 
@@ -32,7 +32,7 @@ namespace NHibernate.DomainModel
 
 		public void AddDetail(Detail d) 
 		{
-			_details.Add(d, _emptyObject);
+			_details.Add( d );
 		}
 
 		public void RemoveDetail(Detail d) 
@@ -40,13 +40,13 @@ namespace NHibernate.DomainModel
 			_details.Remove(d);
 		}
 
-		public IDictionary Details
+		public Iesi.Collections.ISet Details
 		{
 			get { return _details; }
 			set { _details = value; }
 		}
 		
-		public IDictionary MoreDetails
+		public Iesi.Collections.ISet MoreDetails
 		{
 			get { return _moreDetails; }
 			set { _moreDetails = value; }
@@ -54,7 +54,7 @@ namespace NHibernate.DomainModel
 
 		public void AddIncoming(Master m) 
 		{
-			_incoming.Add(m, _emptyObject);
+			_incoming.Add( m );
 		}
 	
 		public void RemoveIncoming(Master m) 
@@ -62,7 +62,7 @@ namespace NHibernate.DomainModel
 			_incoming.Remove(m);
 		}
 
-		public IDictionary Incoming
+		public Iesi.Collections.ISet Incoming
 		{
 			get { return _incoming; }
 			set { _incoming = value; }
@@ -70,7 +70,7 @@ namespace NHibernate.DomainModel
 
 		public void AddOutgoing(Master m) 
 		{
-			_outgoing.Add(m, _emptyObject);
+			_outgoing.Add( m );
 		}
 
 		public void RemoveOutgoing(Master m) 
@@ -78,7 +78,7 @@ namespace NHibernate.DomainModel
 			_outgoing.Remove(m);
 		}
 
-		public IDictionary Outgoing
+		public Iesi.Collections.ISet Outgoing
 		{
 			get { return _outgoing; }
 			set { _outgoing = value; }

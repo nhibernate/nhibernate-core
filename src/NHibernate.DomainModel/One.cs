@@ -11,7 +11,7 @@ namespace NHibernate.DomainModel
 		private long _key;
 		private string _value;
 		// <set> mapping
-		private IDictionary _manies;
+		private Iesi.Collections.ISet _manies;
 		private int _x;
 		
 		public long Key
@@ -26,7 +26,7 @@ namespace NHibernate.DomainModel
 			set { _value = value; }
 		}
 
-		public IDictionary Manies
+		public Iesi.Collections.ISet Manies
 		{
 			get { return _manies; }
 			set { _manies = value; }

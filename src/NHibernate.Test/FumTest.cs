@@ -289,10 +289,10 @@ namespace NHibernate.Test
 			s.Save(fum2);
 			Qux q = new Qux();
 			s.Save(q);
-			IDictionary dict = new Hashtable();
+			Iesi.Collections.ISet dict = new Iesi.Collections.HashedSet();
 			IList list = new ArrayList();
-			dict.Add(fum1, new object() );
-			dict.Add(fum2, new object() );
+			dict.Add( fum1 );
+			dict.Add( fum2 );
 			list.Add(fum1);
 			q.Fums = dict;
 			q.MoreFums = list;
@@ -305,7 +305,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 2, q.Fums.Count, "collection of fums" );
 			Assert.AreEqual( 1, q.MoreFums.Count, "collection of fums" );
 			Assert.AreSame( q, ((Fum)q.MoreFums[0]).QuxArray[0], "unkeyed composite id collection" );
-			IEnumerator enumer = q.Fums.Keys.GetEnumerator();
+			IEnumerator enumer = q.Fums.GetEnumerator();
 			enumer.MoveNext();
 			s.Delete( (Fum)enumer.Current );
 			enumer.MoveNext();
@@ -323,9 +323,9 @@ namespace NHibernate.Test
 			s.Save(q);
 			Fum f1 = new Fum( FumTest.FumKey("f1") );
 			Fum f2 = new Fum( FumTest.FumKey("f2") );
-			IDictionary dict = new Hashtable();
-			dict.Add( f1, new object() );
-			dict.Add( f2, new object() );
+			Iesi.Collections.ISet dict = new Iesi.Collections.HashedSet();
+			dict.Add( f1 );
+			dict.Add( f2 );
 			IList list = new ArrayList();
 			list.Add(f1);
 			list.Add(f2);

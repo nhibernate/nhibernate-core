@@ -10,7 +10,7 @@ namespace NHibernate.DomainModel
 		public Fee _anotherFee;
 		public String _fi;
 		public String _key;
-		public System.Collections.IDictionary _fees;
+		public Iesi.Collections.ISet _fees;
 		private Qux _qux;
 		private FooComponent _compon;
 		private int _count;
@@ -37,7 +37,7 @@ namespace NHibernate.DomainModel
 			set { this._key = value; }
 		}
 	
-		public System.Collections.IDictionary Fees
+		public Iesi.Collections.ISet Fees
 		{
 			get { return _fees; }
 			set { _fees = value; }

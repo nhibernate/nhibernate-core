@@ -51,6 +51,7 @@
 				<includes name="System.Data.dll" />
 				<includes name="DotNetMock.dll" />
 				<includes name="DotNetMock.Framework.dll" />
+				<includes name="Iesi.Collections.dll" />
 				<includes name="log4net.dll" />
 				<includes name="NHibernate.DomainModel.dll" />
 				<includes name="NHibernate.dll" />

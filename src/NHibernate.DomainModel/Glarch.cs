@@ -11,10 +11,10 @@ namespace NHibernate.DomainModel
 		private GlarchProxy _next;
 		private short _order;
 		private IList _strings;
-		private IDictionary _stringSets;
+		private Iesi.Collections.ISet _stringSets;
 		private IList _fooComponents;
 		private GlarchProxy[] _proxyArray;
-		private IDictionary _proxySet;
+		private Iesi.Collections.ISet _proxySet;
 		private string _immutable;
 		private int _derivedVersion;
 //		private object _any;
@@ -69,7 +69,7 @@ namespace NHibernate.DomainModel
 		/// Gets or sets the _stringSets
 		/// </summary> 
 		//TODO: figure out why this is not in the mapping???
-		public IDictionary StringSets
+		public Iesi.Collections.ISet StringSets
 		{
 			get { return _stringSets; }
 			set { _stringSets = value; }
@@ -99,7 +99,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _proxySet
 		/// </summary> 
-		public IDictionary ProxySet
+		public Iesi.Collections.ISet ProxySet
 		{
 			get { return _proxySet; }
 			set { _proxySet = value; }

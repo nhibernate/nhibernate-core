@@ -9,6 +9,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 using NHibernate.DomainModel;
+using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest
@@ -51,6 +52,23 @@ namespace NHibernate.Test.ExpressionTest
 
 			session.Close();
 		}
+	
+		[Test]
+		public void TestQuoting() 
+		{
+			ISession session = factory.OpenSession();
+			DateTime now = DateTime.Now;
+
+			NExpression.Expression andExpression = NExpression.Expression.Eq( "Date", now );
+
+			SqlString sqlString = andExpression.ToSqlString( factoryImpl, typeof(SimpleComponent), "simp_comp" );
+			string quotedColumn = dialect.QuoteForColumnName( "d[at]e_" );
+			string expectedSql = "simp_comp." + quotedColumn + " = :simp_comp." + quotedColumn;
+			
+			CompareSqlStrings( sqlString, expectedSql );
+			
+			session.Close();
+		}
 
 		[Test]
 		public void SimpleDateExpression() 
@@ -75,9 +93,5 @@ namespace NHibernate.Test.ExpressionTest
 
 			session.Close();
 		}
-
-		
-
-
 	}
 }

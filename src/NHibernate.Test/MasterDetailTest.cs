@@ -148,7 +148,7 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
 			master = (Master)s.Load( typeof(Master), mid );
-			IEnumerator enumer = master.Details.Keys.GetEnumerator();
+			IEnumerator enumer = master.Details.GetEnumerator();
 			int i = 0;
 			while( enumer.MoveNext() ) 
 			{
@@ -274,7 +274,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 12, enumer.Current );
 
 			i = 0;
-			foreach( Detail d in master.Details.Keys ) 
+			foreach( Detail d in master.Details  ) 
 			{
 				Assert.AreSame( master, d.Master, "master-detail" );
 				s.Delete(d);
@@ -312,7 +312,7 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			master1 = (Master)s.Load( typeof(Master), m1id );
 			int i = 0;
-			foreach( Master m in master1.Incoming.Keys ) 
+			foreach( Master m in master1.Incoming  ) 
 			{
 				Assert.AreEqual( 1, m.Outgoing.Count, "outgoing" );
 				Assert.IsTrue( m.Outgoing.Contains(master1), "outgoing" );
@@ -342,8 +342,8 @@ namespace NHibernate.Test
 			m0.AddDetail(d2);
 			d1.Master = m0;
 			d2.Master = m0;
-			m.MoreDetails.Add( d1, new object() );
-			m.MoreDetails.Add( d2, new object() );
+			m.MoreDetails.Add( d1 );
+			m.MoreDetails.Add( d2 );
 			object mid = s.Save(m);
 			s.Flush();
 			s.Close();
@@ -351,7 +351,7 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			m = (Master)s.Load( typeof(Master), mid );
 			Assert.AreEqual( 2, m.MoreDetails.Count, "cascade save" );
-			IEnumerator enumer = m.MoreDetails.Keys.GetEnumerator();
+			IEnumerator enumer = m.MoreDetails.GetEnumerator();
 			enumer.MoveNext();
 			Assert.AreEqual( 2, ((Detail)enumer.Current).Master.Details.Count , "cascade save" );
 
@@ -405,7 +405,7 @@ namespace NHibernate.Test
 			s.Reconnect();
 			Master m2 = (Master) s.Load(typeof(Master), mid);
 			Assert.IsTrue( m2.Details.Count==2, "serialized state" );
-			foreach(Detail d in m2.Details.Keys)
+			foreach(Detail d in m2.Details)
 			{
 				Assert.IsTrue( d.Master==m2, "deserialization" );
 				try 
@@ -494,7 +494,7 @@ namespace NHibernate.Test
 			m.Name = "New Name";
 			s = sessions.OpenSession();
 			s.Update(m, mid);
-			IEnumerator enumer = m.Details.Keys.GetEnumerator();
+			IEnumerator enumer = m.Details.GetEnumerator();
 			int i = 0;
 			while( enumer.MoveNext() ) 
 			{
@@ -503,7 +503,7 @@ namespace NHibernate.Test
 			}
 			Assert.AreEqual( 2, i );
 
-			enumer = m.Details.Keys.GetEnumerator();
+			enumer = m.Details.GetEnumerator();
 			while( enumer.MoveNext() ) 
 			{
 				s.Delete( enumer.Current );
@@ -526,16 +526,16 @@ namespace NHibernate.Test
 			object m0id = s.Save(m0);
 			m0.AddDetail(detail);
 			detail.Master = m0;
-			m.MoreDetails.Add( detail, new object() );
-			detail.SubDetails = new Hashtable();
-			detail.SubDetails.Add( subdetail, new object() );
+			m.MoreDetails.Add( detail );
+			detail.SubDetails = new Iesi.Collections.HashedSet();
+			detail.SubDetails.Add( subdetail );
 			object mid = s.Save(m);
 			s.Flush();
 			s.Close();
 
 			s = sessions.OpenSession();
 			m = (Master)s.Load( typeof(Master), mid);
-			IEnumerator enumer = m.MoreDetails.Keys.GetEnumerator();
+			IEnumerator enumer = m.MoreDetails.GetEnumerator();
 			enumer.MoveNext();
 			Assert.IsTrue( ((Detail)enumer.Current).SubDetails.Count!=0 );
 			s.Delete(m);

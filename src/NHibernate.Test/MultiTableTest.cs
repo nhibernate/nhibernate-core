@@ -453,10 +453,10 @@ namespace NHibernate.Test
 			ls.Another = ls;
 			ls.YetAnother = ls;
 			ls.Name = "Less Simple";
-			IDictionary dict = new Hashtable();
+			Iesi.Collections.ISet dict = new Iesi.Collections.HashedSet();
 			ls.Set = dict;
-			dict.Add( multi, new object() );
-			dict.Add( simp, new object() );
+			dict.Add( multi );
+			dict.Add( simp );
 			object id;
 			if( (dialect is Dialect.SybaseDialect) || (dialect is Dialect.MsSql2000Dialect) ) 
 			{
@@ -484,7 +484,7 @@ namespace NHibernate.Test
 			int foundMulti = 0;
 			int foundSimple = 0;
 
-			foreach(object obj in ls.Set.Keys) 
+			foreach(object obj in ls.Set) 
 			{
 				if( obj is Simple ) foundSimple++;
 				if( obj is Multi ) foundMulti++;
@@ -585,9 +585,9 @@ namespace NHibernate.Test
 			Po po = new Po();
 			multi1.Po = po;
 			multi2.Po = po;
-			po.Set = new Hashtable();
-			po.Set.Add( multi1, new object() );
-			po.Set.Add( multi2, new object() );
+			po.Set = new Iesi.Collections.HashedSet();
+			po.Set.Add( multi1 );
+			po.Set.Add( multi2 );
 			po.List = new ArrayList();
 			po.List.Add( new SubMulti() );
 			object id = s.Save(po);

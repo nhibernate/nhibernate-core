@@ -7,7 +7,7 @@ namespace NHibernate.DomainModel
 	public abstract class Abstract : Foo, AbstractProxy
 	{
 		private DateTime _time;
-		private IDictionary _abstracts;
+		private Iesi.Collections.ISet _abstracts;
 
 		/// <summary>
 		/// Gets or sets the _time
@@ -21,7 +21,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _abstract
 		/// </summary> 
-		public IDictionary Abstracts
+		public Iesi.Collections.ISet Abstracts
 		{
 			get { return _abstracts; }
 			set { _abstracts = value; }

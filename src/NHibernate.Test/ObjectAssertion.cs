@@ -31,6 +31,15 @@ namespace NHibernate.Test
 			Assert.AreEqual(expected.OneTestLong, actual.OneTestLong);
 		}
 
+		internal static void AssertEquals(Iesi.Collections.ISet expected, Iesi.Collections.ISet actual) 
+		{
+			Assert.AreEqual( expected.Count, actual.Count, "two sets are diff size" );
+			foreach( object obj in expected ) 
+			{
+				Assert.IsTrue( actual.Contains( obj ), obj.ToString() + " is not contained in actual" );
+			}
+		}
+
 		/// <summary>
 		/// Compares one dimensional arrays for equality.
 		/// </summary>

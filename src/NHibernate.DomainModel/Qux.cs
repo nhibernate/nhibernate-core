@@ -16,7 +16,7 @@ namespace NHibernate.DomainModel
 		private bool _stored;
 		private string _stuff;
 		// <set>
-		private IDictionary _fums;
+		private Iesi.Collections.ISet _fums;
 		private IList _moreFums;
 		private Qux _child;
 		private long _childKey;
@@ -149,7 +149,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _fums (&lt;set&gt;)
 		/// </summary> 
-		public IDictionary Fums
+		public Iesi.Collections.ISet Fums
 		{
 			get { return _fums; }
 			set { _fums = value; }

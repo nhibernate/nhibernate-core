@@ -12,7 +12,7 @@ namespace NHibernate.DomainModel
 		private long _id;
 		private string _value;
 		//<set> mapping
-		private IDictionary _set;
+		private Iesi.Collections.ISet _set;
 		private IList _list;
 
 		public long Id
@@ -27,7 +27,7 @@ namespace NHibernate.DomainModel
 			set {_value = value;}
 		}
 
-		public IDictionary Set
+		public Iesi.Collections.ISet Set
 		{
 			get {return _set;}
 			set {_set = value;}

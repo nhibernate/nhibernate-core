@@ -5,7 +5,10 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Collection {
+using Iesi.Collections;
+
+namespace NHibernate.Collection 
+{
 	/// <summary>
 	/// .NET has no design equivalent for Java's Set.  So we are going to build a 
 	/// wrapper around the IDictionary interface that is going to behaive like a Set.
@@ -24,9 +27,10 @@ namespace NHibernate.Collection {
 	/// this[key]: will work but there is no guarantee that it contains a meaningful object.
 	/// </summary>
 	[Serializable]
-	public class Set : PersistentCollection, IDictionary 
+	public class Set : PersistentCollection, ISet	
 	{
-		protected IDictionary map;
+		//protected IDictionary map;
+		protected ISet _set;
 		
 		[NonSerialized] protected IList tempIdentifierList;
 
@@ -35,12 +39,15 @@ namespace NHibernate.Collection {
 		/// same object.
 		/// <see cref="PersistentCollection.Snapshot"/>
 		/// </summary>
-		protected override object Snapshot(CollectionPersister persister) {
-			Hashtable clonedMap = new Hashtable( map.Count );
-			foreach(DictionaryEntry e in map) {
+		protected override object Snapshot(CollectionPersister persister) 
+		{
+			Hashtable clonedMap = new Hashtable( _set.Count );
+			//foreach(DictionaryEntry e in map) 
+			foreach( object obj in _set )
+			{
 				// the key is the object we are interested in cloning
-				object newKey = persister.ElementType.DeepCopy(e.Key);
-				clonedMap[newKey] = newKey;
+				object copied = persister.ElementType.DeepCopy( obj );
+				clonedMap[ copied ] = copied;
 			}
 			return clonedMap;
 		}
@@ -50,7 +57,8 @@ namespace NHibernate.Collection {
 			IDictionary sn = (IDictionary)snapshot;
 			ArrayList result = new ArrayList(sn.Keys.Count);
 			result.AddRange(sn.Keys);
-			PersistentCollection.IdentityRemoveAll(result, map.Keys, session);
+			//PersistentCollection.IdentityRemoveAll(result, map.Keys, session);
+			PersistentCollection.IdentityRemoveAll( result,_set, session );
 			return result;
 		}
 
@@ -59,14 +67,21 @@ namespace NHibernate.Collection {
 		/// </summary>
 		public override bool EqualsSnapshot(IType elementType) 
 		{
-			
 			IDictionary snapshot = (IDictionary) GetSnapshot();
-			if ( snapshot.Count!=this.map.Count ) return false;
-
-			foreach(DictionaryEntry entry in map) {
-				object newValue = entry.Key;
-				object oldValue = snapshot[newValue];
-				if ( oldValue==null || elementType.IsDirty( oldValue, newValue, session)) return false;
+			if ( snapshot.Count!= _set.Count ) 
+			{
+				return false;
+			}
+			else 
+			{
+				foreach( object obj in _set ) 
+				{
+					object oldValue = snapshot[ obj ];
+					if ( oldValue==null || elementType.IsDirty( oldValue, obj, session)) 
+					{
+						return false;
+					}
+				}
 			}
 
 			return true;
@@ -82,18 +97,23 @@ namespace NHibernate.Collection {
 		/// <remarks>
 		/// Only call this constructor if you consider the map initialized.
 		/// </remarks>
-		public Set(ISessionImplementor session, IDictionary map) : base(session) {
-			this.map = map;
+		public Set(ISessionImplementor session, ISet collection) : base(session) 
+		{
+			//this.map = map;
+			_set = collection;
 			initialized = true;
 			directlyAccessible = true;
 		}
 
-		public Set(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) : base(session) {
+		public Set(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) 
+			: base(session) 
+		{
 			BeforeInitialize(persister);
 			object[] array = (object[]) disassembled;
 			for (int i=0; i<array.Length; i+=2)
-				map[ persister.IndexType.Assemble( array[i], session, owner) ] =
-					persister.ElementType.Assemble( array[i+1], session, owner );
+			{
+				_set.Add( persister.ElementType.Assemble( array[i], session, owner ) );
+			}
 			initialized = true;
 		}
 
@@ -104,185 +124,206 @@ namespace NHibernate.Collection {
 			
 			if(persister.HasOrdering) 
 			{
-				this.map = new System.Collections.Specialized.ListDictionary();
+				_set = new Iesi.Collections.ListSet();
 			}
 			else 
 			{
-				this.map = new Hashtable();
+				_set = new Iesi.Collections.HashedSet();
 			}
 		}
 
 		/// <summary>
 		/// <see cref="ICollection.Count"/>
 		/// </summary>
-		public override int Count {
-			get {
+		public override int Count 
+		{
+			get 
+			{
 				Read();
-				return map.Count;
+				return _set.Count;
+			}
+		}
+
+		public bool IsEmpty 
+		{
+			get 
+			{
+				Read();
+				return _set.IsEmpty;
 			}
 		}
 
 		/// <summary>
 		/// <see cref="ICollection.IsSynchronized"/>
 		/// </summary>
-		public override bool IsSynchronized {
+		public override bool IsSynchronized 
+		{
 			get { return false; }
 		}
 
 		/// <summary>
 		/// <see cref="IDictionary.IsFixedSize"/>
 		/// </summary>
-		public bool IsFixedSize {
+		public bool IsFixedSize 
+		{
 			get { return false; }
 		}
 
 		/// <summary>
 		/// <see cref="IDictionary.IsReadOnly"/>
 		/// </summary>
-		public bool IsReadOnly {
+		public bool IsReadOnly 
+		{
 			get { return false; }
 		}
 
 		/// <summary>
 		/// <see cref="ICollection.SyncRoot"/>
 		/// </summary>
-		public override object SyncRoot {
+		public override object SyncRoot 
+		{
 			get { return this; }
 		}
 
 		/// <summary>
-		/// <see cref="IDictionary.Keys"/>
-		/// </summary>
-		public ICollection Keys 
-		{
-			get 
-			{ 
-				Read();
-				return map.Keys;
-			}
-		}
-
-		/// <summary>
-		/// <see cref="IDictionary.Values"/>
-		/// </summary>
-		public ICollection Values 
-		{
-			get 
-			{ 
-				Read();
-				return map.Values;
-			}
-		}
-
-		/// <summary>
 		/// <see cref="IEnumerable.GetEnumerator"/>
 		/// </summary>
-		public override IEnumerator GetEnumerator() {
+		public override IEnumerator GetEnumerator() 
+		{
 			Read();
-			return map.Keys.GetEnumerator();
+			return _set.GetEnumerator();
 		}
 
-		/// <summary>
-		/// <see cref="IEnumerable.GetEnumerator"/>
-		/// </summary>
-		IEnumerator IEnumerable.GetEnumerator() {
-			Read();
-			return map.Keys.GetEnumerator();
-		}
-
-		/// <summary>
-		/// <see cref="IDictionary.GetEnumerator"/>
-		/// </summary>
-		IDictionaryEnumerator IDictionary.GetEnumerator() {
-			Read();
-			return map.GetEnumerator();
-		}
 
 		/// <summary>
 		/// <see cref="ICollection.CopyTo"/>
 		/// </summary>
-		public override void CopyTo(System.Array array, int index) {
+		public override void CopyTo(System.Array array, int index) 
+		{
 			Read();
-			map.CopyTo(array, index);
+			_set.CopyTo( array, index );
 		}
 		
 		/// <summary>
 		/// <see cref="IDictionary.Add"/>
 		/// </summary>
-		public void Add(object key, object value) {
+		public bool Add(object value) 
+		{
 			Write();
-			map.Add(key, value);
+			return _set.Add( value );
 		}
 		
 		/// <summary>
 		/// <see cref="IDictionary.Contains"/>
 		/// </summary>
-		public bool Contains(object key) {
+		public bool Contains(object key) 
+		{
 			Read();
-			return map.Contains(key);
+			return _set.Contains( key );
 		}
 
-		/// <summary>
-		/// <see cref="IDictionary.Item"/>
-		/// </summary>
-		public object this [object key] {
-			get {
-				Read();
-				return map[key];
-			}
-			set {
-				Write();
-				map[key] = value;
-			}
+		public bool ContainsAll(ICollection c) 
+		{
+			Read();
+			return _set.ContainsAll( c );
 		}
 
 		/// <summary>
 		/// <see cref="IDictionary.Remove"/>
 		/// </summary>
-		public void Remove(object key) {
+		public bool Remove(object key) 
+		{
 			Write();
-			map.Remove(key);
+			return _set.Remove( key );
+		}
+
+		public bool RemoveAll(ICollection c) 
+		{
+			Write();
+			return _set.RemoveAll( c );
+		}
+
+		public bool RetainAll(ICollection c) 
+		{
+			Write();
+			return _set.RetainAll( c );
+		}
+
+		public object Clone() 
+		{
+			Read();
+			return _set.Clone();
+		}
+
+		public ISet ExclusiveOr(ISet a) 
+		{
+			Read();
+			return _set.ExclusiveOr( a );
+		}
+
+		public ISet Intersect(ISet a) 
+		{
+			Read();
+			return _set.Intersect( a );
+		}
+
+		public ISet Minus(ISet a) 
+		{
+			Read();
+			return _set.Minus( a );
+		}
+
+		public ISet Union(ISet a) 
+		{
+			Read();
+			return _set.Union( a );
 		}
 
 		/// <summary>
 		/// <see cref="IDictionary.Clear"/>
 		/// </summary>
-		public void Clear() {
+		public void Clear() 
+		{
 			Write();
-			map.Clear();
+			_set.Clear();
 		}
 
 		/// <summary>
 		/// <see cref="PersistentCollection.Elements"/>
 		/// </summary>
-		public override ICollection Elements() {
-			return map.Keys;
+		public override ICollection Elements() 
+		{
+			return _set;
 		}
 
 		/// <summary>
 		/// <see cref="PersistentCollection.Empty"/>
 		/// </summary>
-		public override bool Empty {
-			get { return map.Count==0; }
+		public override bool Empty 
+		{
+			get { return _set.Count==0; }
 		}
 		
-		public override string ToString() {
+		public override string ToString() 
+		{
 			Read();
-			return map.ToString();
+			return _set.ToString();
 		}
 
 		
 		/// <summary>
 		/// <see cref="PersistentCollection.WriteTo"/>
 		/// </summary>
-		public override void WriteTo(IDbCommand st, CollectionPersister persister, object entry, int i, bool writeOrder) {
+		public override void WriteTo(IDbCommand st, CollectionPersister persister, object entry, int i, bool writeOrder) 
+		{
 			persister.WriteElement(st, entry, writeOrder, session);
 		}
 		
 		/// <summary>
 		/// <see cref="PersistentCollection.ReadFrom"/>
 		/// </summary>
-		public override object ReadFrom(IDataReader rs, CollectionPersister persister, object owner) {
+		public override object ReadFrom(IDataReader rs, CollectionPersister persister, object owner) 
+		{
 			//object elementIdentifier = persister.ReadElement(rs, owner, session);
 			object elementIdentifier = persister.ReadElementIdentifier(rs, owner, session);
 
@@ -295,7 +336,8 @@ namespace NHibernate.Collection {
 		/// to resolve the Identifier to an Entity.
 		/// <see cref="PersistentCollection.BeginRead"/>
 		/// </summary>
-		public override void BeginRead() {
+		public override void BeginRead() 
+		{
 			tempIdentifierList = new ArrayList();
 		}
 
@@ -303,10 +345,12 @@ namespace NHibernate.Collection {
 		/// Resolves all of the Identifiers to an Entity.
 		/// <see cref="PersistentCollection.BeginRead"/>
 		/// </summary>
-		public override void EndRead(CollectionPersister persister, object owner) {
-			foreach(object identifier in tempIdentifierList) {
+		public override void EndRead(CollectionPersister persister, object owner) 
+		{
+			foreach(object identifier in tempIdentifierList) 
+			{
 				object element = persister.ElementType.ResolveIdentifier(identifier, session, owner);
-				map[element] = element;
+				_set.Add( element );
 			}
 				
 		}
@@ -314,19 +358,23 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="PersistentCollection.Entries"/>
 		/// </summary>
-		public override ICollection Entries() {
-			return map.Keys;
+		public override ICollection Entries() 
+		{
+			return _set;
 		}
 
 
 		/// <summary>
 		/// <see cref="PersistentCollection.Disassemble"/>
 		/// </summary>
-		public override object Disassemble(CollectionPersister persister) {
-			object[] result = new object[map.Count];
+		public override object Disassemble(CollectionPersister persister) 
+		{
+			object[] result = new object[ _set.Count ];
 			int i=0;
-			foreach(DictionaryEntry e in map) {
-				result[i++] = persister.ElementType.Disassemble( e.Key, session );
+
+			foreach( object obj in _set ) 
+			{
+				result[i++] = persister.ElementType.Disassemble( obj, session );
 			}
 			return result;
 		}
@@ -334,23 +382,30 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="PersistentCollection.GetDeletes"/>
 		/// </summary>
-		public override ICollection GetDeletes(IType elemType) {
+		public override ICollection GetDeletes(IType elemType) 
+		{
 			IList deletes = new ArrayList();
 			IDictionary snapshot = (IDictionary)GetSnapshot();
 
-			foreach(DictionaryEntry e in snapshot) {
-				object key = e.Key;
+			foreach(DictionaryEntry e in snapshot) 
+			{
+				object test = e.Key;
 				
-				if(map.Contains(key)==false) deletes.Add(key);
+				if( _set.Contains( test )==false ) 
+				{
+					deletes.Add( test );
+				}
 
 			}
 
-			foreach(DictionaryEntry e in map) {
-				object testKey = e.Key;
-				object oldKey = snapshot[e.Key];
+			foreach(object obj in _set) 
+			{
+				//object testKey = e.Key;
+				object oldKey = snapshot[ obj ];
 
-				if(oldKey!=null && elemType.IsDirty(testKey, oldKey, session)) {
-					deletes.Add(testKey);
+				if( oldKey!=null && elemType.IsDirty( obj, oldKey, session ) ) 
+				{
+					deletes.Add( obj );
 				}
 			}
 
@@ -361,8 +416,8 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="PersistentCollection.NeedsInserting"/>
 		/// </summary>
-		public override bool NeedsInserting(object entry, int i, IType elemType) {
-			
+		public override bool NeedsInserting(object entry, int i, IType elemType) 
+		{
 			IDictionary sn = (IDictionary) GetSnapshot();
 			object oldKey = sn[entry];
 			// note that it might be better to iterate the snapshot but this is safe,
@@ -375,21 +430,24 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="PersistentCollection.NeedsUpdating"/>
 		/// </summary>
-		public override bool NeedsUpdating(object entry, int i, IType elemType) {
+		public override bool NeedsUpdating(object entry, int i, IType elemType) 
+		{
 			return false;
 		}
 
 		/// <summary>
 		/// <see cref="PersistentCollection.GetIndex"/>
 		/// </summary>
-		public override object GetIndex(object entry, int i) {
+		public override object GetIndex(object entry, int i) 
+		{
 			throw new NotImplementedException("Sets don't have indexes");
 		}
 
 		/// <summary>
 		/// <see cref="PersistentCollection.EntryExists"/>
 		/// </summary>
-		public override bool EntryExists(object entry, int i) {
+		public override bool EntryExists(object entry, int i) 
+		{
 			//TODO: find out where this is used...
 			return true;
 		}

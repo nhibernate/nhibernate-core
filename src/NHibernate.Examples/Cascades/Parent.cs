@@ -10,10 +10,8 @@ namespace NHibernate.Examples.Cascades
 	{
 		int id;
 		string name;
-		IDictionary children;
+		Iesi.Collections.ISet children;
 		IDictionary	aliases;
-
-		static object emptyObject = new object();
 
 		public int Id 
 		{
@@ -27,24 +25,22 @@ namespace NHibernate.Examples.Cascades
 			set { name = value; }
 		}
 
-		private IDictionary ChildrenSet
+		public Iesi.Collections.ISet Children
 		{
 			get 
 			{ 
-				if (children==null) children = new Hashtable();
+				if (children==null) 
+				{
+					children = new Iesi.Collections.HashedSet();
+				}
 				return children; 
 			}
 			set { children = value; }
 		}
 
-		public ICollection Children 
-		{
-			get { return ChildrenSet;}
-		}
-
 		public void AddChild(Child child) 
 		{
-			ChildrenSet[child] = emptyObject;
+			Children.Add( child );
 			child.SingleParent = this;
 		}
 

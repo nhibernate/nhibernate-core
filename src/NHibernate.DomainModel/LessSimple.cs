@@ -11,7 +11,7 @@ namespace NHibernate.DomainModel
 		private int _intprop;
 		private string _foo;
 		//<set> mapping
-		private IDictionary _set; 
+		private Iesi.Collections.ISet _set; 
 		private IList _bag;
 		private Simple _another;
 		private LessSimple _yetAnother;
@@ -29,7 +29,7 @@ namespace NHibernate.DomainModel
 			set { _foo = value; }
 		}
 
-		public IDictionary Set
+		public Iesi.Collections.ISet Set
 		{
 			get { return _set; }
 			set { _set = value; }

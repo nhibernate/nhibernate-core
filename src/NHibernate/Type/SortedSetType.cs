@@ -30,7 +30,7 @@ namespace NHibernate.Type
 
 		public override PersistentCollection Wrap(ISessionImplementor session, object collection) 
 		{
-			return new SortedSet(session, (IDictionary)collection, comparer);
+			return new SortedSet(session, (Iesi.Collections.ISet)collection, comparer);
 			
 		}
 

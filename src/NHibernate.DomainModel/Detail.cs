@@ -11,7 +11,7 @@ namespace NHibernate.DomainModel
 	{
 		private Master _master;
 		private int _i;
-		private IDictionary _details; //set in mapping
+		private Iesi.Collections.ISet _details; //set in mapping
 		private int _x;
 
 		public Master Master 
@@ -27,7 +27,7 @@ namespace NHibernate.DomainModel
 		}
 	
 
-		public IDictionary SubDetails 
+		public Iesi.Collections.ISet SubDetails 
 		{
 			get { return _details;}
 			set { _details = value; }

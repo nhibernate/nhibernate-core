@@ -86,14 +86,14 @@ namespace NHibernate.DomainModel
 		private IList _components;
 		private IList _manyToMany;
 		// <set> mapping
-		private IDictionary _composites;
+		private Iesi.Collections.ISet _composites;
 		private IList _cascades;
 		private long _id;
 		private IList _bag;
 		private IList _lazyBag = new ArrayList();
 		private IDictionary _ternaryMap;
 		//<set> mapping
-		private IDictionary _ternarySet;
+		private Iesi.Collections.ISet _ternarySet;
 
 		
 		public IList OneToMany
@@ -114,7 +114,7 @@ namespace NHibernate.DomainModel
 			set { _components = value; }
 		}
 
-		public IDictionary Composites
+		public Iesi.Collections.ISet Composites
 		{
 			get { return _composites; }
 			set { _composites = value; }
@@ -150,7 +150,7 @@ namespace NHibernate.DomainModel
 			set { _ternaryMap = value; }
 		}
 
-		public IDictionary TernarySet
+		public Iesi.Collections.ISet TernarySet
 		{
 			get { return _ternarySet; }
 			set { _ternarySet = value; }

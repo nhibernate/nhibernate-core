@@ -558,7 +558,7 @@ namespace NHibernate.Test.NHSpecificTest
 			
 			// remove the last one and add another
 			bc[index].StringSet.Remove("zero");
-			bc[index].StringSet.Add("two", new object());
+			bc[index].StringSet.Add( "two" );
 			s[index].Update(bc[index]);
 
 			t[index].Commit();
@@ -573,9 +573,9 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index-1], bc[index]);
 			
-			bc[index].StringSet = new Hashtable();
-			bc[index].StringSet.Add("zero", new object());
-			bc[index].StringSet.Add("one", new object());
+			bc[index].StringSet = new Iesi.Collections.HashedSet();
+			bc[index].StringSet.Add( "zero" );
+			bc[index].StringSet.Add( "one" );
 			s[index].Update(bc[index]);
 
 			t[index].Commit();
@@ -887,7 +887,7 @@ namespace NHibernate.Test.NHSpecificTest
 				ObjectAssert.AssertEquals(expected.StringBag, actual.StringBag, false);
 				ObjectAssert.AssertEquals(expected.StringList, actual.StringList);
 				ObjectAssert.AssertEquals(expected.StringMap, actual.StringMap, true);
-				ObjectAssert.AssertEquals(expected.StringSet, actual.StringSet, false);
+				ObjectAssert.AssertEquals(expected.StringSet, actual.StringSet );
 			}
 		}
 

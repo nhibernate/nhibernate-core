@@ -89,6 +89,11 @@
                     AssemblyName = "log4net"
                     HintPath = "..\..\lib\net\1.1\log4net.dll"
                 />
+                <Reference
+                    Name = "Iesi.Collections"
+                    AssemblyName = "Iesi.Collections"
+                    HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
+                />
             </References>
         </Build>
         <Files>

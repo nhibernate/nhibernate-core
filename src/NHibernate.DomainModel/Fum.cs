@@ -9,7 +9,7 @@ namespace NHibernate.DomainModel
 		private FumCompositeID _id;
 		private Fum _fo;
 		private Qux[] _quxArray;
-		private IDictionary _friends; // <set> mapping
+		private Iesi.Collections.ISet _friends; // <set> mapping
 		private DateTime m_LastUpdated;
 	
 		public Fum() 
@@ -19,7 +19,7 @@ namespace NHibernate.DomainModel
 		public Fum(FumCompositeID id)
 		{
 			_id = id;
-			_friends = new Hashtable();
+			_friends = new Iesi.Collections.HashedSet();
 			//TODO: H2.0.3 - this is diff from H2.0.3 because I am getting a null exception
 			// when executing the Sql.  H203 uses the CalendarType which we don't have so
 			// I am using DateTime instead...
@@ -38,7 +38,7 @@ namespace NHibernate.DomainModel
 			// I am using DateTime instead...
 			f.LastUpdated = DateTime.Now;
 
-			_friends.Add(f, new object());
+			_friends.Add( f );
 		}
 		
 		public string FumString
@@ -64,7 +64,7 @@ namespace NHibernate.DomainModel
 			set { this._quxArray = value; }
 		}
 	
-		public IDictionary Friends
+		public Iesi.Collections.ISet Friends
 		{
 			get { return _friends; }
 			set	{ this._friends = value; }
@@ -76,9 +76,9 @@ namespace NHibernate.DomainModel
 			if (_friends==null) return LifecycleVeto.NoVeto;
 			try 
 			{
-				foreach(DictionaryEntry de in _friends) 
+				foreach(object obj in _friends) 
 				{
-					s.Delete(de.Key);
+					s.Delete( obj );
 				}
 			}
 			catch (Exception e) 
@@ -99,9 +99,9 @@ namespace NHibernate.DomainModel
 			if (_friends==null) return LifecycleVeto.NoVeto;
 			try 
 			{
-				foreach(DictionaryEntry de in _friends) 
+				foreach(object obj in _friends) 
 				{
-					s.Save(de.Key);
+					s.Save( obj );
 				}
 			}
 			catch (Exception e) 

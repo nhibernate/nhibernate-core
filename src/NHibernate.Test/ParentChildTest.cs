@@ -254,15 +254,14 @@ namespace NHibernate.Test
 			ccic.Simple = y;
 			comps.Add(ccic);
 
-			IDictionary compos = new Hashtable();
-			object emptyObj = new object();
-			compos.Add( ccic, emptyObj );
+			Iesi.Collections.ISet compos = new Iesi.Collections.HashedSet();
+			compos.Add( ccic );
 			c.Composites = compos;
 			c.Components = comps;
 			One one = new One();
 			Many many = new Many();
-			IDictionary manies = new Hashtable();
-			manies.Add( many, emptyObj );
+			Iesi.Collections.ISet manies = new Iesi.Collections.HashedSet();
+			manies.Add( many );
 			one.Manies = manies;
 			many.One = one;
 			ccic.Many = many;
@@ -297,7 +296,7 @@ namespace NHibernate.Test
 			c.Components.RemoveAt(2);
 			c.Components[0] = o1;
 			c.ManyToMany[0] = c.ManyToMany[2];
-			c.Composites.Add(o1, emptyObj);
+			c.Composites.Add( o1 );
 			t.Commit();
 			s.Close();
 
@@ -312,7 +311,7 @@ namespace NHibernate.Test
 			Assert.IsNotNull( c.OneToMany[1] );
 
 			( (Container.ContainerInnerClass)c.Components[0]).Name = "a different name";
-			IEnumerator enumer = c.Composites.Keys.GetEnumerator();
+			IEnumerator enumer = c.Composites.GetEnumerator();
 			enumer.MoveNext();
 			( (Container.ContainerInnerClass)enumer.Current).Name = "once again";
 			t.Commit();
@@ -324,7 +323,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 1, c.Components.Count ); //WAS: 2 -> h2.0.3 comment
 			Assert.AreEqual( 2, c.Composites.Count );
 			Assert.AreEqual( "a different name", ((Container.ContainerInnerClass)c.Components[0]).Name );
-			enumer = c.Composites.Keys.GetEnumerator();
+			enumer = c.Composites.GetEnumerator();
 			bool found = false;
 			while( enumer.MoveNext() ) 
 			{

@@ -1,3 +1,8 @@
+Build 0.5.0.0
+======================== 
+- Added Iesi.Collections Library that contains an ISet.  Code was taken from http://www.codeproject.com/csharp/sets.asp.
+
+
 Alpha Build 0.4.0.0
 ======================== 
 - Started work on documentation.

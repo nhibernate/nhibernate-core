@@ -10,8 +10,8 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private string _id;
 
-		private IDictionary _previousNodes;
-		private IDictionary _destinationNodes;
+		private Iesi.Collections.ISet _previousNodes;
+		private Iesi.Collections.ISet _destinationNodes;
 
 		private Node()
 		{
@@ -19,8 +19,8 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public Node(string id) 
 		{
-			_destinationNodes = new Hashtable();
-			_previousNodes = new Hashtable();
+			_destinationNodes = new Iesi.Collections.HashedSet();
+			_previousNodes = new Iesi.Collections.HashedSet();
 			_id = id;
 		}
 
@@ -41,7 +41,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		/// Any modifications to the "inverse" side should not be persisted - unless
 		/// the modifications are also made to the non-inverse side.
 		/// </remarks>
-		public IDictionary PreviousNodes 
+		public Iesi.Collections.ISet PreviousNodes 
 		{
 			get { return _previousNodes; }
 			set { _previousNodes = value; }
@@ -49,7 +49,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		private void AddPreviousNode(Node previousNode) 
 		{
-			PreviousNodes.Add(previousNode, null);
+			PreviousNodes.Add( previousNode );
 		}
 
 		private void RemovePreviousNode(Node previousNode) 
@@ -66,7 +66,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		/// testing.  The DestinationNodes is the Property that controls which 
 		/// modifications get persisted.
 		/// </remarks>
-		public IDictionary DestinationNodes
+		public Iesi.Collections.ISet DestinationNodes
 		{
 			get { return _destinationNodes; }
 			set { _destinationNodes = value; }
@@ -78,7 +78,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		/// <param name="node">A Node this Node can go to.</param>
 		public void AddDestinationNode(Node destinationNode) 
 		{
-			DestinationNodes.Add(destinationNode, null);
+			DestinationNodes.Add( destinationNode );
 
 			// let the destinationNode know that it can be one of the
 			// previous Nodes was this Node

@@ -82,10 +82,10 @@ namespace NHibernate.Test
 			ISession s = sessions.OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz b = new Baz();
-			IDictionary ss = new Hashtable();
-			ss.Add(new Sortable("foo"), null);
-			ss.Add(new Sortable("bar"), null);
-			ss.Add(new Sortable("baz"), null);
+			Iesi.Collections.ISet ss = new Iesi.Collections.HashedSet();
+			ss.Add( new Sortable("foo") );
+			ss.Add( new Sortable("bar") );
+			ss.Add( new Sortable("baz") );
 			b.Sortablez = ss;
 			s.Save(b);
 			s.Flush();
@@ -103,9 +103,9 @@ namespace NHibernate.Test
 			// compare the first item in the "Set" sortablez - can't reference
 			// the first item using b.sortablez[0] because it thinks 0 is the
 			// DictionaryEntry key - not the index.
-			foreach(DictionaryEntry de in b.Sortablez) 
+			foreach(Sortable sortable in b.Sortablez) 
 			{
-				Assert.AreEqual( ((Sortable)de.Key).name, "bar");
+				Assert.AreEqual( sortable.name, "bar");
 				break;
 			}
 		
@@ -119,9 +119,9 @@ namespace NHibernate.Test
 				.List();
 			b = (Baz) result[0];
 			Assert.IsTrue( b.Sortablez.Count==3 );
-			foreach(DictionaryEntry de in b.Sortablez) 
+			foreach(Sortable sortable in b.Sortablez) 
 			{
-				Assert.AreEqual( ((Sortable)de.Key).name, "bar");
+				Assert.AreEqual( sortable.name, "bar");
 				break;
 			}
 			s.Flush();
@@ -134,9 +134,9 @@ namespace NHibernate.Test
 				.List();
 			b = (Baz) result[0];
 			Assert.IsTrue( b.Sortablez.Count==3 );
-			foreach(DictionaryEntry de in b.Sortablez) 
+			foreach(Sortable sortable in b.Sortablez) 
 			{
-				Assert.AreEqual( ((Sortable)de.Key).name, "bar");
+				Assert.AreEqual( sortable.name, "bar");
 				break;
 			}
 			s.Delete(b);
@@ -362,10 +362,10 @@ namespace NHibernate.Test
 			s.Close();
 			s = sessions.OpenSession();
 			Baz baz = (Baz) s.Load(typeof(Baz), id);
-			IDictionary foos = baz.FooSet;
+			Iesi.Collections.ISet foos = baz.FooSet;
 			Assert.IsTrue( foos.Count==0 );
 			Foo foo = new Foo();
-			foos.Add(foo, null);
+			foos.Add( foo );
 			s.Save(foo);
 			s.Flush();
 			s.Delete(foo);
@@ -440,7 +440,7 @@ namespace NHibernate.Test
 			Assert.IsNull( y.X, "y does not need an X" );
 			s.Delete( y );
 			s.Flush();
-			s.Close()
+			s.Close();
 		}
 
 		[Test]
@@ -507,12 +507,12 @@ namespace NHibernate.Test
 		{
 			ISession s = sessions.OpenSession();
 			Baz baz = new Baz();
-			IDictionary bars = new Hashtable();
+			Iesi.Collections.ISet bars = new Iesi.Collections.HashedSet();
 			baz.CascadingBars = bars;
 			s.Save(baz);
 			s.Flush();
 
-			baz.CascadingBars.Add( new Bar(), new object() );
+			baz.CascadingBars.Add( new Bar() );
 			s.Delete(baz);
 			s.Flush();
 			s.Close();
@@ -528,8 +528,8 @@ namespace NHibernate.Test
 			bar.Name = "Bar";
 			bar2.Name = "Bar Two";
 			Baz baz = new Baz();
-			baz.CascadingBars = new Hashtable();
-			baz.CascadingBars.Add( bar, new object() );
+			baz.CascadingBars = new Iesi.Collections.HashedSet();
+			baz.CascadingBars.Add( bar );
 			bar.Baz = baz;
 
 			ISession s = sessions.OpenSession();
@@ -1091,8 +1091,8 @@ namespace NHibernate.Test
 			s.Save(baz);
 			baz.SetDefaults();
 			baz.StringArray = new string[] { "stuff" };
-			IDictionary bars = new Hashtable();
-			bars.Add( new Bar(), new object() );
+			Iesi.Collections.ISet bars = new Iesi.Collections.HashedSet();
+			bars.Add( new Bar() );
 			baz.CascadingBars = bars;
 			IDictionary sgm = new Hashtable();
 			sgm["a"] = new Glarch();
@@ -1108,11 +1108,11 @@ namespace NHibernate.Test
 			Foo foo2 = new Foo();
 			s.Save(foo2);
 			baz.FooArray = new Foo[] { foo, foo, null, foo2 } ;
-			baz.FooSet.Add(foo, new object() );
+			baz.FooSet.Add(foo );
 			baz.Customs.Add( new string[] {"new", "custom"} );
 			baz.StringArray = null;
 			baz.StringList[0] = "new value";
-			baz.StringSet = new Hashtable();
+			baz.StringSet = new Iesi.Collections.HashedSet();
 			
 			Assert.AreEqual( 1, baz.StringGlarchMap.Count );
 			IList list;
@@ -1146,15 +1146,15 @@ namespace NHibernate.Test
 			Assert.IsNotNull(baz.Components[1].Subcomponent, "component of component in collection");
 			Assert.AreSame(baz, baz.Components[1].Baz);
 			
-			IEnumerator fooSetEnumer = baz.FooSet.Keys.GetEnumerator();
+			IEnumerator fooSetEnumer = baz.FooSet.GetEnumerator();
 			fooSetEnumer.MoveNext();
 			Assert.IsTrue( ((FooProxy)fooSetEnumer.Current).Key.Equals( foo.Key ) , "set of objects" );
 			Assert.AreEqual( 0, baz.StringArray.Length, "collection removed" );
 			Assert.AreEqual( "new value", baz.StringList[0], "changed element" );
 			Assert.AreEqual( 0, baz.StringSet.Count, "replaced set" );
 			
-			baz.StringSet.Add( "two", new object() );
-			baz.StringSet.Add( "one", new object() );
+			baz.StringSet.Add( "two" );
+			baz.StringSet.Add( "one" );
 			baz.Bag.Add("three");
 			s.Flush();
 			s.Close();
@@ -1163,7 +1163,7 @@ namespace NHibernate.Test
 			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
 			Assert.AreEqual( 2, baz.StringSet.Count );
 			int index = 0;
-			foreach(string key in baz.StringSet.Keys ) 
+			foreach(string key in baz.StringSet ) 
 			{
 				// h2.0.3 doesn't have this because the Set has a first() and last() method
 				index++;
@@ -1183,9 +1183,9 @@ namespace NHibernate.Test
 			Bar bar2 = new Bar();
 			s.Save(bar);
 			s.Save(bar2);
-			baz.TopFoos = new Hashtable();
-			baz.TopFoos.Add( bar, new object() );
-			baz.TopFoos.Add( bar2, new object() );
+			baz.TopFoos = new Iesi.Collections.HashedSet();
+			baz.TopFoos.Add( bar );
+			baz.TopFoos.Add( bar2 );
 			baz.TopGlarchez = new Hashtable();
 			GlarchProxy g = new Glarch();
 			s.Save(g);
@@ -1428,8 +1428,8 @@ namespace NHibernate.Test
 			Foo[] foos = new Foo[] { f1, null, f2 };
 			baz.FooArray = foos;
 			// in h2.0.3 this is a Set
-			baz.Foos = new Hashtable();
-			baz.Foos.Add( f1, new object() );
+			baz.Foos = new Iesi.Collections.HashedSet();
+			baz.Foos.Add( f1 );
 			s.Save(f1);
 			s.Save(f2);
 			s.Save(f3);
@@ -1440,7 +1440,7 @@ namespace NHibernate.Test
 
 			baz.Ones[0] = null;
 			baz.Ones.Add(o);
-			baz.Foos.Add( f2, new object() );
+			baz.Foos.Add( f2 );
 			foos[0] = f3;
 			foos[1] = f1;
 
@@ -1617,10 +1617,10 @@ namespace NHibernate.Test
 			Bar bar = new Bar();
 			s.Save(bar);
 			// h2.0.3 was a set
-			bar.Abstracts = new Hashtable();
-			bar.Abstracts.Add( bar, new object() );
+			bar.Abstracts = new Iesi.Collections.HashedSet();
+			bar.Abstracts.Add( bar );
 			Bar bar2 = new Bar();
-			bar.Abstracts.Add( bar2, new object() );
+			bar.Abstracts.Add( bar2 );
 			bar.TheFoo = bar;
 			s.Save(bar2);
 			s.Flush();
@@ -1634,7 +1634,7 @@ namespace NHibernate.Test
 			Assert.IsTrue(bar.Abstracts.Contains(bar), "collection contains self");
 			Assert.AreSame(bar, bar.TheFoo, "association to self");
 
-			foreach(object obj in bar.Abstracts.Keys) 
+			foreach(object obj in bar.Abstracts) 
 			{
 				s.Delete(obj);
 			}
@@ -1805,10 +1805,10 @@ namespace NHibernate.Test
 			Baz baz2 = new Baz();
 			s.Save(baz2);
 			baz1.IntArray = new int[] {1, 2, 3, 4};
-			baz1.FooSet = new Hashtable();
+			baz1.FooSet = new Iesi.Collections.HashedSet();
 			Foo foo = new Foo();
 			s.Save(foo);
-			baz1.FooSet.Add( foo, new object() );
+			baz1.FooSet.Add( foo );
 			s.Flush();
 			s.Close();
 
@@ -1830,7 +1830,7 @@ namespace NHibernate.Test
 			Assert.AreEqual(0, baz1.IntArray.Length, "unkeyed reachability - baz1.IntArray");
 			Assert.AreEqual(0, baz1.FooSet.Count, "unkeyed reachability - baz1.FooSet");
 
-			foreach(object obj in baz2.FooSet.Keys) 
+			foreach(object obj in baz2.FooSet) 
 			{
 				s.Delete( (FooProxy)obj );
 			}
@@ -2082,8 +2082,8 @@ namespace NHibernate.Test
 			list.Add("foo");
 			g.Strings = list;
 			// <sets> in h2.0.3
-			IDictionary hashset = new Hashtable();
-			hashset[g] = new object();
+			Iesi.Collections.ISet hashset = new Iesi.Collections.HashedSet();
+			hashset.Add( g );
 			g.ProxySet = hashset;
 			s.Flush();
 			s.Close();
@@ -2101,7 +2101,7 @@ namespace NHibernate.Test
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			Assert.AreEqual( "foo", g.Strings[0] );
 			Assert.AreSame( g, g.ProxyArray[0] );
-			IEnumerator enumer = g.ProxySet.Keys.GetEnumerator();
+			IEnumerator enumer = g.ProxySet.GetEnumerator();
 			enumer.MoveNext();
 			Assert.AreSame( g, enumer.Current );
 			Assert.AreEqual(1, g.Version, "versioned collection before");
@@ -2343,7 +2343,7 @@ namespace NHibernate.Test
 			Fee fee2 = new Fee();
 			fee1.TheFee = fee2;
 			fee2.TheFee = fee1;
-			fee2.Fees = new Hashtable();
+			fee2.Fees = new Iesi.Collections.HashedSet();
 			Fee fee3 = new Fee();
 			fee3.TheFee = fee1;
 			fee3.AnotherFee = fee2;
@@ -2379,7 +2379,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			fee2.Fi = "CHANGED";
-			fee2.Fees.Add( "an element", new object() );
+			fee2.Fees.Add( "an element" );
 			fee1.Fi = "changed again";
 			s = sessions.OpenSession();
 			s.SaveOrUpdate(fee2);
@@ -2398,7 +2398,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			fee.Fees.Clear();
-			fee.Fees.Add("new element", new object() );
+			fee.Fees.Add( "new element" );
 			fee1.TheFee = null;
 			s = sessions.OpenSession();
 			s.SaveOrUpdate(fee);
@@ -3277,7 +3277,7 @@ namespace NHibernate.Test
 			ISession s = sessions.OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
-			IDictionary bars = new Hashtable();
+			Iesi.Collections.ISet bars = new Iesi.Collections.HashedSet();
 			object emptyObject = new object();
 			baz.CascadingBars = bars;
 			s.Save(baz);
@@ -3287,8 +3287,8 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
 			baz = (Baz) s.Load( typeof(Baz), baz.Code );
-			baz.CascadingBars.Add( new Bar(), emptyObject );
-			baz.CascadingBars.Add( new Bar(), emptyObject );
+			baz.CascadingBars.Add( new Bar() );
+			baz.CascadingBars.Add( new Bar() );
 			t.Commit();
 			s.Close();
 
@@ -3345,18 +3345,18 @@ namespace NHibernate.Test
 			ISession s = sessions.OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
-			IDictionary bars = new Hashtable();
+			Iesi.Collections.ISet bars = new Iesi.Collections.HashedSet();
 			baz.CascadingBars = bars;
-			bars.Add( new Bar(), new object() );
-			bars.Add( new Bar(), new object() );
-			bars.Add( new Bar(), new object() );
+			bars.Add( new Bar() );
+			bars.Add( new Bar() );
+			bars.Add( new Bar() );
 			IList foos = new ArrayList();
 			foos.Add( new Foo() );
 			foos.Add( new Foo() );
 			baz.FooBag = foos;
 			s.Save(baz);
 
-			IEnumerator enumer = new Util.JoinedEnumerable( new IEnumerable[] { foos , bars.Keys } ).GetEnumerator();
+			IEnumerator enumer = new Util.JoinedEnumerable( new IEnumerable[] { foos , bars } ).GetEnumerator();
 			while( enumer.MoveNext() ) 
 			{
 				FooComponent cmp = ((Foo)enumer.Current).Component;
@@ -3367,7 +3367,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			enumer = bars.Keys.GetEnumerator();
+			enumer = bars.GetEnumerator();
 			enumer.MoveNext();
 			bars.Remove( enumer.Current );
 			foos.RemoveAt(1);
@@ -3383,7 +3383,7 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
 			s.Update(baz);
-			enumer = bars.Keys.GetEnumerator();
+			enumer = bars.GetEnumerator();
 			enumer.MoveNext();
 			bars.Remove( enumer.Current );
 			s.Delete(baz);

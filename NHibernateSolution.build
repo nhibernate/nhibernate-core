@@ -71,10 +71,11 @@
 		depends="init" 
 		description="Builds code that NHibernate depends on but is not a core peice of NHibernate.  The built dll/exes will be distributed in the lib folder so there should be no need for a user to build it."
 	>
-		<nant 
-			buildfile="src/HashCodeProvider/HashCodeProvider.build" 
-			target="build"
-		/>
+		<!--
+		<nant target="build" buildfile="src/HashCodeProvider/HashCodeProvider.build" />
+		-->
+		<nant target="build" buildfile="src/Iesi.Collections/Iesi.Collections.build" />
+		
 	</target>
 	
 	<target name="build" depends="init" description="Builds current configuration">
@@ -99,6 +100,7 @@
 		<!-- copy framework-specific libraries -->
 		<copy todir="${build.dir}/bin">
 			<fileset basedir="${lib.dir}">
+				<includes name="Iesi.Collections.*" />
 				<includes name="log4net.*" />
 				<includes name="nunit.framework.*" />
 			</fileset>
@@ -110,6 +112,7 @@
 		<nant target="build" buildfile="src/NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" />
 		<nant target="build" buildfile="src/NHibernate.Tasks/NHibernate.Tasks.build" />
 		<nant target="build" buildfile="src/NHibernate.Examples/NHibernate.Examples.build" />
+		
 	</target>
 	
 	<target name="test" depends="build" description="Runs the tests contained in NHibernate.Test" >

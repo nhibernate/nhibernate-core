@@ -1,7 +1,7 @@
-<?xml version="1.0" ?>
+﻿<?xml version="1.0" ?>
 
 <project 
-	name="NHibernate" 
+	name="Iesi.Collections" 
 	default="build" 
 	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
 >
@@ -20,7 +20,7 @@
 
 	<property name="keyFile" value="..\NHibernate.snk" />
 	
-	<target name="build" description="Build NHibernate">
+	<target name="build" description="Build Iesi.Collections">
 		<!-- ensure the AssemblyInfo is writable -->
 		<attrib file="AssemblyInfo.cs" readonly="false" />
 		
@@ -31,13 +31,13 @@
 			</imports>
 			<attributes>
 				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
-				<attribute type="AssemblyDescriptionAttribute" value="An object persistence library for relational databases." />
+				<attribute type="AssemblyDescriptionAttribute" value="Enhanced Collections for .NET.  Code was published at http://www.codeproject.com/csharp/sets.asp" />
 				<attribute type="AssemblyCompanyAttribute" value="nhibernate.sourceforge.net" />
 				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
-				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
-				<attribute type="AssemblyVersionAttribute" value="${project.version}" />
-				<attribute type="AssemblyInformationalVersionAttribute" value="${project.version.major}.${project.version.minor}" />
-				<attribute type="AssemblyFileVersionAttribute" value="${project.version}" />
+				<attribute type="AssemblyCopyrightAttribute" value="Declaration of code in public domain can be found in comment by Jason Smith at http://www.codeproject.com/csharp/sets.asp#xx703510xx.  Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith." />
+				<attribute type="AssemblyVersionAttribute" value="1.0.0.1" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="1.0" />
+				<attribute type="AssemblyFileVersionAttribute" value="1.0.0.1" />
 				<attribute type="AssemblyKeyFileAttribute" value="${keyFile}" if="${sign}"/>
 			</attributes>
 		</asminfo>
@@ -52,32 +52,17 @@
 			
 			<sources failonempty="true">
 				<includes name="**/*.cs" />
-				<excludes name="Eg/**" />
-				<excludes name="InternalTest/**/*.cs" />
-				<excludes name="Test/**/*.cs" />
-				<excludes name="Util/*Test.cs" />
-				<excludes name="Dialect/HSQLDialect.cs" />
-				<excludes name="Dialect/InterbaseDialect.cs" />
-				<excludes name="Dialect/SAPDBDialect.cs" />
-				<excludes name="Tool/hbm2net/*.cs" />
 			</sources>
 			
-			<resources prefix="NHibernate" dynamicprefix="true">
-				<includes name="*.xsd" />
-				<includes name="**/*.xml" />
-				<excludes name="bin/**/*.xml" />
-			</resources>
 			
 			<references basedir="${build.dir}/bin">
 				<includes name="${nant.settings.currentframework.frameworkassemblydirectory}/System.dll" />
 				<includes name="${nant.settings.currentframework.frameworkassemblydirectory}/System.XML.dll" />
 				<includes name="${nant.settings.currentframework.frameworkassemblydirectory}/System.Data.dll" />
-				<includes name="Iesi.Collections.dll" />
-				<includes name="log4net.dll" />
-				<includes name="HashCodeProvider.dll" />
 			</references>
 	
 		</csc>
+		
 		
 	</target>
 	

@@ -8,12 +8,12 @@ namespace NHibernate.DomainModel
 	/// </summary>
 	public class Mono  : Simple
 	{
-		private IDictionary _strings;
+		private Iesi.Collections.ISet _strings;
 
 		public Mono() : base() {}
 		public Mono(int c) : base(c) {}
 
-		public IDictionary Strings
+		public Iesi.Collections.ISet Strings
 		{
 			get { return _strings; }
 			set { _strings = value; }

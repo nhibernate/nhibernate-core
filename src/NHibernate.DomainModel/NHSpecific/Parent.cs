@@ -10,13 +10,13 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private int _id;
 		private string _adultName;
-		private IDictionary _children;
-		private IDictionary _adultFriends;
+		private Iesi.Collections.ISet _children;
+		private Iesi.Collections.ISet _adultFriends;
 
 
 		public Parent()
 		{
-			_adultFriends = new SortedList(new ParentComparer());
+			_adultFriends = new Iesi.Collections.SortedSet( new ParentComparer() );
 		}
 
 		public int Id 
@@ -31,13 +31,13 @@ namespace NHibernate.DomainModel.NHSpecific
 			set {_adultName = value;}
 		}
 
-		public IDictionary Children 
+		public Iesi.Collections.ISet Children 
 		{
 			get {return _children;}
 			set {_children = value;}
 		}
 
-		public IDictionary AdultFriends 
+		public Iesi.Collections.ISet AdultFriends 
 		{
 			get {return _adultFriends;}
 			set {_adultFriends = value;}
@@ -45,7 +45,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public void AddFriend(Parent friend) 
 		{
-			_adultFriends.Add(friend, friend);
+			_adultFriends.Add( friend );
 		}
 
 	}

@@ -34,7 +34,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		private IList _stringBag;
 		private IList _stringList;
 		private IDictionary _stringMap;
-		private IDictionary _stringSet;
+		private Iesi.Collections.ISet _stringSet;
 		private object _dummyObject = new object();
 
 		public BasicClass()
@@ -183,7 +183,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _stringMap = value; }
 		}
 
-		public IDictionary StringSet 
+		public Iesi.Collections.ISet StringSet 
 		{
 			get { return _stringSet; }
 			set { _stringSet = value; }
@@ -191,8 +191,11 @@ namespace NHibernate.DomainModel.NHSpecific
 		
 		public void AddToStringSet(string stringValue) 
 		{
-			if(StringSet==null) StringSet = new Hashtable();
-			StringSet[stringValue] = _dummyObject;
+			if(StringSet==null)
+			{
+				StringSet = new Iesi.Collections.HashedSet();
+			}
+			StringSet.Add( stringValue );
 		}
 
 	}

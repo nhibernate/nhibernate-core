@@ -83,12 +83,12 @@ namespace NHibernate.Test.NHSpecificTest
 			TestInsert();
 
 			Parent bobJones = (Parent)s.Load(typeof(Parent), 1);
-			IDictionary friends = bobJones.AdultFriends;
+			Iesi.Collections.ISet friends = bobJones.AdultFriends;
 
 			int currentId = 0;
 			int previousId = 0;
 
-			foreach(Parent friend in friends.Keys) {
+			foreach(Parent friend in friends) {
 				previousId = currentId;
 				currentId = friend.Id;
 

@@ -25,14 +25,14 @@ namespace NHibernate.Type {
 		/// <see cref="AbstractType.ReturnedClass"/>
 		/// </summary>
 		public override System.Type ReturnedClass {
-			get {return typeof(IDictionary);}
+			get {return typeof(Iesi.Collections.ISet);}
 		}
 
 		/// <summary>
 		/// <see cref="PersistentCollectionType.Wrap"/>
 		/// </summary>
 		public override PersistentCollection Wrap(ISessionImplementor session, object collection) {
-			return new Set(session, (IDictionary)collection);
+			return new Set(session, (Iesi.Collections.ISet)collection);
 		}
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace NHibernate.Type {
 
 		public override ICollection GetElementsCollection(object collection)
 		{
-			return  (ICollection)((IDictionary)collection).Keys;
+			return  (ICollection)collection;
 		}
 
 

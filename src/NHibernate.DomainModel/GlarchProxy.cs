@@ -39,7 +39,7 @@ namespace NHibernate.DomainModel
 			set;
 		}	
 		
-		IDictionary StringSets
+		Iesi.Collections.ISet StringSets
 		{
 			get;
 			set;
@@ -54,7 +54,7 @@ namespace NHibernate.DomainModel
 			get;
 			set;
 		}	
-		IDictionary ProxySet
+		Iesi.Collections.ISet ProxySet
 		{
 			get;
 			set;

@@ -5,6 +5,7 @@ using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
+using NHibernate.DomainModel;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest
@@ -22,7 +23,9 @@ namespace NHibernate.Test.ExpressionTest
 		public virtual void SetUp() 
 		{
 			Configuration cfg = new Configuration();
-			cfg.AddResource("NHibernate.DomainModel.Simple.hbm.xml", Assembly.Load("NHibernate.DomainModel"));
+			Assembly dm = Assembly.GetAssembly( typeof(Simple) );
+			cfg.AddResource( "NHibernate.DomainModel.Simple.hbm.xml", dm );
+			cfg.AddResource( "NHibernate.DomainModel.NHSpecific.SimpleComponent.hbm.xml", dm );
 
 			factory = cfg.BuildSessionFactory();
 			factoryImpl = (ISessionFactoryImplementor)factory;

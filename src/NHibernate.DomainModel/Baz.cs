@@ -38,12 +38,13 @@ namespace NHibernate.DomainModel
 	private System.Collections.IDictionary _cachedMap;
 	private System.Collections.IDictionary _stringGlarchMap;
 	private System.Collections.IDictionary _anyToAny;
-	private System.Collections.IDictionary _fooSet;
-	private System.Collections.IDictionary _stringSet;
-	private System.Collections.IDictionary _topFoos;
-	private System.Collections.IDictionary _cascadingBars;
-	private System.Collections.IDictionary _cached;
-	private System.Collections.IDictionary _sortablez;
+	//private System.Collections.IDictionary _fooSet;
+	private Iesi.Collections.ISet _fooSet;
+	private Iesi.Collections.ISet _stringSet;
+	private Iesi.Collections.ISet _topFoos;
+	private Iesi.Collections.ISet _cascadingBars;
+	private Iesi.Collections.ISet _cached;
+	private Iesi.Collections.ISet _sortablez;
 	private System.Collections.IList _bag;
 	private System.Collections.IList _fooBag;
 	private System.Collections.IList _bazez;
@@ -380,7 +381,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for fooSet
 	/// </summary>
-	public System.Collections.IDictionary FooSet
+	public Iesi.Collections.ISet FooSet
 	{
 		get
 		{
@@ -395,7 +396,7 @@ namespace NHibernate.DomainModel
 	 /// <summary>
 	/// Get/set for stringSet
 	/// </summary>
-	public System.Collections.IDictionary StringSet
+	public Iesi.Collections.ISet StringSet
 	{
 		get
 		{
@@ -410,7 +411,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for topFoos
 	/// </summary>
-	public System.Collections.IDictionary TopFoos
+	public Iesi.Collections.ISet TopFoos
 	{
 		get
 		{
@@ -425,7 +426,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for cascadingBars
 	/// </summary>
-	public System.Collections.IDictionary CascadingBars
+	public Iesi.Collections.ISet CascadingBars
 	{
 		get
 		{
@@ -440,7 +441,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for cached
 	/// </summary>
-	public System.Collections.IDictionary Cached
+	public Iesi.Collections.ISet Cached
 	{
 		get
 		{
@@ -455,7 +456,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for sortablez
 	/// </summary>
-	public System.Collections.IDictionary Sortablez
+	public Iesi.Collections.ISet Sortablez
 	{
 		get
 		{
@@ -546,17 +547,17 @@ namespace NHibernate.DomainModel
 
 	 public void SetDefaults() 
 	 {
-		 StringSet = new Hashtable();
-		 StringSet.Add("foo", new object());
-		 StringSet.Add("bar", new object());
-		 StringSet.Add("baz", new object());
+		 StringSet = new Iesi.Collections.HashedSet();
+		 StringSet.Add( "foo" );
+		 StringSet.Add( "bar" );
+		 StringSet.Add( "baz" );
 
 		 StringDateMap = new SortedList();
 		 StringDateMap.Add( "now", DateTime.Now );
 		 StringDateMap.Add( "never", null );
 		 StringDateMap.Add( "big bang", new DateTime(0) );
 		 ArrayList list = new ArrayList();
-		 list.AddRange(StringSet.Keys); 
+		 list.AddRange( StringSet ); 
 		 StringList = list;
 		 IntArray = new int[] { 1,3,3,7 };
 		 FooArray =new Foo[0];
@@ -566,7 +567,7 @@ namespace NHibernate.DomainModel
 		 Customs.Add( new String[] { "A", "B" } );
 		 Customs.Add( new String[] { "1", "2" } );
 		
-		 FooSet = new Hashtable();
+		 FooSet = new Iesi.Collections.HashedSet();
 		 Components = new FooComponent[] {
 											 new FooComponent("foo", 42, null, null),
 											 new FooComponent("bar", 88, null, new FooComponent("sub", 69, null, null) )
@@ -583,7 +584,8 @@ namespace NHibernate.DomainModel
 		 Bag.Add("duplicate");
 		 Bag.Add("unique");
 		 
-		 Cached = new SortedList();
+		 //TODO: SET - verify right implementation
+		 Cached = new Iesi.Collections.ListSet();
 
 		 CompositeElement ce = new CompositeElement();
 		 ce.Foo = "foo";
@@ -591,8 +593,8 @@ namespace NHibernate.DomainModel
 		 CompositeElement ce2 = new CompositeElement();
 		 ce2.Foo = "fooxxx";
 		 ce2.Bar = "barxxx";
-		 Cached.Add(ce, new object());
-		 Cached.Add(ce2, new object());
+		 Cached.Add( ce );
+		 Cached.Add( ce2 );
 		 CachedMap = new SortedList();
 		 CachedMap.Add(this, ce);
 	 }
