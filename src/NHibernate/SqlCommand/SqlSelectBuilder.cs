@@ -1,21 +1,17 @@
 using System;
 using System.Collections;
-using System.Data;
-using System.Text;
-
-using NHibernate.Connection;
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
-using NHibernate.Util;
 
-namespace NHibernate.SqlCommand 
+namespace NHibernate.SqlCommand
 {
 	/// <summary>
 	/// A class that builds an <c>INSERT</c> sql statement.
 	/// </summary>
-	public class SqlSelectBuilder: SqlBaseBuilder, ISqlStringBuilder	 
+	public class SqlSelectBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(SqlSelectBuilder) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( SqlSelectBuilder ) );
 
 		private string selectClause;
 		private string fromClause;
@@ -23,9 +19,13 @@ namespace NHibernate.SqlCommand
 		private SqlString outerJoinsAfterWhere;
 		private string orderByClause;
 
-		IList whereSqlStrings = new ArrayList();
+		private IList whereSqlStrings = new ArrayList();
 
-		public SqlSelectBuilder(ISessionFactoryImplementor factory): base(factory)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		public SqlSelectBuilder( ISessionFactoryImplementor factory ) : base( factory )
 		{
 		}
 
@@ -34,7 +34,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="fromClause">The fromClause to set</param>
 		/// <returns>The SqlSelectBuilder</returns>
-		public SqlSelectBuilder SetFromClause(string fromClause) 
+		public SqlSelectBuilder SetFromClause( string fromClause )
 		{
 			this.fromClause = fromClause;
 			return this;
@@ -46,7 +46,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="tableName">The name of the Table to get the data from</param>
 		/// <param name="alias">The Alias to use for the table name.</param>
 		/// <returns>The SqlSelectBuilder</returns>
-		public SqlSelectBuilder SetFromClause(string tableName, string alias) 
+		public SqlSelectBuilder SetFromClause( string tableName, string alias )
 		{
 			this.fromClause = tableName + " " + alias;
 			return this;
@@ -57,7 +57,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="fromClause">The fromClause in a SqlString</param>
 		/// <returns>The SqlSelectBuilder</returns>
-		public SqlSelectBuilder SetFromClause(SqlString fromClause) 
+		public SqlSelectBuilder SetFromClause( SqlString fromClause )
 		{
 			// it is safe to do this because a fromClause will have no
 			// parameters
@@ -69,7 +69,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="orderByClause">The orderByClause to set</param>
 		/// <returns>The SqlSelectBuilder</returns>
-		public SqlSelectBuilder SetOrderByClause(string orderByClause) 
+		public SqlSelectBuilder SetOrderByClause( string orderByClause )
 		{
 			this.orderByClause = orderByClause;
 			return this;
@@ -87,24 +87,36 @@ namespace NHibernate.SqlCommand
 		/// <param name="outerJoinsAfterFrom">The outerJoinsAfterFrom to set</param>
 		/// <param name="outerJoinsAfterWhere">The outerJoinsAfterWhere to set</param>
 		/// <returns>The SqlSelectBuilder</returns>
-		[Obsolete("Should use SqlString version instead")]
-		public SqlSelectBuilder SetOuterJoins(string outerJoinsAfterFrom, string outerJoinsAfterWhere) 
+		[Obsolete( "Should use SqlString version instead" )]
+		public SqlSelectBuilder SetOuterJoins( string outerJoinsAfterFrom, string outerJoinsAfterWhere )
 		{
-			return this.SetOuterJoins( new SqlString(outerJoinsAfterFrom), new SqlString(outerJoinsAfterWhere) );
+			return this.SetOuterJoins( new SqlString( outerJoinsAfterFrom ), new SqlString( outerJoinsAfterWhere ) );
 		}
 
-		[Obsolete("Should use SqlString version instead")]
-		public SqlSelectBuilder SetOuterJoins(SqlString outerJoinsAfterFrom, string outerJoinsAfterWhere) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="outerJoinsAfterFrom"></param>
+		/// <param name="outerJoinsAfterWhere"></param>
+		/// <returns></returns>
+		[Obsolete( "Should use SqlString version instead" )]
+		public SqlSelectBuilder SetOuterJoins( SqlString outerJoinsAfterFrom, string outerJoinsAfterWhere )
 		{
-			return this.SetOuterJoins( outerJoinsAfterFrom, new SqlString(outerJoinsAfterWhere) );
+			return this.SetOuterJoins( outerJoinsAfterFrom, new SqlString( outerJoinsAfterWhere ) );
 		}
 
-		[Obsolete("Should use SqlString version instead")]
-		public SqlSelectBuilder SetOuterJoins(string outerJoinsAfterFrom, SqlString outerJoinsAfterWhere) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="outerJoinsAfterFrom"></param>
+		/// <param name="outerJoinsAfterWhere"></param>
+		/// <returns></returns>
+		[Obsolete( "Should use SqlString version instead" )]
+		public SqlSelectBuilder SetOuterJoins( string outerJoinsAfterFrom, SqlString outerJoinsAfterWhere )
 		{
-			return this.SetOuterJoins( new SqlString(outerJoinsAfterFrom), outerJoinsAfterWhere );
+			return this.SetOuterJoins( new SqlString( outerJoinsAfterFrom ), outerJoinsAfterWhere );
 		}
-		
+
 		/// <summary>
 		/// Sets the SqlString for the OUTER JOINs.  
 		/// </summary>
@@ -115,7 +127,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="outerJoinsAfterFrom">The outerJoinsAfterFrom to set</param>
 		/// <param name="outerJoinsAfterWhere">The outerJoinsAfterWhere to set</param>
 		/// <returns>The SqlSelectBuilder</returns>
-		public SqlSelectBuilder SetOuterJoins(SqlString outerJoinsAfterFrom, SqlString outerJoinsAfterWhere) 
+		public SqlSelectBuilder SetOuterJoins( SqlString outerJoinsAfterFrom, SqlString outerJoinsAfterWhere )
 		{
 			this.outerJoinsAfterFrom = outerJoinsAfterFrom;
 			this.outerJoinsAfterWhere = outerJoinsAfterWhere;
@@ -127,7 +139,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="selectClause">The selectClause to set</param>
 		/// <returns>The SqlSelectBuilder</returns>
-		public SqlSelectBuilder SetSelectClause(string selectClause) 
+		public SqlSelectBuilder SetSelectClause( string selectClause )
 		{
 			this.selectClause = selectClause;
 			return this;
@@ -140,11 +152,11 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">The names of the columns</param>
 		/// <param name="whereType">The Hibernate Type</param>
 		/// <returns>The SqlSelectBuilder</returns>
-		public SqlSelectBuilder SetWhereClause(string tableAlias, string[] columnNames, IType whereType) 
+		public SqlSelectBuilder SetWhereClause( string tableAlias, string[ ] columnNames, IType whereType )
 		{
-			Parameter[] parameters = Parameter.GenerateParameters( Factory, tableAlias, columnNames, whereType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, tableAlias, columnNames, whereType );
 
-			whereSqlStrings.Add(ToWhereString(tableAlias, columnNames, parameters));
+			whereSqlStrings.Add( ToWhereString( tableAlias, columnNames, parameters ) );
 
 			return this;
 
@@ -155,15 +167,15 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="whereSqlString">The SqlString that contains the sql and parameters to add to the WHERE</param>
 		/// <returns>This SqlSelectBuilder</returns>
-		public SqlSelectBuilder AddWhereClause(SqlString whereSqlString) 
+		public SqlSelectBuilder AddWhereClause( SqlString whereSqlString )
 		{
-			whereSqlStrings.Add(whereSqlString);
+			whereSqlStrings.Add( whereSqlString );
 			return this;
 		}
 
-
 		#region ISqlStringBuilder Members
 
+		/// <summary></summary>
 		public SqlString ToSqlString()
 		{
 			// 4 = the "SELECT", selectClause, "FROM", fromClause are straight strings
@@ -174,60 +186,60 @@ namespace NHibernate.SqlCommand
 			int initialCapacity = 4 + outerJoinsAfterFrom.Count + 1 + outerJoinsAfterWhere.Count + 2;
 
 			// move through each whereSqlString to find the capacity
-			for( int i=0; i<whereSqlStrings.Count; i++ ) 
+			for( int i = 0; i < whereSqlStrings.Count; i++ )
 			{
-				initialCapacity += ((SqlString)whereSqlStrings[i]).Count;
+				initialCapacity += ( ( SqlString ) whereSqlStrings[ i ] ).Count;
 			}
 
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder( initialCapacity  + 2 );
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder( initialCapacity + 2 );
 
-			sqlBuilder.Add("SELECT ")
-				.Add(selectClause)
-				.Add(" FROM ")
-				.Add(fromClause)
-				.Add(outerJoinsAfterFrom);
+			sqlBuilder.Add( "SELECT " )
+				.Add( selectClause )
+				.Add( " FROM " )
+				.Add( fromClause )
+				.Add( outerJoinsAfterFrom );
 
-			sqlBuilder.Add(" WHERE ");
+			sqlBuilder.Add( " WHERE " );
 
-			if(whereSqlStrings.Count > 1) 
+			if( whereSqlStrings.Count > 1 )
 			{
 				sqlBuilder.Add(
-					(SqlString[])((ArrayList)whereSqlStrings).ToArray(typeof(SqlString)), 
-					null, "AND", null, false);
+					( SqlString[ ] ) ( ( ArrayList ) whereSqlStrings ).ToArray( typeof( SqlString ) ),
+					null, "AND", null, false );
 			}
-			else 
+			else
 			{
-				sqlBuilder.Add( (SqlString)whereSqlStrings[0], null, null, null, false );
-			}
-
-			sqlBuilder.Add(outerJoinsAfterWhere);
-			
-			if (orderByClause != null && orderByClause.Trim().Length > 0) 
-			{
-				sqlBuilder.Add(" ORDER BY ")
-					.Add(orderByClause);
+				sqlBuilder.Add( ( SqlString ) whereSqlStrings[ 0 ], null, null, null, false );
 			}
 
-			if(log.IsDebugEnabled) 
+			sqlBuilder.Add( outerJoinsAfterWhere );
+
+			if( orderByClause != null && orderByClause.Trim().Length > 0 )
 			{
-				if( initialCapacity < sqlBuilder.Count ) 
+				sqlBuilder.Add( " ORDER BY " )
+					.Add( orderByClause );
+			}
+
+			if( log.IsDebugEnabled )
+			{
+				if( initialCapacity < sqlBuilder.Count )
 				{
-					log.Debug( 
+					log.Debug(
 						"The initial capacity was set too low at: " + initialCapacity + " for the SelectSqlBuilder " +
-						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + fromClause );
+							"that needed a capacity of: " + sqlBuilder.Count + " for the table " + fromClause );
 				}
-				else if( initialCapacity > 16 && ((float)initialCapacity/sqlBuilder.Count) > 1.2 )
+				else if( initialCapacity > 16 && ( ( float ) initialCapacity/sqlBuilder.Count ) > 1.2 )
 				{
 					log.Debug(
 						"The initial capacity was set too high at: " + initialCapacity + " for the SelectSqlBuilder " +
-						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + fromClause );
+							"that needed a capacity of: " + sqlBuilder.Count + " for the table " + fromClause );
 				}
 			}
 
 			return sqlBuilder.ToSqlString();
 
 		}
-		#endregion
 
+		#endregion
 	}
 }

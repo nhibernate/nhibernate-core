@@ -1,7 +1,3 @@
-using System;
-
-using NHibernate.Dialect;
-
 namespace NHibernate.SqlCommand
 {
 	/// <summary>
@@ -12,83 +8,122 @@ namespace NHibernate.SqlCommand
 		private readonly int length;
 		private readonly string suffix;
 
-		public Alias(int length, string suffix)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="length"></param>
+		/// <param name="suffix"></param>
+		public Alias( int length, string suffix )
 		{
-			this.length = (suffix==null) ? length : length - suffix.Length;
+			this.length = ( suffix == null ) ? length : length - suffix.Length;
 			this.suffix = suffix;
 		}
 
-		public Alias(string suffix)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="suffix"></param>
+		public Alias( string suffix )
 		{
 			this.length = int.MaxValue;
 			this.suffix = suffix;
 		}
 
-		public string ToAliasString(string sqlIdentifier, Dialect.Dialect dialect) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlIdentifier"></param>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		public string ToAliasString( string sqlIdentifier, Dialect.Dialect dialect )
 		{
-			bool isQuoted = dialect.IsQuoted(sqlIdentifier);
+			bool isQuoted = dialect.IsQuoted( sqlIdentifier );
 			string unquoted;
 
-			if(isQuoted) 
+			if( isQuoted )
 			{
-				unquoted = dialect.UnQuote(sqlIdentifier);
+				unquoted = dialect.UnQuote( sqlIdentifier );
 			}
-			else 
+			else
 			{
 				unquoted = sqlIdentifier;
 			}
 
-			if ( unquoted.Length > length ) 
+			if( unquoted.Length > length )
 			{
-				unquoted = unquoted.Substring(0, length);
+				unquoted = unquoted.Substring( 0, length );
 			}
 
-			if (suffix!=null) unquoted += suffix;
-
-			if ( isQuoted ) 
+			if( suffix != null )
 			{
-				return dialect.QuoteForAliasName(unquoted);
+				unquoted += suffix;
 			}
-			else 
+
+			if( isQuoted )
+			{
+				return dialect.QuoteForAliasName( unquoted );
+			}
+			else
 			{
 				return unquoted;
 			}
 
 		}
 
-		public string ToUnquotedAliasString(string sqlIdentifier, Dialect.Dialect dialect)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlIdentifier"></param>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		public string ToUnquotedAliasString( string sqlIdentifier, Dialect.Dialect dialect )
 		{
-			string unquoted = dialect.UnQuote(sqlIdentifier);
+			string unquoted = dialect.UnQuote( sqlIdentifier );
 
-			if(unquoted.Length > length) 
+			if( unquoted.Length > length )
 			{
-				unquoted = unquoted.Substring(0, length);
+				unquoted = unquoted.Substring( 0, length );
 			}
 
-			if(suffix!=null) unquoted += suffix;
+			if( suffix != null )
+			{
+				unquoted += suffix;
+			}
 
 			return unquoted;
 		}
 
-		public string[] ToUnquotedAliasStrings(string[] sqlIdentifiers, Dialect.Dialect dialect) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlIdentifiers"></param>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		public string[ ] ToUnquotedAliasStrings( string[ ] sqlIdentifiers, Dialect.Dialect dialect )
 		{
-			string[] aliases = new string[sqlIdentifiers.Length];
-			for(int i = 0; i < sqlIdentifiers.Length; i++) 
+			string[ ] aliases = new string[sqlIdentifiers.Length];
+			for( int i = 0; i < sqlIdentifiers.Length; i++ )
 			{
-				aliases[i] = ToUnquotedAliasString(sqlIdentifiers[i], dialect);
+				aliases[ i ] = ToUnquotedAliasString( sqlIdentifiers[ i ], dialect );
 			}
 
 			return aliases;
 		}
 
-		
-		public string[] ToAliasStrings(string[] sqlIdentifiers, Dialect.Dialect dialect) 
-		{
-			string[] aliases = new string[ sqlIdentifiers.Length ];
 
-			for ( int i=0; i<sqlIdentifiers.Length; i++ ) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlIdentifiers"></param>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		public string[ ] ToAliasStrings( string[ ] sqlIdentifiers, Dialect.Dialect dialect )
+		{
+			string[ ] aliases = new string[sqlIdentifiers.Length];
+
+			for( int i = 0; i < sqlIdentifiers.Length; i++ )
 			{
-				aliases[i] = ToAliasString(sqlIdentifiers[i], dialect);
+				aliases[ i ] = ToAliasString( sqlIdentifiers[ i ], dialect );
 			}
 			return aliases;
 		}

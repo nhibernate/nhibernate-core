@@ -1,7 +1,7 @@
 using System;
 
-namespace NHibernate.SqlCommand 
-{	
+namespace NHibernate.SqlCommand
+{
 	/// <summary>
 	/// Extension to the Parameter class that supports Parameters with
 	/// a Precision and a Scale
@@ -12,56 +12,64 @@ namespace NHibernate.SqlCommand
 	/// generation of <c>decimal(19,5)</c> (MsSql specific) is not good enough.
 	/// </remarks>
 	[Serializable]
-	public class ParameterPrecisionScale : Parameter 
+	public class ParameterPrecisionScale : Parameter
 	{
 		private byte precision;
 		private byte scale;
 
-		public byte Precision 
+		/// <summary></summary>
+		public byte Precision
 		{
-			get {return precision;}
-			set {precision = value;}
+			get { return precision; }
+			set { precision = value; }
 		}
 
-		public byte Scale 
+		/// <summary></summary>
+		public byte Scale
 		{
-			get {return scale;}
-			set {scale = value;}
+			get { return scale; }
+			set { scale = value; }
 		}
-
 
 		#region System.Object Members
-		
-		public override bool Equals(object obj) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public override bool Equals( object obj )
 		{
-			if(base.Equals(obj)) 
+			if( base.Equals( obj ) )
 			{
 				ParameterPrecisionScale rhs;
-			
+
 				// Step	2: Instance of check
 				rhs = obj as ParameterPrecisionScale;
-				if(rhs==null) return false;
+				if( rhs == null )
+				{
+					return false;
+				}
 
 				//Step 3: Check each important field
-				return this.Precision==rhs.Precision
-					&& this.Scale==rhs.Scale;
+				return this.Precision == rhs.Precision
+					&& this.Scale == rhs.Scale;
 			}
-			else 
+			else
 			{
 				return false;
 			}
 		}
 
+		/// <summary></summary>
 		public override int GetHashCode()
 		{
-			unchecked 
+			unchecked
 			{
 				return base.GetHashCode() + precision.GetHashCode() + scale.GetHashCode();
 			}
 		}
 
 		#endregion
-
 	}
 }
-

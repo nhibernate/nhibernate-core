@@ -1,11 +1,9 @@
-using System;
 //using System.Data;
-
 //using NHibernate.Driver;
+using System;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
-
 
 namespace NHibernate.SqlCommand
 {
@@ -14,27 +12,28 @@ namespace NHibernate.SqlCommand
 	/// for an IDbCommand.
 	/// </summary>
 	[Serializable]
-	public class Parameter: ICloneable
+	public class Parameter : ICloneable
 	{
 		private string tableAlias;
 		private string name;
 		private SqlType _sqlType;
-		
-		public string Name 
+
+		/// <summary></summary>
+		public string Name
 		{
-			get{ return name;}
-			set{ this.name = value;}
+			get { return name; }
+			set { this.name = value; }
 		}
 
-
-		public string TableAlias 
+		/// <summary></summary>
+		public string TableAlias
 		{
-			get {return tableAlias;}
-			set {this.tableAlias = value;}
+			get { return tableAlias; }
+			set { this.tableAlias = value; }
 		}
 
-		
-		public SqlType SqlType 
+		/// <summary></summary>
+		public SqlType SqlType
 		{
 			get { return _sqlType; }
 			set { _sqlType = value; }
@@ -46,10 +45,11 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="columnNames">The names of the Columns that compose the IType</param>
 		/// <param name="type">The IType to turn into Parameters</param>
+		/// <param name="factory"></param>
 		/// <returns>An Array of IParameter objects</returns>
-		public static Parameter[] GenerateParameters(ISessionFactoryImplementor factory, string[] columnNames, IType type) 
+		public static Parameter[ ] GenerateParameters( ISessionFactoryImplementor factory, string[ ] columnNames, IType type )
 		{
-			return Parameter.GenerateParameters(factory, null, columnNames, type);
+			return Parameter.GenerateParameters( factory, null, columnNames, type );
 		}
 
 
@@ -61,31 +61,35 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">The names of the Columns that compose the IType</param>
 		/// <param name="type">The IType to turn into Parameters</param>
 		/// <returns>An Array of IParameter objects</returns>
-		public static Parameter[] GenerateParameters(ISessionFactoryImplementor factory, string tableAlias, string[] columnNames, IType type) 
+		public static Parameter[ ] GenerateParameters( ISessionFactoryImplementor factory, string tableAlias, string[ ] columnNames, IType type )
 		{
-			SqlType[] sqlTypes = type.SqlTypes(factory);
+			SqlType[ ] sqlTypes = type.SqlTypes( factory );
 
-			Parameter[] parameters = new Parameter[sqlTypes.Length];
+			Parameter[ ] parameters = new Parameter[sqlTypes.Length];
 
-			for(int i = 0; i < sqlTypes.Length; i++) {
-				if(sqlTypes[i].LengthDefined) {
+			for( int i = 0; i < sqlTypes.Length; i++ )
+			{
+				if( sqlTypes[ i ].LengthDefined )
+				{
 					ParameterLength param = new ParameterLength();
-					param.Length = sqlTypes[i].Length;
-					parameters[i] = param;
+					param.Length = sqlTypes[ i ].Length;
+					parameters[ i ] = param;
 				}
-				else if(sqlTypes[i].PrecisionDefined) {
+				else if( sqlTypes[ i ].PrecisionDefined )
+				{
 					ParameterPrecisionScale param = new ParameterPrecisionScale();
-					param.Precision = sqlTypes[i].Precision;
-					param.Scale = sqlTypes[i].Scale;
-					parameters[i] = param;
+					param.Precision = sqlTypes[ i ].Precision;
+					param.Scale = sqlTypes[ i ].Scale;
+					parameters[ i ] = param;
 				}
-				else {
-					parameters[i] = new Parameter();
+				else
+				{
+					parameters[ i ] = new Parameter();
 				}
 
-				parameters[i].Name = columnNames[i];
-				parameters[i].TableAlias = tableAlias;
-				parameters[i].SqlType = sqlTypes[i];
+				parameters[ i ].Name = columnNames[ i ];
+				parameters[ i ].TableAlias = tableAlias;
+				parameters[ i ].SqlType = sqlTypes[ i ];
 
 			}
 
@@ -94,57 +98,71 @@ namespace NHibernate.SqlCommand
 		}
 
 		#region object Members
-		
-		public override bool Equals(object obj) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public override bool Equals( object obj )
 		{
 			Parameter rhs;
-			
+
 			// Step1: Perform an equals test
-			if(obj==this) return true;
+			if( obj == this )
+			{
+				return true;
+			}
 
 			// Step	2: Instance of check
 			rhs = obj as Parameter;
-			if(rhs==null) return false;
+			if( rhs == null )
+			{
+				return false;
+			}
 
 			//Step 3: Check each important field
-			
+
 			// these 2 fields will not be null so compare them...
-			if( this.SqlType.Equals(rhs.SqlType)==false 
-				|| this.Name.Equals(rhs.Name)==false) 
+			if( this.SqlType.Equals( rhs.SqlType ) == false || this.Name.Equals( rhs.Name ) == false )
 			{
 				return false;
 			}
 
 			// becareful with TableAlias being null
-			if(this.TableAlias==null && rhs.TableAlias==null) 
+			if( this.TableAlias == null && rhs.TableAlias == null )
 			{
 				return true;
 			}
-			else if (this.TableAlias==null && rhs.TableAlias!=null) 
+			else if( this.TableAlias == null && rhs.TableAlias != null )
 			{
 				return false;
 			}
-			else 
+			else
 			{
-				return this.TableAlias.Equals(rhs.TableAlias);
+				return this.TableAlias.Equals( rhs.TableAlias );
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public override int GetHashCode()
 		{
 			int hashCode = 0;
 
-			unchecked 
+			unchecked
 			{
-				if( _sqlType!=null ) 
+				if( _sqlType != null )
 				{
 					hashCode += _sqlType.GetHashCode();
 				}
-				if( name!=null ) 
+				if( name != null )
 				{
 					hashCode += name.GetHashCode();
 				}
-				if(tableAlias!=null) 
+				if( tableAlias != null )
 				{
 					hashCode += tableAlias.GetHashCode();
 				}
@@ -153,33 +171,37 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
-		public override string ToString() 
+		/// <summary></summary>
+		public override string ToString()
 		{
-			return (tableAlias==null || tableAlias.Length == 0)? 
-				":" + name : 
-				":" + tableAlias + "." + name;
+			return ( tableAlias == null || tableAlias.Length == 0 ) ? ":" + name : ":" + tableAlias + "." + name;
 		}
 
 		#endregion
 
 		#region ICloneable Members
 
-		public Parameter Clone() 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public Parameter Clone()
 		{
-			
-			Parameter paramClone = (Parameter)this.MemberwiseClone(); 
+			Parameter paramClone = ( Parameter ) this.MemberwiseClone();
 
 			return paramClone;
 		}
 
-		object ICloneable.Clone() 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		object ICloneable.Clone()
 		{
 			return Clone();
 		}
 
 		#endregion
-	
-		
 	}
 
 }

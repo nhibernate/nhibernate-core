@@ -1,12 +1,7 @@
-using System;
-
-using NHibernate.Dialect;
-using NHibernate.Connection;
-
-namespace NHibernate.SqlCommand 
+namespace NHibernate.SqlCommand
 {
-	
-	public interface ISqlStringBuilder 
+	/// <summary></summary>
+	public interface ISqlStringBuilder
 	{
 		/// <summary>
 		/// Builds a SqlString from the internal data.

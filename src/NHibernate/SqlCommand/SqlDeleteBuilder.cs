@@ -1,33 +1,37 @@
-using System;
 using System.Collections;
-using System.Text;
-
-using NHibernate.Connection;
-using NHibernate.Dialect;
+using log4net;
 using NHibernate.Engine;
-using NHibernate.Util;
 using NHibernate.Type;
 
-namespace NHibernate.SqlCommand 
+namespace NHibernate.SqlCommand
 {
 	/// <summary>
 	/// A class that builds an <c>DELETE</c> sql statement.
 	/// </summary>
-	public class SqlDeleteBuilder: SqlBaseBuilder, ISqlStringBuilder 
+	public class SqlDeleteBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(SqlDeleteBuilder) );
-		string tableName;
+		private static readonly ILog log = LogManager.GetLogger( typeof( SqlDeleteBuilder ) );
+		private string tableName;
 
-		int versionFragmentIndex = -1;
-		int identityFragmentIndex = -1;
+		private int versionFragmentIndex = -1;  // not used !?!
+		private int identityFragmentIndex = -1; // not used !?!
 
-		IList whereStrings = new ArrayList();
+		private IList whereStrings = new ArrayList();
 
-		public SqlDeleteBuilder(ISessionFactoryImplementor factory): base(factory)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		public SqlDeleteBuilder( ISessionFactoryImplementor factory ) : base( factory )
 		{
 		}
 
-		public SqlDeleteBuilder SetTableName(string tableName) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <returns></returns>
+		public SqlDeleteBuilder SetTableName( string tableName )
 		{
 			this.tableName = tableName;
 			return this;
@@ -40,11 +44,11 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="identityType">The IType of the Identity Property.</param>
 		/// <returns>The SqlDeleteBuilder.</returns>
-		public SqlDeleteBuilder SetIdentityColumn(string[] columnNames, IType identityType) 
+		public SqlDeleteBuilder SetIdentityColumn( string[ ] columnNames, IType identityType )
 		{
-			Parameter[] parameters = Parameter.GenerateParameters( Factory, columnNames, identityType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, columnNames, identityType );
 
-			identityFragmentIndex = whereStrings.Add(ToWhereString(columnNames, parameters));
+			identityFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
 
 			return this;
 		}
@@ -55,11 +59,11 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="versionType">The IVersionType of the Version Property.</param>
 		/// <returns>The SqlDeleteBuilder.</returns>
-		public SqlDeleteBuilder SetVersionColumn(string[] columnNames, IVersionType versionType) 
+		public SqlDeleteBuilder SetVersionColumn( string[ ] columnNames, IVersionType versionType )
 		{
-			Parameter[] parameters = Parameter.GenerateParameters( Factory, columnNames, versionType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, columnNames, versionType );
 
-			versionFragmentIndex = whereStrings.Add(ToWhereString(columnNames, parameters));
+			versionFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
 
 			return this;
 		}
@@ -71,10 +75,10 @@ namespace NHibernate.SqlCommand
 		/// <param name="type">The IType of the property.</param>
 		/// <param name="op">The operator to put between the column name and value.</param>
 		/// <returns>The SqlDeleteBuilder</returns>
-		public SqlDeleteBuilder AddWhereFragment(string[] columnNames, IType type, string op) 
+		public SqlDeleteBuilder AddWhereFragment( string[ ] columnNames, IType type, string op )
 		{
-			Parameter[] parameters = Parameter.GenerateParameters( Factory, columnNames, type );
-			whereStrings.Add(ToWhereString(columnNames, parameters, op));
+			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, columnNames, type );
+			whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
 
 			return this;
 		}
@@ -84,57 +88,58 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="whereString">A well formed sql string with no parameters.</param>
 		/// <returns>The SqlDeleteBuilder</returns>
-		public SqlDeleteBuilder AddWhereFragment(string whereString) 
+		public SqlDeleteBuilder AddWhereFragment( string whereString )
 		{
-			whereStrings.Add( new SqlString(whereString) );
+			whereStrings.Add( new SqlString( whereString ) );
 			return this;
 		}
 
 		#region ISqlStringBuilder Members
 
-		public SqlString ToSqlString() 
+		/// <summary></summary>
+		public SqlString ToSqlString()
 		{
 			// will for sure have 3 parts and then each item in the WhereStrings
-			int initialCapacity =  3;
+			int initialCapacity = 3;
 
 			// add an "AND" for each whereString except the first one.
-			initialCapacity += (whereStrings.Count -1);
+			initialCapacity += ( whereStrings.Count - 1 );
 
-			for( int i=0; i<whereStrings.Count; i++ ) 
+			for( int i = 0; i < whereStrings.Count; i++ )
 			{
-				initialCapacity += ((SqlString)whereStrings[i]).Count;
+				initialCapacity += ( ( SqlString ) whereStrings[ i ] ).Count;
 			}
 
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder( initialCapacity + 2 );
-			
+
 			sqlBuilder.Add( "DELETE FROM " )
 				.Add( tableName )
-				.Add( " WHERE " );	
-			
-			if(whereStrings.Count > 1) 
+				.Add( " WHERE " );
+
+			if( whereStrings.Count > 1 )
 			{
 				sqlBuilder.Add(
-					(SqlString[])((ArrayList)whereStrings).ToArray(typeof(SqlString)), 
-					null, "AND", null, false);
+					( SqlString[ ] ) ( ( ArrayList ) whereStrings ).ToArray( typeof( SqlString ) ),
+					null, "AND", null, false );
 			}
-			else 
+			else
 			{
-				sqlBuilder.Add((SqlString)whereStrings[0], null, null, null, false) ;
+				sqlBuilder.Add( ( SqlString ) whereStrings[ 0 ], null, null, null, false );
 			}
 
-			if(log.IsDebugEnabled) 
+			if( log.IsDebugEnabled )
 			{
-				if( initialCapacity < sqlBuilder.Count ) 
+				if( initialCapacity < sqlBuilder.Count )
 				{
-					log.Debug( 
+					log.Debug(
 						"The initial capacity was set too low at: " + initialCapacity + " for the DeleteSqlBuilder " +
-						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName );
+							"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName );
 				}
-				else if( initialCapacity > 16 && ((float)initialCapacity/sqlBuilder.Count) > 1.2 )
+				else if( initialCapacity > 16 && ( ( float ) initialCapacity/sqlBuilder.Count ) > 1.2 )
 				{
 					log.Debug(
 						"The initial capacity was set too high at: " + initialCapacity + " for the DeleteSqlBuilder " +
-						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName);
+							"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName );
 				}
 			}
 			return sqlBuilder.ToSqlString();

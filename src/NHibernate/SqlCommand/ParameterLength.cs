@@ -1,7 +1,7 @@
 using System;
 
-namespace NHibernate.SqlCommand 
-{	
+namespace NHibernate.SqlCommand
+{
 	/// <summary>
 	/// Extension to the Parameter class that supports Parameters with
 	/// a Length.
@@ -16,43 +16,51 @@ namespace NHibernate.SqlCommand
 	{
 		private int length;
 
+		/// <summary></summary>
 		public int Length
 		{
-			get {return length;}
-			set {length = value;}
+			get { return length; }
+			set { length = value; }
 		}
 
-		
 		#region System.Object Members
-		
-		public override bool Equals(object obj) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public override bool Equals( object obj )
 		{
-			if(base.Equals(obj)) 
+			if( base.Equals( obj ) )
 			{
 				ParameterLength rhs;
-			
+
 				// Step	2: Instance of check
 				rhs = obj as ParameterLength;
-				if(rhs==null) return false;
+				if( rhs == null )
+				{
+					return false;
+				}
 
 				//Step 3: Check each important field
-				return this.Length.Equals(rhs.Length);
+				return this.Length.Equals( rhs.Length );
 			}
-			else 
+			else
 			{
 				return false;
 			}
 		}
 
+		/// <summary></summary>
 		public override int GetHashCode()
 		{
-			unchecked 
+			unchecked
 			{
 				return base.GetHashCode() + length.GetHashCode();
 			}
 		}
 
 		#endregion
-
 	}
 }

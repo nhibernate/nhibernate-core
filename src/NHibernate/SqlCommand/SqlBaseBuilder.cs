@@ -1,6 +1,3 @@
-using System;
-using System.Text;
-
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -9,17 +6,21 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// The base class for all of the SqlBuilders.
 	/// </summary>
-	public abstract class SqlBaseBuilder 
+	public abstract class SqlBaseBuilder
 	{
-
 		private ISessionFactoryImplementor factory;
 
-		protected SqlBaseBuilder(ISessionFactoryImplementor factory)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		protected SqlBaseBuilder( ISessionFactoryImplementor factory )
 		{
 			this.factory = factory;
 		}
 
-		protected ISessionFactoryImplementor Factory 
+		/// <summary></summary>
+		protected ISessionFactoryImplementor Factory
 		{
 			get { return factory; }
 		}
@@ -31,8 +32,9 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnValues">The Values for the Columns in the WhereFragment</param>
 		/// <returns>A SqlString that contains the WhereFragment</returns>
 		/// <remarks>This just calls the overloaded ToWhereFragment() with the operator as " = " and the tableAlias null.</remarks>
-		protected SqlString ToWhereString(string[] columnNames, object[] columnValues) {
-			return ToWhereString(columnNames, columnValues, " = ");
+		protected SqlString ToWhereString( string[ ] columnNames, object[ ] columnValues )
+		{
+			return ToWhereString( columnNames, columnValues, " = " );
 		}
 
 		/// <summary>
@@ -43,9 +45,9 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnValues">The Values for the Columns in the WhereFragment</param>
 		/// <returns>A SqlString that contains the WhereFragment</returns>
 		/// <remarks>This defaults the op to " = "</remarks>
-		protected SqlString ToWhereString(string tableAlias, string[] columnNames, object[] columnValues) 
+		protected SqlString ToWhereString( string tableAlias, string[ ] columnNames, object[ ] columnValues )
 		{
-			return ToWhereString(tableAlias, columnNames, columnValues, " = ");
+			return ToWhereString( tableAlias, columnNames, columnValues, " = " );
 		}
 
 		/// <summary>
@@ -55,9 +57,9 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnValues">The Values for the Columns in the WhereFragment</param>
 		/// <param name="op">The operator to use between the names &amp; values.  For example " = " or "!="</param>
 		/// <returns>A SqlString that contains the WhereFragment</returns>
-		protected SqlString ToWhereString(string[] columnNames, object[] columnValues, string op) 
+		protected SqlString ToWhereString( string[ ] columnNames, object[ ] columnValues, string op )
 		{
-			return ToWhereString(null, columnNames, columnValues, op);
+			return ToWhereString( null, columnNames, columnValues, op );
 		}
 
 		/// <summary>
@@ -68,36 +70,39 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnValues">The Values for the Columns in the WhereFragment</param>
 		/// <param name="op">The operator to use between the names &amp; values.  For example " = " or "!="</param>
 		/// <returns>A SqlString that contains the WhereFragment</returns>
-		protected SqlString ToWhereString(string tableAlias, string[] columnNames, object[] columnValues, string op) 
+		protected SqlString ToWhereString( string tableAlias, string[ ] columnNames, object[ ] columnValues, string op )
 		{
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder((columnNames.Length * 2) + 5);
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder( ( columnNames.Length*2 ) + 5 );
 
 			bool andNeeded = false;
-			
-			for(int i = 0; i < columnNames.Length; i++)
+
+			for( int i = 0; i < columnNames.Length; i++ )
 			{
-				if(andNeeded) sqlBuilder.Add(" AND ");
+				if( andNeeded )
+				{
+					sqlBuilder.Add( " AND " );
+				}
 				andNeeded = true;
 
 				string columnName;
-				if(tableAlias!=null && tableAlias.Length > 0) 
+				if( tableAlias != null && tableAlias.Length > 0 )
 				{
-					columnName = tableAlias + StringHelper.Dot + columnNames[i];
+					columnName = tableAlias + StringHelper.Dot + columnNames[ i ];
 				}
-				else 
+				else
 				{
-					columnName = columnNames[i];
+					columnName = columnNames[ i ];
 				}
 
-				sqlBuilder.Add(columnName)
-					.Add(op);
-				if(columnValues[i] is Parameter) 
+				sqlBuilder.Add( columnName )
+					.Add( op );
+				if( columnValues[ i ] is Parameter )
 				{
-					sqlBuilder.Add((Parameter)columnValues[i]);
+					sqlBuilder.Add( ( Parameter ) columnValues[ i ] );
 				}
-				else 
+				else
 				{
-					sqlBuilder.Add((string)columnValues[i]);
+					sqlBuilder.Add( ( string ) columnValues[ i ] );
 				}
 			}
 

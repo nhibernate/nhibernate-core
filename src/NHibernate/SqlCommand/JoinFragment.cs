@@ -1,16 +1,21 @@
 using System;
-
 using NHibernate.Engine;
 using NHibernate.Type;
 
 namespace NHibernate.SqlCommand
 {
-	public enum JoinType 
+	/// <summary></summary>
+	public enum JoinType
 	{
+		/// <summary></summary>
 		None = -666,
+		/// <summary></summary>
 		InnerJoin = 0,
+		/// <summary></summary>
 		FullJoin = -1,
+		/// <summary></summary>
 		LeftOuterJoin = 1,
+		/// <summary></summary>
 		RightOuterJoin = 2
 	}
 
@@ -19,28 +24,94 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public abstract class JoinFragment
 	{
-		public abstract void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType);
-		public abstract void AddCrossJoin(string tableName, string alias);
-		public abstract void AddJoins(SqlString fromFragment, SqlString whereFragment);
-		public abstract SqlString ToFromFragmentString { get; }
-		public abstract SqlString ToWhereFragmentString { get; }
-		public abstract void AddCondition(string alias, string[] columns, string condition);
-		public abstract void AddCondition(string alias, string[] columns, string condition, IType conditionType, ISessionFactoryImplementor factory);
-		public abstract void AddCondition(string alias, string[] fkColumns, string[] pkColumns);
-		public abstract void AddCondition(string condition);
-		public abstract void AddCondition(SqlString condition);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <param name="alias"></param>
+		/// <param name="fkColumns"></param>
+		/// <param name="pkColumns"></param>
+		/// <param name="joinType"></param>
+		public abstract void AddJoin( string tableName, string alias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType );
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <param name="alias"></param>
+		public abstract void AddCrossJoin( string tableName, string alias );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fromFragment"></param>
+		/// <param name="whereFragment"></param>
+		public abstract void AddJoins( SqlString fromFragment, SqlString whereFragment );
+		
+		/// <summary></summary>
+		public abstract SqlString ToFromFragmentString { get; }
+		
+		/// <summary></summary>
+		public abstract SqlString ToWhereFragmentString { get; }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="columns"></param>
+		/// <param name="condition"></param>
+		public abstract void AddCondition( string alias, string[ ] columns, string condition );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="columns"></param>
+		/// <param name="condition"></param>
+		/// <param name="conditionType"></param>
+		/// <param name="factory"></param>
+		public abstract void AddCondition( string alias, string[ ] columns, string condition, IType conditionType, ISessionFactoryImplementor factory );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="fkColumns"></param>
+		/// <param name="pkColumns"></param>
+		public abstract void AddCondition( string alias, string[ ] fkColumns, string[ ] pkColumns );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="condition"></param>
+		public abstract void AddCondition( string condition );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="condition"></param>
+		public abstract void AddCondition( SqlString condition );
+
+		/// <summary></summary>
 		public abstract JoinFragment Copy();
 
-		public virtual void AddFragment(JoinFragment ojf) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="ojf"></param>
+		public virtual void AddFragment( JoinFragment ojf )
 		{
 			AddJoins( ojf.ToFromFragmentString, ojf.ToWhereFragmentString );
 		}
 
-		[Obsolete("should use SqlString instead")]
-		public virtual void AddJoins(string fromFragment, string whereFragment) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fromFragment"></param>
+		/// <param name="whereFragment"></param>
+		[Obsolete( "should use SqlString instead" )]
+		public virtual void AddJoins( string fromFragment, string whereFragment )
 		{
-			this.AddJoins( new SqlString(fromFragment), new SqlString(whereFragment) );
+			this.AddJoins( new SqlString( fromFragment ), new SqlString( whereFragment ) );
 		}
 
 	}

@@ -1,30 +1,25 @@
-using System;
 using System.Collections;
-using System.Text;
-
-using NHibernate.Connection;
-using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.Util;
 using NHibernate.Type;
+using NHibernate.Util;
 
-namespace NHibernate.SqlCommand {
+namespace NHibernate.SqlCommand
+{
 	/// <summary>
 	/// Summary description for SqlSimpleSelectBuilder.
 	/// </summary>
-	public class SqlSimpleSelectBuilder: SqlBaseBuilder, ISqlStringBuilder {
+	public class SqlSimpleSelectBuilder : SqlBaseBuilder, ISqlStringBuilder
+	{
+		private string tableName;
 
-		
-		string tableName;
+		private IList columnNames = new ArrayList(); // name of the column
+		private IList columnValues = new ArrayList(); //string or a Parameter -- not used !?!
+		private IDictionary aliases = new Hashtable(); //key=column Name, value=column Alias
 
-		IList columnNames = new ArrayList(); // name of the column
-		IList columnValues = new ArrayList();  //string or a Parameter
-		IDictionary aliases = new Hashtable(); //key=column Name, value=column Alias
+		private int versionFragmentIndex = -1;  // not used !?!
+		private int identityFragmentIndex = -1; // not used !?!
 
-		int versionFragmentIndex = -1;
-		int identityFragmentIndex = -1;
-
-		IList whereStrings = new ArrayList();
+		private IList whereStrings = new ArrayList();
 
 		//these can be plain strings because a forUpdate and orderBy will have
 		// no parameters so using a SqlString will only complicate matters - or 
@@ -32,11 +27,21 @@ namespace NHibernate.SqlCommand {
 		private string forUpdateFragment;
 		private string orderBy;
 
-
-		public SqlSimpleSelectBuilder(ISessionFactoryImplementor factory):base(factory) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		public SqlSimpleSelectBuilder( ISessionFactoryImplementor factory ) : base( factory )
+		{
 		}
 
-		public SqlSimpleSelectBuilder SetTableName(string tableName) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <returns></returns>
+		public SqlSimpleSelectBuilder SetTableName( string tableName )
+		{
 			this.tableName = tableName;
 			return this;
 		}
@@ -47,8 +52,9 @@ namespace NHibernate.SqlCommand {
 		/// </summary>
 		/// <param name="columnName">The name of the column to add.</param>
 		/// <returns>The SqlSimpleSelectBuilder</returns>
-		public SqlSimpleSelectBuilder AddColumn(string columnName) {
-			columnNames.Add(columnName);
+		public SqlSimpleSelectBuilder AddColumn( string columnName )
+		{
+			columnNames.Add( columnName );
 			return this;
 		}
 
@@ -56,11 +62,12 @@ namespace NHibernate.SqlCommand {
 		/// Adds a columnName and its Alias to the SELECT fragment.
 		/// </summary>
 		/// <param name="columnName">The name of the column to add.</param>
-		/// <param name="aliase">The alias to use for the column</param>
+		/// <param name="alias">The alias to use for the column</param>
 		/// <returns>The SqlSimpleSelectBuilder</returns>
-		public SqlSimpleSelectBuilder AddColumn(string columnName, string alias) {
-			columnNames.Add(columnName);
-			aliases[columnName] = alias;
+		public SqlSimpleSelectBuilder AddColumn( string columnName, string alias )
+		{
+			columnNames.Add( columnName );
+			aliases[ columnName ] = alias;
 			return this;
 		}
 
@@ -69,9 +76,11 @@ namespace NHibernate.SqlCommand {
 		/// </summary>
 		/// <param name="columnNames">The names of the columns to add.</param>
 		/// <returns>The SqlSimpleSelectBuilder</returns>
-		public SqlSimpleSelectBuilder AddColumns(string[] columnNames) {
-			for (int i=0; i<columnNames.Length; i++) {
-				AddColumn( columnNames[i]);
+		public SqlSimpleSelectBuilder AddColumns( string[ ] columnNames )
+		{
+			for( int i = 0; i < columnNames.Length; i++ )
+			{
+				AddColumn( columnNames[ i ] );
 			}
 			return this;
 		}
@@ -82,9 +91,11 @@ namespace NHibernate.SqlCommand {
 		/// <param name="columnNames">The names of the columns to add.</param>
 		/// <param name="aliases">The aliases to use for the columns</param>
 		/// <returns>The SqlSimpleSelectBuilder</returns>
-		public SqlSimpleSelectBuilder AddColumns(string[] columnNames, string[] aliases) {
-			for (int i=0; i<columnNames.Length; i++) {
-				AddColumn( columnNames[i], aliases[i] );
+		public SqlSimpleSelectBuilder AddColumns( string[ ] columnNames, string[ ] aliases )
+		{
+			for( int i = 0; i < columnNames.Length; i++ )
+			{
+				AddColumn( columnNames[ i ], aliases[ i ] );
 			}
 			return this;
 		}
@@ -94,8 +105,9 @@ namespace NHibernate.SqlCommand {
 		/// </summary>
 		/// <param name="columnName">The name of the column to get the Alias for.</param>
 		/// <returns>The Alias if one exists, null otherwise</returns>
-		public string GetAlias(string columnName) {
-			return (string) aliases[columnName];
+		public string GetAlias( string columnName )
+		{
+			return ( string ) aliases[ columnName ];
 		}
 
 		/// <summary>
@@ -104,11 +116,11 @@ namespace NHibernate.SqlCommand {
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="identityType">The IType of the Identity Property.</param>
 		/// <returns>The SqlSimpleSelectBuilder.</returns>
-		public SqlSimpleSelectBuilder SetIdentityColumn(string[] columnNames, IType identityType) 
+		public SqlSimpleSelectBuilder SetIdentityColumn( string[ ] columnNames, IType identityType )
 		{
-			Parameter[] parameters = Parameter.GenerateParameters( Factory, columnNames, identityType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, columnNames, identityType );
 
-			identityFragmentIndex = whereStrings.Add(ToWhereString(columnNames, parameters));
+			identityFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
 
 			return this;
 		}
@@ -119,11 +131,11 @@ namespace NHibernate.SqlCommand {
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="versionType">The IVersionType of the Version Property.</param>
 		/// <returns>The SqlSimpleSelectBuilder.</returns>
-		public SqlSimpleSelectBuilder SetVersionColumn(string[] columnNames, IVersionType versionType) 
+		public SqlSimpleSelectBuilder SetVersionColumn( string[ ] columnNames, IVersionType versionType )
 		{
-			Parameter[] parameters = Parameter.GenerateParameters( Factory, columnNames, versionType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, columnNames, versionType );
 
-			versionFragmentIndex = whereStrings.Add(ToWhereString(columnNames, parameters));
+			versionFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
 
 			return this;
 		}
@@ -133,7 +145,8 @@ namespace NHibernate.SqlCommand {
 		/// </summary>
 		/// <param name="fragment">The fragment to set.</param>
 		/// <returns>The SqlSimpleSelectBuilder</returns>
-		public SqlSimpleSelectBuilder SetForUpdateFragment(string fragment){
+		public SqlSimpleSelectBuilder SetForUpdateFragment( string fragment )
+		{
 			this.forUpdateFragment = fragment;
 			return this;
 		}
@@ -143,7 +156,8 @@ namespace NHibernate.SqlCommand {
 		/// </summary>
 		/// <param name="orderBy">The OrderBy fragment.  It should include the SQL "ORDER BY"</param>
 		/// <returns>The SqlSimpleSelectBuilder</returns>
-		public SqlSimpleSelectBuilder SetOrderBy(string orderBy) {
+		public SqlSimpleSelectBuilder SetOrderBy( string orderBy )
+		{
 			this.orderBy = orderBy;
 			return this;
 		}
@@ -155,65 +169,76 @@ namespace NHibernate.SqlCommand {
 		/// <param name="type">The IType of the property.</param>
 		/// <param name="op">The operator to put between the column name and value.</param>
 		/// <returns>The SqlSimpleSelectBuilder</returns>
-		public SqlSimpleSelectBuilder AddWhereFragment(string[] columnNames, IType type, string op) 
+		public SqlSimpleSelectBuilder AddWhereFragment( string[ ] columnNames, IType type, string op )
 		{
-			Parameter[] parameters = Parameter.GenerateParameters(Factory, columnNames, type);
-			
-			whereStrings.Add(ToWhereString(columnNames, parameters, op));
+			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, columnNames, type );
+
+			whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
 
 			return this;
 		}
 
-
 		#region ISqlStringBuilder Members
 
-		public SqlString ToSqlString() {
+		/// <summary></summary>
+		public SqlString ToSqlString()
+		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
 			bool commaNeeded = false;
 
-			
-			sqlBuilder.Add("SELECT ");
 
-			for(int i = 0; i < columnNames.Count; i++) {
-				string column = (string)columnNames[i];
-				string alias = GetAlias(column);
-				
-				if(commaNeeded) sqlBuilder.Add(StringHelper.CommaSpace);
-				
-				sqlBuilder.Add(column);
-				if(alias!=null && !alias.Equals(column)) {
-					sqlBuilder.Add(" AS ")
-						.Add(alias);
+			sqlBuilder.Add( "SELECT " );
+
+			for( int i = 0; i < columnNames.Count; i++ )
+			{
+				string column = ( string ) columnNames[ i ];
+				string alias = GetAlias( column );
+
+				if( commaNeeded )
+				{
+					sqlBuilder.Add( StringHelper.CommaSpace );
+				}
+
+				sqlBuilder.Add( column );
+				if( alias != null && !alias.Equals( column ) )
+				{
+					sqlBuilder.Add( " AS " )
+						.Add( alias );
 				}
 
 				commaNeeded = true;
 			}
 
 
-			sqlBuilder.Add(" FROM ")
-				.Add(tableName);
+			sqlBuilder.Add( " FROM " )
+				.Add( tableName );
 
-			sqlBuilder.Add(" WHERE ");
+			sqlBuilder.Add( " WHERE " );
 
-			if(whereStrings.Count > 1) {
+			if( whereStrings.Count > 1 )
+			{
 				sqlBuilder.Add(
-					(SqlString[])((ArrayList)whereStrings).ToArray(typeof(SqlString)), 
-					null, "AND", null, false);
+					( SqlString[ ] ) ( ( ArrayList ) whereStrings ).ToArray( typeof( SqlString ) ),
+					null, "AND", null, false );
 			}
-			else {
-				sqlBuilder.Add((SqlString)whereStrings[0], null, null, null, false);
-			}
-
-			if (forUpdateFragment!=null) {
-				sqlBuilder.Add(" ")
-					.Add(forUpdateFragment)
-					.Add(" ");
+			else
+			{
+				sqlBuilder.Add( ( SqlString ) whereStrings[ 0 ], null, null, null, false );
 			}
 
-			if (orderBy!=null)
-				sqlBuilder.Add(orderBy);
+			if( forUpdateFragment != null )
+			{
+				sqlBuilder.Add( " " )
+					.Add( forUpdateFragment )
+					.Add( " " );
+			}
+
+			if( orderBy != null )
+			{
+				sqlBuilder.Add( orderBy );
+			}
 
 			return sqlBuilder.ToSqlString();
 		}

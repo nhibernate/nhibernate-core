@@ -1,6 +1,4 @@
 using System;
-
-using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -10,136 +8,200 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Summary description for QueryJoinFragment.
 	/// </summary>
-	public class QueryJoinFragment : JoinFragment	
+	public class QueryJoinFragment : JoinFragment
 	{
 		private SqlStringBuilder afterFrom = new SqlStringBuilder();
 		private SqlStringBuilder afterWhere = new SqlStringBuilder();
 		private Dialect.Dialect dialect;
 		private bool useThetaStyleInnerJoins;
-	
-		[Obsolete("Use the ctor with Dialect and bool as the parameters.  This will be removed.")]
-		public QueryJoinFragment(Dialect.Dialect dialect) : this (dialect, false) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		[Obsolete( "Use the ctor with Dialect and bool as the parameters.  This will be removed." )]
+		public QueryJoinFragment( Dialect.Dialect dialect ) : this( dialect, false )
 		{
 		}
 
-		public QueryJoinFragment(Dialect.Dialect dialect, bool useThetaStyleInnerJoins) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <param name="useThetaStyleInnerJoins"></param>
+		public QueryJoinFragment( Dialect.Dialect dialect, bool useThetaStyleInnerJoins )
 		{
 			this.dialect = dialect;
 			this.useThetaStyleInnerJoins = useThetaStyleInnerJoins;
 		}
 
-		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <param name="alias"></param>
+		/// <param name="fkColumns"></param>
+		/// <param name="pkColumns"></param>
+		/// <param name="joinType"></param>
+		public override void AddJoin( string tableName, string alias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType )
 		{
-			AddJoin(tableName, alias, alias, fkColumns, pkColumns, joinType);
+			AddJoin( tableName, alias, alias, fkColumns, pkColumns, joinType );
 		}
 
-		public void AddJoin(string tableName, string alias, string concreteAlias, string[] fkColumns, string[] pkColumns, JoinType joinType) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <param name="alias"></param>
+		/// <param name="concreteAlias"></param>
+		/// <param name="fkColumns"></param>
+		/// <param name="pkColumns"></param>
+		/// <param name="joinType"></param>
+		public void AddJoin( string tableName, string alias, string concreteAlias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType )
 		{
-			if (!useThetaStyleInnerJoins || joinType!=JoinType.InnerJoin) 
+			if( !useThetaStyleInnerJoins || joinType != JoinType.InnerJoin )
 			{
 				JoinFragment jf = dialect.CreateOuterJoinFragment();
-				jf.AddJoin(tableName, alias, fkColumns, pkColumns, joinType);
-				AddFragment(jf);
+				jf.AddJoin( tableName, alias, fkColumns, pkColumns, joinType );
+				AddFragment( jf );
 			}
-			else 
+			else
 			{
-				AddCrossJoin(tableName, alias);
-				AddCondition(concreteAlias, fkColumns, pkColumns);
+				AddCrossJoin( tableName, alias );
+				AddCondition( concreteAlias, fkColumns, pkColumns );
 			}
 		}
 
-		public override SqlString ToFromFragmentString 
+		/// <summary></summary>
+		public override SqlString ToFromFragmentString
 		{
 			get { return afterFrom.ToSqlString(); }
 		}
-	
-		public override SqlString ToWhereFragmentString 
+
+		/// <summary></summary>
+		public override SqlString ToWhereFragmentString
 		{
 			get { return afterWhere.ToSqlString(); }
 		}
 
-		public override void AddJoins(SqlString fromFragment, SqlString whereFragment) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fromFragment"></param>
+		/// <param name="whereFragment"></param>
+		public override void AddJoins( SqlString fromFragment, SqlString whereFragment )
 		{
-			afterFrom.Add(fromFragment);
-			afterWhere.Add(whereFragment);
+			afterFrom.Add( fromFragment );
+			afterWhere.Add( whereFragment );
 		}
 
-		public override JoinFragment Copy() 
+		/// <summary></summary>
+		public override JoinFragment Copy()
 		{
-			QueryJoinFragment copy = new QueryJoinFragment(dialect, useThetaStyleInnerJoins);
+			QueryJoinFragment copy = new QueryJoinFragment( dialect, useThetaStyleInnerJoins );
 			copy.afterFrom = new SqlStringBuilder( afterFrom.ToSqlString() );
 			copy.afterWhere = new SqlStringBuilder( afterWhere.ToSqlString() );
 			return copy;
 		}
 
-		public override void AddCondition(string alias, string[] columns, string condition) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="columns"></param>
+		/// <param name="condition"></param>
+		public override void AddCondition( string alias, string[ ] columns, string condition )
 		{
-			for ( int i=0; i<columns.Length; i++ ) 
+			for( int i = 0; i < columns.Length; i++ )
 			{
-				afterWhere.Add(" and " + alias + StringHelper.Dot + columns[i] + condition);
+				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );
 			}
 		}
 
-		public override void AddCondition(string alias, string[] columns, string condition, IType conditionType, ISessionFactoryImplementor factory)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="columns"></param>
+		/// <param name="condition"></param>
+		/// <param name="conditionType"></param>
+		/// <param name="factory"></param>
+		public override void AddCondition( string alias, string[ ] columns, string condition, IType conditionType, ISessionFactoryImplementor factory )
 		{
-			Parameter[] parameters = Parameter.GenerateParameters(factory, alias, columns, conditionType);
-			
-			for( int i=0; i<columns.Length; i++ ) 
+			Parameter[ ] parameters = Parameter.GenerateParameters( factory, alias, columns, conditionType );
+
+			for( int i = 0; i < columns.Length; i++ )
 			{
-				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[i] + condition );
-				afterWhere.Add( parameters[i] );
+				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );
+				afterWhere.Add( parameters[ i ] );
 			}
 		}
 
-		public override void AddCrossJoin(string tableName, string alias) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <param name="alias"></param>
+		public override void AddCrossJoin( string tableName, string alias )
 		{
-			afterFrom.Add(StringHelper.CommaSpace + tableName + ' ' + alias);
+			afterFrom.Add( StringHelper.CommaSpace + tableName + ' ' + alias );
 		}
 
-		public override void AddCondition(string alias, string[] fkColumns, string[] pkColumns) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="fkColumns"></param>
+		/// <param name="pkColumns"></param>
+		public override void AddCondition( string alias, string[ ] fkColumns, string[ ] pkColumns )
 		{
-			for ( int j=0; j<fkColumns.Length; j++) 
+			for( int j = 0; j < fkColumns.Length; j++ )
 			{
-				afterWhere.Add( " and " + fkColumns[j]  + '=' + alias + StringHelper.Dot + pkColumns[j] );
+				afterWhere.Add( " and " + fkColumns[ j ] + '=' + alias + StringHelper.Dot + pkColumns[ j ] );
 			}
 		}
 
-		public override void AddCondition(string condition) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="condition"></param>
+		public override void AddCondition( string condition )
 		{
 			//TODO: this seems hackish
-			if ( 
+			if(
 				afterFrom.ToSqlString().ToString().IndexOf( condition.Trim() ) < 0 &&
-				afterWhere.ToSqlString().ToString().IndexOf( condition.Trim() ) < 0 )
+					afterWhere.ToSqlString().ToString().IndexOf( condition.Trim() ) < 0 )
 			{
-
-			
-				if ( !condition.StartsWith(" and ") ) 
+				if( !condition.StartsWith( " and " ) )
 				{
-					afterWhere.Add(" and ");
+					afterWhere.Add( " and " );
 				}
-				afterWhere.Add(condition);
+				afterWhere.Add( condition );
 			}
 		}
 
-		
-		public override void AddCondition(SqlString condition)
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="condition"></param>
+		public override void AddCondition( SqlString condition )
 		{
 			//TODO: this seems hackish
 			if(
 				afterFrom.ToSqlString().ToString().IndexOf( condition.Trim().ToString() ) < 0 &&
-				afterWhere.ToSqlString().ToString().IndexOf( condition.Trim().ToString() ) < 0 ) 
+					afterWhere.ToSqlString().ToString().IndexOf( condition.Trim().ToString() ) < 0 )
 			{
-				if( !condition.StartsWith(" and ") ) 
+				if( !condition.StartsWith( " and " ) )
 				{
-					afterWhere.Add(" and ");
+					afterWhere.Add( " and " );
 				}
 
-				afterWhere.Add(condition);
+				afterWhere.Add( condition );
 			}
 
 		}
 
 
-		
 	}
 }
