@@ -476,6 +476,23 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
+			// new test code in here to catch when a lazy bag has an addition then
+			// is flushed and then an operation that causes it to read from the db
+			// occurs - this used to cause the element in Add(element) to be in there
+			// twice and throw off the count by 1 (or by however many additions were 
+			// made before the flush
+			s = sessions.OpenSession();
+			c = (Container)s.Find("from c in class ContainerX")[0];
+			Contained c5 = new Contained();
+			c.LazyBag.Add( c5 );
+			c5.LazyBag.Add( c );
+
+			// this causes the additions to be written to the db - now verify
+			// the additions list was cleared and the count returns correctly
+			s.Flush();
+			Assert.AreEqual( 4, c.LazyBag.Count, "correct additions clearing after flush" );
+			s.Close();
+
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
 			c = (Container)s.Find("from c in class ContainerX")[0];
@@ -487,7 +504,10 @@ namespace NHibernate.Test
 			}
 
 			Assert.AreEqual( 3, j);
-			Assert.AreEqual( 3, c.LazyBag.Count );
+
+			// this used to be 3 - but since I added an item in the test above for flush
+			// I increased it to 4
+			Assert.AreEqual( 4, c.LazyBag.Count );
 			s.Delete(c);
 			c.Bag.Remove(c2);
 
@@ -499,6 +519,7 @@ namespace NHibernate.Test
 			}
 
 			Assert.AreEqual( 2, j );
+			s.Delete( s.Load( typeof(Contained), c5.Id ) );
 			s.Delete( s.Load( typeof(Contained), c4.Id ) );
 			s.Delete( s.Load( typeof(Contained), c3.Id ) );
 			t.Commit();
