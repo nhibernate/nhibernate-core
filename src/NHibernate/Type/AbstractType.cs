@@ -12,31 +12,31 @@ namespace NHibernate.Type {
 	/// </summary>
 	public abstract class AbstractType : IType {
 		
-		public bool IsAssociationType {
+		public virtual bool IsAssociationType {
 			get {
 				return false;
 			}
 		}
 	
-		public bool IsPersistentCollectionType {
+		public virtual bool IsPersistentCollectionType {
 			get {
 				return false;
 			}
 		}
 	
-		public bool IsComponentType {
+		public virtual bool IsComponentType {
 			get {
 				return false;
 			}
 		}
 	
-		public bool IsEntityType {
+		public virtual bool IsEntityType {
 			get {
 				return false;
 			}
 		}
 
-		public object Disassemble(object value, ISessionImplementor session) {
+		public virtual object Disassemble(object value, ISessionImplementor session) {
 			if (value==null) {
 				return null;
 			}
@@ -46,7 +46,7 @@ namespace NHibernate.Type {
 		}
 	
 		
-		public object Assemble(object cached, ISessionImplementor session, object owner) {
+		public virtual object Assemble(object cached, ISessionImplementor session, object owner) {
 			if ( cached==null ) {
 				return null;
 			}
@@ -56,20 +56,20 @@ namespace NHibernate.Type {
 		}
 		
 	
-		public bool IsDirty(object old, object current, ISessionImplementor session) {
+		public virtual bool IsDirty(object old, object current, ISessionImplementor session) {
 			return !Equals(old, current);
 		}
 	
 
-		public object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
+		public virtual object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
 			return NullSafeGet(rs, names, session, owner);
 		}
 				
-		public object ResolveIdentifier(object value, ISessionImplementor session, object owner) {
+		public virtual object ResolveIdentifier(object value, ISessionImplementor session, object owner) {
 			return value;
 		}
 				
-		public bool IsObjectType {
+		public virtual bool IsObjectType {
 			get {
 				return false;
 			}

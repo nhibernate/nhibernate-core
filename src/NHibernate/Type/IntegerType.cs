@@ -44,15 +44,15 @@ namespace NHibernate.Type {
             return value.ToString();
 		}
 
-		public object StringToObject(string xml) {
+		public virtual object StringToObject(string xml) {
             return int.Parse(xml);
 		}
 
-		public object Next(object current) {
+		public virtual object Next(object current) {
 			return ((int) current) + 1;
 		}
 
-		public object Seed {
+		public virtual object Seed {
 			get	{ return 0; }
 		}
 	}
