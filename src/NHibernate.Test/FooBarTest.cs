@@ -3011,30 +3011,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		public void ObjectType() 
-		{
-			ISession s = sessions.OpenSession();
-			GlarchProxy g = new Glarch();
-			Foo foo = new Foo();
-			g.Any = foo;
-			object gid = s.Save(g);
-			object fid = s.Save(foo);
-			s.Flush();
-			s.Close();
-
-			s = sessions.OpenSession();
-			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
-			Assert.IsNotNull( g.Any );
-			Assert.IsTrue( g.Any is FooProxy );
-			Assert.AreEqual( fid, ((FooProxy)g.Any).Key );
-			s.Delete(g.Any);
-			s.Delete(g);
-			s.Flush();
-			s.Close();
-
-		}
-
-		[Test]
 		public void Any() 
 		{
 			ISession s = sessions.OpenSession();

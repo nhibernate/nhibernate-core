@@ -10,7 +10,7 @@
 			<generator class="assigned" />
 		</id>
 		
-		<property name="DefaultSize" type="Byte[]" column="bin_def"/>
+		<property name="DefaultSize" column="bin_def"/>
 		<property name="WithSize" type="Byte[](2048880)" column="bin_size" />
 	</class>
 </hibernate-mapping>

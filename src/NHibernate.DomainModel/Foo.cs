@@ -22,23 +22,6 @@ namespace NHibernate.DomainModel
 	[Serializable]
 	public class Foo : FooProxy, ILifecycle
 	{
-//		[Serializable]
-//		public class Struct
-//		{
-//			public string name;
-//			public int count;
-//
-//			public override bool Equals(object obj)
-//			{
-//				Struct s = (Struct) obj;
-//				return ( s.name==name || s.name.Equals(name) ) && s.count==count;
-//			}
-//	 
-//			public override int GetHashCode()
-//			{
-//				return count;
-//			}
-//		}
 
 		#region Fields
 		
@@ -63,7 +46,6 @@ namespace NHibernate.DomainModel
 		private byte _byte;
 		private bool _yesno;
 		private FooStatus _status;
-		private byte[] _binary;
 		private byte[] _bytes;
 		private System.Globalization.CultureInfo _locale;
 		private String _formula;
@@ -255,15 +237,6 @@ namespace NHibernate.DomainModel
 			get { return _status; }
 			set { _status = value; }
 		}
-	
-		/// <summary>
-		/// Get/set for binary
-		/// </summary>
-		public byte[] Binary
-		{
-			get { return _binary; }
-			set { _binary = value; }
-		}
 
 		public byte[] Bytes
 		{
@@ -370,7 +343,6 @@ namespace NHibernate.DomainModel
 			_char = '@';
 			_bytes = System.Text.Encoding.ASCII.GetBytes(_string);
 			_status=FooStatus.ON;
-			_binary = System.Text.Encoding.ASCII.GetBytes( _string + "yada yada yada" );
 			custom = new string[]
 			  {
 				  "foo", "bar" 
@@ -406,16 +378,6 @@ namespace NHibernate.DomainModel
 				for ( int i=0; i< _bytes.Length; i++) 
 				{
 					if ( _bytes[i] != other.Bytes[i] ) return false;
-				}
-			}
-
-			if(_binary!=other.Binary) 
-			{
-				if (_binary==null || other.Binary==null) return false;
-				if (_binary.Length!=other.Binary.Length) return false;
-				for(int i=0; i< _binary.Length; i++) 
-				{
-					if( _binary[i]!=other.Binary[i] ) return false;
 				}
 			}
 		

@@ -22,6 +22,7 @@ namespace NHibernate.Test.NHSpecificTest
 			ExportSchema( new string[] { "NHSpecific.BasicBinary.hbm.xml"}, true );
 		}
 
+
 		[Test]
 		public void InsertNull() 
 		{
@@ -105,6 +106,7 @@ namespace NHibernate.Test.NHSpecificTest
 			BasicBinary bcBinary = Create(1);
 			
 			ISession s = sessions.OpenSession();
+			bcBinary.DefaultSize = System.Text.Encoding.UTF8.GetBytes("ghij1`23%$");
 			s.Save(bcBinary);
 			s.Flush();
 			s.Close();
@@ -112,7 +114,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s = sessions.OpenSession();
 			bcBinary = (BasicBinary)s.Load(typeof(BasicBinary), 1);
 
-			bcBinary.DefaultSize = GetByteArray(15);
+			bcBinary.DefaultSize[1] = (byte)126;
 
 			s.Flush();
 			s.Close();
@@ -122,7 +124,8 @@ namespace NHibernate.Test.NHSpecificTest
 			bcBinary = (BasicBinary)s.Load(typeof(BasicBinary), 1);
 
 			// was DefaultSize updated
-			ObjectAssertion.AssertEquals( bcBinary.DefaultSize, GetByteArray(15) );
+			Assert.AreEqual( 10, bcBinary.DefaultSize.Length );
+			Assert.AreEqual( 126, bcBinary.DefaultSize[1] );
 			// WithSize should not have been updated
 			ObjectAssertion.AssertEquals( bcBinary.WithSize, GetByteArray(10) );
 			
@@ -135,7 +138,9 @@ namespace NHibernate.Test.NHSpecificTest
 			bcBinary = (BasicBinary)s.Load(typeof(BasicBinary), 1);
 
 			// was DefaultSize not updated
-			ObjectAssertion.AssertEquals( bcBinary.DefaultSize, GetByteArray(15) );
+			Assert.AreEqual( 10, bcBinary.DefaultSize.Length );
+			Assert.AreEqual( 126, bcBinary.DefaultSize[1] );
+
 			ObjectAssertion.AssertEquals( bcBinary.WithSize, GetByteArray(20) );
 
 			s.Delete(bcBinary);

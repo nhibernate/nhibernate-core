@@ -3,7 +3,6 @@ using System;
 namespace NHibernate.DomainModel
 {
 
-	//TODO: fix up these property names for .net standards
 	public interface FooProxy 
 	{
 		FooComponent NullComponent
@@ -17,12 +16,6 @@ namespace NHibernate.DomainModel
 			set;
 		}
 		string[] Custom
-		{
-			get;
-			set;
-		}
-
-		byte[] Binary
 		{
 			get;
 			set;

@@ -29,7 +29,7 @@
 			type="Int64" 
 		/>
 		
-		<property name="Buf" length="500"/>
+		
 		<property name="X" />
 	</class>
 </hibernate-mapping>

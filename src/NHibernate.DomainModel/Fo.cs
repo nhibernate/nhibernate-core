@@ -11,15 +11,8 @@ namespace NHibernate.DomainModel
 
 		private Fo() {}
 
-		private byte[] _buf;
 		private long _version;
 		private int _x;
-
-		public byte[] Buf
-		{
-			get { return _buf; }
-			set { _buf = value; }
-		}
 
 		public long Version
 		{

@@ -367,20 +367,19 @@ namespace NHibernate.Test
 		{
 			ISession s = sessions.OpenSession();
 			Fo fo = Fo.NewFo();
-			fo.Buf = System.Text.Encoding.ASCII.GetBytes("abcdefghij1`23%$*^*$*\n\t");
 			s.Save( fo, FumTest.FumKey("an instance of fo") );
 			s.Flush();
 			s.Close();
 
 			s = sessions.OpenSession();
 			fo = (Fo)s.Load( typeof(Fo), FumTest.FumKey("an instance of fo") );
-			fo.Buf[1] = (byte)126;
+			fo.X = 5;
 			s.Flush();
 			s.Close();
 
 			s = sessions.OpenSession();
 			fo = (Fo)s.Load( typeof(Fo), FumTest.FumKey("an instance of fo") );
-			Assert.AreEqual( 126, fo.Buf[1] );
+			Assert.AreEqual( 5, fo.X );
 			IEnumerator enumer = s.Enumerable("from fo in class NHibernate.DomainModel.Fo where fo.id.String like 'an instance of fo'").GetEnumerator();
 			Assert.IsTrue( enumer.MoveNext() );
 			Assert.AreSame( fo, enumer.Current );

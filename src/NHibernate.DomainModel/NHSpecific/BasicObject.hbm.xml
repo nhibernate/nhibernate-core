@@ -13,12 +13,34 @@
 			<column name="the_type" />
 			<column name="id_ser" />
 		</property>
+		
+		<property name="AnyWithProxy" type="Object" >
+			<column name="the_ptype" />
+			<column name="id_pser" />
+		</property>
+		
 	</class>
 	
 	<class 
 		name="NHibernate.DomainModel.NHSpecific.BasicObjectRef, NHibernate.DomainModel"
 		table="bc_ref"
 	>
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		
+		<property name="Name" />
+		
+	</class>
+	<class 
+		name="NHibernate.DomainModel.NHSpecific.BasicObjectProxy, NHibernate.DomainModel"
+		table="bc_ref_p"
+		
+	>
+		<!-- 
+			uncomment once proxies are working
+			proxy="NHibernate.DomainModel.NHSpecific.IBasicObjectProxy, NHibernate.DomainModel"
+		-->
 		<id name="Id">
 			<generator class="native" />
 		</id>

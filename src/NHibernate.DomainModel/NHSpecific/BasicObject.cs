@@ -13,8 +13,9 @@ namespace NHibernate.DomainModel.NHSpecific
 	public class BasicObject 
 	{
 		private int _id;
-		private object _any;
 		private string _name;
+		private object _any;
+		private object _anyProxy;
 		
 		public int Id
 		{
@@ -32,6 +33,12 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			get { return _any; }
 			set { _any = value; }
+		}
+
+		public object AnyWithProxy 
+		{
+			get { return _anyProxy; }
+			set { _anyProxy = value; }
 		}
 
 	}
@@ -58,4 +65,35 @@ namespace NHibernate.DomainModel.NHSpecific
 		}
 
 	}
+
+	public interface IBasicObjectProxy 
+	{
+		int Id { get; set; }
+		string Name { get; set; }
+	}
+
+	[Serializable]
+	public class BasicObjectProxy : IBasicObjectProxy
+	{
+		private int _id;
+		private string _name;
+
+		#region IBasicObjectProxy Members
+
+		public int Id
+		{
+			get { return _id; }
+			set { _id = value; }
+		}
+
+		public string Name
+		{
+			get { return _name; }
+			set { _name = value; }
+		}
+
+		#endregion
+
+	}
+
 }
