@@ -9,7 +9,7 @@
 			column="id" 
 			unsaved-value="0"
 		>
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 		<property 
 			name="TypeName" 

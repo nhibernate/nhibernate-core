@@ -6,7 +6,7 @@
 		table="s_type"	
 	>
 		<id name="Id" column="id">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 		<property name="TypeName" type="String" column="type_name" />
 		<property name="NonpublicString" type="String" column="nonpublic_string" />
