@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 namespace NHibernate {
 	/// <summary>
@@ -29,7 +30,7 @@ namespace NHibernate {
 		/// The SQL type codes for the columns mapped by this type. The codes are defined on
 		/// <c></c>
 		/// </summary>
-		int[] SqlTypes { get; }
+		DbType[] SqlTypes { get; }
 		
 		/// <summary>
 		/// The type returned by <c>NullSafeGet()</c>
@@ -44,8 +45,42 @@ namespace NHibernate {
 		/// <param name="y"></param>
 		/// <returns></returns>
 		bool Equals(object x, object y);
-
-		//TODO:Finish user type
+		
+		/// <summary>
+		/// Retrieve an instance of the mapped class from a JDBC resultset.
+		/// Implementors should handle possibility of null values.
+		/// </summary>
+		/// <param name="rs">a IDataReader</param>
+		/// <param name="names">column names</param>
+		/// <param name="owner">the containing entity</param>
+		/// <returns></returns>
+		/// <exception cref="HibernateException">HibernateException</exception>
+		/// <exception cref="SQLException">SQLException</exception>
+		object NullSafeGet(IDataReader rs, string[] names, object owner);
+	
+		/// <summary>
+		/// Write an instance of the mapped class to a prepared statement.
+		/// Implementors should handle possibility of null values.
+		/// A multi-column type should be written to parameters starting from index.
+		/// </summary>
+		/// <param name="cmd">a IDbCommand</param>
+		/// <param name="value">the object to write</param>
+		/// <param name="index">command parameter index</param>
+		/// <exception cref="HibernateException">HibernateException</exception>
+		/// <exception cref="SQLException">SQLException</exception>
+		void NullSafeSet(IDbCommand cmd, object value, int index);
+	
+		/// <summary>
+		/// Return a deep copy of the persistent state, stopping at entities and at collections.
+		/// </summary>
+		/// <param name="value">generally a collection element or entity field</param>
+		/// <returns>a copy</returns>
+		object DeepCopy(object value);
+	
+		/// <summary>
+		/// Are objects of this type mutable?
+		/// </summary>
+		bool IsMutable { get; }
 
 	}
 }
