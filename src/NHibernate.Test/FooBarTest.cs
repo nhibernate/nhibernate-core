@@ -2148,7 +2148,8 @@ namespace NHibernate.Test
 			object g2id = s.GetIdentifier(g2);
 			g.Name = "glarch";
 			s.Flush();
-			s.Close();
+			//s.Close();
+			s.Dispose();
 
 			// grab a version of g that is old and hold onto it until later
 			// for a StaleObjectException check.
@@ -2157,7 +2158,8 @@ namespace NHibernate.Test
 			// want gOld to be initialized so later I can change a property
 			NHibernateUtil.Initialize( gOld );
 			Assert.IsTrue( NHibernateUtil.IsInitialized( gOld ), "should be initialized" );
-			sOld.Close();
+			//sOld.Close();
+			sOld.Dispose();
 
 			s = sessions.OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
@@ -2170,7 +2172,8 @@ namespace NHibernate.Test
 			Assert.AreEqual(1, s.Find("from g in class NHibernate.DomainModel.Glarch where g.Version=2").Count, "find by version");
 			g.Name = "bar";
 			s.Flush();
-			s.Close();
+			//s.Close();
+			s.Dispose();
 
 			// now that g has been changed verify that we can't go back and update 
 			// it with an old version of g
@@ -2181,12 +2184,13 @@ namespace NHibernate.Test
 			{
 				sOld.Update( gOld, gid );
 				sOld.Flush();
-				sOld.Close();
+				//sOld.Close();
+				sOld.Dispose();
 			}
 			catch(Exception e) 
 			{
 				Exception exc = e;
-				while( e!=null ) 
+				while( exc!=null ) 
 				{
 					if( exc is StaleObjectStateException ) 
 					{
@@ -2212,7 +2216,8 @@ namespace NHibernate.Test
 			s.Delete(g2);
 			s.Delete(g);
 			s.Flush();
-			s.Close();
+			//s.Close();
+			s.Dispose();
 		}
 
 		[Test]
