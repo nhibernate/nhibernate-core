@@ -1,3 +1,14 @@
+PreAlpah Build 5
+======================== 
+- Added check in Configuration for 1.1 version of runtime.
+- Removed reference in NHibernate.csproj to nunit.framework.dll.
+- Fixed update="true" when values different than insert attribute.
+- Enumerable with HQL now works with multiple results.
+- Fixed NullReferenceException in EvictCollections.
+- Fixed bug with lazy loaded sorted collections not loading correctly.
+- Fixed problem with cascading deletes causing OutOfMemoryException.
+- Implemented more TestFixtures.
+
 PreAlpha Build 4
 ======================== 
 - Implemented most DomainModel classes and hbms for testing 
