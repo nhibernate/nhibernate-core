@@ -93,6 +93,28 @@ namespace NHibernate.Test
 			s.Flush();
 			t.Commit();
 			s.Close();
+
+			s = sessions.OpenSession();
+			result = s.CreateQuery("from Baz baz left join fetch baz.sortablez order by baz.name asc")
+				.List();
+			b = (Baz) result[0];
+			Assert.IsTrue( b.sortablez.Count==3 );
+			Assert.AreEqual( ( (Sortable) b.sortablez[0] ).name, "bar" );
+			s.Flush();
+			t.Commit();
+			s.Close();
+		
+			s = sessions.OpenSession();
+			result = s.CreateQuery("from Baz baz order by baz.name asc")
+				.List();
+			b = (Baz) result[0];
+			Assert.IsTrue( b.sortablez.Count==3 );
+			Assert.AreEqual( ( (Sortable) b.sortablez[0] ).name, "bar" );
+			s.Delete(b);
+			s.Flush();
+			t.Commit();
+			s.Close();
+
 		}
 
 		[Test]
@@ -159,6 +181,27 @@ namespace NHibernate.Test
 		
 			s = sessions.OpenSession();
 			s.Delete( s.Load( typeof(Foo), f.key ) );
+			s.Flush();
+			s.Close();
+		}
+
+		[Test]
+		public void EmptyCollection()
+		{
+			ISession s = sessions.OpenSession();
+			object id = s.Save( new Baz() );
+			s.Flush();
+			s.Close();
+			s = sessions.OpenSession();
+			Baz baz = (Baz) s.Load(typeof(Baz), id);
+			IDictionary foos = baz.fooSet;
+			Assert.IsTrue( foos.Count==0 );
+			Foo foo = new Foo();
+			foos.Add(foo, null);
+			s.Save(foo);
+			s.Flush();
+			s.Delete(foo);
+			s.Delete(baz);
 			s.Flush();
 			s.Close();
 		}

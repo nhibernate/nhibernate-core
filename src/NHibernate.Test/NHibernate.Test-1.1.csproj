@@ -126,7 +126,7 @@
                 />
                 <File
                     RelPath = "App.config"
-                    BuildAction = "None"
+                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
