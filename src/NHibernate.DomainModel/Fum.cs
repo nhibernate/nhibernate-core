@@ -12,11 +12,14 @@ namespace NHibernate.DomainModel
 		private IDictionary _friends; // <set> mapping
 		private DateTime _lastUpdated;
 	
-		public Fum() {}
+		public Fum() 
+		{
+		}
+		
 		public Fum(FumCompositeID id)
 		{
-			this.id = id;
-			friends = new Hashtable();
+			_id = id;
+			_friends = new Hashtable();
 			//TODO: H2.0.3 - this is diff from H2.0.3 because I am getting a null exception
 			// when executing the Sql.  H203 uses the CalendarType which we don't have so
 			// I am using DateTime instead...
@@ -28,16 +31,17 @@ namespace NHibernate.DomainModel
 			fid.String= id.String + "dd";
 			
 			Fum f = new Fum();
-			f.id = fid;
-			f.fum="FRIEND";
+			f.Id = fid;
+			f.FumString="FRIEND";
 			//TODO: H2.0.3 - this is diff from H2.0.3 because I am getting a null exception
 			// when executing the Sql.  H203 uses the CalendarType which we don't have so
 			// I am using DateTime instead...
-			f.lastUpdated = DateTime.Now;
+			f.LastUpdated = DateTime.Now;
 
-			friends.Add(f, new object());
+			_friends.Add(f, new object());
 		}
-		public string fum
+		
+		public string FumString
 		{
 			get
 			{
@@ -49,7 +53,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 	
-		public FumCompositeID id
+		public FumCompositeID Id
 		{
 			get
 			{
@@ -60,7 +64,7 @@ namespace NHibernate.DomainModel
 				this._id = value;
 			}
 		}
-		public Fum fo
+		public Fum Fo
 		{
 			get
 			{
@@ -72,7 +76,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 	
-		public Qux[] quxArray
+		public Qux[] QuxArray
 		{
 			get
 			{
@@ -84,7 +88,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 	
-		public IDictionary friends
+		public IDictionary Friends
 		{
 			get
 			{
@@ -99,10 +103,10 @@ namespace NHibernate.DomainModel
 	
 		public LifecycleVeto OnDelete(ISession s) 
 		{
-			if (friends==null) return LifecycleVeto.NoVeto;
+			if (_friends==null) return LifecycleVeto.NoVeto;
 			try 
 			{
-				foreach(DictionaryEntry de in friends) 
+				foreach(DictionaryEntry de in _friends) 
 				{
 					s.Delete(de.Key);
 				}
@@ -122,10 +126,10 @@ namespace NHibernate.DomainModel
 	
 		public LifecycleVeto OnSave(ISession s) 
 		{
-			if (friends==null) return LifecycleVeto.NoVeto;
+			if (_friends==null) return LifecycleVeto.NoVeto;
 			try 
 			{
-				foreach(DictionaryEntry de in friends) 
+				foreach(DictionaryEntry de in _friends) 
 				{
 					s.Save(de.Key);
 				}
@@ -143,7 +147,7 @@ namespace NHibernate.DomainModel
 			return LifecycleVeto.NoVeto;
 		}
 	
-		public DateTime lastUpdated
+		public DateTime LastUpdated
 		{
 			get
 			{

@@ -17,7 +17,7 @@ namespace NHibernate.DomainModel
 
 		public FumCompositeID Id 
 		{
-			get { return fum.id; }
+			get { return fum.Id; }
 			set { }
 		}
 
