@@ -11,10 +11,7 @@ namespace NHibernate.Dialect
 	/// </summary>
 	public class Oracle9Dialect : Dialect
 	{
-		public Oracle9Dialect() 
-		{
-			base();
-
+		public Oracle9Dialect() : base() {
 			/* Type mapping in Java was:
 			  
 			   Types.BIT, "NUMBER(1,0)"
@@ -59,36 +56,29 @@ namespace NHibernate.Dialect
 			*/
 		}
 	
-		public string GetAddColumnString() 
-		{
+		public string GetAddColumnString() {
 			return "add";
 		}
 	
-		public string GetSequenceNextValString(string sequenceName) 
-		{
+		public string GetSequenceNextValString(string sequenceName) {
 			return  "select " + sequenceName + ".nextval from dual";
 		}
-		public string GetCreateSequenceString(string sequenceName) 
-		{
+		public string GetCreateSequenceString(string sequenceName) {
 			return "create sequence " + sequenceName;
 		}
-		public string GetDropSequenceString(string sequenceName) 
-		{
+		public string GetDropSequenceString(string sequenceName) {
 			return "drop sequence " + sequenceName;
 		}
 	
-		public string GetCascadeConstraintsString() 
-		{
+		public string GetCascadeConstraintsString() {
 			return " cascade constraints";
 		}
 	
-		public bool SupportsForUpdateNowait() 
-		{
+		public bool SupportsForUpdateNowait() {
 			return true;
 		}
 	
-		public bool SupportsSequences() 
-		{
+		public bool SupportsSequences() {
 			return true;
 		}
 	}

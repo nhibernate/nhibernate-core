@@ -8,7 +8,7 @@ namespace NHibernate.Dialect {
 	/// </summary>
 	public class GenericDialect : Dialect {
 
-		public GenericDialect() {
+		public GenericDialect() : base() {
 			Register( SqlDbType.Bit, "BIT" );
 			Register( SqlDbType.BigInt, "BIGINT" );
 			Register( SqlDbType.SmallInt, "SMALLINT" );

@@ -11,10 +11,7 @@ namespace NHibernate.Dialect
 	/// </summary>
 	public class MySQLDialect : Dialect
 	{
-		public MySQLDialect()
-		{
-			base();
-
+		public MySQLDialect() : base() {
 			/*  Type mapping in Java was:
 			 
 				Types.BIT, "BIT"
@@ -82,35 +79,28 @@ namespace NHibernate.Dialect
 			*/
 		}
 
-		public string GetAddColumnString() 
-		{
+		public string GetAddColumnString() {
 			return "add column";
 		}
-		public bool DropConstraints() 
-		{
+		public bool DropConstraints() {
 			return false;
 		}
-		public bool QualifyIndexName() 
-		{
+		public bool QualifyIndexName() {
 			return false;
 		}
 	
-		public bool SupportsIdentityColumns() 
-		{
+		public bool SupportsIdentityColumns() {
 			return true;
 		}
-		public string GetIdentitySelectString() 
-		{
+		public string GetIdentitySelectString() {
 			return "SELECT LAST_INSERT_ID()";
 		}
 	
-		public string GetIdentityColumnString() 
-		{
+		public string GetIdentityColumnString() {
 			return "NOT NULL AUTO_INCREMENT";
 		}
 	
-		public string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey) 
-		{
+		public string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey) {
 			string cols = StringHelper.Join(StringHelper.CommaSpace, foreignKey);
 			return new StringBuilder(30)
 				.Append(" add index (")
