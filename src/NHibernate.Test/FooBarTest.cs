@@ -34,8 +34,14 @@ namespace NHibernate.Test
 				}, true);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <remarks>
+		/// This test is still not completely working because it depends on Proxies which
+		/// has not been implemented yet.
+		/// </remarks>
 		[Test]
-		[Ignore("Fails because Proxies are not working.")]
 		public void FetchInitializedCollection()
 		{
 			ISession s = sessions.OpenSession();
