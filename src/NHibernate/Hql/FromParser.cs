@@ -48,7 +48,7 @@ namespace NHibernate.Hql {
 			{
 				if (!afterJoinType) 
 				{
-					if (!expectingJoin|expectingAs) throw new QueryException("unexpected token: join");
+					if ( !(expectingJoin|expectingAs) ) throw new QueryException("unexpected token: join");
 					// inner joings can be abbreviated to 'join'
 					joinType = JoinType.InnerJoin;
 					expectingJoin = false;
