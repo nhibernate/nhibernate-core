@@ -9,7 +9,7 @@ namespace NHibernate.Type {
 	/// <summary>
 	/// ByteType.
 	/// </summary>
-	public class ByteType : PrimitiveType, IDiscriminatorType {
+	public class ByteType : ValueTypeType, IDiscriminatorType {
 		
 		internal ByteType() : base( new ByteSqlType() ) 
 		{
@@ -21,10 +21,6 @@ namespace NHibernate.Type {
 
 		public override object Get(IDataReader rs, string name) {
 			return Convert.ToByte(rs[name]);
-		}
-
-		public override System.Type PrimitiveClass {
-			get { return typeof(byte); }
 		}
 
 		public override System.Type ReturnedClass {

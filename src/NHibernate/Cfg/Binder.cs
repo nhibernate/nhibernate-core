@@ -667,9 +667,7 @@ namespace NHibernate.Cfg {
 						case "element":
 							IType type = GetTypeFromXML(subnode);
 
-							model.ElementClass = model.IsPrimitiveArray ?
-								((PrimitiveType) type).PrimitiveClass :
-								type.ReturnedClass;
+							model.ElementClass = type.ReturnedClass;
 
 							break;
 

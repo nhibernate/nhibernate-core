@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	/// This defaults the Year to 0001, the Month to 01, and the Day to 01 - that should not matter because
 	/// using this Type indicates that you don't care about the Date portion of the DateTime.
 	/// </remarks>
-	public class TimeType : MutableType, IIdentifierType, ILiteralType, IVersionType
+	public class TimeType : ValueTypeType, IIdentifierType, ILiteralType, IVersionType
 	{
 		internal TimeType() : base( new TimeSqlType() ) 
 		{
@@ -71,12 +71,6 @@ namespace NHibernate.Type
 			return ((DateTime)val).ToShortTimeString();
 		}
 
-		public override object DeepCopyNotNull(object value) 
-		{
-			DateTime old = (DateTime) value;
-			return new DateTime(1, 1, 1, old.Hour, old.Month, old.Day);
-		}
-
 		public override bool HasNiceEquals 
 		{
 			get { return true; }
@@ -87,9 +81,9 @@ namespace NHibernate.Type
 			return DateTime.Parse(xml);
 		}
 
-		public string ObjectToSQLString(object value) 
+		public override string ObjectToSQLString(object value) 
 		{
-			return "'" + value.ToString() + "'";
+			return "'" + ((DateTime)value).ToShortTimeString() + "'";
 		}
 
 		public object Next(object current) 

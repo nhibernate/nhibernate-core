@@ -4,7 +4,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
-	public class DateType : MutableType, IIdentifierType, ILiteralType, IVersionType {
+	public class DateType : ValueTypeType, IIdentifierType, ILiteralType, IVersionType {
 
 		internal DateType() : base( new DateSqlType() ) 
 		{
@@ -21,7 +21,8 @@ namespace NHibernate.Type {
 			return Get(rs, rs.GetOrdinal(name));
 		}
 
-		public override System.Type ReturnedClass {
+		public override System.Type ReturnedClass 
+		{
 			get { return typeof(DateTime); }
 		}
 
@@ -59,11 +60,6 @@ namespace NHibernate.Type {
 			return ((DateTime)val).ToShortDateString();
 		}
 
-		public override object DeepCopyNotNull(object value) {
-			DateTime old = (DateTime) value;
-			return new DateTime(old.Year, old.Month, old.Day);
-		}
-
 		public override bool HasNiceEquals {
 			get { return true; }
 		}
@@ -72,8 +68,8 @@ namespace NHibernate.Type {
 			return DateTime.Parse(xml);
 		}
 
-		public string ObjectToSQLString(object value) {
-			return "'" + value.ToString() + "'";
+		public override string ObjectToSQLString(object value) {
+			return "'" + ((DateTime)value).ToShortDateString() + "'";
 		}
 
 		public object Next(object current) 

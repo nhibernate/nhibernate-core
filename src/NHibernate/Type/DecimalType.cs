@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// DecimalType
 	/// </summary>
-	public class DecimalType : PrimitiveType, IIdentifierType
+	public class DecimalType : ValueTypeType, IIdentifierType
 	{
 		internal DecimalType() : this( new DecimalSqlType() ) 
 		{
@@ -27,11 +27,6 @@ namespace NHibernate.Type
 		public override object Get(IDataReader rs, string name) 
 		{
 			return Convert.ToDecimal(rs[name]);
-		}
-
-		public override System.Type PrimitiveClass 
-		{
-			get { return typeof(Decimal); }
 		}
 
 		public override System.Type ReturnedClass 

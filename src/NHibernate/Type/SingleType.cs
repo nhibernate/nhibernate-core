@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	/// Verify through your database's documentation if there is a column type that
 	/// matches up with the capabilities of System.Single  
 	/// </remarks>
-	public class SingleType : PrimitiveType 
+	public class SingleType : ValueTypeType 
 	{
 		internal SingleType() : base( new SingleSqlType() ) 
 		{
@@ -27,11 +27,6 @@ namespace NHibernate.Type
 		public override object Get(IDataReader rs, string name) 
 		{
 			return Convert.ToSingle(rs[name]);
-		}
-
-		public override System.Type PrimitiveClass 
-		{
-			get { return typeof(System.Single); }
 		}
 
 		public override System.Type ReturnedClass 

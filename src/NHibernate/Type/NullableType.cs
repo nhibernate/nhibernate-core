@@ -5,15 +5,19 @@ using NHibernate.SqlTypes;
 using NHibernate.Engine;
 using NHibernate.Util;
 
-
 namespace NHibernate.Type
 {
 	/// <summary>
 	/// Superclass of single-column nullable types.
 	/// </summary>
-	/// <remarks>Maps the Property to a single column that is capable of storing nulls.</remarks>
-	public abstract class NullableType : AbstractType {
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(NullableType));
+	/// <remarks>
+	/// Maps the Property to a single column that is capable of storing nulls in it. If a .net Struct is
+	/// used it will be created with its unitialized value and then on Update the uninitialized value of
+	/// the Struct will be written to the column - not <c>null</c>. 
+	/// </remarks>
+	public abstract class NullableType : AbstractType 
+	{
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(NullableType) );
 
 		/// <summary>
 		/// The underlying <see cref="SqlType"/> used to retrieve and store the value.
@@ -130,10 +134,14 @@ namespace NHibernate.Type
 		/// is called and that method is responsible for setting the value.
 		/// </para>
 		/// </remarks>
-		public void NullSafeSet(IDbCommand cmd, object value, int index) {
-			if (value==null) {
-				if ( log.IsDebugEnabled )
+		public void NullSafeSet(IDbCommand cmd, object value, int index) 
+		{
+			if (value==null) 
+			{
+				if ( log.IsDebugEnabled ) 
+				{
 					log.Debug("binding null to parameter: " + index.ToString());
+				}
 				
 				//Do we check IsNullable?
 				// TODO: find out why a certain Parameter would not take a null value...
@@ -141,9 +149,12 @@ namespace NHibernate.Type
                 // I definitely need to look into this more...
 				( (IDataParameter)cmd.Parameters[index]).Value = DBNull.Value;
 			}
-			else {
-				if ( log.IsDebugEnabled )
+			else 
+			{
+				if ( log.IsDebugEnabled ) 
+				{
 					log.Debug("binding '" + ToXML(value) + "' to parameter: " + index);
+				}
 				
 				Set(cmd, value, index);
 			}
@@ -178,7 +189,8 @@ namespace NHibernate.Type
 		/// 
 		/// TODO: determine if this is needed
 		/// </remarks>
-		public virtual object NullSafeGet(IDataReader rs, string[] names) {
+		public virtual object NullSafeGet(IDataReader rs, string[] names) 
+		{
 			return NullSafeGet(rs, names[0]);
 		}
 
@@ -200,18 +212,20 @@ namespace NHibernate.Type
 		/// </remarks>
 		public virtual object NullSafeGet(IDataReader rs, string name) 
 		{
-			
 			int index = rs.GetOrdinal(name);
 
-			if(rs.IsDBNull(index)) {
-				if ( log.IsDebugEnabled )
+			if( rs.IsDBNull(index) ) 
+			{
+				if ( log.IsDebugEnabled ) 
+				{
 					log.Debug("returning null as column: " + name);
+				}
 				// TODO: add a method to NullableType.GetNullValue - if we want to
 				// use "MAGIC" numbers to indicate null values...
 				return null;
 			}
-			else {
-				
+			else 
+			{				
 				object val = null;
 				try 
 				{
@@ -224,8 +238,10 @@ namespace NHibernate.Type
 						".  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.", ice);
 				}
 				
-				if ( log.IsDebugEnabled )
+				if ( log.IsDebugEnabled ) 
+				{
 					log.Debug("returning '" + ToXML(val) + "' as column: " + name);
+				}
 				
 				return val;
 			}
@@ -291,7 +307,8 @@ namespace NHibernate.Type
 		/// This has the hard coding of 1 in there because, by definition of this class, 
 		/// a NullableType can only map to one column in a table.
 		/// </remarks>
-		public override sealed int GetColumnSpan(IMapping session) {
+		public override sealed int GetColumnSpan(IMapping session) 
+		{
 			return 1;
 		}
 

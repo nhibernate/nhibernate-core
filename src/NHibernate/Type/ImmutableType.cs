@@ -2,13 +2,13 @@ using System;
 
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type {
-
+namespace NHibernate.Type 
+{
 	/// <summary>
 	/// Superclass of nullable immutable types.
 	/// </summary>
-	public abstract class ImmutableType : NullableType {
-
+	public abstract class ImmutableType : NullableType 
+	{
 		/// <summary>
 		/// Initialize a new instance of the ImmutableType class using a 
 		/// <see cref="SqlType"/>. 
@@ -24,11 +24,10 @@ namespace NHibernate.Type {
 		/// <param name="val">The value to deep copy.</param>
 		/// <returns>A deep copy of the object.</returns>
 		/// <remarks>
-		/// This just returns the value passed in because if the object being mapped is 
-		/// immutable.
-		/// 
-		/// TODO: I really need to understand where this method is used so that the 
-		/// .NET types inherit from the correct MutableType/ImmutableType IType.
+		/// A <see cref="ValueType"/> is considered immutable because a boxed version
+		/// of the <see cref="ValueType"/> is being stored by NHibernate.  So any changes
+		/// made to it would require the <see cref="ValueType"/> to be unboxed and
+		/// then reboxed.
 		/// </remarks>
 		public override sealed object DeepCopyNotNull(object val) 
 		{

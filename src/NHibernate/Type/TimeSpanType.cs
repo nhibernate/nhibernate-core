@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Maps a System.Timespan Property to an Int64 column 
 	/// </summary>
-	public class TimeSpanType : MutableType, IVersionType, ILiteralType
+	public class TimeSpanType : ValueTypeType, IVersionType, ILiteralType
 	{
 		internal TimeSpanType() : base( new Int64SqlType() ) 
 		{
@@ -46,11 +46,6 @@ namespace NHibernate.Type
 			return ((TimeSpan)val).Ticks.ToString();
 		}
 
-		public override object DeepCopyNotNull(object value) 
-		{
-			return value;
-		}
-
 		public override bool Equals(object x, object y) 
 		{
 			if (x==y) return true;
@@ -76,7 +71,7 @@ namespace NHibernate.Type
 			get { return DateTime.Now.Ticks; }
 		}
 
-		public string ObjectToSQLString(object value) 
+		public override string ObjectToSQLString(object value) 
 		{
 			return "'" + ((TimeSpan)value).Ticks.ToString() + "'";
 		}

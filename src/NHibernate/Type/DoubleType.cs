@@ -5,7 +5,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
-	public class DoubleType : PrimitiveType {
+	public class DoubleType : ValueTypeType {
 		
 		internal DoubleType() : base( new DoubleSqlType() ) 
 		{
@@ -17,10 +17,6 @@ namespace NHibernate.Type {
 
 		public override object Get(IDataReader rs, string name) {
 			return Convert.ToDouble(rs[name]);
-		}
-
-		public override System.Type PrimitiveClass {
-			get { return typeof(double); }
 		}
 
 		public override System.Type ReturnedClass {

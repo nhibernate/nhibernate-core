@@ -5,7 +5,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
-	public class Int64Type : PrimitiveType, IIdentifierType, IVersionType {
+	public class Int64Type : ValueTypeType, IIdentifierType, IVersionType {
 		
 		internal Int64Type() : base( new Int64SqlType() ) 
 		{
@@ -17,10 +17,6 @@ namespace NHibernate.Type {
 
 		public override object Get(IDataReader rs, string name) {
 			return Convert.ToInt64(rs[name]);
-		}
-
-		public override System.Type PrimitiveClass {
-			get { return typeof(System.Int64); }
 		}
 
 		public override System.Type ReturnedClass {

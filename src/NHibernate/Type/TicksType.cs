@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	/// This is the recommended way to "timestamp" a column.  The System.DateTime.Ticks 
 	/// is accurate to 100-nanosecond intervals. 
 	/// </remarks>
-	public class TicksType : MutableType, IVersionType, ILiteralType
+	public class TicksType : ValueTypeType, IVersionType, ILiteralType
 	{
 		internal TicksType() : base( new Int64SqlType() ) 
 		{
@@ -51,11 +51,6 @@ namespace NHibernate.Type
 			return ((DateTime)val).Ticks.ToString();
 		}
 
-		public override object DeepCopyNotNull(object value) 
-		{
-			return value;
-		}
-
 		public override bool Equals(object x, object y) 
 		{
 			if (x==y) return true;
@@ -81,7 +76,7 @@ namespace NHibernate.Type
 			get { return DateTime.Now.Ticks; }
 		}
 
-		public string ObjectToSQLString(object value) 
+		public override string ObjectToSQLString(object value) 
 		{
 			return "'" + ((DateTime)value).Ticks.ToString() + "'";
 		}

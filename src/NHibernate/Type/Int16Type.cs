@@ -5,7 +5,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
-	public class Int16Type : PrimitiveType, IDiscriminatorType, IVersionType {
+	public class Int16Type : ValueTypeType, IDiscriminatorType, IVersionType {
 		
 		internal Int16Type() : base( new Int16SqlType() ) 
 		{
@@ -18,9 +18,7 @@ namespace NHibernate.Type {
 		public override object Get(IDataReader rs, string name) {
 			return Convert.ToInt16(rs[name]);
 		}
-		public override System.Type PrimitiveClass {
-			get { return typeof(System.Int16); }
-		}
+
 		public override System.Type ReturnedClass {
 			get { return typeof(System.Int16); }
 		}

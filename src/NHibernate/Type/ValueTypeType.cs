@@ -3,45 +3,22 @@ using System;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
-namespace NHibernate.Type {
-
+namespace NHibernate.Type 
+{
 	/// <summary>
-	/// Superclass of primitive / primitive wrapper types.
+	/// Superclass of <see cref="ValueType"/> types.
 	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// DOTNET has no concept of primitive types like Java does.  In Java there is
-	/// a primitive type of "int" and an object type of java.lang.Integer.  In DOTNET
-	/// there is just a struct System.Int32
-	/// </para>
-	/// <para>
-	/// I don't know if putting the Structs under PrimitiveType of MutableType would
-	/// be a better option.
-	/// </para>
-	/// </remarks>
-	public abstract class PrimitiveType : ImmutableType, ILiteralType {
+	public abstract class ValueTypeType : ImmutableType, ILiteralType 
+	{
 		
 		/// <summary>
-		/// Initialize a new instance of the PrimitiveType class using a 
+		/// Initialize a new instance of the ValueTypeType class using a 
 		/// <see cref="SqlType"/>. 
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
-		protected PrimitiveType(SqlType sqlType) : base(sqlType) 
+		protected ValueTypeType(SqlType sqlType) : base(sqlType) 
 		{
 		}
-
-		/// <summary>
-		/// When implemented by a class, gets the <see cref="System.Type"/> wrapped
-		/// by this <see cref="PrimitiveType"/>
-		/// </summary>
-		/// <value>
-		/// The <see cref="System.Type"/> from the .NET framework.
-		/// </value>
-		/// <remarks>
-		/// This is used to establish the class of an array of this <see cref="PrimitiveType"/>
-		/// in the Binder and HQL.
-		/// </remarks>
-		public abstract System.Type PrimitiveClass { get; }
 	
 		/// <summary>
 		/// Compare two instances of the class mapped by this 
@@ -50,7 +27,8 @@ namespace NHibernate.Type {
 		/// <param name="x">The left hand side object.</param>
 		/// <param name="y">The right hand side object.</param>
 		/// <returns>True if the two objects contain the same values.</returns>
-		public override bool Equals(object x, object y) {
+		public override bool Equals(object x, object y) 
+		{
 			return ObjectUtils.Equals(x, y);
 		}
 	

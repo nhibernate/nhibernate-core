@@ -141,12 +141,14 @@ namespace NHibernate.Type {
 			}
 		}
 
-		public object Assembly(object cached, ISessionImplementor session, object owner) {
+		public override object Assemble(object cached, ISessionImplementor session, object owner) 
+		{
 			ObjectTypeCacheEntry e = (ObjectTypeCacheEntry) cached;
 			return (cached==null) ? null : session.Load(e.clazz, e.id);
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session) {
+		public override object Disassemble(object value, ISessionImplementor session) 
+		{
 			return (value==null) ? null : new ObjectTypeCacheEntry( value.GetType(), session.GetEntityIdentifier(value) );
 		}
 

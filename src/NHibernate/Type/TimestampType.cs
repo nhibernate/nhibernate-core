@@ -5,7 +5,6 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type 
 {
-	
 	/// <summary>
 	/// This is almost the exact same type as the DateTime except it can be used
 	/// in the version column, stores it to the accuracy the Database supports, 
@@ -20,15 +19,14 @@ namespace NHibernate.Type
 	/// </p>  
 	/// <p>
 	/// For example - MsSql Server 2000 is only accurate to 3.33 milliseconds.  So if 
-	/// NHibernate writes a value of '01/01/98 23:59:59.995' to the Prepared Command, MsSql
-	/// will store it as '1998-01-01 23:59:59.997'.
+	/// NHibernate writes a value of <c>01/01/98 23:59:59.995</c> to the Prepared Command, MsSql
+	/// will store it as <c>1998-01-01 23:59:59.997</c>.
 	/// </p>
 	/// <p>
 	/// Please review the documentation of your Database server.
 	/// </p>
-	/// 
 	/// </remarks>
-	public class TimestampType : MutableType, IVersionType, ILiteralType
+	public class TimestampType : ValueTypeType, IVersionType, ILiteralType
 	{
 		internal TimestampType() : base( new DateTimeSqlType() ) 
 		{
@@ -82,11 +80,6 @@ namespace NHibernate.Type
 			return ((DateTime)val).ToShortTimeString();
 		}
 
-		public override object DeepCopyNotNull(object value) 
-		{
-			return value;
-		}
-
 		public override bool Equals(object x, object y) 
 		{
 			if (x==y) return true;
@@ -112,7 +105,7 @@ namespace NHibernate.Type
 			get { return DateTime.Now; }
 		}
 
-		public string ObjectToSQLString(object value) 
+		public override string ObjectToSQLString(object value) 
 		{
 			return "'" + value.ToString() + "'";
 		}

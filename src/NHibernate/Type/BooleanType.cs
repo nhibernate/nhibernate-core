@@ -14,7 +14,7 @@ namespace NHibernate.Type {
 	/// to work around a HypersonicSQL driver bug - these are comments copied 
 	/// from Hibernate so I am not sure how/if they apply to NHibernate
 	/// </remarks>
-	public class BooleanType : PrimitiveType, IDiscriminatorType {
+	public class BooleanType : ValueTypeType, IDiscriminatorType {
 
 		private static readonly string TRUE = "1";
 		private static readonly string FALSE = "0";
@@ -45,10 +45,6 @@ namespace NHibernate.Type {
 
 		public override object Get(IDataReader rs, string name) {
 			return Convert.ToBoolean(rs[name]);
-		}
-
-		public override System.Type PrimitiveClass {
-			get { return typeof(bool); }
 		}
 	
 		public override System.Type ReturnedClass {

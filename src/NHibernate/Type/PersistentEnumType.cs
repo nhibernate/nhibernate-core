@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// PersistentEnumType
 	/// </summary>
-	public class PersistentEnumType : ImmutableType, ILiteralType 
+	public class PersistentEnumType : ValueTypeType, ILiteralType 
 	{
 		private readonly System.Type enumClass;
 		
@@ -185,7 +185,7 @@ namespace NHibernate.Type
 			return (value==null) ? null : GetValue(value);
 		}
 	
-		public string ObjectToSQLString(object value) 
+		public override string ObjectToSQLString(object value) 
 		{
 			return GetValue(value).ToString();
 		}

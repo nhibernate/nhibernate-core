@@ -614,9 +614,10 @@ namespace NHibernate.Hql
 			System.Type[] classes = new System.Type[types.Length];
 			for (int i=0; i<types.Length; i++) 
 			{
-				if (types[i]!=null) classes[i] = (types[i] is PrimitiveType) ? 
-										((PrimitiveType) types[i]).PrimitiveClass :
-										types[i].ReturnedClass;
+				if (types[i]!=null) 
+				{
+					classes[i] = types[i].ReturnedClass;
+				}
 			}
 
 			try 

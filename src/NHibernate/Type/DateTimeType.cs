@@ -5,7 +5,6 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type 
 {
-	
 	/// <summary>
 	/// Maps a System.DateTime Property to a column that stores date &amp; time down to 
 	/// the accuracy of a second.
@@ -15,7 +14,7 @@ namespace NHibernate.Type
 	/// date and time storage your provider can give you use the <see cref="TimestampType" />. 
 	/// or the <see cref="TicksType"/>
 	/// </remarks>
-	public class DateTimeType : MutableType, IIdentifierType, ILiteralType, IVersionType
+	public class DateTimeType : ValueTypeType, IIdentifierType, ILiteralType, IVersionType
 	{
 		
 		internal DateTimeType() : base( new DateTimeSqlType() ) 
@@ -83,15 +82,6 @@ namespace NHibernate.Type
 			return ((DateTime)val).ToShortDateString();
 		}
 
-		public override object DeepCopyNotNull(object value) 
-		{
-			// take advantage of the fact that unboxing with the cast
-			// and then reboxing with the return as an object will
-			// return a different box.  
-			return (DateTime)value;
-		}
-
-
 		public override bool HasNiceEquals 
 		{
 			get { return true; }
@@ -102,7 +92,7 @@ namespace NHibernate.Type
 			return DateTime.Parse(xml);
 		}
 
-		public string ObjectToSQLString(object value) 
+		public override string ObjectToSQLString(object value) 
 		{
 			return "'" + value.ToString() + "'";
 		}

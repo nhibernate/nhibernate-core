@@ -1907,11 +1907,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\PrimitiveType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Type\SerializableType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1983,6 +1978,11 @@
                 />
                 <File
                     RelPath = "Type\TypeType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\ValueTypeType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -6,7 +6,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type 
 {
 
-	public class GuidType : PrimitiveType, IDiscriminatorType 
+	public class GuidType : ValueTypeType, IDiscriminatorType 
 	{
 	
 		internal GuidType() : base( new GuidSqlType() ) 
@@ -21,11 +21,6 @@ namespace NHibernate.Type
 		public override object Get(IDataReader rs, string name) 
 		{
 			return new Guid( Convert.ToString(rs[name]) );
-		}
-
-		public override System.Type PrimitiveClass 
-		{
-			get { return typeof(System.Guid); }
 		}
 
 		public override System.Type ReturnedClass 
