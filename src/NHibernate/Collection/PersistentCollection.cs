@@ -179,23 +179,7 @@ namespace NHibernate.Collection {
 			set { collectionSnapshot = value; }
 		}
 
-		sealed class EnumeratorProxy : IEnumerator {
-			private IEnumerator en;
-			public EnumeratorProxy(IEnumerator en) {
-				this.en = en;
-			}
-			public object Current {
-				get { return en.Current; }
-			}
-			public bool MoveNext() {
-				return en.MoveNext();
-			}
-			public void Reset() {
-				en.Reset();
-			}
-		}
-
-		sealed class ListProxy : IList {
+		internal sealed class ListProxy : IList {
 			private PersistentCollection pc;
 			private IList list;
 			
@@ -261,5 +245,25 @@ namespace NHibernate.Collection {
 			}
 		}
 
+		internal sealed class EnumeratorProxy : IEnumerator {
+			private IEnumerator en;
+			public EnumeratorProxy(IEnumerator en) {
+				this.en = en;
+			}
+			public object Current {
+				get { return en.Current; }
+			}
+			public bool MoveNext() {
+				return en.MoveNext();
+			}
+			public void Reset() {
+				en.Reset();
+			}
+		}
+
 	}
+
+	
+
+	
 }
