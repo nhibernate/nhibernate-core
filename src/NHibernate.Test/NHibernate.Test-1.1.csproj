@@ -398,6 +398,20 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MappingExceptions\MissingDefCtor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MappingExceptions\MissingDefCtor.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MappingExceptions\MissingDefCtorFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MappingTest\TableFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
