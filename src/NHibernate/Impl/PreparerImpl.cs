@@ -23,9 +23,6 @@ namespace NHibernate.Impl
 		
 		// key = SqlString or a sql string
 		// value = ADO.NET Command
-		// A Built command is just an sql string/SQL Statement that has been converted
-		// into an ADO.NET Command
-		private Hashtable builtCommands = new Hashtable();
 
 		// A prepared command is ADO.NET command that is attached to an IDbConnection
 		// and optionally an IDbTransaction
@@ -61,7 +58,6 @@ namespace NHibernate.Impl
 					// reset the prepared Commands because they are specific to
 					// a connection.
 					preparedCommands = new Hashtable();
-					builtCommands = new Hashtable();
 
 					currentConnection = value;
 				}
@@ -72,38 +68,25 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IDbCommand BuildCommand(string sql) 
+		private IDbCommand BuildCommand(string sql) 
 		{
-			IDbCommand cmd = builtCommands[sql] as IDbCommand;
-			if( cmd==null ) 
+			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, sql);
+			if(log.IsDebugEnabled) 
 			{
-				cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, sql);
-				if(log.IsDebugEnabled) 
-				{
-					log.Debug( "Building an IDbCommand object for the sql: " + sql );
-				}
+				log.Debug( "Building an IDbCommand object for the sql: " + sql );
 			}
-			
-			builtCommands[sql] = cmd;
 			return cmd;
 			
 		}
 
 
-		public IDbCommand BuildCommand(SqlString sqlString) 
+		private IDbCommand BuildCommand(SqlString sqlString) 
 		{
-			IDbCommand cmd = builtCommands[sqlString] as IDbCommand;
-
-			if( cmd==null ) 
+			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, sqlString);
+			if(log.IsDebugEnabled) 
 			{
-				cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, sqlString);
-				if(log.IsDebugEnabled) 
-				{
-					log.Debug( "Building an IDbCommand object for the SqlString: " + sqlString.ToString() );
-				}
+				log.Debug( "Building an IDbCommand object for the SqlString: " + sqlString.ToString() );
 			}
-
-			builtCommands[sqlString] = cmd;
 			return cmd;
 			
 		}
@@ -158,7 +141,6 @@ namespace NHibernate.Impl
 
 		public IDbCommand PrepareCommand(IDbCommand dbCommand)
 		{
-
 			try 
 			{
 				if(log.IsInfoEnabled) 
@@ -187,7 +169,6 @@ namespace NHibernate.Impl
 					, e);
 			}
 		}
-
 
 		public IDbCommand PrepareCommand(string sql) 
 		{

@@ -18,21 +18,6 @@ namespace NHibernate.Engine
 	/// </remarks>
 	public interface IPreparer
 	{
-
-		/// <summary>
-		/// Builds an IDbCommand from a SQL String.  The SQL String can have 
-		/// no parameters.
-		/// </summary>
-		/// <remarks>The String to build into a IDbCommand.</remarks>
-		IDbCommand BuildCommand(string sql);
-
-		/// <summary>
-		/// Builds an IDbCommand from a SqlString
-		/// </summary>
-		/// <param name="sqlString">The SqlString to build into an IDbCommand.</param>
-		/// <returns></returns>
-		IDbCommand BuildCommand(SqlString sqlString);
-
 		/// <summary>
 		/// Prepares the IDbCommand for the IDbConnection
 		/// 
