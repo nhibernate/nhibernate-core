@@ -91,33 +91,6 @@ namespace NHibernate.Dialect
 			return OpenQuote + name.Replace(CloseQuote.ToString(), new string(CloseQuote, 2) ) + CloseQuote;
 		}
 
-//		/// <summary>
-//		/// MsSql ov
-//		/// </summary>
-//		/// <param name="tableName"></param>
-//		/// <returns></returns>
-//		/// <remarks>
-//		/// MsSql needs to override it because it allows the ] to be a valid char 
-//		/// in a table name.
-//		/// </remarks>
-//		public override string QuoteForTableName(string tableName)
-//		{
-//			if ( IsQuoted(tableName) ) return tableName;
-//			return Quote(tableName); // return OpenQuote + tableName.Replace(CloseQuote.ToString(), new string(CloseQuote, 2) ) + CloseQuote;
-//		}
-//
-//		public override string QuoteForAliasName(string aliasName)
-//		{
-//			if ( IsQuoted(aliasName) ) return aliasName;
-//			return Quote(tableName); // return OpenQuote + aliasName.Replace(CloseQuote.ToString(), new string(CloseQuote, 2) ) + CloseQuote;
-//		}
-//
-//		public override string QuoteForColumnName(string columnName)
-//		{
-//			if ( IsQuoted(columnName) ) return columnName;
-//			return Quote(tableName); // return OpenQuote + columnName.Replace(CloseQuote.ToString(), new string(CloseQuote, 2) ) + CloseQuote;
-//		}
-
 		public override string UnQuote(string quoted)
 		{
 			if ( IsQuoted(quoted) )

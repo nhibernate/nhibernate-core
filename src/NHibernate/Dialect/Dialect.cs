@@ -424,7 +424,6 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// The opening quote for a quoted identifier.
 		/// </summary>
-		//[Obsolete("Should use Quote functions")]
 		protected virtual char OpenQuote 
 		{
 			get { return '"'; }
@@ -433,7 +432,6 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// The closing quote for a quoted identifier.
 		/// </summary>
-		//[Obsolete("Should use Quote functions")]
 		protected virtual char CloseQuote 
 		{
 			get { return '"'; }
@@ -730,33 +728,55 @@ namespace NHibernate.Dialect
 		/// <returns>true if name is already quoted.</returns>
 		/// <remarks>
 		/// The default implementation is to compare the first character
-		/// to Dialect.OpenQuote.
+		/// to Dialect.OpenQuote and the last char to Dialect.CloseQuote
 		/// </remarks>
 		public virtual bool IsQuoted(string name) 
 		{
-			//TODO: should we use regex here - performance implications
-			// or just live with the bug that if the first char in the name
-			// 
-			return name[0]==OpenQuote;
+			return (name[0]==OpenQuote && name[name.Length-1]==CloseQuote);
 		}
 
 		/// <summary>
-		/// Unquotes an already quoted name
+		/// Unquotes and unescapes an already quoted name
 		/// </summary>
 		/// <param name="quoted">Quoted string</param>
 		/// <returns>Unquoted string</returns>
 		/// <remarks>
-		/// The Default implementation checks the first char to see if it is
-		/// == to OpenQuote and if so then it returns the string without the 
-		/// first and last char.  If this implementation is not sufficient for 
-		/// your Dialect then it needs to be overridden.
+		/// <p>
+		/// This method checks the string <c>quoted</c> to see if it is 
+		/// quoted.  If the string <c>quoted</c> is already enclosed in the OpenQuote
+		/// and CloseQuote then those chars are removed.
+		/// </p>
+		/// <p>
+		/// After the OpenQuote and CloseQuote have been cleaned from the string <c>quoted</c>
+		/// then any chars in the string <c>quoted</c> that have been escaped by doubling them
+		/// up are changed back to a single version.
+		/// </p>
+		/// <p>
+		/// The following quoted values return these results
+		/// "quoted" = quoted
+		/// "quote""d" = quote"d
+		/// quote""d = quote"d 
+		/// </p>
+		/// <p>
+		/// If this implementation is not sufficient for your Dialect then it needs to be overridden.
+		/// MsSql2000Dialect is an example of where UnQuoting rules are different.
+		/// </p>
 		/// </remarks>
 		public virtual string UnQuote(string quoted)
 		{
-			if (IsQuoted(quoted)) 
-				return quoted.Substring(1, quoted.Length - 2);
+			string unquoted;
 
-			return quoted;
+			if (IsQuoted(quoted)) 
+				unquoted = quoted.Substring(1, quoted.Length - 2);
+			else
+				unquoted = quoted;
+
+			unquoted = unquoted.Replace( new string(OpenQuote, 2), OpenQuote.ToString() );
+
+			if( OpenQuote!= CloseQuote)
+				unquoted = unquoted.Replace( new string(CloseQuote, 2), CloseQuote.ToString() );
+
+			return unquoted;
 		}
 
 		/// <summary>
@@ -780,40 +800,18 @@ namespace NHibernate.Dialect
 		}
 
 		
-
-		/// <summary>
-		/// Quotes a name for being used as a tablename
-		/// </summary>
-		/// <param name="tableName">Name of the table</param>
-		/// <returns>A Quoted name in the format of OpenQuote + tableName + CloseQuote</returns>
-		/// <remarks></remarks>
-		public virtual string QuoteForTableName(string tableName)
-		{
-			return IsQuoted(tableName) ?
-				tableName :
-				Quote(tableName);
-
-		}
-
-		/// <summary>
-		/// Quotes a name for being used as a columnname
-		/// </summary>
-		/// <remarks>Original implementation calls <see cref="QuoteForTableName"/></remarks>
-		/// <param name="columnName">Name of the column</param>
-		/// <returns>A Quoted name in the format of OpenQuote + columnName + CloseQuote</returns>
-		public virtual string QuoteForColumnName(string columnName)
-		{
-			return IsQuoted(columnName) ?
-				columnName :
-				Quote(columnName);
-
-		}
-
 		/// <summary>
 		/// Quotes a name.
 		/// </summary>
-		/// <param name="name">The string to Quote</param>
+		/// <param name="name">The string that needs to be Quoted.</param>
 		/// <returns>A QuotedName </returns>
+		/// <remarks>
+		/// <p>
+		/// This method assumes that the name is not already Quoted.  So if the name passed
+		/// in is <c>"name</c> then it will return <c>"""name"</c>.  It escapes the first char
+		/// - the " with "" and encloses the escaped string with OpenQuote and CloseQuote. 
+		/// </p>
+		/// </remarks>
 		protected virtual string Quote(string name) 
 		{
 			string quotedName = name.Replace( OpenQuote.ToString(), new string(OpenQuote, 2) );
@@ -835,6 +833,14 @@ namespace NHibernate.Dialect
 		/// <remarks>Original implementation calls <see cref="QuoteForTableName"/></remarks>
 		/// <param name="columnName">Name of the alias</param>
 		/// <returns>A Quoted name in the format of OpenQuote + aliasName + CloseQuote</returns>
+		/// <remarks>
+		/// <p>
+		/// If the aliasName is already enclosed in the OpenQuote and CloseQuote then this 
+		/// method will return the aliasName that was passed in without going through any
+		/// Quoting process.  So if aliasName is passed in already Quoted make sure that 
+		/// you have escaped all of the chars according to your DataBase's specifications.
+		/// </p>
+		/// </remarks>
 		public virtual string QuoteForAliasName(string aliasName)
 		{
 			return IsQuoted(aliasName) ?
@@ -843,7 +849,50 @@ namespace NHibernate.Dialect
 
 		}
 
+		/// <summary>
+		/// Quotes a name for being used as a columnname
+		/// </summary>
+		/// <remarks>Original implementation calls <see cref="QuoteForTableName"/></remarks>
+		/// <param name="columnName">Name of the column</param>
+		/// <returns>A Quoted name in the format of OpenQuote + columnName + CloseQuote</returns>
+		/// <remarks>
+		/// <p>
+		/// If the columnName is already enclosed in the OpenQuote and CloseQuote then this 
+		/// method will return the columnName that was passed in without going through any
+		/// Quoting process.  So if columnName is passed in already Quoted make sure that 
+		/// you have escaped all of the chars according to your DataBase's specifications.
+		/// </p>
+		/// </remarks>
+		public virtual string QuoteForColumnName(string columnName)
+		{
+			return IsQuoted(columnName) ?
+				columnName :
+				Quote(columnName);
 
+		}
+
+		/// <summary>
+		/// Quotes a name for being used as a tablename
+		/// </summary>
+		/// <param name="tableName">Name of the table</param>
+		/// <returns>A Quoted name in the format of OpenQuote + tableName + CloseQuote</returns>
+		/// <remarks>
+		/// <p>
+		/// If the tableName is already enclosed in the OpenQuote and CloseQuote then this 
+		/// method will return the tableName that was passed in without going through any
+		/// Quoting process.  So if tableName is passed in already Quoted make sure that 
+		/// you have escaped all of the chars according to your DataBase's specifications.
+		/// </p>
+		/// </remarks>
+		public virtual string QuoteForTableName(string tableName)
+		{
+			return IsQuoted(tableName) ?
+				tableName :
+				Quote(tableName);
+
+		}
+
+		
 		public class CountQueryFunctionInfo : IQueryFunctionInfo 
 		{
 			#region IQueryFunctionInfo Members
