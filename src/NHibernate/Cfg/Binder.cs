@@ -13,7 +13,7 @@ namespace NHibernate.Cfg {
 	internal class Binder {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Binder));
 
-		public static void BindClass(XmlNode node, PersistentClass model) {
+		public static void BindClass(XmlNode node, PersistentClass model, Mappings mapping) {
 			
 			string className = node.Attributes["name"] == null ? null : node.Attributes["name"].Value;
 			// class
@@ -41,11 +41,15 @@ namespace NHibernate.Cfg {
 			model.DynamicUpdate = (dynamicNode==null)
 				? false :
 				"true".Equals( dynamicNode.Value );
+			//import
+			if (mapping.IsAutoImport) {
+				mapping.AddImport( className, StringHelper.Unqualify(className) );
+			}
 		}
 
 		public static void BindSubclass(XmlNode node, Subclass model, Mappings mappings) {
 
-			BindClass(node, model);
+			BindClass(node, model, mappings);
 
 			if ( model.Persister==null ) {
 				model.RootClazz.Persister = typeof(EntityPersister);
@@ -61,7 +65,7 @@ namespace NHibernate.Cfg {
 
 		public static void BindJoinedSubclass(XmlNode node, Subclass model, Mappings mappings) {
 
-			BindClass(node, model);
+			BindClass(node, model, mappings);
 
 			// joined subclass
 			if ( model.Persister==null ) {
@@ -73,6 +77,7 @@ namespace NHibernate.Cfg {
 			string tableName = (tableNameNode==null)
 				? StringHelper.Unqualify( model.PersistentClazz.Name ) 
 				: tableNameNode.Value;
+
 			//schema
 			XmlAttribute schemaNode = node.Attributes["schema"];
 			string schema = schemaNode==null ? mappings.SchemaName : schemaNode.Value;
@@ -96,7 +101,7 @@ namespace NHibernate.Cfg {
 
 		public static void BindRootClass(XmlNode node, RootClass model, Mappings mappings) {
 
-			BindClass(node, model);
+			BindClass(node, model, mappings);
 
 			//TABLENAME
 			XmlAttribute tableNameNode = node.Attributes["table"];
@@ -152,7 +157,7 @@ namespace NHibernate.Cfg {
 						}
 						if ( id.Type.ReturnedClass.IsArray ) throw new MappingException(
 																 "illegal use of an array as an identifier (arrays don't reimplement equals)"); //is this true in .net?
-						MakeIdentifier(subnode, id);
+						MakeIdentifier(subnode, id, mappings);
 						break;
 					case "composite-id":
 						Component compId = new Component(model);
@@ -168,7 +173,7 @@ namespace NHibernate.Cfg {
 							BindProperty(subnode, prop, mappings);
 							model.IdentifierProperty = prop;
 						}
-						MakeIdentifier(subnode, compId);
+						MakeIdentifier(subnode, compId, mappings);
 						break;
 					case "version":
 					case "timestamp":
@@ -369,6 +374,19 @@ namespace NHibernate.Cfg {
 			}
 		}
 
+		public static void BindAny(XmlNode node, Any model, bool isNullable) {
+			model.IdentifierType = GetTypeFromXML(node);
+
+			XmlAttribute metaAttribute = node.Attributes["meta-type"];
+			if (metaAttribute!=null) {
+				IType metaType = TypeFactory.HueristicType( metaAttribute.Value );
+				if ( metaType==null ) throw new MappingException("could not interpret meta-type");
+				model.MetaType = metaType;
+			}
+
+			BindColumns(node, model, isNullable, false, null);
+		}
+
 		public static void BindOneToOne(XmlNode node, OneToOne model, bool isNullable) {
 			BindColumns(node, model, isNullable, false, null);
 			InitOuterJoinFetchSettings(node, model);
@@ -496,6 +514,9 @@ namespace NHibernate.Cfg {
 				} else if ( "one-to-one".Equals(name) ) {
 					value = new OneToOne( model.Table, model.Owner.Identifier );
 					BindOneToOne(subnode, (OneToOne) value, isNullable);
+				} else if ( "any".Equals(name) ) {
+					value = new Any( model.Table );
+					BindAny(subnode, (Any) value, isNullable);
 				} else if ( "property".Equals(name) || "key-property".Equals(name) ) {
 					value = new Value( model.Table );
 					BindValue(subnode, value, isNullable, propertyName);
@@ -545,6 +566,8 @@ namespace NHibernate.Cfg {
 		private static IType GetTypeFromXML(XmlNode node) {
 			IType type;
 			XmlAttribute typeNode = node.Attributes["type"];
+
+			if (typeNode==null) typeNode = node.Attributes["id-type"]; //for an any
 			if (typeNode==null) {
 				return null; //we will have to use reflection
 			} else {
@@ -569,7 +592,7 @@ namespace NHibernate.Cfg {
 			}
 		}
 
-		private static void MakeIdentifier(XmlNode node, Value model) {
+		private static void MakeIdentifier(XmlNode node, Value model, Mappings mappings) {
 			//GENERATOR
 
 			XmlNode subnode = node.SelectSingleNode("generator");
@@ -577,6 +600,11 @@ namespace NHibernate.Cfg {
 				model.IdentifierGeneratorStrategy = subnode.Attributes["class"].Value;
 
 				IDictionary parms = new Hashtable();
+
+				if ( mappings.SchemaName!=null ) {
+					parms.Add( "schema", mappings.SchemaName );
+				}
+
 				foreach(XmlNode childNode in subnode.SelectNodes("param")) {
 					parms.Add(
 						childNode.Attributes["name"].Value,

@@ -13,10 +13,11 @@ namespace NHibernate.Cfg {
 		private IDictionary collections;
 		private IDictionary tables;
 		private IDictionary queries;
-		private IDictionary imports;
 		private IList secondPasses;
+		private IDictionary imports;
 		private string schemaName;
 		private string defaultCascade;
+		private bool autoImport;
 
 		internal Mappings(IDictionary classes, IDictionary collections, IDictionary tables, IDictionary queries, IDictionary imports, IList secondPasses) {
 			this.classes = classes;
@@ -89,6 +90,11 @@ namespace NHibernate.Cfg {
 		}
 		internal void AddSecondPass(Binder.SecondPass sp) {
 			secondPasses.Add(sp);
+		}
+
+		public bool IsAutoImport {
+			get { return autoImport; }
+			set { autoImport = value; }
 		}
 	}
 }

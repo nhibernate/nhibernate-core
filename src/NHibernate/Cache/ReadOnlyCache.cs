@@ -16,7 +16,7 @@ namespace NHibernate.Cache {
 		public object Get(object key, long timestamp) {
 			lock(this) {
 				object result = cache[key];
-				if ( result!=null) log.Debug("Cache hi: " + key);
+				if ( result!=null && log.IsDebugEnabled) log.Debug("Cache hit: " + key);
 				return result;
 			}
 		}
@@ -28,7 +28,7 @@ namespace NHibernate.Cache {
 
 		public bool Put(object key, object value, long timestamp) {
 			lock(this) {
-				log.Debug("Caching: " + key);
+				if (log.IsDebugEnabled) log.Debug("Caching: " + key);
 				cache[key] = value;
 				return true;
 			}

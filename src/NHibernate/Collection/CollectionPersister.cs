@@ -83,7 +83,7 @@ namespace NHibernate.Collection {
 				k++;
 			}
 
-			isSet = collection.IsSet;
+			//isSet = collection.IsSet;
 			isOneToMany = collection.IsOneToMany;
 			primitiveArray = collection.IsPrimitiveArray;
 			array = collection.IsArray;

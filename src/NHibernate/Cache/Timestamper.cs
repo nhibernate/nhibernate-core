@@ -11,14 +11,16 @@ namespace NHibernate.Cache {
 	public class Timestamper {
 		private static short counter = 0;
 		private static long time;
+		private const int BinDigits = 12;
+		public const short OneMs = 1<<BinDigits;
 
 		public static long Next() {
 			lock(typeof(Timestamper)) {
-				long newTime = System.DateTime.Now.Ticks << 16; //is this right?
+				long newTime = System.DateTime.Now.Ticks << BinDigits; //is this right?
 				if (time < newTime) {
 					time = newTime;
 					counter = 0;
-				} else if (counter < short.MaxValue) {
+				} else if (counter < OneMs - 1) {
 					counter++;
 				}
 				return time + counter;

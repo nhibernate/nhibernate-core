@@ -13,7 +13,7 @@ namespace NHibernate.Collection {
 
 		private object array;
 		private System.Type elementClass;
-		private IList temp;
+		private IList tempList;
 
 		public ArrayHolder(ISessionImplementor session, object array) : base(session) {
 			this.array = array;
@@ -21,10 +21,10 @@ namespace NHibernate.Collection {
 		}
 
 		protected override object Snapshot(CollectionPersister persister) {
-			int length = (array==null) ? temp.Count : ((System.Array)array).Length;
+			int length = /*(array==null) ? temp.Count :*/ ((System.Array)array).Length;
 			object result = System.Array.CreateInstance(persister.ElementClass, length);
 			for (int i=0; i<length; i++) {
-				object elt = (array==null) ? temp[i] : ((System.Array)array).GetValue(i);
+				object elt = /*(array==null) ? temp[i] :*/ ((System.Array)array).GetValue(i);
 				try {
 					((System.Array)result).SetValue( persister.ElementType.DeepCopy(elt), i);
 				} catch (Exception e) {
@@ -64,7 +64,7 @@ namespace NHibernate.Collection {
 		}
 
 		public override ICollection Elements() {
-			if (array==null) return temp;
+			if (array==null) return tempList;
 			int length = ((System.Array)array).Length;
 			IList list = new ArrayList(length);
 			for (int i=0; i<length; i++) {
@@ -85,10 +85,10 @@ namespace NHibernate.Collection {
 		public override object ReadFrom(IDataReader rs, CollectionPersister persister, object owner) {
 			object element = persister.ReadElement(rs, owner, session);
 			int index = (int) persister.ReadIndex(rs, session);
-			for (int i=temp.Count; i<=index; i++) {
-				temp[i] = null;
+			for (int i=tempList.Count; i<=index; i++) {
+				tempList[i] = null;
 			}
-			temp[index] = element;
+			tempList[index] = element;
 			return element;
 		}
 
@@ -104,15 +104,23 @@ namespace NHibernate.Collection {
 			array = list.ToArray( elementClass );
 		}
 
+		public override void BeginRead() {
+			tempList = new ArrayList();
+		}
+		public override void EndRead() {
+			array = ((ArrayList)tempList).ToArray(elementClass);
+			tempList = null;
+		}
+
 		public override object GetInitialValue(bool lazy) {
-			temp = new ArrayList();
+			tempList = new ArrayList();
 			base.GetInitialValue(false);
-			array = System.Array.CreateInstance( elementClass, temp.Count );
-			for (int i=0; i<temp.Count; i++) {
-				((System.Array)array).SetValue(temp[i],i);
+			array = System.Array.CreateInstance( elementClass, tempList.Count );
+			for (int i=0; i<tempList.Count; i++) {
+				((System.Array)array).SetValue(tempList[i],i);
 			}
 			session.AddArrayHolder(this);
-			temp=null;
+			tempList=null;
 			return array;
 		}
 
@@ -134,10 +142,10 @@ namespace NHibernate.Collection {
 		}
 
 		public override object Disassemble(CollectionPersister persister) {
-			int length = temp.Count;
+			int length = tempList.Count;
 			object[] result = new object[length];
 			for (int i=0; i<length; i++) {
-				result[i] = persister.ElementType.Disassemble( temp[i], session);
+				result[i] = persister.ElementType.Disassemble( tempList[i], session);
 			}
 			return result;
 		}
