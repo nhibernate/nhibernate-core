@@ -175,7 +175,7 @@ namespace NHibernate.Cfg {
 						//version
 						Value val = new Value(table);
 						BindValue(subnode, val, false, propertyName);
-						if ( val.Type==null ) val.Type = ("version".Equals(name)) ? NHibernate.Integer : NHibernate.Timestamp;
+						if ( val.Type==null ) val.Type = ( ("version".Equals(name)) ? NHibernate.Integer : NHibernate.Timestamp );
 						Property timestampProp = new Property(val);
 						BindProperty(subnode, timestampProp, mappings);
 						model.Version = timestampProp;

@@ -39,7 +39,7 @@ namespace NHibernate.Mapping {
 		public virtual IType Type {
 			get { return type; }
 			set {
-				this.type = type;
+				this.type = value;
 				int count = 0;
 				
 				foreach(Column col in ColumnCollection) {

@@ -656,6 +656,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Id\CounterGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Id\IConfigurable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -682,6 +687,26 @@
                 />
                 <File
                     RelPath = "Id\IPersistentIdentifierGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Id\SequenceGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Id\SequenceHiLoGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Id\TableGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Id\TableHiLoGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

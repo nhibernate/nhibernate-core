@@ -46,7 +46,7 @@ namespace NHibernate.Id {
 			}
 		}
 
-		static object CreateNumber(long value, System.Type type) {
+		internal static object CreateNumber(long value, System.Type type) {
 			if (type==typeof(long)) {
 				return value;
 			} else if ( type==typeof(int)) {

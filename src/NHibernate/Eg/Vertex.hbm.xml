@@ -21,7 +21,7 @@
 		</list>
 		<property name="CreationDate" type="date" />
 		<subclass name="NHibernate.Eg.Source">
-			<property column="Strength" name="sourceStrength" />
+			<property column="Strength" name="SourceStrength" />
 		</subclass>
 	</class>
 </hibernate-mapping>
