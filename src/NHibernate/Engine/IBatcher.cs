@@ -1,25 +1,32 @@
 using System;
 using System.Data;
 
-namespace NHibernate.Engine {
+using NHibernate.SqlCommand;
 
+namespace NHibernate.Engine 
+{
 	/// <summary>
 	/// Manages <c>IDbCommand</c>s for a session. 
 	/// </summary>
 	/// <remarks>
-	/// Abstracts ADO.NET batching to maintain the illusion
-	/// that a single logical batch exists for the whole session, even when batching is disabled.
+	/// <para>
+	/// Abstracts ADO.NET batching to maintain the illusion that a single logical batch 
+	/// exists for the whole session, even when batching is disabled.
 	/// Provides transparent <c>IDbCommand</c> caching.
-	/// 
-	/// TODO: DESIGNQUESTION: we might want to use this to tie together the Connection.IConnection and Transaction.ITransaction because
-	/// of how closely ADO.NET ties together the IDbConnection and IDbTransaction and IDbCommand - namely that creating
-	/// a IDbCommand from an IDbConnection doesn't automattically give it the IDbTransaction.
+	/// </para>
+	/// <para>
+	/// This will be useful once ADO.NET gets support for batching.  Until that point
+	/// no code exists that will do batching, but this will provide a good point to do
+	/// error checking and making sure the correct number of rows were affected.
+	/// </para>
 	/// </remarks>
-	public interface IBatcher {
-		
+	public interface IBatcher 
+	{
 		/// <summary>
 		/// Get a prepared statement for using in loading / querying.
 		/// </summary>
+		/// <param name="sql"></param>
+		/// <param name="scrollable">TODO: not sure how to use this yet</param>
 		/// <remarks>
 		/// If not explicitly released by <c>CloseQueryStatement()</c>, it will be 
 		/// released when the session is closed or disconnected.
@@ -27,27 +34,34 @@ namespace NHibernate.Engine {
 		/// This does NOT add anything to the batch - it only creates the IDbCommand and 
 		/// does NOT cause the batch to execute...
 		/// </remarks>
-		IDbCommand PrepareQueryStatement(string sql);
+		IDbCommand PrepareQueryCommand(SqlString sql, bool scrollable);
 
+		// TODO: how applicable is this????
 		/// <summary>
 		/// Closes a command opened with <c>PrepareQueryStatement</c>
 		/// </summary>
-		/// <param name="db"></param>
-		void CloseQueryStatement(IDbCommand cm);
+		/// <param name="cmd"></param>
+		/// <param name="reader"></param>
+		/// <remarks>
+		/// TODO: Not sure this is needed - with jdbc you can close a statement - does this
+		/// have an equivalent of Disposing and IDbCommand???
+		/// </remarks>
+		void CloseQueryCommand(IDbCommand cmd, IDataReader reader);
 
 		/// <summary>
 		/// Get a non-batchable prepared statement to use for inserting / deleting / updating.
 		/// Must be explicitly released by <c>CloseStatement()</c>
 		/// </summary>
-		/// <param name="sql"></param>
+		/// <param name="sql">The SqlString to convert to an IDbCommand.</param>
 		/// <returns></returns>
-		IDbCommand PrepareStatement(string sql);
+		IDbCommand PrepareCommand(SqlString sql);
 
+		//TODO: how applicable is this???
 		/// <summary>
-		/// Close a prepared statement opened using <c>PrepareStatement()</c>
+		/// Close a IDbCommand opened using <c>PrepareStatement()</c>
 		/// </summary>
 		/// <param name="cm"></param>
-		void CloseStatement(IDbCommand cm);
+		void CloseCommand(IDbCommand cm);
 
 		/// <summary>
 		/// Get a batchable prepared statement to use for inserting / deleting / updating
@@ -59,13 +73,17 @@ namespace NHibernate.Engine {
 		/// </remarks>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		IDbCommand PrepareBatchStatement(string sql);
+		IDbCommand PrepareBatchCommand(SqlString sql);
 
 		/// <summary>
 		/// Add an insert / delete / update to the current batch (might be called multiple times
 		/// for a single <c>PrepareBatchStatement()</c>)
 		/// </summary>
 		/// <param name="expectedRowCount"></param>
+		/// <remarks>
+		/// A negative number in expectedRowCount means that you don't know how many rows to 
+		/// expect.
+		/// </remarks>
 		void AddToBatch(int expectedRowCount);
 
 		/// <summary>
@@ -73,9 +91,19 @@ namespace NHibernate.Engine {
 		/// </summary>
 		void ExecuteBatch();
 
+		// TODO: how applicable is this???
 		/// <summary>
 		/// Close any query statements that were left lying around
 		/// </summary>
-		void CloseStatements();
+		void CloseCommands();
+
+		IDataReader GetDataReader(IDbCommand cmd);
+
+		/// <summary>
+		/// Must be called when an exception occurs.
+		/// </summary>
+		/// <param name="e"></param>
+		void AbortBatch(Exception e);
+
 	}
 }

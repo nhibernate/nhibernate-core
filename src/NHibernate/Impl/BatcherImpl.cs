@@ -1,10 +1,12 @@
 using System;
-using System.Data;
 using System.Collections;
+using System.Data;
+
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 
-namespace NHibernate.Impl {
-
+namespace NHibernate.Impl 
+{
 	/// <summary>
 	/// Manages prepared statements and batching. Class exists to enfores seperation of concerns
 	/// TODO: RESEARCH how ADO.NET batching compares to JDBC batching - I am not at all familiar with
@@ -21,23 +23,27 @@ namespace NHibernate.Impl {
 	/// adding more Parameters.  I think that would get a little ugly for the performance gain - don't know what the gain
 	/// would be because I don't want to even think about writing that code :)
 	/// </summary>
-	internal abstract class BatcherImpl : IBatcher {
+	internal abstract class BatcherImpl : IBatcher 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(BatcherImpl));
 
-		public static int open;
+		private static int openCommandCount;
+		private static int openReaderCount;
 
-		protected ISessionImplementor session;
-		protected ISessionFactoryImplementor factory;
+		protected readonly ISessionImplementor session;
+		protected readonly ISessionFactoryImplementor factory;
 
 		// batchCommand used to be called batchUpdate - that name to me implied that updates
 		// were being sent - however this could be just INSERT/DELETE/SELECT SQL statement not
 		// just update.  However I haven't seen this being used with read statements...
 		private IDbCommand batchCommand;
-		private string batchCommandSQL;
+		private SqlString batchCommandSql;
 
-		private ArrayList statementsToClose = new ArrayList();
+		private ArrayList commandsToClose = new ArrayList();
+		private ArrayList readersToClose = new ArrayList();
 
-		public BatcherImpl(ISessionImplementor session) {
+		public BatcherImpl(ISessionImplementor session) 
+		{
 			this.session = session;
 			this.factory = session.Factory;
 		}
@@ -59,126 +65,202 @@ namespace NHibernate.Impl {
 		/// 
 		/// </remarks>
 		/// <returns></returns>
-		protected IDbCommand GetStatement() {
+		protected IDbCommand GetCommand() 
+		{
 			return batchCommand;
 		}
 
-		public IDbCommand PrepareStatement(string sql) {
+		public IDbCommand PrepareCommand(SqlString sql) 
+		{
 			
 			ExecuteBatch();
-			LogOpen();
+			LogOpenPreparedCommands();
 			
-			return JoinTransaction( factory.GetPreparedStatement( session.Connection, sql, false) );
+			//return JoinTransaction( factory.GetPreparedStatement( session.Connection, sql, false) );
+			return session.Preparer.PrepareCommand(sql);
 
 		}
-		public IDbCommand PrepareQueryStatement(string sql) {
-			LogOpen();
-			IDbCommand command = factory.GetPreparedStatement( session.Connection, sql, false );
-			
-			factory.SetFetchSize(command);
-			statementsToClose.Add(command);
-			
-			return JoinTransaction(command);
-		}
-
-		/// <summary>
-		/// Joins the Command to the Transaction and ensures that the Session and IDbCommand are in 
-		/// the same Transaction.
-		/// </summary>
-		/// <param name="command">The command to setup the Transaction on.</param>
-		/// <returns>A IDbCommand with a valid Transaction property.</returns>
-		private IDbCommand JoinTransaction(IDbCommand command)
+		
+		public IDbCommand PrepareQueryCommand(SqlString sql, bool scrollable) 
 		{
-			IDbTransaction sessionAdoTrx = null;
+			//TODO: figure out what to do with scrollable - don't think it applies
+			// to ado.net since DataReader is forward only
+			LogOpenPreparedCommands();
+			IDbCommand command = session.Preparer.PrepareCommand(sql);
+			//factory.GetPreparedStatement( session.Connection, sql, false );
 			
-			// at this point in the code if the Transaction is not null then we know we
-			// have a Transaction object that has the .AdoTransaction property.  In the future
-			// we will have a seperate object to represent an AdoTransaction and won't have a 
-			// generic Transaction class - the existing Transaction class will become Abstract.
-			if(this.session.Transaction!=null) sessionAdoTrx = ((Transaction.Transaction)session.Transaction).AdoTransaction;
-
-
-			// if the sessionAdoTrx is null then we don't want the command to be a part of
-			// any Transaction - so lets set the command trx to null
-			if(sessionAdoTrx==null) 
-			{
-				
-				if(command.Transaction!=null) log.Warn("set a nonnull IDbCommand.Transaction to null because the Session had no Transaction");
-				command.Transaction = null;
-
-			}
-
-			// make sure these are the same transaction - I don't know why we would have a command
-			// in a different Transaction than the Session, but I don't understand all of the code
-			// well enough yet to verify that.
-			else if (sessionAdoTrx!=command.Transaction) 
-			{
-				// got into here because the command was being initialized and had a null Transaction - probably
-				// don't need to be confused by that - just a normal part of initialization...
-				log.Warn("The IDbCommand had a different Transaction than the Session.  What is going on???");
-				command.Transaction = sessionAdoTrx; 
-			}
-
+			// not sure if this is needed because fetch size doesn't apply
+			factory.SetFetchSize(command);
+			commandsToClose.Add(command);
+			
 			return command;
 		}
 
-		public void CloseQueryStatement(IDbCommand st) {
-			statementsToClose.Remove(st);
-			LogClose();
-			factory.ClosePreparedStatement(st);
+		public void AbortBatch(Exception e) 
+		{
+			// log the exception here
+			IDbCommand cmd = batchCommand;
+			batchCommand = null;
+			batchCommandSql = null;
+			// close the statement closeStatement(cmd)
 		}
 
-		public void CloseStatement(IDbCommand ps) {
-			LogClose();
-			factory.ClosePreparedStatement(ps);
+		public IDataReader GetDataReader(IDbCommand cmd) 
+		{
+			IDataReader reader = cmd.ExecuteReader();
+			readersToClose.Add(reader);
+			LogOpenReaders();
+			return reader;
 		}
 
-		public IDbCommand PrepareBatchStatement(string sql) {
-			if ( !sql.Equals(batchCommandSQL) ) {
-				batchCommand = PrepareStatement(sql);
-				batchCommandSQL=sql;
+		public void CloseQueryCommand(IDbCommand st, IDataReader reader) 
+		{
+			commandsToClose.Remove(st);
+			if( reader!=null ) 
+			{
+				readersToClose.Remove(reader);
+			}
+
+			try 
+			{
+				if( reader!=null) 
+				{
+					LogCloseReaders();
+					reader.Close();
+				}
+			}
+			finally 
+			{
+				CloseQueryCommand(st);
+			}
+		}
+
+		public IDbCommand PrepareBatchCommand(SqlString sql) 
+		{
+			if ( !sql.Equals(batchCommandSql) ) 
+			{
+				batchCommand = PrepareCommand(sql); // calls ExecuteBatch()
+				batchCommandSql=sql;
 			}
 			return batchCommand;
 		}
 
-		public void ExecuteBatch() {
-			if ( batchCommand!=null ) {
+		public void ExecuteBatch() 
+		{
+			if ( batchCommand!=null ) 
+			{
 				IDbCommand ps = batchCommand;
 				batchCommand = null;
-				batchCommandSQL = null;
-				try {
+				batchCommandSql = null;
+				try 
+				{
 					DoExecuteBatch(ps);
-				} finally {
-					CloseStatement(ps);
+				}
+				finally 
+				{
+					CloseCommand(ps);
 				}
 			}
 		}
 
-		public void CloseStatements() {
-			foreach( IDbCommand cmd in statementsToClose ) {
-				try {
-					CloseStatement(cmd);
-				} catch(Exception e) {
+		public void CloseCommand(IDbCommand cmd) 
+		{
+			LogClosePreparedCommands();
+			// factory.ClosePreparedStatement(cmd);
+		}
+
+		private void CloseQueryCommand(IDbCommand cmd) 
+		{
+			try 
+			{
+				// no equiv to the java code in here
+			}
+			catch( Exception e ) 
+			{
+				log.Warn( "exception clearing maxRows/queryTimeout", e );
+				//cmd.close();  if there was a close method in command
+				return; // NOTE: early exit!
+			}
+
+			CloseCommand( cmd );
+		}
+
+		public void CloseCommands() 
+		{
+			foreach( IDataReader reader in readersToClose ) 
+			{
+				try 
+				{
+					LogCloseReaders();
+					reader.Close();
+				}
+				catch( Exception e ) 
+				{
+					log.Warn( "Could not close IDataReader", e );
+				}
+			}
+			readersToClose.Clear();
+
+			foreach( IDbCommand cmd in commandsToClose ) 
+			{
+				try 
+				{
+					CloseQueryCommand(cmd);
+				} 
+				catch(Exception e) 
+				{
 					// no big deal
 					log.Warn("Could not close a JDBC statement", e);
 				}
 			}
-			statementsToClose.Clear();
+			commandsToClose.Clear();
 		}
 
 		protected abstract void DoExecuteBatch(IDbCommand ps) ;
-		public abstract void AddToBatch(int expectedCount);
+		public abstract void AddToBatch(int expectedRowCount);
 
-		private static void LogOpen() {
-			if ( log.IsDebugEnabled ) {
-				open++;
-				log.Debug( open + " open PreparedStatements" );
+		protected ISessionFactoryImplementor Factory 
+		{
+			get { return factory; }
+		}
+
+		protected ISessionImplementor Session 
+		{
+			get { return session; }
+		}
+
+		private static void LogOpenPreparedCommands() 
+		{
+			if ( log.IsDebugEnabled ) 
+			{
+				log.Debug( "about to open: " + openCommandCount + " open IDbCommands, " + openReaderCount + " open DataReaders" );
+				openCommandCount++;
 			}
 		}
 
-		private static void LogClose() {
-			if ( log.IsDebugEnabled )
-				open--;
+		private static void LogClosePreparedCommands() 
+		{
+			if ( log.IsDebugEnabled ) 
+			{
+				openCommandCount--;
+				log.Debug( "done closing: " + openCommandCount + " open IDbCommands, " + openReaderCount + " open DataReaders" );
+			}
+		}
+
+		private static void LogOpenReaders() 
+		{
+			if( log.IsDebugEnabled ) 
+			{
+				openReaderCount++;
+			}
+		}
+
+		private static void LogCloseReaders() 
+		{
+			if( log.IsDebugEnabled ) 
+			{
+				openReaderCount--;
+			}
 		}
 	}
 }
