@@ -143,6 +143,10 @@
                     BuildAction = "None"
                 />
                 <File
+                    RelPath = "NHibernate.Test.nunit"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "ObjectAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
