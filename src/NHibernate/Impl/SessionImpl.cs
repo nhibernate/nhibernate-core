@@ -3026,21 +3026,49 @@ namespace NHibernate.Impl
 		private IDictionary loadingCollections = new Hashtable();
 		private string loadingRole;
 
-		private sealed class LoadingCollectionEntry {
-			public PersistentCollection collection;
-			public bool initialize;
-			public object id;
-			public object owner;
+		private sealed class LoadingCollectionEntry 
+		{
+			private PersistentCollection _collection;
+			private bool _initialize;
+			private object _id;
+			private object _owner;
 
-			internal LoadingCollectionEntry(PersistentCollection collection, object id) {
-				this.collection = collection;
-				this.id = id;
+			internal LoadingCollectionEntry(PersistentCollection collection, object id) 
+			{
+				_collection = collection;
+				_id = id;
 			}
 
-			internal LoadingCollectionEntry(PersistentCollection collectin, object id, object owner) {
-				this.collection = collection;
-				this.id = id;
-				this.owner = owner;
+			internal LoadingCollectionEntry(PersistentCollection collection, object id, object owner) 
+			{
+				_collection = collection;
+				_id = id;
+				_owner = owner;
+			}
+
+			public PersistentCollection Collection 
+			{
+				get { return _collection;}
+				set { _collection = value; }
+			}
+
+			public object Id 
+			{
+				get { return _id; }
+				set { _id = value; }
+			}
+
+			
+			public object Owner 
+			{
+				get { return _owner; }
+				set { _owner = value; }
+			}
+			
+			public bool Initialize
+			{
+				get { return _initialize; }
+				set { _initialize = value; }
 			}
 		}
 
@@ -3059,7 +3087,7 @@ namespace NHibernate.Impl
 				return pc;
 			}
 			else {
-				return lce.collection;
+				return lce.Collection;
 			}
 		}
 
@@ -3077,7 +3105,7 @@ namespace NHibernate.Impl
 				return pc;
 			}
 			else {
-				return lce.collection;
+				return lce.Collection;
 			}
 		}
 
@@ -3086,9 +3114,9 @@ namespace NHibernate.Impl
 				CollectionPersister persister = GetCollectionPersister(loadingRole);
 				foreach (LoadingCollectionEntry lce in loadingCollections.Values) {
 					//lce.collection.EndRead();
-					lce.collection.EndRead(persister, lce.owner);
-					AddInitializedCollection(lce.collection, persister, lce.id);
-					persister.Cache(lce.id, lce.collection, this);
+					lce.Collection.EndRead(persister, lce.Owner);
+					AddInitializedCollection(lce.Collection, persister, lce.Id);
+					persister.Cache(lce.Id, lce.Collection, this);
 				}
 
 				loadingCollections.Clear();
@@ -3104,8 +3132,8 @@ namespace NHibernate.Impl
 					return null;
 				}
 				else {
-					lce.initialize = true;
-					return lce.collection;
+					lce.Initialize = true;
+					return lce.Collection;
 				}
 			}
 			else {
