@@ -64,7 +64,6 @@ namespace NHibernate.Driver
 			get { return false;	}
 		}
 
-
 		/// <summary>
 		/// Generates an IDbDataParameter that has values for the Size or Precision/Scale Properties set.
 		/// </summary>
@@ -91,6 +90,7 @@ namespace NHibernate.Driver
 
 			switch( parameter.SqlType.DbType ) 
 			{
+				
 				case DbType.AnsiString:
 				case DbType.AnsiStringFixedLength:
 					pl = parameter as ParameterLength;
@@ -99,13 +99,27 @@ namespace NHibernate.Driver
 
 				case DbType.Binary:
 					pl = parameter as ParameterLength;
-					dbParam.Size = dialect.MaxBinarySize;
+					if( parameter.SqlType is SqlTypes.BinaryBlobSqlType) 
+					{
+						dbParam.Size = dialect.MaxBinaryBlobSize;
+					}
+					else 
+					{
+						dbParam.Size = dialect.MaxBinarySize;
+					}
 					break;
 
 				case DbType.String:
 				case DbType.StringFixedLength:
 					pl = parameter as ParameterLength;
-					dbParam.Size = dialect.MaxStringSize;
+					if( parameter.SqlType is SqlTypes.StringClobSqlType) 
+					{
+						dbParam.Size = dialect.MaxStringClobSize;
+					}
+					else 
+					{
+						dbParam.Size = dialect.MaxStringSize;
+					}
 					break; 
 				case DbType.Decimal:
 					pps = parameter as ParameterPrecisionScale;
