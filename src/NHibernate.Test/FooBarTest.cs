@@ -2472,6 +2472,7 @@ namespace NHibernate.Test
 			}
 			catch (Exception e) 
 			{
+				Assert.IsNotNull(e); //getting ride of 'e' is never used compile warning
 				t.Rollback();
 			}
 			finally 
@@ -2969,6 +2970,7 @@ namespace NHibernate.Test
 			}
 			catch(ObjectDeletedException ode) 
 			{
+				Assert.IsNotNull(ode); //getting ride of 'ode' is never used compile warning
 				err = true;
 			}
 			Assert.IsTrue(err);
@@ -2983,6 +2985,7 @@ namespace NHibernate.Test
 			// ObjectNotFoundException
 			catch(LazyInitializationException lie) 
 			{
+				Assert.IsNotNull(lie); //getting ride of 'lie' is never used compile warning
 				err = true;
 			}
 			Assert.IsTrue(err);
@@ -3000,6 +3003,7 @@ namespace NHibernate.Test
 			}
 			catch(ObjectDeletedException ode) 
 			{
+				Assert.IsNotNull(ode); //getting ride of 'ode' is never used compile warning
 				err = true;
 			}
 

@@ -371,7 +371,7 @@ namespace NHibernate.Test
 				}
 				catch (Exception e) 
 				{
-					Assert.IsTrue( e is Exception, "just getting rid of a compiler warning." );
+					Assert.IsNotNull(e); //getting ride of 'e' is never used compile warning
 				}
 			}
 			s.Delete(m2);
@@ -700,6 +700,7 @@ namespace NHibernate.Test
 			}
 			catch(ObjectNotFoundException onfe) 
 			{
+				Assert.IsNotNull(onfe); //getting ride of 'onfe' is never used compile warning
 				none = true;
 			}
 

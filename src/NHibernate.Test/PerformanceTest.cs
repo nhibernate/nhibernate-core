@@ -170,9 +170,17 @@ namespace NHibernate.Test
 			// the results of this test are highly dependent upon
 			// how many times we flush!
 
+//			t.Commit();
+//
+//			t = s.BeginTransaction();
+//
+//			for(int i = 0; i < N; i++) 
+//			{
+//				s.Delete(simples[i]);
+//			}
 			Assert.IsTrue( s.Delete("from s in class NHibernate.DomainModel.Simple") == N);
 
-			s.Flush();
+			//s.Flush();
 			t.Commit();
 			
 		}

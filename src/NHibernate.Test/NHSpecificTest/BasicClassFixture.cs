@@ -792,6 +792,7 @@ namespace NHibernate.Test.NHSpecificTest
 			catch(ObjectNotFoundException onfe) 
 			{
 				// I expect this to be thrown because the object no longer exists...
+				Assert.IsNotNull(onfe); //getting ride of 'onfe' is never used compile warning
 			}
 
 			IList results =  s.CreateCriteria(typeof(BasicClass))

@@ -100,6 +100,7 @@ namespace NHibernate.Test.NHSpecificTest
 			catch(ObjectNotFoundException onfe) 
 			{
 				// do nothing it was expected
+				Assert.IsNotNull(onfe); //getting ride of 'onfe' is never used compile warning
 			}
 
 			s5.Close();
