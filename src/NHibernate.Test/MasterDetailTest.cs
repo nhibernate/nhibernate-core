@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+
+using NHibernate.DomainModel;
 
 using NUnit.Framework;
 
@@ -16,7 +19,7 @@ namespace NHibernate.Test
 
 		 	ExportSchema(new string[] {  
 										  "MasterDetail.hbm.xml",
-										  "Custom.hbm.xml",
+										  //"Custom.hbm.xml",
 										  "Category.hbm.xml",
 										  "INameable.hbm.xml",
 										  "SingleSeveral.hbm.xml",
@@ -85,9 +88,26 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
 		public void MixNativeAssigned() 
 		{
+			// if HSQLDialect then skip test
+			ISession s = sessions.OpenSession();
+			Category c = new Category();
+			c.Name = "NAME";
+			Assignable assn = new Assignable();
+			assn.Id = "i.d.";
+			IList l = new ArrayList();
+			l.Add(c);
+			assn.Categories = l;
+			c.Assignable = assn;
+			s.Save(assn);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			s.Delete(assn);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
