@@ -38,10 +38,6 @@ namespace NHibernate.Test.MappingExceptions
 			{
 				Assert.AreEqual( "persistent class not found", me.Message );
 			}
-		}
-
-		
-
-		
+		}	
 	}
 }

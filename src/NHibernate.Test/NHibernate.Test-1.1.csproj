@@ -200,6 +200,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SQLLoaderTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TestCase.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -221,6 +226,11 @@
                 />
                 <File
                     RelPath = "CfgTest\ConfigurationFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CfgTest\DefaultNsAssmFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -442,6 +452,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NHSpecificTest\CollectionFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHSpecificTest\GetTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -468,6 +483,11 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\SimpleComponentFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\SimpleFooBarFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
