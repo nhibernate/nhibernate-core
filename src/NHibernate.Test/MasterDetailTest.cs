@@ -114,7 +114,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("HQL bugs - http://jira.nhibernate.org:8080/browse/NH-79")]
 		public void MasterDetail() 
 		{
 			//if( dialect is Dialect.HSQLDialect ) return;
@@ -189,8 +188,6 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			//http://jira.nhibernate.org:8080/browse/NH-79
-			/* 
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
 			list = s.Find("select m, m1.Name from Master m1, Master m left join fetch m.Details where m.Name=m1.Name");
@@ -201,8 +198,6 @@ namespace NHibernate.Test
 			list = s.Find("select m.id from Master m inner join fetch m.Details");
 			t.Commit();
 			s.Close();
-			*/
-
 
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();

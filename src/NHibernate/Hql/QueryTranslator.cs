@@ -531,8 +531,10 @@ namespace NHibernate.Hql
 			else
 			{
 				rtsize = returnTypes.Count;
-				foreach(string entityName in entitiesToFetch)
+				foreach(string entityName in entitiesToFetch) 
+				{
 					returnTypes.Add(entityName);
+				}
 			}
 			
 			int size = returnTypes.Count;
@@ -555,7 +557,7 @@ namespace NHibernate.Hql
 			string scalarSelect = RenderScalarSelect(); //Must be done here because of side-effect! yuck...
 
 			int scalarSize = scalarTypes.Count;
-			hasScalars = scalarTypes.Count!=size;
+			hasScalars = scalarTypes.Count!=rtsize;
 
 			types = new IType[scalarSize];
 			for (int i=0; i<scalarSize; i++ ) 
