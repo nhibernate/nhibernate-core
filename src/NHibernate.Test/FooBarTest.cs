@@ -490,7 +490,7 @@ namespace NHibernate.Test
 			IEnumerator e = enumerable.GetEnumerator();
 			while( e.MoveNext() )
 			{
-				e.Current;
+				object temp = e.Current;
 				count++;
 			}
 
@@ -1543,7 +1543,7 @@ namespace NHibernate.Test
 			b = (BarProxy)s.Load( typeof(Foo), b.Key );
 			string tempKey = b.Key;
 			Assert.IsFalse( NHibernate.IsInitialized(b), "b should have been an unitialized Proxy" );
-			b.BarString;
+			string tempString = b.BarString;
 			Assert.IsTrue( NHibernate.IsInitialized(b), "b should have been an initialized Proxy" );
 			BarProxy b2 = (BarProxy)s.Load( typeof(Bar), tempKey );
 			Qux q2 = (Qux)s.Load( typeof(Qux), q.Key );
@@ -2247,7 +2247,7 @@ namespace NHibernate.Test
 			IEnumerator enumer = s.Enumerable("from g in class NHibernate.DomainModel.Glarch").GetEnumerator();
 			while( enumer.MoveNext() ) 
 			{
-				enumer.Current;
+				object objTemp = enumer.Current;
 			}
 
 			IList list = s.Find("from g in class NHibernate.DomainModel.Glarch");
@@ -2293,7 +2293,7 @@ namespace NHibernate.Test
 			enumer = s.Enumerable("from foo in class NHibernate.DomainModel.Foo").GetEnumerator();
 			while( enumer.MoveNext() ) 
 			{
-				enumer.Current;
+				object objTemp = enumer.Current;
 			}
 
 			list = s.Find("from foo in class NHibernate.DomainModel.Foo");
@@ -2676,7 +2676,7 @@ namespace NHibernate.Test
 			bool ok = false;
 			try 
 			{
-				q.MoreFums.Count;
+				int countMoreFums = q.MoreFums.Count;
 			}
 			catch (LazyInitializationException lie) 
 			{
@@ -2688,7 +2688,7 @@ namespace NHibernate.Test
 			ok = false;
 			try 
 			{
-				q.Fums.Count;
+				int countFums = q.Fums.Count;
 			}
 			catch (LazyInitializationException lie) 
 			{
@@ -2906,7 +2906,7 @@ namespace NHibernate.Test
 
 			s = sessions.OpenSession();
 			one = (One)s.Load( typeof(One), one.Key );
-			one.Manies.Count;
+			int countManies = one.Manies.Count;
 			s.Close();
 
 			s = sessions.OpenSession();
@@ -3291,7 +3291,7 @@ namespace NHibernate.Test
 
 			try 
 			{
-				( (FooProxy)s.Load( typeof(Foo), id )).Boolean;
+				bool proxyBoolean = ( (FooProxy)s.Load( typeof(Foo), id )).Boolean;
 			}
 			// this won't work until Proxies are implemented because now it throws an 
 			// ObjectNotFoundException
