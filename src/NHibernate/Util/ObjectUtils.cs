@@ -60,6 +60,8 @@ namespace NHibernate.Util {
 	/// Summary description for ObjectUtils.
 	/// </summary>
 	public class ObjectUtils {
+
+		private ObjectUtils() {}
 		
 		public static object DefaultIfNull(object obj, object defaultVal) {
 			return (obj != null ? obj : defaultVal);
@@ -87,5 +89,8 @@ namespace NHibernate.Util {
 		}
 
 
+		private class NullClass { }
+		private static object theNull = new NullClass();
+		public static object Null { get { return theNull; } }
 	}
 }

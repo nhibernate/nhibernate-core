@@ -22,7 +22,7 @@ namespace NHibernate.Persister {
 		/// instantiated. Called only once, before any other method.
 		/// </summary>
 		/// <param name="factory"></param>
-		void PostInstatiate(ISessionFactoryImplementor factory);
+		void PostInstantiate(ISessionFactoryImplementor factory);
 
 		/// <summary>
 		/// Returns an object that identifies the space in which identifiers of this class hierarchy
@@ -36,7 +36,7 @@ namespace NHibernate.Persister {
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <returns></returns>
-		object[] GetPropertySpaces(object instance);
+		object[] PropertySpaces { get; }
 
 		/// <summary>
 		/// The persistent class

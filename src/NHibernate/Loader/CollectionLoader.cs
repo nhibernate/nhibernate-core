@@ -37,19 +37,19 @@ namespace NHibernate.Loader {
 			JoinFragment ojf = OuterJoins(associations);
 			Select select = new Select()
 				.SetSelectClause(
-				persister.SelectClauseFragment(alias) +
-				(joins==0 ? StringHelper.EmptyString : ", " + SelectString(associations) )
-				)
+					persister.SelectClauseFragment(alias) +
+					(joins==0 ? StringHelper.EmptyString : ", " + SelectString(associations) )
+					)
 				.SetFromClause ( persister.QualifiedTableName, alias )
 				.SetWhereClause(
-				new ConditionalFragment().SetTableAlias(alias)
-				.SetCondition( persister.KeyColumnNames, "?" )
-				.ToFragmentString() +
-				whereString
+					new ConditionalFragment().SetTableAlias(alias)
+					.SetCondition( persister.KeyColumnNames, "?" )
+					.ToFragmentString() +
+					whereString
 				)
 				.SetOuterJoins(
-				ojf.ToFromFragmentString,
-				ojf.ToWhereFragmentString
+					ojf.ToFromFragmentString,
+					ojf.ToWhereFragmentString
 				);
 			if (persister.HasOrdering) select.SetOrderByClause( persister.GetSQLOrderByString(alias));
 			sql = select.ToStatementString();

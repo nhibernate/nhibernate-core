@@ -60,8 +60,8 @@ namespace NHibernate.Persister {
 
 		private Hashtable idTypesByPropertyPath = new Hashtable();
 		private Hashtable idColumnNamesByPropertyPath = new Hashtable();
-		private Hashtable columnNamesByPropertyPath = new Hashtable();
-		private Hashtable typesByPropertyPath = new Hashtable();
+		protected Hashtable columnNamesByPropertyPath = new Hashtable();
+		protected Hashtable typesByPropertyPath = new Hashtable();
 
 		private string identifierPropertyName;
 		private IType identifierType;
@@ -105,7 +105,7 @@ namespace NHibernate.Persister {
 				.Substring(2); //string leading ", "
 		}
 
-		public string[] ToColumns(string name, string path) {
+		public virtual string[] ToColumns(string name, string path) {
 			string[] cols = null;
 
 			if ( path.Equals(PathExpressionParser.EntityClass) ) {
@@ -604,13 +604,13 @@ namespace NHibernate.Persister {
 		public abstract string QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
 		public abstract string DiscriminatorSQLString { get; }
 		public abstract void Delete(object id, object version, object obj, ISessionImplementor session);
-		public abstract object[] GetPropertySpaces(object instance);
+		public abstract object[] PropertySpaces { get; }
 		public abstract object IdentifierSpace { get; }
 		public abstract void Insert(object id, object[] fields, object obj, ISessionImplementor session);
 		public abstract object Insert(object[] fields, object obj, ISessionImplementor session);
 		public abstract object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session);
 		public abstract void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session);
-		public abstract void PostInstatiate(ISessionFactoryImplementor factory);
+		public abstract void PostInstantiate(ISessionFactoryImplementor factory);
 		public abstract void Update(object id, object[] fields, int[] dirtyFields, object oldVersion, object obj, ISessionImplementor session);
 		public abstract int CountSubclassProperties();
 		public abstract IDiscriminatorType DiscriminatorType { get; }
