@@ -1,3 +1,11 @@
+<!-- 
+	before committing make sure to comment out the DOCTYPE
+	It is in here to get intellisense with XMLSpy.  The
+	HomeEdition is a free download.
+
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "../../support/docbook-dtd/docbookx.dtd">
+-->
 <chapter id="architecture">
 
     <title>Architecture</title>
@@ -63,7 +71,7 @@
         <para>
             Heres some definitions of the objects in the diagrams:
 
-            <variablelist spacing="compact">
+            <variablelist>
                 <varlistentry>
                     <term>SessionFactory (<literal>NHibernate.ISessionFactory</literal>)</term>
                     <listitem>
