@@ -243,6 +243,7 @@ namespace NHibernate.Dialect {
 		}
 
 		public static Dialect GetDialect(IDictionary props) {
+			if (props==null) return GetDialect();
 			string dialectName = (string) props[Cfg.Environment.Dialect];
 			if (dialectName==null) return GetDialect();
 			try {

@@ -1,17 +1,20 @@
-<?xml version="1.0"?>
-
+<?xml version="1.0" ?>
 <project name="NHibernate" default="build" basedir=".">
-
-	<!--<csc target="library" output="bin/nant/NHibernate.exe" debug="true">
+	<csc target="library" output="bin/nant/NHibernate.exe" debug="false">
 		<references>
-			<includes name="nunit.framework.dll" />
-			<includes name="log4net.dll" />
+			<includes name="bin/nunit.framework.dll" />
+			<includes name="bin/log4net.dll" />
+			<includes name="System" />
+			<includes name="System.XML" />
+			<includes name="System.Data" />
+			<includes name="System.Runtime.Remoting" />
 		</references>
 		<sources>
 			<includes name="**/*.cs" />
+			<excludes name="Dialect/*.cs" />
+			<includes name="Dialect/Dialect.cs" />
 		</sources>
-	</csc>-->
-
+	</csc>
 	<csc target="exe" output="bin/nant/hbm2ddl.exe" debug="false">
 		<references>
 			<!--<includes name="bin/nant/NHibernate.dll" />-->
@@ -21,6 +24,4 @@
 			<includes name="Tool/hbm2ddl/SchemaExport.cs" />
 		</sources>
 	</csc>
-
-
 </project>

@@ -75,8 +75,10 @@ namespace NHibernate.Tool.hbm2ddl {
 			foreach(DictionaryEntry de in dialect.DefaultProperties) {
 				props.Add( de.Key, de.Value );
 			}
-			foreach(DictionaryEntry de in connectionProperties) {
-				props.Add( de.Key, de.Value );
+			if (connectionProperties!=null) {
+				foreach(DictionaryEntry de in connectionProperties) {
+					props.Add( de.Key, de.Value );
+				}
 			}
 	
 			try {

@@ -9,7 +9,7 @@ namespace NHibernate.Eg {
 	/// <summary>
 	/// A simple command line application designed to get you started with NHibernate
 	/// </summary>
-	[TestFixture]
+	
 	public class NetworkDemo {
 		private static ISessionFactory sessions;
 		private static Configuration ds;
@@ -26,7 +26,7 @@ namespace NHibernate.Eg {
 
 		}
 
-		[Test]
+		
 		public void StartTest() {
 			NetworkDemo.Main(null);
 		}

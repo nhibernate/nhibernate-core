@@ -27,16 +27,16 @@ namespace NHibernate.Mapping {
 		public Table ReferencedTable {
 			get { return referencedTable; }
 			set {
-				if (referencedTable.PrimaryKey.ColumnSpan != ColumnSpan)
+				if (value.PrimaryKey.ColumnSpan != ColumnSpan)
 					throw new MappingException("Foreign key must have same number of columns as referenced primary key");
 
 				IEnumerator fkCols = ColumnCollection.GetEnumerator();
-				IEnumerator pkCols = referencedTable.PrimaryKey.ColumnCollection.GetEnumerator();
+				IEnumerator pkCols = value.PrimaryKey.ColumnCollection.GetEnumerator();
 
 				while( fkCols.MoveNext() && pkCols.MoveNext() ) {
 					((Column)fkCols.Current).Length = ((Column)pkCols.Current).Length;
 				}
-				this.referencedTable = referencedTable;
+				this.referencedTable = value;
 			}
 		}
 
