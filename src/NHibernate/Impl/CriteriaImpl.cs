@@ -105,7 +105,14 @@ namespace NHibernate.Impl
 
 		public FetchMode GetFetchMode(string path) 
 		{
-			return (FetchMode)fetchModes[path];
+			if (fetchModes.Contains(path))
+			{
+				return (FetchMode)fetchModes[path];
+			}
+			else
+			{
+			    return FetchMode.Default;
+			}
 		}
 
 		public ICriteria SetFetchMode(string associationPath, FetchMode mode)
