@@ -23,7 +23,7 @@ namespace NHibernate.Cfg
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class Environment
+	public sealed class Environment
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
 
@@ -80,6 +80,11 @@ namespace NHibernate.Cfg
 			}
 
 
+		}
+
+		private Environment()
+		{
+			// should not be created.	
 		}
 
 		/// <summary>
