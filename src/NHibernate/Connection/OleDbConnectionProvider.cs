@@ -3,42 +3,57 @@ using System.Data;
 using System.Collections;
 using System.Data.OleDb;
 
-namespace NHibernate.Connection {
-	
+namespace NHibernate.Connection 
+{
 	/// <summary>
-	/// A connection provider for connection to sql server databases
+	/// A connection provider for connection to databases through an OleDb driver.
 	/// </summary>
-	public class OleDbConnectionProvider : IConnectionProvider{
+	/// <remarks>
+	/// Always look for a native .NET DataProvider before using the OleDb DataProvider.
+	/// </remarks>
+	public class OleDbConnectionProvider : ConnectionProvider
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(OleDbConnectionProvider));
-		private string connString = null;
-		
-		public void CloseConnection(IDbConnection conn) {
-			log.Debug("Closing OleDb connection");
-			try {
-				conn.Close();
-			} catch(Exception e) {
-				throw new ADOException("Could not close OleDb connection", e);
-			}
-		}
-		public void Configure(IDictionary settings) {
-			log.Info("Configuring SqlServerConnectionProvider");
-			connString = Cfg.Environment.Properties[ Cfg.Environment.ConnectionString ] as string;
-			if (connString==null) throw new HibernateException("Could not find connection string setting");
-		}
 
-		public IDbConnection GetConnection() {
-			log.Debug("Obtaining SqlConnection");
-			try {
-				IDbConnection conn = new OleDbConnection(connString);
+
+		public override IDbConnection GetConnection() 
+		{
+			log.Debug("Obtaining OleDbConnection");
+			try 
+			{
+				IDbConnection conn = new OleDbConnection(this.ConnectionString);
 				conn.Open();
 				return conn;
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				throw new ADOException("Could not create OleDb connection", e);
 			}
 		}
 
-		public bool IsStatementCache {
+		public override bool IsStatementCache 
+		{
 			get { return false; }
+		}
+
+		public override bool UseNamedPrefixInSql 
+		{
+			get {return false;}
+		}
+
+		public override bool UseNamedPrefixInParameter 
+		{
+			get {return false;}
+		}
+
+		public override string NamedPrefix 	
+		{
+			get {return "";}
+		}
+
+		public override IDbCommand CreateCommand() 
+		{
+			return new OleDbCommand();
 		}
 
 	}

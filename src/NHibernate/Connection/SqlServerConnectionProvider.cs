@@ -3,42 +3,54 @@ using System.Data;
 using System.Collections;
 using System.Data.SqlClient;
 
-namespace NHibernate.Connection {
-	
+namespace NHibernate.Connection 
+{
 	/// <summary>
-	/// A connection provider for connection to sql server databases
+	/// A connection provider for connection to SqlServer databases using the 
+	/// <see cref="System.Data.SqlClient.SqlConnection"/>.
 	/// </summary>
-	public class SqlServerConnectionProvider : IConnectionProvider{
+	public class SqlServerConnectionProvider : ConnectionProvider
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SqlServerConnectionProvider));
-		private string connString = null;
-		
-		public void CloseConnection(IDbConnection conn) {
-			log.Debug("Closing SqlConnection");
-			try {
-				conn.Close();
-			} catch(Exception e) {
-				throw new ADOException("Could not close SqlServer connection", e);
-			}
-		}
-		public void Configure(IDictionary settings) {
-			log.Info("Configuring SqlServerConnectionProvider");
-			connString = Cfg.Environment.Properties[ Cfg.Environment.ConnectionString ] as string;
-			if (connString==null) throw new HibernateException("Could not find connection string setting");
-		}
 
-		public IDbConnection GetConnection() {
+		public override IDbConnection GetConnection() 
+		{
 			log.Debug("Obtaining SqlConnection");
-			try {
-				IDbConnection conn = new SqlConnection(connString);
+			try 
+			{
+				IDbConnection conn = new SqlConnection(this.ConnectionString);
 				conn.Open();
 				return conn;
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				throw new ADOException("Could not create SqlServer connection", e);
 			}
 		}
 
-		public bool IsStatementCache {
+		public override bool IsStatementCache 
+		{
 			get { return false; }
+		}
+
+		public override bool UseNamedPrefixInSql 
+		{
+			get {return true;}
+		}
+
+		public override bool UseNamedPrefixInParameter 
+		{
+			get {return true;}
+		}
+
+		public override string NamedPrefix 	
+		{
+			get {return "@";}
+		}
+
+		public override IDbCommand CreateCommand() 
+		{
+			return new System.Data.SqlClient.SqlCommand();
 		}
 
 	}
