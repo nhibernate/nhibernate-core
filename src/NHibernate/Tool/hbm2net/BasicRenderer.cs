@@ -45,7 +45,7 @@ namespace NHibernate.Tool.hbm2net
 //------------------------------------------------------------------------------
 ",Guid.Empty.GetType().Assembly.ImageRuntimeVersion);
 			genPackageDelaration(savedToPackage, classMapping, mainwriter);
-			mainwriter.WriteLine();
+			mainwriter.WriteLine("{");
 			
 			// switch to another writer to be able to insert the actually
 			// used imports when whole class has been rendered. 
@@ -72,7 +72,7 @@ namespace NHibernate.Tool.hbm2net
 			System.String declarationType = classMapping.DeclarationType;
 			
 			
-			classMapping.addImport(typeof(System.Runtime.Serialization.ISerializable));
+			//classMapping.addImport(typeof(System.Runtime.Serialization.ISerializable));
 			//String modifiers = classMapping.getModifiers();
 			if (classMapping.shouldBeAbstract() && (classScope.IndexOf("abstract") == - 1))
 			{
@@ -202,16 +202,12 @@ namespace NHibernate.Tool.hbm2net
 			if ((fieldTypes & CONSTRAINT) == CONSTRAINT)
 			{
 				writer.WriteLine("    private VetoableChangeSupport " + vetoSupport + " = new VetoableChangeSupport(this);");
-				classMapping.Imports.Add("java.beans.VetoableChangeSupport");
-				classMapping.Imports.Add("java.beans.PropertyVetoException");
-				classMapping.Imports.Add("java.beans.VetoableChangeListener");
+				writer.WriteLine();
 			}
 			if ((fieldTypes & BOUND) == BOUND)
 			{
 				writer.WriteLine("    private PropertyChangeSupport " + changeSupport + " = new PropertyChangeSupport(this);");
 				writer.WriteLine();
-				classMapping.Imports.Add("java.beans.PropertyChangeSupport");
-				classMapping.Imports.Add("java.beans.PropertyChangeListener");
 			}
 		}
 		
@@ -226,12 +222,12 @@ namespace NHibernate.Tool.hbm2net
 			
 			fullCons += javaTool.fieldsAsParameters(allFieldsForFullConstructor, classMapping, class2classmap);
 			
-			writer.WriteLine(fullCons + ") {");
+			writer.Write(fullCons + ")");
 			//invoke super to initialize superclass...
 			SupportClass.ListCollectionSupport supersConstructorFields = classMapping.FieldsForSupersFullConstructor;
 			if (!(supersConstructorFields.Count == 0))
 			{
-				writer.Write("        super(");
+				writer.Write(" : base(");
 				bool first = true;
 				for (System.Collections.IEnumerator fields = supersConstructorFields.GetEnumerator(); fields.MoveNext(); )
 				{
@@ -243,8 +239,10 @@ namespace NHibernate.Tool.hbm2net
 					FieldProperty field = (FieldProperty) fields.Current;
 					writer.Write(field.FieldName);
 				}
-				writer.WriteLine(");");
+				writer.Write(")");
 			}
+			writer.WriteLine();
+			writer.WriteLine("    {");
 			
 			// initialisation of localfields
 			for (System.Collections.IEnumerator fields = classMapping.LocalFieldsForFullConstructor.GetEnumerator(); fields.MoveNext(); )
@@ -287,12 +285,12 @@ namespace NHibernate.Tool.hbm2net
 					minCons = minCons + JavaTool.shortenType(JavaTool.getTrueTypeName(field, class2classmap), classMapping.Imports) + " " + field.FieldName;
 				}
 				
-				writer.WriteLine(minCons + ") {");
+				writer.Write(minCons + ")");
 				// invoke super to initialize superclass...
 				SupportClass.ListCollectionSupport supersMinConstructorFields = classMapping.FieldsForSupersMinimalConstructor;
 				if (!(supersMinConstructorFields.Count == 0))
 				{
-					writer.Write("      super(");
+					writer.Write(" : base(");
 					bool first2 = true;
 					for (System.Collections.IEnumerator fields = supersMinConstructorFields.GetEnumerator(); fields.MoveNext(); )
 					{
@@ -304,9 +302,11 @@ namespace NHibernate.Tool.hbm2net
 						FieldProperty field = (FieldProperty) fields.Current;
 						writer.Write(field.FieldName);
 					}
-					writer.WriteLine(");");
+					writer.Write(")");
 				}
-				
+				writer.WriteLine();
+				writer.WriteLine("    {");
+
 				// initialisation of localfields
 				for (System.Collections.IEnumerator fields = classMapping.LocalFieldsForMinimalConstructor.GetEnumerator(); fields.MoveNext(); )
 				{
@@ -345,9 +345,9 @@ namespace NHibernate.Tool.hbm2net
 				if (field.GeneratedAsProperty)
 				{
 					System.String fieldScope = getFieldScope(field, "scope-field", "private");
-					writer.WriteLine("    /** " + (field.Nullable && !field.Identifier?"nullable ":string.Empty) + (field.Identifier?"identifier":"persistent") + " field */");
+					writer.WriteLine("    /// <summary>\n    /// Holder for " + (field.Nullable && !field.Identifier?"nullable ":string.Empty) + (field.Identifier?"identifier":"persistent") + " field " + field.FieldName + "\n    /// </summary>");
 					
-					writer.Write("    " + fieldScope + " " + JavaTool.shortenType(JavaTool.getTrueTypeName(field, class2classmap), imports) + ' ' + field.FieldName);
+					writer.Write("    " + fieldScope + " " + field.FullyQualifiedTypeName + " " + field.FieldName);
 					
 					if (field.getMeta("default-value") != null)
 					{
@@ -363,13 +363,9 @@ namespace NHibernate.Tool.hbm2net
 		{
 			if (classMapping.mustImplementEquals())
 			{
-				classMapping.Imports.Add("org.apache.commons.lang.builder.EqualsBuilder");
-				classMapping.Imports.Add("org.apache.commons.lang.builder.HashCodeBuilder");
-				writer.WriteLine("    public boolean equals(Object other) {");
-				writer.WriteLine("        if ( (other == other ) ) return true;"); // == identity
-				writer.WriteLine("        if ( !(other instanceof " + savedToClass + ") ) return false;"); // same class ?
-				writer.WriteLine("        " + savedToClass + " castOther = (" + savedToClass + ") other;");
-				writer.WriteLine("        return new EqualsBuilder()");
+				writer.WriteLine("    public override bool Equals(object obj) {");
+				writer.WriteLine("        " + savedToClass + " castObj = (" + savedToClass + ") obj;");
+				writer.Write("        return (castObj != null) ");
 				int usedFields = 0;
 				SupportClass.ListCollectionSupport idFields = new SupportClass.ListCollectionSupport();
 				for (System.Collections.IEnumerator fields = classMapping.Fields.GetEnumerator(); fields.MoveNext(); )
@@ -377,7 +373,7 @@ namespace NHibernate.Tool.hbm2net
 					FieldProperty field = (FieldProperty) fields.Current;
 					if (field.getMetaAsBool("use-in-equals"))
 					{
-						writer.WriteLine("            .append(this." + field.GetterSignature + ", castOther." + field.GetterSignature + StringHelper.ClosedParen);
+						writer.Write(" &&\n            (this." + field.FieldName + " == castObj." + field.FieldName + ")");
 						usedFields++;
 					}
 					if (field.Identifier)
@@ -391,22 +387,22 @@ namespace NHibernate.Tool.hbm2net
 					for (System.Collections.IEnumerator fields = idFields.GetEnumerator(); fields.MoveNext(); )
 					{
 						FieldProperty field = (FieldProperty) fields.Current;
-						writer.WriteLine("            .append(this." + field.GetterSignature + ", castOther." + field.GetterSignature + StringHelper.ClosedParen);
+						writer.Write(" &&\n            (this." + field.FieldName + " == castObj." + field.FieldName + ")");
 					}
 				}
-				writer.WriteLine("            .isEquals();");
+				writer.WriteLine(";");
 				writer.WriteLine("    }");
 				writer.WriteLine();
 				
-				writer.WriteLine("    public int hashCode() {");
-				writer.WriteLine("        return new HashCodeBuilder()");
+				writer.WriteLine("    public override int GetHashCode() {");
+				writer.Write("        return");
 				
 				for (System.Collections.IEnumerator fields = classMapping.Fields.GetEnumerator(); fields.MoveNext(); )
 				{
 					FieldProperty field = (FieldProperty) fields.Current;
 					if (field.getMetaAsBool("use-in-equals"))
 					{
-						writer.WriteLine("            .append(" + field.GetterSignature + StringHelper.ClosedParen);
+						writer.Write("\n            " + field.FieldName + ".GetHashCode() ^");
 					}
 				}
 				if (usedFields == 0)
@@ -414,11 +410,11 @@ namespace NHibernate.Tool.hbm2net
 					for (System.Collections.IEnumerator fields = idFields.GetEnumerator(); fields.MoveNext(); )
 					{
 						FieldProperty field = (FieldProperty) fields.Current;
-						writer.WriteLine("            .append(" + field.GetterSignature + StringHelper.ClosedParen);
+						writer.Write("\n            " + field.FieldName + ".GetHashCode() ^");
 					}
 				}
 				
-				writer.WriteLine("            .toHashCode();");
+				writer.WriteLine(" 0;");
 				writer.WriteLine("    }");
 				writer.WriteLine();
 			}
@@ -426,24 +422,23 @@ namespace NHibernate.Tool.hbm2net
 		
 		public virtual void  doToString(ClassMapping classMapping, System.IO.StringWriter writer)
 		{
-			
-			classMapping.addImport("org.apache.commons.lang.builder.ToStringBuilder");
-			writer.WriteLine("    public String toString() {");
-			writer.WriteLine("        return new ToStringBuilder(this)");
+			writer.WriteLine("    public override string ToString()");
+			writer.WriteLine("    {");
+			writer.WriteLine("        return new System.Text.StringBuilder()");
 			for (System.Collections.IEnumerator fields = classMapping.AllFields.GetEnumerator(); fields.MoveNext(); )
 			{
 				FieldProperty field = (FieldProperty) fields.Current;
 				// If nothing is stated about id then include it in toString()
 				if (field.Identifier && field.getMeta("use-in-tostring") == null)
 				{
-					writer.WriteLine("            .append(\"" + field.FieldName + "\", " + field.GetterSignature + ")");
+					writer.WriteLine("            .AppendFormat(\"{0}={{0}};\", {0})", field.FieldName);
 				}
 				else if (field.getMetaAsBool("use-in-tostring"))
 				{
-					writer.WriteLine("            .append(\"" + field.FieldName + "\", " + field.GetterSignature + ")");
+					writer.WriteLine("            .AppendFormat(\"{0}={{0}};\", {0})", field.FieldName);
 				}
 			}
-			writer.WriteLine("            .toString();");
+			writer.WriteLine("            .ToString();");
 			writer.WriteLine("    }");
 			writer.WriteLine();
 		}
@@ -480,18 +475,20 @@ namespace NHibernate.Tool.hbm2net
 					{
 						writer.WriteLine("    /** \n" + javaTool.toJavaDoc(field.getMetaAsString("field-description"), 4) + "     */");
 					}
-					writer.Write("    " + getAccessScope + " " + JavaTool.shortenType(JavaTool.getTrueTypeName(field, class2classmap), classMapping.Imports) + " " + field.GetterSignature);
+					writer.Write("    " + getAccessScope + " " + field.FullyQualifiedTypeName + " " + field.FieldName);
 					if (classMapping.Interface)
 					{
 						writer.WriteLine(";");
 					}
 					else
 					{
-						writer.WriteLine(" {");
-						writer.WriteLine("        return this." + field.FieldName + ";");
-						writer.WriteLine("    }");
+						writer.WriteLine();
+						writer.WriteLine("    {");
+						writer.WriteLine("        get");
+						writer.WriteLine("        {");
+						writer.WriteLine("            return this." + field.FieldName + ";");
+						writer.WriteLine("        }");
 					}
-					writer.WriteLine();
 					
 					// setter
 					int fieldType = 0;
@@ -510,7 +507,7 @@ namespace NHibernate.Tool.hbm2net
 						}
 					}
 					System.String setAccessScope = getFieldScope(field, "scope-set", "public");
-					writer.Write("    " + setAccessScope + " void set" + field.AccessorName + StringHelper.OpenParen + JavaTool.shortenType(JavaTool.getTrueTypeName(field, class2classmap), classMapping.Imports) + " " + field.FieldName + ")");
+					writer.Write("        set");
 					writer.Write((fieldType & CONSTRAINT) == CONSTRAINT?" throws PropertyVetoException ":"");
 					if (classMapping.Interface)
 					{
@@ -518,28 +515,30 @@ namespace NHibernate.Tool.hbm2net
 					}
 					else
 					{
-						writer.WriteLine(" {");
+						writer.WriteLine();
+						writer.WriteLine("        {");
 						if ((fieldType & CONSTRAINT) == CONSTRAINT || (fieldType & BOUND) == BOUND)
 						{
-							writer.WriteLine("        Object oldValue = " + getFieldAsObject(true, field) + ";");
+							writer.WriteLine("            Object oldValue = " + getFieldAsObject(true, field) + ";");
 						}
 						if ((fieldType & CONSTRAINT) == CONSTRAINT)
 						{
 							
-							writer.WriteLine("        " + vetoSupport + ".fireVetoableChange(\"" + field.FieldName + "\",");
-							writer.WriteLine("                oldValue,");
-							writer.WriteLine("                " + getFieldAsObject(false, field) + ");");
+							writer.WriteLine("            " + vetoSupport + ".fireVetoableChange(\"" + field.FieldName + "\",");
+							writer.WriteLine("                    oldValue,");
+							writer.WriteLine("                    " + getFieldAsObject(false, field) + ");");
 						}
 						
-						writer.WriteLine("        this." + field.FieldName + " = " + field.FieldName + ";");
+						writer.WriteLine("            this." + field.FieldName + " = value;");
 						if ((fieldType & BOUND) == BOUND)
 						{
-							writer.WriteLine("        " + changeSupport + ".firePropertyChange(\"" + field.FieldName + "\",");
-							writer.WriteLine("                oldValue,");
-							writer.WriteLine("                " + getFieldAsObject(false, field) + ");");
+							writer.WriteLine("            " + changeSupport + ".firePropertyChange(\"" + field.FieldName + "\",");
+							writer.WriteLine("                    oldValue,");
+							writer.WriteLine("                    " + getFieldAsObject(false, field) + ");");
 						}
-						writer.WriteLine("    }");
+						writer.WriteLine("        }");
 					}
+					writer.WriteLine("    }");
 					writer.WriteLine();
 					
 					// add/remove'rs (commented out for now)

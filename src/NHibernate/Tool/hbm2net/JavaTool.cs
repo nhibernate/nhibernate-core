@@ -189,7 +189,7 @@ namespace NHibernate.Tool.hbm2net
 		
 		public virtual bool hasImplements(ClassMapping cmap)
 		{
-			return (System.Object) getImplements(cmap) != null;
+			return (System.Object) getImplements(cmap) != string.Empty;
 		}
 		
 		public virtual System.String getImplements(ClassMapping cmap)
