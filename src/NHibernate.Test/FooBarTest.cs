@@ -794,9 +794,33 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void CompositeKeyPathExpressions() 
 		{
+			ISession s = sessions.OpenSession();
+
+			string hql = "select fum1.Fo from fum1 in class Fum where fum1.Fo.FumString is not null";
+			s.Find(hql);
+			
+			hql = "from fum1 in class Fum where fum1.Fo.FumString is not null order by fum1.Fo.FumString";
+			s.Find(hql);
+			// TODO: in h2.0.3 there is also HQSLDialect, MckoiDialect, and PointbaseDialect
+			if(!(dialect is Dialect.MySQLDialect)) 
+			{
+				hql = "from fum1 in class Fum where exists elements(fum1.Friends)";
+				s.Find(hql);
+
+				hql = "from fum1 in class Fum where size(fum1.Friends) = 0";
+				s.Find(hql);
+			}
+
+			hql = "select fum1.Friends.elements from fum1 in class Fum";
+			s.Find(hql);
+
+			hql = "from fum1 in class Fum, fr in elements( fum1.Friends )";
+			s.Find(hql);
+
+			s.Close();
+
 		}
 
 		[Test]

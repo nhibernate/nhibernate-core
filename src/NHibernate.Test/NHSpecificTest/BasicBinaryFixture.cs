@@ -40,8 +40,8 @@ namespace NHibernate.Test.NHSpecificTest
 			BasicBinary bcBinaryLoaded = (BasicBinary)s.Load(typeof(BasicBinary), 1);
 
 			Assert.IsNotNull(bcBinaryLoaded);
-			Assert.AreEqual(null, bcBinary.DefaultSize, "A property mapped as type=\"Byte[]\" with a null byte[] value was not saved & loaded as null");
-			Assert.AreEqual(null, bcBinary.WithSize, "A property mapped as type=\"Byte[](length)\" with null byte[] value was not saved & loaded as null");
+			Assert.AreEqual(null, bcBinaryLoaded.DefaultSize, "A property mapped as type=\"Byte[]\" with a null byte[] value was not saved & loaded as null");
+			Assert.AreEqual(null, bcBinaryLoaded.WithSize, "A property mapped as type=\"Byte[](length)\" with null byte[] value was not saved & loaded as null");
 
 			s.Delete(bcBinaryLoaded);
 			s.Flush();
@@ -66,8 +66,8 @@ namespace NHibernate.Test.NHSpecificTest
 			BasicBinary bcBinaryLoaded = (BasicBinary)s.Load(typeof(BasicBinary), 1);
 
 			Assert.IsNotNull(bcBinaryLoaded);
-			Assert.AreEqual(0, bcBinary.DefaultSize.Length, "A property mapped as type=\"Byte[]\" with a byte[0] value was not saved & loaded as byte[0]");
-			Assert.AreEqual(0, bcBinary.WithSize.Length, "A property mapped as type=\"Byte[](length)\" with a byte[0] value was not saved & loaded as byte[0]");
+			Assert.AreEqual(0, bcBinaryLoaded.DefaultSize.Length, "A property mapped as type=\"Byte[]\" with a byte[0] value was not saved & loaded as byte[0]");
+			Assert.AreEqual(0, bcBinaryLoaded.WithSize.Length, "A property mapped as type=\"Byte[](length)\" with a byte[0] value was not saved & loaded as byte[0]");
 
 			s.Delete(bcBinaryLoaded);
 			s.Flush();
