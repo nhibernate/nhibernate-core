@@ -12,7 +12,7 @@ namespace NHibernate.SqlCommand
 	public sealed class Template
 	{
 		/// <summary></summary>
-		public const string PlaceHolder = "$PlaceHolder";
+		public const string Placeholder = "$PlaceHolder";
 
 		private static ISet Keywords = new HashedSet();
 		private static ArrayList delimiterList = new ArrayList( 13 );
@@ -145,7 +145,7 @@ namespace NHibernate.SqlCommand
 					}
 					else if( isIdentifier && ( nextToken == null || !nextToken.Equals( "(" ) ) ) // not a function call
 					{
-						result.Append( PlaceHolder )
+						result.Append( Placeholder )
 							.Append( StringHelper.Dot )
 							.Append( Quote( token, dialect ) );
 
@@ -191,7 +191,7 @@ namespace NHibernate.SqlCommand
 				}
 				commaNeeded = true;
 
-				result.Append( PlaceHolder )
+				result.Append( Placeholder )
 					.Append( StringHelper.Dot )
 					.Append( column );
 			}

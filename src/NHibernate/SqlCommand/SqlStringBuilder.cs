@@ -94,22 +94,27 @@ namespace NHibernate.SqlCommand
 		/// <exception cref="ArgumentException">Thrown when the part is not a Parameter, String, or SqlString.</exception>
 		public SqlStringBuilder AddObject( object part )
 		{
-			if( part is Parameter )
+			Parameter paramPart = part as Parameter;
+			if( paramPart!=null )
 			{
-				return this.Add( ( Parameter ) part );
+				return this.Add( paramPart ); // EARLY EXIT
 			}
-			else if( part is String )
+
+			string stringPart = part as String;
+			if( stringPart!=null )
 			{
-				return this.Add( ( String ) part );
+				return this.Add( stringPart );
 			}
-			else if( part is SqlString )
+			
+			SqlString sqlPart = part as SqlString;
+			if( sqlPart!=null )
 			{
-				return this.Add( ( SqlString ) part, null, null, null );
+				return this.Add( sqlPart, null, null, null );
 			}
-			else
-			{
-				throw new ArgumentException( "Part was not a Parameter, String, or SqlString." );
-			}
+
+			// remarks - we should not get to here - this is a problem with the 
+			// SQL being generated.
+			throw new ArgumentException( "Part was not a Parameter, String, or SqlString." );
 		}
 
 		/// <summary>
