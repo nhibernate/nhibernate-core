@@ -641,7 +641,7 @@ namespace NHibernate.tool.hbm2net
 			}
 			
 			// collections
-			doCollections(classPackage, classElement, "list", "System.Collections.ICollection", "System.Collections.ArrayList", MetaAttribs);
+			doCollections(classPackage, classElement, "list", "System.Collections.IList", "System.Collections.ArrayList", MetaAttribs);
 			doCollections(classPackage, classElement, "map", "System.Collections.IDictionary", "System.Collections.Hashtable", MetaAttribs);
 			doCollections(classPackage, classElement, "set", "System.Collections.IDictionary", "System.Collections.Hashtable", MetaAttribs);
 			//UPGRADE_ISSUE: Method 'java.lang.System.getProperty' was not converted. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1000_javalangSystemgetProperty_javalangString_javalangString"'
@@ -749,11 +749,13 @@ namespace NHibernate.tool.hbm2net
 			{
 				if (className.Array)
 				{
-					imports.Add(className.FullyQualifiedName.Substring(0, (className.FullyQualifiedName.Length - 2) - (0))); // remove []
+					//TODO: fix imports
+					//imports.Add(className.FullyQualifiedName.Substring(0, (className.FullyQualifiedName.Length - 2) - (0))); // remove []
 				}
 				else
 				{
-					imports.Add(className.FullyQualifiedName);
+					//TODO: fix imports
+					//imports.Add(className.FullyQualifiedName);
 				}
 			}
 		}

@@ -136,8 +136,9 @@ namespace NHibernate.tool.hbm2net
 				System.String[] lines = string_Renamed.Split('\n', '\r', '\f');
 				for (int i = 0; i < lines.Length; i++)
 				{
-					System.String docline = " * " + lines[i] + "\n";
-					//result.Append(StringUtils.leftPad(docline, docline.Length + indent));
+					System.String docline = "///" + lines[i] + "\n";
+					for(int j = 0;j < indent;j++)
+						docline = docline.Insert(0," ");
 					result.Append(docline);
 				}
 			}

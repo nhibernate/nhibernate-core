@@ -14,7 +14,7 @@ ${javaTool.getPackageDeclaration($clazz)}
 
 #if($clazz.hasMeta("class-description"))
  /// <summary>
- /// $javaTool.toJavaDoc($clazz.getMetaAsString("class-description"),0)
+ $javaTool.toJavaDoc($clazz.getMetaAsString("class-description"),0)
  /// </summary>
 #else
  /// <summary>
@@ -41,7 +41,7 @@ $clazz.modifiers $clazz.scope $clazz.declarationType $clazz.generatedName#if(($j
 	#region Constructors
 	#if($clazz.AllFieldsForFullConstructor().size()>0)
 	/// <summary>
-	/// Constructor for class ${clazz.generatedName}
+	/// Default constructor for class ${clazz.generatedName}
 	/// </summary>
     public ${clazz.generatedName}() {
     }
@@ -50,37 +50,44 @@ $clazz.modifiers $clazz.scope $clazz.declarationType $clazz.generatedName#if(($j
 	/// <summary>
 	/// Constructor for class ${clazz.generatedName}
 	/// </summary>
-#foreach($field in $clazz.FieldsForSupersFullConstructor())  
-	/// <param name="{$field.fieldName}">Initial ${field.fieldName} value</param>
+#foreach($field in $clazz.AllFieldsForFullConstructor())  
+	/// <param name="${field.fieldName}">Initial ${field.fieldName} value</param>
 #end
 	public ${clazz.generatedName}($javaTool.fieldsAsParameters($clazz.AllFieldsForFullConstructor(),$clazz,$class2classmap))
 #if(!$clazz.FieldsForSupersFullConstructor().isEmpty()) 
 	    : base($javaTool.fieldsAsArguments($clazz.FieldsForSupersFullConstructor(),$clazz,$class2classmap));	    
 #end
-    {
+	{
 #foreach($field in $clazz.LocalFieldsForFullConstructor())  
         this.$field.fieldName = $field.fieldName;
 #end
-    }
+	}
 	
-	#if(($clazz.AllFieldsForFullConstructor().size() > 0) && $clazz.needsMinimalConstructor())
-	/** minimal constructor */
-    public ${clazz.generatedName}($javaTool.fieldsAsParameters($clazz.AllFieldsForMinimalConstructor(),$clazz,$class2classmap)) {
-	#if(!${clazz.FieldsForSupersMinimalConstructor().isEmpty()}) 
+#if(($clazz.AllFieldsForFullConstructor().size() > 0) && $clazz.needsMinimalConstructor())
+	/// <summary>
+	/// Minimal constructor for class ${clazz.generatedName}
+	/// </summary>
+	public ${clazz.generatedName}($javaTool.fieldsAsParameters($clazz.AllFieldsForMinimalConstructor(),$clazz,$class2classmap)) {
+#if(!${clazz.FieldsForSupersMinimalConstructor().isEmpty()}) 
 	    super($javaTool.fieldsAsArguments($clazz.FieldsForSupersMinimalConstructor(),$clazz,$class2classmap));	    
-    #end
-    #foreach($field in $clazz.LocalFieldsForMinimalConstructor())  
+#end
+#foreach($field in $clazz.LocalFieldsForMinimalConstructor())  
         this.$field.fieldName = $field.fieldName;
-    #end
+#end
 	}     
-    #end
+#end
 	#endregion
 	
 	#region Properties
 #foreach($field in $clazz.Fields())
 #if($property.hasMeta("field-description"))
-	/**
-	$javaTool.toJavaDoc($clazz.getMetaAsString("field-description"),4) */
+	///
+	$javaTool.toJavaDoc($clazz.getMetaAsString("field-description"),4)
+	///
+#else
+	/// <summary>
+	/// Get/set for ${field.fieldName}
+	/// </summary>
 #end
     $field.PropertyGetScope() ${javaTool.getTrueTypeName($field, $class2classmap)} $field.fieldName
     {
@@ -98,15 +105,23 @@ $clazz.modifiers $clazz.scope $clazz.declarationType $clazz.generatedName#if(($j
 	#endregion    
 #else ## if !interface
 	#region Properties
-	#foreach($field in $clazz.getFields())
-	#if($property.hasMeta("field-description"))
-	/**
-	$javaTool.toJavaDoc($clazz.getMetaAsString("field-description"),4) */
-	#end
-	$field.PropertyGetScope() ${javaTool.getTrueTypeName($field, $class2classmap)} $field.GetterSignature();
+#foreach($field in $clazz.getFields())
+#if($property.hasMeta("field-description"))
+	///
+	$javaTool.toJavaDoc($clazz.getMetaAsString("field-description"),4)
+	///
+#else
+	/// <summary>
+	/// Get/set for ${field.fieldName}
+	/// </summary>
+#end
+    $field.PropertyGetScope() ${javaTool.getTrueTypeName($field, $class2classmap)} $field.fieldName
+    {
+		get;
+		set;
+	}
 	
-	$field.PropertySetScope() void set$field.AccessorName()($javaTool.getTrueTypeName($field, $class2classmap) $field.FieldName());
-	#end
+#end
 	#endregion
 #end
  }
