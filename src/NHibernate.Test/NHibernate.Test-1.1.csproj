@@ -186,11 +186,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ODMGTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "ParentChildTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

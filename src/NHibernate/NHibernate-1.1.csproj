@@ -410,11 +410,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collection\ODMGCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Collection\PersistentCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1043,16 +1038,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "JCollections\HashSet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "JCollections\ISet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Loader\AbstractEntityLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1264,31 +1249,6 @@
                 />
                 <File
                     RelPath = "Metadata\ICollectionMetadata.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Odmg\IDCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Odmg\IDSet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Odmg\ODMGException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Odmg\QueryException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Odmg\QueryInvalidException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

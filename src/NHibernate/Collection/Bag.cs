@@ -14,7 +14,7 @@ namespace NHibernate.Collection
 	/// so NHibernate follows this practice.
 	/// </summary>
 	[Serializable]
-	public class Bag : ODMGCollection, IList
+	public class Bag : PersistentCollection, IList
 	{
 		private IList bag;
 		// used to hold the Identifiers of the Elements that will later

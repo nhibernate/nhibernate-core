@@ -24,7 +24,7 @@ namespace NHibernate.Collection
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class IdentifierBag : ODMGCollection, IList
+	public class IdentifierBag : PersistentCollection, IList
 	{
 		private IList values;
 		private IList valuesIdentifiers;

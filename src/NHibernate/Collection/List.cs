@@ -11,7 +11,7 @@ namespace NHibernate.Collection
 	/// A persistent wrapper for an IList
 	/// </summary>
 	[Serializable]
-	public class List : ODMGCollection , IList 
+	public class List : PersistentCollection, IList 
 	{
 		private IList list;
 

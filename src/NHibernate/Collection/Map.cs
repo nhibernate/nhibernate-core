@@ -11,7 +11,8 @@ namespace NHibernate.Collection
 	/// is a <see cref="Hashtable" />.
 	/// </summary>
 	[Serializable]
-	public class Map : PersistentCollection, IDictionary {
+	public class Map : PersistentCollection, IDictionary 
+	{
 		
 		protected IDictionary map;
 		protected IDictionary mapIdentifiers;
