@@ -3620,23 +3620,34 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="values"></param>
 		/// <param name="types"></param>
-		private void EvictCollections(Object[] values, IType[] types) { 
-			for ( int i=0; i<types.Length; i++ ) { 
-				if ( types[i].IsPersistentCollectionType ) { 
+		private void EvictCollections(Object[] values, IType[] types) 
+		{ 
+			for ( int i=0; i<types.Length; i++ ) 
+			{ 
+				if( values[i]==null) 
+				{
+					// do nothing
+				}
+				else if ( types[i].IsPersistentCollectionType ) 
+				{ 
 					object pc=null; 
-					if ( ( (PersistentCollectionType) types[i] ).IsArrayType ) { 
+					if ( ( (PersistentCollectionType) types[i] ).IsArrayType ) 
+					{ 
 						pc = arrayHolders[ values[i] ];
 						arrayHolders.Remove( values[i] ); 
 					} 
-					else if ( values[i] is PersistentCollection ) { 
+					else if ( values[i] is PersistentCollection ) 
+					{ 
 						pc = values[i]; 
 					} 
 
-					if (pc!=null) { 
+					if (pc!=null) 
+					{ 
 						if ( ( (PersistentCollection) pc ).UnsetSession(this) ) collections.Remove(pc); 
 					} 
 				} 
-				else if ( types[i].IsComponentType ) { 
+				else if ( types[i].IsComponentType ) 
+				{ 
 					IAbstractComponentType actype = (IAbstractComponentType) types[i]; 
 					EvictCollections( 
 						actype.GetPropertyValues( values[i], this ), 
