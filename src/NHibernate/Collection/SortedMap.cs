@@ -23,7 +23,7 @@ namespace NHibernate.Collection
 
 		protected override object Snapshot(CollectionPersister persister) 
 		{
-			SortedList clonedMap = new SortedList(comparer, map.Count);
+			SortedList clonedMap = new SortedList(comparer);
 			foreach(DictionaryEntry de in map) 
 			{
 				object copy = persister.ElementType.DeepCopy(de.Value);
@@ -38,9 +38,27 @@ namespace NHibernate.Collection
 			get { return comparer; }
 		}
 
-
-		public SortedMap(ISessionImplementor session, CollectionPersister persister, IComparer comparer, object disassembled, object owner)  : this(session, comparer)
+		/// <summary>
+		/// Create an Uninitialized SortedMap.
+		/// </summary>
+		/// <param name="session">The ISession the Map should be a part of.</param>
+		public SortedMap(ISessionImplementor session)
+			: base(session) 
 		{
+		}
+
+		/// <summary>
+		/// Create an Initialized SortedMap from its disassembled state.
+		/// </summary>
+		/// <param name="session">The ISession the Map should be a part of.</param>
+		/// <param name="persister">The CollectionPersister to use to reassemble the Map.</param>
+		/// <param name="comparer">The IComparer to perform the sorting.</param>
+		/// <param name="disassembled">The disassembled Map.</param>
+		/// <param name="owner">The owner object.</param>
+		public SortedMap(ISessionImplementor session, CollectionPersister persister, IComparer comparer, object disassembled, object owner)  
+			: base(session)
+		{
+			this.comparer = comparer;
 			BeforeInitialize(persister);
 			object[] array = (object[])disassembled;
 			
@@ -57,22 +75,24 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Constuct a new empty SortedMap that uses a IComparer to perform the sorting.
+		/// Constuct an uninitialized SortedMap that uses an IComparer to perform the sorting.
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="comparer">The IComparer to user for Sorting.</param>
-		public SortedMap(ISessionImplementor session, IComparer comparer) : base(session, new SortedList(comparer))
+		public SortedMap(ISessionImplementor session, IComparer comparer) 
+			: base(session)
 		{
 			this.comparer = comparer;
 		}
 
 		/// <summary>
-		/// Construct a new SortedMap initialized with the map values.
+		/// Construct an initialized SortedMap based off the values from the existing IDictionary.
 		/// </summary>
-		/// <param name="session">The Session to be bound to.</param>
-		/// <param name="map">The initial values.</param>
+		/// <param name="session">The ISession the SortedMap should be a part of.</param>
+		/// <param name="map">The IDictionary that contains the initial values.</param>
 		/// <param name="comparer">The IComparer to use for Sorting.</param>
-		public SortedMap(ISessionImplementor session, IDictionary map, IComparer comparer) : base(session, new SortedList(map, comparer)) 
+		public SortedMap(ISessionImplementor session, IDictionary map, IComparer comparer) 
+			: base(session, new SortedList(map, comparer)) 
 		{
 			this.comparer = comparer;
 		}

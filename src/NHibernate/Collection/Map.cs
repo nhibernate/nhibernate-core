@@ -38,8 +38,19 @@ namespace NHibernate.Collection {
 			return true;
 		}
 
+		/// <summary>
+		/// Construct an uninitialized Map.
+		/// </summary>
+		/// <param name="session">The ISession the Map should be a part of.</param>
 		public Map(ISessionImplementor session) : base(session) { }
 		
+		/// <summary>
+		/// Construct an initialized Map from its disassembled state.
+		/// </summary>
+		/// <param name="session">The ISession the Map should be a part of.</param>
+		/// <param name="persister">The CollectionPersister to use to reassemble the Map.</param>
+		/// <param name="disassembled">The disassembled Map.</param>
+		/// <param name="owner">The owner object.</param>
 		public Map(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) : base(session) {
 			BeforeInitialize(persister);
 			object[] array = (object[]) disassembled;
@@ -49,7 +60,21 @@ namespace NHibernate.Collection {
 			initialized = true;
 		}
 
-		public override void BeforeInitialize(CollectionPersister persister) {
+		/// <summary>
+		/// Construct an initialized Map based off the values from the existing IDictionary.
+		/// </summary>
+		/// <param name="session">The ISession the Map should be a part of.</param>
+		/// <param name="map">The IDictionary that contains the initial values.</param>
+		public Map(ISessionImplementor session, IDictionary map) : base(session) 
+		{
+			this.map = map;
+			initialized = true;
+			directlyAccessible = true;
+		}
+
+		
+		public override void BeforeInitialize(CollectionPersister persister) 
+		{
 			
 			if(persister.HasOrdering) 
 			{
@@ -64,12 +89,6 @@ namespace NHibernate.Collection {
 				this.map = new Hashtable();
 				this.mapIdentifiers = new Hashtable();
 			}
-		}
-
-		public Map(ISessionImplementor session, IDictionary map) : base(session) {
-			this.map = map;
-			initialized = true;
-			directlyAccessible = true;
 		}
 
 		public int Count {
