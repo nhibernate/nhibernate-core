@@ -145,7 +145,7 @@ namespace NHibernate.Impl {
 			return this;
 		}
 		public IQuery SetEntity(int position, object val) {
-			SetParameter(position, val, NHibernate.Association( HibernateProxyHelper.GetClass(val)));
+			SetParameter(position, val, NHibernate.Entity( HibernateProxyHelper.GetClass(val)));
 			return this;
 		}
 		public IQuery SetEnum(int position, System.Enum val) {
@@ -212,7 +212,7 @@ namespace NHibernate.Impl {
 			return this;
 		}
 		public IQuery SetEntity(string name, object val) {
-			SetParameter(name, val, NHibernate.Association( HibernateProxyHelper.GetClass( val ) ) );
+			SetParameter(name, val, NHibernate.Entity( HibernateProxyHelper.GetClass( val ) ) );
 			return this;
 		}
 		public IQuery SetEnum(string name, System.Enum val) {
@@ -250,7 +250,7 @@ namespace NHibernate.Impl {
 						throw new HibernateException("Could not determine a type for class: " + typename);
 					}
 				}
-				return NHibernate.Association(clazz);
+				return NHibernate.Entity(clazz);
 			}
 			else {
 				return type;

@@ -16,28 +16,27 @@ namespace NHibernate.SqlCommand
 	{
 
 		private static StringDictionary Keywords = new StringDictionary();
-		private static readonly string empty = "";
 		public static readonly string PlaceHolder = "$PlaceHolder";
 		private static ArrayList delimiterList = new ArrayList(13);
 		private static string delimiters = null;
 
 		static Template() 
 		{
-			Keywords["and"] = empty;
-			Keywords["or"] = empty;
-			Keywords["not"] = empty;
-			Keywords["like"] = empty;
-			Keywords["is"] = empty;
-			Keywords["in"] = empty;
-			Keywords["between"] = empty;
-			Keywords["null"] = empty;
-			Keywords["select"] = empty;
-			Keywords["from"] = empty;
-			Keywords["where"] = empty;
-			Keywords["having"] = empty;
-			Keywords["group"] = empty;
-			Keywords["order"] = empty;
-			Keywords["by"] = empty;
+			Keywords["and"] = string.Empty;
+			Keywords["or"] = string.Empty;
+			Keywords["not"] = string.Empty;
+			Keywords["like"] = string.Empty;
+			Keywords["is"] = string.Empty;
+			Keywords["in"] = string.Empty;
+			Keywords["between"] = string.Empty;
+			Keywords["null"] = string.Empty;
+			Keywords["select"] = string.Empty;
+			Keywords["from"] = string.Empty;
+			Keywords["where"] = string.Empty;
+			Keywords["having"] = string.Empty;
+			Keywords["group"] = string.Empty;
+			Keywords["order"] = string.Empty;
+			Keywords["by"] = string.Empty;
 
 			delimiterList.Add(" ");
 			delimiterList.Add("=");
@@ -70,7 +69,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="keyword">The Keyword to add.</param>
 		public static void AddKeyword(string keyword) 
 		{
-			Keywords[keyword] = empty;
+			Keywords[keyword] = string.Empty;
 		}
 
 		/// <summary>

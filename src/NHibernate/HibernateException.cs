@@ -8,7 +8,7 @@ namespace NHibernate {
 	/// <remarks>Exceptions that occur in the database layer are left as native exceptions</remarks>
 	public class HibernateException : ApplicationException {
 		
-		public HibernateException(Exception e) : base("", e) { }
+		public HibernateException(Exception e) : base(string.Empty, e) { }
 
 		public HibernateException(string str, Exception e) : base(str, e) { }
 

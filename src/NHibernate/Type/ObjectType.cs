@@ -126,7 +126,7 @@ namespace NHibernate.Type {
 		}
 
 		public override string ToXML(object value, ISessionFactoryImplementor factory) {
-			return NHibernate.Association( value.GetType() ).ToXML(value, factory);
+			return NHibernate.Entity( value.GetType() ).ToXML(value, factory);
 		}
 
 		[Serializable]

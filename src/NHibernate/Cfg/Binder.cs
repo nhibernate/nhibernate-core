@@ -239,7 +239,7 @@ namespace NHibernate.Cfg {
 					Table table = model.Table;
 					Column col = new Column( model.Type, count++ );
 					BindColumn(subnode, col, isNullable);
-					col.Name = (subnode.Attributes["name"]==null) ? "" : subnode.Attributes["name"].Value;
+					col.Name = (subnode.Attributes["name"]==null) ? string.Empty : subnode.Attributes["name"].Value;
 					if (table!=null) table.AddColumn(col); //table=null -> an association, fill it in later
 					model.AddColumn(col);
 					//column index
@@ -439,7 +439,7 @@ namespace NHibernate.Cfg {
 		public static void BindOneToMany(XmlNode node, OneToMany model) {
 			try 
 			{
-				model.Type = (EntityType) NHibernate.Association( 
+				model.Type = (EntityType) NHibernate.Entity( 
 					ReflectHelper.ClassForName( node.Attributes["class"].Value) );
 			} 
 			catch (Exception e) 

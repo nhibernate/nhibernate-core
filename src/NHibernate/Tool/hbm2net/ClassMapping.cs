@@ -735,8 +735,8 @@ namespace NHibernate.Tool.hbm2net
 				{
 					if ("map".Equals(xmlName))
 					{
-						interfaceClass = typeof(System.Collections.SortedList).FullName;
-						implementingClass = typeof(System.Collections.SortedList).FullName;
+						interfaceClass = typeof(System.Collections.IDictionary).FullName;
+						implementingClass = typeof(System.Collections.IDictionary).FullName;
 					}
 					else if ("set".Equals(xmlName))
 					{

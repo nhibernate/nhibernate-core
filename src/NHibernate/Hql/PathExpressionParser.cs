@@ -255,7 +255,7 @@ namespace NHibernate.Hql
 			if (currentProperty == null) 
 			{
 				IClassPersister p = q.GetPersisterForName(currentName);
-				type = NHibernate.Association(p.MappedClass);
+				type = NHibernate.Entity(p.MappedClass);
 			} 
 			else 
 			{

@@ -677,7 +677,7 @@ namespace NHibernate.Hql
 				int size = returnTypes.Count;
 				for (int k=0; k<size; k++) 
 				{
-					scalarTypes.Add(NHibernate.Association(persisters[k].MappedClass));
+					scalarTypes.Add(NHibernate.Entity(persisters[k].MappedClass));
 					
 					string[] names = persisters[k].IdentifierColumnNames;
 					for (int i=0; i<names.Length; i++) 

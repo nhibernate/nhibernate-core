@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -169,7 +170,8 @@ namespace NHibernate {
 		/// <summary>
 		/// A NHibernate serializable type
 		/// </summary>
-		/// <param name="serializableClass"></param>
+		/// <param name="metaType">a type mapping <see cref="NHibernate.Type.IType"/> to a single column</param>
+		/// <param name="identifierType">the entity identifier type</param>
 		/// <returns></returns>
 		public static IType Any(IType metaType, IType identifierType) {
 			return new ObjectType(metaType, identifierType);
@@ -180,7 +182,19 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="persistentClass">a mapped entity class</param>
 		/// <returns></returns>
+		[Obsolete("use NHibernate.Entity instead")]
 		public static IType Association(System.Type persistentClass) {
+			// not really a many-to-one association *necessarily*
+			return new ManyToOneType(persistentClass);
+		}
+		
+		/// <summary>
+		/// A NHibernate persistent object (entity) type
+		/// </summary>
+		/// <param name="persistentClass">a mapped entity class</param>
+		/// <returns></returns>
+		public static IType Entity(System.Type persistentClass) 
+		{
 			// not really a many-to-one association *necessarily*
 			return new ManyToOneType(persistentClass);
 		}
@@ -191,10 +205,12 @@ namespace NHibernate {
 		/// <param name="userTypeClass">a class that implements UserType</param>
 		/// <returns></returns>
 		public static IType Custom(System.Type userTypeClass) {
-			if( typeof(ICompositeUserType).IsAssignableFrom( userTypeClass )) {
+			if( typeof(ICompositeUserType).IsAssignableFrom( userTypeClass ))
+			{
 				return new CompositeCustomType( userTypeClass );
 			}
-			else {
+			else
+			{
 				return new CustomType(userTypeClass);
 			}
 		}
@@ -206,13 +222,16 @@ namespace NHibernate {
 		/// <param name="proxy">a persistable object, proxy, persistent collection or null</param>
 		/// <exception cref="HibernateException">if we can't initialize the proxy at this time, eg. the Session was closed</exception>
 		public static void Initialize(object proxy) {
-			if (proxy==null) {
+			if (proxy==null)
+			{
 				return;
 			}
-			else if ( proxy is HibernateProxy ) {
-				((HibernateProxy) proxy).Initialize();
+			else if ( proxy is HibernateProxy )
+			{
+				HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) proxy ).Initialize();
 			}
-			else if ( proxy is PersistentCollection ) {
+			else if ( proxy is PersistentCollection )
+			{
 				( (PersistentCollection) proxy ).ForceLoad();
 			}
 		}
@@ -222,21 +241,36 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="proxy">a persistable object, proxy, persistent collection or null</param>
 		/// <returns>true if the argument is already initialized, or is not a proxy or collection</returns>
-		public static bool IsInitialized(object proxy) {
-			if ( proxy is HibernateProxy ) {
+		public static bool IsInitialized(object proxy)
+		{
+			if ( proxy is HibernateProxy ) 
+			{
 				return !HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) proxy ).IsUninitialized;
-			} else if ( proxy is PersistentCollection ) {
+			} 
+			else if ( proxy is PersistentCollection ) 
+			{
 				return ( (PersistentCollection) proxy).WasInitialized;
-			} else {
+			} 
+			else 
+			{
 				return true;
 			}
 		}
 
-		public System.Type GetClass(object proxy) {
-			if(proxy is HibernateProxy) {
+		/// <summary>
+		/// Get the true, underlying class of a proxied persistent class. This operation
+		/// will initialize a proxy by side-effect.
+		/// </summary>
+		/// <param name="proxy">a persistable object or proxy</param>
+		/// <returns>the true class of the instance</returns>
+		public System.Type GetClass(object proxy) 
+		{
+			if(proxy is HibernateProxy) 
+			{
 				return HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) proxy ).GetImplementation().GetType();
 			}
-			else {
+			else 
+			{
 				return proxy.GetType();
 			}
 		}
@@ -257,7 +291,7 @@ namespace NHibernate {
 		/// <param name="stream">a binary stream</param>
 		/// <param name="length">the number of bytes in the stream</param>
 		/// <returns></returns>
-		public static Blob CreateBlob(StreamReader stream, int length) {
+		public static Blob CreateBlob(TextReader stream, int length) {
 			return new BlobImpl(stream, length);
 		}
 		
@@ -265,18 +299,41 @@ namespace NHibernate {
 		/// Create a new Blob. The returned object will be initially immutable.
 		/// </summary>
 		/// <param name="stream">a binary stream</param>
+		/// <param name="length">the number of bytes in the stream</param>
 		/// <returns></returns>
-		public static Blob CreateBlob(StreamReader stream) {
+		public static Blob CreateBlob(BinaryReader stream, int length) 
+		{
+			return new BlobImpl(stream, length);
+		}
+
+		/// <summary>
+		/// Create a new Blob. The returned object will be initially immutable.
+		/// </summary>
+		/// <param name="stream">a binary stream</param>
+		/// <returns></returns>
+		public static Blob CreateBlob(StreamReader stream) 
+		{
 			return new BlobImpl( stream, stream.available() );
 		}
 		
+		/// <summary>
+		/// Create a new Blob. The returned object will be initially immutable.
+		/// </summary>
+		/// <param name="stream">a binary stream</param>
+		/// <returns></returns>
+		public static Blob CreateBlob(BinaryReader stream) 
+		{
+			return new BlobImpl( stream, stream.available() );
+		}
+
 		/// <summary>
 		/// Create a new Clob. The returned object will be
 		/// initially immutable.
 		/// </summary>
 		/// <param name="str">a String</param>
 		/// <returns></returns>
-		public static Clob CreateClob(String str) {
+		public static Clob CreateClob(string str) 
+		{
 			return new ClobImpl(str);
 		}
 
@@ -286,7 +343,7 @@ namespace NHibernate {
 		/// <param name="reader">a character stream</param>
 		/// <param name="length">the number of characters in the stream</param>
 		/// <returns></returns>
-		public static Clob CreateClob(StreamReader reader, int length) {
+		public static Clob CreateClob(TextReader reader, int length) {
 			return new ClobImpl(reader, length);
 		}
 		*/

@@ -66,7 +66,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("HQL is broke")]
+		//[Ignore("HQL is broke")]
 		public void Sortables()
 		{
 			ISession s = sessions.OpenSession();

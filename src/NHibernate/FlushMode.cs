@@ -15,15 +15,15 @@ namespace NHibernate {
 		/// called by the application. This mode is very efficient for read only
 		/// transactions
 		/// </summary>
-		Never,
+		Never = 0,
 		/// <summary>
 		/// The <c>ISession</c> is flushed when <c>Transaction.Commit()</c> is called
 		/// </summary>
-		Commit,
+		Commit = 5,
 		/// <summary>
 		/// The <c>ISession</c> is sometimes flushed before query execution in order to
 		/// ensure that queries never return stale state. This is the default flush mode.
 		/// </summary>
-		Auto
+		Auto = 10
 	}
 }
