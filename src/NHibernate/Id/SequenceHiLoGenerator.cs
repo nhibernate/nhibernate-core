@@ -23,23 +23,24 @@ namespace NHibernate.Id {
 
 		public const string MaxLo = "max_lo";
 
-		private int maxLoValue;
+		private int maxLo;
 		private int lo;
 		private long hi;
 		private System.Type returnClass;
 
 		public override void Configure(IType type, IDictionary parms, Dialect.Dialect d) {
 			base.Configure(type, parms, d);
-			lo = maxLoValue = PropertiesHelper.GetInt(MaxLo, parms, 9);
+			maxLo = PropertiesHelper.GetInt(MaxLo, parms, 9);
+			lo = maxLo + 1; // so we "clock over" on the first invocation
 			returnClass = type.ReturnedClass;
 		}
 
 		public override object Generate(ISessionImplementor session, object obj) {
 			lock(this) {
-				if ( lo==maxLoValue ) {
+				if ( lo>maxLo ) {
 					long hival = ( (long) base.Generate(session, obj) );
-					lo = 0;
-					hi = hival * ( maxLoValue+1 );
+					lo = 1;
+					hi = hival * ( maxLo+1 );
 					log.Debug("new hi value: " + hival);
 				}
 				return IdentifierGeneratorFactory.CreateNumber( hi + lo++, returnClass );

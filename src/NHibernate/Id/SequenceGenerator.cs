@@ -20,6 +20,7 @@ namespace NHibernate.Id {
 		/// The sequence parameter
 		/// </summary>
 		public const string Sequence = "sequence";
+		public const string Schema = "schema";
 
 		private string sequenceName;
 		private System.Type returnClass;
@@ -27,6 +28,13 @@ namespace NHibernate.Id {
 
 		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect) {
 			this.sequenceName = PropertiesHelper.GetString(Sequence, parms, "hibernate_sequence");
+			string schemaName = (string)parms[Schema]; 
+			if ( schemaName!=null && sequenceName.IndexOf(StringHelper.Dot)<0 ) 
+				sequenceName = schemaName + '.' + sequenceName; 
+			returnClass = type.ReturnedClass; 
+			sql = dialect.GetSequenceNextValString(sequenceName); 
+
+
 			returnClass = type.ReturnedClass;
 			sql = dialect.GetSequenceNextValString(sequenceName);
 		}

@@ -4,6 +4,8 @@ using NHibernate.Dialect;
 namespace NHibernate.Id {
 	/// <summary>
 	/// An <c>IIdentifierGenerator</c> that requires creation of database objects
+	/// All <c>IPersistentIdentifierGenerator</c>s that also implement 
+	/// <c>IConfigurable</c> have access to a special mapping parameter: schema
 	/// </summary>
 	public interface IPersistentIdentifierGenerator : IIdentifierGenerator {
 		

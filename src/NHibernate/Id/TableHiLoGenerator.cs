@@ -33,15 +33,16 @@ namespace NHibernate.Id {
 
 		public override void Configure(IType type, IDictionary parms, Dialect.Dialect d) {
 			base.Configure(type, parms, d);
-			lo = maxLo = PropertiesHelper.GetInt(MaxLo, parms, short.MaxValue);
+			maxLo = PropertiesHelper.GetInt(MaxLo, parms, short.MaxValue);
+			lo = maxLo + 1; // so we "clock over" on the first invocation
 			returnClass = type.ReturnedClass;
 		}
 
 		public override object Generate(ISessionImplementor session, object obj) {
 			lock(this) {
-				if (lo==maxLo) {
+				if (lo>maxLo) {
 					int hival = ( (int) base.Generate(session, obj) );
-					lo = 0;
+					lo = 1;
 					hi = hival * (maxLo+1);
 					log.Debug("new hi value: " + hival);
 				}

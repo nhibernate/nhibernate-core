@@ -29,8 +29,8 @@ namespace NHibernate.Id {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(TableGenerator));
 
 		public const string Column = "column";
-
 		public const string Table = "table";
+		public const string Schema = "schema";
 
 		private string tableName;
 		private string columnName;
@@ -41,6 +41,9 @@ namespace NHibernate.Id {
 
 			this.tableName = PropertiesHelper.GetString(Table, parms, "hibernate_unique_key");
 			this.columnName = PropertiesHelper.GetString(Column, parms, "next_hi");
+			string schemaName = (string) parms[Schema];
+			if(schemaName!=null && tableName.IndexOf(StringHelper.Dot)<0)
+				tableName = schemaName + "." + tableName;
 
 			query = "select " + columnName + " from " + tableName;
 			if ( dialect.SupportsForUpdate ) query += " for update";

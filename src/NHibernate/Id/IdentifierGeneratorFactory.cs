@@ -6,7 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Id {
 	
-	public class IdentifierGeneratorFactory {
+	public sealed class IdentifierGeneratorFactory {
 		public static object Get(IDataReader rs, System.Type clazz) {
 			if (clazz==typeof(long)) {
 				return rs.GetInt64(0);
@@ -29,8 +29,11 @@ namespace NHibernate.Id {
 			idgenerators.Add("identity", typeof(IdentityGenerator));
 			idgenerators.Add("sequence", typeof(SequenceGenerator));
 			idgenerators.Add("seqhilo", typeof(SequenceHiLoGenerator));
-			idgenerators.Add("vb", typeof(CounterGenerator));
+			idgenerators.Add("vm", typeof(CounterGenerator));
+			idgenerators.Add("foreign", typeof(ForeignGenerator));
 		}
+
+		private IdentifierGeneratorFactory() {} //cannot be instantiated
 
 		public static IIdentifierGenerator Create(string strategy, IType type, IDictionary parms, Dialect.Dialect dialect) {
 			try {
