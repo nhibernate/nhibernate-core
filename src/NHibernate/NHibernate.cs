@@ -185,7 +185,6 @@ namespace NHibernate {
 			return new ManyToOneType(persistentClass);
 		}
 		
-		/*
 		/// <summary>
 		/// A NHibernate custom type
 		/// </summary>
@@ -194,8 +193,7 @@ namespace NHibernate {
 		public static IType Custom(System.Type userTypeClass) {
 			return new CustomType(userTypeClass);
 		}
-		*/
-		
+				
 		/* Needs HybernateProxyHelper and PersistentCollection implementation
 		 *
 		/// <summary>
