@@ -773,25 +773,26 @@ namespace NHibernate.Test
 		/// <param name="actual">The Actual values.</param>
 		internal void AssertPropertiesEqual(BasicClass expected, BasicClass actual, bool includeCollections) 
 		{
-			Assertion.AssertEquals("Id", expected.Id, actual.Id);
+			Assert.AreEqual(expected.Id, actual.Id, "Id");
 			ObjectAssertion.AssertEquals(expected.BinaryProperty, actual.BinaryProperty);
-			Assertion.AssertEquals("BooleanProperty", expected.BooleanProperty, actual.BooleanProperty);
-			Assertion.AssertEquals("ByteProperty", expected.ByteProperty, actual.ByteProperty);
-			Assertion.AssertEquals("CharacterProperty", expected.CharacterProperty, actual.CharacterProperty);
-			Assertion.AssertEquals("ClassProperty", expected.ClassProperty, actual.ClassProperty);
-			Assertion.AssertEquals("CultureInfoProperty", expected.CultureInfoProperty, actual.CultureInfoProperty);
-			Assertion.AssertEquals("DateTimeProperty", expected.DateTimeProperty, actual.DateTimeProperty);
+			Assert.AreEqual(expected.BooleanProperty, actual.BooleanProperty, "BooleanProperty");
+			Assert.AreEqual(expected.ByteProperty, actual.ByteProperty, "ByteProperty");
+			Assert.AreEqual(expected.CharacterProperty, actual.CharacterProperty, "CharacterProperty");
+			Assert.AreEqual(expected.ClassProperty, actual.ClassProperty, "ClassProperty");
+			Assert.AreEqual(expected.CultureInfoProperty, actual.CultureInfoProperty, "CultureInfoProperty");
+			Assert.AreEqual(expected.DateTimeProperty, actual.DateTimeProperty, "DateTimeProperty");
+			Assert.AreEqual(expected.DecimalProperty, actual.DecimalProperty, "DecimalProperty using Assert should be AreEqual");
 			Assertion.Assert("DecimalProperty", expected.DecimalProperty.Equals(actual.DecimalProperty));
-			Assertion.AssertEquals("DoubleProperty", expected.DoubleProperty, actual.DoubleProperty);
-			Assertion.AssertEquals("Int16Property", expected.Int16Property, actual.Int16Property);
-			Assertion.AssertEquals("Int32Property", expected.Int32Property, actual.Int32Property);
-			Assertion.AssertEquals("Int64Property", expected.Int64Property, actual.Int64Property);
-			Assertion.AssertEquals("SerializableProperty", expected.SerializableProperty, actual.SerializableProperty);
-			Assertion.AssertEquals("SingleProperty", expected.SingleProperty, actual.SingleProperty);
-			Assertion.AssertEquals("StringProperty", expected.StringProperty, actual.StringProperty);
-			Assertion.AssertEquals("TicksProperty", expected.TicksProperty, actual.TicksProperty);
-			Assertion.AssertEquals("TrueFalseProperty", expected.TrueFalseProperty, actual.TrueFalseProperty);
-			Assertion.AssertEquals("YesNoProperty", expected.YesNoProperty, actual.YesNoProperty);
+			Assert.AreEqual(expected.DoubleProperty, actual.DoubleProperty, 0, "DoubleProperty");
+			Assert.AreEqual(expected.Int16Property, actual.Int16Property, "Int16Property");
+			Assert.AreEqual(expected.Int32Property, actual.Int32Property, "Int32Property");
+			Assert.AreEqual(expected.Int64Property, actual.Int64Property, "Int64Property");
+			Assert.AreEqual(expected.SerializableProperty, actual.SerializableProperty, "SerializableProperty");
+			Assert.AreEqual(expected.SingleProperty, actual.SingleProperty, 0, "SingleProperty");
+			Assert.AreEqual(expected.StringProperty, actual.StringProperty, "StringProperty");
+			Assert.AreEqual(expected.TicksProperty, actual.TicksProperty, "TicksProperty");
+			Assert.AreEqual(expected.TrueFalseProperty, actual.TrueFalseProperty, "TrueFalseProperty");
+			Assert.AreEqual(expected.YesNoProperty, actual.YesNoProperty, "YesNoProperty");
 
 			if(includeCollections) 
 			{
