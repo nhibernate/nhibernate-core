@@ -53,8 +53,10 @@ namespace NHibernate.Test
 			IDbTransaction tran = null;
 			try
 			{
-				conn = new SqlConnection("Server=localhost;initial catalog=nhibernate;User ID=someuser;Password=somepwd");
-				conn.Open();
+				if (cfg == null)
+					cfg = new Configuration();
+				Connection.IConnectionProvider prov = Connection.ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
+				conn = prov.GetConnection();
 				tran = conn.BeginTransaction();
 				IDbCommand comm = conn.CreateCommand();
 				comm.CommandText = sql;
@@ -63,15 +65,17 @@ namespace NHibernate.Test
 				comm.ExecuteNonQuery();
 				tran.Commit();
 			}
-			catch
+			catch(Exception exc)
 			{
-				tran.Rollback();
+				if (tran != null)
+					tran.Rollback();
 				if (error)
-					throw;
+					throw exc;
 			}
 			finally
 			{
-				conn.Close();
+				if (conn != null)
+					conn.Close();
 			}
 		}
 

@@ -202,6 +202,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TestTestCase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UnsavedValueTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
