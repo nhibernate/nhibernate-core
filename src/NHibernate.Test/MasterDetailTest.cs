@@ -19,7 +19,7 @@ namespace NHibernate.Test
 
 		 	ExportSchema(new string[] {  
 										  "MasterDetail.hbm.xml",
-										  //"Custom.hbm.xml",
+										  "Custom.hbm.xml",
 										  "Category.hbm.xml",
 										  "INameable.hbm.xml",
 										  "SingleSeveral.hbm.xml",
@@ -190,7 +190,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			//http://jira.nhibernate.org:8080/browse/NH-79
-			/*
+			/* 
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
 			list = s.Find("select m, m1.Name from Master m1, Master m left join fetch m.Details where m.Name=m1.Name");
@@ -205,11 +205,46 @@ namespace NHibernate.Test
 
 
 			// rest of the test depends on ISession.Filter() working
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			Detail dd = (Detail)s.Load( typeof(Detail), did );
+			master = dd.Master;
+			Assert.IsTrue( master.Details.Contains(dd), "detail-master" );
+			Assert.AreEqual( 2, s.Filter( master.Details, "order by this.I desc").Count );
+			Assert.AreEqual( 2, s.Filter( master.Details, "select this where this.id > -1").Count );
+			/*
+			 * TODO: Filter is not working well...
+			IQuery q = s.CreateFilter( master.Details, "where this.id > :id" );
+			q.SetInt32("id", -1);
+			Assert.AreEqual( 2, q.List().Count );
+
+			q = s.CreateFilter( master.Details, "where this.id > :id1 and this.id < :id2" );
+			q.SetInt32("id1", -1);
+			q.SetInt32("id2", 99999999);
+			Assert.AreEqual( 2, q.List().Count );
+			q.SetInt32("id2", -1);
+			Assert.AreEqual( 0, q.List().Count );
+
+			q = s.CreateFilter( master.Details, "where this.id in (:ids)" );
+			list = new ArrayList();
+			list.Add(did);
+			list.Add( (long)-1 );
+			q.SetParameterList("ids", list);
+			
+			Assert.AreEqual( 1, q.List().Count );
+			Assert.IsTrue( q.Enumerable().GetEnumerator().MoveNext() );
+			*/
+			Assert.AreEqual( 2, s.Filter( master.Details, "where this.id > -1").Count );
+			Assert.AreEqual( 2, s.Filter( master.Details, "select this.Master where this.id > -1").Count );
+			Assert.AreEqual( 2, s.Filter( master.Details, "select m from m in class Master where this.id > -1 and this.Master=m").Count );
+			Assert.AreEqual( 0, s.Filter( master.Incoming.Keys, "where this.id > -1 and this.Name is not null").Count );
+
+
+
 
 		}
 
 		[Test]
-		[Ignore("FilterKeyFactory is null so code for test is not complete.  http://jira.nhibernate.org:8080/browse/NH-80")]
 		public void IncomingOutgoing() 
 		{
 			//if HSQLDialect skip test
@@ -227,11 +262,25 @@ namespace NHibernate.Test
 			master3.AddOutgoing(master1);
 			object m1id = s.GetIdentifier(master1);
 
-			//TODO: Filter's are not working because FilterKeyFactory is null.
 			Assert.AreEqual( 2, s.Filter(master1.Incoming, "where this.id > 0 and this.Name is not null").Count );
 			s.Flush();
 			s.Close();
 
+			s = sessions.OpenSession();
+			master1 = (Master)s.Load( typeof(Master), m1id );
+			int i = 0;
+			foreach( Master m in master1.Incoming.Keys ) 
+			{
+				Assert.AreEqual( 1, m.Outgoing.Count, "outgoing" );
+				Assert.IsTrue( m.Outgoing.Contains(master1), "outgoing" );
+				s.Delete(m);
+				i++;
+			}
+
+			Assert.AreEqual( 2, i, "incoming-outgoing" );
+			s.Delete(master1);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
@@ -618,9 +667,44 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void CustomPersister() 
 		{
+			ISession s = sessions.OpenSession();
+			Custom c = new Custom();
+			c.Name = "foo";
+			c.Id = 100;
+			long id = (long)s.Save(c);
+			Assert.AreSame( c, s.Load( typeof(Custom), id ) );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			c = (Custom)s.Load( typeof(Custom), id );
+			Assert.AreEqual( "foo", c.Name );
+			c.Name = "bar";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			c = (Custom)s.Load( typeof(Custom), id );
+			Assert.AreEqual( "bar", c.Name );
+			s.Delete(c);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			bool none = false;
+			try 
+			{
+				s.Load( typeof(Custom), id );
+			}
+			catch(ObjectNotFoundException onfe) 
+			{
+				none = true;
+			}
+
+			Assert.IsTrue(none);
+			s.Close();
 		}
 
 		[Test]

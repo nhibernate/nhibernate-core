@@ -192,7 +192,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("ISession.Filter() not implemented.  Everything else passes. http://jira.nhibernate.org:8080/browse/NH-80")]
+		[Ignore("Filter() and multi-column Types.  Everything else passes. http://jira.nhibernate.org:8080/browse/NH-96")]
 		public void CompositeIDQuery() 
 		{
 			ISession s = sessions.OpenSession();
@@ -255,7 +255,13 @@ namespace NHibernate.Test
 			}
 			Assert.AreEqual( 8, j, "iterate on composite key" );
 
-			//TODO: testing code for Filter() here
+			fum = (Fum)s.Load( typeof(Fum), fum.Id );
+			//TODO: http://jira.nhibernate.org:8080/browse/NH-96 bug is here 
+			s.Filter( fum.QuxArray, "where this.Foo is null" );
+			s.Filter( fum.QuxArray, "where this.Foo.id = ?", "fooid", NHibernate.String );
+			IQuery f = s.CreateFilter( fum.QuxArray, "where this.Foo.id = :fooId" );
+			f.SetString("fooId", "abc");
+			Assert.IsFalse( f.Enumerable().GetEnumerator().MoveNext() );
 
 			enumer = s.Enumerable("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").GetEnumerator();
 			int i = 0;
