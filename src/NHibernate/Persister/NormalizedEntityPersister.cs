@@ -138,8 +138,6 @@ namespace NHibernate.Persister
 
 		protected IUniqueEntityLoader loader;
 		protected readonly IDictionary lockers = new Hashtable();
-		
-//		private readonly bool[] allProperties;
 
 		private static readonly string[] StringArray = {};
 		private static readonly IType[] TypeArray = {};
