@@ -181,7 +181,7 @@ namespace NHibernate.Persister
 				}
 				catch( Exception e )
 				{
-					throw new MappingException( "could not format discriminator value to SQL string", e );
+					throw new MappingException( "Could not format discriminator value '0' to sql string using the IType NHibernate.Types.Int32Type", e );
 				}
 			}
 			else

@@ -124,7 +124,11 @@ namespace NHibernate.Persister
 					// TODO: add a ClassCastException here to catch illegal disc types
 				catch( Exception e )
 				{
-					throw new MappingException( "Could not format discriminator value to sql string", e );
+					string msg = String.Format( "Could not format discriminator value '{0}' to sql string using the IType {1}", 
+						model.DiscriminatorValue, 
+						model.Discriminator.Type.ToString() );
+
+					throw new MappingException( msg , e );
 				}
 
 				distinctColumns.Add( discriminatorColumnName );
