@@ -1631,15 +1631,137 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Find() 
 		{
+			ISession s = sessions.OpenSession();
+
+			// some code commented out in h2.0.3
+
+			Bar bar = new Bar();
+			s.Save( bar );
+			bar.BarString = "bar bar";
+			bar.String = "xxx";
+			Foo foo = new Foo();
+			s.Save( foo );
+			foo.String = "foo bar";
+			s.Save( new Foo() );
+			s.Save( new Bar() );
+	
+			IList list1 = s.Find( "select foo from foo in class NHibernate.DomainModel.Foo where foo.String='foo bar'" );
+			Assert.AreEqual( 1, list1.Count, "find size" );
+			Assert.AreSame( foo, list1[0], "find ==" );
+
+			IList list2 = s.Find( "from foo in class NHibernate.DomainModel.Foo order by foo.String, foo.Date" );
+			Assert.AreEqual( 4, list2.Count, "find size" );
+			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.class='B'" );
+			Assert.AreEqual( 2, list1.Count, "class special property" );
+			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.class=NHibernate.DomainModel.Bar" );
+			Assert.AreEqual( 2, list1.Count, "class special property" );
+			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.class=Bar" );
+			list2 = s.Find( "select bar from bar in class NHibernate.DomainModel.Bar, foo in class NHibernate.DomainModel.Foo where bar.String = foo.String and not bar=foo" );
+			
+			Assert.AreEqual( 2, list1.Count, "class special property" );
+			Assert.AreEqual( 1, list2.Count, "select from a subclass" );
+
+			Trivial t= new Trivial();
+			s.Save( t );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.String='foo bar'" );
+			Assert.AreEqual( 1, list1.Count, "find count" );
+			// There is an interbase bug that causes null integers to return as 0, also numeric precision is <=15 -h2.0.3 comment
+			Assert.IsTrue( ( (Foo)list1[0]).EqualsFoo( foo ), "find equals" );
+			list2 = s.Find( "select foo from foo in class NHibernate.DomainModel.Foo" );
+			Assert.AreEqual( 5, list2.Count, "find count" );
+			IList list3 = s.Find( "from bar in class NHibernate.DomainModel.Bar where bar.BarString='bar bar'" );
+			Assert.AreEqual( 1, list3.Count, "find count" );
+			Assert.IsTrue( list2.Contains( list1[0] ) && list2.Contains( list2[0] ), "find same instance" );
+			Assert.AreEqual( 1, s.Find( "from t in class NHibernate.DomainModel.Trivial").Count );
+			s.Delete( "from t in class NHibernate.DomainModel.Trivial" );
+
+			list2 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.Date = ?", new DateTime(2123,2,3), NHibernate.Date );
+			Assert.AreEqual( 4, list2.Count, "find by date" );
+			IEnumerator enumer = list2.GetEnumerator();
+			while( enumer.MoveNext() ) 
+			{
+				s.Delete( enumer.Current );
+			}
+
+			list2 = s.Find( "from foo in class NHibernate.DomainModel.Foo" );
+			Assert.AreEqual( 0, list2.Count, "find deleted" );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Test not complete yet.")]
 		public void Query() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			s.Save( foo );
+			Foo foo2 = new Foo();
+			s.Save( foo2 );
+			foo.TheFoo = foo2;
+
+			IList list = s.Find( "from Foo foo inner join fetch foo.TheFoo" );
+			Foo foof = (Foo)list[0];
+			Assert.IsTrue( NHibernate.IsInitialized( foof.TheFoo ) );
+
+			list = s.Find( "from Baz baz left outer join fetch baz.FooToGlarch" );
+			
+			list = s.Find( "select foo, bar from Foo foo left outer join foo.TheFoo bar where foo = ?",
+				foo,
+				NHibernate.Entity( typeof(Foo) )
+				);
+
+			object[] row1 = (object[])list[0];
+			Assert.IsTrue( row1[0]==foo && row1[1]==foo2 );
+
+			s.Find( "select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo = 'bar'" );
+			s.Find( "select foo.TheFoo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar'" );
+			s.Find( "select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'bar'" );
+//			if( !( dialect is Dialect.HSQLDialect ) ) 
+//			{
+				s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo = foo.TheFoo.TheFoo" );
+//			}
+			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar' and foo.TheFoo.TheFoo.TheFoo = 'baz'" );
+			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'a' and foo.TheFoo.String = 'b'" );
+
+			s.Find( "from bar in class Bar, foo in elements(bar.Baz.FooArray)" );
+			
+			if( dialect is Dialect.DB2Dialect ) 
+			{
+				s.Find( "from foo in class Foo where lower( foo.TheFoo.String ) = 'foo'" );
+				s.Find( "from foo in class Foo where lower( (foo.TheFoo.String || 'foo') || 'bar' ) = 'foo'" );
+				s.Find( "from foo in class Foo where repeat( (foo.TheFoo.STring || 'foo') || 'bar', 2 ) = 'foo'" );
+				s.Find( "From foo in class Bar where foo.TheFoo.Integer is not null and repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'" );
+				s.Find( "From foo in class Bar where foo.TheFoo.Integer is not null or repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'" );
+			}
+
+			if( ( dialect is Dialect.SybaseDialect ) || ( dialect is Dialect.MsSql2000Dialect ) ) 
+			{
+				s.Enumerable( "select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)" );
+			}
+
+			s.Find( "from Foo as foo where foo.Component.Glarch.Name is not null" );
+			s.Find( "from Foo as foo left outer join foo.Component.Glarch as glarch where glarch.Name = 'foo'" );
+
+			list = s.Find( "from Foo" );
+			Assert.AreEqual( 2, list.Count );
+			Assert.IsTrue( list[0] is FooProxy );
+			list = s.Find( "from Foo foo left outer join foo.TheFoo" );
+			Assert.AreEqual( 2, list.Count );
+			Assert.IsTrue( ( (object[])list[0])[0] is FooProxy );
+
+			s.Find( "From Foo, Bar" );
+			s.Find( "from Baz baz left join baz.FooToGlarch, Bar bar join bar.TheFoo" );
+			s.Find( "from Baz baz left join baz.FooToGlarch join baz.FooSet" );
+			s.Find( "from Baz baz left join baz.FooToGlarch join fetch baz.FooSet foo left join fetch foo.TheFoo" );
+
+			//TODO: resume h2.0.3 - line 1613
 		}
 	
 		[Test]
