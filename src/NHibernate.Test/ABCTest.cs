@@ -46,6 +46,18 @@ namespace NHibernate.Test
 		
 
 		[Test]
+		[Ignore("Test not written")]
+		public void HigherLevelIndexDefinition()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void Subselect()
+		{
+		}
+
+		[Test]
 		public void Subclassing() 
 		{
 			ISession s = sessions.OpenSession();
@@ -109,6 +121,12 @@ namespace NHibernate.Test
 			s.Find("from b in class B");
 			t.Commit();
 			s.Close();
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void GetSave()
+		{
 		}
 	}
 }

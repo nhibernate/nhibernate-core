@@ -45,7 +45,7 @@ namespace NHibernate.Test.ExpressionTest
 		}
 
 		[Test]
-		[Ignore("Test Fails with Exception - do to with Criteria parameter handling")]
+		[Ignore("Test Fails with Exception - do to with Criteria expression/parameter handling")]
 		public void TestJunctionNotExpressionQBE()
 		{
 			ISession s = sessions.OpenSession();

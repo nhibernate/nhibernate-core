@@ -128,6 +128,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "BlobClobTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "CriteriaTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -158,6 +163,11 @@
                 />
                 <File
                     RelPath = "MultiTableTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NewerPerformanceTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -37,13 +37,262 @@ namespace NHibernate.Test
 				}, true);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <remarks>
-		/// This test is still not completely working because it depends on Proxies which
-		/// has not been implemented yet.
-		/// </remarks>
+
+
+		[Test]
+		[Ignore("Test not written")]
+		public void CollectionVersioning()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void ForCertain()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void BagMultipleElements()
+		{
+		}
+		[Test]
+		[Ignore("Test not written")]
+		public void WierdSession()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void DereferenceLazyCollection()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void MoveLazyCollection()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void CriteriaCollection()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not complete yet.")]
+		public void Query() 
+		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			s.Save( foo );
+			Foo foo2 = new Foo();
+			s.Save( foo2 );
+			foo.TheFoo = foo2;
+
+			IList list = s.Find( "from Foo foo inner join fetch foo.TheFoo" );
+			Foo foof = (Foo)list[0];
+			Assert.IsTrue( NHibernateUtil.IsInitialized( foof.TheFoo ) );
+
+			list = s.Find( "from Baz baz left outer join fetch baz.FooToGlarch" );
+			
+			list = s.Find( "select foo, bar from Foo foo left outer join foo.TheFoo bar where foo = ?",
+				foo,
+				NHibernateUtil.Entity( typeof(Foo) )
+				);
+
+			object[] row1 = (object[])list[0];
+			Assert.IsTrue( row1[0]==foo && row1[1]==foo2 );
+
+			s.Find( "select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo = 'bar'" );
+			s.Find( "select foo.TheFoo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar'" );
+			s.Find( "select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'bar'" );
+			//			if( !( dialect is Dialect.HSQLDialect ) ) 
+			//			{
+			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo = foo.TheFoo.TheFoo" );
+			//			}
+			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar' and foo.TheFoo.TheFoo.TheFoo = 'baz'" );
+			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'a' and foo.TheFoo.String = 'b'" );
+
+			s.Find( "from bar in class Bar, foo in elements(bar.Baz.FooArray)" );
+			
+			if( dialect is Dialect.DB2Dialect ) 
+			{
+				s.Find( "from foo in class Foo where lower( foo.TheFoo.String ) = 'foo'" );
+				s.Find( "from foo in class Foo where lower( (foo.TheFoo.String || 'foo') || 'bar' ) = 'foo'" );
+				s.Find( "from foo in class Foo where repeat( (foo.TheFoo.STring || 'foo') || 'bar', 2 ) = 'foo'" );
+				s.Find( "From foo in class Bar where foo.TheFoo.Integer is not null and repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'" );
+				s.Find( "From foo in class Bar where foo.TheFoo.Integer is not null or repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'" );
+			}
+
+			if( ( dialect is Dialect.SybaseDialect ) || ( dialect is Dialect.MsSql2000Dialect ) ) 
+			{
+				s.Enumerable( "select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)" );
+			}
+
+			s.Find( "from Foo as foo where foo.Component.Glarch.Name is not null" );
+			s.Find( "from Foo as foo left outer join foo.Component.Glarch as glarch where glarch.Name = 'foo'" );
+
+			list = s.Find( "from Foo" );
+			Assert.AreEqual( 2, list.Count );
+			Assert.IsTrue( list[0] is FooProxy );
+			list = s.Find( "from Foo foo left outer join foo.TheFoo" );
+			Assert.AreEqual( 2, list.Count );
+			Assert.IsTrue( ( (object[])list[0])[0] is FooProxy );
+
+			s.Find( "From Foo, Bar" );
+			s.Find( "from Baz baz left join baz.FooToGlarch, Bar bar join bar.TheFoo" );
+			s.Find( "from Baz baz left join baz.FooToGlarch join baz.FooSet" );
+			s.Find( "from Baz baz left join baz.FooToGlarch join fetch baz.FooSet foo left join fetch foo.TheFoo" );
+
+			// foo.Boolean = true
+			list = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' and foo.Boolean = 1 order by foo.String asc, foo.Component.Count desc" );
+			Assert.AreEqual( 0, list.Count, "empty query" );
+			IEnumerable enumer = s.Enumerable( "from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' order by foo.String asc, foo.Component.Count desc" );
+			Assert.IsFalse( enumer.GetEnumerator().MoveNext(), "empty enumerator" );
+
+			list = s.Find( "select foo.TheFoo from foo in class NHibernate.DomainModel.Foo" );
+			Assert.AreEqual( 1, list.Count, "query" );
+			Assert.AreEqual( foo.TheFoo, list[0], "returned object" );
+			foo.TheFoo.TheFoo = foo;
+			foo.String = "fizard";
+
+			// the following test is disabled for databases with no subselects...also for Interbase (not sure why) - h2.0.3
+			// also HSQLDialect, MckoiDialect, SAPDBDialect, PointbaseDialect
+			if( !(dialect is Dialect.MySQLDialect) )
+			{
+				// add an !InterbaseDialect wrapper around list and assert
+				list = s.Find( "from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements", new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ), NHibernateUtil.DateTime );
+				Assert.AreEqual( 2, list.Count, "componenet query" );
+			}
+
+			// WAS: 3 in h2.0.3 - there's a null value at index 2 that is not in the db with hibernate - it is a missing index
+			// in the db
+			list = s.Find( "from foo in class NHibernate.DomainModel.Foo where size(foo.Component.ImportantDates) = 4" ); 
+			Assert.AreEqual( 2, list.Count, "component query" );
+			list = s.Find( "from foo in class Foo where 0 = size(foo.Component.ImportantDates)" );
+			Assert.AreEqual( 0, list.Count, "component query" );
+			list = s.Find( "from foo in class Foo where exists elements(foo.Component.ImportantDates)" );
+			Assert.AreEqual( 2, list.Count, "component query" );
+			s.Find( "from foo in class Foo where not exists (from bar in class Bar where bar.id = foo.id)" );
+
+			s.Find( "select foo.TheFoo from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)" );
+			s.Find( "from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long) and foo.TheFoo.String='baz'" );
+			s.Find( "from foo in class Foo where foo.TheFoo.String='baz' and foo = some(select x from x in class Foo where x.Long>foo.TheFoo.Long)" );
+			s.Find( "from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)" );
+
+			s.Enumerable( "select foo.String, foo.Date, foo.TheFoo.String, foo.id from foo in class Foo, baz in class Baz where foo in elements(baz.FooArray) and foo.String like 'foo'" );
+		}
+		// line 1645
+
+		[Test]
+		[Ignore("Test not written")]
+		public void CascadeDeleteDetached()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void ForeignKeys()
+		{
+		}
+
+		
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Databinder() 
+		{
+		}
+
+
+		[Test]
+		public void NonlazyCollections()
+		{
+			object glarchId;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Glarch glarch1 = new Glarch();
+				glarch1.ProxySet = new Iesi.Collections.ListSet();
+
+				Glarch glarch2 = new Glarch();
+				glarch1.ProxySet.Add( glarch1 );
+
+				s.Save( glarch2 );
+				glarchId = s.Save( glarch1 );
+				s.Flush();
+			}
+
+			Glarch loadedGlarch;
+			using( ISession s = sessions.OpenSession() )
+			{
+				loadedGlarch = (Glarch)s.Get( typeof( Glarch ), glarchId );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( loadedGlarch.ProxySet ) );
+			}
+
+			// ProxySet is a non-lazy collection, so this should work outside
+			// a session.
+			Assert.AreEqual( 1, loadedGlarch.ProxySet.Count );
+		}
+
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ReuseDeletedCollection()
+		{
+		}
+
+		[Test]
+		public void PropertyRef()
+		{
+			object qid;
+			object hid;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Holder h = new Holder();
+				h.Name = "foo";
+				Holder h2 = new Holder();
+				h2.Name = "bar";
+				h.OtherHolder = h2;
+				hid = s.Save(h);
+				
+				Qux q = new Qux();
+				q.Holder = h2;
+				qid = s.Save( q );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Holder h = (Holder) s.Load( typeof(Holder), hid );
+				Assert.AreEqual( h.Name, "foo" );
+				Assert.AreEqual( h.OtherHolder.Name, "bar" );
+				object[] res = (object[]) s.Find("from Holder h join h.OtherHolder oh where h.OtherHolder.Name = 'bar'")[0];
+				Assert.AreSame( h, res[0] );
+
+				Qux q = (Qux) s.Get( typeof(Qux), qid );
+				Assert.AreSame( q.Holder, h.OtherHolder );
+				s.Delete( h );
+				s.Delete( q );
+				s.Flush();
+			}
+		}
+
+	
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void QueryCollectionOfValues()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void BatchLoad()
+		{
+		}
+
 		[Test]
 		public void FetchInitializedCollection()
 		{
@@ -76,6 +325,53 @@ namespace NHibernate.Test
 		}
 
 		
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void LateCollectionAdd()
+		{
+		}
+
+		[Test]
+		public void Update() 
+		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			s.Save(foo);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			FooProxy foo2 = (FooProxy)s.Load( typeof(Foo), foo.Key );
+			foo2.String = "dirty";
+			foo2.Boolean = false;
+			foo2.Bytes = new byte[] {1,2,3};
+			foo2.Date = DateTime.Today;
+			foo2.Short = 69;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			Foo foo3 = new Foo();
+			s.Load( foo3, foo.Key );
+			Assert.IsTrue( foo2.EqualsFoo(foo3), "update" );
+			s.Delete(foo3);
+			s.Flush();
+			s.Close();
+		}
+
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ListRemove()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void FetchInitializedCollectionDupe()
+		{
+		}
+
 		[Test]
 		public void Sortables()
 		{
@@ -254,8 +550,8 @@ namespace NHibernate.Test
 			s.Delete(result[0]);
 			s.Flush();
 			s.Close();
-
 		}
+
 
 		[Test]
 		public void ManyToManyBag() 
@@ -281,8 +577,8 @@ namespace NHibernate.Test
 			s.Delete(baz);
 			s.Flush();
 			s.Close();
-
 		}
+
 
 		[Test]
 		public void IdBag() 
@@ -346,6 +642,7 @@ namespace NHibernate.Test
 
 		}
 
+
 		[Test]
 		public void ForceOuterJoin() 
 		{
@@ -381,6 +678,7 @@ namespace NHibernate.Test
 			s.Close();
 			
 		}
+
 
 		[Test]
 		public void EmptyCollection()
@@ -472,6 +770,7 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+
 		[Test]
 		public void Limit() 
 		{
@@ -499,6 +798,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 		}
+
 
 		[Test]
 		public void Custom() 
@@ -533,6 +833,7 @@ namespace NHibernate.Test
 
 		}
 
+
 		[Test]
 		public void SaveAddDelete() 
 		{
@@ -549,6 +850,7 @@ namespace NHibernate.Test
 			s.Close();
 
 		}
+
 
 		[Test]
 		public void NamedParams() 
@@ -611,6 +913,19 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
+		}
+
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void VerifyParameter()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Dyna()
+		{
 		}
 
 		[Test]
@@ -707,6 +1022,7 @@ namespace NHibernate.Test
 		
 		}
 
+
 		[Test]
 		public void AfterDelete() 
 		{
@@ -720,6 +1036,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 		}
+
 
 		[Test]
 		public void CollectionWhere() 
@@ -760,6 +1077,7 @@ namespace NHibernate.Test
 
 		}
 		
+
 		[Test]
 		public void ComponentParent()
 		{
@@ -792,6 +1110,7 @@ namespace NHibernate.Test
 
 		}
 
+
 		[Test]
 		public void CollectionCache() 
 		{
@@ -813,6 +1132,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 		}
+
 
 		[Test]
 		//[Ignore("TimeZone Portions commented out - http://jira.nhibernate.org:8080/browse/NH-88")]
@@ -906,6 +1226,7 @@ namespace NHibernate.Test
 
 		}
 
+
 		[Test]
 		public void CascadeSave() 
 		{
@@ -933,6 +1254,8 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+
+		/*
 		[Test]
 		public void CompositeKeyPathExpressions() 
 		{
@@ -960,8 +1283,8 @@ namespace NHibernate.Test
 			s.Find(hql);
 
 			s.Close();
-
 		}
+		*/
 
 		[Test]
 		public void CollectionsInSelect() 
@@ -1075,6 +1398,7 @@ namespace NHibernate.Test
 
 		}
 
+
 		[Test]
 		public void NewFlushing() 
 		{
@@ -1146,6 +1470,7 @@ namespace NHibernate.Test
 			s.Close();
 
 		}
+
 
 		[Test]
 		public void PersistCollections() 
@@ -1379,6 +1704,7 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+
 		[Test]
 		public void SaveFlush() 
 		{
@@ -1397,6 +1723,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 		}
+
 
 		[Test]
 		public void CreateUpdate() 
@@ -1433,34 +1760,6 @@ namespace NHibernate.Test
 
 		}
 
-		[Test]
-		public void Update() 
-		{
-			ISession s = sessions.OpenSession();
-			Foo foo = new Foo();
-			s.Save(foo);
-			s.Flush();
-			s.Close();
-
-			s = sessions.OpenSession();
-			FooProxy foo2 = (FooProxy)s.Load( typeof(Foo), foo.Key );
-			foo2.String = "dirty";
-			foo2.Boolean = false;
-			foo2.Bytes = new byte[] {1,2,3};
-			foo2.Date = DateTime.Today;
-			foo2.Short = 69;
-			s.Flush();
-			s.Close();
-
-			s = sessions.OpenSession();
-			Foo foo3 = new Foo();
-			s.Load( foo3, foo.Key );
-			Assert.IsTrue( foo2.EqualsFoo(foo3), "update" );
-			s.Delete(foo3);
-			s.Flush();
-			s.Close();
-
-		}
 
 		[Test]
 		public void UpdateCollections() 
@@ -1530,6 +1829,7 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+
 		[Test]
 		public void Load() 
 		{
@@ -1559,6 +1859,7 @@ namespace NHibernate.Test
 
 		}
 
+
 		[Test]
 		public void Create() 
 		{
@@ -1578,6 +1879,7 @@ namespace NHibernate.Test
 			s.Close();
 			
 		}
+
 
 		[Test]
 		public void Callback() 
@@ -1616,6 +1918,7 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+
 		[Test]
 		public void Polymorphism() 
 		{
@@ -1635,6 +1938,7 @@ namespace NHibernate.Test
 			s.Close();
 										  
 		}
+
 
 		[Test]
 		public void RemoveContains() 
@@ -1657,6 +1961,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 		}
+
 
 		[Test]
 		public void CollectionOfSelf() 
@@ -1691,6 +1996,7 @@ namespace NHibernate.Test
 			s.Close();
 
 		}
+
 
 		[Test]
 		public void Find() 
@@ -1757,111 +2063,6 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
-		[Test]
-		[Ignore("Test not complete yet.")]
-		public void Query() 
-		{
-			ISession s = sessions.OpenSession();
-			Foo foo = new Foo();
-			s.Save( foo );
-			Foo foo2 = new Foo();
-			s.Save( foo2 );
-			foo.TheFoo = foo2;
-
-			IList list = s.Find( "from Foo foo inner join fetch foo.TheFoo" );
-			Foo foof = (Foo)list[0];
-			Assert.IsTrue( NHibernateUtil.IsInitialized( foof.TheFoo ) );
-
-			list = s.Find( "from Baz baz left outer join fetch baz.FooToGlarch" );
-			
-			list = s.Find( "select foo, bar from Foo foo left outer join foo.TheFoo bar where foo = ?",
-				foo,
-				NHibernateUtil.Entity( typeof(Foo) )
-				);
-
-			object[] row1 = (object[])list[0];
-			Assert.IsTrue( row1[0]==foo && row1[1]==foo2 );
-
-			s.Find( "select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo = 'bar'" );
-			s.Find( "select foo.TheFoo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar'" );
-			s.Find( "select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'bar'" );
-//			if( !( dialect is Dialect.HSQLDialect ) ) 
-//			{
-			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo = foo.TheFoo.TheFoo" );
-//			}
-			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar' and foo.TheFoo.TheFoo.TheFoo = 'baz'" );
-			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'a' and foo.TheFoo.String = 'b'" );
-
-			s.Find( "from bar in class Bar, foo in elements(bar.Baz.FooArray)" );
-			
-			if( dialect is Dialect.DB2Dialect ) 
-			{
-				s.Find( "from foo in class Foo where lower( foo.TheFoo.String ) = 'foo'" );
-				s.Find( "from foo in class Foo where lower( (foo.TheFoo.String || 'foo') || 'bar' ) = 'foo'" );
-				s.Find( "from foo in class Foo where repeat( (foo.TheFoo.STring || 'foo') || 'bar', 2 ) = 'foo'" );
-				s.Find( "From foo in class Bar where foo.TheFoo.Integer is not null and repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'" );
-				s.Find( "From foo in class Bar where foo.TheFoo.Integer is not null or repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'" );
-			}
-
-			if( ( dialect is Dialect.SybaseDialect ) || ( dialect is Dialect.MsSql2000Dialect ) ) 
-			{
-				s.Enumerable( "select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)" );
-			}
-
-			s.Find( "from Foo as foo where foo.Component.Glarch.Name is not null" );
-			s.Find( "from Foo as foo left outer join foo.Component.Glarch as glarch where glarch.Name = 'foo'" );
-
-			list = s.Find( "from Foo" );
-			Assert.AreEqual( 2, list.Count );
-			Assert.IsTrue( list[0] is FooProxy );
-			list = s.Find( "from Foo foo left outer join foo.TheFoo" );
-			Assert.AreEqual( 2, list.Count );
-			Assert.IsTrue( ( (object[])list[0])[0] is FooProxy );
-
-			s.Find( "From Foo, Bar" );
-			s.Find( "from Baz baz left join baz.FooToGlarch, Bar bar join bar.TheFoo" );
-			s.Find( "from Baz baz left join baz.FooToGlarch join baz.FooSet" );
-			s.Find( "from Baz baz left join baz.FooToGlarch join fetch baz.FooSet foo left join fetch foo.TheFoo" );
-
-			// foo.Boolean = true
-			list = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' and foo.Boolean = 1 order by foo.String asc, foo.Component.Count desc" );
-			Assert.AreEqual( 0, list.Count, "empty query" );
-			IEnumerable enumer = s.Enumerable( "from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' order by foo.String asc, foo.Component.Count desc" );
-			Assert.IsFalse( enumer.GetEnumerator().MoveNext(), "empty enumerator" );
-
-			list = s.Find( "select foo.TheFoo from foo in class NHibernate.DomainModel.Foo" );
-			Assert.AreEqual( 1, list.Count, "query" );
-			Assert.AreEqual( foo.TheFoo, list[0], "returned object" );
-			foo.TheFoo.TheFoo = foo;
-			foo.String = "fizard";
-
-			// the following test is disabled for databases with no subselects...also for Interbase (not sure why) - h2.0.3
-			// also HSQLDialect, MckoiDialect, SAPDBDialect, PointbaseDialect
-			if( !(dialect is Dialect.MySQLDialect) )
-			{
-				// add an !InterbaseDialect wrapper around list and assert
-				list = s.Find( "from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements", new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ), NHibernateUtil.DateTime );
-				Assert.AreEqual( 2, list.Count, "componenet query" );
-			}
-
-			// WAS: 3 in h2.0.3 - there's a null value at index 2 that is not in the db with hibernate - it is a missing index
-			// in the db
-			list = s.Find( "from foo in class NHibernate.DomainModel.Foo where size(foo.Component.ImportantDates) = 4" ); 
-			Assert.AreEqual( 2, list.Count, "component query" );
-			list = s.Find( "from foo in class Foo where 0 = size(foo.Component.ImportantDates)" );
-			Assert.AreEqual( 0, list.Count, "component query" );
-			list = s.Find( "from foo in class Foo where exists elements(foo.Component.ImportantDates)" );
-			Assert.AreEqual( 2, list.Count, "component query" );
-			s.Find( "from foo in class Foo where not exists (from bar in class Bar where bar.id = foo.id)" );
-
-			s.Find( "select foo.TheFoo from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)" );
-			s.Find( "from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long) and foo.TheFoo.String='baz'" );
-			s.Find( "from foo in class Foo where foo.TheFoo.String='baz' and foo = some(select x from x in class Foo where x.Long>foo.TheFoo.Long)" );
-			s.Find( "from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)" );
-
-			s.Enumerable( "select foo.String, foo.Date, foo.TheFoo.String, foo.id from foo in class Foo, baz in class Baz where foo in elements(baz.FooArray) and foo.String like 'foo'" );
-		}
-		// line 1645
 	
 		[Test]
 		public void DeleteRecursive() 
@@ -1879,6 +2080,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 		}
+
 
 		[Test]
 		public void Reachability() 
@@ -2002,6 +2204,7 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+
 		[Test]
 		public void PersistentLifecycle() 
 		{
@@ -2028,6 +2231,7 @@ namespace NHibernate.Test
 			s.Close();
 
 		}
+
 
 		[Test]
 		public void Enumerable() 
@@ -2082,7 +2286,7 @@ namespace NHibernate.Test
 		/// <summary>
 		/// Adding a test to verify that a database action can occur in the
 		/// middle of an Enumeration.  Under certain conditions an open 
-		/// DataReader can be kept open and cause anyother action to fail. 
+		/// DataReader can be kept open and cause any other action to fail. 
 		/// </summary>
 		[Test]
 		public void EnumerableDisposable() 
@@ -2138,6 +2342,7 @@ namespace NHibernate.Test
 			s.Close();
 
 		}
+
 
 		[Test]
 		public void Versioning() 
@@ -2223,6 +2428,7 @@ namespace NHibernate.Test
 			s.Dispose();
 		}
 
+
 		[Test]
 		public void VersionedCollections() 
 		{
@@ -2293,6 +2499,7 @@ namespace NHibernate.Test
 			s.Close();
 
 		}
+
 
 		[Test]
 		public void RecursiveLoad() 
@@ -2404,6 +2611,14 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+
+		[Test]
+		[Ignore("Not applicable to NHibernate?")]
+		public void ScrollableIterator()
+		{
+		}
+
+
 		[Test]
 		public void MultiColumnQueries() 
 		{
@@ -2462,6 +2677,7 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+
 		[Test]
 		public void DeleteTransient() 
 		{
@@ -2486,6 +2702,21 @@ namespace NHibernate.Test
 			tx.Commit();
 			s.Close();
 		}
+
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void DeleteUpdatedTransient()
+		{
+		}
+
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void UpdateOrder()
+		{
+		}
+
 
 		[Test]
 		public void UpdateFromTransient() 
@@ -2595,11 +2826,13 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+
 		[Test]
 		[Ignore("Test not written yet.")]
-		public void Databinder() 
+		public void ArrayOfTimes()
 		{
 		}
+
 
 		[Test]
 		public void Components() 
@@ -2644,6 +2877,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 		}
+
 
 		[Test]
 		public void Enum() 
@@ -2703,6 +2937,7 @@ namespace NHibernate.Test
 			s.Close();
 
 		}
+
 
 		[Test]
 		public void NoForeignKeyViolations() 
@@ -3392,6 +3627,14 @@ namespace NHibernate.Test
 
 		}
 
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ObjectType()
+		{
+		}
+
+
 		[Test]
 		public void Any() 
 		{
@@ -3669,6 +3912,8 @@ namespace NHibernate.Test
 		{
 		}
 
+
+		#region NHibernate specific tests
 		[Test]
 		public void Formula()
 		{
@@ -3687,74 +3932,6 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
-		[Test]
-		public void NonLazyCollections()
-		{
-			object glarchId;
-
-			using( ISession s = sessions.OpenSession() )
-			{
-				Glarch glarch1 = new Glarch();
-				glarch1.ProxySet = new Iesi.Collections.ListSet();
-
-				Glarch glarch2 = new Glarch();
-				glarch1.ProxySet.Add( glarch1 );
-
-				s.Save( glarch2 );
-				glarchId = s.Save( glarch1 );
-				s.Flush();
-			}
-
-			Glarch loadedGlarch;
-			using( ISession s = sessions.OpenSession() )
-			{
-				loadedGlarch = (Glarch)s.Get( typeof( Glarch ), glarchId );
-				Assert.IsTrue( NHibernateUtil.IsInitialized( loadedGlarch.ProxySet ) );
-			}
-
-			// ProxySet is a non-lazy collection, so this should work outside
-			// a session.
-			Assert.AreEqual( 1, loadedGlarch.ProxySet.Count );
-		}
-
-		[Test]
-		public void PropertyRef()
-		{
-			object qid;
-			object hid;
-
-			using( ISession s = sessions.OpenSession() )
-			{
-				Holder h = new Holder();
-				h.Name = "foo";
-				Holder h2 = new Holder();
-				h2.Name = "bar";
-				h.OtherHolder = h2;
-				hid = s.Save(h);
-				
-				Qux q = new Qux();
-				q.Holder = h2;
-				qid = s.Save( q );
-				s.Flush();
-			}
-
-			using( ISession s = sessions.OpenSession() )
-			{
-				Holder h = (Holder) s.Load( typeof(Holder), hid );
-				Assert.AreEqual( h.Name, "foo" );
-				Assert.AreEqual( h.OtherHolder.Name, "bar" );
-				object[] res = (object[]) s.Find("from Holder h join h.OtherHolder oh where h.OtherHolder.Name = 'bar'")[0];
-				Assert.AreSame( h, res[0] );
-
-				Qux q = (Qux) s.Get( typeof(Qux), qid );
-				Assert.AreSame( q.Holder, h.OtherHolder );
-				s.Delete( h );
-				s.Delete( q );
-				s.Flush();
-			}
-		}
-
-	
 		/// <summary>
 		/// This test verifies that the AddAll() method works
 		/// correctly for a persistent Set.
@@ -3785,6 +3962,6 @@ namespace NHibernate.Test
  				s.Flush();
  			}
 		}
-
+		#endregion
 	}
 }

@@ -64,41 +64,16 @@ namespace NHibernate.Test
 
 		#endregion
 
-		public static FumCompositeID FumKey(String str) 
+		[Test]
+		[Ignore("Test not written")]
+		public void CriteriaCollection()
 		{
-		
-			return FumKey(str,false);
 		}
-	
-		public static FumCompositeID FumKey(String str, bool aCompositeQueryTest) 
+
+		[Test]
+		[Ignore("Test not written")]
+		public void Criteria()
 		{
-			FumCompositeID id = new FumCompositeID();
-//			if( dialect is Dialect.MckoiDialect ) 
-//												{
-//													  GregorianCalendar now = new GregorianCalendar();
-//													  GregorianCalendar cal = new GregorianCalendar( 
-//														  now.get(java.util.Calendar.YEAR),
-//														  now.get(java.util.Calendar.MONTH),
-//														  now.get(java.util.Calendar.DATE) 
-//														  );
-//													  id.setDate( cal.getTime() );
-//												  }
-//			else 
-//			{
-			id.Date = new DateTime(2004, 4, 29, 9, 0, 0, 0);
-//				 }
-			id.String = str;
-		
-			if (aCompositeQueryTest) 
-			{
-				id.Short = fumKeyShort++ ;
-			}
-			else 
-			{
-				id.Short = (short)12 ;
-			}
-		
-			return id;
 		}
 
 		[Test]
@@ -134,10 +109,44 @@ namespace NHibernate.Test
 			s.Delete( s.Load( typeof(Fum), list[1] ) );
 			s.Flush();
 			s.Close();
-
-
 		}
 		
+		public static FumCompositeID FumKey(String str) 
+		{
+			return FumKey(str,false);
+		}
+	
+		public static FumCompositeID FumKey(String str, bool aCompositeQueryTest) 
+		{
+			FumCompositeID id = new FumCompositeID();
+//			if( dialect is Dialect.MckoiDialect ) 
+//												{
+//													  GregorianCalendar now = new GregorianCalendar();
+//													  GregorianCalendar cal = new GregorianCalendar( 
+//														  now.get(java.util.Calendar.YEAR),
+//														  now.get(java.util.Calendar.MONTH),
+//														  now.get(java.util.Calendar.DATE) 
+//														  );
+//													  id.setDate( cal.getTime() );
+//												  }
+//			else 
+//			{
+			id.Date = new DateTime(2004, 4, 29, 9, 0, 0, 0);
+//				 }
+			id.String = str;
+		
+			if (aCompositeQueryTest) 
+			{
+				id.Short = fumKeyShort++ ;
+			}
+			else 
+			{
+				id.Short = (short)12 ;
+			}
+		
+			return id;
+		}
+
 		[Test]
 		public void CompositeID() 
 		{
@@ -420,7 +429,6 @@ namespace NHibernate.Test
 		}
 
 		
-
 		[Test]
 		[Ignore("HQL can't parse a class named 'Order' - http://jira.nhibernate.org:8080/browse/NH-81, this test passes when changed to NHibernate.DomainModel")]
 		public void KeyManyToOne() 
@@ -471,6 +479,26 @@ namespace NHibernate.Test
 			s.Delete(d.Id.Master.Id.Sup);
 			s.Flush();
 			s.Close();
+		}
+
+
+		[Test]
+		[Ignore("Test not written")]
+		public void CompositeKeyPathExpressions()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void UnflushedSessionSerialization()
+		{
+		}
+
+		private ISession SpoofSerialization( ISession session)
+		{
+			// TODO: Not test method - implement details
+
+			return null;
 		}
 	}
 }

@@ -45,6 +45,11 @@ namespace NHibernate.Test
 		#endregion
 
 		[Test]
+		[Ignore("Test not written yet.")]
+		public void DialectSQLFunctions()
+		{
+		}
+		[Test]
 		public void SetProperties() 
 		{
 			ISession s = sessions.OpenSession();
@@ -58,6 +63,13 @@ namespace NHibernate.Test
 			s.Delete(simple);
 			t.Commit();
 			s.Close();
+		}
+
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Broken()
+		{
 		}
 
 		[Test]
@@ -84,6 +96,30 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
+		}
+
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CachedQuery()
+		{
+		}
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void SQLFunctionAsAlias()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CachedQueryOnInsert()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CachedQueryRegion()
+		{
 		}
 
 		[Test]
@@ -231,12 +267,6 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-		}
-
-		[Test]
-		[Ignore("BLOB/CLOB not implmented like h2.0.3 - http://jira.nhibernate.org:8080/browse/NH-19")]
-		public void BlobClob() 
-		{
 		}
 
 		

@@ -21,7 +21,14 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		public void TestJoins() 
+		[Ignore("Test not written yet.")]
+		public void FetchManyToOne()
+		{
+		}
+
+
+		[Test]
+		public void Joins() 
 		{
 			ISession s = sessions.OpenSession();
 			s.Find("from SubMulti sm join sm.Children smc where smc.Name > 'a'");
@@ -38,6 +45,12 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void JoinOpenBug()
+		{
+		}
 		[Test]
 		public void SubclassCollection() 
 		{

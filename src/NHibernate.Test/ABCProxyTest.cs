@@ -42,7 +42,24 @@ namespace NHibernate.Test
 		#endregion
 
 		[Test]
-		//[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
+		[Ignore("Test not written")]
+		public void DiscriminatorFiltering()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void OptionalOneToOneInCollection()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written")]
+		public void SharedColumn()
+		{
+		}
+
+		[Test]
 		public void Subclassing()
 		{
 			ISession s = sessions.OpenSession();

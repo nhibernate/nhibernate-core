@@ -52,7 +52,7 @@ namespace NHibernate.Test
 		static long nextLong = 1;
 
 		[Test]
-		public void TestTS()
+		public void TS()
 		{
 			if ( dialect is NHibernate.Dialect.Oracle9Dialect )
 			{
@@ -73,7 +73,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		public void TestTSNamed()
+		public void TSNamed()
 		{
 			if ( dialect is NHibernate.Dialect.Oracle9Dialect )
 			{
@@ -94,7 +94,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		public void TestFindBySQLStar()
+		public void FindBySQLStar()
 		{
 			ISession session = sessions.OpenSession();
 
@@ -126,7 +126,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		public void TestFindBySQLProperties()
+		public void FindBySQLProperties()
 		{
 			ISession session = sessions.OpenSession();
 
@@ -150,7 +150,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		public void TestFindBySQLAssociatedObject()
+		public void FindBySQLAssociatedObject()
 		{
 			ISession s = sessions.OpenSession();
 
@@ -177,7 +177,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		public void TestFindBySQLMultipleObject()
+		public void FindBySQLMultipleObject()
 		{
 			ISession s = sessions.OpenSession();
 
@@ -226,37 +226,37 @@ namespace NHibernate.Test
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestFindBySQLParameters()
+		public void FindBySQLParameters()
 		{
 		}
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestEscapedODBC()
+		public void EscapedODBC()
 		{
 		}
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestDoubleAliasing()
+		public void DoubleAliasing()
 		{
 		}
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestEmbeddedCompositeProperties()
+		public void EmbeddedCompositeProperties()
 		{
 		}
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestComponentStar()
+		public void ComponentStar()
 		{
 		}
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestComponentNoStar()
+		public void ComponentNoStar()
 		{
 		}
 
@@ -266,31 +266,31 @@ namespace NHibernate.Test
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestFindSimpleBySQL()
+		public void FindSimpleBySQL()
 		{
 		}
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestFindBySQLSimpleByDiffSessions()
+		public void FindBySQLSimpleByDiffSessions()
 		{
 		}
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestFindBySQLDiscriminatorSameSession()
+		public void FindBySQLDiscriminatorSameSession()
 		{
 		}
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestFindBySQLDiscriminatedDiffSessions()
+		public void FindBySQLDiscriminatedDiffSessions()
 		{
 		}
 
 		[Test]
 		[Ignore("Test not written")]
-		public void TestNamedSQLQuery()
+		public void NamedSQLQuery()
 		{
 		}
 	}
