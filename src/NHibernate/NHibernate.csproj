@@ -326,6 +326,11 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <File
+                    RelPath = "Dialect\TypeNames.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <Folder RelPath = "Id\" />
                 <File
                     RelPath = "Metadata\ClassMetadata.cs"
@@ -393,7 +398,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\TypeNames.cs"
+                    RelPath = "Sql\SelectFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\SimpleSelect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\Update.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

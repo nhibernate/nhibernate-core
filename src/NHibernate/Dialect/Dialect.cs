@@ -3,7 +3,6 @@ using System.Data;
 using System.Text;
 using System.Collections;
 
-using NHibernate.Sql;
 using NHibernate.Util;
 
 namespace NHibernate.Dialect {
