@@ -7,90 +7,22 @@ using NHibernate.Persister;
 namespace NHibernate.Mapping
 {
 	/// <summary>
-	/// Declaration of a System.Type by using the <c>&lt;class&gt;</c> element.
+	/// Declaration of a System.Type mapped with the <c>&lt;class&gt;</c> element.
 	/// </summary>
-	/// <remarks>
-	/// <p>The <c>&lt;class&gt;</c> element has the following attributes available:</p>
-	/// <list type="table">
-	///		<listheader>
-	///			<term>Attribute</term>
-	///			<description>Possible Values</description>
-	///		</listheader>
-	///		<item>
-	///			<term>name</term>
-	///			<description>The fully qualified TypeName so it can be loaded by Reflection</description>
-	///		</item>
-	///		<item>
-	///			<term>table</term>
-	///			<description>The name of its database table.</description>
-	///		</item>
-	///		<item>
-	///			<term>discriminator-value</term>
-	///			<description>
-	///				(optional - defaults to the FullClassName)  A value that distinguishes individual
-	///				subclasses, used for polymorphic behavior.
-	///			</description>
-	///		</item>
-	///		<item>
-	///			<term>mutable</term>
-	///			<description>
-	///				(optional - defaults to <c>true</c>)  Specifies that instances of the class
-	///				are (not) mutable.
-	///			</description>
-	///		</item>
-	///		<item>
-	///			<term>schema</term>
-	///			<description>(optional)  Override the schema name specified by the root <c>&lt;hibernate-mapping&gt;</c> element.</description>
-	///		</item>
-	///		<item>
-	///			<term>proxy</term>
-	///			<description>
-	///				(optional) Specifies an interface to use for lazy initializing proxies.  
-	///				You may specify the name of the class itself. 
-	///				(TODO: update once Proxies are implemented)
-	///			</description>
-	///		</item>
-	///		<item>
-	///			<term>dynamic-update</term>
-	///			<description>
-	///				(optional - defaults to <c>false</c>) Specifies the <c>UPDATE</c> SQL should 
-	///				be generated at runtime and contain only those columns whose values have changed.
-	///			</description>
-	///		</item>
-	///		<item>
-	///			<term>dynamic-insert</term>
-	///			<description>
-	///				(optional - defaults to <c>false</c>)  Specifies the <c>INSERT</c> SQL should 
-	///				be generated at runtime and contain only those columns whose values are not null.
-	///			</description>
-	///		</item>
-	///		<item>
-	///			<term>polymorphism</term>
-	///			<description>
-	///				(optional, defaults to <c>implicit</c>)  Determines whether implicit or explicit
-	///				query polymorphism is used.	
-	///			</description>
-	///		</item>
-	///		<item>
-	///			<term>where</term>
-	///			<description>
-	///				(optional) Specify an arbitrary SQL <c>WHERE</c> condition to be used 
-	///				when retrieving objects of this class.
-	///			</description>
-	///		</item>
-	///		<item>
-	///			<term>persister</term>
-	///			<description>(optional)  Specifies a custom <see cref="IClassPersister"/>.</description>
-	///		</item>
-	/// </list>
-	/// </remarks>
 	public class RootClass : PersistentClass
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( RootClass ) );
 
-		/// <summary></summary>
+		/// <summary>
+		/// The default name of the column for the Identifier
+		/// </summary>
+		/// <value><c>id</c> is the default column name for the Identifier.</value>
 		public const string DefaultIdentifierColumnName = "id";
-		/// <summary></summary>
+
+		/// <summary>
+		/// The default name of the column for the Discriminator
+		/// </summary>
+		/// <value><c>class</c> is the default column name for the Discriminator.</value>
 		public const string DefaultDiscriminatorColumnName = "class";
 
 		private Property identifierProperty;
@@ -106,74 +38,104 @@ namespace NHibernate.Mapping
 		private bool forceDiscriminator;
 		private string where;
 
-		/// <summary></summary>
-		public bool Polymorphic
-		{
-			set { polymorphic = value; }
-		}
-
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the <see cref="Property"/> that is used as the <c>id</c>.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Property"/> that is used as the <c>id</c>.
+		/// </value>
 		public override Property IdentifierProperty
 		{
 			get { return identifierProperty; }
 			set { identifierProperty = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the <see cref="Value"/> that contains information about the identifier.
+		/// </summary>
+		/// <value>The <see cref="Value"/> that contains information about the identifier.</value>
 		public override Value Identifier
 		{
 			get { return identifier; }
 			set { identifier = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets a boolean indicating if the mapped class has a Property for the <c>id</c>.
+		/// </summary>
+		/// <value><c>true</c> if there is a Property for the <c>id</c>.</value>
 		public override bool HasIdentifierProperty
 		{
 			get { return identifierProperty != null; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the <see cref="Value"/> that contains information about the discriminator.
+		/// </summary>
+		/// <value>The <see cref="Value"/> that contains information about the discriminator.</value>
 		public override Value Discriminator
 		{
 			get { return discriminator; }
 			set { discriminator = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets a boolean indicating if this mapped class is inherited from another. 
+		/// </summary>
+		/// <value>
+		/// <c>false</c> because this is the root mapped class.
+		/// </value>
 		public override bool IsInherited
 		{
 			get { return false; }
 		}
 
 		/// <summary>
-		/// Indicates if the object has subclasses
+		/// Gets or sets if the mapped class has subclasses.
 		/// </summary>
-		/// <remarks>
-		/// This value is set to True when a subclass is added and should not be set
-		/// through any other method - so no setter is declared for this property.
-		/// </remarks>
+		/// <value>
+		/// <c>true</c> if the mapped class has subclasses.
+		/// </value>
 		public override bool IsPolymorphic
 		{
 			get { return polymorphic; }
+			set { polymorphic = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="RootClass"/> of the class that is mapped in the <c>class</c> element.
+		/// </summary>
+		/// <value>
+		/// <c>this</c> since this is the root mapped class.
+		/// </value>
 		public override RootClass RootClazz
 		{
 			get { return this; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="Property"/> objects that this mapped class contains.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Property"/> objects that 
+		/// this mapped class contains.
+		/// </value>
 		public override ICollection PropertyClosureCollection
 		{
 			get { return PropertyCollection; }
 		}
 
 		/// <summary>
-		/// Returns all of the Tables the Root class covers.
+		/// Gets an <see cref="ICollection"/> of <see cref="Table"/> objects that this 
+		/// mapped class reads from and writes to.
 		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Table"/> objects that 
+		/// this mapped class reads from and writes to.
+		/// </value>
 		/// <remarks>
-		/// The RootClass should only have one item in the Collection - the Table that it comes from.
+		/// There is only one <see cref="Table"/> in the <see cref="ICollection"/> since
+		/// this is the root class.
 		/// </remarks>
 		public override ICollection TableClosureCollection
 		{
@@ -186,16 +148,26 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Adds a <see cref="Subclass"/> to the class hierarchy.
 		/// </summary>
-		/// <param name="subclass"></param>
+		/// <param name="subclass">The <see cref="Subclass"/> to add to the hierarchy.</param>
+		/// <remarks>
+		/// When a <see cref="Subclass"/> is added this mapped class has the property <see cref="IsPolymorphic"/>
+		/// set to <c>true</c>.
+		/// </remarks>
 		public override void AddSubclass( Subclass subclass )
 		{
 			base.AddSubclass( subclass );
 			polymorphic = true;
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets a boolean indicating if explicit polymorphism should be used in Queries.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if only classes queried on should be returned, <c>false</c>
+		/// if any class in the heirarchy should implicitly be returned.
+		/// </value>
 		public override bool IsExplicitPolymorphism
 		{
 			get { return explicitPolymorphism; }
@@ -203,41 +175,9 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or Sets the <see cref="Property"/> to use as the Version Property
+		/// Gets or sets the <see cref="Property"/> that is used as the version.
 		/// </summary>
-		/// <value>The <see cref="Property"/> to use for Versioning.</value>
-		/// <remarks>
-		/// <para>
-		/// The &lt;version&gt; element is optional and indicates that the table contains versioned data. 
-		/// This is particularly useful if you plan to use long transactions (see below). 
-		/// </para>
-		/// <para>
-		/// <list type="table">
-		///		<listheader>
-		///			<term>Attribute</term>
-		///			<description>Possible Values</description>
-		///		</listheader>
-		///		<item>
-		///			<term>column</term>
-		///			<description>
-		///				The name of the <c>column</c> holding the version number.  
-		///				Defaults to the Property name.
-		///			</description>
-		///		</item>
-		///		<item>
-		///			<term>name</term>
-		///			<description>The name of the Property in the Persistent Class.</description>
-		///		</item>
-		///		<item>
-		///			<term>type</term>
-		///			<description>
-		///				The <see cref="Type.IType"/> of the Property.  Defaults to an <see cref="Type.Int32Type"/>.  It 
-		///				be any <see cref="Type.IVersionType"/>.   
-		///			</description>
-		///		</item>
-		///	</list>
-		/// </para>
-		/// </remarks>
+		/// <value>The <see cref="Property"/> that is used as the version.</value>
 		public override Property Version
 		{
 			get { return version; }
@@ -245,71 +185,116 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets a value indicating if the <see cref="PersistentClass" /> is versioned
-		/// by NHibernate.
+		/// Gets a boolean indicating if the mapped class has a version property.
 		/// </summary>
-		/// <value><c>true</c> if there is a version property.</value>
+		/// <value><c>true</c> if there is a Property for a <c>version</c>.</value>
 		public override bool IsVersioned
 		{
 			get { return version != null; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the <see cref="ICacheConcurrencyStrategy"/> 
+		/// to use to read/write instances of the persistent class to the Cache.
+		/// </summary>
+		/// <value>The <see cref="ICacheConcurrencyStrategy"/> used with the Cache.</value>
 		public override ICacheConcurrencyStrategy Cache
 		{
 			get { return cache; }
 			set { cache = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or set a boolean indicating if the mapped class has properties that can be changed.
+		/// </summary>
+		/// <value><c>true</c> if the object is mutable.</value>
 		public override bool IsMutable
 		{
 			get { return mutable; }
 			set { mutable = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets a boolean indicating if the identifier is 
+		/// embedded in the class.
+		/// </summary>
+		/// <value><c>true</c> if the class identifies itself.</value>
+		/// <remarks>
+		/// An embedded identifier is true when using a <c>composite-id</c> specifying
+		/// properties of the class as the <c>key-property</c> instead of using a class
+		/// as the <c>composite-id</c>.
+		/// </remarks>
 		public override bool HasEmbeddedIdentifier
 		{
 			get { return embeddedIdentifier; }
 			set { embeddedIdentifier = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the <see cref="System.Type"/> of the Persister.
+		/// </summary>
+		/// <value>The <see cref="System.Type"/> of the Persister.</value>
 		public override System.Type Persister
 		{
 			get { return persister; }
 			set { persister = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="Table"/> of the class
+		/// that is mapped in the <c>class</c> element.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Table"/> of the class this mapped class.
+		/// </value>
 		public override Table RootTable
 		{
 			get { return Table; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the <see cref="PersistentClass"/> that this mapped class is extending.
+		/// </summary>
+		/// <value>
+		/// <c>null</c> since this is the root class.
+		/// </value>
+		/// <exception cref="InvalidOperationException">
+		/// Thrown when the setter is called.  The Superclass can not be set on the 
+		/// RootClass, only the Subclass can have a Superclass set.
+		/// </exception>
 		public override PersistentClass Superclass
 		{
 			get { return null; }
 			set { throw new InvalidOperationException( "Can not set the Superclass on a RootClass." ); }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the <see cref="Value"/> that contains information about the Key.
+		/// </summary>
+		/// <value>The <see cref="Value"/> that contains information about the Key.</value>
 		public override Value Key
 		{
 			get { return Identifier; }
 			set { throw new InvalidOperationException(); }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets a boolean indicating if only values in the discriminator column that
+		/// are mapped will be included in the sql.
+		/// </summary>
+		/// <value><c>true</c> if the mapped discriminator values should be forced.</value>
 		public override bool IsForceDiscriminator
 		{
 			get { return forceDiscriminator; }
 			set { this.forceDiscriminator = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the sql string that should be a part of the where clause.
+		/// </summary>
+		/// <value>
+		/// The sql string that should be a part of the where clause.
+		/// </value>
 		public override string Where
 		{
 			get { return where; }

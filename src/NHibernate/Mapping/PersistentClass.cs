@@ -202,20 +202,23 @@ namespace NHibernate.Mapping
 
 		/// <summary>
 		/// When implemented by a class, gets or set a boolean indicating 
-		/// if the PersistentClass has properties that can be changed.
+		/// if the mapped class has properties that can be changed.
 		/// </summary>
 		/// <value><c>true</c> if the object is mutable.</value>
+		/// <remarks>
+		/// The value of this is set by the <c>mutable</c> attribute. 
+		/// </remarks>
 		public abstract bool IsMutable { get; set; }
 
 		/// <summary>
 		/// When implemented by a class, gets a boolean indicating
-		/// if the PersistentClass has a Property for the <c>id</c>.
+		/// if the mapped class has a Property for the <c>id</c>.
 		/// </summary>
 		/// <value><c>true</c> if there is a Property for the <c>id</c>.</value>
 		public abstract bool HasIdentifierProperty { get; }
 
 		/// <summary>
-		/// When implemented by a class, gets the <see cref="Property"/>
+		/// When implemented by a class, gets or sets the <see cref="Property"/>
 		/// that is used as the <c>id</c>.
 		/// </summary>
 		/// <value>
@@ -244,50 +247,115 @@ namespace NHibernate.Mapping
 		/// <value>The <see cref="Value"/> that contains information about the discriminator.</value>
 		public abstract Value Discriminator { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets a boolean indicating if this
+		/// mapped class is inherited from another. 
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this class is a <c>subclass</c> or <c>joined-subclass</c>
+		/// that inherited from another <c>class</c>.
+		/// </value>
 		public abstract bool IsInherited { get; }
 
-		// see the comment in RootClass about why the polymorphic setter is commented out
-		/// <summary></summary>
-		public abstract bool IsPolymorphic { get; }
+		/// <summary>
+		/// When implemented by a class, gets or sets if the mapped class has subclasses or is
+		/// a subclass.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if the mapped class has subclasses or is a subclass.
+		/// </value>
+		public abstract bool IsPolymorphic { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets a boolean indicating if the mapped class
+		/// has a version property.
+		/// </summary>
+		/// <value><c>true</c> if there is a <c>&lt;version&gt;</c> property.</value>
 		public abstract bool IsVersioned { get; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or sets the <see cref="ICacheConcurrencyStrategy"/> 
+		/// to use to read/write instances of the persistent class to the Cache.
+		/// </summary>
+		/// <value>The <see cref="ICacheConcurrencyStrategy"/> used with the Cache.</value>
 		public abstract ICacheConcurrencyStrategy Cache { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or sets the <see cref="PersistentClass"/>
+		/// that this mapped class is extending.
+		/// </summary>
+		/// <value>
+		/// The <see cref="PersistentClass"/> that this mapped class is extending.
+		/// </value>
 		public abstract PersistentClass Superclass { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or sets a boolean indicating if 
+		/// explicit polymorphism should be used in Queries.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if only classes queried on should be returned, <c>false</c>
+		/// if any class in the heirarchy should implicitly be returned.</value>
+		/// <remarks>
+		/// The value of this is set by the <c>polymorphism</c> attribute. 
+		/// </remarks>
 		public abstract bool IsExplicitPolymorphism { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets an <see cref="ICollection"/> 
+		/// of <see cref="Property"/> objects that this mapped class contains.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Property"/> objects that 
+		/// this mapped class contains.
+		/// </value>
+		/// <remarks>
+		/// This is all of the properties of this mapped class and each mapped class that
+		/// it is inheriting from.
+		/// </remarks>
 		public abstract ICollection PropertyClosureCollection { get; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets an <see cref="ICollection"/> 
+		/// of <see cref="Table"/> objects that this mapped class reads from
+		/// and writes to.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Table"/> objects that 
+		/// this mapped class reads from and writes to.
+		/// </value>
+		/// <remarks>
+		/// This is all of the tables of this mapped class and each mapped class that
+		/// it is inheriting from.
+		/// </remarks>
 		public abstract ICollection TableClosureCollection { get; }
 
 		/// <summary>
-		/// 
+		/// Adds a <see cref="Property"/> that is implemented by a subclass.
 		/// </summary>
-		/// <param name="p"></param>
+		/// <param name="p">The <see cref="Property"/> implemented by a subclass.</param>
 		public virtual void AddSubclassProperty( Property p )
 		{
 			subclassProperties.Add( p );
 		}
 
 		/// <summary>
-		/// 
+		/// Adds a <see cref="Table"/> that a subclass is stored in.
 		/// </summary>
-		/// <param name="table"></param>
+		/// <param name="table">The <see cref="Table"/> the subclass is stored in.</param>
 		public virtual void AddSubclassTable( Table table )
 		{
 			subclassTables.Add( table );
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="Property"/> objects that
+		/// this mapped class contains and that all of its subclasses contain.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Property"/> objects that
+		/// this mapped class contains and that all of its subclasses contain.
+		/// </value>
 		public virtual ICollection SubclassPropertyClosureCollection
 		{
 			get
@@ -300,9 +368,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Returns an ICollection of all of the Tables that the subclass finds its information
-		/// in.  
+		/// Gets an <see cref="ICollection"/> of all of the <see cref="Table"/> objects that the 
+		/// subclass finds its information in.  
 		/// </summary>
+		/// <value>An <see cref="ICollection"/> of <see cref="Table"/> objects.</value>
 		/// <remarks>It adds the TableClosureCollection and the subclassTables into the ICollection.</remarks>
 		public virtual ICollection SubclassTableClosureCollection
 		{
@@ -315,39 +384,83 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the <see cref="System.Type"/> to use as a Proxy.
+		/// </summary>
+		/// <value>The <see cref="System.Type"/> to use as a Proxy.</value>
+		/// <remarks>
+		/// The value of this is set by the <c>proxy</c> attribute. 
+		/// </remarks>
 		public virtual System.Type ProxyInterface
 		{
 			get { return proxyInterface; }
 			set { proxyInterface = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets a boolean indicating if only values in the discriminator column that
+		/// are mapped will be included in the sql.
+		/// </summary>
+		/// <value><c>true</c> if the mapped discriminator values should be forced.</value>
+		/// <remarks>
+		/// The value of this is set by the <c>force</c> attribute on the <c>discriminator</c> element. 
+		/// </remarks>
 		public virtual bool IsForceDiscriminator
 		{
 			get { return false; }
 			set { throw new NotImplementedException( "subclasses need to override this method" ); }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or sets a boolean indicating if the identifier is 
+		/// embedded in the class.
+		/// </summary>
+		/// <value><c>true</c> if the class identifies itself.</value>
+		/// <remarks>
+		/// An embedded identifier is true when using a <c>composite-id</c> specifying
+		/// properties of the class as the <c>key-property</c> instead of using a class
+		/// as the <c>composite-id</c>.
+		/// </remarks>
 		public abstract bool HasEmbeddedIdentifier { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or sets the <see cref="System.Type"/> of 
+		/// the Persister.
+		/// </summary>
+		/// <value>The <see cref="System.Type"/> of the Persister.</value>
+		/// <remarks>The value of this is set by the <c>persister</c> attribute.</remarks>
 		public abstract System.Type Persister { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets the <see cref="Table"/> of the class
+		/// that is mapped in the <c>class</c> element.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Table"/> of the class that is mapped in the <c>class</c> element.
+		/// </value>
 		public abstract Table RootTable { get; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets the <see cref="RootClass"/> of the class
+		/// that is mapped in the <c>class</c> element.
+		/// </summary>
+		/// <value>
+		/// The <see cref="RootClass"/> of the class that is mapped in the <c>class</c> element.
+		/// </value>
 		public abstract RootClass RootClazz { get; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or sets the <see cref="Value"/>
+		/// that contains information about the Key.
+		/// </summary>
+		/// <value>The <see cref="Value"/> that contains information about the Key.</value>
 		public abstract Value Key { get; set; }
 
 		/// <summary>
-		/// 
+		/// Creates the <see cref="PrimaryKey"/> for the <see cref="Table"/>
+		/// this type is persisted in.
 		/// </summary>
-		/// <param name="dialect"></param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> that is used to Alias columns.</param>
 		public virtual void CreatePrimaryKey( Dialect.Dialect dialect )
 		{
 			PrimaryKey pk = new PrimaryKey();
@@ -361,7 +474,16 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or sets the sql string that should 
+		/// be a part of the where clause.
+		/// </summary>
+		/// <value>
+		/// The sql string that should be a part of the where clause.
+		/// </value>
+		/// <remarks>
+		/// The value of this is set by the <c>where</c> attribute. 
+		/// </remarks>
 		public abstract string Where { get; set; }
 
 	}

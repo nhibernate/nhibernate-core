@@ -268,7 +268,7 @@ namespace NHibernate.Cfg
 								col.Type = NHibernate.String;
 							}
 						}
-						model.Polymorphic = true;
+						model.IsPolymorphic = true;
 						if ( subnode.Attributes["force"] != null && "true".Equals( subnode.Attributes["force"].Value ) ) 
 						{
 							model.IsForceDiscriminator = true;
