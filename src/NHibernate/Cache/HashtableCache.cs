@@ -53,7 +53,19 @@ namespace NHibernate.Cache {
 			set	{ region = value; }
 		}
 
-
+		public void Lock( object key )		
+		{	
+		}
+		
+		public void Unlock( object key )		
+		{		
+		}
+		
+		public long NextTimestamp()			
+		{
+			return Timestamper.Next();
+		}
+	
 		#endregion
 	}
 }

@@ -1,0 +1,26 @@
+using System;
+using System.Collections;
+
+namespace NHibernate.Cache 
+{
+	/// <summary>
+	/// Support for pluggable caches
+	/// </summary>
+	public interface ICacheProvider		
+	{
+		/// <summary>
+		/// Configure the cache
+		/// </summary>
+		/// <param name="regionName">the name of the cache region</param>
+		/// <param name="properties">configuration settings</param>
+		/// <returns></returns>
+		ICache BuildCache(string regionName, ICollection properties );
+			
+		/// <summary>
+		/// generate a timestamp
+		/// </summary>
+		/// <returns></returns>
+		long NextTimestamp();
+	}
+}
+
