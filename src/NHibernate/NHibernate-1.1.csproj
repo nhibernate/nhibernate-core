@@ -1402,7 +1402,6 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-                <Folder RelPath = "Sql\" />
                 <File
                     RelPath = "SqlCommand\Alias.cs"
                     SubType = "Code"
