@@ -1,83 +1,32 @@
 <?xml version="1.0" ?>
-<project name="NHibernate" default="buildDebug" basedir="." xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd">
+
+<project 
+	name="NHibernate.Test" 
+	default="build" 
+	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+>
 	
-	<property name="nant.settings.currentframework" value="net-1.1" />
-	<property name="external.bin" value="../../external-bin" />
-	<property name="NHibernate.DomainModel.bin" value="../NHibernate.DomainModel/bin" />
-	<property name="NHibernate.bin" value="../NHibernate/bin" />
+	<target name="build">
 	
-	<target name="buildDebug">
-	
-		<delete dir="bin/Debug" failonerror="false" />
-		<mkdir dir="bin/Debug" />
+		<csc 
+			target="library" 
+			define="${current.build.defines}"
+			debug="${build.debug}"
+			output="${build.dir}/bin/${nant.project.name}.dll" 
+		>
 		
-		<csc target="library" output="bin/Debug/NHibernate.Test.dll" debug="true">
 			<references>
 				<includes name="System.dll" />
 				<includes name="System.XML.dll" />
 				<includes name="System.Data.dll" />
-				<includes name="${external.bin}/DotNetMock.dll" />
-				<includes name="${external.bin}/DotNetMock.Framework.dll" />
-				<includes name="${external.bin}/log4net.dll" />
-				<includes name="${external.bin}/nunit.framework.dll"/>
-				<includes name="${NHibernate.DomainModel.bin}/Debug/NHibernate.DomainModel.dll" />
-				<includes name="${NHibernate.bin}/Debug/NHibernate.dll" />
+				<includes name="${build.dir}/bin/DotNetMock.dll" />
+				<includes name="${build.dir}/bin/DotNetMock.Framework.dll" />
+				<includes name="${build.dir}/bin/log4net.dll" />
+				<includes name="${build.dir}/bin/nunit.framework.dll"/>
+				<includes name="${build.dir}/bin/NHibernate.DomainModel.dll" />
+				<includes name="${build.dir}/bin/NHibernate.dll" />
 			</references>
-			<sources>
-				<includes name="**/*.cs" />
-			</sources>
-		</csc>
-		
-		<copy 
-			file="App.config"
-			tofile="bin/Debug/NHibernate.Test.dll.config" 
-		/>
-		
-		<copy todir="bin/Debug">
-			<fileset basedir="${external.bin}">
-				<includes name="log4net.*" />
-			</fileset>
-		</copy>
-		<copy todir="bin/Debug">
-			<fileset basedir="${external.bin}">
-				<includes name="DotNetMock.*" />
-			</fileset>
-		</copy>
-		<copy todir="bin/Debug">
-			<fileset basedir="${external.bin}">
-				<includes name="nunit.framework.*" />
-			</fileset>
-		</copy>
-		<copy todir="bin/Debug">
-			<fileset basedir="${NHibernate.DomainModel.bin}/Debug">
-				<includes name="*.*" />
-			</fileset>
-		</copy>
-		<copy todir="bin/Debug">
-			<fileset basedir="${NHibernate.bin}/Debug">
-				<includes name="*.*" />
-			</fileset>
-		</copy>
 			
-	</target>
-	
-	<target name="buildRelease">
-	
-		<delete dir="bin/Release" failonerror="false" />
-		<mkdir dir="bin/Release" />
-		
-		<csc target="library" output="bin/Release/NHibernate.Test.dll" debug="false">
-			<references>
-				<includes name="System.dll" />
-				<includes name="System.XML.dll" />
-				<includes name="System.Data.dll" />
-				<includes name="${external.bin}/DotNetMock.dll" />
-				<includes name="${external.bin}/DotNetMock.Framework.dll" />
-				<includes name="${external.bin}/log4net.dll" />
-				<includes name="${external.bin}/nunit.framework.dll"/>
-				<includes name="${NHibernate.DomainModel.bin}/Debug/NHibernate.DomainModel.dll" />
-				<includes name="${NHibernate.bin}/Debug/NHibernate.dll" />
-			</references>
 			<sources>
 				<includes name="**/*.cs" />
 			</sources>
@@ -85,44 +34,15 @@
 		
 		<copy 
 			file="App.config"
-			tofile="bin/Debug/NHibernate.Test.dll.config" 
+			tofile="${build.dir}/bin/NHibernate.Test.dll.config" 
 		/>
-		
-		<copy todir="bin/Release">
-			<fileset basedir="${external.bin}">
-				<includes name="log4net.*" />
-			</fileset>
-		</copy>
-		
-		<copy todir="bin/Release">
-			<fileset basedir="${external.bin}">
-				<includes name="DotNetMock.*" />
-			</fileset>
-		</copy>
-		<copy todir="bin/Release">
-			<fileset basedir="${external.bin}">
-				<includes name="nunit.framework.*" />
-			</fileset>
-		</copy>
-		
-		<copy todir="bin/Release">
-			<fileset basedir="${NHibernate.DomainModel.bin}/Release">
-				<includes name="*.*" />
-			</fileset>
-		</copy>
-		
-		<copy todir="bin/Release">
-			<fileset basedir="${NHibernate.bin}/Release">
-				<includes name="*.*" />
-			</fileset>
-		</copy>
 			
 	</target>
 	
 	<target name="test">
 		<nunit2>
-			<formatter type="Xml" usefile="true" extension=".xml" />
-			<test assemblyname="bin/Debug/NHibernate.Test.dll" appconfig="bin/Debug/NHibernate.Test.dll.config" />
+			<formatter type="Xml" usefile="true" extension=".xml" outputdir="${build.dir}/bin" />
+			<test assemblyname="${build.dir}/bin/NHibernate.Test.dll" appconfig="${build.dir}/bin/NHibernate.Test.dll.config" />
 		</nunit2>
 	</target>
 </project>

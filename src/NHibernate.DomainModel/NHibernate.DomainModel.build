@@ -1,47 +1,39 @@
 <?xml version="1.0" ?>
-<project name="NHibernate.DomainModel" default="buildDebug" basedir="." xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd">
-	
-	<property name="nant.settings.currentframework" value="net-1.1" />
-	<property name="externalBin" value="../../external-bin" />
-	
-	
-	<target name="buildDebug">
+
+<project 
+	name="NHibernate.DomainModel" 
+	default="build" 
+	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+>
+
+	<!--
+        Required properties:
+            * build.dir             - (path) root level to build to, assemblies will go in ${build.dir}/bin
+            * build.debug           - (true|false) debug build?
+            * current.build.defines - framework-specific build defines
+    -->
+	<target name="build" description="Build the DomainModel that will be used by the Tests">
 		
-		<delete dir="bin/Debug" failonerror="false" />
-		<mkdir dir="bin/Debug" />
+		<csc 
+			target="library" 
+			define="${current.build.defines}" 
+			debug="${build.debug}"
+			output="${build.dir}/bin/${nant.project.name}.dll" 
+		>
 		
-		<csc target="library" output="bin/Debug/NHibernate.DomainModel.dll" debug="true">
 			<references>
 				<includes name="System.dll" />
 				<includes name="System.XML.dll" />
 				<includes name="System.Data.dll" />
+				<includes name="${build.dir}/bin/NHibernate.dll" />
 			</references>
+			
 			<resources prefix="NHibernate.DomainModel" dynamicprefix="true">
 				<includes name="**/*.xml" />
 				<excludes name="bin/**/*.xml" />
 			</resources>
-			<sources>
-				<includes name="**/*.cs" />
-			</sources>
-		</csc>
 			
-	</target>
-	
-	<target name="buildRelease">
-		
-		<delete dir="bin/Release" failonerror="false" />
-		<mkdir dir="bin/Release" />
-		
-		<csc target="library" output="bin/Release/NHibernate.DomainModel.dll" debug="false">
-			<references>
-				<includes name="System.dll" />
-				<includes name="System.XML.dll" />
-				<includes name="System.Data.dll" />
-			</references>
-			<resources prefix="NHibernate.DomainModel" dynamicprefix="true">
-				<includes name="**/*.xml" />
-			</resources>
-			<sources>
+			<sources failonempty="true">
 				<includes name="**/*.cs" />
 			</sources>
 		</csc>

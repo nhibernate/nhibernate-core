@@ -1,0 +1,15 @@
+## 
+##	This file contains sample commands to build NHibernate using the build files.
+##	It should be run from the nhibernate directory that contains the 
+##	NHibernateSolution.build file.
+##	
+##	If you are going to run the Test make sure to set the connection information.
+##
+##
+
+
+NAnt -D:project.config=release clean build >output-release-build.log
+
+NAnt clean build >output-debug-build.log
+
+NAnt -D:project.config=release -D:nhibernate.dialect="NHibernate.Dialect.MsSql2000Dialect" -D:nhibernate.connection.driver_class="NHibernate.Driver.SqlClientDriver" -D:nhibernate.connection.connection_string="Server=localhost;initial catalog=nhibernate;User ID=blah;Password=blah;Min Pool Size=2" clean package >output-release-package.log
