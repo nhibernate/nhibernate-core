@@ -27,14 +27,15 @@
 			name="Version" 
 			type="Int64" 
 		/>
-		<!--
-		TODO: commented out because couldn't find a Type
+		<!-- TODO: need to specify System.Object - nh can't guess this one http://jira.nhibernate.org:8080/browse/NH-82-->
 		<property 
 			name="Serial" 
 			column="serial_" 
+			type="System.Object"
+			length="4000"
 		/>
-		-->
-		<property name="Buf" />
+		
+		<property name="Buf" length="500"/>
 		<property name="X" />
 	</class>
 </hibernate-mapping>
