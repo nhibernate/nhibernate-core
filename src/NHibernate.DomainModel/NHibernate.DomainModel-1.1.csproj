@@ -671,6 +671,15 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "NHSpecific\LazyLoadBug.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\LazyLoadBug.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "NHSpecific\Node.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -403,6 +403,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override void BeginRead()
 		{
+			base.BeginRead();
 			tempList = new ArrayList();
 		}
 

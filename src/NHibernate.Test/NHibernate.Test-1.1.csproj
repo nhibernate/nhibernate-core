@@ -437,6 +437,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NHSpecificTest\LazyLoadBugTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHSpecificTest\MapFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
