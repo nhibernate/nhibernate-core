@@ -72,7 +72,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <value>The identifier of the Entity in the database if one has been assigned.</value>
 		/// <remarks>This might be <c>null</c> when the <see cref="EntityEntry.Status"/> is 
-		/// <see cref="Status.Saving"/> and the database generates the id.</remarks>
+		/// <see cref="Impl.Status.Saving"/> and the database generates the id.</remarks>
 		public object Id
 		{
 			get { return _id; }

@@ -6,7 +6,7 @@ namespace NHibernate.Type
 {
 	/// <summary>
 	/// Maps a <see cref="System.Char"/> Property 
-	/// to a <see cref="DbType.Char"/> column.
+	/// to a DbType.Char column.
 	/// </summary>
 	public class CharType : ValueTypeType, IDiscriminatorType
 	{
