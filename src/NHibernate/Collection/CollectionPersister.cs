@@ -79,10 +79,12 @@ namespace NHibernate.Collection {
 			ownerClass = collection.OwnerClass;
 
 			sqlOrderByString = collection.OrderBy;
-			
 			hasOrder = sqlOrderByString!=null;
+			sqlOrderByStringTemplate = hasOrder ? Template.RenderOrderByStringTemplate(sqlOrderByString, dialect) : null;
+
 			sqlWhereString = collection.Where;
 			hasWhere = sqlWhereString!=null;
+			sqlWhereStringTemplate = hasWhere ? Template.RenderWhereStringTemplate(sqlWhereString, dialect) : null;
 
 			cache = collection.Cache;
 
