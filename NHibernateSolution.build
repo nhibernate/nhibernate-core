@@ -8,7 +8,7 @@
 
 	<!-- global project settings -->
 	<property name="project.name" value="nhibernate" />
-	<property name="project.version" value="0.0.5000.3" />
+	<property name="project.version" value="0.0.5000.4" />
 	
 	<!-- default configuration -->
 	<property name="project.config" value="debug" />
