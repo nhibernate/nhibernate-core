@@ -6,9 +6,9 @@ namespace NHibernate.Dialect {
 	/// <summary>
 	/// An SQL dialect for Interbase.
 	/// </summary>
-	public class InterbaseDialect {
+	public class InterbaseDialect : Dialect {
 
-		public InterbaseDialect() : base() {
+		public InterbaseDialect() {
 
 			/* Java mapping was:
 			
@@ -54,21 +54,21 @@ namespace NHibernate.Dialect {
 			*/
 		}
 
-		public string GetAddColumnString() {
-			return "add";
+		public override string AddColumnString {
+			get { return "add"; }
 		}
-		public string GetSequenceNextValString(string sequenceName) {
+		public override string GetSequenceNextValString(string sequenceName) {
 			return string.Concat( "select gen_id( ", sequenceName, ", 1 ) from RDB$DATABASE" );
 		}
-		public string GetCreateSequenceString(string sequenceName) {
+		public override string GetCreateSequenceString(string sequenceName) {
 			return "create generator " + sequenceName;
 		}
-		public string GetDropSequenceString(string sequenceName) {
+		public override string GetDropSequenceString(string sequenceName) {
 			return string.Concat("delete from RDB$GENERATORS where RDB$GENERATOR_NAME = '", sequenceName.ToUpper(), "'" );
 		}
 	
-		public bool SupportsSequences() {
-			return true;
+		public override bool SupportsSequences {
+			get { return true; }
 		}
 	}
 }

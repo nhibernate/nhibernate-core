@@ -56,30 +56,30 @@ namespace NHibernate.Dialect {
 			*/
 		}
 	
-		public string GetAddColumnString() {
-			return "add";
+		public override string AddColumnString {
+			get { return "add"; }
 		}
 	
-		public string GetSequenceNextValString(string sequenceName) {
+		public override string GetSequenceNextValString(string sequenceName) {
 			return  string.Concat( "select ", sequenceName, ".nextval from dual" );
 		}
-		public string GetCreateSequenceString(string sequenceName) {
+		public override string GetCreateSequenceString(string sequenceName) {
 			return "create sequence " + sequenceName;
 		}
-		public string GetDropSequenceString(string sequenceName) {
+		public override string GetDropSequenceString(string sequenceName) {
 			return "drop sequence " + sequenceName;
 		}
 	
-		public string GetCascadeConstraintsString() {
-			return " cascade constraints";
+		public string CascadeConstraintsString {
+			get { return " cascade constraints"; }
 		}
 	
-		public bool SupportsForUpdateNowait() {
-			return true;
+		public bool SupportsForUpdateNowait {
+			get { return true; }
 		}
 	
-		public bool SupportsSequences() {
-			return true;
+		public override bool SupportsSequences {
+			get { return true; }
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Collections;
 
 
 namespace NHibernate.Connection {
@@ -21,7 +22,7 @@ namespace NHibernate.Connection {
 			throw new InvalidOperationException("The user must supply an ADO.NET connection");
 		}
 
-		public void Configure(ConnectionProviderSettings settings) {
+		public void Configure(IDictionary settings) {
 			log.Warn("No connection properties specified - the user must supply an ADO.NET connection");
 		}
 

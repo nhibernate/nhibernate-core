@@ -78,28 +78,28 @@ namespace NHibernate.Dialect {
 			*/
 		}
 
-		public string GetAddColumnString() {
-			return "add column";
+		public override string AddColumnString {
+			get{ return "add column"; }
 		}
-		public bool DropConstraints() {
-			return false;
+		public override bool DropConstraints {
+			get { return false; }
 		}
-		public bool QualifyIndexName() {
-			return false;
-		}
-	
-		public bool SupportsIdentityColumns() {
-			return true;
-		}
-		public string GetIdentitySelectString() {
-			return "SELECT LAST_INSERT_ID()";
+		public override bool QualifyIndexName {
+			get { return false; }
 		}
 	
-		public string GetIdentityColumnString() {
-			return "NOT NULL AUTO_INCREMENT";
+		public override bool SupportsIdentityColumns {
+			get { return true; }
+		}
+		public string GetIdentitySelectString {
+			get { return "SELECT LAST_INSERT_ID()"; }
 		}
 	
-		public string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey) {
+		public string GetIdentityColumnString {
+			get { return "NOT NULL AUTO_INCREMENT"; }
+		}
+	
+		public override string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey) {
 			string cols = StringHelper.Join(StringHelper.CommaSpace, foreignKey);
 			return new StringBuilder(30)
 				.Append(" add index (")

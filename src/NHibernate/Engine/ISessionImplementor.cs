@@ -32,5 +32,34 @@ namespace NHibernate.Engine {
 		/// <param name="coolection"></param>
 		/// <param name="writing"></param>
 		void Initialize(PersistentCollection coolection, bool writing);
+	
+		/// <summary>
+		/// Notify the session that the transaction completed, so we no longer own the old locks.
+		/// (Also we should release cache softlocks.)
+		/// </summary>
+		void AfterTransactionCompletion();
+
+		/// <summary>
+		/// Return the identifier of the persistent object, or null if transient
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		object GetEntityIdentifier(object obj);
+
+		/// <summary>
+		/// Return the identifier of the persistent or transient object, or throw
+		/// an exception if the instance is "unsaved"
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		object GetEntityIdentifierIfNotUnsaved(object obj);
+
+		/// <summary>
+		/// Instantiate the entity class, initilizing with the given identifier
+		/// </summary>
+		/// <param name="?"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		object Instantiate(System.Type clazz, object id);
 	}
 }

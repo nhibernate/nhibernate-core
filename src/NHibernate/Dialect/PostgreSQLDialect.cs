@@ -6,9 +6,9 @@ namespace NHibernate.Dialect {
 	/// <summary>
 	///  An SQL dialect for PostgreSQL.
 	/// </summary>
-	public class PostgreSQLDialect {
+	public class PostgreSQLDialect : Dialect {
 
-		public PostgreSQLDialect() : base()	{
+		public PostgreSQLDialect()	{
 
 			/* Java mapping was:
 			Types.BIT, "BOOL" );
@@ -38,8 +38,7 @@ namespace NHibernate.Dialect {
 			Register( SqlDbType.VarChar, "VARCHAR($l)" );
 			Register( SqlDbType.Float, "FLOAT4" );
 			Register( SqlDbType.Real, "FLOAT8" );
-			Register( SqlDbType.DATE, "DATE" );
-			Register( SqlDbType.TIME, "TIME" );
+			Register( SqlDbType.DateTime, "DATE" );
 			Register( SqlDbType.Timestamp, "TIMESTAMP" );
 			Register( SqlDbType.VarBinary, "BYTEA" );
 			Register( SqlDbType.Text, "TEXT" );
@@ -52,28 +51,28 @@ namespace NHibernate.Dialect {
 			*/
 		}
 
-		public string GetAddColumnString() {
-			return "add column";
+		public override string AddColumnString {
+			get { return "add column"; }
 		}
-		public bool DropConstraints() {
-			return false;
+		public override bool DropConstraints {
+			get { return false; }
 		}
-		public string GetSequenceNextValString(string sequenceName) {
+		public override string GetSequenceNextValString(string sequenceName) {
 			return string.Concat( "select nextval ('", sequenceName, "')" );
 		}
-		public string GetCreateSequenceString(string sequenceName) {
+		public override string GetCreateSequenceString(string sequenceName) {
 			return "create sequence " + sequenceName;
 		}
-		public string GetDropSequenceString(string sequenceName) {
+		public override string GetDropSequenceString(string sequenceName) {
 			return "drop sequence " + sequenceName;
 		}
 	
-		public string GetCascadeConstraintsString() {
-			return " cascade";
+		public string CascadeConstraintsString {
+			get { return " cascade"; }
 		}
 	
-		public bool SupportsSequences() {
-			return true;
+		public override bool SupportsSequences {
+			get { return true; }
 		}
 	}
 }

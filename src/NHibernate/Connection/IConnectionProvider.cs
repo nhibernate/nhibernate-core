@@ -17,7 +17,7 @@ namespace NHibernate.Connection {
 		/// Initialize the connection provider from the given properties.
 		/// </summary>
 		/// <param name="settings">The connection provider settings</param>
-		void Configure(ConnectionProviderSettings settings); 
+		void Configure(IDictionary settings); 
 
 		/// <summary>
 		/// Grab a connection 

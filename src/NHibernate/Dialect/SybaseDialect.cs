@@ -52,32 +52,32 @@ namespace NHibernate.Dialect {
 			*/
 		}
 
-		public string GetAddColumnString() {
-			return "add";
+		public override string AddColumnString {
+			get { return "add"; }
 		}
-		public string GetNullColumnString() {
-			return " null";
+		public override string NullColumnString {
+			get { return " null"; }
 		}
-		public bool QualifyIndexName() {
-			return false;
-		}
-	
-		public bool SupportsForUpdate() {
-			return false;
+		public override bool QualifyIndexName {
+			get { return false; }
 		}
 	
-		public bool SupportsIdentityColumns() {
-			return true;
-		}
-		public string GetIdentitySelectString() {
-			return "select @@identity";
-		}
-		public string GetIdentityColumnString() {
-			return "IDENTITY NOT NULL";
+		public override bool SupportsForUpdate {
+			get { return false; }
 		}
 	
-		public string GetNoColumnsInsertString() {
-			return "DEFAULT VALUES";
+		public override bool SupportsIdentityColumns {
+			get { return true; }
+		}
+		public override string IdentitySelectString {
+			get { return "select @@identity"; }
+		}
+		public override string IdentityColumnString {
+			get { return "IDENTITY NOT NULL"; } 
+		}
+
+		public override string NoColumnsInsertString {
+			get { return "DEFAULT VALUES"; }
 		}
 	}
 }

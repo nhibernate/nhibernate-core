@@ -6,7 +6,7 @@ namespace NHibernate.Dialect {
 	/// <summary>
 	/// An SQL dialect compatible with HSQLDB (Hypersonic SQL).
 	/// </summary>
-	public class HSQLDialect {
+	public class HSQLDialect : Dialect {
 
 		public HSQLDialect() : base() {
 
@@ -57,40 +57,40 @@ namespace NHibernate.Dialect {
 			*/
 		}
 
-		public string GetAddColumnString() {
-			return "add column";
+		public override string AddColumnString {
+			get { return "add column"; }
 		}
 	
-		public bool HasAlterTable(){
-			return false;
+		public override bool HasAlterTable {
+			get { return false; }
 		}
 	
-		public bool DropConstraints() {
-			return false;
+		public override bool DropConstraints {
+			get { return false; }
 		}
 	
-		public bool SupportsIdentityColumns() {
-			return true;
+		public override bool SupportsIdentityColumns {
+			get { return true; }
 		}
 
-		public string GetIdentityColumnString() {
-			return "NOT NULL IDENTITY";
+		public override string IdentityColumnString {
+			get { return "NOT NULL IDENTITY"; }
 		}
 
-		public string GetIdentitySelectString() {
-			return "call IDENTITY()";
+		public override string IdentitySelectString {
+			get { return "call IDENTITY()"; }
 		}
 
-		public string GetIdentityInsertString() {
-			return "null";
+		public override string IdentityInsertString {
+			get { return "null"; }
 		}
 	
-		public bool SupportsForUpdate() {
-			return false;
+		public override bool SupportsForUpdate {
+			get { return false; }
 		}
 	
-		public bool SupportsUnique() {
-			return false;
+		public override bool SupportsUnique {
+			get { return false; }
 		}
 	}
 }

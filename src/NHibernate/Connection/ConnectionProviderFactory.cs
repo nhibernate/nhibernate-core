@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Collections;
 using System.Configuration;
+using NHibernate.Cfg;
 
 namespace NHibernate.Connection {
 
@@ -16,17 +17,19 @@ namespace NHibernate.Connection {
 			throw new InvalidOperationException();
 		}
 
-		public static IConnectionProvider NewConnectionProvider(ConnectionProviderSettings settings) {
+		public static IConnectionProvider NewConnectionProvider(IDictionary settings) {
 			IConnectionProvider connections = null;
-			
-			if (settings.Type != null) {
+			string providerClass = settings[Cfg.Environment.ConnectionProvider] as string;
+			if (providerClass != null) {
 				try {
-					log.Info("Intitializing connection provider: " + settings.Type);
-					connections = (IConnectionProvider) Activator.CreateInstance(settings.Type);
+					log.Info("Intitializing connection provider: " + providerClass);
+					connections = (IConnectionProvider) Activator.CreateInstance(System.Type.GetType(providerClass));
 				} catch (Exception e) {
 					log.Fatal("Could not instantiate connection provider", e);
-					throw new HibernateException("Could not instantiate connection provider: " + settings.Type.FullName);
+					throw new HibernateException("Could not instantiate connection provider: " + providerClass);
 				}
+			} else {
+				connections = new UserSuppliedConnectionProvider();
 			}
 			connections.Configure(settings);
 			return connections;

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Collections;
 using System.Data.SqlClient;
 
 namespace NHibernate.Connection {
@@ -19,7 +20,7 @@ namespace NHibernate.Connection {
 				throw new ADOException("Could not close SqlServer connection", e);
 			}
 		}
-		public void Configure(ConnectionProviderSettings settings) {
+		public void Configure(IDictionary settings) {
 			log.Info("Configuring SqlServerConnectionProvider");
 			//TODO: Get the connection string from the settings
 		}

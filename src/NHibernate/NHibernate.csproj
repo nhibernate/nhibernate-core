@@ -312,11 +312,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Connection\ConnectionProviderSettings.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Connection\IConnectionProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -377,17 +372,22 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Dialect\SAPDBDialect.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Dialect\SybaseDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Dialect\TypeNames.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\Cascades.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\IBatcher.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -403,6 +403,16 @@
                 />
                 <File
                     RelPath = "Engine\ISessionImplementor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\RowSelection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\TypedValue.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -428,6 +438,11 @@
                 />
                 <File
                     RelPath = "Metadata\CollectionMetadata.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\IQueryable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -498,6 +513,21 @@
                 />
                 <File
                     RelPath = "Sql\Update.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Transaction\ITransactionFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Transaction\Transaction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Transaction\TransactionFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
