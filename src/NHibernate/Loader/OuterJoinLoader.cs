@@ -7,7 +7,6 @@ using NHibernate.Collection;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Persister;
-using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -424,8 +423,9 @@ namespace NHibernate.Loader
 		/// <param name="suffix"></param>
 		private static void AppendSelectString(StringBuilder buf, ILoadable persister, string alias, string suffix) 
 		{
-			buf.Append( persister.IdentifierSelectFragment(alias,suffix) )
-				.Append( persister.PropertySelectFragment(alias, suffix) );
+			//TODO: HACKs with ToString()
+			buf.Append( persister.IdentifierSelectFragment(alias,suffix).ToString() )
+				.Append( persister.PropertySelectFragment(alias, suffix).ToString() );
 		}
 
 		protected override string[] Suffixes 
@@ -463,6 +463,7 @@ namespace NHibernate.Loader
 					oj.Subpersister.IdentifierColumnNames,
 					JoinType.LeftOuterJoin
 					);
+				
 				outerjoin.AddJoins(
 					oj.Subpersister.FromJoinFragment(oj.Subalias, false, true),
 					oj.Subpersister.WhereJoinFragment(oj.Subalias, false, true)

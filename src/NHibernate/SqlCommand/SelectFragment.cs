@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Text;
 
-using NHibernate.Sql;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -14,7 +13,6 @@ namespace NHibernate.SqlCommand
 	{
 		private string suffix;
 		private IList columns = new ArrayList();
-		//private IList aliases = new ArrayList();
 		private IList columnAliases = new ArrayList();
 		private Dialect.Dialect dialect;
 
@@ -110,9 +108,6 @@ namespace NHibernate.SqlCommand
 			{
 				string col = columns[i] as string;
 				if(i > 0 || includeLeadingComma) buf.Append(StringHelper.CommaSpace);
-				
-//				string alias = aliases[i] as string;
-//				if (alias!=null) buf.Append(alias).Append(StringHelper.Dot);
 				
 				string columnAlias = columnAliases[i] as string;
 				buf.Append(col)

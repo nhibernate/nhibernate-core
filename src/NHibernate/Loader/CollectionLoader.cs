@@ -55,25 +55,6 @@ namespace NHibernate.Loader
 			if(persister.HasOrdering) selectBuilder.SetOrderByClause(persister.GetSQLOrderByString(alias));
 
 			this.sqlString = selectBuilder.ToSqlString();
-			
-//			Select select = new Select()
-//				.SetSelectClause(
-//					persister.SelectClauseFragment(alias) +
-//					(joins==0 ? String.Empty : ", " + SelectString(associations) )
-//					)
-//				.SetFromClause ( persister.QualifiedTableName, alias )
-//				.SetWhereClause(
-//					new ConditionalFragment().SetTableAlias(alias)
-//					.SetCondition( persister.KeyColumnNames, StringHelper.SqlParameter )
-//					.ToFragmentString() +
-//					whereString
-//				)
-//				.SetOuterJoins(
-//					ojf.ToFromFragmentString,
-//					ojf.ToWhereFragmentString
-//				);
-//			if (persister.HasOrdering) select.SetOrderByClause( persister.GetSQLOrderByString(alias));
-//			sql = select.ToStatementString();
 
 			classPersisters = new ILoadable[joins];
 			lockModeArray = CreateLockModeArray(joins, LockMode.None);

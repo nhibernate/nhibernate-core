@@ -5,7 +5,9 @@ using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+
 using NHibernate;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -17,7 +19,6 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 using BaseLoader = NHibernate.Loader.Loader;
-using System.Runtime.CompilerServices;
 
 namespace NHibernate.Hql 
 {
@@ -279,7 +280,7 @@ namespace NHibernate.Hql
 			// this is a bit ugly, since Alias is really for
 			// aliasing SQL identifiers ... but it does what
 			// we want!
-			return new Alias(10, NextCount().ToString() + StringHelper.Underscore)
+			return new SqlCommand.Alias(10, NextCount().ToString() + StringHelper.Underscore)
 				.ToAliasString(StringHelper.Unqualify(description).ToLower(), dialect);
 		}
 
@@ -378,13 +379,13 @@ namespace NHibernate.Hql
 			collections.Add(name, role);
 		}
 
-		internal void AddFrom(string name, System.Type type, JoinFragment join) 
+		internal void AddFrom(string name, System.Type type, SqlCommand.JoinFragment join) 
 		{
 			AddType(name, type);
 			AddFrom(name, join);
 		}
 
-		internal void AddFrom(string name, JoinFragment join) 
+		internal void AddFrom(string name, SqlCommand.JoinFragment join) 
 		{
 			fromTypes.Add(name);
 			AddJoin(name, join);
@@ -392,7 +393,7 @@ namespace NHibernate.Hql
 
 		internal void AddFromClass(string name, ILoadable classPersister) 
 		{
-			JoinFragment ojf = CreateJoinFragment(false);
+			SqlCommand.JoinFragment ojf = CreateJoinFragment(false);
 			ojf.AddCrossJoin( classPersister.TableName, name );
 			crossJoins.Add( name );
 			AddFrom(name, classPersister.MappedClass, ojf);
@@ -438,17 +439,19 @@ namespace NHibernate.Hql
 			scalarSelectTokens.Add(tokens);
 		}
 
-		internal void AddJoin(string name, JoinFragment newjoin) 
+		internal void AddJoin(string name, SqlCommand.JoinFragment newjoin) 
 		{
-			JoinFragment oldjoin = (JoinFragment) joins[name];
+			SqlCommand.JoinFragment oldjoin = (SqlCommand.JoinFragment) joins[name];
 			if (oldjoin==null) 
 			{
 				joins.Add(name, newjoin);
 			}
 			else 
 			{
+				//TODO: HACKS with ToString() - fixed up
 				oldjoin.AddCondition( newjoin.ToWhereFragmentString );
-				if ( oldjoin.ToFromFragmentString.IndexOf( newjoin.ToFromFragmentString.Trim()) < 0 ) 
+				//TODO: HACKS with ToString()
+				if ( oldjoin.ToFromFragmentString.ToString().IndexOf( newjoin.ToFromFragmentString.ToString().Trim()) < 0 ) 
 				{
 					throw new AssertionFailure("bug in query parser: " + queryString);
 					//TODO: what about the toFromFragmentString() ????
@@ -635,7 +638,8 @@ namespace NHibernate.Hql
 			{
 				string name = (string) returnTypes[k];
 				string suffix = size==1 ? String.Empty : k.ToString() + StringHelper.Underscore;
-				sql.AddSelectFragmentString( persisters[k].IdentifierSelectFragment(name, suffix) );
+				//TODO: HACK with ToString()
+				sql.AddSelectFragmentString( persisters[k].IdentifierSelectFragment(name, suffix).ToString() );
 			}
 		}
 
@@ -663,7 +667,8 @@ namespace NHibernate.Hql
 			{
 				string suffix = (size==1) ? String.Empty : k.ToString() + StringHelper.Underscore;
 				string name = (string) returnTypes[k];
-				sql.AddSelectFragmentString( persisters[k].PropertySelectFragment(name, suffix) );
+				//TODO: HACK with ToString()
+				sql.AddSelectFragmentString( persisters[k].PropertySelectFragment(name, suffix).ToString() );
 			}
 		}
 
@@ -741,7 +746,7 @@ namespace NHibernate.Hql
 			return buf.ToString();
 		}
 
-		private JoinFragment MergeJoins(JoinFragment ojf) 
+		private SqlCommand.JoinFragment MergeJoins(SqlCommand.JoinFragment ojf) 
 		{
 			//classes
 			foreach(string name in typeMap.Keys) 
@@ -749,11 +754,12 @@ namespace NHibernate.Hql
 				IQueryable p = GetPersisterForName(name);
 				bool includeSubclasses = returnTypes.Contains(name) && !IsShallowQuery;
 
-				JoinFragment join = (JoinFragment) joins[name];
+				SqlCommand.JoinFragment join = (SqlCommand.JoinFragment) joins[name];
 				if (join!=null) 
 				{
 					bool isCrossJoin = crossJoins.Contains(name);
 					ojf.AddFragment(join);
+					
 					ojf.AddJoins(
 						p.FromJoinFragment(name, isCrossJoin, includeSubclasses),
 						p.QueryWhereFragment(name, isCrossJoin, includeSubclasses)
@@ -763,7 +769,7 @@ namespace NHibernate.Hql
 
 			foreach(string name in collections.Keys) 
 			{
-				JoinFragment collJoin = (JoinFragment) joins[name];
+				SqlCommand.JoinFragment collJoin = (SqlCommand.JoinFragment) joins[name];
 				if (collJoin!=null) ojf.AddFragment(collJoin);
 			}
 
@@ -848,7 +854,7 @@ namespace NHibernate.Hql
 			//if (keyColumnNames.Length!=1) throw new QueryException("composite-key collecion in filter: " + collectionRole);
 
 			string collectionName;
-			JoinFragment join = CreateJoinFragment(false);
+			SqlCommand.JoinFragment join = CreateJoinFragment(false);
 			collectionName = persister.IsOneToMany ? elementName : CreateNameForCollection(collectionRole);
 			join.AddCrossJoin( persister.QualifiedTableName, collectionName);
 			if ( !persister.IsOneToMany ) 
@@ -864,7 +870,7 @@ namespace NHibernate.Hql
 					elementName,
 					StringHelper.Prefix(eltColumnNames, collectionName + StringHelper.Dot),
 					idColumnNames,
-					JoinType.InnerJoin);
+					SqlCommand.JoinType.InnerJoin);
 			}
 			join.AddCondition( collectionName, keyColumnNames, " = ?");
 			if (persister.HasWhere) join.AddCondition(persister.GetSQLWhereString(collectionName));
@@ -879,12 +885,12 @@ namespace NHibernate.Hql
 			return (string) pathAliases[path];
 		}
 
-		internal JoinFragment GetPathJoin(string path) 
+		internal SqlCommand.JoinFragment GetPathJoin(string path) 
 		{
-			return (JoinFragment) pathJoins[path];
+			return (SqlCommand.JoinFragment) pathJoins[path];
 		}
 
-		internal void AddPathAliasAndJoin(string path, string alias, JoinFragment join) 
+		internal void AddPathAliasAndJoin(string path, string alias, SqlCommand.JoinFragment join) 
 		{
 			pathAliases.Add(path, alias);
 			pathJoins.Add( path, join.Copy() );
@@ -1145,9 +1151,9 @@ namespace NHibernate.Hql
 			}
 		}
 
-		internal QueryJoinFragment CreateJoinFragment(bool useThetaStyleInnerJoins) 
+		internal SqlCommand.QueryJoinFragment CreateJoinFragment(bool useThetaStyleInnerJoins) 
 		{
-			return new QueryJoinFragment( factory.Dialect, useThetaStyleInnerJoins );
+			return new SqlCommand.QueryJoinFragment( factory.Dialect, useThetaStyleInnerJoins );
 		}
 
 		internal System.Type HolderClass 

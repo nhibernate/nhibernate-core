@@ -4,7 +4,6 @@ using System.Collections;
 
 using NHibernate.Engine;
 using NHibernate.Persister;
-using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
@@ -41,16 +40,20 @@ namespace NHibernate.Loader
 				(joins==0 ? String.Empty : SelectString(associations) + ",") +
 				SelectString(persister, alias, suffixes[joins] )
 				)
+				//TODO: HACK with ToString() required because of SetFromClause
 				.SetFromClause
 				(
-					persister.FromTableFragment(alias) + 
-					persister.FromJoinFragment(alias, true, true)
+					persister.FromTableFragment(alias).Append(
+						persister.FromJoinFragment(alias, true, true)
+					).ToString()
 				)
 				.SetOuterJoins
 				(
+				//TODO: ToWhereFragmentString.ToString() is a HACK - removed
+			
 					ojf.ToFromFragmentString,
-					ojf.ToWhereFragmentString + 
-					(
+					ojf.ToWhereFragmentString.Append( 
+						//TODO: HACK with ToString() - removed
 						UseQueryWhereFragment ? 
 						( (IQueryable) persister).QueryWhereFragment(alias, true, true) :
 						persister.WhereJoinFragment(alias, true, true) 
@@ -86,16 +89,19 @@ namespace NHibernate.Loader
 				SelectString(persister, alias, suffixes[joins] )
 				);
 
+			//TODO: HACK with ToString() because of SetFromClause
 			sqlBuilder.SetFromClause(
-				persister.FromTableFragment(alias) + 
-				persister.FromJoinFragment(alias, true, true) 
-				);
+				persister.FromTableFragment(alias).Append(
+					persister.FromJoinFragment(alias, true, true)
+				).ToString()
+			);
 
 			sqlBuilder.AddWhereClause(condition);
 
+			//TODO: HACK with ToString()
 			sqlBuilder.SetOuterJoins(
 				ojf.ToFromFragmentString,
-				ojf.ToWhereFragmentString + 
+				ojf.ToWhereFragmentString.Append 
 				(
 					UseQueryWhereFragment ? 
 					( (IQueryable) persister).QueryWhereFragment(alias, true, true) :

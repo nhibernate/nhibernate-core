@@ -4,17 +4,17 @@ using System.Reflection;
 
 using NHibernate.Cache;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.Util;
+using NHibernate.Hql;
 using NHibernate.Id;
+using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Proxy;
-using NHibernate.Hql;
-using NHibernate.Dialect;
-using NHibernate.Sql;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Loader;
+using NHibernate.Util;
 
 namespace NHibernate.Persister 
 {
@@ -108,16 +108,12 @@ namespace NHibernate.Persister
 			get { return className; }
 		}
 
-		public virtual string IdentifierSelectFragment(string name, string suffix) 
+		public virtual SqlString IdentifierSelectFragment(string name, string suffix) 
 		{
-			//TODO: fix this once the interface is changed from a string to SqlString
-			// this works now because there are no parameters in the select fragment string
-			return new SqlCommand.SelectFragment(dialect)
+			return new SelectFragment(dialect)
 				.SetSuffix(suffix)
 				.AddColumns( name, IdentifierColumnNames )
-				.ToSqlStringFragment(false)
-				.ToString();
-				//.Substring(2); //strip leading ", " - commented out because of the "false" parameter now does that
+				.ToSqlStringFragment(false);
 		}
 
 		//TODO: not in same spot in h2.0.3
@@ -440,7 +436,7 @@ namespace NHibernate.Persister
 			sqlWhereString = model.Where;
 			sqlWhereStringTemplate = sqlWhereString==null ?
 				null :
-				SqlCommand.Template.RenderWhereStringTemplate(sqlWhereString, dialect);
+				Template.RenderWhereStringTemplate(sqlWhereString, dialect);
 
 			polymorphic = model.IsPolymorphic;
 			explicitPolymorphism = model.IsExplicitPolymorphism;
@@ -753,7 +749,7 @@ namespace NHibernate.Persister
 
 		protected string GetSQLWhereString(string alias) 
 		{
-			return StringHelper.Replace(sqlWhereStringTemplate, SqlCommand.Template.PlaceHolder, alias);
+			return StringHelper.Replace(sqlWhereStringTemplate, Template.PlaceHolder, alias);
 		}
 
 		protected bool HasWhere 
@@ -782,7 +778,7 @@ namespace NHibernate.Persister
 			}
 		}
 
-		public abstract string QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
+		public abstract SqlString QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
 		public abstract string DiscriminatorSQLString { get; }
 		public abstract void Delete(object id, object version, object obj, ISessionImplementor session);
 		public abstract object[] PropertySpaces { get; }
@@ -796,16 +792,16 @@ namespace NHibernate.Persister
 		public abstract int CountSubclassProperties();
 		public abstract IDiscriminatorType DiscriminatorType { get; }
 		public abstract OuterJoinLoaderType EnableJoinedFetch(int i);
-		public abstract string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
-		public abstract string FromTableFragment(string alias);
+		public abstract SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
+		public abstract SqlString FromTableFragment(string alias);
 		public abstract string[] GetPropertyColumnNames(int i);
 		public abstract System.Type GetSubclassForDiscriminatorValue(object value);
 		public abstract IType GetSubclassPropertyType(int i);
 		public abstract bool IsDefinedOnSubclass(int i);
-		public abstract string PropertySelectFragment(string alias, string suffix);
+		public abstract SqlString PropertySelectFragment(string alias, string suffix);
 		public abstract string TableName { get; }
 		public abstract string[] ToColumns(string name, int i);
-		public abstract string WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
+		public abstract SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 		public abstract string DiscriminatorColumnName { get; }
 		public abstract string[] GetSubclassPropertyColumnNames(int i);
 		public abstract string GetSubclassPropertyTableName(int i) ;

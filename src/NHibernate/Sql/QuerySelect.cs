@@ -12,7 +12,7 @@ namespace NHibernate.Sql
 	/// </summary>
 	public class QuerySelect 
 	{		
-		private JoinFragment joins;
+		private SqlCommand.JoinFragment joins;
 		private StringBuilder select = new StringBuilder();
 		private StringBuilder where = new StringBuilder();
 		private StringBuilder groupBy = new StringBuilder();
@@ -53,10 +53,10 @@ namespace NHibernate.Sql
 
 		public QuerySelect(Dialect.Dialect dialect) 
 		{
-			joins = new QueryJoinFragment(dialect, false);
+			joins = new SqlCommand.QueryJoinFragment(dialect, false);
 		}
 
-		public JoinFragment JoinFragment 
+		public SqlCommand.JoinFragment JoinFragment 
 		{
 			get { return joins; }
 		}
@@ -118,8 +118,9 @@ namespace NHibernate.Sql
 				.Append("select ");
 
 			if (distinct) buf.Append("distinct ");
-
-			string from = joins.ToFromFragmentString;
+			
+			//TODO: HACK with ToString()
+			string from = joins.ToFromFragmentString.ToString();
 			if ( from.StartsWith(",") ) 
 			{
 				from = from.Substring(1);
@@ -133,7 +134,8 @@ namespace NHibernate.Sql
 				.Append(" from")
 				.Append( from );
 			
-			string part1 = joins.ToWhereFragmentString.Trim();
+			//TODO: HACK with ToString()
+			string part1 = joins.ToWhereFragmentString.ToString().Trim();
 			string part2 = where.ToString().Trim();
 			bool hasPart1 = part1.Length > 0;
 			bool hasPart2 = part2.Length > 0;

@@ -1,5 +1,7 @@
 using System;
+
 using NHibernate.Loader;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Persister 
@@ -115,7 +117,7 @@ namespace NHibernate.Persister
 		/// <param name="name"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		string IdentifierSelectFragment(string name, string suffix);
+		SqlString IdentifierSelectFragment(string name, string suffix);
 
 		/// <summary>
 		/// Given a query alias and an identifying suffix, render the property select fragment
@@ -124,15 +126,15 @@ namespace NHibernate.Persister
 		/// <param name="alias"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		string PropertySelectFragment(string alias, string suffix);
+		SqlString PropertySelectFragment(string alias, string suffix);
 
 		/// <summary>
 		/// Get the main from table fragment, given a query alias (optional operation)
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		string FromTableFragment(string alias);
-
+		SqlString FromTableFragment(string alias);
+		
 		/// <summary>
 		/// Get the where clause part of any joins (optional operation)
 		/// </summary>
@@ -140,7 +142,7 @@ namespace NHibernate.Persister
 		/// <param name="innerJoin"></param>
 		/// <param name="includeSubclasses"></param>
 		/// <returns></returns>
-		string WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
+		SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
 		/// <summary>
 		/// Get the from clause part of any joins (optional operation)
@@ -149,6 +151,7 @@ namespace NHibernate.Persister
 		/// <param name="innerJoin"></param>
 		/// <param name="includeSubclasses"></param>
 		/// <returns></returns>
-		string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
+		SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
+
 	}
 }

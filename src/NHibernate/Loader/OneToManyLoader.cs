@@ -5,7 +5,6 @@ using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
-using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -62,19 +61,23 @@ namespace NHibernate.Loader
 				);
 
 
+			//TODO: HACK with ToString() because of SetFromClause
 			selectBuilder.SetFromClause(
-				persister.FromTableFragment(alias) +
-				persister.FromJoinFragment(alias, true, true)
-				);
+				persister.FromTableFragment(alias).Append(
+					persister.FromJoinFragment(alias, true, true)
+				).ToString()
+			);
 
 			selectBuilder.SetWhereClause(alias, collectionPersister.KeyColumnNames, collectionPersister.KeyType);
 			if(collectionPersister.HasWhere) selectBuilder.AddWhereClause(whereSqlString);
 
+			//TODO: ToWhereFragmentString.ToString() is a HACK - removed
 			selectBuilder.SetOuterJoins(
 				ojf.ToFromFragmentString,
-				ojf.ToWhereFragmentString +
-				persister.WhereJoinFragment(alias, true, true)
-				);
+				ojf.ToWhereFragmentString.Append(
+					persister.WhereJoinFragment(alias, true, true)
+				)
+			);
 
 			if(collectionPersister.HasOrdering) selectBuilder.SetOrderByClause( collectionPersister.GetSQLOrderByString(alias) );
 

@@ -1,4 +1,6 @@
 using System;
+
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Persister 
@@ -44,7 +46,7 @@ namespace NHibernate.Persister
 		/// <param name="innerJoin"></param>
 		/// <param name="includeSublcasses"></param>
 		/// <returns></returns>
-		string QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
+		SqlString QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
 		
 		/// <summary>
 		/// Given a query alias and a property path, return the qualified column name

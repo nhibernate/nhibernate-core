@@ -208,6 +208,30 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		/// <summary>
+		/// Insert a string containing sql into the SqlStringBuilder at the specified index.
+		/// </summary>
+		/// <param name="index">The zero-based index at which the sql should be inserted.</param>
+		/// <param name="sql">The string containing sql to insert.</param>
+		/// <returns>This SqlStringBuilder</returns>
+		public SqlStringBuilder Insert(int index, string sql) 
+		{
+			sqlParts.Insert(index, sql);
+			return this;
+		}
+
+		/// <summary>
+		/// Insert a Parameter into the SqlStringBuilder at the specified index.
+		/// </summary>
+		/// <param name="index">The zero-based index at which the Parameter should be inserted.</param>
+		/// <param name="param">The Parameter to insert.</param>
+		/// <returns>This SqlStringBuilder</returns>
+		public SqlStringBuilder Insert(int index, Parameter param) 
+		{
+			sqlParts.Insert(index, param);
+			return this;
+		}
+
 
 		/// <summary>
 		/// Converts the mutable SqlStringBuilder into the immutable SqlString.

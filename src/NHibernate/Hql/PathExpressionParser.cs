@@ -7,6 +7,7 @@ using NHibernate.Persister;
 using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.Sql;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Hql 
 {
@@ -52,10 +53,10 @@ namespace NHibernate.Hql
 		private string path;
 		private bool ignoreInitialJoin;
 		private bool continuation;
-		private JoinType joinType = JoinType.InnerJoin; //default mode
+		private SqlCommand.JoinType joinType = SqlCommand.JoinType.InnerJoin; //default mode
 		private bool useThetaStyleJoin = true;
 
-		public JoinType JoinType 
+		public SqlCommand.JoinType JoinType 
 		{
 			get
 			{ 
@@ -113,7 +114,8 @@ namespace NHibernate.Hql
 				if(!ignoreInitialJoin) 
 				{
 					JoinFragment ojf = q.GetPathJoin(path);
-					join.AddCondition( ojf.ToWhereFragmentString ); //after reset!
+					//TODO: HACK with ToString()
+					join.AddCondition( ojf.ToWhereFragmentString); //after reset!
 					// we don't need to worry about any condition in the ON clause
 					// here (toFromFragmentString), since anything in the ON condition 
 					// is already applied to the whole query
@@ -346,6 +348,7 @@ namespace NHibernate.Hql
 					if ( memberPersister.IsOneToMany ) 
 					{
 						IQueryable persister = q.GetPersister( ( (EntityType) memberPersister.ElementType ).PersistentClass );
+						//TODO: HACK with ToString() - cleaned up
 						ojf.AddJoins(
 							persister.FromJoinFragment(collectionName, true, false),
 							persister.WhereJoinFragment(collectionName, true, false)
@@ -392,7 +395,7 @@ namespace NHibernate.Hql
 			public bool IsOneToMany;
 			public string Alias;
 			public string[] ElementColumns;
-			public JoinFragment Join;
+			public SqlCommand.JoinFragment Join;
 			public StringBuilder IndexValue = new StringBuilder();
 		}
 
@@ -431,7 +434,7 @@ namespace NHibernate.Hql
 			expectingCollectionIndex = true;
 		}
 
-		public JoinFragment WhereJoin 
+		public SqlCommand.JoinFragment WhereJoin 
 		{
 			get 
 			{ 
@@ -478,9 +481,10 @@ namespace NHibernate.Hql
 				/*.Append(collectionTable)
 				.Append(' ')
 				.Append(collectionName)*/
-				.Append(join.ToFromFragmentString.Substring(2)) //remove initial ", "
+				//TODO: HACK with ToString()
+				.Append(join.ToFromFragmentString.ToString().Substring(2)) //remove initial ", "
 				.Append(" WHERE ")
-				.Append(join.ToWhereFragmentString.Substring(5))
+				.Append(join.ToWhereFragmentString.ToString().Substring(5)) //TODO: HACK with ToString()
 				.ToString();
 		}
 

@@ -3,15 +3,15 @@ using System.Text;
 using System.Data;
 using System.Collections;
 
-using NHibernate.Util;
+using NHibernate.Engine;
+using NHibernate.Hql;
+using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Mapping;
-using NHibernate.Hql;
-using NHibernate.Sql;
+//using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Engine;
-using NHibernate.Id;
+using NHibernate.Util;
 
 namespace NHibernate.Persister 
 {
@@ -1070,12 +1070,12 @@ namespace NHibernate.Persister
 			get { return tableNames; }
 		}
 
-		public override string FromTableFragment(string name) 
+		public override SqlString FromTableFragment(string alias)
 		{
-			return TableName + ' ' + name;
+			return new SqlString( TableName + ' ' + alias );
 		}
 
-		public override string QueryWhereFragment(string name, bool innerJoin, bool includeSubclasses) 
+		public override SqlString QueryWhereFragment(string name, bool innerJoin, bool includeSubclasses) 
 		{
 			if (innerJoin && (forceDiscriminator || IsInherited )) 
 			{
@@ -1088,25 +1088,26 @@ namespace NHibernate.Persister
 						((IQueryable) factory.GetPersister(subclasses[i])).DiscriminatorSQLString
 						);
 				}
-				StringBuilder builder = new StringBuilder(" and " + frag.ToFragmentString());
+
+				SqlStringBuilder builder = new SqlStringBuilder();
+				builder.Add( " and " + frag.ToFragmentString() );
 				
 				if(HasWhere) 
 				{
-					builder.Append(" and ");
-					builder.Append( GetSQLWhereString(name) );
+					builder.Add( " and " + GetSQLWhereString(name) );
 				}
 
-				return builder.ToString();
+				return builder.ToSqlString();
 			} 
 			else 
 			{
 				if(HasWhere) 
 				{
-					return " and " + GetSQLWhereString(name);
+					return new SqlString( " and " + GetSQLWhereString(name) );
 				}
 				else 
 				{
-					return String.Empty;
+					return new SqlString(String.Empty);
 				}
 				
 			}
@@ -1150,28 +1151,31 @@ namespace NHibernate.Persister
 			return this.subclassPropertyNameClosure[i];
 		}
 
-		public override string PropertySelectFragment(string name, string suffix) 
+		public override SqlString PropertySelectFragment(string alias, string suffix)
 		{
-			SqlCommand.SelectFragment frag = new SqlCommand.SelectFragment(factory.Dialect)
-				.SetSuffix(suffix);
-			if ( HasSubclasses ) frag.AddColumn( name, DiscriminatorColumnName );
+			SelectFragment frag = new SelectFragment(factory.Dialect);
 			
-			// TODO: fix this once the interface is changed from a string to SqlString
-			// this works now because there are no parameters in the select string
-			return frag.AddColumns(name, subclassColumnClosure, subclassColumnAliasClosure)
-				.AddFormulas(name, subclassFormulaTemplateClosure, subclassFormulaAliasClosure)
-				.ToSqlStringFragment().ToString();
+			frag.SetSuffix(suffix);
+			if ( HasSubclasses ) 
+			{
+				frag.AddColumn( alias, DiscriminatorColumnName );
+			}
+			
+			return frag.AddColumns(alias, subclassColumnClosure, subclassColumnAliasClosure)
+				.AddFormulas(alias, subclassFormulaTemplateClosure, subclassFormulaAliasClosure)
+				.ToSqlStringFragment();
 		}
 
-		public override string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses) 
+		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
-			return String.Empty;
+			return new SqlString( String.Empty );
 		}
 
-		public override string WhereJoinFragment(string alias, bool innerJoin, bool includeSublasses) 
+		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
-			return String.Empty;
+			return new SqlString( String.Empty );
 		}
+
 
 
 	}

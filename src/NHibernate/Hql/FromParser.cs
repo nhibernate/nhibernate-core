@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+
 using NHibernate;
-using NHibernate.Sql;
-using NHibernate.Util;
 using NHibernate.Persister;
+using NHibernate.Sql;
+using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Hql {
 	
@@ -23,15 +25,15 @@ namespace NHibernate.Hql {
 		private bool expectingAs;
 		private bool afterJoinType;
 		private bool afterFetch;
-		private JoinType joinType = JoinType.None;
+		private SqlCommand.JoinType joinType = SqlCommand.JoinType.None;
 
 		private static IDictionary joinTypes = new Hashtable();
 
 		static FromParser() {
-			joinTypes.Add( "left", JoinType.LeftOuterJoin );
-			joinTypes.Add( "right", JoinType.RightOuterJoin );
-			joinTypes.Add( "full", JoinType.FullJoin );
-			joinTypes.Add( "inner", JoinType.InnerJoin );
+			joinTypes.Add( "left", SqlCommand.JoinType.LeftOuterJoin );
+			joinTypes.Add( "right", SqlCommand.JoinType.RightOuterJoin );
+			joinTypes.Add( "full", SqlCommand.JoinType.FullJoin );
+			joinTypes.Add( "inner", SqlCommand.JoinType.InnerJoin );
 		}
 		
 		public void Token(string token, QueryTranslator q) {

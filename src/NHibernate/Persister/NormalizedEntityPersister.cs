@@ -8,7 +8,7 @@ using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Mapping;
-using NHibernate.Sql;
+//using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -1372,10 +1372,11 @@ namespace NHibernate.Persister
 			}
 		}
 
-		public override string FromTableFragment(string alias) 
+		public override SqlString FromTableFragment(string alias)
 		{
-			return subclassTableNameClosure[0] + ' ' + alias;
+			return new SqlString( subclassTableNameClosure[0] + ' ' + alias );
 		}
+
 
 		public override string TableName 
 		{
@@ -1465,10 +1466,10 @@ namespace NHibernate.Persister
 				Alias(alias, tab) + StringHelper.Dot);
 		}
 
-		public override string PropertySelectFragment(string alias, string suffix) 
+		public override SqlString PropertySelectFragment(string alias, string suffix)
 		{
 			string[] cols = subclassColumnClosure;
-			SqlCommand.SelectFragment frag = new SqlCommand.SelectFragment(factory.Dialect)
+			SelectFragment frag = new SelectFragment(factory.Dialect)
 				.SetSuffix(suffix);
 			
 			for (int i=0; i<cols.Length; i++) 
@@ -1482,26 +1483,30 @@ namespace NHibernate.Persister
 
 			if (HasSubclasses) 
 			{
-				return ", " + 
-					//TODO: this will need to be changed to return a SqlString but for now the SqlString
-					// is being converted to a string for existing interfaces to work.
+				SqlStringBuilder builder = new SqlStringBuilder(3);
+
+				builder.Add(", ");
+				builder.Add( 
 					DiscriminatorFragment(alias) 
-						.SetReturnColumnName( DiscriminatorColumnName, suffix ) 
-						.ToSqlStringFragment().ToString() 
-					+
-					frag.ToSqlStringFragment().ToString();
-					// TODO: fix this once the interface has changed from a string to SqlString
+					.SetReturnColumnName( DiscriminatorColumnName, suffix ) 
+					.ToSqlStringFragment()
+					);
+
+				builder.Add( frag.ToSqlStringFragment() );
+
+				return builder.ToSqlString();
+				
 			} 
 			else 
 			{ 
-				// TODO: fix this once the interface has changed from a string to SqlString
-				return frag.ToSqlStringFragment().ToString(); 
+				return frag.ToSqlStringFragment(); 
 			} 
-		} 
+		}
 
-		private SqlCommand.CaseFragment DiscriminatorFragment(string alias) 
+
+		private CaseFragment DiscriminatorFragment(string alias) 
 		{
-			SqlCommand.CaseFragment cases = dialect.CreateCaseFragment();
+			CaseFragment cases = dialect.CreateCaseFragment();
 			
 			for (int i=0; i<discriminatorValues.Length; i++) 
 			{
@@ -1520,21 +1525,27 @@ namespace NHibernate.Persister
 			return dialect.QuoteForAliasName(dialect.UnQuote(name) + StringHelper.Underscore + tableNumber);
 		}
 
-		public override string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses) 
+		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
 			return Outerjoin(alias, innerJoin, includeSubclasses).ToFromFragmentString;
 		}
 
-		public override string WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses) 
+		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
 			return Outerjoin(alias, innerJoin, includeSubclasses).ToWhereFragmentString;
 		}
 
-		public override string QueryWhereFragment(string alias, bool innerJoin, bool includeSubclasses)  
+		public override SqlString QueryWhereFragment(string alias, bool innerJoin, bool includeSubclasses)  
 		{
-			string result = WhereJoinFragment(alias, innerJoin, includeSubclasses);
-			if( HasWhere ) result += " and " + GetSQLWhereString(alias);
+			SqlString result = WhereJoinFragment(alias, innerJoin, includeSubclasses);
+
+			if( HasWhere) 
+			{
+				result = result.Append( " and " + GetSQLWhereString(alias) );
+			}
+			
 			return result;
+
 		}
 		
 		public override string[] IdentifierColumnNames

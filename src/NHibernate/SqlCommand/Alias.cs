@@ -2,12 +2,12 @@ using System;
 
 using NHibernate.Dialect;
 
-namespace NHibernate.Sql
+namespace NHibernate.SqlCommand
 {
 	/// <summary>
-	/// Summary description for Alias.
+	/// Aliases tables and fields for Sql Statements.
 	/// </summary>
-	public sealed class Alias
+	public class Alias
 	{
 		private readonly int length;
 		private readonly string suffix;

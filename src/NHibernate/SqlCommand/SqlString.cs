@@ -42,10 +42,29 @@ namespace NHibernate.SqlCommand
 		/// </remarks>
 		public SqlString Append(SqlString rhs)
 		{
-		    object[] temp = new object[rhs.SqlParts.Length + sqlParts.Length];
+			object[] temp = new object[rhs.SqlParts.Length + sqlParts.Length];
 			Array.Copy(sqlParts, 0, temp, 0, sqlParts.Length);
 			Array.Copy(rhs.SqlParts, 0, temp, sqlParts.Length, rhs.SqlParts.Length);
 
+			return new SqlString(temp);
+		}
+
+		/// <summary>
+		/// Appends the string parameter to the end of the current SqlString to create a 
+		/// new SqlString object.
+		/// </summary>
+		/// <param name="rhs">The string to append.</param>
+		/// <returns>A new SqlString object.</returns>
+		/// <remarks>
+		/// A SqlString object is immutable so this returns a new SqlString.  If multiple Appends 
+		/// are called it is better to use the SqlStringBuilder.
+		/// </remarks>
+		public SqlString Append(string rhs) 
+		{
+			object[] temp = new object[ sqlParts.Length + 1];
+			Array.Copy(sqlParts, 0, temp, 0, sqlParts.Length);
+			temp[sqlParts.Length] = rhs;
+ 
 			return new SqlString(temp);
 		}
 

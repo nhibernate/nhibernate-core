@@ -1,22 +1,23 @@
 using System;
-using System.Text;
 using System.Collections;
+
 using NHibernate.Util;
 
-namespace NHibernate.Sql 
+namespace NHibernate.SqlCommand
 {
 	/// <summary>
 	/// Represents an <c>... in (...)</c> expression
 	/// </summary>
-	public class InFragment 
+	public class InFragment
 	{
 		private string columnName;
 		private ArrayList values = new ArrayList();
-
+		
 		public InFragment AddValue(string value) 
 		{
 			values.Add(value);
 			return this;
+
 		}
 
 		public InFragment SetColumn(string columnName) 
@@ -31,14 +32,14 @@ namespace NHibernate.Sql
 			return SetColumn( this.columnName );
 		}
 
-		public string ToFragmentString() 
+		public SqlString ToFragmentString() 
 		{
-			StringBuilder buf = new StringBuilder(values.Count * 5);
-			buf.Append(columnName);
+			SqlStringBuilder buf = new SqlStringBuilder(values.Count + 5);
+			buf.Add(columnName);
 			if (values.Count > 1) 
 			{
 				bool allowNull = false;
-				buf.Append(" in (");
+				buf.Add(" in (");
 				for(int i=0; i<values.Count; i++) 
 				{
 					if("null".Equals(values[i])) 
@@ -48,18 +49,19 @@ namespace NHibernate.Sql
 					
 					else 
 					{
-						buf.Append( values[i] );
-						if ( i<values.Count-1) buf.Append(StringHelper.CommaSpace);
+						buf.Add( (string)values[i] );
+						if ( i<values.Count-1) buf.Add(StringHelper.CommaSpace);
 					}
 				}
 
-				buf.Append(StringHelper.ClosedParen);
+				buf.Add(StringHelper.ClosedParen);
 				if(allowNull) 
 				{
+					
 					buf.Insert(0, " is null or ")
 						.Insert(0, columnName)
 						.Insert(0, StringHelper.OpenParen)
-						.Append(StringHelper.ClosedParen);
+						.Add(StringHelper.ClosedParen);
 				}
 			} 
 			else 
@@ -67,14 +69,14 @@ namespace NHibernate.Sql
 				string value = values[0] as string;
 				if ( "null".Equals(value) ) 
 				{
-					buf.Append(" is null");
+					buf.Add(" is null");
 				} 
 				else 
 				{
-					buf.Append("=").Append(values[0]);
+					buf.Add( "=" + values[0] );
 				}
 			}
-			return buf.ToString();
+			return buf.ToSqlString();
 		}				
 	}
 }

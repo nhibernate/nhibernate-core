@@ -1,15 +1,15 @@
 using System;
-using System.Data;
 using System.Collections;
+using System.Data;
+
 using NHibernate.Cfg;
 using NHibernate.Collection;
 using NHibernate.Engine;
-using NHibernate.Util;
 using NHibernate.Persister;
+using NHibernate.SqlCommand;
 using NHibernate.Transaction;
 using NHibernate.Type;
-using NHibernate.Sql;
-using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Loader 
 {	

@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
-using NHibernate.Type;
+
 using NHibernate.Persister;
-using NHibernate.Util;
 using NHibernate.Sql;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Hql 
 {	
@@ -437,12 +438,14 @@ namespace NHibernate.Hql
 			}
 		}
 
-		private void AddJoin( JoinFragment ojf, QueryTranslator q ) 
+		private void AddJoin( SqlCommand.JoinFragment ojf, QueryTranslator q ) 
 		{
-			JoinFragment fromClause = q.CreateJoinFragment(true);
-			fromClause.AddJoins( ojf.ToFromFragmentString, String.Empty );
+			SqlCommand.JoinFragment fromClause = q.CreateJoinFragment(true);
+			//TODO: HACK with StringEmpty and SqlString
+			fromClause.AddJoins( ojf.ToFromFragmentString, new SqlCommand.SqlString(String.Empty) );
 			q.AddJoin( pathExpressionParser.Name, fromClause );
-			AddToCurrentJoin( ojf.ToWhereFragmentString );		
+			//TODO: HACK with ToString()
+			AddToCurrentJoin( ojf.ToWhereFragmentString.ToString() );		
 		}
 		
 		private void DoToken(string token, QueryTranslator q) 

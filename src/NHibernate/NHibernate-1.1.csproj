@@ -1338,47 +1338,22 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\Alias.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\ANSIJoinFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\InFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\JoinFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\OracleJoinFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\OuterJoinFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\QueryJoinFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Sql\QuerySelect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlCommand\Alias.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlCommand\ANSICaseFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\ANSIJoinFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1403,7 +1378,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlCommand\InFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlCommand\ISqlStringBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\JoinFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\OracleJoinFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1419,6 +1409,11 @@
                 />
                 <File
                     RelPath = "SqlCommand\ParameterPrecisionScale.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\QueryJoinFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

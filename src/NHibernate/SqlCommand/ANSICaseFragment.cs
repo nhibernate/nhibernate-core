@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Text;
 
-using NHibernate.Sql;
 using NHibernate.Util;
 
 
