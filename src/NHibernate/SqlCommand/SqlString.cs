@@ -27,6 +27,16 @@ namespace NHibernate.SqlCommand {
 			get { return sqlParts;}
 		}
 
+		// this method treats this as immutable
+		public SqlString Append(SqlString sqlString)
+		{
+		    object[] temp = new object[sqlString.SqlParts.Length + sqlParts.Length];
+			Array.Copy(sqlParts, 0, temp, 0, sqlParts.Length);
+			Array.Copy(sqlString.SqlParts, 0, temp, sqlParts.Length, sqlString.SqlParts.Length);
+
+			return new SqlString(temp);
+		}
+
 		/// <summary>
 		/// Returns the SqlString in a string where it looks like
 		/// SELECT col1, col2 FROM table WHERE col1 = :param1
