@@ -42,7 +42,7 @@ namespace NHibernate.Examples.Blogger
 			
 			// reload the blog to verify the db has the correct values
 			ISession s = _sessions.OpenSession();
-			blog = (Blog) s.Find( "from Blog as b where b.Name=:name", "GregBlog", NHibernate.String )[0];
+			blog = (Blog) s.Find( "from Blog as b where b.Name=:name", "GregBlog", NHibernateUtil.String )[0];
 			Assert.IsNotNull(blog);
 			Assert.AreEqual( 2, blog.Items.Count );
 
