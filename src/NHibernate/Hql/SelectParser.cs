@@ -1,7 +1,9 @@
 using System;
-using System.Data;
 using System.Collections;
-using System.Collections.Specialized;
+using System.Data;
+
+using Iesi.Collections;
+
 using NHibernate;
 using NHibernate.Util;
 using NHibernate.Type;
@@ -17,13 +19,13 @@ namespace NHibernate.Hql
 	{
 		private ArrayList aggregateFuncTokenList = new ArrayList();
 		private static IDictionary aggregateFunctions = new Hashtable();
-		private static StringCollection countArguments = new StringCollection();
+		private static ISet countArguments = new HashedSet();
 		
 		static SelectParser() 
 		{
-			countArguments.Add("distinct");
-			countArguments.Add("all");
-			countArguments.Add("*");
+			countArguments.Add( "distinct" );
+			countArguments.Add( "all" );
+			countArguments.Add( "*" );
 		}
 
 		public SelectParser()

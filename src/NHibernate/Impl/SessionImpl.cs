@@ -5,6 +5,8 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using Iesi.Collections;
+
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -51,7 +53,7 @@ namespace NHibernate.Impl
 		private IdentityMap arrayHolders; //key=array, value=ArrayHolder
 		private IdentityMap collections; //key=PersistentCollection, value=CollectionEntry
 		
-		private IDictionary nullifiables = new Hashtable();  //set of Keys of deleted objects
+		private ISet nullifiables = new HashedSet();  //set of Keys of deleted objects
 
 		private IInterceptor interceptor;
 
@@ -626,7 +628,7 @@ namespace NHibernate.Impl
 			this.callAfterTransactionCompletionFromDisconnect = info.GetBoolean("callAfterTransactionCompletionFromDisconnect");
 			this.entitiesByKey = (IDictionary)info.GetValue( "entitiesByKey", typeof(IDictionary) );
 			this.proxiesByKey = (IDictionary)info.GetValue( "proxiesByKey", typeof(IDictionary) );
-			this.nullifiables = (IDictionary)info.GetValue( "nullifiables", typeof(IDictionary) );
+			this.nullifiables = (ISet)info.GetValue( "nullifiables", typeof(ISet) );
 			this.interceptor = (IInterceptor)info.GetValue( "interceptor", typeof(IInterceptor) );
 
 			this.entries = (IdentityMap)info.GetValue( "entries", typeof(IdentityMap) );
@@ -661,7 +663,7 @@ namespace NHibernate.Impl
 			info.AddValue( "callAfterTransactionCompletionFromDisconnect", callAfterTransactionCompletionFromDisconnect );
 			info.AddValue( "entitiesByKey", entitiesByKey, typeof(IDictionary) );
 			info.AddValue( "proxiesByKey", proxiesByKey, typeof(IDictionary) );
-			info.AddValue( "nullifiables", nullifiables, typeof(IDictionary) );
+			info.AddValue( "nullifiables", nullifiables, typeof(ISet) );
 			info.AddValue( "interceptor", interceptor, typeof(IInterceptor) );
 
 			info.AddValue( "entries", entries, typeof(IdentityMap) );
@@ -1395,16 +1397,16 @@ namespace NHibernate.Impl
 
 			NullifyTransientReferences(entry.DeletedState, propTypes, false, obj);
 
-			// in h2.0.3 this is a Set
-			IDictionary oldNullifiables = null;
+			ISet oldNullifiables = null;
 			ArrayList oldDeletions = null;
 			if ( persister.HasCascades ) 
 			{
-				oldNullifiables = new Hashtable(nullifiables);
+				oldNullifiables = new HashedSet( );
+				oldNullifiables.AddAll( nullifiables );
 				oldDeletions = (ArrayList) deletions.Clone();
 			}
 
-			nullifiables[ new Key(entry.Id, persister) ] = new object();
+			nullifiables.Add( new Key(entry.Id, persister) );
 			entry.Status = Status.Deleted; // before any callbacks, etc, so subdeletions see that this deletion happend first
 			ScheduledDeletion delete = new ScheduledDeletion(entry.Id, version, obj, persister, this);
 			deletions.Add(delete); // ensures that containing deletions happen before sub-deletions
@@ -1428,7 +1430,7 @@ namespace NHibernate.Impl
 				{
 					int start = deletions.Count;
 
-					IDictionary newNullifiables = nullifiables;
+					ISet newNullifiables = nullifiables;
 					nullifiables = oldNullifiables;
 
 					cascading++;
@@ -1440,10 +1442,7 @@ namespace NHibernate.Impl
 					finally 
 					{
 						cascading--;
-						foreach(DictionaryEntry oldNullifyDictEntry in oldNullifiables) 
-						{
-							newNullifiables[oldNullifyDictEntry.Key] = oldNullifyDictEntry.Value;
-						}
+						newNullifiables.AddAll( oldNullifiables );
 						nullifiables = newNullifiables;
 					}
 
@@ -1865,11 +1864,11 @@ namespace NHibernate.Impl
 
 			// take the union of the query spaces (ie the queried tables)
 			QueryTranslator[] q = new QueryTranslator[concreteQueries.Length];
-			ArrayList qs = new ArrayList();
+			HashedSet qs = new HashedSet();
 			for (int i=0; i<concreteQueries.Length; i++ ) 
 			{
 				q[i] = scalar ? factory.GetShallowQuery( concreteQueries[i] ) : factory.GetQuery( concreteQueries[i] );
-				qs.AddRange( q[i].QuerySpaces );
+				qs.AddAll( q[i].QuerySpaces );
 			}
 
 			AutoFlushIfRequired(qs);
@@ -2039,7 +2038,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="querySpaces"></param>
 		/// <returns></returns>
-		private bool AutoFlushIfRequired(IList querySpaces) 
+		private bool AutoFlushIfRequired(ISet querySpaces) 
 		{
 
 			if ( flushMode==FlushMode.Auto && dontFlushFromFind==0 ) 
@@ -2619,7 +2618,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private bool AreTablesToBeUpdated(IList tables) 
+		private bool AreTablesToBeUpdated(ISet tables) 
 		{
 			return AreTablesToUpdated( updates, tables) ||
 				AreTablesToUpdated( insertions, tables) ||
@@ -2629,7 +2628,7 @@ namespace NHibernate.Impl
 				AreTablesToUpdated( collectionRemovals, tables);
 		}
 
-		private bool AreTablesToUpdated(ICollection coll, IList theSet) 
+		private bool AreTablesToUpdated(ICollection coll, ISet theSet) 
 		{
 			foreach( IExecutable executable in coll ) 
 			{
@@ -4025,7 +4024,7 @@ namespace NHibernate.Impl
 			ILoadable persister = (ILoadable) GetPersister(persistentClass);
 			CriteriaLoader loader = new CriteriaLoader(persister, factory, criteria);
 			object[] spaces = persister.PropertySpaces;
-			ArrayList sett = new ArrayList();
+			HashedSet sett = new HashedSet();
 			for (int i=0; i<spaces.Length; i++) 
 			{
 				sett.Add( spaces[i] );

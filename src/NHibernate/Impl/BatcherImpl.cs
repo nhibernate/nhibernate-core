@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Data;
 
+using Iesi.Collections;
+
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -27,8 +29,8 @@ namespace NHibernate.Impl
 		private IDbCommand batchCommand;
 		private SqlString batchCommandSql;
 
-		private ArrayList commandsToClose = new ArrayList();
-		private ArrayList readersToClose = new ArrayList();
+		private ISet commandsToClose = new HashedSet();
+		private ISet readersToClose = new HashedSet();
 
 		public BatcherImpl(ISessionImplementor session) 
 		{
@@ -198,11 +200,10 @@ namespace NHibernate.Impl
 				return;
 			}
 
-			for( int i=0; i<readersToClose.Count; i++ ) 
+			foreach( NHybridDataReader reader in readersToClose ) 
 			{
-				((NHybridDataReader)readersToClose[i]).ReadIntoMemory();
+				reader.ReadIntoMemory();
 			}
-			
 		}
 
 		public void CloseCommand(IDbCommand cmd, IDataReader reader) 

@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Data;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Text.RegularExpressions;
+
+using Iesi.Collections;
 
 using NHibernate;
 using NHibernate.Collection;
@@ -26,8 +27,7 @@ namespace NHibernate.Hql
 	public class QueryTranslator : Loader.Loader
 	{
 		private static readonly log4net.ILog log  = log4net.LogManager.GetLogger(typeof(QueryTranslator));
-		private static StringCollection dontSpace = new StringCollection();
-
+		
 		private IDictionary typeMap = new SequencedHashMap();
 		private IDictionary collections = new SequencedHashMap();
 		private IList returnTypes = new ArrayList();
@@ -35,7 +35,7 @@ namespace NHibernate.Hql
 		private IList scalarTypes = new ArrayList();
 		private IDictionary namedParameters = new Hashtable();
 		private IDictionary aliasNames = new Hashtable();
-		private ArrayList crossJoins = new ArrayList();
+		private ISet crossJoins = new HashedSet();
 
 		// contains a List of strings
 		private IList scalarSelectTokens = new ArrayList();
@@ -46,8 +46,9 @@ namespace NHibernate.Hql
 		private IDictionary joins = new Hashtable();
 		private IList orderByTokens = new ArrayList();
 		private IList groupByTokens = new ArrayList();
-		private ArrayList identifierSpaces = new ArrayList();
-		private ArrayList entitiesToFetch = new ArrayList();
+		
+		private ISet identifierSpaces = new HashedSet();
+		private ISet entitiesToFetch = new HashedSet();
 
 		private IQueryable[] persisters;
 		private string[] names;
@@ -146,11 +147,11 @@ namespace NHibernate.Hql
 			catch (QueryException qe) 
 			{
 				qe.QueryString = queryString;
-				throw qe;
+				throw;
 			}
 			catch (MappingException me) 
 			{
-				throw me;
+				throw;
 			}
 			catch (Exception e) 
 			{
@@ -784,12 +785,9 @@ namespace NHibernate.Hql
 			return ojf;
 		}
 
-		public IList QuerySpaces 
+		public ISet QuerySpaces 
 		{
-			get 
-			{ 
-				return identifierSpaces; 
-			}
+			get { return identifierSpaces; }
 		}
 
 		/// <summary>
@@ -981,8 +979,10 @@ namespace NHibernate.Hql
 					}
 
 					//if ( Character.isUpperCase( token.charAt( token.lastIndexOf(".") + 1 ) ) ) {
+					// added the checks for last!=null and next==null because an ISet can not contain 
+					// a null key in .net - it is valid for a null key to be in a java.util.Set
 					if (
-						( beforeClassTokens.Contains(last) && !notAfterClassTokens.Contains(next) ) ||
+						( ( last!=null && beforeClassTokens.Contains(last) ) && ( next==null || !notAfterClassTokens.Contains(next) ) ) ||
 						"class".Equals(last) ) 
 					{
 						System.Type clazz = GetImportedClass(token, factory);
@@ -1010,18 +1010,19 @@ namespace NHibernate.Hql
 		}
 
 
-		private static readonly IList beforeClassTokens = new ArrayList();
-		private static readonly IList notAfterClassTokens = new ArrayList();
+		private static readonly ISet beforeClassTokens = new HashedSet();
+		private static readonly ISet notAfterClassTokens = new HashedSet();
 
 		static QueryTranslator() 
 		{
-			beforeClassTokens.Add("from");
+			beforeClassTokens.Add( "from" );
 			//beforeClassTokens.Add("new"); DEFINITELY DON'T HAVE THIS!!
-			beforeClassTokens.Add(",");
-			notAfterClassTokens.Add("in");
+			beforeClassTokens.Add( "," );
+
+			notAfterClassTokens.Add( "in" );
 			//notAfterClassTokens.Add(",");
-			notAfterClassTokens.Add("from");
-			notAfterClassTokens.Add(")");
+			notAfterClassTokens.Add( "from" );
+			notAfterClassTokens.Add( ")" );
 		}
 
 		/// <summary>

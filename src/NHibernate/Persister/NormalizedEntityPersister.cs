@@ -1,7 +1,9 @@
 using System;
-using System.Text;
-using System.Data;
 using System.Collections;
+using System.Data;
+using System.Text;
+
+using Iesi.Collections;
 
 using NHibernate.Engine;
 using NHibernate.Hql;
@@ -306,8 +308,8 @@ namespace NHibernate.Persister
 			}
 
 			// check distinctness of columns for this specific subclass only
-			Hashtable distinctColumns = new Hashtable();
-			CheckColumnDuplication(distinctColumns, model.Key.ColumnCollection);
+			HashedSet distinctColumns = new HashedSet();
+			CheckColumnDuplication( distinctColumns, model.Key.ColumnCollection );
 			foreach(Mapping.Property prop in model.PropertyCollection) 
 			{
 				if(prop.IsUpdateable || prop.IsInsertable) 

@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Text;
+
+using Iesi.Collections;
 
 using NHibernate.Dialect;
 using NHibernate.Util;
@@ -16,27 +17,27 @@ namespace NHibernate.SqlCommand
 	{
 		public const string PlaceHolder = "$PlaceHolder";
 		
-		private static StringDictionary Keywords = new StringDictionary();
+		private static ISet Keywords = new HashedSet();
 		private static ArrayList delimiterList = new ArrayList(13);
 		private static string delimiters = null;
 
 		static Template() 
 		{
-			Keywords["and"] = String.Empty;
-			Keywords["or"] = String.Empty;
-			Keywords["not"] = String.Empty;
-			Keywords["like"] = String.Empty;
-			Keywords["is"] = String.Empty;
-			Keywords["in"] = String.Empty;
-			Keywords["between"] = String.Empty;
-			Keywords["null"] = String.Empty;
-			Keywords["select"] = String.Empty;
-			Keywords["from"] = String.Empty;
-			Keywords["where"] = String.Empty;
-			Keywords["having"] = String.Empty;
-			Keywords["group"] = String.Empty;
-			Keywords["order"] = String.Empty;
-			Keywords["by"] = String.Empty;
+			Keywords.Add( "and" );
+			Keywords.Add( "or" );
+			Keywords.Add( "not" );
+			Keywords.Add( "like" );
+			Keywords.Add( "is" );
+			Keywords.Add( "in" );
+			Keywords.Add( "between" );
+			Keywords.Add( "null" );
+			Keywords.Add( "select" );
+			Keywords.Add( "from" );
+			Keywords.Add( "where" );
+			Keywords.Add( "having" );
+			Keywords.Add( "group" );
+			Keywords.Add( "order" );
+			Keywords.Add( "by" );
 
 			delimiterList.Add(" ");
 			delimiterList.Add("=");
@@ -69,7 +70,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="keyword">The Keyword to add.</param>
 		public static void AddKeyword(string keyword) 
 		{
-			Keywords[keyword] = String.Empty;
+			Keywords.Add( keyword );
 		}
 
 		/// <summary>
@@ -124,7 +125,7 @@ namespace NHibernate.SqlCommand
 				{
 					bool isIdentifier = token[0]=='`' || ( // allow any identifier quoted with backtick
 						Char.IsLetter(token[0]) && // only recognizes identifiers beginning with a letter
-						!Keywords.ContainsKey( token.ToLower() ) &&
+						!Keywords.Contains( token.ToLower() ) &&
 						token.IndexOf('.') < 0
 						);
 

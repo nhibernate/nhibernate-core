@@ -103,7 +103,7 @@ namespace NHibernate.Util
 
 				}
 
-				throw pnfe;
+				throw;
 			}
 		}
 

@@ -630,7 +630,7 @@ namespace NHibernate.Loader
 			catch(Exception sqle) 
 			{
 				ClosePreparedCommand(command, null, session);
-				throw sqle;
+				throw;
 			}
 
 			return command;	
@@ -692,7 +692,7 @@ namespace NHibernate.Loader
 			catch (Exception sqle) 
 			{
 				ClosePreparedCommand(st, rs, session);
-				throw sqle;
+				throw;
 			}
 		}
 

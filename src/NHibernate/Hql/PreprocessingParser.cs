@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Text;
+
+using Iesi.Collections;
+
 using NHibernate.Util;
 
 namespace NHibernate.Hql 
@@ -10,27 +12,27 @@ namespace NHibernate.Hql
 	/// </summary>
 	public class PreprocessingParser : IParser 
 	{
-		private static StringCollection operators;
+		private static ISet operators;
 		private static IDictionary collectionProps;
 
 		static PreprocessingParser() 
 		{
-			operators = new StringCollection();
-			operators.Add("<=");
-			operators.Add(">=");
-			operators.Add("=>");
-			operators.Add("=<");
-			operators.Add("!=");
-			operators.Add("<>");
-			operators.Add("!#");
-			operators.Add("!~");
-			operators.Add("!<");
-			operators.Add("!>");
-			operators.Add("is not");
-			operators.Add("not like");
-			operators.Add("not in");
-			operators.Add("not between");
-			operators.Add("not exists");
+			operators = new HashedSet();
+			operators.Add( "<=" );
+			operators.Add( ">=" );
+			operators.Add( "=>" );
+			operators.Add( "=<" );
+			operators.Add( "!=" );
+			operators.Add( "<>" );
+			operators.Add( "!#" );
+			operators.Add( "!~" );
+			operators.Add( "!<" );
+			operators.Add( "!>" );
+			operators.Add( "is not" );
+			operators.Add( "not like" );
+			operators.Add( "not in" );
+			operators.Add( "not between" );
+			operators.Add( "not exists" );
 			
 			collectionProps = new Hashtable();
 			collectionProps.Add("elements", "elements");

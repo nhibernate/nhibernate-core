@@ -2,6 +2,8 @@ using System;
 using System.Text;
 using System.Collections;
 
+using Iesi.Collections;
+
 using NHibernate.Dialect;
 using NHibernate.Util;
 
@@ -25,35 +27,72 @@ namespace NHibernate.SqlCommand
 		private StringBuilder having = new StringBuilder();
 		private bool distinct = false;
 
-		private static readonly IList dontSpace = new ArrayList();
+		/// <summary>
+		/// Certain databases don't like spaces around these operators.
+		/// </summary>
+		/// <remarks>
+		/// This needs to contain both a plain string and a 
+		/// SqlString version of the operator because the portions in 
+		/// the WHERE clause will come in as SqlStrings since there
+		/// might be parameters, other portions of the clause come in
+		/// as strings since there are no parameters.
+		/// </remarks>
+		private static readonly ISet dontSpace = new HashedSet();
 
 		static QuerySelect() 
 		{
 			//dontSpace.add("'");
-			dontSpace.Add(".");
-			dontSpace.Add("+");
-			dontSpace.Add("-");
-			dontSpace.Add("/");
-			dontSpace.Add("*");
-			dontSpace.Add("<");
-			dontSpace.Add(">");
-			dontSpace.Add("=");
-			dontSpace.Add("#");
-			dontSpace.Add("~");
-			dontSpace.Add("|");
-			dontSpace.Add("&");
-			dontSpace.Add("<=");
-			dontSpace.Add(">=");
-			dontSpace.Add("=>");
-			dontSpace.Add("=<");
-			dontSpace.Add("!=");
-			dontSpace.Add("<>");
-			dontSpace.Add("!#");
-			dontSpace.Add("!~");
-			dontSpace.Add("!<");
-			dontSpace.Add("!>");
-			dontSpace.Add(StringHelper.OpenParen); //for MySQL
-			dontSpace.Add(StringHelper.ClosedParen);
+			dontSpace.Add( "." );
+			dontSpace.Add( "+" );
+			dontSpace.Add( "-" );
+			dontSpace.Add( "/" );
+			dontSpace.Add( "*" );
+			dontSpace.Add( "<" );
+			dontSpace.Add( ">" );
+			dontSpace.Add( "=" );
+			dontSpace.Add( "#" );
+			dontSpace.Add( "~" );
+			dontSpace.Add( "|" );
+			dontSpace.Add( "&" );
+			dontSpace.Add( "<=" );
+			dontSpace.Add( ">=" );
+			dontSpace.Add( "=>" );
+			dontSpace.Add( "=<" );
+			dontSpace.Add( "!=" );
+			dontSpace.Add( "<>" );
+			dontSpace.Add( "!#" );
+			dontSpace.Add( "!~" );
+			dontSpace.Add( "!<" );
+			dontSpace.Add( "!>" );
+			// MySQL doesn't like spaces around "(" or ")" also.
+			dontSpace.Add( StringHelper.OpenParen ); 
+			dontSpace.Add( StringHelper.ClosedParen );
+
+			dontSpace.Add( new SqlString( "." ) );
+			dontSpace.Add( new SqlString( "+" ) );
+			dontSpace.Add( new SqlString( "-" ) );
+			dontSpace.Add( new SqlString( "/" ) );
+			dontSpace.Add( new SqlString( "*" ) );
+			dontSpace.Add( new SqlString( "<" ) );
+			dontSpace.Add( new SqlString( ">" ) );
+			dontSpace.Add( new SqlString( "=" ) );
+			dontSpace.Add( new SqlString( "#" ) );
+			dontSpace.Add( new SqlString( "~" ) );
+			dontSpace.Add( new SqlString( "|" ) );
+			dontSpace.Add( new SqlString( "&" ) );
+			dontSpace.Add( new SqlString( "<=" ) );
+			dontSpace.Add( new SqlString( ">=" ) );
+			dontSpace.Add( new SqlString( "=>" ) );
+			dontSpace.Add( new SqlString( "=<" ) );
+			dontSpace.Add( new SqlString( "!=" ) );
+			dontSpace.Add( new SqlString( "<>" ) );
+			dontSpace.Add( new SqlString( "!#" ) );
+			dontSpace.Add( new SqlString( "!~" ) );
+			dontSpace.Add( new SqlString( "!<" ) );
+			dontSpace.Add( new SqlString( "!>" ) );
+			// MySQL doesn't like spaces around "(" or ")" also.
+			dontSpace.Add( new SqlString( StringHelper.OpenParen ) ); 
+			dontSpace.Add( new SqlString( StringHelper.ClosedParen ) );
 		}
 
 		public QuerySelect(Dialect.Dialect dialect) 
@@ -156,7 +195,7 @@ namespace NHibernate.SqlCommand
 				.Add( from );
 			
 			SqlString part1 = joins.ToWhereFragmentString.Trim();
-			SqlString  part2 =  whereBuilder.ToSqlString().Trim();
+			SqlString part2 =  whereBuilder.ToSqlString().Trim();
 			bool hasPart1 = part1.SqlParts.Length > 0;
 			bool hasPart2 = part2.SqlParts.Length > 0;
 			
@@ -243,13 +282,13 @@ namespace NHibernate.SqlCommand
 				}
 				debugIndex++;
 
-				if( tokenString!=null) 
+				if( tokenString!=null ) 
 				{
 					lastQuoted = tokenString.EndsWith("'");
 				}
 				else 
 				{
-					tokenSqlString.EndsWith("'");
+					lastQuoted = tokenSqlString.EndsWith("'");
 				}
 			}
 		}

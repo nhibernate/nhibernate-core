@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -198,7 +197,7 @@ namespace NHibernate.Cfg
 			catch (MappingException me) 
 			{
 				log.Error("Could not compile the mapping document", me);
-				throw me;
+				throw;
 			}
 		}
 
@@ -225,7 +224,7 @@ namespace NHibernate.Cfg
 			} 
 			catch (MappingException me) 
 			{
-				throw me;
+				throw;
 			} 
 			catch (Exception e) 
 			{
@@ -334,7 +333,7 @@ namespace NHibernate.Cfg
 					} 
 					catch (MappingException me) 
 					{
-						throw me;
+						throw;
 					} 
 					catch (Exception e) 
 					{

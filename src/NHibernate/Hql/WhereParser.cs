@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Text;
+
+using Iesi.Collections;
 
 using NHibernate.Persister;
 using NHibernate.Type;
@@ -28,9 +29,9 @@ namespace NHibernate.Hql
 		private PathExpressionParser pathExpressionParser = new PathExpressionParser();
 
 
-		private static StringCollection expressionTerminators = new StringCollection(); //tokens that close a sub expression
-		private static StringCollection expressionOpeners = new StringCollection(); //tokens that open a sub expression
-		private static StringCollection booleanOperators = new StringCollection(); //tokens that would indicate a sub expression is a boolean expression
+		private static ISet expressionTerminators = new HashedSet(); //tokens that close a sub expression
+		private static ISet expressionOpeners = new HashedSet(); //tokens that open a sub expression
+		private static ISet booleanOperators = new HashedSet(); //tokens that would indicate a sub expression is a boolean expression
 
 		private static IDictionary negations = new Hashtable();
 		private Dialect.Dialect d;
@@ -554,7 +555,13 @@ namespace NHibernate.Hql
 			} 
 			else 
 			{
-				q.AppendWhereToken( new SqlCommand.SqlString(token) );
+				// a String.Empty can get passed in here.  If that occurs
+				// then don't create a new SqlString for it - just ignore
+				// it since it adds nothing to the sql being generated.
+				if( token!=null && token.Length>0) 
+				{ 
+					q.AppendWhereToken( new SqlCommand.SqlString(token) );
+				}
 			}
 		}
 

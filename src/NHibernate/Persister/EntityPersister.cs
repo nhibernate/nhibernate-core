@@ -1,7 +1,9 @@
 using System;
-using System.Text;
-using System.Data;
 using System.Collections;
+using System.Data;
+using System.Text;
+
+using Iesi.Collections;
 
 using NHibernate.Engine;
 using NHibernate.Hql;
@@ -83,10 +85,8 @@ namespace NHibernate.Persister
 			tableNames = new string[] { qualifiedTableName };
 
 			// detect mapping errors
-			// note: h2.0.3 uses a HashSet
-			IDictionary distinctColumns = new Hashtable();
-			object distinctColumnsObject = new object();
-
+			HashedSet distinctColumns = new HashedSet();
+			
 			// DISCRIMINATOR
 
 			object discriminatorValue;
@@ -121,7 +121,8 @@ namespace NHibernate.Persister
 				{
 					throw new MappingException("Could not format discriminator value to sql string", e);
 				}
-				distinctColumns.Add(discriminatorColumnName, distinctColumnsObject);
+				
+				distinctColumns.Add( discriminatorColumnName );
 
 			} 
 			else 

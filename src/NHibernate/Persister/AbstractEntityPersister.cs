@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Reflection;
 
+using Iesi.Collections;
+
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -788,8 +790,7 @@ namespace NHibernate.Persister
 			get { return HasIdentifierProperty || HasEmbeddedIdentifier; }
 		}
 
-		// IDictionary was a Set in h2.0.3
-		protected void CheckColumnDuplication(IDictionary distinctColumns, ICollection columns) 
+		protected void CheckColumnDuplication(ISet distinctColumns, ICollection columns) 
 		{
 			foreach(Column col in columns) 
 			{

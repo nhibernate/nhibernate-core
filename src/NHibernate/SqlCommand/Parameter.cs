@@ -132,11 +132,18 @@ namespace NHibernate.SqlCommand
 
 		public override int GetHashCode()
 		{
-			int hashCode;
+			int hashCode = 0;
 
 			unchecked 
 			{
-				hashCode = _sqlType.GetHashCode() + name.GetHashCode();
+				if( _sqlType!=null ) 
+				{
+					hashCode += _sqlType.GetHashCode();
+				}
+				if( name!=null ) 
+				{
+					hashCode += name.GetHashCode();
+				}
 				if(tableAlias!=null) 
 				{
 					hashCode += tableAlias.GetHashCode();

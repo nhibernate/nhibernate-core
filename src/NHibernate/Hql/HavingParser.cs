@@ -12,9 +12,16 @@ namespace NHibernate.Hql
 		public HavingParser(Dialect.Dialect d) : base(d)
 		{
 		}
+
 		protected override void AppendToken(QueryTranslator q, string token) 
 		{
-			q.AppendHavingToken(token);
+			// a String.Empty can get passed in here.  If that occurs
+			// then don't create a new SqlString for it - just ignore
+			// it since it adds nothing to the sql being generated.
+			if( token!=null && token.Length>0 ) 
+			{
+				q.AppendHavingToken(token);
+			}
 		}
 	}
 }

@@ -1,7 +1,9 @@
 using System;
-using System.Text;
-using System.Data;
 using System.Collections;
+using System.Data;
+using System.Text;
+
+using Iesi.Collections;
 
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -113,7 +115,7 @@ namespace NHibernate.Collection
 				k++;
 			}
 			keyColumnAliases = alias.ToAliasStrings(keyAliases, dialect);
-			IList distinctColumns = new ArrayList();
+			ISet distinctColumns = new HashedSet();
 			CheckColumnDuplication( distinctColumns, collection.Key.ColumnCollection );
 
 			isOneToMany = collection.IsOneToMany;
@@ -950,7 +952,7 @@ namespace NHibernate.Collection
 			get { return hasOrphanDelete; }
 		}
 
-		private void CheckColumnDuplication(IList distinctColumns, ICollection columns) 
+		private void CheckColumnDuplication(ISet distinctColumns, ICollection columns) 
 		{
 			foreach(Column col in columns) 
 			{
