@@ -99,7 +99,7 @@ namespace NHibernate.Expression
 		/// <returns>A <see cref="GtExpression" />.</returns>
 		public static Expression Ge(string propertyName, object value) 
 		{
-			return new GtExpression(propertyName, value);
+			return new GeExpression(propertyName, value);
 		}
 
 		/// <summary>
