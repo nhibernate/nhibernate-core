@@ -6,7 +6,7 @@ PreAlpha Build 0.2.0.0
 - Fixed bug with Hql and "IN (:namedParam)"
 - Fixed bug with Hql and multi column IType
 - Fixed bug with NullReferenceException and TypeType class.
-- Simple Filters are now working.
+- ISession.Filter() is now working.
 - Compiled Queries and Filters are now cached.
 - Refactored Hql to use a SqlString instead of string containing sql.
 - Dialect has had public API changed because of Sql to SqlCommand refactoring.
@@ -15,6 +15,7 @@ PreAlpha Build 0.2.0.0
 - Added "access" attribute for NHibernate to get to fields and properties with no setters.  See NHibernate.Property.PropertyAccessorFactory for all valid value types and how to plug in your own implementation of IPropertyAccessor.
 - Added Types to read BLOB/CLOB columns to a byte[]/string Property.
 - TypeFactory was modified to allow the attribute "type" to be the Assembly Qualified Name, Full Name, NHibernate IType.Name, or Hibernate name to help with porting hibernate hbm.xml files and Net2Hbm that John is writing.
+- Fixed bug with Hql and scalar queries 
 
 PreAlpha Build 0.1.0.0
 ======================== 
