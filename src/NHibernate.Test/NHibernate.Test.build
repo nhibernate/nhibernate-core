@@ -40,6 +40,10 @@
 			file="hibernate.cfg.xml"
 			tofile="${build.dir}/bin/hibernate.cfg.xml" 
 		/>
+		<copy
+			file="../NHibernate.DomainModel/ABC.hbm.xml"
+			tofile="${build.dir}/bin/ABC.hbm.xml"
+		/>
 			
 	</target>
 	

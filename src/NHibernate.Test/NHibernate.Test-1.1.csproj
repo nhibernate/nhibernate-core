@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = 'copy /y "$(ProjectDir)App.config" "$(TargetPath).config"&#xd;&#xa;copy /y "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml"'
+                PreBuildEvent = 'copy /y "$(ProjectDir)App.config" "$(TargetPath).config"&#xd;&#xa;copy /y "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml"&#xd;&#xa;copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"'
                 PostBuildEvent = ""
                 RootNamespace = "NHibernate.Test"
                 RunPostBuildEvent = "OnBuildSuccess"

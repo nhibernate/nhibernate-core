@@ -10,7 +10,7 @@
 		<property name="use_outer_join">true</property>
 		<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
 		<!-- mapping files -->
-		<mapping file="../../../NHibernate.DomainModel/ABC.hbm.xml" />
+		<mapping file="ABC.hbm.xml" />
 	</session-factory>
 	
 </hibernate-configuration>
