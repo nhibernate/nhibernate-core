@@ -76,6 +76,7 @@ namespace NHibernate.Impl
 		[NonSerialized] private IDictionary properties;
 		[NonSerialized] private bool showSql;
 		[NonSerialized] private bool useOuterJoin;
+		[NonSerialized] private IsolationLevel isolation;
 		// TODO: figure out why this is commented out in nh and not h2.0.3
 		//[NonSerialized] private Templates templates;
 		[NonSerialized] private IDictionary querySubstitutions;
@@ -144,6 +145,30 @@ namespace NHibernate.Impl
 			useOuterJoin = PropertiesHelper.GetBoolean(Cfg.Environment.OuterJoin, properties);
 			log.Info("use outer join fetching: " + useOuterJoin);
 
+			// default the isolationLevel to Unspecified to indicate to our code that no isolation level 
+			// has been set so just use the default of the DataProvider.
+			string isolationString = PropertiesHelper.GetString( Cfg.Environment.Isolation, properties, String.Empty );
+			if( isolationString!=String.Empty ) 
+			{
+				try 
+				{
+					isolation = (IsolationLevel)Enum.Parse( typeof(IsolationLevel), isolationString );
+					log.Info( "Using Isolation Level: " + isolation.ToString() );
+				}
+				catch( ArgumentException ae ) 
+				{
+					log.Error( "error configuring IsolationLevel " + isolationString, ae );
+					throw new HibernateException( 
+						"The isolation level of " + isolationString + " is not a valid IsolationLevel.  Please " +
+						"use one of the Member Names from the IsolationLevel.", ae );
+				}
+			}
+			else 
+			{
+				isolation = IsolationLevel.Unspecified;
+			}
+
+			
 			bool usrs = PropertiesHelper.GetBoolean(Cfg.Environment.UseScrollableResultSet, properties);
 			int batchSize = PropertiesHelper.GetInt32(Cfg.Environment.StatementBatchSize, properties, 0);
 
@@ -392,6 +417,11 @@ namespace NHibernate.Impl
 		public IConnectionProvider ConnectionProvider 
 		{
 			get {return this.connectionProvider;}
+		}
+
+		public IsolationLevel Isolation 
+		{
+			get { return isolation; }
 		}
 
 		public QueryTranslator GetQuery(string query) 
