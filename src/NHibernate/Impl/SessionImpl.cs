@@ -2278,26 +2278,34 @@ namespace NHibernate.Impl
 			return false;
 		}
 
-		private void Execute() {
-
+		private void Execute() 
+		{
 			log.Debug("executing flush");
 
-			try {
+			try 
+			{
+				// see the comments in ExecuteAll for why the Clear() has been added here...
 				ExecuteAll( insertions );
-				ExecuteAll( updates );
-				ExecuteAll( collectionRemovals );
-				ExecuteAll( collectionUpdates );
-				ExecuteAll( collectionCreations );
-				ExecuteAll( deletions );
-
-				// have to do this here because ICollection does not have a remove method
 				insertions.Clear();
+
+				ExecuteAll( updates );
 				updates.Clear();
+
+				ExecuteAll( collectionRemovals );
 				collectionRemovals.Clear();
+
+				ExecuteAll( collectionUpdates );
 				collectionUpdates.Clear();
+
+				ExecuteAll( collectionCreations );
 				collectionCreations.Clear();
+
+				ExecuteAll( deletions );
 				deletions.Clear();
-			} catch (Exception e) {
+
+			} 
+			catch (Exception e) 
+			{
 				throw new ADOException("could not synchronize database state with session", e);
 			}
 		}
@@ -2330,9 +2338,11 @@ namespace NHibernate.Impl
 			foreach(IExecutable e in coll) {
 				executions.Add(e);
 				e.Execute();
-				//TODO: h2.0.3 has this but not NH
+				// this was moved to Execute because there is no way to
+				// remove an item from an enumerator...
 				// iter.remove -> coll.Remove()??
 			}
+			
 			if ( batcher!=null ) batcher.ExecuteBatch();
 		}
 

@@ -21,7 +21,7 @@ namespace NHibernate.Impl
 			this.dirtyFields = dirtyProperties;
 		}
 
-		public ScheduledUpdate(object id, object[] fields, int[] dirtyProperties, object lastVersion, object nextVersion, object instance, object[] updateState, IClassPersister persister, ISessionImplementor session) : base(session, id, instance, persister) 
+		public ScheduledUpdate(object id, object[] fields, int[] dirtyProperties, object lastVersion, object nextVersion, object instance, object[] updatedState, IClassPersister persister, ISessionImplementor session) : base(session, id, instance, persister) 
 		{
 			this.fields = fields;
 			this.lastVersion = lastVersion;
