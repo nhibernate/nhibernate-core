@@ -1461,7 +1461,7 @@ namespace NHibernate.Persister
 
 			//TODO: H2.0.3 synch - figure out what is different here and why it is different
 			// make sure an Alias was actually passed into the statement
-			if(alias!=null && alias!=String.Empty) 
+			if(alias!=null && alias.Length > 0) 
 				return StringHelper.Prefix(cols, Alias(alias, tableIndex) + StringHelper.Dot);
 			else 
 				return cols;

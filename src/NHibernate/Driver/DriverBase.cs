@@ -47,7 +47,7 @@ namespace NHibernate.Driver
 			if(!UseNamedPrefixInSql) return StringHelper.SqlParameter;
 
 			
-			if(tableAlias!=null && tableAlias!=String.Empty) 
+			if(tableAlias!=null && tableAlias.Length > 0) 
 			{
 				return NamedPrefix + tableAlias + parameterName;
 			}
@@ -67,7 +67,7 @@ namespace NHibernate.Driver
 			if(!UseNamedPrefixInParameter) return parameterName;
 
 			
-			if(tableAlias!=null && tableAlias!=String.Empty) 
+			if(tableAlias!=null && tableAlias.Length > 0) 
 			{
 				return NamedPrefix + tableAlias + parameterName;
 			}

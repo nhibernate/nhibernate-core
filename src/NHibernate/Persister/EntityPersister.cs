@@ -593,7 +593,7 @@ namespace NHibernate.Persister
 			
 
 			// add any special text that is contained in the forUpdateFragment
-			if(forUpdateFragment!=null && forUpdateFragment!=String.Empty) 
+			if(forUpdateFragment!=null && forUpdateFragment.Length > 0) 
 			{
 				SqlStringBuilder sqlBuilder = new SqlStringBuilder(forUpdateSqlString);	
 				sqlBuilder.Add(forUpdateFragment);
@@ -1167,7 +1167,7 @@ namespace NHibernate.Persister
 			}
 
 			// make sure an Alias was actually passed into the statement
-			if(name!=null && name!=String.Empty) 
+			if(name!=null && name.Length > 0) 
 			{
 				return StringHelper.Prefix(cols, name + StringHelper.Dot);
 			}

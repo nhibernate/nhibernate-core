@@ -33,7 +33,7 @@ namespace NHibernate.Id
 		public void Configure(IType type, IDictionary parms, Dialect.Dialect d) 
 		{
 			propertyName = (string)parms["property"];
-			if(propertyName==null || propertyName==String.Empty)
+			if(propertyName==null || propertyName.Length == 0)
 				throw new MappingException("param named \"property\" is required for foreign id generation strategy");
 		}
 	}

@@ -68,7 +68,7 @@ namespace NHibernate.SqlCommand{
 				andNeeded = true;
 
 				string columnName;
-				if(tableAlias!=null && tableAlias!=String.Empty) {
+				if(tableAlias!=null && tableAlias.Length > 0) {
 					columnName = tableAlias + StringHelper.Dot + columnNames[i];
 				}
 				else {

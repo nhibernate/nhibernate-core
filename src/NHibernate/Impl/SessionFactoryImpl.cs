@@ -140,7 +140,7 @@ namespace NHibernate.Impl
 			// default the isolationLevel to Unspecified to indicate to our code that no isolation level 
 			// has been set so just use the default of the DataProvider.
 			string isolationString = PropertiesHelper.GetString( Cfg.Environment.Isolation, properties, String.Empty );
-			if( isolationString!=String.Empty ) 
+			if( isolationString.Length > 0) 
 			{
 				try 
 				{

@@ -780,7 +780,7 @@ namespace NHibernate.Persister
 
 		protected bool HasWhere 
 		{
-			get { return (sqlWhereString!=null && sqlWhereString!=String.Empty); }
+			get { return (sqlWhereString!=null && sqlWhereString.Length > 0); }
 		}
 
 		public virtual bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier 

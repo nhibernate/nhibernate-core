@@ -51,7 +51,7 @@ namespace NHibernate.Impl
 			if(log.IsDebugEnabled) 
 			{
 				string nameMsg = "unnamed";
-				if(name!=null && name!=String.Empty) 
+				if(name!=null && name.Length > 0) 
 				{
 					nameMsg = name;
 				}
@@ -60,7 +60,7 @@ namespace NHibernate.Impl
 			}
 
 			Instances[uid] = instance;
-			if(name!=null && name!=String.Empty) 
+			if(name!=null && name.Length > 0) 
 			{
 				log.Info("Factory name:" + name);
 				NamedInstances[name] = instance;
@@ -80,7 +80,7 @@ namespace NHibernate.Impl
 		/// <param name="properties">The configured properties for the ISessionFactory.</param>
 		public static void RemoveInstance(string uid, string name, IDictionary properties) 
 		{
-			if(name!=null && name!=String.Empty) 
+			if(name!=null && name.Length > 0) 
 			{
 				log.Info("unbinding factory: " + name);
 

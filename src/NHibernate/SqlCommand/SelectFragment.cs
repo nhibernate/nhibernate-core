@@ -46,7 +46,7 @@ namespace NHibernate.SqlCommand
 
 		public SelectFragment AddColumn(string tableAlias, string columnName, string columnAlias) 
 		{
-			if(tableAlias==null || tableAlias==String.Empty) 
+			if(tableAlias==null || tableAlias.Length == 0) 
 			{
 				columns.Add(columnName);
 			}

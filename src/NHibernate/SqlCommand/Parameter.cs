@@ -148,7 +148,7 @@ namespace NHibernate.SqlCommand
 
 		public override string ToString() 
 		{
-			return (tableAlias==null || tableAlias==String.Empty)? 
+			return (tableAlias==null || tableAlias.Length == 0)? 
 				":" + name : 
 				":" + tableAlias + "." + name;
 		}

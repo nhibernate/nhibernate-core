@@ -112,7 +112,7 @@ namespace NHibernate.SqlCommand
 			// make sure the contents of the builder have been added to the sqlBuilder
 			builderString = builder.ToString();
 
-			if(builderString!=String.Empty) 
+			if(builderString.Length > 0) 
 			{
 				sqlBuilder.Add(builderString);
 			}
@@ -285,7 +285,7 @@ namespace NHibernate.SqlCommand
 				// if for some reason we had an empty string in here then just 
 				// move on to the next SqlPart, otherwise lets make sure that 
 				// it does in fact start with the value
-				if(partText!=String.Empty) 
+				if(partText.Length > 0) 
 				{
 					return partText.StartsWith(value);
 				}
