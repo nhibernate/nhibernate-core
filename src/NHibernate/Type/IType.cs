@@ -78,7 +78,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String, ISessionImplementor, Object)"]/*'
 		/// /> 
-		object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, Object owner );
+		object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
