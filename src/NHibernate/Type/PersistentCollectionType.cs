@@ -228,11 +228,14 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// 
+		/// Wraps a collection from System.Collections or Iesi.Collections inside one of the 
+		/// NHibernate collections.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="collection"></param>
-		/// <returns></returns>
+		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
+		/// <param name="collection">The unwrapped collection.</param>
+		/// <returns>
+		/// A subclass of <see cref="PersistentCollection"/> that wraps the non NHibernate collection.
+		/// </returns>
 		public abstract PersistentCollection Wrap( ISessionImplementor session, object collection );
 
 		// Note: return true because this type is castable to IAssociationType. Not because

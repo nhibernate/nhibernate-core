@@ -1,8 +1,7 @@
 using System.Collections;
-using Iesi.Collections;
+
 using NHibernate.Collection;
 using NHibernate.Engine;
-using SortedSet = NHibernate.Collection.SortedSet;
 
 namespace NHibernate.Type
 {
@@ -40,14 +39,16 @@ namespace NHibernate.Type
 		// doesn't have that I don't need to override it.
 
 		/// <summary>
-		/// 
+		/// Wraps an <see cref="Iesi.Collections.ISet"/> in a <see cref="SortedSet"/>.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="collection"></param>
-		/// <returns></returns>
+		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
+		/// <param name="collection">The unwrapped <see cref="Iesi.Collections.ISet"/>.</param>
+		/// <returns>
+		/// An <see cref="SortedSet"/> that wraps the non NHibernate <see cref="Iesi.Collections.ISet"/>.
+		/// </returns>
 		public override PersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return new SortedSet( session, ( ISet ) collection, comparer );
+			return new SortedSet( session, ( Iesi.Collections.ISet ) collection, comparer );
 
 		}
 	}

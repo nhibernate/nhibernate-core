@@ -1,8 +1,6 @@
 using System.Collections;
-using Iesi.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
-using Set = NHibernate.Collection.Set;
 
 namespace NHibernate.Type
 {
@@ -34,17 +32,20 @@ namespace NHibernate.Type
 		/// </summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( ISet ); }
+			get { return typeof( Iesi.Collections.ISet ); }
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollectionType.Wrap"/>
+		/// Wraps an <see cref="Iesi.Collections.ISet"/> in a <see cref="Set"/>.
 		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="session"></param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
+		/// <param name="collection">The unwrapped <see cref="Iesi.Collections.ISet"/>.</param>
+		/// <returns>
+		/// An <see cref="Set"/> that wraps the non NHibernate <see cref="Iesi.Collections.ISet"/>.
+		/// </returns>
 		public override PersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return new Set( session, ( ISet ) collection );
+			return new Set( session, ( Iesi.Collections.ISet ) collection );
 		}
 
 		/// <summary>

@@ -43,11 +43,13 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// 
+		/// Wraps an <see cref="IDictionary"/> in a <see cref="Map"/>.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="collection"></param>
-		/// <returns></returns>
+		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
+		/// <param name="collection">The unwrapped <see cref="IDictionary"/>.</param>
+		/// <returns>
+		/// An <see cref="Map"/> that wraps the non NHibernate <see cref="IDictionary"/>.
+		/// </returns>
 		public override PersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
 			return new Map( session, ( IDictionary ) collection );

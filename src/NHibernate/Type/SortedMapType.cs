@@ -38,11 +38,13 @@ namespace NHibernate.Type
 		// doesn't have that I don't need to override it.
 
 		/// <summary>
-		/// 
+		/// Wraps an <see cref="IDictionary"/> in a <see cref="SortedMap"/>.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="collection"></param>
-		/// <returns></returns>
+		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
+		/// <param name="collection">The unwrapped <see cref="IDictionary"/>.</param>
+		/// <returns>
+		/// An <see cref="SortedMap"/> that wraps the non NHibernate <see cref="IDictionary"/>.
+		/// </returns>
 		public override PersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
 			return new SortedMap( session, ( IDictionary ) collection, comparer );

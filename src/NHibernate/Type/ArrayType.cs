@@ -77,11 +77,13 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// 
+		/// Wraps a <see cref="System.Array"/> in a <see cref="ArrayHolder"/>.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="array"></param>
-		/// <returns></returns>
+		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
+		/// <param name="array">The unwrapped array.</param>
+		/// <returns>
+		/// An <see cref="ArrayHolder"/> that wraps the non NHibernate <see cref="System.Array"/>.
+		/// </returns>
 		public override PersistentCollection Wrap( ISessionImplementor session, object array )
 		{
 			return new ArrayHolder( session, array );
