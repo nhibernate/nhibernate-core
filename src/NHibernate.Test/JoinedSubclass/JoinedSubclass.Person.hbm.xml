@@ -8,6 +8,7 @@
 	<class 
 		name="NHibernate.Test.JoinedSubclass.Person, NHibernate.Test" 
 		table="j_sc"	
+		proxy="NHibernate.Test.JoinedSubclass.Person, NHibernate.Test" 
 	>
 		<id 
 			name="Id" 

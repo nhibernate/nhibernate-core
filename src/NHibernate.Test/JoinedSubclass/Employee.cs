@@ -14,19 +14,19 @@ namespace NHibernate.Test.JoinedSubclass
 
 		public Employee() {}
 
-		public string Title
+		public virtual string Title
 		{
 			get { return _title; }
 			set { _title = value; }
 		}
 
-		public Decimal Salary
+		public virtual Decimal Salary
 		{
 			get { return _salary; }
 			set { _salary = value; }
 		}
 
-		public Employee Manager
+		public virtual Employee Manager
 		{
 			get { return _manager; }
 			set { _manager = value; }

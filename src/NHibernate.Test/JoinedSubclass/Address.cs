@@ -15,19 +15,19 @@ namespace NHibernate.Test.JoinedSubclass
 		{
 		}
 
-		public string Street
+		public virtual string Street
 		{
 			get { return _street; }
 			set { _street = value; }
 		}
 
-		public string Zip
+		public virtual string Zip
 		{
 			get { return _zip; }
 			set { _zip = value; }
 		}
 
-		public string Country
+		public virtual string Country
 		{
 			get { return _country; }
 			set { _country = value; }

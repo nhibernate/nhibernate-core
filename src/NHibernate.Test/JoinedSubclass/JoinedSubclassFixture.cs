@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 
+using NHibernate.Proxy;
+
 using NUnit.Framework;
 
 namespace NHibernate.Test.JoinedSubclass
@@ -78,7 +80,7 @@ namespace NHibernate.Test.JoinedSubclass
 			foreach( Customer c in customers ) 
 			{
 				//TODO: proxies make this work
-				// Assert.IsFalse( NHibernate.IsInitialized( c.Salesperson ) );
+				Assert.IsFalse( NHibernate.IsInitialized( c.Salesperson ) );
 				Assert.AreEqual( "Mark", c.Salesperson.Name );
 			}
 			Assert.AreEqual( 1, customers.Count );
@@ -99,6 +101,54 @@ namespace NHibernate.Test.JoinedSubclass
 			Assert.AreEqual( 0, s.CreateQuery( "from Person" ).List().Count );
 			s.Close();
 										 
+		}
+
+		[Test]
+		public void TestHql()
+		{
+			// test the Save
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			Employee wally = new Employee();
+			wally.Name = "wally";
+			wally.Title = "Unmanaged Employee";
+
+			Employee dilbert = new Employee();
+			dilbert.Name = "dilbert";
+			dilbert.Title = "office clown";
+			
+			Employee pointyhair = new Employee();
+			pointyhair.Name = "pointyhair";
+			pointyhair.Title = "clown watcher";
+
+			dilbert.Manager = pointyhair;
+
+			s.Save( wally );
+			s.Save( dilbert );
+			s.Save( pointyhair );
+			t.Commit();
+			s.Close();
+
+			// get a proxied - initialized version of manager
+			s = sessions.OpenSession();
+			pointyhair = (Employee) s.Load( typeof(Employee), pointyhair.Id );
+			NHibernate.Initialize( pointyhair );
+			s.Close();
+
+			s = sessions.OpenSession();
+			IQuery q = s.CreateQuery( "from Employee as e where e.Manager = :theMgr" );
+			q.SetParameter( "theMgr", pointyhair );
+			IList results = q.List();
+			Assert.AreEqual( 1, results.Count, "should only return 1 employee.");
+			dilbert = (Employee)results[0];
+			Assert.AreEqual( "dilbert", dilbert.Name, "should have been dilbert returned.");
+
+			s.Delete( wally );
+			s.Delete( pointyhair );
+			s.Delete( dilbert );
+			s.Flush();
+			s.Close();			
 		}
 
 		/// <summary>
@@ -134,13 +184,13 @@ namespace NHibernate.Test.JoinedSubclass
 			t = s.BeginTransaction();
 			
 			// perform a load based on the base class
-			Person empAsPerson = (Person)s.Load( typeof(Person), empId );
+			Person empAsPerson = (Person)s.Find( "from Person as p where p.id = ?", empId, NHibernate.Int32 )[0];
 			person = (Person)s.Load( typeof(Person), personId );
-
+			
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded
 			// the sublcass
-			emp = empAsPerson as Employee;
-			Assert.IsNotNull(emp);
+			Assert.AreEqual( typeof(Employee), empAsPerson.GetType(), "even though person was queried, should have returned correct subclass.");
+			emp = (Employee)s.Load( typeof(Employee), empId );
 
 			// lets update the objects
 			person.Name = "Did it get updated";
@@ -149,6 +199,9 @@ namespace NHibernate.Test.JoinedSubclass
 			// update the properties from the subclass and base class
 			emp.Name = "Updated Employee String";
 			emp.Title = "office dunce";
+			
+			// verify the it actually changes the same object
+			Assert.AreEqual( emp.Name, empAsPerson.Name, "emp and empAsPerson should refer to same object." );
 			
 			// save it through the base class reference and make sure that the
 			// subclass properties get updated.

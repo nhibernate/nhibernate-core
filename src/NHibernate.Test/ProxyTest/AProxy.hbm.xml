@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class
+		name="NHibernate.Test.ProxyTest.AProxy, NHibernate.Test"
+		table="aproxy"
+		proxy="NHibernate.Test.ProxyTest.AProxy, NHibernate.Test"
+	>
+		<id name="Id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		
+		<property name="Name" />
+	</class>
+</hibernate-mapping>

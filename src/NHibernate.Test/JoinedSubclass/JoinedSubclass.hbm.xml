@@ -14,6 +14,7 @@
 	<class 
 		name="NHibernate.Test.JoinedSubclass.Person, NHibernate.Test" 
 		table="person"	
+		proxy="NHibernate.Test.JoinedSubclass.Person, NHibernate.Test" 
 	>
 		<id 
 			name="Id" 
@@ -37,6 +38,7 @@
 		<joined-subclass 
 			name="NHibernate.Test.JoinedSubclass.Employee, NHibernate.Test" 
 			table="empl"
+			proxy="NHibernate.Test.JoinedSubclass.Employee, NHibernate.Test" 
 		>
 			<key column="person_id"/>
 			<property name="Title" not-null="true"  length="20"/>
@@ -47,6 +49,7 @@
 		<joined-subclass 
 			name="NHibernate.Test.JoinedSubclass.Customer, NHibernate.Test"
 			table="cust"
+			proxy="NHibernate.Test.JoinedSubclass.Customer, NHibernate.Test"
 		>
 			<key column="person_id"/>
 			<property name="Comments"/>

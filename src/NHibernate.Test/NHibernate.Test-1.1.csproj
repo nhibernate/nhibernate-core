@@ -546,6 +546,20 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "ProxyTest\AProxy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ProxyTest\AProxy.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ProxyTest\NHibernateProxyHelperFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlCommandTest\SqlDeleteBuilderFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

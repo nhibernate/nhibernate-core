@@ -14,13 +14,13 @@ namespace NHibernate.Test.JoinedSubclass
 		{
 		}
 
-		public Employee Salesperson
+		public virtual Employee Salesperson
 		{
 			get { return _salesperson; }
 			set { _salesperson = value; }
 		}
 
-		public string Comments
+		public virtual string Comments
 		{
 			get { return _comments; }
 			set { _comments = value; }
