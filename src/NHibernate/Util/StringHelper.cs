@@ -82,6 +82,31 @@ namespace NHibernate.Util {
 			return qualifiedName.Substring( qualifiedName.LastIndexOf(seperator) + 1 );
 		}
 
+		/// <summary>
+		/// Takes a fully qualified type name and returns the full name of the 
+		/// Class - includes namespaces.
+		/// </summary>
+		/// <param name="typeName"></param>
+		/// <returns></returns>
+		public static string GetFullClassname(string typeName) 
+		{
+			return typeName.Trim().Split(' ', ',')[0];
+		}
+
+		/// <summary>
+		/// Takes a fully qualifed type name (can include the assembly) and just returns
+		/// the name of the Class.
+		/// </summary>
+		/// <param name="typeName"></param>
+		/// <returns></returns>
+		public static string GetClassname(string typeName) 
+		{
+			string[] splitClassname = GetFullClassname(typeName).Split('.');
+
+			return splitClassname[splitClassname.Length-1];
+
+		}
+
 		public static string Qualifier(string qualifiedName) {
 			int loc = qualifiedName.LastIndexOf(".");
 			if ( loc< 0 ) {
