@@ -96,22 +96,65 @@ namespace NHibernate.Impl
 		/// Represents the status of an entity with respect to 
 		/// this session. These statuses are for internal 
 		/// book-keeping only and are not intended to represent 
-		/// any notion that is visible to the _application_. 
+		/// any notion that is visible to the <b>application</b>. 
 		/// </summary>
 		[Serializable]
 		internal enum Status 
 		{
+			/// <summary>
+			/// The Entity is snapshotted in the Session with the same state as the database.
+			/// </summary>
 			Loaded,
+
+			/// <summary>
+			/// The Entity is in the Session and has been marked for deletion but not
+			/// deleted from the database yet.
+			/// </summary>
 			Deleted,
+
+			/// <summary>
+			/// The Entity has been deleted from database.
+			/// </summary>
 			Gone,
+
+			/// <summary>
+			/// The Entity is in the process of being loaded.
+			/// </summary>
 			Loading,
+
+			/// <summary>
+			/// The Entity is in the process of being saved.
+			/// </summary>
 			Saving
 		}
 
+		/// <summary>
+		/// An action that <see cref="ISession"/> can Execute during a
+		/// <c>Flush</c>.
+		/// </summary>
 		internal interface IExecutable 
 		{
+			/// <summary>
+			/// Execute the action required to write changes to the database.
+			/// </summary>
 			void Execute();
+
+			/// <summary>
+			/// Called after the Transaction has been completed.
+			/// </summary>
+			/// <remarks>
+			/// Actions should make sure that the Cache is notified about
+			/// what just happened.
+			/// </remarks>
 			void AfterTransactionCompletion();
+
+			/// <summary>
+			/// The spaces (tables) that are affectd by this Executable action.
+			/// </summary>
+			/// <remarks>
+			/// This is used to determine if the ISession needs to be flushed before
+			/// a query is executed so stale data is not returned.
+			/// </remarks>
 			object[] PropertySpaces { get; }
 		}
 
@@ -266,11 +309,53 @@ namespace NHibernate.Impl
 		public class CollectionEntry : ICollectionSnapshot 
 		{
 			internal bool dirty;
+			
+			/// <summary>
+			/// Indicates that the Collection can still be reached by an Entity
+			/// that exist in the <see cref="ISession"/>.
+			/// </summary>
+			/// <remarks>
+			/// It is also used to ensure that the Collection is not shared between
+			/// two Entities.  
+			/// </remarks>
 			[NonSerialized] internal bool reached;
+			
+			/// <summary>
+			/// Indicates that the Collection has been processed and is ready
+			/// to have its state synchronized with the database.
+			/// </summary>
 			[NonSerialized] internal bool processed;
+			
+			/// <summary>
+			/// Indicates that a Collection needs to be updated.
+			/// </summary>
+			/// <remarks>
+			/// A Collection needs to be updated whenever the contents of the Collection
+			/// have been changed. 
+			/// </remarks>
 			[NonSerialized] internal bool doupdate;
+			
+			/// <summary>
+			/// Indicates that a Collection has old elements that need to be removed.
+			/// </summary>
+			/// <remarks>
+			/// A Collection needs to have removals performed whenever its role changes or
+			/// the key changes and it has a loadedPersister - ie - it was loaded by NHibernate.
+			/// </remarks>
 			[NonSerialized] internal bool doremove;
+			
+			/// <summary>
+			/// Indicates that a Collection needs to be recreated.
+			/// </summary>
+			/// <remarks>
+			/// A Collection needs to be recreated whenever its role changes
+			/// or the owner changes.
+			/// </remarks>
 			[NonSerialized] internal bool dorecreate;
+			
+			/// <summary>
+			/// Indicates that the Collection has been fully initialized.
+			/// </summary>
 			internal bool initialized;
 			
 			/// <summary>

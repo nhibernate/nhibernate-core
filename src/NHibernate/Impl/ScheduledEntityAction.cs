@@ -33,11 +33,6 @@ namespace NHibernate.Impl
 		}
 
 
-		public object[] PropertySpaces 
-		{
-			get { return _persister.PropertySpaces; }
-		}
-
 		/// <summary>
 		/// Gets the <see cref="ISessionImplementor"/> the action is executing in.
 		/// </summary>
@@ -69,7 +64,10 @@ namespace NHibernate.Impl
 		{
 			get { return _instance; }
 		}
+		
+		#region SessionImpl.IExecutable Members
 
+		
 		/// <summary>
 		/// Called when the Transaction this action occurred in has completed.
 		/// </summary>
@@ -79,6 +77,13 @@ namespace NHibernate.Impl
 		/// Execute the action using the <see cref="IClassPersister"/>.
 		/// </summary>
 		public abstract void Execute();
+
+		public object[] PropertySpaces 
+		{
+			get { return _persister.PropertySpaces; }
+		}
+
+		#endregion
 
 	}
 }
