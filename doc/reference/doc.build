@@ -4,24 +4,31 @@
 	default="build" 
 	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
 >
+	<!--
+		Required properties:
+			* build.dir	- (path) root level to copy built documentation to.  Only needed by package task.
+	-->
+	
 	<!-- 
 		I have not figured out a way to modify the Path through NAnt so you
-		need to make sure that xsltproc is in the path
+		need to make sure that xsltproc is in the path.  
 	-->
 	
 	<property name="lang" value="en" />
-	<property name="build.dir" value="build/${lang}" />
+	<property name="output.dir" value="build/${lang}" />
 	
-	<target name="build" description="Generates html from docbook files.">
+	<target name="clean" description="Cleans any previous builds">
+		<delete dir="${output.dir}" failonerror="false" />
+	</target>
 	
+	<target name="build" description="Generates the documentation in multiple formats from the docbook files.">
 		<call target="build-html" />
 		<call target="build-chm" />
-		
 	</target>
 	
 	<target name="build-html" description="Generates html from docbook files.">
 		 
-		<property name="build.html.dir" value="${build.dir}/html" />
+		<property name="build.html.dir" value="${output.dir}/html" />
 	
 		<mkdir dir="${build.html.dir}" failonerror="false" />
 		<mkdir dir="${build.html.dir}/single" failonerror="false" />
@@ -29,9 +36,24 @@
 		<mkdir dir="${build.html.dir}/styles" failonerror="false" />
 		<mkdir dir="${build.html.dir}/images" failonerror="false" />
 		
-		<!-- make the html version of the helpfile -->
-		<exec program="xsltproc" commandline="--output build\${lang}\html\single\reference.html ${lang}\styles\html.xsl ${lang}\master.xml" />
-		<exec program="xsltproc" commandline="--output build\${lang}\html\chunk\ ${lang}\styles\html_chunk.xsl ${lang}\master.xml" />
+		<!-- 
+			When using property elements that contain paths to files they
+			unfortunately can't just be passed to the command line.  I haven't 
+			figured out how to get the nant path seperator of "/" to be translated 
+			windows path seperator of "\".  So we just have to use the long form. 
+		-->
+		<exec program="xsltproc">
+			<arg value="--output" />
+			<arg value="build\${lang}\html\single\reference.html" /> <!-- file to output transform results to -->
+			<arg value="${lang}\styles\html.xsl" /> <!-- xsl to do the transforming -->
+			<arg value="${lang}\master.xml" /> <!-- xml file to transform -->
+		</exec>
+		<exec program="xsltproc">
+			<arg value="--output" />
+			<arg value="build\${lang}\html\chunk\" /> <!-- dir to output transform results to -->
+			<arg value="${lang}\styles\html_chunk.xsl" /> <!-- xsl to do the transforming -->
+			<arg value="${lang}\master.xml" /> <!-- xml file to transform -->
+		</exec>
 		
 		<copy todir="${build.html.dir}">
 			<fileset basedir="${lang}">
@@ -44,30 +66,50 @@
 	
 	<target name="build-chm" description="Generates chm file from docbook files.">
 		
+		<!-- default install location -->
 		<property name="hhc.exe" value="C:\Program Files\HTML Help Workshop\hhc" />
-		<property name="build.htmlhelp.dir" value="${build.dir}/htmlhelp" />
+		<property name="build.chm.dir" value="${output.dir}/chm" />
 		
-		<mkdir dir="${build.htmlhelp.dir}" failonerror="false" />
+		<mkdir dir="${build.chm.dir}" failonerror="false" />
 		
 		<!-- make the htmlhelp version of the helpfile -->
-		<exec program="xsltproc" commandline="--output build\${lang}\htmlhelp\ ${lang}\styles\htmlhelp.xsl ${lang}\master.xml" />
+		<exec program="xsltproc">
+			<arg value="--output" />
+			<arg value="build\${lang}\chm\" /> <!-- dir to output transform results to -->
+			<arg value="${lang}\styles\htmlhelp.xsl" /> <!-- xsl to do the transforming -->
+			<arg value="${lang}\master.xml" /> <!-- xml file to transform -->
+		</exec>
 		
-		<copy todir="${build.htmlhelp.dir}" flatten="true">
+		<!-- 
+			put the styles and images under the chm folder - no need to 
+			have them in their own folder so flatten the copy task.
+		-->
+		<copy todir="${build.chm.dir}" flatten="true">
 			<fileset basedir="${lang}">
 				<includes name="styles/*.css" />
 				<includes name="images/**.*" />
 			</fileset>
 		</copy>
 		
-		<exec program="${hhc.exe}" commandline="build\${lang}\htmlhelp\htmlhelp.hhp" />
+		<exec program="${hhc.exe}">
+			<arg value="build\${lang}\chm\htmlhelp.hhp" />
+		</exec> 
 		
 		<delete>
-			<fileset basedir="${build.htmlhelp.dir}">
+			<fileset basedir="${build.chm.dir}">
 				<includes name="*" />
 				<excludes name="*.chm" />
 			</fileset>
 		</delete>
+		
 	</target>
 	
+	<target name="package" depends="build" description="Copies the files built into the local build dir into the NH build dir.">
+		<move todir="${build.dir}/doc/help">
+			<fileset basedir="${output.dir}">
+				<includes name="**/*" />
+			</fileset>
+		</move>
+	</target>
 </project>
 

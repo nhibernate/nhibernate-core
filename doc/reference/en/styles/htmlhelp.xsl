@@ -41,9 +41,9 @@
 	<xsl:param name="htmlhelp.hhc.binary" select="0"/>
 	<xsl:param name="htmlhelp.hhc.folders.instead.books" select="0"/>
 	<xsl:param name="img.src.path"></xsl:param>
+	
 	<xsl:param name="generate.index" select="1" />
-	<!-- These extensions are required for table printing and other stuff -->
-
+	
 	<!-- Generate the TOCs for named components only -->
 	<xsl:param name="generate.toc">
 		book   toc

@@ -234,6 +234,11 @@
 		</clover-report>
 	</target>
 	
+	<target name="doc" depends="init" description="Builds the API documentation and the Help Documentation" >
+		<call target="sdkdoc" />
+		<nant target="clean package" buildfile="doc/reference/doc.build" />
+	</target>
+	
 	<target name="sdkdoc" depends="init" description="Generates MSDN sytle documentation">
 		<ndoc>
 			<assemblies basedir="${build.dir}/bin">
@@ -299,7 +304,7 @@
 		
 	</target>
 	
-	<target name="package" depends="test sdkdoc" description="Creates Zip files for the File Release System on SourceForge">
+	<target name="package" depends="test doc" description="Creates Zip files for the File Release System on SourceForge">
 		<copy todir="${build.dir}">
 			<fileset>
 				<!-- copy framework nuetral dlls -->
