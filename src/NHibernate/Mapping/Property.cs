@@ -20,7 +20,7 @@ namespace NHibernate.Mapping {
 			get { return value.Type; }
 		}
 
-		public int ColumnSapn {
+		public int ColumnSpan {
 			get { return value.ColumnSpan; }
 		}
 

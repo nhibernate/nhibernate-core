@@ -27,7 +27,7 @@ namespace NHibernate.Mapping {
 			get {
 				int n=0;
 				foreach(Property p in PropertyCollection) {
-					n+= p.ColumnSapn;
+					n+= p.ColumnSpan;
 				}
 				return n;
 			}

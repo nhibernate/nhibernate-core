@@ -600,7 +600,7 @@ namespace NHibernate.Persister {
 				Table tab = prop.Value.Table;
 				string tabname = tab.GetQualifiedName( factory.DefaultSchema );
 				propertyTables[i] = GetTableId(tabname, tableNames);
-				propertyColumnSpans[i] = prop.ColumnSapn;
+				propertyColumnSpans[i] = prop.ColumnSpan;
 
 				string[] propCols = new string[ propertyColumnSpans[i] ];
 				string[] propAliases = new string[ propertyColumnSpans[i] ];
@@ -635,7 +635,7 @@ namespace NHibernate.Persister {
 				definedBySubclass.Add( !thisClassProperties.Contains(prop) );
 				Table tab = prop.Value.Table;
 				string tabname = tab.GetQualifiedName( factory.DefaultSchema );
-				string[] cols = new string[ prop.ColumnSapn ];
+				string[] cols = new string[ prop.ColumnSpan ];
 				types.Add( prop.Type );
 				int tabnum = GetTableId(tabname, subclassTableNameClosure);
 				propTables.Add(tabnum);
@@ -735,7 +735,7 @@ namespace NHibernate.Persister {
 				}
 			}
 
-			string[] names = new string[ prop.ColumnSapn ];
+			string[] names = new string[ prop.ColumnSpan ];
 			int k=0;
 			foreach( Column col in prop.ColumnCollection ) {
 				names[k] = col.Name;

@@ -429,7 +429,7 @@ namespace NHibernate.Persister {
 				foreach(Property prop in ((Component)idValue).PropertyCollection) {
 					idTypesByPropertyPath[prop.Name] = prop.Type;
 					
-					string[] cols = new string[prop.ColumnSapn];
+					string[] cols = new string[prop.ColumnSpan];
 					int j=0;
 					foreach(Column col in prop.ColumnCollection) {
 						cols[j++] = col.Name;

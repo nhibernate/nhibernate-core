@@ -555,7 +555,7 @@ namespace NHibernate.Persister {
 			int i=0;
 			bool foundColumn = false;
 			foreach(Property prop in model.PropertyClosureCollection) {
-				int span = prop.ColumnSapn;
+				int span = prop.ColumnSpan;
 				propertyColumnSpans[i] = span;
 				thisClassProperties.Add(prop);
 
@@ -590,7 +590,7 @@ namespace NHibernate.Persister {
 
 			foreach(Property prop in model.SubclassPropertyClosureCollection) {
 				definedBySubclass.Add( !thisClassProperties.Contains(prop) );
-				string[] cols = new string[ prop.ColumnSapn ];
+				string[] cols = new string[ prop.ColumnSpan ];
 				types.Add( prop.Type );
 				int l=0;
 				foreach( Column col in prop.ColumnCollection ) {
@@ -672,7 +672,7 @@ namespace NHibernate.Persister {
 				}
 			}
 
-			string[] names = new string[ prop.ColumnSapn ];
+			string[] names = new string[ prop.ColumnSpan ];
 			int k=0;
 			foreach( Column col in prop.ColumnCollection ) {
 				names[k] = col.Name;
