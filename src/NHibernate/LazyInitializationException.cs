@@ -14,5 +14,7 @@ namespace NHibernate {
 			log.Error(msg, this);
 		}
 
+		public LazyInitializationException(string msg, Exception root) : base(msg, root) { }
+
 	}
 }

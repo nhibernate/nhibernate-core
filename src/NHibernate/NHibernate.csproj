@@ -292,6 +292,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Collection\CollectionPersister.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collection\PersistentCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Connection\ConnectionProviderFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -328,6 +338,21 @@
                 />
                 <File
                     RelPath = "Dialect\TypeNames.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\ICollectionSnapshot.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\IMapping.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\ISessionImplementor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
