@@ -12,6 +12,7 @@ namespace NHibernate.Test.CfgTest
 	[TestFixture]
 	public class ConfigurationFixture
 	{
+		
 		[SetUp]
 		public void SetUp() 
 		{
@@ -31,11 +32,17 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void ReadCfgXmlFromDefaultFile() 
 		{
+			string origQuerySubst = Cfg.Environment.Properties[Cfg.Environment.QuerySubstitutions] as string;
+			string origConnString = Cfg.Environment.Properties[Cfg.Environment.ConnectionString] as string;
+
 			Configuration cfg = new Configuration();
 			cfg.Configure();
 			
 			Assert.AreEqual( "true 1, false 0, yes 'Y', no 'N'", cfg.Properties[Cfg.Environment.QuerySubstitutions]);
 			Assert.AreEqual( "Server=localhost;initial catalog=nhibernate;Integrated Security=SSPI", cfg.Properties[Cfg.Environment.ConnectionString]);
+
+			cfg.Properties[Cfg.Environment.QuerySubstitutions] = origQuerySubst;
+			cfg.Properties[Cfg.Environment.ConnectionString] = origConnString;
 		}
 	}
 }
