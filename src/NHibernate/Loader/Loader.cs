@@ -220,7 +220,10 @@ namespace NHibernate.Loader
 						{
 							PersistentCollection rowCollection = session.GetLoadingCollection(collectionPersister, ownerKey.Identifier, row[collectionOwner]);
 							object collectionRowKey = collectionPersister.ReadKey(rs, session);
-							if(collectionRowKey!=null) rowCollection.ReadFrom(rs, CollectionPersister, row[collectionOwner]);						   
+							if(collectionRowKey!=null) 
+							{
+								rowCollection.ReadFrom(rs, CollectionPersister, row[collectionOwner]);						   
+							}
 						}
 					}
 					else if (singleCollection) 
@@ -686,7 +689,8 @@ namespace NHibernate.Loader
 			{
 				log.Info(st.CommandText);
 				//TODO: H2.0.3 - uses session.Batcher.GetResultSet(st) instead
-				// of directly executing the reader
+				// of directly executing the reader - the Batcher can be smarter 
+				// about when to wrap the IDataReader in an NDataReader
 				IDataReader rs = st.ExecuteReader();
 				
 				//TODO: make this a much smarter implementation that looks at the Type
