@@ -52,6 +52,7 @@
 				<xs:documentation>default: no proxy interface </xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="lazy" type="xs:boolean" use="optional"/>
 		<xs:attribute name="dynamic-update" type="xs:boolean" use="optional" default="false"/>
 		<xs:attribute name="dynamic-insert" type="xs:boolean" use="optional" default="false"/>
 	</xs:attributeGroup>
@@ -61,6 +62,7 @@
 		<xs:attribute name="table" type="xs:string" use="optional"/>
 		<xs:attribute name="schema" type="xs:string" use="optional"/>
 		<xs:attribute name="lazy" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional"/>
 		<xs:attribute name="cascade" type="cascadeStyle" use="optional"/>
 		<xs:attribute name="where" type="xs:string" use="optional"/>
 		<xs:attribute name="inverse" type="xs:boolean" use="optional" default="false"/>
