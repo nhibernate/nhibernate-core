@@ -76,12 +76,12 @@ namespace NHibernate.Type {
 				case "System.UInt64":
 					return (ulong)code;
 				default:
-					throw new HibernateException( "Unknown GetTypeCode for Enum"); //Impossible exception
+					throw new HibernateException( "Unknown UnderlyingType for Enum"); //Impossible exception
 			}
 		}
 		
 		public override bool Equals(object x, object y) {
-			return (x==y) || ( x!=null && y!=null && x.GetType()==y.GetType() && Enum.ToObject(enumClass.GetType(), x)==Enum.ToObject(enumClass.GetType(), y) );
+			return (x==y) || ( x!=null && y!=null && x.GetType()==y.GetType() && Enum.ToObject(enumClass, x)==Enum.ToObject(enumClass, y) );
 		}
 	
 		public override System.Type ReturnedClass {
