@@ -161,26 +161,18 @@ namespace NHibernate.Test
 			{
 				s.Save(simples[i], ids[i]);
 			}
-			s.Flush();
-
+			
 			for(int i = 0; i < N; i++) 
 			{
 				simples[i].Name = "NH - " + i + N + runname + " - " + System.DateTime.Now.Ticks;
 			}
 
-			s.Flush();
+			//s.Flush();
 			// the results of this test are highly dependent upon
 			// how many times we flush!
 
-			// hql is throwing perf way off...
-			//Assert.IsTrue( s.Delete("from s in class NHibernate.DomainModel.Simple") == n);
+			Assert.IsTrue( s.Delete("from s in class NHibernate.DomainModel.Simple") == N);
 
-			IList simpleList = s.CreateCriteria(typeof(Simple)).List();
-
-			for(int i = 0; i < simpleList.Count; i++) 
-			{
-				s.Delete((Simple)simpleList[i]);
-			}
 			s.Flush();
 			t.Commit();
 			
