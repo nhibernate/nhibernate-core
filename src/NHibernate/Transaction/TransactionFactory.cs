@@ -1,21 +1,31 @@
-using System;
-using System.Data;
 using System.Collections;
 using NHibernate.Engine;
 
-namespace NHibernate.Transaction {
-
+namespace NHibernate.Transaction
+{
 	/// <summary>
 	/// Summary description for TransactionFactory.
 	/// </summary>
-	public class TransactionFactory : ITransactionFactory {
-		
-		public ITransaction BeginTransaction(ISessionImplementor session) {
-			Transaction tx = new Transaction(session);
+	public class TransactionFactory : ITransactionFactory
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public ITransaction BeginTransaction( ISessionImplementor session )
+		{
+			Transaction tx = new Transaction( session );
 			tx.Begin();
 			return tx;
 		}
 
-		public void Configure(IDictionary props) {}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="props"></param>
+		public void Configure( IDictionary props )
+		{
+		}
 	}
 }

@@ -1,8 +1,9 @@
 using System;
 using System.Data;
-
+using log4net;
 using NHibernate.Engine;
-namespace NHibernate.Transaction 
+
+namespace NHibernate.Transaction
 {
 	/// <summary>
 	/// Wraps an ADO.NET transaction to implements the <c>ITransaction</c> interface
@@ -12,139 +13,152 @@ namespace NHibernate.Transaction
 	/// to ADO.NET.  It seems like in the Java world your Transaction objects are much more flexible - allowing
 	/// for JDBC Transactions or JTA Transactions.  
 	/// </remarks>
-	public class Transaction : ITransaction 
+	public class Transaction : ITransaction
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Transaction));
+		private static readonly ILog log = LogManager.GetLogger( typeof( Transaction ) );
 		private ISessionImplementor session;
 		private IDbTransaction trans;
 		private bool begun;
 		private bool committed;
 		private bool rolledBack;
 
-		public Transaction(ISessionImplementor session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		public Transaction( ISessionImplementor session )
 		{
 			this.session = session;
 		}
 
-		public void Enlist(IDbCommand command) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="command"></param>
+		public void Enlist( IDbCommand command )
 		{
-			if( trans==null ) 
+			if( trans == null )
 			{
-				if( log.IsWarnEnabled ) 
+				if( log.IsWarnEnabled )
 				{
-					if( command.Transaction!=null ) 
+					if( command.Transaction != null )
 					{
-						log.Warn("set a nonnull IDbCommand.Transaction to null because the Session had no Transaction");
+						log.Warn( "set a nonnull IDbCommand.Transaction to null because the Session had no Transaction" );
 					}
 				}
 
 				command.Transaction = null;
 				return;
 			}
-			else 
+			else
 			{
-				if( log.IsWarnEnabled ) 
+				if( log.IsWarnEnabled )
 				{
 					// got into here because the command was being initialized and had a null Transaction - probably
 					// don't need to be confused by that - just a normal part of initialization...
-					if( command.Transaction!=null && command.Transaction!=trans ) 
+					if( command.Transaction != null && command.Transaction != trans )
 					{
-						log.Warn("The IDbCommand had a different Transaction than the Session.  This can occur when " +
-							"Disconnecting and Reconnecting Sessions because the PreparedCommand Cache is Session specific.");
+						log.Warn( "The IDbCommand had a different Transaction than the Session.  This can occur when " +
+							"Disconnecting and Reconnecting Sessions because the PreparedCommand Cache is Session specific." );
 					}
 				}
-		
-				command.Transaction = trans; 
+
+				command.Transaction = trans;
 			}
 		}
 
-		public void Begin() 
+		/// <summary></summary>
+		public void Begin()
 		{
-			log.Debug("begin");
+			log.Debug( "begin" );
 
-			try 
+			try
 			{
 				IsolationLevel isolation = session.Factory.Isolation;
-				if( isolation==IsolationLevel.Unspecified ) 
+				if( isolation == IsolationLevel.Unspecified )
 				{
 					trans = session.Connection.BeginTransaction();
 				}
-				else 
+				else
 				{
 					trans = session.Connection.BeginTransaction( isolation );
 				}
-			} 
-			catch( Exception e ) 
+			}
+			catch( Exception e )
 			{
-				log.Error("Begin transaction failed", e);
-				throw new TransactionException("Begin failed with SQL exception", e);
+				log.Error( "Begin transaction failed", e );
+				throw new TransactionException( "Begin failed with SQL exception", e );
 			}
 
 			begun = true;
 		}
 
-		public void Commit() 
+		/// <summary></summary>
+		public void Commit()
 		{
-			if (!begun) 
+			if( !begun )
 			{
-				throw new TransactionException("Transaction not successfully started");
+				throw new TransactionException( "Transaction not successfully started" );
 			}
 
-			log.Debug("commit");
+			log.Debug( "commit" );
 
-			try 
+			try
 			{
-				if( session.FlushMode!=FlushMode.Never ) 
+				if( session.FlushMode != FlushMode.Never )
 				{
 					session.Flush();
 				}
-				try 
+				try
 				{
 					trans.Commit();
 					committed = true;
-				} 
-				catch( Exception e ) 
-				{
-					log.Error("Commit failed", e);
-					throw new TransactionException("Commit failed with SQL exception", e);
 				}
-			} 
-			finally 
+				catch( Exception e )
+				{
+					log.Error( "Commit failed", e );
+					throw new TransactionException( "Commit failed with SQL exception", e );
+				}
+			}
+			finally
 			{
 				session.AfterTransactionCompletion();
 			}
 		}
 
-		public void Rollback() 
+		/// <summary></summary>
+		public void Rollback()
 		{
-			if (!begun) 
+			if( !begun )
 			{
-				throw new TransactionException("Transaction not successfully started");
+				throw new TransactionException( "Transaction not successfully started" );
 			}
 
-			log.Debug("rollback");
-			try 
+			log.Debug( "rollback" );
+			try
 			{
 				trans.Rollback();
 				rolledBack = true;
-			} 
-			catch( Exception e ) 
+			}
+			catch( Exception e )
 			{
-				log.Error("Rollback failed", e);
-				throw new TransactionException("Rollback failed with SQL Exception", e);
-			} 
-			finally 
+				log.Error( "Rollback failed", e );
+				throw new TransactionException( "Rollback failed with SQL Exception", e );
+			}
+			finally
 			{
 				session.AfterTransactionCompletion();
 			}
 		}
 
-		public bool WasRolledBack 
+		/// <summary></summary>
+		public bool WasRolledBack
 		{
 			get { return rolledBack; }
 		}
 
-		public bool WasCommitted 
+		/// <summary></summary>
+		public bool WasCommitted
 		{
 			get { return committed; }
 		}

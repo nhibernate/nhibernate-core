@@ -1,41 +1,74 @@
-using System;
 using System.Data;
 
-namespace NHibernate.Tool.hbm2ddl {
-	
-	public class AdoColumn {
+namespace NHibernate.Tool.hbm2ddl
+{
+	/// <summary></summary>
+	public class AdoColumn
+	{
 		private string name;
 		private System.Type type;
 		private int columnSize;
 		private bool isNullable;
-		
 
-		public AdoColumn(DataColumn column) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="column"></param>
+		public AdoColumn( DataColumn column )
+		{
 			name = column.ColumnName;
 			type = column.DataType;
 			columnSize = column.MaxLength;
 			isNullable = column.AllowDBNull;
 		}
 
-		public string Name {
+		/// <summary></summary>
+		public string Name
+		{
 			get { return name; }
 		}
-		public System.Type Type {
+
+		/// <summary></summary>
+		public System.Type Type
+		{
 			get { return type; }
 		}
-		public int ColumnSize {
+
+		/// <summary></summary>
+		public int ColumnSize
+		{
 			get { return columnSize; }
 		}
-		public bool IsNullable {
+
+		/// <summary></summary>
+		public bool IsNullable
+		{
 			get { return isNullable; }
 		}
 
-		public override string ToString() {
+		/// <summary></summary>
+		public override string ToString()
+		{
 			return name;
 		}
 
-		public override int GetHashCode() {
+		/// <summary></summary>
+		public override int GetHashCode()
+		{
 			return name.GetHashCode();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public override bool Equals( object obj )
+		{
+			if( this == obj ) return true;
+			AdoColumn c = obj as AdoColumn;
+			if( c == null || !c.Equals( this ) ) return false;
+			return c.Name == this.name;
 		}
 	}
 }
