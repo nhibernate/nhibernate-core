@@ -545,6 +545,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Driver\NpgsqlDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Driver\OdbcDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
