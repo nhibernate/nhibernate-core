@@ -112,7 +112,7 @@ namespace NHibernate.Type {
 		}
 		
 		public override bool Equals(object x, object y) {
-			return (x==y) || ( x!=null && y!=null && x.GetType()==y.GetType() && Enum.ToObject(enumClass, x)==Enum.ToObject(enumClass, y) );
+			return (x==y) || ( x!=null && y!=null && x.GetType()==y.GetType() && x.ToString()==y.ToString() );
 		}
 	
 		public override System.Type ReturnedClass {
