@@ -15,7 +15,7 @@ namespace NHibernate.Test.CfgTest
 		[SetUp]
 		public void SetUp() 
 		{
-			System.IO.File.Copy("..\\..\\hibernate.cfg.xml", "hibernate.cfg.xml");
+			System.IO.File.Copy("..\\..\\hibernate.cfg.xml", "hibernate.cfg.xml", true);
 		}
 
 		[TearDown]

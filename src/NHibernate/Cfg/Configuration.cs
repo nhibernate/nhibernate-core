@@ -14,7 +14,8 @@ using NHibernate.Cache;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 
-namespace NHibernate.Cfg {
+namespace NHibernate.Cfg 
+{
 	/// <summary>
 	/// An instance of <c>Configuration</c> allows the application to specify properties
 	/// and mapping documents to be used when creating a <c>ISessionFactory</c>.
@@ -41,11 +42,19 @@ namespace NHibernate.Cfg {
 		private IDictionary properties = Environment.Properties;
 
 		private XmlSchema mappingSchema;
+		private XmlSchema cfgSchema;
 
 		public readonly static string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.0";
 		private readonly static string MappingSchemaResource = "NHibernate.nhibernate-mapping-2.0.xsd";
 
-		protected void Reset() {
+		public readonly static string CfgSchemaXMLNS = "urn:nhibernate-configuration-2.0";
+		private readonly static string CfgSchemaResource = "NHibernate.nhibernate-configuration-2.0.xsd";
+		private readonly static string CfgNamespacePrefix = "cfg";
+		private static XmlNamespaceManager CfgNamespaceMgr;
+			
+
+		protected void Reset() 
+		{
 			classes = new Hashtable();
 			collections = new Hashtable();
 			tables = new Hashtable();
@@ -55,9 +64,14 @@ namespace NHibernate.Cfg {
 			properties = Environment.Properties;
 		}
 
-		public Configuration() {
+		/// <summary>
+		/// Create a new Configuration object.
+		/// </summary>
+		public Configuration() 
+		{
 			Reset();
 			mappingSchema = XmlSchema.Read(Assembly.GetExecutingAssembly().GetManifestResourceStream(MappingSchemaResource), null);
+			cfgSchema = XmlSchema.Read(Assembly.GetExecutingAssembly().GetManifestResourceStream(CfgSchemaResource), null);
 
 		}
 
@@ -639,7 +653,7 @@ namespace NHibernate.Cfg {
 
 		private void AddProperties(XmlNode parent) 
 		{
-			foreach(XmlNode node in parent.SelectNodes("property")) 
+			foreach(XmlNode node in parent.SelectNodes(CfgNamespacePrefix + ":property", CfgNamespaceMgr)) 
 			{
 				string name = node.Attributes["name"].Value;
 				string value = node.FirstChild.Value;
@@ -677,9 +691,23 @@ namespace NHibernate.Cfg {
 		{
 			
 			XmlDocument doc = new XmlDocument();
+			XmlValidatingReader validatingReader = null;
+			XmlTextReader reader = null;
+
 			try 
 			{
-				doc.Load(resource);
+				reader = new XmlTextReader(resource);
+				validatingReader = new XmlValidatingReader( reader );
+				validatingReader.ValidationType = ValidationType.Schema;
+				validatingReader.Schemas.Add(cfgSchema);
+
+				doc.Load(validatingReader);
+				CfgNamespaceMgr = new XmlNamespaceManager(doc.NameTable);
+				// note that the prefix has absolutely nothing to do with what the user
+				// selects as their prefix in the document.  It is the prefix we use to 
+				// build the XPath and the nsmgr takes care of translating our prefix into
+				// the user defined prefix...
+				CfgNamespaceMgr.AddNamespace(CfgNamespacePrefix, Configuration.CfgSchemaXMLNS);
 			} 
 			catch (Exception e) 
 			{
@@ -687,14 +715,15 @@ namespace NHibernate.Cfg {
 				throw new HibernateException("problem parsing configuration " + resource + ": " + e);
 			}
 
-			XmlNode sfNode = doc.DocumentElement.SelectSingleNode("session-factory");
+			XmlNode sfNode = doc.DocumentElement.SelectSingleNode(CfgNamespacePrefix + ":session-factory", CfgNamespaceMgr);
 			XmlAttribute name = sfNode.Attributes["name"];
-			if (name!=null) properties.Add(Environment.SessionFactoryName, name.Value);
+			if (name!=null) properties[Environment.SessionFactoryName] = name.Value;
 			AddProperties(sfNode);
 
 			foreach(XmlNode mapElement in sfNode.ChildNodes) 
 			{
-				string elemname = mapElement.Name;
+				//string elemname = mapElement.Name;
+				string elemname = mapElement.LocalName;
 				if ( "mapping".Equals(elemname) ) 
 				{
 					XmlAttribute rsrc = mapElement.Attributes["resource"];
@@ -722,6 +751,7 @@ namespace NHibernate.Cfg {
 			log.Info("Configured SessionFactory: " + name);
 			log.Debug("properties: " + properties);
 
+			validatingReader.Close();
 			return this;
 		}
 
