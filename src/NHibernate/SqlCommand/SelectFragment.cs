@@ -14,7 +14,7 @@ namespace NHibernate.SqlCommand
 	{
 		private string suffix;
 		private IList columns = new ArrayList();
-		private IList aliases = new ArrayList();
+		//private IList aliases = new ArrayList();
 		private IList columnAliases = new ArrayList();
 		private Dialect.Dialect dialect;
 
@@ -48,8 +48,15 @@ namespace NHibernate.SqlCommand
 
 		public SelectFragment AddColumn(string tableAlias, string columnName, string columnAlias) 
 		{
-			columns.Add(columnName);
-			aliases.Add(tableAlias);
+			if(tableAlias==null || tableAlias==String.Empty) 
+			{
+				columns.Add(columnName);
+			}
+			else 
+			{
+				columns.Add(tableAlias + StringHelper.Dot + columnName);				
+			}
+			
 			columnAliases.Add(columnAlias);
 			return this;
 		}
@@ -67,6 +74,28 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 		
+		public SelectFragment AddFormulas(string tableAlias, string[] formulas, string[] formulaAliases) 
+		{
+			for(int i=0; i < formulas.Length; i++) 
+			{
+				AddFormula(tableAlias, formulas[i], formulaAliases[i]);
+			}
+
+			return this;
+		}
+
+		public SelectFragment AddFormula(string tableAlias, string formula, string formulaAlias) 
+		{
+			
+			AddColumn(
+				null, 
+				StringHelper.Replace(formula, Template.PlaceHolder, tableAlias),
+				formulaAlias);
+
+			return this;
+		}
+
+
 		public SqlString ToSqlStringFragment() 
 		{
 			// this preserves the way this existing method works now.
@@ -82,8 +111,8 @@ namespace NHibernate.SqlCommand
 				string col = columns[i] as string;
 				if(i > 0 || includeLeadingComma) buf.Append(StringHelper.CommaSpace);
 				
-				string alias = aliases[i] as string;
-				if (alias!=null) buf.Append(alias).Append(StringHelper.Dot);
+//				string alias = aliases[i] as string;
+//				if (alias!=null) buf.Append(alias).Append(StringHelper.Dot);
 				
 				string columnAlias = columnAliases[i] as string;
 				buf.Append(col)
