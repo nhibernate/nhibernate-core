@@ -134,11 +134,11 @@ namespace NHibernate.Impl {
 
 			// TODO: DESIGNQUESTION: There are other points in the application that have questions about the
 			// statementCache - I just don't see this as being needed yet.  
-			int cacheSize = PropertiesHelper.GetInt( Cfg.Environment.StatementCacheSize, properties, 0);
+			int cacheSize = PropertiesHelper.GetInt32( Cfg.Environment.StatementCacheSize, properties, 0);
 			statementCache = ( cacheSize<1 || connectionProvider.IsStatementCache ) ? null : new PreparedStatementCache(cacheSize);
 			//statementCache = null;
 
-			statementFetchSize = PropertiesHelper.GetInt( Cfg.Environment.StatementFetchSize, properties, -1);
+			statementFetchSize = PropertiesHelper.GetInt32( Cfg.Environment.StatementFetchSize, properties, -1);
 			if((int)statementFetchSize==-1) statementFetchSize = null;
 			if (statementFetchSize!=null) log.Info("ado result set fetch size: " + statementFetchSize);
 
@@ -146,7 +146,7 @@ namespace NHibernate.Impl {
 			log.Info("use outer join fetching: " + useOuterJoin);
 
 			bool usrs = PropertiesHelper.GetBoolean(Cfg.Environment.UseScrollableResultSet, properties);
-			int batchSize = PropertiesHelper.GetInt(Cfg.Environment.StatementBatchSize, properties, 0);
+			int batchSize = PropertiesHelper.GetInt32(Cfg.Environment.StatementBatchSize, properties, 0);
 
 			try 
 			{

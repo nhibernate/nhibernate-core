@@ -41,7 +41,7 @@ namespace NHibernate.Id
 		public override void Configure(IType type, IDictionary parms, Dialect.Dialect d) 
 		{
 			base.Configure(type, parms, d);
-			maxLo = PropertiesHelper.GetInt(MaxLo, parms, short.MaxValue);
+			maxLo = PropertiesHelper.GetInt32(MaxLo, parms, short.MaxValue);
 			lo = maxLo + 1; // so we "clock over" on the first invocation
 			returnClass = type.ReturnedClass;
 		}

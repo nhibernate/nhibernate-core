@@ -13,27 +13,31 @@ namespace NHibernate.Util {
 				false :
 				bool.Parse(properties[property] as string);
 		}
-		//TODO: rename this GetInt32
-		public static int GetInt(string property, IDictionary properties, int defaultValue) {
+		
+		public static int GetInt32(string property, IDictionary properties, int defaultValue) {
 			string propValue = properties[property] as string;
 			return (propValue==null) ? defaultValue : int.Parse(propValue);
 		}
+		
 		public static string GetString(string property, IDictionary properties, string defaultValue) {
 			string propValue = properties[property] as string;
 			return (propValue==null) ? defaultValue : propValue;
 		}
 		
-		public static IDictionary ToDictionary(string property, string delim, IDictionary properties) {
+		public static IDictionary ToDictionary(string property, string delim, IDictionary properties) 
+		{
 			IDictionary map = new Hashtable();
 			string propValue = (string) properties[ property ];
-			if (propValue!=null) {
-				StringTokenizer tokens = new StringTokenizer(propValue, delim);
+			if (propValue!=null) 
+			{
+				StringTokenizer tokens = new StringTokenizer(propValue, delim, false);
 				IEnumerator en = tokens.GetEnumerator();
-				while ( en.MoveNext() ) {
+				while ( en.MoveNext() ) 
+				{
 					string key = (string) en.Current;
 					
 					string value = en.MoveNext() ? (string) en.Current : String.Empty;
-					map.Add( key, value );
+					map[key] = value;
 				}
 			}
 			return map;

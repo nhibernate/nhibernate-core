@@ -43,7 +43,7 @@ namespace NHibernate.Connection
 			// do their own connection pooling.  This would be useful to change to some higher number
 			// if the .net DataProvider did not provide their own connection pooling.  I don't know of
 			// any instances of this yet.
-			poolSize = PropertiesHelper.GetInt(Cfg.Environment.PoolSize, Cfg.Environment.Properties, 0);
+			poolSize = PropertiesHelper.GetInt32(Cfg.Environment.PoolSize, Cfg.Environment.Properties, 0);
 			log.Info("NHibernate connection pool size: " + poolSize);
 
 			connString = Cfg.Environment.Properties[ Cfg.Environment.ConnectionString ] as string;
