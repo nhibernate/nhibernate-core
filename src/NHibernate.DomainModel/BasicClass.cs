@@ -10,6 +10,13 @@ namespace NHibernate.DomainModel
 		public int classId;
 		public string classString;
 
+		public override int GetHashCode()
+		{
+			// not a good method, but all that is needed for this Class
+			// to be used by tests.
+			return base.GetHashCode();
+		}
+
 		public override bool Equals(object obj)
 		{
 			SerializableClass lhs = obj as SerializableClass;
