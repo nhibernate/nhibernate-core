@@ -21,7 +21,6 @@ namespace NHibernate.Hql
 		
 		public void Token(string token, QueryTranslator q) 
 		{
-
 			if (q.IsName(StringHelper.Root(token))) 
 			{
 				ParserHelper.Parse(pathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);

@@ -142,7 +142,7 @@ namespace NHibernate.Hql {
 					if (afterClass) 
 					{
 						// treat it as a classname
-						ILoadable p = q.GetPersisterUsingImports(token);
+						IQueryable p = q.GetPersisterUsingImports(token);
 						if (p==null) throw new QueryException("persister not found: " + token);
 						q.AddFromClass(alias, p);
 					} 
@@ -167,7 +167,7 @@ namespace NHibernate.Hql {
 					// handle a path expression or class name that appears
 					// at the start, in the "new" HQL style or an alias that
 					// appears at the start in the "old HQL stype
-					ILoadable p = q.GetPersisterUsingImports(token);
+					IQueryable p = q.GetPersisterUsingImports(token);
 					if (p!=null) 
 					{
 						// starts with the name of a mapped class (new style)

@@ -21,6 +21,11 @@ namespace NHibernate.Hql
 		//kind of path expression parser for each of the different 
 		//ways in which path expressions can occur 
 
+		//We should actually rework this class to not implement Parser 
+		//and just process path expressions in the most convenient way.
+	
+		//The class is now way to complex!
+
 		public const string EntityID = "id";
 		public const string EntityClass = "class";
 		public const string CollectionSize = "size";
@@ -38,9 +43,9 @@ namespace NHibernate.Hql
 		protected string[] columns;
 		protected string[] collectionElementColumns;
 		protected string collectionName;
+		private string collectionOwnerName;
 		private string collectionRole;
 		private string collectionTable;
-		private string collectionOwnerName;
 		protected IType collectionElementType;
 		private string componentPath;
 		protected IType type;
@@ -194,7 +199,6 @@ namespace NHibernate.Hql
 							} 
 							else 
 							{
-								
 								string name = q.CreateNameFor(memberClass);
 								q.AddType(name, memberClass);
 								string[] keyColNames = memberPersister.IdentifierColumnNames;
@@ -207,18 +211,18 @@ namespace NHibernate.Hql
 						} 
 						else if (propertyType.IsPersistentCollectionType) 
 						{
-							
 							collectionRole = ((PersistentCollectionType) propertyType).Role;
-							CollectionPersister p = q.GetCollectionPersister(collectionRole);
-							string[] colNames = p.KeyColumnNames;
+							CollectionPersister collPersister = q.GetCollectionPersister(collectionRole);
+							string[] colNames = collPersister.KeyColumnNames;
 							
 							string name = q.CreateNameForCollection(collectionRole);
-							AddJoin( p.QualifiedTableName, name, colNames, q);
-							if ( p.HasWhere ) join.AddCondition( p.GetSQLWhereString(name) );
-							DoCollectionProperty(token, p, name);
+							string tableName = collPersister.QualifiedTableName;
+							AddJoin( tableName, name, colNames, q);
+							if ( collPersister.HasWhere ) join.AddCondition( collPersister.GetSQLWhereString(name) );
+							DoCollectionProperty(token, collPersister, name);
 							collectionName = name;
 							collectionOwnerName = currentName;
-							collectionTable = p.QualifiedTableName;
+							collectionTable = collPersister.QualifiedTableName;
 							currentName = null;
 							currentProperty = null;
 							componentPath = null;
@@ -227,9 +231,7 @@ namespace NHibernate.Hql
 						{
 							if (token != null) throw new QueryException("dereferenced: " + currentProperty);
 						}
-						
 					}
-					
 				}
 			}
 		}
@@ -320,7 +322,6 @@ namespace NHibernate.Hql
 			} 
 			else 
 			{
-				
 				if (!continuation) 
 				{
 					IType propertyType = GetPropertyType(q);
@@ -332,7 +333,6 @@ namespace NHibernate.Hql
 				}
 				if (collectionRole != null) 
 				{
-
 					//special case; expecting: [index]
 					CollectionPersister memberPersister = q.GetCollectionPersister(collectionRole);
 
@@ -345,7 +345,7 @@ namespace NHibernate.Hql
 					ojf.AddCrossJoin( memberPersister.QualifiedTableName, collectionName );
 					if ( memberPersister.IsOneToMany ) 
 					{
-						ILoadable persister = q.GetPersister( ( (EntityType) memberPersister.ElementType ).PersistentClass );
+						IQueryable persister = q.GetPersister( ( (EntityType) memberPersister.ElementType ).PersistentClass );
 						ojf.AddJoins(
 							persister.FromJoinFragment(collectionName, true, false),
 							persister.WhereJoinFragment(collectionName, true, false)
@@ -359,7 +359,7 @@ namespace NHibernate.Hql
 					join.AddCondition(collectionName, indexCols, " = ");
 										
 					string[] eltCols = memberPersister.ElementColumnNames;
-					//if ( eltCols.length!=1 ) throw new QueryException("composite-id collection element []");
+					//if ( eltCols.Length!=1 ) throw new QueryException("composite-id collection element []");
 					
 					CollectionElement elem = new CollectionElement();
 					elem.ElementColumns = StringHelper.Prefix(eltCols, collectionName + StringHelper.Dot);
@@ -471,7 +471,7 @@ namespace NHibernate.Hql
 
 		public string GetCollectionSubquery() 
 		{
-
+			//TODO: refactor to .sql package
 			return new StringBuilder("SELECT ")
 				.Append(String.Join(", ", collectionElementColumns))
 				.Append(" FROM ")
@@ -486,7 +486,10 @@ namespace NHibernate.Hql
 
 		public bool IsCollectionValued 
 		{
-			get { return collectionElementColumns!=null; }
+			get 
+			{ 
+				return collectionElementColumns!=null; 
+			}
 		}
 		
 		public void AddAssociation(QueryTranslator q) 
@@ -520,7 +523,7 @@ namespace NHibernate.Hql
 			else 
 			{
 				q.AddCollection(collectionName, collectionRole);
-				ILoadable p = q.GetPersister(clazz);
+				IQueryable p = q.GetPersister(clazz);
 				elementName = q.CreateNameFor(clazz);
 				string[] keyColumnNames = p.IdentifierColumnNames;
 				join.AddJoin( p.TableName, elementName, collectionElementColumns, keyColumnNames, joinType);
