@@ -2,23 +2,28 @@ using System;
 using NHibernate.Loader;
 using NHibernate.Type;
 
-namespace NHibernate.Persister {
-	
+namespace NHibernate.Persister 
+{
 	/// <summary>
-	/// Implemented by <c>ClassPersister</c> that uses <c>Loader</c>. THere are several optional
+	/// Implemented by <c>ClassPersister</c> that uses <c>Loader</c>. There are several optional
 	/// operations used only by loaders that inherit <c>OuterJoinLoader</c>
 	/// </summary>
-	public interface ILoadable : IClassPersister {
+	public interface ILoadable : IClassPersister 
+	{
+		/// <summary>
+		/// Does the persistent class have subclasses?
+		/// </summary>
+		bool HasSubclasses { get; }
+
+		/// <summary>
+		/// The fully-qualified tablename used to persist this class
+		/// </summary>
+		string TableName { get; }
 		
 		/// <summary>
 		/// The names of columns used to persist the identifier
 		/// </summary>
 		string[] IdentifierColumnNames { get; }
-
-		/// <summary>
-		/// Does the persistent class have subclasses?
-		/// </summary>
-		bool HasSubclasses { get; }
 
 		/// <summary>
 		/// The name of the column used as a discriminator
@@ -44,11 +49,7 @@ namespace NHibernate.Persister {
 		/// <returns></returns>
 		string[] GetPropertyColumnNames(int i);
 
-		/// <summary>
-		/// The fully-qualified tablename used to persist this class
-		/// </summary>
-		string TableName { get; }
-
+		
 		//USED BY OuterJoinLoader + subclasses
 		
 		/// <summary>

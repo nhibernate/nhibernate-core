@@ -6,8 +6,8 @@ using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Metadata;
 
-namespace NHibernate.Persister {
-
+namespace NHibernate.Persister 
+{
 	/// <summary>
 	/// Concrete <c>IClassPersister</c>s implement mapping and persistence logic for a particular class.
 	/// </summary>
@@ -15,7 +15,8 @@ namespace NHibernate.Persister {
 	/// Implementors must be threadsafe (preferrably immutable) and must provide a constructor of type
 	/// (PersistentClass, SessionFactoryImplementor)
 	/// </remarks>
-	public interface IClassPersister {
+	public interface IClassPersister 
+	{
 		
 		/// <summary>
 		/// Finish the initialization of this object, once all <c>ClassPersisters</c> have been
@@ -49,11 +50,6 @@ namespace NHibernate.Persister {
 		string ClassName { get; }
 
 		/// <summary>
-		/// Does it have a composite key?
-		/// </summary>
-		bool HasCompositeKey { get; }
-
-		/// <summary>
 		/// Does the class implement the <c>ILifecycle</c> inteface?
 		/// </summary>
 		bool ImplementsLifecycle { get; }
@@ -69,9 +65,10 @@ namespace NHibernate.Persister {
 		bool HasProxy { get; }
 
 		/// <summary>
-		/// Get an array of interfaces that the proxy object implements
+		/// Get an array of interfaces that the proxy object implements - must include
+		/// proxy interfaces for all subclasses
 		/// </summary>
-		System.Type[] ProxyInterfaces { get; } //TODO: .NET proxy only can implement one???
+		System.Type[] ProxyInterfaces { get; } 
 
 		/// <summary>
 		/// Get the proxy interface that instances of <c>this</c> concrete class will be cast to

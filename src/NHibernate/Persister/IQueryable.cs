@@ -1,13 +1,14 @@
 using System;
 using NHibernate.Type;
 
-namespace NHibernate.Persister {
+namespace NHibernate.Persister 
+{
 	/// <summary>
 	/// Extends the generic <c>IClassPersister</c> contract to add operations required
 	/// by the query language
 	/// </summary>
-	public interface IQueryable : ILoadable {
-		
+	public interface IQueryable : ILoadable 
+	{
 		/// <summary>
 		/// Is this class mapped as a subclass of another class?
 		/// </summary>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Engine;
@@ -15,7 +16,8 @@ using NHibernate.Sql;
 using NHibernate.Type;
 using NHibernate.Loader;
 
-namespace NHibernate.Persister {
+namespace NHibernate.Persister 
+{
 	/// <summary>
 	/// Superclass for built-in mapping strategies. Implements functionalty common to both mapping
 	/// strategies
@@ -23,7 +25,8 @@ namespace NHibernate.Persister {
 	/// <remarks>
 	/// May be considred an immutable view of the mapping object
 	/// </remarks>
-	public abstract class AbstractEntityPersister : IQueryable, IClassMetadata {
+	public abstract class AbstractEntityPersister : IQueryable, IClassMetadata 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(AbstractEntityPersister));
 
 		protected static readonly System.Type[] NoClasses = new System.Type[0];
@@ -47,10 +50,13 @@ namespace NHibernate.Persister {
 		private bool useIdentityColumn;
 		private System.Type superclass;
 		private bool dynamicUpdate;
+		private bool dynamicInsert;
+		private string sqlWhereString;
+		private string sqlWhereStringTemplate;
 
 		private string identitySelectString;
 
-		private readonly System.Type[] proxyInterfaces; //not array?
+		private readonly System.Type[] proxyInterfaces;
 		private System.Type concreteProxyClass;
 		private bool hasProxy;
 		protected bool hasEmbeddedIdentifier;
@@ -58,8 +64,6 @@ namespace NHibernate.Persister {
 		private string[] identifierColumnNames;
 		private Cascades.IdentifierValue unsavedIdentifierValue;
 
-		private Hashtable idTypesByPropertyPath = new Hashtable();
-		private Hashtable idColumnNamesByPropertyPath = new Hashtable();
 		protected Hashtable columnNamesByPropertyPath = new Hashtable();
 		protected Hashtable typesByPropertyPath = new Hashtable();
 
@@ -91,15 +95,21 @@ namespace NHibernate.Persister {
 		private Cascades.CascadeStyle[] cascadeStyles;
 		private ICacheConcurrencyStrategy cache;
 
-		public System.Type MappedClass {
+		// a cglib thing
+		//private MetaClass optimizer;
+
+		public System.Type MappedClass 
+		{
 			get { return mappedClass; }
 		}
 		
-		public string ClassName {
+		public string ClassName 
+		{
 			get { return className; }
 		}
 
-		public virtual string IdentifierSelectFragment(string name, string suffix) {
+		public virtual string IdentifierSelectFragment(string name, string suffix) 
+		{
 			//TODO: fix this once the interface is changed from a string to SqlString
 			// this works now because there are no parameters in the select fragment string
 			return new SqlCommand.SelectFragment(dialect)
@@ -110,45 +120,70 @@ namespace NHibernate.Persister {
 				//.Substring(2); //strip leading ", " - commented out because of the "false" parameter now does that
 		}
 
+		//TODO: not in same spot in h2.0.3
 		public abstract string[] ToColumns(string name, string path) ;
 
-		public virtual IType GetPropertyType(string path) {
+		public virtual IType GetPropertyType(string path) 
+		{
 			return (IType) typesByPropertyPath[path];
 		}
 
-		public virtual Cascades.CascadeStyle[] PropertyCascadeStyles {
+		public virtual Cascades.CascadeStyle[] PropertyCascadeStyles 
+		{
 			get { return cascadeStyles; }
 		}
 
-		public virtual void SetPropertyValues(object obj, object[] values) {
+		public virtual void SetPropertyValues(object obj, object[] values) 
+		{
 			//TODO: optimizer implementation
-			for (int j=0; j<hydrateSpan; j++)
+			for (int j=0; j<hydrateSpan; j++) 
+			{
 				Setters[j].Set(obj, values[j]);
+			}
 		}
 
-		public virtual object[] GetPropertyValues(object obj) {
+		public virtual object[] GetPropertyValues(object obj) 
+		{
 			//TODO: optimizer implementation
 			object[] result = new object[hydrateSpan];
-			for (int j=0;j<hydrateSpan; j++)
+			for (int j=0;j<hydrateSpan; j++) 
+			{
 				result[j] = Getters[j].Get(obj);
+			}
 			return result;
 		}
 
-		public virtual object GetPropertyValue(object obj, int i) {
+		public virtual object GetPropertyValue(object obj, int i) 
+		{
 			return Getters[i].Get(obj);
 		}
 
-		public virtual void SetPropertyValue(object obj, int i, object value) {
+		public virtual void SetPropertyValue(object obj, int i, object value) 
+		{
 			Setters[i].Set(obj, value);
 		}
 
-		public virtual int[] FindDirty(object[] x, object[] y, object obj, ISessionImplementor session) {
+		/// <summary>
+		/// Determine if the given field values are dirty.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="obj"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public virtual int[] FindDirty(object[] x, object[] y, object obj, ISessionImplementor session) 
+		{
 			int[] props = TypeFactory.FindDirty(propertyTypes, x, y, propertyUpdateability, session);
-			if (props==null) {
+			if (props==null) 
+			{
 				return null;
-			} else {
-				if ( log.IsDebugEnabled ) {
-					for (int i=0; i<props.Length; i++) {
+			} 
+			else 
+			{
+				if ( log.IsDebugEnabled ) 
+				{
+					for (int i=0; i<props.Length; i++) 
+					{
 						log.Debug( className + StringHelper.Dot + propertyNames[ props[i] ] + " is dirty");
 					}
 				}
@@ -156,159 +191,203 @@ namespace NHibernate.Persister {
 			}
 		}
 
-		public virtual object GetIdentifier(object obj) {
+		public virtual object GetIdentifier(object obj) 
+		{
 			object id;
-			if (hasEmbeddedIdentifier) {
+			if (hasEmbeddedIdentifier) 
+			{
 				id = obj;
-			} else {
+			} 
+			else 
+			{
 				if (identifierGetter==null) throw new HibernateException( "The class has no identifier property: " + className );
 				id = identifierGetter.Get(obj);
 			}
 			return id;
 		}
 
-		public virtual object GetVersion(object obj) {
+		public virtual object GetVersion(object obj) 
+		{
 			if (!versioned) return null;
 			return versionGetter.Get(obj);
 		}
 
-		public virtual void SetIdentifier(object obj, object id) {
-			if(hasEmbeddedIdentifier) {
+		public virtual void SetIdentifier(object obj, object id) 
+		{
+			if(hasEmbeddedIdentifier) 
+			{
 				ComponentType copier = (ComponentType) identifierType;
 				copier.SetPropertyValues(obj, copier.GetPropertyValues(id));
 			}
-			else if (identifierSetter!=null) {
+			else if (identifierSetter!=null) 
+			{
 				identifierSetter.Set(obj, id);
 			}
 		}
 
-		public virtual object Instantiate(object id) {
-			if (hasEmbeddedIdentifier && id.GetType() == mappedClass) {
+		/// <summary>
+		/// Return a new instance initialized with the given identifier.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public virtual object Instantiate(object id) 
+		{
+			if (hasEmbeddedIdentifier && id.GetType()==mappedClass) 
+			{
 				return id;
-			} else {
+			} 
+			else 
+			{
 				if (abstractClass) throw new HibernateException("Cannot instantiate abstract class or interface: " + className);
 				//TODO: optimizer implementation
-				try {
+				try 
+				{
 					return constructor.Invoke(null);
-				} catch (Exception e) {
+				} 
+				catch (Exception e) 
+				{
 					throw new InstantiationException("Could not instantiate entity: ", mappedClass, e);
 				}
 			}
 		}
 
-		protected virtual ReflectHelper.Setter[] Setters {
+		protected virtual ReflectHelper.Setter[] Setters 
+		{
 			get { return setters; }
 		}
 
-		protected virtual ReflectHelper.Getter[] Getters {
+		protected virtual ReflectHelper.Getter[] Getters 
+		{
 			get { return getters; }
 		}
 
-		public virtual IType[] PropertyTypes {
+		public virtual IType[] PropertyTypes 
+		{
 			get { return propertyTypes; }
 		}
 
-		public virtual IType IdentifierType {
+		public virtual IType IdentifierType 
+		{
 			get { return identifierType; }
 		}
 
-		public virtual string[] IdentifierColumnNames {
+		public virtual string[] IdentifierColumnNames 
+		{
 			get { return identifierColumnNames; }
 		}
 
-		public virtual bool IsPolymorphic {
+		public virtual bool IsPolymorphic 
+		{
 			get { return polymorphic; }
 		}
 
-		public virtual bool IsInherited {
+		public virtual bool IsInherited 
+		{
 			get { return inherited; }
 		}
 
-		public virtual bool HasCompositeKey {
-			get { return identifierColumnNames.Length > 1; }
-		}
-
-		public virtual bool HasCascades {
+		public virtual bool HasCascades 
+		{
 			get { return hasCascades; }
 		}
 
-		public virtual ICacheConcurrencyStrategy Cache {
+		public virtual ICacheConcurrencyStrategy Cache 
+		{
 			get { return cache; }
 		}
 
-		public virtual bool HasIdentifierProperty {
+		public virtual bool HasIdentifierProperty 
+		{
 			get { return identifierGetter!=null; }
 		}
 
-		public virtual PropertyInfo ProxyIdentifierProperty {
+		public virtual PropertyInfo ProxyIdentifierProperty 
+		{
 			get { return proxyIdentifierProperty; }
 		}
 
-		public virtual IVersionType VersionType {
+		public virtual IVersionType VersionType 
+		{
 			get { return versionType; }
 		}
 
-		public virtual int VersionProperty {
+		public virtual int VersionProperty 
+		{
 			get { return versionProperty; }
 		}
 
-		public virtual bool IsVersioned {
+		public virtual bool IsVersioned 
+		{
 			get { return versioned; }
 		}
 
-		public virtual bool IsIdentifierAssignedByInsert {
+		public virtual bool IsIdentifierAssignedByInsert 
+		{
 			get { return useIdentityColumn; }
 		}
 
-		public virtual bool IsUnsaved(object id) {
+		public virtual bool IsUnsaved(object id) 
+		{
 			return unsavedIdentifierValue.IsUnsaved(id);
 		}
 
-		public virtual string[] PropertyNames {
+		public virtual string[] PropertyNames 
+		{
 			get { return propertyNames; }
 		}
 
-		public virtual string IdentifierPropertyName {
+		public virtual string IdentifierPropertyName 
+		{
 			get { return identifierPropertyName; }
 		}
 
-		public virtual string VersionColumnName {
+		public virtual string VersionColumnName 
+		{
 			get { return versionColumnName; }
 		}
 
-		public string[] GetPropertyColumnNames(string path) {
+		public string[] GetPropertyColumnNames(string path) 
+		{
 			return (string[]) columnNamesByPropertyPath[path];
 		}
 
-		public virtual bool ImplementsLifecycle {
+		public virtual bool ImplementsLifecycle 
+		{
 			get { return implementsLifecycle; }
 		}
 
-		public virtual bool ImplementsValidatable {
+		public virtual bool ImplementsValidatable 
+		{
 			get { return implementsValidatable; }
 		}
 
-		public virtual bool HasCollections {
+		public virtual bool HasCollections 
+		{
 			get { return hasCollections; }
 		}
 
-		public virtual bool IsMutable {
+		public virtual bool IsMutable 
+		{
 			get { return mutable; }
 		}
 
-		public virtual bool HasCache {
+		public virtual bool HasCache 
+		{
 			get { return cache!=null; }
 		}
 
-		public virtual bool HasSubclasses {
+		public virtual bool HasSubclasses 
+		{
 			get { return hasSubclasses; }
 		}
 
-		public virtual System.Type[] ProxyInterfaces {
+		public virtual System.Type[] ProxyInterfaces 
+		{
 			get { return proxyInterfaces; }
 		}
 
-		public virtual bool HasProxy {
+		public virtual bool HasProxy 
+		{
 			get { return hasProxy; }
 		}
 
@@ -316,36 +395,52 @@ namespace NHibernate.Persister {
 		/// Returns the SQL used to get the Identity value from the last insert.
 		/// </summary>
 		/// <remarks>This is not a NHibernate Command because there are no parameters.</remarks>
-		public string SqlIdentitySelect {
+		public string SqlIdentitySelect 
+		{
 			get { return identitySelectString; }
 		}
 
-		public virtual IIdentifierGenerator IdentifierGenerator {
-			get {
-				if (idgen==null)
+		public virtual IIdentifierGenerator IdentifierGenerator 
+		{
+			get 
+			{
+				if (idgen==null) 
+				{
 					throw new HibernateException("No ID SchemaExport is configured for class " + className + " (Try using Insert() with an assigned ID)");
+				}
 				return idgen;
 			}
 		}
 
-		protected virtual void Check(int rows, object id) {
-			if (rows<1) {
+		protected virtual void Check(int rows, object id) 
+		{
+			if (rows<1) 
+			{
 				throw new StaleObjectStateException( MappedClass, id );
-			} else if (rows>1) {
+			} 
+			else if (rows>1) 
+			{
 				throw new HibernateException("Duplicate identifier in table for " + ClassName + ": " + id);
 			}
 		}
 
-		protected AbstractEntityPersister(PersistentClass model, ISessionFactoryImplementor factory) {
+		protected AbstractEntityPersister(PersistentClass model, ISessionFactoryImplementor factory) 
+		{
 			this.dialect = factory.Dialect;
 
 			// CLASS
 
-			className = model.PersistentClazz.Name;
+			//className = model.PersistentClazz.Name;
+			className = model.PersistentClazz.FullName;
 			mappedClass = model.PersistentClazz;
 
 			mutable = model.IsMutable;
 			dynamicUpdate = model.DynamicUpdate;
+			dynamicInsert = model.DynamicInsert;
+			sqlWhereString = model.Where;
+			sqlWhereStringTemplate = sqlWhereString==null ?
+				null :
+				SqlCommand.Template.RenderWhereStringTemplate(sqlWhereString, dialect);
 
 			polymorphic = model.IsPolymorphic;
 			explicitPolymorphism = model.IsExplicitPolymorphism;
@@ -363,17 +458,22 @@ namespace NHibernate.Persister {
 			Value idValue = model.Identifier;
 			identifierType = idValue.Type;
 
-			if (identifierPropertyName!=null) {
+			if (identifierPropertyName!=null) 
+			{
 				identifierSetter = ReflectHelper.GetSetter(mappedClass, identifierPropertyName);
 				identifierGetter = ReflectHelper.GetGetter(mappedClass, identifierPropertyName);
 
 				PropertyInfo proxyGetter = identifierGetter.Property;
-				try {
+				try 
+				{
 					System.Type proxy = model.ProxyInterface;
 					if(proxy != null) proxyGetter = ReflectHelper.GetGetter( proxy, identifierPropertyName ).Property;
-				} catch (Exception) {}
+				} 
+				catch (Exception) {}
 				proxyIdentifierProperty = proxyGetter;
-			} else {
+			} 
+			else 
+			{
 				identifierGetter = null;
 				identifierSetter = null;
 				proxyIdentifierProperty = null;
@@ -389,7 +489,8 @@ namespace NHibernate.Persister {
 			identifierColumnNames = new string[idColumnSpan];
 
 			int i=0;
-			foreach(Column col in idValue.ColumnCollection) {
+			foreach(Column col in idValue.ColumnCollection) 
+			{
 				identifierColumnNames[i] = col.GetQuotedName(dialect);
 				i++;
 			}
@@ -402,39 +503,56 @@ namespace NHibernate.Persister {
 			// UNSAVED-VALUE:
 
 			string unsavedValue = model.Identifier.NullValue;
-			if (unsavedValue==null || "any".Equals(unsavedValue) ) {
-				unsavedIdentifierValue = Cascades.IdentifierValue.SaveAny;
-			} else if ( "none".Equals(unsavedValue) ) {
-				unsavedIdentifierValue = Cascades.IdentifierValue.SaveNone;
-			} else if ( "null".Equals(unsavedValue) ) {
+			if (unsavedValue==null || "null".Equals(unsavedValue) ) 
+			{
 				unsavedIdentifierValue = Cascades.IdentifierValue.SaveNull;
-			} else {
+			} 
+			else if ( "none".Equals(unsavedValue) ) 
+			{
+				unsavedIdentifierValue = Cascades.IdentifierValue.SaveNone;
+			} 
+			else if ( "any".Equals(unsavedValue) ) {
+				unsavedIdentifierValue = Cascades.IdentifierValue.SaveAny;
+			} 
+			else 
+			{
 				IType idType = model.Identifier.Type;
-				try {
+				try 
+				{
 					unsavedIdentifierValue = new Cascades.IdentifierValue( ((IIdentifierType)idType ).StringToObject(unsavedValue) );
 				}
-				catch (InvalidCastException) {
+				catch (InvalidCastException) 
+				{
 					throw new MappingException("Bad identifier type: " + idType.GetType().Name );
 				}
-				catch (Exception) {
+				catch (Exception) 
+				{
 					throw new MappingException("Could not parse unsaved-value: " + unsavedValue);
 				}
 			}
 
 			// VERSION:
 
-			if (model.IsVersioned) {
-				foreach(Column col in model.Version.ColumnCollection) {
+			if (model.IsVersioned) 
+			{
+				foreach(Column col in model.Version.ColumnCollection) 
+				{
 					versionColumnName = col.GetQuotedName(dialect); //only hapens once
 				}
-			} else {
+			} 
+			else 
+			{
 				versionColumnName = null;
 			}
 
-			if (model.IsVersioned) {
+			if (model.IsVersioned) 
+			{
 				versionPropertyName = model.Version.Name;
 				versioned = true;
 				versionGetter = ReflectHelper.GetGetter(mappedClass, versionPropertyName);
+				// TODO: determine if this block is kept
+				// this if-else block is extra logic in nhibernate - not sure if I like it - would rather throw
+				// an exception if there is a bad mapping
 				if (!(model.Version.Type is IVersionType))
 				{
 					log.Warn(model.Name + " has version column " + model.Version.Name + ", but the column type " + model.Version.Type.Name + " is not versionable");
@@ -443,9 +561,13 @@ namespace NHibernate.Persister {
 					versionType = null;
 					versionGetter = null;
 				}
-				else
-				versionType = (IVersionType) model.Version.Type;
-			} else {
+				else 
+				{
+					versionType = (IVersionType) model.Version.Type;
+				}
+			} 
+			else 
+			{
 				versionPropertyName = null;
 				versioned = false;
 				versionType = null;
@@ -469,7 +591,8 @@ namespace NHibernate.Persister {
 			int tempVersionProperty=-66;
 			bool foundCascade = false;
 
-			foreach(Property prop in model.PropertyClosureCollection) {
+			foreach(Property prop in model.PropertyClosureCollection) 
+			{
 				if (prop==model.Version) tempVersionProperty = i;
 				propertyNames[i] = prop.Name;
 				getters[i] = ReflectHelper.GetGetter( mappedClass, propertyNames[i] );
@@ -481,8 +604,8 @@ namespace NHibernate.Persister {
 				propertyUpdateability[i] = prop.IsUpdateable;
 				propertyInsertability[i] = prop.IsInsertable;
 
-				gettersByPropertyName.Add( propertyNames[i], getters[i] );
-				settersByPropertyName.Add( propertyNames[i], setters[i] );
+				gettersByPropertyName[ propertyNames[i] ] = getters[i];
+				settersByPropertyName[ propertyNames[i] ] = setters[i];
 
 				cascadeStyles[i] = prop.CascadeStyle;
 				if ( cascadeStyles[i] != Cascades.CascadeStyle.StyleNone ) foundCascade = true;
@@ -505,14 +628,21 @@ namespace NHibernate.Persister {
 
 			// PROXIES
 			System.Type pi = model.ProxyInterface;
-			hasProxy = pi!=null;  //TODO: && Environment.jvmSupportsProxies();
+			hasProxy = pi!=null;  
 			ArrayList pis = new ArrayList();
 			pis.Add(typeof(HibernateProxy));
-			if (!mappedClass.Equals(pi) && pi!=null ) pis.Add(pi); // != null because we use arraylist instead of hashset
+			//pis.Add( typeof(INHibernateProxy) );
+			// != null because we use arraylist instead of hashset
+			if (!mappedClass.Equals(pi) && pi!=null ) 
+			{
+				pis.Add(pi); 
+			}
 			concreteProxyClass = pi;
 
-			if (hasProxy) {
-				foreach(Subclass sc in model.SubclassCollection) {
+			if (hasProxy) 
+			{
+				foreach(Subclass sc in model.SubclassCollection) 
+				{
 					pi = sc.ProxyInterface;
 					if (pi==null) throw new MappingException( "All subclasses must also have proxies: " + mappedClass.Name);
 					if ( !sc.PersistentClazz.Equals(pi) ) pis.Add(pi);
@@ -522,15 +652,21 @@ namespace NHibernate.Persister {
 			proxyInterfaces = (System.Type[]) pis.ToArray( typeof(System.Type) );
 		}
 
-		private bool InitHasCollections() {
+		private bool InitHasCollections() 
+		{
 			return InitHasCollections(propertyTypes);
 		}
 
-		private bool InitHasCollections(IType[] types) {
-			for (int i=0; i<types.Length; i++) {
-				if (types[i].IsPersistentCollectionType) {
+		private bool InitHasCollections(IType[] types) 
+		{
+			for (int i=0; i<types.Length; i++) 
+			{
+				if (types[i].IsPersistentCollectionType) 
+				{
 					return true;
-				} else if (types[i].IsComponentType) {
+				} 
+				else if (types[i].IsComponentType) 
+				{
 					if ( InitHasCollections( ((IAbstractComponentType) types[i]).Subtypes) )
 						return true;
 				}
@@ -538,51 +674,112 @@ namespace NHibernate.Persister {
 			return false;
 		}
 
-		public virtual IClassMetadata ClassMetadata {
+		public virtual IClassMetadata ClassMetadata 
+		{
 			get { return (IClassMetadata) this; }
 		}
 
-		public virtual System.Type ConcreteProxyClass {
+		public virtual System.Type ConcreteProxyClass 
+		{
 			get { return concreteProxyClass; }
 		}
 
-		public virtual System.Type MappedSuperclass {
+		public virtual System.Type MappedSuperclass 
+		{
 			get { return superclass; }
 		}
 
-		public virtual bool IsExplicitPolymorphism {
+		public virtual bool IsExplicitPolymorphism 
+		{
 			get { return explicitPolymorphism; }
 		}
 
-		public virtual bool[] PropertyUpdateability {
+		public virtual bool[] PropertyUpdateability 
+		{
 			get { return propertyUpdateability; }
 		}
 
-		protected virtual bool UseDynamicUpdate {
+		protected virtual bool UseDynamicUpdate 
+		{
 			get { return dynamicUpdate; }
 		}
 
-		public virtual bool[] PropertyInsertability {
+		protected virtual bool UseDynamicInsert 
+		{
+			get { return dynamicInsert; }
+		}
+
+		public virtual bool[] PropertyInsertability 
+		{
 			get { return propertyInsertability; }
 		}
 
-		public virtual object GetPropertyValue(object obj, string propertyName) {
-			return ( (ReflectHelper.Getter) gettersByPropertyName[propertyName] ).Get(obj);
+		public virtual object GetPropertyValue(object obj, string propertyName) 
+		{
+			ReflectHelper.Getter getter = (ReflectHelper.Getter) gettersByPropertyName[propertyName];
+			if(getter==null) throw new HibernateException("unmapped property: " + propertyName);
+			return getter.Get(obj);
 		}
 
-		public virtual void SetPropertyValue(object obj, string propertyName, object value) {
-			( (ReflectHelper.Setter) settersByPropertyName[propertyName] ).Set(obj, value);
+		public virtual void SetPropertyValue(object obj, string propertyName, object value) 
+		{
+			ReflectHelper.Setter setter = (ReflectHelper.Setter) settersByPropertyName[propertyName];
+			if(setter==null) throw new HibernateException("unmapped property: " + propertyName);
+			setter.Set(obj, value);
 		}
 	
-		protected virtual bool HasEmbeddedIdentifier {
-			get {
-				return hasEmbeddedIdentifier;
+		protected virtual bool HasEmbeddedIdentifier 
+		{
+			get { return hasEmbeddedIdentifier; }
+		}
+
+		public bool[] GetNotNullInsertableColumns(object[] fields) 
+		{
+			bool[] notNull = new bool[fields.Length];
+			bool[] insertable = PropertyInsertability;
+			
+			for(int i=0; i < fields.Length; i++) 
+			{
+				notNull[i] = insertable[i] && fields[i]!=null;
 			}
+
+			return notNull;
+		}
+
+		protected Dialect.Dialect Dialect 
+		{
+			get { return dialect; }
+		}
+
+		protected string GetSQLWhereString(string alias) 
+		{
+			return StringHelper.Replace(sqlWhereStringTemplate, SqlCommand.Template.PlaceHolder, alias);
+		}
+
+		protected bool HasWhere 
+		{
+			get { return (sqlWhereString!=null && sqlWhereString!=String.Empty); }
 		}
 
 		public virtual bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier 
 		{
 			get { return HasIdentifierProperty || hasEmbeddedIdentifier;}
+		}
+
+		// IDictionary was a Set in h2.0.3
+		protected void CheckColumnDuplication(IDictionary distinctColumns, ICollection columns) 
+		{
+			foreach(Column col in columns) 
+			{
+				if( distinctColumns.Contains(col.Name) ) 
+				{
+					throw new MappingException(
+						"Repated column in mapping for class " +
+						className + 
+						" should be mapped with insert=\"false\" update=\"false\": " +
+						col.Name);
+				}
+			}
 		}
 
 		public abstract string QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
