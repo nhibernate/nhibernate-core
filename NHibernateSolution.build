@@ -251,7 +251,7 @@
 	</target>
 	
 	<target name="doc" depends="init" description="Builds the API documentation and the Help Documentation" >
-		<!--<call target="sdkdoc" />-->
+		<call target="sdkdoc" />
 		<nant target="clean package" buildfile="doc/reference/doc.build" />
 	</target>
 	
