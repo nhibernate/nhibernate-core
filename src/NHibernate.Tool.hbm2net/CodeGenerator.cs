@@ -24,7 +24,7 @@ namespace NHibernate.Tool.hbm2net
 			nsmgr.AddNamespace("urn", "urn:nhibernate-mapping-2.0");
 			
 			System.IO.File.Delete("error-log.txt");
-			log4net.Config.DOMConfigurator.Configure(new System.IO.FileInfo("hbm2net.exe.config"));
+			log4net.Config.DOMConfigurator.Configure(new System.IO.FileInfo("NHibernate.Tool.hbm2net.exe.config"));
 			
 			if (args.Length == 0)
 			{
