@@ -367,23 +367,13 @@ namespace NHibernate.Test
 		{
 			ISession s = sessions.OpenSession();
 			Fo fo = Fo.NewFo();
-			IDictionary props = new Hashtable();
-			props["foo"] = "bar";
-			props["bar"] = "foo";
-			fo.Serial = props;
 			fo.Buf = System.Text.Encoding.ASCII.GetBytes("abcdefghij1`23%$*^*$*\n\t");
 			s.Save( fo, FumTest.FumKey("an instance of fo") );
-			s.Flush();
-			props["x"] = "y";
 			s.Flush();
 			s.Close();
 
 			s = sessions.OpenSession();
 			fo = (Fo)s.Load( typeof(Fo), FumTest.FumKey("an instance of fo") );
-			props = (IDictionary)fo.Serial;
-			Assert.AreEqual( "bar", props["foo"] );
-			Assert.AreEqual( "y", props["x"] );
-			Assert.AreEqual( 'a', fo.Buf[0] );
 			fo.Buf[1] = (byte)126;
 			s.Flush();
 			s.Close();

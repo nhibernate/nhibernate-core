@@ -652,27 +652,27 @@ namespace NHibernate.Test
 
 		}
 
-		[Test]
-		public void ObjectType() 
-		{
-			ISession s = sessions.OpenSession();
-			Parent g = new Parent();
-			Foo foo = new Foo();
-			g.Any = foo;
-			s.Save(g);
-			s.Save(foo);
-			s.Flush();
-			s.Close();
-
-			s = sessions.OpenSession();
-			g = (Parent)s.Load( typeof(Parent), g.Id );
-			Assert.IsNotNull( g.Any );
-			Assert.IsTrue( g.Any is FooProxy );
-			s.Delete( g.Any );
-			s.Delete(g);
-			s.Flush();
-			s.Close();
-		}
+//		[Test]
+//		public void ObjectType() 
+//		{
+//			ISession s = sessions.OpenSession();
+//			Parent g = new Parent();
+//			Foo foo = new Foo();
+//			g.Any = foo;
+//			s.Save(g);
+//			s.Save(foo);
+//			s.Flush();
+//			s.Close();
+//
+//			s = sessions.OpenSession();
+//			g = (Parent)s.Load( typeof(Parent), g.Id );
+//			Assert.IsNotNull( g.Any );
+//			Assert.IsTrue( g.Any is FooProxy );
+//			s.Delete( g.Any );
+//			s.Delete(g);
+//			s.Flush();
+//			s.Close();
+//		}
 
 
 	}

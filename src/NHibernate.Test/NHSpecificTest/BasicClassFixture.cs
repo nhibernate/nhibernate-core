@@ -230,23 +230,6 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index-1], bc[index]);
 
-			bc[index].SerializableProperty = new SerializableClass();
-			bc[index].SerializableProperty._classId = 1;
-			bc[index].SerializableProperty._classString = "one string";
-			s[index].Update(bc[index]);
-
-			t[index].Commit();
-			s[index].Close();
-
-			index++;
-
-			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
-			t[index] = s[index].BeginTransaction();
-
-			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
-			AssertPropertiesEqual(bc[index-1], bc[index]);
-
 			bc[index].SingleProperty = bc[index].SingleProperty * -1;
 			s[index].Update(bc[index]);
 
@@ -855,7 +838,6 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual(expected.Int16Property, actual.Int16Property, "Int16Property");
 			Assert.AreEqual(expected.Int32Property, actual.Int32Property, "Int32Property");
 			Assert.AreEqual(expected.Int64Property, actual.Int64Property, "Int64Property");
-			Assert.AreEqual(expected.SerializableProperty, actual.SerializableProperty, "SerializableProperty");
 			Assert.AreEqual(expected.SingleProperty, actual.SingleProperty, 0, "SingleProperty");
 			Assert.AreEqual(expected.StringProperty, actual.StringProperty, "StringProperty");
 			Assert.AreEqual(expected.TicksProperty, actual.TicksProperty, "TicksProperty");
@@ -891,10 +873,6 @@ namespace NHibernate.Test.NHSpecificTest
 			basicClass.Int32Property = Int32.MaxValue;
 			basicClass.Int64Property = Int64.MaxValue;
 			
-			basicClass.SerializableProperty = new SerializableClass();
-			basicClass.SerializableProperty._classId = 2;
-			basicClass.SerializableProperty._classString = "string";
-
 			// more MySql problems - it returns 3.40282E38
 			// instead of 3.402823E+38 which is Single.MaxValue
 			basicClass.SingleProperty = 3.5F; //Single.MaxValue;
