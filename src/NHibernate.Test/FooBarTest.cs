@@ -845,7 +845,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test is failing becuase of Arrays in hql and a reference to them.")]
+		[Ignore("Test is failing becuase items in Arrays are being deleted.")]
 		public void CollectionsInSelect() 
 		{
 			ISession s = sessions.OpenSession();
@@ -885,11 +885,12 @@ namespace NHibernate.Test
 			r = (Result)list[0];
 			Assert.AreEqual( baz.Name, r.Name );
 			Assert.AreEqual( 1, r.Count );
+			
 			// TODO: figure out a better way
 			// in hibernate this is hard coded as 696969696969696938l which is very dependant upon 
 			// how the test are run because it is calculated on a global static variable...
 			// maybe a better way to test this would be to assume that the first 
-			Assert.AreEqual( 696969696969696969L, r.Amount );
+			//Assert.AreEqual( 696969696969696969L, r.Amount );
 
 			s.Find("select max( elements(bar.Baz.FooArray) ) from Bar as bar");
 			// the following test is disable for databases with no subselects... also for Interbase (not sure why) - comment from h2.0.3
@@ -909,12 +910,38 @@ namespace NHibernate.Test
 				//s.Find("select count(*) from Bar as bar where 1 in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')");
 				//s.Find("select count(*) from Bar as bar left outer join bar.Component.Glarch.ProxyArray as pg where 1 in (from g in bar.Component.Glarch.ProxyArray)");
 			}
-            // TODO: it looks like we are having problems with arrays - FooArray to foo and then getting a property of the item
-			// in the array.
+            
 			list = s.Find("from Baz baz left join baz.FooToGlarch join fetch baz.FooArray foo left join fetch foo.TheFoo");
 			Assert.AreEqual( 1, list.Count );
 			Assert.AreEqual( 2, ((object[])list[0]).Length );
 
+			//TODO: flush is causing array delete
+			list = s.Find("select baz.Name from Bar bar inner join bar.Baz baz inner join baz.FooSet foo where baz.Name = bar.String");
+			s.Find("SELECT baz.Name FROM Bar AS bar INNER JOIN bar.Baz AS baz INNER JOIN baz.FooSet AS foo WHERE baz.Name = bar.String");
+
+			s.Find("select baz.Name from Bar bar join bar.Baz baz left outer join baz.FooSet foo where baz.Name = bar.String");
+
+			s.Find("select baz.Name from Bar bar, bar.Baz baz, baz.FooSet foo where baz.Name = bar.String");
+			s.Find("SELECT baz.Name FROM Bar AS bar, bar.Baz AS baz, baz.FooSet AS foo WHERE baz.Name = bar.String");
+
+			s.Find("select baz.Name from Bar bar left join bar.Baz baz left join baz.FooSet foo where baz.Name = bar.String");
+			s.Find("select foo.String from Bar bar left join bar.Baz.FooSet foo where bar.String = foo.String");
+		
+			s.Find("select baz.Name from Bar bar left join bar.Baz baz left join baz.FooArray foo where baz.Name = bar.String");
+			s.Find("select foo.String from Bar bar left join bar.Baz.FooArray foo where bar.String = foo.String");
+		
+			s.Find("select bar.String, foo.String from bar in class Bar inner join bar.Baz as baz inner join elements(baz.FooSet) as foo where baz.Name = 'name'");
+			s.Find("select foo from bar in class Bar inner join bar.Baz as baz inner join baz.FooSet as foo");
+			s.Find("select foo from bar in class Bar inner join bar.Baz.FooSet as foo");
+		
+			s.Find("select bar.String, foo.String from bar in class Bar, bar.Baz as baz, elements(baz.FooSet) as foo where baz.Name = 'name'");
+			s.Find("select foo from bar in class Bar, bar.Baz as baz, baz.FooSet as foo");
+			s.Find("select foo from bar in class Bar, bar.Baz.FooSet as foo");
+
+			Assert.AreEqual( 1, s.Find("from Bar bar join bar.Baz.FooArray foo").Count );
+			
+			//Assert.AreEqual( 0, s.Find("from bar in class Bar, foo in bar.Baz.FooSet.elements").Count );
+			//Assert.AreEqual( 1, s.Find("from bar in class Bar, foo in elements( bar.Baz.FooArray )").Count );
 
 			s.Delete(bar);
 
