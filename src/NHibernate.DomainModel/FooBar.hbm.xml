@@ -146,6 +146,10 @@
 			>
 				<key column="foo_id"/>
 				<index column="i"/>
+				<!--
+					in h2.0.3 this was type="date", but with ADO.NET there is no DbType that
+					is equivalent to the JDBC type DATE and java.sql.Date
+				-->
 				<element column="date_" type="DateTime"/>
 			</array>
 			

@@ -7,7 +7,9 @@ namespace NHibernate.DomainModel
 		private string name;
 		private string address;
 		private int count;
-		private DateTime date;
+		// initializing to a value that is ms independent because of MsSql millisecond
+		// accurracy issues
+		private DateTime date = new DateTime( 2004, 01, 01, 12, 00, 00, 00 );
 		private Simple other;
 
 		public Simple(int c) 

@@ -17,7 +17,8 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		private Child[] _friends;
 
-		private System.DateTime _favoriteDate;
+		// default it to today - ms sql has problems with null datetimes
+		private System.DateTime _favoriteDate = DateTime.Today;
 
 		public Child()
 		{

@@ -330,7 +330,7 @@ namespace NHibernate.DomainModel
 		public LifecycleVeto OnSave(ISession s)
 		{
 			_string = "a string";
-			_date = new DateTime(2123,2,3);
+			_date = new DateTime( 1970, 01, 01 );
 			_timestamp = DateTime.Now;
 			_integer = -666;
 			_long = 696969696969696969L - count++;
@@ -348,7 +348,8 @@ namespace NHibernate.DomainModel
 			  {
 				  "foo", "bar" 
 			  };
-			_component = new FooComponent("foo", 12, new DateTime[] { _date, _timestamp, DateTime.MinValue, new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ) }, new FooComponent("bar", 666, new DateTime[] { new DateTime(1999,12,3), DateTime.MinValue }, null ) );
+			//_component = new FooComponent("foo", 12, new DateTime[] { _date, _timestamp, DateTime.MinValue, new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ) }, new FooComponent("bar", 666, new DateTime[] { new DateTime(1999,12,3), DateTime.MinValue }, null ) );
+			_component = new FooComponent("foo", 12, new DateTime[] { _date, _timestamp, new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ) }, new FooComponent("bar", 666, new DateTime[] { new DateTime(1999,12,3) }, null ) );
 			_component.Glarch = new Glarch();
 			_dependent = new Fee();
 			_dependent.Fi = "belongs to foo # " + Key;

@@ -6,7 +6,9 @@ namespace NHibernate.DomainModel
 	[Serializable]
 	public abstract class Abstract : Foo, AbstractProxy
 	{
-		private DateTime _time;
+		// added an initialization because MsSql errors out when inserting
+		// dates outside of the range - TODO: fix this to be a DATE type
+		private DateTime _time = new DateTime( 2001, 12, 1, 1, 1, 1 );
 		private Iesi.Collections.ISet _abstracts;
 
 		/// <summary>

@@ -14,7 +14,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		private char _characterProperty;
 		private System.Type _classProperty;
 		private System.Globalization.CultureInfo _cultureInfoProperty;
-		private DateTime _dateTimeProperty;
+		private DateTime _dateTimeProperty = DateTime.Today;
 		private short _int16Property;
 		private int _int32Property;
 		private long _int64Property;
@@ -32,7 +32,6 @@ namespace NHibernate.DomainModel.NHSpecific
 		private IList _stringList;
 		private IDictionary _stringMap;
 		private Iesi.Collections.ISet _stringSet;
-		private object _dummyObject = new object();
 
 		public BasicClass()
 		{
