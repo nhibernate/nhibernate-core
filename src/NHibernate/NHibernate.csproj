@@ -872,12 +872,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\CultureInfoType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\CurrencyType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Type\DateType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\DecimalType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
