@@ -91,6 +91,11 @@ namespace NHibernate {
 		public static readonly NullableType Int64 = TypeFactory.GetInt64Type();
 
 		/// <summary>
+		/// NHibernate System.Object type
+		/// </summary>
+		public static readonly IType Object = TypeFactory.GetObjectType();
+
+		/// <summary>
 		/// NHibernate serializable type
 		/// </summary>
 		public static readonly NullableType Serializable = TypeFactory.GetSerializableType(); 

@@ -72,12 +72,6 @@ namespace NHibernate.Type
 			
 			//basicTypes.Add(NHibernate.Currency.Name, NHibernate.Currency);
 			
-			// don't need an ObjectType in the basicMap because object has 
-			// been depreciated in favor of the <any> element in the mapping.  The
-			// <any> element refers to basic types of custom types.
-			//basicTypes.Add(typeof(object).Name, NHibernate.Object);
-			//AddToBasicTypes(NHibernate.Object);
-
 			// the Timezone class .NET is not even close to the java.util.Timezone class - in
 			// .NET all you can do is get the local Timezone - there is no "factory" method to
 			// get a Timezone by name...
@@ -97,6 +91,7 @@ namespace NHibernate.Type
 			TypeFactory.GetInt16Type();
 			TypeFactory.GetInt32Type();
 			TypeFactory.GetInt64Type();
+			TypeFactory.GetObjectType();
 			TypeFactory.GetSerializableType(); 
 			TypeFactory.GetSingleType(); 
 			TypeFactory.GetStringType();  
@@ -242,21 +237,21 @@ namespace NHibernate.Type
 
 		}
 
-		private static NullableType AddToTypeOfName(string key, NullableType type) 
+		private static IType AddToTypeOfName(string key, IType type) 
 		{
 			typeByTypeOfName.Add(key, type);
 			typeByTypeOfName.Add(type.Name, type);
 			return type;
 		}
 
-		private static NullableType AddToTypeOfNameWithLength(string key, NullableType type) 
+		private static IType AddToTypeOfNameWithLength(string key, IType type) 
 		{
 			typeByTypeOfName.Add(key, type);
 			typeByTypeOfName.Add(GetKeyForLengthBased(type), type);
 			return type;
 		}
 
-		private static NullableType AddToTypeOfNameWithPrecision(string key, NullableType type) 
+		private static IType AddToTypeOfNameWithPrecision(string key, IType type) 
 		{
 			typeByTypeOfName.Add(key, type);
 			typeByTypeOfName.Add(GetKeyForPrecisionScaleBased(type), type);
@@ -690,6 +685,24 @@ namespace NHibernate.Type
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
 			if(returnType==null) {
 				returnType = new Int64Type( SqlTypeFactory.GetInt64() );
+				AddToTypeOfName(key, returnType);
+			}
+
+			return returnType;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public static IType GetObjectType() 
+		{
+			string key = typeof(ObjectType).FullName;
+			
+			IType returnType = (IType)typeByTypeOfName[key];
+			if(returnType==null) 
+			{
+				returnType = new ObjectType( );
 				AddToTypeOfName(key, returnType);
 			}
 
