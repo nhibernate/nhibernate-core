@@ -642,7 +642,27 @@ namespace NHibernate.Impl {
 		public void Close() 
 		{
 			log.Info("Closing");
-			// nothing else to do unitl we get the caches working.
+
+			foreach(IClassPersister p in classPersisters.Values)
+			{
+				if ( p.HasCache ) p.Cache.Destroy();
+			}
+		
+			foreach(CollectionPersister p in collectionPersisters.Values)
+			{
+				if ( p.HasCache ) p.Cache.Destroy();
+			}
+
+//			TODO: H2.0.3
+//						  if (statementCache!=null) statementCache.CloseAll();
+//			try 
+//			{
+//				connections.close();
+//			}
+//			finally 
+//			{
+//				SessionFactoryObjectFactory.removeInstance(uuid, name, properties);
+//			} 
 		}
 
 		public void Evict(System.Type persistentClass, object id) 
