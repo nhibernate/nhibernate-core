@@ -49,7 +49,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void AddNoHashCode()
 		{
-			IDictionary map = IdentityMap.Instantiate();
+			//IDictionary map = IdentityMap.Instantiate();
+			IDictionary map = IdentityMap.InstantiateSequenced();
 			map.Add(noHashCode1, value1);
 
 			Assert.AreEqual(1, map.Count, "The item was added succesfully");
@@ -62,7 +63,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ConcurrentEntries() 
 		{
-			IDictionary map = IdentityMap.Instantiate();
+			//IDictionary map = IdentityMap.Instantiate();
+			IDictionary map = IdentityMap.InstantiateSequenced();
 			
 			map.Add(noHashCode1, value1);
 			map.Add(noHashCode2, value2);
@@ -96,7 +98,8 @@ namespace NHibernate.Test.UtilityTest
 			NoHashCode noHashCode4 = new NoHashCode();
 			object value4 = new object();
 
-			IDictionary map = IdentityMap.Instantiate();
+			//IDictionary map = IdentityMap.Instantiate();
+			IDictionary map = IdentityMap.InstantiateSequenced();
 			map.Add(noHashCode1, value1);
 			map.Add(noHashCode2, value2);
 
@@ -124,7 +127,8 @@ namespace NHibernate.Test.UtilityTest
 		[ExpectedException(typeof(System.ArgumentException))]
 		public void AddValueTypeException() 
 		{
-			IDictionary map = IdentityMap.Instantiate();
+			//IDictionary map = IdentityMap.Instantiate();
+			IDictionary map = IdentityMap.InstantiateSequenced();
 			int intKey = 3;
 			object objectValue = new object();
 			map.Add(intKey, objectValue); 
@@ -134,7 +138,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void Count() 
 		{
-			IDictionary map = IdentityMap.Instantiate();
+			//IDictionary map = IdentityMap.Instantiate();
+			IDictionary map = IdentityMap.InstantiateSequenced();
 			map.Add(new object(), new object());
 			map.Add(new object(), new object());
 
@@ -149,7 +154,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ContainsSameObjectByRef() 
 		{
-			IDictionary map = IdentityMap.Instantiate();
+			//IDictionary map = IdentityMap.Instantiate();
+			IDictionary map = IdentityMap.InstantiateSequenced();
 
 			MutableHashCode item1Copy = item1;
 			
@@ -167,7 +173,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ContainsSameObjectWithDiffEquals()
 		{
-			IDictionary map = IdentityMap.Instantiate();
+			//IDictionary map = IdentityMap.Instantiate();
+			IDictionary map = IdentityMap.InstantiateSequenced();
 
 			map.Add(item1, new object());
 
@@ -184,7 +191,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ContainsDiffObjectWithEquals() 
 		{
-			IDictionary map = IdentityMap.Instantiate();
+			//IDictionary map = IdentityMap.Instantiate();
+			IDictionary map = IdentityMap.InstantiateSequenced();
 			item1.HashCodeField = 4;
 			item2.HashCodeField = 4;
 
@@ -203,8 +211,9 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void SetItemChangedHashCodeTwice() 
 		{
-			IDictionary actualMap = IdentityMap.Instantiate();
-
+			//IDictionary actualMap = IdentityMap.Instantiate();
+			IDictionary actualMap = IdentityMap.InstantiateSequenced();
+			
 			actualMap[item1] =  value1;
 
 			// change the Property that GetHashCode method uses
@@ -220,7 +229,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void SetItemsEqualHashCodeDiffIdentity() 
 		{
-			IDictionary actualMap = IdentityMap.Instantiate();
+			//IDictionary actualMap = IdentityMap.Instantiate();
+			IDictionary actualMap = IdentityMap.InstantiateSequenced();
 			IDictionary normalMap = new Hashtable();
 
 			item1.HashCodeField = 3;
@@ -249,7 +259,8 @@ namespace NHibernate.Test.UtilityTest
 		public void Keys() 
 		{
 
-			IDictionary map = IdentityMap.Instantiate();
+			//IDictionary map = IdentityMap.Instantiate();
+			IDictionary map = IdentityMap.InstantiateSequenced();
 			map.Add(item1, value1);
 			map.Add(item2, value2);
 
@@ -268,9 +279,11 @@ namespace NHibernate.Test.UtilityTest
 		/// The only reason I think it might be falling back is because that method was added in the .NET 1.1 
 		/// Framework.
 		/// </summary>
-		[Test]
-		[Ignore("I just wanted to verify that an Exception would occur without the NHibernate related code.  " + 
-			 "The Exception only occurs the 2nd Time the Test is run in the same NUnit session.")]
+		/// <remarks>
+		/// This is actually a problem with NUnit settings.  To resolve this go to Tools-Options and make
+		/// sure that Reload before each test run is NOT checked.
+		/// </remarks>
+		//[Test]
 		public void MethodMissingException() 
 		{
 			System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(new object());
