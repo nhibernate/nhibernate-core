@@ -23,14 +23,14 @@ namespace NHibernate.DomainModel
 			created=true;
 			try 
 			{
-				foo = new Foo();
-				session.Save(foo);
+				Foo = new Foo();
+				session.Save(Foo);
 			}
 			catch (Exception e) 
 			{
 				throw new CallbackException(e);
 			}
-			foo.@string = "child of a qux";
+			Foo.String = "child of a qux";
 			return LifecycleVeto.NoVeto;
 		}
 	
@@ -39,7 +39,7 @@ namespace NHibernate.DomainModel
 			deleted=true;
 			try 
 			{
-				session.Delete(foo);
+				session.Delete(Foo);
 			}
 			catch (Exception e) 
 			{
@@ -74,16 +74,10 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _foo
 		/// </summary> 
-		public FooProxy foo
+		public FooProxy Foo
 		{
-			get 
-			{
-				return _foo; 
-			}
-			set 
-			{
-				_foo = value;
-			}
+			get { return _foo; }
+			set { _foo = value; }
 		}
 
 		/// <summary>
@@ -172,16 +166,10 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _key
 		/// </summary> 
-		public long key
+		public long Key
 		{
-			get 
-			{
-				return _key; 
-			}
-			set 
-			{
-				_key = value;
-			}
+			get { return _key; }
+			set { _key = value; }
 		}
 
 	
@@ -189,7 +177,7 @@ namespace NHibernate.DomainModel
 		{
 			set
 			{
-				this.key = value;
+				_key = value;
 			}
 		}
 
@@ -259,7 +247,7 @@ namespace NHibernate.DomainModel
 			get
 			{
 				stored=true;
-				this.childKey = child==null ? 0 : child.key;
+				this.childKey = child==null ? 0 : child.Key;
 				if (childKey!=0 && child==null) child = (Qux) session.Load(typeof(Qux), childKey);
 				return _child;
 			}

@@ -1,19 +1,19 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="NHibernate.DomainModel.Fee, NHibernate.DomainModel" table="`the fees`">
-		<id type="String" name="key" column="id_" length="64" unsaved-value="null">
+		<id type="String" name="Key" column="id_" length="64" unsaved-value="null">
 			<generator class="uuid.hex" />
 		</id>
-		<property name="fi" />
-		<many-to-one name="fee" />
-		<many-to-one name="anotherFee" />
-		<many-to-one name="qux" cascade="all" />
-		<property name="count" column="count_" />
-		<set name="fees">
+		<property name="Fi" />
+		<many-to-one name="TheFee" />
+		<many-to-one name="AnotherFee" />
+		<many-to-one name="Qux" cascade="all" />
+		<property name="Count" column="count_" />
+		<set name="Fees">
 			<key column="fee_id" />
 			<element column="str_" type="String" />
 		</set>
-		<component name="compon" update="false">
+		<component name="Compon" update="false">
 			<property name="Name" />
 			<property name="NullString" column="null_prop" />
 		</component>

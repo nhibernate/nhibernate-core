@@ -23,7 +23,7 @@ namespace NHibernate.DomainModel
 	public class Foo : FooProxy, ILifecycle
 	{
 		[Serializable]
-			public class Struct
+		public class Struct
 		{
 			public string name;
 			public int count;
@@ -41,164 +41,37 @@ namespace NHibernate.DomainModel
 		}
 
 		#region Fields
-		/// <summary>
-		/// Holder for key
-		/// </summary>
+		
 		private string _key;
-		/// <summary>
-		/// Holds the component
-		/// </summary> 
 		private FooComponent _component;
-
-		/// <summary>
-		/// Gets or sets the component
-		/// </summary> 
-		public FooComponent component
-		{
-			get 
-			{
-				return _component; 
-			}
-			set 
-			{
-				_component = value;
-			}
-		}
 	
-		/// <summary>
-		/// Holder for long
-		/// </summary>
 		private long _long;
-	
-		/// <summary>
-		/// Holder for integer
-		/// </summary>
 		private int _integer;
-	
-		/// <summary>
-		/// Holder for float
-		/// </summary>
 		private float _float;
-	
-		/// <summary>
-		/// Holder for x
-		/// </summary>
-		private String _x;
-	
-		/// <summary>
-		/// Holder for double
-		/// </summary>
+		private int _x;
 		private double _double;
-	
-		/// <summary>
-		/// Holder for date
-		/// </summary>
 		private DateTime _date;
-	
-		/// <summary>
-		/// Holder for timestamp
-		/// </summary>
 		private DateTime _timestamp;
-	
-		/// <summary>
-		/// Holder for boolean
-		/// </summary>
 		private bool _boolean;
-	
-		/// <summary>
-		/// Holder for bool
-		/// </summary>
 		private bool _bool;
-	
-		/// <summary>
-		/// Holder for null
-		/// </summary>
 		private int _null;
-	
-		/// <summary>
-		/// Holder for short
-		/// </summary>
 		private short _short;
-	
-		/// <summary>
-		/// Holder for char
-		/// </summary>
 		private char _char;
-	
-		/// <summary>
-		/// Holder for zero
-		/// </summary>
 		private float _zero;
-	
-		/// <summary>
-		/// Holder for int
-		/// </summary>
 		private int _int;
-	
-		/// <summary>
-		/// Holder for string
-		/// </summary>
 		private String _string;
-	
-		/// <summary>
-		/// Holder for byte
-		/// </summary>
 		private byte _byte;
-	
-		/// <summary>
-		/// Holder for yesno
-		/// </summary>
 		private bool _yesno;
-	
-		/// <summary>
-		/// Holder for blob
-		/// </summary>
 		private Foo.Struct _blob;
-	
-		/// <summary>
-		/// Holder for nullBlob
-		/// </summary>
 		private object _nullBlob;
-	
-		/// <summary>
-		/// Holder for status
-		/// </summary>
 		private FooStatus _status;
-	
-		/// <summary>
-		/// Holder for binary
-		/// </summary>
 		private byte[] _binary;
 		private byte[] _bytes;
-	
-		/// <summary>
-		/// Holder for locale
-		/// </summary>
-		private String _locale;
-	
-		/// <summary>
-		/// Holder for formula
-		/// </summary>
+		private System.Globalization.CultureInfo _locale;
 		private String _formula;
-	
-		/// <summary>
-		/// Holder for custom
-		/// </summary>
 		private string[] _custom;
-	
-		/// <summary>
-		/// Holder for version
-		/// </summary>
 		private int _version;
-	
-		/// <summary>
-		/// Holder for foo
-		/// </summary>
 		private FooProxy _foo;
-	
-		/// <summary>
-		/// Holder for dependent
-		/// </summary>
 		private Fee _dependent;
 	
 		#endregion
@@ -217,151 +90,91 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for key
 		/// </summary>
-		public string key
+		public string Key
 		{
-			get
-			{
-				return this._key;
-			}
-			set
-			{
-				this._key = value;
-			}
+			get { return _key; }
+			set { _key = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for long
 		/// </summary>
-		public long @long
+		public long Long
 		{
-			get
-			{
-				return this._long;
-			}
-			set
-			{
-				this._long = value;
-			}
+			get { return _long;	}
+			set { _long = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for integer
 		/// </summary>
-		public int integer
+		public int Integer
 		{
-			get
-			{
-				return this._integer;
-			}
-			set
-			{
-				this._integer = value;
-			}
+			get { return _integer; }
+			set { _integer = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for float
 		/// </summary>
-		public float @float
+		public float Float
 		{
-			get
-			{
-				return this._float;
-			}
-			set
-			{
-				this._float = value;
-			}
+			get { return _float; }
+			set { _float = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for x
 		/// </summary>
-		public String x
+		public virtual int X
 		{
-			get
-			{
-				return this._x;
-			}
-			set
-			{
-				this._x = value;
-			}
+			get { return _x; }
+			set { _x = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for double
 		/// </summary>
-		public double @double
+		public double Double
 		{
-			get
-			{
-				return this._double;
-			}
-			set
-			{
-				this._double = value;
-			}
+			get { return _double; }
+			set { _double = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for date
 		/// </summary>
-		public DateTime date
+		public DateTime Date
 		{
-			get
-			{
-				return this._date;
-			}
-			set
-			{
-				this._date = value;
-			}
+			get { return  _date; }
+			set { _date = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for timestamp
 		/// </summary>
-		public DateTime timestamp
+		public DateTime Timestamp
 		{
-			get
-			{
-				return this._timestamp;
-			}
-			set
-			{
-				this._timestamp = value;
-			}
+			get { return _timestamp; }
+			set { _timestamp = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for boolean
 		/// </summary>
-		public bool boolean
+		public bool Boolean
 		{
-			get
-			{
-				return this._boolean;
-			}
-			set
-			{
-				this._boolean = value;
-			}
+			get { return _boolean; }
+			set { _boolean = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for bool
 		/// </summary>
-		public bool @bool
+		public bool Bool
 		{
-			get
-			{
-				return this._bool;
-			}
-			set
-			{
-				this._bool = value;
-			}
+			get { return _bool; }
+			set { _bool = value; }
 		}
 	
 		/// <summary>
@@ -369,282 +182,184 @@ namespace NHibernate.DomainModel
 		/// </summary>
 		public int NullInt32
 		{
-			get
-			{
-				return this._null;
-			}
-			set
-			{
-				this._null = value;
-			}
+			get { return _null; }
+			set { _null = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for short
 		/// </summary>
-		public short @short
+		public short Short
 		{
-			get
-			{
-				return this._short;
-			}
-			set
-			{
-				this._short = value;
-			}
+			get { return _short; }
+			set { _short = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for char
 		/// </summary>
-		public char @char
+		public char Char
 		{
-			get
-			{
-				return this._char;
-			}
-			set
-			{
-				this._char = value;
-			}
+			get { return _char; }
+			set { _char = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for zero
 		/// </summary>
-		public float zero
+		public float Zero
 		{
-			get
-			{
-				return this._zero;
-			}
-			set
-			{
-				this._zero = value;
-			}
+			get { return _zero; }
+			set { _zero = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for int
 		/// </summary>
-		public int @int
+		public int Int
 		{
-			get
-			{
-				return this._int;
-			}
-			set
-			{
-				this._int = value;
-			}
+			get { return _int; }
+			set { _int = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for string
 		/// </summary>
-		public string @string
+		public string String
 		{
-			get
-			{
-				return this._string;
-			}
-			set
-			{
-				this._string = value;
-			}
+			get { return _string; }
+			set { _string = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for byte
 		/// </summary>
-		public byte @byte
+		public byte Byte
 		{
-			get
-			{
-				return this._byte;
-			}
-			set
-			{
-				this._byte = value;
-			}
+			get { return _byte; }
+			set { _byte = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for yesno
 		/// </summary>
-		public bool yesno
+		public bool YesNo
 		{
-			get
-			{
-				return this._yesno;
-			}
-			set
-			{
-				this._yesno = value;
-			}
+			get { return _yesno; }
+			set { _yesno = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for blob
 		/// </summary>
-		public Foo.Struct blob
+		public Foo.Struct Blob
 		{
-			get
-			{
-				return this._blob;
-			}
-			set
-			{
-				this._blob = value;
-			}
+			get { return _blob; }
+			set { _blob = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for nullBlob
 		/// </summary>
-		public object nullBlob
+		public object NullBlob
 		{
-			get
-			{
-				return this._nullBlob;
-			}
-			set
-			{
-				this._nullBlob = value;
-			}
+			get { return _nullBlob; }
+			set { _nullBlob = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for status
 		/// </summary>
-		public FooStatus status
+		public FooStatus Status
 		{
-			get
-			{
-				return this._status;
-			}
-			set
-			{
-				this._status = value;
-			}
+			get { return _status; }
+			set { _status = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for binary
 		/// </summary>
-		public byte[] binary
+		public byte[] Binary
 		{
-			get
-			{
-				return this._binary;
-			}
-			set
-			{
-				this._binary = value;
-			}
+			get { return _binary; }
+			set { _binary = value; }
 		}
-		public byte[] bytes
+
+		public byte[] Bytes
 		{
-			get
-			{
-				return this._bytes;
-			}
-			set
-			{
-				this._bytes = value;
-			}
+			get { return _bytes; }
+			set { _bytes = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for locale
 		/// </summary>
-		public String locale
+		public System.Globalization.CultureInfo Locale
 		{
-			get
-			{
-				return this._locale;
-			}
-			set
-			{
-				this._locale = value;
-			}
+			get { return _locale; }
+			set { _locale = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for formula
 		/// </summary>
-		public String formula
+		public String Formula
 		{
-			get
-			{
-				return this._formula;
-			}
-			set
-			{
-				this._formula = value;
-			}
+			get { return _formula; }
+			set { _formula = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for custom
 		/// </summary>
-		public string[] custom
+		public string[] Custom
 		{
-			get
-			{
-				return this._custom;
-			}
-			set
-			{
-				this._custom = value;
-			}
+			get { return _custom; }
+			set { _custom = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for version
 		/// </summary>
-		public int version
+		public int Version
 		{
-			get
-			{
-				return this._version;
-			}
-			set
-			{
-				this._version = value;
-			}
+			get { return _version; }
+			set { _version = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for foo
 		/// </summary>
-		public FooProxy foo
+		public FooProxy TheFoo
 		{
-			get
-			{
-				return this._foo;
-			}
-			set
-			{
-				this._foo = value;
-			}
+			get { return _foo; }
+			set { _foo = value; }
 		}
 	
 		/// <summary>
 		/// Get/set for dependent
 		/// </summary>
-		public Fee dependent
+		public Fee Dependent
 		{
-			get
-			{
-				return this._dependent;
-			}
-			set
-			{
-				this._dependent = value;
-			}
+			get { return _dependent; }
+			set { _dependent = value; }
 		}
-	
+
+		/// <summary>
+		/// Gets or sets the component
+		/// </summary> 
+		public FooComponent Component
+		{
+			get { return _component;  }
+			set  { _component = value; }
+		}
+
+		public FooComponent NullComponent
+		{
+			get { return null; }
+			set { if (value!=null) throw new Exception("Null component"); }
+		}
+
 		#endregion
 
 		#region ILifecycle Members
@@ -677,18 +392,18 @@ namespace NHibernate.DomainModel
 			Struct ss = new Struct();
 			ss.name="name";
 			ss.count = 69;
-			blob = ss;
-			status=FooStatus.ON;
-			binary = System.Text.Encoding.ASCII.GetBytes( _string + "yada yada yada" );
-			custom = new string[]
+			_blob = ss;
+			_status=FooStatus.ON;
+			_binary = System.Text.Encoding.ASCII.GetBytes( _string + "yada yada yada" );
+			_custom = new string[]
 			  {
 				  "foo", "bar" 
 			  };
-			component = new FooComponent("foo", 12, new DateTime[] { _date, _timestamp, DateTime.MinValue, new DateTime() }, new FooComponent("bar", 666, new DateTime[] { new DateTime(1999,12,3), DateTime.MinValue }, null ) );
-			component.Glarch = new Glarch();
-			dependent = new Fee();
-			dependent.fi = "belongs to foo # " + key;
-			locale = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
+			_component = new FooComponent("foo", 12, new DateTime[] { _date, _timestamp, DateTime.MinValue, new DateTime() }, new FooComponent("bar", 666, new DateTime[] { new DateTime(1999,12,3), DateTime.MinValue }, null ) );
+			_component.Glarch = new Glarch();
+			_dependent = new Fee();
+			_dependent.Fi = "belongs to foo # " + Key;
+			_locale = System.Threading.Thread.CurrentThread.CurrentCulture;
 			return LifecycleVeto.NoVeto;
 		}
 
@@ -699,9 +414,9 @@ namespace NHibernate.DomainModel
 
 		#endregion
 
-		public void disconnect() 
+		public void Disconnect() 
 		{
-			if ( _foo!=null) _foo.disconnect();
+			if ( _foo!=null) _foo.Disconnect();
 			_foo=null;
 		}
 
@@ -718,44 +433,36 @@ namespace NHibernate.DomainModel
 				}
 			}
 		
-			return ( this._bool == other._bool )
-				&& ( ( this._boolean == other._boolean ) || ( this._boolean.Equals(other._boolean) ) )
-				&& ( ( this._byte == other._byte ) || ( this._byte.Equals(other._byte) ) )
+			return ( _bool == other._bool )
+				&& ( ( _boolean == other._boolean ) || ( _boolean.Equals(other._boolean) ) )
+				&& ( ( _byte == other._byte ) || ( _byte.Equals(other._byte) ) )
 				//&& ( ( this._date == other._date ) || ( this._date.getDate() == other._date.getDate() && this._date.getMonth() == other._date.getMonth() && this._date.getYear() == other._date.getYear() ) )
-				&& ( ( this._double == other._double ) || ( this._double.Equals(other._double) ) )
-				&& ( ( this._float == other._float ) || ( this._float.Equals(other._float) ) )
-				&& ( this._int == other._int )
-				&& ( ( this._integer == other._integer ) || ( this._integer.Equals(other._integer) ) )
-				&& ( ( this._long == other._long ) || ( this._long.Equals(other._long) ) )
-				&& ( this._null == other._null )
-				&& ( ( this._short == other._short ) || ( this._short.Equals(other._short) ) )
-				&& ( ( this._string == other._string) || ( this._string.Equals(other._string) ) )
+				&& ( ( _double == other._double ) || ( _double.Equals(other._double) ) )
+				&& ( ( _float == other._float ) || ( _float.Equals(other._float) ) )
+				&& ( _int == other._int )
+				&& ( ( _integer == other._integer ) || ( _integer.Equals(other._integer) ) )
+				&& ( ( _long == other._long ) || ( _long.Equals(other._long) ) )
+				&& ( _null == other._null )
+				&& ( ( _short == other._short ) || ( _short.Equals(other._short) ) )
+				&& ( ( _string == other._string) || ( _string.Equals(other._string) ) )
 				//&& ( ( this._timestamp==other._timestamp) || ( this._timestamp.getDate() == other._timestamp.getDate() && this._timestamp.getYear() == other._timestamp.getYear() && this._timestamp.getMonth() == other._timestamp.getMonth() ) )
-				&& ( this._zero == other._zero )
-				&& ( ( this._foo == other._foo ) || ( this._foo.key.Equals( other._foo.key ) ) )
-				&& ( ( this.blob == other.blob ) || ( this.blob.Equals(other.blob) ) )
-				&& ( this.yesno == other.yesno )
-				&& ( this.status == other.status )
-				&& ( ( this.binary == other.binary ) || this.binary.Equals(other._binary))
-				&& ( this.key.Equals(other.key) )
-				&& ( this.locale.Equals(other.locale) )
-				&& ( ( this.custom == other.custom ) || ( this.custom[0].Equals(other.custom[0]) && this.custom[1].Equals(other.custom[1]) ) );
+				&& ( _zero == other._zero )
+				&& ( ( _foo == other._foo ) || ( _foo.Key.Equals( other._foo.Key ) ) )
+				&& ( ( _blob == other.Blob ) || ( _blob.Equals(other.Blob) ) )
+				&& ( _yesno == other.YesNo )
+				&& ( _status == other.Status )
+				&& ( ( _binary == other.Binary ) || _binary.Equals(other.Binary))
+				&& ( _key.Equals(other.Key) )
+				&& ( _locale.Equals(other.Locale) )
+				&& ( ( _custom == other.Custom ) || ( _custom[0].Equals(other.Custom[0]) && _custom[1].Equals(other.Custom[1]) ) );
 		}
+
 //		public override int GetHashCode()
 //		{
 //			return key.GetHashCode() - _string.GetHashCode();
 //		}
-		public FooComponent nullComponent
-		{
-			get
-			{
-				return null;
-			}
-			set
-			{
-				if (value!=null) throw new Exception("Null component");
-			}
-		}
+
+		
 
 		private static int count=0;
 	}

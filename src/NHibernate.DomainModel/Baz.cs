@@ -161,14 +161,8 @@ namespace NHibernate.DomainModel
 	/// </summary>
 	public System.Collections.IList Fees
 	{
-		get
-		{
-			return this._fees;
-		}
-		set
-		{
-			this._fees = value;
-		}
+		get { return _fees; }
+		set { _fees = value; }
 	}
 	
 	/// <summary>

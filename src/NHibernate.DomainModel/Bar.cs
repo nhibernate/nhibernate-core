@@ -16,7 +16,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the X
 		/// </summary> 
-		public int X
+		public override int X
 		{
 			get { return _x; }
 			set  { _x = value; }

@@ -19,99 +19,51 @@ namespace NHibernate.DomainModel
 		{
 		}
 	
-		public Fee fee
+		public Fee TheFee
 		{
-			get
-			{
-				return _fee;
-			}
-			set
-			{
+			get { return _fee; }
+			set { _fee = value; }
+		}
 	
-				this._fee = value;
-			}
-		}	
-		public string fi
+		public string Fi
 		{
-			get
+			get { return _fi; }
+			set { _fi = value; }
+		}
 
-			{
-				return _fi;
-			}
-			set
-			{
-				this._fi = value;
-			}
-		}
-		public string key
+		public string Key
 		{
-			get
-			{
-				return _key;
-			}
-			set
-			{
-				this._key = value;
-			}
+			get { return _key; }
+			set { this._key = value; }
 		}
 	
-		public System.Collections.IDictionary fees
+		public System.Collections.IDictionary Fees
 		{
-			get
-			{
-				return _fees;
-			}
-			set
-			{
-				this._fees = value;
-			}
+			get { return _fees; }
+			set { _fees = value; }
 		}
 	
-		public Fee anotherFee
+		public Fee AnotherFee
 		{
-			get
-			{
-				return _anotherFee;
-			}
-			set
-			{
-				this._anotherFee = value;
-			}
+			get { return _anotherFee; }
+			set { _anotherFee = value; }
 		}
 	
-		public Qux qux
+		public Qux Qux
 		{
-			get
-			{
-				return _qux;
-			}
-			set
-			{
-				this._qux = value;
-			}
+			get { return _qux; }
+			set { _qux = value; }
 		}
 	
-		public FooComponent compon
+		public FooComponent Compon
 		{
-			get
-			{
-				return _compon;
-			}
-			set
-			{
-				this._compon = value;
-			}
+			get { return _compon; }
+			set { _compon = value; }
 		}	
-		public int count
+		public int Count
 		{
-			get
-			{
-				return _count;
-			}
-			set
-			{
-				_count = value;
-			}
+			get { return _count; }
+			set { _count = value; }
 		}
 	}
 }

@@ -40,7 +40,7 @@ namespace NHibernate.DomainModel
 			Stuff rhs = obj as Stuff;
 			if(rhs==null) return false;
 
-			return rhs.Id.Equals(this.Id) && rhs.Foo.key.Equals(_foo.key) && rhs.MoreStuff.Equals(_moreStuff) ;
+			return rhs.Id.Equals(this.Id) && rhs.Foo.Key.Equals(_foo.Key) && rhs.MoreStuff.Equals(_moreStuff) ;
 					
 		}
 

@@ -6,55 +6,55 @@ namespace NHibernate.DomainModel
 	//TODO: fix up these property names for .net standards
 	public interface FooProxy 
 	{
-		FooComponent nullComponent
+		FooComponent NullComponent
 		{
 			get;
 			set;
 		}
-		FooComponent component
+		FooComponent Component
 		{
 			get;
 			set;
 		}
-		string[] custom
-		{
-			get;
-			set;
-		}
-
-		byte[] binary
+		string[] Custom
 		{
 			get;
 			set;
 		}
 
-		FooStatus status
+		byte[] Binary
 		{
 			get;
 			set;
 		}
 
-		object nullBlob
+		FooStatus Status
 		{
 			get;
 			set;
 		}
 
-		Foo.Struct blob
+		object NullBlob
 		{
 			get;
 			set;
 		}
 
-		bool yesno
+		Foo.Struct Blob
 		{
 			get;
 			set;
 		}
 
-		void disconnect();
+		bool YesNo
+		{
+			get;
+			set;
+		}
 
-		Byte @byte
+		void Disconnect();
+
+		byte Byte
 		{
 			get;
 			set;
@@ -66,97 +66,97 @@ namespace NHibernate.DomainModel
 			set;
 		}
 
-		int @int
+		int Int
 		{
 			get;
 			set;
 		}
 
-		bool @bool
+		bool Bool
 		{
 			get;
 			set;
 		}
 
-		float zero
+		float Zero
 		{
 			get;
 			set;
 		}
 
-		byte[] bytes
+		byte[] Bytes
 		{
 			get;
 			set;
 		}
 
-		bool boolean
+		bool Boolean
 		{
 			get;
 			set;
 		}
 
-		double @double
+		double Double
 		{
 			get;
 			set;
 		}
 
-		float @float
+		float Float
 		{
 			get;
 			set;
 		}
 
-		short @short
+		short Short
 		{
 			get;
 			set;
 		}
 
-		char @char
+		char Char
 		{
 			get;
 			set;
 		}
 
-		long @long
+		long Long
 		{
 			get;
 			set;
 		}
 
-		int @integer
+		int Integer
 		{
 			get;
 			set;
 		}
 
-		DateTime timestamp
+		DateTime Timestamp
 		{
 			get;
 			set;
 		}
 
-		DateTime date
+		DateTime Date
 		{
 			get;
 			set;
 		}
 
-		String @string
+		string String
 		{
 			get;
 			set;
 		}
 
-		FooProxy foo
+		FooProxy TheFoo
 		{
 			get;
 			set;
 		}
 
-		String key
+		String Key
 		{
 			get;
 			set;
