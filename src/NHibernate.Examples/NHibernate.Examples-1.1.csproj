@@ -115,6 +115,29 @@
                     BuildAction = "None"
                 />
                 <File
+                    RelPath = "Blogger\Blog.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Blogger\Blog.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Blogger\BloggerFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Blogger\BlogItem.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Blogger\BlogItem.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Cascades\Alias.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
