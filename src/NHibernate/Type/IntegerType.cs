@@ -1,4 +1,7 @@
 using System;
+using System.Data;
+
+using NHibernate.Engine;
 
 namespace NHibernate.Type {
 
@@ -10,25 +13,24 @@ namespace NHibernate.Type {
 		// In C# boxing and unboxing is automatic. No System.Number.Integer is needed.
 		// Is it correct?
 
-		/*
-		public object Get(ResultSet rs, string name) {
-            return new Integer(rs.getInt(name));
+		public override object Get(IDataReader rs, string name) {
+            return (int)rs[name];
+
+			//For performance reason should be better read cursor by int index
+			//ie  return re.GetInt32(index);
 		}
-		*/
 
 		public override System.Type PrimitiveClass {
 			get { return typeof(int); }
 		}
 
-		public System.Type ReturnedClass {
+		public override System.Type ReturnedClass {
 			get { return typeof(int); }
 		}
 		
-		/*
-		public void Set(PreparedStatement st, object val, int index) {
-				st.SetInt(index, (int) val);
+		public override void Set(IDbCommand cmd, object value, int index) {
+			( (IDataParameter)cmd.Parameters[index] ).Value = (int) value;
 		}
-		*/
 
 		public override Sql.Types SqlType {
 			get { return Sql.Types.Integer; }
@@ -45,7 +47,7 @@ namespace NHibernate.Type {
 		public object StringToObject(string xml) {
             return int.Parse(xml);
 		}
-		
+
 		public object Next(object current) {
 			return ((int) current) + 1;
 		}

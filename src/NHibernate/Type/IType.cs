@@ -13,11 +13,8 @@ namespace NHibernate.Type {
 	public interface IType {
 
 
-		// QUESTIONS
-		//
+		// QUESTION:
 		// How do we implement Serializable interface? Standard .NET pattern or other?
-		// What do we do with GetReturnedClass? It returns a java.lang.Class
-		// What do we do with method that required ResultSet param?
 		
 		/// <summary>
 		/// Return true if the implementation is castable to AssociationType.

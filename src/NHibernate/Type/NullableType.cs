@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 using log4net;
 
@@ -17,76 +18,63 @@ namespace NHibernate.Type
 
 		private static readonly ILog log = LogManager.GetLogger(StringHelper.Qualifier((typeof(IType)).ToString()));  //Is it correct?
 
-		//Needs PreparedStatement implementation
-		//
-		//public abstract void Set(PreparedStatement st, object value, int index);
+		public abstract void Set(IDbCommand cmd, object value, int index);
 
-		//Needs to solve ResultSet problem
-		//public abstract object Get(ResultSet rs, string name);  ????
+		public abstract object Get(IDataReader rs, string name);
 
 		public abstract Types SqlType { get; }
+
 		public abstract string ToXML(object val);
 
-		//Needs SessionFactoryImplementor
-		/*
-		public sealed string ToXML(object val, SessionFactoryImplementor pc) {
-			return (value==null) ? null : ToXML(val);
-		}
-		*/
-
-		/*  Needs PreparedStatement implementation
-		 * 
-		public sealed void NullSafeSet(PreparedStatement st, object value, int index, ISessionImplementor session) {
-			NullSafeSet(st, value, index);
+		public override sealed string ToXML(object value, ISessionFactoryImplementor pc) {
+			return (value==null) ? null : ToXML(value);
 		}
 		
+		public override sealed void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session) {
+			NullSafeSet(cmd, value, index);
+		}
 
-
-		public sealed void NullSafeSet(PreparedStatement st, object val, int index) {
-			if (val==null) {
+		public void NullSafeSet(IDbCommand cmd, object value, int index) {
+			if (value==null) {
 				if ( log.IsDebugEnabled )
 					LogManager.GetLogger(GetType()).Debug("binding null to parameter: " + index.ToString());
 				
-				st.SetNull( index, SqlType() );
+				//Do we check IsNullable?
+				( (IDataParameter)cmd.Parameters[index]).Value = DBNull.Value;
 			}
 			else {
 				if ( log.IsDebugEnabled )
-					LogManager.GetLogger(GetType()).Debug("binding '" + ToXML(val) + "' to parameter: " + index);
+					LogManager.GetLogger(GetType()).Debug("binding '" + ToXML(value) + "' to parameter: " + index);
 				
-				Set(st, val, index);
+				Set(cmd, value, index);
 			}
 		}
-		*/
-
-
-		/* Needs to solve ResultSet problem
-		 * 
-		public sealed object NullSafeGet(ResultSet rs, string[] names, ISessionImplementor session, object owner) {
+		
+		public override sealed object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
 			return NullSafeGet(rs, names[0]);
 		}
 
-		public sealed object NullSafeGet(ResultSet rs, string[] names) {
+		public object NullSafeGet(IDataReader rs, string[] names) {
 			return NullSafeGet(rs, names[0]);
 		}
 
-		public sealed object NullSafeGet(ResultSet rs, string name) {
-			object val = Get(rs, name);
-			if ( val==null || rs.wasNull() ) { //rs!!!!
+		public object NullSafeGet(IDataReader rs, string name) {
+			object val = rs[name];
+			if ( val==null || val==DBNull.Value ) {
 				if ( log.IsDebugEnabled )
 					LogManager.GetLogger(GetType()).Debug("returning null as column: " + name);
 				return null;
 			}
 			else {
-				if ( log.isTraceEnabled() )
+				if ( log.IsDebugEnabled )
 					LogManager.GetLogger(GetType()).Debug("returning '" + ToXML(val) + "' as column: " + name);
 				return val;
 			}
 		}
 
-		public sealed object NullSafeGet(ResultSet rs, string name, ISessionImplementor session, object owner) {
+		public override sealed object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner) {
 			return NullSafeGet(rs, name);
 		}
-		*/
 	
 		public override sealed int GetColumnSpan(IMapping session) {
 			return 1;
