@@ -26,53 +26,24 @@ namespace NHibernate.Sql
 
 		public string ToAliasString(string sqlIdentifier, Dialect.Dialect dialect) 
 		{
+			if (dialect.UnQuote(sqlIdentifier) != sqlIdentifier)
+			{
+				sqlIdentifier = dialect.UnQuote(sqlIdentifier);
+			}
+
+			if ( sqlIdentifier.Length > length ) 
+			{
+				sqlIdentifier = sqlIdentifier.Substring(0, length);
+			}
+
+			if (suffix!=null) sqlIdentifier += suffix;
+
 			return dialect.QuoteForAliasName(sqlIdentifier);
-			char begin = sqlIdentifier[0];
-			int quoteType = Dialect.Dialect.Quote.IndexOf(begin);
-
-			string unquoted;
-
-			if ( quoteType>=0 ) 
-			{
-				unquoted = sqlIdentifier.Substring(1, sqlIdentifier.Length-1 );
-			}
-			else 
-			{
-				unquoted = sqlIdentifier;
-			}
-
-			if ( unquoted.Length > length ) 
-			{
-				unquoted = unquoted.Substring(0, length);
-			}
-
-			if (suffix!=null) unquoted += suffix;
-
-			if ( quoteType >= 0 ) 
-			{
-				char endQuote = Dialect.Dialect.ClosedQuote[quoteType];
-				return begin + unquoted + endQuote;
-			}
-			else 
-			{
-				return unquoted;
-			}
 		}
 
 		public string ToUnquotedAliasString(string sqlIdentifier, Dialect.Dialect dialect)
 		{
-			char begin = sqlIdentifier[0];
-			int quoteType = Dialect.Dialect.Quote.IndexOf(begin);
-			string unquoted;
-
-			if(quoteType >= 0) 
-			{
-				unquoted = sqlIdentifier.Substring(1, sqlIdentifier.Length - 2);
-			}
-			else 
-			{
-				unquoted = sqlIdentifier;
-			}
+			string unquoted = dialect.UnQuote(sqlIdentifier);
 
 			if(unquoted.Length > length) 
 			{

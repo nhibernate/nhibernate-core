@@ -1178,7 +1178,7 @@ namespace NHibernate.Persister {
 
 		private string Alias(string name, int tableNumber) {
 			if (tableNumber==0) return name;
-			return name + StringHelper.Underscore + tableNumber;
+			return dialect.QuoteForAliasName(dialect.UnQuote(name) + StringHelper.Underscore + tableNumber);
 		}
 
 		public override string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses) {
