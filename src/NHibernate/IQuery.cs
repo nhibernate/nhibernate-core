@@ -23,7 +23,7 @@ namespace NHibernate {
 	/// Named query parameters are tokens of the form <c>:name</c> in the query string. A value is bound
 	/// to the <c>integer</c> parameter <c>:foo</c> by calling
 	/// <code>
-	///		SetParameter("foo", foo, Hibernate.Integer);
+	///		SetParameter("foo", foo, Hibernate.Int32);
 	/// </code>
 	/// for example. A name may appear multiple times in the query string.
 	/// </para>
@@ -171,28 +171,28 @@ namespace NHibernate {
 		IQuery SetString(int position, string val);
 		IQuery SetCharacter(int position, char val);
 		IQuery SetByte(int position, byte val);
-		IQuery SetShort(int position, short val);
-		IQuery SetInteger(int position, int val);
-		IQuery SetLong(int position, long val);
-		IQuery SetFloat(int position, float val);
+		IQuery SetInt16(int position, short val);
+		IQuery SetInt32(int position, int val);
+		IQuery SetInt64(int position, long val);
+		IQuery SetSingle(int position, float val);
 		IQuery SetDouble(int position, double val);
 		IQuery SetBinary(int position, byte[] val);
 		IQuery SetDecimal(int position, decimal val);
-		IQuery SetDate(int position, DateTime val);
+		IQuery SetDateTime(int position, DateTime val);
 		IQuery SetTime(int position, DateTime val);
 		IQuery SetTimestamp(int position, DateTime val);
 
 		IQuery SetString(string name, string val);
 		IQuery SetCharacter(string name, char val);
 		IQuery SetByte(string name, byte val);
-		IQuery SetShort(string name, short val);
-		IQuery SetInteger(string name, int val);
-		IQuery SetLong(string name, long val);
-		IQuery SetFloat(string name, float val);
+		IQuery SetInt16(string name, short val);
+		IQuery SetInt32(string name, int val);
+		IQuery SetInt64(string name, long val);
+		IQuery SetSingle(string name, float val);
 		IQuery SetDouble(string name, double val);
 		IQuery SetBinary(string name, byte[] val);
 		IQuery SetDecimal(string name, decimal val);
-		IQuery SetDate(string name, DateTime val);
+		IQuery SetDateTime(string name, DateTime val);
 		IQuery SetTime(string name, DateTime val);
 		IQuery SetTimestamp(string name, DateTime val);
 

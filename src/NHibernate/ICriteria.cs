@@ -50,6 +50,21 @@ namespace NHibernate {
 		ICriteria SetTimeout(int timeout);
 
 		/// <summary>
+		/// 
+		/// </summary>
+		int MaxResults {get; }
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		int FirstResult {get; }
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		int Timeout {get; }
+
+		/// <summary>
 		/// Add an Expression to constrain the results to be retrieved.
 		/// </summary>
 		/// <param name="expression"></param>
@@ -67,5 +82,30 @@ namespace NHibernate {
 		/// </summary>
 		/// <returns></returns>
 		IList List();
+
+		/// <summary>
+		/// Contains all of the Expressions that were added as one 
+		/// resulting expression.
+		/// </summary>
+		Expression.Expression Expression {get;}
+
+		/// <summary>
+		/// Provides an Enumerator to Iterate through the Expressions 
+		/// that have been added
+		/// </summary>
+		/// <returns></returns>
+		IEnumerator IterateExpressions();
+	
+		/// <summary>
+		/// Provides an Enumerator to Iterate through the Order clauses
+		/// that have been added.
+		/// </summary>
+		/// <returns></returns>
+		IEnumerator IterateOrderings();
+    
+		/// <summary>
+		/// The PersistentClass that is the entry point for the Criteria.
+		/// </summary>
+		System.Type PersistentClass { get; }
 	}
 }

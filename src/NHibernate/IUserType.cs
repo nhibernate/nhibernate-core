@@ -1,6 +1,8 @@
 using System;
 using System.Data;
 
+using NHibernate.SqlTypes;
+
 namespace NHibernate {
 	/// <summary>
 	/// The inteface to be implemented by user-defined types.
@@ -27,10 +29,15 @@ namespace NHibernate {
 	public interface IUserType {
 		
 		/// <summary>
-		/// The SQL type codes for the columns mapped by this type. The codes are defined on
+		/// The DbType codes for the columns mapped by this type. The codes are defined on
 		/// <c></c>
 		/// </summary>
-		DbType[] SqlTypes { get; }
+		DbType[] DbTypes { get; }
+
+		/// <summary>
+		/// The SQL types for the columns mapped by this type. 
+		/// </summary>
+		SqlType[] SqlTypes {get;}
 		
 		/// <summary>
 		/// The type returned by <c>NullSafeGet()</c>

@@ -94,17 +94,17 @@ namespace NHibernate {
 		/// <summary>
 		/// Convenience method to read an <c>int</c>
 		/// </summary>
-		int GetInteger(int col);
+		int GetInt32(int col);
 
 		/// <summary>
-		/// Convenience method to read a <c>long</c>
+		/// Convenience method to read a <c>System.Int64</c>
 		/// </summary>
-		long GetLong(int col);
+		long GetInt64(int col);
 
 		/// <summary>
-		/// Convenience method to read a <c>float</c>
+		/// Convenience method to read a <c>System.Single</c>
 		/// </summary>
-		float GetFloat(int col);
+		float GetSingle(int col);
 
 		/// <summary>
 		/// Convenience method to read a <c>bool</c>
@@ -117,9 +117,9 @@ namespace NHibernate {
 		double GetDouble(int col);
 
 		/// <summary>
-		/// Convenience method to read an <c>short</c>
+		/// Convenience method to read an <c>System.Int16</c>
 		/// </summary>
-		short GetShort(int col);
+		short GetInt16(int col);
 
 		/// <summary>
 		/// Convenience method to read a <c>byte</c>

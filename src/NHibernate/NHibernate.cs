@@ -1,5 +1,6 @@
 using System;
 
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Proxy;
 using NHibernate.Collection;
@@ -14,90 +15,102 @@ namespace NHibernate {
 	public class NHibernate	{
 
 		/// <summary>
-		/// NHibernate long type
+		/// NHibernate binary type
 		/// </summary>
-		public static readonly NullableType Long = new LongType();
+		public static readonly NullableType Binary = TypeFactory.GetBinaryType(); 
 		
 		/// <summary>
-		/// NHibernate short type
+		/// NHibernate boolean type
 		/// </summary>
-		public static readonly NullableType Short = new ShortType();
-		
-		/// <summary>
-		/// NHibernate integer type
-		/// </summary>
-		public static readonly NullableType Integer = new IntegerType();
+		public static readonly NullableType Boolean = TypeFactory.GetBooleanType(); 
 		
 		/// <summary>
 		/// NHibernate byte type
 		/// </summary>
-		public static readonly NullableType Byte = new ByteType();
-		
-		/// <summary>
-		/// NHibernate float type
-		/// </summary>
-		public static readonly NullableType Float = new FloatType();
-		
-		/// <summary>
-		/// NHibernate double type
-		/// </summary>
-		public static readonly NullableType Double = new DoubleType();
+		public static readonly NullableType Byte = TypeFactory.GetByteType() ; 
 		
 		/// <summary>
 		/// NHibernate character type
 		/// </summary>
-		public static readonly NullableType Character = new CharacterType();
+		public static readonly NullableType Character = TypeFactory.GetCharacterType(); 
 		
+		/// <summary>
+		/// NHibernate class type
+		/// </summary>
+		public static readonly NullableType Class = TypeFactory.GetTypeType(); 
+
+		/// <summary>
+		/// NHibernate CultureInfo type
+		/// </summary>
+		public static readonly NullableType CultureInfo = TypeFactory.GetCultureInfoType(); 
+		
+		/// <summary>
+		/// NHibernate date type
+		/// </summary>
+		public static readonly NullableType DateTime = TypeFactory.GetDateTimeType(); 
+		
+		/// <summary>
+		/// NHibernate decimal type
+		/// </summary>
+		public static readonly NullableType Decimal = TypeFactory.GetDecimalType(); 
+		
+		/// <summary>
+		/// NHibernate double type
+		/// </summary>
+		public static readonly NullableType Double = TypeFactory.GetDoubleType(); 
+		
+		
+		/// <summary>
+		/// NHibernate System.Int16 (short in C#) type
+		/// </summary>
+		public static readonly NullableType Int16 = TypeFactory.GetInt16Type(); 
+		
+		/// <summary>
+		/// NHibernate System.Int32 (int in C#) type
+		/// </summary>
+		public static readonly NullableType Int32 = TypeFactory.GetInt32Type(); 
+		
+		/// <summary>
+		/// NHibernate System.Int64 (long in C#) type
+		/// </summary>
+		public static readonly NullableType Int64 = TypeFactory.GetInt64Type();
+
+		/// <summary>
+		/// NHibernate serializable type
+		/// </summary>
+		public static readonly NullableType Serializable = TypeFactory.GetSerializableType(); 
+
+		/// <summary>
+		/// NHIbernate System.Single (float in C#) Type
+		/// </summary>
+		public static readonly NullableType Single = TypeFactory.GetSingleType(); 
+
 		/// <summary>
 		/// NHibernate string type
 		/// </summary>
-		public static readonly NullableType String = new StringType();
+		public static readonly NullableType String = TypeFactory.GetStringType(); 
 		
 		/// <summary>
 		/// NHibernate time type
 		/// </summary>
 		//public static readonly NullableType Time = new TimeType();
 		
-		/// <summary>
-		/// NHibernate date type
-		/// </summary>
-		public static readonly NullableType Date = new DateType();
 		
 		/// <summary>
 		/// NHibernate timestamp type
 		/// </summary>
-		public static readonly NullableType Timestamp = new TimestampType();
-		
-		/// <summary>
-		/// NHibernate boolean type
-		/// </summary>
-		public static readonly NullableType Boolean = new BooleanType();
+		public static readonly NullableType Timestamp = TypeFactory.GetTimestampType(); //new TimestampType();
 		
 		/// <summary>
 		/// NHibernate true_false type
 		/// </summary>
-		public static readonly NullableType TrueFalse = new TrueFalseType();
+		public static readonly NullableType TrueFalse = TypeFactory.GetTrueFalseType(); 
 		
 		/// <summary>
 		/// NHibernate yes_no type
 		/// </summary>
-		public static readonly NullableType YesNo = new YesNoType();
+		public static readonly NullableType YesNo = TypeFactory.GetYesNoType(); 
 
-		/// <summary>
-		/// NHibernate decimal type
-		/// </summary>
-		public static readonly NullableType Decimal = new DecimalType();
-		
-		/// <summary>
-		/// NHibernate big_decimal type
-		/// </summary>
-		//public static readonly NullableType BigDecimal = new BigDecimalType();
-	
-		/// <summary>
-		/// NHibernate binary type
-		/// </summary>
-		public static readonly NullableType Binary = new BinaryType();
-		
 		/// <summary>
 		/// NHibernate blob type
 		/// </summary>
@@ -109,51 +122,11 @@ namespace NHibernate {
 		//public static readonly NullableType Clob = new ClobType();
 		
 		/// <summary>
-		/// NHibernate calendar type
-		/// </summary>
-		//public static readonly NullableType Calendar = new CalendarType();
-		
-		/// <summary>
-		/// NHibernate calendar_date type
-		/// </summary>
-		//public static readonly NullableType CalendarDate = new CalendarDateType();
-		
-		/// <summary>
-		/// NHibernate CultureInfo type
-		/// </summary>
-		public static readonly NullableType CultureInfo = new CultureInfoType();
-		
-		/// <summary>
-		/// NHibernate currency type
-		/// </summary>
-		//public static readonly NullableType Currency = new CurrencyType();
-		
-		/// <summary>
-		/// NHibernate timezone type
-		/// </summary>
-		//public static readonly NullableType Timezone = new TimeZoneType();
-		
-		/// <summary>
-		/// NHibernate class type
-		/// </summary>
-		public static readonly NullableType Class = new ClassType();
-		
-		/// <summary>
-		/// NHibernate object type
-		/// </summary>
-		public static readonly IType Object = new ObjectType();
-		
-		
-		/// <summary>
-		/// NHibernate serializable type
-		/// </summary>
-		public static readonly NullableType Serializable = new SerializableType(typeof(object));
-
-		
-		/// <summary>
 		/// Cannot be instantiated.
 		/// </summary>
-		private NHibernate() {																	  throw new NotSupportedException();											}
+		private NHibernate() {																	  
+			throw new NotSupportedException();											
+		}
 		
 		
 		/// <summary>
