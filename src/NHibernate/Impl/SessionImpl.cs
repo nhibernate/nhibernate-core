@@ -2937,7 +2937,6 @@ namespace NHibernate.Impl
 			}
 
 			persister.SetPropertyValues( obj, hydratedState );
-			TypeFactory.DeepCopy( hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState );
 
 			if( persister.HasCache )
 			{
@@ -2953,6 +2952,10 @@ namespace NHibernate.Impl
 			{
 				( ( ILifecycle ) obj ).OnLoad( this, id );
 			}
+
+			// after setting values to object
+			TypeFactory.DeepCopy( hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState );
+			e.Status = Status.Loaded;
 
 			// reentrantCallback=false;
 			if( log.IsDebugEnabled )
@@ -4642,58 +4645,92 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		private FilterTranslator GetFilterTranslator( object collection, string filter, QueryParameters parameters, bool scalar )
 		{
+			if( collection == null ) throw new ArgumentNullException( "collection", "null collection passed to Filter" );
+
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "filter: " + filter );
 				parameters.LogParameters();
 			}
 
-			if( !( collection is PersistentCollection ) )
-			{
-				collection = GetArrayHolder( collection );
-				if( collection == null )
-				{
-					throw new TransientObjectException( "collection was not yet persistent" );
-				}
-			}
+			CollectionEntry entry = GetCollectionEntryOrNull( collection );
+			ICollectionPersister roleBeforeFlush = ( entry == null ) ? null : entry.loadedPersister;
 
-			PersistentCollection coll = ( PersistentCollection ) collection;
-			CollectionEntry e = GetCollectionEntry( coll );
-			if( e == null )
-			{
-				throw new TransientObjectException( "collection was not persistent in this session" );
-			}
-
-			FilterTranslator q;
-			ICollectionPersister roleBeforeFlush = e.loadedPersister;
+			FilterTranslator filterTranslator;
 			if( roleBeforeFlush == null )
-			{ //ie. it was previously unreferenced
+			{
+				// if it was previously unreferenced, we need
+				// to flush in order to get its state into the
+				// database to query
 				Flush();
-				if( e.loadedPersister == null )
+				entry = GetCollectionEntryOrNull( collection );
+				ICollectionPersister roleAfterFlush = ( entry == null ) ? null : entry.loadedPersister;
+
+				if( roleAfterFlush == null )
 				{
 					throw new QueryException( "the collection was unreferenced" );
 				}
-				q = factory.GetFilter( filter, e.loadedPersister.Role, scalar );
+				filterTranslator = factory.GetFilter( filter, roleAfterFlush.Role, scalar );
 			}
 			else
 			{
-				q = factory.GetFilter( filter, roleBeforeFlush.Role, scalar );
-				if( AutoFlushIfRequired( q.QuerySpaces ) && roleBeforeFlush != e.loadedPersister )
+				// otherwise, we only need to flush if there are
+				// in-memory changes to the queried tables
+				filterTranslator = factory.GetFilter( filter, roleBeforeFlush.Role, scalar );
+				if( AutoFlushIfRequired( filterTranslator.QuerySpaces ) )
 				{
-					if( e.loadedPersister == null )
+					// might need to run a different filter entirely after the flush
+					// because the collection role may have changed
+					entry = GetCollectionEntryOrNull( collection );
+					ICollectionPersister roleAfterFlush = ( entry == null ) ? null : entry.loadedPersister;
+					if( roleBeforeFlush != roleAfterFlush )
 					{
-						throw new QueryException( "the collection was dereferenced" );
+						if( roleAfterFlush == null ) throw new QueryException( "The collection was dereferenced" );
 					}
-					// might need to recompile the query after the flush because the collection role may have changed.
-					q = factory.GetFilter( filter, e.loadedPersister.Role, scalar );
+					filterTranslator = factory.GetFilter( filter, roleAfterFlush.Role, scalar );
 				}
 			}
 
-			parameters.PositionalParameterValues[ 0 ] = e.loadedKey;
-			parameters.PositionalParameterTypes[ 0 ] = e.loadedPersister.KeyType;
+			parameters.PositionalParameterValues[ 0 ] = entry.loadedKey;
+			parameters.PositionalParameterTypes[ 0 ] = entry.loadedPersister.KeyType;
 
-			return q;
+			return filterTranslator;
 
+		}
+
+		/// <summary>
+		/// Get the collection entry for a collection passed to filter,
+		/// which might be a collection wrapper, an array, or an unwrapped
+		/// collection. Return <c>null</c> if there is no entry.
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		private CollectionEntry GetCollectionEntryOrNull( object collection )
+		{
+			PersistentCollection coll;
+			if ( collection is PersistentCollection )
+			{
+				coll = (PersistentCollection) collection;
+			}
+			else
+			{
+				coll = GetArrayHolder( collection );
+				if ( coll == null )
+				{
+					// it might be an unwrapped collection reference!
+					// try to find a wrapper (slowish)
+					foreach( PersistentCollection pc in collectionEntries.Keys )
+					{
+						if( pc.IsWrapper( collection ) )
+						{
+							coll = pc;
+							break;
+						}
+					}
+				}
+			}
+
+			return (coll == null) ? null : GetCollectionEntry( coll );
 		}
 
 		/// <summary>

@@ -50,20 +50,24 @@ namespace NHibernate.Test.NHSpecificTest
 		public void GetAndModify() 
 		{
 			A a = new A( "name" );
-			ISession s = sessions.OpenSession();
-			s.Save( a );
-			s.Close();
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.Save( a );
+				s.Flush();
+			}
 
-			s = sessions.OpenSession();
-			a = s.Get( typeof(A), a.Id ) as A;
-			a.Name = "modified";
-			s.Flush();
-			s.Close();
+			using( ISession s = sessions.OpenSession() )
+			{
+				a = s.Get( typeof(A), a.Id ) as A;
+				a.Name = "modified";
+				s.Flush();
+			}
 
-			s = sessions.OpenSession();
-			a = s.Get( typeof(A), a.Id ) as A;
-			Assert.AreEqual( "modified", a.Name, "the name was modified" );
-			s.Close();
+			using( ISession s = sessions.OpenSession() )
+			{
+				a = s.Get( typeof(A), a.Id ) as A;
+				Assert.AreEqual( "modified", a.Name, "the name was modified" );
+			}
 		}
 	}
 }
