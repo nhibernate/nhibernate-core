@@ -480,23 +480,18 @@ namespace NHibernate.Hql
 					if ( indexOfDot > - 1 &&
 						(constant = ReflectHelper.GetConstantValue( importedName, fieldName )) != null)	
 					{
+						// need to get the NHibernate Type so we can convert the Enum or field from 
+						// a class into it's string representation for hql.
 						IType type;
 						try 
 						{
-							type = TypeFactory.HueristicType(constant.GetType().Name);
+							type = TypeFactory.HueristicType( constant.GetType().AssemblyQualifiedName );
 						} 
 						catch (MappingException me) 
 						{
 							throw new QueryException(me);
 						}
-						if (type == null) 
-						{
-							type = TypeFactory.HueristicType(constant.GetType().AssemblyQualifiedName);
-							if (type == null) 
-							{
-								throw new QueryException("Could not determine type of: " + token);
-							}
-						}
+
 						try 
 						{
 							AppendToken(q, ((ILiteralType) type).ObjectToSQLString(constant));
