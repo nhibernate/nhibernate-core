@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+    <class name="NHibernate.DomainModel.BasicClass" 
+		assemblyName="NHibernate.DomainModel">
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="BinaryProperty" type="Byte[]" />
+		<property name="BooleanProperty" type="Boolean" />
+		<property name="ByteProperty" type="Byte" />
+		<property name="CharacterProperty" type="Character" />
+		<property name="ClassProperty" type="Type" />
+		<property name="CultureInfoProperty" type="CultureInfo" />
+		<property name="DateTimeProperty" type="DateTime" />
+		<property name="DecimalProperty" type="Decimal" />
+		<property name="DoubleProperty" type="Double" />
+		<property name="Int16Property" type="Int16" />
+		<property name="Int32Property" type="Int32" />
+		<property name="Int64Property" type="Int64" />
+		<property name="SerializableProperty" type="NHibernate.DomainModel.SerializableClass, NHibernate.DomainModel(1000)" />
+		<property name="SingleProperty" type="Single" />
+		<property name="StringProperty" type="String" />
+		<property name="TimestampProperty" type="Timestamp" />
+		<property name="TrueFalseProperty" type="TrueFalse" />
+		<property name="YesNoProperty" type="YesNo" />
+		
+		
+		<array name="StringArray" table="BasicClass_StringArray"  >
+			<key column="BasicClass_id" />
+			<index column="StringArray_index" />
+			<element column="string_value" type="String(100)" />
+		</array>
+		
+		<primitive-array name="Int32Array" table="BasicClass_Int32Array">
+			<key column="BasicClass_id" />
+			<index column="Int32Array_index" />
+			<element column="int32_value" type="Int32" />
+		</primitive-array>
+		
+		
+		
+	</class>
+</hibernate-mapping>
