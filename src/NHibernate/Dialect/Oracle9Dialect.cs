@@ -42,13 +42,15 @@ namespace NHibernate.Dialect
 			Register( DbType.DateTime, "DATE" );
 			Register( DbType.Decimal, "NUMBER(19,5)" ); 
 			Register( DbType.Decimal, 19, "NUMBER(19, $1)");
-			Register( DbType.Double, "DOUBLE PRECISION" ); 
+			// having problems with both ODP and OracleClient from MS not being able
+			// to read values out of a field that is DOUBLE PRECISION
+			Register( DbType.Double, "DOUBLE PRECISION" ); //"FLOAT(53)" );
 			//Oracle does not have a guid datatype
 			//Register( DbType.Guid, "UNIQUEIDENTIFIER" );
 			Register( DbType.Int16, "NUMBER(5,0)" );
 			Register( DbType.Int32, "NUMBER(10,0)" );
 			Register( DbType.Int64, "NUMBER(20,0)" );
-			Register( DbType.Single, "FLOAT" ); 
+			Register( DbType.Single, "FLOAT(24)" );
 			Register( DbType.StringFixedLength, "NCHAR(255)");
 			Register( DbType.StringFixedLength, 2000, "NCHAR($1)");
 			Register( DbType.String, "NVARCHAR2(255)" );
