@@ -18,7 +18,7 @@ namespace NHibernate.Id {
 	/// <para>
 	/// It is not intended that applications use this strategy directly. However,
 	/// it may be used to build other (efficient) strategies. The return type is
-	/// <c>Integer</c>
+	/// <c>System.Int32</c>
 	/// </para>
 	/// <para>
 	/// The hi value MUST be fetched in a seperate transaction to the <c>ISession</c>
@@ -48,7 +48,7 @@ namespace NHibernate.Id {
 
 			query = "select " + columnName + " from " + tableName;
 			if ( dialect.SupportsForUpdate ) query += " for update";
-			update = "update " + tableName + " set " + columnName + " = ? where " + columnName + " = ?";
+			update = "update " + tableName + " set " + columnName + " = " + StringHelper.SqlParameter + " where " + columnName + " = " + StringHelper.SqlParameter;
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
