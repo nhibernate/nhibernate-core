@@ -147,7 +147,7 @@ namespace NHibernate.Collection {
 			}
 		}
 
-		public bool IsDirectlyAccessible {
+		public virtual bool IsDirectlyAccessible {
 			get { return directlyAccessible; }
 		}
 
@@ -201,7 +201,7 @@ namespace NHibernate.Collection {
 			get { return additions; }
 		}
 
-		public ICollectionSnapshot CollectionSnapshot {
+		public virtual ICollectionSnapshot CollectionSnapshot {
 			get { return collectionSnapshot; }
 			set { collectionSnapshot = value; }
 		}
