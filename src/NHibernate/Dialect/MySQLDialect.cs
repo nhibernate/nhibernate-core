@@ -104,7 +104,7 @@ namespace NHibernate.Dialect {
 
 	
 		public override string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey) {
-			string cols = StringHelper.Join(StringHelper.CommaSpace, foreignKey);
+			string cols = String.Join(StringHelper.CommaSpace, foreignKey);
 			return new StringBuilder(30)
 				.Append(" add index (")
 				.Append(cols)
@@ -115,7 +115,7 @@ namespace NHibernate.Dialect {
 				.Append(") references ")
 				.Append(referencedTable)
 				.Append(" (")
-				.Append( StringHelper.Join(StringHelper.CommaSpace, primaryKey) )
+				.Append( String.Join(StringHelper.CommaSpace, primaryKey) )
 				.Append(')')
 				.ToString();
 		}
