@@ -117,7 +117,6 @@ namespace NHibernate.Loader
 		/// instances of the queried subclass?
 		/// </summary>
 		/// <value>False, unless overridden</value>
-		//TODO: new in H2.0.3 - find where it is overridden
 		protected virtual bool UseQueryWhereFragment
 		{
 			get { return false;}

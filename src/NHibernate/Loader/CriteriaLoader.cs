@@ -13,8 +13,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader 
 {
-	//TODO: this class depends directly upon CriteriaImpl, in the impl package
-	// add a ICriteriaImplementor interface
 	/// <summary>
 	/// A <c>Loader</c> for <see cref="ICriteria"/> queries. 
 	/// </summary>

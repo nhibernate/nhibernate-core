@@ -67,7 +67,6 @@ namespace NHibernate.Loader
 		protected abstract CollectionPersister CollectionPersister { get; }
 
 		/// <summary>
-		/// TODO: figure out what this is used for - I believe it is in the HQL package in H2.0.3.
 		/// It should be overridden in Hql.QueryTranslator and an actual value placed in there.
 		/// </summary>
 		protected virtual int CollectionOwner 
