@@ -7,19 +7,27 @@ using NHibernate.Collection;
 using NHibernate.Dialect;
 using NHibernate.Type;
 
-namespace NHibernate.Engine {
+namespace NHibernate.Engine 
+{
 	/// <summary>
 	/// Defines the internal contract between the <c>ISessionFactory</c> and other parts of NHibernate
 	/// such as implementors of <c>IType</c>.
 	/// </summary>
-	public interface ISessionFactoryImplementor : IMapping, ISessionFactory {
-		
+	public interface ISessionFactoryImplementor : IMapping, ISessionFactory 
+	{
 		/// <summary>
 		/// TODO: determine if this is more appropriate for ISessionFactory
 		/// </summary>
 		IConnectionProvider ConnectionProvider {get;}
 		
-		
+		/// <summary>
+		/// Gets the IsolationLevel an IDbTransaction should be set to.
+		/// </summary>
+		/// <remarks>
+		/// This is only applicable to manually controlled NHibernate Transactions.
+		/// </remarks>
+		IsolationLevel Isolation { get; }
+
 		/// <summary>
 		/// Get the persister for a class
 		/// </summary>
