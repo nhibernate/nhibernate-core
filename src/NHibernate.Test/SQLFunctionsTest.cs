@@ -8,13 +8,40 @@ namespace NHibernate.Test
 	/// Summary description for SQLFunctionsTest.
 	/// </summary>
 	[TestFixture]
-	public class SQLFunctionsTest
+	public class SQLFunctionsTest : TestCase
 	{
-		public SQLFunctionsTest()
+		[SetUp]
+		public void SetUp() 
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+			ExportSchema( new string[] { "Simple.hbm.xml"//,
+										   //"Blobber.hbm.xml"
+									   } );
 		}
+
+		[Test]
+		[Ignore("Test not yet written")]
+		public void SetProperties() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not yet written")]
+		public void NothingToUpdate() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not yet written")]
+		public void SQLFunctions() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not yet written")]
+		public void BlobClob() 
+		{
+		}
+
+
 	}
 }

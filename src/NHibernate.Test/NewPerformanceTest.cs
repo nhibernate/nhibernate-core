@@ -8,13 +8,29 @@ namespace NHibernate.Test
 	/// Summary description for NewPerformanceTest.
 	/// </summary>
 	[TestFixture]
-	public class NewPerformanceTest
+	public class NewPerformanceTest : TestCase
 	{
-		public NewPerformanceTest()
+		[SetUp]
+		public void SetUp() 
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+			ExportSchema( new string[] { "Simple.hbm.xml"} );
 		}
+
+		[Test]
+		[Ignore("Test not yet written")]
+		public void Performance() 
+		{
+		}
+
+		private void Prepare() 
+		{
+			//TODO: add details - not a test method
+		}
+
+		private void Delete() 
+		{
+			//TODO: add details - not a test method
+		}
+
 	}
 }

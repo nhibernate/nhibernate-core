@@ -13,7 +13,8 @@ namespace NHibernate.Test
 		public ODMGTest()
 		{
 			//
-			// TODO: Add constructor logic here
+			// TODO: figure out if I even want to port this
+			// or just get rid of the ODMG API
 			//
 		}
 	}
