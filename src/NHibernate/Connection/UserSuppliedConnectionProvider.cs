@@ -47,5 +47,12 @@ namespace NHibernate.Connection
 			get { return false; }
 		}
 
+		public override void Close()
+		{
+			// do nothing - don't need to throw an error because this is something
+			// that NHibernate will call.
+		}
+
+
 	}
 }

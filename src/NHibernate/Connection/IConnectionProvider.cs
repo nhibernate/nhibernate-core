@@ -50,5 +50,10 @@ namespace NHibernate.Connection
 		/// </remarks>
 		bool IsStatementCache { get; }
 
+		/// <summary>
+		/// Release all resources held by this ConnectionProvider.
+		/// </summary>
+		void Close();
+
 	}
 }
