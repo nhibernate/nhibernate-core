@@ -77,7 +77,7 @@ namespace NHibernate.Type {
 
 		public abstract object DeepCopy(object val);
 
-		public abstract Types[] SqlTypes(IMapping mapping);
+		public abstract DbType[] SqlTypes(IMapping mapping);
 
 		public abstract int GetColumnSpan(IMapping mapping);
 

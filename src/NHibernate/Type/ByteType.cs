@@ -26,8 +26,8 @@ namespace NHibernate.Type {
 			( (IDataParameter)cmd.Parameters[index] ).Value = (byte) value;
 		}
 
-		public override Sql.Types SqlType {
-			get { return Sql.Types.TinyInt; }
+		public override DbType SqlType {
+			get { return DbType.Byte; }
 		}
 
 		public override string Name {

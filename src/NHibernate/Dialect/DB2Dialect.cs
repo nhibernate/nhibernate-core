@@ -29,22 +29,21 @@ namespace NHibernate.Dialect {
 			Types.CLOB, "CLOB($l)"
 			*/			
 
-			Register( SqlDbType.Bit, "SMALLINT" );
-			Register( SqlDbType.BigInt, "BIGINT" );
-			Register( SqlDbType.SmallInt, "SMALLINT" );
-			Register( SqlDbType.TinyInt, "SMALLINT" );
-			Register( SqlDbType.Int, "INTEGER" );
-			Register( SqlDbType.Char, "CHAR(1)" );
-			Register( SqlDbType.VarChar, "VARCHAR($l)" );
-			Register( SqlDbType.Float, "FLOAT" );
-			Register( SqlDbType.Real, "DOUBLE" );
-			Register( SqlDbType.DateTime, "DATE" );
+			Register( DbType.Bit, "SMALLINT" );
+			Register( DbType.BigInt, "BIGINT" );
+			Register( DbType.SmallInt, "SMALLINT" );
+			Register( DbType.Int16, "SMALLINT" );
+			Register( DbType.Int32, "INTEGER" );
+			Register( DbType.AnsiStringFixedLength, "VARCHAR($l)" );
+			Register( DbType.Float, "FLOAT" );
+			Register( DbType.Real, "DOUBLE" );
+			Register( DbType.DateTime, "DATE" );
 			// register( Types.TIME, "TIME" );  ???
-			Register( SqlDbType.Timestamp, "TIMESTAMP" );
-			Register( SqlDbType.VarBinary, "VARCHAR($l) FOR BIT DATA" );
-			Register( SqlDbType.Decimal, "NUMERIC(19, $l)" );
-			Register( SqlDbType.Image, "BLOB($l)" );
-			Register( SqlDbType.Text, "CLOB($l)" );
+			Register( DbType.Timestamp, "TIMESTAMP" );
+			Register( DbType.VarBinary, "VARCHAR($l) FOR BIT DATA" );
+			Register( DbType.Decimal, "NUMERIC(19, $l)" );
+			Register( DbType.Image, "BLOB($l)" );
+			Register( DbType.Text, "CLOB($l)" );
 		
 			/*
 			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");

@@ -32,22 +32,22 @@ namespace NHibernate.Dialect {
 			   Types.CLOB, "CLOB"
 			*/
 			
-			Register( SqlDbType.Bit, "NUMBER(1,0)" );
-			Register( SqlDbType.BigInt, "NUMBER(19,0)" );
-			Register( SqlDbType.SmallInt, "NUMBER(5,0)" );
-			Register( SqlDbType.TinyInt, "NUMBER(3,0)" );
-			Register( SqlDbType.Int, "NUMBER(10,0)" );
-			Register( SqlDbType.Char, "CHAR(1)" );
-			Register( SqlDbType.VarChar, "VARCHAR2($l)" );
-			Register( SqlDbType.Float, "FLOAT" );
-			Register( SqlDbType.Real, "DOUBLE PRECISION" );
-			Register( SqlDbType.DateTime, "DATE" );
-			Register( SqlDbType.SmallDateTime, "DATE" );
-			Register( SqlDbType.Timestamp, "DATE" );
-			Register( SqlDbType.VarBinary, "RAW($l)" );
-			Register( SqlDbType.Decimal, "NUMBER(19, $l)" );
-			Register( SqlDbType.Image, "BLOB" );
-			Register( SqlDbType.Text, "CLOB" );
+			Register( DbType.Bit, "NUMBER(1,0)" );
+			Register( DbType.BigInt, "NUMBER(19,0)" );
+			Register( DbType.SmallInt, "NUMBER(5,0)" );
+			Register( DbType.TinyInt, "NUMBER(3,0)" );
+			Register( DbType.Int, "NUMBER(10,0)" );
+			Register( DbType.Char, "CHAR(1)" );
+			Register( DbType.VarChar, "VARCHAR2($l)" );
+			Register( DbType.Float, "FLOAT" );
+			Register( DbType.Real, "DOUBLE PRECISION" );
+			Register( DbType.DateTime, "DATE" );
+			Register( DbType.SmallDateTime, "DATE" );
+			Register( DbType.Timestamp, "DATE" );
+			Register( DbType.VarBinary, "RAW($l)" );
+			Register( DbType.Decimal, "NUMBER(19, $l)" );
+			Register( DbType.Image, "BLOB" );
+			Register( DbType.Text, "CLOB" );
 
 			/* TODO:
 			getDefaultProperties().setProperty(Environment.USE_STREAMS_FOR_BINARY, "true");

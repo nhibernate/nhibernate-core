@@ -29,21 +29,21 @@ namespace NHibernate.Dialect {
 			Types.NUMERIC, "NUMERIC" );
 			*/
 
-			Register( SqlDbType.Bit, "BOOL" );
-			Register( SqlDbType.BigInt, "INT8" );
-			Register( SqlDbType.SmallInt, "INT2" );
-			Register( SqlDbType.TinyInt, "INT2" );
-			Register( SqlDbType.Int, "INT4" );
-			Register( SqlDbType.Char, "CHAR(1)" );
-			Register( SqlDbType.VarChar, "VARCHAR($l)" );
-			Register( SqlDbType.Float, "FLOAT4" );
-			Register( SqlDbType.Real, "FLOAT8" );
-			Register( SqlDbType.DateTime, "DATE" );
-			Register( SqlDbType.Timestamp, "TIMESTAMP" );
-			Register( SqlDbType.VarBinary, "BYTEA" );
-			Register( SqlDbType.Text, "TEXT" );
-			Register( SqlDbType.Image, "BYTEA" );
-			Register( SqlDbType.Decimal, "NUMERIC" );
+			Register( DbType.Bit, "BOOL" );
+			Register( DbType.BigInt, "INT8" );
+			Register( DbType.SmallInt, "INT2" );
+			Register( DbType.TinyInt, "INT2" );
+			Register( DbType.Int, "INT4" );
+			Register( DbType.Char, "CHAR(1)" );
+			Register( DbType.VarChar, "VARCHAR($l)" );
+			Register( DbType.Float, "FLOAT4" );
+			Register( DbType.Real, "FLOAT8" );
+			Register( DbType.DateTime, "DATE" );
+			Register( DbType.Timestamp, "TIMESTAMP" );
+			Register( DbType.VarBinary, "BYTEA" );
+			Register( DbType.Text, "TEXT" );
+			Register( DbType.Image, "BYTEA" );
+			Register( DbType.Decimal, "NUMERIC" );
 		
 			/*
 			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");

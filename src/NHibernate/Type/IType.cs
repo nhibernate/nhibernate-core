@@ -57,7 +57,7 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="mapping">Mapping</param>
 		/// <returns>Typecodes</returns>
-		Types[] SqlTypes(IMapping mapping);
+		DbType[] SqlTypes(IMapping mapping);
 	
 		/// <summary>
 		/// How many columns are used to persist this type?

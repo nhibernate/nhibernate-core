@@ -30,22 +30,22 @@ namespace NHibernate.Dialect {
 			Types.CLOB, "BLOB SUB_TYPE 1" );
 			*/
 
-			Register( SqlDbType.Bit, "SMALLINT" );
-			Register( SqlDbType.BigInt, "NUMERIC(18,0)" );
-			Register( SqlDbType.SmallInt, "SMALLINT" );
-			Register( SqlDbType.TinyInt, "SMALLINT" );
-			Register( SqlDbType.Int, "INTEGER" );
-			Register( SqlDbType.Char, "CHAR(1)" );
-			Register( SqlDbType.VarChar, "VARCHAR($l)" );
-			Register( SqlDbType.Float, "FLOAT" );
-			Register( SqlDbType.Real, "DOUBLE PRECISION" );
-			// Register( SqlDbType.DATE, "DATE" );  ???
-			// Register( SqlDbType.TIME, "TIME" );  ???
-			Register( SqlDbType.Timestamp, "TIMESTAMP" );
-			Register( SqlDbType.VarBinary, "BLOB" );
-			Register( SqlDbType.Decimal, "NUMERIC(18, $l)" );
-			Register( SqlDbType.Image, "BLOB" );
-			Register( SqlDbType.Text, "BLOB SUB_TYPE 1" );
+			Register( DbType.Bit, "SMALLINT" );
+			Register( DbType.BigInt, "NUMERIC(18,0)" );
+			Register( DbType.SmallInt, "SMALLINT" );
+			Register( DbType.TinyInt, "SMALLINT" );
+			Register( DbType.Int, "INTEGER" );
+			Register( DbType.Char, "CHAR(1)" );
+			Register( DbType.VarChar, "VARCHAR($l)" );
+			Register( DbType.Float, "FLOAT" );
+			Register( DbType.Real, "DOUBLE PRECISION" );
+			// Register( DbType.DATE, "DATE" );  ???
+			// Register( DbType.TIME, "TIME" );  ???
+			Register( DbType.Timestamp, "TIMESTAMP" );
+			Register( DbType.VarBinary, "BLOB" );
+			Register( DbType.Decimal, "NUMERIC(18, $l)" );
+			Register( DbType.Image, "BLOB" );
+			Register( DbType.Text, "BLOB SUB_TYPE 1" );
 		
 			/*
 			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");

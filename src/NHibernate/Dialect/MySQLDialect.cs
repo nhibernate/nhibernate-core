@@ -42,35 +42,35 @@ namespace NHibernate.Dialect {
 				Types.CLOB, 65535, "TEXT"
 			*/
 
-			Register( SqlDbType.Bit, "BIT" );
-			Register( SqlDbType.BigInt,	"BIGINT" );
-			Register( SqlDbType.SmallInt, "SMALLINT" );
-			Register( SqlDbType.TinyInt, "TINYINT" );
-			Register( SqlDbType.Int, "INTEGER" );
-			Register( SqlDbType.Char, "CHAR(1)" );
-			Register( SqlDbType.VarChar, "LONGTEXT" );
-			Register( SqlDbType.VarChar, 1677215, "MEDIUMTEXT" );
-			Register( SqlDbType.VarChar, 65535, "TEXT" );
-			Register( SqlDbType.VarChar, 255, "VARCHAR($1)" );
-			Register( SqlDbType.Float, "FLOAT" );
-			Register( SqlDbType.Real, "DOUBLE PRECISION" );
+			Register( DbType.Bit, "BIT" );
+			Register( DbType.BigInt,	"BIGINT" );
+			Register( DbType.SmallInt, "SMALLINT" );
+			Register( DbType.TinyInt, "TINYINT" );
+			Register( DbType.Int, "INTEGER" );
+			Register( DbType.Char, "CHAR(1)" );
+			Register( DbType.VarChar, "LONGTEXT" );
+			Register( DbType.VarChar, 1677215, "MEDIUMTEXT" );
+			Register( DbType.VarChar, 65535, "TEXT" );
+			Register( DbType.VarChar, 255, "VARCHAR($1)" );
+			Register( DbType.Float, "FLOAT" );
+			Register( DbType.Real, "DOUBLE PRECISION" );
 			/*
 			And these?
 			register( Types.DATE, "DATE" );
 			register( Types.TIME, "TIME" );
 			*/
-			Register( SqlDbType.Timestamp, "DATETIME" );
-			Register( SqlDbType.VarBinary, "LONGBLOB" );
-			Register( SqlDbType.VarBinary, 16777215, "MEDIUMBLOB" );
-			Register( SqlDbType.VarBinary, 65535, "BLOB" );
-			Register( SqlDbType.VarBinary, 255, "VARCHAR($l) BINARY" );
-			Register( SqlDbType.Decimal, "NUMERIC(19, $l)" );
-			Register( SqlDbType.Image, "LONGBLOB" );
-			Register( SqlDbType.Image, 16777215, "MEDIUMBLOB" );
-			Register( SqlDbType.Image, 65535, "BLOB" );
-			Register( SqlDbType.Text, "LONGTEXT" );
-			Register( SqlDbType.Text, 16777215, "MEDIUMTEXT" );
-			Register( SqlDbType.Text, 65535, "TEXT" );
+			Register( DbType.Timestamp, "DATETIME" );
+			Register( DbType.VarBinary, "LONGBLOB" );
+			Register( DbType.VarBinary, 16777215, "MEDIUMBLOB" );
+			Register( DbType.VarBinary, 65535, "BLOB" );
+			Register( DbType.VarBinary, 255, "VARCHAR($l) BINARY" );
+			Register( DbType.Decimal, "NUMERIC(19, $l)" );
+			Register( DbType.Image, "LONGBLOB" );
+			Register( DbType.Image, 16777215, "MEDIUMBLOB" );
+			Register( DbType.Image, 65535, "BLOB" );
+			Register( DbType.Text, "LONGTEXT" );
+			Register( DbType.Text, 16777215, "MEDIUMTEXT" );
+			Register( DbType.Text, 65535, "TEXT" );
 			
 			/* TODO:
 			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");

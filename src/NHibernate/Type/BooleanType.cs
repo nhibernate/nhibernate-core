@@ -33,8 +33,8 @@ namespace NHibernate.Type {
 			( (IDataParameter)cmd.Parameters[index] ).Value = (bool) value;
 		}
 
-		public override Types SqlType {
-			get { return Types.Bit; }
+		public override DbType SqlType {
+			get { return DbType.Boolean; }
 		}
 	
 		public override string Name {

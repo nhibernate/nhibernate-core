@@ -14,7 +14,7 @@ namespace NHibernate.Type {
 	public abstract class PersistentCollectionType : AbstractType, IAssociationType	{
 		
 		private readonly string role;
-		private static readonly Types[] NoSqlTypes = {};
+		private static readonly DbType[] NoSqlTypes = {};
 		
 		public PersistentCollectionType(string role) {
 			this.role = role;
@@ -62,7 +62,7 @@ namespace NHibernate.Type {
 		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session) {
 		}
 	
-		public override Types[] SqlTypes(IMapping session) {
+		public override DbType[] SqlTypes(IMapping session) {
 			return NoSqlTypes;
 		}
 	

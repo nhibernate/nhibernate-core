@@ -37,7 +37,7 @@ namespace NHibernate.Dialect {
 		/// </summary>
 		/// <param name="code">The typecode</param>
 		/// <returns>The database type name</returns>
-		public string GetTypeName(SqlDbType code) {
+		public string GetTypeName(DbType code) {
 			string result = typeNames.Get(code);
 			if (result == null)
 				throw new HibernateException("No default type mapping for " + code);
@@ -50,7 +50,7 @@ namespace NHibernate.Dialect {
 		/// <param name="code">The typecode</param>
 		/// <param name="length">the length of the column</param>
 		/// <returns>the database type name</returns>
-		public string GetTypeName(SqlDbType code, int length) {
+		public string GetTypeName(DbType code, int length) {
 			string result = typeNames.Get(code, length);
 			if (result == null)
 				throw new HibernateException("No type mapping for " + code + " of length " + length);
@@ -65,7 +65,7 @@ namespace NHibernate.Dialect {
 		/// <param name="code">The typecode</param>
 		/// <param name="capacity">Maximum length of database type</param>
 		/// <param name="name">The database type name</param>
-		protected void Register(SqlDbType code, int capacity, string name) {
+		protected void Register(DbType code, int capacity, string name) {
 			typeNames.Put(code, capacity, name);
 		}
 
@@ -75,7 +75,7 @@ namespace NHibernate.Dialect {
 		/// </summary>
 		/// <param name="code">The typecode</param>
 		/// <param name="name">The database type name</param>
-		protected void Register(SqlDbType code, string name) {
+		protected void Register(DbType code, string name) {
 			typeNames.Put(code, name);
 		}
 

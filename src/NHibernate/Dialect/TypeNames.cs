@@ -56,7 +56,7 @@ namespace NHibernate.Dialect {
 		/// </summary>
 		/// <param name="typecode">the type key</param>
 		/// <returns>the default type name associated with the specified key</returns>
-		public string Get(SqlDbType typecode) {
+		public string Get(DbType typecode) {
 			return (string) defaults[typecode];
 		}
 
@@ -67,7 +67,7 @@ namespace NHibernate.Dialect {
 		/// <param name="size">the (maximum) type size/length</param>
 		/// <returns>The associated name with smallest capacity >= size if available and the
 		/// default type name otherwise</returns>
-		public string Get(SqlDbType typecode, int size) {
+		public string Get(DbType typecode, int size) {
 			IDictionary map = weighted[typecode] as IDictionary;
 			if (map != null && map.Count > 0) {
 				foreach(int entrySize in map.Keys) {
@@ -89,14 +89,14 @@ namespace NHibernate.Dialect {
 		/// <param name="typecode">the type key</param>
 		/// <param name="size">the (maximum) type size/length</param>
 		/// <param name="value">The associated name</param>
-		public void Put(SqlDbType typecode, int capacity, string value) {
-			SortedList map = weighted[ typecode ] as SortedList;
+		public void Put(DbType typecode, int capacity, string value) {
+			SequencedHashMap map = weighted[ typecode ] as SequencedHashMap;
 			if (map==null)
-				weighted[typecode] = map = new SortedList();
+				weighted[typecode] = map = new SequencedHashMap();
 			map[capacity] = value;
 		}
 
-		public void Put(SqlDbType typecode, string value) {
+		public void Put(DbType typecode, string value) {
 			defaults[typecode] = value;
 		}
 

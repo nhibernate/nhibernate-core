@@ -16,7 +16,7 @@ namespace NHibernate.Type {
             return session.GetIdentifierType( PersistentClass ).GetColumnSpan(session);
 		}
 
-		public override Types[] SqlTypes(IMapping session) {
+		public override DbType[] SqlTypes(IMapping session) {
             return session.GetIdentifierType( PersistentClass ).SqlTypes(session);
 		}
 	

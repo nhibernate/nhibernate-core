@@ -9,18 +9,16 @@ namespace NHibernate.Dialect {
 	public class GenericDialect : Dialect {
 
 		public GenericDialect() : base() {
-			Register( SqlDbType.Bit, "BIT" );
-			Register( SqlDbType.BigInt, "BIGINT" );
-			Register( SqlDbType.SmallInt, "SMALLINT" );
-			Register( SqlDbType.TinyInt, "TINYINT" );
-			Register( SqlDbType.Int, "INTEGER" );
-			Register( SqlDbType.Char, "CHAR(1)" );
-			Register( SqlDbType.VarChar, "VARCHAR($1)" );
-			Register( SqlDbType.Float, "FLOAT" );
-			Register( SqlDbType.DateTime, "DATE" );
-			Register( SqlDbType.Timestamp, "TIMESTAMP" );
-			Register( SqlDbType.VarBinary, "VARBINARY($1)" );
-			Register( SqlDbType.Decimal, "DECIMAL" );
+			Register( DbType.Boolean, "BIT" );
+			Register( DbType.Int16, "SMALLINT" );
+			Register( DbType.Int32, "INTEGER" );
+			Register( DbType.Int64, "BIGINT" );
+			Register( DbType.AnsiString, "VARCHAR($1)" );
+			Register( DbType.Single, "FLOAT" );
+			Register( DbType.DateTime, "DATE" );
+			Register( DbType.Time, "TIMESTAMP" );
+			Register( DbType.Binary, "VARBINARY($1)" );
+			Register( DbType.Decimal, "DECIMAL" );
 		}
 
 		public override string AddColumnString {

@@ -30,21 +30,21 @@ namespace NHibernate.Dialect {
 			Types.CLOB, "TEXT" );
 			*/			
 
-			Register( SqlDbType.Bit, "TINYINT" ); //Sybase BIT type does not support null values
-			Register( SqlDbType.BigInt, "NUMERIC(19,0)" );
-			Register( SqlDbType.SmallInt, "SMALLINT" );
-			Register( SqlDbType.TinyInt, "TINYINT" );
-			Register( SqlDbType.Int, "INT" );
-			Register( SqlDbType.Char, "CHAR(1)" );
-			Register( SqlDbType.VarChar, "VARCHAR($l)" );
-			Register( SqlDbType.Float, "FLOAT" );
-			Register( SqlDbType.Real, "DOUBLE PRECISION" );
-			Register( SqlDbType.DateTime, "DATETIME" );
-			Register( SqlDbType.Timestamp, "DATETIME" );
-			Register( SqlDbType.VarBinary, "VARBINARY($l)" );
-			Register( SqlDbType.Decimal, "NUMERIC(19,$l)" );
-			Register( SqlDbType.Image, "IMAGE" );
-			Register( SqlDbType.Text, "TEXT" );
+			Register( DbType.Bit, "TINYINT" ); //Sybase BIT type does not support null values
+			Register( DbType.BigInt, "NUMERIC(19,0)" );
+			Register( DbType.SmallInt, "SMALLINT" );
+			Register( DbType.TinyInt, "TINYINT" );
+			Register( DbType.Int, "INT" );
+			Register( DbType.Char, "CHAR(1)" );
+			Register( DbType.VarChar, "VARCHAR($l)" );
+			Register( DbType.Float, "FLOAT" );
+			Register( DbType.Real, "DOUBLE PRECISION" );
+			Register( DbType.DateTime, "DATETIME" );
+			Register( DbType.Timestamp, "DATETIME" );
+			Register( DbType.VarBinary, "VARBINARY($l)" );
+			Register( DbType.Decimal, "NUMERIC(19,$l)" );
+			Register( DbType.Image, "IMAGE" );
+			Register( DbType.Text, "TEXT" );
 		
 			/*
 			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");

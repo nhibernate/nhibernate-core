@@ -32,8 +32,8 @@ namespace NHibernate.Type {
 			( (IDataParameter) cmd.Parameters[index] ).Value = (char) value;
 		}
 	
-		public override Types SqlType {
-			get { return Types.Char; }
+		public override DbType SqlType {
+			get { return DbType.SByte; }
 		}
 
 		public override string Name {

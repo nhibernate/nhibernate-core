@@ -12,14 +12,14 @@ namespace NHibernate.Type {
 	/// </summary>
 	public class OneToOneType : EntityType, IAssociationType {
 
-		private static readonly Types[] NoSqlTypes = new Types[0];
+		private static readonly DbType[] NoSqlTypes = new DbType[0];
 		private readonly ForeignKeyType foreignKeyType;
 	
 		public override int GetColumnSpan(IMapping session) {
 			return 0;
 		}
 
-		public override Types[] SqlTypes(IMapping session) {
+		public override DbType[] SqlTypes(IMapping session) {
 			return NoSqlTypes;
 		}
 	

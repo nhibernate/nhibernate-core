@@ -32,24 +32,24 @@ namespace NHibernate.Dialect {
 			Types.NUMERIC, "NUMERIC" );
 			*/
 	
-			Register( SqlDbType.BigInt, "BIGINT" );
-			Register( SqlDbType.Binary, "BINARY" );
-			Register( SqlDbType.Bit, "BIT" );
-			Register( SqlDbType.Char, "CHAR(1)" );
-			Register( SqlDbType.DateTime, "DATE" ); //???
-			Register( SqlDbType.Decimal, "DECIMAL" );
-			Register( SqlDbType.Real, "DOUBLE" );
-			Register( SqlDbType.Float, "FLOAT" );
-			Register( SqlDbType.Int, "INTEGER" );
-			// Register( SqlDbType.LONGVARBINARY, "LONGVARBINARY" );  ???
-			Register( SqlDbType.NVarChar, "LONGVARCHAR" );
-			Register( SqlDbType.SmallInt, "SMALLINT" );
-			Register( SqlDbType.TinyInt, "TINYINT" );
-			// Register( SqlDbType.TIME, "TIME" ); ???
-			Register( SqlDbType.Timestamp, "TIMESTAMP" );
-			Register( SqlDbType.VarChar, "VARCHAR($l)" );
-			Register( SqlDbType.VarBinary, "VARBINARY($l)" );
-			Register( SqlDbType.Decimal, "NUMERIC" );
+			Register( DbType.BigInt, "BIGINT" );
+			Register( DbType.Binary, "BINARY" );
+			Register( DbType.Bit, "BIT" );
+			Register( DbType.Char, "CHAR(1)" );
+			Register( DbType.DateTime, "DATE" ); //???
+			Register( DbType.Decimal, "DECIMAL" );
+			Register( DbType.Real, "DOUBLE" );
+			Register( DbType.Float, "FLOAT" );
+			Register( DbType.Int, "INTEGER" );
+			// Register( DbType.LONGVARBINARY, "LONGVARBINARY" );  ???
+			Register( DbType.NVarChar, "LONGVARCHAR" );
+			Register( DbType.SmallInt, "SMALLINT" );
+			Register( DbType.TinyInt, "TINYINT" );
+			// Register( DbType.TIME, "TIME" ); ???
+			Register( DbType.Timestamp, "TIMESTAMP" );
+			Register( DbType.VarChar, "VARCHAR($l)" );
+			Register( DbType.VarBinary, "VARBINARY($l)" );
+			Register( DbType.Decimal, "NUMERIC" );
 		
 			/*
 			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "false");

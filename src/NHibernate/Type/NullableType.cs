@@ -19,7 +19,7 @@ namespace NHibernate.Type
 
 		public abstract object Get(IDataReader rs, string name);
 
-		public abstract Types SqlType { get; }
+		public abstract DbType SqlType { get; }
 
 		public abstract string ToXML(object val);
 
@@ -77,8 +77,8 @@ namespace NHibernate.Type
 			return 1;
 		}
 	
-		public override sealed Types[] SqlTypes(IMapping session) {
-			return new Types[] { SqlType };
+		public override sealed DbType[] SqlTypes(IMapping session) {
+			return new DbType[] { SqlType };
 		}
 	
 		public abstract object DeepCopyNotNull(object val);

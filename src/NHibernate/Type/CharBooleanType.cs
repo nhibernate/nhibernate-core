@@ -27,8 +27,8 @@ namespace NHibernate.Type {
 			( (IDataParameter) cmd.Parameters[index] ).Value = ( ( (bool)value ) ? TrueString : FalseString );
 		}
 
-		public override Types SqlType {
-			get { return Types.Char; }
+		public override DbType SqlType {
+			get { return DbType.AnsiStringFixedLength; }
 		}
 		
 		public override string ObjectToSQLString(object value) {

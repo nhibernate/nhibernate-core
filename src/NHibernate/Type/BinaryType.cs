@@ -61,8 +61,8 @@ namespace NHibernate.Type {
 		}
 
 
-		public override Types SqlType {
-			get { return Types.VarBinary; }
+		public override DbType SqlType {
+			get { return DbType.Binary; }
 		}
 	
 		public override System.Type ReturnedClass {
