@@ -229,7 +229,7 @@ namespace NHibernate.Loader
 				} 
 				finally 
 				{
-					ClosePreparedStatement(st, selection, session);
+					ClosePreparedStatement(st, rs, session);
 				}
 			}
 
@@ -596,7 +596,7 @@ namespace NHibernate.Loader
 				);
 			if(useLimit) sqlString = dialect.GetLimitString(sqlString);
 
-			IDbCommand command = session.Preparer.PrepareCommand(sqlString);
+			IDbCommand command = session.Batcher.PrepareQueryCommand( sqlString, scrollable ); 
 
 			try 
 			{
@@ -631,9 +631,10 @@ namespace NHibernate.Loader
 				}
 
 			}
+			//TODO: fix up the Exception handling here...
 			catch(Exception sqle) 
 			{
-				ClosePreparedStatement(command, selection, session);
+				ClosePreparedStatement(command, null, session);
 				throw sqle;
 			}
 
@@ -674,13 +675,14 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		protected IDataReader GetResultSet(IDbCommand st, RowSelection selection, ISessionImplementor session) 
 		{
+			IDataReader rs = null;
 			try 
 			{
 				log.Info(st.CommandText);
 				//TODO: H2.0.3 - uses session.Batcher.GetResultSet(st) instead
 				// of directly executing the reader - the Batcher can be smarter 
 				// about when to wrap the IDataReader in an NDataReader
-				IDataReader rs = st.ExecuteReader();
+				rs = st.ExecuteReader();
 				
 				//TODO: make this a much smarter implementation that looks at the Type
 				// that is being loaded and determines wether or not to wrap this IDataReader
@@ -703,22 +705,16 @@ namespace NHibernate.Loader
 			} 
 			catch (Exception sqle) 
 			{
-				ClosePreparedStatement(st, selection, session);
+				ClosePreparedStatement(st, rs, session);
 				throw sqle;
 			}
 		}
 
 		
 		//TODO: H2.0.3 - synch with CloseQueryStatement in the Batcher also
-		protected void ClosePreparedStatement(IDbCommand st, RowSelection selection, ISessionImplementor session) {
-			try {
-				if (selection!=null) {
-					//TODO: figure out why this doesn't work for all drivers
-					//st.CommandTimeout = 0;
-				}
-			} finally {
-				session.Batcher.CloseQueryStatement(st);
-			}
+		protected void ClosePreparedStatement(IDbCommand st, IDataReader reader, ISessionImplementor session) 
+		{
+			session.Batcher.CloseQueryCommand(st, reader);
 		}
 
 		/// <summary>
