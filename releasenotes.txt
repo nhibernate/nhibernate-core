@@ -1,7 +1,13 @@
 Build 0.5.0.0
 ======================== 
 - Added Iesi.Collections Library that contains an ISet.  Code was taken from http://www.codeproject.com/csharp/sets.asp.
-
+- Fixed hbm2net problem with spaces in arguments. (Kevin Williams)
+- Added a NHibernateContrib project that contains Nullable Types for .net 1.1 designed for WinForm Databinding. (Donald Mull)
+- Added DB2Driver and DB2Dialect to core of NHibernate. (Martijn Boland)
+- Fixed IQuery.SetParameter() when the value is an Enum
+- Updated to latest MySql Data Provider and changed classes to MySqlDataDriver.  Removed binaries from CVS since they are GPL now.
+- Isolated test and classes that use DbType.Time into their own fixtures.  Data Drivers don't implement this consistently.
+- Fixed problem where HQL was not parsing Fully Qualified Enums correctly. (Peter Smulovics)
 
 Alpha Build 0.4.0.0
 ======================== 
