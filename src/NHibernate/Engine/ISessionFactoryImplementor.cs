@@ -73,6 +73,12 @@ namespace NHibernate.Engine
 		Dialect.Dialect Dialect { get; }
 
 		/// <summary>
+		/// Gets a boolean indicating if the sql statement should be prepared.  The value
+		/// is read from <c>hibernate.prepare_sql</c>.
+		/// </summary>
+		bool PrepareSql { get; }
+
+		/// <summary>
 		/// Get the return types of a query
 		/// </summary>
 		/// <param name="queryString"></param>

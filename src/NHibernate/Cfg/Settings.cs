@@ -24,7 +24,7 @@ namespace NHibernate.Cfg
 		private string _sessionFactoryName;
 		private ICacheProvider _cacheProvider;
 		private string _defaultSchemaName;
-
+		private bool _prepareSql;
 		
 		public bool IsShowSqlEnabled
 		{
@@ -86,5 +86,10 @@ namespace NHibernate.Cfg
 			set { _cacheProvider = value; }
 		}
 
+		public bool PrepareSql
+		{
+			get { return _prepareSql; }
+			set { _prepareSql = value; }
+		}
 	}
 }

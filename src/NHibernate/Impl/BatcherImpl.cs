@@ -32,10 +32,15 @@ namespace NHibernate.Impl
 		private ISet commandsToClose = new HashedSet();
 		private ISet readersToClose = new HashedSet();
 
+		// key = SqlString
+		// value = IDbCommand
+		private IDictionary commands;
+
 		public BatcherImpl(ISessionImplementor session) 
 		{
 			this.session = session;
 			this.factory = session.Factory;
+			commands = new Hashtable();
 		}
 
 		/// <summary>
@@ -48,11 +53,26 @@ namespace NHibernate.Impl
 		
 		public IDbCommand Generate(SqlString sqlString) 
 		{
-			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, sqlString);
+			IDbCommand cmd = commands[ sqlString ] as IDbCommand;
+
+			if( cmd!=null )
+			{
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "Using prebuilt IDbCommand object for the SqlString: " + sqlString.ToString() );
+				}
+
+				return cmd;
+			}
+
+			// need to build the IDbCommand from the sqlString bec
+			cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, sqlString);
 			if(log.IsDebugEnabled) 
 			{
 				log.Debug( "Building an IDbCommand object for the SqlString: " + sqlString.ToString() );
 			}
+
+			commands[ sqlString ] = cmd;
 			return cmd;
 			
 		}
@@ -77,10 +97,11 @@ namespace NHibernate.Impl
 
 				if( command.Connection!=null ) 
 				{
+					// make sure the commands connection is the same as the Sessions connection
+					// these can be different when the session is disconnected and then reconnected
 					if( command.Connection!=session.Connection ) 
 					{
-						throw new AssertionFailure("The IDbCommand for " + command.CommandText + " has a different connection " +
-												"than the Connection the Session is providing.");
+						command.Connection = session.Connection;
 					}
 				}
 				else 
@@ -93,8 +114,7 @@ namespace NHibernate.Impl
 					session.Transaction.Enlist( command );
 				}
 
-			
-				if( factory.ConnectionProvider.Driver.SupportsPreparingCommands ) 
+				if( factory.PrepareSql && factory.ConnectionProvider.Driver.SupportsPreparingCommands ) 
 				{
 					command.Prepare();
 				}
@@ -139,7 +159,7 @@ namespace NHibernate.Impl
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			IDbCommand command = Generate( sql ); // session.Preparer.BuildCommand(sql);
+			IDbCommand command = Generate( sql ); 
 			
 			commandsToClose.Add(command);
 			

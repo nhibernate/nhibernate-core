@@ -311,6 +311,11 @@ namespace NHibernate.Impl
 			get { return settings.IsolationLevel; }
 		}
 
+		public bool PrepareSql
+		{
+			get { return settings.PrepareSql; }
+		}
+
 		public QueryTranslator GetQuery(string query) 
 		{
 			return GetQuery(query, false);

@@ -46,6 +46,7 @@ namespace NHibernate.Cfg
 		public const string QuerySubstitutions = "hibernate.query.substitutions";
 		public const string QueryImports = "hibernate.query.imports";
 		public const string CacheProvider = "hibernate.cache.provider_class";
+		public const string PrepareSql = "hibernate.prepare_sql";
 
 		static Environment() 
 		{

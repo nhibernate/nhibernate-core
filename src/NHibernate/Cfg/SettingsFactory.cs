@@ -105,6 +105,8 @@ namespace NHibernate.Cfg
 				throw new HibernateException( "could not instantiate CacheProvider: " + cacheClassName, e );
 			}
 			
+			bool prepareSql = PropertiesHelper.GetBoolean( Environment.PrepareSql, properties, true );
+
 			string sessionFactoryName = (string) properties[ Cfg.Environment.SessionFactoryName ];
 
 			settings.DefaultSchemaName = defaultSchema;
@@ -117,6 +119,7 @@ namespace NHibernate.Cfg
 			settings.CacheProvider = cacheProvider;
 			settings.SessionFactoryName = sessionFactoryName;
 			settings.IsOuterJoinFetchEnabled = useOuterJoin;
+			settings.PrepareSql = prepareSql;
 
 			return settings;
 
