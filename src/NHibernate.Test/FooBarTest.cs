@@ -33,6 +33,12 @@ namespace NHibernate.Test
 									  }, true);
 		}
 
+		[TearDown]
+		public void TearDown() 
+		{
+			DropSchema();
+		}
+
 		[Test]
 		[Ignore("don't know how to get aliased name for baz")]
 		public void FetchInitializedCollection()
