@@ -1,11 +1,13 @@
 using System;
 using NHibernate.Type;
 
-namespace NHibernate.Metadata {
+namespace NHibernate.Metadata 
+{
 	/// <summary>
 	/// Exposes entity class metadata to the application
 	/// </summary>
-	public interface IClassMetadata {
+	public interface IClassMetadata 
+	{
 		
 		/// <summary>
 		/// The persistent class
@@ -93,6 +95,15 @@ namespace NHibernate.Metadata {
 		/// Are instances of this class versioned by a timestamp or version number column?
 		/// </summary>
 		bool IsVersioned { get; }
+
+		
+		/// <summary>
+		/// Get the version number (or timestamp) from the object's version property 
+		/// (or return null if not versioned)
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		object GetVersion(object obj);
 
 	}
 }
