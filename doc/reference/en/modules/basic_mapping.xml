@@ -616,11 +616,222 @@
             </sect3>
 		</sect2>
 		
-		<!--
-			TODO: resume here
 		<sect2 id="mapping-declaration-compositeid">
-		-->
-		
+            <title>composite-id</title>
+
+            <programlisting>&lt;composite-id
+        name="propertyName"<co id="composite-id1-co" linkends="composite-id1" />
+        class="ClassName"<co id="composite-id2-co" linkends="composite-id2" />
+        unsaved-value="any|none"<co id="composite-id3-co" linkends="composite-id3" />
+        access="field|property|nosetter|ClassName"&gt;
+
+        &lt;key-property name="propertyName" type="typename" column="column_name"/&gt;
+        &lt;key-many-to-one name="propertyName class="ClassName" column="column_name"/&gt;
+        ......
+&lt;/composite-id&gt;</programlisting>
+
+			<para>
+                For a table with a composite key, you may map multiple properties of the class
+                as identifier properties. The <literal>&lt;composite-id&gt;</literal> element
+                accepts <literal>&lt;key-property&gt;</literal> property mappings and
+                <literal>&lt;key-many-to-one&gt;</literal> mappings as child elements.
+            </para>
+            
+            <programlisting><![CDATA[<composite-id>
+        <key-property name="medicareNumber"/>
+        <key-property name="dependent"/>
+</composite-id>]]></programlisting>
+
+            <para>
+                Your persistent class <emphasis>must</emphasis> override <literal>Equals()</literal>
+                and <literal>GetHashCode()</literal> to implement composite identifier equality. It must
+                also be <literal>Serializable</literal>.
+            </para>
+
+            <para>
+                Unfortunately, this approach to composite identifiers means that a persistent object 
+                is its own identifier. There is no convenient "handle" other than the object itself. 
+                You must instantiate an instance of the persistent class itself and populate its 
+                identifier properties before you can <literal>Load()</literal> the persistent state
+                associated with a composite key. We will describe a much more
+                convenient approach where the composite identifier is implemented as a seperate class
+                in TODO:LINKTOCOMPENENTS<!--<xref linkend="components-compositeid"/>-->. The attributes described below apply only
+                to this alternative approach:
+            </para>
+			
+			<calloutlist>
+				<callout arearefs="composite-id1-co" id="composite-id1">
+					<para>
+						<literal>name</literal> (optional): A property of component type that holds the
+                        composite identifier (see next section).
+					</para>
+				</callout>  
+				<callout arearefs="composite-id2-co" id="composite-id2">
+					<para>
+						<literal>class</literal> (optional - defaults to the property type determined by 
+                        reflection): The component class used as a composite identifier (see next section).
+					</para>
+				</callout>  
+				<callout arearefs="composite-id3-co" id="composite-id3">
+					<para>
+						<literal>unsaved-value</literal> (optional - defaults to <literal>none</literal>): 
+                        Indicates that transient instances should be considered newly instantiated, if set 
+                        to <literal>any</literal>.
+					</para>
+				</callout>  
+			</calloutlist> 
+            
+        </sect2>
+        
+        <sect2 id="mapping-declaration-discriminator">
+            <title>discriminator</title>
+
+            <para>
+                The <literal>&lt;discriminator&gt;</literal> element is required for polymorphic persistence 
+                using the table-per-class-hierarchy mapping strategy and declares a discriminator column of the 
+                table. The discriminator column contains marker values that tell the persistence layer what 
+                subclass to instantiate for a particular row. A restricted set of types may be used: 
+                <literal>String</literal>, <literal>Char</literal>, <literal>Int32</literal>, 
+                <literal>Byte</literal>, <literal>Int16</literal>, <literal>Boolean</literal>, 
+                <literal>YesNo</literal>, <literal>TrueFalse</literal>.
+            </para>
+            
+            <programlistingco>
+                <programlisting>&lt;discriminator
+        column="discriminator_column"<co id="discriminator1-co" linkends="discriminator1" />
+        type="discriminator_type"<co id="discriminator2-co" linkends="discriminator2" />
+        force="true|false"<co id="discriminator3-co" linkends="discriminator3" />
+/&gt;</programlisting>
+                <calloutlist>
+                    <callout arearefs="discriminator1-co" id="discriminator1">
+                        <para>
+                            <literal>column</literal> (optional - defaults to <literal>class</literal>) the
+                            name of the discriminator column.
+                        </para>
+                    </callout>
+                    <callout arearefs="discriminator2-co" id="discriminator2">
+                        <para>
+                            <literal>type</literal> (optional - defaults to <literal>String</literal>) a
+                            name that indicates the Hibernate type
+                        </para>
+                    </callout>          
+                    <callout arearefs="discriminator3-co" id="discriminator3">
+                        <para>
+                            <literal>force</literal> (optional - defaults to <literal>false</literal>) 
+                            "force" NHibernate to specify allowed discriminator values even when retrieving 
+                            all instances of the root class.
+                        </para>
+                    </callout>          
+                </calloutlist>
+            </programlistingco>
+
+            <para>
+                Actual values of the discriminator column are specified by the
+                <literal>discriminator-value</literal> attribute of the <literal>&lt;class&gt;</literal> and
+                <literal>&lt;subclass&gt;</literal> elements.
+            </para>
+            
+            <para>
+                The <literal>force</literal> attribute is (only) useful if the table contains rows with
+                "extra" discriminator values that are not mapped to a persistent class. This will not
+                usually be the case.
+            </para>
+        </sect2>
+
+        <sect2 id="mapping-declaration-version">
+            <title>version (optional)</title>
+            
+            <para>
+                The <literal>&lt;version&gt;</literal> element is optional and indicates that
+                the table contains versioned data. This is particularly useful if you plan to
+                use <emphasis>long transactions</emphasis> (see below).
+            </para>
+            
+            <programlistingco>
+                <programlisting>&lt;version
+        column="version_column"<co id="version1-co" linkends="version1" />
+        name="propertyName"<co id="version2-co" linkends="version2" />
+        type="typename"<co id="version3-co" linkends="version3" />
+        access="field|property|nosetter|ClassName"<co id="version4-co" linkends="version4" />
+/&gt;</programlisting>
+                <calloutlist>
+                    <callout arearefs="version1-co" id="version1">
+                        <para>
+                            <literal>column</literal> (optional - defaults to the property name): The name
+                            of the column holding the version number.
+                        </para>
+                    </callout>          
+                    <callout arearefs="version2-co" id="version2">
+                        <para>
+                            <literal>name</literal>: The name of a property  of the persistent class.
+                        </para>
+                    </callout>
+                    <callout arearefs="version3-co" id="version3">
+                        <para>
+                            <literal>type</literal> (optional - defaults to <literal>Int32</literal>): 
+                            The type of the version number.
+                        </para>
+                    </callout>          
+                   <callout arearefs="version4-co" id="version4">
+                        <para>
+                            <literal>access</literal> (optional - defaults to <literal>property</literal>): The
+                            strategy NHibernate should use for accessing the property value.
+                        </para>
+                    </callout>
+                </calloutlist>
+            </programlistingco>
+            
+            <para>
+                Version numbers may be of type <literal>Int64</literal>, <literal>Int32</literal>,
+                <literal>Int16</literal>, <literal>Ticks</literal>, <literal>Timestamp</literal>, 
+                or <literal>TimeSpan</literal>.
+            </para>
+
+        </sect2>
+        	
+		<sect2 id="mapping-declaration-timestamp">
+            <title>timestamp (optional)</title>
+
+            <para>
+                The optional <literal>&lt;timestamp&gt;</literal> element indicates that the table contains 
+                timestamped data. This is intended as an alternative to versioning. Timestamps are by nature
+                a less safe implementation of optimistic locking. However, sometimes the application might
+                use the timestamps in other ways.
+            </para>
+            
+            <programlistingco>      
+                <programlisting>&lt;timestamp
+        column="timestamp_column"<co id="timestamp1-co" linkends="timestamp1" />
+        name="propertyName"<co id="timestamp2-co" linkends="timestamp2" />
+        access="field|property|nosetter|ClassName"<co id="timestamp3-co" linkends="timestamp3" />
+/&gt;</programlisting>
+                <calloutlist>
+                    <callout arearefs="timestamp1-co" id="timestamp1">
+                        <para>
+                            <literal>column</literal> (optional - defaults to the property name): The name
+                            of a column holding the timestamp.
+                        </para>
+                    </callout>                   
+                    <callout arearefs="timestamp2-co" id="timestamp2">
+                        <para>
+                            <literal>name</literal>: The name of a property of .NET type <literal>DateTime</literal>.
+                        </para>
+                    </callout>
+                   <callout arearefs="timestamp3-co" id="timestamp3">
+                        <para>
+                            <literal>access</literal> (optional - defaults to <literal>property</literal>): The
+                            strategy NHibernate should use for accessing the property value.
+                        </para>
+                    </callout>
+                </calloutlist>
+            </programlistingco>
+            
+            <para>
+                Note that <literal>&lt;timestamp&gt;</literal> is equivalent to 
+                <literal>&lt;version type="timestamp"&gt;</literal>.
+            </para>
+        </sect2>
+
 		<sect2 id="mapping-declaration-property">
 			<title>property</title>
 
@@ -851,6 +1062,10 @@
 				</table>
 			</para>
 		</sect2>
+		<!--
+		TODO: resume here
+		<sect2 id="mapping-declaration-manytoone">
+		-->
 	</sect1>
 	<sect1 id="mapping-types">
 		<title>NHibernate Types</title>
