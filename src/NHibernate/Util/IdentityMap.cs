@@ -53,7 +53,7 @@ namespace NHibernate.Util
 		/// <returns>A new IdentityMap based on ListDictionary.</returns>
 		public static IDictionary InstantiateSequenced() 
 		{
-			return new IdentityMap(new ListDictionary());
+			return new IdentityMap(new SequencedHashMap());
 		}
 		
 		/// <summary>

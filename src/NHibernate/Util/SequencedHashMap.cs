@@ -60,7 +60,8 @@
 using System;
 using System.Collections;
 
-namespace NHibernate.Util {
+namespace NHibernate.Util 
+{
 	/// <summary>
 	/// A map of objects whose mapping entries are sequenced based on the order in which they were
 	/// added. This data structure has fast <c>O(1)</c> search time, deletion time, and insertion time
@@ -68,90 +69,119 @@ namespace NHibernate.Util {
 	/// <remarks>
 	/// This class is not thread safe.
 	/// </remarks>
-	public class SequencedHashMap : IDictionary {
+	public class SequencedHashMap : IDictionary 
+	{
 		
-		private class Entry  {
-			private object key;
-			private object value;
+		private class Entry  
+		{
+			private object _key;
+			private object _value;
 
-			public Entry next = null;
-			public Entry prev = null;
+			private Entry _next = null;
+			private Entry _prev = null;
 
-			public Entry(object key, object value) {
-				this.key = key;
-				this.value = value;
+			public Entry(object key, object value) 
+			{
+				_key = key;
+				_value = value;
+			}
+			
+			public object Key 
+			{
+				get { return _key; }
+			}
+			
+			public object Value 
+			{
+				get { return _value; }
+				set { _value = value; }
 			}
 
-			public object Key {
-				get { return key; }
-			}
-			public object Value {
-				get { return value; }
-				set { this.value = value; }
+			public Entry Next 
+			{
+				get { return _next; }
+				set { _next = value; }
 			}
 
-			public override int GetHashCode() {
-				return ((Key == null ? 0 : Key.GetHashCode()) ^ (Value == null ? 0 : Value.GetHashCode()) );
+			public Entry Prev 
+			{
+				get { return _prev; }
+				set { _prev = value; }
 			}
 
-			public override bool Equals(object obj) {
+			#region System.Object Members
+
+			public override int GetHashCode() 
+			{
+				return ((_key == null ? 0 : _key.GetHashCode()) ^ (_value == null ? 0 : _value.GetHashCode()) );
+			}
+
+			public override bool Equals(object obj) 
+			{
 				Entry other = obj as Entry;
 				if (other == null) return false;
 				if (other == this) return true;
 
-				return ( (Key == null ? other.Key == null : Key.Equals(other.Key)) &&
-					(Value == null ? other.Value == null : Value.Equals(other.Value)) );
+				return ( (_key == null ? other.Key == null : _key.Equals(other.Key)) &&
+					(_value == null ? other.Value == null : _value.Equals(other.Value)) );
 			}
 
-			public override string ToString() {
-				return "[" + Key + "=" + Value + "]";
+			public override string ToString() 
+			{
+				return "[" + _key + "=" + _value + "]";
 			}
+
+			#endregion
 
 		}
 
+		
 		/// <summary>
 		/// Construct an empty sentinel used to hold the head (sentinel.next) and the tail (sentinal.prev)
 		/// of the list. The sentinal has a <c>null</c> key and value
 		/// </summary>
 		/// <returns></returns>
-		private static Entry CreateSentinel() {
+		private static Entry CreateSentinel() 
+		{
 			Entry s = new Entry(null, null);
-			s.prev = s;
-			s.next = s;
+			s.Prev = s;
+			s.Next = s;
 			return s;
 		}
 
 		/// <summary>
 		/// Sentinel used to hold the head and tail of the list of entries
 		/// </summary>
-		private Entry sentinel;
+		private Entry _sentinel;
 
 		/// <summary>
 		/// Map of keys to entries
 		/// </summary>
-		private Hashtable entries;
+		private Hashtable _entries;
 
 		/// <summary>
 		/// Holds the number of modifications that have occurred to the map, excluding modifications
 		/// made through a collection view's iterator.
 		/// </summary>
-		private long modCount = 0;
+		private long _modCount = 0;
 
 		/// <summary>
 		/// Construct a new sequenced hash map with default initial size and load factor
 		/// </summary>
-		public SequencedHashMap() {
-			sentinel = CreateSentinel();
-			entries = new Hashtable();
+		public SequencedHashMap() 
+		{
+			_sentinel = CreateSentinel();
+			_entries = new Hashtable();
 		}
 
 		/// <summary>
 		/// Construct a new sequenced hash map with the specified initial size and default load factor
 		/// </summary>
 		/// <param name="initialSize">the initial size for the hash table</param>
-		public SequencedHashMap(int initialSize) {
-			sentinel = CreateSentinel();
-			entries = new Hashtable(initialSize);
+		public SequencedHashMap(int initialSize) 
+		{
+			_sentinel = CreateSentinel();
+			_entries = new Hashtable(initialSize);
 		}
 
 		/// <summary>
@@ -159,9 +189,10 @@ namespace NHibernate.Util {
 		/// </summary>
 		/// <param name="initialSize">the initial size for the hashtable</param>
 		/// <param name="loadFactor">the load factor for the hash table</param>
-		public SequencedHashMap(int initialSize, float loadFactor) {
-			sentinel = CreateSentinel();
-			entries = new Hashtable(initialSize, loadFactor);
+		public SequencedHashMap(int initialSize, float loadFactor) 
+		{
+			_sentinel = CreateSentinel();
+			_entries = new Hashtable(initialSize, loadFactor);
 		}
 
 		
@@ -170,9 +201,10 @@ namespace NHibernate.Util {
 		/// map.
 		/// </summary>
 		/// <param name="entry"></param>
-		private void RemoveEntry(Entry entry) {
-			entry.next.prev = entry.prev;
-			entry.prev.next = entry.next;
+		private void RemoveEntry(Entry entry) 
+		{
+			entry.Next.Prev = entry.Prev;
+			entry.Prev.Next = entry.Next;
 		}
 		
 		/// <summary>
@@ -180,147 +212,217 @@ namespace NHibernate.Util {
 		/// entry to the underlying map.
 		/// </summary>
 		/// <param name="entry"></param>
-		private void InsertEntry(Entry entry) {
-			entry.next = sentinel;
-			entry.prev = sentinel.prev;
-			sentinel.prev.next = entry;
-			sentinel.prev = entry;
+		private void InsertEntry(Entry entry) 
+		{
+			entry.Next = _sentinel;
+			entry.Prev = _sentinel.Prev;
+			_sentinel.Prev.Next = entry;
+			_sentinel.Prev = entry;
 		}
 
-		public void CopyTo(Array array, int i) {
-			//TODO: implement
-		}
+		#region System.Collections.IDictionary Members
 
-		public bool IsSynchronized {
+		public bool IsFixedSize 
+		{
+			get { return false; }
+		}
+		
+		public bool IsReadOnly 
+		{
 			get { return false; }
 		}
 
-		public object SyncRoot {
+		public object this [ object o ] 
+		{
+			get 
+			{
+				Entry entry = (Entry) _entries[o];
+				if (entry == null) return null;
+
+				return entry.Value;
+			}
+			set 
+			{
+				_modCount++;
+
+				Entry e = (Entry)_entries[o];
+				if (e != null) 
+				{
+					RemoveEntry(e);
+					e.Value = value;
+				} 
+				else 
+				{
+					e = new Entry(o, value);
+					_entries[o] = e;
+				}
+
+				InsertEntry(e);
+			}
+		}
+
+		public ICollection Keys 
+		{
+			get { return new KeyCollection(this); }
+		}
+		
+		public ICollection Values 
+		{
+			get { return new ValuesCollection(this); }
+		}
+		
+		public void Add(object key, object value) 
+		{
+			this[key] = value; 
+		}
+
+		public void Clear() 
+		{
+			_modCount++;
+
+			_entries.Clear();
+
+			_sentinel.Next = _sentinel;
+			_sentinel.Prev = _sentinel;
+		}
+
+		public bool Contains(object key) 
+		{
+			return ContainsKey(key);
+		}
+
+		public IDictionaryEnumerator GetEnumerator() 
+		{
+			return new OrderedEnumerator(this, ReturnType.ReturnEntry); 
+		}
+
+		public void Remove(object key) 
+		{
+			RemoveImpl(key);
+		}
+
+		#endregion
+
+		#region System.Collections.ICollection Members
+		
+		public int Count 
+		{
+			get { return _entries.Count; }
+		}
+
+		public bool IsSynchronized 
+		{
+			get { return false; }
+		}
+
+		public object SyncRoot 
+		{
 			get { return this; }
 		}
 
-		public int Count {
-			get { return entries.Count; }
+		public void CopyTo(Array array, int index) 
+		{
+			foreach(DictionaryEntry de in this) 
+			{
+				array.SetValue(de, index++);
+			}
 		}
 
-		public bool IsReadOnly {
-			get { return false; }
+		#endregion
+
+		#region System.Collections.IEnumerable Members
+		
+		IEnumerator IEnumerable.GetEnumerator() 
+		{
+			return new OrderedEnumerator(this, ReturnType.ReturnEntry); 
 		}
 
-		public bool IsFixedSize {
-			get { return false; }
+		
+		#endregion
+		
+
+		private bool IsEmpty 
+		{
+			get { return _sentinel.Next == _sentinel; }
 		}
 
-		public bool IsEmpty {
-			get { return sentinel.next == sentinel; }
+		public bool ContainsKey(object key) 
+		{
+			return _entries.ContainsKey(key);
 		}
 
-		public bool ContainsKey(object key) {
-			return entries.ContainsKey(key);
-		}
-
-		public bool ContainsValue(object value) {
-			if (value == null) {
-				for(Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
+		public bool ContainsValue(object value) 
+		{
+			if (value == null) 
+			{
+				for(Entry pos = _sentinel.Next; pos != _sentinel; pos = pos.Next) 
+				{
 					if (pos.Value == null) return true;
 				}
-			} else {
-				for(Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
+			} 
+			else 
+			{
+				for(Entry pos = _sentinel.Next; pos != _sentinel; pos = pos.Next) 
+				{
 					if (value.Equals(pos.Value)) return true;
 				}
 			}
 			return false;
 		}
 
-		public bool Contains(object key) {
-			return ContainsKey(key); //This is probably wrong....
+		
+		private Entry First 
+		{
+			get { return (IsEmpty) ? null : _sentinel.Next; }
 		}
 
-		IEnumerator IEnumerable.GetEnumerator() {
-			throw new NotImplementedException("this operation is not yet implemented");
+		public object FirstKey 
+		{
+			get { return (First==null) ? null : First.Key; }
 		}
 
-		IDictionaryEnumerator IDictionary.GetEnumerator() {
-			throw new NotImplementedException("this operation is not yet implemented");
+		public object FirstValue 
+		{
+			get { return (First==null) ? null : First.Value; }
 		}
 
-		public void Add(object key, object value) {
-			this[key] = value; 
+		private Entry Last 
+		{
+			get { return (IsEmpty) ? null : _sentinel.Prev; }
 		}
 
-		public object this [ object o ] {
-			get {
-				Entry entry = (Entry) entries[o];
-				if (entry == null) return null;
+		public object LastKey 
+		{
+			get { return (Last==null) ? null : Last.Key; }
+		}
 
-				return entry.Value;
+		public object LastValue 
+		{
+			get { return (Last==null) ? null : Last.Value; }
+		}
+
+		
+		/// <summary>
+		/// Remove the Entry identified by the Key if it exists.
+		/// </summary>
+		/// <param name="key">The Key to remove.</param>
+		private void RemoveImpl(object key) 
+		{
+			Entry e = (Entry) _entries[key];
+			if(e!=null) 
+			{
+				_entries.Remove(key);
+				_modCount++;
+				RemoveEntry(e);
 			}
-			set {
-				modCount++;
-
-				//object oldValue = null;
-
-				Entry e = (Entry)entries[o];
-				if (e != null) {
-					RemoveEntry(e);
-
-					e.Value = value;
-					//oldValue = value;
-				} else {
-					e = new Entry(o, value);
-					entries[o] = e;
-				}
-				InsertEntry(e);
-			}
-		}
-
-		private Entry First {
-			get { return (IsEmpty) ? null : sentinel.next; }
-		}
-
-		public object FirstKey {
-			get { return sentinel.next.Key; }
-		}
-
-		public object FirstValue {
-			get { return sentinel.next.Value; }
-		}
-
-		private Entry Last {
-			get { return (IsEmpty) ? null : sentinel.prev; }
-		}
-
-		public object LastKey {
-			get { return sentinel.prev.Key; }
-		}
-
-		public object LastValue {
-			get { return sentinel.prev.Value; }
-		}
-
-		public void Remove(object key) {
-			Entry e = RemoveImpl(key);
-		}
-
-		private Entry RemoveImpl(object key) {
-			Entry e = (Entry) entries[key];
-			entries.Remove(key);
-			modCount++;
-			RemoveEntry(e);
-			return e;
 
 		}
 
-		public void Clear() {
-			modCount++;
+		
+		#region System.Object Members
 
-			entries.Clear();
-
-			sentinel.next = sentinel;
-			sentinel.prev = sentinel;
-		}
-
-		public override bool Equals(object obj) {
+		public override bool Equals(object obj) 
+		{
 			if (obj == null) return false;
 			if (obj == this) return true;
 
@@ -329,18 +431,22 @@ namespace NHibernate.Util {
 			return Keys.Equals(((IDictionary)obj).Keys);
 		}
 
-		public override int GetHashCode() {
+		public override int GetHashCode() 
+		{
 			return Keys.GetHashCode();
 		}
 
-		public override string ToString() {
+		public override string ToString() 
+		{
 			System.Text.StringBuilder buf = new System.Text.StringBuilder();
 			buf.Append('[');
-			for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
+			for (Entry pos = _sentinel.Next; pos != _sentinel; pos = pos.Next) 
+			{
 				buf.Append(pos.Key);
 				buf.Append('=');
 				buf.Append(pos.Value);
-				if (pos.next != sentinel) {
+				if (pos.Next != _sentinel) 
+				{
 					buf.Append(',');
 				}
 			}
@@ -349,133 +455,214 @@ namespace NHibernate.Util {
 			return buf.ToString();
 		}
 
-		public ICollection Keys {
-			get { return new KeyCollection(this); }
-		}
-		private class KeyCollection : ICollection {
-			private SequencedHashMap parent;
+		#endregion
 
-			public void CopyTo(Array array, int i) {
-				//TODO: implement
+
+		private class KeyCollection : ICollection 
+		{
+			private SequencedHashMap _parent;
+
+			public KeyCollection(SequencedHashMap parent) 
+			{
+				_parent = parent;
 			}
 
-			public object SyncRoot {
-				get { return this; }
+			
+			#region System.Collections.ICollection Members
+
+			public int Count 
+			{
+				get { return _parent.Count; }
 			}
 
-			public bool IsSynchronized {
+			public bool IsSynchronized 
+			{
 				get { return false; }
 			}
 
-			public KeyCollection(SequencedHashMap parent) {
-				this.parent = parent;
-			}
-
-			public IEnumerator GetEnumerator() {
-				return new OrderedEnumerator(parent, KEY);
-			}
-
-			public int Count {
-				get { return parent.Count; }
-			}
-			public bool Contains(object o) {
-				return parent.ContainsKey(o);
-			}
-		}
-		public ICollection Values {
-			get { return new ValuesCollection(this); }
-		}
-		private class ValuesCollection : ICollection {
-			private SequencedHashMap parent;
-
-			public void CopyTo(Array array, int i) {
-				//TODO: implement
-			}
-
-			public object SyncRoot {
+			public object SyncRoot 
+			{
 				get { return this; }
 			}
 
-			public bool IsSynchronized {
+			public void CopyTo(Array array, int index) 
+			{
+				foreach(object obj in this) 
+				{
+					array.SetValue(obj, index++);
+				}
+			}
+
+			#endregion
+
+			#region System.Collections.IEnumerable Members
+
+			public IEnumerator GetEnumerator() 
+			{
+				return new OrderedEnumerator(_parent, ReturnType.ReturnKey);
+			}
+
+			#endregion
+
+			public bool Contains(object o) 
+			{
+				return _parent.ContainsKey(o);
+			}
+
+		}
+
+		private class ValuesCollection : ICollection 
+		{
+			private SequencedHashMap _parent;
+
+			public ValuesCollection(SequencedHashMap parent) 
+			{
+				_parent = parent;
+			}
+
+			#region System.Collections.ICollection Members
+
+			public int Count 
+			{
+				get { return _parent.Count; }
+			}
+
+			public bool IsSynchronized 
+			{
 				get { return false; }
 			}
 
-			public ValuesCollection(SequencedHashMap parent) {
-				this.parent = parent;
+			public object SyncRoot 
+			{
+				get { return this; }
 			}
 
-			public IEnumerator GetEnumerator() {
-				return new OrderedEnumerator(parent, VALUE); 
+			public void CopyTo(Array array, int index) 
+			{
+				foreach(object obj in this) 
+				{
+					array.SetValue(obj, index++);
+				}
 			}
 
-			public int Count {
-				get { return parent.Count; }
+			#endregion
+
+			#region System.Collections.IEnumerable Members
+
+			public IEnumerator GetEnumerator() 
+			{
+				return new OrderedEnumerator(_parent, ReturnType.ReturnValue); 
 			}
 
-			public bool Contains(object o) {
-				return parent.ContainsValue(o);
+			#endregion
+
+			public bool Contains(object o) 
+			{
+				return _parent.ContainsValue(o);
 			}
 		}
 			
-		private const int KEY = 0;
-		private const int VALUE = 1;
-		private const int ENTRY = 2;
+		
+		private enum ReturnType 
+		{
+			/// <summary>
+			/// Return only the Key of the DictionaryEntry
+			/// </summary>
+			ReturnKey,
 
-		private class OrderedEnumerator : IEnumerator {
-			private SequencedHashMap parent;
+			/// <summary>
+			/// Return only the Value of the DictionaryEntry
+			/// </summary>
+			ReturnValue,
 
-			public OrderedEnumerator(SequencedHashMap parent, int returnType) {
-				this.parent = parent;
-				this.returnType = returnType;
-				pos = parent.sentinel;
-				expectedModCount = parent.modCount;
+			/// <summary>
+			/// Return the full DictionaryEntry
+			/// </summary>
+			ReturnEntry
+		}
+
+		
+		private class OrderedEnumerator : IDictionaryEnumerator	
+		{
+			private SequencedHashMap _parent;
+			private ReturnType _returnType;
+			private Entry _pos;
+			private long _expectedModCount;
+
+			public OrderedEnumerator(SequencedHashMap parent, ReturnType returnType) 
+			{
+				_parent = parent;
+				_returnType = returnType;
+				_pos = _parent._sentinel;
+				_expectedModCount = _parent._modCount;
 			}
+			
+			#region System.Collections.IEnumerator Members
 
-			private int returnType;
-			private Entry pos;
-			private long expectedModCount;
-
-			public object Current {
-				get { 
-					if (parent.modCount != expectedModCount) {
+			public object Current 
+			{
+				get 
+				{ 
+					if (_parent._modCount != _expectedModCount) 
+					{
 						throw new InvalidOperationException("Enumerator was modified");
 					}
-					//if (pos.next == parent.sentinel) {
-					//	throw new InvalidOperationException("moved past end");
-					//}
+					
 
-					switch(returnType) {
-						case KEY:
-							return pos.Key;
-						case VALUE:
-							return pos.Value;
-						case ENTRY:
-							return pos;
+					switch(_returnType) 
+					{
+						case ReturnType.ReturnKey:
+							return _pos.Key;
+						case ReturnType.ReturnValue:
+							return _pos.Value;
+						case ReturnType.ReturnEntry:
+							return new DictionaryEntry(_pos.Key, _pos.Value);
 					}
 					return null;
 				}
 			}
-			public bool MoveNext() {
-
-
-				if (parent.modCount != expectedModCount) {
+			
+			public bool MoveNext() 
+			{
+				if (_parent._modCount != _expectedModCount) 
+				{
 					throw new InvalidOperationException("Enumerator was modified");
 				}
-				if (pos.next == parent.sentinel) {
+				if (_pos.Next == _parent._sentinel) 
+				{
 					return false;
 				}
 
-				pos = pos.next;
+				_pos = _pos.Next;
 
 				return true;
 			}
-			public void Reset() {
-				pos = parent.sentinel;
+			
+			public void Reset() 
+			{
+				_pos = _parent._sentinel;
 			}
+
+			#endregion
+
+			#region System.Collection.IDictionaryEnumerator Members
+			
+			public DictionaryEntry Entry 
+			{
+				get { return new DictionaryEntry(_pos.Key, _pos.Value); }
+			}
+
+			public object Key 
+			{
+				get { return _pos.Key; }
+			}
+
+			public object Value 
+			{
+				get { return _pos.Value; }
+			}
+
+			#endregion			
 		}
-
-		
-
-		 
 	}
 }
