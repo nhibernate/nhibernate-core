@@ -1,7 +1,5 @@
 using System;
-using System.Text;
 using System.Collections;
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
@@ -9,72 +7,96 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Loader 
+namespace NHibernate.Loader
 {
 	/// <summary>
 	/// Loads a collection of values or a many-to-many association
 	/// </summary>
-	public class CollectionLoader : OuterJoinLoader, ICollectionInitializer 
+	public class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{
 		private CollectionPersister collectionPersister;
 		private IType idType;
-		
-		public CollectionLoader(CollectionPersister persister, ISessionFactoryImplementor factory) : base(factory.Dialect) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="factory"></param>
+		public CollectionLoader( CollectionPersister persister, ISessionFactoryImplementor factory ) : base( factory.Dialect )
 		{
 			idType = persister.KeyType;
 
-			string alias = ToAlias( persister.QualifiedTableName, 0);
+			string alias = ToAlias( persister.QualifiedTableName, 0 );
 
 			//TODO: H2.0.3 the whereString is appended with the " and " - I don't think
 			// that is needed because we are building SqlStrings differently and the Builder
 			// probably already takes this into account.
 			SqlString whereSqlString = null;
-			if (persister.HasWhere) 
-				whereSqlString = new SqlString(persister.GetSQLWhereString(alias));
-				
-			IList associations = WalkCollectionTree(persister, alias, factory);
+			if( persister.HasWhere )
+			{
+				whereSqlString = new SqlString( persister.GetSQLWhereString( alias ) );
+			}
+
+			IList associations = WalkCollectionTree( persister, alias, factory );
 
 			int joins = associations.Count;
 			Suffixes = new string[joins];
-			for (int i=0; i<joins; i++) Suffixes[i] = i.ToString() + StringHelper.Underscore;
+			for( int i = 0; i < joins; i++ )
+			{
+				Suffixes[ i ] = i.ToString() + StringHelper.Underscore;
+			}
 
-			JoinFragment ojf = OuterJoins(associations);
-			
-			SqlSelectBuilder selectBuilder = new SqlSelectBuilder(factory);
+			JoinFragment ojf = OuterJoins( associations );
+
+			SqlSelectBuilder selectBuilder = new SqlSelectBuilder( factory );
 			selectBuilder.SetSelectClause(
-				persister.SelectClauseFragment(alias) + 
-				(joins==0 ? String.Empty: ", " + SelectString(associations))
+				persister.SelectClauseFragment( alias ) +
+					( joins == 0 ? String.Empty : ", " + SelectString( associations ) )
 				)
-				.SetFromClause(persister.QualifiedTableName, alias)
-				.SetWhereClause(alias, persister.KeyColumnNames, persister.KeyType)
-				.SetOuterJoins(ojf.ToFromFragmentString, ojf.ToWhereFragmentString);
-			
-			if(persister.HasWhere) selectBuilder.AddWhereClause(whereSqlString);
-				
-			if(persister.HasOrdering) selectBuilder.SetOrderByClause(persister.GetSQLOrderByString(alias));
+				.SetFromClause( persister.QualifiedTableName, alias )
+				.SetWhereClause( alias, persister.KeyColumnNames, persister.KeyType )
+				.SetOuterJoins( ojf.ToFromFragmentString, ojf.ToWhereFragmentString );
+
+			if( persister.HasWhere )
+			{
+				selectBuilder.AddWhereClause( whereSqlString );
+			}
+
+			if( persister.HasOrdering )
+			{
+				selectBuilder.SetOrderByClause( persister.GetSQLOrderByString( alias ) );
+			}
 
 			this.SqlString = selectBuilder.ToSqlString();
 
 			Persisters = new ILoadable[joins];
-			LockModeArray = CreateLockModeArray(joins, LockMode.None);
-			for (int i=0; i<joins; i++) 
+			LockModeArray = CreateLockModeArray( joins, LockMode.None );
+			for( int i = 0; i < joins; i++ )
 			{
-				Persisters[i] = (ILoadable) ((OuterJoinableAssociation) associations[i]).Subpersister;
+				Persisters[ i ] = ( ILoadable ) ( ( OuterJoinableAssociation ) associations[ i ] ).Subpersister;
 			}
 			this.collectionPersister = persister;
 
 			PostInstantiate();
-			
+
 		}
 
-		protected override CollectionPersister CollectionPersister 
+		/// <summary></summary>
+		protected override CollectionPersister CollectionPersister
 		{
 			get { return collectionPersister; }
 		}
 
-		public void Initialize(object id, PersistentCollection collection, object owner, ISessionImplementor session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="collection"></param>
+		/// <param name="owner"></param>
+		/// <param name="session"></param>
+		public void Initialize( object id, PersistentCollection collection, object owner, ISessionImplementor session )
 		{
-			LoadCollection(session, id, idType, owner, collection);
+			LoadCollection( session, id, idType, owner, collection );
 		}
 	}
 }

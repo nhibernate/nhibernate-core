@@ -1,15 +1,13 @@
-using System;
 using NHibernate.Collection;
 using NHibernate.Engine;
 
-namespace NHibernate.Loader 
+namespace NHibernate.Loader
 {
 	/// <summary>
 	/// An interface for collection loaders
 	/// </summary>
-	public interface ICollectionInitializer 
+	public interface ICollectionInitializer
 	{
-		
 		/// <summary>
 		/// Initialize the given collection
 		/// </summary>
@@ -17,6 +15,6 @@ namespace NHibernate.Loader
 		/// <param name="collection"></param>
 		/// <param name="owner"></param>
 		/// <param name="session"></param>
-		void Initialize(object id, PersistentCollection collection, object owner, ISessionImplementor session);
+		void Initialize( object id, PersistentCollection collection, object owner, ISessionImplementor session );
 	}
 }

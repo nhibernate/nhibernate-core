@@ -1,9 +1,9 @@
-using System;
 using NHibernate.Engine;
 
-namespace NHibernate.Loader 
+namespace NHibernate.Loader
 {
-	public interface IUniqueEntityLoader 
+	/// <summary></summary>
+	public interface IUniqueEntityLoader
 	{
 		/// <summary>
 		/// Load an entity instance. If <c>OptionalObject</c> is supplied, load the entity
@@ -13,6 +13,6 @@ namespace NHibernate.Loader
 		/// <param name="id"></param>
 		/// <param name="optionalObject"></param>
 		/// <returns></returns>
-		object Load(ISessionImplementor session, object id, object optionalObject);
+		object Load( ISessionImplementor session, object id, object optionalObject );
 	}
 }
