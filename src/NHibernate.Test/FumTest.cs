@@ -192,7 +192,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Filter() and multi-column Types.  Everything else passes. http://jira.nhibernate.org:8080/browse/NH-96")]
 		public void CompositeIDQuery() 
 		{
 			ISession s = sessions.OpenSession();
@@ -256,7 +255,6 @@ namespace NHibernate.Test
 			Assert.AreEqual( 8, j, "iterate on composite key" );
 
 			fum = (Fum)s.Load( typeof(Fum), fum.Id );
-			//TODO: http://jira.nhibernate.org:8080/browse/NH-96 bug is here 
 			s.Filter( fum.QuxArray, "where this.Foo is null" );
 			s.Filter( fum.QuxArray, "where this.Foo.id = ?", "fooid", NHibernate.String );
 			IQuery f = s.CreateFilter( fum.QuxArray, "where this.Foo.id = :fooId" );

@@ -114,7 +114,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("HQL bugs - http://jira.nhibernate.org:8080/browse/NH-79, http://jira.nhibernate.org:8080/browse/NH-80")]
+		[Ignore("HQL bugs - http://jira.nhibernate.org:8080/browse/NH-79")]
 		public void MasterDetail() 
 		{
 			//if( dialect is Dialect.HSQLDialect ) return;
@@ -204,7 +204,6 @@ namespace NHibernate.Test
 			*/
 
 
-			// rest of the test depends on ISession.Filter() working
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
 			Detail dd = (Detail)s.Load( typeof(Detail), did );
@@ -212,8 +211,7 @@ namespace NHibernate.Test
 			Assert.IsTrue( master.Details.Contains(dd), "detail-master" );
 			Assert.AreEqual( 2, s.Filter( master.Details, "order by this.I desc").Count );
 			Assert.AreEqual( 2, s.Filter( master.Details, "select this where this.id > -1").Count );
-			/*
-			 * TODO: Filter is not working well...
+			
 			IQuery q = s.CreateFilter( master.Details, "where this.id > :id" );
 			q.SetInt32("id", -1);
 			Assert.AreEqual( 2, q.List().Count );
@@ -233,15 +231,65 @@ namespace NHibernate.Test
 			
 			Assert.AreEqual( 1, q.List().Count );
 			Assert.IsTrue( q.Enumerable().GetEnumerator().MoveNext() );
-			*/
+			
 			Assert.AreEqual( 2, s.Filter( master.Details, "where this.id > -1").Count );
 			Assert.AreEqual( 2, s.Filter( master.Details, "select this.Master where this.id > -1").Count );
 			Assert.AreEqual( 2, s.Filter( master.Details, "select m from m in class Master where this.id > -1 and this.Master=m").Count );
-			Assert.AreEqual( 0, s.Filter( master.Incoming.Keys, "where this.id > -1 and this.Name is not null").Count );
+			Assert.AreEqual( 0, s.Filter( master.Incoming, "where this.id > -1 and this.Name is not null").Count );
 
+			IQuery filter = s.CreateFilter( master.Details, "select max(this.I)");
+			enumer = filter.Enumerable().GetEnumerator();
+			Assert.IsTrue( enumer.MoveNext() );
+			Assert.IsTrue( enumer.Current is Int32 );
 
+			filter = s.CreateFilter( master.Details, "select max(this.I) group by this.id" );
+			enumer = filter.Enumerable().GetEnumerator();
+			Assert.IsTrue( enumer.MoveNext() );
+			Assert.IsTrue( enumer.Current is Int32 );
 
+			filter = s.CreateFilter( master.Details, "select count(*)" );
+			enumer = filter.Enumerable().GetEnumerator();
+			Assert.IsTrue( enumer.MoveNext() );
+			Assert.IsTrue( enumer.Current is Int32 );
 
+			Assert.AreEqual( 2, s.CreateFilter( master.Details, "select this.Master" ).List().Count );
+
+			IQuery f = s.CreateFilter( master.Details, "select max(this.I) where this.I < :top and this.I>=:bottom" );
+			f.SetInt32("top", 100);
+			f.SetInt32("bottom", 0);
+
+			enumer = f.Enumerable().GetEnumerator();
+			Assert.IsTrue( enumer.MoveNext() );
+			Assert.AreEqual( 12, enumer.Current );
+			
+			f.SetInt32("top", 2);
+			enumer = f.Enumerable().GetEnumerator();
+			Assert.IsTrue( enumer.MoveNext() );
+			Assert.AreEqual( 0, enumer.Current );
+
+			f = s.CreateFilter( master.Details, "select max(this.I) where this.I not in (:list)" );
+			IList coll = new ArrayList();
+			coll.Add(-666);
+			coll.Add(22);
+			coll.Add(0);
+
+			f.SetParameterList("list", coll);
+			enumer = f.Enumerable().GetEnumerator();
+			Assert.IsTrue( enumer.MoveNext() );
+			Assert.AreEqual( 12, enumer.Current );
+
+			i = 0;
+			foreach( Detail d in master.Details.Keys ) 
+			{
+				Assert.AreSame( master, d.Master, "master-detail" );
+				s.Delete(d);
+				i++;
+			}
+
+			Assert.AreEqual( 2, i, "master-detail" );
+			s.Delete(master);
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
