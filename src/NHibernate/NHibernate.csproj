@@ -652,6 +652,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Id\IPersistentIdentifierGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Id\UUIDStringGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

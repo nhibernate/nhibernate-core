@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Reflection;
 using System.Collections;
 using NHibernate.Id;
 using NHibernate.Impl;
@@ -165,9 +166,44 @@ namespace NHibernate.Cfg {
 			}
 		}
 		
+		public Configuration AddResource(string path, Assembly assembly) {
+			log.Info("mapping resource: " + path);
+			Stream rsrc = assembly.GetManifestResourceStream(path);
+			if (rsrc==null) throw new MappingException("Resource: " + path + " not found");
+			return AddInputStream(rsrc);
+		}
 
 		public Configuration AddClass(System.Type persistentClass) {
-			//TODO: get the xml config from the assembly
+			string fileName = persistentClass.FullName + ".hbm.xml";
+			log.Info("Mapping resource: " + fileName);
+			Stream rsrc = persistentClass.Assembly.GetManifestResourceStream(fileName);
+			if (rsrc==null) throw new MappingException("Resource: " + fileName + " not found");
+			return AddInputStream(rsrc);
+		}
+
+		public Configuration AddAssembly(string assemblyName) {
+			log.Info("searching for mapped documents in jar: " + assemblyName);
+
+			Assembly assembly = null;
+			try {
+				assembly = Assembly.Load(assemblyName);
+			} catch (Exception e) {
+				log.Error("Could not configure datastore from assembly", e);
+				throw new MappingException(e);
+			}
+			foreach(string fileName in assembly.GetManifestResourceNames() ) {
+				if ( fileName.EndsWith(".hbm.xml") ) {
+					log.Info( "Found mapping documents in assembly: " + fileName );
+					try {
+						AddInputStream( assembly.GetManifestResourceStream(fileName) );
+					} catch (MappingException me) {
+						throw me;
+					} catch (Exception e) {
+						log.Error("Could not configure datastore from assembly", e);
+						throw new MappingException(e);
+					}
+				}
+			}
 			return this;
 		}
 
@@ -175,13 +211,33 @@ namespace NHibernate.Cfg {
 			Hashtable generators = new Hashtable();
 			foreach(PersistentClass clazz in generators) {
 				IIdentifierGenerator ig = clazz.Identifier.CreateIdentifierGenerator(dialect);
-				//TODO: figure out PersistentIdentifierGenerator
+				if ( ig is IPersistentIdentifierGenerator ) generators.Add(
+																( (IPersistentIdentifierGenerator) ig).GeneratorKey(), ig);
+
 			}
 			return generators.Values;
 		}
 
 		private void SecondPassCompile() {
-			//TODO: finish
+			
+			foreach(Binder.SecondPass sp in secondPasses) {
+				sp.DoSecondPass(classes);
+			}
+
+			secondPasses.Clear();
+
+			foreach(Table table in TableMappings) {
+				foreach(ForeignKey fk in table.ForeignKeyCollection) {
+					if ( fk.ReferencedTable == null ) {
+						PersistentClass referencedClass = (PersistentClass) classes[ fk.ReferencedClass ];
+						if ( referencedClass==null ) throw new MappingException(
+														 "An association refers to an unmapped class: " +
+														 fk.ReferencedClass.Name
+														 );
+						fk.ReferencedTable = referencedClass.Table;
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -273,13 +329,63 @@ namespace NHibernate.Cfg {
 			return properties[name] as string;
 		}
 
+		private void AddProperties(XmlNode parent) {
+			foreach(XmlNode node in parent.SelectNodes("property")) {
+				string name = node.Attributes["name"].Value;
+				string value = node.FirstChild.Value;
+				log.Debug(name + "=" + value);
+				properties.Add(name, value);
+				if ( !name.StartsWith("hibernate") ) properties.Add("hibernate." + name, value);
+			}
+		}
+
+
 		public Configuration Configure() {
-			Configure("???"); //TODO: Figure this out. THis should probably be an app settings reader, and just use that
+			Configure("hibernate.cfg.xml"); //TODO: Figure this out. THis should probably be an app settings reader, and just use that
 			return this;
 		}
 
 		public Configuration Configure(string resource) {
-			return this; //TODO: finish this
+			
+			XmlDocument doc = new XmlDocument();
+			try {
+				doc.Load(resource);
+			} catch (Exception e) {
+				log.Error("Problem parsing configuraiton " + resource, e);
+				throw new HibernateException("problem parsing configuration " + resource + ": " + e);
+			}
+
+			XmlNode sfNode = doc.DocumentElement.SelectSingleNode("session-factory");
+			XmlAttribute name = sfNode.Attributes["name"];
+			if (name!=null) properties.Add(Environment.SessionFactoryName, name.Value);
+			AddProperties(sfNode);
+
+			foreach(XmlNode mapElement in sfNode.ChildNodes) {
+				string elemname = mapElement.Name;
+				if ( "mapping".Equals(elemname) ) {
+					XmlAttribute rsrc = mapElement.Attributes["resource"];
+					XmlAttribute file = mapElement.Attributes["file"];
+					XmlAttribute assembly = mapElement.Attributes["assembly"];
+					if (rsrc!=null) {
+						log.Debug(name + "<-" + rsrc);
+						AddResource( rsrc.Value, Assembly.GetExecutingAssembly() );
+					} else if ( assembly!=null) {
+						log.Debug(name + "<-" + assembly);
+						AddAssembly(assembly.Value);
+					} else {
+						if (file==null) throw new MappingException("<mapping> element in configuration specifies no attributes");
+						log.Debug(name + "<-" + file);
+						AddFile( file.Value );
+					}
+				}
+			}
+
+			log.Info("Configured SessionFactory: " + name);
+			log.Debug("properties: " + properties);
+
+			return this;
+						
+
 		}
 	}
 }

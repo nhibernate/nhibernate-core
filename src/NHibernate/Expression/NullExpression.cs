@@ -24,7 +24,7 @@ namespace NHibernate.Expression {
 				StringHelper.Suffix( GetColumns(sessionFactory, persistentClass, propertyName, alias), " is null" )
 				);
 		
-			//TODO: get SQL rendering out of this package!
+			// TODO: get SQL rendering out of this package!
 		}
 	
 		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {

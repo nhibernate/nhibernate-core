@@ -22,7 +22,7 @@ namespace NHibernate.Expression {
 			if ( values.Length>0 ) pars+="?";
 			return GetColumns(sessionFactory, persistentClass, propertyName, alias) + " in (" + pars + ')';
 		
-			//TODO: get SQL rendering out of this package!
+			// TODO: get SQL rendering out of this package!
 		}
 	
 		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {

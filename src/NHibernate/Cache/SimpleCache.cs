@@ -19,7 +19,7 @@ namespace NHibernate.Cache {
 				return wr.Target; 
 			}
 			set { 
-				cache[key] = new WeakReference(value); 
+				cache[key] = new WeakReference(value);
 			}
 		}
 	}

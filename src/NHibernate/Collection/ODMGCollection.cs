@@ -9,10 +9,7 @@ namespace NHibernate.Collection {
 		public ODMGCollection(ISessionImplementor session) : base(session) {}
 	
 		public bool ExistsElement(string queryString) {
-			foreach(object obj in Select(queryString)) {
-				return true;
-			}
-			return false;
+			return Select(queryString).Count > 0;
 		}
 
 		public List Query(string queryString) {
@@ -23,7 +20,7 @@ namespace NHibernate.Collection {
 			}
 		}
 
-		public IEnumerable Select(string queryString) {
+		public ICollection Select(string queryString) {
 			try {
 				return session.Filter(this, queryString);
 			} catch(HibernateException he) {

@@ -22,7 +22,7 @@ namespace NHibernate.Connection {
 		}
 		public void Configure(IDictionary settings) {
 			log.Info("Configuring SqlServerConnectionProvider");
-			//TODO: Get the connection string from the settings
+			// TODO: Get the connection string from the settings
 		}
 
 		public IDbConnection GetConnection() {

@@ -25,7 +25,7 @@ namespace NHibernate.Expression {
 				" and ", 
 				StringHelper.Suffix( GetColumns(sessionFactory, persistentClass, propertyName, alias), Op + "?" )
 			);
-			//TODO: get SQL rendering out of this package!
+			// TODO: get SQL rendering out of this package!
 		}
 
 		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {

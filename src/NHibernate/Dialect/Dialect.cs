@@ -231,7 +231,7 @@ namespace NHibernate.Dialect {
 		public static Dialect GetDialect() {
 			string dialectName = null;
 			
-			//TODO: Get the class name from the environment
+			// TODO: Get the class name from the environment
 			dialectName = "NHibernate.Dialect.GenericDialect";
 
 			if (dialectName==null) throw new HibernateException("The dialect was not set.");

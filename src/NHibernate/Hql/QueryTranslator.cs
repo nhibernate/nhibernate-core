@@ -404,7 +404,7 @@ namespace NHibernate.Hql {
 
 			if ( hasScalars || shallowQuery ) sql.AddSelectFragmentString(scalarSelect);
 
-			//TODO: for some dialects it would be appropriate to add the renderOrderByProertySelecT() to other select strings
+			// TODO: for some dialects it would be appropriate to add the renderOrderByProertySelecT() to other select strings
 			MergeJoins( sql.JoinFragment );
 
 			sql.WhereTokens = whereTokens;
