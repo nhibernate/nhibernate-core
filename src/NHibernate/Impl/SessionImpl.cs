@@ -5110,6 +5110,27 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public object SavOrUpdateCopy( object obj )
+		{
+			return SaveOrUpdateCopy( obj, null );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public object SaveOrUpdateCopy( object obj, object id )
+		{
+			return DoCopy( obj, id, new Hashtable( 10 ) );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="collectionPersister"></param>
 		/// <param name="id"></param>
 		/// <param name="batchSize"></param>
@@ -5283,6 +5304,78 @@ namespace NHibernate.Impl
 			catch ( ADOException sqle )
 			{
 				throw new ADOException( "Error performing LoadByUniqueKey", sqle );
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="replicationMode"></param>
+		public void Replicate( object obj, ReplicationMode replicationMode )
+		{
+			if ( obj == null )
+			{
+				throw new NullReferenceException( "attempt to replicate null" );
+			}
+
+			if ( ReassociateIfUninitializedProxy( obj ) )
+			{
+				return;
+			}
+
+			object theObj = UnproxyAndReassociate( obj );
+
+			if ( IsEntryFor( theObj ) )
+			{
+				return;
+			}
+
+			IClassPersister persister = GetPersister( theObj );
+			if ( persister.IsUnsaved( theObj ) )
+			{
+				//TODO: generate a new id value for brand new objects
+				throw new TransientObjectException( "unsaved object passed to Replicate()" );
+			}
+
+			object id = persister.GetIdentifier( theObj );
+			object oldVersion;
+			if ( replicationMode == ReplicationMode.Exception )
+			{
+				//always do an INSERT, and let it fail by constraint violation
+				oldVersion = null;
+			}
+			else
+			{
+				//what is the version on the database?
+				oldVersion = persister.CurrentVersion( id, this );
+			}
+
+			if( oldVersion != null )
+			{
+				// existing row - do an update if appropriate
+				if ( replicationMode.ShouldOverwriteCurrentVersion( theObj, oldVersion, persister.GetVersion( obj ), persister.VersionType ) )
+				{
+					//will result in a SQL UPDATE:
+					DoReplicate( theObj, id, oldVersion, replicationMode, persister );
+				}
+				//else do nothing (don't even reassociate object!)
+				//TODO: would it be better to do a refresh from db?
+			}
+			else
+			{
+				// no existing row - do an insert
+				bool regenerate = persister.IsIdentifierAssignedByInsert; // prefer re-generation of identity!
+				DoSave( 
+					theObj, 
+					regenerate ? null : new Key( id, persister ), 
+					persister, 
+					true, //!persister.isUnsaved(object), //TODO: Do an ordinary save in the case of an "unsaved" object
+					// TODO: currently ignores interceptor definition of isUnsaved()
+					regenerate,
+					Cascades.CascadingAction.ActionReplicate, // not quite an ordinary save(), since we cascade back to replicate()
+					replicationMode
+				);
 			}
 		}
 

@@ -213,6 +213,14 @@ namespace NHibernate
 		object Get(System.Type clazz, object id, LockMode lockMode);
 
 		/// <summary>
+		/// Persist all reachable transient objects, reusing the current identifier 
+		/// values. Note that this will not trigger the Interceptor of the Session.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="replicationMode"></param>
+		void Replicate( object obj, ReplicationMode replicationMode );
+
+		/// <summary>
 		/// Persist the given transient instance, first assigning a generated identifier.
 		/// </summary>
 		/// <remarks>
@@ -261,6 +269,31 @@ namespace NHibernate
 		/// <param name="obj">A transient instance containing updated state</param>
 		/// <param name="id">Identifier of persistent instance</param>
 		void Update( object obj, object id );
+
+		/// <summary>
+		/// Copy the state of the given object onto the persistent object with the same
+		/// identifier. If there is no persistent instance currently associated with 
+		/// the session, it will be loaded. Return the persistent instance. If the 
+		/// given instance is unsaved or does not exist in the database, save it and 
+		/// return it as a newly persistent instance. Otherwise, the given instance
+		/// does not become associated with the session.
+		/// </summary>
+		/// <param name="obj">a transient instance with state to be copied</param>
+		/// <returns>an updated persistent instance</returns>
+		object SaveOrUpdateCopy( object obj );
+
+		/// <summary>
+		/// Copy the state of the given object onto the persistent object with the 
+		/// given identifier. If there is no persistent instance currently associated 
+		/// with the session, it will be loaded. Return the persistent instance. If
+		/// there is no database row with the given identifier, save the given instance
+		/// and return it as a newly persistent instance. Otherwise, the given instance
+		/// does not become associated with the session.
+		/// </summary>
+		/// <param name="obj">a persistent or transient instance with state to be copied</param>
+		/// <param name="id">the identifier of the instance to copy to</param>
+		/// <returns>an updated persistent instance</returns>
+		object SaveOrUpdateCopy( object obj, object id );
 
 		/// <summary>
 		/// Remove a persistent instance from the datastore.
@@ -506,11 +539,29 @@ namespace NHibernate
 		IQuery CreateFilter( object collection, string queryString );
 
 		/// <summary>
-		/// Obtain an instance of <c>Query</c> for a named query string defined in the
+		/// Obtain an instance of <c>IQuery</c> for a named query string defined in the
 		/// mapping file.
 		/// </summary>
 		/// <param name="queryName">The name of a query defined externally</param>
 		/// <returns>A queru</returns>
 		IQuery GetNamedQuery( string queryName );
+
+		/// <summary>
+		/// Create a new instance of <c>IQuery</c> for the given SQL string.
+		/// </summary>
+		/// <param name="sql">a query expressed in SQL</param>
+		/// <param name="returnAlias">a table alias that appears inside <tt>{}</tt> in the SQL string</param>
+		/// <param name="returnClass">the returned persistent class</param>
+		/// <returns></returns>
+		IQuery CreateSQLQuery( string sql, string returnAlias, System.Type returnClass );
+
+		/// <summary>
+		/// Create a new instance of <tt>Query</tt> for the given SQL string.
+		/// </summary>
+		/// <param name="sql">a query expressed in SQL</param>
+		/// <param name="returnAliases">an array of table aliases that appear inside <tt>{}</tt> in the SQL string</param>
+		/// <param name="returnClasses">the returned persistent classes</param>
+		/// <returns></returns>
+		IQuery CreateSQLQuery( string sql, string[] returnAliases, System.Type[] returnClasses );
 	}
 }
