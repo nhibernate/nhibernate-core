@@ -21,7 +21,6 @@ namespace NHibernate.Test.TypesTest
 		/// we expect.
 		/// </summary>
 		[Test]
-		[Ignore("MockReader has not implemented GetGuid yet")]
 		public void Get() 
 		{
 			NullableType type = NHibernate.Guid;
