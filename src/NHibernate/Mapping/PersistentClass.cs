@@ -7,8 +7,10 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping 
 {
-	//TODO: H2.0.3 - there are some "set" declared on properties that I am not sure about - need 
-	// to double check those.
+	/// <summary>
+	/// Base class for the <see cref="RootClass" /> mapped by &lt;class&gt; and a 
+	/// <see cref="Subclass"/> that is mapped by &lt;subclass&gt; or &lt;joined-subclass&gt;
+	/// </summary>
 	public abstract class PersistentClass 
 	{
 		private static readonly Alias PKAlias = new Alias(15, "PK");
@@ -24,18 +26,43 @@ namespace NHibernate.Mapping
 		private bool dynamicInsert;
 		private bool dynamicUpdate;
 		
+		/// <summary>
+		/// Gets or Sets if the Insert Sql is built dynamically.
+		/// </summary>
+		/// <value><c>true</c> if the Sql is built at runtime.</value>
+		/// <remarks>
+		/// The value of this is set by the <c>dynamic-insert</c> attribute. 
+		/// </remarks>
 		public virtual bool DynamicInsert 
 		{
 			get { return dynamicInsert; }
 			set { dynamicInsert = value ; }
 		}
 
+		/// <summary>
+		/// Gets or Sets if the Update Sql is built dynamically.
+		/// </summary>
+		/// <value><c>true</c> if the Sql is built at runtime.</value>
+		/// <remarks>
+		/// The value of this is set by the <c>dynamic-update</c> attribute. 
+		/// </remarks>
 		public virtual bool DynamicUpdate 
 		{
 			get { return dynamicUpdate; }
 			set { dynamicUpdate = value ; }
 		}
 
+		/// <summary>
+		/// Gets or Sets the value to use as the discriminator for the Class.
+		/// </summary>
+		/// <value>
+		/// A value that distinguishes this subclass in the database.
+		/// </value>
+		/// <remarks>
+		/// The value of this is set by the <c>discriminator-value</c> attribute.  Each &lt;subclass&gt;
+		/// in a heirarchy must define a unique <c>discriminator-value</c>.  The default value 
+		/// is the class name if no value is supplied.
+		/// </remarks>
 		public virtual string DiscriminatorValue 
 		{
 			get { return discriminatorValue; }
@@ -66,10 +93,12 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets the Collection of Subclasses for this PersistentClass.  It will
-		/// recursively go through Subclasses so that if a Subclass has Subclasses
-		/// it will pick those up also.
+		/// Gets the Collection of Subclasses for this PersistentClass.  
 		/// </summary>
+		/// <remarks>
+		/// It will recursively go through Subclasses so that if a Subclass has Subclasses
+		/// it will pick those up also.
+		/// </remarks>
 		public virtual ICollection SubclassCollection 
 		{
 			get 
@@ -101,6 +130,13 @@ namespace NHibernate.Mapping
 			properties.Add(p);
 		}
 
+		/// <summary>
+		/// Gets or Sets the <see cref="Table"/> that this class is stored in.
+		/// </summary>
+		/// <value>The <see cref="Table"/> this class is stored in.</value>
+		/// <remarks>
+		/// The value of this is set by the <c>table</c> attribute. 
+		/// </remarks>
 		public virtual Table Table 
 		{
 			get { return table; }
