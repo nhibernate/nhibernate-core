@@ -51,7 +51,7 @@ namespace NHibernate.Util {
 
 			SequencedHashMap empty = new SequencedHashMap();
 			foreach(object obj in empty.Keys) {
-				Assertion.Fail("should not be a key");
+				Assertion.Fail("should not be a key: " + obj);
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace NHibernate.Util {
 
 			SequencedHashMap empty = new SequencedHashMap();
 			foreach(object obj in empty.Values) {
-				Assertion.Fail("should not be a value");
+				Assertion.Fail("should not be a value:" + obj);
 			}
 		}
 		
