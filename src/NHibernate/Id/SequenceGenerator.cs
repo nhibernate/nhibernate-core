@@ -41,20 +41,14 @@ namespace NHibernate.Id
 
 		public virtual object Generate(ISessionImplementor session, object obj) 
 		{
-			IDbCommand st = session.Batcher.PrepareCommand( new SqlString(sql) );
+			IDbCommand cmd = session.Batcher.PrepareCommand( new SqlString(sql) );
+			IDataReader reader = null;
 			try 
 			{
-				IDataReader rs = st.ExecuteReader();
+				reader = session.Batcher.ExecuteReader( cmd ); 
 				object result = null;
-				try 
-				{
-					rs.Read();
-					result = IdentifierGeneratorFactory.Get(rs, returnClass);
-				} 
-				finally 
-				{
-					rs.Close();
-				}
+				reader.Read();
+				result = IdentifierGeneratorFactory.Get(reader, returnClass);
 
 				log.Debug("sequence ID generated: " + result);
 				return result;
@@ -65,7 +59,7 @@ namespace NHibernate.Id
 			} 
 			finally 
 			{
-				session.Batcher.CloseCommand(st);
+				session.Batcher.CloseCommand( cmd, reader);
 			}
 		}
 

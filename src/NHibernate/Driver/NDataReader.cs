@@ -31,21 +31,33 @@ namespace NHibernate.Driver
 		private int cachedColIndex = -1;
 
 		/// <summary>
-		/// Creates a NDataReader from a IDataReader
+		/// Creates a NDataReader from a <see cref="IDataReader" />
 		/// </summary>
-		/// <param name="reader">The IDataReader to get the records from the Database.</param>
-		public NDataReader(IDataReader reader) 
+		/// <param name="reader">The <see cref="IDataReader" /> to get the records from the Database.</param>
+		/// <param name="isMidstream"><c>true</c> if we are loading the <see cref="IDataReader" /> in the middle of reading it.</param>
+		/// <remarks>
+		/// NHibernate attempts to not have to read the contents of an <see cref="IDataReader"/> into memory until it absolutely
+		/// has to.  What that means is that it might have processed some records from the <see cref="IDataReader"/> and will
+		/// pick up the <see cref="IDataReader"/> midstream so that the underlying <see cref="IDataReader"/> can be closed 
+		/// so a new one can be opened.
+		/// </remarks>
+		public NDataReader(IDataReader reader, bool isMidstream) 
 		{
 			ArrayList resultList = new ArrayList(2);
 	
 			try 
 			{
+				// if we are in midstream of processing a DataReader then we are already
+				// positioned on the first row (index=0)
+				if( isMidstream ) currentRowIndex = 0;
+
 				// there will be atleast one result 
-				resultList.Add( new NResult(reader) );
+				resultList.Add( new NResult(reader, isMidstream) );
 
 				while( reader.NextResult() ) 
 				{
-					resultList.Add( new NResult(reader) );
+					// the second, third, nth result is not processed midstream
+					resultList.Add( new NResult(reader, false) );
 				}
 
 				results = (NResult[]) resultList.ToArray( typeof(NResult) );
@@ -120,7 +132,6 @@ namespace NHibernate.Driver
 
 		public void Close()
 		{
-			// TODO:  Add NDataReader.Close implementation
 			isClosed = true;
 		}
 
@@ -159,7 +170,9 @@ namespace NHibernate.Driver
 
 		public void Dispose()
 		{
-			// TODO:  Add NDataReader.Dispose implementation
+			isClosed = true;
+			ClearCache();
+			results = null;
 		}
 
 		#endregion
@@ -342,14 +355,24 @@ namespace NHibernate.Driver
 			private readonly ArrayList fieldTypes = new ArrayList();
 			private readonly ArrayList fieldDataTypeNames = new ArrayList();
 
-			internal NResult(IDataReader reader) 
+			/// <summary>
+			/// Initializes a new instance of the NResult class.
+			/// </summary>
+			/// <param name="reader">The IDataReader to populate the Result with.</param>
+			/// <param name="isMidstream">
+			/// <c>true</c> if the <see cref="IDataReader"/> is already positioned on the record
+			/// to start reading from.
+			/// </param>
+			internal NResult(IDataReader reader, bool isMidstream) 
 			{
 				schemaTable = reader.GetSchemaTable();
 				
 				ArrayList recordsList = new ArrayList();
 				int rowIndex = 0;
 
-				while( reader.Read() ) 
+				// if we are in the middle of processing the reader then don't bother
+				// to move to the next record - just use the current one.
+				while( isMidstream || reader.Read() )				
 				{
 					if(rowIndex==0) 
 					{
@@ -371,7 +394,11 @@ namespace NHibernate.Driver
 					reader.GetValues(colValues);
 					recordsList.Add(colValues);
 					
+					// we can go back to reading a reader like normal and don't need
+					// to consider where we started from.
+					isMidstream = false;
 				}
+				
 
 				records = (object[][])recordsList.ToArray( typeof(object[]) );
 

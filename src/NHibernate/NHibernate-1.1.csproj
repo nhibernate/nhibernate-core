@@ -540,6 +540,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Driver\NHybridDataReader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Driver\OdbcDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -604,11 +609,6 @@
                 />
                 <File
                     RelPath = "Engine\IMapping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Engine\IPreparer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -964,11 +964,6 @@
                 />
                 <File
                     RelPath = "Impl\NonBatchingBatcher.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\PreparerImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -158,13 +158,6 @@ namespace NHibernate.Engine
 		IBatcher Batcher { get; }
 
 		/// <summary>
-		/// Get the NHibernate Command Preparer for this Session.
-		/// new to NH
-		/// </summary>
-		IPreparer Preparer {get; }
-		//TODO: this will eventually replace the Batcher...
-
-		/// <summary>
 		/// After actually inserting a row, record the fact taht the instance exists on the database
 		/// (needed for identity-column key generation)
 		/// </summary>

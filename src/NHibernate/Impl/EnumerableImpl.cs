@@ -36,7 +36,7 @@ namespace NHibernate.Impl
 		/// Create an <see cref="IEnumerable"/> wrapper over an <see cref="IDataReader"/>.
 		/// </summary>
 		/// <param name="reader">The <see cref="IDataReader"/> to enumerate over.</param>
-		/// <param name="cmd">TODO: is this needed?</param>
+		/// <param name="cmd">The <see cref="IDbCommand"/> used to create the <see cref="IDataReader"/>.</param>
 		/// <param name="sess">The <see cref="ISession"/> to use to load objects.</param>
 		/// <param name="types">The <see cref="IType"/>s contained in the <see cref="IDataReader"/>.</param>
 		/// <param name="columnNames">The names of the columns in the <see cref="IDataReader"/>.</param>
@@ -69,9 +69,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug("exhausted results");
 				_currentResults = null;
-				_reader.Close();
-				//TODO: H2.0.3 code to synch here to close the QueryStatement
-				//sess.Batcher.CloseQueryStatement( cmd, rs );
+				_sess.Batcher.CloseQueryCommand( _cmd, _reader );
 			} 
 			else 
 			{

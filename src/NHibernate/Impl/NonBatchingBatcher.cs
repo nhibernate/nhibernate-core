@@ -15,7 +15,7 @@ namespace NHibernate.Impl
 
 		public override void AddToBatch(int expectedRowCount) 
 		{
-			int rowCount = GetCommand().ExecuteNonQuery();
+			int rowCount = this.ExecuteNonQuery( this.GetCommand() );
 
 			//negative expected row count means we don't know how many rows to expect
 			if ( expectedRowCount>0 && expectedRowCount!=rowCount ) 

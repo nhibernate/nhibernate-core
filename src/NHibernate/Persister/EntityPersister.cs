@@ -715,6 +715,7 @@ namespace NHibernate.Persister
 				}
 
 				IDbCommand st = session.Batcher.PrepareCommand( (SqlString)lockers[lockMode] );
+				IDataReader reader = null;
 
 				try 
 				{
@@ -725,20 +726,24 @@ namespace NHibernate.Persister
 						VersionType.NullSafeSet(st, version, IdentifierColumnNames.Length, session);
 					}
 
-					IDataReader rs = st.ExecuteReader();
-					try 
-					{
-						if ( rs.Read()==false ) throw new StaleObjectStateException( MappedClass, id);
-					} 
-					finally 
-					{
-						rs.Close();
-					}
+//					IDataReader rs = st.ExecuteReader();
+					reader = session.Batcher.ExecuteReader( st );
+//					try 
+//					{
+						if ( reader.Read()==false ) 
+						{
+							throw new StaleObjectStateException( MappedClass, id);
+						}
+//					} 
+//					finally 
+//					{
+//						rs.Close();
+//					}
 				} 
 				//TODO: add something to catch a sql exception and log it here
 				finally 
 				{
-					session.Batcher.CloseCommand(st);
+					session.Batcher.CloseCommand( st, reader );
 				}
 			}
 		}
@@ -831,20 +836,20 @@ namespace NHibernate.Persister
 
 			IDbCommand statement = null;
 			IDbCommand idSelect = null;
+			IDataReader rs = null;
 
-			// still using the Preparer instead of Batcher because the Batcher won't work 
-			// with 2 commands being Prepared back to back - when the second SqlString gets
-			// prepared that would cause it to execute the first SqlString - which is not
-			// what we want because no values have been put into the parameter.
 			if(dialect.SupportsIdentitySelectInInsert) 
 			{
-				statement = session.Preparer.PrepareCommand( dialect.AddIdentitySelectToInsert(sql) );
+				statement = session.Batcher.PrepareCommand( dialect.AddIdentitySelectToInsert(sql) );
 				idSelect = statement;
 			}
 			else 
 			{
-				statement = session.Preparer.PrepareCommand( sql );
-				idSelect = session.Preparer.PrepareCommand( SqlIdentitySelect );
+				// do not Prepare the Command to be part of a batch.  When the second command
+				// is Prepared for the Batch that would cause the first one to be executed and
+				// we don't want that yet.  
+				statement = session.Batcher.Generate( sql );
+				idSelect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect ) );
 			}
 
 			try 
@@ -862,20 +867,17 @@ namespace NHibernate.Persister
 				// as a seperate command here
 				if(dialect.SupportsIdentitySelectInInsert==false) 
 				{
-					statement.ExecuteNonQuery();
+					session.Batcher.ExecuteNonQuery( statement );
 				}
 
-				IDataReader rs = idSelect.ExecuteReader();
+				rs = session.Batcher.ExecuteReader( idSelect ); 
 				object id;
-				try 
+
+				if ( !rs.Read() ) 
 				{
-					if ( !rs.Read() ) throw new HibernateException("The database returned no natively generated identity value");
-					id = IdentifierGeneratorFactory.Get( rs, IdentifierType.ReturnedClass );
-				} 
-				finally 
-				{
-					rs.Close();
+					throw new HibernateException("The database returned no natively generated identity value");
 				}
+				id = IdentifierGeneratorFactory.Get( rs, IdentifierType.ReturnedClass );
 
 				log.Debug("Natively generated identity: " + id);
 
@@ -888,8 +890,11 @@ namespace NHibernate.Persister
 			} 
 			finally 
 			{
-				// session.Batcher.CloseStatement(statement);
-				// session.Batcher.CloseStatement(idselect);
+				if( dialect.SupportsIdentitySelectInInsert==false ) 
+				{
+					session.Batcher.CloseCommand( statement, null );
+				}
+				session.Batcher.CloseCommand( idSelect, rs );
 			}
 		}
 
@@ -930,7 +935,7 @@ namespace NHibernate.Persister
 				if(IsVersioned) 
 				{
 					VersionType.NullSafeSet(deleteCmd, version, IdentifierColumnNames.Length, session);
-					Check(deleteCmd.ExecuteNonQuery(), id);
+					Check( session.Batcher.ExecuteNonQuery( deleteCmd ) , id);
 				}
 				else 
 				{
@@ -946,7 +951,7 @@ namespace NHibernate.Persister
 			{
 				if( IsVersioned ) 
 				{
-					session.Batcher.CloseCommand( deleteCmd );
+					session.Batcher.CloseCommand( deleteCmd, null );
 				}
 			}
 
@@ -1025,7 +1030,7 @@ namespace NHibernate.Persister
 				if ( IsVersioned ) 
 				{
 					VersionType.NullSafeSet( statement, oldVersion, versionParamIndex, session);
-					Check( statement.ExecuteNonQuery(), id );
+					Check( session.Batcher.ExecuteNonQuery( statement ), id );
 				} 
 				else 
 				{
@@ -1052,7 +1057,7 @@ namespace NHibernate.Persister
 			{
 				if( IsVersioned ) 
 				{
-					session.Batcher.CloseCommand( statement );
+					session.Batcher.CloseCommand( statement, null );
 				}
 			}
 		}

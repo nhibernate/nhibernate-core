@@ -91,9 +91,6 @@ namespace NHibernate.Impl
 		[NonSerialized] private int cascading = 0;
 
 		[NonSerialized] private IBatcher batcher;
-
-		[NonSerialized] private IPreparer preparer;
-
 		
 		/// <summary>
 		/// Represents the status of an entity with respect to 
@@ -521,15 +518,6 @@ namespace NHibernate.Impl
 			{
 				if (batcher==null) batcher = new NonBatchingBatcher(this); //TODO: should check something, no?
 				return batcher;
-			}
-		}
-
-		public IPreparer Preparer 
-		{
-			get 
-			{
-				if (preparer == null) preparer = new PreparerImpl(factory, this);
-				return preparer;
 			}
 		}
 

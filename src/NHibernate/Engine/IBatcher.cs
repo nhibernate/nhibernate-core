@@ -6,7 +6,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Engine 
 {
 	/// <summary>
-	/// Manages <c>IDbCommand</c>s for a session. 
+	/// Manages <see cref="IDbCommand">IDbCommands</see> and <see cref="IDataReader">IDataReaders</see> for a session. 
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -36,16 +36,12 @@ namespace NHibernate.Engine
 		/// </remarks>
 		IDbCommand PrepareQueryCommand(SqlString sql, bool scrollable);
 
-		// TODO: how applicable is this????
 		/// <summary>
-		/// Closes a command opened with <c>PrepareQueryStatement</c>
+		/// Closes the <see cref="IDbCommand"/> &amp; the <see cref="IDataReader"/> that was
+		/// opened with <c>PrepareQueryCommand</c>.
 		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="reader"></param>
-		/// <remarks>
-		/// TODO: Not sure this is needed - with jdbc you can close a statement - does this
-		/// have an equivalent of Disposing and IDbCommand???
-		/// </remarks>
+		/// <param name="cmd">The <see cref="IDbCommand"/> to close.</param>
+		/// <param name="reader">The <see cref="IDataReader"/> to close.</param>
 		void CloseQueryCommand(IDbCommand cmd, IDataReader reader);
 
 		/// <summary>
@@ -56,12 +52,12 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		IDbCommand PrepareCommand(SqlString sql);
 
-		//TODO: how applicable is this???
 		/// <summary>
 		/// Close a IDbCommand opened using <c>PrepareStatement()</c>
 		/// </summary>
-		/// <param name="cm"></param>
-		void CloseCommand(IDbCommand cm);
+		/// <param name="cm">The <see cref="IDbCommand"/> to ensure is closed.</param>
+		/// <param name="reader">The <see cref="IDataReader"/> to ensure is closed.</param>
+		void CloseCommand(IDbCommand cm, IDataReader reader);
 
 		/// <summary>
 		/// Get a batchable prepared statement to use for inserting / deleting / updating
@@ -97,13 +93,42 @@ namespace NHibernate.Engine
 		/// </summary>
 		void CloseCommands();
 
-		IDataReader GetDataReader(IDbCommand cmd);
+		/// <summary>
+		/// Gets an <see cref="IDataReader"/> by calling ExecuteReader on the <see cref="IDbCommand"/>.
+		/// </summary>
+		/// <param name="cmd">The <see cref="IDbCommand"/> to execute to get the <see cref="IDataReader"/>.</param>
+		/// <returns>The <see cref="IDataReader"/> from the <see cref="IDbCommand"/>.</returns>
+		/// <remarks>
+		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
+		/// <see cref="IDataReader"/>s it can have are followed.
+		/// </remarks>
+		IDataReader ExecuteReader(IDbCommand cmd);
+
+		/// <summary>
+		/// Executes the <see cref="IDbCommand"/>. 
+		/// </summary>
+		/// <param name="cmd">The <see cref="IDbCommand"/> to execute.</param>
+		/// <returns>The number of rows affected.</returns>
+		/// <remarks>
+		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
+		/// <see cref="IDataReader"/>s it can have are followed.
+		int ExecuteNonQuery(IDbCommand cmd);
 
 		/// <summary>
 		/// Must be called when an exception occurs.
 		/// </summary>
 		/// <param name="e"></param>
 		void AbortBatch(Exception e);
+
+		/// <summary>
+		/// Generates an <see cref="IDbCommand"/> from a <see cref="SqlString"/>.
+		/// </summary>
+		/// <param name="sqlString">The <see cref="SqlString"/> to use to generate an <see cref="IDbCommand"/>.</param>
+		/// <returns>An <see cref="IDbCommand"/> that is not attached to a Connection or Transaction.</returns>
+		/// <remarks>
+		/// A wrapper for calling the <c>IDriver.GenerateCommand</c> that adds logging.
+		/// </remarks>
+		IDbCommand Generate(SqlString sqlString); 
 
 	}
 }

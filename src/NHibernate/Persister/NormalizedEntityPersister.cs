@@ -943,6 +943,8 @@ namespace NHibernate.Persister
 				}
 
 				IDbCommand st = session.Batcher.PrepareCommand( (SqlString)lockers[lockMode] );
+				IDataReader rs = null;
+
 				try 
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
@@ -951,18 +953,19 @@ namespace NHibernate.Persister
 						VersionType.NullSafeSet(st, version, IdentifierColumnNames.Length, session);
 					}
 
-					IDataReader rs = st.ExecuteReader();
-					try 
-					{
+//					IDataReader rs = st.ExecuteReader();
+					rs = session.Batcher.ExecuteReader( st );
+//					try 
+//					{
 						if ( !rs.Read() ) 
 						{
 							throw new StaleObjectStateException(MappedClass, id);
 						}
-					} 
-					finally 
-					{
-						rs.Close();
-					}
+//					} 
+//					finally 
+//					{
+//						rs.Close();
+//					}
 				} 
 					//TODO: change this to catch a Sql Exception and log it
 				catch (Exception e) 
@@ -971,7 +974,7 @@ namespace NHibernate.Persister
 				} 
 				finally 
 				{
-					session.Batcher.CloseCommand(st);
+					session.Batcher.CloseCommand(st, rs);
 				}
 			}
 		}
@@ -1048,7 +1051,7 @@ namespace NHibernate.Persister
 
 				for (int i = 0; i < tableNames.Length; i++) 
 				{
-					insertCmds[i].ExecuteNonQuery();
+					session.Batcher.ExecuteNonQuery( insertCmds[i] );
 				}
 
 			} 
@@ -1063,7 +1066,7 @@ namespace NHibernate.Persister
 				{
 					if( insertCmds[i]!=null ) 
 					{
-						session.Batcher.CloseCommand( insertCmds[i] );
+						session.Batcher.CloseCommand( insertCmds[i], null );
 					}
 				}
 			}
@@ -1086,22 +1089,22 @@ namespace NHibernate.Persister
 
 			IDbCommand statement = null;
 			IDbCommand idSelect = null;
+			IDataReader rs = null;
 
 			object id;
 			
-			// still using the Preparer instead of Batcher because the Batcher won't work 
-			// with 2 commands being Prepared back to back - when the second SqlString gets
-			// prepared that would cause it to execute the first SqlString - which is not
-			// what we want because no values have been put into the parameter.
 			if(dialect.SupportsIdentitySelectInInsert) 
 			{
-				statement = session.Preparer.PrepareCommand( dialect.AddIdentitySelectToInsert(sql[0]) );
+				statement = session.Batcher.PrepareCommand( dialect.AddIdentitySelectToInsert(sql[0]) );
 				idSelect = statement;
 			}
 			else 
 			{
-				statement = session.Preparer.PrepareCommand(sql[0]);
-				idSelect = session.Preparer.PrepareCommand(SqlIdentitySelect);
+				// do not Prepare the Command to be part of a batch.  When the second command
+				// is Prepared for the Batch that would cause the first one to be executed and
+				// we don't want that yet.  
+				statement = session.Batcher.Generate( sql[0] );
+				idSelect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect ) );
 			}
 
 			try 
@@ -1119,22 +1122,15 @@ namespace NHibernate.Persister
 				// as a seperate command here
 				if(dialect.SupportsIdentitySelectInInsert==false) 
 				{
-					statement.ExecuteNonQuery();
+					session.Batcher.ExecuteNonQuery( statement );
 				}
 
-				IDataReader rs = idSelect.ExecuteReader();
-				try 
+				rs = session.Batcher.ExecuteReader( idSelect );
+				if ( !rs.Read() ) 
 				{
-					if ( !rs.Read() ) 
-					{
-						throw new HibernateException("The database returned no natively generated identity value");
-					}
-					id = IdentifierGeneratorFactory.Get( rs, IdentifierType.ReturnedClass );
-				} 
-				finally 
-				{
-					rs.Close();
+					throw new HibernateException("The database returned no natively generated identity value");
 				}
+				id = IdentifierGeneratorFactory.Get( rs, IdentifierType.ReturnedClass );
 
 				log.Debug("Natively generated identity: " + id);
 
@@ -1146,18 +1142,20 @@ namespace NHibernate.Persister
 			} 
 			finally 
 			{
-				// session.Batcher.CloseStatement(statement);
-				// session.Batcher.CloseStatement(idselect);
+				if( dialect.SupportsIdentitySelectInInsert==false ) 
+				{
+					session.Batcher.CloseCommand( statement, null );
+				}
+				session.Batcher.CloseCommand( idSelect, rs );
 			}
 
 			for (int i=1; i<naturalOrderTableNames.Length; i++ ) 
 			{
-				statement = session.Preparer.PrepareCommand(sql[i]);
-
+				statement = session.Batcher.PrepareCommand( sql[i] );
 				try 
 				{
 					Dehydrate(id, fields, notNull, i, statement, session);
-					statement.ExecuteNonQuery();
+					session.Batcher.ExecuteNonQuery( statement );
 				} 
 					//TODO: change this to SQLException and log it
 				catch ( Exception e) 
@@ -1166,7 +1164,7 @@ namespace NHibernate.Persister
 				} 
 				finally 
 				{
-					//session.Batcher.CloseStatement(statement);
+					session.Batcher.CloseCommand( statement, null );
 				}
 			}
 			return id;
@@ -1205,7 +1203,7 @@ namespace NHibernate.Persister
 					// Do the key. The key is immutable so we can use the _current_ object state
 					IdentifierType.NullSafeSet( statements[i], id, 0, session );
 
-					Check( statements[i].ExecuteNonQuery(), id );
+					Check( session.Batcher.ExecuteNonQuery( statements[i] ), id );
 				}
 			} 
 			catch (Exception e) 
@@ -1216,7 +1214,10 @@ namespace NHibernate.Persister
 			{
 				for (int i=0; i<naturalOrderTableNames.Length; i++) 
 				{
-					if (statements[i]!=null ) session.Batcher.CloseCommand( statements[i] );
+					if (statements[i]!=null ) 
+					{
+						session.Batcher.CloseCommand( statements[i], null );
+					}
 				}
 			}
 		}
@@ -1302,7 +1303,10 @@ namespace NHibernate.Persister
 
 				for (int i=0; i<tables; i++ ) 
 				{
-					if ( includeTable[i] ) Check(statements[i].ExecuteNonQuery(), id );
+					if ( includeTable[i] ) 
+					{
+						Check( session.Batcher.ExecuteNonQuery( statements[i] ), id );
+					}
 				}
 			} 
 			// TODO: change to SQLException and log
@@ -1315,7 +1319,7 @@ namespace NHibernate.Persister
 				{
 					if ( statements[i]!=null ) 
 					{
-						session.Batcher.CloseCommand( statements[i] );
+						session.Batcher.CloseCommand( statements[i], null );
 					}
 				}
 			}
