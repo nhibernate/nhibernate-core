@@ -1,9 +1,4 @@
 using System;
-using System.Data;
-
-using NHibernate.Driver;
-using NHibernate.Engine;
-using NHibernate.Type;
 
 namespace NHibernate.SqlCommand 
 {	
@@ -11,6 +6,11 @@ namespace NHibernate.SqlCommand
 	/// Extension to the Parameter class that supports Parameters with
 	/// a Precision and a Scale
 	/// </summary>
+	/// <remarks>
+	/// This should only be used when the property needs to be mapped with
+	/// a <c>type="Decimal(20,4)"</c> because for some reason the default parameter
+	/// generation of <c>decimal(19,5)</c> (MsSql specific) is not good enough.
+	/// </remarks>
 	public class ParameterPrecisionScale : Parameter 
 	{
 		private byte precision;
@@ -28,14 +28,6 @@ namespace NHibernate.SqlCommand
 			set {scale = value;}
 		}
 
-		public override IDbDataParameter GetIDbDataParameter(IDbCommand command, IDriver driver, string name) 
-		{
-			IDbDataParameter param = base.GetIDbDataParameter (command, driver, name);
-			param.Precision = precision;
-			param.Scale = scale;
-
-			return param;
-		}
 
 		#region System.Object Members
 		

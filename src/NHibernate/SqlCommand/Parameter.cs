@@ -1,7 +1,7 @@
 using System;
-using System.Data;
+//using System.Data;
 
-using NHibernate.Driver;
+//using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -15,59 +15,30 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class Parameter: ICloneable
 	{
-		private DbType dbType;
-		
 		private string tableAlias;
 		private string name;
-
-		public System.Data.DbType DbType {
-			get	{return dbType;}
-			set {this.dbType = value;}
-		}
-
-		public string Name {
+		private SqlType _sqlType;
+		
+		public string Name 
+		{
 			get{ return name;}
 			set{ this.name = value;}
 		}
 
 
-		public string TableAlias {
+		public string TableAlias 
+		{
 			get {return tableAlias;}
 			set {this.tableAlias = value;}
 		}
 
-		/// <summary>
-		/// Returns a string version of the Parameter that is in the correct
-		/// format for the SQL in the CommandText.
-		/// </summary>
-		/// <param name="driver">The Driver that knows how to format the name.</param>
-		/// <param name="name">The name to format for SQL.</param>
-		/// <returns>A valid SQL string for this Parameter.</returns>
-		public string GetSqlName(IDriver driver, string name) 
+		
+		public SqlType SqlType 
 		{
-			return driver.FormatNameForSql(name);
+			get { return _sqlType; }
+			set { _sqlType = value; }
 		}
 
-		/// <summary>
-		/// Returns a string version of the Parameter that is in the correct
-		/// format for the IDbDataParameter.Name
-		/// </summary>
-		/// <param name="driver">The Driver that knows how to format the name.</param>
-		/// <param name="name">The name to format for the IDbDataParameter.</param>
-		/// <returns>A valid IDbDataParameter Name for this  Parameter.</returns>
-		public string GetParameterName(IDriver driver, string name) 
-		{
-			return driver.FormatNameForParameter(name);
-		}
-
-		public virtual IDbDataParameter GetIDbDataParameter(IDbCommand command, IDriver driver, string name) 
-		{
-			IDbDataParameter param = command.CreateParameter();
-			param.DbType = dbType;
-			param.ParameterName = GetParameterName(driver, name);
-
-			return param;
-		}
 
 		/// <summary>
 		/// Generates an Array of Parameters for the columns that make up the IType
@@ -75,7 +46,8 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">The names of the Columns that compose the IType</param>
 		/// <param name="type">The IType to turn into Parameters</param>
 		/// <returns>An Array of IParameter objects</returns>
-		public static Parameter[] GenerateParameters(ISessionFactoryImplementor factory, string[] columnNames, IType type) {
+		public static Parameter[] GenerateParameters(ISessionFactoryImplementor factory, string[] columnNames, IType type) 
+		{
 			return Parameter.GenerateParameters(factory, null, columnNames, type);
 		}
 
@@ -88,7 +60,8 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">The names of the Columns that compose the IType</param>
 		/// <param name="type">The IType to turn into Parameters</param>
 		/// <returns>An Array of IParameter objects</returns>
-		public static Parameter[] GenerateParameters(ISessionFactoryImplementor factory, string tableAlias, string[] columnNames, IType type) {
+		public static Parameter[] GenerateParameters(ISessionFactoryImplementor factory, string tableAlias, string[] columnNames, IType type) 
+		{
 			SqlType[] sqlTypes = type.SqlTypes(factory);
 
 			Parameter[] parameters = new Parameter[sqlTypes.Length];
@@ -110,8 +83,9 @@ namespace NHibernate.SqlCommand
 				}
 
 				parameters[i].Name = columnNames[i];
-				parameters[i].DbType = sqlTypes[i].DbType;
 				parameters[i].TableAlias = tableAlias;
+				parameters[i].SqlType = sqlTypes[i];
+
 			}
 
 
@@ -134,7 +108,11 @@ namespace NHibernate.SqlCommand
 			//Step 3: Check each important field
 			
 			// these 2 fields will not be null so compare them...
-			if(this.DbType.Equals(rhs.DbType)==false || this.Name.Equals(rhs.Name)==false) return false;
+			if( this.SqlType.Equals(rhs.SqlType)==false 
+				|| this.Name.Equals(rhs.Name)==false) 
+			{
+				return false;
+			}
 
 			// becareful with TableAlias being null
 			if(this.TableAlias==null && rhs.TableAlias==null) 
@@ -157,7 +135,7 @@ namespace NHibernate.SqlCommand
 
 			unchecked 
 			{
-				hashCode = dbType.GetHashCode() + name.GetHashCode();
+				hashCode = _sqlType.GetHashCode() + name.GetHashCode();
 				if(tableAlias!=null) 
 				{
 					hashCode += tableAlias.GetHashCode();
@@ -186,11 +164,14 @@ namespace NHibernate.SqlCommand
 			return paramClone;
 		}
 
-		object ICloneable.Clone() {
+		object ICloneable.Clone() 
+		{
 			return Clone();
 		}
 
 		#endregion
+	
+		
 	}
 
 }
