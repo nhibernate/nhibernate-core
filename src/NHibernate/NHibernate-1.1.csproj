@@ -784,6 +784,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\Example.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\Expression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -845,6 +850,11 @@
                 />
                 <File
                     RelPath = "Expression\LtPropertyExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\MatchMode.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2060,6 +2070,11 @@
                 />
                 <File
                     RelPath = "Type\EntityType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\EnumType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
