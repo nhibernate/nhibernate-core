@@ -8,6 +8,8 @@ Build 0.5.0.0
 - Updated to latest MySql Data Provider and changed classes to MySqlDataDriver.  Removed binaries from CVS since they are GPL now.
 - Isolated test and classes that use DbType.Time into their own fixtures.  Data Drivers don't implement this consistently.
 - Fixed problem where HQL was not parsing Fully Qualified Enums correctly. (Peter Smulovics)
+- Fixed Int16 not working as a <version> Property.
+- Modified NHibernate and Iesi.Collections to have the attribute CLSCompliantAttribute(true).
 
 Alpha Build 0.4.0.0
 ======================== 
