@@ -45,7 +45,7 @@ namespace NHibernate.Sql {
 					buf.Insert(0, " is null or ")
 						.Insert(0, columnName)
 						.Insert(0, StringHelper.OpenParen)
-						.Append(StringHelper.OpenParen);
+						.Append(StringHelper.ClosedParen);
 			} else {
 				string value = values[0] as string;
 				if ( "null".Equals(value) ) {
