@@ -217,6 +217,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DialectTest\DialectFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialectTest\MsSqlDialectFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ExpressionTest\BaseExpressionFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
