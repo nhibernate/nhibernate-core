@@ -681,7 +681,7 @@ namespace NHibernate.Hql {
 		public IEnumerable GetEnumerable(object[] values, IType[] types, RowSelection selection, 
 			IDictionary namedParams, IDictionary lockModes, ISessionImplementor session) {
 			IDbCommand st = PrepareQueryStatement(
-				ApplyLocks(SQLString, lockModes, session.Factory.Dialect),
+				ApplyLocks(SqlString, lockModes, session.Factory.Dialect).ToString(),
 				values, types, namedParams, selection, false, session);
 			try {
 				SetMaxRows(st, selection);
@@ -863,7 +863,7 @@ namespace NHibernate.Hql {
 			return lockModeArray;
 		}
 
-		protected override string ApplyLocks(string sql, IDictionary lockModes, Dialect.Dialect dialect)
+		protected override SqlString ApplyLocks(SqlString sql, IDictionary lockModes, Dialect.Dialect dialect)
 		{
 			if (lockModes == null || lockModes.Count == 0)
 			{
@@ -871,25 +871,25 @@ namespace NHibernate.Hql {
 			}
 			else if (dialect.SupportsForUpdate)
 			{
-				//LockMode upgradeType = null;
-				//ForUpdateFragment updateClause = new ForUpdateFragment();
-				//IDictionaryEnumerator it = lockModes.GetEnumerator();
-				//it.MoveNext();
-				//DictionaryEntry me = (DictionaryEntry) it.Current;
-				//String name = GetAliasName( (String) me.Key );
-				//LockMode lockMode = (LockMode) me.Value;
-				//if ( LockMode.Read.lessThan(lockMode) ) 
-				//{
-				//	updateClause.addTableAlias(name);
-				//	if ( upgradeType!=null && lockMode!=upgradeType ) throw new QueryException("mixed LockModes");
-				//	upgradeType = lockMode;
-				//}
-				//if ( upgradeType==LockMode.UpgradeNoWait && dialect.SupportsForUpdateNoWait) 
-				//{ 
-				//	updateClause.setNowait(true);
-				//}
-			    //return sql + updateClause.ToFragmentString();
-				return sql;
+				LockMode upgradeType = null;
+				ForUpdateFragment updateClause = new ForUpdateFragment();
+				IDictionaryEnumerator it = lockModes.GetEnumerator();
+				it.MoveNext();
+				DictionaryEntry me = (DictionaryEntry) it.Current;
+				String name = GetAliasName( (String) me.Key );
+				LockMode lockMode = (LockMode) me.Value;
+				if ( LockMode.Read.LessThan(lockMode) ) 
+				{
+					updateClause.AddTableAlias(name);
+					if ( upgradeType!=null && lockMode!=upgradeType ) throw new QueryException("mixed LockModes");
+					upgradeType = lockMode;
+				}
+				if ( upgradeType==LockMode.UpgradeNoWait && dialect.SupportsForUpdateNoWait) 
+				{ 
+					updateClause.NoWait = true;
+				}
+
+				return sql.Append(updateClause.ToSqlStringFragment());
 			}
 			else
 			{
