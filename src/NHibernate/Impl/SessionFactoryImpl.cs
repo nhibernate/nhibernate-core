@@ -402,7 +402,7 @@ namespace NHibernate.Impl {
 		{
 			//(IClassPersister) was replaced by as
 			IClassPersister result = classPersistersByName[className] as IClassPersister;
-			if ( result==null) throw new MappingException( "No persister for: " + className );
+			//if ( result==null) throw new MappingException( "No persister for: " + className );
 			return result;
 		}
 
