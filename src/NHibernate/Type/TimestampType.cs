@@ -8,7 +8,8 @@ namespace NHibernate.Type
 	
 	/// <summary>
 	/// This is almost the exact same type as the DateTime except it can be used
-	/// in the version column and stores it to the accuracy the Database supports.
+	/// in the version column, stores it to the accuracy the Database supports, 
+	/// and will default to the value of DateTime.Now if the value is null.
 	/// </summary>
 	/// <remarks>
 	/// <p>
@@ -49,12 +50,22 @@ namespace NHibernate.Type
 			get { return typeof(DateTime); }
 		}
 
+		/// <summary>
+		/// Sets the value of this Type in the IDbCommand.
+		/// </summary>
+		/// <param name="st">The IDbCommand to add the Type's value to.</param>
+		/// <param name="value">The value of the Type.</param>
+		/// <param name="index">The index of the IDataParameter in the IDbCommand.</param>
+		/// <remarks>
+		/// No null values will be written to the IDbCommand for this Type. 
+		/// </remarks>
 		public override void Set(IDbCommand st, object value, int index) 
 		{
 			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			if((DateTime)value<new DateTime(1753,1,1))
+
+			if( !(value is DateTime) ) 
 			{
-				parm.Value = DBNull.Value;
+				parm.Value = DateTime.Now;
 			}
 			else 
 			{
