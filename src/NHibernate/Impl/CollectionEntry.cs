@@ -11,7 +11,7 @@ namespace NHibernate.Impl
 	/// of a collection with respect to its persistent state
 	/// </summary>
 	[Serializable]
-	public class CollectionEntry : ICollectionSnapshot 
+	internal class CollectionEntry : ICollectionSnapshot 
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(CollectionEntry) );
 
