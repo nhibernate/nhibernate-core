@@ -44,7 +44,6 @@
 			debug="${build.debug}"
 			doc="${build.dir}/bin/${nant.project.name}.xml"
 			nowarn="1591"
-			verbose="true"
 		>
 			<sources failonempty="true">
 				<includes name="*.cs" />

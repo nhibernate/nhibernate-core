@@ -1,0 +1,2 @@
+NAnt -D:project.config=release -D:sign=true clean build-with-clover test >release-with-clover.log
+NAnt -D:project.config=release -D:sign=true -D:nunit2report.installed=true clean-bin package >release-package.log

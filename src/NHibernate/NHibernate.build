@@ -5,7 +5,7 @@
 	default="build" 
 	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
 >
-
+	
 	<!--
 		Required properties:
 			* build.dir				- (path) root level to build to, assemblies will go in ${build.dir}/bin
@@ -15,12 +15,28 @@
 			* project.version.major	- the major number of the build
 			* project.version.minor - the minor number of the build
 			* project.version.build - the build number
-			* sign					- (true|false)indicates if the Assembly should be signed.
+			* sign					- (true|false) indicates if the Assembly should be signed.
+			* clover.enabled		- (true|false) indicates if Clover.NET should handle the build
 	-->
-
+	
+	<if propertytrue="clover.enabled">	
+		<loadtasks assembly="${clover.home}/CloverNAnt-0.84.dll" />
+	</if>
+	
 	<property name="keyFile" value="..\NHibernate.snk" />
 	
 	<target name="build" description="Build NHibernate">
+		
+		<if propertytrue="clover.enabled">	
+			<mkdir dir="..\CloverBuild" />
+			<clover-setup 
+					initstring="..\CloverBuild\clover.cdb"
+					builddir="..\CloverBuild"
+					enabled="${clover.enabled}"
+					flushinterval="1000"
+			/>
+		</if>
+			
 		<!-- ensure the AssemblyInfo is writable -->
 		<attrib file="AssemblyInfo.cs" readonly="false" />
 		
@@ -54,10 +70,6 @@
 			
 			<sources failonempty="true">
 				<includes name="**/*.cs" />
-				<excludes name="Eg/**" />
-				<excludes name="InternalTest/**/*.cs" />
-				<excludes name="Test/**/*.cs" />
-				<excludes name="Util/*Test.cs" />
 				<excludes name="Dialect/HSQLDialect.cs" />
 				<excludes name="Dialect/InterbaseDialect.cs" />
 				<excludes name="Dialect/SAPDBDialect.cs" />
@@ -80,6 +92,27 @@
 			</references>
 	
 		</csc>
+		
+	</target>
+	
+	<target name="coverage-report">
+		
+		<if propertytrue="clover.enabled">
+			
+			<mkdir dir="${build.dir}/clover" />
+			<clover-setup 
+					initstring="..\CloverBuild\clover.cdb"
+					builddir="..\CloverBuild"
+					enabled="${clover.enabled}"
+					flushinterval="1000"
+			/>
+			<clover-report>
+				<current title="NHibernate Clover Report" output="${build.dir}/clover" >
+					<format type="html" orderBy="Alpha" />
+				</current>
+			</clover-report>
+			
+		</if>
 		
 	</target>
 	

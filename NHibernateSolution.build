@@ -6,6 +6,18 @@
 	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
 >
 	<!-- 
+		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
+		then change this to true.  It generates a nice looking html report for the test files
+	-->
+	<property name="nunit2report.installed" value="false" />
+	
+	<!--
+		Cenqua provided a license of Clover.NET for the NHibernate project to use. 
+	-->
+	<property name="clover.enabled" value="false" />
+	<property name="clover.home" value="C:/Program Files/Cenqua/Clover.NET" />
+	
+	<!-- 
 		Use this to determine if the key file NHibernate.key should be used to 
 		sign the Assemblies.  This defaults to false since users doing their own
 		build have _no_ copy of the private key.  If they do their own private
@@ -61,6 +73,10 @@
 		<delete dir="${build.dir}" failonerror="false" />
 	</target>
 	
+	<target name="clean-bin" depends="init" description="Deletes the current bin folder">
+		<delete dir="${build.dir}/bin" failonerror="false" />
+	</target>
+	
 	<target name="cleanall" description="Deletes every build configuration">
 		<echo message="Deleting all builds from all configurations" />
 		<delete dir="build" failonerror="false" />
@@ -74,6 +90,24 @@
 		<nant target="build" buildfile="src/HashCodeProvider/HashCodeProvider.build" />
 		<nant target="build" buildfile="src/Iesi.Collections/Iesi.Collections.build" />
 		
+	</target>
+	
+	<target name="build-with-clover" depends="init" description="Builds current config with Clover coverage">
+		<!-- 
+			mark this as being a clover enabled build and then just let the normal build
+			process take place
+		-->
+		<property name="clover.enabled" value="true" />
+	</target>
+	
+	<target name="build-without-clover" depends="init" description="Ensures the build is done without Clover coverage">
+		<!--
+			This does not really need to be called unless the clover.enabled property has been explicitly 
+			set to true by some other means since clover.enabled defaults to false.  It is my intention
+			to first do a clover build to get the coverage then to do a non-clover build to get the 
+			clover-free dlls.
+		-->
+		<property name="clover.enabled" value="false" />
 	</target>
 	
 	<target name="build" depends="init" description="Builds current configuration">
@@ -146,7 +180,9 @@
 			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
 			value="conn string here" 
 		/>
-		
+
+		<!-- the NHibernate.build takes care of determining if this is a clover build or not -->
+		<nant target="coverage-report" buildfile="src/NHibernate/NHibernate.build" />
 	</target>
 	
 	<target name="sdkdoc" depends="init" description="Generates MSDN sytle documentation">
@@ -154,7 +190,9 @@
 			<assemblies basedir="${build.dir}/bin">
 				<includes name="NHibernate.dll" />
 			</assemblies>
-			
+			<summaries>
+				<includes name="src/NHibernate/NamespaceSummary.xml" />
+			</summaries>
 			<documenters>
 				<documenter name="MSDN">
 					<property name="OutputDirectory" value="${build.dir}/doc/sdk" />
@@ -190,9 +228,9 @@
 					<property name="UseNamespaceDocSummaries" value="False" />
 					<property name="AutoPropertyBackerSummaries" value="False" />
 					<property name="AutoDocumentConstructors" value="True" />
-					<property name="DocumentAttributes" value="False" />
+					<property name="DocumentAttributes" value="True" />
 					<property name="ShowTypeIdInAttributes" value="False" />
-					<property name="DocumentedAttributes" value="" />
+					<property name="DocumentedAttributes" value="True" />
 					<property name="GetExternalSummaries" value="True" />
 					<property name="EditorBrowsableFilter" value="Off" />
 					<property name="UseNDocXmlFile" value="" />
@@ -217,8 +255,13 @@
 				<includes name="lib/*" />
 				<includes name="${lib.dir}/**" />
 				
-				<!-- exclude the UnitTesting project that is no longer used -->
+				<!-- 
+					exclude the UnitTesting project that is no longer used and the
+					Clover modified source files.
+				-->
 				<excludes name="src/UnitTesting/**" />
+				<excludes name="src/CloverBuild/**" />
+				
 				<includes name="src/**" />
 				
 				<includes name="NHibernateSolution.build" />
