@@ -327,14 +327,15 @@ namespace NHibernate.Impl
 
 		public FilterTranslator GetFilter(string query, string collectionRole, bool scalar) 
 		{
-			object cacheKey = FilterKeyFactory.NewInstance(collectionRole, query, scalar );
-
-			FilterTranslator q = (FilterTranslator) Get(cacheKey);
-			if ( q==null ) 
-			{
-				q = new FilterTranslator(dialect);
-				Put(cacheKey, q);
-			}
+//			object cacheKey = FilterKeyFactory.NewInstance(collectionRole, query, scalar );
+//
+//			FilterTranslator q = (FilterTranslator) Get(cacheKey);
+//			if ( q==null ) 
+//			{
+//				q = new FilterTranslator(dialect);
+//				Put(cacheKey, q);
+//			}
+			FilterTranslator q = new FilterTranslator(dialect);
 			q.Compile(collectionRole, this, query, querySubstitutions, scalar);
 			
 			return q;
