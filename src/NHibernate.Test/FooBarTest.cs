@@ -644,21 +644,147 @@ namespace NHibernate.Test
 		}
 		
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void ComponentParent()
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			BarProxy bar = new Bar();
+			bar.Component = new FooComponent();
+			Baz baz = new Baz();
+			baz.Components = new FooComponent[] { new FooComponent(), new FooComponent()};
+			s.Save(bar);
+			s.Save(baz);
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			
+			bar = (BarProxy)s.Load(typeof(Bar), bar.Key);
+			s.Load(baz, baz.Code);
+
+			Assert.AreEqual(bar, bar.BarComponent.Parent);
+			Assert.IsTrue( baz.Components[0].Baz==baz && baz.Components[1].Baz==baz);
+
+			s.Delete(baz);
+			s.Delete(bar);
+
+			t.Commit();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void CollectionCache() 
 		{
+			ISession s = sessions.OpenSession();
+			Baz baz = new Baz();
+			baz.SetDefaults();
+			s.Save(baz);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			s.Load( typeof(Baz), baz.Code );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz) s.Load( typeof(Baz), baz.Code );
+			s.Delete(baz);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		//[Ignore("Test not written yet.")]
 		public void AssociationId() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Bar bar = new Bar();
+			string id = (string)s.Save(bar);
+			MoreStuff more = new MoreStuff();
+			more.Name = "More Stuff";
+			more.IntId = 12;
+			more.StringId = "id";
+			Stuff stuf = new Stuff();
+			stuf.MoreStuff = more;
+			more.Stuffs = new ArrayList();
+			more.Stuffs.Add(stuf);
+			stuf.Foo = bar;
+			stuf.Id = 1234;
+			
+			//stuf.setProperty(TimeZone.getDefault() );
+			s.Save(more);
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			//The special property (lowercase) id may be used to reference the unique identifier of an object. (You may also use its property name.) 
+			string hqlString = "from s in class Stuff where s.Foo.id = ? and s.id.Id = ? and s.MoreStuff.id.IntId = ? and s.MoreStuff.id.StringId = ?";
+			object[] values = new object[] {bar, (long)1234, (int)12, "id" };
+			Type.IType[] types = new Type.IType[]
+				{
+					NHibernate.Entity(typeof(Foo)),
+					NHibernate.Int64,
+					NHibernate.Int32,
+					NHibernate.String 
+				};
+		
+
+			IList results = s.Find(hqlString, values, types);
+			Assert.AreEqual(1, results.Count);
+
+			hqlString = "from s in class Stuff where s.Foo.id = ? and s.id.Id = ? and s.MoreStuff.Name = ?";
+			values = new object[] {bar, (long)1234, "More Stuff"};
+			types = new Type.IType[] 
+				{
+					NHibernate.Entity(typeof(Foo)),
+					NHibernate.Int64,
+					NHibernate.String
+				};
+			
+			results = s.Find(hqlString, values, types);
+			Assert.AreEqual(1, results.Count);
+
+
+			hqlString = "from s in class Stuff where s.Foo.String is not null";
+			s.Find(hqlString);
+
+			hqlString = "from s in class Stuff where s.Foo > '0' order by s.Foo";
+			results = s.Find(hqlString);
+			Assert.AreEqual(1, results.Count);
+
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			FooProxy foo = (FooProxy)s.Load(typeof(Foo), id);
+			s.Load(more, more);
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			Stuff stuff = new Stuff();
+			stuff.Foo = foo;
+			stuff.Id = 1234;
+			stuff.MoreStuff = more;
+			s.Load(stuff, stuff);
+
+			// TODO: figure out what to do with TimeZone
+			//Assert.IsTrue( stuff.getProperty().equals( TimeZone.getDefault() ) );
+			Assert.AreEqual("More Stuff", stuff.MoreStuff.Name);
+			s.Delete("from ms in class MoreStuff");
+			s.Delete("from foo in class Foo");
+			
+			t.Commit();
+			s.Close();
+
 		}
 
 		[Test]
