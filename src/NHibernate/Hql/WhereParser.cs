@@ -1,4 +1,3 @@
-//$Id$
 using System;
 using System.Collections;
 using System.Collections.Specialized;
@@ -354,10 +353,10 @@ namespace NHibernate.Hql {
 			}
 			pathExpressionParser.End(q);
 			if (pathExpressionParser.IsCollectionValued) {
-				OpenExpression(q, StringHelper.EmptyString);
+				OpenExpression(q, String.Empty);
 				AppendToken(q, pathExpressionParser.GetCollectionSubquery() );
 				q.AddIdentifierSpace(pathExpressionParser.CollectionTable);
-				CloseExpression(q, StringHelper.EmptyString);
+				CloseExpression(q, String.Empty);
 			} else {
 				if (pathExpressionParser.IsExpectingCollectionIndex) {
 					expectingIndex++;
@@ -370,7 +369,7 @@ namespace NHibernate.Hql {
 
 		private void AddJoin( JoinFragment ojf, QueryTranslator q ) {
 			JoinFragment fromClause = q.CreateJoinFragment();
-			fromClause.AddJoins( ojf.ToFromFragmentString, StringHelper.EmptyString );
+			fromClause.AddJoins( ojf.ToFromFragmentString, String.Empty );
 			q.AddJoin( pathExpressionParser.Name, fromClause );
 			AddToCurrentJoin( ojf.ToWhereFragmentString );		
 		}

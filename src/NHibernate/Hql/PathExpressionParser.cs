@@ -1,4 +1,3 @@
-//$Id$
 using System;
 using System.Collections;
 using System.Text;
@@ -175,8 +174,8 @@ namespace NHibernate.Hql {
 					return EntityID;
 				} else {
 					return currentProperty + 
-						(skippedId ? StringHelper.Dot + EntityID : StringHelper.EmptyString) + 
-						((componentPath == null) ? StringHelper.EmptyString : StringHelper.Dot + componentPath);
+						(skippedId ? StringHelper.Dot + EntityID : String.Empty) + 
+						((componentPath == null) ? String.Empty : StringHelper.Dot + componentPath);
 				}
 			}
 		}
@@ -229,7 +228,7 @@ namespace NHibernate.Hql {
 		public void Start(QueryTranslator q) {
 			if (!continuation) {
 				Reset(q);
-				path = StringHelper.EmptyString;
+				path = String.Empty;
 			}
 		}
 
@@ -415,7 +414,7 @@ namespace NHibernate.Hql {
 				collectionElementType = memberPersister.IndexType;
 			} else if (token.Equals(CollectionSize)) {
 				collectionElementColumns = new string[] { "count(*)" };
-				collectionElementType = NHibernate.Integer;
+				collectionElementType = NHibernate.Int32;
 			} else if (token.Equals(CollectionMaxIndex)) {
 				if (!memberPersister.HasIndex) throw new QueryException("unindexed collection before .maxIndex");
 				string[] cols = memberPersister.IndexColumnNames;

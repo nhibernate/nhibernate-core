@@ -1,4 +1,3 @@
-//$Id$
 using System;
 using System.Collections;
 using System.Collections.Specialized;
@@ -13,6 +12,7 @@ using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister;
 using NHibernate.Sql;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 using BaseLoader = NHibernate.Loader.Loader;
@@ -181,6 +181,13 @@ namespace NHibernate.Hql {
 
 		public override string SQLString {
 			get { LogQuery(queryString, sqlString); return sqlString; }
+		}
+
+
+		public override SqlString SqlString{
+			get {
+				throw new InvalidOperationException("SqlString not yet implemented in HQL.QueryTranslator");
+			}
 		}
 
 		private string Prefix(string s) {
@@ -382,7 +389,7 @@ namespace NHibernate.Hql {
 			for (int i=0; i<size; i++) {
 				string name = (string) returnTypes[i];
 				persisters[i] = GetPersisterForName(name);
-				suffixes[i] = (size==1) ? StringHelper.EmptyString : i.ToString() + StringHelper.Underscore;
+				suffixes[i] = (size==1) ? String.Empty : i.ToString() + StringHelper.Underscore;
 			}
 
 			string scalarSelect = RenderScalarSelect();
@@ -447,7 +454,7 @@ namespace NHibernate.Hql {
 
 			for (int k=0; k<size; k++) {
 				string name = (string) returnTypes[k];
-				string suffix = size==1 ? StringHelper.EmptyString : k.ToString() + StringHelper.Underscore;
+				string suffix = size==1 ? String.Empty : k.ToString() + StringHelper.Underscore;
 				sql.AddSelectFragmentString( persisters[k].IdentifierSelectFragment(name, suffix) );
 			}
 		}
@@ -455,7 +462,7 @@ namespace NHibernate.Hql {
 		private void RenderPropertiesSelect(QuerySelect sql) {
 			int size = returnTypes.Count;
 			for (int k=0; k<size; k++) {
-				string suffix = (size==1) ? StringHelper.EmptyString : k.ToString() + StringHelper.Underscore;
+				string suffix = (size==1) ? String.Empty : k.ToString() + StringHelper.Underscore;
 				string name = (string) returnTypes[k];
 				sql.AddSelectFragmentString( persisters[k].PropertySelectFragment(name, suffix) );
 			}
@@ -588,7 +595,7 @@ namespace NHibernate.Hql {
 			JoinFragment join = CreateJoinFragment();
 			if ( persister.IsOneToMany ) {
 				join.AddCrossJoin( persister.QualifiedTableName, elementName );
-				join.AddCondition( elementName, keyColumnNames, " = ?");
+				join.AddCondition( elementName, keyColumnNames, " = " + StringHelper.SqlParameter);
 				if ( persister.HasWhere ) join.AddCondition( persister.GetSQLWhereString(elementName) );
 			} else {
 				//many-to-many
@@ -596,7 +603,7 @@ namespace NHibernate.Hql {
 				AddCollection(collectionName, collectionRole);
 				join.AddCrossJoin(collectionName, collectionRole);
 				join.AddCrossJoin( persister.QualifiedTableName, collectionName );
-				join.AddCondition( collectionName, keyColumnNames, " = ?");
+				join.AddCondition( collectionName, keyColumnNames, " = " + StringHelper.SqlParameter);
 
 				IQueryable p = GetPersister( elemType.PersistentClass );
 				string[] idColumnNames = p.IdentifierColumnNames;
@@ -762,7 +769,8 @@ namespace NHibernate.Hql {
 			RowSelection selection,
 			IDictionary namedParams) {
 
-			return base.Find(session, values, types, returnProxies, selection, namedParams);
+			// TODO: fix the last parameter that is suppoesd to use lockModes
+			return base.Find(session, values, types, returnProxies, selection, namedParams, null);
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IDataReader rs, ISessionImplementor session) {
@@ -798,6 +806,12 @@ namespace NHibernate.Hql {
 			get { return holderClass; }
 			set { holderClass = value; }
 		}
+
+		//TODO: implement this method - in here for compilation
+		protected override LockMode[] GetLockModes(IDictionary lockModes) {
+			return null;
+		}
+
 
 	}
 }

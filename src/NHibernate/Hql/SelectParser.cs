@@ -93,7 +93,7 @@ namespace NHibernate.Hql {
 			} else if (aggregateFunctions.Contains(lctoken)) {
 				if (!ready) throw new QueryException(", expected before aggregate function in SELECT: " + token);
 				if (lctoken.Equals("count")) {
-					q.AddSelectScalar(NHibernate.Integer);//must be handled differently 'cos of count(*)
+					q.AddSelectScalar(NHibernate.Int32);//must be handled differently 'cos of count(*)
 					count = true;
 				}
 				else if( lctoken.Equals("avg") ) {
@@ -138,17 +138,19 @@ namespace NHibernate.Hql {
 				throw new AssertionFailure("count(*) must be handled differently"); 
 			} 
 			else if (avg) { 
-				DbType[] sqlTypes; 
+				SqlTypes.SqlType[] sqlTypes;
+				
 				try { 
-					sqlTypes = type.SqlTypes(q.factory); 
+					sqlTypes = type.SqlTypes(q.factory);
 				} 
 				catch (MappingException me) { 
 					throw new QueryException(me); 
 				} 
+
 				if (sqlTypes.Length!=1) throw new QueryException("multi-column type in avg()"); 
-				DbType sqlType = sqlTypes[0]; 
-				if ( sqlType==DbType.Int32 || sqlType==DbType.Int64 || sqlType==DbType.Int16 ) { 
-					return NHibernate.Float; 
+				DbType sqlDbType = sqlTypes[0].DbType; 
+				if ( sqlDbType==DbType.Int32 || sqlDbType==DbType.Int64 || sqlDbType==DbType.Int16 ) { 
+					return NHibernate.Single; 
 				} 
 				else { 
 					return type; 
