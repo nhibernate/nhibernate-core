@@ -1,19 +1,16 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
-<hibernate-mapping>
-
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="net.sf.hibernate.test.Fo" table="foes">
 		<composite-id class="net.sf.hibernate.test.FumCompositeID">
 			<key-property name="string">
-				<column name="string_" length="20"/>
+				<column name="string_" length="20" />
 			</key-property>
-			<key-property name="short" column="short_"/>
-			<key-property name="date" column="date_" type="date"/>
+			<key-property name="short" column="short_" />
+			<key-property name="date" column="date_" type="date" />
 		</composite-id>
-		<version name="version" type="long"/>
-		<property name="serial" column="serial_"/>
-		<property name="buf"/>
-		<property name="x"/>
+		<version name="version" type="long" />
+		<property name="serial" column="serial_" />
+		<property name="buf" />
+		<property name="x" />
 	</class>
-	
 </hibernate-mapping>

@@ -1,18 +1,14 @@
-<?xml version="1.0"?>
-
-<!DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
-
-<hibernate-mapping>
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="net.sf.hibernate.test.One" table="one">
 		<id name="key" column="one_key">
 			<generator class="native" />
 		</id>
-		<property name="x"/>
-		<property column="one_value" name="value"/>
+		<property name="x" />
+		<property column="one_value" name="value" />
 		<set name="manies" inverse="true" lazy="true">
-			<key column="one_key"/>
-			<one-to-many class="net.sf.hibernate.test.Many"/>
+			<key column="one_key" />
+			<one-to-many class="net.sf.hibernate.test.Many" />
 		</set>
 	</class>
 </hibernate-mapping>
-

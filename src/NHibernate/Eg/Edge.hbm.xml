@@ -1,8 +1,5 @@
 ﻿<?xml version="1.0" ?>
-<!DOCTYPE hibernate-mapping PUBLIC 
-        "-//Hibernate/Hibernate Mapping DTD//EN"
-        "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
-<hibernate-mapping>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="NHibernate.Eg.Edge" table="edge">
 		<!--<jcs-cache usage="read-write"/>-->
 		<id column="edge_id" name="Key">

@@ -1,33 +1,29 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
-<hibernate-mapping>
-	
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="net.sf.hibernate.test.MoreStuff">
 		<composite-id>
-			<key-property name="intId"/>
-			<key-property name="stringId" length="32"/>
+			<key-property name="intId" />
+			<key-property name="stringId" length="32" />
 		</composite-id>
-		<property name="name"/>
+		<property name="name" />
 		<bag name="stuffs" inverse="true" lazy="false" cascade="all">
 			<key>
 				<!--unfortunately have to specify not-null here because of limitation in schema export....-->
-				<column name="moreInt" not-null="true"/>
-				<column name="moreString" not-null="true" length="32"/>
+				<column name="moreInt" not-null="true" />
+				<column name="moreString" not-null="true" length="32" />
 			</key>
-			<one-to-many class="net.sf.hibernate.test.Stuff"/>
+			<one-to-many class="net.sf.hibernate.test.Stuff" />
 		</bag>
 	</class>
-	
-    <class name="net.sf.hibernate.test.Stuff">
-        <composite-id unsaved-value="any">
-            <key-property name="id"/>
-            <key-many-to-one name="foo" class="net.sf.hibernate.test.Foo"/>
-            <key-many-to-one name="moreStuff" class="net.sf.hibernate.test.MoreStuff">
-            	<column name="moreInt"/>
-				<column name="moreString" length="32"/>
+	<class name="net.sf.hibernate.test.Stuff">
+		<composite-id unsaved-value="any">
+			<key-property name="id" />
+			<key-many-to-one name="foo" class="net.sf.hibernate.test.Foo" />
+			<key-many-to-one name="moreStuff" class="net.sf.hibernate.test.MoreStuff">
+				<column name="moreInt" />
+				<column name="moreString" length="32" />
 			</key-many-to-one>
-        </composite-id>
-        <property name="property"/>
-    </class>
-
+		</composite-id>
+		<property name="property" />
+	</class>
 </hibernate-mapping>

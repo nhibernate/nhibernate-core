@@ -1,13 +1,10 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
-<hibernate-mapping>
-
-    <class name="net.sf.hibernate.test.Vetoer">
-        <id type="string" column="id_" length="32">
-            <generator class="uuid.hex"/>
-        </id>
-        <property name="name"/>
-        <property name="strings"/>
-    </class>
-
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class name="net.sf.hibernate.test.Vetoer">
+		<id type="string" column="id_" length="32">
+			<generator class="uuid.hex" />
+		</id>
+		<property name="name" />
+		<property name="strings" />
+	</class>
 </hibernate-mapping>
