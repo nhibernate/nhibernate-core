@@ -125,7 +125,7 @@
 				<generator class="hilo"/>
 			</collection-id>
 			<key column="baz"/>
-			<element type="binary" column="bytez" not-null="true"/>
+			<element type="Byte[]" column="bytez" not-null="true"/>
 		</idbag>
 	
 		<array name="stringArray">
