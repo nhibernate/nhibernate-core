@@ -15,7 +15,7 @@ namespace NHibernate.Transaction
 		/// <returns></returns>
 		public ITransaction BeginTransaction( ISessionImplementor session )
 		{
-			Transaction tx = new Transaction( session );
+			AdoTransaction tx = new AdoTransaction( session );
 			tx.Begin();
 			return tx;
 		}

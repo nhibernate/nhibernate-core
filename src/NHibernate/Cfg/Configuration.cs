@@ -31,6 +31,7 @@ namespace NHibernate.Cfg
 	public class Configuration : IMapping
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( Configuration ) );
+		private static readonly IInterceptor emptyInterceptor = new EmptyInterceptor();
 
 		private Hashtable classes = new Hashtable();
 		private Hashtable imports = new Hashtable();
@@ -38,18 +39,22 @@ namespace NHibernate.Cfg
 		private Hashtable tables = new Hashtable();
 		private Hashtable namedQueries = new Hashtable();
 		private ArrayList secondPasses = new ArrayList();
-		private IInterceptor interceptor = EmptyInterceptor;
+		private IInterceptor interceptor = emptyInterceptor;
 		private IDictionary properties = Environment.Properties;
 		private IDictionary caches = new Hashtable();
 
 		private XmlSchema mappingSchema;
 		private XmlSchema cfgSchema;
 
-		/// <summary></summary>
+		/// <summary>
+		/// The XML Namespace for the nhibernate-mapping
+		/// </summary>
 		public static readonly string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.0";
 		private static readonly string MappingSchemaResource = "NHibernate.nhibernate-mapping-2.0.xsd";
 
-		/// <summary></summary>
+		/// <summary>
+		/// The XML Namespace for the nhibernate-configuration
+		/// </summary>
 		public static readonly string CfgSchemaXMLNS = "urn:nhibernate-configuration-2.0";
 		private static readonly string CfgSchemaResource = "NHibernate.nhibernate-configuration-2.0.xsd";
 		private static readonly string CfgNamespacePrefix = "cfg";
@@ -63,7 +68,7 @@ namespace NHibernate.Cfg
 			tables = new Hashtable();
 			namedQueries = new Hashtable();
 			secondPasses = new ArrayList();
-			interceptor = EmptyInterceptor;
+			interceptor = emptyInterceptor;
 			properties = Environment.Properties;
 		}
 
@@ -568,58 +573,6 @@ namespace NHibernate.Cfg
 		public IDictionary NamedQueries
 		{
 			get { return namedQueries; }
-		}
-
-		private static readonly IInterceptor EmptyInterceptor = new EmptyInterceptorClass();
-
-		[Serializable]
-		private class EmptyInterceptorClass : IInterceptor
-		{
-			public void OnDelete( object entity, object id, object[ ] state, string[ ] propertyNames, IType[ ] types )
-			{
-			}
-
-			public bool OnFlushDirty( object entity, object id, object[ ] currentState, object[ ] previousState, string[ ] propertyNames, IType[ ] types )
-			{
-				return false;
-			}
-
-			public bool OnLoad( object entity, object id, object[ ] state, string[ ] propertyNames, IType[ ] types )
-			{
-				return false;
-			}
-
-			public bool OnSave( object entity, object id, object[ ] state, string[ ] propertyNames, IType[ ] types )
-			{
-				return false;
-			}
-
-			public void OnPostFlush( object entity, object id, object[ ] currentState, string[ ] propertyNames, IType[ ] types )
-			{
-			}
-
-			public void PostFlush( ICollection entities )
-			{
-			}
-
-			public void PreFlush( ICollection entitites )
-			{
-			}
-
-			public object IsUnsaved( object entity )
-			{
-				return null;
-			}
-
-			public object Instantiate( System.Type clazz, object id )
-			{
-				return null;
-			}
-
-			public int[ ] FindDirty( object entity, object id, object[ ] currentState, object[ ] previousState, string[ ] propertyNames, IType[ ] types )
-			{
-				return null;
-			}
 		}
 
 		/// <summary>

@@ -8,14 +8,9 @@ namespace NHibernate.Transaction
 	/// <summary>
 	/// Wraps an ADO.NET transaction to implements the <c>ITransaction</c> interface
 	/// </summary>
-	/// <remarks>
-	/// TODO: DESIGNQUESTION: We might want to rename this AdoTransaction to indicate this Transaction object is specific
-	/// to ADO.NET.  It seems like in the Java world your Transaction objects are much more flexible - allowing
-	/// for JDBC Transactions or JTA Transactions.  
-	/// </remarks>
-	public class Transaction : ITransaction
+	public class AdoTransaction : ITransaction
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( Transaction ) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( AdoTransaction ) );
 		private ISessionImplementor session;
 		private IDbTransaction trans;
 		private bool begun;
@@ -26,7 +21,7 @@ namespace NHibernate.Transaction
 		/// 
 		/// </summary>
 		/// <param name="session"></param>
-		public Transaction( ISessionImplementor session )
+		public AdoTransaction( ISessionImplementor session )
 		{
 			this.session = session;
 		}

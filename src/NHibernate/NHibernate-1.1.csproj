@@ -374,6 +374,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cfg\EmptyInterceptor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cfg\Environment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1689,12 +1694,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Transaction\ITransactionFactory.cs"
+                    RelPath = "Transaction\AdoTransaction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Transaction\Transaction.cs"
+                    RelPath = "Transaction\ITransactionFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
