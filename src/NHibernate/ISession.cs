@@ -278,7 +278,7 @@ namespace NHibernate {
 		/// </remarks>
 		/// <param name="query">The query string</param>
 		/// <returns>An enumerator</returns>
-		IEnumerator Enumerator(string query);
+		ICollection GetCollection(string query);
 
 		/// <summary>
 		/// Execute a query and return the results in an interator, 
@@ -299,7 +299,7 @@ namespace NHibernate {
 		/// <param name="value">A value to be written to a "?" placeholder in the query string</param>
 		/// <param name="type">The hibernate type of the value</param>
 		/// <returns>An enumerator</returns>
-		IEnumerator Enumerator(string query, object value, IType type);
+		ICollection GetCollection(string query, object value, IType type);
 
 		/// <summary>
 		/// Execute a query and return the results in an interator, 
@@ -320,7 +320,7 @@ namespace NHibernate {
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of hibernate types of the values</param>
 		/// <returns>An enumerator</returns>
-		IEnumerator Enumerator(string query, object[] values, IType[] types);
+		ICollection GetCollection(string query, object[] values, IType[] types);
 
 		/// <summary>
 		/// Apply a filter to a persistent collection.

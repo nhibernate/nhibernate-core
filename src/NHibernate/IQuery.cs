@@ -70,14 +70,14 @@ namespace NHibernate {
 		}
 
 		/// <summary>
-		/// Return the query results as an <c>IEnuemrator</c>. If the query contains multiple results
+		/// Return the query results as an <c>ICollection</c>. If the query contains multiple results
 		/// per row, the results are returned in an instance of <c>object[]</c>.
 		/// </summary>
 		/// <remarks>
 		/// Entities returned as results are initialized on demand. The first SQL query returns
 		/// identifiers only.
 		/// </remarks>
-		IEnumerator Enumerator();
+		ICollection GetCollection();
 
 		/// <summary>
 		/// Return the query results as <c>ScrollableResults</c>. The scrollability of the returned
@@ -87,34 +87,28 @@ namespace NHibernate {
 		/// Entities returned as results are initialized on demand. The first SQL query returns
 		/// identifier only.
 		/// </remarks>
-		IScrollableResults ScrollableResults();
+		//IScrollableResults GetScrollableResults();
 
 		/// <summary>
 		/// Return the query results as a <c>IList</c>. If the query contains multiple results per row,
 		/// the results are returned in an instance of <c>object[]</c>.
 		/// </summary>
-		IList List();
+		IList GetList();
 
 		/// <summary>
 		/// The maximum number of rows to retrieve
 		/// </summary>
-		int MaxResults {
-			get; set;
-		}
+		IQuery SetMaxResults(int maxResults);
 
 		/// <summary>
 		/// The first row to retrieve.
 		/// </summary>
-		int FirstResult {
-			get; set;
-		}
+		IQuery SetFirstResult(int firstResult);
 
 		/// <summary>
 		/// The timeout for the underlying ADO query
 		/// </summary>
-		int Timeout {
-			get; set;
-		}
+		IQuery SetTimeout(int timeout);
 
 		/// <summary>
 		/// Bind a value to a JDBC-style query parameter
@@ -122,7 +116,7 @@ namespace NHibernate {
 		/// <param name="position">Postion of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The Hibernate type</param>
-		void SetParameter(int position, object val, IType type);
+		IQuery SetParameter(int position, object val, IType type);
 
 		/// <summary>
 		/// Bind a value to a named query parameter
@@ -130,7 +124,7 @@ namespace NHibernate {
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The hibernate type</param>
-		void SetParameter(string name, object val, IType type);
+		IQuery SetParameter(string name, object val, IType type);
 
 		/// <summary>
 		/// Bind a value to a JDBC-style query parameter, guessing the Hibernate type from
@@ -138,7 +132,7 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The non-null parameter value</param>
-		void SetParameter(int position, object val);
+		IQuery SetParameter(int position, object val);
 
 		/// <summary>
 		/// Bind a value to a named query parameter, guessing the Hibernate type from the class of
@@ -146,7 +140,7 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The non-null parameter value</param>
-		void SetParameter(string name, object val);
+		IQuery SetParameter(string name, object val);
 
 		/// <summary>
 		/// Bind multiple values to a named query parameter. This is useful for binding a list
@@ -155,7 +149,7 @@ namespace NHibernate {
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
 		/// <param name="type">The Hibernate type of the values</param>
-		void SetParameterList(string name, ICollection vals, IType type);
+		IQuery SetParameterList(string name, ICollection vals, IType type);
 
 		/// <summary>
 		/// Bind multiple values to a named query parameter, guessing the Hibernate
@@ -164,7 +158,7 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
-		void SetParameterList(string name, ICollection vals);
+		IQuery SetParameterList(string name, ICollection vals);
 
 		/// <summary>
 		/// Bind the property values of the given object to named paramters of the query,
@@ -172,34 +166,62 @@ namespace NHibernate {
 		/// Hibernate types using hueristics.
 		/// </summary>
 		/// <param name="obj">Any PONO</param>
-		void SetProperties(object obj);
+		IQuery SetProperties(object obj);
+
+		IQuery SetString(int position, string val);
+		IQuery SetCharacter(int position, char val);
+		IQuery SetByte(int position, byte val);
+		IQuery SetShort(int position, short val);
+		IQuery SetInteger(int position, int val);
+		IQuery SetLong(int position, long val);
+		IQuery SetFloat(int position, float val);
+		IQuery SetDouble(int position, double val);
+		IQuery SetBinary(int position, byte[] val);
+		IQuery SetDecimal(int position, decimal val);
+		IQuery SetDate(int position, DateTime val);
+		IQuery SetTime(int position, DateTime val);
+		IQuery SetTimestamp(int position, DateTime val);
+
+		IQuery SetString(string name, string val);
+		IQuery SetCharacter(string name, char val);
+		IQuery SetByte(string name, byte val);
+		IQuery SetShort(string name, short val);
+		IQuery SetInteger(string name, int val);
+		IQuery SetLong(string name, long val);
+		IQuery SetFloat(string name, float val);
+		IQuery SetDouble(string name, double val);
+		IQuery SetBinary(string name, byte[] val);
+		IQuery SetDecimal(string name, decimal val);
+		IQuery SetDate(string name, DateTime val);
+		IQuery SetTime(string name, DateTime val);
+		IQuery SetTimestamp(string name, DateTime val);
 
 		/// <summary>
 		/// Bind an instance of a mapped persistent class to a JDBC-style query parameter.
 		/// </summary>
 		/// <param name="position">Position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a persistent class</param>
-		void SetEntity(int position, object val);
+		IQuery SetEntity(int position, object val);
 
 		/// <summary>
 		/// Bind an instance of a persistent enumeration class to a JDBC-style query parameter.
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a persistent enumeration</param>
-		void SetEnum(int position, IPersistentEnum val);
+		IQuery SetEnum(int position, IPersistentEnum val);
 
 		/// <summary>
 		/// Bind an instance of a mapped persistent class to a named query parameter.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a persistent class</param>
-		void SetEntity(string name, object val);
+		IQuery SetEntity(string name, object val);
 
 		/// <summary>
 		/// Bind an instance of a persistent enumeration class to a named query parameter.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a persistent enumeration</param>
-		void SetEnum(string name, IPersistentEnum val);
+		IQuery SetEnum(string name, IPersistentEnum val);
 	}
 }
