@@ -12,11 +12,11 @@
         <mediaobject>
             <!--
             <imageobject role="fo">
-                <imagedata fileref="images/overview.svg" format="SVG" align="center"/>
+                <imagedata fileref="../images/overview.svg" format="SVG" align="center"/>
             </imageobject>
 			-->
             <imageobject role="html">
-                <imagedata fileref="images/overview.gif" format="GIF" align="center"/>
+                <imagedata fileref="../images/overview.gif" format="GIF" align="center"/>
             </imageobject>
         </mediaobject>
         <para>
@@ -35,11 +35,11 @@
 		<mediaobject>
             <!--
 			<imageobject role="fo">
-                <imagedata fileref="images/lite.svg" format="SVG" align="center"/>
+                <imagedata fileref="../images/lite.svg" format="SVG" align="center"/>
             </imageobject>
 			-->
             <imageobject role="html">
-                <imagedata fileref="images/lite.gif" format="GIF" align="center"/>
+                <imagedata fileref="../images/lite.gif" format="GIF" align="center"/>
             </imageobject>
         </mediaobject>
         
@@ -52,11 +52,11 @@
 		<mediaobject>
             <!--
 			<imageobject role="fo">
-                <imagedata fileref="images/full_cream.svg" format="SVG" align="center"/>
+                <imagedata fileref="../images/full_cream.svg" format="SVG" align="center"/>
             </imageobject>
 			-->
             <imageobject role="html">
-                <imagedata fileref="images/full_cream.gif" format="GIF" align="center"/>
+                <imagedata fileref="../images/full_cream.gif" format="GIF" align="center"/>
             </imageobject>
         </mediaobject>
 

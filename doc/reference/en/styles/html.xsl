@@ -31,7 +31,7 @@
 		modified this so the stylesheet would be lang specific since it is stored
 		under the lang subdirectory anyway
 	-->
-	<xsl:param name="html.stylesheet">styles/html.css</xsl:param>
+	<xsl:param name="html.stylesheet">../styles/html.css</xsl:param>
 
 	<!-- These extensions are required for table printing and other stuff -->
 

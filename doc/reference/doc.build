@@ -6,25 +6,28 @@
 >
 
 	<property name="lang" value="en" />
-	
+	<property name="build.dir" value="build/${lang}" />
+	<property name="build.html.dir" value="${build.dir}/html" />
 	<target name="build" description="Generates html from docbook files.">
 	
 		<!-- 
 			I have not figured out a way to modify the Path through NAnt so you
 			need to make sure that xsltproc is in the path
 		-->
-		<mkdir dir="html-single/${lang}" failonerror="false" />
-		<mkdir dir="html-single/${lang}/styles" failonerror="false" />
-		<mkdir dir="html-single/${lang}/images" failonerror="false" />
+		<mkdir dir="${build.html.dir}" failonerror="false" />
+		<mkdir dir="${build.html.dir}/single" failonerror="false" />
+		<mkdir dir="${build.html.dir}/styles" failonerror="false" />
+		<mkdir dir="${build.html.dir}/images" failonerror="false" />
 		
-		<exec program="xsltproc" commandline="--output html-single\${lang}\reference.html ${lang}\styles\html.xsl ${lang}\master.xml" />
+		<exec program="xsltproc" commandline="--output build\${lang}\html\single\reference.html ${lang}\styles\html.xsl ${lang}\master.xml" />
 		
-		<copy file="${lang}/styles/html.css" tofile="html-single/${lang}/styles/html.css" />
-		<copy todir="html-single">
-			<fileset>
-				<includes name="${lang}/images/*.gif" />
+		<copy todir="${build.html.dir}">
+			<fileset basedir="${lang}">
+				<includes name="styles/html.css" />
+				<includes name="images/**.*" />
 			</fileset>
 		</copy>
+		
 	</target>
 	
 </project>
