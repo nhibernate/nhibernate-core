@@ -10,6 +10,7 @@ using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Sql;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -25,13 +26,15 @@ namespace NHibernate.Collection {
 	public sealed class CollectionPersister : ICollectionMetadata {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CollectionPersister));
 
-		private string sqlSelectString;
-		private string sqlDeleteString; 
-		private string sqlInsertRowString;
-		private string sqlUpdateRowString;
-		private string sqlDeleteRowString;
+		private SqlString sqlSelectString;
+		private SqlString sqlDeleteString; 
+		private SqlString sqlInsertRowString;
+		private SqlString sqlUpdateRowString;
+		private SqlString sqlDeleteRowString;
+
 		private string sqlOrderByString;
 		private string sqlWhereString;
+
 		private bool hasOrder;
 		private bool hasWhere;
 		private bool isSet;
@@ -63,8 +66,12 @@ namespace NHibernate.Collection {
 		private string role;
 
 		private Dialect.Dialect dialect;
+		private ISessionFactoryImplementor factory;
 
 		public CollectionPersister(Mapping.Collection collection, Configuration datastore, ISessionFactoryImplementor factory) {
+			
+			this.factory = factory;
+			this.dialect = factory.Dialect;
 			collectionType = collection.Type;
 			role = collection.Role;
 			ownerClass = collection.OwnerClass;
@@ -85,7 +92,7 @@ namespace NHibernate.Collection {
 				k++;
 			}
 
-			//isSet = collection.IsSet;
+			isSet = collection.IsSet;
 			isOneToMany = collection.IsOneToMany;
 			primitiveArray = collection.IsPrimitiveArray;
 			array = collection.IsArray;
@@ -122,6 +129,7 @@ namespace NHibernate.Collection {
 
 			if ( hasIndex = collection.IsIndexed ) {
 				IndexedCollection indexedMap = (IndexedCollection) collection;
+				
 				indexType = indexedMap.Index.Type;
 				int indexSpan = indexedMap.Index.ColumnSpan;
 				indexColumnNames = new string[indexSpan];
@@ -140,23 +148,25 @@ namespace NHibernate.Collection {
 				rowSelectType = elementType;
 			}
 
-			sqlSelectString = SqlSelectString();
-			sqlDeleteString = SqlDeleteString();
-			sqlInsertRowString = SqlInsertRowString();
-			sqlUpdateRowString = SqlUpdateRowString();
-			sqlDeleteRowString = SqlDeleteRowString();
+			// TODO: refactor AddColumn method in insert to AddColumns
+			sqlSelectString = GenerateSqlSelectString();
+			sqlDeleteString = GenerateSqlDeleteString();
+			sqlInsertRowString = GenerateSqlInsertRowString();
+			sqlUpdateRowString = GenerateSqlUpdateRowString();
+			sqlDeleteRowString = GenerateSqlDeleteRowString();
+
 			isLazy = collection.IsLazy;
 
 			isInverse = collection.IsInverse;
 
 			if (collection.IsArray ) {
 				elementClass = ( (Mapping.Array) collection ).ElementClass;
-			} else {
+			} 
+			else {
 				// for non-arrays, we don't need to know the element class
 				elementClass = null;
 			}
 			loader = CreateCollectionQuery(factory);
-			this.dialect = factory.Dialect;
 		}
 
 		public ICollectionInitializer Initializer {
@@ -191,6 +201,12 @@ namespace NHibernate.Collection {
 		}
 		public void ReleaseSoftlock(object id) {
 			if (cache!=null) cache.Release(id);
+		}
+
+		public PersistentCollectionType CollectionType {
+			get {
+				return this.collectionType;
+			}
 		}
 
 		public string GetSQLWhereString(string alias) {
@@ -242,23 +258,23 @@ namespace NHibernate.Collection {
 			get { return hasWhere; }
 		}
 
-		public string SQLSelectString {
+		public SqlString SqlSelectString {
 			get { return sqlSelectString; }
 		}
 		
-		public string SQLDeleteString {
+		public SqlString SqlDeleteString {
 			get { return sqlDeleteString; }
 		}
 
-		public string SQLInsertRowString {
+		public SqlString SqlInsertRowString {
 			get { return sqlInsertRowString; }
 		}
 
-		public string SQLUpdateRowString {
+		public SqlString SqlUpdateRowString {
 			get { return sqlUpdateRowString; }
 		}
 
-		public string SQLDeleteRowString {
+		public SqlString SqlDeleteRowString {
 			get { return sqlDeleteRowString; }
 		}
 
@@ -278,29 +294,68 @@ namespace NHibernate.Collection {
 			get { return elementClass; }
 		}
 
+		
+		/// <summary>
+		/// Gets just the Identifier of the Element for the Collection.
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="owner"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		/// <remarks>
+		/// This was created in addition to ReadElement because ADO.NET does not allow
+		/// for 2 IDataReaders to be open against a single IDbConnection at one time.  
+		/// 
+		/// When a Collection is loaded it was recursively opening IDbDataReaders to resolve
+		/// the Element for the Collection while the IDbDataReader was open that contained the
+		/// record for the Collection.
+		/// </remarks>		
+		public object ReadElementIdentifier(IDataReader rs, object owner, ISessionImplementor session) {
+			return ElementType.Hydrate(rs, unquotedElementColumnNames, session, owner);
+		}
+
+		/// <summary>
+		/// Reads the Element from the IDataReader.  The IDataReader will probably only contain
+		/// the id of the Element.
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="owner"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		/// <remarks>See ReadElementIdentifier for an explanation of why this method will be depreciated.</remarks>
 		public object ReadElement(IDataReader rs, object owner, ISessionImplementor session) {
 			object element = ElementType.NullSafeGet(rs, unquotedElementColumnNames, session, owner);
 			return element;
 		}
+
 		public object ReadIndex(IDataReader rs, ISessionImplementor session) {
 			return IndexType.NullSafeGet(rs, unquotedIndexColumnNames, session, null);
 		}
 
+		public object ReadKey(IDataReader dr, ISessionImplementor session) {
+			//TODO: h2.0.3 = use keyColumnAliases instead of keyColumnNames
+			return KeyType.NullSafeGet(dr, keyColumnNames, session, null);
+		}
+
 		public void WriteElement(IDbCommand st, object elt, bool writeOrder, ISessionImplementor session) {
-			ElementType.NullSafeSet(st, elt, 1+(writeOrder?0:keyColumnNames.Length+(hasIndex?indexColumnNames.Length:0)), session);
+			//ElementType.NullSafeSet(st, elt, 1+(writeOrder?0:keyColumnNames.Length+(hasIndex?indexColumnNames.Length:0)), session);
+			ElementType.NullSafeSet(st, elt, (writeOrder?0:keyColumnNames.Length+(hasIndex?indexColumnNames.Length:0)), session);
 		}
 
 		public void WriteIndex(IDbCommand st, object idx, bool writeOrder, ISessionImplementor session) {
-			IndexType.NullSafeSet(st, idx, 1+keyColumnNames.Length + (writeOrder?elementColumnNames.Length:0), session);
+			//IndexType.NullSafeSet(st, idx, 1+keyColumnNames.Length + (writeOrder?elementColumnNames.Length:0), session);
+			IndexType.NullSafeSet(st, idx, keyColumnNames.Length + (writeOrder?elementColumnNames.Length:0), session);
 		}
 
 		private void WriteRowSelect(IDbCommand st, object idx, ISessionImplementor session) {
-			rowSelectType.NullSafeSet(st, idx, 1+keyColumnNames.Length, session);
+			//rowSelectType.NullSafeSet(st, idx, 1+keyColumnNames.Length, session);
+			rowSelectType.NullSafeSet(st, idx, keyColumnNames.Length, session);
 		}
 
 		public void WriteKey(IDbCommand st, object id, bool writeOrder, ISessionImplementor session) {
 			if ( id==null ) throw new NullReferenceException("Null collection key");
-			KeyType.NullSafeSet(st, id, 1+(writeOrder?elementColumnNames.Length:0), session);
+			//KeyType.NullSafeSet(st, id, 1+(writeOrder?elementColumnNames.Length:0), session);
+			KeyType.NullSafeSet(st, id, (writeOrder?elementColumnNames.Length:0), session);
 		}
 
 		public bool IsPrimitiveArray {
@@ -313,84 +368,119 @@ namespace NHibernate.Collection {
 
 		public string SelectClauseFragment(string alias) {
 			SelectFragment frag = new SelectFragment()
-				.SetSuffix(StringHelper.EmptyString)
+				.SetSuffix(String.Empty)
 				.AddColumns(alias, elementColumnNames);
 			if (hasIndex) frag.AddColumns(alias, indexColumnNames);
 			return frag.ToFragmentString()
 				.Substring(2); //string leading ','
 		}
 
-		private string SqlSelectString() {
-			SimpleSelect select = new SimpleSelect()
-				.SetTableName(qualifiedTableName)
-				.AddColumns(elementColumnNames);
-			if (hasIndex) select.AddColumns(indexColumnNames);
-			select.AddCondition( keyColumnNames, "=?" );
-			if (hasOrder) select.SetOrderBy(sqlOrderByString);
-			return select.ToStatementString();
-		}
-
-		private string SqlDeleteString() {
-			if (isOneToMany) {
-				Update update = new Update(dialect)
-					.SetTableName(qualifiedTableName)
+		private SqlString GenerateSqlDeleteString() {
+			if(isOneToMany) {
+				SqlUpdateBuilder update = new SqlUpdateBuilder(factory);
+				update.SetTableName(qualifiedTableName)
 					.AddColumns(keyColumnNames, "null");
-				if (hasIndex) update.AddColumns(indexColumnNames, "null");
-				return update.SetPrimaryKeyColumnNames(keyColumnNames)
-					.ToStatementString();
-			} else {
-				return new Delete(dialect)
-					.SetTableName(qualifiedTableName)
-					.SetPrimaryKeyColumnNames(keyColumnNames)
-					.ToStatementString();
+				if(hasIndex) update.AddColumns(indexColumnNames, "null");
+
+				update.SetIdentityColumn(keyColumnNames, keyType);
+				return update.ToSqlString();
+				
 			}
+			else {
+				SqlDeleteBuilder delete = new SqlDeleteBuilder(factory);
+				delete.SetTableName(qualifiedTableName)
+					.SetIdentityColumn(keyColumnNames, keyType);
+				
+				return delete.ToSqlString();
+			}
+
 		}
 
-		private string SqlInsertRowString() {
-			if (isOneToMany) {
-				Update update = new Update(dialect)
-					.SetTableName(qualifiedTableName)
-					.AddColumns(keyColumnNames);
-				if (hasIndex) update.AddColumns(indexColumnNames);
-				return update.SetPrimaryKeyColumnNames(elementColumnNames)
-					.ToStatementString();
-			} else {
-				Insert insert = new Insert(null)
-					.SetTableName(qualifiedTableName)
-					.AddColumns(keyColumnNames);
-				if (hasIndex) insert.AddColumns(indexColumnNames);
-				return insert.AddColumns(elementColumnNames)
-					.ToStatementString();
-			}
+		private SqlString GenerateSqlSelectString(){
+			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(factory);
+			builder.SetTableName(qualifiedTableName)
+				.AddColumns(elementColumnNames);
+
+			if (hasIndex) builder.AddColumns(indexColumnNames);
+			
+			builder.AddWhereFragment(keyColumnNames, keyType, " = ");
+
+			if(hasOrder) builder.SetOrderBy(sqlOrderByString);
+
+			return builder.ToSqlString();
+			
 		}
 
-		private string SqlUpdateRowString() {
+		
+		private SqlString GenerateSqlInsertRowString() {
+			if(isOneToMany) {
+				SqlUpdateBuilder update = new SqlUpdateBuilder(factory);
+				update.SetTableName(qualifiedTableName)
+					.AddColumns(keyColumnNames, keyType);
+				if(hasIndex) update.AddColumns(indexColumnNames, indexType);
+				update.SetIdentityColumn(elementColumnNames, elementType);
+				return update.ToSqlString();
+				
+			}
+			else {
+				SqlInsertBuilder insert = new SqlInsertBuilder(factory);
+				insert.SetTableName(qualifiedTableName)
+					.AddColumn(keyColumnNames, keyType);
+				if(hasIndex) insert.AddColumn(indexColumnNames, indexType);
+				insert.AddColumn(elementColumnNames, elementType);
+
+				return insert.ToSqlString();
+			}
+
+		}
+
+		private SqlString GenerateSqlUpdateRowString() {
 			if (isOneToMany) {
 				return null;
-			} else {
-				return new Update(dialect)
-					.SetTableName(qualifiedTableName)
-					.AddColumns(elementColumnNames)
-					.SetPrimaryKeyColumnNames( ArrayHelper.Join(keyColumnNames, rowSelectColumnNames) )
-					.ToStatementString();
+			} 
+			else {
+				SqlUpdateBuilder update = new SqlUpdateBuilder(factory);
+				update.SetTableName(qualifiedTableName)
+					.AddColumns(elementColumnNames, elementType)
+					.AddWhereFragment(keyColumnNames, keyType, " = ")
+					.AddWhereFragment(rowSelectColumnNames, rowSelectType, " = ");
+					
+				return update.ToSqlString();
+				
 			}
 		}
 
-		private string SqlDeleteRowString() {
-			string[] pkColumns = ArrayHelper.Join(keyColumnNames, rowSelectColumnNames);
+		
+
+
+		private SqlString GenerateSqlDeleteRowString() {
+			
 			if (isOneToMany) {
-				Update update = new Update(dialect)
-					.SetTableName(qualifiedTableName)
+				SqlUpdateBuilder update = new SqlUpdateBuilder(factory);
+				update.SetTableName(qualifiedTableName)
 					.AddColumns(keyColumnNames, "null");
-				if (hasIndex) update.AddColumns(indexColumnNames, "null");
-				return update.SetPrimaryKeyColumnNames(pkColumns).ToStatementString();
-			} else {
-				return new Delete(dialect)
-					.SetTableName(qualifiedTableName)
-					.SetPrimaryKeyColumnNames(pkColumns)
-					.ToStatementString();
+
+				if(hasIndex) update.AddColumns(indexColumnNames, "null");
+				
+				update.AddWhereFragment(keyColumnNames, keyType, " = ");
+				update.AddWhereFragment(rowSelectColumnNames, rowSelectType, " = ");
+
+				return update.ToSqlString();
+				
 			}
+			else {
+				SqlDeleteBuilder delete = new SqlDeleteBuilder(factory);
+				delete.SetTableName(qualifiedTableName)
+					.AddWhereFragment(keyColumnNames, keyType, " = ")
+					.AddWhereFragment(rowSelectColumnNames, rowSelectType, " = ");
+
+				return delete.ToSqlString();
+				
+
+			}
+			
 		}
+
 
 		public string[] IndexColumnNames {
 			get { return indexColumnNames; }
@@ -429,12 +519,21 @@ namespace NHibernate.Collection {
 			if (!isInverse) {
 				if (log.IsDebugEnabled ) log.Debug("Deleting collection: " + role + "#" + id);
 
-				IDbCommand st = session.Batcher.PrepareBatchStatement( SQLDeleteString );
+				//IDbCommand st = session.Batcher.PrepareBatchStatement( SQLDeleteString );
+				IDbCommand st = session.Preparer.PrepareCommand(SqlDeleteRowString);
 
 				try {
 					WriteKey(st, id, false, session);
-					session.Batcher.AddToBatch(-1);
-				} catch (Exception e) {
+					//TODO: this is hackish for expected row count
+					int expectedRowCount = -1;
+					int rowCount = st.ExecuteNonQuery();
+
+					//negative expected row count means we don't know how many rows to expect
+					if ( expectedRowCount>0 && expectedRowCount!=rowCount )
+						throw new HibernateException("SQL update or deletion failed (row not found)");
+					//session.Batcher.AddToBatch(-1);
+				} 
+				catch (Exception e) {
 					throw e;
 				}
 			}
@@ -449,7 +548,8 @@ namespace NHibernate.Collection {
 				
 				ICollection entries = collection.Entries();
 				if (entries.Count > 0) {
-					IDbCommand st = session.Batcher.PrepareBatchStatement( SQLInsertRowString );
+					//IDbCommand st = session.Batcher.PrepareBatchStatement( SQLInsertRowString );
+					IDbCommand st = session.Preparer.PrepareCommand(SqlInsertRowString);
 
 					int i=0;
 					try {
@@ -457,7 +557,14 @@ namespace NHibernate.Collection {
 							if (collection.EntryExists(entry, i)) {
 								WriteKey(st, id, false, session);
 								collection.WriteTo(st, this, entry, i, false);
-								session.Batcher.AddToBatch(1);
+								//TODO: this is hackish for expected row count
+								int expectedRowCount = 1;
+								int rowCount = st.ExecuteNonQuery();
+
+								//negative expected row count means we don't know how many rows to expect
+								if ( expectedRowCount>0 && expectedRowCount!=rowCount )
+									throw new HibernateException("SQL update or deletion failed (row not found)");
+								//session.Batcher.AddToBatch(1);
 							}
 							i++;
 						}
@@ -478,12 +585,19 @@ namespace NHibernate.Collection {
 
 				ICollection entries = collection.GetDeletes(elementType);
 				if (entries.Count > 0) {
-					IDbCommand st = session.Batcher.PrepareBatchStatement( SQLDeleteRowString );
+					IDbCommand st = session.Preparer.PrepareCommand(SqlDeleteRowString);
 					try {
 						foreach(object entry in entries) {
 							WriteKey(st, id, false, session);
 							WriteRowSelect(st, entry, session);
-							session.Batcher.AddToBatch(-1);
+							//TODO: this is hackish for expected row count
+							int expectedRowCount = -1;
+							int rowCount = st.ExecuteNonQuery();
+
+							//negative expected row count means we don't know how many rows to expect
+							if ( expectedRowCount>0 && expectedRowCount!=rowCount )
+								throw new HibernateException("SQL update or deletion failed (row not found)");
+							//session.Batcher.AddToBatch(-1);
 						}
 					} catch (Exception e) {
 						throw e;
@@ -500,14 +614,22 @@ namespace NHibernate.Collection {
 			try {
 				foreach(object entry in entries) {
 					if (collection.NeedsUpdating(entry, i, elementType)) {
-						if (st==null) st = session.Batcher.PrepareBatchStatement( SQLUpdateRowString );
+						if (st==null) st = session.Preparer.PrepareCommand(SqlUpdateRowString); //st = session.Batcher.PrepareBatchStatement( SQLUpdateRowString );
 						WriteKey(st, id, true, session);
 						collection.WriteTo(st, this, entry, i, true);
-						session.Batcher.AddToBatch(1);
+						//TODO: this is hackish for expected row count
+						int expectedRowCount = 1;
+						int rowCount = st.ExecuteNonQuery();
+
+						//negative expected row count means we don't know how many rows to expect
+						if ( expectedRowCount>0 && expectedRowCount!=rowCount )
+							throw new HibernateException("SQL update or deletion failed (row not found)");
+						//session.Batcher.AddToBatch(1);
 					}
 					i++;
 				}
-			} catch (Exception e) {
+			} 
+			catch (Exception e) {
 				throw e;
 			}
 		}
@@ -520,10 +642,17 @@ namespace NHibernate.Collection {
 			try {
 				foreach(object entry in entries) {
 					if (collection.NeedsUpdating(entry, i, elementType) ) {
-						if (rmvst==null) rmvst = session.Batcher.PrepareBatchStatement( SQLDeleteRowString );
+						if (rmvst==null)  rmvst = session.Preparer.PrepareCommand(SqlDeleteRowString);//rmvst = session.Batcher.PrepareBatchStatement( SQLDeleteRowString );
 						WriteKey(rmvst, id, false, session);
 						WriteIndex(rmvst, collection.GetIndex(entry, i), false, session);
-						session.Batcher.AddToBatch(-1);
+						//TODO: this is hackish for expected row count
+						int expectedRowCount = -1;
+						int rowCount = rmvst.ExecuteNonQuery();
+
+						//negative expected row count means we don't know how many rows to expect
+						if ( expectedRowCount>0 && expectedRowCount!=rowCount )
+							throw new HibernateException("SQL update or deletion failed (row not found)");
+						//session.Batcher.AddToBatch(-1);
 					}
 					i++;
 				}
@@ -538,10 +667,17 @@ namespace NHibernate.Collection {
 			try {
 				foreach( object entry in entries) {
 					if (collection.NeedsUpdating(entry, i, elementType) ) {
-						if (insst==null) insst = session.Batcher.PrepareBatchStatement( SQLInsertRowString );
+						if (insst==null) insst = session.Preparer.PrepareCommand(SqlInsertRowString); //session.Batcher.PrepareBatchStatement( SQLInsertRowString );
 						WriteKey(insst, id, false, session);
 						collection.WriteTo(insst, this, entry, i, false);
-						session.Batcher.AddToBatch(1);
+						//TODO: this is hackish for expected row count
+						int expectedRowCount = 1;
+						int rowCount = rmvst.ExecuteNonQuery();
+
+						//negative expected row count means we don't know how many rows to expect
+						if ( expectedRowCount>0 && expectedRowCount!=rowCount )
+							throw new HibernateException("SQL update or deletion failed (row not found)");
+						//session.Batcher.AddToBatch(1);
 					}
 					i++;
 				}
@@ -573,10 +709,17 @@ namespace NHibernate.Collection {
 				try {
 					foreach(object entry in entries) {
 						if (collection.NeedsInserting(entry, i, elementType)) {
-							if (st==null) st = session.Batcher.PrepareBatchStatement(SQLInsertRowString);
+							if (st==null) st = session.Preparer.PrepareCommand(SqlInsertRowString); //st = session.Batcher.PrepareBatchStatement(SQLInsertRowString);
 							WriteKey(st, id, false, session);
 							collection.WriteTo(st, this, entry, i, false);
-							session.Batcher.AddToBatch(1);
+							//TODO: this is hackish for expected row count
+							int expectedRowCount = 1;
+							int rowCount = st.ExecuteNonQuery();
+
+							//negative expected row count means we don't know how many rows to expect
+							if ( expectedRowCount>0 && expectedRowCount!=rowCount )
+								throw new HibernateException("SQL update or deletion failed (row not found)");
+							//session.Batcher.AddToBatch(1);
 						}
 						i++;
 					}

@@ -9,6 +9,7 @@ namespace NHibernate.Collection {
 	public class Map : PersistentCollection, IDictionary {
 		
 		protected IDictionary map;
+		protected IDictionary mapIdentifiers;
 
 		protected override object Snapshot(CollectionPersister persister) {
 			Hashtable clonedMap = new Hashtable( map.Count );
@@ -28,11 +29,21 @@ namespace NHibernate.Collection {
 		}
 
 		public Map(ISessionImplementor session) : base(session) { }
+		
+		public Map(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) : base(session) {
+			BeforeInitialize(persister);
+			object[] array = (object[]) disassembled;
+			for (int i=0; i<array.Length; i+=2)
+				map[ persister.IndexType.Assemble( array[i], session, owner) ] =
+					persister.ElementType.Assemble( array[i+1], session, owner );
+			initialized = true;
+		}
 
 		public override void BeforeInitialize(CollectionPersister persister) {
 			//TODO: check this
 			//this.map = persister.HasOrdering ? LinkedHashCollectionHelper.CreateLinkedHashMap() : new Hashtable();
 			this.map = new Hashtable();
+			this.mapIdentifiers = new Hashtable();
 		}
 
 		public Map(ISessionImplementor session, IDictionary map) : base(session) {
@@ -61,27 +72,33 @@ namespace NHibernate.Collection {
 			get { return this; }
 		}
 		public ICollection Keys {
-			get { return null; }
-			//TODO: FINISH
+			get { 
+				Read();
+				return map.Keys;
+			}
 		}
 		public ICollection Values {
-			get { return null; }
-			//TODO: FINISH
+			get {  
+				Read();
+				return map.Values;
+			}
+			
 		}
 		public IEnumerator GetEnumerator() {
-			return null;
-			//TODO: FINISH
+			Read();
+			return map.GetEnumerator();
+			
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() {
 			Read();
-			return null;
-			//TODO: FINISH
+			return map.GetEnumerator();
+			
 		}
 
 		IDictionaryEnumerator IDictionary.GetEnumerator() {
 			Read();
-			return null;
+			return map.GetEnumerator();
 		}
 
 		public void CopyTo(System.Array array, int index) {
@@ -118,17 +135,15 @@ namespace NHibernate.Collection {
 			map.Clear();
 		}
 
-		public override void ReplaceElements(IDictionary replacements) {
-			int n=0;
-			foreach(DictionaryEntry e in map) {
-				object val = e.Value;
-				object r;
-				if ( val!=null && (r=replacements[val])!=null )
-					map[e.Key] = r;
-					//e.Value = r;
-				n++;
+		public override void EndRead(CollectionPersister persister, object owner) {
+			foreach(DictionaryEntry entry in mapIdentifiers){
+				object index = entry.Key;
+				object elementIdentifier = entry.Value;
+
+				object element = persister.ElementType.ResolveIdentifier(elementIdentifier, session, owner);
+
+				map[index] = element;
 			}
-			if ( n!=replacements.Count ) throw new HibernateException("Application error: don't use mutable values for keys of maps");
 		}
 
 		public override ICollection Elements() {
@@ -149,10 +164,13 @@ namespace NHibernate.Collection {
 		}
 
 		public override object ReadFrom(IDataReader rs, CollectionPersister persister, object owner) {
-			object element = persister.ReadElement(rs, owner, session);
+			//object element = persister.ReadElement(rs, owner, session);
+			object elementIdentifier = persister.ReadElementIdentifier(rs, owner, session);
+
 			object index = persister.ReadIndex(rs, session);
-			map[index] = element;
-			return element;
+			map[index] = null;
+			mapIdentifiers[index] = elementIdentifier;
+			return elementIdentifier;
 		}
 
 		public override ICollection Entries() {
@@ -167,15 +185,6 @@ namespace NHibernate.Collection {
 			foreach(DictionaryEntry entry in entries) {
 				map[entry.Key] = entry.Value;
 			}
-		}
-
-		public Map(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) : base(session) {
-			BeforeInitialize(persister);
-			object[] array = (object[]) disassembled;
-			for (int i=0; i<array.Length; i+=2)
-				map[ persister.IndexType.Assemble( array[i], session, owner) ] =
-					persister.ElementType.Assemble( array[i+1], session, owner );
-			initialized = true;
 		}
 
 		public override object Disassemble(CollectionPersister persister) {
@@ -226,5 +235,5 @@ namespace NHibernate.Collection {
 
 
 		
-		}
+	}
 }

@@ -14,6 +14,7 @@ namespace NHibernate.Collection {
 		private object array;
 		private System.Type elementClass;
 		private IList tempList;
+		private IList tempListIdentifier;
 
 		public ArrayHolder(ISessionImplementor session, object array) : base(session) {
 			this.array = array;
@@ -53,16 +54,6 @@ namespace NHibernate.Collection {
 			return true;
 		}
 
-		public override void ReplaceElements(IDictionary replacements) {
-			int size = ((System.Array)array).Length;
-			for (int i=0; i<size; i++) {
-				object val = ((System.Array)array).GetValue(i);
-				object r;
-				if (val!=null && ( r=replacements[val])!=null)
-					((System.Array)array).SetValue( r, i);
-			}
-		}
-
 		public override ICollection Elements() {
 			if (array==null) return tempList;
 			int length = ((System.Array)array).Length;
@@ -83,13 +74,16 @@ namespace NHibernate.Collection {
 		}
 
 		public override object ReadFrom(IDataReader rs, CollectionPersister persister, object owner) {
-			object element = persister.ReadElement(rs, owner, session);
+			//object element = persister.ReadElement(rs, owner, session);
+			object elementIdentifier = persister.ReadElementIdentifier(rs, owner, session);
 			int index = (int) persister.ReadIndex(rs, session);
 			for (int i=tempList.Count; i<=index; i++) {
-				tempList[i] = null;
+				tempList.Insert(i, null);
+				tempListIdentifier.Insert(i , null);
 			}
-			tempList[index] = element;
-			return element;
+			//tempList[index] = element;
+			tempListIdentifier[index] = elementIdentifier;
+			return elementIdentifier;
 		}
 
 		public override ICollection Entries() {
@@ -106,11 +100,26 @@ namespace NHibernate.Collection {
 
 		public override void BeginRead() {
 			tempList = new ArrayList();
+			tempListIdentifier = new ArrayList();
 		}
+		
 		public override void EndRead() {
 			array = ((ArrayList)tempList).ToArray(elementClass);
 			tempList = null;
 		}
+
+		public override void EndRead(CollectionPersister persister, object owner) {
+			
+			for(int i = 0 ;i < tempListIdentifier.Count; i++) {
+				object element = persister.ElementType.ResolveIdentifier(tempListIdentifier[i], session, owner);
+				tempList[i] = element;
+			}
+
+			array = ((ArrayList)tempList).ToArray(elementClass);
+			//tempList = null;
+			//tempListIdentifier = null;
+		}
+
 
 		public override object GetInitialValue(bool lazy) {
 			tempList = new ArrayList();

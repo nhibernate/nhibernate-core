@@ -22,8 +22,6 @@ namespace NHibernate.Collection {
 		public abstract ICollection Elements();
 		public abstract bool Empty { get; }
 
-		public abstract void ReplaceElements(IDictionary replacements);
-
 		public void Read() {
 			Initialize(false);
 		}
@@ -99,8 +97,24 @@ namespace NHibernate.Collection {
 			// override on some subclasses
 		}
 	
+		/// <summary>
+		/// It is my thoughts to have this be the portion that takes care of 
+		/// converting the Identifier to the element...
+		/// </summary>
+		//TODO: depreciate this method...
 		public virtual void EndRead() {
 			// override on some subclasses
+		}
+
+		/// <summary>
+		/// Called when there are no other open IDataReaders so this PersistentCollection
+		/// is free to resolve all of the Identifiers to their Entities (which potentially
+		/// involves issuing a new query and opening a new IDataReader.
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="owner"></param>
+		public virtual void EndRead(CollectionPersister persister, object owner) {
+			// override on baseclasses - will eventually make abstract.
 		}
 
 		public void Initialize(bool writing) {
@@ -156,8 +170,18 @@ namespace NHibernate.Collection {
 		}
 
 		public abstract ICollection Entries();
+		//TODO: determine where this is used - not in H2.0.3
 		public abstract void ReadEntries(ICollection entries);
+		
+		/// <summary>
+		/// Reads the elements Identifier from the reader.
+		/// </summary>
+		/// <param name="reader">The IDataReader that contains the value of the Identifier</param>
+		/// <param name="role">The persister for this Collection.</param>
+		/// <param name="entry">The owner of this Collection.</param>
+		/// <returns>The value of the Identifier.</returns>
 		public abstract object ReadFrom(IDataReader reader, CollectionPersister role, object entry);
+		
 		public abstract void WriteTo(IDbCommand st, CollectionPersister role, object entry, int i, bool writeOrder);
 		public abstract object GetIndex(object entry, int i);
 		public abstract void BeforeInitialize(CollectionPersister persister);
@@ -287,6 +311,9 @@ namespace NHibernate.Collection {
 				en.Reset();
 			}
 		}
+
+		//TODO: H2.0.3 has an internal class SetProxy
+		
 
 	}
 

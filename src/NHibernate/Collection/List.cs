@@ -13,6 +13,10 @@ namespace NHibernate.Collection {
 	public class List : ODMGCollection , IList {
 		private IList list;
 
+		// used to hold the Identifiers of the Elements that will later
+		// be moved to the list field.
+		private IList listIdentifiers;
+
 		protected override object Snapshot(CollectionPersister persister) {
 			ArrayList clonedList = new ArrayList( list.Count );
 			foreach(object obj in list) {
@@ -40,6 +44,7 @@ namespace NHibernate.Collection {
 
 		public override void BeforeInitialize(CollectionPersister persister) {
 			this.list = new ArrayList();
+			this.listIdentifiers = new ArrayList();
 		}
 
 		public override int Count {
@@ -129,11 +134,10 @@ namespace NHibernate.Collection {
 			return list.IndexOf(obj);
 		}
 
-		public override void ReplaceElements(IDictionary replacements) {
-			for (int i=0; i<Count; i++) {
-				object val = list[i];
-				object r;
-				if ( val!=null && ( r = replacements[val] )!=null ) list[i] = r;
+		public override void EndRead(CollectionPersister persister, object owner) {
+			for(int i = 0 ;i < listIdentifiers.Count; i++) {
+				object element = persister.ElementType.ResolveIdentifier(listIdentifiers[i], session, owner);
+				list[i] = element;
 			}
 		}
 
@@ -156,13 +160,16 @@ namespace NHibernate.Collection {
 		}
 
 		public override object ReadFrom(IDataReader rs, CollectionPersister persister, object owner) {
-			object element = persister.ReadElement(rs, owner, session);
+			//object element = persister.ReadElement(rs, owner, session);
+			object elementIdentifier = persister.ReadElementIdentifier(rs, owner, session);
 			int index = (int) persister.ReadIndex(rs, session);
 			for (int i=list.Count; i<=index; i++) {
-				list[i]=null;
+				list.Insert(i, null);
+				listIdentifiers.Insert(i , null);
 			}
-			list[index] = element;
-			return element;
+			listIdentifiers[index] = elementIdentifier;
+			//list[index] = element;
+			return elementIdentifier;
 		}
 
 		public override ICollection Entries() {
