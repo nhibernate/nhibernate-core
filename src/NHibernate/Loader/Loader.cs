@@ -509,26 +509,15 @@ namespace NHibernate.Loader
 		/// <param name="rs"></param>
 		/// <param name="selection"></param>
 		/// <param name="session"></param>
-		protected void Advance(IDataReader rs, RowSelection selection, ISessionImplementor session) {
+		protected void Advance(IDataReader rs, RowSelection selection, ISessionImplementor session) 
+		{
 			int firstRow = Loader.GetFirstRow(selection);
-			if(firstRow!=0) 
+			
+			if( firstRow!=0 ) 
 			{
-				if(session.Factory.UseScrollableResultSets ) 
+				for(int i = 0; i < firstRow; i++) 
 				{
-					//TODO: H2.0.3 synch, but I'm not sure if needed because of diff 
-					// between JDBC's ResultSet & ADO.NET's DataReader
-					//rs.absolute(firstRow);
-					for(int i = 0; i < firstRow; i++) 
-					{
-						rs.Read();
-					}
-				}
-				else 
-				{
-					for(int i = 0; i < firstRow; i++) 
-					{
-						rs.Read();
-					}
+					rs.Read();
 				}
 			}
 
@@ -574,10 +563,7 @@ namespace NHibernate.Loader
 			Dialect.Dialect dialect = session.Factory.Dialect;
 			
 			bool useLimit = UseLimit(selection, dialect);
-			bool scrollable = session.Factory.UseScrollableResultSets && (
-				scroll ||
-				(!useLimit && GetFirstRow(selection)!=0)
-				);
+			bool scrollable =  scroll || (!useLimit && GetFirstRow(selection)!=0);
 			if(useLimit) sqlString = dialect.GetLimitString(sqlString);
 
 			IDbCommand command = session.Batcher.PrepareQueryCommand( sqlString, scrollable ); 

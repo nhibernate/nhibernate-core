@@ -139,8 +139,6 @@ namespace NHibernate.Impl
 			// thrown.
 			IDbCommand command = Generate( sql ); // session.Preparer.BuildCommand(sql);
 			
-			// not sure if this is needed because fetch size doesn't apply
-			factory.SetFetchSize(command);
 			commandsToClose.Add(command);
 			
 			return command;
