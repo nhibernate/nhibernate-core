@@ -2422,7 +2422,7 @@ namespace NHibernate.Impl
 		{
 			persister.SetIdentifier( obj, id );
 			object version = Versioning.GetVersion( values, persister );
-			AddEntry( obj, Status.Loaded, values, id, version, lockMode, true, persister, false );
+			AddEntry( obj, Status.Loading, values, id, version, lockMode, true, persister, false );
 
 			if( log.IsDebugEnabled && version != null )
 			{
