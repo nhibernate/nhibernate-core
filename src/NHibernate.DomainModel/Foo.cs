@@ -48,7 +48,8 @@ namespace NHibernate.DomainModel
 		private FooStatus _status;
 		private byte[] _bytes;
 		private System.Globalization.CultureInfo _locale;
-		private String _formula;
+		// in h2.0.3 this was a float
+		private int _formula;
 		private string[] custom;
 		private int _version;
 		private FooProxy _foo;
@@ -256,7 +257,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for formula
 		/// </summary>
-		public String Formula
+		public int Formula
 		{
 			get { return _formula; }
 			set { _formula = value; }

@@ -3600,5 +3600,23 @@ namespace NHibernate.Test
 		{
 		}
 
+		[Test]
+		public void Formula()
+		{
+			Foo foo = new Foo();
+			ISession s = sessions.OpenSession();
+			object id = s.Save( foo );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			foo = (Foo)s.Find( "from Foo as f where f.id = ?", id, NHibernate.String)[0];
+			Assert.AreEqual( 4, foo.Formula, "should be 2x 'Int' property that is defaulted to 2" );
+
+			s.Delete( foo );
+			s.Flush();
+			s.Close();
+		}
+
 	}
 }

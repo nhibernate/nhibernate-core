@@ -68,7 +68,11 @@
 		<property name="Status" column="`status_@###`" type="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel"/>
 		<property name="Locale" column="`localeayzabc123!@#$`" access="field.camelcase-underscore" type="locale"/>
 	    
-		<property name="Formula" formula="1/2 * int_"/>
+	    <!-- 
+			h2.0.3 had this a 1/2 * int_ - but with Mssql that was returning 0 (which could be mistaken
+			for an uninitialized Int32
+		-->
+		<property name="Formula" formula="2 * int_"/>
 	    
 		<property name="Custom" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel" access="field.camelcase">
 			<column name="first_name" length="66"/>
