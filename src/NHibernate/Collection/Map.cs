@@ -71,16 +71,20 @@ namespace NHibernate.Collection {
 		public object SyncRoot {
 			get { return this; }
 		}
-		public ICollection Keys {
-			get { 
-				Read();
-				return map.Keys;
+		public ICollection Keys 
+		{
+			get 
+			{ 
+				//Read();
+				return new CollectionProxy(this, map.Keys);
 			}
 		}
-		public ICollection Values {
-			get {  
-				Read();
-				return map.Values;
+		public ICollection Values 
+		{
+			get 
+			{  
+				//Read();
+				return new CollectionProxy(this, map.Values);
 			}
 			
 		}

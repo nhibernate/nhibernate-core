@@ -230,86 +230,344 @@ namespace NHibernate.Collection {
 			set { collectionSnapshot = value; }
 		}
 
-		internal sealed class ListProxy : IList {
-			private PersistentCollection pc;
+		internal class CollectionProxy : ICollection
+		{
+			protected PersistentCollection pc;
+			private ICollection collection;
+
+			public CollectionProxy(PersistentCollection pc, ICollection collection) 
+			{
+				this.pc = pc;
+				this.collection = collection;
+			}
+
+			#region ICollection Members
+
+			public bool IsSynchronized
+			{
+				get{ return false; }
+			}
+
+			public int Count
+			{
+				get{return collection.Count;}
+			}
+
+			public void CopyTo(Array array, int index)
+			{
+				collection.CopyTo(array, index);
+			}
+
+			public object SyncRoot
+			{
+				get{return null;}
+			}
+
+			#endregion
+
+			#region IEnumerable Members
+
+			public IEnumerator GetEnumerator()
+			{
+				return new EnumeratorProxy(collection.GetEnumerator());
+			}
+
+			#endregion
+		}
+
+		
+		internal sealed class ListProxy : CollectionProxy, IList 
+		{
 			private IList list;
 			
-			public ListProxy(PersistentCollection pc, IList list) {
-				this.pc = pc;
+			public ListProxy(PersistentCollection pc, IList list) : base(pc, list)
+			{
 				this.list = list;
 			}
 
-			public bool IsFixedSize {
-				get { return list.IsFixedSize; }
-			}
-			public bool IsReadOnly {
+			#region IList Members
+
+			public bool IsReadOnly
+			{
 				get { return list.IsReadOnly; }
 			}
-			public int Count {
-				get { return list.Count; }
-			}
-			public bool IsSynchronized {
-				get { return list.IsSynchronized; }
-			}
-			public object SyncRoot {
-				get { return list.SyncRoot; }
-			}
-			public bool Contains(object obj) {
-				return list.Contains(obj);
-			}
-			public int IndexOf(object obj) {
-				return list.IndexOf(obj); 
-			}
-			public void CopyTo(Array array, int index) {
-				list.CopyTo(array, index);
-			}
-			public IEnumerator GetEnumerator() {
-				return new EnumeratorProxy(list.GetEnumerator());
-			}
-			public int Add(object obj) {
-				pc.Write();
-				return list.Add(obj);
-			}
-			public void Clear() {
-				pc.Write();
-				list.Clear();
-			}
-			public void Insert(int index, object obj) {
-				pc.Write();
-				list.Insert(index, obj);
-			}
-			public void RemoveAt(int index) {
-				pc.Write();
-				list.RemoveAt(index);
-			}
-			public object this [ int index] {
-				get { return list[index]; }
-				set {
+
+			public object this[int index]
+			{
+				get { return list[index];}
+				set 
+				{ 
 					pc.Write();
 					list[index] = value;
 				}
 			}
 
-			public void Remove(object obj) {
+			public void RemoveAt(int index)
+			{
 				pc.Write();
-				list.Remove(obj);
+				list.RemoveAt(index);
+			}
+
+			public void Insert(int index, object value)
+			{
+				pc.Write();
+				list.Insert(index, value);
+			}
+
+			public void Remove(object value)
+			{
+				pc.Write();
+				list.Remove(value);
+			}
+
+			public bool Contains(object value)
+			{
+				return list.Contains(value);
+			}
+
+			public void Clear()
+			{
+				pc.Write();
+				list.Clear();
+			}
+
+			public int IndexOf(object value)
+			{
+				return list.IndexOf(value);
+			}
+
+			public int Add(object value)
+			{
+				pc.Write();
+				return list.Add(value);
+			}
+
+			public bool IsFixedSize
+			{
+				get	{ return list.IsFixedSize;}
+			}
+
+			#endregion
+
+		}
+
+		
+		internal sealed class DictionaryProxy : IDictionary
+		{
+			private PersistentCollection pc;
+			private IDictionary dictionary;
+
+			public DictionaryProxy(PersistentCollection pc, IDictionary dictionary)
+			{
+				this.pc = pc;
+				this.dictionary = dictionary;
+			}
+
+			#region IDictionary Members
+
+			public bool IsReadOnly
+			{
+				get
+				{
+					// TODO:  Add DictionaryProxy.IsReadOnly getter implementation
+					return false;
+				}
+			}
+
+			public IDictionaryEnumerator GetEnumerator()
+			{
+				// TODO:  Add DictionaryProxy.GetEnumerator implementation
+				return null;
+			}
+
+			public object this[object key]
+			{
+				get
+				{
+					// TODO:  Add DictionaryProxy.this getter implementation
+					return null;
+				}
+				set
+				{
+					// TODO:  Add DictionaryProxy.this setter implementation
+				}
+			}
+
+			public void Remove(object key)
+			{
+				// TODO:  Add DictionaryProxy.Remove implementation
+			}
+
+			public bool Contains(object key)
+			{
+				// TODO:  Add DictionaryProxy.Contains implementation
+				return false;
+			}
+
+			public void Clear()
+			{
+				// TODO:  Add DictionaryProxy.Clear implementation
+			}
+
+			public ICollection Values
+			{
+				get
+				{
+					// TODO:  Add DictionaryProxy.Values getter implementation
+					return null;
+				}
+			}
+
+			public void Add(object key, object value)
+			{
+				// TODO:  Add DictionaryProxy.Add implementation
+			}
+
+			public ICollection Keys
+			{
+				get
+				{
+					// TODO:  Add DictionaryProxy.Keys getter implementation
+					return null;
+				}
+			}
+
+			public bool IsFixedSize
+			{
+				get
+				{
+					// TODO:  Add DictionaryProxy.IsFixedSize getter implementation
+					return false;
+				}
+			}
+
+			#endregion
+
+			#region ICollection Members
+
+			public bool IsSynchronized
+			{
+				get{ return false; }
+			}
+
+			public int Count
+			{
+				get{return dictionary.Count;}
+			}
+
+			public void CopyTo(Array array, int index)
+			{
+				dictionary.CopyTo(array, index);
+			}
+
+			public object SyncRoot
+			{
+				get{return null;}
+			}
+
+			#endregion
+
+			#region IEnumerable Members
+
+			IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				// TODO:  Add DictionaryProxy.System.Collections.IEnumerable.GetEnumerator implementation
+				return null;
+			}
+
+			#endregion
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <remarks>
+		/// I don't know how needed this is because the java.util.Iterator provides methods
+		/// to modify the underlying object - such as remove() and set(Object).  In .NET
+		/// the IEnumerator does not provide any means to modify the underlying collection 
+		/// while using the IEnumerator interface.
+		/// </remarks>
+		internal sealed class EnumeratorProxy : IEnumerator 
+		{
+			private IEnumerator en;
+
+			public EnumeratorProxy(IEnumerator en) 
+			{
+				this.en = en;
+			}
+
+			public object Current 
+			{
+				get { return en.Current; }
+			}
+
+			public bool MoveNext() 
+			{
+				return en.MoveNext();
+			}
+
+			public void Reset() 
+			{
+				en.Reset();
 			}
 		}
 
-		internal sealed class EnumeratorProxy : IEnumerator {
-			private IEnumerator en;
-			public EnumeratorProxy(IEnumerator en) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <remarks>
+		/// I don't know how needed this is because the java.util.Iterator provides methods
+		/// to modify the underlying object - such as remove() and set(Object).  In .NET
+		/// the IEnumerator does not provide any means to modify the underlying collection 
+		/// while using the IEnumerator interface.
+		/// </remarks>
+		internal sealed class DictionaryEnumeratorProxy : IDictionaryEnumerator
+		{
+			private IDictionaryEnumerator en;
+			
+			public DictionaryEnumeratorProxy(IDictionaryEnumerator en) 
+			{
 				this.en = en;
 			}
-			public object Current {
-				get { return en.Current; }
+
+			#region IDictionaryEnumerator Members
+
+			public object Key
+			{
+				get{ return en.Key; }
 			}
-			public bool MoveNext() {
-				return en.MoveNext();
+
+			public object Value
+			{
+				get	{ return en.Value; }
 			}
-			public void Reset() {
+
+			public DictionaryEntry Entry
+			{
+				get	{ return new DictionaryEntry(Key, Value); }
+			}
+
+			#endregion
+
+			#region IEnumerator Members
+
+			public void Reset()
+			{
 				en.Reset();
 			}
+
+			public object Current
+			{
+				get	{ return en.Current; }
+			}
+
+			public bool MoveNext()
+			{
+				return en.MoveNext();
+			}
+
+			#endregion
+
 		}
 
 		//TODO: H2.0.3 has an internal class SetProxy

@@ -128,20 +128,24 @@ namespace NHibernate.Collection {
 		/// <summary>
 		/// <see cref="IDictionary.Keys"/>
 		/// </summary>
-		public ICollection Keys {
-			get { 
-				Read();
-				return map.Keys; 
+		public ICollection Keys 
+		{
+			get 
+			{ 
+				//Read();
+				return new CollectionProxy(this, map.Keys); 
 			}
 		}
 
 		/// <summary>
 		/// <see cref="IDictionary.Values"/>
 		/// </summary>
-		public ICollection Values {
-			get { 
-				Read();
-				return map.Values;
+		public ICollection Values 
+		{
+			get 
+			{ 
+				//Read();
+				return new CollectionProxy(this, map.Values);
 			}
 		}
 
