@@ -6,14 +6,15 @@ namespace NHibernate.SqlTypes
 	/// <summary>
 	/// Summary description for AnsiStringFixedLengthSqlType.
 	/// </summary>
+	[Serializable]
 	public class AnsiStringFixedLengthSqlType : SqlType 
 	{
-		public AnsiStringFixedLengthSqlType() 
-			: base(DbType.AnsiStringFixedLength)
+		public AnsiStringFixedLengthSqlType() : base(DbType.AnsiStringFixedLength)
 		{
 		}
 
-		public AnsiStringFixedLengthSqlType(int length) : base(DbType.AnsiStringFixedLength, length) {	
+		public AnsiStringFixedLengthSqlType(int length) : base(DbType.AnsiStringFixedLength, length) 
+		{	
 		}
 
 	}

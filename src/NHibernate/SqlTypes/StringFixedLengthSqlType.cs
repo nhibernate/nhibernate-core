@@ -6,6 +6,7 @@ namespace NHibernate.SqlTypes
 	/// <summary>
 	/// Summary description for StringFixedLengthSqlType.
 	/// </summary>
+	[Serializable]
 	public class StringFixedLengthSqlType : SqlType 
 	{
 		public StringFixedLengthSqlType() : base(DbType.StringFixedLength)

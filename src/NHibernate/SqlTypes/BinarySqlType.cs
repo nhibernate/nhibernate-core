@@ -6,6 +6,7 @@ namespace NHibernate.SqlTypes
 	/// <summary>
 	/// Summary description for BinarySqlType.
 	/// </summary>
+	[Serializable]
 	public class BinarySqlType : SqlType 
 	{
 		

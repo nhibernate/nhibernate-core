@@ -6,6 +6,7 @@ namespace NHibernate.SqlTypes
 	/// <summary>
 	/// Summary description for DecimalSqlType.
 	/// </summary>
+	[Serializable]
 	public class DecimalSqlType : SqlType 
 	{
 

@@ -10,6 +10,7 @@ namespace NHibernate.SqlTypes {
 	/// and the sql server money = decimal(19,4) and smallmoney = decimal(10,4).  So there
 	/// is no advantage to using it.
 	/// </summary>
+	[Serializable]
 	public class CurrencySqlType : SqlType
 	{
 		public CurrencySqlType() : base(DbType.Currency) 

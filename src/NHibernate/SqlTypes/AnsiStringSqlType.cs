@@ -7,6 +7,7 @@ namespace NHibernate.SqlTypes
 	/// <summary>
 	/// Summary description for AnsiStringSqlType.
 	/// </summary>
+	[Serializable]
 	public class AnsiStringSqlType : SqlType 
 	{
 		public AnsiStringSqlType() : base(DbType.AnsiString) 
@@ -15,7 +16,5 @@ namespace NHibernate.SqlTypes
 		public AnsiStringSqlType(int length) : base(DbType.AnsiString, length) 
 		{	
 		}
-
-
 	}
 }

@@ -11,9 +11,9 @@ namespace NHibernate.SqlTypes
 	/// It is expected that each Dialect will be the one responsible for converting these
 	/// objects to the sql string when using SchemaExport.
 	/// </summary>
+	[Serializable]
 	public abstract class SqlType
 	{
-
 		protected DbType dbType;
 		protected int length;
 		protected byte precision;

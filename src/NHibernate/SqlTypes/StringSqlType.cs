@@ -6,6 +6,7 @@ namespace NHibernate.SqlTypes
 	/// <summary>
 	/// Summary description for StringSqlType.
 	/// </summary>
+	[Serializable]
 	public class StringSqlType : SqlType 
 	{
 		public StringSqlType() : base(DbType.String)
