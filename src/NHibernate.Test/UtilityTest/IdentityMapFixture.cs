@@ -41,6 +41,10 @@ namespace NHibernate.Test.UtilityTest
 
 		}
 
+		protected virtual IDictionary GetIdentityMap() 
+		{
+			return IdentityMap.Instantiate();
+		}
 
 		/// <summary>
 		/// Verify that the object being added as the Key does not have it's GetHashCode
@@ -49,8 +53,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void AddNoHashCode()
 		{
-			//IDictionary map = IdentityMap.Instantiate();
-			IDictionary map = IdentityMap.InstantiateSequenced();
+			IDictionary map = GetIdentityMap();
 			map.Add(noHashCode1, value1);
 
 			Assert.AreEqual(1, map.Count, "The item was added succesfully");
@@ -63,8 +66,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ConcurrentEntries() 
 		{
-			//IDictionary map = IdentityMap.Instantiate();
-			IDictionary map = IdentityMap.InstantiateSequenced();
+			IDictionary map = GetIdentityMap();
 			
 			map.Add(noHashCode1, value1);
 			map.Add(noHashCode2, value2);
@@ -98,8 +100,7 @@ namespace NHibernate.Test.UtilityTest
 			NoHashCode noHashCode4 = new NoHashCode();
 			object value4 = new object();
 
-			//IDictionary map = IdentityMap.Instantiate();
-			IDictionary map = IdentityMap.InstantiateSequenced();
+			IDictionary map = GetIdentityMap();
 			map.Add(noHashCode1, value1);
 			map.Add(noHashCode2, value2);
 
@@ -127,8 +128,7 @@ namespace NHibernate.Test.UtilityTest
 		[ExpectedException(typeof(System.ArgumentException))]
 		public void AddValueTypeException() 
 		{
-			//IDictionary map = IdentityMap.Instantiate();
-			IDictionary map = IdentityMap.InstantiateSequenced();
+			IDictionary map = GetIdentityMap();
 			int intKey = 3;
 			object objectValue = new object();
 			map.Add(intKey, objectValue); 
@@ -138,8 +138,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void Count() 
 		{
-			//IDictionary map = IdentityMap.Instantiate();
-			IDictionary map = IdentityMap.InstantiateSequenced();
+			IDictionary map = GetIdentityMap();
 			map.Add(new object(), new object());
 			map.Add(new object(), new object());
 
@@ -154,8 +153,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ContainsSameObjectByRef() 
 		{
-			//IDictionary map = IdentityMap.Instantiate();
-			IDictionary map = IdentityMap.InstantiateSequenced();
+			IDictionary map = GetIdentityMap();
 
 			MutableHashCode item1Copy = item1;
 			
@@ -173,8 +171,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ContainsSameObjectWithDiffEquals()
 		{
-			//IDictionary map = IdentityMap.Instantiate();
-			IDictionary map = IdentityMap.InstantiateSequenced();
+			IDictionary map = GetIdentityMap();
 
 			map.Add(item1, new object());
 
@@ -191,8 +188,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ContainsDiffObjectWithEquals() 
 		{
-			//IDictionary map = IdentityMap.Instantiate();
-			IDictionary map = IdentityMap.InstantiateSequenced();
+			IDictionary map = GetIdentityMap();
 			item1.HashCodeField = 4;
 			item2.HashCodeField = 4;
 
@@ -211,8 +207,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void SetItemChangedHashCodeTwice() 
 		{
-			//IDictionary actualMap = IdentityMap.Instantiate();
-			IDictionary actualMap = IdentityMap.InstantiateSequenced();
+			IDictionary actualMap = GetIdentityMap();
 			
 			actualMap[item1] =  value1;
 
@@ -229,8 +224,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void SetItemsEqualHashCodeDiffIdentity() 
 		{
-			//IDictionary actualMap = IdentityMap.Instantiate();
-			IDictionary actualMap = IdentityMap.InstantiateSequenced();
+			IDictionary actualMap = GetIdentityMap();
 			IDictionary normalMap = new Hashtable();
 
 			item1.HashCodeField = 3;
@@ -259,8 +253,7 @@ namespace NHibernate.Test.UtilityTest
 		public void Keys() 
 		{
 
-			//IDictionary map = IdentityMap.Instantiate();
-			IDictionary map = IdentityMap.InstantiateSequenced();
+			IDictionary map = GetIdentityMap();
 			map.Add(item1, value1);
 			map.Add(item2, value2);
 
