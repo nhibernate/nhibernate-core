@@ -672,7 +672,7 @@ namespace NHibernate.Loader
 		/// <param name="selection"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		private IDataReader GetResultSet(IDbCommand st, RowSelection selection, ISessionImplementor session) 
+		protected IDataReader GetResultSet(IDbCommand st, RowSelection selection, ISessionImplementor session) 
 		{
 			try 
 			{
