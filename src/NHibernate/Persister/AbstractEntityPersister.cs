@@ -32,71 +32,71 @@ namespace NHibernate.Persister
 		protected static readonly System.Type[] NoClasses = new System.Type[0];
 
 		private System.Type mappedClass;
-		protected Dialect.Dialect dialect;
-		private ConstructorInfo constructor;
+		[NonSerialized] protected Dialect.Dialect dialect;
+		[NonSerialized] private ConstructorInfo constructor;
 
-		private IIdentifierGenerator idgen;
-		private bool polymorphic;
-		private bool explicitPolymorphism;
-		private bool inherited;
-		private bool hasSubclasses;
-		private bool versioned;
-		private bool abstractClass;
-		private bool implementsLifecycle;
-		private bool implementsValidatable;
-		private bool hasCollections;
-		private bool hasCascades;
-		private bool mutable;
-		private bool useIdentityColumn;
-		private System.Type superclass;
-		private bool dynamicUpdate;
-		private bool dynamicInsert;
-		private string sqlWhereString;
-		private string sqlWhereStringTemplate;
+		[NonSerialized] private IIdentifierGenerator idgen;
+		[NonSerialized] private bool polymorphic;
+		[NonSerialized] private bool explicitPolymorphism;
+		[NonSerialized] private bool inherited;
+		[NonSerialized] private bool hasSubclasses;
+		[NonSerialized] private bool versioned;
+		[NonSerialized] private bool abstractClass;
+		[NonSerialized] private bool implementsLifecycle;
+		[NonSerialized] private bool implementsValidatable;
+		[NonSerialized] private bool hasCollections;
+		[NonSerialized] private bool hasCascades;
+		[NonSerialized] private bool mutable;
+		[NonSerialized] private bool useIdentityColumn;
+		[NonSerialized] private System.Type superclass;
+		[NonSerialized] private bool dynamicUpdate;
+		[NonSerialized] private bool dynamicInsert;
+		[NonSerialized] private string sqlWhereString;
+		[NonSerialized] private string sqlWhereStringTemplate;
 
-		private string identitySelectString;
+		[NonSerialized] private string identitySelectString;
 
-		private readonly System.Type[] proxyInterfaces;
-		private System.Type concreteProxyClass;
-		private bool hasProxy;
-		protected bool hasEmbeddedIdentifier;
+		[NonSerialized] private readonly System.Type[] proxyInterfaces;
+		[NonSerialized] private System.Type concreteProxyClass;
+		[NonSerialized] private bool hasProxy;
+		[NonSerialized] protected bool hasEmbeddedIdentifier;
 
-		private string[] identifierColumnNames;
-		private Cascades.IdentifierValue unsavedIdentifierValue;
+		[NonSerialized] private string[] identifierColumnNames;
+		[NonSerialized] private Cascades.IdentifierValue unsavedIdentifierValue;
 
-		protected Hashtable columnNamesByPropertyPath = new Hashtable();
-		protected Hashtable typesByPropertyPath = new Hashtable();
+		[NonSerialized] protected Hashtable columnNamesByPropertyPath = new Hashtable();
+		[NonSerialized] protected Hashtable typesByPropertyPath = new Hashtable();
 
-		private string identifierPropertyName;
-		private IType identifierType;
-		private ReflectHelper.Setter identifierSetter;
-		private ReflectHelper.Getter identifierGetter;
-		private PropertyInfo proxyIdentifierProperty;
+		[NonSerialized] private string identifierPropertyName;
+		[NonSerialized] private IType identifierType;
+		[NonSerialized] private ReflectHelper.Setter identifierSetter;
+		[NonSerialized] private ReflectHelper.Getter identifierGetter;
+		[NonSerialized] private PropertyInfo proxyIdentifierProperty;
 
-		private string[] propertyNames;
-		private IType[] propertyTypes;
-		private bool[] propertyUpdateability;
-		private bool[] propertyInsertability;
+		[NonSerialized] private string[] propertyNames;
+		[NonSerialized] private IType[] propertyTypes;
+		[NonSerialized] private bool[] propertyUpdateability;
+		[NonSerialized] private bool[] propertyInsertability;
 
-		private string versionPropertyName;
-		private string versionColumnName;
-		private IVersionType versionType;
-		private ReflectHelper.Getter versionGetter;
-		private int versionProperty;
+		[NonSerialized] private string versionPropertyName;
+		[NonSerialized] private string versionColumnName;
+		[NonSerialized] private IVersionType versionType;
+		[NonSerialized] private ReflectHelper.Getter versionGetter;
+		[NonSerialized] private int versionProperty;
 
-		private ReflectHelper.Getter[] getters;
-		private ReflectHelper.Setter[] setters;
-		private readonly Hashtable gettersByPropertyName = new Hashtable();
-		private readonly Hashtable settersByPropertyName = new Hashtable();
-		protected int hydrateSpan;
+		[NonSerialized] private ReflectHelper.Getter[] getters;
+		[NonSerialized] private ReflectHelper.Setter[] setters;
+		[NonSerialized] private readonly Hashtable gettersByPropertyName = new Hashtable();
+		[NonSerialized] private readonly Hashtable settersByPropertyName = new Hashtable();
+		[NonSerialized] protected int hydrateSpan;
 
-		private string className;
+		[NonSerialized] private string className;
 
-		private Cascades.CascadeStyle[] cascadeStyles;
-		private ICacheConcurrencyStrategy cache;
+		[NonSerialized] private Cascades.CascadeStyle[] cascadeStyles;
+		[NonSerialized] private ICacheConcurrencyStrategy cache;
 
 		// a cglib thing
-		//private MetaClass optimizer;
+		//[NonSerialized] private MetaClass optimizer;
 
 		public System.Type MappedClass 
 		{
