@@ -20,13 +20,9 @@
 
 	<class 
 		name="NHibernate.DomainModel.W, NHibernate.DomainModel" 
+		proxy="NHibernate.DomainModel.Z, NHibernate.DomainModel"
 		discriminator-value="0" 
 	>
-		<!-- 
-			proxy doesn't work yet
-			proxy="NHibernate.DomainModel.Z, NHibernate.DomainModel"
-		-->
-		
 		<id name="Id" unsaved-value="0">
 			<generator class="hilo"/>
 		</id>

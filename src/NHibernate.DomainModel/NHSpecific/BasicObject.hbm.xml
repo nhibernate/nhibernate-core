@@ -34,13 +34,10 @@
 	</class>
 	<class 
 		name="NHibernate.DomainModel.NHSpecific.BasicObjectProxy, NHibernate.DomainModel"
+		proxy="NHibernate.DomainModel.NHSpecific.IBasicObjectProxy, NHibernate.DomainModel"
 		table="bc_ref_p"
 		
 	>
-		<!-- 
-			uncomment once proxies are working
-			proxy="NHibernate.DomainModel.NHSpecific.IBasicObjectProxy, NHibernate.DomainModel"
-		-->
 		<id name="Id">
 			<generator class="native" />
 		</id>

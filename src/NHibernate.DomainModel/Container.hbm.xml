@@ -13,11 +13,8 @@
 	/>
 	<class 
 		name="NHibernate.DomainModel.Container, NHibernate.DomainModel" 
+		proxy="NHibernate.DomainModel.Container, NHibernate.DomainModel"
 	>
-	<!-- 
-			proxy doesn't work yet
-			proxy="NHibernate.DomainModel.Container, NHibernate.DomainModel"
-		-->
 		<id 
 			name="Id" 
 			column="container_id"
@@ -160,11 +157,8 @@
 	</class>
 	<class 
 		name="NHibernate.DomainModel.Contained, NHibernate.DomainModel" 
+		proxy="NHibernate.DomainModel.Contained, NHibernate.DomainModel"
 	>
-	<!-- 
-			proxy doesn't work yet
-			proxy="NHibernate.DomainModel.Contained, NHibernate.DomainModel"
-		-->
 		<id 
 			name="Id" 
 			column="container_id" 

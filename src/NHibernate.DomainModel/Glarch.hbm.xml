@@ -2,14 +2,10 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class 
 		name="NHibernate.DomainModel.Glarch, NHibernate.DomainModel" 
+		proxy="NHibernate.DomainModel.GlarchProxy, NHibernate.DomainModel"
 		table="`glarchez`"
 		dynamic-update="true"
 	>
-		<!-- 
-			proxy doesn't work yet
-			proxy="NHibernate.DomainModel.GlarchProxy, NHibernate.DomainModel"
-		-->
-		
 		<!-- <jcs-cache usage="read-write" /> -->
 		<!-- commented out in h2.0.3 also -->
 		<id 

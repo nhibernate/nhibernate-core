@@ -56,13 +56,10 @@
 		</subclass>
 	</class>
 	<class 
-		name="NHibernate.DomainModel.D, NHibernate.DomainModel" 
+		name="NHibernate.DomainModel.D, NHibernate.DomainModel"
+		proxy="NHibernate.DomainModel.D, NHibernate.DomainModel" 
 		discriminator-value="0"
 	>
-		<!-- 
-			proxy does not work yet
-			proxy="NHibernate.DomainModel.D, NHibernate.DomainModel"
-		-->
 		<id 
 			name="Id" 
 			unsaved-value="0"

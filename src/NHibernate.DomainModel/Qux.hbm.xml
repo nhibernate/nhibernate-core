@@ -1,14 +1,10 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class 
-		name="NHibernate.DomainModel.Qux, NHibernate.DomainModel" 
+		name="NHibernate.DomainModel.Qux, NHibernate.DomainModel"
+		proxy="NHibernate.DomainModel.Qux, NHibernate.DomainModel" 
 		table="quux" 
 	>
-		<!-- 
-			proxy doesn't work yet - once proxy is working remove the 
-			[Serializable] attribute from the class.
-			proxy="NHibernate.DomainModel.Qux, NHibernate.DomainModel"
-		-->
 		<id name="Key" column="qux_key" unsaved-value="0">
 			<generator class="hilo" />
 		</id>
