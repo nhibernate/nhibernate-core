@@ -17,8 +17,8 @@ namespace NHibernate.SqlCommand
 	public class SqlInsertBuilder: ISqlStringBuilder	
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(SqlInsertBuilder) );
-
-		ISessionFactoryImplementor factory;
+		
+		private ISessionFactoryImplementor factory;
 		string tableName;
 		IList columnNames = new ArrayList();
 		IList columnValues = new ArrayList();
@@ -44,7 +44,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlInsertBuilder.</returns>
 		public SqlInsertBuilder AddColumn(string[] columnNames, IType propertyType) 
 		{
-			Parameter[] parameters = Parameter.GenerateParameters(factory, columnNames, propertyType);
+			Parameter[] parameters = Parameter.GenerateParameters( factory, columnNames, propertyType );
 
 			for(int i = 0; i < columnNames.Length; i++) 
 			{

@@ -8,8 +8,8 @@ namespace NHibernate
 	[Serializable]
 	public class PropertyNotFoundException : MappingException 
 	{
-		public PropertyNotFoundException(string msg, Exception root) : base(msg, root) {}
+		public PropertyNotFoundException(string message, Exception root) : base(message, root) {}
 		public PropertyNotFoundException(Exception root) : base(root) {}
-		public PropertyNotFoundException(string msg) : base(msg) {}
+		public PropertyNotFoundException(string message) : base(message) {}
 	}
 }

@@ -14,14 +14,14 @@ namespace NHibernate
 
 		public ADOException() : this("DataException occured", new InvalidOperationException("Invalid Operation")) { }
 
-		public ADOException(string str) : this(str, new InvalidOperationException("Invalid Operation")) { }
+		public ADOException(string message) : this(message, new InvalidOperationException("Invalid Operation")) { }
 
 		public ADOException(DataException root) : this("DataException occurred", root) { }
 
-		public ADOException(string str, Exception root) : base(str, root) 
+		public ADOException(string message, Exception root) : base(message, root) 
 		{
 			sqle = root;
-			log4net.LogManager.GetLogger( typeof(ADOException) ).Error(str, root);  
+			log4net.LogManager.GetLogger( typeof(ADOException) ).Error(message, root);  
 		}
 
 		protected ADOException(SerializationInfo info, StreamingContext context) : base(info, context) { }

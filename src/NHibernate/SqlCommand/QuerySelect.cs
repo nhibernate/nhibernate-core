@@ -98,6 +98,7 @@ namespace NHibernate.SqlCommand
 	
 		public bool Distinct 
 		{
+			get { return distinct; }
 			set { this.distinct = value; }
 		}
 	

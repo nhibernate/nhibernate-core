@@ -9,6 +9,6 @@ namespace NHibernate
 	[Serializable]
 	public class TransientObjectException : HibernateException 
 	{
-		public TransientObjectException(string msg): base(msg) {	}
+		public TransientObjectException(string message): base(message) {	}
 	}
 }

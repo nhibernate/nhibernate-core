@@ -8,6 +8,6 @@ namespace NHibernate.Type
 	[Serializable]
 	public class SerializationException : HibernateException 
 	{
-		public SerializationException(string msg, Exception root) : base(msg, root) { }
+		public SerializationException(string message, Exception root) : base(message, root) { }
 	}
 }

@@ -104,8 +104,9 @@ namespace NHibernate.SqlCommand {
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="identityType">The IType of the Identity Property.</param>
 		/// <returns>The SqlSimpleSelectBuilder.</returns>
-		public SqlSimpleSelectBuilder SetIdentityColumn(string[] columnNames, IType identityType) {
-			Parameter[] parameters = Parameter.GenerateParameters(factory, columnNames, identityType);
+		public SqlSimpleSelectBuilder SetIdentityColumn(string[] columnNames, IType identityType) 
+		{
+			Parameter[] parameters = Parameter.GenerateParameters( Factory, columnNames, identityType );
 
 			identityFragmentIndex = whereStrings.Add(ToWhereString(columnNames, parameters));
 
@@ -118,8 +119,9 @@ namespace NHibernate.SqlCommand {
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="versionType">The IVersionType of the Version Property.</param>
 		/// <returns>The SqlSimpleSelectBuilder.</returns>
-		public SqlSimpleSelectBuilder SetVersionColumn(string[] columnNames, IVersionType versionType) {
-			Parameter[] parameters = Parameter.GenerateParameters(factory, columnNames, versionType);
+		public SqlSimpleSelectBuilder SetVersionColumn(string[] columnNames, IVersionType versionType) 
+		{
+			Parameter[] parameters = Parameter.GenerateParameters( Factory, columnNames, versionType );
 
 			versionFragmentIndex = whereStrings.Add(ToWhereString(columnNames, parameters));
 
@@ -153,8 +155,9 @@ namespace NHibernate.SqlCommand {
 		/// <param name="type">The IType of the property.</param>
 		/// <param name="op">The operator to put between the column name and value.</param>
 		/// <returns>The SqlSimpleSelectBuilder</returns>
-		public SqlSimpleSelectBuilder AddWhereFragment(string[] columnNames, IType type, string op) {
-			Parameter[] parameters = Parameter.GenerateParameters(factory, columnNames, type);
+		public SqlSimpleSelectBuilder AddWhereFragment(string[] columnNames, IType type, string op) 
+		{
+			Parameter[] parameters = Parameter.GenerateParameters(Factory, columnNames, type);
 			
 			whereStrings.Add(ToWhereString(columnNames, parameters, op));
 

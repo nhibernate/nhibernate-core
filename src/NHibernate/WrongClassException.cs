@@ -12,7 +12,7 @@ namespace NHibernate
 		private object identifier;
 		private System.Type type;
 
-		public WrongClassException(string msg, object identifier, System.Type type) : base(msg) 
+		public WrongClassException(string message, object identifier, System.Type type) : base(message) 
 		{
 			this.identifier = identifier;
 			this.type = type;

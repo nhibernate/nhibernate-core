@@ -8,8 +8,8 @@ namespace NHibernate.Id
 	[Serializable]
 	public class IdentifierGenerationException : HibernateException 
 	{
-		public IdentifierGenerationException(string msg) : base(msg) {}
+		public IdentifierGenerationException(string message) : base(message) {}
 
-		public IdentifierGenerationException(string msg, Exception e) : base(msg, e) {}
+		public IdentifierGenerationException(string message, Exception e) : base(message, e) {}
 	}
 }

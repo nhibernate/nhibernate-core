@@ -97,9 +97,9 @@ namespace NHibernate.SqlCommand
 					builderString = builder.ToString();
 					
 					// don't add an empty string into the new compacted SqlString
-					if(builderString!=String.Empty) 
+					if( builderString.Length!=0 ) 
 					{
-						sqlBuilder.Add(builderString);
+						sqlBuilder.Add( builderString );
 					}
 
 					builder = new StringBuilder();

@@ -8,8 +8,8 @@ namespace NHibernate
 	[Serializable]
 	public class TransactionException : HibernateException 
 	{
-		public TransactionException(string msg, Exception root) : base(msg, root) {}
+		public TransactionException(string message, Exception root) : base(message, root) {}
 
-		public TransactionException(string msg) : base(msg) {}
+		public TransactionException(string message) : base(message) {}
 	}
 }

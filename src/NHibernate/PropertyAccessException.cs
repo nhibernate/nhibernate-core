@@ -12,7 +12,7 @@ namespace NHibernate
 		private string propertyName;
 		private bool wasSetter;
 
-		public PropertyAccessException(Exception root, string s, bool wasSetter, System.Type persistentType, string propertyName) : base(s, root) 
+		public PropertyAccessException(Exception root, string message, bool wasSetter, System.Type persistentType, string propertyName) : base(message, root) 
 		{
 			this.persistentType = persistentType;
 			this.wasSetter = wasSetter;

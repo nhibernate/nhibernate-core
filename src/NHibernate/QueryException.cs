@@ -10,9 +10,9 @@ namespace NHibernate
 	{
 		private string queryString;
 
-		public QueryException(string msg) : base(msg) {}
+		public QueryException(string message) : base(message) {}
 
-		public QueryException(string msg, Exception e) : base(msg, e) {}
+		public QueryException(string message, Exception e) : base(message, e) {}
 
 		public QueryException(Exception e) : base(e) {}
 

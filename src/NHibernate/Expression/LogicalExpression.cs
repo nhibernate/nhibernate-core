@@ -15,14 +15,7 @@ namespace NHibernate.Expression
 	public abstract class LogicalExpression : Expression 
 	{
 
-		/// <summary>
-		/// The Expression that will be on the Left Hand Side of the Op.
-		/// </summary>
 		protected Expression lhs;
-		
-		/// <summary>
-		/// The Expression that will be on the Right Hand Side of the Op.
-		/// </summary>
 		protected Expression rhs;
 
 		/// <summary>
@@ -35,6 +28,22 @@ namespace NHibernate.Expression
 		{
 			this.lhs = lhs;
 			this.rhs = rhs;
+		}
+
+		/// <summary>
+		/// The Expression that will be on the Left Hand Side of the Op.
+		/// </summary>
+		protected Expression LeftHandSide 
+		{
+			get { return lhs; }
+		}
+
+		/// <summary>
+		/// The Expression that will be on the Right Hand Side of the Op.
+		/// </summary>
+		protected Expression RightHandSide 
+		{
+			get { return rhs; }
 		}
 
 		/// <summary>

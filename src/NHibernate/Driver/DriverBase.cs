@@ -12,9 +12,6 @@ namespace NHibernate.Driver
 	/// </summary>
 	public abstract class DriverBase : IDriver
 	{
-		public DriverBase()
-		{
-		}
 
 		#region IDriver Members
 

@@ -12,12 +12,12 @@ namespace NHibernate
 	{
 		public LazyInitializationException(Exception root) : this(root.Message) {}
 
-		public LazyInitializationException(string msg) : base(msg) 
+		public LazyInitializationException(string message) : base(message) 
 		{
-			log4net.LogManager.GetLogger( typeof(LazyInitializationException) ).Error(msg, this);
+			log4net.LogManager.GetLogger( typeof(LazyInitializationException) ).Error(message, this);
 		}
 
-		public LazyInitializationException(string msg, Exception root) : this(msg + " " + root.Message) {}
+		public LazyInitializationException(string message, Exception root) : this(message + " " + root.Message) {}
 
 		public LazyInitializationException() : this("LazyInitalizationException") {}
 

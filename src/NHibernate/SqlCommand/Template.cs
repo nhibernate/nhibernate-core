@@ -14,9 +14,9 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public sealed class Template 
 	{
-
+		public const string PlaceHolder = "$PlaceHolder";
+		
 		private static StringDictionary Keywords = new StringDictionary();
-		public static readonly string PlaceHolder = "$PlaceHolder";
 		private static ArrayList delimiterList = new ArrayList(13);
 		private static string delimiters = null;
 

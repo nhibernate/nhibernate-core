@@ -11,7 +11,7 @@ namespace NHibernate
 	{
 		private object identifier;
 
-		public ObjectDeletedException(string msg, object identifier) : base(msg) 
+		public ObjectDeletedException(string message, object identifier) : base(message) 
 		{
 			this.identifier = identifier;
 		}
@@ -26,9 +26,9 @@ namespace NHibernate
 			get { return base.Message + ": " + identifier; }
 		}
 
-		public ObjectDeletedException(string msg, Exception root) : this(msg, root.Message) {}
+		public ObjectDeletedException(string message, Exception root) : this(message, root.Message) {}
 
-		public ObjectDeletedException(string msg) : this(msg, msg) {}
+		public ObjectDeletedException(string message) : this(message, message) {}
 
 		public ObjectDeletedException(Exception root) : this(root.Message, root.Message) {}
 

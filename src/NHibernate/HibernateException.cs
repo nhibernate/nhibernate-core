@@ -15,9 +15,9 @@ namespace NHibernate
 
 		public HibernateException(Exception e) : base(String.Empty, e) { }
 
-		public HibernateException(string str, Exception e) : base(str, e) { }
+		public HibernateException(string message, Exception e) : base(message, e) { }
 
-		public HibernateException(string str) : base(str) { }
+		public HibernateException(string message) : base(message) { }
 
 		protected HibernateException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}

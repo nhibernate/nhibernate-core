@@ -17,7 +17,7 @@ namespace NHibernate.Type
 		private readonly string role;
 		private static readonly SqlType[] NoSqlTypes = {};
 
-		public PersistentCollectionType(string role) 
+		protected PersistentCollectionType(string role) 
 		{
 			this.role = role;
 		}

@@ -143,7 +143,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSelectBuilder</returns>
 		public SqlSelectBuilder SetWhereClause(string tableAlias, string[] columnNames, IType whereType) 
 		{
-			Parameter[] parameters = Parameter.GenerateParameters(factory, tableAlias, columnNames, whereType);
+			Parameter[] parameters = Parameter.GenerateParameters( Factory, tableAlias, columnNames, whereType );
 
 			whereSqlStrings.Add(ToWhereString(tableAlias, columnNames, parameters));
 

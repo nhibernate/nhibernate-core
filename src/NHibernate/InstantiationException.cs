@@ -11,7 +11,8 @@ namespace NHibernate
 	{
 		private System.Type type;
 
-		public InstantiationException(string s, System.Type type, Exception root) : base(s, root) 
+		public InstantiationException(string message, System.Type type, Exception root) 
+			: base(message, root) 
 		{
 			this.type = type;
 		}
@@ -26,9 +27,9 @@ namespace NHibernate
 			get { return base.Message + type.FullName; }
 		}
 
-		public InstantiationException(string s, Exception root) : this(s, typeof(InstantiationException), root) {}
+		public InstantiationException(string message, Exception root) : this(message, typeof(InstantiationException), root) {}
 
-		public InstantiationException(string s) : this(s, typeof(InstantiationException), new InvalidOperationException("Invalid Operation")) {}
+		public InstantiationException(string message) : this(message, typeof(InstantiationException), new InvalidOperationException("Invalid Operation")) {}
 
 		public InstantiationException() : this("Exception occured", typeof(InstantiationException), new InvalidOperationException("Invalid Operation")) {}
 

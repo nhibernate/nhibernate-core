@@ -12,7 +12,7 @@ namespace NHibernate.Mapping
 
 		private Value index;
 
-		public IndexedCollection(PersistentClass owner) : base(owner) 
+		protected IndexedCollection(PersistentClass owner) : base(owner) 
 		{ 
 		}
 

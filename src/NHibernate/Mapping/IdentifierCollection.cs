@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 		public static readonly string DefaultIdentifierColumnName = "id";
 		private Value identifier;
 
-		public IdentifierCollection(PersistentClass owner) : base(owner)
+		protected IdentifierCollection(PersistentClass owner) : base(owner)
 		{
 		}
 

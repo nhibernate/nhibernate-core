@@ -42,7 +42,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlDeleteBuilder.</returns>
 		public SqlDeleteBuilder SetIdentityColumn(string[] columnNames, IType identityType) 
 		{
-			Parameter[] parameters = Parameter.GenerateParameters(factory, columnNames, identityType);
+			Parameter[] parameters = Parameter.GenerateParameters( Factory, columnNames, identityType );
 
 			identityFragmentIndex = whereStrings.Add(ToWhereString(columnNames, parameters));
 
@@ -57,7 +57,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlDeleteBuilder.</returns>
 		public SqlDeleteBuilder SetVersionColumn(string[] columnNames, IVersionType versionType) 
 		{
-			Parameter[] parameters = Parameter.GenerateParameters(factory, columnNames, versionType);
+			Parameter[] parameters = Parameter.GenerateParameters( Factory, columnNames, versionType );
 
 			versionFragmentIndex = whereStrings.Add(ToWhereString(columnNames, parameters));
 
@@ -73,7 +73,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlDeleteBuilder</returns>
 		public SqlDeleteBuilder AddWhereFragment(string[] columnNames, IType type, string op) 
 		{
-			Parameter[] parameters = Parameter.GenerateParameters(factory, columnNames, type);
+			Parameter[] parameters = Parameter.GenerateParameters( Factory, columnNames, type );
 			whereStrings.Add(ToWhereString(columnNames, parameters, op));
 
 			return this;

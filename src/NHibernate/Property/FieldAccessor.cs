@@ -14,15 +14,25 @@ namespace NHibernate.Property
 	/// </remarks>
 	public class FieldAccessor : IPropertyAccessor
 	{
-		protected IFieldNamingStrategy namingStragety;
+		private IFieldNamingStrategy namingStrategy;
 
 		public FieldAccessor() 
 		{
 		}
 
-		public FieldAccessor(IFieldNamingStrategy namingStragety) 
+		public FieldAccessor(IFieldNamingStrategy namingStrategy) 
 		{
-			this.namingStragety = namingStragety;
+			this.namingStrategy = namingStrategy;
+		}
+
+		/// <summary>
+		/// Gets the <see cref="IFieldNamingStrategy"/> used to convert the name of the
+		/// Property in the hbm.xml file to the name of the field in the class.
+		/// </summary>
+		/// <value>The <see cref="IFieldNamingStrategy"/> or <c>null</c>.</value>
+		public IFieldNamingStrategy NamingStrategy 
+		{
+			get { return namingStrategy; }
 		}
 
 		#region IPropertyAccessor Members
@@ -70,13 +80,13 @@ namespace NHibernate.Property
 		/// </remarks>
 		private string GetFieldName(string propertyName) 
 		{
-			if(namingStragety==null) 
+			if( namingStrategy==null ) 
 			{
 				return propertyName;
 			}
 			else 
 			{
-				return namingStragety.GetFieldName(propertyName);
+				return namingStrategy.GetFieldName(propertyName);
 			}
 		}
 	}

@@ -9,6 +9,6 @@ namespace NHibernate
 	[Serializable]
 	public class PersistentObjectException : HibernateException 
 	{
-		public PersistentObjectException(string s) : base(s) {}
+		public PersistentObjectException(string message) : base(message) {}
 	}
 }

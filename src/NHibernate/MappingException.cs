@@ -10,11 +10,11 @@ namespace NHibernate
 	[Serializable]
 	public class MappingException : HibernateException 
 	{
-		public MappingException(string msg, Exception root) : base(msg, root) {}
+		public MappingException(string message, Exception root) : base(message, root) {}
 
 		public MappingException(Exception root) : base(root) { }
 
-		public MappingException(string msg) : base(msg) {}
+		public MappingException(string message) : base(message) {}
 
 		public MappingException() : base() {}
 
