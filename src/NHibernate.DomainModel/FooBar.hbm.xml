@@ -196,7 +196,11 @@
 					</array>
 				</component>
 				<any name="Object" id-type="Int64" cascade="all">
-					<column name="clazz" length="100"/>
+					<!-- 
+					made clazz 200 instead of 100 because of all the extra info stored
+					such as assembly, key, culture
+					-->
+					<column name="clazz" length="200"/>
 					<column name="gen_id"/>
 				</any>
 			</subclass>
