@@ -1,5 +1,6 @@
 using System;
 
+using NHibernate.Loader;
 using NHibernate.Engine;
 
 namespace NHibernate.Type {
@@ -21,6 +22,6 @@ namespace NHibernate.Type {
 		
 		Cascades.CascadeStyle Cascade(int i);
 		
-		int EnableJoinedFetch(int i);
+		OuterJoinLoaderType EnableJoinedFetch(int i);
 	}
 }

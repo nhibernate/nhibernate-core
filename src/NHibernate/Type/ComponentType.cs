@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Util;
+using NHibernate.Loader;
 
 namespace NHibernate.Type {
 	
@@ -18,7 +19,7 @@ namespace NHibernate.Type {
 		private string[] propertyNames;
 		private int propertySpan;
 		private Cascades.CascadeStyle[] cascade;
-		private int[] joinedFetch;
+		private OuterJoinLoaderType[] joinedFetch;
 		private string parentProperty;
 		private ReflectHelper.Setter parentSetter;
 		
@@ -46,7 +47,7 @@ namespace NHibernate.Type {
 		public ComponentType(	System.Type componentClass,
 			string[] properties,
 			IType[] types,
-			int[] joinedFetch,
+			OuterJoinLoaderType[] joinedFetch,
 			Cascades.CascadeStyle[] cascade,
 			string parentProperty,
 			bool embedded ) {
@@ -256,7 +257,7 @@ namespace NHibernate.Type {
 			get { return false; }
 		}
 
-		public int EnableJoinedFetch(int i) {
+		public OuterJoinLoaderType EnableJoinedFetch(int i) {
 			return joinedFetch[i];
 		}
 								

@@ -1,6 +1,6 @@
 using System;
 using NHibernate.Collection;
-
+using NHibernate.Persister;
 namespace NHibernate.Engine {
 	/// <summary>
 	/// Defines the internal contract between the <c>Session</c> and other parts of Hibernate
@@ -154,6 +154,49 @@ namespace NHibernate.Engine {
 		/// <param name="key"></param>
 		/// <returns></returns>
 		object GetEntity(Key key);
+
+		/// <summary>
+		/// Add an uninitialized instance of an entity class, as a placeholder to ensure object
+		/// identity.
+		/// </summary>
+		/// <remarks>
+		/// Must be called before <c>PostHydrate()</c>
+		/// </remarks>
+		/// <param name="key"></param>
+		/// <param name="obj"></param>
+		/// <param name="lockMode"></param>
+		void AddUninitializedEntity(Key key, object obj, LockMode lockMode);
+
+		/// <summary>
+		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="id"></param>
+		/// <param name="values"></param>
+		/// <param name="obj"></param>
+		/// <param name="lockMode"></param>
+		void PostHydrate(IClassPersister persister, object id, object[] values, object obj, LockMode lockMode);
+
+		/// <summary>
+		/// Get the <c>ClassPersister</c> for an object
+		/// </summary>
+		IClassPersister GetPersister(object obj);
+
+		/// <summary>
+		/// Perform the second step of 2-phase load(ie fully initialize the entity instance)
+		/// </summary>
+		/// <param name="obj"></param>
+		void InitializeEntity(object obj);
+
+		/// <summary>
+		/// Return the existing proxy associated with the given <c>Key</c> or the
+		/// second argument (the entity associated with the key) if no proxy exists
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="key"></param>
+		/// <param name="impl"></param>
+		/// <returns></returns>
+		object ProxyFor(IClassPersister persister, Key key, object impl);
 	
 	}
 }
