@@ -408,6 +408,12 @@ namespace NHibernate.Persister
 			}
 		}
 
+		/// <summary>
+		/// Checks to make sure that one and only one row was affected
+		/// by the IDbCommand that was run.
+		/// </summary>
+		/// <param name="rows">The results of IDbCommand..ExecuteNonQuery()</param>
+		/// <param name="id">The idenitifer of the Entity.  Use for logging purposes.</param>
 		protected virtual void Check(int rows, object id) 
 		{
 			if (rows<1) 
