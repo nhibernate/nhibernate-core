@@ -358,8 +358,268 @@
 				There is an alternative <literal>&lt;composite-id&gt;</literal> declaration to allow access to
 				legacy data with composite keys. We strongly discourage its use for anything else.
 			</para>
-	
+			
+			<sect3 id="mapping-declaration-id-generator">
+                <title>generator</title>
+
+                <para>
+                    The required <literal>&lt;generator&gt;</literal> child element names a .NET type used
+                    to generate unique identifiers for instances of the persistent class. If any parameters
+                    are required to configure or initialize the generator instance, they are passed using the
+                    <literal>&lt;param&gt;</literal> element.
+                </para>
+
+				<programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
+        <generator class="NHibernate.Id.TableHiLoGenerator">
+                <param name="table">uid_table</param>
+                <param name="column">next_hi_value_column</param>
+        </generator>
+</id>]]></programlisting>
+
+				<para>
+                    All generators implement the interface <literal>NHibernate.Id.IdentifierGenerator</literal>.
+                    This is a very simple interface; some applications may choose to provide their own specialized
+                    implementations. However, NHibernate provides a range of built-in implementations. There are shortcut
+                    names for the built-in generators:
+                    
+                    <variablelist>
+                        <varlistentry>
+                        <term><literal>identity</literal></term>
+                        <listitem>
+                            <para>
+                                supports identity columns in DB2, MySQL, MS SQL Server, Sybase and
+                                HypersonicSQL. The returned identifier is of type <literal>Int64</literal>,
+                                <literal>Int32</literal> or <literal>Int16</literal>.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>sequence</literal></term>
+                        <listitem>
+                            <para>
+                                uses a sequence in DB2, PostgreSQL, Oracle. The returned identifier 
+                                is of type <literal>Int64</literal>,
+                                <literal>Int32</literal> or <literal>Int16</literal>
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>hilo</literal></term>
+                        <listitem>
+                            <para>
+                                uses a hi/lo algorithm to efficiently generate identifiers of
+                                type <literal>Int64</literal>, <literal>Int32</literal> or <literal>Int16</literal>,
+                                given a table and column (by default <literal>hibernate_unique_key</literal> and
+                                <literal>next</literal> respectively) as a source of hi values. The hi/lo algorithm
+                                generates identifiers that are unique only for a particular database.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>seqhilo</literal></term>
+                        <listitem>
+                            <para>
+                                uses a hi/lo algorithm to efficiently generate identifiers of type
+                                <literal>Int64</literal>, <literal>Int32</literal> or <literal>Int16</literal>,
+                                given a named database sequence.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>uuid.hex</literal></term>
+                        <listitem>
+                            <para>
+                                uses <literal>System.Guid</literal> and its <literal>ToString(string format)</literal> method
+                                to generate identifiers of type string.  The length of the string returned depends on the 
+                                configured <literal>format</literal>.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>uuid.string</literal></term>
+                        <listitem>
+                            <para>
+                                uses a new <literal>System.Guid</literal> to create a <literal>byte[]</literal> that is
+                                converted to a string.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>guid</literal></term>
+                        <listitem>
+                            <para>
+                                uses a new <literal>System.Guid</literal> as the identifier.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>guid.comb</literal></term>
+                        <listitem>
+                            <para>
+                                uses the algorithm to generate a new <literal>System.Guid</literal>
+                                described by Jimmy Nilsson in the article 
+                                http://www.informit.com/articles/article.asp?p=25862.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>native</literal></term>
+                        <listitem>
+                            <para>
+                                picks <literal>identity</literal>, <literal>sequence</literal> or
+                                <literal>hilo</literal> depending upon the capabilities of the
+                                underlying database.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>assigned</literal></term>
+                        <listitem>
+                            <para>
+                                lets the application to assign an identifier to the object before
+                                <literal>save()</literal> is called.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>foreign</literal></term>
+                        <listitem>
+                            <para>
+                                uses the identifier of another associated object. Usually used in conjunction
+                                with a <literal>&lt;one-to-one&gt;</literal> primary key association.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                    </variablelist>
+
+                </para>
+            </sect3>
+            
+            
+            <sect3 id="mapping-declaration-id-hilo">
+                <title>Hi/Lo Algorithm</title>
+                <para>
+                    The <literal>hilo</literal> and <literal>seqhilo</literal> generators provide two alternate
+                    implementations of the hi/lo algorithm, a favorite approach to identifier generation. The
+                    first implementation requires a "special" database table to hold the next available "hi" value.
+                    The second uses an Oracle-style sequence (where supported).
+                </para>
+
+                <programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
+        <generator class="hilo">
+                <param name="table">hi_value</param>
+                <param name="column">next_value</param>
+                <param name="max_lo">100</param>
+        </generator>
+</id>]]></programlisting>
+
+                <programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
+        <generator class="seqhilo">
+                <param name="sequence">hi_value</param>
+                <param name="max_lo">100</param>
+        </generator>
+</id>]]></programlisting>
+
+                <para>
+                    Unfortunately, you can't use <literal>hilo</literal> when supplying your own
+                    <literal>Connection</literal>  to NHibernate. NHibernate must be able to
+                    fetch the "hi" value in a new transaction.
+                </para>
+            </sect3>
+            
+            <sect3 id="mapping-declaration-id-uuid-hex">
+                <title>UUID Hex Algorithm</title>
+
+                <programlisting><![CDATA[<id name="Id" type="String" column="cat_id">
+        <generator class="uuid.hex">
+                <param name="format">format_value</param>
+                <param name="seperator">seperator_value</param>
+        </generator>
+</id>]]></programlisting>
+
+                <para>
+					The UUID is generated by calling <literal>Guid.NewGuid().ToString(format)</literal>.  The
+					valid values for format are described in the MSDN documentation.  The default 
+					<literal>seperator</literal> is <literal>-</literal> and should rarely be modified.  The
+					<literal>format</literal> determines if the configured <literal>seperator</literal> can 
+					replace the default seperator used by the <literal>format</literal>.
+                </para>
+            </sect3>
+            
+            <sect3 id="mapping-declaration-id-uuid-string">
+                <title>UUID String Algorithm</title>
+                <para>
+					The UUID is generated by calling <literal>Guid.NewGuid().ToByteArray()</literal> and 
+					then converting the <literal>byte[]</literal> into a <literal>char[]</literal>.  The
+					<literal>char[]</literal> is returned as a <literal>String</literal> consisting of
+					16 characters.
+                </para>
+            </sect3>
+
+            <sect3 id="mapping-declaration-id-guid">
+                <title>GUID Algorithms</title>
+                <para>
+					The <literal>guid</literal> identifier is generated by calling <literal>Guid.NewGuid()</literal>.
+					To address some of the performance concerns with using Guids as primary keys, foreign keys, and
+					as part of indexes with MS SQL the <literal>guid.comb</literal> can be used.  The benefit of using  
+					the <literal>guid.comb</literal> with other databases that support GUIDs has not been measured.
+                </para>
+            </sect3>
+
+            <sect3 id="mapping-declaration-id-sequences">
+				<title>Identity columns and Sequences</title>
+                <para>
+                    For databases which support identity columns (DB2, MySQL, Sybase, MS SQL), you
+                    may use <literal>identity</literal> key generation. For databases that support
+                    sequences (DB2, Oracle, PostgreSQL) you may use
+                    <literal>sequence</literal> style key generation. Both these strategies usually require
+                    two SQL queries to insert a new object.  When working with MS SQL and the 
+                    <literal>identity</literal> key generator then <literal>select SCOPE_IDENTITY()</literal>
+                    will be appended to the <literal>insert</literal> sql thus avoiding the executions
+                    of a two distinct <literal>IDbCommand</literal>s.
+                </para>
+
+                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid">
+        <generator class="sequence">
+                <param name="sequence">uid_sequence</param>
+        </generator>
+</id>]]></programlisting>
+
+                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
+        <generator class="identity"/>
+</id>]]></programlisting>
+            
+                <para>
+                    For cross-platform development, the <literal>native</literal> strategy will
+                    choose from the <literal>identity</literal>, <literal>sequence</literal> and
+                    <literal>hilo</literal> strategies, dependant upon the capabilities of the
+                    underlying database.
+                </para>
+            </sect3>
+            
+            <sect3 id="mapping-declaration-id-assigned">
+                <title>Assigned Identifiers</title>
+                <para>
+                    If you want the application to assign identifiers (as opposed to having
+                    NHibernate generate them), you may use the <literal>assigned</literal> generator.
+                    This special generator will use the identifier value already assigned to the
+                    object's identifier property. Be very careful when using this feature to not assign
+                    keys with business meaning (almost always a terrible design decision).
+                </para>
+                <para>
+                    Due to its inherent nature, entities that use this generator cannot be saved
+                    via the ISession's <literal>SaveOrUpdate()</literal> method. Instead you have to 
+                    explicitly specify to NHibernate if the object should be saved or updated 
+                    by calling either the <literal>Save()</literal> or <literal>Update()</literal> 
+                    method of the ISession.
+                </para>
+            </sect3>
 		</sect2>
+		
+		<!--
+			TODO: resume here
+		<sect2 id="mapping-declaration-compositeid">
+		-->
 		
 		<sect2 id="mapping-declaration-property">
 			<title>property</title>
@@ -634,6 +894,7 @@
 				<emphasis>component</emphasis> is a user defined class with value semantics.
 			</para>
 		</sect2>
+		
 		<sect2 id="mapping-types-basictypes">
 			<title>Basic value types</title>
 
