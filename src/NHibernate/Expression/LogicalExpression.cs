@@ -9,10 +9,8 @@ namespace NHibernate.Expression
 	/// </summary>
 	public abstract class LogicalExpression : Expression
 	{
-		/// <summary></summary>
-		protected Expression lhs;
-		/// <summary></summary>
-		protected Expression rhs;
+		private Expression lhs;
+		private Expression rhs;
 
 		/// <summary>
 		/// Initialize a new instance of the LogicalExpression class that
