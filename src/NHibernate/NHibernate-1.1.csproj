@@ -124,6 +124,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "FetchMode.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "FlushMode.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -803,6 +808,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Id\GuidGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Id\IConfigurable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -849,6 +859,11 @@
                 />
                 <File
                     RelPath = "Id\TableHiLoGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Id\UUIDHexGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
