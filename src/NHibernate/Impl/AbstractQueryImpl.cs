@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Text;
-
 using Iesi.Collections;
-
 using NHibernate.Engine;
+using NHibernate.Hql;
 using NHibernate.Property;
 using NHibernate.Proxy;
 using NHibernate.Type;
@@ -29,6 +28,9 @@ namespace NHibernate.Impl
 		private ISet actualNamedParameters;
 		private IDictionary namedParameters = new Hashtable( 4 );
 		private IDictionary namedParametersLists = new Hashtable( 4 );
+		private bool cacheable;
+		private string cacheRegion;
+		private bool forceCacheRefresh;
 		private static readonly object UNSET_PARAMETER = new Object();
 		private static readonly object UNSET_TYPE = new Object();
 
@@ -42,14 +44,11 @@ namespace NHibernate.Impl
 			this.session = session;
 			this.queryString = queryString;
 			selection = new RowSelection();
-
 			InitParameterBookKeeping();
 		}
 
 		protected void VerifyParameters()
 		{
-			actualNamedParameters = new ListSet( session.Factory.GetNamedParameters( queryString ) );
-
 			if ( actualNamedParameters.Count != namedParameters.Count + namedParametersLists.Count )
 			{
 				Set missingParams = new ListSet( actualNamedParameters );
@@ -675,8 +674,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetParameterList( string name, ICollection vals, IType type )
 		{
-			// HACK: Test for null should be removed once Filter parsing bug is resolved
-			if ( actualNamedParameters != null && !actualNamedParameters.Contains(name) )
+			if ( !actualNamedParameters.Contains(name) )
 				throw new ArgumentOutOfRangeException(string.Format("Parameter {0} does not exist as a named parameter in [{1}]", name, queryString));
 
 			namedParametersLists.Add( name, new TypedValue( type, vals ) );
@@ -708,14 +706,14 @@ namespace NHibernate.Impl
 			{
 				string alias = name + i++ + StringHelper.Underscore;
 				namedParams.Add( alias, new TypedValue( type, obj ) );
-				list.Append( ':' + alias );
+				list.Append( ParserHelper.HqlVariablePrefix + alias );
 				if( i < vals.Count )
 				{
 					list.Append( StringHelper.CommaSpace );
 				}
 			}
 
-			return StringHelper.Replace( queryString, ':' + name, list.ToString() );
+			return StringHelper.Replace( queryString, ParserHelper.HqlVariablePrefix + name, list.ToString() );
 		}
 
 		/// <summary>
@@ -736,8 +734,21 @@ namespace NHibernate.Impl
 
 		private void InitParameterBookKeeping()
 		{
-			// HACK: Filter parsing bug causes this to fail e.g. select max(this.I) can't resolve 'this'
-			//actualNamedParameters = new ListSet( session.Factory.GetNamedParameters( queryString ) );
+			StringTokenizer st = new StringTokenizer( queryString, ParserHelper.HqlSeparators );
+			ISet result = new HashedSet();
+
+			IEnumerator enumer = st.GetEnumerator();
+			while( enumer.MoveNext() ) 
+			{
+				string str = (string) enumer.Current;
+				if ( str.StartsWith( ParserHelper.HqlVariablePrefix ) )
+				{
+					result.Add( str.Substring( 1 ) );
+				}
+			}
+
+			actualNamedParameters = result;
+			// TODO: This is weak as it doesn't take account of ? embedded in the SQL
 			positionalParameterCount = StringHelper.CountUnquoted( queryString, StringHelper.SqlParameter.ToCharArray()[0] );
 		}
 
@@ -746,8 +757,6 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				// HACK: Remove once Filter parsing bug resolved
-				actualNamedParameters = new ListSet( session.Factory.GetNamedParameters( queryString ) );
 				string[ ] retVal = new String[actualNamedParameters.Count];
 				int i = 0;
 				foreach( string parm in actualNamedParameters )
@@ -766,8 +775,6 @@ namespace NHibernate.Impl
 		public IQuery SetProperties( object bean )
 		{
 			System.Type clazz = bean.GetType();
-			// HACK: Remove once Filter parsing bug resolved
-			actualNamedParameters = new ListSet( session.Factory.GetNamedParameters( queryString ) );
 			foreach( string namedParam in actualNamedParameters )
 			{
 				try

@@ -856,7 +856,7 @@ namespace NHibernate.Impl
 
 			if ( persister.HasCollections )
 			{
-				// h2.1 has some extra code here for OnReplicateVisitor - is a new setting
+				// TODO - 2.1 has some extra code here for OnReplicateVisitor - is a new setting
 				// that is only in h2.1 because of the method Replicate(object, ReplicateMode)
 				WrapVisitor visitor = new WrapVisitor(this);
 				// substitutes into values by side-effect
