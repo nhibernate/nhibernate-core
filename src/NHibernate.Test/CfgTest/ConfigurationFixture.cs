@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.IO;
+using System.Xml;
 
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
@@ -73,6 +75,76 @@ namespace NHibernate.Test.CfgTest
 			Assert.AreEqual( "Server=localhost;initial catalog=nhibernate;User Id=;Password=", cfg.Properties[Cfg.Environment.ConnectionString]);
 		}
 
+		/// <summary>
+		/// Verify that NHibernate properly releases resources when an Exception occurs
+		/// during the reading of config files.
+		/// </summary>
+		[Test]
+		public void InvalidXmlInCfgFile()
+		{
+			XmlDocument cfgXml = new XmlDocument();
+			cfgXml.Load( "hibernate.cfg.xml" );
 
+			// this should put us at the first <property> element
+			XmlElement propElement = cfgXml.DocumentElement.GetElementsByTagName( "property" )[0] as XmlElement;
+			
+			// removing this will cause it not to validate
+			propElement.RemoveAttribute( "name" );
+
+			cfgXml.Save( "hibernate.invalid.cfg.xml" );
+
+			Configuration cfg = new Configuration();
+			try 
+			{
+				cfg.Configure( "hibernate.invalid.cfg.xml" );
+			}
+			catch( HibernateException )
+			{
+				// just absorb it - not what we are testing
+			}
+			finally 
+			{
+				// clean up the bad file - if the Configure method cleans up after
+				// itself we should be able to do this without problem.  If it does
+				// property release the resource then this won't be able to access
+				// the file to delete.
+				System.IO.File.Delete( "hibernate.invalid.cfg.xml" );
+			}
+
+		}
+
+		[Test]
+		public void InvalidXmlInHbmFile()
+		{
+			string filename = "invalid.hbm.xml";
+			// it's missing the class name - won't validate
+			string hbm = @"<?xml version='1.0' encoding='utf-8' ?> 
+							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+								<class table='a'></class>
+							</hibernate-mapping>";
+			XmlDocument hbmDoc = new XmlDocument();
+			hbmDoc.LoadXml( hbm );
+			hbmDoc.Save( filename );
+
+			Configuration cfg = new Configuration();
+			try 
+			{
+				cfg.Configure();
+				cfg.AddXmlFile( "invalid.hbm.xml" );
+			}
+			catch( HibernateException )
+			{
+				// just absorb it - not what we are testing
+			}
+			finally 
+			{
+				// clean up the bad file - if the AddXmlFile method cleans up after
+				// itself we should be able to do this without problem.  If it does
+				// property release the resource then this won't be able to access
+				// the file to delete.
+				System.IO.File.Delete( filename );
+			}
+
+		}
 	}
 }
