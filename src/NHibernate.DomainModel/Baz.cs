@@ -19,7 +19,6 @@ namespace NHibernate.DomainModel
 	
 	private NestingComponent _collectionComponent; 
 	private String _code;
-	private DateTime[] _timeArray;
 	private FooComponent[] _components;
 	private string[] _stringArray;
 	private int[] _intArray;
@@ -394,21 +393,6 @@ namespace NHibernate.DomainModel
 	}
 	
 	 /// <summary>
-	 /// Gets or sets the _timeArray
-	 /// </summary> 
-	 public DateTime[] TimeArray
-	 {
-		 get 
-		 {
-			 return _timeArray; 
-		 }
-		 set 
-		 {
-			 _timeArray = value;
-		 }
-	 }
-
-	/// <summary>
 	/// Get/set for stringSet
 	/// </summary>
 	public System.Collections.IDictionary StringSet
@@ -587,8 +571,6 @@ namespace NHibernate.DomainModel
 											 new FooComponent("foo", 42, null, null),
 											 new FooComponent("bar", 88, null, new FooComponent("sub", 69, null, null) )
 										 };
-		 TimeArray = new DateTime[] { new DateTime(), new DateTime(), DateTime.MinValue, new DateTime(0) };
-		
 		 Count = 667;
 		 Name="Bazza";
 		 TopComponents = new ArrayList();

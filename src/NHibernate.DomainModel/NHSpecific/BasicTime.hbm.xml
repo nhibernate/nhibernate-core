@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+    <class 
+		name="NHibernate.DomainModel.NHSpecific.BasicTime, NHibernate.DomainModel" 
+		table="bc_time"
+	>
+		
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="TimeValue" type="Time" column="timecol"/>
+		
+		<array name="TimeArray" table="bct_arr">
+			<key>
+				<column name="bct_id" length="16" />
+			</key>
+			<index column="j"/>
+			<element type="Time" column="the_time" />
+		</array>
+	</class>
+</hibernate-mapping>

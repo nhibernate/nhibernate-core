@@ -123,7 +123,11 @@
 				<array name="ImportantDates" table="foo_times">
 					<key column="foo_id"/>
 					<index column="i"/>
-					<element column="date_" type="Time"/>
+					<element column="date_" type="DateTime"/>
+					<!-- 
+						in the hibernate test this was a type="time", but in nh the functionallity
+						between type="Time" and type="Time" is not quite the same
+					-->
 				</array>
 				
 				<many-to-one 

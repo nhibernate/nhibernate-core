@@ -6,15 +6,24 @@ namespace NHibernate.Type
 {
 	
 	/// <summary>
-	/// Maps a System.DateTime Property to an DateTime column that only stores the Hours, Minutes,
-	/// and Seconds of the DateTime.
+	/// Maps a <see cref="System.DateTime" /> Property to an DateTime column that only stores the 
+	/// Hours, Minutes, and Seconds of the DateTime as significant.
 	/// </summary>
 	/// <remarks>
-	/// This defaults the Year to 0001, the Month to 01, and the Day to 01 - that should not matter because
+	/// <para>
+	/// This defaults the Date to "1753-01-01" - that should not matter because
 	/// using this Type indicates that you don't care about the Date portion of the DateTime.
+	/// </para>
+	/// <para>
+	/// A more appropriate choice to store the duration/time is the <see cref="TimeSpanType"/>.
+	/// The underlying <see cref="DbType.Time"/> tends to be handled diffently by different
+	/// DataProviders.
+	/// </para>
 	/// </remarks>
 	public class TimeType : ValueTypeType, IIdentifierType, ILiteralType
 	{
+		private static DateTime BaseDateValue = new DateTime( 1753, 01, 01 );
+
 		internal TimeType() : base( new TimeSqlType() ) 
 		{
 		}
@@ -22,7 +31,7 @@ namespace NHibernate.Type
 		public override object Get(IDataReader rs, int index) 
 		{
 			DateTime dbValue = Convert.ToDateTime(rs[index]);
-			return new DateTime(1, 1, 1, dbValue.Hour, dbValue.Minute, dbValue.Second);
+			return new DateTime(1753, 01, 01, dbValue.Hour, dbValue.Minute, dbValue.Second);
 		}
 
 		public override object Get(IDataReader rs, string name) 
@@ -38,7 +47,7 @@ namespace NHibernate.Type
 		public override void Set(IDbCommand st, object value, int index) 
 		{
 			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			if((DateTime)value<new DateTime(1753,1,1))
+			if( (DateTime)value < TimeType.BaseDateValue )
 			{
 				parm.Value = DBNull.Value;
 			}

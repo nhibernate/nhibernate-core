@@ -1065,7 +1065,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Time Portions commented out - http://jira.nhibernate.org:8080/browse/NH-89")]
 		public void PersistCollections() 
 		{
 			ISession s = sessions.OpenSession();
@@ -1100,8 +1099,6 @@ namespace NHibernate.Test
 			baz.StringArray = null;
 			baz.StringList[0] = "new value";
 			baz.StringSet = new Hashtable();
-			//http://jira.nhibernate.org:8080/browse/NH-89
-			// TODO: baz.TimeArray[2] = new DateTime(
 			
 			Assert.AreEqual( 1, baz.StringGlarchMap.Count );
 			IList list;
@@ -1141,8 +1138,6 @@ namespace NHibernate.Test
 			Assert.AreEqual( 0, baz.StringArray.Length, "collection removed" );
 			Assert.AreEqual( "new value", baz.StringList[0], "changed element" );
 			Assert.AreEqual( 0, baz.StringSet.Count, "replaced set" );
-			// todo: populate time array
-			//Assert.IsNotNull( baz.TimeArray[2], "array element changed" );
 			
 			baz.StringSet.Add( "two", new object() );
 			baz.StringSet.Add( "one", new object() );
@@ -2314,12 +2309,6 @@ namespace NHibernate.Test
 		[Test]
 		[Ignore("Test not written yet.")]
 		public void Databinder() 
-		{
-		}
-
-		[Test]
-		[Ignore("Test not written yet.")]
-		public void ArrayOfTimes() 
 		{
 		}
 
