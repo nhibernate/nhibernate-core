@@ -2985,6 +2985,9 @@ namespace NHibernate.Impl
 		{
 			CollectionEntry ce = GetCollectionEntry(coll);
 
+			if (ce == null)
+				throw new HibernateException("found reference to object that is not in session");
+
 			if (ce.reached) 
 			{
 				// we've been here before
