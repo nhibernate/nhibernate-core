@@ -157,9 +157,9 @@ namespace NHibernate.Hql
 				qe.QueryString = queryString;
 				throw;
 			}
-			catch( MappingException me )
+			catch( MappingException )
 			{
-				throw me;
+				throw;
 			}
 			catch( Exception e )
 			{
