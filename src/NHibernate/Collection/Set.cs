@@ -73,6 +73,14 @@ namespace NHibernate.Collection {
 
 		public Set(ISessionImplementor session) : base(session) { }
 
+		/// <summary>
+		/// Creates a new Set initialized to the values in the Map.
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="map"></param>
+		/// <remarks>
+		/// Only call this constructor if you consider the map initialized.
+		/// </remarks>
 		public Set(ISessionImplementor session, IDictionary map) : base(session) {
 			this.map = map;
 			initialized = true;

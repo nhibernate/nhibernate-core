@@ -53,7 +53,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="comparer">The IComparer to user for Sorting.</param>
-		public SortedSet(ISessionImplementor session, IComparer comparer) : base(session, new SortedList(comparer))
+		public SortedSet(ISessionImplementor session, IComparer comparer) : base(session)
 		{
 			this.comparer = comparer;
 		}
