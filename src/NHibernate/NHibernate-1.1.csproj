@@ -1,9 +1,9 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
-        SchemaVersion = "1.0"
-        ProjectGuid = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{EE3B9473-7C64-44FF-B342-91B558D413A8}"
     >
         <Build>
             <Settings
@@ -16,7 +16,10 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
                 RootNamespace = "NHibernate"
+                RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >
                 <Config
@@ -30,6 +33,8 @@
                     DebugSymbols = "true"
                     FileAlignment = "4096"
                     IncrementalBuild = "true"
+                    NoStdLib = "false"
+                    NoWarn = ""
                     Optimize = "false"
                     OutputPath = "bin\Debug\"
                     RegisterForComInterop = "false"
@@ -48,6 +53,8 @@
                     DebugSymbols = "false"
                     FileAlignment = "4096"
                     IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
                     Optimize = "true"
                     OutputPath = "bin\Release\"
                     RegisterForComInterop = "false"
@@ -60,33 +67,33 @@
                 <Reference
                     Name = "System"
                     AssemblyName = "System"
-                    HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.dll"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.dll"
                 />
                 <Reference
                     Name = "System.Data"
                     AssemblyName = "System.Data"
-                    HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Data.dll"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Data.dll"
                 />
                 <Reference
                     Name = "System.XML"
                     AssemblyName = "System.Xml"
-                    HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
-                />
-                <Reference
-                    Name = "System.Runtime.Remoting"
-                    AssemblyName = "System.Runtime.Remoting"
-                    HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Runtime.Remoting.dll"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
                 <Reference
                     Name = "log4net"
                     AssemblyName = "log4net"
-                    HintPath = "..\..\..\log4net1.2.0-beta5\build\bin\Debug\log4net.dll"
-                    Private = "False"
+                    HintPath = "..\..\external-bin\log4net.dll"
+                />
+                <Reference
+                    Name = "NHibernate.DomainModel-1.1"
+                    Project = "{E3482030-5828-4112-9906-D4C5153DCE3F}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
-                    HintPath = "..\..\..\Archivos de programa\NUnit V2.0\bin\nunit.framework.dll"
+                    HintPath = "C:\Program Files\OSS.NET\NUnit V2.1\\bin\nunit.framework.dll"
+                    AssemblyFolderKey = "hklm\dn\nunit.framework"
                 />
             </References>
         </Build>
@@ -208,13 +215,35 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "nhibernate.build"
+                    RelPath = "NHibernate.build"
                     BuildAction = "None"
                 />
                 <File
                     RelPath = "NHibernate.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "nhibernate-configuration-2.0.xsd"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "nhibernate-configuration-2.0.xsx"
+                    DependentUpon = "nhibernate-configuration-2.0.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "nhibernate-generic.xsd"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "nhibernate-mapping-2.0.xsd"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "nhibernate-mapping-2.0.xsx"
+                    DependentUpon = "nhibernate-mapping-2.0.xsd"
+                    BuildAction = "None"
                 />
                 <File
                     RelPath = "ObjectDeletedException.cs"
@@ -387,12 +416,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Connection\ConnectionProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Connection\ConnectionProviderFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Connection\IConnectionProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Connection\OdbcConnectionProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -418,6 +457,16 @@
                 />
                 <File
                     RelPath = "Dialect\GenericDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\MsSql2000Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\MySQLDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -481,6 +530,11 @@
                 />
                 <File
                     RelPath = "Engine\IMapping.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\IPreparer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -805,6 +859,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\PreparerImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\QueryImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -861,6 +920,46 @@
                 />
                 <File
                     RelPath = "Impl\SessionImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InternalTest\InternalTestCase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InternalTest\Expression\SimpleExpressionTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InternalTest\SqlCommand\SqlDeleteBuilderTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InternalTest\SqlCommand\SqlInsertBuilderTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InternalTest\SqlCommand\SqlSelectBuilderTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InternalTest\SqlCommand\SqlSimpleSelectBuilderTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InternalTest\SqlCommand\SqlStringParameterTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InternalTest\SqlCommand\SqlUpdateBuilderTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1180,17 +1279,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\Delete.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Sql\InFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\Insert.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1225,46 +1314,147 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\Select.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Sql\SelectFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\SimpleSelect.cs"
+                    RelPath = "SqlCommand\ISqlStringBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\Types.cs"
+                    RelPath = "SqlCommand\Parameter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\Update.cs"
+                    RelPath = "SqlCommand\ParameterLength.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Test\Simple.cs"
+                    RelPath = "SqlCommand\ParameterPrecisionScale.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Test\Simple.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Test\SimpleTest.cs"
+                    RelPath = "SqlCommand\SqlBaseBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Test\TestCase.cs"
+                    RelPath = "SqlCommand\SqlDeleteBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\SqlInsertBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\SqlSelectBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\SqlSimpleSelectBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\SqlString.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\SqlStringBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\SqlUpdateBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\AnsiStringFixedLengthSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\BinarySqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\BooleanSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\ByteSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\CurrencySqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\DateTimeSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\DecimalSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\DoubleSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\Int16SqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\Int32SqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\Int64SqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\SingleSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\SqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\SqlTypeFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\StringFixedLengthSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\StringSqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1314,11 +1504,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\BigDecimalType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Type\BinaryType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1339,22 +1524,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\CalendarDateType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Type\CharacterType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Type\CharBooleanType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\ClassType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1379,17 +1554,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\CurrencyType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Type\CustomType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\DateType.cs"
+                    RelPath = "Type\DateTimeType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1405,11 +1575,6 @@
                 />
                 <File
                     RelPath = "Type\EntityType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\FloatType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1444,7 +1609,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\IntegerType.cs"
+                    RelPath = "Type\Int16Type.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\Int32Type.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\Int64Type.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1454,17 +1629,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\IType.cs.xmldoc"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "Type\IVersionType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Type\ListType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\LongType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1529,7 +1703,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\ShortType.cs"
+                    RelPath = "Type\SingleType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1560,6 +1734,11 @@
                 />
                 <File
                     RelPath = "Type\TypeFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\TypeType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
