@@ -1,30 +1,45 @@
 using System;
 using System.Collections;
+
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Impl {
+namespace NHibernate.Impl 
+{
 	
-	internal class FilterImpl : QueryImpl {
+	/// <summary>
+	/// Implementation of the <see cref="IQuery"/> interface for collection filters.
+	/// </summary>
+	internal class FilterImpl : QueryImpl 
+	{
 		private object collection;
 
-		public FilterImpl(string queryString, object collection, ISessionImplementor session) : base(queryString, session) {
+		public FilterImpl(string queryString, object collection, ISessionImplementor session) : base(queryString, session) 
+		{
 			this.collection = collection;
 		}
 
-		public override IEnumerable Enumerable() {
+		public override IEnumerable Enumerable() 
+		{
 			IDictionary namedParams = new Hashtable( NamedParams );
 			string query = BindParameterLists( namedParams );
 			return Session.EnumerableFilter( collection, query, ValueArray(), TypeArray(), Selection, namedParams, LockModes);
 		}
 
-		public override IList List() {
+		public override IList List() 
+		{
 			IDictionary namedParams = new Hashtable( NamedParams );
 			string query = BindParameterLists( namedParams );
 			return Session.Filter( collection, query, ValueArray(), TypeArray(), Selection, namedParams, LockModes);
 		}
 
-		private IType[] TypeArray() {
+		public IScrollableResults Scroll() 
+		{
+			throw new NotImplementedException("Can't Scroll Filters");
+		}
+
+		private IType[] TypeArray() 
+		{
 			IList typeList = Types;
 			int size = typeList.Count;
 			IType[] result = new IType[size+1];
@@ -33,7 +48,8 @@ namespace NHibernate.Impl {
 			return result;
 		}
 
-		private object[] ValueArray() {
+		private object[] ValueArray() 
+		{
 			IList valueList = Values;
 			int size = valueList.Count;
 			object[] result = new object[size+1];
