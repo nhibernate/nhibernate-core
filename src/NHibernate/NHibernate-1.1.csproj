@@ -515,11 +515,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Driver\ByteFXDataDriver.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Driver\DriverBase.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -531,6 +526,11 @@
                 />
                 <File
                     RelPath = "Driver\IDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\MySqlDataDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
