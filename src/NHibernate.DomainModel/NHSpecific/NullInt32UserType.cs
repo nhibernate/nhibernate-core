@@ -7,7 +7,6 @@ using NHibernate.Type;
 
 namespace NHibernate.DomainModel.NHSpecific 
 {
-
 	/// <summary>
 	/// Converts a value of 0 to a DbNull
 	/// </summary>
@@ -39,14 +38,6 @@ namespace NHibernate.DomainModel.NHSpecific
 			get
 			{
 				return new SqlType[] { _int32Type.SqlType };
-			}
-		}
-
-		public System.Data.DbType[] DbTypes
-		{
-			get
-			{
-				return new DbType[] { _int32Type.SqlType.DbType };
 			}
 		}
 
