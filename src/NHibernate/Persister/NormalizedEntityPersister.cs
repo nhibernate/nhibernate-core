@@ -207,7 +207,7 @@ namespace NHibernate.Persister {
 		protected virtual string[] GenerateDeleteStrings() {
 			string[] result = new string[ tableNames.Length ];
 			for (int i=0; i<tableNames.Length; i++ ) {
-				Delete delete = new Delete()
+				Delete delete = new Delete(dialect)
 					.SetTableName( tableNames[i] )
 					.SetPrimaryKeyColumnNames( tableKeyColumns[i] );
 				if (i==0) delete.SetVersionColumnName( VersionColumnName );
@@ -253,7 +253,7 @@ namespace NHibernate.Persister {
 		protected virtual string[] GenerateUpdateStrings(bool[] includeProperty) {
 			string[] result = new string[ tableNames.Length ];
 			for (int j=0; j<tableNames.Length; j++ ) {
-				Update update = new Update()
+				Update update = new Update(dialect)
 					.SetTableName( tableNames[j] )
 					.SetPrimaryKeyColumnNames( tableKeyColumns[j] );
 
