@@ -169,32 +169,34 @@ namespace NHibernate {
 		IQuery SetProperties(object obj);
 
 		IQuery SetAnsiString(int position, string val);
-		IQuery SetString(int position, string val);
-		IQuery SetCharacter(int position, char val);
+		IQuery SetBinary(int position, byte[] val);
+		IQuery SetBoolean(int position, bool val);
 		IQuery SetByte(int position, byte val);
+		IQuery SetCharacter(int position, char val);
+		IQuery SetDateTime(int position, DateTime val);
+		IQuery SetDecimal(int position, decimal val);
+		IQuery SetDouble(int position, double val);
 		IQuery SetInt16(int position, short val);
 		IQuery SetInt32(int position, int val);
 		IQuery SetInt64(int position, long val);
 		IQuery SetSingle(int position, float val);
-		IQuery SetDouble(int position, double val);
-		IQuery SetBinary(int position, byte[] val);
-		IQuery SetDecimal(int position, decimal val);
-		IQuery SetDateTime(int position, DateTime val);
+		IQuery SetString(int position, string val);
 		IQuery SetTime(int position, DateTime val);
 		IQuery SetTimestamp(int position, DateTime val);
 
 		IQuery SetAnsiString(string name, string val);
-		IQuery SetString(string name, string val);
-		IQuery SetCharacter(string name, char val);
+		IQuery SetBinary(string name, byte[] val);
+		IQuery SetBoolean(string name, bool val);
 		IQuery SetByte(string name, byte val);
+		IQuery SetCharacter(string name, char val);
+		IQuery SetDateTime(string name, DateTime val);
+		IQuery SetDecimal(string name, decimal val);
+		IQuery SetDouble(string name, double val);
 		IQuery SetInt16(string name, short val);
 		IQuery SetInt32(string name, int val);
 		IQuery SetInt64(string name, long val);
 		IQuery SetSingle(string name, float val);
-		IQuery SetDouble(string name, double val);
-		IQuery SetBinary(string name, byte[] val);
-		IQuery SetDecimal(string name, decimal val);
-		IQuery SetDateTime(string name, DateTime val);
+		IQuery SetString(string name, string val);
 		IQuery SetTime(string name, DateTime val);
 		IQuery SetTimestamp(string name, DateTime val);
 
