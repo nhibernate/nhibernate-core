@@ -123,11 +123,7 @@
 		<!-- copy framework-nuetral libraries -->
 		<copy todir="${build.dir}/bin">
 			<fileset basedir="lib">
-				<includes name="Commons.*" />
-				<includes name="DotNetMock.*" />
 				<includes name="HashCodeProvider.*" />
-				<includes name="NAnt.Core.*" />
-				<includes name="NVelocity.*" />
 			</fileset>
 		</copy>
 		
@@ -150,8 +146,6 @@
 		<nant target="build" buildfile="src/NHibernate/NHibernate.build" />
 		<nant target="build" buildfile="src/NHibernate.DomainModel/NHibernate.DomainModel.build" />
 		<nant target="build" buildfile="src/NHibernate.Test/NHibernate.Test.build" />
-		<nant target="build" buildfile="src/NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" />
-		<nant target="build" buildfile="src/NHibernate.Tasks/NHibernate.Tasks.build" />
 		<nant target="build" buildfile="src/NHibernate.Examples/NHibernate.Examples.build" />
 		
 	</target>
@@ -298,6 +292,10 @@
 				<excludes name="src/UnitTesting/**" />
 				<excludes name="${clover.src}/**" />
 				
+				<!-- exclude ReSharper stuff -->
+				<excludes name="**/_ReSharper*/**" />
+				<excludes name="**/*.resharperoptions" />
+				
 				<includes name="src/**" />
 				
 				<includes name="NHibernateSolution.build" />
@@ -310,10 +308,6 @@
 				<excludes name="**/*j.user" />
 				<excludes name="**/bin/**" />
 				<excludes name="**/obj/**" />
-				
-				<!-- exclude ReSharper stuff -->
-				<excludes name="**/_ReSharper*" />
-				<excludes name="**/*.resharperoptions" />
 				
 				<!-- exclude any keys that exist on the build machine -->
 				<excludes name="**/*.snk" />

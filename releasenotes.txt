@@ -1,8 +1,18 @@
 Build 0.6.0.0
 ======================== 
+- Added support for proxy="" on classes.
+- Added a configuration parameter "hibernate.prepare_sql" to turn on or off calls to IDbCommand.Prepare().
+- Added NHibernate Type for System.SByte. (Sergey Koshcheyev)
+- Added support for mapping subclasses and joined-subclasses in different files through addition of extends attribute. (Andrew Mayorov)
+- Added support for LIMIT to MySQLDialect. (Sergey Koshcheyev)
 - Removed DbType {get;} from IUserType.
 - Fixed problem with spaces in sql generated from hql and MySql.
 - Modified logging in Transaction to not generate as many messages.
+- Modified how exceptions are rethrown so call stack of original exception is not lost.
+- Fixed bug with Configuration when there is a class without a namespace.
+- Fixed bug with Sql generated for an IN clause that contains a class/subclass with a discriminator-value="null".
+- Improved error messages when IDbCommand and IDbConnection can't be found by the IDriver.
+- Fixed potential threading problem with QueryTranslator.
 
 Build 0.5.0.0
 ======================== 
