@@ -47,7 +47,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Equals() 
 		{
-			GuidType type = (GuidType)NHibernate.Guid;
+			GuidType type = (GuidType)NHibernateUtil.Guid;
 			
 			Guid lhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
 			Guid rhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");

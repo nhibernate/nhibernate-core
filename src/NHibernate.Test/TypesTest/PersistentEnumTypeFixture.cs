@@ -30,7 +30,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void EqualsTrue() 
 		{
-			IType type = NHibernate.Enum(typeof(A));
+			IType type = NHibernateUtil.Enum(typeof(A));
 
 			A lhs = A.One;
 			A rhs = A.One;
@@ -45,7 +45,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void EqualsFalseSameUnderlyingValue() 
 		{
-			IType type = NHibernate.Enum(typeof(A));
+			IType type = NHibernateUtil.Enum(typeof(A));
 
 			A lhs = A.One;
 			B rhs = B.One;
@@ -56,7 +56,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void EqualsFalse() 
 		{
-			IType type = NHibernate.Enum(typeof(A));
+			IType type = NHibernateUtil.Enum(typeof(A));
 
 			A lhs = A.One;
 			A rhs = A.Two;

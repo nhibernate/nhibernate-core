@@ -35,7 +35,7 @@ namespace NHibernate.Test.SqlCommandTest
 			select.SetOuterJoins( new SqlString(" LEFT OUTER JOIN before ON select_test_alias.column1 = before.column1"), new SqlString(" LEFT OUTER JOIN after ON select_test_alias.column1 = after.column1") );
 			select.SetOrderByClause("column1 DESC");
 
-			select.SetWhereClause("select_test_alias", new string[] {"identity_column"}, NHibernate.Int64);
+			select.SetWhereClause("select_test_alias", new string[] {"identity_column"}, NHibernateUtil.Int64);
  
 			SqlString sqlString = select.ToSqlString();
 

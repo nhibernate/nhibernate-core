@@ -15,7 +15,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Next() 
 		{
-			Int32Type type = (Int32Type)NHibernate.Int32;
+			Int32Type type = (Int32Type)NHibernateUtil.Int32;
 			object current = (int)1;
 			object next = type.Next( current );
 			
@@ -27,7 +27,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Seed() 
 		{
-			Int32Type type = (Int32Type)NHibernate.Int32;
+			Int32Type type = (Int32Type)NHibernateUtil.Int32;
 			Assert.IsTrue( type.Seed is Int32, "seed should be Int32" );
 		}
 	}

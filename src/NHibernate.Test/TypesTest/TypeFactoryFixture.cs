@@ -46,7 +46,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void GetDefaultString() 
 		{
-			NullableType stringFromNH = NHibernate.String;
+			NullableType stringFromNH = NHibernateUtil.String;
 			NullableType stringFromTF = TypeFactory.GetStringType();
 
 			Assert.AreSame(stringFromNH, stringFromTF);

@@ -68,7 +68,7 @@ namespace NHibernate.Test.ProxyTest
 				Assert.AreEqual( typeof(AProxy), type, "Should have returned 'A' for a non-proxy" );
 				
 				AProxy aProxied = (AProxy)s.Load( typeof(AProxy), a.Id );
-				Assert.IsFalse( NHibernate.IsInitialized( aProxied ), "should be a proxy" );
+				Assert.IsFalse( NHibernateUtil.IsInitialized( aProxied ), "should be a proxy" );
 
 				type = NHibernateProxyHelper.GetClass( aProxied );
 				Assert.AreEqual( typeof(AProxy), type, "even though aProxied was a Proxy it should have returned the correct type." );

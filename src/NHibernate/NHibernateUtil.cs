@@ -10,7 +10,7 @@ namespace NHibernate
 	/// IType instances may be used to bind values to query parameters.
 	/// Also a factory for new Blobs and Clobs.
 	/// </summary>
-	public class NHibernate
+	public sealed class NHibernateUtil
 	{
 		/// <summary>
 		/// NHibernate Ansi String type
@@ -164,7 +164,7 @@ namespace NHibernate
 		/// <summary>
 		/// Cannot be instantiated.
 		/// </summary>
-		private NHibernate()
+		private NHibernateUtil()
 		{
 			throw new NotSupportedException();
 		}
@@ -291,7 +291,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="proxy">a persistable object or proxy</param>
 		/// <returns>the true class of the instance</returns>
-		public System.Type GetClass( object proxy )
+		public static System.Type GetClass( object proxy )
 		{
 			if( proxy is INHibernateProxy )
 			{

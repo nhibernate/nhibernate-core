@@ -141,7 +141,7 @@ namespace NHibernate.Hql
 				q.AppendScalarSelectToken( token );
 				if( "*".Equals( token ) )
 				{
-					q.AddSelectScalar( NHibernate.Int32 );
+					q.AddSelectScalar( NHibernateUtil.Int32 );
 				} //special case
 			}
 			else if( aggregateFunctions.Contains( lctoken ) )

@@ -29,13 +29,13 @@ namespace NHibernate.Test.SqlCommandTest
 			
 			update.SetTableName("test_update_builder");
 
-			update.AddColumns(new string[] {"intColumn"}, NHibernate.Int32);
-			update.AddColumns(new string[] {"longColumn"}, NHibernate.Int64);
-			update.AddColumn("literalColumn", false, (Type.ILiteralType) NHibernate.Boolean);
+			update.AddColumns(new string[] {"intColumn"}, NHibernateUtil.Int32);
+			update.AddColumns(new string[] {"longColumn"}, NHibernateUtil.Int64);
+			update.AddColumn("literalColumn", false, (Type.ILiteralType) NHibernateUtil.Boolean);
 			update.AddColumn("stringColumn", 5.ToString());
 			
-			update.SetIdentityColumn(new string[] {"decimalColumn"}, NHibernate.Decimal);
-			update.SetVersionColumn(new string[] {"versionColumn"}, (IVersionType)NHibernate.Int32);
+			update.SetIdentityColumn(new string[] {"decimalColumn"}, NHibernateUtil.Decimal);
+			update.SetVersionColumn(new string[] {"versionColumn"}, (IVersionType)NHibernateUtil.Int32);
 
 			update.AddWhereFragment("a=b");
 			SqlString sqlString = update.ToSqlString();

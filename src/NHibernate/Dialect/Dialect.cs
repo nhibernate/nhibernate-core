@@ -800,7 +800,7 @@ namespace NHibernate.Dialect
 			/// <returns></returns>
 			public IType QueryFunctionType( IType columnType, IMapping mapping )
 			{
-				return NHibernate.Int32;
+				return NHibernateUtil.Int32;
 			}
 
 			/// <summary></summary>
@@ -850,7 +850,7 @@ namespace NHibernate.Dialect
 
 				if( sqlType.DbType == DbType.Int16 || sqlType.DbType == DbType.Int32 || sqlType.DbType == DbType.Int64 )
 				{
-					return NHibernate.Single;
+					return NHibernateUtil.Single;
 				}
 				else
 				{

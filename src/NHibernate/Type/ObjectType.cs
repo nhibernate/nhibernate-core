@@ -52,7 +52,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
-		internal ObjectType() : this( NHibernate.Class, NHibernate.Serializable )
+		internal ObjectType() : this( NHibernateUtil.Class, NHibernateUtil.Serializable )
 		{
 		}
 
@@ -199,7 +199,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override string ToXML( object value, ISessionFactoryImplementor factory )
 		{
-			return NHibernate.Entity( value.GetType() ).ToXML( value, factory );
+			return NHibernateUtil.Entity( value.GetType() ).ToXML( value, factory );
 		}
 
 		/// <summary></summary>

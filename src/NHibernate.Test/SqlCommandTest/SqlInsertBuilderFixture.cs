@@ -28,9 +28,9 @@ namespace NHibernate.Test.SqlCommandTest
 			
 			insert.SetTableName("test_insert_builder");
 
-			insert.AddColumn(new string[] {"intColumn"}, NHibernate.Int32);
-			insert.AddColumn(new string[] {"longColumn"}, NHibernate.Int64);
-			insert.AddColumn("literalColumn", false, (Type.ILiteralType) NHibernate.Boolean);
+			insert.AddColumn(new string[] {"intColumn"}, NHibernateUtil.Int32);
+			insert.AddColumn(new string[] {"longColumn"}, NHibernateUtil.Int64);
+			insert.AddColumn("literalColumn", false, (Type.ILiteralType) NHibernateUtil.Boolean);
 			insert.AddColumn("stringColumn", 5.ToString());
 			
 			SqlString sqlString = insert.ToSqlString();

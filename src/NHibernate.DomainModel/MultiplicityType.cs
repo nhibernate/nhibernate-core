@@ -9,7 +9,7 @@ namespace NHibernate.DomainModel
 															  "count", "glarch" 
 														  };
 		private static readonly Type.IType[] TYPES = new Type.IType[] { 
-														   NHibernate.Int32, NHibernate.Entity(typeof(Glarch))
+			NHibernateUtil.Int32, NHibernateUtil.Entity(typeof(Glarch))
 													   };
 		public String[] PropertyNames
 		{
@@ -55,8 +55,8 @@ namespace NHibernate.DomainModel
 
 		public object NullSafeGet(IDataReader rs, String[] names, Engine.ISessionImplementor session, Object owner)
 		{
-			int c = (int) NHibernate.Int32.NullSafeGet( rs, names[0], session, owner);
-			GlarchProxy g = (GlarchProxy) NHibernate.Entity(typeof(Glarch)).NullSafeGet(rs, names[1], session, owner);
+			int c = (int) NHibernateUtil.Int32.NullSafeGet( rs, names[0], session, owner);
+			GlarchProxy g = (GlarchProxy) NHibernateUtil.Entity(typeof(Glarch)).NullSafeGet(rs, names[1], session, owner);
 			Multiplicity m = new Multiplicity();
 			m.count = ( c==0 ? 0 : c );
 			m.glarch = g;
@@ -78,8 +78,8 @@ namespace NHibernate.DomainModel
 				g = o.glarch;
 				c = o.count;
 			}
-			NHibernate.Int32.NullSafeSet(st, c, index, session);
-			NHibernate.Entity(typeof(Glarch)).NullSafeSet(st, g, index+1, session);
+			NHibernateUtil.Int32.NullSafeSet(st, c, index, session);
+			NHibernateUtil.Entity(typeof(Glarch)).NullSafeSet(st, g, index+1, session);
 
 		}
 

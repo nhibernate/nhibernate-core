@@ -15,7 +15,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Next() 
 		{
-			Int16Type type = (Int16Type)NHibernate.Int16;
+			Int16Type type = (Int16Type)NHibernateUtil.Int16;
 			object current = (short)1;
 			object next = type.Next( current );
 			
@@ -27,7 +27,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Seed() 
 		{
-			Int16Type type = (Int16Type)NHibernate.Int16;
+			Int16Type type = (Int16Type)NHibernateUtil.Int16;
 			Assert.IsTrue( type.Seed is Int16, "seed should be int16" );
 		}
 	}

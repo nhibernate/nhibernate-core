@@ -40,7 +40,7 @@ namespace NHibernate.Type
 		internal SerializableType( System.Type serializableClass ) : base( new BinarySqlType() )
 		{
 			this.serializableClass = serializableClass;
-			this.binaryType = ( BinaryType ) NHibernate.Binary;
+			this.binaryType = ( BinaryType ) NHibernateUtil.Binary;
 
 		}
 

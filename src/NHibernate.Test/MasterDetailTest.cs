@@ -170,7 +170,7 @@ namespace NHibernate.Test
 			t = s.BeginTransaction();
 			IList list = s.Find("from Master m left join fetch m.Details");
 			Master m = (Master)list[0];
-			Assert.IsTrue( NHibernate.IsInitialized( m.Details ), "joined fetch should initialize collection" );
+			Assert.IsTrue( NHibernateUtil.IsInitialized( m.Details ), "joined fetch should initialize collection" );
 			Assert.AreEqual( 2, m.Details.Count );
 			list = s.Find("from Detail d inner join fetch d.Master");
 			Detail dt = (Detail)list[0];
@@ -182,7 +182,7 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
 			list = s.Find("select m from Master m1, Master m left join fetch m.Details where m.Name=m1.Name");
-			Assert.IsTrue( NHibernate.IsInitialized( ((Master)list[0]).Details ) );
+			Assert.IsTrue( NHibernateUtil.IsInitialized( ((Master)list[0]).Details ) );
 			dt = (Detail)s.Load( typeof(Detail), dtid );
 			Assert.IsTrue( ((Master)list[0]).Details.Contains(dt) );
 			t.Commit();
@@ -192,7 +192,7 @@ namespace NHibernate.Test
 			t = s.BeginTransaction();
 			list = s.Find("select m, m1.Name from Master m1, Master m left join fetch m.Details where m.Name=m1.Name");
 			Master masterFromHql = (Master)((object[])list[0])[0];
-			Assert.IsTrue( NHibernate.IsInitialized( masterFromHql.Details ) );
+			Assert.IsTrue( NHibernateUtil.IsInitialized( masterFromHql.Details ) );
 			dt = (Detail)s.Load( typeof(Detail), dtid );
 			Assert.IsTrue( masterFromHql.Details.Contains(dt) );
 			list = s.Find("select m.id from Master m inner join fetch m.Details");
@@ -632,7 +632,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			Assert.IsFalse( NHibernate.IsInitialized( c.Subcategories ) );
+			Assert.IsFalse( NHibernateUtil.IsInitialized( c.Subcategories ) );
 
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();

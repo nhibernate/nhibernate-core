@@ -16,7 +16,7 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override IType Type
 		{
-			get { return NHibernate.Int32; }
+			get { return NHibernateUtil.Int32; }
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// </summary>
 	/// <remarks>
 	/// Moved that mapping out of ParentChildTest because MySql has a bug with writing
-	/// binary types to the database.  So any TestFixture that used <see cref="NHibernate.DomainModel.Parent"/>
+	/// binary types to the database.  So any TestFixture that used <see cref="NHibernateUtil.DomainModel.Parent"/>
 	/// would fail.
 	/// </remarks>
 	[TestFixture]

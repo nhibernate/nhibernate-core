@@ -69,7 +69,7 @@ namespace NHibernate.Test.JoinedSubclass
 			foreach( Customer c in customers ) 
 			{
 				// when proxies is working this is important
-				Assert.IsTrue( NHibernate.IsInitialized( c.Salesperson ) );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( c.Salesperson ) );
 				Assert.AreEqual( "Mark", c.Salesperson.Name );
 			}
 			Assert.AreEqual( 1, customers.Count );
@@ -80,7 +80,7 @@ namespace NHibernate.Test.JoinedSubclass
 			foreach( Customer c in customers ) 
 			{
 				//TODO: proxies make this work
-				Assert.IsFalse( NHibernate.IsInitialized( c.Salesperson ) );
+				Assert.IsFalse( NHibernateUtil.IsInitialized( c.Salesperson ) );
 				Assert.AreEqual( "Mark", c.Salesperson.Name );
 			}
 			Assert.AreEqual( 1, customers.Count );
@@ -133,7 +133,7 @@ namespace NHibernate.Test.JoinedSubclass
 			// get a proxied - initialized version of manager
 			s = sessions.OpenSession();
 			pointyhair = (Employee) s.Load( typeof(Employee), pointyhair.Id );
-			NHibernate.Initialize( pointyhair );
+			NHibernateUtil.Initialize( pointyhair );
 			s.Close();
 
 			s = sessions.OpenSession();
@@ -184,7 +184,7 @@ namespace NHibernate.Test.JoinedSubclass
 			t = s.BeginTransaction();
 			
 			// perform a load based on the base class
-			Person empAsPerson = (Person)s.Find( "from Person as p where p.id = ?", empId, NHibernate.Int32 )[0];
+			Person empAsPerson = (Person)s.Find( "from Person as p where p.id = ?", empId, NHibernateUtil.Int32 )[0];
 			person = (Person)s.Load( typeof(Person), personId );
 			
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded

@@ -222,11 +222,6 @@
                     BuildAction = "None"
                 />
                 <File
-                    RelPath = "NHibernate.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "nhibernate-configuration-2.0.xsd"
                     BuildAction = "EmbeddedResource"
                 />
@@ -247,6 +242,11 @@
                     RelPath = "nhibernate-mapping-2.0.xsx"
                     DependentUpon = "nhibernate-mapping-2.0.xsd"
                     BuildAction = "None"
+                />
+                <File
+                    RelPath = "NHibernateUtil.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ObjectDeletedException.cs"

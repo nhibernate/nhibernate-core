@@ -56,7 +56,7 @@ namespace NHibernate.Test
 			s.Save(baz);
 			fooBag = baz.FooBag;
 			s.Find("from Baz baz left join fetch baz.FooBag");
-			Assert.IsTrue( NHibernate.IsInitialized(fooBag) );
+			Assert.IsTrue( NHibernateUtil.IsInitialized(fooBag) );
 			Assert.IsTrue( fooBag==baz.FooBag );
 			Assert.IsTrue( baz.FooBag.Count==2 );
 			s.Close();
@@ -64,9 +64,9 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			baz = (Baz) s.Load( typeof(Baz), baz.Code );
 			Object bag = baz.FooBag;
-			Assert.IsFalse( NHibernate.IsInitialized(bag) );
+			Assert.IsFalse( NHibernateUtil.IsInitialized(bag) );
 			s.Find("from Baz baz left join fetch fooBag");
-			Assert.IsFalse( NHibernate.IsInitialized(bag) );
+			Assert.IsFalse( NHibernateUtil.IsInitialized(bag) );
 			Assert.IsTrue( bag==baz.FooBag );
 			Assert.IsTrue( baz.FooBag.Count==2 );
 			s.Delete(baz);
@@ -166,7 +166,7 @@ namespace NHibernate.Test
 			}
 			baz.Fees = list;
 			list = s.Find("from Foo foo, Baz baz left join fetch baz.Fees");
-			Assert.IsTrue( NHibernate.IsInitialized( ( (Baz) ( (object[]) list[0] )[1] ).Fees ) );
+			Assert.IsTrue( NHibernateUtil.IsInitialized( ( (Baz) ( (object[]) list[0] )[1] ).Fees ) );
 			s.Delete(foo);
 			s.Delete(foo2);
 			s.Delete(baz);
@@ -274,10 +274,10 @@ namespace NHibernate.Test
 
 			s = sessions.OpenSession();
 			baz = (Baz)s.Load( typeof(Baz), id );
-			Assert.IsFalse( NHibernate.IsInitialized( baz.FooBag ) );
+			Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooBag ) );
 			Assert.AreEqual( 1, baz.FooBag.Count );
 
-			Assert.IsTrue( NHibernate.IsInitialized( baz.FooBag[0] ) );
+			Assert.IsTrue( NHibernateUtil.IsInitialized( baz.FooBag[0] ) );
 			s.Delete(baz);
 			s.Flush();
 			s.Close();
@@ -371,9 +371,9 @@ namespace NHibernate.Test
 
 			s = sessions.OpenSession();
 			f = (FooProxy)s.Load( typeof(Foo), id );
-			Assert.IsFalse( NHibernate.IsInitialized( f ) );
-			Assert.IsTrue( NHibernate.IsInitialized( f.Component.Glarch ) ); //outer-join="true"
-			Assert.IsFalse( NHibernate.IsInitialized( f.TheFoo ) ); //outer-join="auto"
+			Assert.IsFalse( NHibernateUtil.IsInitialized( f ) );
+			Assert.IsTrue( NHibernateUtil.IsInitialized( f.Component.Glarch ) ); //outer-join="true"
+			Assert.IsFalse( NHibernateUtil.IsInitialized( f.TheFoo ) ); //outer-join="auto"
 			Assert.AreEqual( gid, s.GetIdentifier( f.Component.Glarch ) );
 			s.Delete( f );
 			s.Delete( f.TheFoo );
@@ -695,7 +695,7 @@ namespace NHibernate.Test
 				.List();
 			
 			f = (Foo) list[0];
-			Assert.IsTrue(NHibernate.IsInitialized(f.TheFoo));
+			Assert.IsTrue(NHibernateUtil.IsInitialized(f.TheFoo));
 			
 			//TODO: this is initialized because Proxies are not implemented yet.
 			//Assert.IsFalse( NHibernate.IsInitialized(f.component.Glarch) );
@@ -846,10 +846,10 @@ namespace NHibernate.Test
 			object[] values = new object[] {bar, (long)1234, 12, "id" };
 			Type.IType[] types = new Type.IType[]
 				{
-					NHibernate.Entity(typeof(Foo)),
-					NHibernate.Int64,
-					NHibernate.Int32,
-					NHibernate.String 
+					NHibernateUtil.Entity(typeof(Foo)),
+					NHibernateUtil.Int64,
+					NHibernateUtil.Int32,
+					NHibernateUtil.String 
 				};
 		
 
@@ -860,9 +860,9 @@ namespace NHibernate.Test
 			values = new object[] {bar, (long)1234, "More Stuff"};
 			types = new Type.IType[] 
 				{
-					NHibernate.Entity(typeof(Foo)),
-					NHibernate.Int64,
-					NHibernate.String
+					NHibernateUtil.Entity(typeof(Foo)),
+					NHibernateUtil.Int64,
+					NHibernateUtil.String
 				};
 			
 			results = s.Find(hqlString, values, types);
@@ -1542,9 +1542,9 @@ namespace NHibernate.Test
 			q = (Qux)s.Load( typeof(Qux), q.Key );
 			b = (BarProxy)s.Load( typeof(Foo), b.Key );
 			string tempKey = b.Key;
-			Assert.IsFalse( NHibernate.IsInitialized(b), "b should have been an unitialized Proxy" );
+			Assert.IsFalse( NHibernateUtil.IsInitialized(b), "b should have been an unitialized Proxy" );
 			string tempString = b.BarString;
-			Assert.IsTrue( NHibernate.IsInitialized(b), "b should have been an initialized Proxy" );
+			Assert.IsTrue( NHibernateUtil.IsInitialized(b), "b should have been an initialized Proxy" );
 			BarProxy b2 = (BarProxy)s.Load( typeof(Bar), tempKey );
 			Qux q2 = (Qux)s.Load( typeof(Qux), q.Key );
 			Assert.AreSame( q, q2, "loaded same Qux" );
@@ -1740,7 +1740,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 1, s.Find( "from t in class NHibernate.DomainModel.Trivial").Count );
 			s.Delete( "from t in class NHibernate.DomainModel.Trivial" );
 
-			list2 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.Date = ?", new DateTime(2123,2,3), NHibernate.Date );
+			list2 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.Date = ?", new DateTime(1970, 01, 01), NHibernateUtil.Date );
 			Assert.AreEqual( 4, list2.Count, "find by date" );
 			IEnumerator enumer = list2.GetEnumerator();
 			while( enumer.MoveNext() ) 
@@ -1767,13 +1767,13 @@ namespace NHibernate.Test
 
 			IList list = s.Find( "from Foo foo inner join fetch foo.TheFoo" );
 			Foo foof = (Foo)list[0];
-			Assert.IsTrue( NHibernate.IsInitialized( foof.TheFoo ) );
+			Assert.IsTrue( NHibernateUtil.IsInitialized( foof.TheFoo ) );
 
 			list = s.Find( "from Baz baz left outer join fetch baz.FooToGlarch" );
 			
 			list = s.Find( "select foo, bar from Foo foo left outer join foo.TheFoo bar where foo = ?",
 				foo,
-				NHibernate.Entity( typeof(Foo) )
+			               NHibernateUtil.Entity( typeof(Foo) )
 				);
 
 			object[] row1 = (object[])list[0];
@@ -1837,7 +1837,7 @@ namespace NHibernate.Test
 			if( !(dialect is Dialect.MySQLDialect) )
 			{
 				// add an !InterbaseDialect wrapper around list and assert
-				list = s.Find( "from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements", new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ), NHibernate.DateTime );
+				list = s.Find( "from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements", new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ), NHibernateUtil.DateTime );
 				Assert.AreEqual( 2, list.Count, "componenet query" );
 			}
 
@@ -2061,7 +2061,7 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 
 			Assert.AreEqual(8, 
-				s.Delete("from q in class NHibernate.DomainModel.Qux where q.Stuff=?", "foo", NHibernate.String),
+				s.Delete("from q in class NHibernate.DomainModel.Qux where q.Stuff=?", "foo", NHibernateUtil.String),
 				"delete by query");
 			
 			s.Flush();
@@ -2073,6 +2073,66 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
+
+		}
+
+		/// <summary>
+		/// Adding a test to verify that a database action can occur in the
+		/// middle of an Enumeration.  Under certain conditions an open 
+		/// DataReader can be kept open and cause anyother action to fail. 
+		/// </summary>
+		[Test]
+		public void EnumerableDisposable() 
+		{
+			// this test used to be called Iterators()
+
+			ISession s = sessions.OpenSession();
+			for( int i=0; i<10; i++ ) 
+			{
+				Simple simple = new Simple();
+				simple.Count = i;
+				s.Save(simple, i);
+				Assert.IsNotNull(simple, "simple is not null");
+			}
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Simple simp = (Simple)s.Load( typeof(Simple), 8 );
+			
+			// the reader under the enum has to still be a SqlDataReader (subst db name here) and 
+			// can't be a NDataReader - the best way to get this result is to query on just a property
+			// of an object.  If the query is "from Simple as s" then it will be converted to a NDataReader
+			// on the MoveNext so it can get the object from the id - thus needing another open DataReader so
+			// it must convert to an NDataReader.
+			IEnumerable enumer = s.Enumerable("select s.Count from Simple as s");
+			//int count = 0;
+			foreach( object obj in enumer )
+			{
+				if( (int)obj==7 )
+				{
+					break;
+				}
+			}
+
+			// if Enumerable doesn't implement Dispose() then the test fails on this line
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			Assert.AreEqual( 10, 
+					s.Delete( "from Simple" ),
+					"delete by query" );
+			
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			enumer = s.Enumerable("from Simple");
+			Assert.IsFalse( enumer.GetEnumerator().MoveNext() , "no items in enumerator" );
+			s.Flush();
+			s.Close();
 
 		}
 
@@ -2095,8 +2155,8 @@ namespace NHibernate.Test
 			ISession sOld = sessions.OpenSession();
 			GlarchProxy gOld = (GlarchProxy)sOld.Load( typeof(Glarch), gid );
 			// want gOld to be initialized so later I can change a property
-			NHibernate.Initialize( gOld );
-			Assert.IsTrue( NHibernate.IsInitialized( gOld ), "should be initialized" );
+			NHibernateUtil.Initialize( gOld );
+			Assert.IsTrue( NHibernateUtil.IsInitialized( gOld ), "should be initialized" );
 			sOld.Close();
 
 			s = sessions.OpenSession();
@@ -3001,7 +3061,7 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			s.Load( im, im.Id);
 	
-			Immutable imFromFind = (Immutable)s.Find("from im in class Immutable where im = ?", im, NHibernate.Entity(typeof(Immutable)))[0];
+			Immutable imFromFind = (Immutable)s.Find("from im in class Immutable where im = ?", im, NHibernateUtil.Entity(typeof(Immutable)))[0];
 			Immutable imFromLoad = (Immutable)s.Load(typeof(Immutable), im.Id);
 			
 			Assert.IsTrue(im==imFromFind, "cached object identity from Find ");
@@ -3187,7 +3247,7 @@ namespace NHibernate.Test
 				baz.FooArray[0] = null;
 				e = s.Enumerable("from baz in class NHibernate.DomainModel.Baz where ? in baz.FooArray.elements", 
 					foo, 
-					NHibernate.Entity( typeof(Foo) ) ).GetEnumerator();
+				                 NHibernateUtil.Entity( typeof(Foo) ) ).GetEnumerator();
 				
 				Assert.IsFalse( e.MoveNext() );
 				baz.FooArray[0] = foo;
@@ -3340,7 +3400,7 @@ namespace NHibernate.Test
 			IList list = s.Find(
 				"from Bar bar where bar.Object.id = ? and bar.Object.class = ?",
 				new object[] { oid, typeof(One) },
-				new Type.IType[] { NHibernate.Int64, NHibernate.Class } );
+				new Type.IType[] { NHibernateUtil.Int64, NHibernateUtil.Class } );
 			Assert.AreEqual(1, list.Count);
 
 			// this is a little different from h2.0.3 because the full type is stored, not
@@ -3611,7 +3671,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			s = sessions.OpenSession();
-			foo = (Foo)s.Find( "from Foo as f where f.id = ?", id, NHibernate.String)[0];
+			foo = (Foo)s.Find( "from Foo as f where f.id = ?", id, NHibernateUtil.String)[0];
 			Assert.AreEqual( 4, foo.Formula, "should be 2x 'Int' property that is defaulted to 2" );
 
 			s.Delete( foo );

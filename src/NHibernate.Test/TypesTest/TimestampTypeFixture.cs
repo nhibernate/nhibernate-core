@@ -15,7 +15,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Next() 
 		{
-			TimestampType type = (TimestampType)NHibernate.Timestamp;
+			TimestampType type = (TimestampType)NHibernateUtil.Timestamp;
 			object current = DateTime.Parse( "2004-01-01" );
 			object next = type.Next( current );
 			
@@ -27,7 +27,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Seed() 
 		{
-			TimestampType type = (TimestampType)NHibernate.Timestamp;
+			TimestampType type = (TimestampType)NHibernateUtil.Timestamp;
 			Assert.IsTrue( type.Seed is DateTime, "seed should be DateTime" );
 		}
 	}

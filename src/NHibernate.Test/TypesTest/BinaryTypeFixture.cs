@@ -55,7 +55,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Equals() 
 		{
-			BinaryType type = (BinaryType)NHibernate.Binary;
+			BinaryType type = (BinaryType)NHibernateUtil.Binary;
 
 			byte[] expected = System.Text.Encoding.UTF8.GetBytes("ghij1`23%$");
 			byte[] expectedClone = System.Text.Encoding.UTF8.GetBytes("ghij1`23%$");

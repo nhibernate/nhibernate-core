@@ -12,7 +12,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// </summary>
 	public class NullInt32UserType : IUserType
 	{
-		private static NullableType _int32Type = NHibernate.Int32;
+		private static NullableType _int32Type = NHibernateUtil.Int32;
 
 		public NullInt32UserType() 
 		{

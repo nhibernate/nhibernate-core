@@ -241,13 +241,13 @@ namespace NHibernate.Test
 			Assert.AreEqual( "fo", fum.Id.String, "find by composite key query (check fo object)" );
 
 			// Try to fnd the Fum object "fi" that we inserted by searching the date in the id
-			vList = s.Find("from fum in class NHibernate.DomainModel.Fum where fum.Id.Short = ?", fiShort, NHibernate.Int16 );
+			vList = s.Find("from fum in class NHibernate.DomainModel.Fum where fum.Id.Short = ?", fiShort, NHibernateUtil.Int16 );
 			Assert.AreEqual( 1, vList.Count, "find by composite key query (find fi object)" );
 			fi = (Fum)vList[0];
 			Assert.AreEqual( "fi", fi.Id.String, "find by composite key query (check fi object)" );
 			
 			// make sure we can return all of the objects by searching by the date id
-			vList = s.Find("from fum in class NHibernate.DomainModel.Fum where fum.Id.Date <= ? and not fum.FumString='FRIEND'", DateTime.Now, NHibernate.Date);
+			vList = s.Find("from fum in class NHibernate.DomainModel.Fum where fum.Id.Date <= ? and not fum.FumString='FRIEND'", DateTime.Now, NHibernateUtil.Date);
 			Assert.AreEqual( 4, vList.Count, "find by composite key query with arguments" );
 			s.Flush();
 			s.Close();
@@ -278,7 +278,7 @@ namespace NHibernate.Test
 
 			fum = (Fum)s.Load( typeof(Fum), fum.Id );
 			s.Filter( fum.QuxArray, "where this.Foo is null" );
-			s.Filter( fum.QuxArray, "where this.Foo.id = ?", "fooid", NHibernate.String );
+			s.Filter( fum.QuxArray, "where this.Foo.id = ?", "fooid", NHibernateUtil.String );
 			IQuery f = s.CreateFilter( fum.QuxArray, "where this.Foo.id = :fooId" );
 			f.SetString("fooId", "abc");
 			Assert.IsFalse( f.Enumerable().GetEnumerator().MoveNext() );
@@ -462,7 +462,7 @@ namespace NHibernate.Test
 			s.Close();
 			
 			s = sessions.OpenSession();
-			d = (Outer)s.Find("from Outer o where o.id.DetailId=?", d.Id.DetailId, NHibernate.String)[0];
+			d = (Outer)s.Find("from Outer o where o.id.DetailId=?", d.Id.DetailId, NHibernateUtil.String)[0];
 			s.Find("from Outer o where o.Id.Master.Id.Sup.Dudu is not null");
 			s.Find("from Outer o where o.Id.Master.Bla = ''");
 			s.Find("from Outer o where o.Id.Master.Id.One = ''");

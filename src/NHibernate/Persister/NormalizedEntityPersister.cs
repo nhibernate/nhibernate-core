@@ -175,7 +175,7 @@ namespace NHibernate.Persister
 
 				try
 				{
-					this.discriminatorType = ( IDiscriminatorType ) NHibernate.Int32;
+					this.discriminatorType = ( IDiscriminatorType ) NHibernateUtil.Int32;
 					discriminatorValue = 0;
 					this.discriminatorSQLString = "0";
 				}

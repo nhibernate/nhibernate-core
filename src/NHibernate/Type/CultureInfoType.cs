@@ -27,7 +27,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object Get( IDataReader rs, int index )
 		{
-			string str = ( string ) NHibernate.String.Get( rs, index );
+			string str = ( string ) NHibernateUtil.String.Get( rs, index );
 			if( str == null )
 			{
 				return null;
@@ -57,7 +57,7 @@ namespace NHibernate.Type
 		/// <param name="index"></param>
 		public override void Set( IDbCommand cmd, object value, int index )
 		{
-			NHibernate.String.Set( cmd, ( ( CultureInfo ) value ).Name, index );
+			NHibernateUtil.String.Set( cmd, ( ( CultureInfo ) value ).Name, index );
 		}
 
 		/// <summary>
@@ -100,7 +100,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public string ObjectToSQLString( object value )
 		{
-			return ( ( ILiteralType ) NHibernate.String ).ObjectToSQLString( value.ToString() );
+			return ( ( ILiteralType ) NHibernateUtil.String ).ObjectToSQLString( value.ToString() );
 		}
 	}
 }

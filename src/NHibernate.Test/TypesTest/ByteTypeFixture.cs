@@ -47,7 +47,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Equals() 
 		{
-			ByteType type = (ByteType)NHibernate.Byte;
+			ByteType type = (ByteType)NHibernateUtil.Byte;
 			
 			Assert.IsTrue( type.Equals( (byte)5, (byte)5 ) );
 			Assert.IsFalse( type.Equals( (byte)5, (byte)6 ) );

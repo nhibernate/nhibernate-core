@@ -73,112 +73,112 @@ namespace NHibernate.Type
 			//basicTypes.Add(NHibernate.Timezone.Name, NHibernate.Timezone);
 
 			// set up the mappings of .NET Classes/Structs to their NHibernate types.
-			typeByTypeOfName[ typeof( Byte[ ] ).Name ] = NHibernate.Binary;
-			typeByTypeOfName[ typeof( Byte[ ] ).AssemblyQualifiedName ] = NHibernate.Binary;
-			typeByTypeOfName[ typeof( Boolean ).FullName ] = NHibernate.Boolean;
-			typeByTypeOfName[ typeof( Boolean ).AssemblyQualifiedName ] = NHibernate.Boolean;
-			typeByTypeOfName[ typeof( Byte ).FullName ] = NHibernate.Byte;
-			typeByTypeOfName[ typeof( Byte ).AssemblyQualifiedName ] = NHibernate.Byte;
-			typeByTypeOfName[ typeof( Char ).FullName ] = NHibernate.Character;
-			typeByTypeOfName[ typeof( Char ).AssemblyQualifiedName ] = NHibernate.Character;
-			typeByTypeOfName[ typeof( CultureInfo ).FullName ] = NHibernate.CultureInfo;
-			typeByTypeOfName[ typeof( CultureInfo ).AssemblyQualifiedName ] = NHibernate.CultureInfo;
-			typeByTypeOfName[ typeof( DateTime ).FullName ] = NHibernate.DateTime;
-			typeByTypeOfName[ typeof( DateTime ).AssemblyQualifiedName ] = NHibernate.DateTime;
-			typeByTypeOfName[ typeof( Decimal ).FullName ] = NHibernate.Decimal;
-			typeByTypeOfName[ typeof( Decimal ).AssemblyQualifiedName ] = NHibernate.Decimal;
-			typeByTypeOfName[ typeof( Double ).FullName ] = NHibernate.Double;
-			typeByTypeOfName[ typeof( Double ).AssemblyQualifiedName ] = NHibernate.Double;
-			typeByTypeOfName[ typeof( Guid ).FullName ] = NHibernate.Guid;
-			typeByTypeOfName[ typeof( Guid ).AssemblyQualifiedName ] = NHibernate.Guid;
-			typeByTypeOfName[ typeof( Int16 ).FullName ] = NHibernate.Int16;
-			typeByTypeOfName[ typeof( Int16 ).AssemblyQualifiedName ] = NHibernate.Int16;
-			typeByTypeOfName[ typeof( Int32 ).FullName ] = NHibernate.Int32;
-			typeByTypeOfName[ typeof( Int32 ).AssemblyQualifiedName ] = NHibernate.Int32;
-			typeByTypeOfName[ typeof( Int64 ).FullName ] = NHibernate.Int64;
-			typeByTypeOfName[ typeof( Int64 ).AssemblyQualifiedName ] = NHibernate.Int64;
-			typeByTypeOfName[ typeof( SByte ).FullName ] = NHibernate.SByte;
-			typeByTypeOfName[ typeof( SByte ).AssemblyQualifiedName ] = NHibernate.SByte;
-			typeByTypeOfName[ typeof( Single ).FullName ] = NHibernate.Single;
-			typeByTypeOfName[ typeof( Single ).AssemblyQualifiedName ] = NHibernate.Single;
-			typeByTypeOfName[ typeof( String ).FullName ] = NHibernate.String;
-			typeByTypeOfName[ typeof( String ).AssemblyQualifiedName ] = NHibernate.String;
-			typeByTypeOfName[ typeof( TimeSpan ).FullName ] = NHibernate.TimeSpan;
-			typeByTypeOfName[ typeof( TimeSpan ).AssemblyQualifiedName ] = NHibernate.TimeSpan;
+			typeByTypeOfName[ typeof( Byte[ ] ).Name ] = NHibernateUtil.Binary;
+			typeByTypeOfName[ typeof( Byte[ ] ).AssemblyQualifiedName ] = NHibernateUtil.Binary;
+			typeByTypeOfName[ typeof( Boolean ).FullName ] = NHibernateUtil.Boolean;
+			typeByTypeOfName[ typeof( Boolean ).AssemblyQualifiedName ] = NHibernateUtil.Boolean;
+			typeByTypeOfName[ typeof( Byte ).FullName ] = NHibernateUtil.Byte;
+			typeByTypeOfName[ typeof( Byte ).AssemblyQualifiedName ] = NHibernateUtil.Byte;
+			typeByTypeOfName[ typeof( Char ).FullName ] = NHibernateUtil.Character;
+			typeByTypeOfName[ typeof( Char ).AssemblyQualifiedName ] = NHibernateUtil.Character;
+			typeByTypeOfName[ typeof( CultureInfo ).FullName ] = NHibernateUtil.CultureInfo;
+			typeByTypeOfName[ typeof( CultureInfo ).AssemblyQualifiedName ] = NHibernateUtil.CultureInfo;
+			typeByTypeOfName[ typeof( DateTime ).FullName ] = NHibernateUtil.DateTime;
+			typeByTypeOfName[ typeof( DateTime ).AssemblyQualifiedName ] = NHibernateUtil.DateTime;
+			typeByTypeOfName[ typeof( Decimal ).FullName ] = NHibernateUtil.Decimal;
+			typeByTypeOfName[ typeof( Decimal ).AssemblyQualifiedName ] = NHibernateUtil.Decimal;
+			typeByTypeOfName[ typeof( Double ).FullName ] = NHibernateUtil.Double;
+			typeByTypeOfName[ typeof( Double ).AssemblyQualifiedName ] = NHibernateUtil.Double;
+			typeByTypeOfName[ typeof( Guid ).FullName ] = NHibernateUtil.Guid;
+			typeByTypeOfName[ typeof( Guid ).AssemblyQualifiedName ] = NHibernateUtil.Guid;
+			typeByTypeOfName[ typeof( Int16 ).FullName ] = NHibernateUtil.Int16;
+			typeByTypeOfName[ typeof( Int16 ).AssemblyQualifiedName ] = NHibernateUtil.Int16;
+			typeByTypeOfName[ typeof( Int32 ).FullName ] = NHibernateUtil.Int32;
+			typeByTypeOfName[ typeof( Int32 ).AssemblyQualifiedName ] = NHibernateUtil.Int32;
+			typeByTypeOfName[ typeof( Int64 ).FullName ] = NHibernateUtil.Int64;
+			typeByTypeOfName[ typeof( Int64 ).AssemblyQualifiedName ] = NHibernateUtil.Int64;
+			typeByTypeOfName[ typeof( SByte ).FullName ] = NHibernateUtil.SByte;
+			typeByTypeOfName[ typeof( SByte ).AssemblyQualifiedName ] = NHibernateUtil.SByte;
+			typeByTypeOfName[ typeof( Single ).FullName ] = NHibernateUtil.Single;
+			typeByTypeOfName[ typeof( Single ).AssemblyQualifiedName ] = NHibernateUtil.Single;
+			typeByTypeOfName[ typeof( String ).FullName ] = NHibernateUtil.String;
+			typeByTypeOfName[ typeof( String ).AssemblyQualifiedName ] = NHibernateUtil.String;
+			typeByTypeOfName[ typeof( TimeSpan ).FullName ] = NHibernateUtil.TimeSpan;
+			typeByTypeOfName[ typeof( TimeSpan ).AssemblyQualifiedName ] = NHibernateUtil.TimeSpan;
 
 			// add the mappings of the NHibernate specific names that are used in type=""
-			typeByTypeOfName[ NHibernate.AnsiString.Name ] = NHibernate.AnsiString;
-			typeByTypeOfName[ NHibernate.Binary.Name ] = NHibernate.Binary;
-			typeByTypeOfName[ NHibernate.BinaryBlob.Name ] = NHibernate.BinaryBlob;
-			typeByTypeOfName[ NHibernate.Boolean.Name ] = NHibernate.Boolean;
-			typeByTypeOfName[ NHibernate.Byte.Name ] = NHibernate.Byte;
-			typeByTypeOfName[ NHibernate.Character.Name ] = NHibernate.Character;
-			typeByTypeOfName[ NHibernate.StringClob.Name ] = NHibernate.StringClob;
-			typeByTypeOfName[ NHibernate.CultureInfo.Name ] = NHibernate.CultureInfo;
-			typeByTypeOfName[ NHibernate.DateTime.Name ] = NHibernate.DateTime;
-			typeByTypeOfName[ NHibernate.Date.Name ] = NHibernate.Date;
-			typeByTypeOfName[ NHibernate.Decimal.Name ] = NHibernate.Decimal;
-			typeByTypeOfName[ NHibernate.Double.Name ] = NHibernate.Double;
-			typeByTypeOfName[ NHibernate.Guid.Name ] = NHibernate.Guid;
-			typeByTypeOfName[ NHibernate.Int16.Name ] = NHibernate.Int16;
-			typeByTypeOfName[ NHibernate.Int32.Name ] = NHibernate.Int32;
-			typeByTypeOfName[ NHibernate.Int64.Name ] = NHibernate.Int64;
-			typeByTypeOfName[ NHibernate.SByte.Name ] = NHibernate.SByte;
-			typeByTypeOfName[ NHibernate.String.Name ] = NHibernate.String;
-			typeByTypeOfName[ NHibernate.Single.Name ] = NHibernate.Single;
-			typeByTypeOfName[ NHibernate.Timestamp.Name ] = NHibernate.Timestamp;
-			typeByTypeOfName[ NHibernate.Time.Name ] = NHibernate.Time;
-			typeByTypeOfName[ NHibernate.TrueFalse.Name ] = NHibernate.TrueFalse;
-			typeByTypeOfName[ NHibernate.YesNo.Name ] = NHibernate.YesNo;
-			typeByTypeOfName[ NHibernate.Ticks.Name ] = NHibernate.Ticks;
-			typeByTypeOfName[ NHibernate.TimeSpan.Name ] = NHibernate.TimeSpan;
+			typeByTypeOfName[ NHibernateUtil.AnsiString.Name ] = NHibernateUtil.AnsiString;
+			typeByTypeOfName[ NHibernateUtil.Binary.Name ] = NHibernateUtil.Binary;
+			typeByTypeOfName[ NHibernateUtil.BinaryBlob.Name ] = NHibernateUtil.BinaryBlob;
+			typeByTypeOfName[ NHibernateUtil.Boolean.Name ] = NHibernateUtil.Boolean;
+			typeByTypeOfName[ NHibernateUtil.Byte.Name ] = NHibernateUtil.Byte;
+			typeByTypeOfName[ NHibernateUtil.Character.Name ] = NHibernateUtil.Character;
+			typeByTypeOfName[ NHibernateUtil.StringClob.Name ] = NHibernateUtil.StringClob;
+			typeByTypeOfName[ NHibernateUtil.CultureInfo.Name ] = NHibernateUtil.CultureInfo;
+			typeByTypeOfName[ NHibernateUtil.DateTime.Name ] = NHibernateUtil.DateTime;
+			typeByTypeOfName[ NHibernateUtil.Date.Name ] = NHibernateUtil.Date;
+			typeByTypeOfName[ NHibernateUtil.Decimal.Name ] = NHibernateUtil.Decimal;
+			typeByTypeOfName[ NHibernateUtil.Double.Name ] = NHibernateUtil.Double;
+			typeByTypeOfName[ NHibernateUtil.Guid.Name ] = NHibernateUtil.Guid;
+			typeByTypeOfName[ NHibernateUtil.Int16.Name ] = NHibernateUtil.Int16;
+			typeByTypeOfName[ NHibernateUtil.Int32.Name ] = NHibernateUtil.Int32;
+			typeByTypeOfName[ NHibernateUtil.Int64.Name ] = NHibernateUtil.Int64;
+			typeByTypeOfName[ NHibernateUtil.SByte.Name ] = NHibernateUtil.SByte;
+			typeByTypeOfName[ NHibernateUtil.String.Name ] = NHibernateUtil.String;
+			typeByTypeOfName[ NHibernateUtil.Single.Name ] = NHibernateUtil.Single;
+			typeByTypeOfName[ NHibernateUtil.Timestamp.Name ] = NHibernateUtil.Timestamp;
+			typeByTypeOfName[ NHibernateUtil.Time.Name ] = NHibernateUtil.Time;
+			typeByTypeOfName[ NHibernateUtil.TrueFalse.Name ] = NHibernateUtil.TrueFalse;
+			typeByTypeOfName[ NHibernateUtil.YesNo.Name ] = NHibernateUtil.YesNo;
+			typeByTypeOfName[ NHibernateUtil.Ticks.Name ] = NHibernateUtil.Ticks;
+			typeByTypeOfName[ NHibernateUtil.TimeSpan.Name ] = NHibernateUtil.TimeSpan;
 
-			typeByTypeOfName[ NHibernate.Class.Name ] = NHibernate.Class;
-			typeByTypeOfName[ typeof( System.Type ).FullName ] = NHibernate.Class;
-			typeByTypeOfName[ typeof( System.Type ).AssemblyQualifiedName ] = NHibernate.Class;
+			typeByTypeOfName[ NHibernateUtil.Class.Name ] = NHibernateUtil.Class;
+			typeByTypeOfName[ typeof( System.Type ).FullName ] = NHibernateUtil.Class;
+			typeByTypeOfName[ typeof( System.Type ).AssemblyQualifiedName ] = NHibernateUtil.Class;
 
 			// need to do add the key "Serializable" because the hbm files will have a 
 			// type="Serializable", but the SerializableType returns the Name as 
 			// "serializable - System.Object for the default SerializableType.
-			typeByTypeOfName[ "Serializable" ] = NHibernate.Serializable;
-			typeByTypeOfName[ NHibernate.Serializable.Name ] = NHibernate.Serializable;
+			typeByTypeOfName[ "Serializable" ] = NHibernateUtil.Serializable;
+			typeByTypeOfName[ NHibernateUtil.Serializable.Name ] = NHibernateUtil.Serializable;
 
 			// object needs to have both class and serializable setup before it can
 			// be created.
-			typeByTypeOfName[ typeof( Object ).FullName ] = NHibernate.Object;
-			typeByTypeOfName[ typeof( Object ).AssemblyQualifiedName ] = NHibernate.Object;
-			typeByTypeOfName[ NHibernate.Object.Name ] = NHibernate.Object;
+			typeByTypeOfName[ typeof( Object ).FullName ] = NHibernateUtil.Object;
+			typeByTypeOfName[ typeof( Object ).AssemblyQualifiedName ] = NHibernateUtil.Object;
+			typeByTypeOfName[ NHibernateUtil.Object.Name ] = NHibernateUtil.Object;
 
 			// These are in here for Hibernate mapping compatibility
-			typeByTypeOfName[ "binary" ] = NHibernate.Binary;
-			typeByTypeOfName[ "boolean" ] = NHibernate.Boolean;
-			typeByTypeOfName[ "byte" ] = NHibernate.Byte;
-			typeByTypeOfName[ "character" ] = NHibernate.Character;
-			typeByTypeOfName[ "class" ] = NHibernate.Class;
-			typeByTypeOfName[ "locale" ] = NHibernate.CultureInfo;
-			typeByTypeOfName[ "date" ] = NHibernate.DateTime;
-			typeByTypeOfName[ "big_decimal" ] = NHibernate.Decimal;
-			typeByTypeOfName[ "double" ] = NHibernate.Double;
-			typeByTypeOfName[ "short" ] = NHibernate.Int16;
-			typeByTypeOfName[ "integer" ] = NHibernate.Int32;
-			typeByTypeOfName[ "long" ] = NHibernate.Int64;
-			typeByTypeOfName[ "float" ] = NHibernate.Single;
-			typeByTypeOfName[ "serializable" ] = NHibernate.Serializable;
-			typeByTypeOfName[ "string" ] = NHibernate.String;
-			typeByTypeOfName[ "timestamp" ] = NHibernate.Timestamp;
-			typeByTypeOfName[ "time" ] = NHibernate.Time;
-			typeByTypeOfName[ "true_false" ] = NHibernate.TrueFalse;
-			typeByTypeOfName[ "yes_no" ] = NHibernate.YesNo;
-			typeByTypeOfName[ "object" ] = NHibernate.Object;
+			typeByTypeOfName[ "binary" ] = NHibernateUtil.Binary;
+			typeByTypeOfName[ "boolean" ] = NHibernateUtil.Boolean;
+			typeByTypeOfName[ "byte" ] = NHibernateUtil.Byte;
+			typeByTypeOfName[ "character" ] = NHibernateUtil.Character;
+			typeByTypeOfName[ "class" ] = NHibernateUtil.Class;
+			typeByTypeOfName[ "locale" ] = NHibernateUtil.CultureInfo;
+			typeByTypeOfName[ "date" ] = NHibernateUtil.DateTime;
+			typeByTypeOfName[ "big_decimal" ] = NHibernateUtil.Decimal;
+			typeByTypeOfName[ "double" ] = NHibernateUtil.Double;
+			typeByTypeOfName[ "short" ] = NHibernateUtil.Int16;
+			typeByTypeOfName[ "integer" ] = NHibernateUtil.Int32;
+			typeByTypeOfName[ "long" ] = NHibernateUtil.Int64;
+			typeByTypeOfName[ "float" ] = NHibernateUtil.Single;
+			typeByTypeOfName[ "serializable" ] = NHibernateUtil.Serializable;
+			typeByTypeOfName[ "string" ] = NHibernateUtil.String;
+			typeByTypeOfName[ "timestamp" ] = NHibernateUtil.Timestamp;
+			typeByTypeOfName[ "time" ] = NHibernateUtil.Time;
+			typeByTypeOfName[ "true_false" ] = NHibernateUtil.TrueFalse;
+			typeByTypeOfName[ "yes_no" ] = NHibernateUtil.YesNo;
+			typeByTypeOfName[ "object" ] = NHibernateUtil.Object;
 
 
-			getTypeDelegatesWithLength.Add( NHibernate.AnsiString.Name, new GetNullableTypeWithLength( GetAnsiStringType ) );
-			getTypeDelegatesWithLength.Add( NHibernate.Binary.Name, new GetNullableTypeWithLength( GetBinaryType ) );
-			getTypeDelegatesWithLength.Add( NHibernate.Serializable.Name, new GetNullableTypeWithLength( GetSerializableType ) );
-			getTypeDelegatesWithLength.Add( NHibernate.String.Name, new GetNullableTypeWithLength( GetStringType ) );
-			getTypeDelegatesWithLength.Add( NHibernate.Class.Name, new GetNullableTypeWithLength( GetTypeType ) );
+			getTypeDelegatesWithLength.Add( NHibernateUtil.AnsiString.Name, new GetNullableTypeWithLength( GetAnsiStringType ) );
+			getTypeDelegatesWithLength.Add( NHibernateUtil.Binary.Name, new GetNullableTypeWithLength( GetBinaryType ) );
+			getTypeDelegatesWithLength.Add( NHibernateUtil.Serializable.Name, new GetNullableTypeWithLength( GetSerializableType ) );
+			getTypeDelegatesWithLength.Add( NHibernateUtil.String.Name, new GetNullableTypeWithLength( GetStringType ) );
+			getTypeDelegatesWithLength.Add( NHibernateUtil.Class.Name, new GetNullableTypeWithLength( GetTypeType ) );
 
-			getTypeDelegatesWithPrecision.Add( NHibernate.Decimal.Name, new GetNullableTypeWithPrecision( GetDecimalType ) );
+			getTypeDelegatesWithPrecision.Add( NHibernateUtil.Decimal.Name, new GetNullableTypeWithPrecision( GetDecimalType ) );
 
 		}
 
@@ -455,11 +455,11 @@ namespace NHibernate.Type
 					}
 					else if( typeof( ILifecycle ).IsAssignableFrom( typeClass ) )
 					{
-						type = NHibernate.Entity( typeClass );
+						type = NHibernateUtil.Entity( typeClass );
 					}
 					else if( typeClass.IsEnum )
 					{
-						type = NHibernate.Enum( typeClass );
+						type = NHibernateUtil.Enum( typeClass );
 					}
 					else if( typeClass.IsSerializable )
 					{
@@ -480,7 +480,7 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		public static NullableType GetAnsiStringType()
 		{
-			return NHibernate.AnsiString;
+			return NHibernateUtil.AnsiString;
 		}
 
 		/// <summary>
@@ -490,7 +490,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetAnsiStringType( int length )
 		{
-			string key = GetKeyForLengthBased( NHibernate.AnsiString.Name, length );
+			string key = GetKeyForLengthBased( NHibernateUtil.AnsiString.Name, length );
 
 			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
 			if( returnType == null )
@@ -519,7 +519,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public static NullableType GetBinaryType()
 		{
-			return NHibernate.Binary;
+			return NHibernateUtil.Binary;
 		}
 
 		/// <summary>
@@ -537,10 +537,10 @@ namespace NHibernate.Type
 			//HACK: don't understand why SerializableType calls this with length=0
 			if( length == 0 )
 			{
-				return NHibernate.Binary;
+				return NHibernateUtil.Binary;
 			}
 
-			string key = GetKeyForLengthBased( NHibernate.Binary.Name, length );
+			string key = GetKeyForLengthBased( NHibernateUtil.Binary.Name, length );
 			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
 			if( returnType == null )
 			{
@@ -558,7 +558,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetBooleanType()
 		{
-			return NHibernate.Boolean;
+			return NHibernateUtil.Boolean;
 		}
 
 		/// <summary>
@@ -567,7 +567,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetByteType()
 		{
-			return NHibernate.Byte;
+			return NHibernateUtil.Byte;
 		}
 
 		/// <summary>
@@ -576,7 +576,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetCharType()
 		{
-			return NHibernate.Character;
+			return NHibernateUtil.Character;
 		}
 
 		/// <summary>
@@ -585,7 +585,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetCultureInfoType()
 		{
-			return NHibernate.CultureInfo;
+			return NHibernateUtil.CultureInfo;
 		}
 
 		/// <summary>
@@ -594,7 +594,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetDateTimeType()
 		{
-			return NHibernate.DateTime;
+			return NHibernateUtil.DateTime;
 		}
 
 		/// <summary>
@@ -603,7 +603,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetDateType()
 		{
-			return NHibernate.Date;
+			return NHibernateUtil.Date;
 		}
 
 
@@ -613,7 +613,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetDecimalType()
 		{
-			return NHibernate.Decimal;
+			return NHibernateUtil.Decimal;
 		}
 
 		/// <summary>
@@ -624,7 +624,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetDecimalType( byte precision, byte scale )
 		{
-			string key = GetKeyForPrecisionScaleBased( NHibernate.Decimal.Name, precision, scale );
+			string key = GetKeyForPrecisionScaleBased( NHibernateUtil.Decimal.Name, precision, scale );
 			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
 			if( returnType == null )
 			{
@@ -642,7 +642,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetDoubleType()
 		{
-			return NHibernate.Double;
+			return NHibernateUtil.Double;
 		}
 
 		/// <summary>
@@ -651,7 +651,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetGuidType()
 		{
-			return NHibernate.Guid;
+			return NHibernateUtil.Guid;
 		}
 
 		/// <summary>
@@ -660,7 +660,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetInt16Type()
 		{
-			return NHibernate.Int16;
+			return NHibernateUtil.Int16;
 		}
 
 		/// <summary>
@@ -669,7 +669,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetInt32Type()
 		{
-			return NHibernate.Int32;
+			return NHibernateUtil.Int32;
 		}
 
 		/// <summary>
@@ -678,7 +678,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetInt64Type()
 		{
-			return NHibernate.Int64;
+			return NHibernateUtil.Int64;
 		}
 
 		/// <summary>
@@ -687,7 +687,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static IType GetObjectType()
 		{
-			return NHibernate.Object;
+			return NHibernateUtil.Object;
 		}
 
 		/// <summary>
@@ -696,7 +696,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetSingleType()
 		{
-			return NHibernate.Single;
+			return NHibernateUtil.Single;
 		}
 
 		/// <summary>
@@ -705,7 +705,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetSerializableType()
 		{
-			return NHibernate.Serializable;
+			return NHibernateUtil.Serializable;
 
 		}
 
@@ -771,7 +771,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetSerializableType( int length )
 		{
-			string key = GetKeyForLengthBased( NHibernate.Serializable.Name, length );
+			string key = GetKeyForLengthBased( NHibernateUtil.Serializable.Name, length );
 
 			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
 			if( returnType == null )
@@ -790,7 +790,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetStringType()
 		{
-			return NHibernate.String;
+			return NHibernateUtil.String;
 		}
 
 		/// <summary>
@@ -800,7 +800,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetStringType( int length )
 		{
-			string key = GetKeyForLengthBased( NHibernate.String.Name, length );
+			string key = GetKeyForLengthBased( NHibernateUtil.String.Name, length );
 
 			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
 			if( returnType == null )
@@ -819,7 +819,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetTicksType()
 		{
-			return NHibernate.Ticks;
+			return NHibernateUtil.Ticks;
 		}
 
 		/// <summary>
@@ -828,7 +828,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetTimeSpanType()
 		{
-			return NHibernate.TimeSpan;
+			return NHibernateUtil.TimeSpan;
 		}
 
 		/// <summary>
@@ -837,7 +837,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetTimestampType()
 		{
-			return NHibernate.Timestamp;
+			return NHibernateUtil.Timestamp;
 		}
 
 		/// <summary>
@@ -846,7 +846,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetTimeType()
 		{
-			return NHibernate.Time;
+			return NHibernateUtil.Time;
 		}
 
 		/// <summary>
@@ -855,7 +855,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetTrueFalseType()
 		{
-			return NHibernate.TrueFalse;
+			return NHibernateUtil.TrueFalse;
 		}
 
 		/// <summary>
@@ -864,7 +864,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetTypeType()
 		{
-			return NHibernate.Class;
+			return NHibernateUtil.Class;
 		}
 
 		/// <summary>
@@ -893,7 +893,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static NullableType GetYesNoType()
 		{
-			return NHibernate.YesNo;
+			return NHibernateUtil.YesNo;
 		}
 
 

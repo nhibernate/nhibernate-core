@@ -554,7 +554,7 @@ namespace NHibernate.Impl
 				throw new NullReferenceException( "attempted to save null" );
 			}
 
-			if( !NHibernate.IsInitialized( obj ) )
+			if( !NHibernateUtil.IsInitialized( obj ) )
 			{
 				throw new PersistentObjectException( "uninitialized proxy passed to save()" );
 			}
@@ -608,7 +608,7 @@ namespace NHibernate.Impl
 				throw new NullReferenceException( "null identifier passed to insert()" );
 			}
 
-			if( !NHibernate.IsInitialized( obj ) )
+			if( !NHibernateUtil.IsInitialized( obj ) )
 			{
 				throw new PersistentObjectException( "uninitialized proxy passed to save()" );
 			}
@@ -1246,7 +1246,7 @@ namespace NHibernate.Impl
 				if( value != null )
 				{
 					IClassPersister persister = GetPersister( ( ( EntityType ) type ).PersistentClass );
-					if( persister.HasProxy && !NHibernate.IsInitialized( value ) )
+					if( persister.HasProxy && !NHibernateUtil.IsInitialized( value ) )
 					{
 						ReassociateProxy( value );
 					}
@@ -1277,7 +1277,7 @@ namespace NHibernate.Impl
 				throw new NullReferenceException( "attempted to update null" );
 			}
 
-			if( !NHibernate.IsInitialized( obj ) )
+			if( !NHibernateUtil.IsInitialized( obj ) )
 			{
 				ReassociateProxy( obj );
 				return;
@@ -1320,7 +1320,7 @@ namespace NHibernate.Impl
 				throw new NullReferenceException( "attempted to update null" );
 			}
 
-			if( !NHibernate.IsInitialized( obj ) )
+			if( !NHibernateUtil.IsInitialized( obj ) )
 			{
 				ReassociateProxy( obj );
 				return;
@@ -1416,7 +1416,7 @@ namespace NHibernate.Impl
 				}
 			}
 
-			if( !NHibernate.IsInitialized( obj ) )
+			if( !NHibernateUtil.IsInitialized( obj ) )
 			{
 				ReassociateProxy( obj );
 				return;
@@ -2382,7 +2382,7 @@ namespace NHibernate.Impl
 				throw new NullReferenceException( "attempted to refresh null" );
 			}
 
-			if( !NHibernate.IsInitialized( obj ) )
+			if( !NHibernateUtil.IsInitialized( obj ) )
 			{
 				ReassociateProxy( obj );
 				return;

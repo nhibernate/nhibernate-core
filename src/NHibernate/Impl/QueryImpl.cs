@@ -161,7 +161,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetAnsiString( int position, string val )
 		{
-			SetParameter( position, val, NHibernate.AnsiString );
+			SetParameter( position, val, NHibernateUtil.AnsiString );
 			return this;
 		}
 
@@ -173,7 +173,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetString( int position, string val )
 		{
-			SetParameter( position, val, NHibernate.String );
+			SetParameter( position, val, NHibernateUtil.String );
 			return this;
 		}
 
@@ -185,7 +185,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetCharacter( int position, char val )
 		{
-			SetParameter( position, val, NHibernate.Character ); // );
+			SetParameter( position, val, NHibernateUtil.Character ); // );
 			return this;
 		}
 
@@ -197,7 +197,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetBoolean( int position, bool val )
 		{
-			SetParameter( position, val, NHibernate.Boolean ); // );
+			SetParameter( position, val, NHibernateUtil.Boolean ); // );
 			return this;
 		}
 
@@ -209,7 +209,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetByte( int position, byte val )
 		{
-			SetParameter( position, val, NHibernate.Byte );
+			SetParameter( position, val, NHibernateUtil.Byte );
 			return this;
 		}
 
@@ -221,7 +221,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetInt16( int position, short val )
 		{
-			SetParameter( position, val, NHibernate.Int16 );
+			SetParameter( position, val, NHibernateUtil.Int16 );
 			return this;
 		}
 
@@ -233,7 +233,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetInt32( int position, int val )
 		{
-			SetParameter( position, val, NHibernate.Int32 );
+			SetParameter( position, val, NHibernateUtil.Int32 );
 			return this;
 		}
 
@@ -245,7 +245,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetInt64( int position, long val )
 		{
-			SetParameter( position, val, NHibernate.Int64 );
+			SetParameter( position, val, NHibernateUtil.Int64 );
 			return this;
 		}
 
@@ -257,7 +257,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetSingle( int position, float val )
 		{
-			SetParameter( position, val, NHibernate.Single );
+			SetParameter( position, val, NHibernateUtil.Single );
 			return this;
 		}
 
@@ -269,7 +269,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetDouble( int position, double val )
 		{
-			SetParameter( position, val, NHibernate.Double );
+			SetParameter( position, val, NHibernateUtil.Double );
 			return this;
 		}
 
@@ -281,7 +281,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetBinary( int position, byte[ ] val )
 		{
-			SetParameter( position, val, NHibernate.Binary );
+			SetParameter( position, val, NHibernateUtil.Binary );
 			return this;
 		}
 
@@ -293,7 +293,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetDecimal( int position, decimal val )
 		{
-			SetParameter( position, val, NHibernate.Decimal );
+			SetParameter( position, val, NHibernateUtil.Decimal );
 			return this;
 		}
 
@@ -305,7 +305,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetDateTime( int position, DateTime val )
 		{
-			SetParameter( position, val, NHibernate.DateTime );
+			SetParameter( position, val, NHibernateUtil.DateTime );
 			return this;
 		}
 
@@ -317,7 +317,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetTime( int position, DateTime val )
 		{
-			SetParameter( position, val, NHibernate.DateTime ); //TODO: change to time
+			SetParameter( position, val, NHibernateUtil.DateTime ); //TODO: change to time
 			return this;
 		}
 
@@ -329,7 +329,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetTimestamp( int position, DateTime val )
 		{
-			SetParameter( position, val, NHibernate.Timestamp );
+			SetParameter( position, val, NHibernateUtil.Timestamp );
 			return this;
 		}
 
@@ -341,7 +341,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetEntity( int position, object val )
 		{
-			SetParameter( position, val, NHibernate.Entity( NHibernateProxyHelper.GetClass( val ) ) );
+			SetParameter( position, val, NHibernateUtil.Entity( NHibernateProxyHelper.GetClass( val ) ) );
 			return this;
 		}
 
@@ -353,7 +353,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetEnum( int position, Enum val )
 		{
-			SetParameter( position, val, NHibernate.Enum( val.GetType() ) );
+			SetParameter( position, val, NHibernateUtil.Enum( val.GetType() ) );
 			return this;
 		}
 
@@ -365,7 +365,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetAnsiString( string name, string val )
 		{
-			SetParameter( name, val, NHibernate.AnsiString );
+			SetParameter( name, val, NHibernateUtil.AnsiString );
 			return this;
 		}
 
@@ -377,7 +377,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetString( string name, string val )
 		{
-			SetParameter( name, val, NHibernate.String );
+			SetParameter( name, val, NHibernateUtil.String );
 			return this;
 		}
 
@@ -389,7 +389,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetCharacter( string name, char val )
 		{
-			SetParameter( name, val, NHibernate.Character );
+			SetParameter( name, val, NHibernateUtil.Character );
 			return this;
 		}
 
@@ -401,7 +401,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetBoolean( string name, bool val )
 		{
-			SetParameter( name, val, NHibernate.Boolean );
+			SetParameter( name, val, NHibernateUtil.Boolean );
 			return this;
 		}
 
@@ -413,7 +413,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetByte( string name, byte val )
 		{
-			SetParameter( name, val, NHibernate.Byte );
+			SetParameter( name, val, NHibernateUtil.Byte );
 			return this;
 		}
 
@@ -425,7 +425,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetInt16( string name, short val )
 		{
-			SetParameter( name, val, NHibernate.Int16 );
+			SetParameter( name, val, NHibernateUtil.Int16 );
 			return this;
 		}
 
@@ -437,7 +437,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetInt32( string name, int val )
 		{
-			SetParameter( name, val, NHibernate.Int32 );
+			SetParameter( name, val, NHibernateUtil.Int32 );
 			return this;
 		}
 
@@ -449,7 +449,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetInt64( string name, long val )
 		{
-			SetParameter( name, val, NHibernate.Int64 );
+			SetParameter( name, val, NHibernateUtil.Int64 );
 			return this;
 		}
 
@@ -461,7 +461,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetSingle( string name, float val )
 		{
-			SetParameter( name, val, NHibernate.Single );
+			SetParameter( name, val, NHibernateUtil.Single );
 			return this;
 		}
 
@@ -473,7 +473,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetDouble( string name, double val )
 		{
-			SetParameter( name, val, NHibernate.Double );
+			SetParameter( name, val, NHibernateUtil.Double );
 			return this;
 		}
 
@@ -485,7 +485,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetBinary( string name, byte[ ] val )
 		{
-			SetParameter( name, val, NHibernate.Binary );
+			SetParameter( name, val, NHibernateUtil.Binary );
 			return this;
 		}
 
@@ -497,7 +497,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetDecimal( string name, decimal val )
 		{
-			SetParameter( name, val, NHibernate.Decimal );
+			SetParameter( name, val, NHibernateUtil.Decimal );
 			return this;
 		}
 
@@ -509,7 +509,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetDateTime( string name, DateTime val )
 		{
-			SetParameter( name, val, NHibernate.DateTime );
+			SetParameter( name, val, NHibernateUtil.DateTime );
 			return this;
 		}
 
@@ -521,7 +521,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetTime( string name, DateTime val )
 		{
-			SetParameter( name, val, NHibernate.DateTime ); //TODO: change to time
+			SetParameter( name, val, NHibernateUtil.DateTime ); //TODO: change to time
 			return this;
 		}
 
@@ -533,7 +533,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetTimestamp( string name, DateTime val )
 		{
-			SetParameter( name, val, NHibernate.Timestamp );
+			SetParameter( name, val, NHibernateUtil.Timestamp );
 			return this;
 		}
 
@@ -545,7 +545,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetEntity( string name, object val )
 		{
-			SetParameter( name, val, NHibernate.Entity( NHibernateProxyHelper.GetClass( val ) ) );
+			SetParameter( name, val, NHibernateUtil.Entity( NHibernateProxyHelper.GetClass( val ) ) );
 			return this;
 		}
 
@@ -557,7 +557,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetEnum( string name, Enum val )
 		{
-			SetParameter( name, val, NHibernate.Enum( val.GetType() ) );
+			SetParameter( name, val, NHibernateUtil.Enum( val.GetType() ) );
 			return this;
 		}
 
@@ -613,7 +613,7 @@ namespace NHibernate.Impl
 						throw new HibernateException( "Could not determine a type for class: " + typename );
 					}
 				}
-				return NHibernate.Entity( clazz );
+				return NHibernateUtil.Entity( clazz );
 			}
 			else
 			{

@@ -61,10 +61,10 @@ namespace NHibernate.Dialect
 			}
 			aggregateFunctions[ "trunc" ] = new QueryFunctionStandard();
 			aggregateFunctions[ "round" ] = new QueryFunctionStandard();
-			aggregateFunctions[ "abs" ] = new QueryFunctionStandard( NHibernate.Int32 );
-			aggregateFunctions[ "sign" ] = new QueryFunctionStandard( NHibernate.Int32 );
-			aggregateFunctions[ "ceil" ] = new QueryFunctionStandard( NHibernate.Int32 );
-			aggregateFunctions[ "floor" ] = new QueryFunctionStandard( NHibernate.Int32 );
+			aggregateFunctions[ "abs" ] = new QueryFunctionStandard( NHibernateUtil.Int32 );
+			aggregateFunctions[ "sign" ] = new QueryFunctionStandard( NHibernateUtil.Int32 );
+			aggregateFunctions[ "ceil" ] = new QueryFunctionStandard( NHibernateUtil.Int32 );
+			aggregateFunctions[ "floor" ] = new QueryFunctionStandard( NHibernateUtil.Int32 );
 			aggregateFunctions[ "sqrt" ] = new QueryFunctionStandard();
 			aggregateFunctions[ "exp" ] = new QueryFunctionStandard();
 			aggregateFunctions[ "ln" ] = new QueryFunctionStandard();
@@ -77,7 +77,7 @@ namespace NHibernate.Dialect
 			aggregateFunctions[ "stddev" ] = new QueryFunctionStandard();
 			aggregateFunctions[ "variance" ] = new QueryFunctionStandard();
 			aggregateFunctions[ "sysdate" ] = new SysdateQueryFunctionInfo();
-			aggregateFunctions[ "lastday" ] = new QueryFunctionStandard( NHibernate.Date );
+			aggregateFunctions[ "lastday" ] = new QueryFunctionStandard( NHibernateUtil.Date );
 		}
 
 		/// <summary></summary>
@@ -197,7 +197,7 @@ namespace NHibernate.Dialect
 			/// <returns></returns>
 			public IType QueryFunctionType( IType columnType, IMapping mapping )
 			{
-				return NHibernate.Date;
+				return NHibernateUtil.Date;
 			}
 
 			/// <summary></summary>

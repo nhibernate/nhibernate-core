@@ -152,7 +152,7 @@ namespace NHibernate.Test
 			s.Find("select c, c.Parent from c in class NHibernate.DomainModel.Child order by c.Parent.Count");
 			s.Find("select c, c.Parent from c in class NHibernate.DomainModel.Child where c.Parent.Count=66 order by c.Parent.Count");
 			s.Enumerable("select c, c.Parent, c.Parent.Count from c in class NHibernate.DomainModel.Child order by c.Parent.Count");
-			Assert.AreEqual( 1, s.Find("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?", (int)66, NHibernate.Int32).Count, "1-1 query" );
+			Assert.AreEqual( 1, s.Find("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?", (int)66, NHibernateUtil.Int32).Count, "1-1 query" );
 			s.Delete(c);
 			s.Delete(p);
 			t.Commit();

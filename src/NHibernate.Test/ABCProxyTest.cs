@@ -64,7 +64,7 @@ namespace NHibernate.Test
 			t = s.BeginTransaction();
 			// Test won't run after this line because of proxy initalization problems
 			A c1a = (A) s.Load(typeof(A), c1.Id );
-			Assert.IsFalse( NHibernate.IsInitialized(c1a) );
+			Assert.IsFalse( NHibernateUtil.IsInitialized(c1a) );
 			Assert.IsTrue( c1a.Name.Equals("c1") );
 			t.Commit();
 			s.Close();

@@ -64,7 +64,7 @@ namespace NHibernate.Test.ExpressionTest
 			builder.Add( "$alias.address = " );
 			builder.Add( firstAndParam );
 
-			NExpression.Expression sqlExpression = NExpression.Expression.Sql(builder.ToSqlString(), "some address", NHibernate.String );
+			NExpression.Expression sqlExpression = NExpression.Expression.Sql(builder.ToSqlString(), "some address", NHibernateUtil.String );
 
 			SqlString sqlString = sqlExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
 

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using NHibernate;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -36,7 +37,7 @@ namespace NHibernate.Type
 		/// </exception>
 		public override object Get( IDataReader rs, int index )
 		{
-			string str = ( string ) NHibernate.String.Get( rs, index );
+			string str = ( string ) NHibernateUtil.String.Get( rs, index );
 			if( str == null )
 			{
 				return null;
@@ -84,11 +85,11 @@ namespace NHibernate.Type
 		/// <param name="index">The index of the <see cref="IDbDataParameter"/> to start writing the value to.</param>
 		/// <remarks>
 		/// This uses the <see cref="NullableType.Set(IDbCommand, Object,Int32)"/> method of the 
-		/// <see cref="NHibernate.String"/> object to do the work.
+		/// <see cref="NHibernateUtil.String"/> object to do the work.
 		/// </remarks>
 		public override void Set( IDbCommand cmd, object value, int index )
 		{
-			NHibernate.String.Set( cmd, ( ( System.Type ) value ).AssemblyQualifiedName, index );
+			NHibernateUtil.String.Set( cmd, ( ( System.Type ) value ).AssemblyQualifiedName, index );
 		}
 
 		/// <summary>

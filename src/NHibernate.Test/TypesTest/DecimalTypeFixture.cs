@@ -51,7 +51,7 @@ namespace NHibernate.Test.TypesTest
 			decimal lhs = 5.64351M;
 			decimal rhs = 5.64351M;
 
-			DecimalType type = (DecimalType)NHibernate.Decimal;
+			DecimalType type = (DecimalType)NHibernateUtil.Decimal;
 			Assert.IsTrue( type.Equals(lhs, rhs) );
 			
 			// Test that two decimal fields that are equal except one has a higher precision than

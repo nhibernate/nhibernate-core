@@ -21,7 +21,7 @@ namespace NHibernate.DomainModel
 		private static readonly Hashtable Instances = new Hashtable();
 		private static readonly IIdentifierGenerator Generator = new CounterGenerator();
 
-		private static readonly IType[] Types = new IType[] { NHibernate.String };
+		private static readonly IType[] Types = new IType[] { NHibernateUtil.String };
 		private static readonly string[] Names = new string[] { "name" };
 		private static readonly bool[] Mutability = new bool[] { true };
 
@@ -199,7 +199,7 @@ namespace NHibernate.DomainModel
 
 		public IType IdentifierType
 		{
-			get { return NHibernate.Int64; }
+			get { return NHibernateUtil.Int64; }
 		}
 
 		public System.Reflection.PropertyInfo ProxyIdentifierProperty

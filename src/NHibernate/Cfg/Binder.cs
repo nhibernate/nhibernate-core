@@ -249,7 +249,7 @@ namespace NHibernate.Cfg
 						//version
 						Value val = new Value(table);
 						BindValue(subnode, val, false, propertyName);
-						if ( val.Type==null ) val.Type = ( ("version".Equals(name)) ? NHibernate.Int32 : NHibernate.Timestamp );
+						if ( val.Type==null ) val.Type = ( ("version".Equals(name)) ? NHibernateUtil.Int32 : NHibernateUtil.Timestamp );
 						Mapping.Property timestampProp = new Mapping.Property(val);
 						BindProperty(subnode, timestampProp, mappings);
 						model.Version = timestampProp;
@@ -262,10 +262,10 @@ namespace NHibernate.Cfg
 						BindValue(subnode, discrim, false, RootClass.DefaultDiscriminatorColumnName);
 						if ( discrim.Type==null ) 
 						{
-							discrim.Type = NHibernate.String;
+							discrim.Type = NHibernateUtil.String;
 							foreach(Column col in discrim.ColumnCollection) 
 							{
-								col.Type = NHibernate.String;
+								col.Type = NHibernateUtil.String;
 							}
 						}
 						model.IsPolymorphic = true;
@@ -534,7 +534,7 @@ namespace NHibernate.Cfg
 				log.Error("This shouldn't happen, check BindIntegerValue");
 			foreach(Column col in model.ColumnCollection) 
 			{
-				col.Type = NHibernate.Int32;
+				col.Type = NHibernateUtil.Int32;
 				col.TypeIndex = 0;
 				break;
 			}
@@ -608,7 +608,7 @@ namespace NHibernate.Cfg
 		{
 			try 
 			{
-				model.Type = (EntityType) NHibernate.Entity( 
+				model.Type = (EntityType) NHibernateUtil.Entity( 
 					ReflectHelper.ClassForName( node.Attributes["class"].Value) );
 			} 
 			catch (Exception e) 

@@ -15,7 +15,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Next() 
 		{
-			TimeSpanType type = (TimeSpanType)NHibernate.TimeSpan;
+			TimeSpanType type = (TimeSpanType)NHibernateUtil.TimeSpan;
 			object current = new TimeSpan( DateTime.Now.Ticks - 5 );
 			object next = type.Next( current );
 			
@@ -27,7 +27,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Seed() 
 		{
-			TimeSpanType type = (TimeSpanType)NHibernate.TimeSpan;
+			TimeSpanType type = (TimeSpanType)NHibernateUtil.TimeSpan;
 			Assert.IsTrue( type.Seed is TimeSpan, "seed should be TimeSpan" );
 		}
 	}

@@ -30,11 +30,11 @@ namespace NHibernate.Test.ProxyInterface
 
 			s = sessions.OpenSession();
 			ap = (CastleProxy)s.Load( typeof(CastleProxyImpl), ap.Id ); 
-			Assert.IsFalse( NHibernate.IsInitialized( ap ) );
+			Assert.IsFalse( NHibernateUtil.IsInitialized( ap ) );
 			int id = ap.Id;
-			Assert.IsFalse( NHibernate.IsInitialized( ap ), "get id should not have initialized it." );
+			Assert.IsFalse( NHibernateUtil.IsInitialized( ap ), "get id should not have initialized it." );
 			string name = ap.Name;
-			Assert.IsTrue(  NHibernate.IsInitialized( ap ), "get name should have initialized it." );
+			Assert.IsTrue(  NHibernateUtil.IsInitialized( ap ), "get name should have initialized it." );
 			s.Delete( ap );
 			s.Flush();
 			s.Close();

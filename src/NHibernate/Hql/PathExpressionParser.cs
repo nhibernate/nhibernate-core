@@ -298,7 +298,7 @@ namespace NHibernate.Hql
 			if( currentProperty == null )
 			{
 				IClassPersister p = q.GetPersisterForName( currentName );
-				type = NHibernate.Entity( p.MappedClass );
+				type = NHibernateUtil.Entity( p.MappedClass );
 			}
 			else
 			{
@@ -670,7 +670,7 @@ namespace NHibernate.Hql
 			else if( token.Equals( CollectionSize ) )
 			{
 				collectionElementColumns = new string[ ] {"count(*)"};
-				collectionElementType = NHibernate.Int32;
+				collectionElementType = NHibernateUtil.Int32;
 			}
 			else if( token.Equals( CollectionMaxIndex ) )
 			{

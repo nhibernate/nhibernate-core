@@ -15,7 +15,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Next() 
 		{
-			Int64Type type = (Int64Type)NHibernate.Int64;
+			Int64Type type = (Int64Type)NHibernateUtil.Int64;
 			object current = (long)1;
 			object next = type.Next( current );
 			
@@ -27,7 +27,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Seed() 
 		{
-			Int64Type type = (Int64Type)NHibernate.Int64;
+			Int64Type type = (Int64Type)NHibernateUtil.Int64;
 			Assert.IsTrue( type.Seed is Int64, "seed should be int64" );
 		}
 	}

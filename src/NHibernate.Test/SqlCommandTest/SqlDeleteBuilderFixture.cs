@@ -29,8 +29,8 @@ namespace NHibernate.Test.SqlCommandTest
 			delete.SetTableName("test_delete_builder");
 
 			
-			delete.SetIdentityColumn(new string[] {"decimalColumn"}, NHibernate.Decimal);
-			delete.SetVersionColumn(new string[] {"versionColumn"}, (IVersionType)NHibernate.Int32);
+			delete.SetIdentityColumn(new string[] {"decimalColumn"}, NHibernateUtil.Decimal);
+			delete.SetVersionColumn(new string[] {"versionColumn"}, (IVersionType)NHibernateUtil.Int32);
 
 			delete.AddWhereFragment("a=b");
 			SqlString sqlString = delete.ToSqlString();

@@ -556,7 +556,8 @@ namespace NHibernate.DomainModel
 		 StringDateMap = new SortedList();
 		 StringDateMap.Add( "now", DateTime.Now );
 		 StringDateMap.Add( "never", null );
-		 StringDateMap.Add( "big bang", new DateTime(0) );
+		 StringDateMap.Add( "millenium", new DateTime( 2000, 01, 01 ) );
+		 //StringDateMap.Add( "big bang", new DateTime(0) );
 		 ArrayList list = new ArrayList();
 		 list.AddRange( StringSet ); 
 		 StringList = list;
