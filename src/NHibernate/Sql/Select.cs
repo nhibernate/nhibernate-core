@@ -38,6 +38,11 @@ namespace NHibernate.Sql {
 			return this;
 		}
 
+		public Select SetFromClause(string tableName, string alias) {
+			this.fromClause = tableName + ' ' + alias;
+			return this;
+		}
+
 		/// <summary>
 		/// Sets the orderByClause
 		/// </summary>

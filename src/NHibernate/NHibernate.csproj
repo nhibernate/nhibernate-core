@@ -333,12 +333,32 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Sql\ANSICaseFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\ANSIOuterJoinFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Sql\CaseFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Sql\OuterJoinFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Sql\Select.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\TypeNames.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
