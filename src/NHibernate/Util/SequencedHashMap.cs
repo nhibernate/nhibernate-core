@@ -93,6 +93,7 @@ namespace NHibernate.Util {
 			public override int GetHashCode() {
 				return ((Key == null ? 0 : Key.GetHashCode()) ^ (Value == null ? 0 : Value.GetHashCode()) );
 			}
+
 			public override bool Equals(object obj) {
 				Entry other = obj as Entry;
 				if (other == null) return false;
@@ -101,6 +102,7 @@ namespace NHibernate.Util {
 				return ( (Key == null ? other.Key == null : Key.Equals(other.Key)) &&
 					(Value == null ? other.Value == null : Value.Equals(other.Value)) );
 			}
+
 			public override string ToString() {
 				return "[" + Key + "=" + Value + "]";
 			}

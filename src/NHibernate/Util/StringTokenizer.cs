@@ -46,9 +46,7 @@ namespace NHibernate.Util {
 
 			public bool MoveNext() {
 				_next = GetNext();
-				if (_next == null)
-					return false;
-				return true;
+				return _next != null;
 			}
 
 			public void Reset() {
@@ -62,19 +60,16 @@ namespace NHibernate.Util {
 			}
 
 			private string GetNext() {
-				StringBuilder sb;
 				char c;
 				bool isDelim;
 				
-				if( _cursor == _stokenizer._origin.Length )
+				if( _cursor >= _stokenizer._origin.Length )
 					return null;
 
-				sb = new StringBuilder();
-				
 				c = _stokenizer._origin[_cursor];
 				isDelim = (_stokenizer._delim.IndexOf(c) != -1);
 				
-				if( isDelim ) {
+				if ( isDelim ) {
 					_cursor++;
 					if ( _stokenizer._returnDelim ) {
 						return c.ToString();
@@ -82,15 +77,14 @@ namespace NHibernate.Util {
 					return GetNext();
 				}
 
-				while( _cursor < _stokenizer._origin.Length && !isDelim ) {
-					sb.Append(c);
-					if( ++_cursor == _stokenizer._origin.Length)
-						break;
-					c = _stokenizer._origin[_cursor];
-					isDelim = (_stokenizer._delim.IndexOf(c) != -1);
+				int nextDelimPos = _stokenizer._origin.IndexOfAny(_stokenizer._delim.ToCharArray(), _cursor);
+				if (nextDelimPos == -1) {
+					nextDelimPos = _stokenizer._origin.Length;
 				}
-				
-				return sb.ToString();
+
+				string nextToken = _stokenizer._origin.Substring(_cursor, nextDelimPos - _cursor);
+				_cursor = nextDelimPos;
+				return nextToken;
 			}
 
 		}
