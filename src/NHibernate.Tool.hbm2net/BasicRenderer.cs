@@ -158,14 +158,10 @@ namespace NHibernate.Tool.hbm2net
 		}
 		
 		/// <summary> Method doSupportMethods.</summary>
-		/// <param name="">fieldTypes
-		/// </param>
-		/// <param name="">vetoSupport
-		/// </param>
-		/// <param name="">changeSupport
-		/// </param>
-		/// <param name="">propWriter
-		/// </param>
+		/// <param name="changeSupport"></param>
+		/// <param name="fieldTypes"></param>
+		/// <param name="vetoSupport"></param>
+		/// <param name="writer"></param>
 		private void  doSupportMethods(int fieldTypes, System.String vetoSupport, System.String changeSupport, System.IO.StringWriter writer)
 		{
 			if ((fieldTypes & CONSTRAINT) == CONSTRAINT)
@@ -192,11 +188,11 @@ namespace NHibernate.Tool.hbm2net
 		
 		
 		/// <summary> Method doSupports.</summary>
-		/// <param name="">vetoSupport
+		/// <param name="vetoSupport">
 		/// </param>
-		/// <param name="">changeSupport
+		/// <param name="changeSupport">
 		/// </param>
-		/// <param name="">writer
+		/// <param name="writer">
 		/// </param>
 		private void  doSupports(int fieldTypes, ClassMapping classMapping, System.String vetoSupport, System.String changeSupport, System.IO.StringWriter writer)
 		{

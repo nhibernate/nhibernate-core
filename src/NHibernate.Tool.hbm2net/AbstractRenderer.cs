@@ -5,6 +5,10 @@
 * Window>Preferences>Java>Code Generation>Code Template
 */
 using System;
+using System.Collections;
+using System.Collections.Specialized;
+using System.IO;
+
 namespace NHibernate.Tool.hbm2net
 {
 	
@@ -13,38 +17,38 @@ namespace NHibernate.Tool.hbm2net
 	public abstract class AbstractRenderer : Renderer
 	{
 		
-		public virtual void  render(System.String savedToPackage, System.String savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter writer)
+		public virtual void  render(String savedToPackage, String savedToClass, ClassMapping classMapping, IDictionary class2classmap, StreamWriter writer)
 		{
 		}
 
-		internal System.Collections.Specialized.NameValueCollection properties;
+		internal NameValueCollection properties;
 		
-		public virtual void  configure(System.Collections.Specialized.NameValueCollection props)
+		public virtual void  configure(NameValueCollection props)
 		{
 			this.properties = props;
 		}
 		
-		public virtual System.String getFieldScope(FieldProperty field, System.String localScopeName, System.String defaultScope)
+		public virtual String getFieldScope(FieldProperty field, String localScopeName, String defaultScope)
 		{
 			return field.getScope(localScopeName, defaultScope);
 		}
 		
-		public virtual System.String getPackageDeclaration(System.String savedToPackage, ClassMapping classMapping)
+		public virtual String getPackageDeclaration(String savedToPackage, ClassMapping classMapping)
 		{
-			if ((System.Object) savedToPackage != null && !savedToPackage.Trim().Equals(""))
+			if ((Object) savedToPackage != null && !savedToPackage.Trim().Equals(""))
 			{
 				return "namespace " + savedToPackage + "";
 			}
-			else if ((System.Object) classMapping.GeneratedPackageName != null)
+			else if ((Object) classMapping.GeneratedPackageName != null)
 			{
 				return "namespace " + classMapping.GeneratedPackageName + "";
 			}
 			return "";
 		}
 		
-		protected internal virtual void  genPackageDelaration(System.String savedToPackage, ClassMapping classMapping, System.IO.StreamWriter w)
+		protected internal virtual void  genPackageDelaration(String savedToPackage, ClassMapping classMapping, StreamWriter w)
 		{
-			System.String string_Renamed = getPackageDeclaration(savedToPackage, classMapping);
+			String string_Renamed = getPackageDeclaration(savedToPackage, classMapping);
 			if (string_Renamed.Length > 0)
 			{
 				w.WriteLine(string_Renamed);
@@ -55,12 +59,12 @@ namespace NHibernate.Tool.hbm2net
 			}
 		}
 		
-		public virtual System.String getSaveToClassName(ClassMapping classMapping)
+		public virtual String getSaveToClassName(ClassMapping classMapping)
 		{
 			return classMapping.GeneratedName;
 		}
 		
-		public virtual System.String getSaveToPackage(ClassMapping classMapping)
+		public virtual String getSaveToPackage(ClassMapping classMapping)
 		{
 			return classMapping.GeneratedPackageName;
 		}

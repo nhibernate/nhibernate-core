@@ -1,5 +1,5 @@
 using System;
-using StringHelper = NHibernate.Util.StringHelper;
+using NHibernate.Util;
 
 namespace NHibernate.Tool.hbm2net
 {
@@ -14,7 +14,7 @@ namespace NHibernate.Tool.hbm2net
 	*/
 	public class ClassName
 	{
-		virtual public System.String FullyQualifiedName
+		virtual public String FullyQualifiedName
 		{
 			get
 			{
@@ -26,7 +26,7 @@ namespace NHibernate.Tool.hbm2net
 		/// 
 		/// java.util.Set -> "Set" 
 		/// </summary>
-		virtual public System.String Name
+		virtual public String Name
 		{
 			get
 			{
@@ -40,7 +40,7 @@ namespace NHibernate.Tool.hbm2net
 		/// </summary>
 		/// <returns>
 		/// </returns>
-		virtual public System.String PackageName
+		virtual public String PackageName
 		{
 			get
 			{
@@ -64,7 +64,7 @@ namespace NHibernate.Tool.hbm2net
 		{
 			get
 			{
-				System.String baseTypeName = StringHelper.Replace(fullyQualifiedName, "[]", "");
+				String baseTypeName = StringHelper.Replace(fullyQualifiedName, "[]", "");
 				return PRIMITIVES.Contains(baseTypeName);
 			}
 			
@@ -72,17 +72,17 @@ namespace NHibernate.Tool.hbm2net
 		
 		internal static readonly SupportClass.SetSupport PRIMITIVES = new SupportClass.HashSetSupport();
 		
-		public ClassName(System.String fqn)
+		public ClassName(String fqn)
 		{
 			initFullyQualifiedName(fqn);
 		}
 		
-		private System.String fullyQualifiedName = null;
-		private System.String name = null;
-		private System.String packageName = null;
+		private String fullyQualifiedName = null;
+		private String name = null;
+		private String packageName = null;
 		
 		/// <summary>Two ClassName are equals if their fullyQualifiedName are the same/equals! </summary>
-		public  override bool Equals(System.Object other)
+		public  override bool Equals(Object other)
 		{
 			ClassName otherClassName = (ClassName) other;
 			return otherClassName.fullyQualifiedName.Equals(fullyQualifiedName);
@@ -95,21 +95,21 @@ namespace NHibernate.Tool.hbm2net
 		
 		public virtual bool inSamePackage(ClassName other)
 		{
-			return (System.Object) other.packageName == (System.Object) this.packageName || ((System.Object) other.packageName != null && other.packageName.Equals(this.packageName));
+			return (Object) other.packageName == (Object) this.packageName || ((Object) other.packageName != null && other.packageName.Equals(this.packageName));
 		}
 		
 		
 		/*
 		* Initialize the class fields with info from a fully qualified name.
 		*/
-		private void  initFullyQualifiedName(System.String fqn)
+		private void  initFullyQualifiedName(String fqn)
 		{
 			this.fullyQualifiedName = fqn;
 			if (fullyQualifiedName.IndexOf(",")>0)
 				fullyQualifiedName = fullyQualifiedName.Substring(0,fullyQualifiedName.IndexOf(","));
 			if (!Primitive)
 			{
-				if ((System.Object) fqn != null)
+				if ((Object) fqn != null)
 				{
 					
 					int lastDot = fqn.LastIndexOf(",");
@@ -138,7 +138,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 		}
 		
-		public override System.String ToString()
+		public override String ToString()
 		{
 			return FullyQualifiedName;
 		}

@@ -1,4 +1,6 @@
 using System;
+using System.Reflection;
+using log4net;
 using MultiMap = System.Collections.Hashtable;
 using Element = System.Xml.XmlElement;
 
@@ -8,7 +10,7 @@ namespace NHibernate.Tool.hbm2net
 	
 	public class FieldProperty:MappingElement
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		public string fieldcase
 		{
@@ -26,7 +28,7 @@ namespace NHibernate.Tool.hbm2net
 				return fieldName;
 			}
 		}
-		virtual public System.String FieldName
+		virtual public String FieldName
 		{
 			get
 			{
@@ -34,7 +36,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String AccessorName
+		virtual public String AccessorName
 		{
 			get
 			{
@@ -42,7 +44,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		private System.String GetterType
+		private String GetterType
 		{
 			get
 			{
@@ -50,7 +52,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String FullyQualifiedTypeName
+		virtual public String FullyQualifiedTypeName
 		{
 			get
 			{
@@ -105,8 +107,6 @@ namespace NHibernate.Tool.hbm2net
 		/// <returns> ClassName
 		/// </returns>
 		/// <summary> Sets the foreignClass.</summary>
-		/// <param name="foreignClass">The foreignClass to set
-		/// </param>
 		virtual public ClassName ForeignClass
 		{
 			get
@@ -134,7 +134,7 @@ namespace NHibernate.Tool.hbm2net
 		/// <summary> Method getGetterSignature.</summary>
 		/// <returns> String
 		/// </returns>
-		virtual public System.String GetterSignature
+		virtual public String GetterSignature
 		{
 			get
 			{
@@ -171,7 +171,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String FieldScope
+		virtual public String FieldScope
 		{
 			get
 			{
@@ -179,7 +179,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String PropertyGetScope
+		virtual public String PropertyGetScope
 		{
 			get
 			{
@@ -187,7 +187,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String PropertySetScope
+		virtual public String PropertySetScope
 		{
 			get
 			{
@@ -197,10 +197,10 @@ namespace NHibernate.Tool.hbm2net
 		}
 		
 		/// <summary>the field name </summary>
-		private System.String fieldName = null;
+		private String fieldName = null;
 		
 		/// <summary>the property name </summary>
-		private System.String accessorName = null;
+		private String accessorName = null;
 		
 		/// <summary>true if this is part of an id </summary>
 		private bool id = false;
@@ -215,24 +215,23 @@ namespace NHibernate.Tool.hbm2net
 		private ClassName implementationClassName;
 		
 		private ClassMapping parentClass;
-		
-		
-		public FieldProperty(Element element, MappingElement parent, System.String name, ClassName type, bool nullable, MultiMap metaattribs):base(element, parent)
+
+		public FieldProperty(Element element, MappingElement parent, String name, ClassName type, bool nullable, MultiMap metaattribs):base(element, parent)
 		{
 			initWith(name, type, type, nullable, id, false, null, null, metaattribs);
 		}
 		
-		public FieldProperty(Element element, MappingElement parent, System.String name, ClassName type, bool nullable, bool id, bool generated, MultiMap metaattribs):base(element, parent)
+		public FieldProperty(Element element, MappingElement parent, String name, ClassName type, bool nullable, bool id, bool generated, MultiMap metaattribs):base(element, parent)
 		{
 			initWith(name, type, type, nullable, id, generated, null, null, metaattribs);
 		}
 		
-		public FieldProperty(Element element, MappingElement parent, System.String name, ClassName type, ClassName implementationClassName, bool nullable, ClassName foreignClass, SupportClass.SetSupport foreignKeys, MultiMap metaattribs):base(element, parent)
+		public FieldProperty(Element element, MappingElement parent, String name, ClassName type, ClassName implementationClassName, bool nullable, ClassName foreignClass, SupportClass.SetSupport foreignKeys, MultiMap metaattribs):base(element, parent)
 		{
 			initWith(name, type, implementationClassName, nullable, id, false, foreignClass, foreignKeys, metaattribs);
 		}
 		
-		protected internal virtual void  initWith(System.String name, ClassName type, ClassName implementationClassName, bool nullable, bool id, bool generated, ClassName foreignClass, SupportClass.SetSupport foreignKeys, MultiMap metaattribs)
+		protected internal virtual void  initWith(String name, ClassName type, ClassName implementationClassName, bool nullable, bool id, bool generated, ClassName foreignClass, SupportClass.SetSupport foreignKeys, MultiMap metaattribs)
 		{
 			this.fieldName = name;
 			Type = type;
@@ -252,34 +251,32 @@ namespace NHibernate.Tool.hbm2net
 		/// FOo -> FOo
 		/// 
 		/// </summary>
-		/// <param name="">name2
-		/// </param>
 		/// <returns>
 		/// </returns>
-		private System.String beancapitalize(System.String fieldname)
+		private String beancapitalize(String fieldname)
 		{
-			if ((System.Object) fieldname == null || fieldname.Length == 0)
+			if ((Object) fieldname == null || fieldname.Length == 0)
 			{
 				return fieldname;
 			}
 			
-			if (fieldname.Length > 1 && System.Char.IsUpper(fieldname[1]) && System.Char.IsUpper(fieldname[0]))
+			if (fieldname.Length > 1 && Char.IsUpper(fieldname[1]) && Char.IsUpper(fieldname[0]))
 			{
 				return fieldname;
 			}
 			char[] chars = fieldname.ToCharArray();
-			chars[0] = System.Char.ToUpper(chars[0]);
-			return new System.String(chars);
+			chars[0] = Char.ToUpper(chars[0]);
+			return new String(chars);
 		}
 		
-		public override System.String ToString()
+		public override String ToString()
 		{
 			return FullyQualifiedTypeName + ":" + FieldName;
 		}
 		
-		public virtual System.String getScope(System.String localScopeName, System.String defaultScope)
+		public virtual String getScope(String localScopeName, String defaultScope)
 		{
-			if ((System.Object) defaultScope == null)
+			if ((Object) defaultScope == null)
 				defaultScope = "private";
 			return (getMeta(localScopeName) == null)?defaultScope:getMetaAsString(localScopeName);
 		}

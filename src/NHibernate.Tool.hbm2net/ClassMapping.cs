@@ -1,15 +1,16 @@
 using System;
+using System.Collections;
+using System.IO;
+using System.Reflection;
+using System.Xml;
+using log4net;
+using NHibernate.Type;
+using NHibernate.Util;
 using CompositeUserType = NHibernate.ICompositeUserType;
 using UserType = NHibernate.IUserType;
-using PrimitiveType = NHibernate.Type.PrimitiveType;
 using Type = NHibernate.Type.TypeType;
-using TypeFactory = NHibernate.Type.TypeFactory;
-using ReflectHelper = NHibernate.Util.ReflectHelper;
-using StringHelper = NHibernate.Util.StringHelper;
 using Element = System.Xml.XmlElement;
 using MultiMap = System.Collections.Hashtable;
-using System.Xml;
-using IType = NHibernate.Type.IType;
 
 namespace NHibernate.Tool.hbm2net
 {
@@ -17,7 +18,7 @@ namespace NHibernate.Tool.hbm2net
 	
 	public class ClassMapping:MappingElement
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private void  InitBlock()
 		{
@@ -43,7 +44,7 @@ namespace NHibernate.Tool.hbm2net
 			
 		}
 		/// <summary>shorthand method for getClassName().getFullyQualifiedName() </summary>
-		virtual public System.String FullyQualifiedName
+		virtual public String FullyQualifiedName
 		{
 			get
 			{
@@ -52,7 +53,7 @@ namespace NHibernate.Tool.hbm2net
 			
 		}
 		/// <summary>shorthand method for getClassName().getName() </summary>
-		virtual public System.String Name
+		virtual public String Name
 		{
 			get
 			{
@@ -61,7 +62,7 @@ namespace NHibernate.Tool.hbm2net
 			
 		}
 		/// <summary>shorthand method for getClassName().getPackageName() </summary>
-		virtual public System.String PackageName
+		virtual public String PackageName
 		{
 			get
 			{
@@ -77,7 +78,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String GeneratedName
+		virtual public String GeneratedName
 		{
 			get
 			{
@@ -85,7 +86,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String GeneratedPackageName
+		virtual public String GeneratedPackageName
 		{
 			get
 			{
@@ -93,7 +94,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String Proxy
+		virtual public String Proxy
 		{
 			get
 			{
@@ -109,7 +110,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String SuperClass
+		virtual public String SuperClass
 		{
 			get
 			{
@@ -122,7 +123,7 @@ namespace NHibernate.Tool.hbm2net
 			get
 			{
 				SupportClass.ListCollectionSupport result = new SupportClass.ListCollectionSupport();
-				for (System.Collections.IEnumerator myFields = Fields.GetEnumerator(); myFields.MoveNext(); )
+				for (IEnumerator myFields = Fields.GetEnumerator(); myFields.MoveNext(); )
 				{
 					FieldProperty field = (FieldProperty) myFields.Current;
 					if (!field.Identifier || (field.Identifier && !field.Generated))
@@ -158,7 +159,7 @@ namespace NHibernate.Tool.hbm2net
 			get
 			{
 				SupportClass.ListCollectionSupport result = new SupportClass.ListCollectionSupport();
-				for (System.Collections.IEnumerator myFields = Fields.GetEnumerator(); myFields.MoveNext(); )
+				for (IEnumerator myFields = Fields.GetEnumerator(); myFields.MoveNext(); )
 				{
 					FieldProperty field = (FieldProperty) myFields.Current;
 					if ((!field.Identifier && !field.Nullable) || (field.Identifier && !field.Generated))
@@ -228,7 +229,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		public static System.Collections.IEnumerator Components
+		public static IEnumerator Components
 		{
 			get
 			{
@@ -257,11 +258,11 @@ namespace NHibernate.Tool.hbm2net
 		}
 		/// <returns>
 		/// </returns>
-		virtual public System.String Scope
+		virtual public String Scope
 		{
 			get
 			{
-				System.String classScope = "public";
+				String classScope = "public";
 				if (getMeta("scope-class") != null)
 				{
 					classScope = getMetaAsString("scope-class").Trim();
@@ -272,7 +273,7 @@ namespace NHibernate.Tool.hbm2net
 		}
 		/// <returns>
 		/// </returns>
-		virtual public System.String DeclarationType
+		virtual public String DeclarationType
 		{
 			get
 			{
@@ -293,7 +294,7 @@ namespace NHibernate.Tool.hbm2net
 		/// </summary>
 		/// <returns>
 		/// </returns>
-		virtual public System.String Modifiers
+		virtual public String Modifiers
 		{
 			get
 			{
@@ -321,18 +322,18 @@ namespace NHibernate.Tool.hbm2net
 		
 		private ClassName name = null;
 		private ClassName generatedName = null;
-		private System.String superClass = null;
+		private String superClass = null;
 		private ClassMapping superClassMapping = null;
-		private System.String proxyClass = null;
+		private String proxyClass = null;
 		private SupportClass.ListCollectionSupport fields;
 		private SupportClass.TreeSetSupport imports;
 		private SupportClass.ListCollectionSupport subclasses;
-		private static readonly System.Collections.IDictionary components = new System.Collections.Hashtable();
+		private static readonly IDictionary components = new Hashtable();
 		private bool mustImplementEquals_Renamed_Field = false;
 		
 		private bool shouldBeAbstract_Renamed_Field = false;
 		
-		public ClassMapping(System.String classPackage, MappingElement parentElement, ClassName superClass, ClassMapping superClassMapping, Element classElement, MultiMap inheritedMeta):this(classPackage, parentElement, superClass, classElement, inheritedMeta)
+		public ClassMapping(String classPackage, MappingElement parentElement, ClassName superClass, ClassMapping superClassMapping, Element classElement, MultiMap inheritedMeta):this(classPackage, parentElement, superClass, classElement, inheritedMeta)
 		{
 			
 			this.superClassMapping = superClassMapping;
@@ -340,7 +341,7 @@ namespace NHibernate.Tool.hbm2net
 			if (this.superClassMapping != null)
 			{
 				SupportClass.ListCollectionSupport l = this.superClassMapping.AllFieldsForFullConstructor;
-				for (System.Collections.IEnumerator iter = l.GetEnumerator(); iter.MoveNext(); )
+				for (IEnumerator iter = l.GetEnumerator(); iter.MoveNext(); )
 				{
 					FieldProperty element = (FieldProperty) iter.Current;
 					ClassName ct = element.ClassType;
@@ -357,30 +358,30 @@ namespace NHibernate.Tool.hbm2net
 			}
 		}
 		
-		public ClassMapping(System.String classPackage, MappingElement parentElement, ClassName superClass, Element classElement, MultiMap inheritedMeta):base(classElement, parentElement)
+		public ClassMapping(String classPackage, MappingElement parentElement, ClassName superClass, Element classElement, MultiMap inheritedMeta):base(classElement, parentElement)
 		{
 			InitBlock();
 			initWith(classPackage, superClass, classElement, false, inheritedMeta);
 		}
 		
-		public ClassMapping(System.String classPackage, Element classElement, MappingElement parentElement, MultiMap inheritedMeta):base(classElement, parentElement)
+		public ClassMapping(String classPackage, Element classElement, MappingElement parentElement, MultiMap inheritedMeta):base(classElement, parentElement)
 		{
 			InitBlock();
 			initWith(classPackage, null, classElement, false, inheritedMeta);
 		}
 		
-		public ClassMapping(System.String classPackage, Element classElement, MappingElement parentElement, bool component, MultiMap inheritedMeta):base(classElement, parentElement)
+		public ClassMapping(String classPackage, Element classElement, MappingElement parentElement, bool component, MultiMap inheritedMeta):base(classElement, parentElement)
 		{
 			InitBlock();
 			initWith(classPackage, null, classElement, component, inheritedMeta);
 		}
 		
-		protected internal virtual void  initWith(System.String classPackage, ClassName mySuperClass, Element classElement, bool component, MultiMap inheritedMeta)
+		protected internal virtual void  initWith(String classPackage, ClassName mySuperClass, Element classElement, bool component, MultiMap inheritedMeta)
 		{
 			
-			System.String fullyQualifiedName = (classElement.Attributes[component?"class":"name"] == null?string.Empty:classElement.Attributes[component?"class":"name"].Value);
+			String fullyQualifiedName = (classElement.Attributes[component?"class":"name"] == null?string.Empty:classElement.Attributes[component?"class":"name"].Value);
 			
-			if (fullyQualifiedName.IndexOf((System.Char) '.') < 0 && (System.Object) classPackage != null && classPackage.Trim().Length > 0)
+			if (fullyQualifiedName.IndexOf('.') < 0 && (Object) classPackage != null && classPackage.Trim().Length > 0)
 			{
 				fullyQualifiedName = classPackage + "." + fullyQualifiedName;
 			}
@@ -443,9 +444,9 @@ namespace NHibernate.Tool.hbm2net
 			if (cmpid != null)
 			{
 				implementEquals();
-				System.String cmpname = (cmpid.Attributes["name"] == null?null:cmpid.Attributes["name"].Value);
-				System.String cmpclass = (cmpid.Attributes["class"] == null?null:cmpid.Attributes["class"].Value);
-				if ((System.Object) cmpclass == null || cmpclass.Equals(string.Empty))
+				String cmpname = (cmpid.Attributes["name"] == null?null:cmpid.Attributes["name"].Value);
+				String cmpclass = (cmpid.Attributes["class"] == null?null:cmpid.Attributes["class"].Value);
+				if ((Object) cmpclass == null || cmpclass.Equals(string.Empty))
 				{
 					//Embedded composite id
 					//implementEquals();
@@ -466,7 +467,6 @@ namespace NHibernate.Tool.hbm2net
 					object tempObject;
 					tempObject = mapping;
 					components[mapping.FullyQualifiedName] = tempObject;
-					System.Object generatedAux = tempObject;
 				}
 			}
 			
@@ -477,20 +477,20 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 			// derive the class imports and fields from the properties
-			for (System.Collections.IEnumerator properties = propertyList.GetEnumerator(); properties.MoveNext(); )
+			for (IEnumerator properties = propertyList.GetEnumerator(); properties.MoveNext(); )
 			{
 				Element property = (Element) properties.Current;
 				
 				MultiMap metaForProperty = MetaAttributeHelper.loadAndMergeMetaMap(property, MetaAttribs);
-				System.String propertyName = (property.Attributes["name"] == null?null:property.Attributes["name"].Value);
-				if ((System.Object) propertyName == null || propertyName.Trim().Equals(string.Empty))
+				String propertyName = (property.Attributes["name"] == null?null:property.Attributes["name"].Value);
+				if ((Object) propertyName == null || propertyName.Trim().Equals(string.Empty))
 				{
 					continue; //since an id doesn't necessarily need a name
 				}
 				
 				// ensure that the type is specified
-				System.String type = (property.Attributes["type"] == null?null:property.Attributes["type"].Value);
-				if ((System.Object) type == null && cmpid != null)
+				String type = (property.Attributes["type"] == null?null:property.Attributes["type"].Value);
+				if ((Object) type == null && cmpid != null)
 				{
 					// for composite-keys
 					type = (property.Attributes["class"] == null?null:property.Attributes["class"].Value);
@@ -505,7 +505,7 @@ namespace NHibernate.Tool.hbm2net
 					type = "System.Object";
 				}
 				
-				if ((System.Object) type == null || type.Trim().Equals(string.Empty))
+				if ((Object) type == null || type.Trim().Equals(string.Empty))
 				{
 					if (property == id)
 						type = "Int32";
@@ -522,8 +522,8 @@ namespace NHibernate.Tool.hbm2net
 				if (property == id)
 				{
 					Element generator = property["generator"];
-					System.String unsavedValue = (property.Attributes["unsaved-value"] == null?null:property.Attributes["unsaved-value"].Value);
-					bool mustBeNullable = ((System.Object) unsavedValue != null && unsavedValue.Equals("null"));
+					String unsavedValue = (property.Attributes["unsaved-value"] == null?null:property.Attributes["unsaved-value"].Value);
+					bool mustBeNullable = ((Object) unsavedValue != null && unsavedValue.Equals("null"));
 					bool generated = !(generator.Attributes["class"] == null?string.Empty:generator.Attributes["class"].Value).Equals("assigned");
 					ClassName rtype = getFieldType(type, mustBeNullable, false);
 					addImport(rtype);
@@ -532,16 +532,16 @@ namespace NHibernate.Tool.hbm2net
 				}
 				else
 				{
-					System.String notnull = (property.Attributes["not-null"] == null?null:property.Attributes["not-null"].Value);
+					String notnull = (property.Attributes["not-null"] == null?null:property.Attributes["not-null"].Value);
 					// if not-null property is missing lets see if it has been
 					// defined at column level
-					if ((System.Object) notnull == null)
+					if ((Object) notnull == null)
 					{
 						Element column = property["column"];
 						if (column != null)
 							notnull = (column.Attributes["not-null"] == null?null:column.Attributes["not-null"].Value);
 					}
-					bool nullable = ((System.Object) notnull == null || notnull.Equals("false"));
+					bool nullable = ((Object) notnull == null || notnull.Equals("false"));
 					bool key = property.LocalName.StartsWith("key-"); //a composite id property
 					ClassName t = getFieldType(type);
 					addImport(t);
@@ -551,15 +551,15 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 			// one to ones
-			for (System.Collections.IEnumerator onetoones = classElement.SelectNodes("urn:one-to-one", CodeGenerator.nsmgr).GetEnumerator(); onetoones.MoveNext(); )
+			for (IEnumerator onetoones = classElement.SelectNodes("urn:one-to-one", CodeGenerator.nsmgr).GetEnumerator(); onetoones.MoveNext(); )
 			{
 				Element onetoone = (Element) onetoones.Current;
 				
 				MultiMap metaForOneToOne = MetaAttributeHelper.loadAndMergeMetaMap(onetoone, MetaAttribs);
-				System.String propertyName = (onetoone.Attributes["name"] == null?string.Empty:onetoone.Attributes["name"].Value);
+				String propertyName = (onetoone.Attributes["name"] == null?string.Empty:onetoone.Attributes["name"].Value);
 				
 				// ensure that the class is specified
-				System.String clazz = (onetoone.Attributes["class"] == null?string.Empty:onetoone.Attributes["class"].Value);
+				String clazz = (onetoone.Attributes["class"] == null?string.Empty:onetoone.Attributes["class"].Value);
 				if (clazz.Length == 0)
 				{
 					log.Warn("one-to-one \"" + name + "\" in class " + Name + " is missing a class attribute");
@@ -572,15 +572,15 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 			// many to ones - TODO: consolidate with code above
-			for (System.Collections.IEnumerator manytoOnes = manyToOneList.GetEnumerator(); manytoOnes.MoveNext(); )
+			for (IEnumerator manytoOnes = manyToOneList.GetEnumerator(); manytoOnes.MoveNext(); )
 			{
 				Element manyToOne = (Element) manytoOnes.Current;
 				
 				MultiMap metaForManyToOne = MetaAttributeHelper.loadAndMergeMetaMap(manyToOne, MetaAttribs);
-				System.String propertyName = (manyToOne.Attributes["name"] == null?string.Empty:manyToOne.Attributes["name"].Value);
+				String propertyName = (manyToOne.Attributes["name"] == null?string.Empty:manyToOne.Attributes["name"].Value);
 				
 				// ensure that the type is specified
-				System.String type = (manyToOne.Attributes["class"] == null?string.Empty:manyToOne.Attributes["class"].Value);
+				String type = (manyToOne.Attributes["class"] == null?string.Empty:manyToOne.Attributes["class"].Value);
 				if (type.Length == 0)
 				{
 					log.Warn("many-to-one \"" + propertyName + "\" in class " + Name + " is missing a class attribute");
@@ -589,8 +589,8 @@ namespace NHibernate.Tool.hbm2net
 				ClassName classType = new ClassName(type);
 				
 				// is it nullable?
-				System.String notnull = (manyToOne.Attributes["not-null"] == null?null:manyToOne.Attributes["not-null"].Value);
-				bool nullable = ((System.Object) notnull == null || notnull.Equals("false"));
+				String notnull = (manyToOne.Attributes["not-null"] == null?null:manyToOne.Attributes["not-null"].Value);
+				bool nullable = ((Object) notnull == null || notnull.Equals("false"));
 				bool key = manyToOne.LocalName.StartsWith("key-"); //a composite id property
 				
 				// add an import and field for this property
@@ -613,13 +613,13 @@ namespace NHibernate.Tool.hbm2net
 			
 			//components
 			
-			for (System.Collections.IEnumerator iter = classElement.SelectNodes("urn:component", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
+			for (IEnumerator iter = classElement.SelectNodes("urn:component", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
 			{
 				Element cmpe = (Element) iter.Current;
 				MultiMap metaForComponent = MetaAttributeHelper.loadAndMergeMetaMap(cmpe, MetaAttribs);
-				System.String cmpname = (cmpe.Attributes["name"] == null?null:cmpe.Attributes["name"].Value);
-				System.String cmpclass = (cmpe.Attributes["class"] == null?null:cmpe.Attributes["class"].Value);
-				if ((System.Object) cmpclass == null || cmpclass.Equals(string.Empty))
+				String cmpname = (cmpe.Attributes["name"] == null?null:cmpe.Attributes["name"].Value);
+				String cmpclass = (cmpe.Attributes["class"] == null?null:cmpe.Attributes["class"].Value);
+				if ((Object) cmpclass == null || cmpclass.Equals(string.Empty))
 				{
 					log.Warn("component \"" + cmpname + "\" in class " + Name + " does not specify a class");
 					continue;
@@ -634,20 +634,19 @@ namespace NHibernate.Tool.hbm2net
 				object tempObject2;
 				tempObject2 = mapping;
 				components[mapping.FullyQualifiedName] = tempObject2;
-				System.Object generatedAux2 = tempObject2;
 			}
 			
 			
 			//    subclasses (done last so they can access this superclass for info)
 			
-			for (System.Collections.IEnumerator iter = classElement.SelectNodes("urn:subclass", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
+			for (IEnumerator iter = classElement.SelectNodes("urn:subclass", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
 			{
 				Element subclass = (Element) iter.Current;
 				ClassMapping subclassMapping = new ClassMapping(classPackage, this, name, this, subclass, MetaAttribs);
 				addSubClass(subclassMapping);
 			}
 			
-			for (System.Collections.IEnumerator iter = classElement.SelectNodes("urn:joined-subclass", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
+			for (IEnumerator iter = classElement.SelectNodes("urn:joined-subclass", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
 			{
 				Element subclass = (Element) iter.Current;
 				ClassMapping subclassMapping = new ClassMapping(classPackage, this, name, this, subclass, MetaAttribs);
@@ -666,7 +665,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			else
 			{
-				throw new System.SystemException("Field " + fieldProperty + " is already associated with a class: " + fieldProperty.ParentClass);
+				throw new SystemException("Field " + fieldProperty + " is already associated with a class: " + fieldProperty.ParentClass);
 			}
 		}
 		
@@ -710,39 +709,39 @@ namespace NHibernate.Tool.hbm2net
 			}
 		}
 		
-		public virtual void  addImport(System.String className)
+		public virtual void  addImport(String className)
 		{
 			ClassName cn = new ClassName(className);
 			addImport(cn);
 		}
 		
-		private void  doCollections(System.String classPackage, Element classElement, System.String xmlName, System.String interfaceClass, System.String implementingClass, MultiMap inheritedMeta)
+		private void  doCollections(String classPackage, Element classElement, String xmlName, String interfaceClass, String implementingClass, MultiMap inheritedMeta)
 		{
 			
-			System.String originalInterface = interfaceClass;
-			System.String originalImplementation = implementingClass;
+			String originalInterface = interfaceClass;
+			String originalImplementation = implementingClass;
 			
-			for (System.Collections.IEnumerator collections = classElement.SelectNodes("urn:" + xmlName, CodeGenerator.nsmgr).GetEnumerator(); collections.MoveNext(); )
+			for (IEnumerator collections = classElement.SelectNodes("urn:" + xmlName, CodeGenerator.nsmgr).GetEnumerator(); collections.MoveNext(); )
 			{
 				
 				Element collection = (Element) collections.Current;
 				MultiMap metaForCollection = MetaAttributeHelper.loadAndMergeMetaMap(collection, inheritedMeta);
-				System.String propertyName = (collection.Attributes["name"] == null?string.Empty:collection.Attributes["name"].Value);
+				String propertyName = (collection.Attributes["name"] == null?string.Empty:collection.Attributes["name"].Value);
 				
 				//TODO: map and set in .net
 				//		Small hack to switch over to sortedSet/sortedMap if sort is specified. (that is sort != unsorted)
-				System.String sortValue = (collection.Attributes["sort"] == null?null:collection.Attributes["sort"].Value);
-				if ((System.Object) sortValue != null && !"unsorted".Equals(sortValue) && !"".Equals(sortValue.Trim()))
+				String sortValue = (collection.Attributes["sort"] == null?null:collection.Attributes["sort"].Value);
+				if ((Object) sortValue != null && !"unsorted".Equals(sortValue) && !"".Equals(sortValue.Trim()))
 				{
 					if ("map".Equals(xmlName))
 					{
-						interfaceClass = typeof(System.Collections.IDictionary).FullName;
-						implementingClass = typeof(System.Collections.IDictionary).FullName;
+						interfaceClass = typeof(IDictionary).FullName;
+						implementingClass = typeof(IDictionary).FullName;
 					}
 					else if ("set".Equals(xmlName))
 					{
-						interfaceClass = typeof(System.Collections.IDictionary).FullName;
-						implementingClass = typeof(System.Collections.IDictionary).FullName;
+						interfaceClass = typeof(IDictionary).FullName;
+						implementingClass = typeof(IDictionary).FullName;
 					}
 				}
 				else
@@ -782,7 +781,7 @@ namespace NHibernate.Tool.hbm2net
 					if (collection["key"].Attributes["column"] != null)
 						foreignKeys.Add(collection["key"].Attributes["column"].Value);
 					
-					for (System.Collections.IEnumerator iter = collection["key"].SelectNodes("urn:column", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
+					for (IEnumerator iter = collection["key"].SelectNodes("urn:column", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
 					{
 						if (((Element) iter.Current).Attributes["name"] != null)
 							foreignKeys.Add(((Element) iter.Current).Attributes["name"].Value);
@@ -794,10 +793,10 @@ namespace NHibernate.Tool.hbm2net
 				addFieldProperty(cf);
 				if (collection.SelectNodes("urn:composite-element", CodeGenerator.nsmgr).Count != 0)
 				{
-					for (System.Collections.IEnumerator compositeElements = collection.SelectNodes("urn:composite-element", CodeGenerator.nsmgr).GetEnumerator(); compositeElements.MoveNext(); )
+					for (IEnumerator compositeElements = collection.SelectNodes("urn:composite-element", CodeGenerator.nsmgr).GetEnumerator(); compositeElements.MoveNext(); )
 					{
 						Element compositeElement = (Element) compositeElements.Current;
-						System.String compClass = compositeElement.Attributes["class"].Value;
+						String compClass = compositeElement.Attributes["class"].Value;
 						
 						try
 						{
@@ -808,9 +807,8 @@ namespace NHibernate.Tool.hbm2net
 							object tempObject;
 							tempObject = mapping;
 							components[mapping.FullyQualifiedName] = tempObject;
-							System.Object generatedAux = tempObject;
 						}
-						catch (System.Exception e)
+						catch (Exception e)
 						{
 							log.Error("Error building composite-element " + compClass, e);
 						}
@@ -819,15 +817,15 @@ namespace NHibernate.Tool.hbm2net
 			}
 		}
 		
-		private void  doArrays(Element classElement, System.String type, MultiMap inheritedMeta)
+		private void  doArrays(Element classElement, String type, MultiMap inheritedMeta)
 		{
-			for (System.Collections.IEnumerator arrays = classElement.SelectNodes(type).GetEnumerator(); arrays.MoveNext(); )
+			for (IEnumerator arrays = classElement.SelectNodes(type).GetEnumerator(); arrays.MoveNext(); )
 			{
 				Element array = (Element) arrays.Current;
 				MultiMap metaForArray = MetaAttributeHelper.loadAndMergeMetaMap(array, inheritedMeta);
-				System.String role = array.Attributes["name"].Value;
-				System.String elementClass = (array.Attributes["element-class"] == null?null:array.Attributes["element-class"].Value);
-				if ((System.Object) elementClass == null)
+				String role = array.Attributes["name"].Value;
+				String elementClass = (array.Attributes["element-class"] == null?null:array.Attributes["element-class"].Value);
+				if ((Object) elementClass == null)
 				{
 					Element elt = array["element"];
 					if (elt == null)
@@ -842,7 +840,7 @@ namespace NHibernate.Tool.hbm2net
 						continue;
 					}
 					elementClass = (elt.Attributes["type"] == null?null:elt.Attributes["type"].Value);
-					if ((System.Object) elementClass == null)
+					if ((Object) elementClass == null)
 						elementClass = (elt.Attributes["class"] == null?string.Empty:elt.Attributes["class"].Value);
 				}
 				ClassName cn = getFieldType(elementClass, false, true);
@@ -853,7 +851,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 		}
 		
-		private ClassName getFieldType(System.String hibernateType)
+		private ClassName getFieldType(String hibernateType)
 		{
 			return getFieldType(hibernateType, false, false);
 		}
@@ -863,15 +861,14 @@ namespace NHibernate.Tool.hbm2net
 		/// </summary>
 		/// <param name="hibernateType">Name of the hibernatetype (e.g. "binary")
 		/// </param>
-		/// <param name="needObject">
-		/// </param>
 		/// <param name="isArray">if the type should be postfixed with array brackes ("[]")
 		/// </param>
+		/// <param name="mustBeNullable"></param>
 		/// <returns>
 		/// </returns>
-		private ClassName getFieldType(System.String hibernateType, bool mustBeNullable, bool isArray)
+		private ClassName getFieldType(String hibernateType, bool mustBeNullable, bool isArray)
 		{
-			System.String postfix = isArray?"[]":"";
+			String postfix = isArray?"[]":"";
 			// deal with hibernate binary type
 			ClassName cn = null;
 			if (hibernateType.Equals("binary"))
@@ -909,7 +906,7 @@ namespace NHibernate.Tool.hbm2net
 		}
 		
 		/// <summary>Returns name of returnedclass if type is an UserType *</summary>
-		private System.String getTypeForUserType(System.String type)
+		private String getTypeForUserType(String type)
 		{
 			System.Type clazz = null;
 			try
@@ -922,7 +919,7 @@ namespace NHibernate.Tool.hbm2net
 				{
 					UserType ut = (UserType) SupportClass.CreateNewInstance(clazz);
 					log.Debug("Resolved usertype: " + type + " to " + ut.ReturnedType.Name);
-					System.String t = clazzToName(ut.ReturnedType);
+					String t = clazzToName(ut.ReturnedType);
 					return t;
 				}
 				
@@ -930,21 +927,21 @@ namespace NHibernate.Tool.hbm2net
 				{
 					CompositeUserType ut = (CompositeUserType) SupportClass.CreateNewInstance(clazz);
 					log.Debug("Resolved composite usertype: " + type + " to " + ut.ReturnedClass.Name);
-					System.String t = clazzToName(ut.ReturnedClass);
+					String t = clazzToName(ut.ReturnedClass);
 					return t;
 				}
 			}
-			catch (System.IO.FileNotFoundException e)
+			catch (FileNotFoundException e)
 			{
 				if (type.IndexOf(",")>0)
 					type = type.Substring(0, type.IndexOf(","));
 				log.Warn("Could not find UserType: " + type + ". Using the type '" + type + "' directly instead. (" + e.ToString() + ")");
 			}
-			catch (System.UnauthorizedAccessException iae)
+			catch (UnauthorizedAccessException iae)
 			{
 				log.Warn("Error while trying to resolve UserType. Using the type '" + type + "' directly instead. (" + iae.ToString() + ")");
 			}
-			catch (System.Exception e)
+			catch (Exception e)
 			{
 				log.Warn("Error while trying to resolve UserType. Using the type '" + type + "' directly instead. (" + e.ToString() + ")");
 			}
@@ -952,9 +949,9 @@ namespace NHibernate.Tool.hbm2net
 			return type;
 		}
 		
-		private System.String clazzToName(System.Type cl)
+		private String clazzToName(System.Type cl)
 		{
-			System.String s = null;
+			String s = null;
 			
 			if (cl.IsArray)
 			{
@@ -981,21 +978,17 @@ namespace NHibernate.Tool.hbm2net
 		internal virtual void  validateMetaAttribs()
 		{
 			// Inform that "extends" is not used if this one is a genuine subclass
-			if ((System.Object) SuperClass != null && getMeta("extends") != null)
+			if ((Object) SuperClass != null && getMeta("extends") != null)
 			{
 				log.Warn("Warning: meta attribute extends='" + getMetaAsString("extends") + "' will be ignored for subclass " + name);
 			}
 		}
 		
-		/// <seealso cref="java.lang.Object#toString()">
-		/// </seealso>
-		public override System.String ToString()
+		public override String ToString()
 		{
 			return "ClassMapping: " + name.FullyQualifiedName;
 		}
 		
-		/// <param name="">subclassMapping
-		/// </param>
 		public virtual void  addSubClass(ClassMapping subclassMapping)
 		{
 			subclasses.Add(subclassMapping);

@@ -1,6 +1,10 @@
 using System;
-using MappingException = NHibernate.MappingException;
-
+using System.Collections;
+using System.IO;
+using System.Reflection;
+using System.Xml;
+using log4net;
+using log4net.Config;
 using MultiHashMap = System.Collections.Hashtable;
 using MultiMap = System.Collections.Hashtable;
 using Document = System.Xml.XmlDocument;
@@ -13,29 +17,29 @@ namespace NHibernate.Tool.hbm2net
 	/// <summary> </summary>
 	public class CodeGenerator
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		internal static System.Xml.XmlNamespaceManager nsmgr;
+		internal static XmlNamespaceManager nsmgr;
 	
 		[STAThread]
-		public static void  Main(System.String[] args)
+		public static void  Main(String[] args)
 		{
-			nsmgr = new System.Xml.XmlNamespaceManager(new System.Xml.NameTable());
+			nsmgr = new XmlNamespaceManager(new NameTable());
 			nsmgr.AddNamespace("urn", "urn:nhibernate-mapping-2.0");
 			
-			System.IO.File.Delete("error-log.txt");
-			log4net.Config.DOMConfigurator.Configure(new System.IO.FileInfo("NHibernate.Tool.hbm2net.exe.config"));
+			File.Delete("error-log.txt");
+			DOMConfigurator.Configure(new FileInfo("NHibernate.Tool.hbm2net.exe.config"));
 			
 			if (args.Length == 0)
 			{
-				System.Console.Error.WriteLine("No arguments provided. Nothing to do. Exit.");
-				System.Environment.Exit(- 1);
+				Console.Error.WriteLine("No arguments provided. Nothing to do. Exit.");
+				Environment.Exit(- 1);
 			}
 			try
 			{
-				System.Collections.ArrayList mappingFiles = new System.Collections.ArrayList();
+				ArrayList mappingFiles = new ArrayList();
 				
-				System.String outputDir = null;
+				String outputDir = null;
 				
 				SupportClass.ListCollectionSupport generators = new SupportClass.ListCollectionSupport();
 				
@@ -49,10 +53,10 @@ namespace NHibernate.Tool.hbm2net
 						if (args[i].StartsWith("--config="))
 						{
 							// parse config xml file
-							Document document = new System.Xml.XmlDocument();
+							Document document = new XmlDocument();
 							document.Load(args[i].Substring(9));
-							globalMetas = MetaAttributeHelper.loadAndMergeMetaMap((System.Xml.XmlElement)(document["codegen"]), null);
-							System.Collections.IEnumerator generateElements = document["codegen"].SelectNodes("generate").GetEnumerator();
+							globalMetas = MetaAttributeHelper.loadAndMergeMetaMap((document["codegen"]), null);
+							IEnumerator generateElements = document["codegen"].SelectNodes("generate").GetEnumerator();
 							
 							while (generateElements.MoveNext())
 							{
@@ -76,31 +80,31 @@ namespace NHibernate.Tool.hbm2net
 					generators.Add(new Generator());
 				}
 				
-				System.Collections.Hashtable classMappings = new System.Collections.Hashtable();
-				for (System.Collections.IEnumerator iter = mappingFiles.GetEnumerator(); iter.MoveNext(); )
+				Hashtable classMappings = new Hashtable();
+				for (IEnumerator iter = mappingFiles.GetEnumerator(); iter.MoveNext(); )
 				{
 					try
 					{
 						log.Info(iter.Current.ToString());
 						// parse the mapping file
-						System.Xml.NameTable nt = new System.Xml.NameTable();
+						NameTable nt = new NameTable();
 						nt.Add("urn:nhibernate-mapping-2.0");
-						Document document = new System.Xml.XmlDocument(nt);
-						document.Load((System.String) iter.Current);
+						Document document = new XmlDocument(nt);
+						document.Load((String) iter.Current);
 					
 						Element rootElement = document["hibernate-mapping"];
 
 						if (rootElement == null)
 							continue;
 					
-						System.Xml.XmlAttribute a = rootElement.Attributes["package"];
-						System.String pkg = null;
+						XmlAttribute a = rootElement.Attributes["package"];
+						String pkg = null;
 						if (a != null)
 						{
 							pkg = a.Value;
 						}
 						MappingElement me = new MappingElement(rootElement, null);
-						System.Collections.IEnumerator classElements = rootElement.SelectNodes("urn:class", nsmgr).GetEnumerator();
+						IEnumerator classElements = rootElement.SelectNodes("urn:class", nsmgr).GetEnumerator();
 						MultiMap mm = MetaAttributeHelper.loadAndMergeMetaMap(rootElement, globalMetas);
 						handleClass(pkg, me, classMappings, classElements, mm, false);
 					
@@ -116,20 +120,20 @@ namespace NHibernate.Tool.hbm2net
 					}
 				}
 				// generate source files
-				for (System.Collections.IEnumerator iterator = generators.GetEnumerator(); iterator.MoveNext(); )
+				for (IEnumerator iterator = generators.GetEnumerator(); iterator.MoveNext(); )
 				{
 					Generator g = (Generator) iterator.Current;
 					g.BaseDirName = outputDir;
 					g.generate(classMappings);
 				}
 			}
-			catch (System.Exception e)
+			catch (Exception e)
 			{
 				SupportClass.WriteStackTrace(e, Console.Error);
 			}
 		}
 		
-		private static void  handleClass(System.String classPackage, MappingElement me, System.Collections.Hashtable classMappings, System.Collections.IEnumerator classElements, MultiMap mm, bool extendz)
+		private static void  handleClass(String classPackage, MappingElement me, Hashtable classMappings, IEnumerator classElements, MultiMap mm, bool extendz)
 		{
 			while (classElements.MoveNext())
 			{
@@ -142,8 +146,8 @@ namespace NHibernate.Tool.hbm2net
 				}
 				else
 				{
-					System.String ex = (clazz.Attributes["extends"] == null?null:clazz.Attributes["extends"].Value);
-					if ((System.Object) ex == null)
+					String ex = (clazz.Attributes["extends"] == null?null:clazz.Attributes["extends"].Value);
+					if ((Object) ex == null)
 					{
 						throw new MappingException("Missing extends attribute on <" + clazz.LocalName + " name=" + clazz.Attributes["name"].Value + ">");
 					}
