@@ -149,9 +149,7 @@ namespace NHibernate.Hql
 		private ArrayList nots = new ArrayList(); //were an odd or even number of NOTs encountered
 		private ArrayList joins = new ArrayList(); //the join string built up by compound paths inside this expression
 		private ArrayList booleanTests = new ArrayList();//a flag indicating if the subexpression is known to be boolean		
-		
-
-
+	
 		private string GetElementName(PathExpressionParser.CollectionElement element, QueryTranslator q) 
 		{
 			string name;
@@ -201,7 +199,6 @@ namespace NHibernate.Hql
 			//Cope with a continued path expression (ie. ].baz)
 			if (expectingPathContinuation) 
 			{
-				
 				expectingPathContinuation = false;
 				
 				PathExpressionParser.CollectionElement element = pathExpressionParser.LastCollectionElement();
@@ -230,7 +227,6 @@ namespace NHibernate.Hql
 				}
 				
 			}
-			
 			
 			//Cope with a subselect
 			
@@ -391,7 +387,6 @@ namespace NHibernate.Hql
 
 		private void DoPathExpression(string token, QueryTranslator q) 
 		{
-
 			Preprocess( token, q );
 
 			Util.StringTokenizer tokens = new Util.StringTokenizer(token, ".", true);
@@ -432,28 +427,28 @@ namespace NHibernate.Hql
 		
 		private void DoToken(string token, QueryTranslator q) 
 		{
-			if (q.IsName(StringHelper.Root(token))) 
-			{ //path expression
+			if (q.IsName(StringHelper.Root(token))) //path expression
+			{
 				DoPathExpression(q.Unalias(token), q);
 			} 
-			else if (token.StartsWith(ParserHelper.HqlVariablePrefix)) 
+			else if (token.StartsWith(ParserHelper.HqlVariablePrefix)) //named query parameter
 			{
-				//named query parameter
 				q.AddNamedParameter(token.Substring(1));
+				//TODO: H2.0.3 why token is not '?' ??
 				AppendToken(q, "[<" + token.Substring(1) + ">]"); // THEO
 			} 
 			else 
 			{
 				IQueryable p = q.GetPersisterUsingImports(token);
-				if (p != null) 
-				{ // the name of a class
+				if (p != null) // the name of a class
+				{
 					AppendToken(q, p.DiscriminatorSQLString);
 				} 
 				else 
 				{
 					object constant;
 
-					if (	token.IndexOf((System.Char) StringHelper.Dot) > - 1 &&
+					if ( token.IndexOf((System.Char) StringHelper.Dot) > - 1 &&
 						(constant = ReflectHelper.GetConstantValue(token)) != null)	
 					{
 						IType type;
