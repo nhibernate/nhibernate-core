@@ -299,12 +299,14 @@ namespace NHibernate.Cfg {
 			return this;
 		}
 
-		private ICollection CollectionGenerators(Dialect.Dialect dialect) {
+		private ICollection CollectionGenerators(Dialect.Dialect dialect) 
+		{
 			Hashtable generators = new Hashtable();
-			foreach(PersistentClass clazz in generators) {
+			foreach(PersistentClass clazz in classes.Values) 
+			{
 				IIdentifierGenerator ig = clazz.Identifier.CreateIdentifierGenerator(dialect);
-				if ( ig is IPersistentIdentifierGenerator ) generators.Add(
-																( (IPersistentIdentifierGenerator) ig).GeneratorKey(), ig);
+				if ( ig is IPersistentIdentifierGenerator ) 
+					generators.Add( ( (IPersistentIdentifierGenerator) ig).GeneratorKey(), ig);
 
 			}
 			return generators.Values;
@@ -313,7 +315,8 @@ namespace NHibernate.Cfg {
 		/// <summary>
 		/// Generate DDL for droping tables
 		/// </summary>
-		public string[] GenerateDropSchemaScript(Dialect.Dialect dialect) {
+		public string[] GenerateDropSchemaScript(Dialect.Dialect dialect) 
+		{
 			SecondPassCompile();
 
 			ArrayList script = new ArrayList(50);
