@@ -1,0 +1,22 @@
+<refentry id="component.title.properties">
+<refmeta>
+<refentrytitle>component.title.properties</refentrytitle>
+<refmiscinfo role="type">attribute set</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>component.title.properties</refname>
+<refpurpose>Properties for component titles</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<src:fragment id='component.title.properties.frag'>
+<xsl:attribute-set name="component.title.properties"/>
+</src:fragment>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+
+<para>The properties common to all component titles.</para>
+
+</refsect1>
+</refentry>
