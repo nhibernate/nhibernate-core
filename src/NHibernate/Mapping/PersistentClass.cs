@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// Base class for the <see cref="RootClass" /> mapped by <c>&lt;class&gt;</c> and a 
 	/// <see cref="Subclass"/> that is mapped by <c>&lt;subclass&gt;</c> or 
-	/// <c>&lt;joined-subclass&gt</c>.
+	/// <c>&lt;joined-subclass&gt;</c>.
 	/// </summary>
 	public abstract class PersistentClass
 	{

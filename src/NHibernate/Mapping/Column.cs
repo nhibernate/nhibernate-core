@@ -287,7 +287,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Returns the hash code for this instance.
 		/// </summary>
-		/// <value>The value of <see cref="Name.GetHashCode()">Name.GetHashCode()</see>.</value>
+		/// <value>The value of Name.GetHashCode().</value>
 		public override int GetHashCode()
 		{
 			return name.GetHashCode();

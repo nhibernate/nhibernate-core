@@ -39,6 +39,7 @@ namespace NHibernate.Mapping
 		/// Generates the SQL string to create the Unique Key Constraint in the database.
 		/// </summary>
 		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <param name="constraintName"></param>
 		/// <returns>
 		/// A string that contains the SQL to create the Unique Key Constraint.
 		/// </returns>
