@@ -16,6 +16,8 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlSelectBuilder: SqlBaseBuilder, ISqlStringBuilder	 
 	{
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(SqlSelectBuilder) );
+
 		private string selectClause;
 		private string fromClause;
 		private SqlString outerJoinsAfterFrom;
@@ -26,7 +28,6 @@ namespace NHibernate.SqlCommand
 
 		public SqlSelectBuilder(ISessionFactoryImplementor factory): base(factory)
 		{
-			
 		}
 
 		/// <summary>
@@ -166,9 +167,20 @@ namespace NHibernate.SqlCommand
 
 		public SqlString ToSqlString()
 		{
+			// 4 = the "SELECT", selectClause, "FROM", fromClause are straight strings
+			// plus the number of parts in outerJoinsAfterFrom SqlString.
+			// 1 = the "WHERE" 
+			// plus the number of parts in outerJoinsAfterWhere SqlString.
+			// 2 = the "ORDER BY" and orderByClause
+			int initialCapacity = 4 + outerJoinsAfterFrom.Count + 1 + outerJoinsAfterWhere.Count + 2;
 
-			//TODO: set a default capacity
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
+			// move through each whereSqlString to find the capacity
+			for( int i=0; i<whereSqlStrings.Count; i++ ) 
+			{
+				initialCapacity += ((SqlString)whereSqlStrings[i]).Count;
+			}
+
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder( initialCapacity  + 2 );
 
 			sqlBuilder.Add("SELECT ")
 				.Add(selectClause)
@@ -186,7 +198,7 @@ namespace NHibernate.SqlCommand
 			}
 			else 
 			{
-				sqlBuilder.Add((SqlString)whereSqlStrings[0], null, null, null, false);
+				sqlBuilder.Add( (SqlString)whereSqlStrings[0], null, null, null, false );
 			}
 
 			sqlBuilder.Add(outerJoinsAfterWhere);
@@ -195,6 +207,22 @@ namespace NHibernate.SqlCommand
 			{
 				sqlBuilder.Add(" ORDER BY ")
 					.Add(orderByClause);
+			}
+
+			if(log.IsDebugEnabled) 
+			{
+				if( initialCapacity < sqlBuilder.Count ) 
+				{
+					log.Debug( 
+						"The initial capacity was set too low at: " + initialCapacity + " for the SelectSqlBuilder " +
+						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + fromClause );
+				}
+				else if( initialCapacity > 16 && ((float)initialCapacity/sqlBuilder.Count) > 1.2 )
+				{
+					log.Debug(
+						"The initial capacity was set too high at: " + initialCapacity + " for the SelectSqlBuilder " +
+						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + fromClause );
+				}
 			}
 
 			return sqlBuilder.ToSqlString();

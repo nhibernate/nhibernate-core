@@ -186,7 +186,7 @@ namespace NHibernate.SqlCommand
 		public SqlStringBuilder Add(SqlString[] sqlStrings, string prefix, string op, string postfix, bool wrapStatement) 
 		{
 			
-			if(prefix!=null && prefix!=String.Empty) sqlParts.Add(prefix);
+			if( prefix!=null ) sqlParts.Add(prefix);
 			
 			bool opNeeded = false;
 			
@@ -208,7 +208,7 @@ namespace NHibernate.SqlCommand
 				
 			}
 
-			if(postfix!=null && postfix!=String.Empty) sqlParts.Add(postfix);
+			if( postfix!=null ) sqlParts.Add(postfix);
 			
 			return this;
 		}
