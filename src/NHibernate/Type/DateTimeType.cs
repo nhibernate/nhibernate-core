@@ -5,7 +5,28 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
-	public class DateTimeType : MutableType, IIdentifierType, ILiteralType {
+	/// <summary>
+	/// Maps a System.DateTime Property to a column that stores date & time.
+	/// </summary>
+	/// <remarks>
+	/// <p>
+	/// The value stored in the database depends on what your Data Provider is capable
+	/// of storing.  So there is a possibility that the DateTime you save will not be
+	/// the same DateTime you get back when you check DateTime.Equals(DateTime) because
+	/// they will have their milliseconds off.
+	/// </p>  
+	/// <p>
+	/// For example - MsSql Server 2000 is only accurate to 3.33 milliseconds.  So if 
+	/// NHibernate writes a value of '01/01/98 23:59:59.995' to the Prepared Command, MsSql
+	/// will store it as '1998-01-01 23:59:59.997'.
+	/// </p>
+	/// <p>
+	/// Please review the documentation of your Database server.
+	/// </p>
+	/// 
+	/// </remarks>
+	public class DateTimeType : MutableType, IIdentifierType, ILiteralType 
+	{
 		
 		public DateTimeType(DateTimeSqlType sqlType) : base(sqlType) {
 		}
