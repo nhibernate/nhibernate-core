@@ -535,7 +535,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("SetMaxResults - http://jira.nhibernate.org:8080/browse/NH-87")]
 		public void FindByCriteria() 
 		{
 			ISession s = sessions.OpenSession();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 
+using NHibernate.Engine;
 using NHibernate.Expression;
 
 namespace NHibernate 
@@ -50,19 +51,9 @@ namespace NHibernate
 		ICriteria SetTimeout(int timeout);
 
 		/// <summary>
-		/// 
+		/// Gets the <see cref="RowSelection"/> for the ICriteria
 		/// </summary>
-		int MaxResults {get; }
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		int FirstResult {get; }
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		int Timeout {get; }
+		RowSelection Selection { get; }
 
 		/// <summary>
 		/// Add an Expression to constrain the results to be retrieved.

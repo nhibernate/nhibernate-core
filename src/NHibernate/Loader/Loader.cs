@@ -128,7 +128,7 @@ namespace NHibernate.Loader
 			IDictionary lockModes) 
 		{
 
-			int maxRows = (selection==null || selection.MaxRows==0) ?
+			int maxRows = (selection==null || selection.MaxRows==RowSelection.NoValue) ?
 				int.MaxValue : selection.MaxRows;
 
 			ILoadable[] persisters = Persisters;
@@ -551,9 +551,10 @@ namespace NHibernate.Loader
 		private static bool UseLimit(RowSelection selection, Dialect.Dialect dialect) 
 		{
 			// it used to be selection.MaxRows != null -> since an Int32 will always
-			// be initialized to 0, I will compare it to that instead of null.
+			// have a value I'll compare it to the static field NoValue used to initialize 
+			// max rows to nothing
 			return dialect.SupportsLimit &&
-				( selection!=null && selection.MaxRows!=0 ) && // there is a max rows
+				( selection!=null && selection.MaxRows!=RowSelection.NoValue ) && // there is a max rows
 				( dialect.PreferLimit || GetFirstRow(selection)!=0);
 		}
 
@@ -600,7 +601,10 @@ namespace NHibernate.Loader
 
 			try 
 			{
-				if (selection!=null && selection.Timeout!=0) command.CommandTimeout = selection.Timeout;
+				if (selection!=null && selection.Timeout!=RowSelection.NoValue) 
+				{
+					command.CommandTimeout = selection.Timeout;
+				}
 				
 				int colIndex = 0;
 
@@ -625,7 +629,7 @@ namespace NHibernate.Loader
 				}
 
 				if(!useLimit) SetMaxRows(command, selection);
-				if(selection!=null && selection.Timeout!=0) 
+				if(selection!=null && selection.Timeout!=RowSelection.NoValue) 
 				{
 					command.CommandTimeout = selection.Timeout;
 				}
@@ -655,9 +659,15 @@ namespace NHibernate.Loader
 			( (IDataParameter)st.Parameters[index + (reverse?0:1)] ).Value = lastRow;
 		}
 
+		/// <summary>
+		/// Limits the number of rows returned by the Sql query if necessary.
+		/// </summary>
+		/// <param name="st">The IDbCommand to limit.</param>
+		/// <param name="selection">The RowSelection that contains the MaxResults info.</param>
+		/// <remarks>TODO: This does not apply to ADO.NET at all</remarks>
 		protected void SetMaxRows(IDbCommand st, RowSelection selection) 
 		{
-			if ( selection!=null && selection.MaxRows!=0 )  
+			if ( selection!=null && selection.MaxRows!=RowSelection.NoValue )  
 			{
 				//TODO: H2.0.3 - do we need this method??
 				// there is nothing in ADO.NET to do anything  similar

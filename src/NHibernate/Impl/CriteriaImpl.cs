@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 
+using NHibernate.Engine;
 using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Impl 
@@ -14,9 +15,7 @@ namespace NHibernate.Impl
 		private IList orderings = new ArrayList();
 		private IDictionary fetchModes = new Hashtable();
 
-		private int maxResults;
-		private int firstResult;
-		private int timeout;
+		private RowSelection selection = new RowSelection();
 		private System.Type persistentClass;
 		private SessionImpl session;
 	
@@ -25,19 +24,19 @@ namespace NHibernate.Impl
 		
 		public ICriteria SetMaxResults(int maxResults) 
 		{
-			this.maxResults = maxResults;
+			selection.MaxRows = maxResults;
 			return this;
 		}
 		
 		public ICriteria SetFirstResult(int firstResult) 
 		{
-			this.firstResult = firstResult;
+			selection.FirstRow = firstResult;
 			return this;
 		}
 		
 		public ICriteria SetTimeout(int timeout) 
 		{
-			this.timeout = timeout;
+			selection.Timeout = timeout;
 			return this;
 		}
 	
@@ -53,18 +52,10 @@ namespace NHibernate.Impl
 		{
 			get {return conjunction;}
 		}
-
-		public int MaxResults 
+		
+		public RowSelection Selection 
 		{
-			get { return maxResults; }
-		}
-		public int FirstResult 
-		{
-			get { return firstResult; }
-		}
-		public int Timeout 
-		{
-			get { return timeout; }
+			get { return selection; }
 		}
 	
 		public CriteriaImpl(System.Type persistentClass, SessionImpl session) 
