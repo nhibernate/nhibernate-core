@@ -802,13 +802,7 @@ namespace NHibernate.Persister
 
 				Dehydrate(id, fields, notNull, insertCmd, session);
 				
-				// IDbCommand REFACTOR 
-				// session.Batcher.AddToBatch(1);
-				int rowCount = insertCmd.ExecuteNonQuery();
-
-				//negative expected row count means we don't know how many rows to expect
-				if ( rowCount > 0 && rowCount != 1)
-					throw new HibernateException("SQL update or deletion failed (row not found)");
+				session.Batcher.AddToBatch(1);
 
 			}
 				//TODO: add SQLException catching here...
@@ -924,7 +918,7 @@ namespace NHibernate.Persister
 			{
 				deleteCmd = session.Batcher.PrepareBatchCommand( SqlDeleteString );
 			}
-			
+						
 			
 			try 
 			{
@@ -1011,8 +1005,8 @@ namespace NHibernate.Persister
 
 			if (!hasUpdateableColumns) return;
 
-
 			IDbCommand statement = null; 
+
 			if( IsVersioned ) 
 			{
 				statement = session.Batcher.PrepareCommand( sqlUpdateString );
