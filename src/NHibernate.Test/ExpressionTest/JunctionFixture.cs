@@ -50,8 +50,8 @@ namespace NHibernate.Test.ExpressionTest
 			TypedValue[] typedValues = _conjunction.GetTypedValues( factoryImpl, typeof(Simple) );
 
 			TypedValue[] expectedTV = new TypedValue[2];
-			expectedTV[0] = new TypedValue(Type.TypeFactory.GetInt32Type(), 5);
-			expectedTV[1] = new TypedValue(Type.TypeFactory.GetInt32Type(), 10);
+			expectedTV[0] = new TypedValue(NHibernate.Int32, 5);
+			expectedTV[1] = new TypedValue(NHibernate.Int32, 10);
 
 			Assert.AreEqual(2, typedValues.Length);
 

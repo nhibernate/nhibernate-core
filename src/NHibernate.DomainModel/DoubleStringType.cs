@@ -42,8 +42,8 @@ namespace NHibernate.DomainModel
 		public Object NullSafeGet(IDataReader rs, String[] names, Engine.ISessionImplementor session, Object owner)
 		{
 		
-			String first = (String) Type.TypeFactory.Basic("String").NullSafeGet(rs, names[0], session, owner);
-			String second = (String) Type.TypeFactory.Basic("String").NullSafeGet(rs, names[1], session, owner);
+			String first = (String) NHibernate.String.NullSafeGet(rs, names[0], session, owner);
+			String second = (String) NHibernate.String.NullSafeGet(rs, names[1], session, owner);
 		
 			return ( first==null && second==null ) ? null : new String[] { first, second };
 		}
@@ -53,8 +53,8 @@ namespace NHibernate.DomainModel
 		{		
 			String[] strings = (value==null) ? new String[2] : (String[]) value;
 		
-			Type.TypeFactory.Basic("String").NullSafeSet(st, strings[0], index, session);
-			Type.TypeFactory.Basic("String").NullSafeSet(st, strings[1], index+1, session);
+			NHibernate.String.NullSafeSet(st, strings[0], index, session);
+			NHibernate.String.NullSafeSet(st, strings[1], index+1, session);
 		}
 	
 		public String[] PropertyNames
@@ -69,7 +69,7 @@ namespace NHibernate.DomainModel
 		{
 			get
 			{
-				return new Type.IType[] { Type.TypeFactory.Basic("String"), Type.TypeFactory.Basic("String") };
+				return new Type.IType[] { NHibernate.String, NHibernate.String };
 			}
 		}
 
