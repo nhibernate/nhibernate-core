@@ -881,17 +881,8 @@ namespace NHibernate.Tool.hbm2net
 				IType basicType = TypeFactory.Basic(hibernateType);
 				if (basicType != null)
 				{
-					
-					if ((basicType is PrimitiveType) && !hibernateType.Trim().Equals(basicType.ReturnedClass.Name) && !mustBeNullable)
-					{
-						cn = new ClassName(((PrimitiveType) basicType).PrimitiveClass.Name + postfix);
-						return cn;
-					}
-					else
-					{
-						cn = new ClassName(basicType.ReturnedClass.Name + postfix);
-						return cn;
-					}
+					cn = new ClassName(basicType.ReturnedClass.Name + postfix);
+					return cn;
 				}
 				else
 				{
