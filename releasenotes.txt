@@ -21,6 +21,8 @@ Alpha Build 0.3.0.0
 - Added VersionProperty to IClassMetadata.
 - Renamed PrimitiveType to ValueTypeType to be more .net style consistent and fixed them up so they inherit from the appropriate class.
 - Fixed bug with caching an ObjectType.
+- Mucho code cleaned up for FxCop (Peter Smulovics).
+- Fixed bug with <bag lazy="true">, doing an Add, and then a Flush() resulting in the entity in there twice.
 
 Alpha Build 0.2.0.0
 ======================== 
