@@ -650,7 +650,7 @@ namespace NHibernate.Impl {
 		
 			foreach(CollectionPersister p in collectionPersisters.Values)
 			{
-				if ( p.HasCache ) p.Cache.Destroy();
+				if ( p.HasCache ) p.CacheConcurrencyStrategy.Destroy();
 			}
 
 //			TODO: H2.0.3
