@@ -14,7 +14,7 @@ namespace NHibernate.Cache
 		/// <param name="regionName">the name of the cache region</param>
 		/// <param name="properties">configuration settings</param>
 		/// <returns></returns>
-		ICache BuildCache(string regionName, ICollection properties );
+		ICache BuildCache(string regionName, IDictionary properties );
 			
 		/// <summary>
 		/// generate a timestamp
