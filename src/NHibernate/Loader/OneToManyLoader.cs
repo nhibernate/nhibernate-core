@@ -71,7 +71,6 @@ namespace NHibernate.Loader
 			selectBuilder.SetWhereClause(alias, collectionPersister.KeyColumnNames, collectionPersister.KeyType);
 			if(collectionPersister.HasWhere) selectBuilder.AddWhereClause(whereSqlString);
 
-			//TODO: ToWhereFragmentString.ToString() is a HACK - removed
 			selectBuilder.SetOuterJoins(
 				ojf.ToFromFragmentString,
 				ojf.ToWhereFragmentString.Append(

@@ -48,12 +48,9 @@ namespace NHibernate.Loader
 					).ToString()
 				)
 				.SetOuterJoins
-				(
-				//TODO: ToWhereFragmentString.ToString() is a HACK - removed
-			
+				(			
 					ojf.ToFromFragmentString,
 					ojf.ToWhereFragmentString.Append( 
-						//TODO: HACK with ToString() - removed
 						UseQueryWhereFragment ? 
 						( (IQueryable) persister).QueryWhereFragment(alias, true, true) :
 						persister.WhereJoinFragment(alias, true, true) 
@@ -98,7 +95,6 @@ namespace NHibernate.Loader
 
 			sqlBuilder.AddWhereClause(condition);
 
-			//TODO: HACK with ToString()
 			sqlBuilder.SetOuterJoins(
 				ojf.ToFromFragmentString,
 				ojf.ToWhereFragmentString.Append 

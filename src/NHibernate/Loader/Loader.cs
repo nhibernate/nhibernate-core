@@ -32,19 +32,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// The SQL query string to be called; implemented by all subclasses
-		/// </summary>
-		/// <remarks>
-		/// TODO: This should be removed when the Implementation has gone completely SqlString() based.
-		/// The only peice holding this up is the QueryTranslator.
-		/// </remarks>
-		[Obsolete("Should use SqlString instead of a string to hold the SQL")]
-		public virtual string SQLString { 
-			get { throw new NotImplementedException("This will be depreciated - don't use."); } 
-		}
-
-		/// <summary>
-		/// The SqlString to be called; implemented by alll subclasses
+		/// The SqlString to be called; implemented by all subclasses
 		/// </summary>
 		public abstract SqlString SqlString {get;}
 
