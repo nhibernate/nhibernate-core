@@ -2589,9 +2589,80 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void AuotFlushCollections() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction tx = s.BeginTransaction();
+			Baz baz = new Baz();
+			baz.SetDefaults();
+			s.Save(baz);
+			tx.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			tx = s.BeginTransaction();
+			baz = (Baz)s.Load( typeof(Baz), baz.Code );
+			baz.StringArray[0] = "bark";
+			IEnumerator e = s.Enumerable("select baz.StringArray.elements from baz in class NHibernate.DomainModel.Baz").GetEnumerator();
+			bool found = false;
+			while( e.MoveNext() ) 
+			{
+				if ( "bark".Equals( e.Current ) )
+				{
+					found = true;
+				}
+			}
+			Assert.IsTrue(found);
+			baz.StringArray = null;
+			e = s.Enumerable("select distinct baz.StringArray.elements from baz in class NHibernate.DomainModel.Baz").GetEnumerator();
+			Assert.IsFalse( e.MoveNext() );
+			baz.StringArray = new string[] {"foo", "bar"};
+			e = s.Enumerable("select baz.StringArray.elements from baz in class NHibernate.DomainModel.Baz").GetEnumerator();
+			Assert.IsTrue( e.MoveNext() );
+
+			Foo foo = new Foo();
+			s.Save(foo);
+			s.Flush();
+			baz.FooArray = new Foo[]{foo};
+
+			e = s.Enumerable("select foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements").GetEnumerator();
+			found = false;
+			while( e.MoveNext() ) 
+			{
+				if ( foo==e.Current ) 
+				{
+					found = true;
+				}
+			}
+			Assert.IsTrue(found);
+
+			baz.FooArray[0] = null;
+			e = s.Enumerable("select foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements").GetEnumerator();
+			Assert.IsFalse( e.MoveNext() );
+			baz.FooArray[0] = foo;
+			e = s.Enumerable("select baz.FooArray.elements from baz in class NHibernate.DomainModel.Baz").GetEnumerator();
+			Assert.IsTrue( e.MoveNext() );
+
+			if( !(dialect is Dialect.MySQLDialect) 
+				// HSQLDialect, InterbaseDialect, PointbaseDialect, SAPDBDialect
+				) 
+			{
+				baz.FooArray[0] = null;
+				e = s.Enumerable("from baz in class NHibernate.DomainModel.Baz where ? in baz.FooArray.elements", 
+					foo, 
+					NHibernate.Entity( typeof(Foo) ) ).GetEnumerator();
+				
+				Assert.IsFalse( e.MoveNext() );
+				baz.FooArray[0] = foo;
+				e = s.Enumerable("select foo from foo in class NHibernate.DomainModel.Foo where foo in "
+					+ "(select elt from baz in class NHibernate.DomainModel.Baz, elt in baz.FooArray.elements)"
+					).GetEnumerator();
+				Assert.IsTrue( e.MoveNext() );
+			}
+			s.Delete(foo);
+			s.Delete(baz);
+			tx.Commit();
+			s.Close();
 		}
 
 		[Test]
