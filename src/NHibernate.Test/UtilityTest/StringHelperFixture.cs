@@ -56,21 +56,29 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		/// <summary>
 		/// Qualify a name with a prefix
 		/// </summary>
 		public void Qualify()
 		{
+			Assert.AreEqual( "a.b", StringHelper.Qualify( "a", "b" ), "Qualified names differ" );
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		/// <summary>
 		/// Qualify an array of names with a prefix
 		/// </summary>
 		public void QualifyArray()
 		{
+			string[] simple = { "b", "c" };
+			string[] qual = { "a.b", "a.c" };
+
+			string[] result = StringHelper.Qualify( "a", simple );
+
+			for (int i = 0; i < result.Length; i++ )
+			{
+				Assert.AreEqual( qual[i], result[i], "Qualified names differ" );
+			}
 		}
 	}
 }
