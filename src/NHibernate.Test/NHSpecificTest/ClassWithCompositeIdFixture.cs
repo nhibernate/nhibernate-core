@@ -16,12 +16,15 @@ namespace NHibernate.Test.NHSpecificTest
 		
 		private DateTime firstDateTime = new DateTime(2003, 8, 16);
 		private DateTime secondDateTime = new DateTime(2003, 8, 17);
-
+		private CompositeId id;
+		private CompositeId secondId;
 					
 		[SetUp]
 		public void SetUp() 
 		{
 			ExportSchema( new string[] { "NHSpecific.ClassWithCompositeId.hbm.xml" } );
+			id = new CompositeId("stringKey", 3, firstDateTime);
+			secondId = new CompositeId("stringKey2", 5, secondDateTime);
 		}
 
 		/// <summary>
@@ -53,8 +56,6 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void TestSimpleCRUD() 
 		{
-			CompositeId id = new CompositeId("stringKey", 3, firstDateTime);
-			CompositeId secondId = new CompositeId("stringKey2", 5, secondDateTime);
 			
 			// insert the new objects
 			ISession s = sessions.OpenSession();
@@ -173,6 +174,39 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual(1, results.Count);
 
 			s.Close();
+		}
+
+		[Test]
+		public void Hql() 
+		{
+			// insert the new objects
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			ClassWithCompositeId theClass = new ClassWithCompositeId();
+			theClass.Id = id;
+			theClass.OneProperty = 5;
+
+			ClassWithCompositeId theSecondClass = new ClassWithCompositeId();
+			theSecondClass.Id = secondId;
+			theSecondClass.OneProperty = 10;
+
+			s.Save(theClass);
+			s.Save(theSecondClass);
+
+			t.Commit();
+			s.Close();
+
+			ISession s2 = sessions.OpenSession();
+			
+			IQuery hql = s2.CreateQuery("from ClassWithCompositeId as cwid where cwid.Id.KeyString = :keyString");
+ 
+			hql.SetString("keyString", id.KeyString);
+
+			IList results = hql.List();
+
+			Assert.AreEqual(1, results.Count);
+
 		}
 
 
