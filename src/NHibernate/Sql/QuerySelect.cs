@@ -13,13 +13,17 @@ namespace NHibernate.Sql
 	public class QuerySelect 
 	{		
 		private SqlCommand.JoinFragment joins;
-		private StringBuilder select = new StringBuilder();
-		private StringBuilder where = new StringBuilder();
+		
+		// the selectBuilder could probably be a string if the Persister's methods that build
+		// the SqlString instead returned a String.
+		private SqlCommand.SqlStringBuilder selectBuilder = new SqlCommand.SqlStringBuilder();
 		private SqlCommand.SqlStringBuilder whereBuilder = new SqlCommand.SqlStringBuilder();
+		
+		// groupBy, orderBy, and having will for sure have no parameters.
 		private StringBuilder groupBy = new StringBuilder();
 		private StringBuilder orderBy = new StringBuilder();
 		private StringBuilder having = new StringBuilder();
-		private bool distinct=false;
+		private bool distinct = false;
 
 		private static readonly IList dontSpace = new ArrayList();
 
@@ -64,15 +68,29 @@ namespace NHibernate.Sql
 	
 		public void AddSelectFragmentString(string fragment) 
 		{
-			if ( fragment.Length>0 && fragment[0]==',' ) fragment = fragment.Substring(1);
-			fragment = fragment.Trim();
-			if ( fragment.Length>0 ) 
-			{
-				if ( select.Length>0 ) select.Append(StringHelper.CommaSpace);
-				select.Append(fragment);
-			}
+			AddSelectFragmentString( new SqlCommand.SqlString(fragment) );
 		}
 	
+		public void AddSelectFragmentString(SqlCommand.SqlString fragment) 
+		{
+			if( fragment.SqlParts.Length>0 && fragment.StartsWith(",") )
+			{
+				fragment = fragment.Substring(1);
+			}
+
+			fragment = fragment.Trim();
+
+			if( fragment.SqlParts.Length > 0 ) 
+			{
+				if( selectBuilder.Count > 0 ) 
+				{
+					selectBuilder.Add(StringHelper.CommaSpace);
+				}
+				
+				selectBuilder.Add(fragment);
+			}
+		}
+
 		public void AddSelectColumn(string columnName, string alias) 
 		{
 			AddSelectFragmentString(columnName + ' ' + alias);
@@ -114,49 +132,6 @@ namespace NHibernate.Sql
 			orderBy.Append(orderByString);
 		}
 
-		[Obsolete("Should be using ToQuerySqlString instead")]
-		public string ToQueryString() 
-		{
-			StringBuilder buf = new StringBuilder(50)
-				.Append("select ");
-
-			if (distinct) buf.Append("distinct ");
-			
-			//TODO: HACK with ToString()
-			string from = joins.ToFromFragmentString.ToString();
-			if ( from.StartsWith(",") ) 
-			{
-				from = from.Substring(1);
-			}
-			else if ( from.StartsWith(" inner join") ) 
-			{
-				from = from.Substring(11);
-			}
-
-			buf.Append(select.ToString())
-				.Append(" from")
-				.Append( from );
-			
-			//TODO: HACK with ToString()
-			string part1 = joins.ToWhereFragmentString.ToString().Trim();
-			string part2 = where.ToString().Trim();
-			bool hasPart1 = part1.Length > 0;
-			bool hasPart2 = part2.Length > 0;
-			
-			if (hasPart1 || hasPart2) buf.Append(" where ");
-			if (hasPart1) buf.Append( part1.Substring(4) );
-			if (hasPart2) 
-			{
-				if (hasPart1) buf.Append(" and (");
-				buf.Append(part2);
-				if (hasPart1) buf.Append(")");
-			}
-			if ( groupBy.Length > 0 ) buf.Append(" group by ").Append( groupBy.ToString() );
-			if ( having.Length > 0 ) buf.Append(" having ").Append( having.ToString() );
-			if ( orderBy.Length > 0 ) buf.Append(" order by ").Append( orderBy.ToString() );
-			return buf.ToString();
-		}
-
 		public SqlCommand.SqlString ToQuerySqlString() 
 		{
 			SqlCommand.SqlStringBuilder builder = new SqlCommand.SqlStringBuilder();
@@ -175,7 +150,7 @@ namespace NHibernate.Sql
 				from = from.Substring(11);
 			}
 
-			builder.Add(select.ToString())
+			builder.Add(selectBuilder.ToSqlString())
 				.Add(" from")
 				.Add( from );
 			
