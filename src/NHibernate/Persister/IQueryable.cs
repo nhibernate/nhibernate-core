@@ -6,7 +6,7 @@ namespace NHibernate.Persister {
 	/// Extends the generic <c>IClassPersister</c> contract to add operations required
 	/// by the query language
 	/// </summary>
-	public interface IQueryable {
+	public interface IQueryable : ILoadable {
 		
 		/// <summary>
 		/// Is this class mapped as a subclass of another class?

@@ -21,6 +21,11 @@ namespace NHibernate.Persister {
 		bool HasSubclasses { get; }
 
 		/// <summary>
+		/// The name of the column used as a discriminator
+		/// </summary>
+		string DiscriminatorColumnName { get; }
+
+		/// <summary>
 		/// The discriminator type
 		/// </summary>
 		IDiscriminatorType DiscriminatorType { get; }
@@ -70,6 +75,12 @@ namespace NHibernate.Persister {
 		/// <param name="i"></param>
 		/// <returns></returns>
 		IType GetSubclassPropertyType(int i);
+
+		/// <summary>
+		/// Return the column names used to persist all properties of all sublasses of the persistent class
+		/// (optional operation)
+		/// </summary>
+		string[] GetSubclassPropertyColumnNames(int i);
 
 		/// <summary>
 		/// Given the number of a property of a subclass, and a table alias, return the aliased column names

@@ -13,6 +13,7 @@ using NHibernate.Hql;
 using NHibernate.Dialect;
 using NHibernate.Sql;
 using NHibernate.Type;
+using NHibernate.Loader;
 
 namespace NHibernate.Persister {
 	/// <summary>
@@ -108,8 +109,7 @@ namespace NHibernate.Persister {
 			string[] cols = null;
 
 			if ( path.Equals(PathExpressionParser.EntityClass) ) {
-				//cols = new string[] { DiscriminatorColumnName };
-				//TODO: Fix
+				cols = new string[] { DiscriminatorColumnName };
 			} else {
 				string idprop = IdentifierPropertyName;
 				if (PathExpressionParser.EntityID.Equals(path) ||
@@ -135,9 +135,7 @@ namespace NHibernate.Persister {
 
 		public IType GetPropertyType(string path) {
 			if (path.Equals(PathExpressionParser.EntityClass)) {
-				//return DiscriminatorType;
-				//TODO: fix
-				return null;
+				return DiscriminatorType;
 			} else {
 				string idprop = IdentifierPropertyName;
 
@@ -550,8 +548,11 @@ namespace NHibernate.Persister {
 				}
 			}
 
-			//TODO: fix this
-			//proxyInterfaces = (System.Type[]) pis.Keys;
+			proxyInterfaces = new System.Type[pis.Count];
+			i=0;
+			foreach(System.Type type in pis.Keys) {
+				proxyInterfaces[i++] = type;
+			}
 
 		}
 
@@ -572,7 +573,7 @@ namespace NHibernate.Persister {
 		}
 
 		public IClassMetadata ClassMetadata {
-			get { return this; }
+			get { return (IClassMetadata) this; }
 		}
 
 		public System.Type ConcreteProxyClass {
@@ -601,7 +602,31 @@ namespace NHibernate.Persister {
 
 
 		public abstract string QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
-
 		public abstract string DiscriminatorSQLString { get; }
+		public abstract void Delete(object id, object version, object obj, ISessionImplementor session);
+		public abstract object[] GetPropertySpaces(object instance);
+		public abstract object IdentifierSpace { get; }
+		public abstract void Insert(object id, object[] fields, object obj, ISessionImplementor session);
+		public abstract object Insert(object[] fields, object obj, ISessionImplementor session);
+		public abstract object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session);
+		public abstract void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session);
+		public abstract void PostInstatiate(ISessionFactoryImplementor factory);
+		public abstract void Update(object id, object[] fields, int[] dirtyFields, object oldVersion, object obj, ISessionImplementor session);
+		public abstract int CountSubclassProperties();
+		public abstract IDiscriminatorType DiscriminatorType { get; }
+		public abstract OuterJoinLoaderType EnableJoinedFetch(int i);
+		public abstract string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
+		public abstract string FromTableFragment(string alias);
+		public abstract string GetConcreteClassAlias(string alias);
+		public abstract string[] GetPropertyColumnNames(int i);
+		public abstract System.Type GetSubclassForDiscriminatorValue(object value);
+		public abstract IType GetSubclassPropertyType(int i);
+		public abstract bool IsDefinedOnSubclass(int i);
+		public abstract string PropertySelectFragment(string alias, string suffix);
+		public abstract string TableName { get; }
+		public abstract string[] ToColumns(string name, int i);
+		public abstract string WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
+		public abstract string DiscriminatorColumnName { get; }
+		public abstract string[] GetSubclassPropertyColumnNames(int i);
 	}
 }

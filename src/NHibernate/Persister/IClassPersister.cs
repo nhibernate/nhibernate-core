@@ -172,7 +172,7 @@ namespace NHibernate.Persister {
 		/// <summary>
 		/// A method of the proxy interface that returns the identifier value (optional operation)
 		/// </summary>
-		MethodInfo ProxyGetIdentifierMethod { get; }
+		PropertyInfo ProxyIdentifierProperty { get; }
 
 		/// <summary>
 		/// Are instances of this class versioned by a timestamp or version number column?
