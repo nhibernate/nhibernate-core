@@ -30,22 +30,28 @@ namespace NHibernate.Transaction
 		{
 			if( trans==null ) 
 			{
-				if(command.Transaction!=null) 
+				if( log.IsWarnEnabled ) 
 				{
-					log.Warn("set a nonnull IDbCommand.Transaction to null because the Session had no Transaction");
+					if( command.Transaction!=null ) 
+					{
+						log.Warn("set a nonnull IDbCommand.Transaction to null because the Session had no Transaction");
+					}
 				}
+
 				command.Transaction = null;
 				return;
 			}
 			else 
 			{
-				
-				// got into here because the command was being initialized and had a null Transaction - probably
-				// don't need to be confused by that - just a normal part of initialization...
-				if(command.Transaction!=null) 
+				if( log.IsWarnEnabled ) 
 				{
-					log.Warn("The IDbCommand had a different Transaction than the Session.  This can occur when " +
-						"Disconnecting and Reconnecting Sessions because the PreparedCommand Cache is Session specific.");
+					// got into here because the command was being initialized and had a null Transaction - probably
+					// don't need to be confused by that - just a normal part of initialization...
+					if( command.Transaction!=null && command.Transaction!=trans ) 
+					{
+						log.Warn("The IDbCommand had a different Transaction than the Session.  This can occur when " +
+							"Disconnecting and Reconnecting Sessions because the PreparedCommand Cache is Session specific.");
+					}
 				}
 		
 				command.Transaction = trans; 
