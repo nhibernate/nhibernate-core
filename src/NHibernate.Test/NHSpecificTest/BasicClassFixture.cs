@@ -748,6 +748,32 @@ namespace NHibernate.Test.NHSpecificTest
 			AssertDelete(id);
 		}
 
+		[Test]
+		public void TestWrapArrayInListProperty() 
+		{
+			
+			ISession s = sessions.OpenSession();
+			BasicClass bc = new BasicClass();
+
+			int id = 1;
+
+			bc.StringList = new string[] { "one", "two" };
+
+			s.Save( bc, id );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			bc = (BasicClass)s.Load( typeof(BasicClass), id );
+
+			Assert.AreEqual( 2, bc.StringList.Count, "should have saved to StringList from an array" );
+			Assert.IsTrue( bc.StringList.Contains( "one" ), "'one' should be in there" );
+			Assert.IsTrue( bc.StringList.Contains( "two" ), "'two' should be in there" );
+
+			s.Delete( bc );
+			s.Flush();
+			s.Close();
+		}
 
 		internal void AssertDelete(int id) 
 		{

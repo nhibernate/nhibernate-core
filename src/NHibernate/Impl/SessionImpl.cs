@@ -2893,9 +2893,11 @@ namespace NHibernate.Impl
 		/// some subclass of PersistentCollection, wrap it up and
 		/// return the wrapper
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
+		/// <param name="obj">The <see cref="Object"/> to wrap.</param>
+		/// <param name="type">The <see cref="IType"/> of the Property the obj came in for.</param>
+		/// <returns>
+		/// An <see cref="Object"/> that NHibernate has now been made aware of.
+		/// </returns>
 		private object Wrap(object obj, IType type) {
 
 			if (obj==null) return null;
@@ -2909,6 +2911,8 @@ namespace NHibernate.Impl
 
 			if ( type.IsPersistentCollectionType ) 
 			{
+				// a previously wrapped collection from another session has come back
+				// into NHibernate 
 				if ( obj is PersistentCollection ) 
 				{
 					PersistentCollection pc = (PersistentCollection) obj;
@@ -2935,24 +2939,34 @@ namespace NHibernate.Impl
 						}	
 					}
 				} 
-				else if ( obj.GetType().IsArray ) 
-				{
-					// TODO: we could really re-use the existing arrayholder
-					// for this new array (if it exists)
-					ArrayHolder ah = GetArrayHolder(obj);
-					if (ah==null) 
-					{
-						ah = new ArrayHolder(this, obj);
-						AddNewCollection(ah);
-						AddArrayHolder(ah);
-					}
-				} 
+
+				// used to be code here to see if the obj.GetType().IsArray but don't want it
+				// here because in .net an array is an IList - not true in java so NHibernate can
+				// have an array passed to a type that is a List.
+
+				// this is a new collection that NHibernate is not aware of.
 				else 
 				{
-					PersistentCollection pc = ((PersistentCollectionType) type).Wrap(this, obj);
-					if ( log.IsDebugEnabled ) log.Debug( "Wrapped collection in role: " + ((PersistentCollectionType) type).Role);
-					AddNewCollection(pc);
-					obj = pc;
+					// if the Type of the collection is an ArrayType then we need to add it 
+					// to an ArrayHolder - TODO: figure out if this is really necessary since
+					// Java and .NET treat arrays differently.
+					if( type is ArrayType ) 
+					{
+						ArrayHolder ah = GetArrayHolder( obj );
+						if( ah==null ) 
+						{
+							ah = new ArrayHolder( this, obj );
+							AddNewCollection( ah );
+							AddArrayHolder( ah );
+						}
+					}
+					else 
+					{
+						PersistentCollection pc = ((PersistentCollectionType) type).Wrap(this, obj);
+						if ( log.IsDebugEnabled ) log.Debug( "Wrapped collection in role: " + ((PersistentCollectionType) type).Role);
+						AddNewCollection(pc);
+						obj = pc;
+					}
 				}
 			}
 
