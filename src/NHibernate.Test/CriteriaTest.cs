@@ -5,14 +5,14 @@ using System.Data;
 using NHibernate.DomainModel;
 using NUnit.Framework;
 
-namespace NHibernate.Test {
+namespace NHibernate.Test
+{
 	
 	[TestFixture]
 	public class CriteriaTest : TestCase {
 
 		[SetUp]
 		public void SetUp() {
-			//log4net.Config.DOMConfigurator.Configure();
 			ExportSchema( new string[] { "Simple.hbm.xml"}, true );
 		}
 

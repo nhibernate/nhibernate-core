@@ -80,13 +80,13 @@ namespace NHibernate.Test
 
 		[Test]
 		[Ignore("Test not yet written")]
-		public void CompositeID() 
+		public void ListIdentifiers() 
 		{
 		}
-
+		
 		[Test]
 		[Ignore("Test not yet written")]
-		public void CompositeIDCollections() 
+		public void CompositeID() 
 		{
 		}
 
@@ -96,7 +96,7 @@ namespace NHibernate.Test
 			ISession s = sessions.OpenSession();
 			Fum fum = new Fum( FumKey("fum") );
 			fum.fum = "fee fi fo";
-			//s.Save(fum);
+			//s.Save(fum); commented out in h2.0.3
 			Fumm fumm = new Fumm();
 			fumm.Fum = fum;
 			s.Save(fumm);
@@ -105,14 +105,12 @@ namespace NHibernate.Test
 
 			s = sessions.OpenSession();
 			fumm = (Fumm) s.Load( typeof(Fumm), FumKey("fum") );
-			//s.delete(fumm.Fum);
+			//s.delete(fumm.Fum); commented out in h2.0.3
 			s.Delete(fumm);
 			s.Flush();
 			s.Close();
 					   
 		}
-
-		
 
 		[Test]
 		[Ignore("Test not yet written")]
@@ -122,7 +120,7 @@ namespace NHibernate.Test
 
 		[Test]
 		[Ignore("Test not yet written")]
-		public void CompositeIDs() 
+		public void CompositeIDCollections() 
 		{
 		}
 
@@ -134,14 +132,18 @@ namespace NHibernate.Test
 
 		[Test]
 		[Ignore("Test not yet written")]
+		public void CompositeIDs() 
+		{
+		}
+
+		
+
+		[Test]
+		[Ignore("Test not yet written")]
 		public void KeyManyToOne() 
 		{
 		}
 
-		[Test]
-		[Ignore("Test not yet written")]
-		public void ListIdentifiers() 
-		{
-		}
+		
 	}
 }

@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
+
 using NUnit.Framework;
 using NHibernate;
 using NHibernate.DomainModel;
-using System.Collections;
+
 
 namespace NHibernate.Test
 {

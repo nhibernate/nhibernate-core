@@ -14,22 +14,22 @@ namespace NHibernate.Test
 		{
 			ExportSchema(new string[] {   
 				"FooBar.hbm.xml",
-				"Glarch.hbm.xml",
-				"Fee.hbm.xml",
-				"Qux.hbm.xml",
-				"Fum.hbm.xml",
 				"Baz.hbm.xml",
-				"Simple.hbm.xml",
+				"Qux.hbm.xml",
+				"Glarch.hbm.xml",
+				"Fum.hbm.xml",
 				"Fumm.hbm.xml",
 				"Fo.hbm.xml",
 				"One.hbm.xml",
 				"Many.hbm.xml",
 				"Immutable.hbm.xml" ,
+				"Fee.hbm.xml",
 				//"Vetoer.hbm.xml",
 				"Holder.hbm.xml",
 				"Location.hbm.xml",
 				"Stuff.hbm.xml",
 				"Container.hbm.xml",
+				"Simple.hbm.xml",
 				"XY.hbm.xml"
 				}, true);
 		}
@@ -66,6 +66,7 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+		
 		[Test]
 		public void Sortables()
 		{
@@ -136,6 +137,7 @@ namespace NHibernate.Test
 
 		}
 
+		
 		[Test]
 		public void FetchList() 
 		{
@@ -163,6 +165,7 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+		
 		[Test]
 		public void BagOneToMany() 
 		{
@@ -186,20 +189,29 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
-		[Test]
-		[Ignore("won't work without proxy")]
-		public void SaveDelete()
-		{
-			ISession s = sessions.OpenSession();
-			Foo f = new Foo();
-			s.Save(f);
-			s.Flush();
-			s.Close();
 		
-			s = sessions.OpenSession();
-			s.Delete( s.Load( typeof(Foo), f.key ) );
-			s.Flush();
-			s.Close();
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void QueryLockMode() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ManyToManyBag() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void IdBag() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ForceOuterJoin() 
+		{
 		}
 
 		[Test]
@@ -221,6 +233,329 @@ namespace NHibernate.Test
 			s.Delete(baz);
 			s.Flush();
 			s.Close();
+		}
+
+		
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void OneToOneGenerator() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Limit() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Custom() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void SaveAddDelete() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void NamedParams() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Dyna() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void FindByCriteria() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void AfterDelete() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CollectionWhere() 
+		{
+		}
+		
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ComponentParent()
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CollectionCache() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void AssociationId() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CascadeSave() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CompositeKeyPathExpressions() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CollectionsInSelect() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void NewFlushing() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void PersistCollections() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void SaveFlush() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CreateUpdate() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Update() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void UpdateCollections() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Load() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Create() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Callback() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Polymorphism() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void RemoveContains() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CollectionOfSelf() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Find() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Query() 
+		{
+		}
+	
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void DeleteRecursive() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Reachability() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void PersistentLifecycle() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Iterators() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Versioning() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void VersionedCollections() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void RecursiveLoad() 
+		{
+		}
+		
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ScrollableIterator() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void MultiColumnQueries() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void DeleteTransient() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void UpdateFromTransient() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Databinder() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ArrayOfTimes() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Components() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Enum() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void NoForeignKeyViolations() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void LazyCollections() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void NewSessionLifecycle() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Disconnect() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void OrderBy() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ManyToOne() 
+		{
+		}
+
+		[Test]
+		[Ignore("won't work without proxy")]
+		public void SaveDelete()
+		{
+			ISession s = sessions.OpenSession();
+			Foo f = new Foo();
+			s.Save(f);
+			s.Flush();
+			s.Close();
+		
+			s = sessions.OpenSession();
+			s.Delete( s.Load( typeof(Foo), f.key ) );
+			s.Flush();
+			s.Close();
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ProxyArray() 
+		{
 		}
 
 		[Test]
@@ -248,5 +583,121 @@ namespace NHibernate.Test
 			s.Close();
 
 		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void FindLoad() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Refresh() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void AutoFlush() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Veto() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void SerializableType() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void AuotFlushCollections() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void UserProvidedConnection() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void CachedCollection() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ComplicatedQuery() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void LoadAfterDelete() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ObjectType() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Any() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void EmbeddedCompositeID() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void AutosaveChildren() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void OrphanDelete() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void TransientOrphanDelete() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void ProxiesInCollections() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void Service() 
+		{
+		}
+
+		[Test]
+		[Ignore("Test not written yet.")]
+		public void PSCache() 
+		{
+		}
+
+
 	}
 }

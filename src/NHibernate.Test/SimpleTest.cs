@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test 
 {
-	
 	[TestFixture]
 	public class SimpleTest : TestCase 
 	{
@@ -18,7 +17,6 @@ namespace NHibernate.Test
 		[SetUp]
 		public void SetUp() 
 		{
-			//log4net.Config.DOMConfigurator.Configure();
 			ExportSchema( new string[] { "Simple.hbm.xml"} );
 		}
 

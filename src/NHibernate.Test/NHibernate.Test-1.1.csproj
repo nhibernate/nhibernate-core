@@ -134,17 +134,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "BasicTypes.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ClassWithCompositeIdTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "CriteriaTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DemoTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -159,17 +154,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "JoinedSubclassTest.cs"
+                    RelPath = "MasterDetailTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MapTest.cs"
+                    RelPath = "MultiTableTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "NH47.cs"
+                    RelPath = "NewPerformanceTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -182,12 +177,17 @@
                     BuildAction = "None"
                 />
                 <File
-                    RelPath = "NodeFixture.cs"
+                    RelPath = "ObjectAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ObjectAssertion.cs"
+                    RelPath = "ODMGTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ParentChildTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -197,17 +197,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SimpleComponentTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "SimpleTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SubclassTest.cs"
+                    RelPath = "SQLFunctionsTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -218,11 +213,6 @@
                 />
                 <File
                     RelPath = "TestTestCase.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "UnsavedValueTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -293,6 +283,51 @@
                 />
                 <File
                     RelPath = "ExpressionTest\SimpleExpressionFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\BasicClassFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\ClassWithCompositeIdFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\JoinedSubclassFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\MapFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH47Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NodeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\SimpleComponentFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\SubclassFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\UnsavedValueFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

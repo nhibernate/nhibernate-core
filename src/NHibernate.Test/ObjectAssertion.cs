@@ -3,6 +3,7 @@ using System.Collections;
 
 using NUnit.Framework;
 using NHibernate.DomainModel;
+using NHibernate.DomainModel.NHSpecific;
 
 namespace NHibernate.Test
 {
