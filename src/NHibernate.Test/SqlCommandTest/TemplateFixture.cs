@@ -32,5 +32,27 @@ namespace NHibernate.Test.SqlCommandTest
 
 		}
 
+		[Test]
+		public void OrderBySingleColumn() 
+		{
+			Dialect.Dialect dialect = new Dialect.MsSql2000Dialect();
+
+			string orderBy = "col1 asc";
+			string expectedOrderBy = "$PlaceHolder.col1 asc";
+
+			Assert.AreEqual( expectedOrderBy, Template.RenderOrderByStringTemplate( orderBy, dialect ) );
+		}
+
+		[Test]
+		public void OrderByMultiColumn() 
+		{
+			Dialect.Dialect dialect = new Dialect.MsSql2000Dialect();
+
+			string orderBy = "col1 asc, col2 desc, col3";
+			string expectedOrderBy = "$PlaceHolder.col1 asc, $PlaceHolder.col2 desc, $PlaceHolder.col3";
+
+			Assert.AreEqual( expectedOrderBy, Template.RenderOrderByStringTemplate( orderBy, dialect ) );
+		}
+
 	}
 }

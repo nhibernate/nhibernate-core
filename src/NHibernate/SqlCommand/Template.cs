@@ -167,7 +167,7 @@ namespace NHibernate.SqlCommand
 		public static string RenderOrderByStringTemplate(string sqlOrderByString, Dialect.Dialect dialect) 
 		{
 			//TODO: make this a bit nicer
-			StringTokenizer tokens = new StringTokenizer(sqlOrderByString, ",");
+			StringTokenizer tokens = new StringTokenizer(sqlOrderByString, ",", false);
 			StringBuilder result = new StringBuilder(sqlOrderByString.Length + 2);
 			bool commaNeeded = false; 
 			IEnumerator tokenEnum = tokens.GetEnumerator();
