@@ -33,28 +33,28 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
-        <class name="Eg.Cat, Eg" table="CATS" discriminator-value="C">
-                <id name="Id" column="uid" type="Int64">
-                        <generator class="hilo"/>
-                </id>
-                <discriminator column="subclass" type="Char"/>
-                <property name="Birthdate" type="Date"/>
-                <property name="Color" not-null="true"/>
-                <property name="Sex" not-null="true" update="false"/>
-                <property name="Weight"/>
-                <many-to-one name="Mate" column="mate_id"/>
-                <set name="Kittens">
-                        <key column="mother_id"/>
-                        <one-to-many class="Eg.Cat, Eg"/>
-                </set>
-                <subclass name="Eg.DomesticCat, Eg" discriminator-value="D">
-                        <property name="Name" type="String"/>
-                </subclass>
-        </class>
+	<class name="Eg.Cat, Eg" table="CATS" discriminator-value="C">
+		<id name="Id" column="uid" type="Int64">
+			<generator class="hilo"/>
+		</id>
+		<discriminator column="subclass" type="Char"/>
+		<property name="Birthdate" type="Date"/>
+		<property name="Color" not-null="true"/>
+		<property name="Sex" not-null="true" update="false"/>
+		<property name="Weight"/>
+		<many-to-one name="Mate" column="mate_id"/>
+		<set name="Kittens">
+			<key column="mother_id"/>
+			<one-to-many class="Eg.Cat, Eg"/>
+		</set>
+		<subclass name="Eg.DomesticCat, Eg" discriminator-value="D">
+			<property name="Name" type="String"/>
+		</subclass>
+	</class>
 
-        <class name="Eg.Dog, Eg">
-                <!-- mapping for Dog could go here -->
-        </class>
+	<class name="Eg.Dog, Eg">
+		<!-- mapping for Dog could go here -->
+	</class>
 
 </hibernate-mapping>
 ]]></programlisting>
@@ -98,14 +98,12 @@
 			</para>
  
 			
-			<programlisting> 
-&lt;hibernate-mapping
-         schema="schemaName" <co id="hm1-co" linkends="hm1" />
-         default-cascade="none|save-update" <co id="hm2-co" linkends="hm2" />
-         auto-import="true|false" <co id="hm3-co" linkends="hm3" />
-         default-access="property|field|nosetter|ClassName" <co id="hm4-co" linkends="hm4" />
- &gt;
-			</programlisting>
+			<programlisting>&lt;hibernate-mapping
+	schema="schemaName" <co id="hm1-co" linkends="hm1" />
+	default-cascade="none|save-update" <co id="hm2-co" linkends="hm2" />
+	auto-import="true|false" <co id="hm3-co" linkends="hm3" />
+	default-access="property|field|nosetter|ClassName" <co id="hm4-co" linkends="hm4" />
+&gt; </programlisting>
 			<calloutlist>
 					<callout arearefs="hm1-co" id="hm1">
 						<para>
@@ -153,17 +151,17 @@
 			
 				
 			<programlisting>&lt;class
-        name="ClassName" <co id="class1-co" linkends="class1" />
-        table="tableName"<co id="class2-co" linkends="class2" />
-        discriminator-value="discriminator_value"<co id="class3-co" linkends="class3" />
-        mutable="true|false"<co id="class4-co" linkends="class4" />
-        schema="owner"<co id="class5-co" linkends="class5" />
-        proxy="ProxyInterface"<co id="class6-co" linkends="class6" />
-        dynamic-update="true|false"<co id="class7-co" linkends="class7" />
-        dynamic-insert="true|false"<co id="class8-co" linkends="class8" />
-        polymorphism="implicit|explicit"<co id="class9-co" linkends="class9" />
-        where="arbitrary sql where condition"<co id="class10-co" linkends="class10" />
-        persister="PersisterClass"<co id="class11-co" linkends="class11" />
+	name="ClassName" <co id="class1-co" linkends="class1" />
+	table="tableName"<co id="class2-co" linkends="class2" />
+	discriminator-value="discriminator_value"<co id="class3-co" linkends="class3" />
+	mutable="true|false"<co id="class4-co" linkends="class4" />
+	schema="owner"<co id="class5-co" linkends="class5" />
+	proxy="ProxyInterface"<co id="class6-co" linkends="class6" />
+	dynamic-update="true|false"<co id="class7-co" linkends="class7" />
+	dynamic-insert="true|false"<co id="class8-co" linkends="class8" />
+	polymorphism="implicit|explicit"<co id="class9-co" linkends="class9" />
+	where="arbitrary sql where condition"<co id="class10-co" linkends="class10" />
+	persister="PersisterClass"<co id="class11-co" linkends="class11" />
 /&gt;</programlisting>
 			<calloutlist>
 				<callout arearefs="class1-co" id="class1">
@@ -298,13 +296,13 @@
 			</para>
 	
 			<programlisting>&lt;id 
-        name="propertyName" <co id="id1-co" linkends="id1" />
-        type="typename" <co id="id2-co" linkends="id2" />
-        column="column_name" <co id="id3-co" linkends="id3" />
-        unsaved-value="any|none|null|id_value" <co id="id4-co" linkends="id4" />
-        access="field|property|nosetter|ClassName"&gt; <co id="id5-co" linkends="id5" />
+	name="propertyName" <co id="id1-co" linkends="id1" />
+	type="typename" <co id="id2-co" linkends="id2" />
+	column="column_name" <co id="id3-co" linkends="id3" />
+	unsaved-value="any|none|null|id_value" <co id="id4-co" linkends="id4" />
+	access="field|property|nosetter|ClassName"&gt; <co id="id5-co" linkends="id5" />
 
-        &lt;generator class="generatorClass"/&gt;
+	&lt;generator class="generatorClass"/&gt;
 &lt;/id&gt;		</programlisting>
 			<calloutlist>
 				<callout arearefs="id1-co" id="id1">
@@ -360,477 +358,471 @@
 			</para>
 			
 			<sect3 id="mapping-declaration-id-generator">
-                <title>generator</title>
+				<title>generator</title>
 
-                <para>
-                    The required <literal>&lt;generator&gt;</literal> child element names a .NET type used
-                    to generate unique identifiers for instances of the persistent class. If any parameters
-                    are required to configure or initialize the generator instance, they are passed using the
-                    <literal>&lt;param&gt;</literal> element.
-                </para>
+				<para>
+					The required <literal>&lt;generator&gt;</literal> child element names a .NET type used
+					to generate unique identifiers for instances of the persistent class. If any parameters
+					are required to configure or initialize the generator instance, they are passed using the
+					<literal>&lt;param&gt;</literal> element.
+				</para>
 
 				<programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
-        <generator class="NHibernate.Id.TableHiLoGenerator">
-                <param name="table">uid_table</param>
-                <param name="column">next_hi_value_column</param>
-        </generator>
+	<generator class="NHibernate.Id.TableHiLoGenerator">
+		<param name="table">uid_table</param>
+		<param name="column">next_hi_value_column</param>
+	</generator>
 </id>]]></programlisting>
 
 				<para>
-                    All generators implement the interface <literal>NHibernate.Id.IdentifierGenerator</literal>.
-                    This is a very simple interface; some applications may choose to provide their own specialized
-                    implementations. However, NHibernate provides a range of built-in implementations. There are shortcut
-                    names for the built-in generators:
-                    
-                    <variablelist>
-                        <varlistentry>
-                        <term><literal>identity</literal></term>
-                        <listitem>
-                            <para>
-                                supports identity columns in DB2, MySQL, MS SQL Server, Sybase and
-                                HypersonicSQL. The returned identifier is of type <literal>Int64</literal>,
-                                <literal>Int32</literal> or <literal>Int16</literal>.
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                        <varlistentry>
-                        <term><literal>sequence</literal></term>
-                        <listitem>
-                            <para>
-                                uses a sequence in DB2, PostgreSQL, Oracle. The returned identifier 
-                                is of type <literal>Int64</literal>,
-                                <literal>Int32</literal> or <literal>Int16</literal>
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                        <varlistentry>
-                        <term><literal>hilo</literal></term>
-                        <listitem>
-                            <para>
-                                uses a hi/lo algorithm to efficiently generate identifiers of
-                                type <literal>Int64</literal>, <literal>Int32</literal> or <literal>Int16</literal>,
-                                given a table and column (by default <literal>hibernate_unique_key</literal> and
-                                <literal>next</literal> respectively) as a source of hi values. The hi/lo algorithm
-                                generates identifiers that are unique only for a particular database.
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                        <varlistentry>
-                        <term><literal>seqhilo</literal></term>
-                        <listitem>
-                            <para>
-                                uses a hi/lo algorithm to efficiently generate identifiers of type
-                                <literal>Int64</literal>, <literal>Int32</literal> or <literal>Int16</literal>,
-                                given a named database sequence.
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                        <varlistentry>
-                        <term><literal>uuid.hex</literal></term>
-                        <listitem>
-                            <para>
-                                uses <literal>System.Guid</literal> and its <literal>ToString(string format)</literal> method
-                                to generate identifiers of type string.  The length of the string returned depends on the 
-                                configured <literal>format</literal>.
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                        <varlistentry>
-                        <term><literal>uuid.string</literal></term>
-                        <listitem>
-                            <para>
-                                uses a new <literal>System.Guid</literal> to create a <literal>byte[]</literal> that is
-                                converted to a string.
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                        <varlistentry>
-                        <term><literal>guid</literal></term>
-                        <listitem>
-                            <para>
-                                uses a new <literal>System.Guid</literal> as the identifier.
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                        <varlistentry>
-                        <term><literal>guid.comb</literal></term>
-                        <listitem>
-                            <para>
-                                uses the algorithm to generate a new <literal>System.Guid</literal>
-                                described by Jimmy Nilsson in the article 
-                                http://www.informit.com/articles/article.asp?p=25862.
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                        <varlistentry>
-                        <term><literal>native</literal></term>
-                        <listitem>
-                            <para>
-                                picks <literal>identity</literal>, <literal>sequence</literal> or
-                                <literal>hilo</literal> depending upon the capabilities of the
-                                underlying database.
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                        <varlistentry>
-                        <term><literal>assigned</literal></term>
-                        <listitem>
-                            <para>
-                                lets the application to assign an identifier to the object before
-                                <literal>save()</literal> is called.
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                        <varlistentry>
-                        <term><literal>foreign</literal></term>
-                        <listitem>
-                            <para>
-                                uses the identifier of another associated object. Usually used in conjunction
-                                with a <literal>&lt;one-to-one&gt;</literal> primary key association.
-                            </para>
-                        </listitem>
-                        </varlistentry>
-                    </variablelist>
+					All generators implement the interface <literal>NHibernate.Id.IdentifierGenerator</literal>.
+					This is a very simple interface; some applications may choose to provide their own specialized
+					implementations. However, NHibernate provides a range of built-in implementations. There are shortcut
+					names for the built-in generators:
+	                
+					<variablelist>
+						<varlistentry>
+						<term><literal>identity</literal></term>
+						<listitem>
+							<para>
+								supports identity columns in DB2, MySQL, MS SQL Server, Sybase and
+								HypersonicSQL. The returned identifier is of type <literal>Int64</literal>,
+								<literal>Int32</literal> or <literal>Int16</literal>.
+							</para>
+						</listitem>
+						</varlistentry>
+						<varlistentry>
+						<term><literal>sequence</literal></term>
+						<listitem>
+							<para>
+								uses a sequence in DB2, PostgreSQL, Oracle. The returned identifier 
+								is of type <literal>Int64</literal>,
+								<literal>Int32</literal> or <literal>Int16</literal>
+							</para>
+						</listitem>
+						</varlistentry>
+						<varlistentry>
+						<term><literal>hilo</literal></term>
+						<listitem>
+							<para>
+								uses a hi/lo algorithm to efficiently generate identifiers of
+								type <literal>Int64</literal>, <literal>Int32</literal> or <literal>Int16</literal>,
+								given a table and column (by default <literal>hibernate_unique_key</literal> and
+								<literal>next</literal> respectively) as a source of hi values. The hi/lo algorithm
+								generates identifiers that are unique only for a particular database.
+							</para>
+						</listitem>
+						</varlistentry>
+						<varlistentry>
+						<term><literal>seqhilo</literal></term>
+						<listitem>
+							<para>
+								uses a hi/lo algorithm to efficiently generate identifiers of type
+								<literal>Int64</literal>, <literal>Int32</literal> or <literal>Int16</literal>,
+								given a named database sequence.
+							</para>
+						</listitem>
+						</varlistentry>
+						<varlistentry>
+						<term><literal>uuid.hex</literal></term>
+						<listitem>
+							<para>
+								uses <literal>System.Guid</literal> and its <literal>ToString(string format)</literal> method
+								to generate identifiers of type string.  The length of the string returned depends on the 
+								configured <literal>format</literal>.
+							</para>
+						</listitem>
+						</varlistentry>
+						<varlistentry>
+						<term><literal>uuid.string</literal></term>
+						<listitem>
+							<para>
+								uses a new <literal>System.Guid</literal> to create a <literal>byte[]</literal> that is
+								converted to a string.
+							</para>
+						</listitem>
+						</varlistentry>
+						<varlistentry>
+						<term><literal>guid</literal></term>
+						<listitem>
+							<para>
+								uses a new <literal>System.Guid</literal> as the identifier.
+							</para>
+						</listitem>
+						</varlistentry>
+						<varlistentry>
+						<term><literal>guid.comb</literal></term>
+						<listitem>
+							<para>
+								uses the algorithm to generate a new <literal>System.Guid</literal>
+								described by Jimmy Nilsson in the article 
+								http://www.informit.com/articles/article.asp?p=25862.
+							</para>
+						</listitem>
+						</varlistentry>
+						<varlistentry>
+						<term><literal>native</literal></term>
+						<listitem>
+							<para>
+								picks <literal>identity</literal>, <literal>sequence</literal> or
+								<literal>hilo</literal> depending upon the capabilities of the
+								underlying database.
+							</para>
+						</listitem>
+						</varlistentry>
+						<varlistentry>
+						<term><literal>assigned</literal></term>
+						<listitem>
+							<para>
+								lets the application to assign an identifier to the object before
+								<literal>save()</literal> is called.
+							</para>
+						</listitem>
+						</varlistentry>
+						<varlistentry>
+						<term><literal>foreign</literal></term>
+						<listitem>
+							<para>
+								uses the identifier of another associated object. Usually used in conjunction
+								with a <literal>&lt;one-to-one&gt;</literal> primary key association.
+							</para>
+						</listitem>
+						</varlistentry>
+					</variablelist>
 
-                </para>
-            </sect3>
-            
-            
-            <sect3 id="mapping-declaration-id-hilo">
-                <title>Hi/Lo Algorithm</title>
-                <para>
-                    The <literal>hilo</literal> and <literal>seqhilo</literal> generators provide two alternate
-                    implementations of the hi/lo algorithm, a favorite approach to identifier generation. The
-                    first implementation requires a "special" database table to hold the next available "hi" value.
-                    The second uses an Oracle-style sequence (where supported).
-                </para>
+				</para>
+			</sect3>
+	        
+	        
+			<sect3 id="mapping-declaration-id-hilo">
+				<title>Hi/Lo Algorithm</title>
+				<para>
+					The <literal>hilo</literal> and <literal>seqhilo</literal> generators provide two alternate
+					implementations of the hi/lo algorithm, a favorite approach to identifier generation. The
+					first implementation requires a "special" database table to hold the next available "hi" value.
+					The second uses an Oracle-style sequence (where supported).
+				</para>
 
-                <programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
-        <generator class="hilo">
-                <param name="table">hi_value</param>
-                <param name="column">next_value</param>
-                <param name="max_lo">100</param>
-        </generator>
+				<programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
+	<generator class="hilo">
+		<param name="table">hi_value</param>
+		<param name="column">next_value</param>
+		<param name="max_lo">100</param>
+	</generator>
 </id>]]></programlisting>
 
-                <programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
-        <generator class="seqhilo">
-                <param name="sequence">hi_value</param>
-                <param name="max_lo">100</param>
-        </generator>
+				<programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
+	<generator class="seqhilo">
+		<param name="sequence">hi_value</param>
+		<param name="max_lo">100</param>
+	</generator>
 </id>]]></programlisting>
 
-                <para>
-                    Unfortunately, you can't use <literal>hilo</literal> when supplying your own
-                    <literal>Connection</literal>  to NHibernate. NHibernate must be able to
-                    fetch the "hi" value in a new transaction.
-                </para>
-            </sect3>
-            
-            <sect3 id="mapping-declaration-id-uuid-hex">
-                <title>UUID Hex Algorithm</title>
+				<para>
+					Unfortunately, you can't use <literal>hilo</literal> when supplying your own
+					<literal>Connection</literal>  to NHibernate. NHibernate must be able to
+					fetch the "hi" value in a new transaction.
+				</para>
+			</sect3>
+	        
+			<sect3 id="mapping-declaration-id-uuid-hex">
+				<title>UUID Hex Algorithm</title>
 
-                <programlisting><![CDATA[<id name="Id" type="String" column="cat_id">
-        <generator class="uuid.hex">
-                <param name="format">format_value</param>
-                <param name="seperator">seperator_value</param>
-        </generator>
+				<programlisting><![CDATA[<id name="Id" type="String" column="cat_id">
+	<generator class="uuid.hex">
+		<param name="format">format_value</param>
+		<param name="seperator">seperator_value</param>
+	</generator>
 </id>]]></programlisting>
 
-                <para>
+				<para>
 					The UUID is generated by calling <literal>Guid.NewGuid().ToString(format)</literal>.  The
 					valid values for format are described in the MSDN documentation.  The default 
 					<literal>seperator</literal> is <literal>-</literal> and should rarely be modified.  The
 					<literal>format</literal> determines if the configured <literal>seperator</literal> can 
 					replace the default seperator used by the <literal>format</literal>.
-                </para>
-            </sect3>
-            
-            <sect3 id="mapping-declaration-id-uuid-string">
-                <title>UUID String Algorithm</title>
-                <para>
+				</para>
+			</sect3>
+	        
+			<sect3 id="mapping-declaration-id-uuid-string">
+				<title>UUID String Algorithm</title>
+				<para>
 					The UUID is generated by calling <literal>Guid.NewGuid().ToByteArray()</literal> and 
 					then converting the <literal>byte[]</literal> into a <literal>char[]</literal>.  The
 					<literal>char[]</literal> is returned as a <literal>String</literal> consisting of
 					16 characters.
-                </para>
-            </sect3>
+				</para>
+			</sect3>
 
-            <sect3 id="mapping-declaration-id-guid">
-                <title>GUID Algorithms</title>
-                <para>
+			<sect3 id="mapping-declaration-id-guid">
+				<title>GUID Algorithms</title>
+				<para>
 					The <literal>guid</literal> identifier is generated by calling <literal>Guid.NewGuid()</literal>.
 					To address some of the performance concerns with using Guids as primary keys, foreign keys, and
 					as part of indexes with MS SQL the <literal>guid.comb</literal> can be used.  The benefit of using  
 					the <literal>guid.comb</literal> with other databases that support GUIDs has not been measured.
-                </para>
-            </sect3>
+				</para>
+			</sect3>
 
-            <sect3 id="mapping-declaration-id-sequences">
+			<sect3 id="mapping-declaration-id-sequences">
 				<title>Identity columns and Sequences</title>
-                <para>
-                    For databases which support identity columns (DB2, MySQL, Sybase, MS SQL), you
-                    may use <literal>identity</literal> key generation. For databases that support
-                    sequences (DB2, Oracle, PostgreSQL) you may use
-                    <literal>sequence</literal> style key generation. Both these strategies usually require
-                    two SQL queries to insert a new object.  When working with MS SQL and the 
-                    <literal>identity</literal> key generator then <literal>select SCOPE_IDENTITY()</literal>
-                    will be appended to the <literal>insert</literal> sql thus avoiding the executions
-                    of a two distinct <literal>IDbCommand</literal>s.
-                </para>
+				<para>
+					For databases which support identity columns (DB2, MySQL, Sybase, MS SQL), you
+					may use <literal>identity</literal> key generation. For databases that support
+					sequences (DB2, Oracle, PostgreSQL) you may use
+					<literal>sequence</literal> style key generation. Both these strategies usually require
+					two SQL queries to insert a new object.  When working with MS SQL and the 
+					<literal>identity</literal> key generator then <literal>select SCOPE_IDENTITY()</literal>
+					will be appended to the <literal>insert</literal> sql thus avoiding the executions
+					of a two distinct <literal>IDbCommand</literal>s.
+				</para>
 
-                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid">
-        <generator class="sequence">
-                <param name="sequence">uid_sequence</param>
-        </generator>
+				<programlisting><![CDATA[<id name="Id" type="Int64" column="uid">
+	<generator class="sequence">
+			<param name="sequence">uid_sequence</param>
+	</generator>
 </id>]]></programlisting>
 
-                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
-        <generator class="identity"/>
+				<programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
+	<generator class="identity"/>
 </id>]]></programlisting>
-            
-                <para>
-                    For cross-platform development, the <literal>native</literal> strategy will
-                    choose from the <literal>identity</literal>, <literal>sequence</literal> and
-                    <literal>hilo</literal> strategies, dependant upon the capabilities of the
-                    underlying database.
-                </para>
-            </sect3>
-            
-            <sect3 id="mapping-declaration-id-assigned">
-                <title>Assigned Identifiers</title>
-                <para>
-                    If you want the application to assign identifiers (as opposed to having
-                    NHibernate generate them), you may use the <literal>assigned</literal> generator.
-                    This special generator will use the identifier value already assigned to the
-                    object's identifier property. Be very careful when using this feature to not assign
-                    keys with business meaning (almost always a terrible design decision).
-                </para>
-                <para>
-                    Due to its inherent nature, entities that use this generator cannot be saved
-                    via the ISession's <literal>SaveOrUpdate()</literal> method. Instead you have to 
-                    explicitly specify to NHibernate if the object should be saved or updated 
-                    by calling either the <literal>Save()</literal> or <literal>Update()</literal> 
-                    method of the ISession.
-                </para>
-            </sect3>
+	        
+				<para>
+					For cross-platform development, the <literal>native</literal> strategy will
+					choose from the <literal>identity</literal>, <literal>sequence</literal> and
+					<literal>hilo</literal> strategies, dependant upon the capabilities of the
+					underlying database.
+				</para>
+			</sect3>
+	        
+			<sect3 id="mapping-declaration-id-assigned">
+				<title>Assigned Identifiers</title>
+				<para>
+					If you want the application to assign identifiers (as opposed to having
+					NHibernate generate them), you may use the <literal>assigned</literal> generator.
+					This special generator will use the identifier value already assigned to the
+					object's identifier property. Be very careful when using this feature to not assign
+					keys with business meaning (almost always a terrible design decision).
+				</para>
+				<para>
+					Due to its inherent nature, entities that use this generator cannot be saved
+					via the ISession's <literal>SaveOrUpdate()</literal> method. Instead you have to 
+					explicitly specify to NHibernate if the object should be saved or updated 
+					by calling either the <literal>Save()</literal> or <literal>Update()</literal> 
+					method of the ISession.
+				</para>
+			</sect3>
 		</sect2>
 		
 		<sect2 id="mapping-declaration-compositeid">
-            <title>composite-id</title>
+			<title>composite-id</title>
 
-            <programlisting>&lt;composite-id
-        name="propertyName"<co id="composite-id1-co" linkends="composite-id1" />
-        class="ClassName"<co id="composite-id2-co" linkends="composite-id2" />
-        unsaved-value="any|none"<co id="composite-id3-co" linkends="composite-id3" />
-        access="field|property|nosetter|ClassName"&gt;
+			<programlisting>&lt;composite-id
+	name="propertyName"<co id="composite-id1-co" linkends="composite-id1" />
+	class="ClassName"<co id="composite-id2-co" linkends="composite-id2" />
+	unsaved-value="any|none"<co id="composite-id3-co" linkends="composite-id3" />
+	access="field|property|nosetter|ClassName"&gt;
 
-        &lt;key-property name="propertyName" type="typename" column="column_name"/&gt;
-        &lt;key-many-to-one name="propertyName class="ClassName" column="column_name"/&gt;
-        ......
+	&lt;key-property name="propertyName" type="typename" column="column_name"/&gt;
+	&lt;key-many-to-one name="propertyName class="ClassName" column="column_name"/&gt;
+	......
 &lt;/composite-id&gt;</programlisting>
 
 			<para>
-                For a table with a composite key, you may map multiple properties of the class
-                as identifier properties. The <literal>&lt;composite-id&gt;</literal> element
-                accepts <literal>&lt;key-property&gt;</literal> property mappings and
-                <literal>&lt;key-many-to-one&gt;</literal> mappings as child elements.
-            </para>
-            
-            <programlisting><![CDATA[<composite-id>
-        <key-property name="medicareNumber"/>
-        <key-property name="dependent"/>
+				For a table with a composite key, you may map multiple properties of the class
+				as identifier properties. The <literal>&lt;composite-id&gt;</literal> element
+				accepts <literal>&lt;key-property&gt;</literal> property mappings and
+				<literal>&lt;key-many-to-one&gt;</literal> mappings as child elements.
+			</para>
+
+			<programlisting><![CDATA[<composite-id>
+	<key-property name="medicareNumber"/>
+	<key-property name="dependent"/>
 </composite-id>]]></programlisting>
 
-            <para>
-                Your persistent class <emphasis>must</emphasis> override <literal>Equals()</literal>
-                and <literal>GetHashCode()</literal> to implement composite identifier equality. It must
-                also be <literal>Serializable</literal>.
-            </para>
+			<para>
+				Your persistent class <emphasis>must</emphasis> override <literal>Equals()</literal>
+				and <literal>GetHashCode()</literal> to implement composite identifier equality. It must
+				also be <literal>Serializable</literal>.
+			</para>
 
-            <para>
-                Unfortunately, this approach to composite identifiers means that a persistent object 
-                is its own identifier. There is no convenient "handle" other than the object itself. 
-                You must instantiate an instance of the persistent class itself and populate its 
-                identifier properties before you can <literal>Load()</literal> the persistent state
-                associated with a composite key. We will describe a much more
-                convenient approach where the composite identifier is implemented as a seperate class
-                in TODO:LINKTOCOMPENENTS<!--<xref linkend="components-compositeid"/>-->. The attributes described below apply only
-                to this alternative approach:
-            </para>
+			<para>
+				Unfortunately, this approach to composite identifiers means that a persistent object 
+				is its own identifier. There is no convenient "handle" other than the object itself. 
+				You must instantiate an instance of the persistent class itself and populate its 
+				identifier properties before you can <literal>Load()</literal> the persistent state
+				associated with a composite key. We will describe a much more
+				convenient approach where the composite identifier is implemented as a seperate class
+				in TODO:LINKTOCOMPENENTS<!--<xref linkend="components-compositeid"/>-->. The attributes described below apply only
+				to this alternative approach:
+			</para>
 			
 			<calloutlist>
 				<callout arearefs="composite-id1-co" id="composite-id1">
 					<para>
 						<literal>name</literal> (optional): A property of component type that holds the
-                        composite identifier (see next section).
+						composite identifier (see next section).
 					</para>
 				</callout>  
 				<callout arearefs="composite-id2-co" id="composite-id2">
 					<para>
 						<literal>class</literal> (optional - defaults to the property type determined by 
-                        reflection): The component class used as a composite identifier (see next section).
+						reflection): The component class used as a composite identifier (see next section).
 					</para>
 				</callout>  
 				<callout arearefs="composite-id3-co" id="composite-id3">
 					<para>
 						<literal>unsaved-value</literal> (optional - defaults to <literal>none</literal>): 
-                        Indicates that transient instances should be considered newly instantiated, if set 
-                        to <literal>any</literal>.
+						Indicates that transient instances should be considered newly instantiated, if set 
+						to <literal>any</literal>.
 					</para>
 				</callout>  
 			</calloutlist> 
-            
-        </sect2>
-        
-        <sect2 id="mapping-declaration-discriminator">
-            <title>discriminator</title>
+	        
+		</sect2>
+	    
+		<sect2 id="mapping-declaration-discriminator">
+			<title>discriminator</title>
 
-            <para>
-                The <literal>&lt;discriminator&gt;</literal> element is required for polymorphic persistence 
-                using the table-per-class-hierarchy mapping strategy and declares a discriminator column of the 
-                table. The discriminator column contains marker values that tell the persistence layer what 
-                subclass to instantiate for a particular row. A restricted set of types may be used: 
-                <literal>String</literal>, <literal>Char</literal>, <literal>Int32</literal>, 
-                <literal>Byte</literal>, <literal>Int16</literal>, <literal>Boolean</literal>, 
-                <literal>YesNo</literal>, <literal>TrueFalse</literal>.
-            </para>
-            
-            <programlistingco>
-                <programlisting>&lt;discriminator
-        column="discriminator_column"<co id="discriminator1-co" linkends="discriminator1" />
-        type="discriminator_type"<co id="discriminator2-co" linkends="discriminator2" />
-        force="true|false"<co id="discriminator3-co" linkends="discriminator3" />
+			<para>
+				The <literal>&lt;discriminator&gt;</literal> element is required for polymorphic persistence 
+				using the table-per-class-hierarchy mapping strategy and declares a discriminator column of the 
+				table. The discriminator column contains marker values that tell the persistence layer what 
+				subclass to instantiate for a particular row. A restricted set of types may be used: 
+				<literal>String</literal>, <literal>Char</literal>, <literal>Int32</literal>, 
+				<literal>Byte</literal>, <literal>Int16</literal>, <literal>Boolean</literal>, 
+				<literal>YesNo</literal>, <literal>TrueFalse</literal>.
+			</para>
+	        
+			<programlisting>&lt;discriminator
+	column="discriminator_column"<co id="discriminator1-co" linkends="discriminator1" />
+	type="discriminator_type"<co id="discriminator2-co" linkends="discriminator2" />
+	force="true|false"<co id="discriminator3-co" linkends="discriminator3" />
 /&gt;</programlisting>
-                <calloutlist>
-                    <callout arearefs="discriminator1-co" id="discriminator1">
-                        <para>
-                            <literal>column</literal> (optional - defaults to <literal>class</literal>) the
-                            name of the discriminator column.
-                        </para>
-                    </callout>
-                    <callout arearefs="discriminator2-co" id="discriminator2">
-                        <para>
-                            <literal>type</literal> (optional - defaults to <literal>String</literal>) a
-                            name that indicates the Hibernate type
-                        </para>
-                    </callout>          
-                    <callout arearefs="discriminator3-co" id="discriminator3">
-                        <para>
-                            <literal>force</literal> (optional - defaults to <literal>false</literal>) 
-                            "force" NHibernate to specify allowed discriminator values even when retrieving 
-                            all instances of the root class.
-                        </para>
-                    </callout>          
-                </calloutlist>
-            </programlistingco>
+			<calloutlist>
+				<callout arearefs="discriminator1-co" id="discriminator1">
+					<para>
+						<literal>column</literal> (optional - defaults to <literal>class</literal>) the
+						name of the discriminator column.
+					</para>
+				</callout>
+				<callout arearefs="discriminator2-co" id="discriminator2">
+					<para>
+						<literal>type</literal> (optional - defaults to <literal>String</literal>) a
+						name that indicates the Hibernate type
+					</para>
+				</callout>          
+				<callout arearefs="discriminator3-co" id="discriminator3">
+					<para>
+						<literal>force</literal> (optional - defaults to <literal>false</literal>) 
+						"force" NHibernate to specify allowed discriminator values even when retrieving 
+						all instances of the root class.
+					</para>
+				</callout>          
+			</calloutlist>
 
-            <para>
-                Actual values of the discriminator column are specified by the
-                <literal>discriminator-value</literal> attribute of the <literal>&lt;class&gt;</literal> and
-                <literal>&lt;subclass&gt;</literal> elements.
-            </para>
-            
-            <para>
-                The <literal>force</literal> attribute is (only) useful if the table contains rows with
-                "extra" discriminator values that are not mapped to a persistent class. This will not
-                usually be the case.
-            </para>
-        </sect2>
+			<para>
+				Actual values of the discriminator column are specified by the
+				<literal>discriminator-value</literal> attribute of the <literal>&lt;class&gt;</literal> and
+				<literal>&lt;subclass&gt;</literal> elements.
+			</para>
+	        
+			<para>
+				The <literal>force</literal> attribute is (only) useful if the table contains rows with
+				"extra" discriminator values that are not mapped to a persistent class. This will not
+				usually be the case.
+			</para>
+		</sect2>
 
-        <sect2 id="mapping-declaration-version">
-            <title>version (optional)</title>
-            
-            <para>
-                The <literal>&lt;version&gt;</literal> element is optional and indicates that
-                the table contains versioned data. This is particularly useful if you plan to
-                use <emphasis>long transactions</emphasis> (see below).
-            </para>
-            
-            <programlistingco>
-                <programlisting>&lt;version
-        column="version_column"<co id="version1-co" linkends="version1" />
-        name="propertyName"<co id="version2-co" linkends="version2" />
-        type="typename"<co id="version3-co" linkends="version3" />
-        access="field|property|nosetter|ClassName"<co id="version4-co" linkends="version4" />
+		<sect2 id="mapping-declaration-version">
+			<title>version (optional)</title>
+	        
+			<para>
+				The <literal>&lt;version&gt;</literal> element is optional and indicates that
+				the table contains versioned data. This is particularly useful if you plan to
+				use <emphasis>long transactions</emphasis> (see below).
+			</para>
+		    
+			<programlisting>&lt;version
+	column="version_column"<co id="version1-co" linkends="version1" />
+	name="propertyName"<co id="version2-co" linkends="version2" />
+	type="typename"<co id="version3-co" linkends="version3" />
+	access="field|property|nosetter|ClassName"<co id="version4-co" linkends="version4" />
 /&gt;</programlisting>
-                <calloutlist>
-                    <callout arearefs="version1-co" id="version1">
-                        <para>
-                            <literal>column</literal> (optional - defaults to the property name): The name
-                            of the column holding the version number.
-                        </para>
-                    </callout>          
-                    <callout arearefs="version2-co" id="version2">
-                        <para>
-                            <literal>name</literal>: The name of a property  of the persistent class.
-                        </para>
-                    </callout>
-                    <callout arearefs="version3-co" id="version3">
-                        <para>
-                            <literal>type</literal> (optional - defaults to <literal>Int32</literal>): 
-                            The type of the version number.
-                        </para>
-                    </callout>          
-                   <callout arearefs="version4-co" id="version4">
-                        <para>
-                            <literal>access</literal> (optional - defaults to <literal>property</literal>): The
-                            strategy NHibernate should use for accessing the property value.
-                        </para>
-                    </callout>
-                </calloutlist>
-            </programlistingco>
-            
-            <para>
-                Version numbers may be of type <literal>Int64</literal>, <literal>Int32</literal>,
-                <literal>Int16</literal>, <literal>Ticks</literal>, <literal>Timestamp</literal>, 
-                or <literal>TimeSpan</literal>.
-            </para>
+			<calloutlist>
+				<callout arearefs="version1-co" id="version1">
+					<para>
+						<literal>column</literal> (optional - defaults to the property name): The name
+						of the column holding the version number.
+					</para>
+				</callout>          
+				<callout arearefs="version2-co" id="version2">
+					<para>
+						<literal>name</literal>: The name of a property  of the persistent class.
+					</para>
+				</callout>
+				<callout arearefs="version3-co" id="version3">
+					<para>
+						<literal>type</literal> (optional - defaults to <literal>Int32</literal>): 
+						The type of the version number.
+					</para>
+				</callout>          
+				<callout arearefs="version4-co" id="version4">
+					<para>
+						<literal>access</literal> (optional - defaults to <literal>property</literal>): The
+						strategy NHibernate should use for accessing the property value.
+					</para>
+				</callout>
+			</calloutlist>
+	        
+			<para>
+				Version numbers may be of type <literal>Int64</literal>, <literal>Int32</literal>,
+				<literal>Int16</literal>, <literal>Ticks</literal>, <literal>Timestamp</literal>, 
+				or <literal>TimeSpan</literal>.
+			</para>
 
-        </sect2>
-        	
+		</sect2>
+	        
 		<sect2 id="mapping-declaration-timestamp">
-            <title>timestamp (optional)</title>
+			<title>timestamp (optional)</title>
 
-            <para>
-                The optional <literal>&lt;timestamp&gt;</literal> element indicates that the table contains 
-                timestamped data. This is intended as an alternative to versioning. Timestamps are by nature
-                a less safe implementation of optimistic locking. However, sometimes the application might
-                use the timestamps in other ways.
-            </para>
-            
-            <programlistingco>      
-                <programlisting>&lt;timestamp
-        column="timestamp_column"<co id="timestamp1-co" linkends="timestamp1" />
-        name="propertyName"<co id="timestamp2-co" linkends="timestamp2" />
-        access="field|property|nosetter|ClassName"<co id="timestamp3-co" linkends="timestamp3" />
+			<para>
+				The optional <literal>&lt;timestamp&gt;</literal> element indicates that the table contains 
+				timestamped data. This is intended as an alternative to versioning. Timestamps are by nature
+				a less safe implementation of optimistic locking. However, sometimes the application might
+				use the timestamps in other ways.
+			</para>
+	        
+			<programlisting>&lt;timestamp
+	column="timestamp_column"<co id="timestamp1-co" linkends="timestamp1" />
+	name="propertyName"<co id="timestamp2-co" linkends="timestamp2" />
+	access="field|property|nosetter|ClassName"<co id="timestamp3-co" linkends="timestamp3" />
 /&gt;</programlisting>
-                <calloutlist>
-                    <callout arearefs="timestamp1-co" id="timestamp1">
-                        <para>
-                            <literal>column</literal> (optional - defaults to the property name): The name
-                            of a column holding the timestamp.
-                        </para>
-                    </callout>                   
-                    <callout arearefs="timestamp2-co" id="timestamp2">
-                        <para>
-                            <literal>name</literal>: The name of a property of .NET type <literal>DateTime</literal>.
-                        </para>
-                    </callout>
-                   <callout arearefs="timestamp3-co" id="timestamp3">
-                        <para>
-                            <literal>access</literal> (optional - defaults to <literal>property</literal>): The
-                            strategy NHibernate should use for accessing the property value.
-                        </para>
-                    </callout>
-                </calloutlist>
-            </programlistingco>
-            
-            <para>
-                Note that <literal>&lt;timestamp&gt;</literal> is equivalent to 
-                <literal>&lt;version type="timestamp"&gt;</literal>.
-            </para>
-        </sect2>
+			<calloutlist>
+				<callout arearefs="timestamp1-co" id="timestamp1">
+					<para>
+						<literal>column</literal> (optional - defaults to the property name): The name
+						of a column holding the timestamp.
+					</para>
+				</callout>                   
+				<callout arearefs="timestamp2-co" id="timestamp2">
+					<para>
+						<literal>name</literal>: The name of a property of .NET type <literal>DateTime</literal>.
+					</para>
+				</callout>
+				<callout arearefs="timestamp3-co" id="timestamp3">
+					<para>
+						<literal>access</literal> (optional - defaults to <literal>property</literal>): The
+						strategy NHibernate should use for accessing the property value.
+					</para>
+				</callout>
+			</calloutlist>
+	        
+			<para>
+				Note that <literal>&lt;timestamp&gt;</literal> is equivalent to 
+				<literal>&lt;version type="timestamp"&gt;</literal>.
+			</para>
+		</sect2>
 
 		<sect2 id="mapping-declaration-property">
 			<title>property</title>
@@ -841,13 +833,13 @@
 			</para>
 	        
 			<programlisting>&lt;property
-        name="propertyName"<co id="property1-co" linkends="property1" />
-        column="column_name"<co id="property2-co" linkends="property2" />
-        type="typename"<co id="property3-co" linkends="property3" />
-        update="true|false"<co id="property4-co" linkends="property4" />
-        insert="true|false"<co id="property5-co" linkends="property5" />
-        formula="arbitrary SQL expression"<co id="property6-co" linkends="property6" />
-        access="field|property|nosetter|ClassName"<co id="property7-co" linkends="property7" />
+	name="propertyName"<co id="property1-co" linkends="property1" />
+	column="column_name"<co id="property2-co" linkends="property2" />
+	type="typename"<co id="property3-co" linkends="property3" />
+	update="true|false"<co id="property4-co" linkends="property4" />
+	insert="true|false"<co id="property5-co" linkends="property5" />
+	formula="arbitrary SQL expression"<co id="property6-co" linkends="property6" />
+	access="field|property|nosetter|ClassName"<co id="property7-co" linkends="property7" />
 /&gt;</programlisting>
 			<calloutlist>
 				<callout arearefs="property1-co" id="property1">
@@ -1062,10 +1054,155 @@
 				</table>
 			</para>
 		</sect2>
-		<!--
-		TODO: resume here
 		<sect2 id="mapping-declaration-manytoone">
-		-->
+			<title>many-to-one</title>
+
+			<para>An ordinary association to another persistent class is declared
+			using a many-to-one element. The relational model is a many-to-one
+			association. (Its really just an object reference.) </para>
+
+            <programlisting>&lt;many-to-one
+        name="propertyName"<co id="manytoone1-co" />
+        column="column_name"<co id="manytoone2-co" />
+        class="ClassName"<co id="manytoone3-co" />
+        cascade="all|none|save-update|delete"<co id="manytoone4-co" />
+        outer-join="true|false|auto"<co id="manytoone5-co" />
+        update="true|false"<co id="manytoone6-co" />
+        insert="true|false"<co id="manytoone6-co" />
+        access="field|property|ClassName"<co id="manytoone7-co" />
+/&gt;</programlisting>
+			<calloutlist>
+				<callout arearefs="manytoone1-co" id="manytoone1">
+					<para>
+						<literal>name</literal>: The name of the property.
+					</para>   
+				</callout>
+				<callout arearefs="manytoone2-co" id="manytoone2">
+					<para>
+						<literal>column</literal> (optional): The name of the column.
+					</para>  
+				</callout>
+				<callout arearefs="manytoone3-co" id="manytoone3">
+					<para>
+						<literal>class</literal> (optional - defaults to the property type
+						determined by reflection): The name of the associated class.
+					</para>
+				</callout>
+				<callout arearefs="manytoone4-co" id="manytoone4">
+					<para>
+						<literal>cascade</literal> (optional): Specifies which operations should
+						be cascaded from the parent object to the associated object.
+					</para>    
+				</callout>
+				<callout arearefs="manytoone5-co" id="manytoone5">
+					<para>
+						<literal>outer-join</literal> (optional - defaults to <literal>auto</literal>): 
+						enables outer-join fetching for this association when 
+						<literal>hibernate.use_outer_join</literal> is set.
+					</para> 
+				</callout>
+				<callout arearefs="manytoone6-co" id="manytoone6">
+					<para>
+						<literal>update, insert</literal> (optional - defaults to <literal>true</literal>) 
+						specifies that the mapped columns should be included in SQL <literal>UPDATE</literal> 
+						and/or <literal>INSERT</literal> statements. Setting both to <literal>false</literal>
+						allows a pure "derived" association whose value is initialized from some other
+						property that maps to the same colum(s) or by a trigger or other application.
+					</para>   
+				</callout>
+				<callout arearefs="manytoone7-co" id="manytoone7">
+					<para>
+						<literal>access</literal> (optional - defaults to
+						<literal>property</literal>): The strategy NHibernate should use for
+						accessing the property value.
+					</para>
+				</callout>
+		</calloutlist>
+		<para>
+			The <literal>cascade</literal> attribute permits the following values: 
+			<literal>all</literal>, <literal>save-update</literal>, <literal>delete</literal>,
+			<literal>none</literal>. Setting a value other than <literal>none</literal>
+			will propagate certain operations to the associated (child) object.
+			See "Lifecycle Objects" below.
+		</para>
+		
+		<para>
+			The <literal>outer-join</literal> attribute accepts three different values:
+		</para>
+		
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					<literal>auto</literal> (default) Fetch the association using an
+					outerjoin if the associated class has no proxy
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<literal>true</literal> Always fetch the association using an 
+					outerjoin
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<literal>false</literal> Never fetch the association using an
+					outerjoin
+				</para>
+			</listitem>
+		</itemizedlist>
+	</sect2>
+	<sect2 id="mapping-declaration-onetoone">
+		<title>one-to-one</title>
+		
+		<para>
+			A one-to-one association to another persistent class is declared using a 
+			<literal>one-to-one</literal> element.
+		</para>
+		<para>TODO: mapping sample</para>
+	</sect2>
+	<sect2 id="mapping-declaration-component">
+		<title>component, dynamic-component</title>
+		
+		<para>
+			The <literal>&lt;component&gt;</literal> element maps properties of a
+			child object to columns of the table of a parent class. Components may, in
+			turn, declare their own properties, components or collections. See
+			"Components" below.
+		</para>
+		<para>TODO: mapping sample</para>
+	</sect2>
+	<sect2 id="mapping-declaration-subclass">
+		<title>subclass</title>
+		
+		<para>
+			Finally, polymorphic persistence requires the declaration of each subclass of
+			the root persistent class. For the (recommended) table-per-class-hierarchy
+			mapping strategy, the <literal>&lt;subclass&gt;</literal> declaration is used.
+		</para>
+		<para>TODO: mapping sample</para>
+	</sect2>
+	<sect2 id="mapping-declaration-joinedsubclass">
+		<title>joined-subclass</title>
+		
+		<para>
+			Alternatively, a subclass that is persisted to its own table (table-per-subclass 
+			mapping strategy) is declared using a <literal>&lt;joined-subclass&gt;</literal>
+			element.
+		</para>
+		<para>TODO: mapping sample</para>
+		</sect2>
+		<sect2 id="mapping-declaration-collections">
+			<title>map, set, list, bag</title>
+		
+			<para>
+				Collections are discussed later.
+			</para>
+		</sect2>
+		
+		<sect2 id="mapping-declaration-import">
+			<title>import</title>
+			<para>TODO: mapping sample</para>
+		</sect2>
 	</sect1>
 	<sect1 id="mapping-types">
 		<title>NHibernate Types</title>
@@ -1328,28 +1465,93 @@
 				<literal>NHibernate.Type.TypeFactory</literal>. 
 			</para>
 		</sect2>
-	        
+		<sect2 id="mapping-types-custom">
+			<title>Custom value types</title>
+	
+			<para>
+				It is relatively easy for developers to create their own value types. For example,
+				you might want to persist properties of type <literal>Int64</literal>
+				to <literal>VARCHAR</literal> columns. NHibernate does not provide a built-in type 
+				for this. But custom types are not limited to mapping a property (or collection element) 
+				to a single table column. So, for example, you might have a property 
+				<literal>Name {get; set;}</literal> of type <literal>String</literal> that is persisted to the columns 
+				<literal>FIRST_NAME</literal>, <literal>INITIAL</literal>, <literal>SURNAME</literal>. 
+			</para>
+	
+			<para>
+				To implement a custom type, implement either <literal>NHibernate.IUserType</literal> 
+				or <literal>NHibernate.ICompositeUserType</literal> and declare properties using the 
+				fully qualified name of the type. Check out 
+				<literal>NHibernate.DomainModel.DoubleStringType</literal> to see the kind of things that 
+				are possible.
+			</para>
+
+			<programlisting><![CDATA[<property name="TwoStrings" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
+	<column name="first_string"/>
+	<column name="second_string"/>
+</property>]]></programlisting>
+
+			<para>
+				Notice the use of <literal>&lt;column&gt;</literal> tags to map a property to multiple
+				columns.
+			</para>
+			<para>
+				Even though NHibernate's rich range of built-in types and support for components means you
+				will very rarely <emphasis>need</emphasis> to use a custom type, it is nevertheless
+				considered good form to use custom types for (non-entity) classes that occur frequently
+				in your application. For example, a <literal>MonetoryAmount</literal> class is a good
+				candidate for a <literal>ICompositeUserType</literal>, even though it could easily be mapped 
+				as a component. One motivation for this is abstraction. With a custom type, your mapping 
+				documents would be future-proofed against possible changes in your way of representing 
+				monetory values.
+			</para>
+		</sect2>
+		<sect2 id="mapping-types-anymapping">
+			<title>Any type mappings</title>
+			<para>TODO</para>
+		</sect2>
+	
 	</sect1>	
 
 	
 	<sect1 id="mapping-quotedidentifiers">
-			<title>SQL quoted identifiers</title>
-			<para>
-				You may force NHibernate to quote an identifier in the generated SQL by enclosing the table or
-				column name in backticks in the mapping document.  NHibernate will use the correct quotation
-				style for the SQL <literal>Dialect</literal> (usually double quotes, but brackets for SQL
-				Server and backticks for MySQL).
-			</para>
+		<title>SQL quoted identifiers</title>
+		<para>
+			You may force NHibernate to quote an identifier in the generated SQL by enclosing the table or
+			column name in backticks in the mapping document.  NHibernate will use the correct quotation
+			style for the SQL <literal>Dialect</literal> (usually double quotes, but brackets for SQL
+			Server and backticks for MySQL).
+		</para>
 
-			<programlisting><![CDATA[
+		<programlisting><![CDATA[
 <class name="LineItem" table="`Line Item`">
-    <id name="id" column="`Item Id`">
-        <generator class="assigned"/>
-    </id>
-    <property name="itemNumber" column="`Item #`"/>
-    ...
+	<id name="id" column="`Item Id`">
+		<generator class="assigned"/>
+	</id>
+	<property name="itemNumber" column="`Item #`"/>
+	...
 </class>]]></programlisting>
 
-    </sect1>
+	</sect1>
+	<sect1 id="mapping-modularfiles">
+		<title>Modular mapping files</title>
+		<para>
+			It is possible to define <literal>subclass</literal> and <literal>joined-subclass</literal>
+			mappings in seperate mapping documents, directly beneath <literal>hibernate-mapping</literal>.
+			This allows you to extend a class hierachy just by adding a new mapping file. You must
+			specify an <literal>extends</literal> attribute in the subclass mapping, naming a previously
+			mapped superclass.  If you are configuring NHibernate by using Embedded Resources then the
+			hbm.xml files are configured in the correct order.  If you are manually adding them or specifying
+			them in the cfg.xml file then the ordering of the mapping documents is important!
+		</para>
+
+		<programlisting><![CDATA[
+<hibernate-mapping>
+	<subclass name="Eg.Subclass.DomesticCat, Eg" extends="Eg.Cat, Eg" discriminator-value="D">
+		<property name="Name" type="String"/>
+	</subclass>
+</hibernate-mapping>]]></programlisting>
+
+	</sect1>
 
 </chapter>
