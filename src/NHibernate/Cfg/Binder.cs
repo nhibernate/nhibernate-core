@@ -1061,6 +1061,7 @@ namespace NHibernate.Cfg {
 
 		private static void AddIndexForIndexedCollection(IndexedCollection model)
 		{
+			//TODO: Find out why this is commented out
 //			 if ( model.IsOneToMany ) {
 //				Index uniqueKey = model.Table.Index("x");
 //				Iterator cols = model.getKey().getColumnIterator();
