@@ -36,7 +36,7 @@ namespace NHibernate.Loader {
 		/// The suffix identifies a particular column of results in the SQL <c>IDataReader</c>;
 		/// implemented by all subclasses
 		/// </summary>
-		public abstract string[] Suffixes { get; set; }
+		protected abstract string[] Suffixes { get; set; }
 
 		/// <summary>
 		/// An (optional) persister for a collection to be initialized; only collection loaders
@@ -169,7 +169,7 @@ namespace NHibernate.Loader {
 			return results;
 		}
 
-		protected object GetResultColumnOrRow(object[] row, IDataReader rs, ISessionImplementor session) {
+		protected virtual object GetResultColumnOrRow(object[] row, IDataReader rs, ISessionImplementor session) {
 			return row;
 		}
 
@@ -449,7 +449,7 @@ namespace NHibernate.Loader {
 			return DoFind(session, new object[] {id}, new IType[] {type}, null, null, collection, owner, true, null, null);
 		}
 
-		protected IList Find(
+		protected virtual IList Find(
 			ISessionImplementor session,
 			object[] values,
 			IType[] types,

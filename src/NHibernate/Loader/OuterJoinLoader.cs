@@ -222,7 +222,7 @@ namespace NHibernate.Loader {
 				.Append( persister.PropertySelectFragment(alias, suffix) );
 		}
 
-		public override string[] Suffixes {
+		protected override string[] Suffixes {
 			get { return suffixes; }
 			set { suffixes = value; }
 		}

@@ -36,7 +36,7 @@ namespace NHibernate.Loader {
 		protected override CollectionPersister CollectionPersister {
 			get { return null; }
 		}
-		public override string[] Suffixes {
+		protected override string[] Suffixes {
 			get { return NoSuffix; }
 			set { throw new NotImplementedException(); }
 		}
