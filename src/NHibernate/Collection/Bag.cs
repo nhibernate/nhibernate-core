@@ -297,6 +297,9 @@ namespace NHibernate.Collection
 			}
 			else 
 			{
+				//TODO: take a look at this - I don't like it because it changes the 
+				// meaning of Add - instead of returning the index it was added at 
+				// returns a "fake" index - not consistent with IList interface...
 				return -1;
 			}
 		}
