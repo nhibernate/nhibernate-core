@@ -93,6 +93,7 @@ namespace NHibernate.Type
 			TypeFactory.GetDateType(); 
 			TypeFactory.GetDecimalType();  
 			TypeFactory.GetDoubleType(); 
+			TypeFactory.GetGuidType();
 			TypeFactory.GetInt16Type();
 			TypeFactory.GetInt32Type();
 			TypeFactory.GetInt64Type();
@@ -609,6 +610,25 @@ namespace NHibernate.Type
 			{
 				returnType = new DoubleType(SqlTypeFactory.GetDouble(length));
 				AddToTypeOfNameWithLength(key, returnType);
+			}
+
+			return returnType;
+			
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public static NullableType GetGuidType() 
+		{
+
+			string key = typeof(GuidType).FullName;
+			NullableType returnType = (NullableType)typeByTypeOfName[key];
+			if(returnType==null) 
+			{
+				returnType = new GuidType(SqlTypeFactory.GetGuid());
+				AddToTypeOfName(key, returnType);
 			}
 
 			return returnType;

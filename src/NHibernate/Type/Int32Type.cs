@@ -1,7 +1,6 @@
 using System;
 using System.Data;
 
-//using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {

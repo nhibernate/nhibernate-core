@@ -64,6 +64,10 @@ namespace NHibernate {
 		/// </summary>
 		public static readonly NullableType Double = TypeFactory.GetDoubleType(); 
 		
+		/// <summary>
+		/// NHibernate Guid type.
+		/// </summary>
+		public static readonly NullableType Guid = TypeFactory.GetGuidType();
 		
 		/// <summary>
 		/// NHibernate System.Int16 (short in C#) type
