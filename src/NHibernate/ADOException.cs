@@ -13,7 +13,7 @@ namespace NHibernate {
 
 		public ADOException(string str, Exception root) : base(str, root) {
 			sqle = root;
-			log.Error(str, root); 
+			log.Error(str, root);  
 		}
 
 	}
