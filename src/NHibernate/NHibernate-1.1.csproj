@@ -1403,6 +1403,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlCommand\Template.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlTypes\AnsiStringFixedLengthSqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
