@@ -126,7 +126,8 @@ namespace NHibernate.Impl {
 				// got into here because the command was being initialized and had a null Transaction - probably
 				// don't need to be confused by that - just a normal part of initialization...
 				if(command.Transaction!=null) 
-					log.Warn("The IDbCommand had a different Transaction than the Session.");
+					log.Warn("The IDbCommand had a different Transaction than the Session.  This can occur when " +
+							"Disconnecting and Reconnecting Sessions because the PreparedCommand Cache is Session specific.");
 		
 				command.Transaction = sessionAdoTrx; 
 			}
@@ -179,7 +180,9 @@ namespace NHibernate.Impl {
 
 			if(preparedCommands.ContainsKey(sqlString)) 
 			{
-				 return (IDbCommand)preparedCommands[sqlString];
+				cmd = (IDbCommand)preparedCommands[sqlString];
+				cmd = JoinTransaction(cmd);
+				return cmd;
 			}
 
 			cmd = this.BuildCommand(sqlString);
