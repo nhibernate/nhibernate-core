@@ -20,9 +20,9 @@ using System.Runtime.CompilerServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersionAttribute("0.0.5000.3")]
+[assembly: AssemblyVersionAttribute("0.0.5000.4")]
 [assembly: AssemblyInformationalVersionAttribute("0.0")]
-[assembly: AssemblyFileVersionAttribute("0.0000.3")]
+[assembly: AssemblyFileVersionAttribute("0.0000.4")]
 
 [assembly: AssemblyDelaySignAttribute(false)]
 //[assembly: AssemblyKeyFile("..\\..\\NHibernate.snk")]
