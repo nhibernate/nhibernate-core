@@ -19,7 +19,13 @@ namespace NHibernate.Sql {
 		}
 
 		public Insert AddColumn(string columnName) {
-			return AddColumn(columnName, "?");
+			// PORT NOTE:
+			// this is .NET fix to questionmark placeholder problem
+
+			if(dialect.UseNamedParameters)
+				return AddColumn(columnName, dialect.NamedParametersPrefix + columnName);
+			else 
+				return AddColumn(columnName, "?");
 		}
 
 		public Insert AddColumns(string[] columnNames) {
@@ -61,14 +67,14 @@ namespace NHibernate.Sql {
 				foreach(string key in columns.Keys) {
 					i++;
 					buf.Append( key );
-					if (i<columns.Count-1) buf.Append(StringHelper.CommaSpace);
+					if (i<columns.Count) buf.Append(StringHelper.CommaSpace);
 				}
 				buf.Append(") values (");
 				i = 0;
 				foreach(string value in columns.Values) {
 					i++;
 					buf.Append( value );
-					if (i<columns.Count-1) buf.Append(StringHelper.CommaSpace);
+					if (i<columns.Count) buf.Append(StringHelper.CommaSpace);
 				}
 				buf.Append(')');
 			}

@@ -14,8 +14,13 @@ namespace NHibernate.Sql {
 		private string[] primaryKeyColumnNames;
 		private string versionColumnName;
 		private string where;
+		private Dialect.Dialect dialect;
 
 		private SortedList columns = new SortedList();
+
+		public Update(Dialect.Dialect dialect) {
+			this.dialect = dialect;
+		}
  
 		public Update AddColumns(string[] columnNames) {
 			for (int i=0; i<columnNames.Length; i++ ) {
@@ -32,7 +37,10 @@ namespace NHibernate.Sql {
 		}
 
 		public Update AddColumn(string columnName) {
-			return AddColumn(columnName, "?");
+			if(dialect.UseNamedParameters)
+				return AddColumn(columnName, dialect.NamedParametersPrefix + columnName);
+			else 
+				return AddColumn(columnName, "?");
 		}
 
 		public Update AddColumn(string columnName, string value) {
@@ -55,6 +63,7 @@ namespace NHibernate.Sql {
 		}
 
 		public string ToStatementString() {
+			bool useNamedPars = dialect.UseNamedParameters;
 			StringBuilder buf = new StringBuilder( columns.Count * 15 + tableName.Length + 10 );
 			buf.Append("update ")
 				.Append(tableName)
@@ -67,17 +76,37 @@ namespace NHibernate.Sql {
 					.Append(columns[key]);
 				if (i<columns.Count-1) buf.Append(StringHelper.CommaSpace);
 			}
-			buf.Append(" where ")
-				.Append( string.Join("=? and ", primaryKeyColumnNames) )
-				.Append("=?");
+			buf.Append(" where ");
+			if(useNamedPars) {
+				for(int j=0; j<primaryKeyColumnNames.Length; j++) {
+					buf.Append(primaryKeyColumnNames[j]);
+					buf.Append('"');
+					buf.Append(dialect.NamedParametersPrefix);
+					buf.Append(primaryKeyColumnNames[j]);
+					if( j==primaryKeyColumnNames.Length-1) break;
+					buf.Append(" and ");
+				}
+			}
+			else {
+				buf.Append( string.Join("=? and ", primaryKeyColumnNames) )
+					.Append("=?");
+			}
+				
 			if (where!=null) {
 				buf.Append(" and ")
 					.Append(where);
 			}
 			if (versionColumnName!=null) {
 				buf.Append(" and ")
-					.Append(versionColumnName)
-					.Append("=?");
+					.Append(versionColumnName);
+				if(useNamedPars) {
+					buf.Append("=")
+						.Append(dialect.NamedParametersPrefix)
+						.Append(versionColumnName);
+				}
+				else {
+					buf.Append("=?");
+				}
 			}
 			return buf.ToString();
 		}
