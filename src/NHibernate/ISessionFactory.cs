@@ -14,9 +14,9 @@ namespace NHibernate {
 	/// obtain <c>ISession</c>s from the factory. Implementors must be threadsafe.
 	/// </para>
 	/// <para>
-	/// The <c>ISessionFactory</c> is controlled by the following properties. Properties may either
-	/// be <c>System</c> properties, properties defined in a resource named <c>/hibernate.properties</c>
-	/// in the path.
+	/// <c>ISessionFactory</c>s are immutable. The behaviour of a <c>SessionFactory</c>
+	/// is controlled by properties supplied at configuration time.
+	/// These properties are defined on <c>Environment</c>
 	/// </para>
 	/// </remarks>
 	public interface ISessionFactory {
@@ -82,5 +82,14 @@ namespace NHibernate {
 		/// </summary>
 		/// <returns></returns>
 		IDictionary GetAllCollectionMetadata();
+
+		/// <summary>
+		/// Destroy this <c>SessionFactory</c> and release all resources 
+		/// connection pools, etc). It is the responsibility of the application
+		/// to ensure that there are no open <c>Session</c>s before calling
+		/// <c>close()</c>. 
+		/// </summary>
+		void Close(); 
+
 	}
 }
