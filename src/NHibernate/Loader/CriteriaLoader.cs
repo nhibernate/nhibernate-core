@@ -33,24 +33,17 @@ namespace NHibernate.Loader
 			
 			StringBuilder orderByBuilder = new StringBuilder(60);
 
-			// TODO: H2.0.3 has code here to iterateExpressions() - our code is in the Expression.ToSqlString()
-			// code I believe - verify this.
-			bool orderByNeeded = true;
 			bool commaNeeded = false;
 			iter = criteria.IterateOrderings(); 
 			
 			while ( iter.MoveNext() ) 
 			{ 
-				//TODO: H2.0.3 - this is not in H2.0.3 - where did it move to?
-				//if(orderByNeeded) orderByBuilder.Append(" ORDER BY ");
-				orderByNeeded = false;
-
 				Order ord = (Order) iter.Current; 
-				orderByBuilder.Append(ord.ToStringForSql(factory, criteria.PersistentClass, alias));
 				
 				if(commaNeeded) orderByBuilder.Append(StringHelper.CommaSpace); 
 				commaNeeded = true;
-
+				
+				orderByBuilder.Append(ord.ToStringForSql(factory, criteria.PersistentClass, alias));
 			} 
 
 			RenderStatement(criteria.Expression.ToSqlString(factory, criteria.PersistentClass, alias), orderByBuilder.ToString(), factory);
