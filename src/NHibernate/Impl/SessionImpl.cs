@@ -1,19 +1,20 @@
 using System;
-using System.Data;
-using System.Text;
 using System.Collections;
+using System.Data;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
-using NHibernate.Type;
+
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Hql;
+using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Persister;
 using NHibernate.Proxy;
-using NHibernate.Hql;
+using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Id;
 
 namespace NHibernate.Impl 
 {
