@@ -1193,10 +1193,11 @@ namespace NHibernate.Persister
 
 				if ( IsVersioned ) 
 				{
-					VersionType.NullSafeSet( statements[0], version, IdentifierColumnNames.Length + 1 , session );
+					// don't need to add the 1 because the parameter indexes begin at 0, unlike jdbc's which begin at 1
+					VersionType.NullSafeSet( statements[0], version, IdentifierColumnNames.Length , session );
 				}
 
-				for (int i=tableNames.Length-1; i>=0; i-- ) 
+				for (int i=naturalOrderTableNames.Length-1; i>=0; i-- ) 
 				{
 					// Do the key. The key is immutable so we can use the _current_ object state
 					IdentifierType.NullSafeSet( statements[i], id, 0, session );
