@@ -26,8 +26,10 @@ namespace NHibernate.SqlTypes
 		private byte _precision;
 		private byte _scale;
 
-		private bool _lengthDefined = false;
-		private bool _precisionDefined = false;
+		// false by default
+		private bool _lengthDefined;
+		// false by default
+		private bool _precisionDefined;
 
 		/// <summary>
 		/// 
