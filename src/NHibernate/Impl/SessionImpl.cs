@@ -185,10 +185,16 @@ namespace NHibernate.Impl
 		private int cascading = 0;
 
 		[NonSerialized]
+		private int loadCounter = 0;
+
+		[NonSerialized]
 		private bool flushing;
 
 		[NonSerialized]
 		private IBatcher batcher;
+
+		[NonSerialized]
+		private IList nonlazyCollections = new ArrayList(20);
 
 		#region System.Runtime.Serialization.ISerializable Members 
 
@@ -2532,7 +2538,7 @@ namespace NHibernate.Impl
 			}
 
 			AddEntry( result, Status.Loaded, values, id, version, LockMode.None, true, subclassPersister );
-			// TODO: InitializeNonLazyCollections();
+			InitializeNonLazyCollections();
 
 			// upgrate lock if necessary;
 			Lock( result, lockMode );
@@ -3488,7 +3494,7 @@ namespace NHibernate.Impl
 						if( entry.dorecreate )
 						{
 							log.Debug( "forcing collection initialization" );
-							coll.ForceLoad();
+							coll.ForceInitialization();
 						}
 					}
 				}
@@ -3512,6 +3518,7 @@ namespace NHibernate.Impl
 		}
 
 		private IDictionary loadingCollections = new Hashtable();
+
 		private string loadingRole;
 
 		private sealed class LoadingCollectionEntry
@@ -3647,6 +3654,42 @@ namespace NHibernate.Impl
 				// or should it actually throw an exception?
 				old.UnsetSession(this);
 				collectionEntries.Remove(old);
+			}
+		}
+
+		public void BeforeLoad()
+		{
+			loadCounter++;
+		}
+
+		public void AfterLoad()
+		{
+			loadCounter--;
+		}
+
+		public void InitializeNonLazyCollections()
+		{
+			if( loadCounter==0 )
+			{
+				log.Debug( "initializing non-lazy collections" );
+				// Do this work only at the very highest level of the load
+				
+				// Don't let this method be called recursively
+				loadCounter++;
+				try 
+				{
+					while (nonlazyCollections.Count > 0)
+					{
+						//note that each iteration of the loop may add new elements
+						PersistentCollection collection = (PersistentCollection)nonlazyCollections[ nonlazyCollections.Count - 1 ];
+						nonlazyCollections.RemoveAt( nonlazyCollections.Count - 1 );
+						collection.ForceInitialization();
+					}
+				}
+				finally 
+				{
+					loadCounter--;
+				}
 			}
 		}
 
@@ -4544,7 +4587,7 @@ namespace NHibernate.Impl
 				}
 				else if ( !persister.IsLazy ) 
 				{
-					//nonlazyCollections.Add(collection);
+					nonlazyCollections.Add(collection);
 				}
 				return collection.GetValue();
 			}

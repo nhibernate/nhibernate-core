@@ -591,7 +591,7 @@ namespace NHibernate.Test
 				"select bar, b " +
 				"from Bar bar " + 
 				"inner join bar.Baz baz inner join baz.CascadingBars b " +
-				"where bar.Name like 'bar%'" );
+				"where bar.Name ilike 'bar%'" );
 			list = q.List();
 			Assert.AreEqual( 1, list.Count );
 
@@ -2784,10 +2784,10 @@ namespace NHibernate.Test
 				//s.Flush();
 				t.Commit();
 			}
-			catch (Exception e) 
+			catch (Exception) 
 			{
 				t.Rollback();
-				throw e;
+				throw;
 			}
 			finally 
 			{
@@ -2822,10 +2822,10 @@ namespace NHibernate.Test
 				// s.Flush();
 				t.Commit();
 			}
-			catch(Exception e) 
+			catch(Exception) 
 			{
 				t.Rollback();
-				throw e;
+				throw;
 			}
 			finally 
 			{
@@ -3643,7 +3643,7 @@ namespace NHibernate.Test
 				enumer = baz.FooBag.GetEnumerator();
 				enumer.MoveNext();
 				Assert.IsFalse( enumer.Current is Proxy.INHibernateProxy ); // many-to-many outer-join="true"
-		}
+			}
 
 			enumer = baz.FooSet.GetEnumerator();
 			enumer.MoveNext();
@@ -3684,5 +3684,34 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+		[Test]
+		public void NonLazyCollections()
+		{
+			object glarchId;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Glarch glarch1 = new Glarch();
+				glarch1.ProxySet = new Iesi.Collections.ListSet();
+
+				Glarch glarch2 = new Glarch();
+				glarch1.ProxySet.Add( glarch1 );
+
+				s.Save( glarch2 );
+				glarchId = s.Save( glarch1 );
+				s.Flush();
+			}
+
+			Glarch loadedGlarch;
+			using( ISession s = sessions.OpenSession() )
+			{
+				loadedGlarch = (Glarch)s.Get( typeof( Glarch ), glarchId );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( loadedGlarch.ProxySet ) );
+			}
+
+			// ProxySet is a non-lazy collection, so this should work outside
+			// a session.
+			Assert.AreEqual( 1, loadedGlarch.ProxySet.Count );
+		}
 	}
 }

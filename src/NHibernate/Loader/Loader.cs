@@ -122,6 +122,36 @@ namespace NHibernate.Loader
 			return false;
 		}
 
+		// This method is called DoQueryAndInitializeNonLazyCollections in H2.1,
+		// since DoFind is called DoQuery and is split into several smaller methods.
+		private IList DoFindAndInitializeNonLazyCollections(
+			ISessionImplementor session,
+			QueryParameters parameters,
+			object optionalObject,
+			object optionalID,
+			PersistentCollection optionalCollection,
+			object optionalCollectionOwner,
+			bool returnProxies )
+		{
+			session.BeforeLoad();
+
+			IList result;
+
+			try
+			{
+				result = DoFind(
+					session, parameters, optionalObject, optionalID,
+					optionalCollection, optionalCollectionOwner, returnProxies);
+			}
+			finally
+			{
+				session.AfterLoad();
+			}
+
+			session.InitializeNonLazyCollections();
+			return result;
+		}
+
 		/// <summary>
 		/// Execute an SQL query and attempt to instantiate instances of the class mapped by the given
 		/// persister from each row of the <c>IDataReader</c>.
@@ -797,7 +827,7 @@ namespace NHibernate.Loader
 			bool returnProxies )
 		{
 			QueryParameters qp = new QueryParameters( types, values );
-			return DoFind( session, qp, optionalObject, optionalID, null, null, returnProxies );
+			return DoFindAndInitializeNonLazyCollections( session, qp, optionalObject, optionalID, null, null, returnProxies );
 		}
 
 		/// <summary>
@@ -817,7 +847,7 @@ namespace NHibernate.Loader
 			PersistentCollection collection )
 		{
 			QueryParameters qp = new QueryParameters( new IType[ ] {type}, new object[ ] {id} );
-			return DoFind( session, qp, null, null, collection, owner, true );
+			return DoFindAndInitializeNonLazyCollections( session, qp, null, null, collection, owner, true );
 		}
 
 		/// <summary>
@@ -832,7 +862,7 @@ namespace NHibernate.Loader
 			QueryParameters parameters,
 			bool returnProxies )
 		{
-			return DoFind( session, parameters, null, null, null, null, returnProxies );
+			return DoFindAndInitializeNonLazyCollections( session, parameters, null, null, null, null, returnProxies );
 		}
 
 		private string[ ][ ] suffixedKeyColumns;

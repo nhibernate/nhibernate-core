@@ -260,7 +260,7 @@ namespace NHibernate
 			}
 			else if( proxy is PersistentCollection )
 			{
-				( ( PersistentCollection ) proxy ).ForceLoad();
+				( ( PersistentCollection ) proxy ).ForceInitialization();
 			}
 		}
 

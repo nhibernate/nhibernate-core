@@ -78,6 +78,21 @@ namespace NHibernate.Engine
 		void EndLoadingCollections();
 
 		/// <summary>
+		/// new in h2.1 and no javadoc
+		/// </summary>
+		void AfterLoad();
+
+		/// <summary>
+		/// new in h2.1 and no javadoc
+		/// </summary>
+		void BeforeLoad();
+
+		/// <summary>
+		/// new in h2.1 and no javadoc
+		/// </summary>
+		void InitializeNonLazyCollections();
+
+		/// <summary>
 		/// Gets the NHibernate collection wrapper from the ISession.
 		/// </summary>
 		/// <param name="role"></param>

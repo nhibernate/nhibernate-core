@@ -484,12 +484,18 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Default behavior is to call Read; will be overridden in deep lazy collections
+		/// To be called internally by the session, forcing
+		/// immediate initalization.
 		/// </summary>
-		/// TODO: H2.0.3 declares this as final
-		public void ForceLoad()
+		/// <remarks>
+		/// This method is similar to <see cref="Initialize" />, except that different exceptions are thrown.
+		/// </remarks>
+		public void ForceInitialization()
 		{
-			Read();
+			if( initializing ) throw new AssertionFailure("force initialize loading collection");
+			if( session == null ) throw new HibernateException("collection is not associated with any session");
+			if( !session.IsConnected ) throw new HibernateException("disconnected session");
+			if( !initialized ) session.InitializeCollection(this, false);
 		}
 
 		/// <summary>
