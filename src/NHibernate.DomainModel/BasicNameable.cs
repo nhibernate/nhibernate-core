@@ -5,11 +5,13 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Summary description for BasicNameable.
 	/// </summary>
-	public class BasicNameable
+	public class BasicNameable : INameable
 	{
 		private string _name;
 		private long _id;
 
+		#region INameable Members
+		
 		public string Name 
 		{
 			get { return _name; }
@@ -22,5 +24,6 @@ namespace NHibernate.DomainModel
 			set { _id = value; }
 		}
 
+		#endregion
 	}
 }

@@ -8,7 +8,7 @@ namespace NHibernate.DomainModel
 	/// </summary>
 	public class Category
 	{
-		private static readonly string RootCategory = "/";
+		public static readonly string RootCategory = "/";
 
 		private long _id;
 		private string _name;
