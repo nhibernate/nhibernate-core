@@ -12,9 +12,8 @@ namespace NHibernate.Cache
 
 		private ICache _cache;
 
-		public NonstrictReadWriteCache(ICache cache) 
+		public NonstrictReadWriteCache() 
 		{
-			_cache = cache;
 		}
 
 		#region ICacheConcurrencyStrategy Members

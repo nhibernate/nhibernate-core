@@ -50,13 +50,6 @@ namespace NHibernate.Cache
 		/// <exception cref="CacheException"></exception>
 		string Region {set;}
 
-		// were added in h2.1
-//		void Lock( object key );
-//		
-//		void Unlock( object key );
-//		
-//		long NextTimestamp();
-
 	}
 
 

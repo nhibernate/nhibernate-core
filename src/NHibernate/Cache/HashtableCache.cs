@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 
-namespace NHibernate.Cache {
-
+namespace NHibernate.Cache 
+{
 	/// <summary>
 	/// A simple <c>Hashtable</c> based cache
 	/// </summary>
@@ -53,20 +53,6 @@ namespace NHibernate.Cache {
 			set	{ region = value; }
 		}
 
-		// were added in h2.1
-//		public void Lock( object key )		
-//		{	
-//		}
-//		
-//		public void Unlock( object key )		
-//		{		
-//		}
-//		
-//		public long NextTimestamp()			
-//		{
-//			return Timestamper.Next();
-//		}
-	
 		#endregion
 	}
 }

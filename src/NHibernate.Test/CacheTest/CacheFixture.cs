@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 
 using NHibernate.Cache;
 using NUnit.Framework;
@@ -6,14 +7,18 @@ using NUnit.Framework;
 namespace NHibernate.Test.CacheTest {
 
 	[TestFixture]
-	public class CacheFixture {
-		
+	public class CacheFixture 
+	{
 		[Test]
-		public void TestSimpleCache() {
-			DoTestCache( new HashtableCache("theregion") );
+		public void TestSimpleCache() 
+		{
+			DoTestCache( new HashtableCacheProvider() );
 		}
 	
-		public void DoTestCache(ICache cache) {
+		public void DoTestCache(ICacheProvider cacheProvider) 
+		{
+			ICache cache = cacheProvider.BuildCache( typeof(String).FullName, new Hashtable() );
+
 			long longBefore = Timestamper.Next();
 
 			System.Threading.Thread.Sleep(15);
@@ -22,7 +27,8 @@ namespace NHibernate.Test.CacheTest {
 
 			System.Threading.Thread.Sleep(15);
 
-			ICacheConcurrencyStrategy ccs = new ReadWriteCache(cache);
+			ICacheConcurrencyStrategy ccs = new ReadWriteCache();
+			ccs.Cache = cache;
 
 			// cache something
 

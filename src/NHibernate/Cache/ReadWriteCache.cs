@@ -16,9 +16,8 @@ namespace NHibernate.Cache
 		private readonly object lockObject = new object();
 		private ICache _cache;
 
-		public ReadWriteCache(ICache cache) 
+		public ReadWriteCache() 
 		{
-			_cache = cache;
 		}
 
 		#region ICacheConcurrencyStrategy Members
