@@ -49,6 +49,10 @@ namespace NHibernate.Engine
 		public override bool Equals(object other) 
 		{
 			Key otherKey = other as Key;
+			if(otherKey==null) 
+			{
+				return false;
+			}
 			return otherKey.identifierSpace.Equals(this.identifierSpace) && otherKey.id.Equals(this.id);
 		}
 
