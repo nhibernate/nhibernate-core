@@ -195,6 +195,18 @@ namespace NHibernate.Util
 			_entries = new Hashtable(initialSize, loadFactor);
 		}
 
+		/// <summary>
+		/// Creates an empty Hashtable with the default initial capacity and using the default load factor, 
+		/// the specified hash code provider and the specified comparer
+		/// </summary>
+		/// <param name="hcp"></param>
+		/// <param name="comparer"></param>
+		public SequencedHashMap(IHashCodeProvider hcp, IComparer comparer) 
+		{
+			_sentinel = CreateSentinel();
+			_entries = new Hashtable(hcp, comparer);
+		}
+
 		
 		/// <summary>
 		/// Removes an internal entry from the linked list. THis does not remove it from the underlying
