@@ -36,7 +36,7 @@ namespace NHibernate.Proxy
 		}
 
 
-		protected override void AddSerailizationInfo(SerializationInfo info)
+		protected override void AddSerializationInfo(SerializationInfo info)
 		{
 			// the AvalonProxyDeserializer will be the Type that is actually serialized for this
 			// proxy.  
