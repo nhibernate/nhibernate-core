@@ -34,7 +34,7 @@ namespace NHibernate.Collection {
 
 		public IComparer Comparer {
 			get { return comparer;}
-			set { comparer = value;}
+			//set { comparer = value;}
 		}
 
 
@@ -42,21 +42,39 @@ namespace NHibernate.Collection {
 			this.map = new SortedList(comparer); // new Hashtable(null, comparer);
 		}
 
-		public SortedSet(ISessionImplementor session) : base(session) {
-		}
+		// changed the Comparer to a readonly property because you can't change it on SortedList after
+		// it has been created - so there is no point in being able to change it on this class.
+//		public SortedSet(ISessionImplementor session) : base(session) 
+//		{
+//		}
 
-		//TODO: think about not implementing this because in .NET the comparer is a protected
-		// property - not a public get/set pair like in Java...
-		// Added the IComparer property because of this.
-		public SortedSet(ISessionImplementor session, IDictionary map, IComparer comparer) : base(session, new SortedList(map, comparer)) {
+		/// <summary>
+		/// Constuct a new empty SortedSet
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="comparer"></param>
+		public SortedSet(ISessionImplementor session, IComparer comparer) : base(session, new SortedList(comparer))
+		{
 			this.comparer = comparer;
 		}
 
-		public SortedSet(ISessionImplementor session, CollectionPersister persister, IComparer comparer, object disassembled, object owner) : this(session) {
+		/// <summary>
+		/// Construct a new SortedSet initialized with the map values.
+		/// </summary>
+		/// <param name="session">The Session to be bound to.</param>
+		/// <param name="map">The initial values.</param>
+		/// <param name="comparer">The IComparer to use for Sorting.</param>
+		public SortedSet(ISessionImplementor session, IDictionary map, IComparer comparer) : base(session, new SortedList(map, comparer)) 
+		{
 			this.comparer = comparer;
+		}
+
+		public SortedSet(ISessionImplementor session, CollectionPersister persister, IComparer comparer, object disassembled, object owner) : this(session, comparer) 
+		{
 			BeforeInitialize(persister);
 			object[] array = (object[])disassembled;
-			for(int i = 0; i < array.Length; i++) {
+			for(int i = 0; i < array.Length; i++) 
+			{
 				object newObject = persister.ElementType.Assemble(array[i], session, owner);
 				map.Add(newObject, newObject);
 			}

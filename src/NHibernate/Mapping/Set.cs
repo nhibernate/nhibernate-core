@@ -38,7 +38,6 @@ namespace NHibernate.Mapping {
 		/// </summary>
 		public override System.Type WrapperClass {
 			get {
-				//TODO: modify when added implementation of sorted set
 				return IsSorted ? 
 					typeof(NCollection.SortedSet) :
 					typeof(NCollection.Set);

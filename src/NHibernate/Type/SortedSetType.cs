@@ -17,9 +17,8 @@ namespace NHibernate.Type{
 		}
 
 		public override PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister) {
-			// TODO: uncomment when SortedSet is implemented
-			SortedSet sortedSet = new SortedSet(session);
-			sortedSet.Comparer = comparer;
+			SortedSet sortedSet = new SortedSet(session, comparer);
+			//sortedSet.Comparer = comparer;
 			return sortedSet;
 		}
 
