@@ -24,6 +24,5 @@ namespace NHibernate.Dialect {
 		public override string AddColumnString {
 			get { return "add column"; }
 		}
-		
 	}
 }

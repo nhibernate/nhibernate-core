@@ -30,21 +30,21 @@ namespace NHibernate.Dialect {
 			Types.CLOB, "TEXT" );
 			*/			
 
-			Register( DbType.Bit, "TINYINT" ); //Sybase BIT type does not support null values
-			Register( DbType.BigInt, "NUMERIC(19,0)" );
-			Register( DbType.SmallInt, "SMALLINT" );
-			Register( DbType.TinyInt, "TINYINT" );
-			Register( DbType.Int, "INT" );
-			Register( DbType.Char, "CHAR(1)" );
-			Register( DbType.VarChar, "VARCHAR($l)" );
-			Register( DbType.Float, "FLOAT" );
-			Register( DbType.Real, "DOUBLE PRECISION" );
+			Register( DbType.Boolean, "TINYINT" ); //Sybase BIT type does not support null values
+			Register( DbType.Int64, "NUMERIC(19,0)" );
+			Register( DbType.Int16, "SMALLINT" );
+			Register( DbType.Int32, "INT" );
+			Register( DbType.Byte, "TINYINT" );
+			//Register( DbType.Character, "CHAR(1)" );
+			Register( DbType.String, "VARCHAR($l)" );
+			Register( DbType.Single, "FLOAT" );
+			Register( DbType.Double, "DOUBLE PRECISION" );
 			Register( DbType.DateTime, "DATETIME" );
-			Register( DbType.Timestamp, "DATETIME" );
-			Register( DbType.VarBinary, "VARBINARY($l)" );
+			//Register( DbType.Timestamp, "DATETIME" );
+			//Register( DbType.VarBinary, "VARBINARY($l)" );
 			Register( DbType.Decimal, "NUMERIC(19,$l)" );
-			Register( DbType.Image, "IMAGE" );
-			Register( DbType.Text, "TEXT" );
+			Register( DbType.Binary, "IMAGE" );
+			Register( DbType.AnsiString, "TEXT" );
 		
 			/*
 			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");
@@ -78,6 +78,14 @@ namespace NHibernate.Dialect {
 
 		public override string NoColumnsInsertString {
 			get { return "DEFAULT VALUES"; }
+		}
+
+		public override bool UseNamedParameters {
+			get { return true; }
+		}
+
+		public override string NamedParametersPrefix {
+			get { return "@"; }
 		}
 	}
 }

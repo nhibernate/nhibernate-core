@@ -81,5 +81,13 @@ namespace NHibernate.Dialect {
 		public override bool SupportsSequences {
 			get { return true; }
 		}
+
+		public override bool UseNamedParameters {
+			get { return true; }
+		}
+
+		public override string NamedParametersPrefix {
+			get { return ":"; }
+		}
 	}
 }

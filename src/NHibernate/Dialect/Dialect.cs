@@ -268,7 +268,7 @@ namespace NHibernate.Dialect {
 		/// Create an <c>JoinFragment</c> for this dialect
 		/// </summary>
 		/// <returns></returns>
-		public JoinFragment CreateOuterJoinFragment() {
+		public virtual JoinFragment CreateOuterJoinFragment() {
 			return new ANSIJoinFragment();
 		}
 
@@ -276,16 +276,35 @@ namespace NHibernate.Dialect {
 		/// Create an <c>CaseFragment</c> for this dialect
 		/// </summary>
 		/// <returns></returns>
-		public CaseFragment CreateCaseFragment() {
+		public virtual CaseFragment CreateCaseFragment() {
 			return new ANSICaseFragment();
 		}
 
 		/// <summary>
 		/// The name of the SQL function that transforms a string to lowercase
 		/// </summary>
-		public string LowercaseFunction {
+		public virtual string LowercaseFunction {
 			get {
 				return "lower";
+			}
+		}
+
+		/// <summary>
+		/// Does this dialect use named parameters?
+		/// </summary>
+		public virtual bool UseNamedParameters {
+			get {
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// The prefix to use with named parameter.
+		/// If UseNamedParameters return false this property will not be used.
+		/// </summary>
+		public virtual string NamedParametersPrefix {
+			get {
+				return StringHelper.EmptyString;
 			}
 		}
 	}
