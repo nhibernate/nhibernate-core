@@ -213,7 +213,7 @@ namespace NHibernate.Impl
 		[NonSerialized] private IdentityMap arrayHolders; //key=array, value=ArrayHolder
 		[NonSerialized] private IdentityMap collections; //key=PersistentCollection, value=CollectionEntry
 		
-		private IList nullifiables = new ArrayList();  //set of Keys of deleted objects
+		private IDictionary nullifiables = new Hashtable();  //set of Keys of deleted objects
 
 		private IInterceptor interceptor;
 
@@ -1107,6 +1107,7 @@ namespace NHibernate.Impl
 				}
 			}
 
+		
 			return e.Status==Status.Saving || (
 				earlyInsert ? !e.ExistsInDatabase : nullifiables.Contains( new Key(e.Id, e.Persister) )
 				);
@@ -1120,20 +1121,21 @@ namespace NHibernate.Impl
 		{
 			if (obj==null) throw new NullReferenceException("attempted to delete null");
 
-			object theObj = UnproxyAndReassociate(obj);
+			//object theObj = UnproxyAndReassociate(obj);
+			obj = UnproxyAndReassociate(obj);
 
-			EntityEntry entry = GetEntry(theObj);
+			EntityEntry entry = GetEntry(obj);
 			IClassPersister persister=null;
 			if (entry==null) 
 			{
 				log.Debug("deleting a transient instance");
 
-				persister = GetPersister(theObj);
-				object id = persister.GetIdentifier(theObj);
+				persister = GetPersister(obj);
+				object id = persister.GetIdentifier(obj);
 
 				if (id==null) throw new HibernateException("the transient instance passed to Delete() has a null identifier");
 
-				object old = GetEntry( new Key(id, persister) );
+				object old = GetEntity( new Key(id, persister) );
 
 				if (old!=null) 
 				{
@@ -1143,15 +1145,15 @@ namespace NHibernate.Impl
 						);
 				}
 
-				RemoveCollectionsFor(persister, id, theObj);
+				RemoveCollectionsFor(persister, id, obj);
 
-				AddEntity( new Key(id, persister), theObj);
+				AddEntity( new Key(id, persister), obj);
 				entry = AddEntry(
-					theObj, 
+					obj, 
 					Status.Loaded, 
-					persister.GetPropertyValues(theObj),
+					persister.GetPropertyValues(obj),
 					id,
-					persister.GetVersion(theObj),
+					persister.GetVersion(obj),
 					LockMode.None,
 					true,
 					persister
@@ -1170,10 +1172,12 @@ namespace NHibernate.Impl
 			}
 
 			if ( !persister.IsMutable ) 
+			{
 				throw new HibernateException(
 					"attempted to delete an object of immutable class: " + 
 					MessageHelper.InfoString(persister)
 					);
+			}
 
 			if ( log.IsDebugEnabled ) log.Debug( "deleting " + MessageHelper.InfoString(persister, entry.Id) );
 
@@ -1184,7 +1188,7 @@ namespace NHibernate.Impl
 			if (entry.LoadedState==null ) 
 			{ 
 				//ie the object came in from Update()
-				entry.DeletedState = persister.GetPropertyValues(theObj);
+				entry.DeletedState = persister.GetPropertyValues(obj);
 			} 
 			else 
 			{
@@ -1192,30 +1196,32 @@ namespace NHibernate.Impl
 				TypeFactory.DeepCopy(entry.LoadedState, propTypes, persister.PropertyUpdateability, entry.DeletedState);
 			}
 
-			interceptor.OnDelete(theObj, entry.Id, entry.DeletedState, persister.PropertyNames, propTypes);
+			interceptor.OnDelete(obj, entry.Id, entry.DeletedState, persister.PropertyNames, propTypes);
 
-			NullifyTransientReferences(entry.DeletedState, propTypes, false, theObj);
+			NullifyTransientReferences(entry.DeletedState, propTypes, false, obj);
 
-			ArrayList oldNullifiables = null;
+			// in h2.0.3 this is a Set
+			IDictionary oldNullifiables = null;
 			ArrayList oldDeletions = null;
 			if ( persister.HasCascades ) 
 			{
-				oldNullifiables = new ArrayList();
-				oldNullifiables.AddRange(nullifiables);
+				oldNullifiables = new Hashtable(nullifiables);
 				oldDeletions = (ArrayList) deletions.Clone();
 			}
 
-			nullifiables.Add( new Key(entry.Id, persister) );
+			nullifiables[ new Key(entry.Id, persister) ] = new object();
 			entry.Status = Status.Deleted; // before any callbacks, etc, so subdeletions see that this deletion happend first
-			ScheduledDeletion delete = new ScheduledDeletion(entry.Id, version, theObj, persister, this);
+			ScheduledDeletion delete = new ScheduledDeletion(entry.Id, version, obj, persister, this);
 			deletions.Add(delete); // ensures that containing deletions happen before sub-deletions
 
 			try 
 			{
 				// after nullify, because we don't want to nullify references to subdeletions
 				// try to do callback + cascade
-				if ( persister.ImplementsLifecycle ) {
-					if ( ( (ILifecycle)theObj).OnDelete(this) == LifecycleVeto.Veto ) {
+				if ( persister.ImplementsLifecycle ) 
+				{
+					if ( ( (ILifecycle)obj).OnDelete(this) == LifecycleVeto.Veto ) 
+					{
 						//rollback deletion
 						RollbackDeletion(entry, delete);
 						return; //don't let it cascade
@@ -1223,25 +1229,25 @@ namespace NHibernate.Impl
 				}
 
 				//BEGIN YUCKINESS:
-				if ( persister.HasCascades ) {
-					
+				if ( persister.HasCascades ) 
+				{
 					int start = deletions.Count;
 
-					IList newNullifiables = nullifiables;
+					IDictionary newNullifiables = nullifiables;
 					nullifiables = oldNullifiables;
 
 					cascading++;
 					try 
 					{
 						// cascade-delete to collections "BEFORE" the collection owner is deleted
-						Cascades.Cascade(this, persister, theObj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeAfterInsertBeforeDelete);
+						Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeAfterInsertBeforeDelete);
 					} 
 					finally 
 					{
 						cascading--;
-						foreach(object oldNullify in oldNullifiables) 
+						foreach(DictionaryEntry oldNullifyDictEntry in oldNullifiables) 
 						{
-							newNullifiables.Add(oldNullify);
+							newNullifiables[oldNullifyDictEntry.Key] = oldNullifyDictEntry.Value;
 						}
 						nullifiables = newNullifiables;
 					}
@@ -1270,7 +1276,7 @@ namespace NHibernate.Impl
 				//END YUCKINESS
 
 				// cascade-save to many-to-one AFTER the parent was saved
-				Cascades.Cascade(this, persister, theObj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeBeforeInsertAfterDelete);
+				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeBeforeInsertAfterDelete);
 			} 
 			catch (Exception e) 
 			{ 
@@ -1302,11 +1308,10 @@ namespace NHibernate.Impl
 		private void RemoveCollection(CollectionPersister role, object id) 
 		{
 			if ( log.IsDebugEnabled ) log.Debug( "collection dereferenced while transient " + MessageHelper.InfoString(role, id) ); 
-			//TODO: H2.0.3 - add back in when CollectionPersister.HasOrphanDelete is coded
-//			if(role.HasOrphanDelete) 
-//			{
-//				throw new HibernateException("You may not dereference a collection with cascade=\"all-delete-orphan\"");
-//			}
+			if(role.HasOrphanDelete) 
+			{
+				throw new HibernateException("You may not dereference a collection with cascade=\"all-delete-orphan\"");
+			}
 			collectionRemovals.Add( new ScheduledCollectionRemove(role, id, false, this) );
 		}
 
