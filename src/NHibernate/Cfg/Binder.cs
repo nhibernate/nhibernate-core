@@ -18,7 +18,7 @@ namespace NHibernate.Cfg
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Binder));
 
 		private static XmlNamespaceManager nsmgr;
-		private static readonly string nsPrefix = "hbm";
+		private const string nsPrefix = "hbm";
 		internal static Dialect.Dialect dialect;
 
 		public static void BindClass(XmlNode node, PersistentClass model, Mappings mapping) 

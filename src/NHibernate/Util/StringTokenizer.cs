@@ -8,7 +8,7 @@ namespace NHibernate.Util
 	/// </summary>
 	public class StringTokenizer : IEnumerable
 	{
-		private static readonly string _defaultDelim = " \t\n\r\f";
+		private const string _defaultDelim = " \t\n\r\f";
 		private string _origin;
 		private string _delim;
 		private bool _returnDelim;
