@@ -189,7 +189,17 @@ namespace NHibernate.Impl
 				IClassPersister cp;
 				cp = PersisterFactory.Create(model, this);
 				classPersisters[model.PersistentClazz] = cp;
+				
+				// Adds the "Namespace.ClassName" (FullClassname) as a lookup to get to the Persiter.
+				// Most of the internals of NHibernate use this method to get to the Persister since
+				// Model.Name is used in so many places.  It would be nice to fix it up to be Model.TypeName
+				// instead of just FullClassname
 				classPersistersByName[model.Name] = cp ;
+				
+				// Add in the AssemblyQualifiedName (includes version) as a lookup to get to the Persister.  
+				// In HQL the Imports are used to get from the Classname to the Persister.  The
+				// Imports provide the ability to jump from the Classname to the AssemblyQualifiedName.
+				classPersistersByName[model.PersistentClazz.AssemblyQualifiedName] = cp;
 			}
 
 			collectionPersisters = new Hashtable();
@@ -240,35 +250,126 @@ namespace NHibernate.Impl
 		[NonSerialized] private int strongRefIndex = 0;
 		[NonSerialized] private readonly IDictionary softQueryCache = new Hashtable(); //TODO: make soft reference map
 
-		//TODO: All
-		private static readonly QueryCacheKeyFactory QueryKeyFactory;
-		private static readonly FilterCacheKeyFactory FilterKeyFactory;
+		
 		static SessionFactoryImpl() 
 		{
-			/*
-			 * KeyFactory is a CGLIB item.
-			QueryKeyFactory = (QueryCacheKeyFactory) KeyFactory.Create(QueryCacheKeyFactory.GetType(), QueryCacheKeyFactory......);
-			FilterKeyFactory = (FilterCacheKeyFactory) KeyFactory.Create(
-			FilterCacheKeyFactory.class, FilterCacheKeyFactory.class.getClassLoader() 				);
-			*/
-			
-			QueryKeyFactory = null;
-			FilterKeyFactory = null;
+			// used to do some CGLIB stuff in here for QueryKeyFactory and FilterKeyFactory
 		}
 																												
 
-		
-		interface QueryCacheKeyFactory 
+		/// <summary>
+		/// A class that can be used as a Key in a Hashtable for 
+		/// a Query Cache.
+		/// </summary>
+		private class QueryCacheKey 
 		{
-			// will not recalculate hashKey for constant queries
-			object NewInstance(string query, bool scalar);
+			private string _query;
+			private bool _scalar;
+
+			internal QueryCacheKey(string query, bool scalar) 
+			{
+				_query = query;
+				_scalar = scalar;
+			}
+
+			public string Query 
+			{
+				get { return _query; }
+			}
+
+			public bool Scalar 
+			{
+				get { return _scalar; }
+			}
+
+			#region System.Object Members
+
+			public override bool Equals(object obj)
+			{
+				QueryCacheKey other = obj as QueryCacheKey;
+				if( other==null) return false;
+
+				return Equals(other);
+			}
+
+			public bool Equals(QueryCacheKey obj) 
+			{
+				return this.Query.Equals(obj.Query) && this.Scalar==obj.Scalar;
+			}
+
+			public override int GetHashCode()
+			{
+				unchecked 
+				{
+					return this.Query.GetHashCode() + this.Scalar.GetHashCode();
+				}
+			}
+
+			#endregion
+
+
 		}
 		
-		interface FilterCacheKeyFactory 
+		/// <summary>
+		/// A class that can be used as a Key in a Hashtable for 
+		/// a Query Cache.
+		/// </summary>
+		private class FilterCacheKey 
 		{
-			// will not recalculate hashKey for constant queries
-			object NewInstance(string role, string query, bool scalar);
+			private string _role;
+			private string _query;
+			private bool _scalar;
+
+			internal FilterCacheKey(string role, string query, bool scalar) 
+			{
+				_role = role;
+				_query = query;
+				_scalar = scalar;
+			}
+
+			public string Role 
+			{
+				get { return _role; }
+			}
+
+			public string Query 
+			{
+				get { return _query; }
+			}
+
+			public bool Scalar 
+			{
+				get { return _scalar; }
+			}
+
+			#region System.Object Members
+
+			public override bool Equals(object obj)
+			{
+				FilterCacheKey other = obj as FilterCacheKey;
+				if( other==null) return false;
+
+				return Equals(other);
+			}
+
+			public bool Equals(FilterCacheKey obj) 
+			{
+				return this.Role.Equals(obj.Role) && this.Query.Equals(obj.Query) && this.Scalar==obj.Scalar;
+			}
+
+			public override int GetHashCode()
+			{
+				unchecked 
+				{
+					return this.Role.GetHashCode() + this.Query.GetHashCode() + this.Scalar.GetHashCode();
+				}
+			}
+
+			#endregion
+
+
 		}
+		
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		private object Get(object key) 
@@ -303,10 +404,9 @@ namespace NHibernate.Impl
 			return GetQuery(query, true);
 		}
 
-		//TODO: h2.0.3 synch
 		private QueryTranslator GetQuery(string query, bool shallow) 
 		{
-			/*object cacheKey = QueryKeyFactory.NewInstance(query, shallow);
+			QueryCacheKey cacheKey = new QueryCacheKey(query, shallow);
 
 			// have to be careful to ensure that if the JVM does out-of-order execution
 			// then another thread can't get an uncompiled QueryTranslator from the cache
@@ -314,12 +414,12 @@ namespace NHibernate.Impl
 			// compiled queries while another query is being compiled
 
 			QueryTranslator q = (QueryTranslator) Get(cacheKey);
-			if ( q==null) {
-				q = new QueryTranslator();
+			if ( q==null) 
+			{
+				q = new QueryTranslator(dialect);
 				Put(cacheKey, q);
 			}
-			*/
-			QueryTranslator q = new QueryTranslator(dialect);
+			
 			q.Compile(this, query, querySubstitutions, shallow);
 			
 			return q;
@@ -327,15 +427,15 @@ namespace NHibernate.Impl
 
 		public FilterTranslator GetFilter(string query, string collectionRole, bool scalar) 
 		{
-//			object cacheKey = FilterKeyFactory.NewInstance(collectionRole, query, scalar );
-//
-//			FilterTranslator q = (FilterTranslator) Get(cacheKey);
-//			if ( q==null ) 
-//			{
-//				q = new FilterTranslator(dialect);
-//				Put(cacheKey, q);
-//			}
-			FilterTranslator q = new FilterTranslator(dialect);
+			FilterCacheKey cacheKey = new FilterCacheKey( collectionRole, query, scalar );
+
+			FilterTranslator q = (FilterTranslator) Get(cacheKey);
+			if ( q==null ) 
+			{
+				q = new FilterTranslator(dialect);
+				Put(cacheKey, q);
+			}
+			
 			q.Compile(collectionRole, this, query, querySubstitutions, scalar);
 			
 			return q;
@@ -396,7 +496,9 @@ namespace NHibernate.Impl
 		{
 			//(IClassPersister) was replaced by as
 			IClassPersister result = classPersistersByName[className] as IClassPersister;
-			//if ( result==null) throw new MappingException( "No persister for: " + className );
+			//TODO: not throwing this exception results in a 50% perf gain with hql - not sure
+			// where else this code is being used and expecting an exception...
+//			if ( result==null) throw new MappingException( "No persister for: " + className );
 			return result;
 		}
 
