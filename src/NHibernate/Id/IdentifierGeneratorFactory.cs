@@ -53,7 +53,6 @@ namespace NHibernate.Id
 			idgenerators.Add("sequence", typeof(SequenceGenerator));
 			idgenerators.Add("seqhilo", typeof(SequenceHiLoGenerator));
 			idgenerators.Add("vm", typeof(CounterGenerator));
-			idgenerators.Add("increment", typeof(IncrementGenerator));
 			idgenerators.Add("foreign", typeof(ForeignGenerator));
 			idgenerators.Add("guid", typeof(GuidGenerator));
 		}

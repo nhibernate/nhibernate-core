@@ -848,11 +848,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Id\IncrementGenerator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Id\IPersistentIdentifierGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
