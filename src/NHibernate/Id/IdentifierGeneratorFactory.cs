@@ -41,7 +41,7 @@ namespace NHibernate.Id
 		}
 
 		private static readonly Hashtable idgenerators = new Hashtable();
-		public static readonly string ShortCircuitIndicator = string.Empty;
+		public static readonly string ShortCircuitIndicator = String.Empty;
 
 		static IdentifierGeneratorFactory() 
 		{

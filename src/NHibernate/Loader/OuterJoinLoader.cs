@@ -431,7 +431,6 @@ namespace NHibernate.Loader
 		protected override string[] Suffixes 
 		{
 			get { return suffixes; }
-			set { suffixes = value; }
 		}
 
 		protected string Alias(string tableName, int n) 

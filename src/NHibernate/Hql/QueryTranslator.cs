@@ -118,6 +118,7 @@ namespace NHibernate.Hql
 				this.factory = factory;
 				this.replacements = replacements;
 				this.shallowQuery = scalar;
+
 				Compile(queryString);
 			}
 		}
@@ -267,19 +268,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		private string Prefix(string s) 
-		{
-			//TODO: H2.0.3: Using Prefix or using alias?
-			if ( s.Length > 3 ) 
-			{
-				return s.Substring(0, 3).ToLower();
-			} 
-			else 
-			{
-				return s.ToLower();
-			}
-		}
-
 		private int NextCount() 
 		{
 			return (superQuery==null) ? count++ : superQuery.count++;
@@ -297,13 +285,11 @@ namespace NHibernate.Hql
 		internal string CreateNameFor(System.Type type) 
 		{
 			return CreateName(type.Name);
-			//return Prefix(type.Name) + NextCount() + StringHelper.Underscore;
 		}
 
 		internal string CreateNameForCollection(string role) 
 		{
 			return CreateName(role);
-			//return Prefix( StringHelper.Unqualify(role) ) + NextCount() + StringHelper.Underscore;
 		}
 
 		internal System.Type GetType(string name) 
@@ -555,6 +541,7 @@ namespace NHibernate.Hql
 			for (int i=0; i<size; i++) 
 			{
 				string name = (string) returnTypes[i];
+				//if ( !IsName(name) ) throw new QueryException("unknown type: " + name);
 				persisters[i] = GetPersisterForName(name);
 				suffixes[i] = (size==1) ? String.Empty : i.ToString() + StringHelper.Underscore;
 				names[i] = name;
@@ -563,7 +550,7 @@ namespace NHibernate.Hql
 				if ( name.Equals(collectionOwnerName) ) collectionOwnerColumn = i;
 			}
 
-			string scalarSelect = RenderScalarSelect();
+			string scalarSelect = RenderScalarSelect(); //Must be done here because of side-effect! yuck...
 
 			int scalarSize = scalarTypes.Count;
 			hasScalars = scalarTypes.Count!=size;
@@ -585,8 +572,7 @@ namespace NHibernate.Hql
 			
 			if ( CollectionPersister!=null ) 
 			{
-				//TODO: H2.0.3: When collection is updated
-				//sql.AddSelectFragmentString( CollectionPersister.MultiselectClauseFragment(fetchName) );
+				sql.AddSelectFragmentString( collectionPersister.MultiselectClauseFragment(fetchName) );
 			}
 			if ( hasScalars || shallowQuery ) sql.AddSelectFragmentString(scalarSelect);
 
@@ -601,8 +587,7 @@ namespace NHibernate.Hql
 			
 			if ( CollectionPersister!=null && CollectionPersister.HasOrdering ) 
 			{
-				//TODO: H2.0.3: When Sql/QuerySelect is updated
-				//sql.addOrderBy( CollectionPersister.GetSQLOrderByString(fetchName) );
+				sql.AddOrderBy( CollectionPersister.GetSQLOrderByString(fetchName) );
 			}
 
 			scalarColumnNames = GenerateColumnNames(types, factory);
@@ -651,6 +636,23 @@ namespace NHibernate.Hql
 			}
 		}
 
+		private string RenderOrderByPropertiesSelect() 
+		{
+			StringBuilder buf = new StringBuilder(10);
+		
+			//add the columns we are ordering by to the select ID select clause
+			foreach(string token in orderByTokens)
+			{
+				if ( token.LastIndexOf(".") > 0 ) 
+				{
+					//ie. it is of form "foo.bar", not of form "asc" or "desc"
+					buf.Append(StringHelper.CommaSpace).Append(token);
+				}
+			}
+		
+			return buf.ToString();
+		}
+
 		private void RenderPropertiesSelect(QuerySelect sql) 
 		{
 			int size = returnTypes.Count;
@@ -686,7 +688,6 @@ namespace NHibernate.Hql
 						if (!isSubselect) buf.Append(" as ").Append(ScalarName(k, i)); 
 						if (i != names.Length - 1 || k != size - 1) buf.Append(StringHelper.CommaSpace);
 					}
-					
 				}
 			} 
 			else 
@@ -739,6 +740,7 @@ namespace NHibernate.Hql
 
 		private JoinFragment MergeJoins(JoinFragment ojf) 
 		{
+			//classes
 			foreach(string name in typeMap.Keys) 
 			{
 				IQueryable p = GetPersisterForName(name);
@@ -776,6 +778,7 @@ namespace NHibernate.Hql
 		/// <summary>
 		/// Is this query called by Scroll() or Iterate()?
 		/// </summary>
+		/// <value>true if it is, false if it is called by find() or list()</value>
 		public bool IsShallowQuery 
 		{
 			get 
@@ -792,10 +795,6 @@ namespace NHibernate.Hql
 
 		internal bool Distinct 
 		{
-			//			get 
-			//			{ 
-			//				return distinct; 
-			//			}
 			set 
 			{ 
 				distinct = value; 
@@ -831,14 +830,11 @@ namespace NHibernate.Hql
 			{ 
 				return suffixes; 
 			}
-			set 
-			{ 
-				suffixes = value; 
-			}
 		}
 
 		protected void AddFromCollection(string elementName, string collectionRole) 
 		{
+			//q.addCollection(collectionName, collectionRole);
 			IType collectionElementType = GetCollectionPersister(collectionRole).ElementType;
 			if ( !collectionElementType.IsEntityType ) throw new QueryException(
 														   "collection of values in filter: " + elementName);
@@ -895,6 +891,7 @@ namespace NHibernate.Hql
 		{
 			if (namedParams != null) 
 			{
+				// assumes that types are all of span 1
 				int result = 0;
 				foreach (DictionaryEntry e in namedParams) 
 				{
@@ -938,8 +935,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		
-
 		public static string[] ConcreteQueries(string query, ISessionFactoryImplementor factory) 
 		{
 			//scan the query string for class names appearing in the from clause and replace 
@@ -960,14 +955,12 @@ namespace NHibernate.Hql
 			templateQuery.Append( tokens[0] );
 			for (int i=1; i<tokens.Length; i++) 
 			{
-
 				//update last non-whitespace token, if necessary
 				if ( !ParserHelper.IsWhitespace( tokens[i-1] ) ) last = tokens[i-1].ToLower();
 
 				string token = tokens[i];
 				if ( ParserHelper.IsWhitespace(token) || last==null ) 
 				{
-
 					// scan for the next non-whitespace token
 					if (nextIndex<=i) 
 					{
@@ -978,6 +971,7 @@ namespace NHibernate.Hql
 						}
 					}
 
+					//if ( Character.isUpperCase( token.charAt( token.lastIndexOf(".") + 1 ) ) ) {
 					if (
 						( beforeClassTokens.Contains(last) && !notAfterClassTokens.Contains(next) ) ||
 						"class".Equals(last) ) 
@@ -1013,9 +1007,10 @@ namespace NHibernate.Hql
 		static QueryTranslator() 
 		{
 			beforeClassTokens.Add("from");
+			//beforeClassTokens.Add("new"); DEFINITELY DON'T HAVE THIS!!
 			beforeClassTokens.Add(",");
 			notAfterClassTokens.Add("in");
-			notAfterClassTokens.Add(",");
+			//notAfterClassTokens.Add(",");
 			notAfterClassTokens.Add("from");
 			notAfterClassTokens.Add(")");
 		}
@@ -1069,6 +1064,7 @@ namespace NHibernate.Hql
 		protected override object GetResultColumnOrRow(object[] row, IDataReader rs, ISessionImplementor session) 
 		{
 			IType[] returnTypes = ReturnTypes;
+			row = ToResultRow(row);
 			if (hasScalars) 
 			{
 				string[][] names = ScalarColumnNames;
@@ -1122,14 +1118,11 @@ namespace NHibernate.Hql
 
 		internal QueryJoinFragment CreateJoinFragment(bool useThetaStyleInnerJoins) 
 		{
-			return new QueryJoinFragment( factory.Dialect );
-			//TODO: H2.0.3 when QueryJoinFragment is updated
-			//return new QueryJoinFragment( factory.Dialect, useThetaStyleInnerJoins );
+			return new QueryJoinFragment( factory.Dialect, useThetaStyleInnerJoins );
 		}
 
 		internal System.Type HolderClass 
 		{
-			get { return holderClass; }
 			set { holderClass = value; }
 		}
 

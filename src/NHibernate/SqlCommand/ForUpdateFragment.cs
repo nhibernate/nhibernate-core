@@ -37,8 +37,8 @@ namespace NHibernate.SqlCommand
 		public SqlString ToSqlStringFragment() 
 		{
 			return aliases.Length==0 ?
-				new SqlString(string.Empty) :
-				new SqlString(" for update of " + aliases + ( nowait ? " nowait" : string.Empty)); 
+				new SqlString(String.Empty) :
+				new SqlString(" for update of " + aliases + ( nowait ? " nowait" : String.Empty)); 
 		}
 
 	}

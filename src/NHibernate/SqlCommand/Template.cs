@@ -22,21 +22,21 @@ namespace NHibernate.SqlCommand
 
 		static Template() 
 		{
-			Keywords["and"] = string.Empty;
-			Keywords["or"] = string.Empty;
-			Keywords["not"] = string.Empty;
-			Keywords["like"] = string.Empty;
-			Keywords["is"] = string.Empty;
-			Keywords["in"] = string.Empty;
-			Keywords["between"] = string.Empty;
-			Keywords["null"] = string.Empty;
-			Keywords["select"] = string.Empty;
-			Keywords["from"] = string.Empty;
-			Keywords["where"] = string.Empty;
-			Keywords["having"] = string.Empty;
-			Keywords["group"] = string.Empty;
-			Keywords["order"] = string.Empty;
-			Keywords["by"] = string.Empty;
+			Keywords["and"] = String.Empty;
+			Keywords["or"] = String.Empty;
+			Keywords["not"] = String.Empty;
+			Keywords["like"] = String.Empty;
+			Keywords["is"] = String.Empty;
+			Keywords["in"] = String.Empty;
+			Keywords["between"] = String.Empty;
+			Keywords["null"] = String.Empty;
+			Keywords["select"] = String.Empty;
+			Keywords["from"] = String.Empty;
+			Keywords["where"] = String.Empty;
+			Keywords["having"] = String.Empty;
+			Keywords["group"] = String.Empty;
+			Keywords["order"] = String.Empty;
+			Keywords["by"] = String.Empty;
 
 			delimiterList.Add(" ");
 			delimiterList.Add("=");
@@ -69,7 +69,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="keyword">The Keyword to add.</param>
 		public static void AddKeyword(string keyword) 
 		{
-			Keywords[keyword] = string.Empty;
+			Keywords[keyword] = String.Empty;
 		}
 
 		/// <summary>

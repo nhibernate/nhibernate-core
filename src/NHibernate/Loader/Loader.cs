@@ -58,7 +58,7 @@ namespace NHibernate.Loader
 		/// The suffix identifies a particular column of results in the SQL <c>IDataReader</c>;
 		/// implemented by all subclasses
 		/// </summary>
-		protected abstract string[] Suffixes { get; set; }
+		protected abstract string[] Suffixes { get; }
 
 		/// <summary>
 		/// An (optional) persister for a collection to be initialized; only collection loaders

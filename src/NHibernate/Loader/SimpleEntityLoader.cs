@@ -49,7 +49,6 @@ namespace NHibernate.Loader
 		protected override string[] Suffixes 
 		{
 			get { return NoSuffix; }
-			set { throw new NotImplementedException(); }
 		}
 
 		public object Load(ISessionImplementor session, object id, object obj) 
