@@ -3,14 +3,18 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// An Unique Key constraint in the database.
+	/// </summary>
 	public class UniqueKey : Constraint
 	{
 		/// <summary>
-		/// 
+		/// Generates the SQL string to create the Unique Key Constraint in the database.
 		/// </summary>
-		/// <param name="d"></param>
-		/// <returns></returns>
+		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <returns>
+		/// A string that contains the SQL to create the Unique Key Constraint.
+		/// </returns>
 		public string SqlConstraintString( Dialect.Dialect d )
 		{
 			StringBuilder buf = new StringBuilder( " unique (" );
@@ -32,11 +36,12 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Generates the SQL string to create the Unique Key Constraint in the database.
 		/// </summary>
-		/// <param name="d"></param>
-		/// <param name="constraintName"></param>
-		/// <returns></returns>
+		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <returns>
+		/// A string that contains the SQL to create the Unique Key Constraint.
+		/// </returns>
 		public override string SqlConstraintString( Dialect.Dialect d, string constraintName )
 		{
 			StringBuilder buf = new StringBuilder(

@@ -6,8 +6,9 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Mapping
 {
 	/// <summary>
-	/// Base class for the <see cref="RootClass" /> mapped by &lt;class&gt; and a 
-	/// <see cref="Subclass"/> that is mapped by &lt;subclass&gt; or &lt;joined-subclass&gt;
+	/// Base class for the <see cref="RootClass" /> mapped by <c>&lt;class&gt;</c> and a 
+	/// <see cref="Subclass"/> that is mapped by <c>&lt;subclass&gt;</c> or 
+	/// <c>&lt;joined-subclass&gt</c>.
 	/// </summary>
 	public abstract class PersistentClass
 	{
@@ -57,7 +58,7 @@ namespace NHibernate.Mapping
 		/// A value that distinguishes this subclass in the database.
 		/// </value>
 		/// <remarks>
-		/// The value of this is set by the <c>discriminator-value</c> attribute.  Each &lt;subclass&gt;
+		/// The value of this is set by the <c>discriminator-value</c> attribute.  Each <c>&lt;subclass&gt;</c>
 		/// in a heirarchy must define a unique <c>discriminator-value</c>.  The default value 
 		/// is the class name if no value is supplied.
 		/// </remarks>
@@ -68,21 +69,27 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Adds a <see cref="Subclass"/> to the class hierarchy.
 		/// </summary>
-		/// <param name="subclass"></param>
+		/// <param name="subclass">The <see cref="Subclass"/> to add to the hierarchy.</param>
 		public virtual void AddSubclass( Subclass subclass )
 		{
 			subclasses.Add( subclass );
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets a boolean indicating if this PersistentClass has any subclasses.
+		/// </summary>
+		/// <value><c>true</c> if this PeristentClass has any subclasses.</value>
 		public virtual bool HasSubclasses
 		{
 			get { return subclasses.Count > 0; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the number of subclasses that inherit either directly or indirectly.
+		/// </summary>
+		/// <value>The number of subclasses that inherit from this PersistentClass.</value>
 		public virtual int SubclassSpan
 		{
 			get
@@ -99,10 +106,10 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets the Collection of Subclasses for this PersistentClass.  
 		/// </summary>
-		/// <remarks>
+		/// <value>
 		/// It will recursively go through Subclasses so that if a Subclass has Subclasses
 		/// it will pick those up also.
-		/// </remarks>
+		/// </value>
 		public virtual ICollection SubclassCollection
 		{
 			get
@@ -124,16 +131,23 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="Subclass"/> objects
+		/// that directly inherit from this PersistentClass.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Subclass"/> objects
+		/// that directly inherit from this PersistentClass.
+		/// </value>
 		public virtual ICollection DirectSubclasses
 		{
 			get { return subclasses; }
 		}
 
 		/// <summary>
-		/// 
+		/// Add the <see cref="Property"/> to this PersistentClass.
 		/// </summary>
-		/// <param name="p"></param>
+		/// <param name="p">The <see cref="Property"/> to add.</param>
 		public virtual void AddProperty( Property p )
 		{
 			properties.Add( p );
@@ -152,41 +166,82 @@ namespace NHibernate.Mapping
 			set { table = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="Property"/> objects.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Property"/> objects.
+		/// </value>
 		public virtual ICollection PropertyCollection
 		{
 			get { return properties; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="System.Type"/> that is being mapped.
+		/// </summary>
+		/// <value>The <see cref="System.Type"/> that is being mapped.</value>
+		/// <remarks>
+		/// The value of this is set by the <c>name</c> attribute on the <c>&lt;class&gt;</c> 
+		/// element.
+		/// </remarks>
 		public virtual System.Type PersistentClazz
 		{
 			get { return persistentClass; }
 			set { persistentClass = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the fully qualified name of the type being persisted.
+		/// </summary>
+		/// <value>The fully qualified name of the type being persisted.</value>
 		public virtual string Name
 		{
 			get { return persistentClass.FullName; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or set a boolean indicating 
+		/// if the PersistentClass has properties that can be changed.
+		/// </summary>
+		/// <value><c>true</c> if the object is mutable.</value>
 		public abstract bool IsMutable { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets a boolean indicating
+		/// if the PersistentClass has a Property for the <c>id</c>.
+		/// </summary>
+		/// <value><c>true</c> if there is a Property for the <c>id</c>.</value>
 		public abstract bool HasIdentifierProperty { get; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets the <see cref="Property"/>
+		/// that is used as the <c>id</c>.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Property"/> that is used as the <c>id</c>.
+		/// </value>
 		public abstract Property IdentifierProperty { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or sets the <see cref="Value"/>
+		/// that contains information about the identifier.
+		/// </summary>
+		/// <value>The <see cref="Value"/> that contains information about the identifier.</value>
 		public abstract Value Identifier { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or sets the <see cref="Property"/>
+		/// that is used as the version.
+		/// </summary>
+		/// <value>The <see cref="Property"/> that is used as the version.</value>
 		public abstract Property Version { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// When implemented by a class, gets or sets the <see cref="Value"/>
+		/// that contains information about the discriminator.
+		/// </summary>
+		/// <value>The <see cref="Value"/> that contains information about the discriminator.</value>
 		public abstract Value Discriminator { get; set; }
 
 		/// <summary></summary>

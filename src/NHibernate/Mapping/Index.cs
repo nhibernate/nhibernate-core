@@ -5,7 +5,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// An Index in the database.
+	/// </summary>
 	public class Index : IRelationalModel
 	{
 		private Table table;
@@ -13,11 +15,13 @@ namespace NHibernate.Mapping
 		private string name;
 
 		/// <summary>
-		/// 
+		/// Generates the SQL string to create this Index in the database.
 		/// </summary>
-		/// <param name="dialect"></param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="p"></param>
-		/// <returns></returns>
+		/// <returns>
+		/// A string that contains the SQL to create this Index.
+		/// </returns>
 		public string SqlCreateString( Dialect.Dialect dialect, IMapping p )
 		{
 			StringBuilder buf = new StringBuilder( "create index " )
@@ -43,32 +47,47 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Generates the SQL string to drop this Index in the database.
 		/// </summary>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <returns>
+		/// A string that contains the SQL to drop this Index.
+		/// </returns>
 		public string SqlDropString( Dialect.Dialect dialect )
 		{
 			return "drop index " + table.GetQualifiedName( dialect ) + StringHelper.Dot + name;
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the <see cref="Table"/> this Index is in.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Table"/> this Index is in.
+		/// </value>
 		public Table Table
 		{
 			get { return table; }
 			set { table = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="Column"/> objects that are 
+		/// part of the Index.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Column"/> objects that are 
+		/// part of the Index.
+		/// </value>
 		public ICollection ColumnCollection
 		{
 			get { return columns; }
 		}
 
 		/// <summary>
-		/// 
+		/// Adds the <see cref="Column"/> to the <see cref="ICollection"/> of 
+		/// Columns that are part of the Index.
 		/// </summary>
-		/// <param name="column"></param>
+		/// <param name="column">The <see cref="Column"/> to include in the Index.</param>
 		public void AddColumn( Column column )
 		{
 			if( !columns.Contains( column ) )
@@ -77,7 +96,10 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the Name used to identify the Index in the database.
+		/// </summary>
+		/// <value>The Name used to identify the Index in the database.</value>
 		public string Name
 		{
 			get { return name; }

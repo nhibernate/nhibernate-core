@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Data;
 using System.Text;
@@ -24,17 +25,19 @@ namespace NHibernate.Mapping
 		private bool quoted;
 		private static int tableCounter = 0;
 
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes a new instance of <see cref="Table"/>.
+		/// </summary>
 		public Table()
 		{
 			uniqueInteger = tableCounter++;
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the schema qualified name of the Table.
 		/// </summary>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> that knows how to Quote the Table name.</param>
+		/// <returns>The name of the table qualified with the schema if one is specified.</returns>
 		public string GetQualifiedName( Dialect.Dialect dialect )
 		{
 			string quotedName = GetQuotedName( dialect );
@@ -43,9 +46,9 @@ namespace NHibernate.Mapping
 
 
 		/// <summary>
-		/// Returns the QualifiedName for the table using the specified Qualifier
+		/// Gets the schema qualified name of the Table using the specified qualifier
 		/// </summary>
-		/// <param name="dialect"></param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> that knows how to Quote the Table name.</param>
 		/// <param name="defaultQualifier">The Qualifier to use when accessing the table.</param>
 		/// <returns>A String representing the Qualified name.</returns>
 		/// <remarks>If this were used with MSSQL it would return a dbo.table_name.</remarks>
@@ -57,7 +60,24 @@ namespace NHibernate.Mapping
 				GetQualifiedName( dialect );
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the name of the Table in the database.
+		/// </summary>
+		/// <value>
+		/// The name of the Table in the database.  The get does 
+		/// not return a Quoted Table name.
+		/// </value>
+		/// <remarks>
+		/// <p>
+		/// If a value is passed in that is wrapped by <c>`</c> then 
+		/// NHibernate will Quote the Table whenever SQL is generated
+		/// for it.  How the Table is quoted depends on the Dialect.
+		/// </p>
+		/// <p>
+		/// The value returned by the getter is not Quoted.  To get the
+		/// column name in quoted form use <see cref="GetQuotedName(Dialect.Dialect)"/>.
+		/// </p>
+		/// </remarks>
 		public string Name
 		{
 			get { return name; }
@@ -76,10 +96,15 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the name of this Table in quoted form if it is necessary.
 		/// </summary>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
+		/// <param name="dialect">
+		/// The <see cref="Dialect.Dialect"/> that knows how to quote the Table name.
+		/// </param>
+		/// <returns>
+		/// The Table name in a form that is safe to use inside of a SQL statement.
+		/// Quoted if it needs to be, not quoted if it does not need to be.
+		/// </returns>
 		public string GetQuotedName( Dialect.Dialect dialect )
 		{
 			return IsQuoted ?
@@ -88,10 +113,12 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the <see cref="Column"/> at the specified index.
 		/// </summary>
-		/// <param name="n"></param>
-		/// <returns></returns>
+		/// <param name="n">The index of the Column to get.</param>
+		/// <returns> 
+		/// The <see cref="Column"/> at the specified index.
+		/// </returns>
 		public Column GetColumn( int n )
 		{
 			IEnumerator iter = columns.Values.GetEnumerator();
@@ -103,9 +130,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Adds the <see cref="Column"/> to the <see cref="ICollection"/> of 
+		/// Columns that are part of the Table.
 		/// </summary>
-		/// <param name="column"></param>
+		/// <param name="column">The <see cref="Column"/> to include in the Table.</param>
 		public void AddColumn( Column column )
 		{
 			Column old = ( Column ) columns[ column.Name ];
@@ -120,31 +148,64 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the number of columns that this Table contains.
+		/// </summary>
+		/// <value>
+		/// The number of columns that this Table contains.
+		/// </value>
 		public int ColumnSpan
 		{
 			get { return columns.Count; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="Column"/> objects that 
+		/// are part of the Table.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Column"/> objects that are 
+		/// part of the Table.
+		/// </value>
 		public ICollection ColumnCollection
 		{
 			get { return columns.Values; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="Index"/> objects that 
+		/// are part of the Table.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Index"/> objects that are 
+		/// part of the Table.
+		/// </value>
 		public ICollection IndexCollection
 		{
 			get { return indexes.Values; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="ForeignKey"/> objects that 
+		/// are part of the Table.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="ForeignKey"/> objects that are 
+		/// part of the Table.
+		/// </value>
 		public ICollection ForeignKeyCollection
 		{
 			get { return foreignKeys.Values; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="UniqueKey"/> objects that 
+		/// are part of the Table.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="UniqueKey"/> objects that are 
+		/// part of the Table.
+		/// </value>
 		public ICollection UniqueKeyCollection
 		{
 			get { return uniqueKeys.Values; }
@@ -191,11 +252,14 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Generates the SQL string to create this Table in the database.
 		/// </summary>
-		/// <param name="dialect"></param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="p"></param>
-		/// <returns></returns>
+		/// <returns>
+		/// A string that contains the SQL to create this Table, Primary Key Constraints
+		/// , and Unique Key Constraints.
+		/// </returns>
 		public string SqlCreateString( Dialect.Dialect dialect, IMapping p )
 		{
 			StringBuilder buf = new StringBuilder( "create table " )
@@ -204,7 +268,8 @@ namespace NHibernate.Mapping
 
 			bool identityColumn = idValue != null && idValue.CreateIdentifierGenerator( dialect ) is IdentityGenerator;
 
-			// try to find out the name of the pk to create it as identity if the identitygenerator is used
+			// try to find out the name of the pk to create it as identity if the 
+			// identitygenerator is used
 			string pkname = null;
 			if( primaryKey != null && identityColumn )
 			{
@@ -278,16 +343,22 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Generates the SQL string to drop this Table in the database.
 		/// </summary>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <returns>
+		/// A string that contains the SQL to drop this Table and to cascade the drop to 
+		/// the constraints if the database supports it.
+		/// </returns>
 		public string SqlDropString( Dialect.Dialect dialect )
 		{
 			return "drop table " + GetQualifiedName( dialect ) + dialect.CascadeConstraintsString;
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the <see cref="PrimaryKey"/> of the Table.
+		/// </summary>
+		/// <value>The <see cref="PrimaryKey"/> of the Table.</value>
 		public PrimaryKey PrimaryKey
 		{
 			get { return primaryKey; }
@@ -295,10 +366,13 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the <see cref="Index"/> identified by the name.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
+		/// <param name="name">The name of the <see cref="Index"/> to get.</param>
+		/// <returns>
+		/// The <see cref="Index"/> identified by the name.  If the <see cref="Index"/>
+		/// identified by the name does not exist then it is created.
+		/// </returns>
 		public Index GetIndex( string name )
 		{
 			Index index = ( Index ) indexes[ name ];
@@ -315,10 +389,13 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the <see cref="UniqueKey"/> identified by the name.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
+		/// <param name="name">The name of the <see cref="UniqueKey"/> to get.</param>
+		/// <returns>
+		/// The <see cref="UniqueKey"/> identified by the name.  If the <see cref="UniqueKey"/>
+		/// identified by the name does not exist then it is created.
+		/// </returns>
 		public UniqueKey GetUniqueKey( string name )
 		{
 			UniqueKey uk = ( UniqueKey ) uniqueKeys[ name ];
@@ -335,10 +412,17 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Create a <see cref="ForeignKey"/> for the columns in the Table.
 		/// </summary>
-		/// <param name="columns"></param>
-		/// <returns></returns>
+		/// <param name="columns">An <see cref="IList"/> of <see cref="Column"/> objects.</param>
+		/// <returns>
+		/// A <see cref="ForeignKey"/> for the columns in the Table.  
+		/// </returns>
+		/// <remarks>
+		/// This does not necessarily create a <see cref="ForeignKey"/>, if
+		/// one already exists for the columns then it will return an 
+		/// existing <see cref="ForeignKey"/>.
+		/// </remarks>
 		public ForeignKey CreateForeignKey( IList columns )
 		{
 			string name = "FK" + UniqueColumnString( columns );
@@ -361,10 +445,13 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Generates a unique string for an <see cref="ICollection"/> of 
+		/// <see cref="Column"/> objects.
 		/// </summary>
-		/// <param name="col"></param>
-		/// <returns></returns>
+		/// <param name="col">An <see cref="ICollection"/> of <see cref="Column"/> objects.</param>
+		/// <returns>
+		/// An unique string for the <see cref="Column"/> objects.
+		/// </returns>
 		public string UniqueColumnString( ICollection col )
 		{
 			int result = 0;
@@ -380,33 +467,44 @@ namespace NHibernate.Mapping
 					result += obj.GetHashCode();
 				}
 			}
-
+			// "X"= hexadecimal format
 			return ( name.GetHashCode().ToString( "X" ) + result.GetHashCode().ToString( "X" ) );
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the schema the table is in.
+		/// </summary>
+		/// <value>
+		/// The schema the table is in or <c>null</c> if no schema is specified.
+		/// </value>
 		public string Schema
 		{
 			get { return schema; }
 			set { schema = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the unique number of the Table.
+		/// </summary>
+		/// <value>The unique number of the Table.</value>
 		public int UniqueInteger
 		{
 			get { return uniqueInteger; }
 		}
 
 		/// <summary>
-		/// 
+		/// Sets the Identifier of the Table.
 		/// </summary>
-		/// <param name="idValue"></param>
+		/// <param name="idValue">The <see cref="Value"/> that represents the Identifier.</param>
 		public void SetIdentifierValue( Value idValue )
 		{
 			this.idValue = idValue;
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets if the column needs to be quoted in SQL statements.
+		/// </summary>
+		/// <value><c>true</c> if the column is quoted.</value>
 		public bool IsQuoted
 		{
 			get { return quoted; }

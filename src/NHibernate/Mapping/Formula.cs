@@ -24,13 +24,13 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		public String GetTemplate( Dialect.Dialect dialect )
+		public string GetTemplate( Dialect.Dialect dialect )
 		{
 			return Template.RenderWhereStringTemplate( formula, dialect );
 		}
 
 		/// <summary></summary>
-		public String Alias
+		public string Alias
 		{
 			get { return "f" + uniqueInteger.ToString() + StringHelper.Underscore; }
 		}

@@ -7,7 +7,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary>
+	/// Represents the mapping to a column in a database.
+	/// </summary>
 	public class Column
 	{
 		private static readonly int DefaultPropertyLength = 255;
@@ -24,21 +26,46 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		internal int uniqueInteger;
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the length of the datatype in the database.
+		/// </summary>
+		/// <value>The length of the datatype in the database.</value>
 		public int Length
 		{
 			get { return length; }
 			set { length = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the NHibernate <see cref="IType"/> of the column.
+		/// </summary>
+		/// <value>
+		/// The NHibernate <see cref="IType"/> of the column.
+		/// </value>
 		public IType Type
 		{
 			get { return type; }
 			set { type = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the name of the column in the database.
+		/// </summary>
+		/// <value>
+		/// The name of the column in the database.  The get does 
+		/// not return a Quoted column name.
+		/// </value>
+		/// <remarks>
+		/// <p>
+		/// If a value is passed in that is wrapped by <c>`</c> then 
+		/// NHibernate will Quote the column whenever SQL is generated
+		/// for it.  How the column is quoted depends on the Dialect.
+		/// </p>
+		/// <p>
+		/// The value returned by the getter is not Quoted.  To get the
+		/// column name in quoted form use <see cref="GetQuotedName(Dialect.Dialect)"/>.
+		/// </p>
+		/// </remarks>
 		public string Name
 		{
 			get { return name; }
@@ -57,10 +84,16 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the name of this Column in quoted form if it is necessary.
 		/// </summary>
-		/// <param name="d"></param>
-		/// <returns></returns>
+		/// <param name="d">
+		/// The <see cref="Dialect.Dialect"/> that knows how to quote
+		/// the column name.
+		/// </param>
+		/// <returns>
+		/// The column name in a form that is safe to use inside of a SQL statement.
+		/// Quoted if it needs to be, not quoted if it does not need to be.
+		/// </returns>
 		public string GetQuotedName( Dialect.Dialect d )
 		{
 			return IsQuoted ?
@@ -69,10 +102,12 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Gets an Alias for the column name.
 		/// </summary>
-		/// <param name="d"></param>
-		/// <returns></returns>
+		/// <param name="d">The <see cref="Dialect.Dialect"/> that contains the rules for Aliasing.</param>
+		/// <returns>
+		/// A string that can be used as the alias for this Column.
+		/// </returns>
 		public string Alias( Dialect.Dialect d )
 		{
 			if( quoted )
@@ -91,11 +126,13 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Gets an Alias for the column name.
 		/// </summary>
-		/// <param name="d"></param>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
+		/// <param name="d">The <see cref="Dialect.Dialect"/> that contains the rules for Aliasing.</param>
+		/// <param name="suffix">A string to use as the suffix for the Alias.</param>
+		/// <returns>
+		/// A string that can be used as the alias for this Column.
+		/// </returns>
 		public string Alias( Dialect.Dialect d, string suffix )
 		{
 			if( quoted )
@@ -107,7 +144,6 @@ namespace NHibernate.Mapping
 			{
 				return name + suffix;
 			}
-				//return name.Substring(0, name.Length - suffix.Length);
 			else
 			{
 				return ( new Alias( 10, uniqueInteger.ToString() + StringHelper.Underscore + suffix ) ).ToAliasString( name, d );
@@ -115,7 +151,10 @@ namespace NHibernate.Mapping
 
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets if the column can have null values in it.
+		/// </summary>
+		/// <value><c>true</c> if the column can have a null value in it.</value>
 		public bool IsNullable
 		{
 			get { return nullable; }
@@ -123,17 +162,22 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of <see cref="Column"/>.
 		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="typeIndex"></param>
+		/// <param name="type">The NHibernate <see cref="IType"/> that reads from and writes to the column.</param>
+		/// <param name="typeIndex">The index of the column in the <see cref="IType"/>.</param>
 		public Column( IType type, int typeIndex )
 		{
 			this.type = type;
 			this.typeIndex = typeIndex;
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets the index of the column in the <see cref="IType"/>.
+		/// </summary>
+		/// <value>
+		/// The index of the column in the <see cref="IType"/>.
+		/// </value>
 		public int TypeIndex
 		{
 			get { return typeIndex; }
@@ -141,10 +185,12 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the <see cref="SqlType"/> of the column based on the <see cref="IType"/>.
 		/// </summary>
 		/// <param name="mapping"></param>
-		/// <returns></returns>
+		/// <returns>
+		/// The <see cref="SqlType"/> of the column based on the <see cref="IType"/>.
+		/// </returns>
 		public SqlType GetAutoSqlType( IMapping mapping )
 		{
 			try
@@ -163,7 +209,10 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets if the column contains unique values.
+		/// </summary>
+		/// <value><c>true</c> if the column contains unique values.</value>
 		public bool IsUnique
 		{
 			get { return unique; }
@@ -171,11 +220,18 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the name of the data type for the column.
 		/// </summary>
-		/// <param name="dialect"></param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use to get the valid data types.</param>
 		/// <param name="mapping"></param>
-		/// <returns></returns>
+		/// <returns>
+		/// The name of the data type for the column. 
+		/// </returns>
+		/// <remarks>
+		/// If the mapping file contains a value of the attribute <c>sql-type</c> this will
+		/// return the string contained in that attribute.  Otherwise it will use the 
+		/// typename from the <see cref="Dialect.Dialect"/> of the <see cref="SqlType"/> object. 
+		/// </remarks>
 		public string GetSqlType( Dialect.Dialect dialect, IMapping mapping )
 		{
 			if( sqlType == null )
@@ -189,21 +245,31 @@ namespace NHibernate.Mapping
 			}
 		}
 
+		#region System.Object Members
+
 		/// <summary>
-		/// 
+		/// Determines if this instance of <see cref="Column"/> and a specified object, 
+		/// which must be a <b>Column</b> can be considered the same.
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+		/// <param name="obj">An <see cref="Object"/> that should be a <see cref="Column"/>.</param>
+		/// <returns>
+		/// <c>true</c> if the name of this Column and the other Column are the same, 
+		/// otherwise <c>false</c>.
+		/// </returns>
 		public override bool Equals( object obj )
 		{
 			return obj is Column && Equals( ( Column ) obj );
 		}
 
 		/// <summary>
-		/// 
+		/// Determines if this instance of <see cref="Column"/> and the specified Column 
+		/// can be considered the same.
 		/// </summary>
-		/// <param name="column"></param>
-		/// <returns></returns>
+		/// <param name="column">A <see cref="Column"/> to compare to this Column.</param>
+		/// <returns>
+		/// <c>true</c> if the name of this Column and the other Column are the same, 
+		/// otherwise <c>false</c>.
+		/// </returns>
 		public bool Equals( Column column )
 		{
 			if( null == column )
@@ -218,20 +284,36 @@ namespace NHibernate.Mapping
 			return name.Equals( column.Name );
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Returns the hash code for this instance.
+		/// </summary>
+		/// <value>The value of <see cref="Name.GetHashCode()">Name.GetHashCode()</see>.</value>
 		public override int GetHashCode()
 		{
 			return name.GetHashCode();
 		}
 
-		/// <summary></summary>
+		#endregion
+
+		/// <summary>
+		/// Gets or sets the sql data type name of the column.
+		/// </summary>
+		/// <value>
+		/// The sql data type name of the column. 
+		/// </value>
+		/// <remarks>
+		/// This is usually read from the <c>sql-type</c> attribute.
+		/// </remarks>
 		public string SqlType
 		{
 			get { return sqlType; }
 			set { sqlType = value; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets or sets if the column needs to be quoted in SQL statements.
+		/// </summary>
+		/// <value><c>true</c> if the column is quoted.</value>
 		public bool IsQuoted
 		{
 			get { return quoted; }
