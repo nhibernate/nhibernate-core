@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 
+using NHibernate.Util;
 using NHibernate.Engine;
 using NHibernate.Persister;
 
@@ -28,9 +29,7 @@ namespace NHibernate.Type
 
 		protected EntityType(System.Type persistentClass) {
 			this.persistentClass = persistentClass;
-
-			this.niceEquals = true; //HACK: need ReflectHelper porting
-			//TODO: niceEquals = !ReflectHelper.overridesEquals(persistentClass);
+			this.niceEquals = !ReflectHelper.OverridesEquals(persistentClass);
 		}
 		
 		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner) {
