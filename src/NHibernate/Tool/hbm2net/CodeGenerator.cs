@@ -20,6 +20,7 @@ namespace NHibernate.tool.hbm2net
 		[STAThread]
 		public static void  Main(System.String[] args)
 		{
+			log4net.Config.DOMConfigurator.Configure();
 			
 			if (args.Length == 0)
 			{

@@ -32,7 +32,7 @@ namespace NHibernate.tool.hbm2net
 			
 			//UPGRADE_TODO: Format of property file may need to be changed. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1089"'
 			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
-			
+			p.SetProperty( "runtime.log.logsystem.log4net.category", "x");
 //			//UPGRADE_TODO: Method 'java.util.Properties.setProperty' was converted to 'System.Collections.Specialized.NameValueCollection.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073"'
 //			p["resource.loader"] = "class";
 //			//UPGRADE_TODO: Method 'java.util.Properties.setProperty' was converted to 'System.Collections.Specialized.NameValueCollection.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073"'

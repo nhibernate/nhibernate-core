@@ -230,14 +230,17 @@ namespace NHibernate.tool.hbm2net
 			{
 				System.Text.StringBuilder sbuf = new System.Text.StringBuilder();
 				//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
+				bool first = true;
 				for (System.Collections.IEnumerator iter = interfaces.GetEnumerator(); iter.MoveNext(); )
 				{
+					if (first)
+						first = false;
+					else
+						sbuf.Append(",");
 					//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 					//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 					sbuf.Append(JavaTool.shortenType(iter.Current.ToString(), cmap.Imports));
 					//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
-					if (iter.MoveNext())
-						sbuf.Append(",");
 				}
 				return sbuf.ToString();
 			}
@@ -252,16 +255,17 @@ namespace NHibernate.tool.hbm2net
 		{
 			System.Text.StringBuilder buf = new System.Text.StringBuilder();
 			//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
+			bool first = true;
 			for (System.Collections.IEnumerator fields = fieldslist.GetEnumerator(); fields.MoveNext(); )
 			{
+				if (first)
+					first = false;
+				else
+					buf.Append(", ");
 				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 				FieldProperty field = (FieldProperty) fields.Current;
 				buf.Append(JavaTool.shortenType(JavaTool.getTrueTypeName(field, class2classmap), classMapping.Imports) + " " + field.FieldName);
 				//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
-				if (fields.MoveNext())
-				{
-					buf.Append(", ");
-				}
 			}
 			return buf.ToString();
 		}
@@ -271,16 +275,18 @@ namespace NHibernate.tool.hbm2net
 		{
 			System.Text.StringBuilder buf = new System.Text.StringBuilder();
 			//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
+			bool first = true;
 			for (System.Collections.IEnumerator fields = fieldslist.GetEnumerator(); fields.MoveNext(); )
 			{
+				if (first)
+					first = false;
+				else
+					buf.Append(", ");
+
 				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 				FieldProperty field = (FieldProperty) fields.Current;
 				buf.Append(field.FieldName);
 				//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
-				if (fields.MoveNext())
-				{
-					buf.Append(", ");
-				}
 			}
 			return buf.ToString();
 		}
@@ -308,7 +314,7 @@ namespace NHibernate.tool.hbm2net
 					//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 					//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 					System.String cname = it.Current.ToString();
-					buf.Append("import " + cname + ";\n");
+					buf.Append("using " + cname + ";\n");
 				}
 			}
 			return buf.ToString();

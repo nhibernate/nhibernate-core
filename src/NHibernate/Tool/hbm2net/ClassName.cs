@@ -120,8 +120,9 @@ namespace NHibernate.tool.hbm2net
 					}
 					else
 					{
-						name = fqn.Substring(lastDot + 1);
 						packageName = fqn.Substring(0, (lastDot) - (0));
+						name = packageName.Substring(packageName.LastIndexOf(".") + 1);
+						packageName = packageName.Substring(0, (packageName.LastIndexOf(".")) - (0));
 					}
 				}
 				else

@@ -145,13 +145,16 @@ namespace NHibernate.tool.hbm2net
 		{
 			System.Text.StringBuilder buf = new System.Text.StringBuilder();
 			//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
+			bool first = true;
 			for (System.Collections.IEnumerator iter = meta.GetEnumerator(); iter.MoveNext(); )
 			{
+				if (first)
+					first = false;
+				else
+					buf.Append(seperator);
 				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 				buf.Append(iter.Current);
 				//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
-				if (iter.MoveNext())
-					buf.Append(seperator);
 			}
 			return buf.ToString();
 		}

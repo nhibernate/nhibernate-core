@@ -642,7 +642,7 @@ namespace NHibernate.tool.hbm2net
 			}
 			
 			// collections
-			doCollections(classPackage, classElement, "list", "java.util.List", "java.util.ArrayList", MetaAttribs);
+			doCollections(classPackage, classElement, "list", "System.Collections.ICollection", "System.Collections.ArrayList", MetaAttribs);
 			doCollections(classPackage, classElement, "map", "java.util.Map", "java.util.HashMap", MetaAttribs);
 			doCollections(classPackage, classElement, "set", "java.util.Set", "java.util.HashSet", MetaAttribs);
 			//UPGRADE_ISSUE: Method 'java.lang.System.getProperty' was not converted. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1000_javalangSystemgetProperty_javalangString_javalangString"'
