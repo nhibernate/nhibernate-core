@@ -102,7 +102,7 @@ namespace NHibernate.Type
 		
 			object oldid = GetIdentifier(old, session);
 			object newid = GetIdentifier(current, session);
-			return !session.GetFactory().GetIdentifierType(persistentClass).Equals(oldid, newid);
+			return !session.Factory.GetIdentifierType(persistentClass).Equals(oldid, newid);
 		}
 	}
 }

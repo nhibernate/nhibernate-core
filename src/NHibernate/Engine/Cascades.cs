@@ -180,7 +180,7 @@ namespace NHibernate.Engine {
 								cascadeVia = cascadeTo;
 							}
 							PersistentCollectionType pctype = (PersistentCollectionType) type;
-							CollectionPersister persister = session.GetFactory().GetCollectionPersister( pctype.Role );
+							CollectionPersister persister = session.Factory.GetCollectionPersister( pctype.Role );
 							IType elemType = persister.ElementType;
 							ICollection iter;
 							if (action.ShouldCascadeCollection(child)) {

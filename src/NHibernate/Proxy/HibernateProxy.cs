@@ -65,7 +65,7 @@ namespace NHibernate.Proxy {
 				if ( parms == 0 ) {
 					if ( "WriteReplace".Equals(methodName)) {
 						if (target==null && session!=null)
-							target = session.GetEntity( new Key( id, session.GetFactory().GetPersister(persistentClass)) );
+							target = session.GetEntity( new Key( id, session.Factory.GetPersister(persistentClass)) );
 						if (target==null) {
 							return new ReturnMessage(SerializableProxy, null, 0, methodMessage.LogicalCallContext, methodMessage);
 						} else {
@@ -133,7 +133,7 @@ namespace NHibernate.Proxy {
 
 		public object GetImplementation(ISessionImplementor s) {
 			return s.GetEntity(
-				new Key( Identifier, s.GetFactory().GetPersister( PersistentClass ) )
+				new Key( Identifier, s.Factory.GetPersister( PersistentClass ) )
 				);
 		}
 	}

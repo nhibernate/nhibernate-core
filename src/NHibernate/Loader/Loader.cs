@@ -259,7 +259,7 @@ namespace NHibernate.Loader {
 						hydrate[i] = true;
 
 						// so that code is circular-ref safe:
-						session.AddUninitializedEntity(key, obj, LockMode );
+						session.AddUninitializeEntity(key, obj, LockMode );
 					}
 				}
 
@@ -381,7 +381,7 @@ namespace NHibernate.Loader {
 				int col=1;
 				for (int i=0; i<values.Length; i++) {
 					types[i].NullSafeSet( st, values[i], col, session);
-					col += types[i].GetColumnSpan( session.GetFactory() );
+					col += types[i].GetColumnSpan( session.Factory );
 				}
 			} catch (Exception e) {
 				ClosePreparedStatement(st, selection, session);

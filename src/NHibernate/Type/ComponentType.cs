@@ -112,7 +112,7 @@ namespace NHibernate.Type {
 			bool notNull=false;
 			object[] values = new object[propertySpan];
 			for (int i=0; i<propertySpan; i++) {
-				int length = types[i].GetColumnSpan( session.GetFactory() );
+				int length = types[i].GetColumnSpan( session.Factory );
 				string[] range = ArrayHelper.Slice(names, begin, length);
 				object val = types[i].NullSafeGet(rs, range, session, owner);
 				if (val!=null) notNull=true;
@@ -136,7 +136,7 @@ namespace NHibernate.Type {
 
 			for (int i=0; i<propertySpan; i++) {
 				types[i].NullSafeSet(st, subvalues[i], begin, session);
-				begin += types[i].GetColumnSpan( session.GetFactory() );
+				begin += types[i].GetColumnSpan( session.Factory );
 			}
 		}
 

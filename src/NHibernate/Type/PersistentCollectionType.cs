@@ -45,7 +45,7 @@ namespace NHibernate.Type {
 
 		public virtual object GetCollection(object id, object owner, ISessionImplementor session) {
 		
-			CollectionPersister persister = session.GetFactory().GetCollectionPersister(role);
+			CollectionPersister persister = session.Factory.GetCollectionPersister(role);
 			
 			PersistentCollection collection = persister.GetCachedCollection(id, owner, session);
 			if (collection!=null) {
@@ -113,9 +113,9 @@ namespace NHibernate.Type {
 	
 		public override bool IsDirty(object old, object current, ISessionImplementor session) {
 		
-			System.Type ownerClass = session.GetFactory().GetCollectionPersister(role).OwnerClass;
+			System.Type ownerClass = session.Factory.GetCollectionPersister(role).OwnerClass;
 		
-			if ( !session.GetFactory().GetPersister(ownerClass).IsVersioned ) {
+			if ( !session.Factory.GetPersister(ownerClass).IsVersioned ) {
 				// collections don't dirty an unversioned parent entity
 				return false;
 			}

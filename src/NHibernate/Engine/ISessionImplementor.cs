@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Persister;
+using NHibernate.Type;
 namespace NHibernate.Engine {
 	/// <summary>
 	/// Defines the internal contract between the <c>Session</c> and other parts of Hibernate
@@ -67,42 +69,7 @@ namespace NHibernate.Engine {
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		bool IsCollectionReadOnly(PersistentCollection collection);		
-	
-		/// <summary>
-		/// Notify the session that the transaction completed, so we no longer own the old locks.
-		/// (Also we should release cache softlocks.)
-		/// </summary>
-		void AfterTransactionCompletion();
-
-		/// <summary>
-		/// Return the identifier of the persistent object, or null if transient
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		object GetEntityIdentifier(object obj);
-
-		/// <summary>
-		/// Return the identifier of the persistent or transient object, or throw
-		/// an exception if the instance is "unsaved"
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		object GetEntityIdentifierIfNotUnsaved(object obj);
-
-		/// <summary>
-		/// Instantiate the entity class, initilizing with the given identifier
-		/// </summary>
-		/// <param name="?"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		object Instantiate(System.Type clazz, object id);
-
-		/// <summary>
-		/// Get the creating SessionFactoryImplementor
-		/// </summary>
-		/// <returns></returns>
-		ISessionFactoryImplementor GetFactory();
+		bool IsCollectionReadOnly(PersistentCollection collection);
 
 		/// <summary>
 		/// Load an instance without checking if it was deleted. If it does not exist, throw an exception.
@@ -112,7 +79,7 @@ namespace NHibernate.Engine {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		object InternalLoad(System.Type persistentClass, object id);
-		
+
 		/// <summary>
 		/// Load an instance without checking if it was deleted. If it does not exist, return <tt>null</tt>.
 		/// Do not create a proxy (but do return any existing proxy).
@@ -121,7 +88,7 @@ namespace NHibernate.Engine {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		object InternalLoadOneToOne(System.Type persistentClass, object id);
-		
+
 		/// <summary>
 		/// Load an instance immediately. Do not return a proxy.
 		/// </summary>
@@ -129,7 +96,6 @@ namespace NHibernate.Engine {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		object ImmediateLoad(System.Type persistentClass, object id);
-		
 
 		/// <summary>
 		/// Load an instance immediately. Do not return a proxy
@@ -144,28 +110,92 @@ namespace NHibernate.Engine {
 		long Timestamp { get; }
 
 		/// <summary>
+		/// Get the creating SessionFactoryImplementor
+		/// </summary>
+		/// <returns></returns>
+		ISessionFactoryImplementor Factory { get; }
+
+		
+		/// <summary>
 		/// Get the prepared statement <c>Batcher</c> for this session
 		/// </summary>
 		IBatcher Batcher { get; }
 
 		/// <summary>
-		/// Get the entity instance associated with the given <c>Key</c>
+		/// After actually inserting a row, record the fact taht the instance exists on the database
+		/// (needed for identity-column key generation)
 		/// </summary>
-		/// <param name="key"></param>
-		/// <returns></returns>
-		object GetEntity(Key key);
+		/// <param name="obj"></param>
+		void PostInsert(object obj);
 
 		/// <summary>
-		/// Add an uninitialized instance of an entity class, as a placeholder to ensure object
-		/// identity.
+		/// After actually deleting a row, record the fact that the instance no longer exists on the
+		/// database (needed for identity-column key generation)
 		/// </summary>
-		/// <remarks>
+		/// <param name="obj"></param>
+		void PostDelete(object obj);
+	
+		/// <summary>
+		/// Execute a <c>Find()</c> query
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="values"></param>
+		/// <param name="types"></param>
+		/// <param name="selection"></param>
+		/// <param name="namedParams"></param>
+		/// <returns></returns>
+		IList FindList(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+	
+		/// <summary>
+		/// Execute an <c>Iterate()</c> query
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="values"></param>
+		/// <param name="types"></param>
+		/// <param name="selection"></param>
+		/// <param name="namedParams"></param>
+		/// <returns></returns>
+		ICollection FindCollection(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+
+		/// <summary>
+		/// Execute a filter
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="filter"></param>
+		/// <param name="values"></param>
+		/// <param name="types"></param>
+		/// <param name="selection"></param>
+		/// <param name="namedParams"></param>
+		/// <returns></returns>
+		IList FilterList(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+
+		/// <summary>
+		/// Collection from a filter
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="filter"></param>
+		/// <param name="values"></param>
+		/// <param name="types"></param>
+		/// <param name="selection"></param>
+		/// <param name="namedParams"></param>
+		/// <returns></returns>
+		ICollection FilterCollection(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+		
+		/// <summary>
+		/// Get the <c>IClassPersister</c> for an object
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		IClassPersister GetPersister(object obj);
+
+		/// <summary>
+		/// Add an uninitialized instance of an entity class, as a placeholder to ensure object identity.
 		/// Must be called before <c>PostHydrate()</c>
-		/// </remarks>
+		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
-		void AddUninitializedEntity(Key key, object obj, LockMode lockMode);
+		void AddUninitializeEntity(Key key, object obj, LockMode lockMode);
 
 		/// <summary>
 		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading
@@ -176,27 +206,64 @@ namespace NHibernate.Engine {
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
 		void PostHydrate(IClassPersister persister, object id, object[] values, object obj, LockMode lockMode);
-
+	
 		/// <summary>
-		/// Get the <c>ClassPersister</c> for an object
-		/// </summary>
-		IClassPersister GetPersister(object obj);
-
-		/// <summary>
-		/// Perform the second step of 2-phase load(ie fully initialize the entity instance)
+		/// Perform the second step of 2-phase load (ie. fully initialize the entity instance)
 		/// </summary>
 		/// <param name="obj"></param>
 		void InitializeEntity(object obj);
 
 		/// <summary>
-		/// Return the existing proxy associated with the given <c>Key</c> or the
-		/// second argument (the entity associated with the key) if no proxy exists
+		/// Get the entity instance associated with the given <c>Key</c>
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		object GetEntity(Key key);
+
+		/// <summary>
+		/// Return the existing proxy associated with the given <c>Key</c>, or the second
+		/// argument (the entity associated with the key) if no proxy exists.
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="key"></param>
 		/// <param name="impl"></param>
 		/// <returns></returns>
 		object ProxyFor(IClassPersister persister, Key key, object impl);
-	
+
+		/// <summary>
+		/// Return the existing proxy associated with the given object. (Slower than the form above)
+		/// </summary>
+		/// <param name="impl"></param>
+		/// <returns></returns>
+		object ProxyFor(object impl);
+
+		/// <summary>
+		/// Notify the session that the transaction completed, so we no longer own the old locks.
+		/// (Also we shold release cache softlocks).
+		/// </summary>
+		void AfterTransactionCompletion();
+
+		/// <summary>
+		/// Return the identifier of the persistent object, or null if transient
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		object GetEntityIdentifier(object obj);
+
+		/// <summary>
+		/// Return the identifer of the persistent or transient object, or throw
+		/// an exception if the instance is "unsaved"
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		object GetEntityIdentifierIfNotUnsaved(object obj);
+
+		/// <summary>
+		/// Instantiate the entity class, initializing with the given identifier
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		object Instantiate(System.Type clazz, object id);
 	}
 }

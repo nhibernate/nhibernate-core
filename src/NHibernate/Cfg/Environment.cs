@@ -78,10 +78,7 @@ namespace NHibernate.Cfg {
 		}
 
 		public static bool UseStreamsForBinary {
-			get { 
-				return true;	//HACK: to compile BinaryType
-								//TODO: return useStreamsForBinary; 
-			}			
+			get { return true; }			
 		}
 	}
 }

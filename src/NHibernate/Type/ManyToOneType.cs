@@ -24,7 +24,7 @@ namespace NHibernate.Type {
 		}
 
 		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session) {
-			session.GetFactory().GetIdentifierType( PersistentClass )
+			session.Factory.GetIdentifierType( PersistentClass )
 			.NullSafeSet(cmd, GetIdentifier(value, session), index, session);
 		}
 		
@@ -37,7 +37,7 @@ namespace NHibernate.Type {
 		}
 
 		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
-			return session.GetFactory().GetIdentifierType( PersistentClass )
+			return session.Factory.GetIdentifierType( PersistentClass )
 			.NullSafeGet(rs, names, session, owner);
 		}
 

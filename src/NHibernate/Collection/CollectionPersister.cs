@@ -161,13 +161,10 @@ namespace NHibernate.Collection {
 			get { return loader; }
 		}
 		public ICollectionInitializer CreateCollectionQuery(ISessionFactoryImplementor factory) {
-			/*return isOneToMany ?
+			return isOneToMany ?
 				(ICollectionInitializer) new OneToManyLoader(this, factory) :
 				(ICollectionInitializer) new CollectionLoader(this, factory);
-				
-			*/ 
-			//TODO: uncomment
-			return null;
+	
 		}
 		public void Cache(object id, PersistentCollection coll, ISessionImplementor s) {
 			if (cache!=null) {
@@ -199,7 +196,7 @@ namespace NHibernate.Collection {
 			StringBuilder result = new StringBuilder();
 			foreach(string token in tokens) {
 				if (char.IsLetter(token[0]) && !keywords.Contains(token) ) {
-					//TODO: handle and, or, not
+					//todo: handle and, or, not
 					result.Append(alias).Append(StringHelper.Dot).Append(token);
 				} else {
 					result.Append(token);
