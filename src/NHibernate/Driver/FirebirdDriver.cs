@@ -1,6 +1,4 @@
 using System;
-using System.Data;
-using System.Reflection;
 
 namespace NHibernate.Driver
 {
@@ -16,6 +14,16 @@ namespace NHibernate.Driver
 		{
 			connectionType = System.Type.GetType("FirebirdSql.Data.Firebird.FbConnection, FirebirdSql.Data.Firebird");
 			commandType = System.Type.GetType("FirebirdSql.Data.Firebird.FbCommand, FirebirdSql.Data.Firebird");
+			
+			if( connectionType==null || commandType==null )
+			{
+				throw new HibernateException( 
+					"The IDbCommand and IDbConnection implementation in the Assembly FirebirdSql.Data could not be found.  " +					
+					"Please ensure that the Assemblies needed to communicate with Firebird " +
+					"are in the Global Assembly Cache or in a location that NHibernate " +
+					"can use System.Type.GetType(string) to load the types from."
+					);
+			}
 		}
 
 		public override System.Type CommandType

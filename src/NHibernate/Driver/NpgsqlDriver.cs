@@ -1,6 +1,4 @@
 using System;
-using System.Data;
-using System.Reflection;
 
 namespace NHibernate.Driver
 {
@@ -16,7 +14,8 @@ namespace NHibernate.Driver
 	/// NHibernate to load it.
 	/// </p>
 	/// <p>
-	/// Please check the products website <a href="http://www.postgresql.org/">http://www.postgresql.org/</a>
+	/// Please check the products website 
+	/// <a href="http://www.postgresql.org/">http://www.postgresql.org/</a>
 	/// for any updates and or documentation.
 	/// </p>
 	/// <p>
@@ -33,6 +32,16 @@ namespace NHibernate.Driver
 		{
 			connectionType = System.Type.GetType("Npgsql.NpgsqlConnection, Npgsql");
 			commandType = System.Type.GetType("Npgsql.NpgsqlCommand, Npgsql");
+
+			if( connectionType==null || commandType==null )
+			{
+				throw new HibernateException( 
+					"The IDbCommand and IDbConnection implementation in the Assembly Npgsql.dll could not be found.  " +					
+					"Please ensure that the Assemblies needed to communicate with PostgreSQL " +
+					"are in the Global Assembly Cache or in a location that NHibernate " +
+					"can use System.Type.GetType(string) to load the types from."
+					);
+			}
 		}
 
 		public override System.Type CommandType

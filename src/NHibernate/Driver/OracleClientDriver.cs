@@ -5,8 +5,7 @@ using System.Reflection;
 namespace NHibernate.Driver
 {
 	/// <summary>
-	/// A NHibernate Driver for using the Oracle DataProvider	
-	/// <see cref="System.Data.OracleClient.OracleConnection"/>.
+	/// A NHibernate Driver for using the Oracle DataProvider.
 	/// </summary>
 	public class OracleClientDriver: DriverBase
 	{
