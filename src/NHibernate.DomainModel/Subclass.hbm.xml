@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class 
-		name="NHibernate.DomainModel.JoinedSubclassBase" 
-		assemblyName="NHibernate.DomainModel" 
+		name="NHibernate.DomainModel.JoinedSubclassBase, NHibernate.DomainModel" 
 		table="one_table_with_subclasses" 
 		discriminator-value="SUPER">
 		
@@ -17,8 +16,7 @@
 		<property name="TestDateTime" column="test_date_time" type="DateTime" />
 		
 		<subclass 
-			name="NHibernate.DomainModel.JoinedSubclassOne" 
-			assemblyName="NHibernate.DomainModel" 
+			name="NHibernate.DomainModel.JoinedSubclassOne, NHibernate.DomainModel" 
 			discriminator-value="SUB" >
 			
 			<property name="OneTestLong" column="one_test_long" type="Int64" />

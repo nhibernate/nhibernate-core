@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!-- DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd"-->
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="NHibernate.DomainModel.SimpleComponent" assemblyName="NHibernate.DomainModel" table="simple_component" >
+	<class name="NHibernate.DomainModel.SimpleComponent, NHibernate.DomainModel" table="simple_component" >
 		<id name="Key" type="Int64" column="id_"  >
 			<generator class="assigned" />
 		</id>
@@ -9,7 +9,7 @@
 		<property name="Address" />
 		<property name="Count" column="count_" not-null="true" unique="true" />
 		<property name="Date" column="date_" />
-		<component name="Audit" class="NHibernate.DomainModel.AuditComponent" assemblyName="NHibernate.DomainModel">
+		<component name="Audit" class="NHibernate.DomainModel.AuditComponent, NHibernate.DomainModel">
 			<property name="CreatedUserId" column="created_user_id" />
 			<property name="CreatedDate" column="created_date" />
 			<property name="UpdatedUserId" column="updated_user_id" />

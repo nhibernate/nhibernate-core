@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
-    <class name="NHibernate.DomainModel.UnsavedType" assemblyName="NHibernate.DomainModel">
+    <class name="NHibernate.DomainModel.UnsavedType, NHibernate.DomainModel">
 		<id name="Id" column="id" unsaved-value="0">
 			<generator class="identity" />
 		</id>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd"-->
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="NHibernate.DomainModel.JoinedSubclassBase" assemblyName="NHibernate.DomainModel" table="joined_subclass_base">
+	<class name="NHibernate.DomainModel.JoinedSubclassBase, NHibernate.DomainModel" table="joined_subclass_base">
 		<id name="Id" type="Int32" unsaved-value="null" column="joined_subclass_id" >
 			<!--<column name="casefile_detail_id" sql-type="int" />-->
 			<generator class="assigned" />
@@ -11,10 +11,10 @@
 		<property name="TestString" column="test_string" type="String" />
 		<property name="TestDateTime" column="test_date_time" type="DateTime" />
 		
-		<joined-subclass name="NHibernate.DomainModel.JoinedSubclassOne" assemblyName="NHibernate.DomainModel" table="joined_subclass_one">
+		<joined-subclass name="NHibernate.DomainModel.JoinedSubclassOne, NHibernate.DomainModel" table="joined_subclass_one">
 			<key column="joined_subclass_id" />
 			<property name="OneTestLong" column="one_test_long" type="Int64" />
 		</joined-subclass>
 	</class>
-
+	
 </hibernate-mapping>
