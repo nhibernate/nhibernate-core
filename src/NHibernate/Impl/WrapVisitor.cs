@@ -13,7 +13,8 @@ namespace NHibernate.Impl
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( WrapVisitor ) );
 
-		private bool _substitute = false;
+		// set to false by default by the framework
+		private bool _substitute;
 
 		public bool IsSubstitutionRequired
 		{
@@ -26,9 +27,9 @@ namespace NHibernate.Impl
 
 		protected override object ProcessCollection(object collection, PersistentCollectionType collectionType)
 		{
-			if( collection is PersistentCollection )
+			PersistentCollection coll = collection as PersistentCollection;
+			if( coll!=null )
 			{
-				PersistentCollection coll = (PersistentCollection)collection;
 				if( coll.SetCurrentSession( Session ) )
 				{
 					Session.ReattachCollection( coll, coll.CollectionSnapshot );
