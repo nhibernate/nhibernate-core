@@ -19,6 +19,7 @@ namespace NHibernate.Engine
 	/// error checking and making sure the correct number of rows were affected.
 	/// </para>
 	/// </remarks>
+	//TODO: add IDisposable
 	public interface IBatcher
 	{
 		/// <summary>

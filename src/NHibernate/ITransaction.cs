@@ -14,6 +14,7 @@ namespace NHibernate
 	/// at most one uncommitted <c>ITransaction</c> associated with a particular <c>ISession</c>
 	/// at a time. Implementors are not intended to be threadsafe.
 	/// </remarks>
+	//TODO: add IDisposable
 	public interface ITransaction
 	{
 		/// <summary>
