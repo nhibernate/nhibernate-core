@@ -518,6 +518,25 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ProxyInterface\CastleProxy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ProxyInterface\CastleProxyFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ProxyInterface\CastleProxyImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ProxyInterface\CastleProxyImpl.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "SqlCommandTest\SqlDeleteBuilderFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

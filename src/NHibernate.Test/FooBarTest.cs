@@ -347,7 +347,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void ForceOuterJoin() 
 		{
 			if( ((Engine.ISessionFactoryImplementor)sessions).EnableJoinedFetch==false ) 
@@ -550,7 +549,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void NamedParams() 
 		{
 			Bar bar = new Bar();
@@ -1350,22 +1348,14 @@ namespace NHibernate.Test
 				}
 			}
 
-			//TODO: once proxies is implemented get rid of the try-catch and notFound
-			bool notFound = false;
 			try 
 			{
 				s.Load( typeof(Qux), (long)666 ); //nonexistent
 			}
 			catch(ObjectNotFoundException onfe) 
 			{
-				notFound = true;
 				Assert.IsNotNull(onfe, "should not find a Qux with id of 666 when Proxies are not implemented.");
 			}
-			Assert.IsTrue( 
-				notFound, 
-				"without proxies working - an ObjectNotFoundException should have been thrown.  " + 
-				"If Proxies are implemented then you need to change this code" 
-				);
 
 			Assert.AreEqual( 1, s.Delete("from g in class Glarch") );
 			s.Flush();
@@ -1378,24 +1368,9 @@ namespace NHibernate.Test
 			s = (ISession)formatter.Deserialize(stream);
 			stream.Close();
 
-			//TODO: once proxies is implemented get rid of the try-catch and notFound
-			notFound = false;
-			try 
-			{
-				s.Load( typeof(Qux), (long)666 ) ; //nonexistent
-			}
-			catch(HibernateException he) 
-			{
-				notFound = true;
-				Assert.IsNotNull( he, "should have a session disconnected error when finding a Qux with id of 666 and Proxies are not implemented.");
-			}
-			Assert.IsTrue( 
-				notFound, 
-				"without proxies working - an ADOException/HibernateException should have been thrown.  " + 
-				"If Proxies are implemented then you need to change this code because the ISession does " +
-				"not need to be connected to the db when building a Proxy."
-				);
-			
+			Qux nonexistentQux = (Qux)s.Load( typeof(Qux), (long)666 ) ; //nonexistent
+			Assert.IsNotNull( nonexistentQux, "even though it doesn't exists should still get a proxy - no db hit." );
+
 			s.Close();
 		}
 
@@ -1551,7 +1526,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void Load() 
 		{
 			ISession s = sessions.OpenSession();
@@ -2081,6 +2055,9 @@ namespace NHibernate.Test
 			// for a StaleObjectException check.
 			ISession sOld = sessions.OpenSession();
 			GlarchProxy gOld = (GlarchProxy)sOld.Load( typeof(Glarch), gid );
+			// want gOld to be initialized so later I can change a property
+			NHibernate.Initialize( gOld );
+			Assert.IsTrue( NHibernate.IsInitialized( gOld ), "should be initialized" );
 			sOld.Close();
 
 			s = sessions.OpenSession();
@@ -2919,7 +2896,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void ProxyArray() 
 		{
 			ISession s = sessions.OpenSession();
@@ -3253,7 +3229,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void LoadAfterDelete() 
 		{
 			ISession s = sessions.OpenSession();
@@ -3516,7 +3491,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void ProxiesInCollections() 
 		{
 			ISession s = sessions.OpenSession();

@@ -18,7 +18,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
+		//[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void Subclassing()
 		{
 			ISession s = sessions.OpenSession();
