@@ -78,14 +78,15 @@
                     HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Runtime.Remoting.dll"
                 />
                 <Reference
-                    Name = "log4net"
-                    AssemblyName = "log4net"
-                    HintPath = "bin\log4net.dll"
-                />
-                <Reference
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
                     HintPath = "bin\nunit.framework.dll"
+                />
+                <Reference
+                    Name = "log4net"
+                    AssemblyName = "log4net"
+                    HintPath = "C:\log4net1.2.0-beta5\build\bin\Debug\log4net.dll"
+                    Private = "False"
                 />
             </References>
         </Build>
@@ -805,6 +806,16 @@
                 />
                 <File
                     RelPath = "Impl\SessionImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "JCollections\HashSet.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "JCollections\ISet.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
