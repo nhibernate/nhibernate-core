@@ -12,10 +12,13 @@ namespace NHibernate.Test
 		[SetUp]
 		public void SetUp()
 		{
-			ExecuteStatement("drop table D", false);
-			ExecuteStatement("drop table A", false);
-			ExecuteStatement("drop table map", false);
 			ExportSchema(new string[] { "ABCProxy.hbm.xml"});
+		}
+
+		[TearDown]
+		public void TearDown() 
+		{
+			DropSchema(new string[] { "ABCProxy.hbm.xml"});
 		}
 
 		[Test]

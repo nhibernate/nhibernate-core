@@ -13,6 +13,7 @@ namespace NHibernate.Test
 	
 	public abstract class TestCase 
 	{
+		protected Configuration cfg;
 		protected ISessionFactory sessions;
 		protected Dialect.Dialect dialect;
 
@@ -23,7 +24,7 @@ namespace NHibernate.Test
 
 		public void ExportSchema(string[] files, bool exportSchema) 
 		{
-			Configuration cfg = new Configuration();
+			cfg = new Configuration();
 
 			for (int i=0; i<files.Length; i++) 
 			{
@@ -37,37 +38,10 @@ namespace NHibernate.Test
 			sessions = cfg.BuildSessionFactory( );
 		}
 
-		public void ExecuteStatement(string sql)
+		public void DropSchema(string[] files) 
 		{
-			ExecuteStatement(sql, true);
+			new SchemaExport(cfg).Drop(true, true);
 		}
 
-		public void ExecuteStatement(string sql, bool error)
-		{
-			SqlConnection conn = null;
-			SqlTransaction tran = null;
-			try
-			{
-				conn = new SqlConnection("Server=localhost;initial catalog=nhibernate;User ID=someuser;Password=somepwd");
-				conn.Open();
-				tran = conn.BeginTransaction();
-				System.Data.SqlClient.SqlCommand comm = conn.CreateCommand();
-				comm.CommandText = sql;
-				comm.Transaction = tran;
-				comm.CommandType = CommandType.Text;
-				comm.ExecuteNonQuery();
-				tran.Commit();
-			}
-			catch
-			{
-				tran.Rollback();
-				if (error)
-					throw;
-			}
-			finally
-			{
-				conn.Close();
-			}
-		}
 	}
 }
