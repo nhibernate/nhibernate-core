@@ -45,9 +45,14 @@ namespace NHibernate.Engine
 	/// <summary>
 	/// Summary description for Cascades.
 	/// </summary>
-	public class Cascades
+	public sealed class Cascades
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( Cascades ) );
+
+		private Cascades()
+		{
+			// should not be initialized	
+		}
 
 		/// <summary>
 		/// A session action that may be cascaded from parent entity to its children
