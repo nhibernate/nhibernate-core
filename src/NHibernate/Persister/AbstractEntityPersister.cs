@@ -654,7 +654,8 @@ namespace NHibernate.Persister
 			pis.Add(typeof(HibernateProxy));
 			//pis.Add( typeof(INHibernateProxy) );
 			// != null because we use arraylist instead of hashset
-			if (!mappedClass.Equals(pi) && pi!=null ) 
+			// mono does not like a null value passed into Equals()
+			if ( pi!=null && !mappedClass.Equals(pi) ) 
 			{
 				pis.Add(pi); 
 			}
