@@ -9,7 +9,7 @@
 		<list name="Players" lazy="true">
 			<key column="team_id" />
 			<index column="player_index" type="Int32" />
-			<one-to-many class="NHibernate.DomainModel.Child, NHibernate.DomainModel"/>
+			<one-to-many class="NHibernate.DomainModel.Child, NHibernate.DomainModel" />
 		</list>
 
 	</class>

@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
-    <class name="NHibernate.DomainModel.Child, NHibernate.DomainModel">
+    <class 
+		name="NHibernate.DomainModel.Child, NHibernate.DomainModel"
+		table="child"
+	>
 		<id name="Id" column="id">
 			<generator class="assigned" />
 		</id>
@@ -11,13 +14,13 @@
 		
 		<many-to-one name="Sex" class="NHibernate.DomainModel.SexType, NHibernate.DomainModel" column="sex_type_id"/>
 		
-		<map name="Parents" table="child_parent" lazy="true">
+		<map name="Parents" table="c_prnt" lazy="true">
 			<key column="child_id" />
 			<index column="which_parent" type="String" />
 			<many-to-many column="parent_id" class="NHibernate.DomainModel.Parent, NHibernate.DomainModel" />
 		</map>
 		
-		<list name="Siblings" table="child_siblings" lazy="true">
+		<list name="Siblings" table="c_sibs" lazy="true">
 			<key column="child_id" />
 			<index column="which_sibling" />
 			<many-to-many column="sibling_child_id" class="NHibernate.DomainModel.Child, NHibernate.DomainModel" />
@@ -29,7 +32,7 @@
 			they don't think I am their friend ;)
 			
 		-->
-		<array name="Friends" table="child_friends">
+		<array name="Friends" table="c_frnds">
 			<key column="child_id" />
 			<index column="friend_index" />
 			<many-to-many column="friend_id" class="NHibernate.DomainModel.Child, NHibernate.DomainModel" />

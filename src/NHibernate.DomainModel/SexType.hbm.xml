@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
-    <class name="NHibernate.DomainModel.SexType, NHibernate.DomainModel">
+    <class 
+		name="NHibernate.DomainModel.SexType, NHibernate.DomainModel"
+		table="s_type"	
+	>
 		<id name="Id" column="id">
 			<generator class="identity" />
 		</id>
