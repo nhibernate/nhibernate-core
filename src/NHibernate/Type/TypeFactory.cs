@@ -124,13 +124,13 @@ namespace NHibernate.Type {
 							throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e);
 						}
 					}
-					else if ( typeof(IUserType).IsAssignableFrom(typeClass) ) {
-						type = NHibernate.Custom(typeClass);
-					}
+					//else if ( typeof(IUserType).IsAssignableFrom(typeClass) ) {
+					//	type = new CustomType(typeClass);
+					//}
 					else if ( typeof(ILifecycle).IsAssignableFrom(typeClass) ) {
 						type = NHibernate.Association(typeClass);
 					}
-					else if ( typeClass.IsEnum ) {
+					else if ( typeof(IPersistentEnum).IsAssignableFrom(typeClass) ) {
 						type = NHibernate.Enum(typeClass);
 					}
 					else if ( typeClass.IsSerializable ) {
@@ -143,19 +143,23 @@ namespace NHibernate.Type {
 
 		// Collection Types:
 	
-		/*
-		public static PersistentCollectionType Array(string role, Class elementClass) {
-			return new ArrayTyperole, elementClass);
+		
+		public static PersistentCollectionType Array(string role, System.Type elementClass) {
+			return new ArrayType(role, elementClass);
 		}
+		
 		public static PersistentCollectionType List(string role) {
 			return new ListType(role);
 		}
+		/*
 		public static PersistentCollectionType Bag(string role) {
 			return new BagType(role);
 		}
+		*/
 		public static PersistentCollectionType Map(string role) {
 			return new MapType(role);
 		}
+		/*
 		public static PersistentCollectionType Set(string role) {
 			return new SetType(role);
 		}
@@ -205,7 +209,7 @@ namespace NHibernate.Type {
 			}
 			else {
 				int[] trimmed = new int[count];
-				Array.Copy(results, 0, trimmed, 0, count);
+				System.Array.Copy(results, 0, trimmed, 0, count);
 				return trimmed;
 			}
 		}
