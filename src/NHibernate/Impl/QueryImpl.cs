@@ -569,7 +569,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetParameter( string name, object val )
 		{
-			SetParameter( name, val, GuessType( val.GetType() ) );
+			SetParameter( name, val, GuessType( val ) );
 			return this;
 		}
 
@@ -581,7 +581,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetParameter( int position, object val )
 		{
-			SetParameter( position, val, GuessType( val.GetType() ) );
+			SetParameter( position, val, GuessType( val ) );
 			return this;
 		}
 
