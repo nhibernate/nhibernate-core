@@ -21,11 +21,11 @@
 			output="${build.dir}/bin/${nant.project.name}.dll" 
 		>
 		
-			<references>
+			<references basedir="${build.dir}/bin">
 				<includes name="System.dll" />
 				<includes name="System.XML.dll" />
 				<includes name="System.Data.dll" />
-				<includes name="${build.dir}/bin/NHibernate.dll" />
+				<includes name="NHibernate.dll" />
 			</references>
 			
 			<resources prefix="NHibernate.DomainModel" dynamicprefix="true">

@@ -5,7 +5,13 @@
 	default="build" 
 	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
 >
-	
+	<!--
+        Required properties:
+            * build.dir             - (path) root level to build to, assemblies will go in ${build.dir}/bin
+            * build.debug           - (true|false) debug build?
+            * current.build.defines - framework-specific build defines
+    -->
+    
 	<target name="build">
 	
 		<csc 
@@ -15,16 +21,16 @@
 			output="${build.dir}/bin/${nant.project.name}.dll" 
 		>
 		
-			<references>
+			<references basedir="${build.dir}/bin">
 				<includes name="System.dll" />
 				<includes name="System.XML.dll" />
 				<includes name="System.Data.dll" />
-				<includes name="${build.dir}/bin/DotNetMock.dll" />
-				<includes name="${build.dir}/bin/DotNetMock.Framework.dll" />
-				<includes name="${build.dir}/bin/log4net.dll" />
-				<includes name="${build.dir}/bin/nunit.framework.dll"/>
-				<includes name="${build.dir}/bin/NHibernate.DomainModel.dll" />
-				<includes name="${build.dir}/bin/NHibernate.dll" />
+				<includes name="DotNetMock.dll" />
+				<includes name="DotNetMock.Framework.dll" />
+				<includes name="log4net.dll" />
+				<includes name="NHibernate.DomainModel.dll" />
+				<includes name="NHibernate.dll" />
+				<includes name="nunit.framework.dll"/>
 			</references>
 			
 			<sources>
@@ -34,7 +40,7 @@
 		
 		<copy 
 			file="App.config"
-			tofile="${build.dir}/bin/NHibernate.Test.dll.config" 
+			tofile="${build.dir}/bin/${nant.project.name}.dll.config" 
 		/>
 		<copy 
 			file="hibernate.cfg.xml"
@@ -49,8 +55,16 @@
 	
 	<target name="test">
 		<nunit2>
-			<formatter type="Xml" usefile="true" extension=".xml" outputdir="${build.dir}/bin" />
-			<test assemblyname="${build.dir}/bin/NHibernate.Test.dll" appconfig="${build.dir}/bin/NHibernate.Test.dll.config" />
+			<formatter 
+				type="Xml" 
+				usefile="true" 
+				extension=".xml" 
+				outputdir="${build.dir}/bin" 
+			/>
+			<test 
+				assemblyname="${build.dir}/bin/${nant.project.name}.dll" 
+				appconfig="${build.dir}/bin/${nant.project.name}.dll.config" 
+			/>
 		</nunit2>
 	</target>
 </project>
