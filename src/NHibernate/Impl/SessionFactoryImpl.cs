@@ -239,7 +239,7 @@ namespace NHibernate.Impl {
 		}
 
 		private QueryTranslator GetQuery(string query, bool shallow) {
-			object cacheKey = QueryKeyFactory.NewInstance(query, shallow);
+			/*object cacheKey = QueryKeyFactory.NewInstance(query, shallow);
 
 			// have to be careful to ensure that if the JVM does out-of-order execution
 			// then another thread can't get an uncompiled QueryTranslator from the cache
@@ -251,6 +251,8 @@ namespace NHibernate.Impl {
 				q = new QueryTranslator();
 				Put(cacheKey, q);
 			}
+			*/
+			QueryTranslator q = new QueryTranslator();
 			q.Compile(this, query, querySubstitutions, shallow);
 			
 			return q;
