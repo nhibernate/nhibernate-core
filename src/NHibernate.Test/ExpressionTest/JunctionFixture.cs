@@ -22,24 +22,44 @@ namespace NHibernate.Test.ExpressionTest
 	[TestFixture]
 	public class JunctionFixture : BaseExpressionFixture
 	{
+		NExpression.Conjunction _conjunction;
 		
-		[Test]
-		public void JunctionSqlStringTest()
+		[SetUp]
+		public override void SetUp() 
 		{
-			
-			ISession session = factory.OpenSession();
-			
-			NExpression.Conjunction conjunction = NExpression.Expression.Conjunction();
-			conjunction.Add(NExpression.Expression.IsNull("Address"))
+			base.SetUp();
+			_conjunction = NExpression.Expression.Conjunction();
+			_conjunction.Add(NExpression.Expression.IsNull("Address"))
 				.Add(NExpression.Expression.Between("Count", 5, 10));
+		}
 
-			SqlString sqlString = conjunction.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
-
+		[Test]
+		public void SqlString()
+		{
+			SqlString sqlString = _conjunction.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			
 			string expectedSql = "(simple_alias.address IS NULL and simple_alias.count_ between :simple_alias.count__lo and :simple_alias.count__hi)";
 			
 			CompareSqlStrings(sqlString, expectedSql, 2);
 	
-			session.Close();
+		}
+
+		[Test]
+		public void GetTypedValues() 
+		{
+			TypedValue[] typedValues = _conjunction.GetTypedValues( factoryImpl, typeof(Simple) );
+
+			TypedValue[] expectedTV = new TypedValue[2];
+			expectedTV[0] = new TypedValue(Type.TypeFactory.GetInt32Type(), 5);
+			expectedTV[1] = new TypedValue(Type.TypeFactory.GetInt32Type(), 10);
+
+			Assert.AreEqual(2, typedValues.Length);
+
+			for(int i=0; i<typedValues.Length; i++) 
+			{
+				Assert.AreEqual(expectedTV[i].Type, typedValues[i].Type);
+				Assert.AreEqual(expectedTV[i].Value, typedValues[i].Value);
+			}
 		}
 
 		

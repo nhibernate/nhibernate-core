@@ -19,7 +19,7 @@ namespace NHibernate.Test.ExpressionTest
 		protected Dialect.Dialect dialect;
 		
 		[SetUp]
-		public void SetUp() 
+		public virtual void SetUp() 
 		{
 			Configuration cfg = new Configuration();
 			cfg.AddResource("NHibernate.DomainModel.Simple.hbm.xml", Assembly.Load("NHibernate.DomainModel"));
