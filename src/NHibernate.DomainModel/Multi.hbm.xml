@@ -114,11 +114,10 @@
 	        
 	        <component	
 				name="comp" 
-				class="NHibernate.DomainModel.Multi$Component, NHibernate.DomainModel"
+				class="NHibernate.DomainModel.Multi+Component, NHibernate.DomainModel"
 			>
-			<!-- TODO: figure out how to reflect on a nested type -->
-	        	<property name="cal"/>
-	        	<property name="floaty"/>
+	        	<property name="Cal"/>
+	        	<property name="Floaty"/>
 	        </component>
 	        
 	        <joined-subclass 
