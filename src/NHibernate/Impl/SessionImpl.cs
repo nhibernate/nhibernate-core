@@ -577,7 +577,7 @@ namespace NHibernate.Impl {
 		}
 
 		private void AddEntity(Key key, object obj) {
-			entitiesByKey.Add(key, obj);
+			entitiesByKey[key] = obj;
 		}
 		public object GetEntity(Key key) {
 			return entitiesByKey[key];
@@ -3263,6 +3263,14 @@ namespace NHibernate.Impl {
 	
 		public object GetVersion(object entity) {
 			return GetEntry(entity).lastVersion;
+		}
+
+		private static readonly ICollection EmptyCollection = new ArrayList(0);
+
+		public ICollection GetOrphans(PersistentCollection coll) 
+		{
+			CollectionEntry ce = GetCollectionEntry(coll);
+			return ce.IsNew ? EmptyCollection : coll.GetOrphans(ce.Snapshot);
 		}
 		
 	}
