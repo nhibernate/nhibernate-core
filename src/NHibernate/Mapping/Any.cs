@@ -44,7 +44,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Get or set the metatype 
 		/// </summary>
-		public IType MetaType {
+		public virtual IType MetaType {
 			get {
 				return metaType;
 			}
