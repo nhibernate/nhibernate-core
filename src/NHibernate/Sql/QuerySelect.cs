@@ -99,9 +99,20 @@ namespace NHibernate.Sql {
 			StringBuilder buf = new StringBuilder(50)
 				.Append("select ");
 			if (distinct) buf.Append("distinct ");
-			buf.Append(select)
+
+			string from = joins.ToFromFragmentString;
+			if ( from.StartsWith(",") ) 
+			{
+				from = from.Substring(1);
+			}
+			else if ( from.StartsWith(" inner join") ) 
+			{
+				from = from.Substring(11);
+			}
+
+			buf.Append(select.ToString())
 				.Append(" from")
-				.Append( joins.ToFromFragmentString.Substring(1) );
+				.Append( from );
 			string part1 = joins.ToWhereFragmentString.Trim();
 			string part2 = where.ToString().Trim();
 			bool hasPart1 = part1.Length > 0;
