@@ -94,6 +94,11 @@
                     AssemblyName = "System.Drawing"
                     HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
                 />
+                <Reference
+                    Name = "HashCodeProvider"
+                    AssemblyName = "HashCodeProvider"
+                    HintPath = "..\..\external-bin\HashCodeProvider.dll"
+                />
             </References>
         </Build>
         <Files>
