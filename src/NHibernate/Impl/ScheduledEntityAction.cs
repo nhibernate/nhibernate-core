@@ -3,18 +3,19 @@ using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.Cache;
 
-namespace NHibernate.Impl {
+namespace NHibernate.Impl 
+{
 	
-	internal abstract class ScheduledEntityAction : SessionImpl.IExecutable {
+	internal abstract class ScheduledEntityAction : SessionImpl.IExecutable 
+	{
 		
-		protected ISessionImplementor session;
-		protected object id;
-		protected IClassPersister persister;
-		protected object instance;
+		private readonly ISessionImplementor session;
+		private readonly object id;
+		private readonly IClassPersister persister;
+		private readonly object instance;
 
-		
-
-		protected ScheduledEntityAction(ISessionImplementor session, object id, object instance, IClassPersister persister) {
+		protected ScheduledEntityAction(ISessionImplementor session, object id, object instance, IClassPersister persister) 
+		{
 			this.session = session;
 			this.id = id;
 			this.persister = persister;
@@ -24,6 +25,27 @@ namespace NHibernate.Impl {
 
 		public object[] PropertySpaces {
 			get { return persister.PropertySpaces; }
+		}
+
+		protected ISessionImplementor Session 
+		{
+			get { return session;}
+		}
+
+		protected object Id 
+		{
+			get { return id; }
+		}
+
+		protected IClassPersister Persister 
+		{
+			get { return persister;}
+		}
+
+
+		protected object Instance 
+		{
+			get { return instance; }
 		}
 
 		public abstract void AfterTransactionCompletion();
