@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Text;
 
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -23,7 +24,7 @@ namespace NHibernate.Dialect
 			Register( DbType.AnsiString, 65535, "TEXT" );
 			Register( DbType.AnsiString, 16777215, "MEDIUMTEXT" );
 			Register( DbType.Binary, "LONGBLOB");
-			Register( DbType.Binary, 255, "VARCHAR($1) BINARY");
+			Register( DbType.Binary, 127, "TINYBLOB");
 			Register( DbType.Binary, 65535, "BLOB");
 			Register( DbType.Binary, 16777215, "MEDIUMBLOB");
 			Register( DbType.Boolean, "TINYINT(1)" ); 
@@ -33,7 +34,7 @@ namespace NHibernate.Dialect
 			Register( DbType.DateTime, "DATETIME" );
 			Register( DbType.Decimal, "NUMERIC(19,5)" );
 			Register( DbType.Decimal, 19, "NUMERIC(19, $1)");
-			Register( DbType.Double, "FLOAT" );
+			Register( DbType.Double, "DOUBLE" );
 			Register( DbType.Guid, "VARCHAR(40)" );
 			Register( DbType.Int16, "SMALLINT" );
 			Register( DbType.Int32, "INTEGER" );
@@ -89,6 +90,37 @@ namespace NHibernate.Dialect
 		protected override char OpenQuote
 		{
 			get { return '`';}
+		}
+
+		public override bool SupportsLimit		
+		{
+			get	{ return true; }
+		}
+
+		public override bool PreferLimit
+		{
+			get { return true; }
+		}
+
+		public override SqlString GetLimitString(SqlString querySqlString)
+		{
+			Parameter p1 = new Parameter();
+			Parameter p2 = new Parameter();
+
+			p1.Name = "p1";
+			p1.SqlType = new Int32SqlType();
+
+			p2.Name = "p2";
+			p2.SqlType = new Int32SqlType();
+
+			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
+			pagingBuilder.Add(querySqlString);
+			pagingBuilder.Add(" limit ");
+			pagingBuilder.Add(p1);
+			pagingBuilder.Add(", ");
+			pagingBuilder.Add(p2);
+
+			return pagingBuilder.ToSqlString();
 		}
 
 		public override string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey) 

@@ -72,15 +72,13 @@ namespace NHibernate.Driver
 			get { return false;	}
 		}
 
-//		protected override IDbDataParameter GenerateParameter(IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect)
-//		{
-//			IDbDataParameter dbParam = command.CreateParameter();
-//			dbParam.DbType = parameter.SqlType.DbType;
-//			
-//			//dbParam.ParameterName = this.FormatNameForParameter(name);
-//
-//			return dbParam;
-//		}
-
+		/// <summary>
+		/// With the Gamma MySql.Data provider it is throwing an exception with the 
+		/// message "Expected End of data packet" when a select command is prepared.
+		/// </summary>
+		public override bool SupportsPreparingCommands
+		{
+			get { return false; }
+		}
 	}
 }
