@@ -40,7 +40,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("don't know how to get aliased name for baz")]
 		public void FetchInitializedCollection()
 		{
 			ISession s = sessions.OpenSession();
@@ -51,7 +50,7 @@ namespace NHibernate.Test
 			baz.fooBag=fooBag;
 			s.Save(baz);
 			fooBag = baz.fooBag;
-			s.Find("from Baz baz left join fetch baz.fooBag");
+			s.Find("from Baz baz left join fetch fooBag");
 			Assert.IsTrue( NHibernate.IsInitialized(fooBag) );
 			Assert.IsTrue( fooBag==baz.fooBag );
 			Assert.IsTrue( baz.fooBag.Count==2 );
@@ -61,7 +60,7 @@ namespace NHibernate.Test
 			baz = (Baz) s.Load( typeof(Baz), baz.code );
 			Object bag = baz.fooBag;
 			Assert.IsFalse( NHibernate.IsInitialized(bag) );
-			s.Find("from Baz baz left join fetch baz.fooBag");
+			s.Find("from Baz baz left join fetch fooBag");
 			Assert.IsFalse( NHibernate.IsInitialized(bag) );
 			Assert.IsTrue( bag==baz.fooBag );
 			Assert.IsTrue( baz.fooBag.Count==2 );
@@ -72,7 +71,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("HQL is broke")]
 		public void Sortables()
 		{
 			ISession s = sessions.OpenSession();
@@ -143,7 +141,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("don't know how to get aliased name for bazid")]
 		public void FetchList() 
 		{
 			ISession s = sessions.OpenSession();
@@ -161,7 +158,7 @@ namespace NHibernate.Test
 				list.Add(fee);
 			}
 			baz.fees = list;
-			list = s.Find("from Foo foo, Baz baz left join fetch baz.fees");
+			list = s.Find("from Foo foo, Baz baz left join fetch fees");
 			Assert.IsTrue( NHibernate.IsInitialized( ( (Baz) ( (object[]) list[0] )[1] ).fees ) );
 			s.Delete(foo);
 			s.Delete(foo2);
