@@ -5,12 +5,14 @@ using System.Runtime.CompilerServices;
 
 using NHibernate.Dialect;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
 
-namespace NHibernate.Id {
+namespace NHibernate.Id 
+{
 	/// <summary>
 	/// An <c>IIdentifierGenerator</c> that uses a database table to store the last
 	/// generated value.
@@ -41,7 +43,8 @@ namespace NHibernate.Id {
 		private string tableName;
 		private string columnName;
 		private string query;
-		private string update;
+		
+		private SqlString updateSql;
 
 		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect) 
 		{
@@ -53,7 +56,28 @@ namespace NHibernate.Id {
 
 			query = "select " + columnName + " from " + tableName;
 			if ( dialect.SupportsForUpdate ) query += " for update";
-			update = "update " + tableName + " set " + columnName + " = " + StringHelper.SqlParameter + " where " + columnName + " = " + StringHelper.SqlParameter;
+			
+			// build the sql string for the Update since it uses parameters
+			Parameter setParam = new Parameter();
+			setParam.Name = columnName;
+			setParam.DbType = DbType.Int32;
+		
+			Parameter whereParam = new Parameter();
+			whereParam.Name = columnName;
+			whereParam.DbType = DbType.Int32;
+
+			SqlStringBuilder builder = new SqlStringBuilder();
+			builder.Add("update " + tableName + " set ")
+				.Add(columnName)
+				.Add(" = ")
+				.Add(setParam)
+				.Add(" where ")
+				.Add(columnName)
+				.Add(" = ")
+				.Add(whereParam);
+
+			updateSql = builder.ToSqlString();
+				
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
@@ -99,21 +123,16 @@ namespace NHibernate.Id {
 					{
 					}
 
-					IDbCommand ups = conn.CreateCommand();
-					ups.CommandText = update;
-					ups.CommandType = CommandType.Text;
+
+					IDbCommand ups = updateSql.BuildCommand(session.Factory.ConnectionProvider.Driver);
+					ups.Connection = conn;
 					ups.Transaction = trans;
 
 					try 
 					{
-						IDbDataParameter parm1 = ups.CreateParameter();
-						parm1.DbType = DbType.Int32;
-						parm1.Value = result + 1;
-						ups.Parameters.Add(parm1);
-						IDbDataParameter parm2 = ups.CreateParameter();
-						parm2.DbType = DbType.Int32;
-						parm2.Value = result;
-						ups.Parameters.Add(parm2);
+						((IDbDataParameter)ups.Parameters[0]).Value = result + 1;
+						((IDbDataParameter)ups.Parameters[1]).Value = result;
+
 						rows = ups.ExecuteNonQuery();
 					} 
 					catch (Exception e) 
