@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 using NHibernate.Engine;
 using NHibernate.Sql;
@@ -35,19 +36,17 @@ namespace NHibernate.Type {
 			}
 		}
 
-		/*
-		public Serializable Disassemble(object value, ISessionImplementor session) {
+		public object Disassemble(object value, ISessionImplementor session) {
 			if (value==null) {
 				return null;
 			}
 			else {
-				return (Serializable) DeepCopy(value);
+				return DeepCopy(value);
 			}
 		}
-		*/
 	
-		/*
-		public object Assemble(Serializable cached, ISessionImplementor session, object owner) {
+		
+		public object Assemble(object cached, ISessionImplementor session, object owner) {
 			if ( cached==null ) {
 				return null;
 			}
@@ -55,17 +54,16 @@ namespace NHibernate.Type {
 				return DeepCopy(cached);
 			}
 		}
-		*/
+		
 	
 		public bool IsDirty(object old, object current, ISessionImplementor session) {
 			return !Equals(old, current);
 		}
 	
-		/*
-		public object Hydrate(ResultSet rs, string[] names,	ISessionImplementor session, object owner) {
+
+		public object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
 			return NullSafeGet(rs, names, session, owner);
 		}
-		*/
 				
 		public object ResolveIdentifier(object value, ISessionImplementor session, object owner) {
 			return value;
@@ -88,5 +86,17 @@ namespace NHibernate.Type {
 		public abstract bool IsMutable {get;}
 
 		public abstract string Name { get; }
+
+		public abstract bool HasNiceEquals { get; }
+
+		public abstract object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+
+		public abstract object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, Object owner);
+	
+		public abstract void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session); 
+
+		public abstract System.Type ReturnedClass { get; }
+
+		public abstract string ToXML(object value, ISessionFactoryImplementor factory);
 	}
 }

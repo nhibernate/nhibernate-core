@@ -15,7 +15,7 @@ namespace NHibernate.Type {
 			get { return false; }
 		}
 
-		public bool HasNiceEquals {
+		public override bool HasNiceEquals {
 			get { return true; }
 		}
 		

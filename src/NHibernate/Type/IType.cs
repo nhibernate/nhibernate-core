@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 using NHibernate.Sql;
 using NHibernate.Engine;
@@ -69,15 +70,12 @@ namespace NHibernate.Type {
 		/// <exception cref="MappingException">MappingException</exception>
 		int GetColumnSpan(IMapping mapping);
 	
-		/* TODO:
+		/// <summary>
+		/// The class returned by <c>NullSafeGet()</c> methods. This is used to establish the
+		/// class of an array of this type
+		/// </summary>
+		System.Type ReturnedClass { get; }
 		
-		 * The class returned by <tt>nullSafeGet()</tt> methods. This is used to establish 
-		 * the class of an array of this type.
-		 *
-		 * @return Class
-		 
-		public Class GetReturnedClass();
-		*/
 	
 		/// <summary>
 		/// Compare two instances of the class mapped by this type for persistence "equality", ie. Equality of persistent state.
@@ -85,7 +83,6 @@ namespace NHibernate.Type {
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		/// <exception cref="HibernateException">HibernateException</exception>
 		bool Equals(object x, object y);
 		
 		/// <summary>
@@ -93,24 +90,13 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="old">the old value</param>
 		/// <param name="current">the current value</param>
-		/// <param name="session"></param>
+		/// <param name="session">the session</param>
 		/// <returns>true if the field is dirty</returns>
 		bool IsDirty(object old, object current, ISessionImplementor session);
 	
-		/* TODO:
-		 
-		 * @see Type#hydrate(ResultSet, String[], SessionImplementor, Object) alternative, 2-phase property initialization
-		 * @param rs
-		 * @param names the column names
-		 * @param session
-		 * @param owner the parent entity
-		 * @return Object
-		 * @throws HibernateException
-		 * @throws SQLException
-		 
 
 		/// <summary>
-		/// Retrieve an instance of the mapped class from a JDBC resultset.
+		/// Retrieve an instance of the mapped class from an ADO.NET resultset.
 		/// Implementors should handle possibility of null values.
 		/// </summary>
 		/// <param name="rs"></param>
@@ -118,48 +104,44 @@ namespace NHibernate.Type {
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public object NullSafeGet(ResultSet rs, string[] names, ISessionImplementor session, object owner);
+		object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+
+		/// <summary>
+		/// Retrieve an instance of the mapped class from an ADO.NET data reader. Implementations
+		/// should handle possibility of null values.
+		/// </summary>
+		/// <remarks>
+		/// This method might be called if the type is known to be a single-column type.
+		/// </remarks>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, Object owner);
+	
+		/// <summary>
+		/// Write an instance of the mapped class to a prepared statement. Implementors should
+		/// handle possibility of null values.
+		/// </summary>
+		/// <remarks>
+		/// A multi-column type should be written to parameters starting from <c>Index</c>.
+		/// </remarks>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="session"></param>
+		void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
 	
 
-		 * Retrieve an instance of the mapped class from a JDBC resultset. Implementations
-		 * should handle possibility of null values. This method might be called if the
-		 * type is known to be a single-column type.
-		 *
-		 * @param rs
-		 * @param name the column name
-		 * @param session
-		 * @param owner the parent entity
-		 * @return Object
-		 * @throws HibernateException
-		 * @throws SQLException
+		/// <summary>
+		/// A representation of the value to be embedded in an XML element
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		string ToXML(object value, ISessionFactoryImplementor factory);
 
-		public Object nullSafeGet(ResultSet rs, String name, SessionImplementor session, Object owner) throws HibernateException, SQLException;
-	
-
-		 * Write an instance of the mapped class to a prepared statement. Implementors
-		 * should handle possibility of null values. A multi-column type should be written
-		 * to parameters starting from <tt>index</tt>.
-		 *
-		 * @param st
-		 * @param value the object to write
-		 * @param index statement parameter index
-		 * @param session
-		 * @throws HibernateException
-		 * @throws SQLException
-
-		public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException;
-	
-
-		 * A representation of the value to be embedded in an XML element.
-		 *
-		 * @param value
-		 * @param factory
-		 * @return String
-		 * @throws HibernateException
-		 
-		public String toXML(Object value, SessionFactoryImplementor factory) throws HibernateException;
-		
-		*/
 		
 		/// <summary>
 		/// Returns the abbreviated name of the type.
@@ -181,60 +163,58 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <returns></returns>
 		bool IsMutable { get; }
+
+		/// <summary>
+		/// Return a cacheable "disassembled" representation of the object.
+		/// </summary>
+		/// <param name="value">the value to cache</param>
+		/// <param name="session">the sesion</param>
+		/// <returns>the disassembled, deep cloned state</returns>
+		object Disassemble(object value, ISessionImplementor session);
 	
-		/**TODO:
-		 * Return a cacheable "disassembled" representation of the object.
-		 * @param value the value to cache
-		 * @param session the session
-		 * @return the disassembled, deep cloned state
-		
-		public Serializable disassemble(Object value, SessionImplementor session) throws HibernateException;
+		/// <summary>
+		/// Reconstruct the object from its cached "disassembled" state.
+		/// </summary>
+		/// <param name="cached">the disassembled state from the cache</param>
+		/// <param name="session">the session</param>
+		/// <param name="owner">the parent entity object</param>
+		/// <returns>the object</returns>
+		object Assemble(object cached, ISessionImplementor session, object owner);
+
+		/// <summary>
+		/// Does this type implement a well-behaved <c>Equals()</c> method?
+		/// </summary>
+		/// <remarks>
+		/// Strickly, if this method returns <c>true</c> then <c>x.Equals(y)</c> implies
+		/// <c>IType.Equals(x, y)</c> and alos <c>IType.Equals(x, y)</c> implies that
+		/// probably <c>x.Equals(y)</c>
+		/// </remarks>
+		bool HasNiceEquals { get; }
 	
-		 *
-		 * Reconstruct the object from its cached "disassembled" state.
-		 * @param cached the disassembled state from the cache
-		 * @param session the session
-		 * @param owner the parent entity object
-		 * @return the the object
-		
-		public Object assemble(Serializable cached, SessionImplementor session, Object owner) throws HibernateException, SQLException;
+		/// <summary>
+		/// Retrieve an instance of the mapped class, or the identifier of an entity or collection
+		/// from an ADO.NET result set
+		/// </summary>
+		/// <remarks>
+		/// This is useful for 2-phase property initialization - the second phase is a call to
+		/// <c>ResolveIdentifier()</c>
+		/// </remarks>
+		/// <param name="rs"></param>
+		/// <param name="names">the column names</param>
+		/// <param name="session">the session</param>
+		/// <param name="owner">the parent entity</param>
+		/// <returns>an identifier or actual object</returns>
+		object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 	
-		 *
-		 * Does this type implement a well-behaved <tt>equals()</tt> method?
-		 * (ie. one that is consistent with <tt>Type.equals()</tt>.) Strictly,
-		 * if this method returns <tt>true</tt> then <tt>x.equals(y)</tt> implies
-		 * <tt>Type.equals(x, y)</tt> and also <tt>Type.equals(x, y)</tt> implies
-		 * that <b>probably</b> <tt>x.equals(y)</tt>
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 * @see Type#equals(java.lang.Object, java.lang.Object)
-		
-		public boolean hasNiceEquals();
-	
-		 *
-		 * Retrieve an instance of the mapped class, or the identifier of an entity or collection, from a JDBC resultset.
-		 * This is useful for 2-phase property initialization - the second phase is a call to <tt>resolveIdentifier()</tt>.
-		 * @see Type#resolveIdentifier(Object, SessionImplementor)
-		 * @param rs
-		 * @param names the column names
-		 * @param session the session
-		 * @param owner the parent entity
-		 * @return Object an identifier or actual value
-		 * @throws HibernateException
-		 * @throws SQLException
-	
-		public Object hydrate(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException;
-	
-		 *
-		 * Map identifiers to entities or collections. This is the second phase of 2-phase property initialization.
-		 * @see Type#hydrate(ResultSet, String[], SessionImplementor, Object)
-		 * @param value an identifier or value returned by <tt>hydrate()</tt>
-		 * @param owner the parent entity
-		 * @param session the session
-		 * @return the given value, or the value associated with the identifier
-		 * @throws HibernateException
-		 * @throws SQLException
-		
-		public Object resolveIdentifier(Object value, SessionImplementor session, Object owner) throws HibernateException, SQLException;
-		 */
+		/// <summary>
+		/// Map identifiers to entities or collections. This is the second phase of 2-phase property
+		/// initialization
+		/// </summary>
+		/// <param name="value">an identifier or value returned by <c>Hydrate()</c></param>
+		/// <param name="session">The session</param>
+		/// <param name="owner">The parent entity</param>
+		/// <returns></returns>
+		object ResolveIdentifier(object value, ISessionImplementor session, object owner);
+
 	}
 }
