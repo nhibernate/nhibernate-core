@@ -1,10 +1,11 @@
 using System;
-using System.Data;
 using System.Collections;
+using System.Data;
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Collection 
+namespace NHibernate.Collection
 {
 	/// <summary>
 	/// Persistent collections are treated as value objects by Hibernate.
@@ -35,91 +36,124 @@ namespace NHibernate.Collection
 	[Serializable]
 	public abstract class PersistentCollection : ICollection
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PersistentCollection));
+		private static readonly ILog log = LogManager.GetLogger( typeof( PersistentCollection ) );
 
-		[NonSerialized] protected ISessionImplementor session;
+		/// <summary></summary>
+		[NonSerialized]
+		protected ISessionImplementor session;
+
+		/// <summary></summary>
 		protected bool initialized;
-		[NonSerialized] private ArrayList additions;
+
+		[NonSerialized]
+		private ArrayList additions;
+
 		private ICollectionSnapshot collectionSnapshot;
-		[NonSerialized] protected bool directlyAccessible;
+
+		/// <summary></summary>
+		[NonSerialized]
+		protected bool directlyAccessible;
 
 		//careful: these methods do not initialize the collection
+		
+		/// <summary></summary>
 		public abstract ICollection Elements();
+		
+		/// <summary></summary>
 		public abstract bool Empty { get; }
 
-		public void Read() 
+		/// <summary></summary>
+		public void Read()
 		{
-			Initialize(false);
+			Initialize( false );
 		}
 
-		private bool IsConnectedToSession 
-		{ 
-			get {return session!=null && session.IsOpen;}
+		private bool IsConnectedToSession
+		{
+			get { return session != null && session.IsOpen; }
 		}
 
-		protected void Write() 
+		/// <summary></summary>
+		protected void Write()
 		{
-			Initialize(true);
-			if (IsConnectedToSession) 
+			Initialize( true );
+			if( IsConnectedToSession )
 			{
-				session.Dirty(this);
-			} 
-			else 
+				session.Dirty( this );
+			}
+			else
 			{
 				collectionSnapshot.SetDirty();
 			}
 		}
 
-		private bool MayQueueAdd 
+		private bool MayQueueAdd
 		{
-			get 
+			get
 			{
-				return 
+				return
 					!initialized &&
-					IsConnectedToSession &&
-					session.IsInverseCollection(this);
+						IsConnectedToSession &&
+						session.IsInverseCollection( this );
 			}
 		}
 
-		protected bool QueueAdd(object element) 
+		/// <summary></summary>
+		protected bool QueueAdd( object element )
 		{
-			if ( MayQueueAdd ) 
+			if( MayQueueAdd )
 			{
-				if (additions == null) additions = new ArrayList(10);
-				additions.Add(element);
-				session.Dirty(this); //needed so that we remove this collection from the JCS cache
+				if( additions == null )
+				{
+					additions = new ArrayList( 10 );
+				}
+				additions.Add( element );
+				session.Dirty( this ); //needed so that we remove this collection from the JCS cache
 				return true;
-			} 
-			else 
+			}
+			else
 			{
 				return false;
 			}
 		}
 
-		protected bool QueueAddAll(ICollection coll) 
+		/// <summary></summary>
+		protected bool QueueAddAll( ICollection coll )
 		{
-			if ( MayQueueAdd ) 
+			if( MayQueueAdd )
 			{
-				if (additions==null) additions = new ArrayList(20);
-				additions.AddRange(coll);
+				if( additions == null )
+				{
+					additions = new ArrayList( 20 );
+				}
+				additions.AddRange( coll );
 				return true;
-			} 
-			else 
+			}
+			else
 			{
 				return false;
 			}
 		}
 
 		//TODO: H2.0.3 new method
-		public virtual void DelayedAddAll(ICollection coll) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="coll"></param>
+		public virtual void DelayedAddAll( ICollection coll )
 		{
-			throw new AssertionFailure("Collection does not support delayed initialization.");
+			throw new AssertionFailure( "Collection does not support delayed initialization." );
 		}
 
 		// TODO: h2.0.3 synhc - I don't see AddAll in the H code...
-		public virtual bool AddAll(ICollection coll) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="coll"></param>
+		/// <returns></returns>
+		public virtual bool AddAll( ICollection coll )
 		{
-			throw new AssertionFailure("Collection does not support delayed initialization");
+			throw new AssertionFailure( "Collection does not support delayed initialization" );
 		}
 
 		/// <summary>
@@ -127,7 +161,7 @@ namespace NHibernate.Collection
 		/// to be added.
 		/// </summary>
 		/// <value>An <see cref="ArrayList"/> of objects or null.</value>
-		protected ArrayList Additions 
+		protected ArrayList Additions
 		{
 			get { return additions; }
 			set { additions = value; }
@@ -141,15 +175,19 @@ namespace NHibernate.Collection
 		/// contents of the Collection.  Since everything is in synch remove
 		/// any Queued Additions.
 		/// </remarks>
-		public virtual void PostFlush() 
+		public virtual void PostFlush()
 		{
-			if( additions!=null ) 
+			if( additions != null )
 			{
 				additions.Clear();
 			}
 		}
 
-		protected PersistentCollection(ISessionImplementor session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		protected PersistentCollection( ISessionImplementor session )
 		{
 			this.session = session;
 		}
@@ -160,17 +198,18 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="lazy"></param>
 		/// <returns></returns>
-		public virtual object GetInitialValue(bool lazy) 
+		public virtual object GetInitialValue( bool lazy )
 		{
-			if ( !lazy ) 
+			if( !lazy )
 			{
-				session.Initialize(this, false);
+				session.Initialize( this, false );
 				initialized = true;
 			}
 			return this;
 		}
 
-		public virtual object GetCachedValue() 
+		/// <summary></summary>
+		public virtual object GetCachedValue()
 		{
 			initialized = true; //TODO: only needed for query FETCH so should move out of here
 			return this;
@@ -179,17 +218,17 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Override on some subclasses
 		/// </summary>
-		public virtual void BeginRead() 
+		public virtual void BeginRead()
 		{
 			// override on some subclasses
 		}
-	
+
 		/// <summary>
 		/// It is my thoughts to have this be the portion that takes care of 
 		/// converting the Identifier to the element...
 		/// </summary>
-		[Obsolete("Should be replaced with EndRead(CollectionPersister, object) - need to verify")]
-		public virtual void EndRead() 
+		[Obsolete( "Should be replaced with EndRead(CollectionPersister, object) - need to verify" )]
+		public virtual void EndRead()
 		{
 			// override on some subclasses
 		}
@@ -201,64 +240,78 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="owner"></param>
-		public abstract void EndRead(CollectionPersister persister, object owner) ;
+		public abstract void EndRead( CollectionPersister persister, object owner );
 
-		public void Initialize(bool writing) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="writing"></param>
+		public void Initialize( bool writing )
 		{
-			if (!initialized) 
+			if( !initialized )
 			{
-				if ( IsConnectedToSession ) 
+				if( IsConnectedToSession )
 				{
-					try 
+					try
 					{
-						session.Initialize(this, writing);
+						session.Initialize( this, writing );
 						initialized = true;
 						// do this after setting initialized to true or it will recurse
-						if (additions!=null) 
+						if( additions != null )
 						{
-							DelayedAddAll(additions);
+							DelayedAddAll( additions );
 							additions = null;
 						}
-					} 
-					catch (Exception e) 
-					{
-						log.Error("Failed to lazily initialize a collection", e);
-						throw new LazyInitializationException("Failed to lazily initialize a collection", e);
 					}
-				} 
-				else 
+					catch( Exception e )
+					{
+						log.Error( "Failed to lazily initialize a collection", e );
+						throw new LazyInitializationException( "Failed to lazily initialize a collection", e );
+					}
+				}
+				else
 				{
-					throw new LazyInitializationException("Failed to lazily initialize a collection - no session");
+					throw new LazyInitializationException( "Failed to lazily initialize a collection - no session" );
 				}
 			}
 		}
 
-		public bool UnsetSession(ISessionImplementor session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public bool UnsetSession( ISessionImplementor session )
 		{
-			if (session==this.session) 
+			if( session == this.session )
 			{
-				this.session=null;
+				this.session = null;
 				return true;
 			}
-			else 
+			else
 			{
 				return false;
 			}
 		}
 
-		public bool SetSession(ISessionImplementor session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public bool SetSession( ISessionImplementor session )
 		{
-			if (session == this.session) 
+			if( session == this.session )
 			{
 				return false;
-			} 
-			else 
+			}
+			else
 			{
-				if ( IsConnectedToSession ) 
+				if( IsConnectedToSession )
 				{
-					throw new HibernateException("Illegal attempt to associate a collection with two open sessions");
-				} 
-				else 
+					throw new HibernateException( "Illegal attempt to associate a collection with two open sessions" );
+				}
+				else
 				{
 					this.session = session;
 					return true;
@@ -280,17 +333,25 @@ namespace NHibernate.Collection
 		/// that it will know about all operations that would call cause NHibernate's collections to call
 		/// <c>Read()</c> or <c>Write()</c>.
 		/// </remarks>
-		public virtual bool IsDirectlyAccessible 
+		public virtual bool IsDirectlyAccessible
 		{
 			get { return directlyAccessible; }
 		}
 
-		public virtual bool IsArrayHolder {
+		/// <summary>
+		/// 
+		/// </summary>
+		public virtual bool IsArrayHolder
+		{
 			get { return false; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public abstract ICollection Entries();
-		
+
 		/// <summary>
 		/// Reads the elements Identifier from the reader.
 		/// </summary>
@@ -298,16 +359,52 @@ namespace NHibernate.Collection
 		/// <param name="role">The persister for this Collection.</param>
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <returns>The value of the Identifier.</returns>
-		public abstract object ReadFrom(IDataReader reader, CollectionPersister role, object owner);
-		
-		public abstract void WriteTo(IDbCommand st, CollectionPersister role, object entry, int i, bool writeOrder);
-		public abstract object GetIndex(object entry, int i);
-		public abstract void BeforeInitialize(CollectionPersister persister);
+		public abstract object ReadFrom( IDataReader reader, CollectionPersister role, object owner );
 
-		public abstract bool EqualsSnapshot(IType elementType);
-		protected abstract object Snapshot(CollectionPersister persister);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="role"></param>
+		/// <param name="entry"></param>
+		/// <param name="i"></param>
+		/// <param name="writeOrder"></param>
+		public abstract void WriteTo( IDbCommand st, CollectionPersister role, object entry, int i, bool writeOrder );
 
-		public abstract object Disassemble(CollectionPersister persister);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entry"></param>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public abstract object GetIndex( object entry, int i );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		public abstract void BeforeInitialize( CollectionPersister persister );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="elementType"></param>
+		/// <returns></returns>
+		public abstract bool EqualsSnapshot( IType elementType );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <returns></returns>
+		protected abstract object Snapshot( CollectionPersister persister );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <returns></returns>
+		public abstract object Disassemble( CollectionPersister persister );
 
 		/// <summary>
 		/// Gets a <see cref="Boolean"/> indicating if the rows for this collection
@@ -319,51 +416,90 @@ namespace NHibernate.Collection
 		/// individually updated/inserted/deleted.  Currently only <see cref="Bag"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>
-		public virtual bool NeedsRecreate(CollectionPersister persister) 
+		public virtual bool NeedsRecreate( CollectionPersister persister )
 		{
 			return false;
 		}
 
-		public object GetSnapshot(CollectionPersister persister) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <returns></returns>
+		public object GetSnapshot( CollectionPersister persister )
 		{
-			return (persister==null) ? null : Snapshot(persister);
+			return ( persister == null ) ? null : Snapshot( persister );
 		}
 
 		/// <summary>
 		/// Default behavior is to call Read; will be overridden in deep lazy collections
 		/// </summary>
 		/// TODO: H2.0.3 declares this as final
-		public void ForceLoad() 
+		public void ForceLoad()
 		{
 			Read();
 		}
 
-		public abstract bool EntryExists(object entry, int i);
-		public abstract bool NeedsInserting(object entry, int i, IType elemType);
-		public abstract bool NeedsUpdating(object entry, int i, IType elemType);
-		public abstract ICollection GetDeletes(IType elemType);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entry"></param>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public abstract bool EntryExists( object entry, int i );
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entry"></param>
+		/// <param name="i"></param>
+		/// <param name="elemType"></param>
+		/// <returns></returns>
+		public abstract bool NeedsInserting( object entry, int i, IType elemType );
 
-		protected object GetSnapshot() 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entry"></param>
+		/// <param name="i"></param>
+		/// <param name="elemType"></param>
+		/// <returns></returns>
+		public abstract bool NeedsUpdating( object entry, int i, IType elemType );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="elemType"></param>
+		/// <returns></returns>
+		public abstract ICollection GetDeletes( IType elemType );
+
+		
+		/// <summary></summary>
+		protected object GetSnapshot()
 		{
-			return session.GetSnapshot(this);
+			return session.GetSnapshot( this );
 		}
 
-		public bool WasInitialized 
+		/// <summary></summary>
+		public bool WasInitialized
 		{
 			get { return initialized; }
 		}
 
-		public bool HasQueuedAdds 
+		/// <summary></summary>
+		public bool HasQueuedAdds
 		{
-			get { return additions!= null; }
+			get { return additions != null; }
 		}
 
-		public ICollection QueuedAddsCollection 
+		/// <summary></summary>
+		public ICollection QueuedAddsCollection
 		{
 			get { return additions; }
 		}
 
-		public virtual ICollectionSnapshot CollectionSnapshot 
+		/// <summary></summary>
+		public virtual ICollectionSnapshot CollectionSnapshot
 		{
 			get { return collectionSnapshot; }
 			set { collectionSnapshot = value; }
@@ -380,26 +516,49 @@ namespace NHibernate.Collection
 		/// a List then it will be the object at that index.
 		/// </param>
 		/// <param name="i">The index of the Entry while enumerating through the Collection.</param>
-		public virtual void PreInsert(CollectionPersister persister, object entry, int i) {}
-		
-		public abstract ICollection GetOrphans(object snapshot);
-		public static void IdentityRemoveAll(IList list, ICollection collection, ISessionImplementor session) 
+		public virtual void PreInsert( CollectionPersister persister, object entry, int i )
 		{
-			IEnumerator enumer = collection.GetEnumerator();
-			while(enumer.MoveNext()) PersistentCollection.IdentityRemove(list, enumer.Current, session);
 		}
 
-		public static void IdentityRemove(IList list, object obj, ISessionImplementor session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="snapshot"></param>
+		/// <returns></returns>
+		public abstract ICollection GetOrphans( object snapshot );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="list"></param>
+		/// <param name="collection"></param>
+		/// <param name="session"></param>
+		public static void IdentityRemoveAll( IList list, ICollection collection, ISessionImplementor session )
+		{
+			IEnumerator enumer = collection.GetEnumerator();
+			while( enumer.MoveNext() )
+			{
+				PersistentCollection.IdentityRemove( list, enumer.Current, session );
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="list"></param>
+		/// <param name="obj"></param>
+		/// <param name="session"></param>
+		public static void IdentityRemove( IList list, object obj, ISessionImplementor session )
 		{
 			int indexOfEntityToRemove = -1;
 
-			if(session.IsSaved(obj)) 
+			if( session.IsSaved( obj ) )
 			{
-				object idOfCurrent = session.GetEntityIdentifierIfNotUnsaved(obj);
-				for(int i = 0; i < list.Count; i++) 
+				object idOfCurrent = session.GetEntityIdentifierIfNotUnsaved( obj );
+				for( int i = 0; i < list.Count; i++ )
 				{
-					object idOfOld = session.GetEntityIdentifierIfNotUnsaved(list[i]);
-					if(idOfCurrent.Equals(idOfOld) )
+					object idOfOld = session.GetEntityIdentifierIfNotUnsaved( list[ i ] );
+					if( idOfCurrent.Equals( idOfOld ) )
 					{
 						// in hibernate this used the Iterator to remove the item - since in .NET
 						// the Enumerator is read only we have to change the implementation slightly. 
@@ -408,11 +567,13 @@ namespace NHibernate.Collection
 					}
 				}
 
-				if(indexOfEntityToRemove != -1) list.RemoveAt(indexOfEntityToRemove);
+				if( indexOfEntityToRemove != -1 )
+				{
+					list.RemoveAt( indexOfEntityToRemove );
+				}
 			}
 		}
 
-		
 		#region - Hibernate Collection Proxy Classes
 
 		/*
@@ -420,40 +581,37 @@ namespace NHibernate.Collection
 		 * to get sublists, modify a collection with an iterator - all things that 
 		 * Hibernate needs to be made aware of.  If .net changes their collection interfaces
 		 * then we can readd these back in.
-		 */ 
-		
+		 */
 
 		#endregion
 
 		#region ICollection Members
 
-		public abstract bool IsSynchronized
-		{
-			get;
-		}
+		/// <summary></summary>
+		public abstract bool IsSynchronized { get; }
 
-		public abstract int Count
-		{
-			get;
-		}
+		/// <summary></summary>
+		public abstract int Count { get; }
 
-		public abstract void CopyTo(Array array, int index);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="array"></param>
+		/// <param name="index"></param>
+		public abstract void CopyTo( Array array, int index );
 
-		public abstract object SyncRoot
-		{
-			get;
-		}
+		/// <summary></summary>
+		public abstract object SyncRoot { get; }
 
 		#endregion
 
 		#region IEnumerable Members
 
+		/// <summary></summary>
 		public abstract IEnumerator GetEnumerator();
 
 		#endregion
 	}
 
-	
 
-	
 }

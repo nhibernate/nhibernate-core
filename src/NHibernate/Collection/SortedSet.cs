@@ -1,11 +1,9 @@
 using System;
 using System.Collections;
-using System.Data;
-
+using Iesi.Collections;
 using NHibernate.Engine;
-using NHibernate.Type;
 
-namespace NHibernate.Collection 
+namespace NHibernate.Collection
 {
 	/// <summary>
 	/// A Persistent wrapper for a <c>Iesi.Collections.ISet</c> that has
@@ -15,31 +13,40 @@ namespace NHibernate.Collection
 	/// This class uses the Iesi.Collections.SortedSet for the SortedSet.  
 	/// </remarks>
 	[Serializable]
-	public class SortedSet : Set, Iesi.Collections.ISet  
+	public class SortedSet : Set, ISet
 	{
 		private IComparer comparer;
 
-		protected override object Snapshot(CollectionPersister persister) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <returns></returns>
+		protected override object Snapshot( CollectionPersister persister )
 		{
-			SortedList clonedSet = new SortedList(comparer, internalSet.Count);
-			foreach(object obj in internalSet) 
+			SortedList clonedSet = new SortedList( comparer, internalSet.Count );
+			foreach( object obj in internalSet )
 			{
 				object copy = persister.ElementType.DeepCopy( obj );
-				clonedSet.Add(copy, copy);
+				clonedSet.Add( copy, copy );
 			}
 
 			return clonedSet;
 		}
 
-		public IComparer Comparer 
+		/// <summary></summary>
+		public IComparer Comparer
 		{
-			get { return comparer;}
+			get { return comparer; }
 		}
 
-
-		public override void BeforeInitialize(CollectionPersister persister) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persister"></param>
+		public override void BeforeInitialize( CollectionPersister persister )
 		{
-			internalSet = new Iesi.Collections.SortedSet( Comparer ); 
+			internalSet = new Iesi.Collections.SortedSet( Comparer );
 			// an ArrayList of the identifiers is what Set uses because there is not
 			// both a Key & Value to worry about - just the Key.
 			this.tempIdentifierList = new ArrayList();
@@ -50,7 +57,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="comparer">The IComparer to user for Sorting.</param>
-		public SortedSet(ISessionImplementor session, IComparer comparer) : base(session)
+		public SortedSet( ISessionImplementor session, IComparer comparer ) : base( session )
 		{
 			this.comparer = comparer;
 		}
@@ -61,19 +68,27 @@ namespace NHibernate.Collection
 		/// <param name="session">The Session to be bound to.</param>
 		/// <param name="map">The initial values.</param>
 		/// <param name="comparer">The IComparer to use for Sorting.</param>
-		public SortedSet(ISessionImplementor session, Iesi.Collections.ISet map, IComparer comparer) 
+		public SortedSet( ISessionImplementor session, ISet map, IComparer comparer )
 			: base( session, new Iesi.Collections.SortedSet( map, comparer ) )
 		{
 			this.comparer = comparer;
 		}
 
-		public SortedSet(ISessionImplementor session, CollectionPersister persister, IComparer comparer, object disassembled, object owner) : this(session, comparer) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="persister"></param>
+		/// <param name="comparer"></param>
+		/// <param name="disassembled"></param>
+		/// <param name="owner"></param>
+		public SortedSet( ISessionImplementor session, CollectionPersister persister, IComparer comparer, object disassembled, object owner ) : this( session, comparer )
 		{
-			BeforeInitialize(persister);
-			object[] array = (object[])disassembled;
-			for(int i = 0; i < array.Length; i++) 
+			BeforeInitialize( persister );
+			object[ ] array = ( object[ ] ) disassembled;
+			for( int i = 0; i < array.Length; i++ )
 			{
-				object newObject = persister.ElementType.Assemble(array[i], session, owner);
+				object newObject = persister.ElementType.Assemble( array[ i ], session, owner );
 				internalSet.Add( newObject );
 			}
 
