@@ -306,7 +306,7 @@ namespace NHibernate.Cfg {
 			{
 				IIdentifierGenerator ig = clazz.Identifier.CreateIdentifierGenerator(dialect);
 				if ( ig is IPersistentIdentifierGenerator ) 
-					generators.Add( ( (IPersistentIdentifierGenerator) ig).GeneratorKey(), ig);
+					generators[ ( (IPersistentIdentifierGenerator) ig).GeneratorKey()] = ig;
 
 			}
 			return generators.Values;
