@@ -106,6 +106,17 @@ namespace NHibernate.Type {
 		}
 	
 		public override bool Equals(object x, object y) {
+			
+			if(x==null && y==null) 
+			{
+				return true;
+			}
+			
+			if(x==null || y==null) 
+			{
+				return false;
+			}
+
 			return x.Equals(y);
 		}
 	
