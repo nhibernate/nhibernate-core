@@ -8,14 +8,14 @@
 		<discriminator column="vertex_type" />
 		<version column="version_number" name="Version" />
 		<property name="Name" unique="true" not-null="true" length="50" />
-		<list name="Incoming" lazy="true" inverse="true" cascade="all" order-by="name">
+		<bag name="Incoming" lazy="true" inverse="true" cascade="all" order-by="name">
 			<key column="sink" />
 			<one-to-many class="NHibernate.Eg.Edge" />
-		</list>
-		<list name="Outgoing" lazy="true" inverse="true" cascade="all" order-by="name desc">
+		</bag>
+		<bag name="Outgoing" lazy="true" inverse="true" cascade="all" order-by="name desc">
 			<key column="source" />
 			<one-to-many class="NHibernate.Eg.Edge" />
-		</list>
+		</bag>
 		<property name="CreationDate" type="DateTime" />
 		<subclass name="NHibernate.Eg.Source">
 			<property column="Strength" name="SourceStrength" />

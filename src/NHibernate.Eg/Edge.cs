@@ -1,8 +1,10 @@
 using System;
 
-namespace NHibernate.Eg {
+namespace NHibernate.Eg 
+{
 	
-	public class Edge {
+	public class Edge 
+	{
 		private float length;
 		private string name;
 		private float capacity;
@@ -11,37 +13,44 @@ namespace NHibernate.Eg {
 		private long key;
 		private DateTime creationDate = DateTime.Now;
 
-		public float Capacity {
+		public float Capacity 
+		{
 			get { return capacity; }
 			set { capacity = value; }
 		}
 
-		public float Length {
+		public float Length 
+		{
 			get { return length; }
 			set { length = value; }
 		}
 
-		public string Name {
+		public string Name 
+		{
 			get { return name; }
 			set { name = value; }
 		}
 
-		public Vertex Source {
+		public Vertex Source 
+		{
 			get { return source; }
 			set { source = value; }
 		}
 
-		public Vertex Sink {
+		public Vertex Sink 
+		{
 			get { return sink; }
 			set { sink = value; }
 		}
 
-		public long Key {
+		public long Key 
+		{
 			get { return key; }
 			set { key = value; }
 		}
 
-		public DateTime CreationDate {
+		public DateTime CreationDate 
+		{
 			get { return creationDate; }
 			set { creationDate = value; }
 		}

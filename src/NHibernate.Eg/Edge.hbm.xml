@@ -13,3 +13,4 @@
 		<property name="CreationDate" type="DateTime" />
 	</class>
 </hibernate-mapping>
+

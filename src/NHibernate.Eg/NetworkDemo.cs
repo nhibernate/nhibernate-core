@@ -4,16 +4,19 @@ using System.Collections;
 
 using NHibernate.Cfg;
 
-namespace NHibernate.Eg {
+namespace NHibernate.Eg 
+{
 	/// <summary>
 	/// A simple command line application designed to get you started with NHibernate
 	/// </summary>
-	
-	public class NetworkDemo {
+	public class NetworkDemo 
+	{
 		private static ISessionFactory sessions;
 		private static Configuration ds;
 
-		public static void Main(string[] args) {
+		[STAThread]
+		public static void Main(string[] args) 
+		{
 
 			// configure the configuration
 			ds = new Configuration()
@@ -26,7 +29,8 @@ namespace NHibernate.Eg {
 		}
 
 		
-		public void StartTest() {
+		public void StartTest() 
+		{
 			NetworkDemo.Main(null);
 		}
 		
