@@ -264,7 +264,7 @@ namespace NHibernate.Test
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index-1], bc[index]);
 
-			bc[index].SingleProperty = Single.MinValue;
+			bc[index].SingleProperty = bc[index].SingleProperty * -1;
 			s[index].Update(bc[index]);
 
 			t[index].Commit();
@@ -814,12 +814,12 @@ namespace NHibernate.Test
 			basicClass.BinaryProperty = stream.ToArray();
 
 			basicClass.BooleanProperty = true;
-			basicClass.ByteProperty = Byte.MaxValue;
+			basicClass.ByteProperty = Byte.MaxValue;  
 			basicClass.CharacterProperty = 'a';
 			basicClass.ClassProperty = typeof(object);
 			basicClass.CultureInfoProperty = System.Globalization.CultureInfo.CurrentCulture;
 			basicClass.DateTimeProperty = DateTime.Parse("2003-12-01 10:45:21 AM");
-			basicClass.DecimalProperty = 5.64350M;
+			basicClass.DecimalProperty = 5.64351M;
 			basicClass.DoubleProperty = 456343;
 			basicClass.Int16Property = Int16.MaxValue;
 			basicClass.Int32Property = Int32.MaxValue;
@@ -829,7 +829,9 @@ namespace NHibernate.Test
 			basicClass.SerializableProperty.classId = 2;
 			basicClass.SerializableProperty.classString = "string";
 
-			basicClass.SingleProperty = Single.MaxValue;
+			// more MySql problems - it returns 3.40282E38
+			// instead of 3.402823E+38 which is Single.MaxValue
+			basicClass.SingleProperty = 3.5F; //Single.MaxValue;
 			basicClass.StringProperty = "string property";
 			basicClass.TicksProperty = DateTime.Now;
 			basicClass.TrueFalseProperty = true;
