@@ -25,7 +25,6 @@ namespace NHibernate.Test
 
 			for (int i=0; i<files.Length; i++) 
 			{
-				System.Diagnostics.Debug.Write("test recompile");
 				cfg.AddResource("NHibernate.DomainModel." + files[i], Assembly.Load("NHibernate.DomainModel"));
 			}
 
