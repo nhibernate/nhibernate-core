@@ -1,141 +1,189 @@
 <?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
-  <import class="NHibernate.DomainModel.Result, NHibernate.DomainModel"/>
-  <import class="NHibernate.DomainModel.Named, NHibernate.DomainModel"/>
+	<import class="NHibernate.DomainModel.Result, NHibernate.DomainModel"/>
+	<import class="NHibernate.DomainModel.Named, NHibernate.DomainModel"/>
 
-  <class 
-  	name="NHibernate.DomainModel.Foo, NHibernate.DomainModel"
-  	table="`foos`"
-  	proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel"
-  	discriminator-value="F"
-  	dynamic-update="true"
-  	dynamic-insert="true">
+	<class 
+  		name="NHibernate.DomainModel.Foo, NHibernate.DomainModel"
+  		table="`foos`"
+  		proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel"
+  		discriminator-value="F"
+  		dynamic-update="true"
+  		dynamic-insert="true"
+  	>
   	
-  	<jcs-cache usage="nonstrict-read-write"/>
+  		<jcs-cache usage="nonstrict-read-write"/>
   
-    <id name="key" type="String">
-      <column name="`foo_id`" length="36"/>
-      <generator class="uuid.hex">
-        <param name="seperator">:</param>
-      </generator>
-    </id>
-    <discriminator column="`$foo_subclass^`" type="Char"/>
-    <version name="version"/>
-    <!--<version name="versionCalendar" type="calendar"/>-->
-    <!--<timestamp name="versionTimestamp"/>-->
-    <many-to-one name="foo" class="NHibernate.DomainModel.Foo, NHibernate.DomainModel">
-        <column name="foo" length="36" index="fbmtoidx"/>
-    </many-to-one>
-    <property name="long">
-    	<column name="long_" index="fbmtoidx" unique-key="abc" not-null="true"/>
-    </property>
-    <property name="integer">
-        <column name="`@@##integer_  *`" unique-key="abc" not-null="true"/>
-    </property>
-    <property name="float">
-        <column name="float_" unique-key="abc" not-null="true"/>
-    </property>
-    <property name="x"/>
-    <property name="double" column="double_"/>
+		<id name="key" type="String">
+			<column name="`foo_id`" length="36"/>
+			<generator class="uuid.hex">
+				<param name="seperator">:</param>
+			</generator>
+		</id>
+		<discriminator column="`$foo_subclass^`" type="Char"/>
+		<version name="version"/>
+		<!--<version name="versionCalendar" type="calendar"/>-->
+		<!--<timestamp name="versionTimestamp"/>-->
+		<many-to-one name="foo" class="NHibernate.DomainModel.Foo, NHibernate.DomainModel">
+			<column name="foo" length="36" index="fbmtoidx"/>
+		</many-to-one>
+		<property name="long">
+    		<column name="long_" index="fbmtoidx" unique-key="abc" not-null="true"/>
+		</property>
+		<property name="integer">
+			<column name="`@@##integer_  *`" unique-key="abc" not-null="true"/>
+		</property>
+		<property name="float">
+			<column name="float_" unique-key="abc" not-null="true"/>
+		</property>
+		<property name="x"/>
+		<property name="double" column="double_"/>
 
-	<primitive-array name="bytes" table="foobytes">
-		<key column="id"/>
-		<index column="i"/>
-		<element column="byte_" type="Byte"/>
-	</primitive-array>
+		<primitive-array name="bytes" table="foobytes">
+			<key column="id"/>
+			<index column="i"/>
+			<element column="byte_" type="Byte"/>
+		</primitive-array>
 
-    <property name="date" type="DateTime" column="date_"/>
-    <property name="timestamp" type="Timestamp" column="timestamp_"/>
-    <property name="boolean" column="boolean_"/>
-    <property name="bool" column="bool_"/>
-    <property name="null" column="null_"/>
-    <property name="short" column="short_"/>
-    <property name="char" column="char_"/>
-    <property name="zero" column="zero_"/>
-    <property name="int" column="int_"/>
-    <property name="string">
-        <column name="string_" length="48" index="fbstridx"/>
-    </property>
-    <property name="byte" column="byte_"/>
-    <property name="yesno" />
-    <property name="blob" type="NHibernate.DomainModel.Foo+Struct, NHibernate.DomainModel" column="blobb_"/>
-    <property name="nullBlob" type="System.Object"/>
-    <property name="status" column="`status_@###`" type="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel"/>
-    <property name="binary" column="bin_"/>
-    <property name="locale" column="`localeayzabc123!@#$`"/>
-    
-    <property name="formula" formula="1/2 * int_"/>
-    
-    <property name="custom" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
-        <column name="first_name" length="66"/>
-        <column name="surname" length="66"/>
-    </property>
-    <many-to-one name="dependent" class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" cascade="all" not-null="true"/>
-    <component name="component">
-      <property name="count" column="count_" type="Int32" not-null="true"/> 
-      <property name="name">
-        <column name="name_" length="32" not-null="true"/> 
-      </property>
-      <many-to-one name="glarch" column="g__" cascade="all" class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel" outer-join="true"/>
-      <property name="null" column="cmpnt_null_"/>
-      <component name="subcomponent">
-        <property name="count" column="subcount"/>
-        <property name="name" column="subname"/>
-        <array name="importantDates" table="foo_times">
-          <key column="foo_id"/>
-          <index column="i"/>
-          <element column="date_" type="Time"/>
-        </array>
-        <many-to-one name="fee" column="fee_sub" cascade="all" class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" outer-join="false"/>
-      </component>
-      <array name="importantDates" table="foo_dates">
-        <key column="foo_id"/>
-        <index column="i"/>
-        <element column="date_" type="DateTime"/>
-      </array>
-    </component>
-    <component name="nullComponent">
-      <property name="name" column="null_cmpnt_"/>
-    </component>
-    <subclass
-    	name="NHibernate.DomainModel.Trivial, NHibernate.DomainModel"
-    	proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel" 
-    	discriminator-value="T"/>
-    <subclass 
-    	name="NHibernate.DomainModel.Abstract, NHibernate.DomainModel" 
-    	proxy="NHibernate.DomainModel.AbstractProxy, NHibernate.DomainModel" 
-    	discriminator-value="null">
-        <set name="Abstracts">
-            <key column="abstract_id"/>
-            <one-to-many class="NHibernate.DomainModel.Abstract, NHibernate.DomainModel"/>
-        </set>
-        <property name="Time" column="the_time"/>
-        <subclass 
-        	name="NHibernate.DomainModel.Bar, NHibernate.DomainModel" 
-        	proxy="NHibernate.DomainModel.BarProxy, NHibernate.DomainModel"
-        	discriminator-value="B">
-          <many-to-one name="Baz"/>
-          <property name="BarString">
-            <column name="bar_String" length="24"/>
-          </property>
-          <property name="Name" column="name_name"/>
-          <component name="BarComponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
-            <parent name="parent"/>
-            <property name="count" column="bar_count"/>
-            <property name="name" length="64"/>
-            <array name ="importantDates">
-                <key column="id" />
-                <index column="i"/>
-               <element column="date_" type="DateTime"/>
-            </array>
-          </component>
-          <any name="Object" id-type="Int64" cascade="all">
-            <column name="clazz" length="100"/>
-            <column name="gen_id"/>
-          </any>
-        </subclass>
-    </subclass>
+		<property name="date" type="DateTime" column="date_"/>
+		<property name="timestamp" type="Timestamp" column="timestamp_"/>
+		<property name="boolean" column="boolean_"/>
+		<property name="bool" column="bool_"/>
+		<property name="NullInt32" column="null_"/>
+		<property name="short" column="short_"/>
+		<property name="char" column="char_"/>
+		<property name="zero" column="zero_"/>
+		<property name="int" column="int_"/>
+		<property name="string">
+			<column name="string_" length="48" index="fbstridx"/>
+		</property>
+		<property name="byte" column="byte_"/>
+		<property name="yesno" />
+		<property name="blob" type="NHibernate.DomainModel.Foo+Struct, NHibernate.DomainModel" column="blobb_"/>
+		<property name="nullBlob" type="System.Object"/>
+		<property name="status" column="`status_@###`" type="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel"/>
+		<property name="binary" column="bin_"/>
+		<property name="locale" column="`localeayzabc123!@#$`"/>
+	    
+		<property name="formula" formula="1/2 * int_"/>
+	    
+		<property name="custom" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
+			<column name="first_name" length="66"/>
+			<column name="surname" length="66"/>
+		</property>
+		<many-to-one name="dependent" class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" cascade="all" not-null="true"/>
+		
+		<component name="component">
+			<property 
+				name="Count" 
+				column="count_" 
+				type="Int32" 
+				not-null="true"
+			/> 
+			<property 
+				name="Name"
+			>
+				<column 
+					name="name_" 
+					length="32" 
+					not-null="true"
+				/> 
+			</property>
+			<many-to-one 
+				name="Glarch" 
+				column="g__" 
+				cascade="all" 
+				class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel" 
+				outer-join="true"
+			/>
+			
+			<property 
+				name="NullString" 
+				column="cmpnt_null_"
+			/>
+	      
+			<component 
+				name="Subcomponent"
+			>
+				<property 
+					name="Count" 
+					column="subcount"
+				/>
+				<property 
+					name="Name" 
+					column="subname"
+				/>
+				<array name="ImportantDates" table="foo_times">
+					<key column="foo_id"/>
+					<index column="i"/>
+					<element column="date_" type="Time"/>
+				</array>
+				
+				<many-to-one 
+					name="Fee" 
+					column="fee_sub" 
+					cascade="all" 
+					class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" 
+					outer-join="false"
+				/>
+			</component>
+      
+			<array 
+				name="ImportantDates" 
+				table="foo_dates"
+			>
+				<key column="foo_id"/>
+				<index column="i"/>
+				<element column="date_" type="DateTime"/>
+			</array>
+			
+		</component>
+		
+		<component name="nullComponent">
+			<property name="Name" column="null_cmpnt_"/>
+		</component>
+		
+		<subclass
+    		name="NHibernate.DomainModel.Trivial, NHibernate.DomainModel"
+    		proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel" 
+    		discriminator-value="T"
+    	/>
+		<subclass 
+    		name="NHibernate.DomainModel.Abstract, NHibernate.DomainModel" 
+    		proxy="NHibernate.DomainModel.AbstractProxy, NHibernate.DomainModel" 
+    		discriminator-value="null"
+    	>
+			<set name="Abstracts">
+				<key column="abstract_id"/>
+				<one-to-many class="NHibernate.DomainModel.Abstract, NHibernate.DomainModel"/>
+			</set>
+			<property name="Time" column="the_time"/>
+			<subclass 
+        		name="NHibernate.DomainModel.Bar, NHibernate.DomainModel" 
+        		proxy="NHibernate.DomainModel.BarProxy, NHibernate.DomainModel"
+        		discriminator-value="B">
+			<many-to-one name="Baz"/>
+			<property name="BarString">
+				<column name="bar_String" length="24"/>
+			</property>
+			<property name="Name" column="name_name"/>
+			<component name="BarComponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
+				<parent name="Parent"/>
+				<property name="Count" column="bar_count"/>
+				<property name="Name" length="64"/>
+				<array name="ImportantDates">
+					<key column="id" />
+					<index column="i"/>
+					<element column="date_" type="DateTime"/>
+				</array>
+			</component>
+			<any name="Object" id-type="Int64" cascade="all">
+				<column name="clazz" length="100"/>
+				<column name="gen_id"/>
+			</any>
+			</subclass>
+		</subclass>
   </class>
 
 

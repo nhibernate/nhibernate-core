@@ -60,7 +60,7 @@ namespace NHibernate.DomainModel
 			set;
 		}
 
-		int @null
+		int NullInt32
 		{
 			get;
 			set;

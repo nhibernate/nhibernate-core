@@ -14,8 +14,8 @@
 			<element column="str_" type="String" />
 		</set>
 		<component name="compon" update="false">
-			<property name="name" />
-			<property name="null" column="null_prop" />
+			<property name="Name" />
+			<property name="NullString" column="null_prop" />
 		</component>
 	</class>
 </hibernate-mapping>

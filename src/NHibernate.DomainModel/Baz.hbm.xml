@@ -90,24 +90,24 @@
 			<composite-element 
 				class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel"
 			>
-				<parent name="baz"/>
-				<property name="name">
+				<parent name="Baz"/>
+				<property name="Name">
 					<column 
 						name="name" 
 						length="56"
 					/>
 				</property>
 				<property 
-					name="count" 
+					name="Count" 
 					column="count_" 
 					type="Int32"
 				/>
 				<nested-composite-element 
-					name="subcomponent" 
+					name="Subcomponent" 
 					class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel"
 				>
-					<property name="name" column="x_"/>
-					<property name="count" column="y_" type="Int32"/>
+					<property name="Name" column="x_"/>
+					<property name="Count" column="y_" type="Int32"/>
 				</nested-composite-element>
 			</composite-element>
 		</array>
@@ -168,11 +168,11 @@
 				class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel"
 			>
 				<key-property 
-					name="name" 
+					name="Name" 
 					length="32"
 				/>
 				<key-property 
-					name="count" 
+					name="Count" 
 					column="count_" 
 					type="Int32"
 				/>
@@ -259,8 +259,8 @@
 			<key column="id_"/>
 			<index column="i"/>
 			<composite-element class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
-				<property name="name"/>
-				<property name="count" column="count_" type="Int32"/>
+				<property name="Name"/>
+				<property name="Count" column="count_" type="Int32"/>
 			</composite-element>
 		</list>
 		

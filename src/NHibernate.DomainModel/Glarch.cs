@@ -14,7 +14,7 @@ namespace NHibernate.DomainModel
 		private IDictionary _stringSets;
 		private IList _fooComponents;
 		private GlarchProxy[] _proxyArray;
-		private IList _proxySet;
+		private IDictionary _proxySet;
 		private object _dynaBean;
 		private string _immutable;
 		private int _derivedVersion;
@@ -22,13 +22,13 @@ namespace NHibernate.DomainModel
 		private int _x;
 		private Multiplicity _multiple;
 
-		public int x
+		public int X
 		{
 			get { return _x; }
-			set { this._x = value; }
+			set { _x = value; }
 		}
 	
-		public int version
+		public int Version
 		{
 			get { return _version; }
 			set { this._version = value; }
@@ -39,7 +39,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _next
 		/// </summary> 
-		public GlarchProxy next
+		public GlarchProxy Next
 		{
 			get { return _next;  }
 			set { _next = value; }
@@ -49,7 +49,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _order
 		/// </summary> 
-		public short order
+		public short Order
 		{
 			get { return _order; }
 			set { _order = value; }
@@ -59,7 +59,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _strings
 		/// </summary> 
-		public IList strings
+		public IList Strings
 		{
 			get { return _strings;  }
 			set { _strings = value; }
@@ -69,7 +69,8 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _stringSets
 		/// </summary> 
-		public IDictionary stringSets
+		//TODO: figure out why this is not in the mapping???
+		public IDictionary StringSets
 		{
 			get { return _stringSets; }
 			set { _stringSets = value; }
@@ -79,7 +80,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _fooComponents
 		/// </summary> 
-		public IList fooComponents
+		public IList FooComponents
 		{
 			get { return _fooComponents;  }
 			set { _fooComponents = value; }
@@ -89,7 +90,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _proxyArray
 		/// </summary> 
-		public GlarchProxy[] proxyArray
+		public GlarchProxy[] ProxyArray
 		{
 			get { return _proxyArray; }
 			set { _proxyArray = value; }
@@ -99,7 +100,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _proxySet
 		/// </summary> 
-		public IList proxySet
+		public IDictionary ProxySet
 		{
 			get { return _proxySet; }
 			set { _proxySet = value; }
@@ -160,7 +161,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _immutable
 		/// </summary> 
-		public string immutable
+		public string Immutable
 		{
 			get { return _immutable; }
 			set { _immutable = value; }
@@ -169,7 +170,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _derivedVersion
 		/// </summary> 
-		public int derivedVersion
+		public int DerivedVersion
 		{
 			get { return _derivedVersion;  }
 			set { _derivedVersion = value; }
@@ -178,7 +179,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _any
 		/// </summary> 
-		public object any
+		public object Any
 		{
 			get { return _any; }
 			set { _any = value; }
@@ -189,16 +190,16 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _multiple
 		/// </summary> 
-		public Multiplicity multiple
+		public Multiplicity Multiple
 		{
 			get  { return _multiple; }
 			set  { _multiple = value; }
 		}
 
-		public new string name
+		public new string Name
 		{
 			get { return base._name; }
-			set { this._name = value; }
+			set { _name = value; }
 		}
 
 	}

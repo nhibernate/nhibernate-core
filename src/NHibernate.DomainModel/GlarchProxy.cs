@@ -5,35 +5,35 @@ namespace NHibernate.DomainModel
 {
 	public interface GlarchProxy 
 	{
-		int version
+		int Version
 		{
 			get;
 			set;
 		}
-		int derivedVersion
+		int DerivedVersion
 		{
 			get;
 		}
 	
-		string name
-		{
-			get;
-			set;
-		}
-	
-		GlarchProxy next
+		string Name
 		{
 			get;
 			set;
 		}
 	
-		short order
+		GlarchProxy Next
 		{
 			get;
 			set;
 		}
 	
-		IList strings
+		short Order
+		{
+			get;
+			set;
+		}
+	
+		IList Strings
 		{
 			get;
 			set;
@@ -43,32 +43,32 @@ namespace NHibernate.DomainModel
 			get;
 			set;
 		}	
-		IDictionary stringSets
+		IDictionary StringSets
 		{
 			get;
 			set;
 		}	
-		IList fooComponents
+		IList FooComponents
 		{
 			get;
 			set;
 		}	
-		GlarchProxy[] proxyArray
+		GlarchProxy[] ProxyArray
 		{
 			get;
 			set;
 		}	
-		IList proxySet
+		IDictionary ProxySet
 		{
 			get;
 			set;
 		}	
-		Multiplicity multiple
+		Multiplicity Multiple
 		{
 			get;
 			set;
 		}	
-		object any
+		object Any
 		{
 			get;
 			set;
