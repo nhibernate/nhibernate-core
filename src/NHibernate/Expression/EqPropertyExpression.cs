@@ -1,17 +1,22 @@
-using System;
-
 namespace NHibernate.Expression
 {
-    public class EqPropertyExpression : PropertyExpression
-    {
-        public EqPropertyExpression(string propertyName, string otherPropertyName)
-            : base(propertyName, otherPropertyName)
-        {
-        }
+	/// <summary></summary>
+	public class EqPropertyExpression : PropertyExpression
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <param name="otherPropertyName"></param>
+		public EqPropertyExpression( string propertyName, string otherPropertyName )
+			: base( propertyName, otherPropertyName )
+		{
+		}
 
-        protected override string Op
-        {
-            get { return " = "; }
-        }
-    }
+		/// <summary></summary>
+		protected override string Op
+		{
+			get { return " = "; }
+		}
+	}
 }

@@ -1,16 +1,12 @@
-using System;
-
 using NHibernate.Engine;
 
-namespace NHibernate.Expression 
+namespace NHibernate.Expression
 {
-
 	/// <summary>
 	/// Represents an order imposed upon a ICriteria result set
 	/// </summary>
-	public class Order 
+	public class Order
 	{
-
 		private bool ascending;
 		private string propertyName;
 
@@ -19,13 +15,13 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <param name="ascending"></param>
-		protected Order(string propertyName, bool ascending) 
+		protected Order( string propertyName, bool ascending )
 		{
 			this.propertyName = propertyName;
 			this.ascending = ascending;
 		}
-	
-		
+
+
 		/// <summary>
 		/// Render the SQL fragment
 		/// </summary>
@@ -33,31 +29,34 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public string ToStringForSql(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) 
+		public string ToStringForSql( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias )
 		{
-			string[] columns = Expression.GetColumns(sessionFactory, persistentClass, propertyName, alias);
-			if (columns.Length!=1) throw new HibernateException("Cannot order by multi-column property: " + propertyName);
-			return columns[0] + ( ascending ? " asc" : " desc" );
+			string[ ] columns = Expression.GetColumns( sessionFactory, persistentClass, propertyName, alias );
+			if( columns.Length != 1 )
+			{
+				throw new HibernateException( "Cannot order by multi-column property: " + propertyName );
+			}
+			return columns[ 0 ] + ( ascending ? " asc" : " desc" );
 		}
-	
+
 		/// <summary>
 		/// Ascending order
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public static Order Asc(string propertyName) 
+		public static Order Asc( string propertyName )
 		{
-			return new Order(propertyName, true);
+			return new Order( propertyName, true );
 		}
-	
+
 		/// <summary>
 		/// Descending order
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public static Order Desc(string propertyName) 
+		public static Order Desc( string propertyName )
 		{
-			return new Order(propertyName, false);
+			return new Order( propertyName, false );
 		}
 	}
 }

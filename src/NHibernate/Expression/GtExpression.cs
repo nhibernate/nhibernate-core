@@ -1,16 +1,19 @@
-using System;
-
-namespace NHibernate.Expression 
+namespace NHibernate.Expression
 {
-	
-	public class GtExpression : SimpleExpression 
+	/// <summary></summary>
+	public class GtExpression : SimpleExpression
 	{
-
-		internal GtExpression(string propertyName, object value) : base (propertyName, value) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <param name="value"></param>
+		internal GtExpression( string propertyName, object value ) : base( propertyName, value )
 		{
 		}
 
-		protected override string Op 
+		/// <summary></summary>
+		protected override string Op
 		{
 			get { return " > "; }
 		}

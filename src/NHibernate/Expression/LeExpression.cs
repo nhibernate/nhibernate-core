@@ -1,16 +1,19 @@
-using System;
-
-namespace NHibernate.Expression 
+namespace NHibernate.Expression
 {
-	
-	public class LeExpression : SimpleExpression 
+	/// <summary></summary>
+	public class LeExpression : SimpleExpression
 	{
-
-		internal LeExpression(string propertyName, object value) : base (propertyName, value) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <param name="value"></param>
+		internal LeExpression( string propertyName, object value ) : base( propertyName, value )
 		{
 		}
 
-		protected override string Op 
+		/// <summary></summary>
+		protected override string Op
 		{
 			get { return " <= "; }
 		}

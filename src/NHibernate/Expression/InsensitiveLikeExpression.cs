@@ -1,12 +1,8 @@
-using System;
-using System.Text;
-
 using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.SqlCommand;
 using NHibernate.Persister;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Expression
 {
@@ -15,56 +11,72 @@ namespace NHibernate.Expression
 	/// 
 	/// </summary>
 	//TODO:H2.0.3 renamed this to ILikeExpression
-	public class InsensitiveLikeExpression: Expression 
+	public class InsensitiveLikeExpression : Expression
 	{
-
 		private readonly string propertyName;
 		private readonly object expressionValue;
 
-		internal InsensitiveLikeExpression(string propertyName, object expressionValue) 
-		{		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <param name="expressionValue"></param>
+		internal InsensitiveLikeExpression( string propertyName, object expressionValue )
+		{
 			this.propertyName = propertyName;
 			this.expressionValue = expressionValue;
 		}
 
-		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <param name="persistentClass"></param>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			IType propertyType = ((IQueryable)factory.GetPersister(persistentClass)).GetPropertyType(propertyName);
-			string[] columnNames = GetColumns(factory, persistentClass, propertyName, alias);
-			string[] paramColumnNames = GetColumns(factory, persistentClass, propertyName , null);
-			Parameter[] parameters = Parameter.GenerateParameters(factory, alias, paramColumnNames, propertyType);
+			IType propertyType = ( ( IQueryable ) factory.GetPersister( persistentClass ) ).GetPropertyType( propertyName );
+			string[ ] columnNames = GetColumns( factory, persistentClass, propertyName, alias );
+			string[ ] paramColumnNames = GetColumns( factory, persistentClass, propertyName, null );
+			Parameter[ ] parameters = Parameter.GenerateParameters( factory, alias, paramColumnNames, propertyType );
 
-			
-			if(factory.Dialect is PostgreSQLDialect) 
+
+			if( factory.Dialect is PostgreSQLDialect )
 			{
-				sqlBuilder.Add(columnNames[0]);
-				sqlBuilder.Add(" ilike ");
+				sqlBuilder.Add( columnNames[ 0 ] );
+				sqlBuilder.Add( " ilike " );
 			}
-			else 
+			else
 			{
-				sqlBuilder.Add(factory.Dialect.LowercaseFunction)
-					.Add("(")
-					.Add(columnNames[0])
-					.Add(")")
-					.Add(" like ");
+				sqlBuilder.Add( factory.Dialect.LowercaseFunction )
+					.Add( "(" )
+					.Add( columnNames[ 0 ] )
+					.Add( ")" )
+					.Add( " like " );
 			}
 
-			sqlBuilder.Add(parameters[0]);
+			sqlBuilder.Add( parameters[ 0 ] );
 
 			return sqlBuilder.ToSqlString();
 		}
 
-
-		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sessionFactory"></param>
+		/// <param name="persistentClass"></param>
+		/// <returns></returns>
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
 		{
-			return new TypedValue[] { Expression.GetTypedValue( sessionFactory, persistentClass, propertyName, expressionValue.ToString().ToLower() ) };
+			return new TypedValue[ ] {Expression.GetTypedValue( sessionFactory, persistentClass, propertyName, expressionValue.ToString().ToLower() )};
 		}
 
-
-		public override string ToString() 
+		/// <summary></summary>
+		public override string ToString()
 		{
 			return propertyName + " ilike " + expressionValue;
 		}

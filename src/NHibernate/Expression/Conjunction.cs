@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Expression
 {
 	/// <summary>
@@ -7,7 +5,8 @@ namespace NHibernate.Expression
 	/// </summary>
 	public class Conjunction : Junction
 	{
-		protected override string Op 
+		/// <summary></summary>
+		protected override string Op
 		{
 			get { return " and "; }
 		}

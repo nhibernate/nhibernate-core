@@ -1,11 +1,8 @@
-using System;
-
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
-namespace NHibernate.Expression 
+namespace NHibernate.Expression
 {
 	/// <summary>
 	/// Creates a SQLExpression
@@ -16,35 +13,52 @@ namespace NHibernate.Expression
 	/// </remarks>
 	public class SQLExpression : Expression
 	{
-
 		private readonly SqlString sql;
-		private readonly TypedValue[] typedValues;
+		private readonly TypedValue[ ] typedValues;
 
-		internal SQLExpression(SqlString sql, object[] values, IType[] types) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sql"></param>
+		/// <param name="values"></param>
+		/// <param name="types"></param>
+		internal SQLExpression( SqlString sql, object[ ] values, IType[ ] types )
 		{
 			this.sql = sql;
 			typedValues = new TypedValue[values.Length];
-			for ( int i=0; i<typedValues.Length; i++ ) 
+			for( int i = 0; i < typedValues.Length; i++ )
 			{
-				typedValues[i] = new TypedValue( types[i], values[i] );
+				typedValues[ i ] = new TypedValue( types[ i ], values[ i ] );
 			}
 		}
 
-
-		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <param name="persistentClass"></param>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
 		{
 			return sql.Replace( "$alias", alias );
 		}
 
-		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sessionFactory"></param>
+		/// <param name="persistentClass"></param>
+		/// <returns></returns>
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
 		{
 			return typedValues;
 		}
 
-		public override string ToString() 
+		/// <summary></summary>
+		public override string ToString()
 		{
 			return sql.ToString();
 		}
 	}
 }
-
