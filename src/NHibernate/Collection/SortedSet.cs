@@ -18,6 +18,7 @@ namespace NHibernate.Collection
 	/// to the Dictionary.  In my opinion, the index is not useful except to get the first or last
 	/// element.
 	/// </remarks>
+	[Serializable]
 	public class SortedSet : Set, IDictionary  
 	{
 		private IComparer comparer;

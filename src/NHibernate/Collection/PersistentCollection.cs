@@ -4,9 +4,8 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Collection {
-
-
+namespace NHibernate.Collection 
+{
 	/// <summary>
 	/// Persistent collections are treated as value objects by Hibernate.
 	/// ie. they have no independent existence beyond the object holding
@@ -35,7 +34,8 @@ namespace NHibernate.Collection {
 	/// @author Gavin King
 	/// </summary>
 	[Serializable]
-	public abstract class PersistentCollection {
+	public abstract class PersistentCollection 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PersistentCollection));
 
 		[NonSerialized] protected ISessionImplementor session;

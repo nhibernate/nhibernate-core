@@ -6,14 +6,15 @@ using NHibernate.Sql;
 using NHibernate.SqlTypes;
 
 
-namespace NHibernate.Type {
-
+namespace NHibernate.Type 
+{
 	/// <summary>
 	/// The base implementation of the <see cref="IType"/> interface.
 	/// Mapping of the built in Type hierarchy.
 	/// </summary>
-	public abstract class AbstractType : IType {
-		
+	[Serializable]
+	public abstract class AbstractType : IType 
+	{
 		/// <summary>
 		/// Gets a value indicating if the <see cref="AbstractType"/> is an <see cref="IAssociationType"/>.
 		/// </summary>

@@ -4,8 +4,13 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Collection {
-	
+namespace NHibernate.Collection 
+{
+	/// <summary>
+	/// A persistent wrapper for a <see cref="IDictionary" />. Underlying collection
+	/// is a <see cref="Hashtable" />.
+	/// </summary>
+	[Serializable]
 	public class Map : PersistentCollection, IDictionary {
 		
 		protected IDictionary map;

@@ -9,14 +9,15 @@ namespace NHibernate.Collection
 	/// <summary>
 	/// A persistent wrapper for an array. lazy initialization is NOT supported
 	/// </summary>
+	[Serializable]
 	public class ArrayHolder : PersistentCollection
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PersistentCollection));
 
 		private object array;
-		private System.Type elementClass;
-		private IList tempList;
-		private IList tempListIdentifier;
+		[NonSerialized] private System.Type elementClass;
+		[NonSerialized] private IList tempList;
+		[NonSerialized] private IList tempListIdentifier;
 
 		public ArrayHolder(ISessionImplementor session, object array) : base(session) 
 		{

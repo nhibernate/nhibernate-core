@@ -4,8 +4,8 @@ using System.Collections;
 using System.Runtime.Serialization;
 using NHibernate.Type;
 
-namespace NHibernate {
-
+namespace NHibernate 
+{
 	/// <summary>
 	/// The main runtime interface between a Java application and Hibernate. This is the central
 	/// API class abstracting the notion of a persistence service.
@@ -65,8 +65,8 @@ namespace NHibernate {
 	///	after the exception occurs.
 	/// </para>
 	/// </remarks>
-	public interface ISession : IDisposable, ISerializable, IDeserializationCallback {
-		
+	public interface ISession : IDisposable  
+	{
 		/// <summary>
 		/// Force the <c>ISession</c> to flush.
 		/// </summary>

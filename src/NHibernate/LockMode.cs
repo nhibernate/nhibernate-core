@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
 
-namespace NHibernate {
+namespace NHibernate 
+{
 	/// <summary>
 	/// Instances represent a lock mode for a row of a relational database table.
 	/// </summary>
@@ -11,28 +12,34 @@ namespace NHibernate {
 	/// wish to explicitly specify lock levels.
 	/// </remarks>
 	[Serializable]
-	public sealed class LockMode {
+	public sealed class LockMode 
+	{
 		private int level;
 		private string name;
 
-		private LockMode(int level, string name) {
+		private LockMode(int level, string name) 
+		{
 			this.level = level;
 			this.name = name;
 		}
-		public override string ToString() {
+
+		public override string ToString() 
+		{
 			return name;
 		}
 
 		/// <summary>
 		/// Is this lock mode more restrictive than the given lock mode?
 		/// </summary>
-		public bool GreaterThan(LockMode mode) {
+		public bool GreaterThan(LockMode mode) 
+		{
 			return level > mode.level;
 		}
 		/// <summary>
 		/// Is this lock mode less restrictive than the given lock mode?
 		/// </summary>
-		public bool LessThan(LockMode mode) {
+		public bool LessThan(LockMode mode) 
+		{
 			return level < mode.level;
 		}
 

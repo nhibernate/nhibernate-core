@@ -8,6 +8,7 @@ namespace NHibernate.Collection {
 	/// <summary>
 	/// Last modified by edgar.sanchez@objeq.com
 	/// </summary>
+	[Serializable]
 	public abstract class ODMGCollection : PersistentCollection, IDCollection {
 		
 		public ODMGCollection(ISessionImplementor session) : base(session) {}

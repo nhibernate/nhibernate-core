@@ -1,7 +1,7 @@
 using System;
 
-namespace NHibernate {
-	
+namespace NHibernate 
+{
 	/// <summary>
 	/// Represents a flushing strategy.
 	/// </summary>
@@ -9,7 +9,9 @@ namespace NHibernate {
 	/// The flush process synchronizes database state with session state by detecting state
 	/// changes and executing SQL statements
 	/// </remarks>
-	public enum FlushMode {
+	[Serializable]
+	public enum FlushMode 
+	{
 		/// <summary>
 		/// The <c>ISession</c> is never flushed unless <c>Flush()</c> is explicitly
 		/// called by the application. This mode is very efficient for read only

@@ -23,11 +23,12 @@ namespace NHibernate.Collection {
 	/// 
 	/// this[key]: will work but there is no guarantee that it contains a meaningful object.
 	/// </summary>
+	[Serializable]
 	public class Set : PersistentCollection, IDictionary {
 		
 		protected IDictionary map;
 		
-		protected IList tempIdentifierList;
+		[NonSerialized] protected IList tempIdentifierList;
 
 		/// <summary>
 		/// Returns a Hashtable where the Key & the Value are both a Copy of the

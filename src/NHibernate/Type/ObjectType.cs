@@ -130,10 +130,12 @@ namespace NHibernate.Type {
 		}
 
 		[Serializable]
-		public sealed class ObjectTypeCacheEntry {
+		public sealed class ObjectTypeCacheEntry 
+		{
 			public System.Type clazz;
 			public object id;
-			public ObjectTypeCacheEntry(System.Type clazz, object id) {
+			public ObjectTypeCacheEntry(System.Type clazz, object id) 
+			{
 				this.clazz = clazz;
 				this.id = id;
 			}

@@ -2,7 +2,6 @@ using System;
 
 namespace NHibernate 
 {
-	
 	/// <summary>
 	/// Represents a fetching strategy.
 	/// </summary>
@@ -13,9 +12,9 @@ namespace NHibernate
 	/// For Hql queries, use the <c>FETCH</c> keyword instead.
 	/// </para>
 	/// </remarks>
+	[Serializable]
 	public enum FetchMode 
 	{
-		
 		/// <summary>
 		/// Default to the setting configured in the mapping file.
 		/// </summary>

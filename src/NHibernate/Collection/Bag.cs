@@ -8,8 +8,12 @@ using NHibernate.Type;
 namespace NHibernate.Collection
 {
 	/// <summary>
-	/// Summary description for Bag.
+	/// An unordered, unkeyed collection that can contain the same element
+	/// multiple times. The .net collections API, has no <tt>Bag</tt>.
+	/// Most developers seem to use <tt>IList</tt>s to represent bag semantics,
+	/// so NHibernate follows this practice.
 	/// </summary>
+	[Serializable]
 	public class Bag : ODMGCollection, IList
 	{
 		private IList bag;

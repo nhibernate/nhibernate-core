@@ -5,12 +5,14 @@ using NHibernate.Engine;
 using NHibernate.Type;
 
 
-namespace NHibernate.Collection {
-
+namespace NHibernate.Collection 
+{
 	/// <summary>
 	/// A persistent wrapper for an IList
 	/// </summary>
-	public class List : ODMGCollection , IList {
+	[Serializable]
+	public class List : ODMGCollection , IList 
+	{
 		private IList list;
 
 		// used to hold the Identifiers of the Elements that will later

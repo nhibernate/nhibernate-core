@@ -23,6 +23,7 @@ namespace NHibernate.Collection
 	/// there is no reason to use <c>inverse="true"</c>.
 	/// </para>
 	/// </remarks>
+	[Serializable]
 	public class IdentifierBag : ODMGCollection, IList
 	{
 		private IList values;

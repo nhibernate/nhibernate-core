@@ -4,6 +4,7 @@ using System.Collections;
 namespace NHibernate.DomainModel
 {
 	//TODO: figure out what to do with this DynaBean
+	[Serializable]
 	public class Glarch : Super, GlarchProxy, ILifecycle
 	{
 	
@@ -15,7 +16,7 @@ namespace NHibernate.DomainModel
 		private IList _fooComponents;
 		private GlarchProxy[] _proxyArray;
 		private IDictionary _proxySet;
-		private object _dynaBean;
+		[NonSerialized] private object _dynaBean;
 		private string _immutable;
 		private int _derivedVersion;
 		private object _any;
