@@ -29,7 +29,7 @@ namespace NHibernate.Examples.ForumQuestions
 		public void ExportSchema(string[] files, bool exportSchema) 
 		{
 			cfg = new Configuration();
-
+			
 			for (int i=0; i<files.Length; i++) 
 			{
 				cfg.AddResource("NHibernate.Examples.ForumQuestions." + files[i], Assembly.Load(AssemblyName));
@@ -38,7 +38,7 @@ namespace NHibernate.Examples.ForumQuestions
 			if(exportSchema) new SchemaExport(cfg).Create(true, true);
 		
 			sessions = cfg.BuildSessionFactory( );
-			dialect = Dialect.Dialect.GetDialect();
+			dialect = Dialect.Dialect.GetDialect( cfg.Properties );
 		}
 
 		/// <summary>

@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = 'copy /y "$(ProjectDir)App.config" "$(TargetPath).config"'
+                PreBuildEvent = 'copy /y "$(ProjectDir)App.config" "$(TargetPath).config"&#xd;&#xa;copy /y "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml"'
                 PostBuildEvent = ""
                 RootNamespace = "NHibernate.Examples"
                 RunPostBuildEvent = "OnBuildSuccess"
@@ -101,6 +101,10 @@
                     RelPath = "AssemblyInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "hibernate.cfg.xml"
+                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "NHibernate.Examples.build"
