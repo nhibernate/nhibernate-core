@@ -145,14 +145,15 @@ namespace NHibernate.Collection
 
 		public override void EndRead(CollectionPersister persister, object owner) 
 		{
-			
+			array = System.Array.CreateInstance(elementClass, tempListIdentifier.Count);
+
 			for(int i = 0 ;i < tempListIdentifier.Count; i++) 
 			{
 				object element = persister.ElementType.ResolveIdentifier(tempListIdentifier[i], session, owner);
+				( (System.Array)array ).SetValue(element, i);	
 				tempList[i] = element;
 			}
 
-			array = ((ArrayList)tempList).ToArray(elementClass);
 			//tempList = null;
 			//tempListIdentifier = null;
 		}
