@@ -45,6 +45,13 @@
 		<delete dir="build" failonerror="false" />
 	</target>
 	
+	<target name="build-external" depends="init" description="Builds code that NHibernate depends on but is not a core peice of NHibernate.  The built dll/exes will be distributed in the external-bin folder so there should be no need for a user to build it.">
+		<nant 
+			buildfile="src/HashCodeProvider/HashCodeProvider.build" 
+			target="build"
+		/>
+	</target>
+	
 	<target name="build" depends="init" description="Builds current configuration">
 		<echo message="Current Directory is ${nant.project.basedir}" />
 		
@@ -59,6 +66,7 @@
 				<includes name="log4net.*" />
 				<includes name="DotNetMock.*" />
 				<includes name="nunit.framework.*" />
+				<includes name="HashCodeProvider.*" />
 			</fileset>
 		</copy>
 		
