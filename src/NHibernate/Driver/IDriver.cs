@@ -1,6 +1,8 @@
 using System;
 using System.Data;
 
+using NHibernate.SqlCommand;
+
 namespace NHibernate.Driver
 {
 	/// <summary>
@@ -177,7 +179,7 @@ namespace NHibernate.Driver
 		/// <param name="dialect">The Dialect to help build the IDbCommand</param>
 		/// <param name="sqlString">The SqlString that contains the sql and parameters.</param>
 		/// <returns>An IDbCommand with the CommandText and Parameters fully set.</returns>
-		IDbCommand GenerateCommand(Dialect.Dialect dialect, SqlCommand.SqlString sqlString);
+		IDbCommand GenerateCommand(Dialect.Dialect dialect, SqlString sqlString);
 
 		/// <summary>
 		/// Generates an IDbCommand from the string containing sql according to the requirements 

@@ -1,6 +1,8 @@
 using System;
 using System.Data;
+using System.Text;
 
+using NHibernate.SqlCommand;
 using NHibernate.Util;
 
 namespace NHibernate.Driver
@@ -85,16 +87,16 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-		public virtual IDbCommand GenerateCommand(Dialect.Dialect dialect, SqlCommand.SqlString sqlString) 
+		public virtual IDbCommand GenerateCommand(Dialect.Dialect dialect, SqlString sqlString) 
 		{
 			int paramIndex = 0;
 			IDbCommand cmd = this.CreateCommand();
 
-			System.Text.StringBuilder builder = new System.Text.StringBuilder(sqlString.SqlParts.Length * 15);
+			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Length * 15);
 			for(int i = 0; i < sqlString.SqlParts.Length; i++) 
 			{
 				object part = sqlString.SqlParts[i];
-				SqlCommand.Parameter parameter = part as SqlCommand.Parameter;
+				Parameter parameter = part as Parameter;
 				
 				if(parameter!=null) 
 				{
@@ -140,7 +142,7 @@ namespace NHibernate.Driver
 		/// override this method and use the info contained in the Parameter to set those value.  By default
 		/// those values are not set, only the DbType and ParameterName are set.
 		/// </remarks>
-		protected virtual IDbDataParameter GenerateParameter(IDbCommand command, string name, SqlCommand.Parameter parameter, Dialect.Dialect dialect) 
+		protected virtual IDbDataParameter GenerateParameter(IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect) 
 		{
 			IDbDataParameter dbParam = command.CreateParameter();
 			dbParam.DbType = parameter.SqlType.DbType;

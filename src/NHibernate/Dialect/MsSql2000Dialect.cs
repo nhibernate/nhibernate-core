@@ -93,7 +93,7 @@ namespace NHibernate.Dialect
 		/// <returns>A new SqlString with <c>; SELECT SCOPE_IDENTITY()</c> at the end.</returns>
 		public override SqlString AddIdentitySelectToInsert(SqlString insertSql)
 		{
-			return insertSql.Append( new SqlString("; SELECT SCOPE_IDENTITY()") );
+			return insertSql.Append( "; SELECT SCOPE_IDENTITY()" );
 		}
 
 		public override bool SupportsIdentityColumns 

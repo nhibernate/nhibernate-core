@@ -1,6 +1,6 @@
 using System;
 
-using NHibernate.Sql;
+//using NHibernate.Sql;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect 
