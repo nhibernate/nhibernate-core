@@ -5,7 +5,6 @@ using System.Text;
 
 using NHibernate.Engine;
 using NHibernate.Hql;
-//using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;

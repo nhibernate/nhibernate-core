@@ -4,7 +4,7 @@ using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Sql;
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Mapping 

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 
 using NHibernate.Cache;
-using NHibernate.Sql;
+using NHibernate.SqlCommand;
 using NHibernate.Util;
 
 namespace NHibernate.Mapping 

@@ -8,7 +8,6 @@ using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Mapping;
-//using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
