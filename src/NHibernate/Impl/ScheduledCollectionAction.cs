@@ -21,7 +21,7 @@ namespace NHibernate.Impl {
 		}
 
 		public object[] PropertySpaces {
-			get { return new string[] { persister.QualifiedTableName }; }
+			get { return new string[] { persister.QualifiedTableName }; } //TODO: cache the array on the persister
 		}
 
 		public abstract void Execute();

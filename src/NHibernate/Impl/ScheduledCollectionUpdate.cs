@@ -5,20 +5,29 @@ using NHibernate.Engine;
 namespace NHibernate.Impl {
 
 	internal sealed class ScheduledCollectionUpdate : ScheduledCollectionAction {
-		private PersistentCollection collection;
 		
-		public ScheduledCollectionUpdate(PersistentCollection collection, CollectionPersister persister, object id, ISessionImplementor session) : base(persister, id, session) {
+		private readonly PersistentCollection collection;
+		private readonly bool emptySnapshot;
+		
+		public ScheduledCollectionUpdate(PersistentCollection collection, CollectionPersister persister, object id, bool emptySnapshot, ISessionImplementor session) : base(persister, id, session) {
 			this.collection = collection;
+			this.emptySnapshot = emptySnapshot;
 		}
 
 		public override void Execute() {
 			persister.Softlock(id);
-			if ( collection.Empty ) {
-				persister.Remove(id, session);
-			} else if ( collection.NeedsRecreate( persister.ElementType ) ) {
-				persister.Remove(id, session);
+			if ( !collection.WasInitialized ) {
+				if ( !collection.HasQueuedAdds ) throw new AssertionFailure("bug processing queued adds");
+				//do nothing - we only need to notify the cache...
+			}
+			else if ( collection.Empty ) {
+				if( !emptySnapshot ) persister.Remove(id, session);
+			}
+			else if ( collection.NeedsRecreate( persister.ElementType ) ) {
+				if( !emptySnapshot ) persister.Remove(id, session);
 				persister.Recreate(collection, id, session);
-			} else {
+			}
+			else {
 				persister.DeleteRows(collection, id, session);
 				persister.UpdateRows(collection, id, session);
 				persister.InsertRows(collection, id, session);
