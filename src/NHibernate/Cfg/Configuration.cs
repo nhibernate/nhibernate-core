@@ -644,17 +644,35 @@ namespace NHibernate.Cfg {
 				string name = node.Attributes["name"].Value;
 				string value = node.FirstChild.Value;
 				log.Debug(name + "=" + value);
-				properties.Add(name, value);
-				if ( !name.StartsWith("hibernate") ) properties.Add("hibernate." + name, value);
+				properties[name] = value;
+				if ( !name.StartsWith("hibernate") ) 
+				{
+					properties["hibernate." + name] = value;
+				}
 			}
 		}
 
+		/// <summary>
+		/// Configure NHibernate using the file "hibernate.cfg.xml"
+		/// </summary>
+		/// <returns>A Configuration object initialized with the file.</returns>
+		/// <remarks>
+		/// Calling Configure() will overwrite the values set in app.config or web.config
+		/// </remarks>
 		public Configuration Configure() 
 		{
 			Configure("hibernate.cfg.xml");
 			return this;
 		}
 
+		/// <summary>
+		/// Configure NHibernate using the file specified.
+		/// </summary>
+		/// <param name="resource">The location of the Xml file to use to configure NHibernate.</param>
+		/// <returns>A Configuration object initialized with the file.</returns>
+		/// <remarks>
+		/// Calling Configure(string) will overwrite the values set in app.config or web.config
+		/// </remarks>
 		public Configuration Configure(string resource) 
 		{
 			

@@ -3,10 +3,11 @@ using System.Xml;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
+
 using NHibernate.Util;
 
-namespace NHibernate.Cfg {
-
+namespace NHibernate.Cfg 
+{
 	/// <summary>
 	/// Provides access to configuration info
 	/// </summary>
@@ -24,13 +25,14 @@ namespace NHibernate.Cfg {
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class Environment {
+	public class Environment 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Environment));
 
 		private static IDictionary properties = new Hashtable();
 		private static IDictionary isolationLevels = new Hashtable();
 
-		private const string Version = "prealpha3";
+		private const string Version = "prealpha";
 
 		public const string ConnectionProvider = "hibernate.connection.provider";
 		public const string ConnectionDriver = "hibernate.connection.driver_class";
@@ -56,28 +58,38 @@ namespace NHibernate.Cfg {
 		public const string StatementFetchSize = "hibernate.jdbc.fetch_size";
 		public const string UseScrollableResultSet = "hibernate.jdbc.use_scrollable_resultset";
 
-		static Environment() {
+		static Environment() 
+		{
 			log4net.Config.DOMConfigurator.Configure();
-
-			NameValueCollection props = System.Configuration.ConfigurationSettings.GetConfig("nhibernate") as NameValueCollection;
-			if (props==null) throw new HibernateException("no nhibernate settings available");
-			
-			foreach(string key in props.Keys) {
-				properties[key] = props[key];
-			}
 
 			isolationLevels.Add( System.Data.IsolationLevel.Chaos, "NONE" );
 			isolationLevels.Add( System.Data.IsolationLevel.ReadUncommitted, "READ_UNCOMMITTED" );
 			isolationLevels.Add( System.Data.IsolationLevel.ReadCommitted, "READ_COMMITTED" );
 			isolationLevels.Add( System.Data.IsolationLevel.RepeatableRead, "REPEATABLE_READ" );
 			isolationLevels.Add( System.Data.IsolationLevel.Serializable, "SERIALIZABLE" );
+
+			NameValueCollection props = System.Configuration.ConfigurationSettings.GetConfig("nhibernate") as NameValueCollection;
+			if (props==null) 
+			{
+				log.Debug("no hibernate settings in app.config/web.config were found");
+				return;
+			}
+			
+			foreach(string key in props.Keys) 
+			{
+				properties[key] = props[key];
+			}
+
+			
 		}
 
-		public static IDictionary Properties {
+		public static IDictionary Properties 
+		{
 			get { return properties; }
 		}
 
-		public static bool UseStreamsForBinary {
+		public static bool UseStreamsForBinary 
+		{
 			get { return true; }			
 		}
 	}
