@@ -23,6 +23,7 @@ namespace NHibernate.Hql {
 		private bool expectingAs;
 		private bool afterJoinType;
 		private bool afterFetch;
+		//TODO: H2.0.3 does not have classPersister as a field...
 		private ILoadable classPersister;
 		private JoinType joinType = JoinType.None;
 
@@ -41,7 +42,7 @@ namespace NHibernate.Hql {
 			string lcToken = token.ToLower();
 			if ( lcToken.Equals(StringHelper.Comma) ) 
 			{
-				if (!expectingJoin) throw new QueryException("unexpected token: ,");
+				if ( !(expectingJoin|expectingAs) ) throw new QueryException("unexpected token: ,");
 				expectingJoin = false;
 				expectingAs = false;
 			} 
@@ -78,7 +79,7 @@ namespace NHibernate.Hql {
 			} 
 			else if ( joinTypes.Contains(lcToken) ) 
 			{
-				if (!expectingJoin) throw new QueryException("unexpected token: " + token);
+				if ( !(expectingJoin|expectingAs) ) throw new QueryException("unexpected token: " + token);
 				joinType = (JoinType) joinTypes[lcToken];
 				afterJoinType = true;
 				expectingJoin = false;
@@ -118,11 +119,12 @@ namespace NHibernate.Hql {
 					// _after_ the class name or path expression ie using the
 					// AS construction
 
-					if (classPersister!=null) 
-					{
-						q.AddFromClass(token, classPersister);
-					} 
-					else if (entityName!=null) 
+//					if (classPersister!=null) 
+//					{
+//						q.AddFromClass(token, classPersister);
+//					} 
+					//else if (entityName!=null) 
+					if (entityName!=null) 
 					{
 						q.SetAliasName(token, entityName);
 					} 

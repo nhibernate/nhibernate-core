@@ -285,14 +285,25 @@ namespace NHibernate.Hql
 			return (superQuery==null) ? count++ : superQuery.count++;
 		}
 
+		internal string CreateName(string description) 
+		{
+			// this is a bit ugly, since Alias is really for
+			// aliasing SQL identifiers ... but it does what
+			// we want!
+			return new Alias(10, NextCount().ToString() + StringHelper.Underscore)
+				.ToAliasString(StringHelper.Unqualify(description).ToLower(), dialect);
+		}
+
 		internal string CreateNameFor(System.Type type) 
 		{
-			return Prefix(type.Name) + NextCount() + StringHelper.Underscore;
+			return CreateName(type.Name);
+			//return Prefix(type.Name) + NextCount() + StringHelper.Underscore;
 		}
 
 		internal string CreateNameForCollection(string role) 
 		{
-			return Prefix( StringHelper.Unqualify(role) ) + NextCount() + StringHelper.Underscore;
+			return CreateName(role);
+			//return Prefix( StringHelper.Unqualify(role) ) + NextCount() + StringHelper.Underscore;
 		}
 
 		internal System.Type GetType(string name) 

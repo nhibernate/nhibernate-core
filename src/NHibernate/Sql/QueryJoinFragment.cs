@@ -82,8 +82,15 @@ namespace NHibernate.Sql
 		}
 
 		public override void AddCondition(string condition) {
-			if ( !condition.StartsWith(" and ") ) afterWhere.Append(" and ");
-			afterWhere.Append(condition);
+			if ( 
+				afterFrom.ToString().IndexOf( condition.Trim() ) < 0 &&
+				afterWhere.ToString().IndexOf( condition.Trim() ) < 0 )
+			{
+
+			
+				if ( !condition.StartsWith(" and ") ) afterWhere.Append(" and ");
+				afterWhere.Append(condition);
+			}
 		}
 
 	}
