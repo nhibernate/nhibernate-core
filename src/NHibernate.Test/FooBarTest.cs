@@ -226,15 +226,12 @@ namespace NHibernate.Test
 
 			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode(b) );
 			s.Find("from Foo foo");
-			// When Proxies are implemented this will need to be changed to LockMode.None
-			Assert.AreEqual( LockMode.Write, s.GetCurrentLockMode(b) );
+			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode(b) );
 			q = s.CreateQuery("from Foo foo");
 			q.SetLockMode("foo", LockMode.Read);
 			q.List();
 
-			// When Proxies are implemented this will need to be changed to LockMode.Read
-			// because the current LockMode.Write won't downgrade to LockMode.Read
-			Assert.AreEqual( LockMode.Write, s.GetCurrentLockMode(b) );
+			Assert.AreEqual( LockMode.Read, s.GetCurrentLockMode(b) );
 			s.Evict(baz);
 
 			s.Disconnect();

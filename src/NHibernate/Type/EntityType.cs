@@ -67,20 +67,33 @@ namespace NHibernate.Type
 
 		public abstract bool IsOneToOne { get; }
 	
-		public override object Disassemble(object value, ISessionImplementor session) {
-			if (value==null) {
+		public override object Disassemble(object value, ISessionImplementor session) 
+		{
+			if (value==null) 
+			{
 				return null;
 			}
-			else {
+			else 
+			{
 				object id = session.GetIdentifier(value);
-				if (id==null)
+				if (id==null) 
+				{
 					throw new AssertionFailure("cannot cache a reference to an object with a null id");
-				return id;
+				}
+				return GetIdentifierType( session ).Disassemble( id, session );
 			}
 		}
 	
-		public override object Assemble(object oid, ISessionImplementor session, object owner) {
-			return ResolveIdentifier(oid, session, owner);
+		protected IType GetIdentifierType(ISessionImplementor session) 
+		{
+			return session.Factory.GetIdentifierType( persistentClass );
+		}
+		
+		public override object Assemble(object oid, ISessionImplementor session, object owner) 
+		{
+			object assembledId = GetIdentifierType( session ).Assemble( oid, session, owner );
+
+			return ResolveIdentifier( assembledId, session, owner );
 		}
 
 		public override bool HasNiceEquals {
@@ -97,12 +110,13 @@ namespace NHibernate.Type
 	
 		public override abstract object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 		
-		public override bool IsDirty(object old, object current, ISessionImplementor session) {
+		public override bool IsDirty(object old, object current, ISessionImplementor session) 
+		{
 			if ( Equals(old, current) ) return false;
 		
 			object oldid = GetIdentifier(old, session);
 			object newid = GetIdentifier(current, session);
-			return !session.Factory.GetIdentifierType(persistentClass).Equals(oldid, newid);
+			return !GetIdentifierType(session).Equals(oldid, newid);
 		}
 	}
 }
