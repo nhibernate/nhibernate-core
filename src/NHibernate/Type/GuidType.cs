@@ -44,7 +44,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value) 
 		{
-			return value.ToString();
+			return "'" + value.ToString() + "'";
 		}
 
 		public object StringToObject(string xml) 
