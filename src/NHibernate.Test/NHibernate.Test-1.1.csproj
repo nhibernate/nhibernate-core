@@ -356,6 +356,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "PropertyTest\FieldAccessorFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\FieldClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\FieldMUnderscorePrefixAccessorFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\FieldUnderscorePrefixAccessorFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlCommandTest\SqlDeleteBuilderFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
