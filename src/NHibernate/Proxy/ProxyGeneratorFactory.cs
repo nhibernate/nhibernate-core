@@ -1,10 +1,4 @@
 using System;
-using System.Reflection;
-
-//TODO: build a version
-//using Castle.DynamicProxy;
-
-using NHibernate.Engine;
 
 namespace NHibernate.Proxy
 {
@@ -15,8 +9,7 @@ namespace NHibernate.Proxy
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(ProxyGeneratorFactory) );
 
-		//TODO: build a version
-		private static IProxyGenerator _generator = null;// new CastleProxyGenerator();
+		private static IProxyGenerator _generator = new CastleProxyGenerator();
 		
 		public static IProxyGenerator GetProxyGenerator() 
 		{

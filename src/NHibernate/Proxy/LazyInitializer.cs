@@ -105,6 +105,10 @@ namespace NHibernate.Proxy
 		/// with the instantiated target.
 		/// </summary>
 		/// <param name="info">The <see cref="SerializationInfo"/> to write the object to.</param>
+		/// <remarks>
+		/// This will only be called if the Dynamic Proxy generator does not handle serialization
+		/// itself or delegates calls to the method GetObjectData to the LazyInitializer.
+		/// </remarks>
 		protected virtual void AddSerializationInfo(SerializationInfo info)
 		{
 		}
@@ -169,7 +173,7 @@ namespace NHibernate.Proxy
 		/// Invokes the method if this is something that the LazyInitializer can handle
 		/// without the underlying proxied object being instantiated.
 		/// </summary>
-		/// <param name="methodName">The name of the method/property to Invoke.</param>
+		/// <param name="method">The name of the method/property to Invoke.</param>
 		/// <param name="args">The arguments to pass the method/property.</param>
 		/// <returns>
 		/// The result of the Invoke if the underlying proxied object is not needed.  If the 
@@ -178,10 +182,9 @@ namespace NHibernate.Proxy
 		/// </returns>
 		public virtual object Invoke(MethodBase method, params object[] args)
 		{
-			// all Proxies must implement INHibernateProxy which extends ISerializable
-			// not true anymore - DynamicProxy now handles the serialization.  All Proxy
-			// Generators should make sure that ISerializable is implemented if their 
-			// Proxy doesn't do it by default.
+			// if the Proxy Engine delegates the call of GetObjectData to the Initializer
+			// then we need to handle it.  Castle.DynamicProxy takes care of serializing
+			// proxies for us, but other providers might not.
 			if( method.Name.Equals("GetObjectData") ) 
 			{
 				SerializationInfo info = (SerializationInfo)args[0];

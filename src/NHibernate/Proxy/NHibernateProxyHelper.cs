@@ -15,10 +15,13 @@ namespace NHibernate.Proxy
 		}
 
 		/// <summary>
-		/// Gets the NLazyInitializer that is used by the Proxy.
+		/// Gets the <see cref="LazyInitializer"/> that is used by the Proxy.
 		/// </summary>
 		/// <param name="proxy">The Proxy object</param>
-		/// <returns>A reference to NLazyInitializer that contains the details of the Proxied object.</returns>
+		/// <returns>
+		/// A reference to <see cref="LazyInitializer"/> that contains the details 
+		/// of the Proxied object.
+		/// </returns>
 		public static LazyInitializer GetLazyInitializer(INHibernateProxy proxy) 
 		{
 			LazyInitializer li = ProxyGeneratorFactory.GetProxyGenerator().GetLazyInitializer( proxy );
