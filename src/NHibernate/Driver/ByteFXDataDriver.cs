@@ -9,7 +9,7 @@ namespace NHibernate.Driver
 	/// </summary>
 	/// <remarks>
 	/// <p>
-	/// In order to use this Driver you must have the ByteFX.Data.dll Assembly available for 
+	/// In order to use this Driver you must have the ByteFX.MySqlClient.dll Assembly available for 
 	/// NHibernate to load it.  The ICSharpCode.SharpZipLib.dll Assembly is also required by
 	/// the ByteFX.Data Assembly.
 	/// </p>
@@ -29,8 +29,8 @@ namespace NHibernate.Driver
 
 		public ByteFXDataDriver()
 		{
-			connectionType = System.Type.GetType("ByteFX.Data.MySqlClient.MySqlConnection, ByteFX.Data");
-			commandType = System.Type.GetType("ByteFX.Data.MySqlClient.MySqlCommand, ByteFX.Data");
+			connectionType = System.Type.GetType("ByteFX.Data.MySqlClient.MySqlConnection, ByteFX.MySqlClient");
+			commandType = System.Type.GetType("ByteFX.Data.MySqlClient.MySqlCommand, ByteFX.MySqlClient");
 		}
 
 		public override System.Type CommandType
@@ -56,6 +56,16 @@ namespace NHibernate.Driver
 		public override string NamedPrefix 	
 		{
 			get {return "@";}
+		}
+
+		/// <summary>
+		/// The ByteFX driver does NOT support more than 1 open IDataReader
+		/// with only 1 IDbConnection.
+		/// </summary>
+		/// <value><c>false</c> - it is not supported.</value>
+		public override bool SupportsMultipleOpenReaders
+		{
+			get { return false;	}
 		}
 	}
 }
