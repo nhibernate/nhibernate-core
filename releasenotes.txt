@@ -13,10 +13,12 @@ Build 0.7.0.0
 - Fixed problem of LazyInitializationException losing InnerException.
 - Fixed problem of Collections not always getting cached.
 - Fixed Id.TableGenerator so it works with Oracle.
+- Fixed problem with SequenceHiLoGenerator and converting to Int64 (Yves Dierick). 
 - Fixed problem of some NHibernate Exceptions not being serializable.
 - Improved documentation in IQuery to explain how SetMaxResult is working.
 - Improved messages in Exceptions thrown by ISetter.
 - Improved messages in Exceptions for Persisters with problems parsing discriminator values.
+- Improved Configuration.AddAssembly() to process hbm.xml files with subclass/joined-subclass files using "extends" in correct order (Mark Traudt).   Also added overload of AddAssembly(Assembly,bool) that can be used to skip ordering.
 - Many internal cleanups from FxCop reccommendations.
 - Modified ISession.Lock() to allow reassociating transient instances like hibernate 2.1 (Sergey Koshcheyev).
 - Modified Exception thrown by Preparer when the IDbCommand.Prepare() method fails to ADOException.
