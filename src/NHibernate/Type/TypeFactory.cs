@@ -523,7 +523,7 @@ namespace NHibernate.Type
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
 			if(returnType==null) 
 			{
-				returnType = new CultureInfoType( SqlTypeFactory.GetString(10) );
+				returnType = new CultureInfoType( SqlTypeFactory.GetString(5) );
 				AddToTypeOfName(key, returnType);
 			}
 
