@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace NHibernate.Cache {
 	/// <summary>
@@ -14,17 +15,16 @@ namespace NHibernate.Cache {
 		private const int BinDigits = 12;
 		public const short OneMs = 1<<BinDigits;
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static long Next() {
-			lock(typeof(Timestamper)) {
-				long newTime = System.DateTime.Now.Ticks << BinDigits; //is this right?
-				if (time < newTime) {
-					time = newTime;
-					counter = 0;
-				} else if (counter < OneMs - 1) {
-					counter++;
-				}
-				return time + counter;
+			long newTime = System.DateTime.Now.Ticks << BinDigits; //is this right?
+			if (time < newTime) {
+				time = newTime;
+				counter = 0;
+			} else if (counter < OneMs - 1) {
+				counter++;
 			}
+			return time + counter;
 		}
 	}
 }

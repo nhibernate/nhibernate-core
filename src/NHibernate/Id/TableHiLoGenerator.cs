@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 using NHibernate.Dialect;
 using NHibernate.Engine;
@@ -38,17 +39,16 @@ namespace NHibernate.Id {
 			returnClass = type.ReturnedClass;
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		public override object Generate(ISessionImplementor session, object obj) {
-			lock(this) {
-				if (lo>maxLo) {
-					int hival = ( (int) base.Generate(session, obj) );
-					lo = 1;
-					hi = hival * (maxLo+1);
-					log.Debug("new hi value: " + hival);
-				}
-
-				return IdentifierGeneratorFactory.CreateNumber( hi + lo++, returnClass );
+			if (lo>maxLo) {
+				int hival = ( (int) base.Generate(session, obj) );
+				lo = 1;
+				hi = hival * (maxLo+1);
+				log.Debug("new hi value: " + hival);
 			}
+
+			return IdentifierGeneratorFactory.CreateNumber( hi + lo++, returnClass );
 		}
 	}
 }

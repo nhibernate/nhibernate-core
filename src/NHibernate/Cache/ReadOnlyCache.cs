@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace NHibernate.Cache {
 	/// <summary>
@@ -13,12 +14,11 @@ namespace NHibernate.Cache {
 			this.cache = cache;
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		public object Get(object key, long timestamp) {
-			lock(this) {
-				object result = cache[key];
-				if ( result!=null && log.IsDebugEnabled) log.Debug("Cache hit: " + key);
-				return result;
-			}
+			object result = cache[key];
+			if ( result!=null && log.IsDebugEnabled) log.Debug("Cache hit: " + key);
+			return result;
 		}
 
 		public void Lock(object key) {
@@ -26,12 +26,11 @@ namespace NHibernate.Cache {
 			throw new InvalidOperationException("Can't write to a readonly object");
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		public bool Put(object key, object value, long timestamp) {
-			lock(this) {
-				if (log.IsDebugEnabled) log.Debug("Caching: " + key);
-				cache[key] = value;
-				return true;
-			}
+			if (log.IsDebugEnabled) log.Debug("Caching: " + key);
+			cache[key] = value;
+			return true;
 		}
 
 		public void Release(object key) {

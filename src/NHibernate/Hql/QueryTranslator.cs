@@ -16,6 +16,7 @@ using NHibernate.Sql;
 using NHibernate.Type;
 using NHibernate.Util;
 using BaseLoader = NHibernate.Loader.Loader;
+using System.Runtime.CompilerServices;
 
 namespace NHibernate.Hql {
 	/// <summary> 
@@ -96,14 +97,13 @@ namespace NHibernate.Hql {
 		/// <param name="queryString"></param>
 		/// <param name="replacements"></param>
 		/// <param name="scalar"></param>
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Compile(ISessionFactoryImplementor factory, string queryString, IDictionary replacements, bool scalar) {
-			lock(this) {
-				if (!compiled) {
-					this.factory = factory;
-					this.replacements = replacements;
-					this.shallowQuery = scalar;
-					Compile(queryString);
-				}
+			if (!compiled) {
+				this.factory = factory;
+				this.replacements = replacements;
+				this.shallowQuery = scalar;
+				Compile(queryString);
 			}
 		}
 

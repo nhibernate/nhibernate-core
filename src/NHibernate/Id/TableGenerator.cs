@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 using NHibernate.Dialect;
 using NHibernate.Engine;
@@ -50,69 +51,67 @@ namespace NHibernate.Id {
 			update = "update " + tableName + " set " + columnName + " = ? where " + columnName + " = ?";
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual object Generate(ISessionImplementor session, object obj) {
-			lock(this) {
-
 				//this has to be done using a different connection to the containing
 				//transaction becase the new hi value must remain valid even if the
 				//contataining transaction rolls back
 				IDbConnection conn = session.Factory.OpenConnection();
 				int result;
 				int rows;
-				try {
-					IDbTransaction trans = conn.BeginTransaction();
+			try {
+				IDbTransaction trans = conn.BeginTransaction();
 
-					do {
-						//the loop ensure atomicitiy of the 
-						//select + uspdate even for no transaction
-						//or read committed isolation level (needed for .net?)
+				do {
+					//the loop ensure atomicitiy of the 
+					//select + uspdate even for no transaction
+					//or read committed isolation level (needed for .net?)
 
-						IDbCommand qps = conn.CreateCommand();
-						qps.CommandText = query;
-						qps.CommandType = CommandType.Text;
-						qps.Transaction = trans;
-						try {
-							IDataReader rs = qps.ExecuteReader();
-							if ( !rs.Read() ) {
-								string err = "could not read a hi value - you need to populate the table: " + tableName;
-								log.Error(err);
-								throw new IdentifierGenerationException(err);
-							}
-							result = rs.GetInt32(1);
-							rs.Close();
-						} catch (Exception e) {
-							log.Error("could not read a hi value", e);
-							throw e;
-						} finally {
+					IDbCommand qps = conn.CreateCommand();
+					qps.CommandText = query;
+					qps.CommandType = CommandType.Text;
+					qps.Transaction = trans;
+					try {
+						IDataReader rs = qps.ExecuteReader();
+						if ( !rs.Read() ) {
+							string err = "could not read a hi value - you need to populate the table: " + tableName;
+							log.Error(err);
+							throw new IdentifierGenerationException(err);
 						}
+						result = rs.GetInt32(1);
+						rs.Close();
+					} catch (Exception e) {
+						log.Error("could not read a hi value", e);
+						throw e;
+					} finally {
+					}
 
-						IDbCommand ups = conn.CreateCommand();
-						ups.CommandText = update;
-						ups.CommandType = CommandType.Text;
-						ups.Transaction = trans;
-						try {
-							IDbDataParameter parm1 = ups.CreateParameter();
-							parm1.DbType = DbType.Int32;
-							parm1.Value = result + 1;
-							ups.Parameters.Add(parm1);
-							IDbDataParameter parm2 = ups.CreateParameter();
-							parm2.DbType = DbType.Int32;
-							parm2.Value = result;
-							ups.Parameters.Add(parm2);
-							rows = ups.ExecuteNonQuery();
-						} catch (Exception e) {
-							log.Error("could not update hi value in: " + tableName, e);
-							throw e;
-						} finally {
-						}
-					} while (rows==0);
+					IDbCommand ups = conn.CreateCommand();
+					ups.CommandText = update;
+					ups.CommandType = CommandType.Text;
+					ups.Transaction = trans;
+					try {
+						IDbDataParameter parm1 = ups.CreateParameter();
+						parm1.DbType = DbType.Int32;
+						parm1.Value = result + 1;
+						ups.Parameters.Add(parm1);
+						IDbDataParameter parm2 = ups.CreateParameter();
+						parm2.DbType = DbType.Int32;
+						parm2.Value = result;
+						ups.Parameters.Add(parm2);
+						rows = ups.ExecuteNonQuery();
+					} catch (Exception e) {
+						log.Error("could not update hi value in: " + tableName, e);
+						throw e;
+					} finally {
+					}
+				} while (rows==0);
 
-					trans.Commit();
+				trans.Commit();
 
-					return result;
-				} finally {
-					session.Factory.CloseConnection(conn);
-				}
+				return result;
+			} finally {
+				session.Factory.CloseConnection(conn);
 			}
 		}
 

@@ -3,6 +3,8 @@ using System.IO;
 using System.Xml;
 using System.Data;
 using System.Collections;
+using System.Runtime.CompilerServices;
+
 using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Cfg;
@@ -196,21 +198,19 @@ namespace NHibernate.Impl {
 			object NewInstance(string query, bool scalar);
 		}
 
-		private object Get(object key) {
-			lock(this) {
-				object result = softQueryCache[key];
-				if ( result != null ) {
-					strongRefs[ ++strongRefIndex % MaxStrongRefCount ] = result;
-				}
-				return result;
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		private object Get(object key) {		
+			object result = softQueryCache[key];
+			if ( result != null ) {
+				strongRefs[ ++strongRefIndex % MaxStrongRefCount ] = result;
 			}
+			return result;
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		private void Put(object key, object value) {
-			lock(this) {
-				softQueryCache[key] = value;
-				strongRefs[ ++strongRefIndex % MaxStrongRefCount ] = value;
-			}
+			softQueryCache[key] = value;
+			strongRefs[ ++strongRefIndex % MaxStrongRefCount ] = value;
 		}
 
 		public QueryTranslator GetQuery(string query) {
