@@ -1,20 +1,23 @@
 using System;
-using System.Text;
 using System.Collections;
+using System.Data;
+using System.Text;
+
 using NHibernate.Collection;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.Sql;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Loader {
 
 	public enum OuterJoinLoaderType {
-		Eager = 1,
+		Lazy = -1, 
 		Auto = 0,
-		Lazy = -1
+		Eager = 1
 	}
 	
 	public class OuterJoinLoader : Loader {
@@ -24,12 +27,29 @@ namespace NHibernate.Loader {
 		protected static readonly string[] NoStrings = new string[0];
 		protected static readonly ILoadable[] NoPersisters = new ILoadable[0];
 		protected ILoadable[] classPersisters;
+		protected LockMode[] lockModeArray;
+		//TODO: remove this field
 		protected string sql;
+		
+		protected SqlString sqlString;
 		protected string[] suffixes;
 		private Dialect.Dialect dialect;
 
+		
 		public OuterJoinLoader(Dialect.Dialect dialect) {
 			this.dialect = dialect;
+		}
+
+		/// <summary>
+		/// Override on subclasses to enable or suppress joining of some associations
+		/// </summary>
+		/// <param name="mappingDefault"></param>
+		/// <param name="path"></param>
+		/// <param name="table"></param>
+		/// <param name="foreignKeyColumns"></param>
+		/// <returns></returns>
+		protected virtual bool EnableJoinedFetch(bool mappingDefault, string path, string table, string[] foreignKeyColumns) {
+			return mappingDefault;
 		}
 
 		public sealed class OuterJoinableAssociation {
@@ -47,7 +67,7 @@ namespace NHibernate.Loader {
 		/// <returns></returns>
 		public IList WalkTree(ILoadable persister, string alias, ISessionFactoryImplementor session) {
 			IList associations = new ArrayList();
-			WalkTree(persister, alias, associations, new ArrayList(), session);
+			WalkClassTree(persister, alias, associations, new ArrayList(), String.Empty, session);
 			return associations;
 		}
 
@@ -58,7 +78,7 @@ namespace NHibernate.Loader {
 		/// <param name="alias"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected IList WalkTree(CollectionPersister persister, string alias, ISessionFactoryImplementor session) {
+		protected IList WalkCollectionTree(CollectionPersister persister, string alias, ISessionFactoryImplementor session) {
 			IList associations = new ArrayList();
 
 			if ( session.EnableJoinedFetch ) {
@@ -68,15 +88,97 @@ namespace NHibernate.Loader {
 					EntityType etype = (EntityType) type;
 					if ( AutoEager( persister.EnableJoinFetch, etype, session) ) {
 						string[] columns = StringHelper.Prefix( persister.ElementColumnNames, alias + StringHelper.Dot);
-						WalkTree(etype, columns, persister, associations, new ArrayList(), session);
+						WalkAssociationTree(etype, columns, persister, alias, associations, new ArrayList(),  String.Empty, session);
 					}
-				} else if (type.IsComponentType) {
-					WalkTree( (IAbstractComponentType) type, persister.ElementColumnNames, persister, alias, associations, new ArrayList(), session);
+				} 
+				else if (type.IsComponentType) {
+					WalkCompositeElementTree( (IAbstractComponentType) type, persister.ElementColumnNames, persister, alias, associations, new ArrayList(), String.Empty, session);
 				}
 			}
 
 			return associations;
 		}
+
+		/// <summary>
+		///  Add on association (one-to-one or many-to-one) to a list of associations be fetched by outerjoin (if necessary)
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="columns"></param>
+		/// <param name="persister"></param>
+		/// <param name="alias"></param>
+		/// <param name="associations"></param>
+		/// <param name="classPersisters"></param>
+		/// <param name="path"></param>
+		/// <param name="session"></param>
+		private void WalkAssociationTree(
+			EntityType type,
+			string[] columns,
+			object persister,
+			string alias,
+			IList associations,
+			IList classPersisters,
+			string path,
+			ISessionFactoryImplementor session) {
+
+			ILoadable subpersister = (ILoadable)session.GetPersister(type.PersistentClass);
+
+			// to avoid navigating back up bidirectional associations (and circularities) 
+			if(!classPersisters.Contains(subpersister)) {
+				OuterJoinableAssociation assoc = new OuterJoinableAssociation();
+				associations.Add(assoc);
+				classPersisters.Add(persister);
+				assoc.Subpersister = subpersister;
+				assoc.ForeignKeyColumns = columns;
+				string subalias = Alias(subpersister.ClassName, associations.Count);
+				assoc.Subalias = subalias;
+
+				WalkClassTree(subpersister, subalias, associations, classPersisters, path, session);
+			
+			}
+			
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="etype"></param>
+		/// <param name="persister"></param>
+		/// <param name="propertyNumber"></param>
+		/// <param name="alias"></param>
+		/// <param name="associations"></param>
+		/// <param name="classPersisters"></param>
+		/// <param name="path"></param>
+		/// <param name="session"></param>
+		private void WalkAssociationTree (
+			EntityType etype,
+			ILoadable persister,
+			int propertyNumber,
+			string alias,
+			IList associations,
+			IList classPersisters,
+			string path,
+			ISessionFactoryImplementor session) {
+
+			bool autoEager = AutoEager(persister.EnableJoinedFetch(propertyNumber), etype, session);
+			string[] columns;
+
+			if(etype.IsOneToOne) {
+				//TODO: NOTE: workaround for problem with 1-to-1 defined on a subclass "accidently" picking up an object
+				if(persister.IsDefinedOnSubclass(propertyNumber)) return;
+
+				columns = StringHelper.Prefix(
+					persister.IdentifierColumnNames, //The cast is safe because collections can't contain a 1-to-1
+					alias + StringHelper.Dot);
+			}
+			else {
+				columns = persister.ToColumns(alias, propertyNumber);
+			}
+            
+			string subpath = SubPath(path, persister.GetSubclassPropertyName(propertyNumber));
+			bool enable = EnableJoinedFetch(autoEager, subpath, persister.GetSubclassPropertyTableName(propertyNumber), persister.GetSubclassPropertyColumnNames(propertyNumber) );
+			if (enable) WalkAssociationTree(etype, columns, persister, alias, associations, classPersisters, subpath, session);
+		}
+
 
 		/// <summary>
 		/// For an entity class, add to a list of associations to be fetched by outerjoin
@@ -85,35 +187,43 @@ namespace NHibernate.Loader {
 		/// <param name="alias"></param>
 		/// <param name="associations"></param>
 		/// <param name="classPersisters"></param>
+		/// <param name="path"></param>
 		/// <param name="session"></param>
-		private void WalkTree(ILoadable persister, string alias, IList associations, IList classPersisters, ISessionFactoryImplementor session) {
+		private void WalkClassTree(ILoadable persister, string alias, IList associations, IList classPersisters, string path, ISessionFactoryImplementor session) {
 			if ( !session.EnableJoinedFetch ) return;
 
 			int n = persister.CountSubclassProperties();
 			for (int i=0; i<n; i++) {
 				IType type = persister.GetSubclassPropertyType(i);
 				if (type.IsEntityType) {
-					EntityType etype = (EntityType) type;
-					if (AutoEager ( persister.EnableJoinedFetch(i), etype, session)) {
-						
-						string[] columns;
-						if (etype.IsOneToOne) {
-
-							if ( persister.IsDefinedOnSubclass(i) ) continue;
-
-							columns = StringHelper.Prefix(
-								( (ILoadable) persister ).IdentifierColumnNames,
-								alias + StringHelper.Dot
-								);
-						} else {
-							columns = persister.ToColumns(alias, i);
-						}
-
-						WalkTree(etype, columns, persister, associations, classPersisters, session);
-					}
-				} else if ( type.IsComponentType ) {
+					WalkAssociationTree (
+						(EntityType)type,
+						persister,
+						i,
+						alias,
+						associations,
+						classPersisters,
+						path,
+						session
+						);
+					
+					
+				} 
+				else if ( type.IsComponentType ) {
+					string subpath = SubPath(path, persister.GetSubclassPropertyName(i) );
 					string[] columns = persister.GetSubclassPropertyColumnNames(i);
-					WalkTree( (IAbstractComponentType) type, columns, persister, alias, associations, classPersisters, session);
+					string[] aliasedColumns = persister.ToColumns(alias, i);
+
+					WalkComponentTree( 
+						(IAbstractComponentType) type, 
+						i, 
+						columns, 
+						aliasedColumns,
+						persister, 
+						alias, 
+						associations, 
+						classPersisters, 
+						subpath, session);
 				}
 			}
 		}
@@ -128,29 +238,114 @@ namespace NHibernate.Loader {
 		/// <param name="assocaitions"></param>
 		/// <param name="classPersisters"></param>
 		/// <param name="session"></param>
-		private void WalkTree(IAbstractComponentType act, string[] cols, object persister, string alias, IList associations, IList classPersisters, ISessionFactoryImplementor session) {
-			if (
-				!session.EnableJoinedFetch ||
-				persister is NormalizedEntityPersister
-				) return;
+		private void WalkComponentTree(
+			IAbstractComponentType act, 
+			int propertyNumber, 
+			string[] cols, 
+			string[] aliasedCols, 
+			ILoadable persister, 
+			string alias, 
+			IList associations, 
+			IList classPersisters, 
+			string path,
+			ISessionFactoryImplementor session) {
+
+			if (!session.EnableJoinedFetch ) return;
 
 			IType[] types = act.Subtypes;
+			string[] propertyNames = act.PropertyNames;
 			int begin = 0;
 			for (int i=0; i<types.Length; i++) {
 				int length = types[i].GetColumnSpan(session);
 				string[] range = ArrayHelper.Slice(cols, begin, length);
+				string[] aliasedRange = ArrayHelper.Slice(aliasedCols, begin, length);
+
 				if ( types[i].IsEntityType ) {
 					EntityType etype = (EntityType) types[i];
-					if ( AutoEager( act.EnableJoinedFetch(i), etype, session ) ) {
-						string[] columns = StringHelper.Prefix( range, alias + StringHelper.Dot);
-						WalkTree(etype, columns, persister, associations, classPersisters, session);
-					}
-				} else if ( types[i].IsComponentType ) {
-					WalkTree ( (IAbstractComponentType) types[i], range, persister, alias, associations, classPersisters, session);
+					
+					//TODO: workaround for problem with 1-to-1 defined on a subclass
+					if (etype.IsOneToOne) continue;
+					
+					string subpath = SubPath(path, propertyNames[i]);
+					bool autoEager = AutoEager(act.EnableJoinedFetch(i), etype, session);
+					//TODO: looks like I need to fix the persister class
+
+					bool enable = EnableJoinedFetch(autoEager, subpath, persister.GetSubclassPropertyTableName(propertyNumber), range);
+					
+					if(enable)
+						WalkAssociationTree(etype, aliasedRange, persister, alias, associations, classPersisters, subpath, session);
+
+				} 
+				else if ( types[i].IsComponentType ) {
+					string subpath = SubPath(path, propertyNames[i]);
+
+					WalkComponentTree ( (IAbstractComponentType) types[i], propertyNumber, range, aliasedRange, persister, alias, associations, classPersisters, subpath, session);
 				}
+
 				begin+=length;
 			}
 		}
+
+		/// <summary>
+		/// For a composite element, add to a list of associations to be fetched by outerjoin
+		/// </summary>
+		/// <param name="act"></param>
+		/// <param name="cols"></param>
+		/// <param name="persister"></param>
+		/// <param name="alias"></param>
+		/// <param name="associations"></param>
+		/// <param name="classPersisters"></param>
+		/// <param name="path"></param>
+		/// <param name="session"></param>
+		private void WalkCompositeElementTree (
+			IAbstractComponentType act,
+			string[] cols,
+			CollectionPersister persister,
+			string alias,
+			IList associations,
+			IList classPersisters,
+			string path,
+			ISessionFactoryImplementor session ) {
+		
+			if(!session.EnableJoinedFetch) return;
+
+			IType[] types = act.Subtypes;
+			string[] propertyNames = act.PropertyNames;
+			int begin = 0;
+
+			for(int i=0; i < types.Length; i++){
+				int length = types[i].GetColumnSpan(session);
+				string[] range = ArrayHelper.Slice(cols, begin, length);
+ 
+				if(types[i].IsEntityType) {
+					EntityType etype = (EntityType) types[i];
+					string subpath = SubPath(path, propertyNames[i]);
+					bool autoEager = AutoEager(act.EnableJoinedFetch(i), etype, session );
+					bool enable = EnableJoinedFetch(autoEager, subpath, persister.QualifiedTableName, range);
+
+					if(enable) {
+						string[] columns = StringHelper.Prefix(range, alias + StringHelper.Dot);
+						WalkAssociationTree(etype, columns, persister, alias, associations, classPersisters, subpath, session);
+					}
+				}
+				else if(types[i].IsComponentType) {
+					string subpath = SubPath(path, propertyNames[i]);
+					WalkCompositeElementTree(
+						(IAbstractComponentType) types[i],
+						range,
+						persister,
+						alias,
+						associations,
+						classPersisters,
+						subpath,
+						session);
+															
+				}
+				begin+=length;
+			}
+			
+		}
+
 
 		protected bool AutoEager(OuterJoinLoaderType config, EntityType type, ISessionFactoryImplementor session) {
 			if (config==OuterJoinLoaderType.Eager) return true;
@@ -159,25 +354,16 @@ namespace NHibernate.Loader {
 			return !persister.HasProxy || ( type.IsOneToOne && ((OneToOneType) type).IsNullable );
 		}
 
-		private void WalkTree(EntityType type, string[] columns, object persister, IList associations, IList classPersisters, ISessionFactoryImplementor session) {
-
-			ILoadable subpersister = (ILoadable) session.GetPersister( type.PersistentClass );
-
-			if ( !classPersisters.Contains(subpersister) ) {
-				OuterJoinableAssociation assoc = new OuterJoinableAssociation();
-				associations.Add(assoc);
-				classPersisters.Add(persister);
-				assoc.Subpersister = subpersister;
-				assoc.ForeignKeyColumns = columns;
-				string subalias = Alias( subpersister.ClassName, associations.Count );
-				assoc.Subalias = subalias;
-				WalkTree(subpersister, subalias, associations, classPersisters, session);
-			}
-		}
-
+		//TODO: remove this property
 		public override string SQLString {
 			get { return sql; }
 		}
+
+		public override SqlString SqlString {
+			get { return sqlString;}
+		}
+
+
 		public override ILoadable[] Persisters {
 			get { return classPersisters; } 
 		}
@@ -258,6 +444,25 @@ namespace NHibernate.Loader {
 					);
 			}
 			return outerjoin;
+		}
+
+		protected override LockMode[] GetLockModes(IDictionary lockModes){
+			return lockModeArray;
+		}
+
+		protected LockMode[] createLockModeArray(int length, LockMode lockMode) {
+			LockMode[] lmArray = new LockMode[length];
+			lmArray[0] = lockMode;
+			return lmArray;
+		}
+
+		private string SubPath(string path, string property) {
+			if(path==null || path.Length==0) {
+				return property;
+			}
+			else {
+				return path + StringHelper.Dot + property;
+			}
 		}
 		
 	}

@@ -1,10 +1,12 @@
 using System;
 using System.Text;
 using System.Collections;
+
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.Sql;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -17,55 +19,64 @@ namespace NHibernate.Loader {
 		private CollectionPersister collectionPersister;
 		private IType idType;
 		
-		public OneToManyLoader(CollectionPersister collPersister, ISessionFactoryImplementor session) : base ( session.Dialect ) {
+		public OneToManyLoader(CollectionPersister collPersister, ISessionFactoryImplementor factory) : base ( factory.Dialect ) {
 			collectionPersister = collPersister;
 			idType = collectionPersister.KeyType;
 
-			ILoadable persister = (ILoadable) session.GetPersister(
+			ILoadable persister = (ILoadable) factory.GetPersister(
 				((EntityType) collPersister.ElementType).PersistentClass);
 
 			string alias = Alias(collectionPersister.QualifiedTableName, 0);
 			string collAlias = persister.GetConcreteClassAlias(alias);
 
-			string whereString="";
-			if (collectionPersister.HasWhere) whereString = " and " + collectionPersister.GetSQLWhereString(collAlias);
+			SqlString whereSqlString = null;
 
-			IList associations = WalkTree(persister, alias, session);
+			if (collectionPersister.HasWhere) 
+				whereSqlString = new SqlString(collectionPersister.GetSQLWhereString(collAlias));
+				
+			IList associations = WalkTree(persister, alias, factory);
 
 			int joins=associations.Count;
 			suffixes = new string[joins+1];
-			for (int i=0; i<=joins; i++) suffixes[i] = (joins==0) ? StringHelper.EmptyString : i.ToString() + StringHelper.Underscore;
+			for (int i=0; i<=joins; i++) suffixes[i] = (joins==0) ? String.Empty : i.ToString() + StringHelper.Underscore;
 
 
 			JoinFragment ojf = OuterJoins(associations);
-			Select select = new Select()
-				.SetSelectClause(
-				collectionPersister.SelectClauseFragment(collAlias) +
-				(joins==0 ? StringHelper.EmptyString : "," + SelectString(associations) ) +
+
+			SqlSelectBuilder selectBuilder = new SqlSelectBuilder(factory);
+			
+			selectBuilder.SetSelectClause(collectionPersister.SelectClauseFragment(collAlias) +
+				(joins==0 ? String.Empty : "," + SelectString(associations) ) +
 				", " +
 				SelectString( persister, alias, suffixes[joins] )
-				)
-				.SetFromClause(
+				);
+
+
+			selectBuilder.SetFromClause(
 				persister.FromTableFragment(alias) +
 				persister.FromJoinFragment(alias, true, true)
-				)
-				.SetWhereClause(
-				new ConditionalFragment().SetTableAlias(collAlias)
-				.SetCondition( collectionPersister.KeyColumnNames, "?" )
-				.ToFragmentString()
-				+ whereString
-				)
-				.SetOuterJoins(
+				);
+
+			selectBuilder.SetWhereClause(collAlias, collectionPersister.KeyColumnNames, collectionPersister.KeyType);
+			if(collectionPersister.HasWhere) selectBuilder.AddWhereClause(whereSqlString);
+
+			selectBuilder.SetOuterJoins(
 				ojf.ToFromFragmentString,
 				ojf.ToWhereFragmentString +
 				persister.WhereJoinFragment(alias, true, true)
 				);
-			if (collectionPersister.HasOrdering) select.SetOrderByClause( collectionPersister.GetSQLOrderByString(collAlias) );
-			sql = select.ToStatementString();
+
+			if(collectionPersister.HasOrdering) selectBuilder.SetOrderByClause( collectionPersister.GetSQLOrderByString(collAlias) );
+
+			this.sqlString = selectBuilder.ToSqlString();
+
 
 			classPersisters = new ILoadable[joins+1];
 			for (int i=0; i<joins; i++) classPersisters[i] = ((OuterJoinableAssociation) associations[i]).Subpersister;
 			classPersisters[joins] = persister;
+			
+			lockModeArray = createLockModeArray(joins+1, LockMode.None);
+			PostInstantiate();
 		}
 
 		protected override CollectionPersister CollectionPersister {

@@ -3,11 +3,13 @@ using System.Collections;
 using System.Data;
 using System.Text;
 
+using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Expression;
-using NHibernate.Type;
 using NHibernate.Impl;
 using NHibernate.Persister;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Loader {
 	/// <summary>
@@ -15,50 +17,44 @@ namespace NHibernate.Loader {
 	/// </summary>
 	public class CriteriaLoader : AbstractEntityLoader {
 		
-		private CriteriaImpl criteria;
-		//private static readonly IType[] NoTypes = new IType[0];
-
-		public CriteriaLoader(ILoadable persister, ISessionFactoryImplementor factory, CriteriaImpl criteria) : base(persister, factory) {
+		private ICriteria criteria;
+		
+		public CriteriaLoader(ILoadable persister, ISessionFactoryImplementor factory, ICriteria criteria) : base(persister, factory) {
 
 			this.criteria = criteria;
-			StringBuilder condition = new StringBuilder(32);
 			
 			IEnumerator iter = criteria.IterateExpressions();
-
-			//--- PORT NOTE ---
-			//This block would be better with IIterator.
-
-			if ( !iter.MoveNext() ) condition.Append(" 1=1"); //TODO: fix this ugliness
-			iter.Reset();
-			while ( iter.MoveNext() ) {
-				Expression.Expression expr = (Expression.Expression) iter.Current;
-
-				condition.Append( expr.ToSqlString(factory, criteria.PersistentClass, alias) );
-
-				condition.Append(" and ");
-
-			}
-			condition.Remove(condition.Length-5,5); //remove last " and "
 			
-			iter = criteria.IterateOrderings(); 
-			if ( !iter.MoveNext() ) condition.Append(" order by "); 
-			iter.Reset();
-			while ( iter.MoveNext() ) { 
-				Order ord = (Order) iter.Current; 
-				condition.Append( ord.ToSqlString(factory, criteria.PersistentClass, alias) ); 
-				condition.Append(", ");
-			} 
-			condition.Remove(condition.Length-2,2); //remove last ", "
-			//---
+			StringBuilder orderByBuilder = new StringBuilder(60);
 
-			RenderStatement( condition.ToString(), factory );
+			bool orderByNeeded = true;
+			bool commaNeeded = false;
+			iter = criteria.IterateOrderings(); 
+			
+			while ( iter.MoveNext() ) { 
+				if(orderByNeeded) orderByBuilder.Append(" ORDER BY ");//condition.Append(" order by ");
+				orderByNeeded = false;
+
+				Order ord = (Order) iter.Current; 
+				orderByBuilder.Append(ord.ToStringForSql(factory, criteria.PersistentClass, alias));
+
+				if(commaNeeded) orderByBuilder.Append(StringHelper.CommaSpace); //condition.Append(", ");
+				commaNeeded = true;
+
+			} 
+
+			//RenderStatement(criteria.Expression.ToSqlFragment(factory, criteria.PersistentClass, alias), orderByBuilder.ToString(), factory);
+			RenderStatement(criteria.Expression.ToSqlString(factory, criteria.PersistentClass, alias), orderByBuilder.ToString(), factory);
+			
+			PostInstantiate();
+			
 		}
 	
 		public IList List(ISessionImplementor session) {
 			ArrayList values = new ArrayList();
 			ArrayList types = new ArrayList();
 			IEnumerator iter = criteria.IterateExpressions();
-			while ( iter.MoveNext() ) { //is the first lost?
+			while ( iter.MoveNext() ) { 
 				Expression.Expression expr = (Expression.Expression) iter.Current;
 				TypedValue[] tv = expr.GetTypedValues( session.Factory, criteria.PersistentClass );
 				for ( int i=0; i<tv.Length; i++ ) {
@@ -67,14 +63,14 @@ namespace NHibernate.Loader {
 				}
 			}
 			object[] valueArray = values.ToArray();
-			IType[] typeArray = (IType[]) types.ToArray(typeof(IType[]));
+			IType[] typeArray = (IType[]) types.ToArray(typeof(IType));
 		
 			RowSelection selection = new RowSelection();
 			selection.FirstRow = criteria.FirstResult;
 			selection.MaxRows = criteria.MaxResults;
 			selection.Timeout = criteria.Timeout;
 		
-			return Find(session, valueArray, typeArray, true, selection, null);
+			return Find(session, valueArray, typeArray, true, selection, null, null);
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IDataReader rs, ISessionImplementor session) {
