@@ -1,9 +1,8 @@
 using System;
 using System.Text;
 
-
-
-namespace NHibernate.SqlCommand {
+namespace NHibernate.SqlCommand 
+{
 
 	/// <summary>
 	/// This is a non-modifiable Sql statement that is ready to be prepared 
@@ -12,22 +11,35 @@ namespace NHibernate.SqlCommand {
 	/// If you need to modify this object pass it to a <c>SqlStringBuilder</c> and
 	/// get a new object back from it.
 	/// </summary>
-	public class SqlString : ICloneable {
+	public class SqlString : ICloneable 
+	{
 
 		readonly object[] sqlParts;
 		
-		public SqlString(string sqlPart) : this(new object[] {sqlPart}) {
+		public SqlString(string sqlPart) : this(new object[] {sqlPart}) 
+		{
 		}
 
-		public SqlString(object[] sqlParts)	{
+		public SqlString(object[] sqlParts)	
+		{
 			this.sqlParts = sqlParts;
 		}
 
-		public object[] SqlParts {
+		public object[] SqlParts 
+		{
 			get { return sqlParts;}
 		}
 
-		// this method treats this as immutable
+		/// <summary>
+		/// Appends the SqlString parameter to the end of the current SqlString to create a 
+		/// new SqlString object.
+		/// </summary>
+		/// <param name="rhs">The SqlString to append.</param>
+		/// <returns>A new SqlString object.</returns>
+		/// <remarks>
+		/// A SqlString object is immutable so this returns a new SqlString.  If multiple Appends 
+		/// are called it is better to use the SqlStringBuilder.
+		/// </remarks>
 		public SqlString Append(SqlString rhs)
 		{
 		    object[] temp = new object[rhs.SqlParts.Length + sqlParts.Length];
@@ -46,9 +58,11 @@ namespace NHibernate.SqlCommand {
 		/// wants our parameters formatted.
 		/// </summary>
 		/// <returns>A Provider nuetral version of the CommandText</returns>
-		public override string ToString() {
+		public override string ToString() 
+		{
 			StringBuilder builder = new StringBuilder(sqlParts.Length * 15);
-			foreach(object part in sqlParts) {
+			foreach(object part in sqlParts) 
+			{
 				builder.Append(part.ToString());
 			}
 
@@ -62,13 +76,15 @@ namespace NHibernate.SqlCommand {
 			object[] clonedParts = new object[sqlParts.Length];
 			Parameter param;
 
-			for(int i = 0; i < sqlParts.Length; i++) {
-				
+			for(int i = 0; i < sqlParts.Length; i++) 
+			{				
 				param = sqlParts[i] as Parameter;
-				if(param!=null) {
+				if(param!=null) 
+				{
 					clonedParts[i] = param.Clone();
 				}
-				else {
+				else 
+				{
 					clonedParts[i] = (string)sqlParts[i];
 				}
 			}
@@ -76,7 +92,8 @@ namespace NHibernate.SqlCommand {
 			return new SqlString(clonedParts);
 		}
 
-		object ICloneable.Clone() {
+		object ICloneable.Clone() 
+		{
 			return Clone();
 		}
 
