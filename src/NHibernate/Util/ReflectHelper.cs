@@ -144,17 +144,6 @@ namespace NHibernate.Util {
 			return System.Type.GetType(name, true);
 		}
 
-		/// <summary>
-		/// Returns a reference to the Type.
-		/// </summary>
-		/// <param name="name">The name of the class.</param>
-		/// <param name="assemblyName">The name of the Assembly to find the class in.</param>
-		/// <returns>The Type for the Class.</returns>
-		public static System.Type ClassForName(string name, string assemblyName) {
-			string className = assemblyName==null ? name: name + ", " + assemblyName;
-			return System.Type.GetType(className, true);
-		}
-
 		public static object GetConstantValue(string name) {
 			System.Type clazz;
 			try {

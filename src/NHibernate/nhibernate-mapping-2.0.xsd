@@ -85,11 +85,6 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
-			<xs:attribute name='assemblyName'>
-				<xs:annotation>
-					<xs:documentation>Specifies the name of the Assembly to find the class in.</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
 			<xs:attribute name='table'>
 				<xs:annotation>
 					<xs:documentation>default: unqualified classname </xs:documentation>
@@ -132,11 +127,6 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name='persister' />
-			<xs:attribute name='persisterAssemblyName'>
-				<xs:annotation>
-					<xs:documentation>Specifies the name of the Assembly to find the custom persister class in.</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
 			<xs:attribute name='dynamic-update' default='false'>
 				<xs:simpleType>
 					<xs:restriction base='xs:string'>
@@ -197,11 +187,6 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='class' />
-			<xs:attribute name='assemblyName'>
-				<xs:annotation>
-					<xs:documentation>Specifies the name of the Assembly to find the composite-id class in.</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
 			<xs:attribute name='name' />
 			<xs:attribute name='unsaved-value' default='none'>
 				<xs:simpleType>
@@ -301,11 +286,6 @@
 				<xs:element ref='subclass' minOccurs='0' maxOccurs='unbounded' />
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
-			<xs:attribute name='assemblyName'>
-				<xs:annotation>
-					<xs:documentation>Specifies the name of the Assembly to find the subclass in.</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
 			<xs:attribute name='proxy'>
 				<xs:annotation>
 					<xs:documentation>default: no proxy interface </xs:documentation>
@@ -362,11 +342,6 @@
 				<xs:element ref='joined-subclass' minOccurs='0' maxOccurs='unbounded' />
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
-			<xs:attribute name='assemblyName'>
-				<xs:annotation>
-					<xs:documentation>Specifies the name of the Assembly to find the joined subclass in.</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
 			<xs:attribute name='proxy'>
 				<xs:annotation>
 					<xs:documentation>default: no proxy interface </xs:documentation>
@@ -621,7 +596,6 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='class' />
-			<xs:attribute name='assemblyName' />
 			<xs:attribute name='name' use='required' />
 			<xs:attribute name='update' default='true'>
 				<xs:simpleType>
@@ -735,14 +709,6 @@
 				<xs:element ref='param' minOccurs='0' maxOccurs='unbounded' />
 			</xs:sequence>
 			<xs:attribute name='class' use='required' />
-			<xs:attribute name='assemblyName'>
-				<xs:annotation>
-					<xs:documentation>
-						Specifies the name of the Assembly to find the generator class in.  
-						If it is a native NHibernate genertor then no value is needed.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name='idbag'>
@@ -921,7 +887,6 @@
 				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
 			</xs:sequence>
 			<xs:attribute name='class' use='required' />
-			<xs:attribute name='assemblyName' use='required' />
 			<xs:attribute name='column' />
 			<xs:attribute name='outer-join' default='auto'>
 				<xs:simpleType>
@@ -942,7 +907,6 @@
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
 			<xs:attribute name='class' />
-			<xs:attribute name='assemblyName' />
 			<xs:attribute name='column' />
 			<xs:attribute name='not-null' default='false'>
 				<xs:simpleType>
@@ -1082,7 +1046,6 @@
 	<xs:element name='one-to-many'>
 		<xs:complexType>
 			<xs:attribute name='class' use='required' />
-			<xs:attribute name='assemblyName' use='required' />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name='one-to-one'>
@@ -1092,7 +1055,6 @@
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
 			<xs:attribute name='class' />
-			<xs:attribute name='assemblyName' />
 			<xs:attribute name='cascade'>
 				<xs:simpleType>
 					<xs:restriction base='xs:string'>

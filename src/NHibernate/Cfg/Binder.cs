@@ -19,11 +19,10 @@ namespace NHibernate.Cfg {
 		public static void BindClass(XmlNode node, PersistentClass model, Mappings mapping) {
 			
 			string className = node.Attributes["name"] == null ? null : node.Attributes["name"].Value;
-			string assemblyName = node.Attributes["assemblyName"] == null ? null : node.Attributes["assemblyName"].Value;
-
+			
 			// class
 			try {
-				model.PersistentClazz = ReflectHelper.ClassForName(className, assemblyName);
+				model.PersistentClazz = ReflectHelper.ClassForName(className);
 			} 
 			catch ( Exception cnfe ) {
 				throw new MappingException( "persistent class not found", cnfe);
@@ -387,12 +386,13 @@ namespace NHibernate.Cfg {
 			InitOuterJoinFetchSettings(node, model);
 
 			XmlAttribute typeNode = node.Attributes["class"];
-			XmlAttribute assemblyNode = node.Attributes["assemblyName"];
-			if ( typeNode!=null ) {
+			
+			if ( typeNode!=null ) 
+			{
 				try {
 					model.Type = 
-						TypeFactory.ManyToOne( ReflectHelper.ClassForName( typeNode.Value, assemblyNode.Value ) );
-				} catch (Exception) {
+						TypeFactory.ManyToOne( ReflectHelper.ClassForName( typeNode.Value)); 
+				} catch (Exception e) {
 					throw new MappingException("could not find class: " + typeNode.Value);
 				}
 			}
@@ -422,11 +422,13 @@ namespace NHibernate.Cfg {
 			model.ForeignKeyType = (constrained ? ForeignKeyType.ForeignKeyFromParent : ForeignKeyType.ForeignKeyToParent);
 
 			XmlAttribute typeNode = node.Attributes["class"];			
-			XmlAttribute assemblyNode = node.Attributes["assemblyName"];
-			if (typeNode!=null) {
+			
+			if (typeNode!=null) 
+			{
 				try {
 					model.Type = 
-						TypeFactory.OneToOne( ReflectHelper.ClassForName( typeNode.Value, assemblyNode.Value), model.ForeignKeyType);
+						TypeFactory.OneToOne( ReflectHelper.ClassForName( typeNode.Value ), model.ForeignKeyType);
+					
 				} catch (Exception) {
 					throw new MappingException("could not find class: " + typeNode.Value);
 				}
@@ -434,10 +436,13 @@ namespace NHibernate.Cfg {
 		}
 
 		public static void BindOneToMany(XmlNode node, OneToMany model) {
-			try {
+			try 
+			{
 				model.Type = (EntityType) NHibernate.Association( 
-					ReflectHelper.ClassForName( node.Attributes["class"].Value, node.Attributes["assemblyName"].Value ) );
-			} catch (Exception e) {
+					ReflectHelper.ClassForName( node.Attributes["class"].Value) );
+			} 
+			catch (Exception e) 
+			{
 				throw new MappingException("associated class not found", e);
 			}
 		}
@@ -486,9 +491,13 @@ namespace NHibernate.Cfg {
 						case "one-to-many":
 						case "many-to-many":
 						case "composite-element":
-							try {
-								model.ElementClass = ReflectHelper.ClassForName( subnode.Attributes["class"].Value, subnode.Attributes["assemblyName"].Value );
-							} catch (Exception e) {
+							try 
+							{
+								
+								model.ElementClass = ReflectHelper.ClassForName( subnode.Attributes["class"].Value);
+							} 
+							catch (Exception e) 
+							{
 								throw new MappingException(e);
 							}
 							break;
@@ -497,37 +506,40 @@ namespace NHibernate.Cfg {
 			}
 		}
 
-		public static void BindComponent(XmlNode node, Component model, System.Type reflectedClass, string path, bool isNullable, Mappings mappings) {
+		public static void BindComponent(XmlNode node, Component model, System.Type reflectedClass, string path, bool isNullable, Mappings mappings) 
+		{
 
 			XmlAttribute classNode = node.Attributes["class"];
 			XmlAttribute dynaclassNode = node.Attributes["dynaclass"];
-			XmlAttribute assemblyNode = node.Attributes["assemblyName"];
-
+			
 			string className;
-			string assemblyName;
-
-			if (dynaclassNode!=null) {
+			
+			if (dynaclassNode!=null) 
+			{
 				className = dynaclassNode.Value;
 				model.IsEmbedded = false;
 			} 
-			else if (classNode!=null) {
+			else if (classNode!=null) 
+			{
 				className = classNode.Value;
-				assemblyName = assemblyNode.Value;
-
-				try {
-					model.ComponentClass = ReflectHelper.ClassForName(className, assemblyName);
+				
+				try 
+				{
+					model.ComponentClass = ReflectHelper.ClassForName(className); 
 				} 
 				catch (Exception e) {
 					throw new MappingException("component class not found", e);
 				}
 				model.IsEmbedded = false;
 			} 
-			else if (reflectedClass!=null) {
+			else if (reflectedClass!=null) 
+			{
 				model.ComponentClass = reflectedClass;
 				className = model.ComponentClass.Name;
 				model.IsEmbedded = false;
 			} 
-			else {
+			else 
+			{
 				// an "embedded" component (ids only)
 				model.ComponentClass = model.Owner.PersistentClazz;
 				className = model.Owner.Name;
