@@ -1,5 +1,8 @@
 using System;
 
+using NHibernate.Engine;
+using NHibernate.Type;
+
 namespace NHibernate.SqlCommand
 {
 	public enum JoinType 
@@ -22,14 +25,10 @@ namespace NHibernate.SqlCommand
 		public abstract SqlString ToFromFragmentString { get; }
 		public abstract SqlString ToWhereFragmentString { get; }
 		public abstract void AddCondition(string alias, string[] columns, string condition);
+		public abstract void AddCondition(string alias, string[] columns, string condition, IType conditionType, ISessionFactoryImplementor factory);
 		public abstract void AddCondition(string alias, string[] fkColumns, string[] pkColumns);
 		public abstract void AddCondition(string condition);
-		
-		public virtual void AddCondition(SqlString condition)
-		{
-			//TODO: hack with ToString()
-			AddCondition( condition.ToString() );
-		}
+		public abstract void AddCondition(SqlString condition);
 
 		public abstract JoinFragment Copy();
 

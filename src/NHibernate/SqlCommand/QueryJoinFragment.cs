@@ -1,6 +1,8 @@
 using System;
 
 using NHibernate.Dialect;
+using NHibernate.Engine;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -78,6 +80,16 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
+		public override void AddCondition(string alias, string[] columns, string condition, IType conditionType, ISessionFactoryImplementor factory)
+		{
+			Parameter[] parameters = Parameter.GenerateParameters(factory, alias, columns, conditionType);
+			
+			for( int i=0; i<columns.Length; i++ ) 
+			{
+				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[i] + condition );
+				afterWhere.Add( parameters[i] );
+			}
+		}
 
 		public override void AddCrossJoin(string tableName, string alias) 
 		{
@@ -108,6 +120,25 @@ namespace NHibernate.SqlCommand
 				afterWhere.Add(condition);
 			}
 		}
+
+		
+		public override void AddCondition(SqlString condition)
+		{
+			//TODO: this seems hackish
+			if(
+				afterFrom.ToSqlString().ToString().IndexOf( condition.Trim().ToString() ) < 0 &&
+				afterWhere.ToSqlString().ToString().IndexOf( condition.Trim().ToString() ) < 0 ) 
+			{
+				if( !condition.StartsWith(" and ") ) 
+				{
+					afterWhere.Add(" and ");
+				}
+
+				afterWhere.Add(condition);
+			}
+
+		}
+
 
 		
 	}
