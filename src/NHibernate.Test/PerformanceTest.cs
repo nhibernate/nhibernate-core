@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Data;
 
-using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Driver;
 using NHibernate.DomainModel;
@@ -45,6 +43,7 @@ namespace NHibernate.Test
 	{
 		string driverClass = null;
 		IDriver driver = null;
+		bool prepareSql;
 
 		[SetUp]
 		public void SetUp() 
@@ -58,6 +57,13 @@ namespace NHibernate.Test
 			}
 
 			driver = (IDriver)Activator.CreateInstance(System.Type.GetType(driverClass));
+
+			string prepare = (string)cfg.Properties[ Cfg.Environment.PrepareSql ] as string;
+			if( prepare=="true" )
+			{
+				prepareSql = true;
+			}
+
 		}
 
 		[Test]
@@ -130,7 +136,7 @@ namespace NHibernate.Test
 			}
 			System.Console.Out.Write("NHibernate: " + hiber + "ms / Direct ADO.NET: " + adonet + "ms = Ratio: " + (((float)hiber/adonet)).ToString() );
 			
-			cp.Close();
+			cp.Dispose();
 			System.GC.Collect();
 		}
 
@@ -204,10 +210,13 @@ namespace NHibernate.Test
 			select.Transaction = t;
 			update.Transaction = t;
 
-			insert.Prepare();
-			delete.Prepare();
-			select.Prepare();
-			update.Prepare();
+			if( prepareSql ) 
+			{
+				insert.Prepare();
+				delete.Prepare();
+				select.Prepare();
+				update.Prepare();
+			}
 
 			for(int i = 0; i < N; i++) 
 			{
