@@ -15,5 +15,16 @@ namespace NHibernate.Proxy {
 			}
 		}
 
+		public static HibernateProxy GetHibernateProxy(object obj) {
+			//TODO: reflect into the object, and pull out the real proxy
+			return null;
+		}
+
+
+		public static bool IsProxy(object obj) {
+			//TODO: this is obviously very fragile...is there a better way?
+			return obj.GetType().FullName.Equals("System.Runtime.Remoting.Proxies.__TransparentProxy");
+		}
+
 	}
 }

@@ -337,8 +337,8 @@ namespace NHibernate.Impl {
 		}
 
 		public LockMode GetCurrentLockMode(object obj) {
-			if ( obj is HibernateProxy ) {
-				obj = ((HibernateProxy) obj).GetImplementation(this);
+			if ( HibernateProxyHelper.IsProxy(obj) ) {
+				obj = (HibernateProxyHelper.GetHibernateProxy(obj)).GetImplementation(this);
 				if (obj==null) return LockMode.None;
 			}
 			EntityEntry e = GetEntry(obj);
@@ -588,15 +588,15 @@ namespace NHibernate.Impl {
 		}
 
 		private bool IsTransient(object obj, bool earlyInsert, object self) {
-			if ( obj is HibernateProxy ) {
+			if ( HibernateProxyHelper.IsProxy(obj) ) {
 				// if its an uninitialized proxy, it can't be transietn
-				if ( ((HibernateProxy)obj).GetImplementation(this)==null ) {
+				if ( (HibernateProxyHelper.GetHibernateProxy(obj)).GetImplementation(this)==null ) {
 					return false;
 					// ie we never have to null out a reference to an uninitialized proxy
 				} else {
 					try {
 						//unwrap it
-						obj = ((HibernateProxy)obj).GetImplementation(this);
+						obj = (HibernateProxyHelper.GetHibernateProxy(obj)).GetImplementation(this);
 					} catch (HibernateException he) {
 						//does not occur
 						throw new AssertionFailure("Unexpected HibernateException occurred in IsTransient()", he);
@@ -823,8 +823,8 @@ namespace NHibernate.Impl {
 			} else if ( type.IsEntityType ) {
 				if ( value!=null ) {
 					IClassPersister persister = GetPersister( ( (EntityType) type).PersistentClass );
-					if ( persister.HasProxy && ( value is HibernateProxy) ) {
-						((HibernateProxy)value).Session = this;
+					if ( persister.HasProxy && ( HibernateProxyHelper.IsProxy(value) ) ) {
+						(HibernateProxyHelper.GetHibernateProxy(value)).Session = this;
 					}
 				}
 			} else if ( type.IsComponentType ) {
@@ -1764,8 +1764,8 @@ namespace NHibernate.Impl {
 		}
 
 		public object GetIdentifier(object obj) {
-			if (obj is HibernateProxy) {
-				return ((HibernateProxy) obj).Identifier;
+			if (HibernateProxyHelper.IsProxy(obj)) {
+				return (HibernateProxyHelper.GetHibernateProxy(obj)).Identifier;
 			} else {
 				EntityEntry entry = GetEntry(obj);
 				if (entry==null) throw new TransientObjectException("the instance was not associated with this session");
@@ -1774,8 +1774,8 @@ namespace NHibernate.Impl {
 		}
 
 		public object GetEntityIdentifier(object obj) {
-			if ( obj is HibernateProxy ) {
-				return ((HibernateProxy)obj).Identifier;
+			if (HibernateProxyHelper.IsProxy(obj)) {
+				return (HibernateProxyHelper.GetHibernateProxy(obj)).Identifier;
 			} else {
 				EntityEntry entry = GetEntry(obj);
 				return (entry!=null) ? entry.id : null;
@@ -1785,8 +1785,8 @@ namespace NHibernate.Impl {
 		public object GetEntityIdentifierIfNotUnsaved(object obj) {
 			if (obj==null) return null;
 
-			if (obj is HibernateProxy) {
-				return ((HibernateProxy)obj).Identifier;
+			if (HibernateProxyHelper.IsProxy(obj)) {
+				return (HibernateProxyHelper.GetHibernateProxy(obj)).Identifier;
 			} else {
 				EntityEntry entry = GetEntry(obj);
 				if ( entry!=null) return entry.id;
