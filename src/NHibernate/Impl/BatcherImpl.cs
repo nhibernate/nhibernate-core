@@ -233,7 +233,7 @@ namespace NHibernate.Impl
 			CheckReaders();
 
 			Prepare( cmd );
-			;
+			
 
 			IDataReader reader;
 			if( factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders == false )

@@ -9,7 +9,8 @@ namespace NHibernate.Id
 	/// </summary>
 	public class CounterGenerator : IIdentifierGenerator
 	{
-		private static short counter = ( short ) 0;
+		// (short)0 by default
+		private static short counter;
 
 		/// <summary></summary>
 		protected short Count

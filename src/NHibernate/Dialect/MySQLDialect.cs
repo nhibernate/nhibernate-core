@@ -139,14 +139,8 @@ namespace NHibernate.Dialect
 		/// <returns></returns>
 		public override SqlString GetLimitString( SqlString querySqlString )
 		{
-			Parameter p1 = new Parameter();
-			Parameter p2 = new Parameter();
-
-			p1.Name = "p1";
-			p1.SqlType = new Int32SqlType();
-
-			p2.Name = "p2";
-			p2.SqlType = new Int32SqlType();
+			Parameter p1 = new Parameter( "p1", new Int32SqlType() );
+			Parameter p2 = new Parameter( "p2", new Int32SqlType() );
 
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			pagingBuilder.Add( querySqlString );

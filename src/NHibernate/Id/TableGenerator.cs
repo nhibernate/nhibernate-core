@@ -81,13 +81,8 @@ namespace NHibernate.Id
 			}
 
 			// build the sql string for the Update since it uses parameters
-			Parameter setParam = new Parameter();
-			setParam.Name = columnName;
-			setParam.SqlType = new Int32SqlType();
-
-			Parameter whereParam = new Parameter();
-			whereParam.Name = columnName;
-			whereParam.SqlType = new Int32SqlType();
+			Parameter setParam = new Parameter( columnName, new Int32SqlType() );
+			Parameter whereParam = new Parameter( columnName, new Int32SqlType() );
 
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add( "update " + tableName + " set " )

@@ -352,8 +352,7 @@ namespace NHibernate.SqlCommand
 
 				if( token.Equals( StringHelper.SqlParameter ) )
 				{
-					Parameter param = new Parameter();
-					param.Name = "placholder";
+					Parameter param = new Parameter( "placeholder" );
 					builder.Add( param );
 				}
 				else

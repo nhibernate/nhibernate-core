@@ -8,35 +8,83 @@ using NHibernate.Type;
 namespace NHibernate.SqlCommand
 {
 	/// <summary>
-	/// A lightweight object to hold what later will be converted into an IDbParameter
+	/// An immutable Parameter that later will be converted into an IDbParameter
 	/// for an IDbCommand.
 	/// </summary>
 	[Serializable]
 	public class Parameter : ICloneable
 	{
-		private string tableAlias;
-		private string name;
+		private string _tableAlias;
+		private string _name;
 		private SqlType _sqlType;
 
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes a new instance of <see cref="Parameter"/> class.
+		/// </summary>
+		/// <param name="name">The name of the parameter.</param>
+		public Parameter(string name)
+			: this( name, null, null )
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of <see cref="Parameter"/> class.
+		/// </summary>
+		/// <param name="name">The name of the parameter.</param>
+		/// <param name="sqlType">The <see cref="SqlType"/> to create the parameter for.</param>
+		public Parameter(string name, SqlType sqlType)
+			: this( name, null, sqlType )
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of <see cref="Parameter"/> class.
+		/// </summary>
+		/// <param name="name">The name of the parameter.</param>
+		/// <param name="tableAlias">The Alias to use for the table.</param>
+		/// <param name="sqlType">The <see cref="SqlType"/> to create the parameter for.</param>
+		public Parameter(string name, string tableAlias, SqlType sqlType)
+		{
+			_name = name;
+			_tableAlias = tableAlias;
+			_sqlType = sqlType;
+		}
+
+		/// <summary>
+		/// Gets the name of the Parameter.
+		/// </summary>
+		/// <value>The name of the Parameter.</value>
 		public string Name
 		{
-			get { return name; }
-			set { this.name = value; }
+			get { return _name; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the alias for the table in the Sql statement.
+		/// </summary>
+		/// <value>
+		/// The alias for the table in the Sql statement.
+		/// </value>
+		/// <remarks>
+		/// TODO: Determine if this is even needed - it is not used anywhere
+		/// and is just extra junk.
+		/// </remarks>
 		public string TableAlias
 		{
-			get { return tableAlias; }
-			set { this.tableAlias = value; }
+			get { return _tableAlias; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="SqlType"/> that defines the specifics of 
+		/// the IDbDataParameter.
+		/// </summary>
+		/// <value>
+		/// The <see cref="SqlType"/> that defines the specifics of 
+		/// the IDbDataParameter.
+		/// </value>
 		public SqlType SqlType
 		{
 			get { return _sqlType; }
-			set { _sqlType = value; }
 		}
 
 
@@ -46,7 +94,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">The names of the Columns that compose the IType</param>
 		/// <param name="type">The IType to turn into Parameters</param>
 		/// <param name="factory"></param>
-		/// <returns>An Array of IParameter objects</returns>
+		/// <returns>An Array of <see cref="Parameter"/> objects</returns>
 		public static Parameter[ ] GenerateParameters( ISessionFactoryImplementor factory, string[ ] columnNames, IType type )
 		{
 			return Parameter.GenerateParameters( factory, null, columnNames, type );
@@ -60,7 +108,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="tableAlias">The Alias for the Table.</param>
 		/// <param name="columnNames">The names of the Columns that compose the IType</param>
 		/// <param name="type">The IType to turn into Parameters</param>
-		/// <returns>An Array of IParameter objects</returns>
+		/// <returns>An Array of <see cref="Parameter"/> objects</returns>
 		public static Parameter[ ] GenerateParameters( ISessionFactoryImplementor factory, string tableAlias, string[ ] columnNames, IType type )
 		{
 			SqlType[ ] sqlTypes = type.SqlTypes( factory );
@@ -71,28 +119,19 @@ namespace NHibernate.SqlCommand
 			{
 				if( sqlTypes[ i ].LengthDefined )
 				{
-					ParameterLength param = new ParameterLength();
-					param.Length = sqlTypes[ i ].Length;
+					ParameterLength param = new ParameterLength( columnNames[i], tableAlias, sqlTypes[i] );
 					parameters[ i ] = param;
 				}
 				else if( sqlTypes[ i ].PrecisionDefined )
 				{
-					ParameterPrecisionScale param = new ParameterPrecisionScale();
-					param.Precision = sqlTypes[ i ].Precision;
-					param.Scale = sqlTypes[ i ].Scale;
+					ParameterPrecisionScale param = new ParameterPrecisionScale( columnNames[i], tableAlias, sqlTypes[i] );
 					parameters[ i ] = param;
 				}
 				else
 				{
-					parameters[ i ] = new Parameter();
+					parameters[ i ] = new Parameter( columnNames[i], tableAlias, sqlTypes[i] );
 				}
-
-				parameters[ i ].Name = columnNames[ i ];
-				parameters[ i ].TableAlias = tableAlias;
-				parameters[ i ].SqlType = sqlTypes[ i ];
-
 			}
-
 
 			return parameters;
 		}
@@ -100,10 +139,17 @@ namespace NHibernate.SqlCommand
 		#region object Members
 
 		/// <summary>
-		/// 
+		/// Determines wether this instance and the specified object 
+		/// are the same Type and have the same values.
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+		/// <param name="obj">An object to compare to this instance.</param>
+		/// <returns>
+		/// <c>true</c> if the object is a Parameter (not a subclass) and has the
+		/// same values.
+		/// </returns>
+		/// <remarks>
+		/// Each subclass needs to implement their own <c>Equals</c>. 
+		/// </remarks>
 		public override bool Equals( object obj )
 		{
 			Parameter rhs;
@@ -120,9 +166,38 @@ namespace NHibernate.SqlCommand
 			{
 				return false;
 			}
-
+		
 			//Step 3: Check each important field
 
+			// verify the Parameter is actually a Parameter, and not a ParameterLength
+			// or ParameterPrecisionScale - this ensures that rhs.Equals(lhs) and 
+			// lhs.Equals(rhs) always returns the same result.
+			return this.Equals( rhs, true );
+		}
+
+		/// <summary>
+		/// Determines if this instance and the specified object have the 
+		/// same values.  If <c>isTypeSensitive==true</c> then <c>rhs</c>
+		/// has to be a <see cref="Parameter"/> and can not be a subclass.
+		/// </summary>
+		/// <param name="rhs">The <see cref="Parameter"/> to compare to this instance.</param>
+		/// <param name="isTypeSensitive">
+		/// <c>true</c> if <c>rhs</c> has to be a <see cref="Parameter"/> and not a subclass,
+		/// <c>false</c> if <c>rhs</c> can be a subclass of <see cref="Parameter"/>.</param>
+		/// <returns>
+		/// <c>true</c> if the properties in <see cref="Parameter"/> are all the same.
+		/// </returns>
+		protected bool Equals(Parameter rhs, bool isTypeSensitive)
+		{
+			if( isTypeSensitive ) 
+			{
+				if( typeof(Parameter)!=rhs.GetType() )
+				{
+					return false;
+				}
+			}
+				 
+			
 			// these 2 fields will not be null so compare them...
 			if( this.SqlType.Equals( rhs.SqlType ) == false || this.Name.Equals( rhs.Name ) == false )
 			{
@@ -145,9 +220,11 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// 
+		/// Gets a hash code based on the SqlType, Name, and TableAlias properties.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>
+		/// An <see cref="Int32"/> value for the hash code.
+		/// </returns>
 		public override int GetHashCode()
 		{
 			int hashCode = 0;
@@ -158,13 +235,13 @@ namespace NHibernate.SqlCommand
 				{
 					hashCode += _sqlType.GetHashCode();
 				}
-				if( name != null )
+				if( _name != null )
 				{
-					hashCode += name.GetHashCode();
+					hashCode += _name.GetHashCode();
 				}
-				if( tableAlias != null )
+				if( _tableAlias != null )
 				{
-					hashCode += tableAlias.GetHashCode();
+					hashCode += _tableAlias.GetHashCode();
 				}
 
 				return hashCode;
@@ -174,7 +251,7 @@ namespace NHibernate.SqlCommand
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return ( tableAlias == null || tableAlias.Length == 0 ) ? ":" + name : ":" + tableAlias + "." + name;
+			return ( _tableAlias == null || _tableAlias.Length == 0 ) ? ":" + _name : ":" + _tableAlias + "." + _name;
 		}
 
 		#endregion

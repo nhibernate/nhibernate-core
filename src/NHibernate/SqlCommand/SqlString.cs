@@ -35,6 +35,13 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary></summary>
+		/// <remarks>
+		/// TODO: modify this from object[] to an ICollection so that we can
+		/// safely say that SqlString truly is immutable.  Right now someone
+		/// can change the contents of the array - hence changing the SqlString
+		/// and throwing any place this is used as a key in a hashtable into
+		/// an unfindable instance.
+		/// </remarks>
 		public object[ ] SqlParts
 		{
 			get { return sqlParts; }
@@ -210,7 +217,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Gets the indexes of the Parameters in the SqlParts
+		/// Gets the indexes of the Parameters in the SqlParts array.
 		/// </summary>
 		/// <value>
 		/// An Int32 array that contains the indexes of the Parameters in the SqlPart array.
@@ -407,6 +414,16 @@ namespace NHibernate.SqlCommand
 			}
 
 			//Step 3: Check each important field
+
+			// if they don't contain the same number of parts then we
+			// can exit early because they are different
+			if( sqlParts.Length!=rhs.SqlParts.Length )
+			{
+				return false;
+			}
+
+			// they have the same number of parts - so compare each
+			// part for equallity.
 			for( int i = 0; i < sqlParts.Length; i++ )
 			{
 				if( this.sqlParts[ i ].Equals( rhs.SqlParts[ i ] ) == false )
@@ -415,6 +432,7 @@ namespace NHibernate.SqlCommand
 				}
 			}
 
+			// nothing has been found that is different - so they are equal.
 			return true;
 		}
 
