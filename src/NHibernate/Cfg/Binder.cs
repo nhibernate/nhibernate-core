@@ -814,9 +814,7 @@ namespace NHibernate.Cfg {
 				types[i] = prop.Type;
 				cascade[i] = prop.CascadeStyle;
 				joinedFetch[i] = prop.Value.OuterJoinFetchSetting;
-				//skiping dynaprops
-				//TODO: Dynaprops
-
+				
 				// the setters is new code added for field access
 				setters[i] = prop.GetSetter( model.ComponentClass );
 				getters[i] = prop.GetGetter( model.ComponentClass );
@@ -824,7 +822,6 @@ namespace NHibernate.Cfg {
 				i++;
 			}
 
-			//TODO: resume here with adding setters and getters
 			model.Type = 
 				(IType) new ComponentType( model.ComponentClass, names, getters, setters, foundCustomAccessor, types, joinedFetch, cascade, model.ParentProperty, model.IsEmbedded );
 		}
