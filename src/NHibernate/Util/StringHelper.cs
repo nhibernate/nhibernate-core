@@ -64,14 +64,28 @@ namespace NHibernate.Util {
 		/// <param name="separators">separators for the tokens of the list</param>
 		/// <param name="list">the string that will be broken into tokens</param>
 		/// <returns></returns>
-		public static string[] Split(string separators, string list) {
+		public static string[] Split(string separators, string list) 
+		{
 			return list.Split(separators.ToCharArray());
 		}
 
-		public static string[] Split(string separators, string list, bool include) {
+		/// <summary>
+		/// Splits the String using the StringTokenizer.  
+		/// </summary>
+		/// <param name="separators">separators for the tokens of the list</param>
+		/// <param name="list">the string that will be broken into tokens</param>
+		/// <param name="include">true to include the seperators in the tokens.</param>
+		/// <returns></returns>
+		/// <remarks>
+		/// This is more powerful than Split because you have the option of including or 
+		/// not including the seperators in the tokens.
+		/// </remarks>
+		public static string[] Split(string separators, string list, bool include) 
+		{
 			StringTokenizer tokens = new StringTokenizer(list, separators, include);
 			ArrayList results = new ArrayList();
-			foreach(string token in tokens) {
+			foreach(string token in tokens) 
+			{
 				results.Add( token );
 			}
 			return (string[]) results.ToArray(typeof(string));
