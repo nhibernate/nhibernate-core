@@ -459,7 +459,9 @@ namespace NHibernate.Hql
 		{
 			if (superQuery != null) superQuery.AddNamedParameter(name);
 
-			int loc = ++parameterCount;
+			// want the param index to start at 0 instead of 1
+			//int loc = ++parameterCount;
+			int loc = parameterCount++;
 			object o  = namedParameters[name];
 			if (o == null) 
 			{
@@ -901,7 +903,8 @@ namespace NHibernate.Hql
 					for (int i = 0; i < locs.Length; i++) 
 					{
 						// Hack: parametercollection starts at 0
-						typedval.Type.NullSafeSet(ps, typedval.Value, Impl.AdoHack.ParameterPos(locs[i] + start), session);
+						//typedval.Type.NullSafeSet(ps, typedval.Value, Impl.AdoHack.ParameterPos(locs[i] + start), session);
+						typedval.Type.NullSafeSet(ps, typedval.Value, (locs[i] + start), session);
 						// end-of Hack
 					}
 					result += locs.Length;
@@ -1226,6 +1229,115 @@ namespace NHibernate.Hql
 			{
 				return factory.Dialect.AggregateFunctions;
 			}
+		}
+
+		/// <summary>
+		/// Obtain an <see cref="IDbCommand"/> and bind the parameters.
+		/// </summary>
+		/// <param name="sql">A string containing the Sql statement</param>
+		/// <param name="values">The values to put in the Parameters.</param>
+		/// <param name="types">The IType to use to put the values in the Parameters.</param>
+		/// <param name="selection"></param>
+		/// <param name="scroll"></param>
+		/// <param name="session">The ISession currently in.</param>
+		/// <returns>An IDbCommand that is ready for execution.</returns>
+		/// <remarks>
+		/// <para>
+		/// This is used to convert an Hql sql string into a SqlString and then finally into an IDbCommand
+		/// that has been prepared.
+		/// </para>
+		/// <para>
+		/// This should not be considered a permanent solution because it is not very smart - it splits on
+		/// a <c>?</c> as long as the previous token ends with <c>"="</c> or <c>"= "</c>.
+		/// </para>
+		/// <para>
+		/// This used to be in the Loader, but since the only use of this right now is in the QueryTranslator
+		/// I moved it into here.
+		/// </para>
+		/// </remarks>
+		protected override IDbCommand PrepareQueryStatement(string sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
+		{
+			IType[] paramTypes = null;
+			object[] paramValues = null;
+
+			if(namedParams==null) 
+			{
+				paramTypes = types;
+				paramValues = values;
+			}
+			else 
+			{
+				// convert the named parameters to an array of values and types
+				ArrayList paramTypeList = new ArrayList(namedParams.Keys.Count);
+				ArrayList paramValueList = new ArrayList(namedParams.Keys.Count);
+				
+				// assumes that types are all of span 1
+				foreach (DictionaryEntry e in namedParams) 
+				{
+					int lastInsertedIndex = paramTypeList.Count;
+
+					string name = (string) e.Key;
+					TypedValue typedval = (TypedValue) e.Value;
+					int[] locs = GetNamedParameterLocs(name);
+
+					for (int i = 0; i < locs.Length; i++) 
+					{
+						int insertAt = locs[i];
+						
+						// need to make sure that the ArrayList is populated with null objects
+						// up to the index we are about to add the values into.  An Index Out 
+						// of Range exception will be thrown if we add an element at an index
+						// that is greater than the Count.
+						if(insertAt >= lastInsertedIndex) 
+						{
+							for(int j = lastInsertedIndex; j <= insertAt; j++) 
+							{
+								paramTypeList.Add(null);
+								paramValueList.Add(null);
+							}
+						}
+						
+						paramTypeList[insertAt] = typedval.Type; 
+						paramValueList[insertAt] = typedval.Value;
+					}
+					
+				}
+				paramTypes = (IType[]) paramTypeList.ToArray( typeof(IType) );
+				paramValues = (object[]) paramValueList.ToArray( typeof(object) );
+			}
+
+			
+			StringTokenizer tokenizer = new StringTokenizer(sql, StringHelper.SqlParameter, true);
+			string[] tokens =  sql.Split(StringHelper.SqlParameter[0]);
+
+			SqlStringBuilder hqlToSqlBuilder = new SqlStringBuilder(types.Length * 2);
+			
+			IEnumerator tokenEnum = tokenizer.GetEnumerator();
+			string previousToken = String.Empty;
+			string token = String.Empty;
+			int paramIndex = 0;
+
+			while(tokenEnum.MoveNext()) 
+			{
+				token = (string)tokenEnum.Current;
+				
+				if(token.Equals(StringHelper.SqlParameter) 
+					&& ( previousToken.EndsWith("=") || previousToken.EndsWith("= ") ) ) 
+				{
+					Parameter param = Parameter.GenerateParameters(session.Factory, new string[]{paramIndex.ToString()}, paramTypes[paramIndex])[0];
+					hqlToSqlBuilder.Add(param);
+					paramIndex++;
+				}
+				else 
+				{
+					hqlToSqlBuilder.Add(token);
+				}
+
+				previousToken = token;
+			}
+			
+			return PrepareCommand(hqlToSqlBuilder.ToSqlString(), paramValues, paramTypes, null, selection, scroll, session);
+			
 		}
 	}
 }

@@ -574,83 +574,13 @@ namespace NHibernate.Loader
 				( dialect.PreferLimit || GetFirstRow(selection)!=0);
 		}
 
-		/// <summary>
-		/// Obtain a <c>PreparedStatemnt</c> and bind parameters
-		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		/// <param name="selection"></param>
-		/// <param name="scroll"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		/// <remarks>I want to get rid of this because of the string based SQL!!</remarks>
-		protected IDbCommand PrepareQueryStatement(string sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
+		protected virtual IDbCommand PrepareQueryStatement(string sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
 		{
-			Dialect.Dialect dialect = session.Factory.Dialect;
-
-			bool useLimit = UseLimit(selection, dialect);
-			bool scrollable = session.Factory.UseScrollableResultSets && (
-				scroll ||
-				(!useLimit && GetFirstRow(selection)!=0)
-			);
-			if(useLimit) sql = dialect.GetLimitString(sql);
-
-			IDbCommand st = session.Batcher.PrepareQueryStatement(sql);
-
-			// HACK: force parameters to be created
-			Impl.AdoHack.ReplaceHqlParameters(session.Factory.Dialect, st);
-			// end-of Hack
-
-			try 
-			{
-				if (selection!=null && selection.Timeout!=0) st.CommandTimeout = selection.Timeout;
-				
-				// I really think the variable 
-				// "col" should be replaced with the for scoped variable "i" - maybe not, maybe the variable
-				// "col" should just be initialized to 0 instead of 1 because the next line checks to see how
-				// many columns the type spans 
-				// this might have been what one of the AdoHacks was trying to solve...
-				int col=0;
-
-				if( useLimit && dialect.BindLimitParametersFirst ) 
-				{
-					BindLimitParameters(st, col, selection, session);
-					col+=2;
-				}
-
-				for (int i=0; i<values.Length; i++) 
-				{
-					types[i].NullSafeSet( st, values[i], col, session);
-					col += types[i].GetColumnSpan( session.Factory );
-				}
-				
-				//if (namedParams!=null)	
-				col += BindNamedParameters(st, namedParams, col, session);
-
-				if( useLimit && !dialect.BindLimitParametersFirst ) 
-				{
-					BindLimitParameters(st, col, selection, session);
-				}
-
-				if(!useLimit) SetMaxRows(st, selection);
-				if(selection!=null && selection.Timeout!=0) 
-				{
-					st.CommandTimeout = selection.Timeout;
-				}
-
-			} 
-			catch (Exception e) 
-			{
-				ClosePreparedStatement(st, selection, session);
-				throw e;
-			}
-
-			return st;
+			// TODO: this is just a hack because I moved it to Hql.QueryTranslator.  It will be removed
+			// once everything is converted to SqlString instead of strings holding sql...
+			return null;
 		}
 
-		
-		
 		/// <summary>
 		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
 		/// database to Load an Entity.
