@@ -289,6 +289,7 @@ namespace NHibernate.Test.UtilityTest
 		/// fields initialized.  If the class overrides GetHashCode() then it will be inconsistent
 		/// between the construction and field population by NHibernate.
 		/// </summary>
+		[Serializable]
 		protected class MutableHashCode 
 		{
 			private int hashCodeField;
@@ -326,6 +327,7 @@ namespace NHibernate.Test.UtilityTest
 		/// The IdentityMap should not ever call the GetHashCode() because that
 		/// will have side effects on Collections/Entities.
 		/// </summary>
+		[Serializable]
 		protected class NoHashCode 
 		{
 			public override int GetHashCode()
