@@ -1308,7 +1308,18 @@ namespace NHibernate.Cfg {
 
 			}
 
-			//TODO: H2.0.3: IDBAG is missing
+			private static CollectionType IDBAG = new CollectionTypeBag("idbag");
+			private class CollectionTypeIdBag : CollectionType 
+			{
+				public CollectionTypeIdBag(string xmlTag) : base(xmlTag) {}
+				public override Mapping.Collection Create(XmlNode node, string prefix, PersistentClass owner, Mappings mappings)
+				{
+					IdentifierBag bag = new IdentifierBag(owner);
+					Binder.BindCollection(node, bag, prefix, mappings);
+					return bag;
+				}
+
+			}
 
 			private static CollectionType ARRAY = new CollectionTypeArray("array");
 			private class CollectionTypeArray : CollectionType 
@@ -1339,6 +1350,7 @@ namespace NHibernate.Cfg {
 			{
 				Instances.Add(MAP.ToString(), MAP);
 				Instances.Add(BAG.ToString(), BAG);
+				Instances.Add(IDBAG.ToString(), IDBAG);
 				Instances.Add(SET.ToString(), SET);
 				Instances.Add(LIST.ToString(), LIST);
 				Instances.Add(ARRAY.ToString(), ARRAY);

@@ -1087,6 +1087,11 @@ namespace NHibernate.Type
 			return new BagType(role);
 		}
 		
+		public static PersistentCollectionType IdBag(string role) 
+		{
+			return new IdentifierBagType(role);
+		}
+
 		public static PersistentCollectionType Map(string role) 
 		{
 			return new MapType(role);

@@ -15,13 +15,11 @@ namespace NHibernate.Mapping
 		{
 		}
 
-		//TODO: need to implement an IdentifierBag in PersistentColleciton.
 		public override PersistentCollectionType Type 
 		{
 			get 
 			{ 
-				throw new NotImplementedException("need to code IdentifierBag");
-				//return TypeFactory.Bag(Role)); 
+				return TypeFactory.IdBag(Role); 
 			}
 		}
 		
@@ -29,8 +27,7 @@ namespace NHibernate.Mapping
 		{
 			get 
 			{
-				throw new NotImplementedException("need to code IdentifierBag");
-				//return typeof(NHCollection.IdentifierBag) ; 
+				return typeof(NHCollection.IdentifierBag) ; 
 			}
 		}
 		

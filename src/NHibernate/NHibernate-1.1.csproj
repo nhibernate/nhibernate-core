@@ -390,6 +390,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Collection\IdentifierBag.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Collection\List.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1654,6 +1659,11 @@
                 />
                 <File
                     RelPath = "Type\IAssociationType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\IdentifierBagType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
