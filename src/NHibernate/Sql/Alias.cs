@@ -26,19 +26,34 @@ namespace NHibernate.Sql
 
 		public string ToAliasString(string sqlIdentifier, Dialect.Dialect dialect) 
 		{
-			if (dialect.UnQuote(sqlIdentifier) != sqlIdentifier)
+			bool isQuoted = dialect.IsQuoted(sqlIdentifier);
+			string unquoted;
+
+			if(isQuoted) 
 			{
-				sqlIdentifier = dialect.UnQuote(sqlIdentifier);
+				unquoted = dialect.UnQuote(sqlIdentifier);
+			}
+			else 
+			{
+				unquoted = sqlIdentifier;
 			}
 
-			if ( sqlIdentifier.Length > length ) 
+			if ( unquoted.Length > length ) 
 			{
-				sqlIdentifier = sqlIdentifier.Substring(0, length);
+				unquoted = unquoted.Substring(0, length);
 			}
 
-			if (suffix!=null) sqlIdentifier += suffix;
+			if (suffix!=null) unquoted += suffix;
 
-			return dialect.QuoteForAliasName(sqlIdentifier);
+			if ( isQuoted ) 
+			{
+				return dialect.QuoteForAliasName(unquoted);
+			}
+			else 
+			{
+				return unquoted;
+			}
+
 		}
 
 		public string ToUnquotedAliasString(string sqlIdentifier, Dialect.Dialect dialect)

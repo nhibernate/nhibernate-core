@@ -71,7 +71,9 @@ namespace NHibernate.Mapping
 
 		public string GetQuotedName(Dialect.Dialect dialect) 
 		{
-			return dialect.QuoteForTableName(name);
+			return IsQuoted ?
+				dialect.QuoteForTableName(name):
+				name;
 		}
 
 		public Column GetColumn(int n) 

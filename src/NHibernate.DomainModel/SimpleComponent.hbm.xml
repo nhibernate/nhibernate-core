@@ -4,13 +4,13 @@
 	<class name="NHibernate.DomainModel.SimpleComponent, NHibernate.DomainModel" 
 		table="simp_com" 
 	>
-		<id name="Key" type="Int64" column="id_"  >
+		<id name="Key" type="Int64" column="`i[d]_`"  >
 			<generator class="assigned" />
 		</id>
 		<property name="Name" />
 		<property name="Address" />
 		<property name="Count" column="count_" not-null="true" unique="true" />
-		<property name="Date" column="date_" />
+		<property name="Date" column="`d[at]e_`" />
 		<component name="Audit" class="NHibernate.DomainModel.AuditComponent, NHibernate.DomainModel">
 			<property name="CreatedUserId" column="created_user_id" />
 			<property name="CreatedDate" column="created_date" />
