@@ -1247,8 +1247,8 @@ namespace NHibernate.Hql
 		/// that has been prepared.
 		/// </para>
 		/// <para>
-		/// This should not be considered a permanent solution because it is not very smart - it splits on
-		/// a <c>?</c> as long as the previous token ends with <c>"="</c> or <c>"= "</c>.
+		/// This should not be considered a permanent solution.  While parsing the HQL we should be building
+		/// a SqlString, not a string that contains sql...
 		/// </para>
 		/// <para>
 		/// This used to be in the Loader, but since the only use of this right now is in the QueryTranslator
@@ -1322,7 +1322,7 @@ namespace NHibernate.Hql
 				token = (string)tokenEnum.Current;
 				
 				if(token.Equals(StringHelper.SqlParameter) 
-					&& ( previousToken.EndsWith("=") || previousToken.EndsWith("= ") ) ) 
+					&& ( EndsWithBoolOperator( previousToken ) ) ) //.EndsWith("=") || previousToken.EndsWith("= ") ) ) 
 				{
 					Parameter param = Parameter.GenerateParameters(session.Factory, new string[]{paramIndex.ToString()}, paramTypes[paramIndex])[0];
 					hqlToSqlBuilder.Add(param);
@@ -1338,6 +1338,24 @@ namespace NHibernate.Hql
 			
 			return PrepareCommand(hqlToSqlBuilder.ToSqlString(), paramValues, paramTypes, null, selection, scroll, session);
 			
+		}
+
+		/// <summary>
+		/// Temp method to help us figure out if the string ends with character that indicate that
+		/// a parameter is likely to follow.
+		/// </summary>
+		/// <param name="sqlFragment">A string that contains sql.</param>
+		/// <returns>true when a Parameter might follow this sql.</returns>
+		private bool EndsWithBoolOperator(string sqlFragment) 
+		{
+			string sql = sqlFragment.Trim();
+
+			for(int i = 0; i < WhereParser.booleanOperators.Count; i++) 
+			{
+				if( sql.EndsWith(WhereParser.booleanOperators[i]) ) return true;
+			}
+
+			return false;
 		}
 	}
 }

@@ -30,7 +30,8 @@ namespace NHibernate.Hql
 
 		private static StringCollection expressionTerminators = new StringCollection(); //tokens that close a sub expression
 		private static StringCollection expressionOpeners = new StringCollection(); //tokens that open a sub expression
-		private static StringCollection booleanOperators = new StringCollection(); //tokens that would indicate a sub expression is a boolean expression
+		//TODO: HACK to make this internal for QueryTranslator...
+		internal static StringCollection booleanOperators = new StringCollection(); //tokens that would indicate a sub expression is a boolean expression
 		private static IDictionary negations = new Hashtable();
 		private Dialect.Dialect d;
 
