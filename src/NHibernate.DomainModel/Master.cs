@@ -17,7 +17,10 @@ namespace NHibernate.DomainModel
 		private IDictionary _incoming = new Hashtable();
 		private IDictionary _outgoing = new Hashtable();
 		private string _name = "master";
-		private DateTime _stamp;
+		// since this is a version column a value should be set.  NHibernate is unable
+		// to set it right now because it checks to see if value==null -> since this 
+		// is a struct it is not null...
+		private DateTime _stamp = DateTime.Now;
 		// private BigDecimal bigDecimal = new BigDecimal("1234.123"); TODO: how to do in .net
 		private int _x;
 		

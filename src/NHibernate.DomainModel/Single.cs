@@ -13,7 +13,7 @@ namespace NHibernate.DomainModel
 		private string _prop;
 		private string _string;
 		//<bag>
-		private IList _several;
+		private IList _several = new ArrayList();
 
 		public string Id
 		{
