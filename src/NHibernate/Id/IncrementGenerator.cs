@@ -8,6 +8,8 @@ using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
 
+#warning Hack to run tests, should rework transaction handling
+
 namespace NHibernate.Id
 {
 	/// <summary>
@@ -45,7 +47,7 @@ namespace NHibernate.Id
 		{
 			if(sql!=null) 
 			{
-				GetNext( session.Connection );
+				GetNext( session.Connection, session.Transaction as Transaction.Transaction );
 			}
 
 			return next++;
@@ -69,13 +71,14 @@ namespace NHibernate.Id
 
 		#endregion
 
-		private void GetNext(IDbConnection conn) 
+		private void GetNext(IDbConnection conn, Transaction.Transaction transaction) 
 		{
 			log.Debug("fetching initial value: " + sql);
 
 			IDbCommand cmd = conn.CreateCommand();
 			cmd.CommandType = CommandType.Text;
 			cmd.CommandText = sql;
+			cmd.Transaction = transaction.AdoTransaction;
 			cmd.Prepare();
 
 			IDataReader rs = null;
