@@ -153,10 +153,23 @@ namespace NHibernate.SqlCommand
 			if(rhs==null) return false;
 
 			//Step 3: Check each important field
-			return this.DbType.Equals(rhs.DbType) 
-					&& this.Name.Equals(rhs.Name)
-					&& this.TableAlias.Equals(rhs.TableAlias);
 			
+			// these 2 fields will not be null so compare them...
+			if(this.DbType.Equals(rhs.DbType)==false || this.Name.Equals(rhs.Name)==false) return false;
+
+			// becareful with TableAlias being null
+			if(this.TableAlias==null && rhs.TableAlias==null) 
+			{
+				return true;
+			}
+			else if (this.TableAlias==null && rhs.TableAlias!=null) 
+			{
+				return false;
+			}
+			else 
+			{
+				return this.TableAlias.Equals(rhs.TableAlias);
+			}
 		}
 
 		public override int GetHashCode()
