@@ -1,6 +1,5 @@
 using System;
 
-using NHibernate.Collection;
 using NHibernate.Persister;
 
 namespace NHibernate.Engine 

@@ -1681,7 +1681,11 @@ namespace NHibernate.Impl
 		// Grab the existing proxy for an instance, if one exists
 		public object ProxyFor(IClassPersister persister, Key key, object impl) 
 		{
-			if ( !persister.HasProxy ) return impl;
+			if ( !persister.HasProxy || key==null ) 
+			{
+				return impl;
+			}
+
 			object proxy = proxiesByKey[key];
 			if (proxy!=null) 
 			{
