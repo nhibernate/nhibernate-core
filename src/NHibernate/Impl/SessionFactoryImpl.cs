@@ -564,10 +564,7 @@ namespace NHibernate.Impl
 					retVal.CommandText = sql;
 					retVal.CommandType = CommandType.Text;
 
-					// Hack: force parameters to be created
-					Impl.AdoHack.CreateParameters(dialect, retVal);
-					// end-of Hack
-
+					
 					// Hack: disable Prepare() as long as the parameters have no datatypes!!
 #if FALSE
 					retVal.Prepare();
