@@ -24,13 +24,13 @@ namespace NHibernate.Type {
 		/// This does not necessarily imply that the type actually represents an association.
 		/// </summary>
 		/// <returns></returns>
-		public bool IsAssociationType();
+		public bool IsAssociationType { get; }
 		
 		/// <summary>
 		/// Is this type a collection type?
 		/// </summary>
 		/// <returns></returns>
-		public bool IsPersistentCollectionType();
+		public bool IsPersistentCollectionType { get; }
 
 		/// <summary>
 		/// Is this type a component type?
@@ -38,13 +38,13 @@ namespace NHibernate.Type {
 		/// A component type may own collections or associations and hence must provide certain extra functionality.
 		/// </summary>
 		/// <returns></returns>
-		public bool IsComponentType();
+		public bool IsComponentType	{ get; }
 	
 		/// <summary>
 		/// Is this type an entity type?
 		/// </summary>
 		/// <returns></returns>
-		public bool IsEntityType();
+		public bool IsEntityType { get; }
 	
 		/// <summary>
 		/// Is this an "object" type,
@@ -52,7 +52,7 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <returns></returns>
 		/// <exception cref="MappingException">MappingException</exception>
-		public boolean IsObjectType();
+		public boolean IsObjectType { get; }
 	
 		/// <summary>
 		/// Return the SQL typecodes for the columns mapped by this type.
@@ -166,7 +166,7 @@ namespace NHibernate.Type {
 		/// Returns the abbreviated name of the type.
 		/// </summary>
 		/// <returns>the Hibernate type name</returns>
-		public string GetName();
+		public string Name { get; }
 	
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.
@@ -181,7 +181,7 @@ namespace NHibernate.Type {
 		/// entities and collections are considered immutable because they manage their own internal state.)
 		/// </summary>
 		/// <returns></returns>
-		public bool IsMutable();
+		public bool IsMutable { get; }
 	
 		/**TODO:
 		 * Return a cacheable "disassembled" representation of the object.
