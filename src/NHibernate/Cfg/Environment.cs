@@ -1,8 +1,8 @@
 using System;
-using System.Xml;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Xml;
 
 using NHibernate.Util;
 
@@ -83,9 +83,23 @@ namespace NHibernate.Cfg
 			
 		}
 
+		/// <summary>
+		/// Gets a copy of the configuration found in app.config/web.config
+		/// </summary>
+		/// <remarks>
+		/// This is the replacement for hibernate.properties
+		/// </remarks>
 		public static IDictionary Properties 
 		{
-			get { return properties; }
+			get 
+			{ 
+				IDictionary copy = new Hashtable(properties.Count);
+				foreach(DictionaryEntry de in properties) 
+				{
+					copy[de.Key] = de.Value;
+				}
+				return copy;
+			}
 		}
 
 		public static bool UseStreamsForBinary 

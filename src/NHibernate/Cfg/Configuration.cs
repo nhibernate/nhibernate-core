@@ -1,10 +1,11 @@
 using System;
+using System.Collections;
+using System.Collections.Specialized;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
 
-using System.Reflection;
-using System.Collections;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Util;
@@ -72,7 +73,6 @@ namespace NHibernate.Cfg
 			Reset();
 			mappingSchema = XmlSchema.Read(Assembly.GetExecutingAssembly().GetManifestResourceStream(MappingSchemaResource), null);
 			cfgSchema = XmlSchema.Read(Assembly.GetExecutingAssembly().GetManifestResourceStream(CfgSchemaResource), null);
-
 		}
 
 		/// <summary>
@@ -129,10 +129,7 @@ namespace NHibernate.Cfg
 			log.Debug("Mapping file: " + xmlFile);
 			try 
 			{
-				AddXmlReader(new XmlTextReader(xmlFile));
-//				XmlDocument doc = new XmlDocument();
-//				doc.Load(xmlFile);
-//				Add ( doc );
+				AddXmlReader( new XmlTextReader(xmlFile) );
 			} 
 			catch (Exception e) 
 			{
@@ -152,15 +149,10 @@ namespace NHibernate.Cfg
 			if ( log.IsDebugEnabled ) log.Debug("Mapping XML:\n" + xml);
 			try 
 			{
-				
 				// make a StringReader for the string passed in - the StringReader
 				// inherits from TextReader.  We can use the XmlTextReader.ctor that
 				// takes the TextReader to build from a string...
-				AddXmlReader(new XmlTextReader(new StringReader(xml)));
-
-//				XmlDocument doc = new XmlDocument();
-//				doc.LoadXml(xml);
-//				Add ( doc );
+				AddXmlReader( new XmlTextReader(new StringReader(xml)) );
 			} 
 			catch (Exception e) 
 			{
@@ -179,8 +171,7 @@ namespace NHibernate.Cfg
 			if ( log.IsDebugEnabled ) log.Debug("Mapping XML:\n" + doc.OuterXml);
 			try 
 			{
-				AddXmlReader(new XmlNodeReader(doc));
-//				Add ( doc );
+				AddXmlReader( new XmlNodeReader(doc) );
 			} 
 			catch (Exception e) 
 			{
@@ -200,7 +191,7 @@ namespace NHibernate.Cfg
 			try 
 			{
 				Binder.dialect = Dialect.Dialect.GetDialect(properties);
-				Binder.BindRoot( doc, CreateMappings());
+				Binder.BindRoot( doc, CreateMappings() );
 			} 
 			catch (MappingException me) 
 			{
@@ -227,11 +218,7 @@ namespace NHibernate.Cfg
 		{
 			try 
 			{
-				AddXmlReader(new XmlTextReader(xmlInputStream));
-				
-//				XmlDocument doc = new XmlDocument();
-//				doc.Load(xmlInputStream);
-//				Add( doc );
+				AddXmlReader( new XmlTextReader(xmlInputStream) );
 				return this;
 			} 
 			catch (MappingException me) 
