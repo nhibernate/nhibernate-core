@@ -1,3 +1,4 @@
+#region The Apache Software License, Version 1.1
 /* This is a port from the Jakarta commons project */
 
 /*
@@ -56,9 +57,11 @@
  * <http://www.apache.org/>.
  *
  */
+#endregion
 
 using System;
 using System.Collections;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Util 
 {
@@ -69,10 +72,12 @@ namespace NHibernate.Util
 	/// <remarks>
 	/// This class is not thread safe.
 	/// </remarks>
-	public class SequencedHashMap : IDictionary 
+	[Serializable]
+	public class SequencedHashMap : IDictionary, ISerializable, IDeserializationCallback
 	{
 		
-		private class Entry  
+		[Serializable]
+		private class Entry
 		{
 			private object _key;
 			private object _value;
@@ -168,31 +173,25 @@ namespace NHibernate.Util
 		/// <summary>
 		/// Construct a new sequenced hash map with default initial size and load factor
 		/// </summary>
-		public SequencedHashMap() 
+		public SequencedHashMap() : this(0, 1.0F, null, null)
 		{
-			_sentinel = CreateSentinel();
-			_entries = new Hashtable();
 		}
 
 		/// <summary>
 		/// Construct a new sequenced hash map with the specified initial size and default load factor
 		/// </summary>
-		/// <param name="initialSize">the initial size for the hash table</param>
-		public SequencedHashMap(int initialSize) 
+		/// <param name="capacity">the initial size for the hash table</param>
+		public SequencedHashMap(int capacity) : this(capacity, 1.0F, null, null)
 		{
-			_sentinel = CreateSentinel();
-			_entries = new Hashtable(initialSize);
 		}
 
 		/// <summary>
 		/// Construct a new sequenced hash map with the specified initial size and load factor
 		/// </summary>
-		/// <param name="initialSize">the initial size for the hashtable</param>
+		/// <param name="capacity">the initial size for the hashtable</param>
 		/// <param name="loadFactor">the load factor for the hash table</param>
-		public SequencedHashMap(int initialSize, float loadFactor) 
+		public SequencedHashMap(int capacity, float loadFactor) : this(capacity, loadFactor, null, null)
 		{
-			_sentinel = CreateSentinel();
-			_entries = new Hashtable(initialSize, loadFactor);
 		}
 
 		/// <summary>
@@ -201,10 +200,22 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="hcp"></param>
 		/// <param name="comparer"></param>
-		public SequencedHashMap(IHashCodeProvider hcp, IComparer comparer) 
+		public SequencedHashMap(IHashCodeProvider hcp, IComparer comparer) : this(0, 1.0F, hcp, comparer)
+		{
+		}
+
+		/// <summary>
+		/// Creates an empty Hashtable with the default initial capacity and using the default load factor, 
+		/// the specified hash code provider and the specified comparer
+		/// </summary>
+		/// <param name="capacity">the initial size for the hashtable</param>
+		/// <param name="loadFactor">the load factor for the hash table</param>
+		/// <param name="hcp"></param>
+		/// <param name="comparer"></param>
+		public SequencedHashMap(int capacity, float loadFactor, IHashCodeProvider hcp, IComparer comparer) 
 		{
 			_sentinel = CreateSentinel();
-			_entries = new Hashtable(hcp, comparer);
+			_entries = new Hashtable(capacity, loadFactor, hcp, comparer);
 		}
 
 		
@@ -433,21 +444,6 @@ namespace NHibernate.Util
 		
 		#region System.Object Members
 
-		public override bool Equals(object obj) 
-		{
-			if (obj == null) return false;
-			if (obj == this) return true;
-
-			if (!(obj is IDictionary)) return false;
-
-			return Keys.Equals(((IDictionary)obj).Keys);
-		}
-
-		public override int GetHashCode() 
-		{
-			return Keys.GetHashCode();
-		}
-
 		public override string ToString() 
 		{
 			System.Text.StringBuilder buf = new System.Text.StringBuilder();
@@ -523,6 +519,7 @@ namespace NHibernate.Util
 
 		}
 
+		
 		private class ValuesCollection : ICollection 
 		{
 			private SequencedHashMap _parent;
@@ -676,5 +673,36 @@ namespace NHibernate.Util
 
 			#endregion			
 		}
+
+		
+		#region ISerializable Members
+
+		SerializationInfo _info;
+
+		protected SequencedHashMap(SerializationInfo info, StreamingContext context) 
+		{
+			_info = info;
+		}
+
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue( "_sentinel", _sentinel, typeof(SequencedHashMap.Entry) );
+			info.AddValue( "_modCount", _modCount );
+			info.AddValue( "_entries", _entries );
+		}
+
+		#endregion
+
+		#region IDeserializationCallback Members
+
+		public void OnDeserialization(object sender)
+		{
+			_sentinel = (SequencedHashMap.Entry)_info.GetValue( "_sentinel", typeof(SequencedHashMap.Entry) );
+			_modCount = _info.GetInt64("_modCount");
+			_entries = (Hashtable)_info.GetValue( "_entries", typeof(Hashtable) );
+			_info = null;
+		}
+
+		#endregion
 	}
 }
