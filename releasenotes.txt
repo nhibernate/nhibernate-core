@@ -1,8 +1,9 @@
 PreAlpha Build 0.1.0.0
 ======================== 
+- NHibernate and HashCodeProvider are now strong named assemblies.  The key used to sign the assemblies is not in CVS.
 - Many more Tests implemented.
 - Added Examples into CVS and zip.
-- ConnectionProvider use settings passed to it by ConnectionProviderFactory instead of default settings.
+- ConnectionProvider uses settings passed to it by ConnectionProviderFactory instead of default settings.
 - Hbm2Net moved from NHibernate folder to its own folder and NAnt Tasks for it contributed by Kevin Williams.
 - Adding properties to Cfg instead of using app.config/web.config or hbm.cfg.xml now supported.
 - In hbm.cfg.xml, an assembly where the resource can be found is now needed - ie: <mapping resource="" assembly="" />.
