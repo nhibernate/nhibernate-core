@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="NHibernate.Tool.hbm2net" 
+	default="build" 
+	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+>
+
+	<!--
+        Required properties:
+            * build.dir             - (path) root level to build to, assemblies will go in ${build.dir}/bin
+            * build.debug           - (true|false) debug build?
+            * current.build.defines - framework-specific build defines
+    -->
+    
+	<target name="build" description="Tool to Generate Classes from hbm.xml files.">
+		
+		
+		<csc
+			target="exe"
+			define="${current.build.defines}" 
+			debug="${build.debug}"
+			output="${build.dir}/bin/${nant.project.name}.exe"
+			doc="${build.dir}/bin/${nant.project.name}.xml"
+			nowarn="1591,1574,1573,1572,1570,1030,0618,1589,0169"
+		>
+		
+			<sources>
+				<includes name="*.cs" />
+			</sources>
+			<resources prefix="NHibernate.Tool.hbm2net" dynamicprefix="true">
+				<includes name="*.vm" />
+			</resources>
+			<references basedir="${build.dir}/bin">
+				 <includes name="NHibernate.dll" />
+				 <includes name="Commons.dll" />
+				 <includes name="NVelocity.dll" />
+				 <includes name="log4net.dll" />
+			</references>
+		</csc>
+		
+		<copy 
+			file="App.config"
+			tofile="${build.dir}/bin/${nant.project.name}.exe.config" 
+		/>
+		
+	</target>
+	
+</project>
