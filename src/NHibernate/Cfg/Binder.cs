@@ -84,7 +84,9 @@ namespace NHibernate.Cfg
 
 			//PROXY INTERFACE
 			XmlAttribute proxyNode = node.Attributes["proxy"];
-			if (proxyNode!=null) 
+			XmlAttribute lazyNode = node.Attributes["lazy"];
+			bool lazyTrue = lazyNode != null && "true".Equals( lazyNode.Value );
+			if ( proxyNode != null && ( lazyNode == null || lazyTrue ) )
 			{
 				try 
 				{
@@ -94,6 +96,10 @@ namespace NHibernate.Cfg
 				{
 					throw new MappingException( "proxy class not found", cnfe );
 				}
+			}
+			if ( proxyNode == null && lazyTrue )
+			{
+				model.ProxyInterface = model.MappedClass;
 			}
 			
 			//DISCRIMINATOR
@@ -705,7 +711,8 @@ namespace NHibernate.Cfg
 			{
 				try 
 				{
-					model.Type = TypeFactory.ManyToOne( ReflectHelper.ClassForName( typeNode.Value ), model.ReferencedPropertyName ); 
+					string name = FullClassName( typeNode.Value, mappings );
+					model.Type = TypeFactory.ManyToOne( ReflectHelper.ClassForName( name ), model.ReferencedPropertyName ); 
 				} 
 				catch 
 				{
@@ -765,7 +772,8 @@ namespace NHibernate.Cfg
 			{
 				try 
 				{
-					model.Type = TypeFactory.OneToOne( ReflectHelper.ClassForName( classNode.Value ), model.ForeignKeyType, model.ReferencedPropertyName ) ;
+					string name = FullClassName( classNode.Value, mappings );
+					model.Type = TypeFactory.OneToOne( ReflectHelper.ClassForName( name ), model.ForeignKeyType, model.ReferencedPropertyName ) ;
 				} 
 				catch (Exception) 
 				{
@@ -778,8 +786,8 @@ namespace NHibernate.Cfg
 		{
 			try 
 			{
-				model.Type = (EntityType) NHibernateUtil.Entity( 
-					ReflectHelper.ClassForName( node.Attributes["class"].Value) );
+				string name = FullClassName( node.Attributes["class"].Value, mappings );
+				model.Type = (EntityType) NHibernateUtil.Entity( ReflectHelper.ClassForName( name ) );
 			} 
 			catch (Exception e) 
 			{
@@ -848,8 +856,8 @@ namespace NHibernate.Cfg
 						case "composite-element":
 							try 
 							{
-								
-								model.ElementClass = ReflectHelper.ClassForName( subnode.Attributes["class"].Value);
+								string className = FullClassName( subnode.Attributes["class"].Value, mappings );								
+								model.ElementClass = ReflectHelper.ClassForName( className );
 							} 
 							catch (Exception e) 
 							{
@@ -1409,7 +1417,8 @@ namespace NHibernate.Cfg
 					System.Type clazz;
 					try
 					{
-						clazz = ReflectHelper.ClassForName( returns.Attributes["class"].Value );
+						string name = FullClassName( returns.Attributes["class"].Value, model );
+						clazz = ReflectHelper.ClassForName( name );
 					}
 					catch (Exception)
 					{
