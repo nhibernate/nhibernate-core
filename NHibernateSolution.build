@@ -20,13 +20,15 @@
 	<target name="debug" description="Perform a 'debug' build">
 		<property name="project.config" value="debug" />
 		<property name="build.debug" value="true" />
-		<property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}-${project.config}" />
+		<property name="build.name" value="${project.name}-${project.version}-${project.config}" />
+		<property name="build.dir" value="${nant.project.basedir}/build/${build.name}" />
 	</target>
 	
 	<target name="release" description="Perform a 'release' build">
 		<property name="project.config" value="release" />
 		<property name="build.debug" value="false" />
-		<property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
+		<property name="build.name" value="${project.name}-${project.version}" />
+		<property name="build.dir" value="${nant.project.basedir}/build/${build.name}" />
 	</target>
 	
 	<target name="init" description="Initializes build properties">
@@ -79,6 +81,9 @@
 	</target>
 	
 	<target name="test" depends="build" description="Runs the tests contained in NHibernate.Test" >
+		<!-- make sure the config file is NOT readonly -->
+		<attrib file="${build.dir}/bin/NHibernate.Test.dll.config" readonly="false" />
+
 		<!-- 
 			Tell nhibernate how to connect to the test database.
 		-->
@@ -228,10 +233,16 @@
 	<target name="package" depends="test sdkdoc" description="Creates Zip files for the File Release System on SourceForge">
 		<copy todir="${build.dir}">
 			<fileset>
+				<includes name="external-bin/**" />
+				
 				<!-- exclude the UnitTesting project that is no longer used -->
 				<excludes name="src/UnitTesting/**" />
-				
 				<includes name="src/**" />
+				
+				<includes name="NHibernateSolution.build" />
+				<includes name="lpgl.txt" />
+				<includes name="releasenotes.txt" />
+				<includes name="readme.html" />
 				
 				<!-- exclude VS.NET stuff -->
 				<excludes name="**/*.suo" />
@@ -241,7 +252,7 @@
 			
 			</fileset>
 		</copy>
-		<property name="project.zip-path" value="${nant.project.basedir}/build/${project.name}-${project.version}.zip" />
+		<property name="project.zip-path" value="${nant.project.basedir}/build/${build.name}.zip" />
 		
 		<zip zipfile="${project.zip-path}">
 			<fileset basedir="${build.dir}">
@@ -249,7 +260,7 @@
 			</fileset>
 		</zip>
 		
-		<echo message="Create a '${project.config}' package ast file://${project.zip-path}" />
+		<echo message="Create a '${project.config}' package as file://${project.zip-path}" />
 		
 	</target>
 	
