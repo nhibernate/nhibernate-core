@@ -110,21 +110,31 @@ namespace NHibernate.Test
 			s.Close();
 
 			s = sessions.OpenSession();
-			result = s.CreateQuery("from Baz baz left join fetch baz.sortablez order by baz.name asc")
+			t = s.BeginTransaction();
+			result = s.CreateQuery("from Baz baz left join fetch sortablez order by baz.name asc")
 				.List();
 			b = (Baz) result[0];
 			Assert.IsTrue( b.sortablez.Count==3 );
-			Assert.AreEqual( ( (Sortable) b.sortablez[0] ).name, "bar" );
+			foreach(DictionaryEntry de in b.sortablez) 
+			{
+				Assert.AreEqual( ((Sortable)de.Key).name, "bar");
+				break;
+			}
 			s.Flush();
 			t.Commit();
 			s.Close();
 		
 			s = sessions.OpenSession();
+			t = s.BeginTransaction();
 			result = s.CreateQuery("from Baz baz order by baz.name asc")
 				.List();
 			b = (Baz) result[0];
 			Assert.IsTrue( b.sortablez.Count==3 );
-			Assert.AreEqual( ( (Sortable) b.sortablez[0] ).name, "bar" );
+			foreach(DictionaryEntry de in b.sortablez) 
+			{
+				Assert.AreEqual( ((Sortable)de.Key).name, "bar");
+				break;
+			}
 			s.Delete(b);
 			s.Flush();
 			t.Commit();
