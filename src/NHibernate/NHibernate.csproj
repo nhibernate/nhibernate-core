@@ -1037,6 +1037,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Util\ReflectHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Util\SequencedHashMap.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
