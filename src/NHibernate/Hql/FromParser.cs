@@ -23,8 +23,6 @@ namespace NHibernate.Hql {
 		private bool expectingAs;
 		private bool afterJoinType;
 		private bool afterFetch;
-		//TODO: H2.0.3 does not have classPersister as a field...
-		private ILoadable classPersister;
 		private JoinType joinType = JoinType.None;
 
 		private static IDictionary joinTypes = new Hashtable();
@@ -119,11 +117,6 @@ namespace NHibernate.Hql {
 					// _after_ the class name or path expression ie using the
 					// AS construction
 
-//					if (classPersister!=null) 
-//					{
-//						q.AddFromClass(token, classPersister);
-//					} 
-					//else if (entityName!=null) 
 					if (entityName!=null) 
 					{
 						q.SetAliasName(token, entityName);
@@ -136,8 +129,6 @@ namespace NHibernate.Hql {
 					expectingJoin = true;
 					expectingAs = false;
 					entityName = null;
-					classPersister = null;
-
 				} 
 				else if (afterIn) 
 				{
@@ -145,6 +136,7 @@ namespace NHibernate.Hql {
 					// ie using the IN or IN CLASS constructions
 
 					if (alias==null) throw new QueryException("alias not specified for: " + token);
+
 					if (joinType!=JoinType.None) throw new QueryException("outer or full join must be followed by path expressions");
 
 					if (afterClass) 
@@ -180,7 +172,6 @@ namespace NHibernate.Hql {
 					{
 						// starts with the name of a mapped class (new style)
 						if (joinType!=JoinType.None) throw new QueryException("outer or full join must be followed by path expression");
-						classPersister = p;
 						entityName = q.CreateNameFor( p.MappedClass );
 						q.AddFromClass( entityName, p );
 						expectingAs = true;
@@ -197,6 +188,7 @@ namespace NHibernate.Hql {
 						// starts with a path expression (new style)
 
 						// force HQL style: from Person p inner join p.cars c
+						//if (joinType==JoinType.None) throw new QueryException("path expression must be preceded by full, left, right or inner join");
 						
 						//allow ODMG OQL style: from Person p, p.cars c
 						if (joinType!=JoinType.None)
@@ -239,9 +231,9 @@ namespace NHibernate.Hql {
 			}
 		}
 		
-		public virtual void  Start(QueryTranslator q) {
+		public virtual void  Start(QueryTranslator q) 
+		{
 			entityName = null;
-			classPersister = null;
 			alias = null;
 			afterIn = false;
 			afterAs = false;
@@ -252,7 +244,8 @@ namespace NHibernate.Hql {
 			joinType = JoinType.None;
 		}
 		
-		public virtual void  End(QueryTranslator q) {
+		public virtual void  End(QueryTranslator q) 
+		{
 		}
 	}
 }

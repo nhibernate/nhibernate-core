@@ -16,7 +16,8 @@ namespace NHibernate.Hql {
 		private bool    byExpected = false;
 		private int parenCount = 0;
 		
-		public virtual void Token(string token, QueryTranslator q) {
+		public virtual void Token(string token, QueryTranslator q) 
+		{
 			string lcToken = token.ToLower();
 			
 			if ( token.Equals(StringHelper.OpenParen ) )
@@ -28,7 +29,8 @@ namespace NHibernate.Hql {
 				parenCount--;
 			}
 
-			if (byExpected && !lcToken.Equals("by")) {
+			if (byExpected && !lcToken.Equals("by")) 
+			{
 				throw new QueryException("BY expected after GROUP or ORDER: " + token);
 			}
 			
@@ -38,7 +40,7 @@ namespace NHibernate.Hql {
 			{
 				if (lcToken.Equals("select")) 
 				{
-					selectTokens      = new ArrayList();
+					selectTokens = new ArrayList();
 					cacheSelectTokens = true;
 				} 
 				else if (lcToken.Equals("from")) 
