@@ -3,12 +3,15 @@ using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Persister;
 using NHibernate.Type;
-namespace NHibernate.Engine {
+
+namespace NHibernate.Engine 
+{
 	/// <summary>
 	/// Defines the internal contract between the <c>Session</c> and other parts of Hibernate
 	/// such as implementors of <c>Type</c> or <c>ClassPersister</c>
 	/// </summary>
-	public interface ISessionImplementor : ISession {
+	public interface ISessionImplementor : ISession 
+	{
 
 		/// <summary>
 		/// Get the pre-flush identifier of the collection
@@ -53,7 +56,7 @@ namespace NHibernate.Engine {
 
 		/// <summary>
 		/// Set the "shallow dirty" status of the collection. Called when the collection detects
-		/// taht the client is modifying it
+		/// that the client is modifying it
 		/// </summary>
 		void Dirty(PersistentCollection collection);
 
@@ -156,6 +159,7 @@ namespace NHibernate.Engine {
 
 		/// <summary>
 		/// Get the NHibernate Command Preparer for this Session.
+		/// new to NH
 		/// </summary>
 		IPreparer Preparer {get; }
 		//TODO: this will eventually replace the Batcher...
@@ -331,7 +335,6 @@ namespace NHibernate.Engine {
 		/// Get the current version of the entity
 		/// </summary>
 		/// <param name="entity"></param>
-		//TODO: remove this comment
 		object GetVersion(object entity);
 
 		/// <summary>
@@ -347,8 +350,8 @@ namespace NHibernate.Engine {
 		/// </summary>
 		/// <param name="coll"></param>
 		/// <returns></returns>
-		//TODO: remove this comment
-		//ICollection GetOrphans(PersistentCollection coll);
+		//TODO: write this code...
+		ICollection GetOrphans(PersistentCollection coll);
 
 	}
 }

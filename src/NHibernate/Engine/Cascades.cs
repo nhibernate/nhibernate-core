@@ -380,12 +380,11 @@ namespace NHibernate.Engine {
 								PersistentCollection pc = (PersistentCollection)child;
 								if(pc.WasInitialized) 
 								{
-									//TODO: H2.0.3 - need the GetOrphans in ISessionImpl
-//									ICollection orphanColl = session.GetOrphans(pc);
-//									foreach(object obj in orphanColl) 
-//									{
-//										session.Delete(obj);
-//									}
+									ICollection orphanColl = session.GetOrphans(pc);
+									foreach(object obj in orphanColl) 
+									{
+										session.Delete(obj);
+									}
 								}
 							}
 						}
