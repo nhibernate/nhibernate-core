@@ -774,6 +774,26 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
+		public static NullableType GetTicksType() 
+		{
+			
+			string key = typeof(TicksType).FullName;
+			
+			NullableType returnType = (NullableType)typeByTypeOfName[key];
+			if(returnType==null) 
+			{
+				returnType = new TicksType(SqlTypeFactory.GetInt64());
+				AddToTypeOfName(key, returnType);
+			}
+
+			return returnType;
+			
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public static NullableType GetTimestampType() {
 			
 			string key = typeof(TimestampType).FullName;

@@ -1723,6 +1723,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\TicksType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\TimestampType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

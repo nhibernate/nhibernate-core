@@ -95,6 +95,10 @@ namespace NHibernate {
 		/// </summary>
 		//public static readonly NullableType Time = new TimeType();
 		
+		/// <summary>
+		/// NHibernate Ticks type
+		/// </summary>
+		public static readonly NullableType Ticks = TypeFactory.GetTicksType();
 		
 		/// <summary>
 		/// NHibernate timestamp type
