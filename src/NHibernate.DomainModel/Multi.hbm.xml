@@ -111,7 +111,7 @@
 				column="other2" 
 				class="NHibernate.DomainModel.Multi, NHibernate.DomainModel" 
 			/>
-	        <many-to-one name="Po"/>
+	        <many-to-one name="Po" column="po"/>
 	        
 	        <component	
 				name="Comp" 
@@ -135,7 +135,7 @@
 	        		<key column="parent"/>
 	        		<one-to-many class="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel"/>
 	        	</bag>
-	        	<many-to-one name="Parent"/>
+	        	<many-to-one name="Parent" column="parent" />
 				<list name="MoreChildren" lazy="true">
 	        		<key column="another_parent"/>
 	        		<index column="list_ind"/>
