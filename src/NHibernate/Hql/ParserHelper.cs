@@ -3,7 +3,7 @@ using NHibernate.Util;
 namespace NHibernate.Hql
 {
 	/// <summary></summary>
-	public class ParserHelper
+	public sealed class ParserHelper
 	{
 		/// <summary></summary>
 		public const string HqlVariablePrefix = ":";

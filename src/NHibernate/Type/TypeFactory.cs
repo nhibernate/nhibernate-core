@@ -17,7 +17,7 @@ namespace NHibernate.Type
 	/// correct IType.  Instead use TypeFactory.GetString(300) and keep a local variable that holds
 	/// a reference to the IType.
 	/// </remarks>
-	public class TypeFactory
+	public sealed class TypeFactory
 	{
 		private enum TypeClassification
 		{
