@@ -8,11 +8,19 @@ namespace NHibernate.Cache
 	[Serializable]
 	public class CacheException : HibernateException
 	{
-		public CacheException(string message) : base( message )
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		public CacheException( string message ) : base( message )
 		{
 		}
 
-		public CacheException(Exception e) : base( e )
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="e"></param>
+		public CacheException( Exception e ) : base( e )
 		{
 		}
 	}

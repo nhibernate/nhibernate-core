@@ -1,6 +1,4 @@
-using System;
-
-namespace NHibernate.Cache 
+namespace NHibernate.Cache
 {
 	/// <summary>
 	/// Implementors manage transactional access to cached data.
@@ -15,8 +13,8 @@ namespace NHibernate.Cache
 	/// for an Entity and the results of <see cref="Collection.PersistentCollection"/>.Disassemble for a Collection.
 	/// </para>
 	/// </remarks>
-	public interface ICacheConcurrencyStrategy 
-	{		
+	public interface ICacheConcurrencyStrategy
+	{
 		/// <summary>
 		/// Attempt to retrieve an object from the Cache
 		/// </summary>
@@ -24,7 +22,7 @@ namespace NHibernate.Cache
 		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
 		/// <returns>The cached object or <c>null</c></returns>
 		/// <exception cref="CacheException"></exception>
-		object Get(object key, long txTimestamp);
+		object Get( object key, long txTimestamp );
 
 		/// <summary>
 		/// Attempt to Cache an object 
@@ -34,28 +32,28 @@ namespace NHibernate.Cache
 		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
 		/// <returns><c>true</c> if the object was successfully cached</returns>
 		/// <exception cref="CacheException"></exception>
-		bool Put(object key, object value, long txTimestamp);
+		bool Put( object key, object value, long txTimestamp );
 
 		/// <summary>
 		/// We are going to attempt to update/delete the keyed object
 		/// </summary>
 		/// <param name="key">The key</param>
 		/// <exception cref="CacheException"></exception>
-		void Lock(object key);
+		void Lock( object key );
 
 		/// <summary>
 		/// We have finished the attempted update/delete (which may or may not have been successful)
 		/// </summary>
 		/// <param name="key">The key</param>
 		/// <exception cref="CacheException"></exception>
-		void Release(object key);
+		void Release( object key );
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="key"></param>
 		/// <exception cref="CacheException"></exception>
-		void Remove(object key);
+		void Remove( object key );
 
 		/// <summary>
 		/// 
@@ -73,6 +71,6 @@ namespace NHibernate.Cache
 		/// Gets or sets the <see cref="ICache"/> for this strategy to use.
 		/// </summary>
 		/// <value>The <see cref="ICache"/> for this strategy to use.</value>
-		ICache Cache { get; set ;}
+		ICache Cache { get; set; }
 	}
 }

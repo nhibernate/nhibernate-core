@@ -1,34 +1,42 @@
 using System;
+using log4net;
 
-namespace NHibernate.Cache 
+namespace NHibernate.Cache
 {
 	/// <summary>
 	/// Caches data that is never updated
 	/// </summary>
-	public class ReadOnlyCache : ICacheConcurrencyStrategy 
+	public class ReadOnlyCache : ICacheConcurrencyStrategy
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ReadOnlyCache));
-		
+		private static readonly ILog log = LogManager.GetLogger( typeof( ReadOnlyCache ) );
+
 		private object lockObject = new object();
 		private ICache _cache;
 
-		public ReadOnlyCache() 
+		/// <summary></summary>
+		public ReadOnlyCache()
 		{
 		}
 
 		#region ICacheConcurrencyStrategy Members
 
-		public object Get(object key, long timestamp) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="timestamp"></param>
+		/// <returns></returns>
+		public object Get( object key, long timestamp )
 		{
-			lock( lockObject ) 
+			lock( lockObject )
 			{
-				if( log.IsDebugEnabled ) 
+				if( log.IsDebugEnabled )
 				{
 					log.Debug( "Cache lookup: " + key );
 				}
 
 				object result = _cache.Get( key );
-				if ( result!=null && log.IsDebugEnabled ) 
+				if( result != null && log.IsDebugEnabled )
 				{
 					log.Debug( "Cache hit" );
 				}
@@ -40,60 +48,87 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public void Lock(object key)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Lock( object key )
 		{
-			log.Error("Application attempted to edit read only item: " + key);
-			throw new InvalidOperationException("Can't write to a readonly object");
+			log.Error( "Application attempted to edit read only item: " + key );
+			throw new InvalidOperationException( "Can't write to a readonly object" );
 		}
 
-		public bool Put(object key, object value, long timestamp) {
-			
-			lock( lockObject ) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="timestamp"></param>
+		/// <returns></returns>
+		public bool Put( object key, object value, long timestamp )
+		{
+			lock( lockObject )
 			{
-				if (log.IsDebugEnabled) 
+				if( log.IsDebugEnabled )
 				{
-					log.Debug("Caching: " + key);
+					log.Debug( "Caching: " + key );
 				}
-				_cache.Put(key, value); 
+				_cache.Put( key, value );
 				return true;
 			}
 		}
 
-		public void Release(object key) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Release( object key )
 		{
-			log.Error("Application attempted to edit read only item: " + key);
-			throw new InvalidOperationException("Can't write to a readonly object");
+			log.Error( "Application attempted to edit read only item: " + key );
+			throw new InvalidOperationException( "Can't write to a readonly object" );
 		}
 
-		public void Clear() 
+		/// <summary>
+		/// 
+		/// </summary>
+		public void Clear()
 		{
 			_cache.Clear();
 		}
 
-		public void Remove(object key) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Remove( object key )
 		{
-			_cache.Remove(key);
+			_cache.Remove( key );
 		}
 
-		public void Destroy() 
+		/// <summary>
+		/// 
+		/// </summary>
+		public void Destroy()
 		{
-			try 
+			try
 			{
 				_cache.Destroy();
 			}
-			catch(Exception e) 
+			catch( Exception e )
 			{
-				log.Warn("Could not destroy cache", e);
+				log.Warn( "Could not destroy cache", e );
 			}
 		}
 
-		public ICache Cache 
+		/// <summary>
+		/// 
+		/// </summary>
+		public ICache Cache
 		{
 			get { return _cache; }
 			set { _cache = value; }
 		}
-		
-		#endregion
 
+		#endregion
 	}
 }

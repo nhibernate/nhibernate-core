@@ -1,7 +1,6 @@
-using System;
 using System.Collections;
 
-namespace NHibernate.Cache 
+namespace NHibernate.Cache
 {
 	/// <summary>
 	/// Cache Provider plugin for NHibernate that is configured by using
@@ -11,11 +10,21 @@ namespace NHibernate.Cache
 	{
 		#region ICacheProvider Members
 
-		public ICache BuildCache(string regionName, IDictionary properties)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="regionName"></param>
+		/// <param name="properties"></param>
+		/// <returns></returns>
+		public ICache BuildCache( string regionName, IDictionary properties )
 		{
 			return new HashtableCache( regionName );
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();

@@ -1,40 +1,46 @@
-using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
 
-namespace NHibernate.Cache 
+namespace NHibernate.Cache
 {
 	/// <summary>
 	/// A simple <c>Hashtable</c> based cache
 	/// </summary>
 	public class HashtableCache : ICache
 	{
-		private static object synchObject = new object();
+//		private static object synchObject = new object();
 		private Hashtable cache = new Hashtable();
 		private string region;
 
-		public HashtableCache(string region) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="region"></param>
+		public HashtableCache( string region )
 		{
 			this.region = region;
 		}
 
 		#region ICache Members
-		
-		public object Get(object key) 
+
+		/// <summary></summary>
+		public object Get( object key )
 		{
-			return cache[key];
+			return cache[ key ];
 		}
 
-		public void Put(object key, object value) 
+		/// <summary></summary>
+		public void Put( object key, object value )
 		{
-			cache[key] = value;
+			cache[ key ] = value;
 		}
 
-		public void Remove(object key)
+		/// <summary></summary>
+		public void Remove( object key )
 		{
-			cache.Remove(key);
+			cache.Remove( key );
 		}
 
+		/// <summary></summary>
 		public void Clear()
 		{
 			cache.Clear();
@@ -48,9 +54,10 @@ namespace NHibernate.Cache
 			cache = new Hashtable();
 		}
 
+		/// <summary></summary>
 		public string Region
 		{
-			set	{ region = value; }
+			set { region = value; }
 		}
 
 		#endregion

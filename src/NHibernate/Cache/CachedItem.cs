@@ -15,6 +15,10 @@ namespace NHibernate.Cache
 		private int theLock;
 		private object value;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
 		public CachedItem(object value)
 		{
 			this.value = value;
@@ -31,6 +35,9 @@ namespace NHibernate.Cache
 			get { return freshTimestamp; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public long UnlockTimestamp
 		{
 			get { return unlockTimestamp; }

@@ -1,6 +1,7 @@
 using System;
+using log4net;
 
-namespace NHibernate.Cache 
+namespace NHibernate.Cache
 {
 	/// <summary>
 	/// Caches data that is sometimes updated while maintaining "read committed"
@@ -9,43 +10,50 @@ namespace NHibernate.Cache
 	/// <remarks>
 	/// Works at the "Read Committed" isolation level
 	/// </remarks>
-	public class ReadWriteCache : ICacheConcurrencyStrategy 
+	public class ReadWriteCache : ICacheConcurrencyStrategy
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(ReadWriteCache) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( ReadWriteCache ) );
 		private readonly object lockObject = new object();
 		private ICache _cache;
 
-		public ReadWriteCache() 
+		/// <summary></summary>
+		public ReadWriteCache()
 		{
 		}
 
 		#region ICacheConcurrencyStrategy Members
 
-		public object Get(object key, long txTimestamp) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="txTimestamp"></param>
+		/// <returns></returns>
+		public object Get( object key, long txTimestamp )
 		{
-			lock( lockObject ) 
+			lock( lockObject )
 			{
-				if( log.IsDebugEnabled ) 
+				if( log.IsDebugEnabled )
 				{
-					log.Debug("Cache lookup: " + key);
+					log.Debug( "Cache lookup: " + key );
 				}
 
-				CachedItem item = _cache.Get(key) as CachedItem;
-				if (
-					item!=null &&
-					item.FreshTimestamp < txTimestamp &&
-					item.IsFresh // || txTimestamp < item.LockTimestamp
-					) 
+				CachedItem item = _cache.Get( key ) as CachedItem;
+				if(
+					item != null &&
+						item.FreshTimestamp < txTimestamp &&
+						item.IsFresh // || txTimestamp < item.LockTimestamp
+					)
 				{
-					if( log.IsDebugEnabled ) 
+					if( log.IsDebugEnabled )
 					{
 						log.Debug( "Cache hit: " + key );
 					}
 					return item.Value;
-				} 
-				else 
+				}
+				else
 				{
-					if( log.IsDebugEnabled ) 
+					if( log.IsDebugEnabled )
 					{
 						log.Debug( "Cache miss: " + key );
 					}
@@ -57,47 +65,61 @@ namespace NHibernate.Cache
 		//TODO: Actually keep locked CacheItems in a different Hashtable 
 		// in this class until unlocked
 
-		public void Lock(object key) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Lock( object key )
 		{
-			lock( lockObject ) 
+			lock( lockObject )
 			{
-				if( log.IsDebugEnabled ) 
+				if( log.IsDebugEnabled )
 				{
-					log.Debug("Invalidating: " + key);
+					log.Debug( "Invalidating: " + key );
 				}
-			
+
 				CachedItem item = _cache.Get( key ) as CachedItem;
-				if ( item==null ) item = new CachedItem( null );
+				if( item == null )
+				{
+					item = new CachedItem( null );
+				}
 				item.Lock();
 				_cache.Put( key, item );
 			}
 		}
 
-		public bool Put(object key, object value, long txTimestamp) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="txTimestamp"></param>
+		/// <returns></returns>
+		public bool Put( object key, object value, long txTimestamp )
 		{
-			lock( lockObject ) 
+			lock( lockObject )
 			{
-				if( log.IsDebugEnabled ) 
+				if( log.IsDebugEnabled )
 				{
 					log.Debug( "Caching: " + key );
 				}
-			
+
 				CachedItem item = _cache.Get( key ) as CachedItem;
-				if (
-					item==null ||
-					(item.IsUnlocked && !item.IsFresh && item.UnlockTimestamp < txTimestamp)
-					) 
+				if(
+					item == null ||
+						( item.IsUnlocked && !item.IsFresh && item.UnlockTimestamp < txTimestamp )
+					)
 				{
 					_cache.Put( key, new CachedItem( value ) );
-					if( log.IsDebugEnabled ) 
+					if( log.IsDebugEnabled )
 					{
 						log.Debug( "Cached: " + key );
 					}
 					return true;
-				} 
+				}
 				else
 				{
-					if( log.IsDebugEnabled ) 
+					if( log.IsDebugEnabled )
 					{
 						log.Debug( "Could not cache: " + key );
 					}
@@ -106,56 +128,72 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public void Release(object key) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Release( object key )
 		{
-			lock( lockObject ) 
+			lock( lockObject )
 			{
-				if( log.IsDebugEnabled ) 
+				if( log.IsDebugEnabled )
 				{
 					log.Debug( "Releasing: " + key );
 				}
 				CachedItem item = _cache.Get( key ) as CachedItem;
-				if( item!=null ) 
+				if( item != null )
 				{
 					item.Unlock();
 					_cache.Put( key, item );
-				} 
-				else 
+				}
+				else
 				{
 					log.Warn( "An item was expired by the cache while it was locked" );
 				}
 			}
 		}
 
-		public void Clear() 
+		/// <summary>
+		/// 
+		/// </summary>
+		public void Clear()
 		{
 			_cache.Clear();
 		}
 
-		public void Remove(object key) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Remove( object key )
 		{
 			_cache.Remove( key );
 		}
 
-		public void Destroy() 
+		/// <summary>
+		/// 
+		/// </summary>
+		public void Destroy()
 		{
-			try 
+			try
 			{
 				_cache.Destroy();
 			}
-			catch(Exception e) 
+			catch( Exception e )
 			{
 				log.Warn( "Could not destroy cache", e );
 			}
 		}
 
-		public ICache Cache 
+		/// <summary>
+		/// 
+		/// </summary>
+		public ICache Cache
 		{
 			get { return _cache; }
 			set { _cache = value; }
 		}
 
 		#endregion
-
 	}
 }

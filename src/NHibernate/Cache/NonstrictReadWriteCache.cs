@@ -1,42 +1,50 @@
 using System;
+using log4net;
 
-namespace NHibernate.Cache 
+namespace NHibernate.Cache
 {
 	/// <summary>
 	/// Summary description for NonstrictReadWriteCache.
 	/// </summary>
 	public class NonstrictReadWriteCache : ICacheConcurrencyStrategy
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(NonstrictReadWriteCache));
+		private static readonly ILog log = LogManager.GetLogger( typeof( NonstrictReadWriteCache ) );
 		private static readonly long timeout = 10000;
 
 		private ICache _cache;
 
-		public NonstrictReadWriteCache() 
+		/// <summary></summary>
+		public NonstrictReadWriteCache()
 		{
 		}
 
 		#region ICacheConcurrencyStrategy Members
 
-		public object Get(object key, long txTimestamp)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="txTimestamp"></param>
+		/// <returns></returns>
+		public object Get( object key, long txTimestamp )
 		{
-			if( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Cache lookup: " + key );
 			}
 
-			object result = _cache.Get(key);
-			if( result!=null & !(result is Int64) ) 
+			object result = _cache.Get( key );
+			if( result != null & !( result is Int64 ) )
 			{
-				if (log.IsDebugEnabled) 
+				if( log.IsDebugEnabled )
 				{
 					log.Debug( "Cache hit" );
 				}
 				return result;
 			}
-			else 
+			else
 			{
-				if( log.IsDebugEnabled ) 
+				if( log.IsDebugEnabled )
 				{
 					log.Debug( "Cache miss" );
 				}
@@ -45,26 +53,33 @@ namespace NHibernate.Cache
 			return null;
 		}
 
-		public bool Put(object key, object value, long txTimestamp)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		/// <param name="txTimestamp"></param>
+		/// <returns></returns>
+		public bool Put( object key, object value, long txTimestamp )
 		{
 			object result = _cache.Get( key );
-			if( result==null ) 
+			if( result == null )
 			{
-				if( log.IsDebugEnabled ) 
+				if( log.IsDebugEnabled )
 				{
-					log.Debug("Caching new: " + key);
+					log.Debug( "Caching new: " + key );
 				}
 			}
-			else if( (result is Int64) && ( (Int64)result < txTimestamp / Timestamper.OneMs ) )
+			else if( ( result is Int64 ) && ( ( Int64 ) result < txTimestamp/Timestamper.OneMs ) )
 			{
 				// note that this is not guaranteed to be correct in a cluster
 				// because system times could be inconsistent
-				if( log.IsDebugEnabled ) 
+				if( log.IsDebugEnabled )
 				{
 					log.Debug( "Caching invalidated: " + key );
 				}
 			}
-			else 
+			else
 			{
 				return false; // note early exit
 			}
@@ -73,54 +88,69 @@ namespace NHibernate.Cache
 			return true;
 		}
 
-		public void Lock(object key)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Lock( object key )
 		{
 			// in case the server crashes, we need the lock to timeout
-			_cache.Put( key, ( timeout + Timestamper.Next() / Timestamper.OneMs ) );
+			_cache.Put( key, ( timeout + Timestamper.Next()/Timestamper.OneMs ) );
 		}
 
-		public void Release(object key)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Release( object key )
 		{
-			if( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Invalidating: " + key );
 			}
 
 			//remove the lock (any later transactions can recache)
-			_cache.Put( key, Timestamper.Next() / Timestamper.OneMs );
+			_cache.Put( key, Timestamper.Next()/Timestamper.OneMs );
 		}
 
-		public void Remove(object key)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		public void Remove( object key )
 		{
-			if( log.IsDebugEnabled )  
+			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Removing: " + key );
 			}
 			_cache.Remove( key );
 		}
 
+		/// <summary></summary>
 		public void Clear()
 		{
-			if( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Clearing" );
 			}
 			_cache.Clear();
 		}
 
+		/// <summary></summary>
 		public void Destroy()
 		{
-			try 
+			try
 			{
 				_cache.Destroy();
 			}
-			catch(Exception e) 
+			catch( Exception e )
 			{
 				log.Warn( "Could not destroy cache", e );
 			}
 		}
 
-		public ICache Cache 
+		/// <summary></summary>
+		public ICache Cache
 		{
 			get { return _cache; }
 			set { _cache = value; }
