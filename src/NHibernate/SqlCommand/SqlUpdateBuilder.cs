@@ -154,11 +154,11 @@ namespace NHibernate.SqlCommand
 		/// <summary>
 		/// Adds a string to the WhereFragement
 		/// </summary>
-		/// <param name="whereString">A well formed sql string with no parameters.</param>
+		/// <param name="whereSql">A well formed sql string with no parameters.</param>
 		/// <returns>The SqlUpdateBuilder</returns>
-		public SqlUpdateBuilder AddWhereFragment( string whereString )
+		public SqlUpdateBuilder AddWhereFragment( string whereSql )
 		{
-			whereStrings.Add( new SqlString( whereString ) );
+			whereStrings.Add( new SqlString( whereSql ) );
 			return this;
 		}
 

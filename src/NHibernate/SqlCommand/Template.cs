@@ -87,16 +87,18 @@ namespace NHibernate.SqlCommand
 		/// <summary>
 		/// Takes the where condition provided in the mapping attribute and iterpolates the alias.
 		/// </summary>
-		/// <param name="sqlWhereString"></param>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
-		public static string RenderWhereStringTemplate( string sqlWhereString, Dialect.Dialect dialect )
+		/// <param name="whereSql">The "where" sql statement from the mapping attribute.</param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with rendering the Sql.</param>
+		/// <returns>
+		/// A well formed "where" sql statement for the <see cref="Dialect.Dialect"/>.
+		/// </returns>
+		public static string RenderWhereStringTemplate( string whereSql, Dialect.Dialect dialect )
 		{
 			//TODO: make this a bit nicer.
 
-			StringTokenizer tokens = new StringTokenizer( sqlWhereString, delimiters, true );
+			StringTokenizer tokens = new StringTokenizer( whereSql, delimiters, true );
 
-			StringBuilder result = new StringBuilder( sqlWhereString.Length + 10 );
+			StringBuilder result = new StringBuilder( whereSql.Length + 10 );
 
 			bool quoted = false;
 			bool afterFrom = false;
@@ -164,16 +166,18 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Takes order-by clause in the mapping attribute and iterpolates the alias
+		/// Takes "order by" clause in the mapping attribute and iterpolates the alias
 		/// </summary>
-		/// <param name="sqlOrderByString"></param>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
-		public static string RenderOrderByStringTemplate( string sqlOrderByString, Dialect.Dialect dialect )
+		/// <param name="orderBySql">The "order by" sql statement from the mapping.</param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with rendering the Sql.</param>
+		/// <returns>
+		/// A well formed "order by" sql statement for the <see cref="Dialect.Dialect"/>.
+		/// </returns>
+		public static string RenderOrderByStringTemplate( string orderBySql, Dialect.Dialect dialect )
 		{
 			//TODO: make this a bit nicer
-			StringTokenizer tokens = new StringTokenizer( sqlOrderByString, ",", false );
-			StringBuilder result = new StringBuilder( sqlOrderByString.Length + 2 );
+			StringTokenizer tokens = new StringTokenizer( orderBySql, ",", false );
+			StringBuilder result = new StringBuilder( orderBySql.Length + 2 );
 			bool commaNeeded = false;
 			IEnumerator tokenEnum = tokens.GetEnumerator();
 

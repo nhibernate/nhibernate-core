@@ -21,7 +21,9 @@ namespace NHibernate.SqlCommand
 		private StringBuilder groupBy = new StringBuilder();
 		private StringBuilder orderBy = new StringBuilder();
 		private StringBuilder having = new StringBuilder();
-		private bool distinct = false;
+		
+		// false by default
+		private bool distinct;
 
 		/// <summary>
 		/// Certain databases don't like spaces around these operators.
@@ -199,16 +201,17 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// 
+		/// Adds a string containing a valid "order by" sql statement
+		/// to this QuerySelect
 		/// </summary>
-		/// <param name="orderByString"></param>
-		public void AddOrderBy( string orderByString )
+		/// <param name="orderBySql">The "order by" sql statement.</param>
+		public void AddOrderBy( string orderBySql )
 		{
 			if( orderBy.Length > 0 )
 			{
 				orderBy.Append( StringHelper.CommaSpace );
 			}
-			orderBy.Append( orderByString );
+			orderBy.Append( orderBySql );
 		}
 
 		/// <summary></summary>

@@ -39,7 +39,7 @@ namespace NHibernate.SqlCommand
 					joinString = " full outer join ";
 					break;
 				default:
-					throw new AssertionFailure( "undefind join type" );
+					throw new AssertionFailure( "undefined join type" );
 			}
 
 			buffer.Add( joinString + tableName + ' ' + alias + " on " );
