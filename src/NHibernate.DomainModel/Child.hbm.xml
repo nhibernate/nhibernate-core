@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
-    <class name="NHibernate.DomainModel.Child, NHibernate.DomainModel"><!-- assemblyName="NHibernate.DomainModel"-->
+    <class name="NHibernate.DomainModel.Child, NHibernate.DomainModel">
 		<id name="Id" column="id">
 			<generator class="assigned" />
 		</id>
@@ -9,18 +9,18 @@
 		<property name="FullName" type="String(45)" column="full_name" />
 		<property name="FavoriteDate" type="DateTime" column="favorite_date" />
 		
-		<many-to-one name="Sex" class="NHibernate.DomainModel.SexType, NHibernate.DomainModel" column="sex_type_id"/><!--assemblyName="NHibernate.DomainModel" -->
+		<many-to-one name="Sex" class="NHibernate.DomainModel.SexType, NHibernate.DomainModel" column="sex_type_id"/>
 		
 		<map name="Parents" table="child_parent" lazy="true">
 			<key column="child_id" />
 			<index column="which_parent" type="String" />
-			<many-to-many column="parent_id" class="NHibernate.DomainModel.Parent, NHibernate.DomainModel" /> <!--assemblyName="NHibernate.DomainModel" -->
+			<many-to-many column="parent_id" class="NHibernate.DomainModel.Parent, NHibernate.DomainModel" />
 		</map>
 		
 		<list name="Siblings" table="child_siblings" lazy="true">
 			<key column="child_id" />
 			<index column="which_sibling" />
-			<many-to-many column="sibling_child_id" class="NHibernate.DomainModel.Child, NHibernate.DomainModel" /> <!--assemblyName="NHibernate.DomainModel" -->
+			<many-to-many column="sibling_child_id" class="NHibernate.DomainModel.Child, NHibernate.DomainModel" />
 		</list>
 
 		<!--
@@ -32,7 +32,7 @@
 		<array name="Friends" table="child_friends">
 			<key column="child_id" />
 			<index column="friend_index" />
-			<many-to-many column="friend_id" class="NHibernate.DomainModel.Child, NHibernate.DomainModel" /> <!--assemblyName="NHibernate.DomainModel" -->
+			<many-to-many column="friend_id" class="NHibernate.DomainModel.Child, NHibernate.DomainModel" />
 		</array>
 		
 	</class>

@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
-    <class name="NHibernate.DomainModel.Parent, NHibernate.DomainModel"> <!-- assemblyName="NHibernate.DomainModel"-->
+    <class name="NHibernate.DomainModel.Parent, NHibernate.DomainModel"> 
 		<id name="Id" column="id">
 			<generator class="assigned" />
 		</id>
@@ -9,12 +9,12 @@
 		<!--<map name="Children" inverse="true" lazy="false" table="child_parent">
 			<key column="parent_id"/>
 			<index column="which_parent" type="string" />
-			<many-to-many column="id" class="NHibernate.DomainModel.Child" assemblyName="NHibernate.DomainModel" />
+			<many-to-many column="id" class="NHibernate.DomainModel.Child, NHibernate.DomainModel" />
 		</map>-->
 
 		<set name="AdultFriends" table="parent_friends" sort="NHibernate.DomainModel.ParentComparer, NHibernate.DomainModel">
 			<key column="parent_id" />
-			<many-to-many column="parent_friend_id" class="NHibernate.DomainModel.Parent, NHibernate.DomainModel" /><!--</many-to-many> assemblyName="NHibernate.DomainModel" -->
+			<many-to-many column="parent_friend_id" class="NHibernate.DomainModel.Parent, NHibernate.DomainModel" />
 		</set>
 
 	</class>

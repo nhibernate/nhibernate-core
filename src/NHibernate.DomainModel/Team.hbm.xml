@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
-    <class name="NHibernate.DomainModel.Team, NHibernate.DomainModel"> <!-- assemblyName="NHibernate.DomainModel"-->
+    <class name="NHibernate.DomainModel.Team, NHibernate.DomainModel">
 		<id name="Id" column="team_id">
 			<generator class="identity" />
 		</id>
@@ -9,7 +9,7 @@
 		<list name="Players" lazy="true">
 			<key column="team_id" />
 			<index column="player_index" type="Int32" />
-			<one-to-many class="NHibernate.DomainModel.Child, NHibernate.DomainModel"/> <!-- assemblyName="NHibernate.DomainModel" -->
+			<one-to-many class="NHibernate.DomainModel.Child, NHibernate.DomainModel"/>
 		</list>
 
 	</class>
