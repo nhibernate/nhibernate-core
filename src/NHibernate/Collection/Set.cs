@@ -5,32 +5,21 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-using Iesi.Collections;
-
 namespace NHibernate.Collection 
 {
 	/// <summary>
-	/// .NET has no design equivalent for Java's Set.  So we are going to build a 
-	/// wrapper around the IDictionary interface that is going to behaive like a Set.
-	/// I suggest that the class that contains the IDictionary that is supposed 
-	/// to behaive like a Set does not expose the IDictionary field/property and instead
-	/// exposes typed methods like Add() and Contains() and the Keys enumerator.
-	/// 
-	/// Some of the ways the IDictionary interface will be changed to interact will be:
-	/// 
-	/// Add(key,value): the value really doesn't matter - this mimics the java definition of a 
-	/// set because you can only add an object (the key) once.  There is no matching value 
-	/// for that key because it is what you care about.  
-	/// 
-	/// Values: will work but there is no guarantee that it contains a meaningful object.
-	/// 
-	/// this[key]: will work but there is no guarantee that it contains a meaningful object.
+	/// .NET has no design equivalent for Java's Set so we are going to use the
+	/// Iesi.Collections library.
 	/// </summary>
+	/// <remarks>
+	/// The code for the Iesi.Collections library was taken from the article
+	/// <a href="http://www.codeproject.com/csharp/sets.asp">Add Support for "Set" Collections
+	/// to .NET</a> that was written by JasonSmith.
+	/// </remarks>
 	[Serializable]
-	public class Set : PersistentCollection, ISet	
+	public class Set : PersistentCollection, Iesi.Collections.ISet	
 	{
-		//protected IDictionary map;
-		protected ISet _set;
+		protected Iesi.Collections.ISet _set;
 		
 		[NonSerialized] protected IList tempIdentifierList;
 
@@ -42,10 +31,8 @@ namespace NHibernate.Collection
 		protected override object Snapshot(CollectionPersister persister) 
 		{
 			Hashtable clonedMap = new Hashtable( _set.Count );
-			//foreach(DictionaryEntry e in map) 
 			foreach( object obj in _set )
 			{
-				// the key is the object we are interested in cloning
 				object copied = persister.ElementType.DeepCopy( obj );
 				clonedMap[ copied ] = copied;
 			}
@@ -57,7 +44,6 @@ namespace NHibernate.Collection
 			IDictionary sn = (IDictionary)snapshot;
 			ArrayList result = new ArrayList(sn.Keys.Count);
 			result.AddRange(sn.Keys);
-			//PersistentCollection.IdentityRemoveAll(result, map.Keys, session);
 			PersistentCollection.IdentityRemoveAll( result,_set, session );
 			return result;
 		}
@@ -97,9 +83,8 @@ namespace NHibernate.Collection
 		/// <remarks>
 		/// Only call this constructor if you consider the map initialized.
 		/// </remarks>
-		public Set(ISessionImplementor session, ISet collection) : base(session) 
+		public Set(ISessionImplementor session, Iesi.Collections.ISet collection) : base(session) 
 		{
-			//this.map = map;
 			_set = collection;
 			initialized = true;
 			directlyAccessible = true;
@@ -131,6 +116,19 @@ namespace NHibernate.Collection
 				_set = new Iesi.Collections.HashedSet();
 			}
 		}
+		
+		
+
+		#region System.Collections.ICollection Members
+        
+		/// <summary>
+		/// <see cref="ICollection.CopyTo"/>
+		/// </summary>
+		public override void CopyTo(System.Array array, int index) 
+		{
+			Read();
+			_set.CopyTo( array, index );
+		}
 
 		/// <summary>
 		/// <see cref="ICollection.Count"/>
@@ -144,35 +142,10 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public bool IsEmpty 
-		{
-			get 
-			{
-				Read();
-				return _set.IsEmpty;
-			}
-		}
-
 		/// <summary>
 		/// <see cref="ICollection.IsSynchronized"/>
 		/// </summary>
 		public override bool IsSynchronized 
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// <see cref="IDictionary.IsFixedSize"/>
-		/// </summary>
-		public bool IsFixedSize 
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// <see cref="IDictionary.IsReadOnly"/>
-		/// </summary>
-		public bool IsReadOnly 
 		{
 			get { return false; }
 		}
@@ -185,37 +158,22 @@ namespace NHibernate.Collection
 			get { return this; }
 		}
 
-		/// <summary>
-		/// <see cref="IEnumerable.GetEnumerator"/>
-		/// </summary>
-		public override IEnumerator GetEnumerator() 
-		{
-			Read();
-			return _set.GetEnumerator();
-		}
+		#endregion
 
+		#region Iesi.Collections.ISet Memebers
 
-		/// <summary>
-		/// <see cref="ICollection.CopyTo"/>
-		/// </summary>
-		public override void CopyTo(System.Array array, int index) 
-		{
-			Read();
-			_set.CopyTo( array, index );
-		}
-		
-		/// <summary>
-		/// <see cref="IDictionary.Add"/>
-		/// </summary>
 		public bool Add(object value) 
 		{
 			Write();
 			return _set.Add( value );
 		}
 		
-		/// <summary>
-		/// <see cref="IDictionary.Contains"/>
-		/// </summary>
+		public void Clear() 
+		{
+			Write();
+			_set.Clear();
+		}
+
 		public bool Contains(object key) 
 		{
 			Read();
@@ -227,10 +185,34 @@ namespace NHibernate.Collection
 			Read();
 			return _set.ContainsAll( c );
 		}
+		
+		public Iesi.Collections.ISet ExclusiveOr(Iesi.Collections.ISet a) 
+		{
+			Read();
+			return _set.ExclusiveOr( a );
+		}
 
-		/// <summary>
-		/// <see cref="IDictionary.Remove"/>
-		/// </summary>
+		public Iesi.Collections.ISet Intersect(Iesi.Collections.ISet a) 
+		{
+			Read();
+			return _set.Intersect( a );
+		}
+
+		public bool IsEmpty 
+		{
+			get 
+			{
+				Read();
+				return _set.IsEmpty;
+			}
+		}
+
+		public Iesi.Collections.ISet Minus(Iesi.Collections.ISet a) 
+		{
+			Read();
+			return _set.Minus( a );
+		}
+
 		public bool Remove(object key) 
 		{
 			Write();
@@ -249,44 +231,53 @@ namespace NHibernate.Collection
 			return _set.RetainAll( c );
 		}
 
+		public Iesi.Collections.ISet Union(Iesi.Collections.ISet a) 
+		{
+			Read();
+			return _set.Union( a );
+		}
+
+		#endregion
+
+//		/// <summary>
+//		/// <see cref="IDictionary.IsFixedSize"/>
+//		/// </summary>
+//		public bool IsFixedSize 
+//		{
+//			get { return false; }
+//		}
+//
+//		/// <summary>
+//		/// <see cref="IDictionary.IsReadOnly"/>
+//		/// </summary>
+//		public bool IsReadOnly 
+//		{
+//			get { return false; }
+//		}
+
+		#region System.Collections.IEnumerable Members
+
+		/// <summary>
+		/// <see cref="IEnumerable.GetEnumerator"/>
+		/// </summary>
+		public override IEnumerator GetEnumerator() 
+		{
+			Read();
+			return _set.GetEnumerator();
+		}
+
+		#endregion
+
+		
+		#region System.Collections.ICloneable Members
+		
 		public object Clone() 
 		{
 			Read();
 			return _set.Clone();
 		}
 
-		public ISet ExclusiveOr(ISet a) 
-		{
-			Read();
-			return _set.ExclusiveOr( a );
-		}
-
-		public ISet Intersect(ISet a) 
-		{
-			Read();
-			return _set.Intersect( a );
-		}
-
-		public ISet Minus(ISet a) 
-		{
-			Read();
-			return _set.Minus( a );
-		}
-
-		public ISet Union(ISet a) 
-		{
-			Read();
-			return _set.Union( a );
-		}
-
-		/// <summary>
-		/// <see cref="IDictionary.Clear"/>
-		/// </summary>
-		public void Clear() 
-		{
-			Write();
-			_set.Clear();
-		}
+		#endregion
 
 		/// <summary>
 		/// <see cref="PersistentCollection.Elements"/>

@@ -8,15 +8,11 @@ using NHibernate.Type;
 namespace NHibernate.Collection 
 {
 	/// <summary>
-	/// A Persistent wrapper for a <c>System.Collections.IDictionary</c> that has
+	/// A Persistent wrapper for a <c>Iesi.Collections.ISet</c> that has
 	/// Set logic to prevent duplicate elements.
 	/// </summary>
 	/// <remarks>
-	/// This class uses the SortedList as the underlying map for the SortedSet.  The SortedList
-	/// is not really an IList at all.  It actually is a Hashtable that provides methods to get
-	/// to a Key by its index.  Since it is sorted the indexes can change based on what is added
-	/// to the Dictionary.  In my opinion, the index is not useful except to get the first or last
-	/// element.
+	/// This class uses the Iesi.Collections.SortedSet for the SortedSet.  
 	/// </remarks>
 	[Serializable]
 	public class SortedSet : Set, Iesi.Collections.ISet  
