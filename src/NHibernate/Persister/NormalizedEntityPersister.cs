@@ -1451,7 +1451,7 @@ namespace NHibernate.Persister
 			//TODO: H2.0.3 synch - figure out what is different here and why it is different
 			// make sure an Alias was actually passed into the statement
 			if(alias!=null && alias!=String.Empty) 
-				return StringHelper.Prefix(cols, alias + StringHelper.Dot);
+				return StringHelper.Prefix(cols, Alias(alias, tableIndex) + StringHelper.Dot);
 			else 
 				return cols;
 
@@ -1532,7 +1532,9 @@ namespace NHibernate.Persister
 
 		public override string QueryWhereFragment(string alias, bool innerJoin, bool includeSubclasses)  
 		{
-			return WhereJoinFragment(alias, innerJoin, includeSubclasses);
+			string result = WhereJoinFragment(alias, innerJoin, includeSubclasses);
+			if( HasWhere ) result += " and " + GetSQLWhereString(alias);
+			return result;
 		}
 		
 		public override string[] IdentifierColumnNames
