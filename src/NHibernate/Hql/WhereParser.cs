@@ -434,8 +434,7 @@ namespace NHibernate.Hql
 			else if (token.StartsWith(ParserHelper.HqlVariablePrefix)) //named query parameter
 			{
 				q.AddNamedParameter(token.Substring(1));
-				//TODO: H2.0.3 why token is not '?' ??
-				AppendToken(q, "[<" + token.Substring(1) + ">]"); // THEO
+				AppendToken(q, StringHelper.SqlParameter);
 			} 
 			else 
 			{
