@@ -1,0 +1,130 @@
+using System;
+using System.Data;
+
+namespace NHibernate.Driver
+{
+	/// <summary>
+	/// A strategy for describing how NHibernate should interact with the different .NET Data
+	/// Providers.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// The <c>IDriver</c> interface is not intended to be exposed to the application.
+	/// Instead it is used internally by Hibernate to obtain connection objects, command objects, and
+	/// to format an IDbCommand's CommandText. Implementors should provide a public default constructor.
+	/// </para>
+	/// <para>
+	/// This is the interface to implement, or you can inherit from <see cref="DriverBase"/> 
+	/// if you have a .NET DataProvider that NHibernate does not have built in support for.
+	/// </para>
+	/// <para>
+	/// For example, there is an Assembly for the ByteFX.Data MySql DataProvider.  
+	/// It is part of the <c>NHibernate.Driver</c> namespace and that is where your
+	/// DataProvider should be placed.  The assembly should start with the name <c>NHibernate.Driver</c>,
+	/// however it does not have to.  The MySql DataProvider is in an assembly called <c>NHibernate.Driver.ByteFX.dll</c>.
+	/// For someone to use it all that needs to be done is in the configuration file for NHibernate this should be
+	/// there.
+	/// </para>
+	/// <code>
+	/// key="hibernate.connection.driver_class"          
+	/// value="FullyQualifiedClassName, AssemblyName" 
+	/// </code>
+	/// <para>
+	/// This is the standard .NET way to load a class from an external assembly.
+	/// </para>
+	/// </remarks>
+	public interface IDriver
+	{
+
+		/// <summary>
+		/// Creates an uninitialized IDbConnection object for the specific Driver
+		/// </summary>
+		IDbConnection CreateConnection();
+
+		/// <summary>
+		/// Creates an empty IDbCommand object for the specific Driver
+		/// </summary>
+		/// <remarks>
+		/// The reason for having this method is that Interfaces in ADO.NET require 
+		/// the use of a IDbCommand.CreateCommand - when we are making the IDbCommand
+		/// objects we might not have a particular connection to create the commands
+		/// from.
+		/// </remarks>
+		IDbCommand CreateCommand();
+
+		/// <summary>
+		/// Does this Driver require the use of a Named Prefix in the SQL statement.  
+		/// </summary>
+		/// <remarks>
+		/// For example, SqlClient requires <c>select * from simple where simple_id = @simple_id</c>
+		/// If this is false, like with the OleDb provider, then it is assumed that  
+		/// the <c>?</c> can be a placeholder for the parameter in the SQL statement.
+		/// </remarks>
+		bool UseNamedPrefixInSql {get;}
+
+		/// <summary>
+		/// Does this Driver require the use of the Named Prefix when trying
+		/// to reference the Parameter in the Command's Parameter collection.  
+		/// </summary>
+		/// <remarks>
+		/// This is really only useful when the UseNamedPrefixInSql == true.  When this is true the
+		/// code will look like:
+		/// <code>IDbParameter param = cmd.Parameters["@paramName"]</code>
+		/// if this is false the code will be 
+		/// <code>IDbParameter param = cmd.Parameters["paramName"]</code>.
+		/// </remarks>
+		bool UseNamedPrefixInParameter {get;}
+
+		/// <summary>
+		/// The Named Prefix for parameters.  
+		/// </summary>
+		/// <remarks>
+		/// Sql Server uses <c>"@"</c> and Oracle uses <c>":"</c>.
+		/// </remarks>
+		string NamedPrefix  {get;}
+
+		/// <summary>
+		/// Change the parameterName into the correct format IDbCommand.CommandText
+		/// for the ConnectionProvider
+		/// </summary>
+		/// <param name="parameterName">The unformatted name of the parameter</param>
+		/// <returns>A parameter formatted for an IDbCommand.CommandText</returns>
+		string FormatNameForSql(string parameterName);
+
+		/// <summary>
+		/// Change the parameterName into the correct format IDbCommand.CommandText
+		/// for the ConnectionProvider
+		/// </summary>
+		/// <param name="tableAlias">The Alias for the Table.</param>
+		/// <param name="parameterName">The unformatted name of the parameter</param>
+		/// <returns>A parameter formatted for an IDbCommand.CommandText</returns>
+		string FormatNameForSql(string tableAlias, string parameterName);
+
+
+		/// <summary>
+		/// Changes the parameterName into the correct format for an IDbParameter
+		/// for the Driver.
+		/// </summary>
+		/// <remarks>
+		/// For SqlServerConnectionProvider it will change <c>id</c> to <c>@id</c>
+		/// </remarks>
+		/// <param name="parameterName">The unformatted name of the parameter</param>
+		/// <returns>A parameter formatted for an IDbParameter.</returns>
+		string FormatNameForParameter(string parameterName);
+
+		/// <summary>
+		/// Changes the parameterName into the correct format for an IDbParameter
+		/// for the Driver.
+		/// </summary>
+		/// <remarks>
+		/// For SqlServerConnectionProvider it will change <c>id</c> to <c>@id</c>
+		/// </remarks>
+		/// <param name="tableAlias">The Alias for the Table.</param>
+		/// <param name="parameterName">The unformatted name of the parameter</param>
+		/// <returns>A parameter formatted for an IDbParameter.</returns>
+		string FormatNameForParameter(string tableAlias, string parameterName);
+		
+		
+
+	}
+}

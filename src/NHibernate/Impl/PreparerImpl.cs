@@ -68,7 +68,7 @@ namespace NHibernate.Impl {
 				return (IDbCommand)builtCommands[sql];
 			}
 			else {
-				IDbCommand cmd = factory.ConnectionProvider.CreateCommand();
+				IDbCommand cmd = factory.ConnectionProvider.Driver.CreateCommand();
 				cmd.CommandText = sql;
 				
 				builtCommands.Add(sql, cmd);
@@ -83,7 +83,7 @@ namespace NHibernate.Impl {
 			if(builtCommands.ContainsKey(sqlString)) 
 				return (IDbCommand) builtCommands[sqlString];
 			
-			IDbCommand cmd = factory.ConnectionProvider.CreateCommand();
+			IDbCommand cmd = factory.ConnectionProvider.Driver.CreateCommand();
 
 			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Length * 15);
 			foreach(object part in sqlString.SqlParts) {

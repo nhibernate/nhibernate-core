@@ -33,6 +33,7 @@ namespace NHibernate.Cfg {
 		private const string Version = "0.1 beta 1";
 
 		public const string ConnectionProvider = "hibernate.connection.provider";
+		public const string ConnectionDriver = "hibernate.connection.driver_class";
 		public const string ConnectionString = "hibernate.connection.connection_string";
 		public const string Isolation = "hibernate.connection.isolation";
 		public const string StatementCacheSize = "hibernate.statement_cache.size";

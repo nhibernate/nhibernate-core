@@ -38,11 +38,11 @@ namespace NHibernate.SqlCommand
 		
 		public string GetSqlName(IConnectionProvider provider){
 			
-			return provider.FormatNameForSql(tableAlias, name);
+			return provider.Driver.FormatNameForSql(tableAlias, name);
 		}
 
 		public string GetParameterName(IConnectionProvider provider){
-			return provider.FormatNameForParameter(tableAlias, name);
+			return provider.Driver.FormatNameForParameter(tableAlias, name);
 		}
 
 		public virtual IDbDataParameter GetIDbDataParameter(IDbCommand command, IConnectionProvider provider) {

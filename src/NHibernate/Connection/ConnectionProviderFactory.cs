@@ -39,8 +39,9 @@ namespace NHibernate.Connection
 			} 
 			else 
 			{
+				throw new NotImplementedException("We have not implemented user supplied connections yet.");
 //				connections = new UserSuppliedConnectionProvider();
-				connections = new SqlServerConnectionProvider();
+//				connections = new SqlServerConnectionProvider();
 			}
 			connections.Configure(settings);
 			return connections;

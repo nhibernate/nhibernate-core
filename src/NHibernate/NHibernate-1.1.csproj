@@ -95,6 +95,16 @@
                     HintPath = "C:\Program Files\OSS.NET\NUnit V2.1\\bin\nunit.framework.dll"
                     AssemblyFolderKey = "hklm\dn\nunit.framework"
                 />
+                <Reference
+                    Name = "System.Web"
+                    AssemblyName = "System.Web"
+                    HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
+                />
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -426,22 +436,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Connection\DriverConnectionProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Connection\IConnectionProvider.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Connection\OdbcConnectionProvider.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Connection\OleDbConnectionProvider.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Connection\SqlServerConnectionProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -482,6 +482,31 @@
                 />
                 <File
                     RelPath = "Dialect\TypeNames.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\DriverBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\IDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\OdbcDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\OleDbDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\SqlClientDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
