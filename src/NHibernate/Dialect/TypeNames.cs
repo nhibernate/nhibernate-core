@@ -1,10 +1,8 @@
-using System;
 using System.Collections;
 using System.Data;
-
 using NHibernate.Util;
 
-namespace NHibernate.Dialect 
+namespace NHibernate.Dialect
 {
 	/// <summary>
 	/// This class maps a DbType to names.
@@ -39,7 +37,7 @@ namespace NHibernate.Dialect
 	///		Names.Get(DbType,10000)	// --> "VARCHAR(10000)"
 	/// </code>
 	/// </remarks>
-	public class TypeNames 
+	public class TypeNames
 	{
 		private string placeholder;
 		private Hashtable weighted = new Hashtable();
@@ -49,7 +47,7 @@ namespace NHibernate.Dialect
 		/// Constructor.
 		/// </summary>
 		/// <param name="placeholder">String to be replaced by actual size/length in type names</param>
-		public TypeNames(string placeholder) 
+		public TypeNames( string placeholder )
 		{
 			this.placeholder = placeholder;
 		}
@@ -59,9 +57,9 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="typecode">the type key</param>
 		/// <returns>the default type name associated with the specified key</returns>
-		public string Get(DbType typecode) 
+		public string Get( DbType typecode )
 		{
-			return (string) defaults[typecode];
+			return ( string ) defaults[ typecode ];
 		}
 
 		/// <summary>
@@ -73,45 +71,50 @@ namespace NHibernate.Dialect
 		/// The associated name with smallest capacity >= size if available and the
 		/// default type name otherwise
 		/// </returns>
-		public string Get(DbType typecode, int size) 
+		public string Get( DbType typecode, int size )
 		{
-			IDictionary map = weighted[typecode] as IDictionary;
-			if (map != null && map.Count > 0) 
+			IDictionary map = weighted[ typecode ] as IDictionary;
+			if( map != null && map.Count > 0 )
 			{
-				foreach(int entrySize in map.Keys) 
+				foreach( int entrySize in map.Keys )
 				{
-					if (size <= entrySize) 
+					if( size <= entrySize )
 					{
 						return StringHelper.ReplaceOnce(
-							(string) map[entrySize],
+							( string ) map[ entrySize ],
 							placeholder,
 							size.ToString()
 							);
 					}
 				}
 			}
-			return StringHelper.ReplaceOnce(Get(typecode), placeholder, size.ToString());
+			return StringHelper.ReplaceOnce( Get( typecode ), placeholder, size.ToString() );
 		}
 
 		/// <summary>
 		/// Set a type name for specified type key and capacity
 		/// </summary>
 		/// <param name="typecode">the type key</param>
-		/// <param name="size">the (maximum) type size/length</param>
+		/// <param name="capacity">the (maximum) type size/length</param>
 		/// <param name="value">The associated name</param>
-		public void Put(DbType typecode, int capacity, string value) 
+		public void Put( DbType typecode, int capacity, string value )
 		{
 			SequencedHashMap map = weighted[ typecode ] as SequencedHashMap;
-			if (map==null) 
+			if( map == null )
 			{
-				weighted[typecode] = map = new SequencedHashMap();
+				weighted[ typecode ] = map = new SequencedHashMap();
 			}
-			map[capacity] = value;
+			map[ capacity ] = value;
 		}
 
-		public void Put(DbType typecode, string value) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="typecode"></param>
+		/// <param name="value"></param>
+		public void Put( DbType typecode, string value )
 		{
-			defaults[typecode] = value;
+			defaults[ typecode ] = value;
 		}
 
 	}

@@ -1,5 +1,3 @@
-using System;
-
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Type;
@@ -18,32 +16,48 @@ namespace NHibernate.Dialect
 	{
 		private IType returnType = null;
 
+		/// <summary></summary>
 		public QueryFunctionStandard()
 		{
 		}
 
-		public QueryFunctionStandard(IType returnType) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="returnType"></param>
+		public QueryFunctionStandard( IType returnType )
 		{
 			this.returnType = returnType;
 		}
 
 		#region IQueryFunctionInfo Members
 
-		public IType QueryFunctionType(IType columnType, IMapping mapping)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="columnType"></param>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		public IType QueryFunctionType( IType columnType, IMapping mapping )
 		{
-			if(returnType==null) return columnType;
+			if( returnType == null )
+			{
+				return columnType;
+			}
 
 			return returnType;
 		}
 
+		/// <summary></summary>
 		public bool IsFunctionArgs
 		{
-			get{ return true;}
+			get { return true; }
 		}
 
+		/// <summary></summary>
 		public bool IsFunctionNoArgsUseParanthesis
 		{
-			get	{ return true;}
+			get { return true; }
 		}
 
 		#endregion

@@ -1,15 +1,15 @@
-using System;
-using System.Data;
+using NHibernate.Cfg;
 
-namespace NHibernate.Dialect {
-
+namespace NHibernate.Dialect
+{
 	/// <summary>
 	/// An SQL dialect compatible with Sybase.
 	/// </summary>
-	public class SybaseDialect : Dialect {
-
-		public SybaseDialect() : base() {
-
+	public class SybaseDialect : Dialect
+	{
+		/// <summary></summary>
+		public SybaseDialect() : base()
+		{
 			/* Java mapping was:
 			
 			Types.BIT, "TINYINT" );
@@ -28,36 +28,56 @@ namespace NHibernate.Dialect {
 			Types.NUMERIC, "NUMERIC(19,$1)" 
 			Types.BLOB, "IMAGE" );
 			Types.CLOB, "TEXT" );
-			*/			
-		
-			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
+			*/
+
+			DefaultProperties[ Environment.OuterJoin ] = "true";
 		}
 
-		public override string AddColumnString {
+		/// <summary></summary>
+		public override string AddColumnString
+		{
 			get { return "add"; }
 		}
-		public override string NullColumnString {
+
+		/// <summary></summary>
+		public override string NullColumnString
+		{
 			get { return " null"; }
 		}
-		public override bool QualifyIndexName {
+
+		/// <summary></summary>
+		public override bool QualifyIndexName
+		{
 			get { return false; }
-		}
-	
-		public override bool SupportsForUpdate {
-			get { return false; }
-		}
-	
-		public override bool SupportsIdentityColumns {
-			get { return true; }
-		}
-		public override string IdentitySelectString {
-			get { return "select @@identity"; }
-		}
-		public override string IdentityColumnString {
-			get { return "IDENTITY NOT NULL"; } 
 		}
 
-		public override string NoColumnsInsertString {
+		/// <summary></summary>
+		public override bool SupportsForUpdate
+		{
+			get { return false; }
+		}
+
+		/// <summary></summary>
+		public override bool SupportsIdentityColumns
+		{
+			get { return true; }
+		}
+
+		/// <summary></summary>
+		public override string IdentitySelectString
+		{
+			get { return "select @@identity"; }
+		}
+
+		/// <summary></summary>
+		public override string IdentityColumnString
+		{
+			get { return "IDENTITY NOT NULL"; }
+		}
+
+		/// <summary></summary>
+		public override string NoColumnsInsertString
+		{
 			get { return "DEFAULT VALUES"; }
 		}
 
