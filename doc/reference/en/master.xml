@@ -2,6 +2,7 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
   "../support/docbook-dtd/docbookx.dtd" [
   <!ENTITY architecture SYSTEM "modules/architecture.xml">
+  <!ENTITY configuration SYSTEM "modules/configuration.xml">
   <!ENTITY basic-mapping SYSTEM "modules/basic_mapping.xml">
 
 ]>
@@ -61,7 +62,7 @@
                     NHibernate can be used.
                 </para>
             </listitem>
-            <listitem>
+            <!--<listitem>
                 <para>
                     Have a look at the <literal>eg/</literal> directory in the Hibernate
                     distribution, it contains a simple standalone application. Copy your
@@ -71,7 +72,7 @@
                     type <literal>ant eg</literal> (using Ant), or under Windows, type
                     <literal>build eg</literal>.
                 </para>
-            </listitem>
+            </listitem>-->
             <listitem>
 				<para>
 					FAQs are answered on the NHibernate website.
@@ -91,6 +92,7 @@
     </preface>
  
   &architecture;
+  &configuration;
   &basic-mapping;
   <index id="index"/>
 </book>

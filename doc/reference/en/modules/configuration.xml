@@ -1,0 +1,411 @@
+<!-- 
+	before committing make sure to comment out the DOCTYPE
+	It is in here to get intellisense with XMLSpy.  The
+	HomeEdition is a free download.
+
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "../../support/docbook-dtd/docbookx.dtd">
+-->
+<chapter id="session-configuration">
+
+    <title>ISessionFactory Configuration</title>
+    
+    <para>
+        Because NHibernate is designed to operate in many different environments, there
+        are a large number of configuration parameters. Fortunately, most have sensible
+        default values. The NHibernate.Test.dll contains an example of the hibernate 
+        properties in an <literal>app.config</literal> file that shows the various options.
+    </para>
+
+    <sect1 id="configuration-programmatic">
+        <title>Programmatic Configuration</title>
+
+        <para>
+            An instance of <literal>NHibernate.Cfg.Configuration</literal>
+            represents an entire set of mappings of an application's .NET types to a
+            SQL database. The <literal>Configuration</literal> is used to build a
+            (immutable) <literal>ISessionFactory</literal>. The mappings are compiled
+            from various XML mapping files.
+        </para>
+
+        <para>
+            You may obtain a <literal>Configuration</literal> instance by
+            instantiating it directly. Heres an example of setting up a datastore from 
+            mappings defined in two XML configuration files (in the same folder as the exe):
+        </para>
+
+        <programlisting><![CDATA[Configuration cfg = new Configuration()
+    .AddXmlFile("Item.hbm.xml")
+    .AddXmlFile("Bid.hbm.xml");]]></programlisting>
+
+        <para>
+            An alternative (usually better) way is to let NHibernate load a mapping file
+            using <literal>GetManifestResourceStream()</literal>:
+        </para>
+
+        <programlisting><![CDATA[Configuration cfg = new Configuration()
+    .AddClass( typeof(NHibernate.Auction.Item) )
+    .AddClass( typeof(NHibernate.Auction.Bid) );]]></programlisting>
+
+        <para>
+            Then NHibernate will look for mapping files named
+            <literal>NHibernate.Auction.Item.hbm.xml</literal> and
+            <literal>NHibernate.Auction.Bid.hbm.xml</literal> as an Embedded Resource 
+            in the Assembly those types are contained in.  This approach eliminates 
+            any hardcoded filenames.
+        </para>
+        
+        <para>
+            Another alternative (probably best) way is to let NHibernate load all of 
+            the mapping files contained in an Assembly:
+        </para>
+
+        <programlisting><![CDATA[Configuration cfg = new Configuration()
+    .AddAssembly( "NHibernate.Auction" );]]></programlisting>
+
+        <para>
+            Then NHibernate will look through the Assembly for any resources that
+            end with <literal>hbm.xml</literal>.  This approach eliminates 
+            any hardcoded filenames and ensures the mapping files in the Assembly
+            get added.
+        </para>
+        
+        <para>
+			If VisualStudio.NET or NAnt is used to build the Assembly then make sure
+			that the hbm.xml files are added as <literal>Embedded Resources</literal>.
+        </para>
+        
+        <para>
+            A <literal>Configuration</literal> also specifies various optional properties:
+        </para>
+
+        <programlisting><![CDATA[Hashtable props = new Hashtable();
+...
+Configuration cfg = new Configuration()
+    .AddClass( typeof(NHibernate.Auction.Item) )
+    .AddClass( typeof(NHibernate.Auction.Bid) )
+    .Properties = props;]]></programlisting>
+
+        <para>
+            A <literal>Configuration</literal> is intended as a configuration-time object, to be
+            discarded once a <literal>SessionFactory</literal> is built.
+        </para>
+
+    </sect1>
+    
+    <sect1 id="configuration-sessionfactory">
+        <title>Obtaining an ISessionFactory</title>
+
+        <para>
+            When all mappings have been parsed by the <literal>Configuration</literal>, the application
+            must obtain a factory for <literal>ISession</literal> instances. This factory is intended
+            to be shared by all application threads:
+        </para>
+
+        <programlisting><![CDATA[ISessionFactory sessions = cfg.BuildSessionFactory();]]></programlisting>
+
+        <para>
+            However, NHibernate does allow your application to instantiate more than one
+            <literal>ISessionFactory</literal>. This is useful if you are using more than one database.
+        </para>
+
+    </sect1>
+
+    <sect1 id="configuration-userado">
+        <title>User provided ADO.NET connection</title>
+
+        <para>
+            An <literal>ISessionFactory</literal> may open an <literal>ISession</literal> on 
+            a user-provided ADO.NET connection. This design choice frees the application to 
+            obtain ADO.NET connections wherever it pleases:
+        </para>
+
+        <programlisting><![CDATA[IDbConnection conn = myapp.GetOpenConnection();
+ISession session = sessions.OpenSession(conn);
+
+// do some data access work]]></programlisting>
+
+        <para>
+            The application must be careful not to open two concurrent
+            <literal>ISession</literal>s on the same ADO.NET connection!
+        </para>
+
+    </sect1>
+
+
+    <sect1 id="configuration-nhibernateado">
+        <title>NHibernate provided ADO connection</title>
+
+        <para>
+            Alternatively, you can have the <literal>ISessionFactory</literal>
+            open connections for you. The <literal>ISessionFactory</literal>
+            must be provided with ADO connection properties in one of the
+            following ways:
+        </para>
+
+        <orderedlist spacing="compact">
+            <listitem>
+                <para>
+                    Pass an instance of <literal>IDictionary</literal> to
+                    <literal>Configuration.Properties</literal>.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Add the properties to a configuration section that is a  
+                    <literal>System.Configuration.NameValueSectionHandler</literal>
+                    named <literal>nhibernate</literal>.                    
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Include <literal>&lt;property&gt;</literal> elements in
+                    <literal>hibernate.cfg.xml</literal> (discussed later).
+                </para>
+            </listitem>
+        </orderedlist>
+
+        <para>
+            If you take this approach, opening an <literal>ISession</literal> is as simple as:
+        </para>
+
+        <programlisting><![CDATA[ISession session = sessions.OpenSession(); // open a new Session
+// do some data access work, an ADO connection will be used on demand]]></programlisting>
+
+        <para>
+            All NHibernate property names and semantics are defined on the class 
+            <literal>NHibernate.Cfg.Environment</literal>. We will now describe the most
+            important settings for ADO connection configuration.
+        </para>
+
+        <para>
+            NHibernate will obtain connections using the ADO.NET Data Provider
+            if you set the following properties:
+        </para>
+
+        <table frame="topbot">
+            <title>NHibernate ADO.NET Properties</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colwidth="1*"/>
+                <colspec colname="c2" colwidth="1*"/>
+                <thead>
+                    <row>
+                        <entry>Property name</entry>
+                        <entry>Purpose</entry>
+                    </row>
+                </thead>
+            <tbody>
+            <row>
+                <entry>
+                    <literal>hibernate.connection.driver_class</literal>
+                </entry>
+                <entry>
+                    Implementation of <literal>NHibernate.Driver.IDriver</literal> interface
+                    that NHibernate will use to get the implementation of IDbConnection
+                    , IDbCommand, and IDbDataParameter.                    
+                </entry>
+            </row>
+            <row>
+                <entry>
+                    <literal>hibernate.connection.connection_string</literal>
+                </entry>
+                <entry>
+                    Connection string to use to obtain the connection.
+                </entry>
+            </row>
+            </tbody>
+            </tgroup>
+        </table>
+
+        <para>
+            This is an example of how to specify the database connection properties inside a 
+            <literal>web.config</literal>:
+        </para>
+
+        <programlisting id="we-config-configuration" revision="1"><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<configSections>
+		<section name="nhibernate" type="System.Configuration.NameValueSectionHandler, System, Version=1.0.5000.0,Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+	    <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler,log4net" />
+	</configSections>
+	
+	<nhibernate>
+		<add 
+			key="hibernate.connection.provider"          
+			value="NHibernate.Connection.DriverConnectionProvider" 
+		/>
+		<add 
+			key="hibernate.connection.driver_class"          
+			value="NHibernate.Driver.SqlClientDriver" 
+		/>
+		<add 
+			key="hibernate.connection.connection_string" 
+			value="Server=127.0.0.1;Initial Catalog=thedatabase;Integrated Security=SSPI" 
+		/>
+		<add 
+			key="hibernate.connection.isolation"
+			value="ReadCommitted"
+		/>
+		<add 
+			key="hibernate.dialect"                      
+			value="NHibernate.Dialect.MsSql2000Dialect" 
+		/>
+		
+	</nhibernate>
+	
+	<!-- log4net and other app specific config follows -->
+</configuration>
+	]]></programlisting>
+
+        
+        <para>
+            You may define your own plugin strategy for obtaining ADO.NET connections by implementing the
+            interface <literal>NHibernate.Connection.IConnectionProvider</literal>. You may select
+            a custom implementation by setting <literal>hibernate.connection.provider_class</literal>.
+        </para>
+
+    </sect1>
+
+	<sect1 id="configuration-optional">
+        <title>Optional configuration properties</title>
+        
+        <para>
+            There are a number of other properties that control the behavior of NHibernate
+            at runtime. All are optional and have reasonable default values.
+        </para>
+
+        <table frame="topbot" id="configuration-optional-properties" revision="3">
+            <title>NHibernate Configuration Properties</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colwidth="1*"/>
+                <colspec colname="c2" colwidth="1*"/>
+                <thead>
+                    <row>
+                        <entry>Property name</entry>
+                        <entry>Purpose</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <literal>hibernate.dialect</literal>
+                        </entry>
+                        <entry>
+                            The classname of a NHibernate <literal>Dialect</literal> - enables
+                            certain platform dependent features.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>full.classname.of.Dialect</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.default_schema</literal>
+                        </entry>
+                        <entry>
+                            Qualify unqualified tablenames with the given schema/tablespace
+                            in generated SQL.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>SCHEMA_NAME</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.session_factory_name</literal>
+                        </entry>
+                        <entry>
+                            The <literal>SessionFactory</literal> will be automatically
+                            bound to this name after it has been created.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>some.name</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.use_outer_join</literal>
+                        </entry>
+                        <entry>
+                            Enables outer join fetching.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+						<entry>
+							<literal>hibernate.connection.isolation</literal>
+						</entry>
+						<entry>
+							Set the ADO.NET transaction isolation level. Check
+							<literal>System.Data.IsolationLevel</literal> for meaningful values but
+							note that most databases do not support all isolation levels.
+							<para>
+								<emphasis role="strong">eg.</emphasis> 
+								<literal>Chaos, ReadCommitted, ReadUncommitted, RepeatableRead, Serializable, Unspecified </literal>
+							</para>
+						</entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.connection.provider_class</literal>
+                        </entry>
+                        <entry>
+                            The type of a custom <literal>ConnectionProvider</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>typename.of.ConnectionProvider</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.cache.provider_class</literal>
+                        </entry>
+                        <entry>
+                            The classname of a custom <literal>CacheProvider</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>typename.of.CacheProvider</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.query.substitutions</literal>
+                        </entry>
+                        <entry>
+                            Mapping from tokens in NHibernate queries to SQL tokens
+                            (tokens might be function or literal names, for example).
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>hqlLiteral=SQL_LITERAL, hqlFunction=SQLFUNC</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <!--<row>
+                        <entry>
+                            <literal>hibernate.show_sql</literal>
+                        </entry>
+                        <entry>
+                            Write all SQL statements to console.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>-->
+                </tbody>
+            </tgroup>
+        </table>
+        
+        <!-- resume at <sect2 id="configuration-optional-dialects"> -->
+	</sect1>
+
+    
+</chapter>
