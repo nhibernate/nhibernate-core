@@ -1023,6 +1023,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\SessionImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1304,6 +1309,11 @@
                 />
                 <File
                     RelPath = "Persister\NormalizedEntityPersister.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\PersisterFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
