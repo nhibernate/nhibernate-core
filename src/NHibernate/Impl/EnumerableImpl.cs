@@ -151,23 +151,65 @@ namespace NHibernate.Impl
 		#region IDisposable Members
 
 		/// <summary>
-		/// Releases resources that the EnumerableImpl acquired.
+		/// A flag to indicate if <c>Disose()</c> has been called.
 		/// </summary>
+		private bool _isAlreadyDisposed;
+
+		/// <summary>
+		/// Finalizer that ensures the object is correctly disposed of.
+		/// </summary>
+		~EnumerableImpl()
+		{
+			Dispose( false );
+		}
+
+		/// <summary>
+		/// Takes care of freeing the managed and unmanaged resources that 
+		/// this class is responsible for.
+		/// </summary>
+		public void Dispose()
+		{
+			log.Debug( "running EnumerableImpl.Dispose()" );
+			Dispose( true );
+		}
+
+		/// <summary>
+		/// Takes care of freeing the managed and unmanaged resources that 
+		/// this class is responsible for.
+		/// </summary>
+		/// <param name="isDisposing">Indicates if this EnumerableImpl is being Disposed of or Finalized.</param>
 		/// <remarks>
 		/// The command is closed and the reader is disposed.  This allows other ADO.NET
 		/// related actions to occur without needing to move all the way through the
 		/// EnumerableImpl.
 		/// </remarks>
-		public void Dispose()
+		protected virtual void Dispose(bool isDisposing)
 		{
-			log.Debug( "disposing of enumerator" );
-			// if there is still a possibility of moving next then we need to clean up
-			// the resources - otherwise the cleanup has already been done.
-			if( _hasNext ) 
+			if( _isAlreadyDisposed )
 			{
-				_currentResults = null;
-				_sess.Batcher.CloseQueryCommand( _cmd, _reader );
+				// don't dispose of multiple times.
+				return;
 			}
+
+			// free managed resources that are being managed by the EnumerableImpl if we
+			// know this call came through Dispose()
+			if( isDisposing )
+			{
+				// if there is still a possibility of moving next then we need to clean up
+				// the resources - otherwise the cleanup has already been done by the 
+				// PostMoveNext method.
+				if( _hasNext ) 
+				{
+					_currentResults = null;
+					_sess.Batcher.CloseQueryCommand( _cmd, _reader );
+				}
+			}
+
+			// free unmanaged resources here
+			
+			_isAlreadyDisposed = true;
+			// nothing for Finalizer to do - so tell the GC to ignore it
+			GC.SuppressFinalize( this );
 		}
 
 		#endregion
