@@ -8,12 +8,14 @@ using NHibernate.Util;
 using NHibernate.Dialect;
 
 
-namespace NHibernate.Id {
+namespace NHibernate.Id 
+{
 	/// <summary>
-	/// Generates <c>long</c> values using an oracle-style sequence. A higher performance
-	/// algorithm is <c>SequenceHiLoGerator</c>
+	/// Generates <c>Int64</c> values using an oracle-style sequence. A higher performance
+	/// algorithm is <see cref="SequenceHiLoGenerator"/>
 	/// </summary>
-	public class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable {
+	public class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SequenceGenerator));
 
 		/// <summary>
@@ -26,50 +28,60 @@ namespace NHibernate.Id {
 		private System.Type returnClass;
 		private string sql;
 
-		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect) {
+		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect) 
+		{
 			this.sequenceName = PropertiesHelper.GetString(Sequence, parms, "hibernate_sequence");
 			string schemaName = (string)parms[Schema]; 
 			if ( schemaName!=null && sequenceName.IndexOf(StringHelper.Dot)<0 ) 
 				sequenceName = schemaName + '.' + sequenceName; 
 			returnClass = type.ReturnedClass; 
 			sql = dialect.GetSequenceNextValString(sequenceName); 
-
-
-			returnClass = type.ReturnedClass;
-			sql = dialect.GetSequenceNextValString(sequenceName);
 		}
 
-		public virtual object Generate(ISessionImplementor session, object obj) {
+		public virtual object Generate(ISessionImplementor session, object obj) 
+		{
 			IDbCommand st = session.Batcher.PrepareStatement(sql);
-			try {
+			try 
+			{
 				IDataReader rs = st.ExecuteReader();
 				object result = null;
-				try {
+				try 
+				{
 					rs.Read();
 					result = IdentifierGeneratorFactory.Get(rs, returnClass);
-				} finally {
+				} 
+				finally 
+				{
 					rs.Close();
 				}
+
 				log.Debug("sequence ID generated: " + result);
 				return result;
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				throw e;
-			} finally {
+			} 
+			finally 
+			{
 				session.Batcher.CloseStatement(st);
 			}
 		}
 
-		public string[] SqlCreateStrings(Dialect.Dialect dialect) {
+		public string[] SqlCreateStrings(Dialect.Dialect dialect) 
+		{
 			return new string[] {
 									dialect.GetCreateSequenceString(sequenceName)
 								};
 		}
 
-		public string SqlDropString(Dialect.Dialect dialect) {
+		public string SqlDropString(Dialect.Dialect dialect) 
+		{
 			return dialect.GetDropSequenceString(sequenceName);
 		}
 
-		public object GeneratorKey() {
+		public object GeneratorKey() 
+		{
 			return sequenceName;
 		}
 	}

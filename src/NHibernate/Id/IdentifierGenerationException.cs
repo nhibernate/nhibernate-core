@@ -1,10 +1,12 @@
 using System;
 
-namespace NHibernate.Id {
+namespace NHibernate.Id 
+{
 	/// <summary>
 	/// Thrown by <c>IIdentifierGenerator</c> implementation class when ID generation fails
 	/// </summary>
-	public class IdentifierGenerationException : HibernateException {
+	public class IdentifierGenerationException : HibernateException 
+	{
 		
 		public IdentifierGenerationException(string msg) : base(msg) {}
 

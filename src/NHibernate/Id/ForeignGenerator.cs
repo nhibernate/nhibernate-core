@@ -9,13 +9,14 @@ namespace NHibernate.Id
 	/// <summary>
 	/// An <c>IIdentifierGenerator</c> that uses the value of the id property of an associated object
 	/// 
-	/// One mapping parameter id supported: property.
+	/// One mapping parameter is required: property.
 	/// </summary>
 	public class ForeignGenerator : IIdentifierGenerator, IConfigurable
 	{
 		private string propertyName;
 
-		public object Generate(ISessionImplementor session, object obj) {
+		public object Generate(ISessionImplementor session, object obj) 
+		{
 			object associatedObject = session.Factory
 				.GetClassMetadata( obj.GetType() )
 				.GetPropertyValue(obj,  propertyName);		
@@ -29,8 +30,11 @@ namespace NHibernate.Id
 			return id;
 		}
 
-		public void Configure(IType type, IDictionary parms, Dialect.Dialect d) {
+		public void Configure(IType type, IDictionary parms, Dialect.Dialect d) 
+		{
 			propertyName = (string)parms["property"];
+			if(propertyName==null || propertyName==String.Empty)
+				throw new MappingException("param named \"property\" is required for foreign id generation strategy");
 		}
 	}
 }

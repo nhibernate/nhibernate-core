@@ -25,8 +25,12 @@ namespace NHibernate.Id {
 	/// transaction so the generator must be able to obtain a new connection and commit it.
 	/// Hence this implementation may not be used when the user is supplying connections.
 	/// </para>
+	/// <para>
+	/// Mapping parameters supported are: <c>table</c>, <c>column</c>
+	/// </para>
 	/// </remarks>
-	public class TableGenerator : IPersistentIdentifierGenerator, IConfigurable {
+	public class TableGenerator : IPersistentIdentifierGenerator, IConfigurable 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(TableGenerator));
 
 		public const string Column = "column";
@@ -38,8 +42,8 @@ namespace NHibernate.Id {
 		private string query;
 		private string update;
 
-		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect) {
-
+		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect) 
+		{
 			this.tableName = PropertiesHelper.GetString(Table, parms, "hibernate_unique_key");
 			this.columnName = PropertiesHelper.GetString(Column, parms, "next_hi");
 			string schemaName = (string) parms[Schema];
@@ -52,13 +56,14 @@ namespace NHibernate.Id {
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual object Generate(ISessionImplementor session, object obj) {
-				//this has to be done using a different connection to the containing
-				//transaction becase the new hi value must remain valid even if the
-				//contataining transaction rolls back
-				IDbConnection conn = session.Factory.OpenConnection();
-				int result;
-				int rows;
+		public virtual object Generate(ISessionImplementor session, object obj) 
+		{
+			//this has to be done using a different connection to the containing
+			//transaction becase the new hi value must remain valid even if the
+			//contataining transaction rolls back
+			IDbConnection conn = session.Factory.OpenConnection();
+			int result;
+			int rows;
 			try {
 				IDbTransaction trans = conn.BeginTransaction();
 
@@ -71,26 +76,35 @@ namespace NHibernate.Id {
 					qps.CommandText = query;
 					qps.CommandType = CommandType.Text;
 					qps.Transaction = trans;
-					try {
+					try 
+					{
 						IDataReader rs = qps.ExecuteReader();
-						if ( !rs.Read() ) {
+						if ( !rs.Read() ) 
+						{
 							string err = "could not read a hi value - you need to populate the table: " + tableName;
 							log.Error(err);
 							throw new IdentifierGenerationException(err);
 						}
-						result = rs.GetInt32(1);
+
+						result = rs.GetInt32(0);
 						rs.Close();
-					} catch (Exception e) {
+					} 
+					catch (Exception e) 
+					{
 						log.Error("could not read a hi value", e);
 						throw e;
-					} finally {
+					} 
+					finally 
+					{
 					}
 
 					IDbCommand ups = conn.CreateCommand();
 					ups.CommandText = update;
 					ups.CommandType = CommandType.Text;
 					ups.Transaction = trans;
-					try {
+
+					try 
+					{
 						IDbDataParameter parm1 = ups.CreateParameter();
 						parm1.DbType = DbType.Int32;
 						parm1.Value = result + 1;
@@ -100,33 +114,44 @@ namespace NHibernate.Id {
 						parm2.Value = result;
 						ups.Parameters.Add(parm2);
 						rows = ups.ExecuteNonQuery();
-					} catch (Exception e) {
+					} 
+					catch (Exception e) 
+					{
 						log.Error("could not update hi value in: " + tableName, e);
 						throw e;
-					} finally {
+					} 
+					finally 
+					{
 					}
+
 				} while (rows==0);
 
 				trans.Commit();
 
 				return result;
-			} finally {
+
+			} 
+			finally 
+			{
 				session.Factory.CloseConnection(conn);
 			}
 		}
 
-		public string[] SqlCreateStrings(Dialect.Dialect dialect) {
+		public string[] SqlCreateStrings(Dialect.Dialect dialect) 
+		{
 			return new string[] {
-									"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName(DbType.Int32) + " )",
-									"insert into " + tableName + " values ( 0 )"
+						"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName(DbType.Int32) + " )",
+						"insert into " + tableName + " values ( 0 )"
 								};
 		}
 
-		public string SqlDropString(Dialect.Dialect dialect) {
+		public string SqlDropString(Dialect.Dialect dialect) 
+		{
 			return "drop table " + tableName + dialect.CascadeConstraintsString;
 		}
 
-		public object GeneratorKey() {
+		public object GeneratorKey() 
+		{
 			return tableName;
 		}
 
