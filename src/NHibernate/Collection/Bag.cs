@@ -179,7 +179,7 @@ namespace NHibernate.Collection
 			foreach(object oldObject in sn) 
 			{
 				bool found = false;
-				if(bag.Count>1 && elemType.Equals(oldObject, bag[i++])) 
+				if(bag.Count>i && elemType.Equals(oldObject, bag[i++])) 
 				{
 					//a shortcut if its location didn't change!
 					found = true;
@@ -205,7 +205,7 @@ namespace NHibernate.Collection
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
 			IList sn = (IList)GetSnapshot();
-			if( sn.Count>1 && elemType.Equals(sn[i], entry) )
+			if( sn.Count>i && elemType.Equals(sn[i], entry) )
 			{
 				// a shortcut if its location didn't change
 				return false;
@@ -337,6 +337,7 @@ namespace NHibernate.Collection
 
 		public override IEnumerator GetEnumerator()
 		{
+			Read();
 			//TODO: H2.0.3 has an IteratorProxy - do we need??
 			return bag.GetEnumerator();
 		}
