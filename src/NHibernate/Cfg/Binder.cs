@@ -831,6 +831,12 @@ namespace NHibernate.Cfg {
 					model.Element = element;
 					BindComponent(subnode, element, null, model.Role + ".element", true, mappings);
 				}
+				else if ( "many-to-any".Equals(name) ) 
+				{
+					Any element = new Any( model.Table );				
+					model.Element = element;
+					BindAny(subnode, element, true);
+				} 
 			}
 
 			if ( !model.IsInverse ) {
