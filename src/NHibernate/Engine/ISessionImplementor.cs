@@ -174,9 +174,9 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// After actually updating a row, record the fact that the database state has been update.
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="updatedState"></param>
-		/// <param name="nextVersion"></param>
+		/// <param name="obj">The <see cref="object"/> instance that was saved.</param>
+		/// <param name="updatedState">A updated snapshot of the values in the object.</param>
+		/// <param name="nextVersion">The new version to assign to the <c>obj</c>.</param>
 		void PostUpdate(object obj, object[] updatedState, object nextVersion);
 
 		/// <summary>

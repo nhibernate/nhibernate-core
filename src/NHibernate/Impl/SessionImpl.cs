@@ -47,7 +47,7 @@ namespace NHibernate.Impl
 		private IDictionary proxiesByKey; //key=Key, value=HibernateProxy
 		
 		//IdentityMaps are serializable in NH 
-		private IdentityMap entries;//key=Object, value=Entry
+		private IdentityMap entries;//key=Object, value=EntityEntry
 		private IdentityMap arrayHolders; //key=array, value=ArrayHolder
 		private IdentityMap collections; //key=PersistentCollection, value=CollectionEntry
 		

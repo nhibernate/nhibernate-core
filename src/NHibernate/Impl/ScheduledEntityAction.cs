@@ -5,7 +5,10 @@ using NHibernate.Cache;
 
 namespace NHibernate.Impl 
 {
-	
+	/// <summary>
+	/// The base class for a scheduled action to perform on an entity during a
+	/// flush.
+	/// </summary>
 	internal abstract class ScheduledEntityAction : SessionImpl.IExecutable 
 	{
 		
@@ -35,22 +38,33 @@ namespace NHibernate.Impl
 			get { return _persister.PropertySpaces; }
 		}
 
+		/// <summary>
+		/// Gets the <see cref="ISessionImplementor"/> the action is executing in.
+		/// </summary>
 		protected ISessionImplementor Session 
 		{
 			get { return _session;}
 		}
 
+		/// <summary>
+		/// Gets the identifier of the object.
+		/// </summary>
 		protected object Id 
 		{
 			get { return _id; }
 		}
 
+		/// <summary>
+		/// Gets the <see cref="IClassPersister"/> that is responsible for persisting the object.
+		/// </summary>
 		protected IClassPersister Persister 
 		{
 			get { return _persister;}
 		}
 
-
+		/// <summary>
+		/// Gets the object that is having the scheduled action performed against it.
+		/// </summary>
 		protected object Instance 
 		{
 			get { return _instance; }

@@ -15,9 +15,9 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Increment the given version number
 		/// </summary>
-		/// <param name="version"></param>
-		/// <param name="versionType"></param>
-		/// <returns></returns>
+		/// <param name="version">The value of the current version.</param>
+		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
+		/// <returns>Returns the next value for the version.</returns>
 		public static object Increment(object version, IVersionType versionType) 
 		{
 			object next = versionType.Next(version);
@@ -28,8 +28,8 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Create an initial version number
 		/// </summary>
-		/// <param name="versionType"></param>
-		/// <returns></returns>
+		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
+		/// <returns>A seed value to initialize the versioned property with.</returns>
 		public static object Seed(IVersionType versionType) 
 		{
 			object seed = versionType.Seed;
@@ -40,10 +40,10 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Seed the given instance state snapshot with an initial version number
 		/// </summary>
-		/// <param name="fields"></param>
-		/// <param name="versionProperty"></param>
-		/// <param name="versionType"></param>
-		/// <returns></returns>
+		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
+		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
+		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
+		/// <returns><c>true</c> if the version property needs to be seeded with an initial value.</returns>
 		public static bool SeedVersion(object[] fields, int versionProperty, IVersionType versionType) 
 		{
 			if ( fields[versionProperty]==null ) 
@@ -57,11 +57,25 @@ namespace NHibernate.Engine
 			}
 		}
 
+		/// <summary>
+		/// Gets the value of the version.
+		/// </summary>
+		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
+		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
+		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
+		/// <returns>The value of the version.</returns>
 		private static object GetVersion(object[] fields, int versionProperty, IVersionType versionType) 
 		{
 			return fields[versionProperty];
 		}
 
+		/// <summary>
+		/// Sets the value of the version.
+		/// </summary>
+		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
+		/// <param name="version">The value the version should be set to in the <c>fields</c> parameter.</param>
+		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
+		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
 		private static void SetVersion(object[] fields, object version, int versionProperty, IVersionType versionType) 
 		{
 			fields[versionProperty] = version;
@@ -70,9 +84,9 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Set the version number of the given instance state snapshot
 		/// </summary>
-		/// <param name="fields"></param>
-		/// <param name="version"></param>
-		/// <param name="persister"></param>
+		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
+		/// <param name="version">The value the version should be set to in the <c>fields</c> parameter.</param>
+		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for persisting the values of the <c>fields</c> parameter.</param>
 		public static void SetVersion(object[] fields, object version, IClassPersister persister) 
 		{
 			SetVersion( fields, version, persister.VersionProperty, persister.VersionType );
@@ -81,9 +95,12 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Get the version number of the given instance state snapshot
 		/// </summary>
-		/// <param name="fields"></param>
-		/// <param name="persister"></param>
-		/// <returns></returns>
+		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
+		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for persisting the values of the <c>fields</c> parameter.</param>
+		/// <returns>
+		/// The value of the version contained in the <c>fields</c> parameter or null if the
+		/// Entity is not versioned.
+		/// </returns>
 		public static object GetVersion(object[] fields, IClassPersister persister) 
 		{
 			return persister.IsVersioned ? GetVersion( fields, persister.VersionProperty, persister.VersionType) : null;

@@ -11,7 +11,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Indicates that the no value has been set on the Property.
 		/// </summary>
-		public static int NoValue = -1;
+		public static readonly int NoValue = -1;
 		
 		private int firstRow = 0;
 		private int maxRows = RowSelection.NoValue;

@@ -5,6 +5,9 @@ using NHibernate.Persister;
 
 namespace NHibernate.Impl 
 {
+	/// <summary>
+	/// A scheduled deletion of an object.
+	/// </summary>
 	internal class ScheduledDeletion : ScheduledEntityAction 
 	{		
 		private object _version;
@@ -25,14 +28,20 @@ namespace NHibernate.Impl
 
 		public override void Execute() 
 		{
-			if( Persister.HasCache ) Persister.Cache.Lock( Id );
+			if( Persister.HasCache ) 
+			{
+				Persister.Cache.Lock( Id );
+			}
 			Persister.Delete( Id, _version, Instance, Session );
 			Session.PostDelete( Instance );
 		}
 
 		public override void AfterTransactionCompletion() 
 		{
-			if ( Persister.HasCache ) Persister.Cache.Release( Id );
+			if ( Persister.HasCache ) 
+			{
+				Persister.Cache.Release( Id );
+			}
 		}
 	}
 }
