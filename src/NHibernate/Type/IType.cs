@@ -104,7 +104,7 @@ namespace NHibernate.Type
 		bool IsMutable { get; }
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name=M:IType.Disassemble"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.Disassemble"]/*'
 		/// /> 
 		object Disassemble( object value, ISessionImplementor session );
 
