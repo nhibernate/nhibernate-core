@@ -9,13 +9,13 @@ namespace NHibernate
 	/// was closed) or iterate query results.
 	/// </summary>
 	[Serializable]
-	public class LazyInitializationException : Exception
+	public class LazyInitializationException : HibernateException
 	{
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="root"></param>
-		public LazyInitializationException( Exception root ) : this( root.Message )
+		public LazyInitializationException( Exception root ) : base( "NHibernate lazy initialization problem", root )
 		{
 		}
 
@@ -33,7 +33,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="message"></param>
 		/// <param name="root"></param>
-		public LazyInitializationException( string message, Exception root ) : this( message + " " + root.Message )
+		public LazyInitializationException( string message, Exception root ) : base( message, root )
 		{
 		}
 
