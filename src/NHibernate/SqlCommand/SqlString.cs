@@ -146,6 +146,36 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Gets the number of SqlParts contained in this SqlString.
+		/// </summary>
+		/// <value>The number of SqlParts contained in this SqlString.</value>
+		/// <remarks>
+		/// If a SqlPart contains a SqlString then this recursively looks at each SqlPart
+		/// for the Count.
+		/// </remarks>
+		public int Count 
+		{
+			get 
+			{
+				int count = 0;
+				for( int i=0; i<sqlParts.Length; i++ ) 
+				{
+					SqlString sqlString = sqlParts[i] as SqlString;
+					if( sqlString!=null ) 
+					{
+						count += sqlString.Count;
+					}
+					else 
+					{
+						count++;
+					}
+				}
+
+				return count;
+			}
+		}
+
+		/// <summary>
 		/// Determines whether the end of this instance matches the specified String.
 		/// </summary>
 		/// <param name="value">A string to seek at the end.</param>

@@ -120,6 +120,22 @@ namespace NHibernate.Test.SqlCommandTest
 		}
 
 		[Test]
+		public void Count() 
+		{
+			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", new Parameter(), " and b = " , new Parameter() } );
+			Assert.AreEqual( 5, sql.Count, "Count with no nesting failed." );
+
+			sql = sql.Append( new SqlString( new object[] {" more parts ", " another part "} ) );
+			Assert.AreEqual( 7, sql.Count, "Added a SqlString to a SqlString" );
+
+			SqlString nestedSql = new SqlString( new object[] { "nested 1", "nested 2" } );
+
+			sql = sql.Append( new SqlString( new object[] { nestedSql, " not nested 1", " not nested 2" } ) );
+
+			Assert.AreEqual( 11, sql.Count, "Added 2 more levels of nesting" );
+		}
+
+		[Test]
 		public void EndsWith() 
 		{
 			SqlString sql = new SqlString( new string[] {"select", " from table" } );
