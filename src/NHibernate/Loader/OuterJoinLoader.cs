@@ -571,7 +571,7 @@ namespace NHibernate.Loader
 				assoc.ForeignKeyColumns = aliasedForeignKeyColumns;
 				assoc.Subalias = subalias;
 				assoc.Owner = GetPosition( alias, associations );
-				assoc.IsOneToOne = type.IsEntityType && ( (EntityType) type).IsOneToOne && ( (EntityType) type).IsUniqueKeyReference;
+				assoc.IsOneToOne = type.IsEntityType && ( (EntityType) type).IsOneToOne;
 				assoc.JoinType = joinType;
 
 				if ( assoc.ForeignKeyColumns.Length != assoc.PrimaryKeyColumns.Length || assoc.ForeignKeyColumns.Length == 0 )

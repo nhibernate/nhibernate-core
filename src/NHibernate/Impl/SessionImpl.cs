@@ -2766,6 +2766,9 @@ namespace NHibernate.Impl
 			}
 			else
 			{
+				// check to see if we know already that it does not exist:
+				if ( nonExists.Contains(key) ) return null;
+
 				// LOOK IN CACHE
 				CacheEntry entry = persister.HasCache ? ( CacheEntry ) persister.Cache.Get( id, timestamp ) : null;
 				if( entry != null )
