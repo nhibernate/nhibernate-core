@@ -34,7 +34,12 @@ namespace NHibernate.Engine
 		/// A cascade point that occurs just after eviction of the parent entity from the
 		/// session cache
 		/// </summary>
-		CascadeOnEvict = 0 //-1
+		CascadeOnEvict = 0, //-1
+		
+		/// <summary>
+		/// A cascade point that occurs just after locking the parent entity
+		/// </summary>
+		CascadeOnLock = 0
 	}
 
 	/// <summary>
@@ -57,7 +62,7 @@ namespace NHibernate.Engine
 			/// <summary>
 			/// Cascade the action to the child object
 			/// </summary>
-			public abstract void Cascade( ISessionImplementor session, object child );
+			public abstract void Cascade( ISessionImplementor session, object child, object anything );
 
 			/// <summary>
 			/// Should this action be cascaded to the given (possibly unitilized) collection?
@@ -72,7 +77,7 @@ namespace NHibernate.Engine
 
 			private class ActionDeleteClass : CascadingAction
 			{
-				public override void Cascade( ISessionImplementor session, object child )
+				public override void Cascade( ISessionImplementor session, object child, object anything )
 				{
 					log.Debug( "cascading to delete()" );
 					if( session.IsSaved( child ) )
@@ -98,7 +103,7 @@ namespace NHibernate.Engine
 
 			private class ActionEvictClass : CascadingAction
 			{
-				public override void Cascade( ISessionImplementor session, object child )
+				public override void Cascade( ISessionImplementor session, object child, object anything )
 				{
 					log.Debug( "cascading to evict()" );
 					session.Evict( child );
@@ -117,11 +122,33 @@ namespace NHibernate.Engine
 			}
 
 			/// <summary></summary>
+			public static CascadingAction ActionLock = new ActionLockClass();
+
+			private class ActionLockClass : CascadingAction
+			{
+				public override void Cascade( ISessionImplementor session, object child, object anything )
+				{
+					log.Debug( "cascading to lock()" );
+					session.Lock( child, (LockMode) anything );
+				}
+
+				public override bool ShouldCascadeCollection( object collection )
+				{
+					return CollectionIsInitialized( collection );
+				}
+
+				public override bool DeleteOrphans()
+				{
+					return false;
+				}
+			}
+
+			/// <summary></summary>
 			public static CascadingAction ActionSaveUpdate = new ActionSaveUpdateClass();
 
 			private class ActionSaveUpdateClass : CascadingAction
 			{
-				public override void Cascade( ISessionImplementor session, object child )
+				public override void Cascade( ISessionImplementor session, object child, object anything )
 				{
 					log.Debug( "cascading to SaveOrUpdate()" );
 					session.SaveOrUpdate( child );
@@ -322,7 +349,8 @@ namespace NHibernate.Engine
 		/// <param name="action"></param>
 		/// <param name="cascadeTo"></param>
 		/// <param name="deleteOrphans"></param>
-		private static void Cascade( ISessionImplementor session, object child, IType type, CascadingAction action, CascadePoint cascadeTo, bool deleteOrphans )
+		/// <param name="anything"></param>
+		private static void Cascade( ISessionImplementor session, object child, IType type, CascadingAction action, CascadePoint cascadeTo, bool deleteOrphans, object anything )
 		{
 			if( child != null )
 			{
@@ -332,7 +360,7 @@ namespace NHibernate.Engine
 					{
 						if( type.IsEntityType || type.IsObjectType )
 						{
-							action.Cascade( session, child );
+							action.Cascade( session, child, anything );
 						}
 						else if( type.IsPersistentCollectionType )
 						{
@@ -387,7 +415,7 @@ namespace NHibernate.Engine
 							{
 								foreach( object obj in iter )
 								{
-									Cascade( session, obj, elemType, action, cascadeVia, false );
+									Cascade( session, obj, elemType, action, cascadeVia, false, anything );
 								}
 							}
 
@@ -416,7 +444,7 @@ namespace NHibernate.Engine
 					{
 						if( ctype.Cascade( i ).DoCascade( action ) )
 						{
-							Cascade( session, children[ i ], types[ i ], action, cascadeTo, deleteOrphans );
+							Cascade( session, children[ i ], types[ i ], action, cascadeTo, deleteOrphans, anything );
 						}
 					}
 				}
@@ -431,7 +459,8 @@ namespace NHibernate.Engine
 		/// <param name="parent"></param>
 		/// <param name="action"></param>
 		/// <param name="cascadeTo"></param>
-		public static void Cascade( ISessionImplementor session, IClassPersister persister, object parent, CascadingAction action, CascadePoint cascadeTo )
+		/// <param name="anything"></param>
+		public static void Cascade( ISessionImplementor session, IClassPersister persister, object parent, CascadingAction action, CascadePoint cascadeTo, object anything )
 		{
 			if( persister.HasCascades )
 			{
@@ -445,7 +474,7 @@ namespace NHibernate.Engine
 				{
 					if( cascadeStyles[ i ].DoCascade( action ) )
 					{
-						Cascade( session, persister.GetPropertyValue( parent, i ), types[ i ], action, cascadeTo, cascadeStyles[ i ] == CascadeStyle.StyleAllGC );
+						Cascade( session, persister.GetPropertyValue( parent, i ), types[ i ], action, cascadeTo, cascadeStyles[ i ] == CascadeStyle.StyleAllGC, anything );
 					}
 				}
 				if( log.IsDebugEnabled )

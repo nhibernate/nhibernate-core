@@ -16,9 +16,6 @@ namespace NHibernate.Collection
 	public class Bag : PersistentCollection, IList
 	{
 		private IList bag;
-		// used to hold the Identifiers of the Elements that will later
-		// be moved to the bag field.
-		private IList bagIdentifiers;
 
 		/// <summary>
 		/// 
@@ -94,37 +91,15 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		public override void EndRead( CollectionPersister persister, object owner )
-		{
-			for( int i = 0; i < bagIdentifiers.Count; i++ )
-			{
-				object element = persister.ElementType.ResolveIdentifier( bagIdentifiers[ i ], session, owner );
-				bag.Add( element );
-			}
-
-			if( Additions != null )
-			{
-				DelayedAddAll( Additions );
-				Additions = null;
-			}
-		}
-
-
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <param name="reader"></param>
 		/// <param name="persister"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader reader, CollectionPersister persister, object owner )
 		{
-			object elementIdentifier = persister.ReadElementIdentifier( reader, owner, session );
-			bagIdentifiers.Add( elementIdentifier );
-
-			return elementIdentifier;
+			object element = persister.ReadElement( reader, owner, session );
+			bag.Add( element );
+			return element;
 		}
 
 		/// <summary>
@@ -147,7 +122,6 @@ namespace NHibernate.Collection
 		public override void BeforeInitialize( CollectionPersister persister )
 		{
 			this.bag = new ArrayList();
-			this.bagIdentifiers = new ArrayList();
 		}
 
 		/// <summary>

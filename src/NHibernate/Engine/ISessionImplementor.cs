@@ -37,22 +37,6 @@ namespace NHibernate.Engine
 		void AddArrayHolder( ArrayHolder holder );
 
 		/// <summary>
-		/// Register an uninitialized <c>PersistentColleciton</c> that will be lazily initialized
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="persister"></param>
-		/// <param name="id"></param>
-		void AddUninitializedCollection( PersistentCollection collection, CollectionPersister persister, object id );
-
-		/// <summary>
-		/// Register an initialized <c>PersistentCollection</c>
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="persister"></param>
-		/// <param name="id"></param>
-		void AddInitializedCollection( PersistentCollection collection, CollectionPersister persister, object id );
-
-		/// <summary>
 		/// Set the "shallow dirty" status of the collection. Called when the collection detects
 		/// that the client is modifying it
 		/// </summary>
@@ -63,7 +47,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="coolection"></param>
 		/// <param name="writing"></param>
-		void Initialize( PersistentCollection coolection, bool writing );
+		void InitializeCollection( PersistentCollection coolection, bool writing );
 
 		/// <summary>
 		/// Is this the "inverse" end of a bidirectional association?
@@ -82,17 +66,6 @@ namespace NHibernate.Engine
 
 		/// <summary>
 		/// new in h2.0.3 and no javadoc
-		/// 
-		/// MikeD added to help with EndRead of Collections...
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="id"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		PersistentCollection GetLoadingCollection( CollectionPersister persister, object id, object owner );
-
-		/// <summary>
-		/// new in h2.0.3 and no javadoc
 		/// </summary>
 		/// <param name="role"></param>
 		/// <param name="id"></param>
@@ -104,6 +77,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		void EndLoadingCollections();
 
+		object GetCollection( string role, object id, object owner );
 
 		/// <summary>
 		/// Load an instance without checking if it was deleted. If it does not exist, throw an exception.
@@ -160,7 +134,7 @@ namespace NHibernate.Engine
 		IBatcher Batcher { get; }
 
 		/// <summary>
-		/// After actually inserting a row, record the fact taht the instance exists on the database
+		/// After actually inserting a row, record the fact that the instance exists on the database
 		/// (needed for identity-column key generation)
 		/// </summary>
 		/// <param name="obj"></param>
@@ -174,7 +148,7 @@ namespace NHibernate.Engine
 		void PostDelete( object obj );
 
 		/// <summary>
-		/// After actually updating a row, record the fact that the database state has been update.
+		/// After actually updating a row, record the fact that the database state has been updated.
 		/// </summary>
 		/// <param name="obj">The <see cref="object"/> instance that was saved.</param>
 		/// <param name="updatedState">A updated snapshot of the values in the object.</param>

@@ -16,8 +16,6 @@ namespace NHibernate.Collection
 	{
 		/// <summary></summary>
 		protected IDictionary map;
-		/// <summary></summary>
-		protected IDictionary mapIdentifiers;
 
 		/// <summary>
 		/// 
@@ -121,12 +119,10 @@ namespace NHibernate.Collection
 				// it maintains items in the Dictionary in the same order as they were 
 				// added.
 				this.map = new ListDictionary();
-				this.mapIdentifiers = new ListDictionary();
 			}
 			else
 			{
 				this.map = new Hashtable();
-				this.mapIdentifiers = new Hashtable();
 			}
 		}
 
@@ -273,24 +269,6 @@ namespace NHibernate.Collection
 			map.Clear();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		public override void EndRead( CollectionPersister persister, object owner )
-		{
-			foreach( DictionaryEntry entry in mapIdentifiers )
-			{
-				object index = entry.Key;
-				object elementIdentifier = entry.Value;
-
-				object element = persister.ElementType.ResolveIdentifier( elementIdentifier, session, owner );
-
-				map[ index ] = element;
-			}
-		}
-
 		/// <summary></summary>
 		public override ICollection Elements()
 		{
@@ -334,13 +312,11 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader rs, CollectionPersister persister, object owner )
 		{
-			//object element = persister.ReadElement(rs, owner, session);
-			object elementIdentifier = persister.ReadElementIdentifier( rs, owner, session );
-
+			object element = persister.ReadElement(rs, owner, session);
 			object index = persister.ReadIndex( rs, session );
-			map[ index ] = null;
-			mapIdentifiers[ index ] = elementIdentifier;
-			return elementIdentifier;
+
+			map[ index ] = element;
+			return element;
 		}
 
 		/// <summary></summary>

@@ -110,10 +110,6 @@ namespace NHibernate.Collection
 		public override void BeforeInitialize( CollectionPersister persister )
 		{
 			this.map = new SortedList( comparer );
-			// it should be okay to use just a hashtable to store the MapIdentifier because
-			// when the Identifiers are converted to actual entries then the Comparer should
-			// take care of putting them in the correct order...
-			this.mapIdentifiers = new Hashtable();
 		}
 
 

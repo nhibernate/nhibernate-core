@@ -92,6 +92,7 @@ namespace NHibernate.Type
 		{
 		}
 
+		/*
 		/// <summary>
 		/// 
 		/// </summary>
@@ -123,6 +124,7 @@ namespace NHibernate.Type
 			}
 
 		}
+		*/
 
 		/// <summary>
 		/// 
@@ -309,9 +311,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				// h2.1 changed this to use sesion.GetCollection( role, value, owner ) and 
-				// move the impl of GetCollection from this class to the ISession.
-				return GetCollection( value, owner, session );
+				return session.GetCollection( role, value, owner );
 			}
 		}
 

@@ -36,9 +36,9 @@ namespace NHibernate.Engine
 		void SetDirty();
 
 		/// <summary>
-		/// Gets a <see cref="bool"/> indicating if the underlying collection has been
-		/// initialized yet.
+		/// Gets a <see cref="bool"/> indicating if the collection was at one time
+		/// associated with an Entity and then later dereferenced during a Flush().
 		/// </summary>
-		bool IsInitialized { get; }
+		bool WasDereferenced { get; }
 	}
 }

@@ -26,7 +26,6 @@ namespace NHibernate.Collection
 	public class IdentifierBag : PersistentCollection, IList
 	{
 		private IList values;
-		private IList valuesIdentifiers;
 
 		private IDictionary identifiers; //element -> id
 
@@ -244,7 +243,6 @@ namespace NHibernate.Collection
 		{
 			identifiers = new Hashtable();
 			values = new ArrayList();
-			valuesIdentifiers = new ArrayList();
 		}
 
 		/// <summary>
@@ -276,20 +274,6 @@ namespace NHibernate.Collection
 		public override bool Empty
 		{
 			get { return ( values.Count == 0 ); }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		public override void EndRead( CollectionPersister persister, object owner )
-		{
-			for( int i = 0; i < valuesIdentifiers.Count; i++ )
-			{
-				object element = persister.ElementType.ResolveIdentifier( valuesIdentifiers[ i ], session, owner );
-				values[ i ] = element;
-			}
 		}
 
 		/// <summary></summary>
@@ -424,13 +408,10 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader reader, CollectionPersister persister, object owner )
 		{
-			object elementIdentifier = persister.ReadElementIdentifier( reader, owner, session );
-			values.Add( null );
-			valuesIdentifiers.Add( elementIdentifier );
-
+			object element = persister.ReadElement( reader, owner, session );
+			values.Add( element );
 			identifiers[ values.Count - 1 ] = persister.ReadIdentifier( reader, session );
-
-			return elementIdentifier;
+			return element;
 		}
 
 		/// <summary>

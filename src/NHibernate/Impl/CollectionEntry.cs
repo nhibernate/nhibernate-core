@@ -15,9 +15,11 @@ namespace NHibernate.Impl
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( CollectionEntry ) );
 
-		/// <summary></summary>
-		// false by default
-		internal bool dirty;
+		/// <summary>
+		/// Collections detect changes made via their public interface
+		/// and mark themselves as dirty. False by default.
+		/// </summary>
+		private bool dirty;
 
 		/// <summary>
 		/// Indicates that the Collection can still be reached by an Entity
@@ -68,6 +70,13 @@ namespace NHibernate.Impl
 		internal bool dorecreate;
 
 		/// <summary>
+		/// If we instantiate a collection during the <see cref="ISession.Flush" />
+		/// process, we must ignore it for the rest of the flush.
+		/// </summary>
+		[NonSerialized]
+		internal bool ignore;
+
+		/// <summary>
 		/// Indicates that the Collection has been fully initialized.
 		/// </summary>
 		internal bool initialized;
@@ -97,7 +106,10 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		internal object currentKey;
 
-		/// <summary></summary>
+		/// <summary>
+		/// The identifier of the Entity that is the owner of this Collection 
+		/// during the load or post flush.
+		/// </summary>
 		internal object loadedKey;
 
 		/// <summary></summary>
@@ -115,9 +127,19 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public CollectionEntry()
 		{
-			// dirty is initialized to false by runtime
+			// A newly wrapped collection is NOT dirty (or we get unnecessary version updates)
 			//this.dirty = false;
 			this.initialized = true;
+
+			// New collections that get found and wrapped during flush shouldn't be ignored
+			//this.ignore = false;
+		}
+
+		public CollectionEntry( CollectionPersister loadedPersister, object loadedID )
+			// Detached collection wrappers that get found and reattached
+			// during flush shouldn't be ignored
+			: this( loadedPersister, loadedID, false )
+		{
 		}
 
 		/// <summary>
@@ -125,14 +147,15 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="loadedPersister">The <see cref="CollectionPersister"/> that persists this Collection type.</param>
 		/// <param name="loadedID">The identifier of the Entity that is the owner of this Collection.</param>
-		/// <param name="initialized">A boolean indicating if the collection has been initialized.</param>
-		public CollectionEntry( CollectionPersister loadedPersister, object loadedID, bool initialized )
+		/// <param name="ignore">A boolean indicating whether to ignore the collection during current (or next) flush.</param>
+		public CollectionEntry( CollectionPersister loadedPersister, object loadedID, bool ignore )
 		{
 			// dirty is initialized to false by runtime
 			//this.dirty = false;
-			this.initialized = initialized;
+			this.initialized = false;
 			this.loadedKey = loadedID;
 			SetLoadedPersister( loadedPersister );
+			this.ignore = ignore;
 		}
 
 		/// <summary>
@@ -150,8 +173,11 @@ namespace NHibernate.Impl
 			this.dirty = cs.Dirty;
 			this.snapshot = cs.Snapshot;
 			this.loadedKey = cs.Key;
-			SetLoadedPersister( factory.GetCollectionPersister( cs.Role ) );
 			this.initialized = true;
+			// Detached collections that get found and reattached during flush
+			// shouldn't be ignored
+			//this.ignore = false;
+			SetLoadedPersister( factory.GetCollectionPersister( cs.Role ) );
 		}
 
 		/// <summary>
@@ -225,33 +251,45 @@ namespace NHibernate.Impl
 		/// <param name="collection">The <see cref="PersistentCollection"/> that was flushed.</param>
 		public void PostFlush( PersistentCollection collection )
 		{
-			// the CollectionEntry should be processed if we are in the PostFlush()
-			if( !processed )
+			if( ignore )
 			{
-				throw new AssertionFailure( "Hibernate has a bug processing collections" );
+				ignore = false;
 			}
-
-			// now that the flush has gone through move everything that is the current
-			// over to the loaded fields and set dirty to false since the db & collection
-			// are in synch.
-			loadedKey = currentKey;
-			SetLoadedPersister( currentPersister );
-			dirty = false;
-
-			// collection needs to know its' representation in memory and with
-			// the db is now in synch - esp important for collections like a bag
-			// that can add without initializing the collection.
-			collection.PostFlush();
-
-			// if it was initialized or any of the scheduled actions were performed then
-			// need to resnpashot the contents of the collection.
-			if( initialized && ( doremove || dorecreate || doupdate ) )
+			else
 			{
-				snapshot = collection.GetSnapshot( loadedPersister ); //re-snapshot
+				// the CollectionEntry should be processed if we are in the PostFlush()
+				if( !processed )
+				{
+					throw new AssertionFailure( "collection was not processed by Flush()" );
+				}
+
+				// now that the flush has gone through move everything that is the current
+				// over to the loaded fields and set dirty to false since the db & collection
+				// are in synch.
+				loadedKey = currentKey;
+				SetLoadedPersister( currentPersister );
+				dirty = false;
+
+				// collection needs to know its' representation in memory and with
+				// the db is now in synch - esp important for collections like a bag
+				// that can add without initializing the collection.
+				collection.PostFlush();
+
+				// if it was initialized or any of the scheduled actions were performed then
+				// need to resnpashot the contents of the collection.
+				if( initialized && ( doremove || dorecreate || doupdate ) )
+				{
+					InitSnapshot(collection, loadedPersister);
+				}
 			}
 		}
 
 		#region Engine.ICollectionSnapshot Members
+
+		internal void InitSnapshot(PersistentCollection collection, CollectionPersister persister)
+		{
+			snapshot = collection.GetSnapshot( persister );
+		}
 
 		/// <summary></summary>
 		public object Key
@@ -277,16 +315,17 @@ namespace NHibernate.Impl
 			get { return dirty; }
 		}
 
-		/// <summary></summary>
 		public void SetDirty()
 		{
 			dirty = true;
 		}
 
-		/// <summary></summary>
-		public bool IsInitialized
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool WasDereferenced
 		{
-			get { return initialized; }
+			get { return loadedKey == null; }
 		}
 
 		#endregion
@@ -299,7 +338,7 @@ namespace NHibernate.Impl
 		/// The <see cref="CollectionPersister"/> that is 
 		/// responsible for the Collection.
 		/// </param>
-		private void SetLoadedPersister( CollectionPersister persister )
+		internal void SetLoadedPersister( CollectionPersister persister )
 		{
 			loadedPersister = persister;
 			if( persister != null )

@@ -14,10 +14,6 @@ namespace NHibernate.Collection
 	{
 		private IList list;
 
-		// used to hold the Identifiers of the Elements that will later
-		// be moved to the list field.
-		private IList listIdentifiers;
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -96,7 +92,6 @@ namespace NHibernate.Collection
 		public override void BeforeInitialize( CollectionPersister persister )
 		{
 			this.list = new ArrayList();
-			this.listIdentifiers = new ArrayList();
 		}
 
 		/// <summary></summary>
@@ -266,26 +261,6 @@ namespace NHibernate.Collection
 			return list.IndexOf( obj );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		public override void EndRead( CollectionPersister persister, object owner )
-		{
-			for( int i = 0; i < listIdentifiers.Count; i++ )
-			{
-				object element = persister.ElementType.ResolveIdentifier( listIdentifiers[ i ], session, owner );
-				list[ i ] = element;
-			}
-
-			if( Additions != null )
-			{
-				DelayedAddAll( Additions );
-				Additions = null;
-			}
-		}
-
 		/// <summary></summary>
 		public override ICollection Elements()
 		{
@@ -328,17 +303,16 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader rs, CollectionPersister persister, object owner )
 		{
-			//object element = persister.ReadElement(rs, owner, session);
-			object elementIdentifier = persister.ReadElementIdentifier( rs, owner, session );
-			int index = ( int ) persister.ReadIndex( rs, session );
-			for( int i = list.Count; i <= index; i++ )
+			object element = persister.ReadElement(rs, owner, session);
+			int index = (int)persister.ReadIndex( rs, session );
+
+			for( int i=list.Count; i<=index; i++ )
 			{
 				list.Insert( i, null );
-				listIdentifiers.Insert( i, null );
 			}
-			listIdentifiers[ index ] = elementIdentifier;
-			//list[index] = element;
-			return elementIdentifier;
+
+			list[ index ] = element;
+			return element;
 		}
 
 		/// <summary></summary>

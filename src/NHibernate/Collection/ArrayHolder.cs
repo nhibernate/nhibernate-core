@@ -15,16 +15,14 @@ namespace NHibernate.Collection
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( PersistentCollection ) );
 
-		private object array;
+		private Array array;
 
 		[NonSerialized]
 		private System.Type elementClass;
 
 		[NonSerialized]
-		private IList tempList;
+		private ArrayList tempList;
 
-		[NonSerialized]
-		private IList tempListIdentifier;
 
 		/// <summary>
 		/// 
@@ -33,7 +31,7 @@ namespace NHibernate.Collection
 		/// <param name="array"></param>
 		public ArrayHolder( ISessionImplementor session, object array ) : base( session )
 		{
-			this.array = array;
+			this.array = (Array) array;
 			initialized = true;
 		}
 
@@ -44,14 +42,14 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		protected override object Snapshot( CollectionPersister persister )
 		{
-			int length = /*(array==null) ? temp.Count :*/ ( ( Array ) array ).Length;
-			object result = System.Array.CreateInstance( persister.ElementClass, length );
+			int length = /*(array==null) ? temp.Count :*/ array.Length;
+			Array result = System.Array.CreateInstance( persister.ElementClass, length );
 			for( int i = 0; i < length; i++ )
 			{
-				object elt = /*(array==null) ? temp[i] :*/ ( ( Array ) array ).GetValue( i );
+				object elt = /*(array==null) ? temp[i] :*/ array.GetValue( i );
 				try
 				{
-					( ( Array ) result ).SetValue( persister.ElementType.DeepCopy( elt ), i );
+					result.SetValue( persister.ElementType.DeepCopy( elt ), i );
 				}
 				catch( Exception e )
 				{
@@ -173,17 +171,14 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader rs, CollectionPersister persister, object owner )
 		{
-			//object element = persister.ReadElement(rs, owner, session);
-			object elementIdentifier = persister.ReadElementIdentifier( rs, owner, session );
+			object element = persister.ReadElement(rs, owner, session);
 			int index = ( int ) persister.ReadIndex( rs, session );
 			for( int i = tempList.Count; i <= index; i++ )
 			{
 				tempList.Insert( i, null );
-				tempListIdentifier.Insert( i, null );
 			}
-			//tempList[index] = element;
-			tempListIdentifier[ index ] = elementIdentifier;
-			return elementIdentifier;
+			tempList[index] = element;
+			return element;
 		}
 
 		/// <summary>
@@ -200,51 +195,22 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override void BeginRead()
 		{
+			base.BeginRead();
 			tempList = new ArrayList();
-			tempListIdentifier = new ArrayList();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Obsolete( "See PersistentCollection.EndRead for reason." )]
 		public override void EndRead()
 		{
-			array = ( ( ArrayList ) tempList ).ToArray( elementClass );
-			tempList = null;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		public override void EndRead( CollectionPersister persister, object owner )
-		{
-			array = System.Array.CreateInstance( elementClass, tempListIdentifier.Count );
-
-			for( int i = 0; i < tempListIdentifier.Count; i++ )
+			SetInitialized();
+			array = System.Array.CreateInstance( elementClass, tempList.Count );
+			int index = 0;
+			foreach( object element in tempList )
 			{
-				object element = persister.ElementType.ResolveIdentifier( tempListIdentifier[ i ], session, owner );
-				( ( Array ) array ).SetValue( element, i );
-				tempList[ i ] = element;
+				array.SetValue( element, index );
+				index++;
 			}
-
-			//tempList = null;
-			//tempListIdentifier = null;
-		}
-
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="lazy"></param>
-		/// <returns></returns>
-		public override object GetInitialValue( bool lazy )
-		{
-			base.GetInitialValue( false );
-			session.AddArrayHolder( this );
-			return array;
+			tempList = null;
+			//return true;
 		}
 
 		/// <summary>
@@ -308,13 +274,8 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public override object GetCachedValue()
+		public override object GetValue()
 		{
-			session.AddArrayHolder( this );
 			return array;
 		}
 

@@ -954,6 +954,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\AbstractVisitor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\BatcherImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -965,6 +970,11 @@
                 />
                 <File
                     RelPath = "Impl\CollectionEntry.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\CollectionKey.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -989,6 +999,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\FlushVisitor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\IExecutable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1004,7 +1019,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\OnLockVisitor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\OnUpdateVisitor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\ProxyVisitor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\QueryImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\ReattachVisitor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1065,6 +1100,11 @@
                 />
                 <File
                     RelPath = "Impl\Status.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\WrapVisitor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

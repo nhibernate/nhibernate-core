@@ -47,9 +47,6 @@ namespace NHibernate.Collection
 		public override void BeforeInitialize( CollectionPersister persister )
 		{
 			internalSet = new Iesi.Collections.SortedSet( Comparer );
-			// an ArrayList of the identifiers is what Set uses because there is not
-			// both a Key & Value to worry about - just the Key.
-			this.tempIdentifierList = new ArrayList();
 		}
 
 		/// <summary>

@@ -228,7 +228,7 @@ namespace NHibernate.Loader
 						Key ownerKey = keys[ collectionOwner ];
 						if( ownerKey != null )
 						{
-							PersistentCollection rowCollection = session.GetLoadingCollection( collectionPersister, ownerKey.Identifier, row[ collectionOwner ] );
+							PersistentCollection rowCollection = session.GetLoadingCollection( collectionPersister, ownerKey.Identifier );
 							object collectionRowKey = collectionPersister.ReadKey( rs, session );
 							if( collectionRowKey != null )
 							{
@@ -287,7 +287,7 @@ namespace NHibernate.Loader
 			}
 			if( singleCollection )
 			{
-				optionalCollection.EndRead( CollectionPersister, optionalCollectionOwner );
+				optionalCollection.EndRead();
 			}
 
 

@@ -24,7 +24,7 @@ namespace NHibernate.Collection
 
 		/// <summary></summary>
 		[NonSerialized]
-		protected IList tempIdentifierList;
+		protected IList tempList;
 
 		/// <summary>
 		/// Returns a Hashtable where the Key &amp; the Value are both a Copy of the
@@ -384,11 +384,9 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader rs, CollectionPersister persister, object owner )
 		{
-			//object elementIdentifier = persister.ReadElement(rs, owner, session);
-			object elementIdentifier = persister.ReadElementIdentifier( rs, owner, session );
-
-			tempIdentifierList.Add( elementIdentifier );
-			return elementIdentifier;
+			object element = persister.ReadElement(rs, owner, session);
+			tempList.Add( element );
+			return element;
 		}
 
 		/// <summary>
@@ -398,23 +396,15 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override void BeginRead()
 		{
-			tempIdentifierList = new ArrayList();
+			tempList = new ArrayList();
 		}
 
-		/// <summary>
-		/// Resolves all of the Identifiers to an Entity.
-		/// <see cref="PersistentCollection.BeginRead"/>
-		/// </summary>
-		/// <param name="owner"></param>
-		/// <param name="persister"></param>
-		public override void EndRead( CollectionPersister persister, object owner )
+		public override void EndRead()
 		{
-			foreach( object identifier in tempIdentifierList )
-			{
-				object element = persister.ElementType.ResolveIdentifier( identifier, session, owner );
-				internalSet.Add( element );
-			}
-
+			internalSet.AddAll( tempList );
+			tempList = null;
+			SetInitialized();
+			// return true;
 		}
 
 		/// <summary>

@@ -44,6 +44,7 @@ namespace NHibernate.Collection
 
 		/// <summary></summary>
 		protected bool initialized;
+		private bool initializing;
 
 		[NonSerialized]
 		private ArrayList additions;
@@ -193,80 +194,77 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// As far as every client is concerned, the collection is loaded after this call!
-		/// (Actually is done lazily
+		/// Return the user-visible collection (or array) instance
 		/// </summary>
-		/// <param name="lazy"></param>
 		/// <returns></returns>
-		public virtual object GetInitialValue( bool lazy )
+		public virtual object GetValue()
 		{
-			if( !lazy )
-			{
-				session.Initialize( this, false );
-				initialized = true;
-			}
 			return this;
 		}
 
+		/*
 		/// <summary></summary>
 		public virtual object GetCachedValue()
 		{
 			initialized = true; //TODO: only needed for query FETCH so should move out of here
 			return this;
 		}
+		*/
 
 		/// <summary>
 		/// Override on some subclasses
 		/// </summary>
 		public virtual void BeginRead()
 		{
-			// override on some subclasses
+			initializing = true;
 		}
 
 		/// <summary>
-		/// It is my thoughts to have this be the portion that takes care of 
-		/// converting the Identifier to the element...
+		/// Override on some subclasses.
 		/// </summary>
-		[Obsolete( "Should be replaced with EndRead(CollectionPersister, object) - need to verify" )]
 		public virtual void EndRead()
 		{
-			// override on some subclasses
+			// TODO:SYNCH:hib2.1 has this return a bool
+			SetInitialized();
+			//do this bit after setting initialized to true or it will recurse
+			if (additions!=null) 
+			{
+				DelayedAddAll(additions);
+				additions=null;
+				//return false;
+			}
+			else 
+			{
+				//return true;
+			}
 		}
-
-		/// <summary>
-		/// Called when there are no other open IDataReaders so this PersistentCollection
-		/// is free to resolve all of the Identifiers to their Entities (which potentially
-		/// involves issuing a new query and opening a new IDataReader.
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		public abstract void EndRead( CollectionPersister persister, object owner );
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="writing"></param>
-		public void Initialize( bool writing )
+		protected void Initialize( bool writing )
 		{
 			if( !initialized )
 			{
+				if( initializing ) throw new LazyInitializationException("cannot access loading collection");
 				if( IsConnectedToSession )
 				{
-					try
+					if( session.IsConnected )
 					{
-						session.Initialize( this, writing );
-						initialized = true;
-						// do this after setting initialized to true or it will recurse
-						if( additions != null )
+						try
 						{
-							DelayedAddAll( additions );
-							additions = null;
+							session.InitializeCollection( this, writing );
+						}
+						catch( Exception e )
+						{
+							log.Error( "Failed to lazily initialize a collection", e );
+							throw new LazyInitializationException( "Failed to lazily initialize a collection", e );
 						}
 					}
-					catch( Exception e )
+					else
 					{
-						log.Error( "Failed to lazily initialize a collection", e );
-						throw new LazyInitializationException( "Failed to lazily initialize a collection", e );
+						throw new LazyInitializationException( "Failed to lazily initialize a collection - session is disconnected" );
 					}
 				}
 				else
@@ -299,7 +297,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public bool SetSession( ISessionImplementor session )
+		public bool SetCurrentSession( ISessionImplementor session )
 		{
 			if( session == this.session )
 			{
@@ -572,6 +570,12 @@ namespace NHibernate.Collection
 					list.RemoveAt( indexOfEntityToRemove );
 				}
 			}
+		}
+
+		protected void SetInitialized()
+		{
+			initializing = false;
+			initialized = true;
 		}
 
 		#region - Hibernate Collection Proxy Classes
