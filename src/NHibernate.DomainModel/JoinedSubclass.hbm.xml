@@ -5,7 +5,7 @@
 		table="j_sc"	
 	>
 		<id name="Id" type="Int32" unsaved-value="null" column="joined_subclass_id" >
-			<generator class="assigned" />
+			<generator class="native" />
 		</id>
 		
 		<property name="TestLong" column="test_long" type="Int64" />

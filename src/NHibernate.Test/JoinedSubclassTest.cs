@@ -27,12 +27,15 @@ namespace NHibernate.Test {
 		[Test]
 		public void TestCRUD() {
 			
+			int one1Id;
+			int base1Id;
+
 			// test the Save
 			ISession s1 = sessions.OpenSession();
 			ITransaction t1 = s1.BeginTransaction();
 
 			JoinedSubclassOne one1 = new JoinedSubclassOne();
-			one1.Id = 2;
+			//one1.Id = 2;
 			one1.TestDateTime = new System.DateTime(2003, 10, 17);
 			one1.TestString = "the test one string";
 			one1.TestLong = 6;
@@ -41,7 +44,7 @@ namespace NHibernate.Test {
 			s1.Save(one1);
 
 			JoinedSubclassBase base1 = new JoinedSubclassBase();
-			base1.Id = 1;
+			//base1.Id = 1;
 			base1.TestDateTime = new System.DateTime(2003, 10, 17);
 			base1.TestString = "the test string";
 			base1.TestLong = 5;
@@ -51,13 +54,16 @@ namespace NHibernate.Test {
 			t1.Commit();
 			s1.Close();
 
+			one1Id = one1.Id;
+			base1Id = base1.Id;
+
 			// lets verify the correct classes were saved
 			ISession s2 = sessions.OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 			
 			// perform a load based on the base class
-			JoinedSubclassBase base2 = (JoinedSubclassBase)s2.Load(typeof(JoinedSubclassBase), 1);
-			JoinedSubclassBase oneBase2 = (JoinedSubclassBase)s2.Load(typeof(JoinedSubclassBase), 2);
+			JoinedSubclassBase base2 = (JoinedSubclassBase)s2.Load(typeof(JoinedSubclassBase), base1Id);
+			JoinedSubclassBase oneBase2 = (JoinedSubclassBase)s2.Load(typeof(JoinedSubclassBase), one1Id);
 
 			// do some quick checks to make sure s2 loaded an object with the same data as s2 saved.
 			ObjectAssertion.AssertPropertiesEqual(base1, base2);
