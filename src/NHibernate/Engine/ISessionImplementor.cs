@@ -353,5 +353,30 @@ namespace NHibernate.Engine
 		//TODO: write this code...
 		ICollection GetOrphans(PersistentCollection coll);
 
+
+		/// <summary>
+		/// Adds a PersistentCollection to the Session that a Component needs to Resolve.
+		/// </summary>
+		/// <param name="id">The Id of the Entity that contains the Component.</param>
+		/// <param name="role">The role that Identifies the PersistentCollection.</param>
+		/// <param name="collection">The PersistentCollection to add to the Session.</param>
+		void AddUnresolvedComponentCollection(object id, string role, PersistentCollection collection);
+
+		/// <summary>
+		/// Returns the PersistentCollection from the Session that a Component needs to Resolve.
+		/// </summary>
+		/// <param name="id">The Id of the Entity that contains the Component.</param>
+		/// <param name="role">The role that Identifies the PersistentCollection.</param>
+		/// <returns>The PersistentCollection that has not been resolved.</returns>
+		PersistentCollection GetUnresolvedComponentCollection(object id, string role);
+
+		/// <summary>
+		/// Removes the PersistentCollection from the Session because the Component has
+		/// Resolved the Identifier for it.
+		/// </summary>
+		/// <param name="id">The Id of the Entity that contains the Component.</param>
+		/// <param name="role">The role that Identifiers the PersistentCollection.</param>
+		void RemoveUnresolvedComponentCollection(object id, string role); 
+
 	}
 }

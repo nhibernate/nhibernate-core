@@ -111,14 +111,78 @@ namespace NHibernate.Type {
 			return false;
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
+		/// <summary>
+		/// Provides component specific implementation of ResolveIdentifier that is safe for Collections.
+		/// </summary>
+		/// <param name="value">The Component object.</param>
+		/// <param name="session">The current Session.</param>
+		/// <param name="owner">The Entity object the Component is contained in.</param>
+		/// <returns>A fully resolved Component.</returns>
+		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
+		{
+			if(value==null) return null;
+			
+			for(int i=0; i < propertySpan; i++) 
+			{
+				// the only types we need to resolve are PersistentCollectionTypes and ComponentTypes.
+				// ComponentTypes only really need to be resolved when they contain other ComponentTypes
+				// that contain Collections, I'm not sure how safe it is to call Set(target, val) during
+				// ResolveIdentifier - commented out the Set because this is not creating new objects, just
+				// modifying the existing ones so they don't need to be Set again.  
+				// Nor am I sure how safe it is to ignore ResolveIdentifer for everything
+				// else.  I know ManyToOneType and OneToOneType also override ResolveIdentifer and can potentially
+				// connect to the db.
+				
+				if(types[i] is PersistentCollectionType)
+				{
+					object id = session.GetEntityIdentifier(owner);
+					object val = ((PersistentCollectionType)types[i]).ResolveIdentifier(id, session, owner, true);
+					//setters[i].Set(value, val);
+				}
+				else 
+				{
+					object val = types[i].ResolveIdentifier(getters[i].Get(value), session, owner);
+					//setters[i].Set(value, val);
+				}
+			}
+
+			return value;
+
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="names"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner) 
+		{
 			int begin = 0;
 			bool notNull=false;
 			object[] values = new object[propertySpan];
 			for (int i=0; i<propertySpan; i++) {
 				int length = types[i].GetColumnSpan( session.Factory );
 				string[] range = ArrayHelper.Slice(names, begin, length);
-				object val = types[i].NullSafeGet(rs, range, session, owner);
+				object val = null; //types[i].NullSafeGet(rs, range, session, owner);
+
+				// if the Component contains a collection type then use its special NullSafeGet
+				// so that we don't create another IDataReader to Get the Collections values from
+				// the Db.  This breaks the nice OO'ness of being able to just call type.NullSafeGet
+				// but it solves the problem of Collections inside of Components opening another
+				// DataReader...
+				if(types[i] is PersistentCollectionType) 
+				{
+					val = ((PersistentCollectionType)types[i]).NullSafeGet(rs, range, session, owner, true);
+				}
+				else 
+				{
+					val = types[i].NullSafeGet(rs, range, session, owner);
+				}
+
+
 				if (val!=null) notNull=true;
 				values[i] = val;
 				begin+=length;

@@ -1117,6 +1117,7 @@ namespace NHibernate.Impl
 
 				//BEGIN YUCKINESS:
 				if ( persister.HasCascades ) {
+					
 					int start = deletions.Count;
 
 					IList newNullifiables = nullifiables;
@@ -1145,9 +1146,11 @@ namespace NHibernate.Impl
 						//ie if any deletions occurred as a result of cascade
 
 						//move them earlier. this is yucky code:
-
-						IList middle = deletions.GetRange( oldDeletions.Count, start );
-						IList tail = deletions.GetRange( start, end);
+						
+						// in h203 they used SubList where it takes the start and end indexes, in nh GetRange
+						// takes the start index and quantity to get.
+						IList middle = deletions.GetRange( oldDeletions.Count, (start - oldDeletions.Count) );
+						IList tail = deletions.GetRange( start, (end - start) );
 
 						oldDeletions.AddRange(tail);
 						oldDeletions.AddRange(middle);
@@ -3043,13 +3046,111 @@ namespace NHibernate.Impl
 			}
 		}
 
+		#region - Session Helpers for handling PersistentCollections inside of a Component
+	
+		// key = ComponentCollectionKey(id, role)
+		// value = PersistentCollection
+		// contains the PersistentCollections that need to be resolved by a Component through
+		// the use of ResolveIdentifier.
+		private IDictionary unresolvedComponentCollections = new Hashtable();
+
+		/// <summary>
+		/// Key for the IDictionary that is storing the PersistentCollections that need to be
+		/// Resolved for a Component
+		/// </summary>
+		private class ComponentCollectionKey 
+		{
+			private object id;
+			private string role;
+
+			public ComponentCollectionKey(object id, string role) 
+			{
+				this.id = id;
+				this.role = role;
+			}
+
+			public override int GetHashCode()
+			{
+				unchecked 
+				{
+					return id.GetHashCode() + role.GetHashCode();
+				}
+			}
+
+			public object Id 
+			{
+				get { return id;}
+			}
+
+			public string Role 
+			{
+				get { return role; }
+			}
+
+			public override bool Equals(object obj)
+			{
+				ComponentCollectionKey rhs = obj as ComponentCollectionKey;
+				
+				if(rhs==null) return false;
+				
+				return this.Equals(rhs);
+			}
+
+			public bool Equals(ComponentCollectionKey obj) 
+			{
+				// check for ref equality
+				if(this==obj) return true;
+
+				return (this.id.Equals(obj.Id)) && (this.role==obj.role);
+			}
+
+			public override string ToString()
+			{
+				return "Id=" + id.ToString() + " ; role=" + role;
+			}
+
+
+		}
+
+		public void AddUnresolvedComponentCollection(object id, string role, PersistentCollection collection) 
+		{
+			ComponentCollectionKey key = new ComponentCollectionKey(id, role);
+			
+			// I can't think of any valid reason that the same unresolved collection for a Component would
+			// get in here twice...
+			if( unresolvedComponentCollections.Contains(key) )
+			{
+				throw new HibernateException("There is a problem adding the collection identified by " + key.ToString());
+			}
+
+			unresolvedComponentCollections[key] = collection;
+
+		}
+
+		public PersistentCollection GetUnresolvedComponentCollection(object id, string role)
+		{
+			ComponentCollectionKey key = new ComponentCollectionKey(id, role);
+			object returnValue = unresolvedComponentCollections[key];
+			return returnValue==null ? null : (PersistentCollection) returnValue;
+
+		}
+
+		public void RemoveUnresolvedComponentCollection(object id, string role) 
+		{
+			ComponentCollectionKey key = new ComponentCollectionKey(id, role);
+			unresolvedComponentCollections.Remove(key);
+		}
+
+		#endregion
+
 		/// <summary>
 		/// add a collection we just loaded up (still needs initializing)
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		public void AddUninitializedCollection(PersistentCollection collection, CollectionPersister persister, object id) {
+		public void AddUninitializedCollection(PersistentCollection collection, CollectionPersister persister, object id) 
+		{
 			CollectionEntry ce = new CollectionEntry(persister, id, false);
 			collections[collection] = ce;
 			collection.CollectionSnapshot = ce;
@@ -3370,7 +3471,7 @@ namespace NHibernate.Impl
 
 			if ( log.IsDebugEnabled ) {
 				log.Debug( "search: " + persistentClass.Name );
-				log.Debug( "criteria: " + criteria.ToString() );
+				log.Debug( "criteria: " + criteria );
 			}
 
 			ILoadable persister = (ILoadable) GetPersister(persistentClass);
