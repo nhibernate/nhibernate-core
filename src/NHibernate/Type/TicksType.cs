@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	/// the Ticks property.
 	/// </summary>
 	/// <remarks>
-	/// This is the recommended way to timestamp a column.  The System.DateTime.Ticks 
+	/// This is the recommended way to "timestamp" a column.  The System.DateTime.Ticks 
 	/// is accurate to 100-nanosecond intervals. 
 	/// </remarks>
 	public class TicksType : MutableType, IVersionType, ILiteralType
@@ -35,6 +35,7 @@ namespace NHibernate.Type
 		{
 			get { return typeof(DateTime); }
 		}
+
 		public override void Set(IDbCommand st, object value, int index) 
 		{
 			IDataParameter parm = st.Parameters[index] as IDataParameter;
@@ -45,10 +46,12 @@ namespace NHibernate.Type
 		{
 			get { return "Ticks"; }
 		}
+
 		public override string ToXML(object val) 
 		{
 			return ((DateTime)val).Ticks.ToString();
 		}
+
 		public override object DeepCopyNotNull(object value) 
 		{
 			return value;
@@ -76,7 +79,7 @@ namespace NHibernate.Type
 		
 		public object Seed 
 		{
-			get { return DateTime.Now; }
+			get { return DateTime.Now.Ticks; }
 		}
 
 		public string ObjectToSQLString(object value) 
