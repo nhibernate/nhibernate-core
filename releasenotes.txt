@@ -1,3 +1,26 @@
+Alpha Build 0.3.0.0
+======================== 
+- Removed property AdoTransaction from Transaction.
+- Added MsSql7Dialect.
+- Added PostgreSQL Driver and Dialect (Oliver Weichhold & Martijn Boland).
+- Fixed bug with Expression.Ge() not returning correct Expression.
+- PersistentCollection now implements ICollection (Donald Mull).
+- BatcherImpl and PreparerImpl were combined and code cleaned up thanks to problems found when using Ngpsql
+- ITransaction is now responsible for joining IDbCommand to IDbTransaction instead of IBatcher - if applicable.
+- Modified code to help improve performance of Drivers that don't support multiple Open DataReaders on a single IDbConnection.
+- Fixed bug with hbm2net and VelocityRenderer throwing Exception (Carlos Guzmán Álvarez & Peter Smulovics).
+- Clean up of hbm2net (Peter Smulovics).
+- Modified internals of AbstractEntityPersister to help with buiding on Mono (Oliver Weichhold).
+- Renamed nhibernate.build to NHibernate.build to help with building on Mono (Oliver Weichhold).
+- Removed Dialect.GetLimitString(string) should use Dialect.GetLimitString(SqlString) instead.
+- SqlStringBuilders were modified to set an initial capacity for the ArrayList.
+- Added properties to SqlString to help with SqlStringBuilders and Hql.
+- Marked Exceptions as [Serializable].
+- Fixed bug with Hql not being able to use a constant in an imported or mapped Class.
+- DateTimeType.DeepCopyNotNull() cleaned up (Mark Traudt).
+- Added VersionProperty to IClassMetadata.
+
+
 Alpha Build 0.2.0.0
 ======================== 
 - Removed support for <dynabean> mapping since it doesn't exist in .net.
