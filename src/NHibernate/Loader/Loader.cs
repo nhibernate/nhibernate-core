@@ -231,7 +231,7 @@ namespace NHibernate.Loader
 			
 					results.Add(GetResultColumnOrRow(row, rs, session));
 
-					if(log.IsDebugEnabled) log.Debug("done processing result set(" + count + " rows");
+					if(log.IsDebugEnabled) log.Debug("done processing result set(" + count + " rows)");
 
 				}
 			}

@@ -106,6 +106,7 @@ namespace NHibernate.Type
 			TypeFactory.GetTypeType(); 
 			TypeFactory.GetYesNoType(); 
 			TypeFactory.GetTicksType();
+			TypeFactory.GetTimeSpanType();
 
 			getTypeDelegatesWithLength.Add(TypeFactory.GetBinaryType().Name, new GetNullableTypeWithLength(GetBinaryType));
 			getTypeDelegatesWithLength.Add(TypeFactory.GetDoubleType().Name, new GetNullableTypeWithLength(GetDoubleType));
@@ -871,6 +872,26 @@ namespace NHibernate.Type
 			if(returnType==null) 
 			{
 				returnType = new TicksType(SqlTypeFactory.GetInt64());
+				AddToTypeOfName(key, returnType);
+			}
+
+			return returnType;
+			
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public static NullableType GetTimeSpanType() 
+		{
+			
+			string key = typeof(TimeSpanType).FullName;
+			
+			NullableType returnType = (NullableType)typeByTypeOfName[key];
+			if(returnType==null) 
+			{
+				returnType = new TimeSpanType(SqlTypeFactory.GetInt64());
 				AddToTypeOfName(key, returnType);
 			}
 

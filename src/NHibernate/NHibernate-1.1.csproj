@@ -1802,6 +1802,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\TimeSpanType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\TimestampType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

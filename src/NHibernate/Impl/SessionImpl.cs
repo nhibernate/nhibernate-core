@@ -3370,7 +3370,7 @@ namespace NHibernate.Impl
 
 			if ( log.IsDebugEnabled ) {
 				log.Debug( "search: " + persistentClass.Name );
-				log.Debug( "criteria: " + criteria );
+				log.Debug( "criteria: " + criteria.ToString() );
 			}
 
 			ILoadable persister = (ILoadable) GetPersister(persistentClass);
