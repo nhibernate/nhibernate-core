@@ -302,7 +302,7 @@
 		</zip>
 		
 		<!-- delete the directory that was used to create the zip -->
-		<delete dir="${build.dir}" />
+		<!--<delete dir="${build.dir}" />-->
 		
 		<echo message="Create a '${project.config}' package as file://${project.zip-path}" />
 		
