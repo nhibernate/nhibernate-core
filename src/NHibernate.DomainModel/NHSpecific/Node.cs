@@ -52,6 +52,10 @@ namespace NHibernate.DomainModel.NHSpecific
 			PreviousNodes.Add(previousNode, null);
 		}
 
+		private void RemovePreviousNode(Node previousNode) 
+		{
+			PreviousNodes.Remove(previousNode);
+		}
 
 		/// <summary>
 		/// The Nodes this Node can go To.
@@ -79,6 +83,12 @@ namespace NHibernate.DomainModel.NHSpecific
 			// let the destinationNode know that it can be one of the
 			// previous Nodes was this Node
 			destinationNode.AddPreviousNode(this);
+		}
+
+		public void RemoveDestinationNode(Node destinationNode) 
+		{
+			DestinationNodes.Remove(destinationNode);
+			destinationNode.RemovePreviousNode(this);
 		}
 
 		public override int GetHashCode()
