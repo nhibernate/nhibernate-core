@@ -15,11 +15,11 @@ namespace NHibernate.DomainModel
 		{
 			get
 			{
-				return x;
+				return _x;
 			}
 			set
 			{
-				this.x = value;
+				this._x = value;
 			}
 		}
 	
@@ -31,7 +31,7 @@ namespace NHibernate.DomainModel
 			}
 			set
 			{
-				this.version = value;
+				this._version = value;
 			}
 		}
 

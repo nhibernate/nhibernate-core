@@ -57,11 +57,11 @@ namespace NHibernate.DomainModel
 		{
 			get 
 			{
-				return component; 
+				return _component; 
 			}
 			set 
 			{
-				component = value;
+				_component = value;
 			}
 		}
 	
