@@ -130,7 +130,7 @@
                <element column="date_" type="DateTime"/>
             </array>
           </component>
-          <any name="object" id-type="long" cascade="all">
+          <any name="object" id-type="Int64" cascade="all">
             <column name="clazz" length="100"/>
             <column name="gen_id"/>
           </any>
