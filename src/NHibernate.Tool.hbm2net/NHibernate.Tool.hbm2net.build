@@ -7,16 +7,16 @@
 >
 
 	<!--
-        Required properties:
-            * build.dir             - (path) root level to build to, assemblies will go in ${build.dir}/bin
-            * build.debug           - (true|false) debug build?
-            * current.build.defines - framework-specific build defines
+		Required properties:
+			* build.dir				- (path) root level to build to, assemblies will go in ${build.dir}/bin
+			* build.debug			- (true|false) debug build?
+			* current.build.defines - framework-specific build defines
 			* project.version		- full project version
 			* project.version.major	- the major number of the build
 			* project.version.minor - the minor number of the build
 			* project.version.build - the build number
-    -->
-    
+	-->
+	
 	<target name="build" description="Tool to Generate Classes from hbm.xml files.">
 		<!-- ensure the AssemblyInfo is writable -->
 		<attrib file="AssemblyInfo.cs" readonly="false" />

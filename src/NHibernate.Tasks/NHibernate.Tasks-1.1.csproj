@@ -76,7 +76,7 @@
                 />
                 <Reference
                     Name = "System.XML"
-                    AssemblyName = "System.XML"
+                    AssemblyName = "System.Xml"
                     HintPath = "..\..\..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
@@ -87,12 +87,12 @@
                 <Reference
                     Name = "log4net"
                     AssemblyName = "log4net"
-                    HintPath = "..\..\external-bin\log4net.dll"
+                    HintPath = "..\..\lib\net\1.1\log4net.dll"
                 />
                 <Reference
                     Name = "NAnt.Core"
                     AssemblyName = "NAnt.Core"
-                    HintPath = "..\..\external-bin\NAnt.Core.dll"
+                    HintPath = "..\..\lib\NAnt.Core.dll"
                 />
             </References>
         </Build>
