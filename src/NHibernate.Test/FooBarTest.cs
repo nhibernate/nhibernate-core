@@ -34,7 +34,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Bugs in quoteing kills other tests too")]
+		[Ignore("Fetch keyword is missing from HQL")]
 		public void FetchInitializedCollection()
 		{
 			ISession s = sessions.OpenSession();
@@ -51,16 +51,16 @@ namespace NHibernate.Test
 			Assert.IsTrue( baz.fooBag.Count==2 );
 			s.Close();
 			
-//			s = sessions.OpenSession();
-//			baz = (Baz) s.load( typeof(Baz), baz.getCode() );
-//			Object bag = baz.getFooBag();
-//			Assert.IsFalse( NHibernate.IsInitialized(bag) );
-//			s.Find("from Baz baz left join fetch baz.fooBag");
-//			Assert.IsFalse( NHibernate.IsInitialized(bag) );
-//			Assert.IsTrue( bag==baz.getFooBag() );
-//			Assert.IsTrue( baz.getFooBag().size()==2 );
-//			s.Delete(baz);
-//			s.Flush();
+			s = sessions.OpenSession();
+			baz = (Baz) s.Load( typeof(Baz), baz.code );
+			Object bag = baz.fooBag;
+			Assert.IsFalse( NHibernate.IsInitialized(bag) );
+			s.Find("from Baz baz left join fetch baz.fooBag");
+			Assert.IsFalse( NHibernate.IsInitialized(bag) );
+			Assert.IsTrue( bag==baz.fooBag );
+			Assert.IsTrue( baz.fooBag.Count==2 );
+			s.Delete(baz);
+			s.Flush();
 
 			s.Close();
 		}
