@@ -17,7 +17,7 @@ namespace NHibernate.Connection
 		// cannot be instantiated
 		private ConnectionProviderFactory() 
 		{
-			throw new InvalidOperationException();
+			throw new InvalidOperationException("ConnectionProviderFactory can not be instantiated.");
 		}
 
 		public static IConnectionProvider NewConnectionProvider(IDictionary settings) 

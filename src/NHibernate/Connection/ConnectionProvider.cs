@@ -43,10 +43,10 @@ namespace NHibernate.Connection
 			// do their own connection pooling.  This would be useful to change to some higher number
 			// if the .net DataProvider did not provide their own connection pooling.  I don't know of
 			// any instances of this yet.
-			poolSize = PropertiesHelper.GetInt32(Cfg.Environment.PoolSize, Cfg.Environment.Properties, 0);
+			poolSize = PropertiesHelper.GetInt32(Cfg.Environment.PoolSize, settings, 0);
 			log.Info("NHibernate connection pool size: " + poolSize);
 
-			connString = Cfg.Environment.Properties[ Cfg.Environment.ConnectionString ] as string;
+			connString = settings[ Cfg.Environment.ConnectionString ] as string;
 			if (connString==null) throw new HibernateException("Could not find connection string setting");
 			
 			ConfigureDriver(settings);
@@ -59,7 +59,7 @@ namespace NHibernate.Connection
 		/// <param name="settings">A name/value Dictionary that contains the settings for the Driver.</param>
 		protected virtual void ConfigureDriver(IDictionary settings) 
 		{
-			string driverClass = Cfg.Environment.Properties[ Cfg.Environment.ConnectionDriver] as string;
+			string driverClass = settings[ Cfg.Environment.ConnectionDriver] as string;
 			if(driverClass==null) 
 			{
 				throw new HibernateException("The " + Cfg.Environment.ConnectionDriver + " must be specified in the NHibernate configuration section.");
@@ -105,7 +105,6 @@ namespace NHibernate.Connection
 
 		#region IDisposable Members
 
-		// equiv to java's object.finalize()
 		public void Dispose()
 		{
 			Close();
