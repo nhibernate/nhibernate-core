@@ -44,6 +44,7 @@ namespace NHibernate.Collection {
 		private IType indexType;
 		private IType elementType;
 		private string[] keyColumnNames;
+		private string[] keyColumnAliases;
 		private string[] indexColumnNames;
 		private string[] unquotedIndexColumnNames;
 		private string[] elementColumnNames;
@@ -77,6 +78,7 @@ namespace NHibernate.Collection {
 			collectionType = collection.Type;
 			role = collection.Role;
 			ownerClass = collection.OwnerClass;
+			Alias alias = new Alias("__");
 
 			sqlOrderByString = collection.OrderBy;
 			hasOrder = sqlOrderByString!=null;
@@ -86,16 +88,21 @@ namespace NHibernate.Collection {
 			hasWhere = sqlWhereString!=null;
 			sqlWhereStringTemplate = hasWhere ? Template.RenderWhereStringTemplate(sqlWhereString, dialect) : null;
 
+			//hasOrphanDelete = collection.hasOrphanDelete();
+		
 			cache = collection.Cache;
 
 			keyType = collection.Key.Type;
 			int span = collection.Key.ColumnSpan;
 			keyColumnNames = new string[span];
+			string[] keyAliases = new string[span];
 			int k=0;
 			foreach(Column col in collection.Key.ColumnCollection) {
 				keyColumnNames[k] = col.GetQuotedName(dialect);
+				keyAliases[k] = col.Alias(dialect);
 				k++;
 			}
+			keyColumnAliases = alias.ToAliasStrings(keyAliases, dialect);
 
 			isSet = collection.IsSet;
 			isOneToMany = collection.IsOneToMany;
@@ -354,7 +361,7 @@ namespace NHibernate.Collection {
 
 		public object ReadKey(IDataReader dr, ISessionImplementor session) {
 			//TODO: h2.0.3 = use keyColumnAliases instead of keyColumnNames
-			return KeyType.NullSafeGet(dr, keyColumnNames, session, null);
+			return KeyType.NullSafeGet(dr, keyColumnAliases, session, null);
 		}
 
 		public void WriteElement(IDbCommand st, object elt, bool writeOrder, ISessionImplementor session) {
