@@ -44,6 +44,7 @@ namespace NHibernate.Hql {
 		private ArrayList identifierSpaces = new ArrayList();
 
 		private IQueryable[] persisters;
+		private string[] names;
 		private IType[] types;
 		private string[][] scalarColumnNames;
 		
@@ -169,10 +170,30 @@ namespace NHibernate.Hql {
 				log.Debug("SQL: " + sql);
 			}
 		}
+
 		internal void SetAliasName(string alias, string name) {
 			aliasNames.Add(alias, name);
 		}
-		internal string Unalias(string path) {
+
+		internal string GetAliasName(String alias) 
+		{
+			String name = (String) aliasNames[alias];
+			if (name==null) 
+			{
+				if (superQuery!=null) 
+				{
+					name = superQuery.GetAliasName(alias);
+				}
+				else 
+				{
+					name = alias;
+				}
+			}
+			return name;
+		}
+
+		internal string Unalias(string path) 
+				{
 			string alias = StringHelper.Root(path);
 			string name = (string) aliasNames[alias];
 			if (name!=null) {
@@ -387,12 +408,14 @@ namespace NHibernate.Hql {
 			}
 			
 			int size = returnTypes.Count;
+			names = new string[size];
 			persisters = new IQueryable[size];
 			suffixes = new string[size];
 			for (int i=0; i<size; i++) {
 				string name = (string) returnTypes[i];
 				persisters[i] = GetPersisterForName(name);
 				suffixes[i] = (size==1) ? String.Empty : i.ToString() + StringHelper.Underscore;
+				names[i] = name;
 			}
 
 			string scalarSelect = RenderScalarSelect();
@@ -654,8 +677,11 @@ namespace NHibernate.Hql {
 			}
 		}
 
-		public IEnumerable GetEnumerable(object[] values, IType[] types, RowSelection selection, IDictionary namedParams, ISessionImplementor session) {
-			IDbCommand st = PrepareQueryStatement( SQLString, values, types, namedParams, selection, false, session);
+		public IEnumerable GetEnumerable(object[] values, IType[] types, RowSelection selection, 
+			IDictionary namedParams, IDictionary lockModes, ISessionImplementor session) {
+			IDbCommand st = PrepareQueryStatement(
+				ApplyLocks(SQLString, lockModes, session.Factory.Dialect),
+				values, types, namedParams, selection, false, session);
 			try {
 				SetMaxRows(st, selection);
 				IDataReader rs = st.ExecuteReader();
@@ -770,10 +796,11 @@ namespace NHibernate.Hql {
 			IType[] types,
 			bool returnProxies,
 			RowSelection selection,
-			IDictionary namedParams) {
+			IDictionary namedParams,
+			IDictionary lockModes) {
 
 			// TODO: fix the last parameter that is suppoesd to use lockModes
-			return base.Find(session, values, types, returnProxies, selection, namedParams, null);
+			return base.Find(session, values, types, returnProxies, selection, namedParams, lockModes);
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IDataReader rs, ISessionImplementor session) {
@@ -812,7 +839,62 @@ namespace NHibernate.Hql {
 
 		//TODO: implement this method - in here for compilation
 		protected override LockMode[] GetLockModes(IDictionary lockModes) {
-			return new LockMode[] {LockMode.Write};
+			IDictionary nameLockModes = new Hashtable();
+			if (lockModes!=null) 
+			{
+				IDictionaryEnumerator it = lockModes.GetEnumerator();
+				while ( it.MoveNext() ) 
+				{
+					DictionaryEntry me = it.Entry;
+					nameLockModes.Add( 
+						GetAliasName( (String) me.Key ),
+						me.Value
+						);
+				}
+			}
+			LockMode[] lockModeArray = new LockMode[names.Length];
+			for ( int i=0; i < names.Length; i++ ) 
+			{
+				LockMode lm = (LockMode) nameLockModes[names[i]];
+				if (lm==null) lm = LockMode.None;
+				lockModeArray[i] = lm;
+			}
+			return lockModeArray;
+		}
+
+		protected override string ApplyLocks(string sql, IDictionary lockModes, Dialect.Dialect dialect)
+		{
+			if (lockModes == null || lockModes.Count == 0)
+			{
+			    return sql;
+			}
+			else if (dialect.SupportsForUpdate)
+			{
+				//LockMode upgradeType = null;
+				//ForUpdateFragment updateClause = new ForUpdateFragment();
+				//IDictionaryEnumerator it = lockModes.GetEnumerator();
+				//it.MoveNext();
+				//DictionaryEntry me = (DictionaryEntry) it.Current;
+				//String name = GetAliasName( (String) me.Key );
+				//LockMode lockMode = (LockMode) me.Value;
+				//if ( LockMode.Read.lessThan(lockMode) ) 
+				//{
+				//	updateClause.addTableAlias(name);
+				//	if ( upgradeType!=null && lockMode!=upgradeType ) throw new QueryException("mixed LockModes");
+				//	upgradeType = lockMode;
+				//}
+				//if ( upgradeType==LockMode.UpgradeNoWait && dialect.SupportsForUpdateNoWait) 
+				//{ 
+				//	updateClause.setNowait(true);
+				//}
+			    //return sql + updateClause.ToFragmentString();
+				return sql;
+			}
+			else
+			{
+				log.Debug("dialect does not support FOR UPDATE");
+			    return sql;
+			}
 		}
 
 

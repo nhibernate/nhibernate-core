@@ -183,7 +183,8 @@ namespace NHibernate.Engine {
 		/// <param name="selection"></param>
 		/// <param name="namedParams"></param>
 		/// <returns></returns>
-		IList Find(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+		IList Find(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams,
+			IDictionary lockModes);
 	
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
@@ -194,7 +195,8 @@ namespace NHibernate.Engine {
 		/// <param name="selection"></param>
 		/// <param name="namedParams"></param>
 		/// <returns></returns>
-		IEnumerable Enumerable(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+		IEnumerable Enumerable(string query, object[] values, IType[] types, RowSelection selection, 
+			IDictionary namedParams, IDictionary lockModes);
 
 		/// <summary>
 		/// Execute a filter
@@ -206,7 +208,8 @@ namespace NHibernate.Engine {
 		/// <param name="selection"></param>
 		/// <param name="namedParams"></param>
 		/// <returns></returns>
-		IList Filter(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+		IList Filter(object collection, string filter, object[] values, IType[] types, RowSelection selection, 
+			IDictionary namedParams, IDictionary lockModes);
 
 		/// <summary>
 		/// Collection from a filter
@@ -218,7 +221,8 @@ namespace NHibernate.Engine {
 		/// <param name="selection"></param>
 		/// <param name="namedParams"></param>
 		/// <returns></returns>
-		IEnumerable EnumerableFilter(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams);
+		IEnumerable EnumerableFilter(object collection, string filter, object[] values, IType[] types, RowSelection selection, 
+			IDictionary namedParams, IDictionary lockModes);
 		
 		/// <summary>
 		/// Get the <c>IClassPersister</c> for an object

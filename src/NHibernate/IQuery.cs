@@ -223,5 +223,13 @@ namespace NHibernate {
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a persistent enumeration</param>
 		IQuery SetEnum(string name, IPersistentEnum val);
+
+		/// <summary>
+		/// Set the lockmode for the objects idententified by the
+		/// given alias that appears in the <tt>FROM</tt> clause.
+		/// </summary>
+		/// <param name="alias">alias a query alias, or <tt>this</tt> for a collection filter</param>
+		/// <param name="lockMode"></param>
+		void SetLockMode(string alias, LockMode lockMode);
 	}
 }

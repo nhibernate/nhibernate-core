@@ -18,6 +18,7 @@ namespace NHibernate.Impl {
 		private ArrayList types = new ArrayList(4);
 		private IDictionary namedParameters = new Hashtable(4);
 		private IDictionary namedParametersLists = new Hashtable(4);
+		private IDictionary lockModes = new Hashtable(2);
 
 		public QueryImpl(string queryString, ISessionImplementor session) {
 			this.session = session;
@@ -29,14 +30,26 @@ namespace NHibernate.Impl {
 			IDictionary namedParams = new Hashtable( namedParameters );
 			
 			string query = BindParameterLists(namedParams);
-			return session.Enumerable(query, (object[]) values.ToArray(typeof(object)), (IType[]) types.ToArray(typeof(IType)), selection, namedParams);
+			return session.Enumerable(query, (object[]) values.ToArray(typeof(object)), 
+				(IType[]) types.ToArray(typeof(IType)), selection, namedParams, lockModes);
 		}
 
-		public virtual IList List() {
+	    public IDictionary LockModes
+	    {
+	        get { return lockModes; }
+	    }
+
+		public virtual void SetLockMode(string alias, LockMode lockMode)
+		{
+			lockModes[alias] = lockMode;    
+		}
+
+	    public virtual IList List() {
 			IDictionary namedParams = new Hashtable( namedParameters );
 			
 			string query = BindParameterLists(namedParams);
-			return session.Find(query, (object[]) values.ToArray(typeof(object)), (IType[]) types.ToArray(typeof(IType)), selection, namedParams);
+			return session.Find(query, (object[]) values.ToArray(typeof(object)), (IType[]) types.ToArray(typeof(IType)), 
+				selection, namedParams, lockModes);
 		}
 
 		public IQuery SetMaxResults(int maxResults) {

@@ -1276,10 +1276,11 @@ namespace NHibernate.Impl {
 		}
 
 		public IList Find(string query, object[] values, IType[] types) {
-			return Find(query, values, types, null, null);
+			return Find(query, values, types, null, null, null);
 		}
 
-		public IList Find(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams) {
+		public IList Find(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams,
+			IDictionary lockModes) {
 
 			if ( log.IsDebugEnabled ) {
 				log.Debug( "find: " + query);
@@ -1297,7 +1298,7 @@ namespace NHibernate.Impl {
 				for (int i=0; i<q.Length; i++ ) {
 					IList currentResults;
 					try {
-						currentResults = q[i].FindList(this, values, types, true, selection, namedParams);
+						currentResults = q[i].FindList(this, values, types, true, selection, namedParams, lockModes);
 					} catch (Exception e) {
 						throw new ADOException("Could not execute query", e);
 					}
@@ -1340,10 +1341,11 @@ namespace NHibernate.Impl {
 		}
 
 		public IEnumerable Enumerable(string query, object[] values, IType[] types) {
-			return Enumerable(query, values, types, null, null);
+			return Enumerable(query, values, types, null, null, null);
 		}
 
-		public IEnumerable Enumerable(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams) {
+		public IEnumerable Enumerable(string query, object[] values, IType[] types, RowSelection selection, 
+			IDictionary namedParams, IDictionary lockModes) {
 
 			if ( log.IsDebugEnabled ) {
 				log.Debug( "GetEnumerable: " + query );
@@ -1362,7 +1364,7 @@ namespace NHibernate.Impl {
 			//execute the queries and return all results as a single enumerable
 			for (int i=0; i<q.Length; i++) {
 				try {
-					result = q[i].GetEnumerable(values, types, selection, namedParams, this);
+					result = q[i].GetEnumerable(values, types, selection, namedParams, lockModes, this);
 				} catch (Exception e) {
 					throw new ADOException("Could not execute query", e);
 				}
@@ -2822,11 +2824,11 @@ namespace NHibernate.Impl {
 		}
 
 		public ICollection Filter(object collection, string filter) {
-			return Filter( collection, filter, new object[1], new IType[1], null, null );
+			return Filter( collection, filter, new object[1], new IType[1], null, null, null);
 		}
 
 		public ICollection Filter(object collection, string filter, object value, IType type) {
-			return Filter( collection, filter, new object[] { null, value }, new IType[] { null, type }, null, null );
+			return Filter( collection, filter, new object[] { null, value }, new IType[] { null, type }, null, null, null );
 		}
 
 		public ICollection Filter(object collection, string filter, object[] values, IType[] types) {
@@ -2834,7 +2836,7 @@ namespace NHibernate.Impl {
 			IType[] typs = new IType[ values.Length + 1 ];
 			Array.Copy(values, 0, vals, 1, values.Length);
 			Array.Copy(types, 0, typs, 1, types.Length);
-			return Filter(collection, filter, vals, typs, null, null);
+			return Filter(collection, filter, vals, typs, null, null, null);
 		}
 
 		/// <summary>
@@ -2887,7 +2889,8 @@ namespace NHibernate.Impl {
 
 		}
 
-		public IList Filter(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams) {
+		public IList Filter(object collection, string filter, object[] values, IType[] types, RowSelection selection, 
+			IDictionary namedParams, IDictionary lockModes) {
 
 			string[] concreteFilters = QueryTranslator.ConcreteQueries(filter, factory);
 			FilterTranslator[] filters = new FilterTranslator[ concreteFilters.Length ];
@@ -2903,7 +2906,7 @@ namespace NHibernate.Impl {
 				for (int i=0; i<concreteFilters.Length; i++ ) {
 					IList currentResults;
 					try {
-						currentResults = filters[i].FindList(this, values, types, true, selection, namedParams);
+						currentResults = filters[i].FindList(this, values, types, true, selection, namedParams, lockModes);
 					} catch (Exception e) {
 						throw new ADOException("could not execute query", e);
 					}
@@ -2918,7 +2921,8 @@ namespace NHibernate.Impl {
 			return results;
 		}
 
-		public IEnumerable EnumerableFilter(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams) {
+		public IEnumerable EnumerableFilter(object collection, string filter, object[] values, IType[] types, 
+			RowSelection selection, IDictionary namedParams, IDictionary lockModes) {
 
 			string[] concreteFilters = QueryTranslator.ConcreteQueries(filter, factory);
 			FilterTranslator[] filters = new FilterTranslator[ concreteFilters.Length ];
@@ -2938,7 +2942,7 @@ namespace NHibernate.Impl {
 			for (int i=0; i<filters.Length; i++ ) {
 
 				try { 
-					result = filters[i].GetEnumerable(values, types, selection, namedParams, this);
+					result = filters[i].GetEnumerable(values, types, selection, namedParams, lockModes, this);
 				} catch (Exception e) {
 					throw new ADOException("could not execute query", e);
 				}

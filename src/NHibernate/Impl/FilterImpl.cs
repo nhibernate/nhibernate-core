@@ -15,13 +15,13 @@ namespace NHibernate.Impl {
 		public override IEnumerable Enumerable() {
 			IDictionary namedParams = new Hashtable( NamedParams );
 			string query = BindParameterLists( namedParams );
-			return Session.EnumerableFilter( collection, query, ValueArray(), TypeArray(), Selection, namedParams);
+			return Session.EnumerableFilter( collection, query, ValueArray(), TypeArray(), Selection, namedParams, LockModes);
 		}
 
 		public override IList List() {
 			IDictionary namedParams = new Hashtable( NamedParams );
 			string query = BindParameterLists( namedParams );
-			return Session.Filter( collection, query, ValueArray(), TypeArray(), Selection, namedParams);
+			return Session.Filter( collection, query, ValueArray(), TypeArray(), Selection, namedParams, LockModes);
 		}
 
 		private IType[] TypeArray() {
