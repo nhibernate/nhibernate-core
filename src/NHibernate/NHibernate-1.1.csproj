@@ -1648,6 +1648,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\GuidType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\IAbstractComponentType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
