@@ -363,7 +363,7 @@ namespace NHibernate.Type
 					{
 						type = NHibernate.Association(typeClass);
 					}
-					else if ( typeof(IPersistentEnum).IsAssignableFrom(typeClass) ) 
+					else if ( typeClass.IsEnum ) 
 					{
 						type = NHibernate.Enum(typeClass);
 					}

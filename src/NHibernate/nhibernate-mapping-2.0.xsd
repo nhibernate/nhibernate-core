@@ -214,7 +214,7 @@
 				</xs:element>
 			</xs:sequence>
 			<xs:attribute name='column' />
-			<xs:attribute name='type' default='string' />
+			<xs:attribute name='type' default='String' />
 			<xs:attribute name='not-null' default='true'>
 				<xs:simpleType>
 					<xs:restriction base='xs:string'>
