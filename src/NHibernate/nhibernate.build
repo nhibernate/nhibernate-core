@@ -18,15 +18,11 @@
 			* sign					- indicates if the Assembly should be signed
     -->
     
-	<property name="keyFile" value="" />
+	<property name="keyFile" value="..\NHibernate.snk" />
 	
 	<target name="build" description="Build NHibernate">
 		<!-- ensure the AssemblyInfo is writable -->
 		<attrib file="AssemblyInfo.cs" readonly="false" />
-		
-		<if propertytrue="sign">
-			<property name="keyFile" value="..\NHibernate.snk" />
-		</if>
 		
 		<asminfo output="AssemblyInfo.cs" language="CSharp">
 			<imports>
@@ -42,7 +38,7 @@
 				<attribute type="AssemblyVersionAttribute" value="${project.version}" />
 				<attribute type="AssemblyInformationalVersionAttribute" value="${project.version.major}.${project.version.minor}" />
 				<attribute type="AssemblyFileVersionAttribute" value="${project.version}" />
-				<attribute type="AssemblyKeyFileAttribute" value="${keyFile}" />
+				<attribute type="AssemblyKeyFileAttribute" value="${keyFile}" if="${sign}"/>
 			</attributes>
 		</asminfo>
 
