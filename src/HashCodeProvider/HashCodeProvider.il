@@ -39,7 +39,7 @@
 // Image base: 0x07b50000
 .namespace HashCodeProvider 
 {
-  .class public IdentityHashCodeProvider
+  .class public serializable IdentityHashCodeProvider
        implements [mscorlib]System.Collections.IHashCodeProvider
   {
     .method private hidebysig newslot final virtual 
