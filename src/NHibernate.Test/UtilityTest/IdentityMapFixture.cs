@@ -14,25 +14,66 @@ namespace NHibernate.Test.UtilityTest
 	public class IdentityMapFixture
 	{
 		protected MutableHashCode item1 = null;
-		protected object value1 = null;
 		protected MutableHashCode item2 = null;
-		protected object value2 = null;
 		protected IDictionary expectedMap = null;
 
+		protected NoHashCode noHashCode1 = null;
+		protected NoHashCode noHashCode2 = null;
+		
+		protected object value1 = null;
+		protected object value2 = null;
+		
 		[SetUp]
 		public void SetUp() 
 		{
 			item1 = new MutableHashCode(1);
-			value1 = new object();
 			item2 = new MutableHashCode(2);
+			
+			value1 = new object();
 			value2 = new object();
 			
+			noHashCode1 = new NoHashCode();
+			noHashCode2 = new NoHashCode();
+
 			expectedMap = new Hashtable();
 			expectedMap.Add(item1, value1);
 			expectedMap.Add(item2, value2);
 
 		}
 
+
+		[Test]
+		public void AddNoHashCode()
+		{
+			IDictionary map = IdentityMap.Instantiate();
+			map.Add(noHashCode1, value1);
+
+			Assert.AreEqual(1, map.Count, "The item was added succesfully");
+		}
+
+		[Test]
+		public void ConcurrentEntries() 
+		{
+			IDictionary map = IdentityMap.Instantiate();
+			
+			map.Add(noHashCode1, value1);
+			map.Add(noHashCode2, value2);
+
+			// call ConcurrentEntries and verify it doesn't use the HashCode to build the 
+			// new list.
+			ICollection concurrent = IdentityMap.ConcurrentEntries(map);
+
+			Assert.AreEqual(2, concurrent.Count, "There are two elements in concurrent Map");
+			foreach(DictionaryEntry de in concurrent) 
+			{
+				NoHashCode noCode = (NoHashCode)de.Key;
+				object noCodeValue = de.Value;
+
+				Assert.IsTrue(map.Contains(noCode), "The Key in the concurrent map should have been in the original map's Keys");
+				Assert.IsTrue(noCodeValue==map[noCode], "The Value identified by the Key in concurrent map should be the same as the IdentityMap");
+			}
+
+		}
 
 		/// <summary>
 		/// An IdentityMap can not use a ValueType as the Key because of the boxing/unboxing
@@ -233,6 +274,23 @@ namespace NHibernate.Test.UtilityTest
 				return hashCodeField.Equals(((MutableHashCode)obj).HashCodeField);
 			}
 
+		}
+
+		/// <summary>
+		/// The IdentityMap should not ever call the object.GetHashCode() because that
+		/// will have side effects on Collections/Entities.
+		/// </summary>
+		protected class NoHashCode 
+		{
+			public override int GetHashCode()
+			{
+				throw new NotImplementedException("This method should not get called during test");
+			}
+
+			public override bool Equals(object obj) 
+			{
+				return base.Equals(obj);
+			}
 		}
 		
 	}
