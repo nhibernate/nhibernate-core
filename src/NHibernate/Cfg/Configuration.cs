@@ -1031,7 +1031,7 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			XmlNode sfNode = doc.DocumentElement.SelectSingleNode( CfgNamespacePrefix + ":session-factory", CfgNamespaceMgr );
+			XmlNode sfNode = doc.DocumentElement.SelectSingleNode( "//" + CfgNamespacePrefix + ":session-factory", CfgNamespaceMgr );
 			XmlAttribute name = sfNode.Attributes[ "name" ];
 			if( name != null )
 			{
@@ -1069,7 +1069,10 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			log.Info( "Configured SessionFactory: " + name.Value );
+			if( name!=null ) 
+			{
+				log.Info( "Configured SessionFactory: " + name.Value );
+			}
 			log.Debug( "properties: " + properties );
 
 			return this;
