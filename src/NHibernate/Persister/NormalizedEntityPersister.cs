@@ -921,7 +921,8 @@ namespace NHibernate.Persister {
 					statements[i] = session.Preparer.PrepareCommand(SqlDeleteStrings[i]);
 				} 
 
-				if ( IsVersioned ) VersionType.NullSafeSet( statements[0], version, IdentifierColumnNames.Length + 1, session );
+				if ( IsVersioned ) //VersionType.NullSafeSet( statements[0], version, IdentifierColumnNames.Length + 1, session );
+					VersionType.NullSafeSet( statements[0], version, IdentifierColumnNames.Length , session );
 
 				for (int i=tableNames.Length-1; i>=0; i-- ) {
 

@@ -727,7 +727,8 @@ namespace NHibernate.Persister {
 				IdentifierType.NullSafeSet(deleteCmd, id, 0, session);
  
 				if(IsVersioned) {
-					VersionType.NullSafeSet(deleteCmd, version, IdentifierColumnNames.Length + 1, session);
+					//VersionType.NullSafeSet(deleteCmd, version, IdentifierColumnNames.Length + 1, session);
+					VersionType.NullSafeSet(deleteCmd, version, IdentifierColumnNames.Length, session);
 				}
 
 				actualCount = deleteCmd.ExecuteNonQuery();
