@@ -14,11 +14,11 @@ namespace NHibernate.Type {
 		}
 
 		public override object Get(IDataReader rs, int index) {
-			return rs.GetDecimal(index);
+			return Convert.ToDecimal(rs[index]);
 		}
 
 		public override object Get(IDataReader rs, string name) {
-			return Get(rs, rs.GetOrdinal(name));
+			return Convert.ToDecimal(rs[name]);
 		}
 
 		public override System.Type PrimitiveClass {

@@ -22,12 +22,12 @@ namespace NHibernate.Type
 
 		public override object Get(IDataReader rs, int index)
 		{
-			return rs.GetFloat(index);
+			return Convert.ToSingle(rs[index]);
 		}
 
 		public override object Get(IDataReader rs, string name) 
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Convert.ToSingle(rs[name]);
 		}
 
 		public override System.Type PrimitiveClass 

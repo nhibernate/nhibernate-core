@@ -11,11 +11,11 @@ namespace NHibernate.Type {
 		}
 
 		public override object Get(IDataReader rs, int index) {
-			return rs.GetInt32(index);
+			return Convert.ToInt32(rs[index]);
 		}
 
 		public override object Get(IDataReader rs, string name) {
-			return Get(rs, rs.GetOrdinal(name));
+			return Convert.ToInt32(rs[name]);
 		}
 
 		public override System.Type PrimitiveClass {

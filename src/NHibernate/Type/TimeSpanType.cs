@@ -18,12 +18,12 @@ namespace NHibernate.Type
 
 		public override object Get(IDataReader rs, int index) 
 		{
-			return new TimeSpan(rs.GetInt64(index));
+			return new TimeSpan( Convert.ToInt64(rs[index]) );
 		}
 
 		public override object Get(IDataReader rs, string name) 
 		{
-			return Get(rs, rs.GetOrdinal(name));// rs.[name];
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		public override System.Type ReturnedClass 

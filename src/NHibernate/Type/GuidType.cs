@@ -15,12 +15,12 @@ namespace NHibernate.Type
 
 		public override object Get(IDataReader rs, int index) 
 		{
-			return rs.GetGuid(index);
+			return new Guid( Convert.ToString(rs[index]) );
 		}
 
 		public override object Get(IDataReader rs, string name) 
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return new Guid( Convert.ToString(rs[name]) );
 		}
 
 		public override System.Type PrimitiveClass 

@@ -18,7 +18,7 @@ namespace NHibernate.Type {
 		}
 
 		public override object Get(IDataReader rs, int index) {
-			string code = rs.GetString(index);
+			string code = Convert.ToString(rs[index]);
 			if (code==null) {
 				return null;
 			}

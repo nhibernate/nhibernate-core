@@ -15,12 +15,12 @@ namespace NHibernate.Type {
 		}
 
 		public override object Get(IDataReader rs, int index) {
-			string str = rs.GetString(index);
-			if (str==null) {
+			string dbValue = Convert.ToString(rs[index]);
+			if (dbValue==null) {
 				return null;
 			}
 			else {
-				return str[0];
+				return dbValue[0];
 			}	
 		}
 

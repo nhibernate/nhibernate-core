@@ -36,12 +36,12 @@ namespace NHibernate.Type
 
 		public override object Get(IDataReader rs, int index) 
 		{
-			return rs.GetDateTime(index);
+			return Convert.ToDateTime(rs[index]);
 		}
 
 		public override object Get(IDataReader rs, string name) 
 		{
-			return Get(rs, rs.GetOrdinal(name));// rs.[name];
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		public override System.Type ReturnedClass 

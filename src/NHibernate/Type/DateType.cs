@@ -13,13 +13,13 @@ namespace NHibernate.Type {
 
 	    public override object Get(IDataReader rs, int index) 
 		{
-			DateTime dbValue = rs.GetDateTime(index);
+			DateTime dbValue = Convert.ToDateTime(rs[index]);
 			return new DateTime(dbValue.Year, dbValue.Month, dbValue.Day);
 		}
 
 		public override object Get(IDataReader rs, string name) 
 		{
-			return Get(rs, rs.GetOrdinal(name));// rs.[name];
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		public override System.Type ReturnedClass {
