@@ -70,9 +70,9 @@ namespace NHibernate.Type {
 			System.Type[] propTypes = new System.Type[propertySpan];
 			for (int i=0; i<propertySpan; i++) 
 			{
-				getterNames[i] = getters[i].Property.Name;
-				setterNames[i] = setters[i].Property.Name;
-				propTypes[i] = getters[i].Property.PropertyType;
+				getterNames[i] = getters[i].PropertyName;
+				setterNames[i] = setters[i].PropertyName;
+				propTypes[i] = getters[i].ReturnType;
 			}
 
 			if(parentProperty==null) 

@@ -614,9 +614,9 @@ namespace NHibernate.Persister
 				propertyNames[i] = prop.Name;
 				getters[i] = prop.GetGetter( mappedClass );
 				setters[i] = prop.GetSetter( mappedClass );
-				getterNames[i] = getters[i].Property.Name;
-				setterNames[i] = setters[i].Property.Name;
-				types[i] = getters[i].Property.PropertyType;
+				getterNames[i] = getters[i].PropertyName;
+				setterNames[i] = setters[i].PropertyName;
+				types[i] = getters[i].ReturnType;
 				propertyTypes[i] = prop.Type;
 				propertyUpdateability[i] = prop.IsUpdateable;
 				propertyInsertability[i] = prop.IsInsertable;
