@@ -5,7 +5,7 @@ Alpha Build 0.3.0.0
 - Added PostgreSQL Driver and Dialect (Oliver Weichhold & Martijn Boland).
 - Fixed bug with Expression.Ge() not returning correct Expression.
 - PersistentCollection now implements ICollection (Donald Mull).
-- BatcherImpl and PreparerImpl were combined and code cleaned up thanks to problems found when using Ngpsql
+- BatcherImpl and PreparerImpl were combined and code cleaned up thanks to problems found when using Ngpsql (Martijn Boland).
 - ITransaction is now responsible for joining IDbCommand to IDbTransaction instead of IBatcher - if applicable.
 - Modified code to help improve performance of Drivers that don't support multiple Open DataReaders on a single IDbConnection.
 - Fixed bug with hbm2net and VelocityRenderer throwing Exception (Carlos Guzmán Álvarez & Peter Smulovics).
@@ -19,7 +19,8 @@ Alpha Build 0.3.0.0
 - Fixed bug with Hql not being able to use a constant in an imported or mapped Class.
 - DateTimeType.DeepCopyNotNull() cleaned up (Mark Traudt).
 - Added VersionProperty to IClassMetadata.
-
+- Renamed PrimitiveType to ValueTypeType to be more .net style consistent and fixed them up so they inherit from the appropriate class.
+- Fixed bug with caching an ObjectType.
 
 Alpha Build 0.2.0.0
 ======================== 
