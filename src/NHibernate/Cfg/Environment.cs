@@ -76,5 +76,12 @@ namespace NHibernate.Cfg {
 		public IDictionary Properties {
 			get { return properties; }
 		}
+
+		public static bool UseStreamsForBinary {
+			get { 
+				return true;	//HACK: to compile BinaryType
+								//TODO: return useStreamsForBinary; 
+			}			
+		}
 	}
 }
