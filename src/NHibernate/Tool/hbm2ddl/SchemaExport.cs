@@ -9,24 +9,28 @@ using NHibernate.Dialect;
 using NHibernate.Util;
 
 
-namespace NHibernate.Tool.hbm2ddl {
+namespace NHibernate.Tool.hbm2ddl 
+{
 	/// <summary>
 	/// Commandline tool to export table schema for a configured <c>Configuration</c> to the database
 	/// </summary>
 	/// <remarks>
 	/// To compile run "csc SchemaExport.cs /reference:../../bin/debug/NHibernate.dll"
 	/// </remarks>
-	public class SchemaExport {
+	public class SchemaExport 
+	{
 		private string[] dropSQL;
 		private string[] createSQL;
 		private IDictionary connectionProperties;
 		private string outputFile = null;
 		private Dialect.Dialect dialect;
+		private string delimiter = null;
 
 		/// <summary>
 		/// Create a schema exported for a given Configuration
 		/// </summary>
-		public SchemaExport(Configuration cfg) : this(cfg, cfg.Properties) {
+		public SchemaExport(Configuration cfg) : this(cfg, cfg.Properties) 
+		{
 		}
 
 		/// <summary>
@@ -35,7 +39,8 @@ namespace NHibernate.Tool.hbm2ddl {
 		/// </summary>
 		/// <param name="cfg"></param>
 		/// <param name="connectionProperties"></param>
-		public SchemaExport(Configuration cfg, IDictionary connectionProperties) {
+		public SchemaExport(Configuration cfg, IDictionary connectionProperties) 
+		{
 			this.connectionProperties = connectionProperties;
 			dialect = Dialect.Dialect.GetDialect(connectionProperties);
 			dropSQL = cfg.GenerateDropSchemaScript(dialect);
@@ -45,26 +50,37 @@ namespace NHibernate.Tool.hbm2ddl {
 		/// <summary>
 		/// Set the output filename. The generated script will be written to this file
 		/// </summary>
-		public SchemaExport SetOutputFile(string filename) {
+		public SchemaExport SetOutputFile(string filename) 
+		{
 			outputFile = filename;
 			return this;
 		}
-
+		
+		/// <summary>
+		/// Set the end of statement delimiter 
+		/// </summary>
+		public SchemaExport SetDelimiter(string delimiter) 
+		{
+			this.delimiter = delimiter;
+			return this;
+		}
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
-		public void Create(bool script, bool export) {
-			Execute(script, export, false, true, null);
+		public void Create(bool script, bool export) 
+		{
+			Execute(script, export, false, true);
 		}
 
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
-		public void Drop(bool script, bool export) {
-			Execute(script, export, true, true, null);
+		public void Drop(bool script, bool export) 
+		{
+			Execute(script, export, true, true);
 		}
 
-		private void Execute(bool script, bool export, bool justDrop, bool format, string delimiter) 
+		private void Execute(bool script, bool export, bool justDrop, bool format) 
 		{
 			IDbConnection connection  = null;
 			IDbTransaction transaction = null;
@@ -196,6 +212,13 @@ namespace NHibernate.Tool.hbm2ddl {
 			}
 		}
 
+		/// <summary>
+		/// Format an SQL statement using simple rules:
+		/// a) Insert newline after each comma;
+		/// b) Indent three spaces after each inserted newline;
+		/// If the statement contains single/double quotes return unchanged,
+		/// it is too complex and could be broken by simple formatting.
+		/// </summary>
 		private static string Format(string sql) {
 
 			if ( sql.IndexOf("\"") > 0 || sql.IndexOf("'") > 0) {
@@ -275,7 +298,8 @@ namespace NHibernate.Tool.hbm2ddl {
 				} else {
 					new SchemaExport(cfg)
 						.SetOutputFile(outputFile)
-						.Execute(script, export, drop, formatSQL, delimiter);
+						.SetDelimiter(delimiter)
+						.Execute(script, export, drop, formatSQL);
 				}
 			} catch(Exception e) {
 				Console.Error.WriteLine("Error creating schema " + e.Message );

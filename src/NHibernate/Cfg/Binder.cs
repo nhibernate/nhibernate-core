@@ -499,11 +499,13 @@ namespace NHibernate.Cfg {
 
 			BindValue(node, model, isNullable, defaultColumnName);
 
-			//TODO: H2.0.3 sets only the first column (shouldn't be more :))
+			if (model.ColumnCollection.Count > 1)
+				log.Error("This shouldn't happen, check BindIntegerValue");
 			foreach(Column col in model.ColumnCollection) 
 			{
 				col.Type = NHibernate.Int32;
 				col.TypeIndex = 0;
+				break;
 			}
 		}
 
