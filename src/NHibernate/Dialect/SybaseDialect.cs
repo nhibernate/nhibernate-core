@@ -31,7 +31,6 @@ namespace NHibernate.Dialect {
 			*/			
 		
 			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
-			DefaultProperties[Cfg.Environment.StatementBatchSize] = NoBatch;
 		}
 
 		public override string AddColumnString {

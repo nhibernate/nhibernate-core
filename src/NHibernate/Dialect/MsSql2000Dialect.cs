@@ -50,7 +50,6 @@ namespace NHibernate.Dialect
 			Register( DbType.Time, "DATETIME" );
 			
 			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
-			DefaultProperties[Cfg.Environment.StatementBatchSize] = NoBatch;
 		}
 
 		public override string AddColumnString 

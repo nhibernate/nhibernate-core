@@ -24,7 +24,6 @@ namespace NHibernate.Dialect
 		public Oracle9Dialect() : base() 
 		{
 //			DefaultProperties[Cfg.Environment.UseStreamsForBinary] = "true";
-			DefaultProperties[Cfg.Environment.StatementBatchSize] = DefaultBatchSize;
 			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
 
 			Register( DbType.AnsiStringFixedLength, "CHAR(255)");
