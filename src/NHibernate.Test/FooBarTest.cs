@@ -1025,9 +1025,185 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		//[Ignore("Test not written yet.")]
 		public void PersistCollections() 
 		{
+			ISession s = sessions.OpenSession();
+
+			IEnumerator enumer = s.Enumerable("select count(*) from b in class Bar").GetEnumerator();
+			enumer.MoveNext();
+			Assert.AreEqual( 0, enumer.Current );
+
+			Baz baz = new Baz();
+			s.Save(baz);
+			baz.SetDefaults();
+			baz.StringArray = new string[] { "stuff" };
+			IDictionary bars = new Hashtable();
+			bars.Add( new Bar(), new object() );
+			baz.CascadingBars = bars;
+			IDictionary sgm = new Hashtable();
+			sgm["a"] = new Glarch();
+			sgm["b"] = new Glarch();
+			baz.StringGlarchMap = sgm;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz) ( (object[])s.Find("select baz, baz from baz in class NHibernate.DomainModel.Baz")[0] )[1];
+			Foo foo = new Foo();
+			s.Save(foo);
+			Foo foo2 = new Foo();
+			s.Save(foo2);
+			baz.FooArray = new Foo[] { foo, foo, null, foo2 } ;
+			baz.FooSet.Add(foo, new object() );
+			baz.Customs.Add( new string[] {"new", "custom"} );
+			baz.StringArray = null;
+			baz.StringList[0] = "new value";
+			baz.StringSet = new Hashtable();
+			// TODO: baz.TimeArray[2] = new DateTime(
+			
+			Assert.AreEqual( 1, baz.StringGlarchMap.Count );
+			IList list;
+
+			// disable this for dbs with no subselects
+			if( !(dialect is Dialect.MySQLDialect) 
+				// &&  !(dialect is Dialect.HSQLDialect) && !(dialect is Dialect.PointbaseDialect)
+				) 
+			{
+				list = s.Find("select foo from foo in class NHibernate.DomainModel.Foo, baz in class NHibernate.DomainModel.Baz where foo in baz.FooArray.elements and 3 = some baz.IntArray.elements and 4 > all baz.IntArray.indices");
+				Assert.AreEqual( 2, list.Count, "collection.elements find" );
+			}
+
+			// sapdb doesn't like distinct with binary type
+			//if( !(dialect is Dialect.SAPDBDialect) ) 
+			//{
+				list = s.Find("select distinct foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements");
+				Assert.AreEqual( 2, list.Count, "collection.elements find" );
+			//}
+
+			list = s.Find("select foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooSet.elements");
+			Assert.AreEqual( 1, list.Count, "association.elements find");
+
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
+			Assert.AreEqual(4, baz.Customs.Count, "collection of custom types - added element");
+			Assert.IsNotNull(baz.Customs[0], "collection of custom types - added element");
+			Assert.IsNotNull(baz.Components[1].Subcomponent, "component of component in collection");
+			Assert.AreSame(baz, baz.Components[1].Baz);
+			
+			IEnumerator fooSetEnumer = baz.FooSet.Keys.GetEnumerator();
+			fooSetEnumer.MoveNext();
+			Assert.IsTrue( ((FooProxy)fooSetEnumer.Current).Key.Equals( foo.Key ) , "set of objects" );
+			Assert.AreEqual( 0, baz.StringArray.Length, "collection removed" );
+			Assert.AreEqual( "new value", baz.StringList[0], "changed element" );
+			Assert.AreEqual( 0, baz.StringSet.Count, "replaced set" );
+			// todo: populate time array
+			//Assert.IsNotNull( baz.TimeArray[2], "array element changed" );
+			
+			baz.StringSet.Add( "two", new object() );
+			baz.StringSet.Add( "one", new object() );
+			baz.Bag.Add("three");
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
+			Assert.AreEqual( 2, baz.StringSet.Count );
+			int i = 0;
+			foreach(string key in baz.StringSet.Keys ) 
+			{
+				// h2.0.3 doesn't have this because the Set has a first() and last() method
+				i++;
+				if(i==1) Assert.AreEqual( "one", key );
+				if(i==2) Assert.AreEqual( "two", key );
+				if(i>2) Assert.Fail("should not be more than 2 items in StringSet");
+			}
+			Assert.AreEqual( 5, baz.Bag.Count );
+			baz.StringSet.Remove("two");
+			baz.Bag.Remove("duplicate");
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz)s.Load( typeof(Baz), baz.Code );
+			Bar bar = new Bar();
+			Bar bar2 = new Bar();
+			s.Save(bar);
+			s.Save(bar2);
+			baz.TopFoos = new Hashtable();
+			baz.TopFoos.Add( bar, new object() );
+			baz.TopFoos.Add( bar2, new object() );
+			baz.TopGlarchez = new Hashtable();
+			GlarchProxy g = new Glarch();
+			s.Save(g);
+			baz.TopGlarchez['g'] = g;
+			Hashtable map = new Hashtable();
+			map[bar] = g;
+			map[bar2] = g;
+			baz.FooToGlarch = map;
+			map = new Hashtable();
+			map[new FooComponent("name", 123, null, null)] = bar;
+			map[new FooComponent("nameName", 12, null, null)] = bar;
+			baz.FooComponentToFoo = map;
+			map = new Hashtable();
+			map[bar] = g;
+			baz.GlarchToFoo = map;
+			s.Flush();
+			s.Close();
+			
+			s = sessions.OpenSession();
+			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
+			ISession s2 = sessions.OpenSession();
+			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
+			object o = baz.FooComponentToFoo[new FooComponent("name", 123, null, null)];
+			Assert.IsNotNull( o );
+			Assert.AreEqual( o, baz.FooComponentToFoo[new FooComponent("nameName", 12, null, null)] );
+			s2.Close();
+			Assert.AreEqual( 2, baz.TopFoos.Count );
+			Assert.AreEqual( 1, baz.TopGlarchez.Count );
+			enumer = baz.TopFoos.GetEnumerator();
+			Assert.IsTrue( enumer.MoveNext() );
+			Assert.IsNotNull( enumer.Current );
+			Assert.AreEqual( 1, baz.StringSet.Count );
+			Assert.AreEqual( 4, baz.Bag.Count );
+			Assert.AreEqual( 2, baz.FooToGlarch.Count );
+			Assert.AreEqual( 2, baz.FooComponentToFoo.Count );
+			Assert.AreEqual( 1, baz.GlarchToFoo.Count );
+
+			enumer = baz.FooToGlarch.Keys.GetEnumerator();
+			for( int j=0; j<2; j++ ) 
+			{
+				enumer.MoveNext();
+				Assert.IsTrue( enumer.Current is BarProxy );
+			}
+			enumer = baz.FooComponentToFoo.Keys.GetEnumerator();
+			enumer.MoveNext();
+			FooComponent fooComp = (FooComponent)enumer.Current;
+			Assert.IsTrue (
+				(fooComp.Count==123 && fooComp.Name.Equals("name"))
+				|| (fooComp.Count==12 && fooComp.Name.Equals("nameName"))
+				);
+			Assert.IsTrue( baz.FooComponentToFoo[fooComp] is BarProxy );
+
+			Glarch g2 = new Glarch();
+			s.Save(g2);
+			g = (GlarchProxy)baz.TopGlarchez['G'];
+			baz.TopGlarchez['H'] = g;
+			baz.TopGlarchez['G'] = g2;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
+			Assert.AreEqual( 2, baz.TopGlarchez.Count );
+			s.Disconnect();
+				
+			//TODO: add test for deserialization of ISession here!
+
+			s.Close();
 		}
 
 		[Test]
