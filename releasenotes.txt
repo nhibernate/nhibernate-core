@@ -1,3 +1,20 @@
+PreAlpha Build 0.2.0.0
+======================== 
+- Removed support for <dynabean> mapping since it doesn't exist in .net
+- Fixed bug in nhibernate.build file when not signing NHibernate.dll
+- Fixed bug with Hql and SetParameter() where there were 2 parameters with same name.
+- Fixed bug with Hql and "IN (:namedParam)"
+- Fixed bug with Hql and multi column IType
+- Fixed bug with NullReferenceException and TypeType class.
+- Simple Filters are now working.
+- Compiled Queries and Filters are now cached.
+- Refactored Hql to use a SqlString instead of string containing sql.
+- Dialect has had public API changed because of Sql to SqlCommand refactoring.
+- IPreparer has had methods removed from public API
+- type="System.Object" no longer matches to SerializableType - instead it matches to ObjectType.  Use type="Serializable" instead.
+- Added "access" attribute for NHibernate to get to fields and properties with no setters.  See NHibernate.Property.PropertyAccessorFactory for all valid value types and how to plug in your own implementation of IPropertyAccessor.
+- Added Types to read BLOB/CLOB columns to a byte[]/string Property.
+
 PreAlpha Build 0.1.0.0
 ======================== 
 - NHibernate and HashCodeProvider are now strong named assemblies.  The key used to sign the assemblies is not in CVS.
