@@ -1,17 +1,23 @@
 using System;
 
-namespace NHibernate.Type
-{
+namespace NHibernate.Type {
+
 	/// <summary>
-	/// Summary description for ImmutableType.
+	/// Superclass of nullable immutable types.
 	/// </summary>
-	public class ImmutableType
-	{
-		public ImmutableType()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
+	public abstract class ImmutableType : NullableType {
+
+		public override object DeepCopyNotNull(object val) {
+			return val;
 		}
+
+		public override bool IsMutable {
+			get {return false; }
+		}
+
+		public bool HasNiceEquals {
+			get { return true; }
+		}
+		
 	}
 }

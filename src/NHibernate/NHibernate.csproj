@@ -777,6 +777,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Sql\Types.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Sql\Update.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
