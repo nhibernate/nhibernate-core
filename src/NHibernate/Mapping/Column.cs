@@ -131,18 +131,14 @@ namespace NHibernate.Mapping
 			if(sqlType==null) 
 			{
 				SqlType sqlTypeObject = GetAutoSqlType(mapping);
-//				if(sqlTypeObject!=null) {
-					return dialect.SqlTypeToString(sqlTypeObject);
-//				}
-//				else {
-//					returnString = dialect.GetTypeName( GetAutoDbType(mapping), Length );
-//				}
+				return dialect.GetTypeName( sqlTypeObject, Length );
 			}
 			else 
 			{
 				return sqlType;
 			}
 		}
+		
 
 		public override bool Equals(object obj) 
 		{

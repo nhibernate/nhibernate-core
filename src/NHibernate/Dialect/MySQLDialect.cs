@@ -8,12 +8,45 @@ using NHibernate.Util;
 namespace NHibernate.Dialect 
 {
 	/// <summary>
-	/// An SQL dialect for MySQL
+	/// A SQL dialect for MySQL
 	/// </summary>
 	public class MySQLDialect : Dialect	
 	{
 		public MySQLDialect() : base() 
 		{
+			Register( DbType.AnsiStringFixedLength, "CHAR(255)");
+			Register( DbType.AnsiStringFixedLength, 16777215, "MEDIUMTEXT" );
+			Register( DbType.AnsiStringFixedLength, 65535, "TEXT" );
+			Register( DbType.AnsiStringFixedLength, 255, "CHAR($1)" );
+			Register( DbType.AnsiString, "VARCHAR(255)" );
+			Register( DbType.AnsiString, 16777215, "MEDIUMTEXT" );
+			Register( DbType.AnsiString, 65535, "TEXT" );
+			Register( DbType.AnsiString, 255, "VARCHAR($1)" );
+			Register( DbType.Binary, "LONGBLOB");
+			Register( DbType.Binary, 16777215, "MEDIUMBLOB");
+			Register( DbType.Binary, 65535, "BLOB");
+			Register( DbType.Binary, 255, "VARCHAR($1) BINARY");
+			Register( DbType.Boolean, "TINYTINT(1)" ); 
+			Register( DbType.Byte, "TINYINT UNSIGNED" );
+			Register( DbType.Currency, "MONEY");
+			Register( DbType.Date, "DATE");
+			Register( DbType.DateTime, "DATETIME" );
+			Register( DbType.Decimal, "NUMERIC(19, $1)");
+			Register( DbType.Double, "FLOAT" ); 
+			Register( DbType.Int16, "SMALLINT" );
+			Register( DbType.Int32, "INTEGER" );
+			Register( DbType.Int64, "BIGINT" );
+			Register( DbType.Single, "FLOAT" ); 
+			Register( DbType.StringFixedLength, "CHAR(255)");
+			Register( DbType.StringFixedLength, 16777215, "MEDIUMTEXT" );
+			Register( DbType.StringFixedLength, 65535, "TEXT" );
+			Register( DbType.StringFixedLength, 255, "CHAR($1)" );
+			Register( DbType.String, "VARCHAR(255)" );
+			Register( DbType.String, 16777215, "MEDIUMTEXT" );
+			Register( DbType.String, 65535, "TEXT" );
+			Register( DbType.String, 255, "VARCHAR($1)" );
+			Register( DbType.Time, "TIME" );
+			
 			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
 			DefaultProperties[Cfg.Environment.StatementBatchSize] = DefaultBatchSize;
 		}
@@ -74,165 +107,5 @@ namespace NHibernate.Dialect
 				.Append(')')
 				.ToString();
 		}
-			
-		private string SqlTypeToString(string name, int length) 
-		{
-			return name + "(" + length + ")";
-		}
-
-		private string SqlTypeToString(string name, int precision, int scale) 
-		{
-			return name + "(" + precision + ", " + scale + ")";
-		}
-
-		protected override string SqlTypeToString(AnsiStringFixedLengthSqlType sqlType) 
-		{
-			
-			if(sqlType.Length <= 255) 
-			{
-				return SqlTypeToString("CHAR", sqlType.Length);
-			}
-			else if(sqlType.Length <= 65535)
-			{
-				return "TEXT"; 
-			}
-			else if(sqlType.Length <= 16777215) 
-			{
-				return "MEDIUMTEXT";
-			}
-			else 
-			{
-				return "LONGTEXT";
-			}
-					
-		}
-
-		protected override string SqlTypeToString(BinarySqlType sqlType) 
-		{
-			
-			if(sqlType.Length <= 255) 
-			{
-				//return SqlTypeToString("VARBINARY", sqlType.Length);
-				return "TINYBLOB";
-			}
-			else if (sqlType.Length <= 65535)
-			{
-				return "BLOB";
-			}
-			else if (sqlType.Length <= 16777215) 
-			{
-				return "MEDIUMBLOB";
-			}
-			else {
-				return "LONGBLOB"; 
-			}
-					
-		}
-
-		protected override string SqlTypeToString(BooleanSqlType sqlType)
-		{
-			return "TINYINT(1)";
-		}
-
-		
-		protected override string SqlTypeToString(ByteSqlType sqlType)
-		{
-			return "TINYINT UNSIGNED";
-		}
-
-		protected override string SqlTypeToString(CurrencySqlType sqlType)
-		{
-			return "MONEY";
-		}
-
-		protected override string SqlTypeToString(DateSqlType sqlType)
-		{
-			return "DATE";
-		}
-
-		protected override string SqlTypeToString(DateTimeSqlType sqlType)
-		{
-			return "DATETIME";
-		}
-
-		protected override string SqlTypeToString(DecimalSqlType sqlType)
-		{
-			return SqlTypeToString("NUMERIC", sqlType.Precision, sqlType.Scale);
-		}
-
-		protected override string SqlTypeToString(DoubleSqlType sqlType)
-		{
-			return SqlTypeToString("FLOAT", sqlType.Length);
-		}
-
-		protected override string SqlTypeToString(Int16SqlType sqlType)
-		{
-			return "SMALLINT";
-		}
-
-		protected override string SqlTypeToString(Int32SqlType sqlType)
-		{
-			return "INTEGER";
-		}
-
-		protected override string SqlTypeToString(Int64SqlType sqlType)
-		{
-			return "BIGINT";
-		}
-
-		protected override string SqlTypeToString(SingleSqlType sqlType)
-		{
-			return SqlTypeToString("FLOAT", sqlType.Length);
-		}
-
-		protected override string SqlTypeToString(StringFixedLengthSqlType sqlType) 
-		{
-			
-			if(sqlType.Length <= 255) 
-			{
-				return SqlTypeToString("CHAR", sqlType.Length);
-			}
-			else if(sqlType.Length <= 65535)
-			{
-				return "TEXT"; 
-			}
-			else if(sqlType.Length <= 16777215) 
-			{
-				return "MEDIUMTEXT";
-			}
-			else 
-			{
-				return "LONGTEXT";
-			}
-					
-		}
-
-		protected override string SqlTypeToString(StringSqlType sqlType) 
-		{
-			
-			if(sqlType.Length <= 255) 
-			{
-				return SqlTypeToString("VARCHAR", sqlType.Length);
-			}
-			else if(sqlType.Length <= 65535)
-			{
-				return "TEXT"; 
-			}
-			else if(sqlType.Length <= 16777215) 
-			{
-				return "MEDIUMTEXT";
-			}
-			else 
-			{
-				return "LONGTEXT";
-			}
-					
-		}
-
-		protected override string SqlTypeToString(TimeSqlType sqlType)
-		{
-			return "TIME";
-		}
-
 	}
 }

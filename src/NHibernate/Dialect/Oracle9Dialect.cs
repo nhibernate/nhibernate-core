@@ -27,6 +27,35 @@ namespace NHibernate.Dialect
 			DefaultProperties[Cfg.Environment.StatementBatchSize] = DefaultBatchSize;
 			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
 
+			Register( DbType.AnsiStringFixedLength, "CHAR(255)");
+			Register( DbType.AnsiStringFixedLength, 2000, "CHAR($1)" );
+			Register( DbType.AnsiString, "VARCHAR2(255)" );
+			Register( DbType.AnsiString, 2000, "VARCHAR2($1)" );
+			Register( DbType.AnsiString, 2147483647, "CLOB"); // should use the IType.ClobType
+			Register( DbType.Binary, "RAW(2000)");
+			Register( DbType.Binary, 2000, "VARBINARY($1)");
+			Register( DbType.Binary, 2147483647, "BLOB" );
+			Register( DbType.Boolean, "NUMBER(1,0)" ); 
+			Register( DbType.Byte, "NUMBER(3,0)" );
+			Register( DbType.Currency, "NUMBER(19,1)");
+			Register( DbType.Date, "DATE");
+			Register( DbType.DateTime, "DATE" );
+			Register( DbType.Decimal, "NUMBER(19,5)" ); 
+			Register( DbType.Decimal, 19, "NUMBER(19, $1)");
+			Register( DbType.Double, "DOUBLE PRECISION" ); 
+			//Oracle does not have a guid datatype
+			//Register( DbType.Guid, "UNIQUEIDENTIFIER" );
+			Register( DbType.Int16, "NUMBER(5,0)" );
+			Register( DbType.Int32, "NUMBER(10,0)" );
+			Register( DbType.Int64, "NUMBER(20,0)" );
+			Register( DbType.Single, "FLOAT" ); 
+			Register( DbType.StringFixedLength, "NCHAR(255)");
+			Register( DbType.StringFixedLength, 2000, "NCHAR($1)");
+			Register( DbType.String, "NVARCHAR2(255)" );
+			Register( DbType.String, 2000, "NVARCHAR2($1)" );
+			Register( DbType.String, 1073741823, "NCLOB" );
+			Register( DbType.Time, "DATE" );
+
 			// add all the functions from the base into this instance
 			foreach(DictionaryEntry de in base.AggregateFunctions) 
 			{
@@ -108,10 +137,10 @@ namespace NHibernate.Dialect
 			Parameter p2 = new Parameter();
 
 			p1.Name = "p1";
-			p1.DbType = DbType.Int16;
+			p1.SqlType = new Int16SqlType();
 
 			p2.Name = "p2";
-			p2.DbType = DbType.Int16;
+			p2.SqlType = new Int16SqlType();
 
 			/*
 			 * "select * from ( select row_.*, rownum rownum_ from ( "
@@ -161,115 +190,6 @@ namespace NHibernate.Dialect
 			get { return ":"; }
 		}
 
-
-        
-		private string SqlTypeToString(string name, int length) 
-		{
-			return name + "(" + length + ")";
-		}
-
-		private string SqlTypeToString(string name, int precision, int scale) 
-		{
-			if (precision > 19) precision = 19;
-			return name + "(" + precision + ", " + scale + ")";
-		}
-
-		protected override string SqlTypeToString(AnsiStringFixedLengthSqlType sqlType) 
-		{
-			return SqlTypeToString("NVARCHAR2", 1000);
-		}
-
-		protected override string SqlTypeToString(BinarySqlType sqlType) 
-		{			
-			if(sqlType.Length <= 8000) 
-			{
-				return SqlTypeToString("RAW", sqlType.Length);
-			}
-			else 
-			{
-				return "BLOB"; // should use the IType.BlobType
-			}					
-		}
-		
-		protected override string SqlTypeToString(BooleanSqlType sqlType)
-		{
-			return "NUMBER(1,0)";
-		}
-
-		
-		protected override string SqlTypeToString(ByteSqlType sqlType)
-		{
-			return "NUMBER(3,0)";
-		}
-
-		protected override string SqlTypeToString(CurrencySqlType sqlType)
-		{
-			return "NUMBER(19, 1)";
-		}
-
-		protected override string SqlTypeToString(DateSqlType sqlType)
-		{
-			return "DATE";
-		}
-
-		protected override string SqlTypeToString(DateTimeSqlType sqlType)
-		{
-			return "DATE";
-		}
-
-		protected override string SqlTypeToString(DecimalSqlType sqlType)
-		{
-			return SqlTypeToString("NUMBER", sqlType.Precision, sqlType.Scale);
-		}
-
-		protected override string SqlTypeToString(DoubleSqlType sqlType)
-		{
-			return "DOUBLE PRECISION";
-		}
-
-		protected override string SqlTypeToString(Int16SqlType sqlType)
-		{
-			return "NUMBER(5,0)";
-		}
-
-		protected override string SqlTypeToString(Int32SqlType sqlType)
-		{
-			return "NUMBER(10,0)";
-		}
-
-		protected override string SqlTypeToString(Int64SqlType sqlType)
-		{
-			return "NUMBER(20,0)";
-		}
-
-		protected override string SqlTypeToString(SingleSqlType sqlType)
-		{
-			return "FLOAT";
-		}
-
-		protected override string SqlTypeToString(StringFixedLengthSqlType sqlType) 
-		{			
-			if(sqlType.Length <= 2000) 
-			{
-				return SqlTypeToString("NVARCHAR2", sqlType.Length);
-			}
-			else 
-			{
-				return string.Empty; // should use the IType.ClobType
-			}					
-		}
-
-		protected override string SqlTypeToString(StringSqlType sqlType) 
-		{
-			if(sqlType.Length <= 2000) 
-			{
-				return SqlTypeToString("NVARCHAR2", sqlType.Length);
-			}
-			else 
-			{
-				return string.Empty; // should use the IType.ClobType
-			}					
-		}
 
 		public class SysdateQueryFunctionInfo : IQueryFunctionInfo	
 		{

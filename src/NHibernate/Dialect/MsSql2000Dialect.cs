@@ -14,6 +14,46 @@ namespace NHibernate.Dialect
 
 		public MsSql2000Dialect() : base() 
 		{
+			Register( DbType.AnsiStringFixedLength, "CHAR(255)");
+			Register( DbType.AnsiStringFixedLength, 8000, "CHAR($1)" );
+			Register( DbType.AnsiString, "VARCHAR(255)" );
+			Register( DbType.AnsiString, 8000, "VARCHAR($1)" );
+			Register( DbType.AnsiString, 2147483647, "TEXT"); // should use the IType.ClobType
+			// TODO: figure out how to support this - VARCHAR > 8000 since
+			// there is no DbType.CLOB - might just make it a mapping
+			// requirement that they specify a sql-type or make NHibernate's
+			// own DbType enum or use SqlType as the key for Register
+			//Register( DbType.AnsiString, "TEXT" );
+			Register( DbType.Binary, "VARBINARY(8000)");
+			Register( DbType.Binary, 8000, "VARBINARY($1)");
+			Register( DbType.Binary, 2147483647, "IMAGE" );// should use the IType.BlobType
+			Register( DbType.Boolean, "BIT" ); //Sybase BIT type does not support null values
+			Register( DbType.Byte, "TINYINT" );
+			Register( DbType.Currency, "MONEY");
+			Register( DbType.Date, "DATETIME");
+			Register( DbType.DateTime, "DATETIME" );
+			// TODO: figure out if this is the good way to fix the problem
+			// with exporting a DECIMAL column
+			// NUMERIC(precision, scale) has a hardcoded precision of 19, even though it can range from 1 to 38
+			// and the scale has to be 0 <= scale <= precision.
+			// I think how I might handle it is keep the type="Decimal(29,5)" and make them specify a 
+			// sql-type="decimal(20,5)" if they need to do that.  The Decimal parameter and ddl will get generated
+			// correctly with minimal work.
+			Register( DbType.Decimal, "DECIMAL(19,5)" ); 
+			Register( DbType.Decimal, 19, "DECIMAL(19, $1)");
+			Register( DbType.Double, "DOUBLE PRECISION" ); //synonym for FLOAT(53)
+			Register( DbType.Guid, "UNIQUEIDENTIFIER" );
+			Register( DbType.Int16, "SMALLINT" );
+			Register( DbType.Int32, "INT" );
+			Register( DbType.Int64, "BIGINT" );
+			Register( DbType.Single, "REAL" ); //synonym for FLOAT(24) 
+			Register( DbType.StringFixedLength, "NCHAR(255)");
+			Register( DbType.StringFixedLength, 4000, "NCHAR($1)");
+			Register( DbType.String, "NVARCHAR(255)" );
+			Register( DbType.String, 4000, "NVARCHAR($1)" );
+			Register( DbType.String, 1073741823, "NTEXT" );// should use the IType.ClobType
+			Register( DbType.Time, "DATETIME" );
+			
 			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
 			DefaultProperties[Cfg.Environment.StatementBatchSize] = NoBatch;
 		}
@@ -86,6 +126,22 @@ namespace NHibernate.Dialect
 			get { return "@"; }
 		}						
 
+		public override int MaxAnsiStringSize
+		{
+			get { return 8000; }
+		}
+
+		public override int MaxBinarySize
+		{
+			get { return 8000; }
+		}
+
+		public override int MaxStringSize
+		{
+			get	{ return 4000; }
+		}
+
+
 		protected override char CloseQuote
 		{
 			get { return ']';}
@@ -117,149 +173,5 @@ namespace NHibernate.Dialect
 
 			return quoted.Replace( new string(CloseQuote, 2), CloseQuote.ToString() );
 		}
-
-		private string SqlTypeToString(string name, int length) 
-		{
-			return name + "(" + length + ")";
-		}
-
-		private string SqlTypeToString(string name, int precision, int scale) 
-		{
-			return name + "(" + precision + ", " + scale + ")";
-		}
-
-		protected override string SqlTypeToString(AnsiStringSqlType sqlType)
-		{
-			if(sqlType.Length <= 8000) 
-			{
-				return SqlTypeToString("VARCHAR", sqlType.Length);
-			}
-			else 
-			{
-				return "TEXT"; // should use the IType.ClobType
-			}
-		}
-
-		protected override string SqlTypeToString(AnsiStringFixedLengthSqlType sqlType) 
-		{
-			
-			if(sqlType.Length <= 8000) 
-			{
-				return SqlTypeToString("CHAR", sqlType.Length);
-			}
-			else 
-			{
-				return "TEXT"; // should use the IType.ClobType
-			}
-					
-		}
-
-		protected override string SqlTypeToString(BinarySqlType sqlType) 
-		{
-			
-			if(sqlType.Length <= 8000) 
-			{
-				return SqlTypeToString("VARBINARY", sqlType.Length);
-			}
-			else 
-			{
-				return "IMAGE"; // should use the IType.BlobType
-			}
-					
-		}
-		
-		protected override string SqlTypeToString(BooleanSqlType sqlType)
-		{
-			return "BIT";
-		}
-
-		
-		protected override string SqlTypeToString(ByteSqlType sqlType)
-		{
-			return "TINYINT";
-		}
-
-		protected override string SqlTypeToString(CurrencySqlType sqlType)
-		{
-			return "MONEY";
-		}
-
-		protected override string SqlTypeToString(DateSqlType sqlType)
-		{
-			return "DATETIME";
-		}
-
-		protected override string SqlTypeToString(DateTimeSqlType sqlType)
-		{
-			return "DATETIME";
-		}
-
-		protected override string SqlTypeToString(TimeSqlType sqlType)
-		{
-			return "DATETIME";
-		}
-
-		protected override string SqlTypeToString(DecimalSqlType sqlType)
-		{
-			return SqlTypeToString("DECIMAL", sqlType.Precision, sqlType.Scale);
-		}
-
-		protected override string SqlTypeToString(DoubleSqlType sqlType)
-		{
-			return SqlTypeToString("FLOAT", sqlType.Length);
-		}
-
-		protected override string SqlTypeToString(GuidSqlType sqlType)
-		{
-			return "UNIQUEIDENTIFIER";
-		}
-
-		protected override string SqlTypeToString(Int16SqlType sqlType)
-		{
-			return "SMALLINT";
-		}
-
-		protected override string SqlTypeToString(Int32SqlType sqlType)
-		{
-			return "INT";
-		}
-
-		protected override string SqlTypeToString(Int64SqlType sqlType)
-		{
-			return "BIGINT";
-		}
-
-		protected override string SqlTypeToString(SingleSqlType sqlType)
-		{
-			return SqlTypeToString("FLOAT", sqlType.Length);
-		}
-
-		protected override string SqlTypeToString(StringFixedLengthSqlType sqlType) 
-		{
-			
-			if(sqlType.Length <= 4000) 
-			{
-				return SqlTypeToString("NCHAR", sqlType.Length);
-			}
-			else 
-			{
-				return "NTEXT"; // should use the IType.ClobType
-			}
-					
-		}
-
-		protected override string SqlTypeToString(StringSqlType sqlType) {
-			
-			if(sqlType.Length <= 4000) 
-			{
-				return SqlTypeToString("NVARCHAR", sqlType.Length);
-			}
-			else 
-			{
-				return "NTEXT";
-			}
-					
-		}
-
 	}
 }

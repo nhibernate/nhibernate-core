@@ -25,6 +25,9 @@ namespace NHibernate.Dialect
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Dialect));
 
+		private TypeNames typeNames = new TypeNames("$1");
+		private IDictionary properties = new Hashtable();
+		
 		private static readonly IDictionary aggregateFunctions = new Hashtable();
 
 		protected const string DefaultBatchSize = "15";
@@ -40,18 +43,90 @@ namespace NHibernate.Dialect
 			
 		}
 
+		/// <summary>
+		/// The base constructor for Dialect.
+		/// </summary>
+		/// <remarks>
+		/// Every subclass should override this and call Register() with every <see cref="DbType"/> except
+		/// <see cref="DbType.Object"/>, <see cref="DbType.SByte"/>, <see cref="DbType.UInt16"/>, <see cref="DbType.UInt32"/>, 
+		/// <see cref="DbType.UInt64"/>, <see cref="DbType.VarNumeric"/>.
+		/// 
+		/// <para>
+		/// The Default properties for this Dialect should also be set - such as whether or not to use outer-joins
+		/// and what the batch size should be.
+		/// </para>
+		/// </remarks>
 		protected Dialect() 
 		{
 			log.Info( "Using dialect: " + this );
 		}
 
-		private IDictionary properties = new Hashtable();
 		
 		/// <summary>
 		/// Characters used for quoting sql identifiers
 		/// </summary>
 		public const string PossibleQuoteChars = "`'\"[";
 		public const string PossibleClosedQuoteChars = "`'\"]";
+
+		/// <summary>
+		/// Get the name of the database type associated with the given 
+		/// <see cref="NHibernate.SqlTypes.SqlType"/>,
+		/// </summary>
+		/// <param name="code">The SqlType</param>
+		/// <returns>The database type name used by ddl.</returns>
+		public virtual string GetTypeName(SqlType sqlType) 
+		{
+			string result = typeNames.Get(sqlType.DbType);
+			if(result==null) 
+			{
+				throw new HibernateException( "No default type mapping for SqlType " + sqlType.ToString() );
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get the name of the database type associated with the given
+		/// <see cref="SqlType"/>.
+		/// </summary>
+		/// <param name="sqlType">The SqlType </param>
+		/// <param name="length">The length of the SqlType</param>
+		/// <returns>The database type name used by ddl.</returns>
+		public virtual string GetTypeName(SqlType sqlType, int length) 
+		{
+			string result = typeNames.Get(sqlType.DbType, length);
+			if(result==null) 
+			{
+				throw new HibernateException( "No type mapping for SqlType " + sqlType.ToString() + " of length " + length );
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// Subclasses register a typename for the given type code and maximum
+		/// column length. <c>$1</c> in the type name will be replaced by the column
+		/// length (if appropriate)
+		/// </summary>
+		/// <param name="code">The typecode</param>
+		/// <param name="capacity">Maximum length of database type</param>
+		/// <param name="name">The database type name</param>
+		protected void Register(DbType code, int capacity, string name) 
+		{
+			typeNames.Put(code, capacity, name);
+		}
+
+		/// <summary>
+		/// Suclasses register a typename for the given type code. <c>$1</c> in the 
+		/// typename will be replaced by the column length (if appropriate).
+		/// </summary>
+		/// <param name="code">The typecode</param>
+		/// <param name="name">The database type name</param>
+		protected void Register(DbType code, string name) 
+		{
+			typeNames.Put(code, name);
+		}
+
+
 
 		/// <summary>
 		/// Does this dialect support the <c>ALTER TABLE</c> syntax?
@@ -259,7 +334,7 @@ namespace NHibernate.Dialect
 		public static Dialect GetDialect() 
 		{
 			string dialectName = Cfg.Environment.Properties[Cfg.Environment.Dialect] as string;
-            if (dialectName==null) throw new HibernateException("The dialect was not set. Set the property hibernate.dialect.");
+			if (dialectName==null) throw new HibernateException("The dialect was not set. Set the property hibernate.dialect.");
 			try 
 			{
 				return (Dialect) Activator.CreateInstance(ReflectHelper.ClassForName(dialectName));
@@ -457,247 +532,62 @@ namespace NHibernate.Dialect
 		}
 
 		
-
 		/// <summary>
-		/// Converts the SqlType to the Dialect specific column type string used when
-		/// <c>CREATE</c>ing the table.
+		/// The largest value that can be set in IDbDataParameter.Size for a parameter
+		/// that contains an AnsiString.
 		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string</param>
-		/// <returns>A string that can be used in the table CREATE statement.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method uses SqlType.DbType to call the appropriate protected method of SqlTypeToString().  
-		/// All Dialects should override the SqlTypeToString methods because that is where the underlying
-		/// SqlType is converted to a string.
+		/// Setting the value to 0 indicates that there is no Maximum Size or that it 
+		/// does not need to be set to Prepare the IDbCommand.
+		/// </para>
+		/// <para>
+		/// Currently the only Driver that needs to worry about setting the Param size
+		/// is MsSql
 		/// </para>
 		/// </remarks>
-		public string SqlTypeToString(SqlType sqlType) 
+		public virtual int MaxAnsiStringSize 
 		{
-			switch(sqlType.DbType) 
-			{
-				case DbType.AnsiString:
-					return SqlTypeToString((AnsiStringSqlType)sqlType);
-				case DbType.AnsiStringFixedLength: 
-					return SqlTypeToString((AnsiStringFixedLengthSqlType)sqlType);
-				case DbType.Binary :
-					return SqlTypeToString((BinarySqlType)sqlType);
-				case DbType.Boolean :
-					return SqlTypeToString((BooleanSqlType)sqlType);
-				case DbType.Byte:
-					return SqlTypeToString((ByteSqlType)sqlType);
-				case DbType.Currency:
-					return SqlTypeToString((CurrencySqlType)sqlType);
-				case DbType.Date:
-					return SqlTypeToString((DateSqlType)sqlType);
-				case DbType.DateTime:
-					return SqlTypeToString((DateTimeSqlType)sqlType);
-				case DbType.Decimal:
-					return SqlTypeToString((DecimalSqlType)sqlType);
-				case DbType.Double:
-					return SqlTypeToString((DoubleSqlType)sqlType);
-				case DbType.Guid:
-					return SqlTypeToString((GuidSqlType)sqlType);
-				case DbType.Int16:
-					return SqlTypeToString((Int16SqlType)sqlType);
-				case DbType.Int32:
-					return SqlTypeToString((Int32SqlType)sqlType);
-				case DbType.Int64:
-					return SqlTypeToString((Int64SqlType)sqlType);
-				case DbType.Single:
-					return SqlTypeToString((SingleSqlType)sqlType);
-				case DbType.StringFixedLength:
-					return SqlTypeToString((StringFixedLengthSqlType)sqlType);
-				case DbType.String:
-					return SqlTypeToString((StringSqlType)sqlType);
-				case DbType.Time:
-					return SqlTypeToString((TimeSqlType)sqlType);
-				default:
-					throw new ApplicationException("Unmapped DBType");
-					//break;
-			}
-
+			get { throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract"); }
 		}
 
 		/// <summary>
-		/// Converts an AnsiStringSqlType to the Database specific column type. 
+		/// The largest value that can be set in IDbDataParameter.Size for a parameter
+		/// that contains a Binary.
 		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(AnsiStringSqlType sqlType)
+		/// <remarks>
+		/// <para>
+		/// Setting the value to 0 indicates that there is no Maximum Size or that it 
+		/// does not need to be set to Prepare the IDbCommand.
+		/// </para>
+		/// <para>
+		/// Currently the only Driver that needs to worry about setting the Param size
+		/// is MsSql
+		/// </para>
+		/// </remarks>
+		public virtual int MaxBinarySize 
 		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
+			get { throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract"); }
 		}
 
 		/// <summary>
-		/// Converts an AnsiStringFixedLengthSqlType to the Database specific column type. 
+		/// The largest value that can be set in IDbDataParameter.Size for a parameter
+		/// that contains an Unicode String.
 		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(AnsiStringFixedLengthSqlType sqlType)
+		/// <remarks>
+		/// <para>
+		/// Setting the value to 0 indicates that there is no Maximum Size or that it 
+		/// does not need to be set to Prepare the IDbCommand.
+		/// </para>
+		/// <para>
+		/// Currently the only Driver that needs to worry about setting the Param size
+		/// is MsSql
+		/// </para>
+		/// </remarks>
+		public virtual int MaxStringSize 
 		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
+			get { throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract"); }
 		}
-		
-		/// <summary>
-		/// Converts an BinarySqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(BinarySqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an BooleanSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(BooleanSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an ByteSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(ByteSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an CurrencySqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(CurrencySqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an DateSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(DateSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an DateTimeSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(DateTimeSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an DecimalSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(DecimalSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an DoubleSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(DoubleSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an GuidSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(GuidSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-
-		/// <summary>
-		/// Converts an Int16SqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(Int16SqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an Int32SqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(Int32SqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an Int64SqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(Int64SqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an SingleSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(SingleSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an StringFixedLengthSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(StringFixedLengthSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-		
-		/// <summary>
-		/// Converts an StringSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(StringSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-
-		/// <summary>
-		/// Converts an TimeSqlType to the Database specific column type. 
-		/// </summary>
-		/// <param name="sqlType">The SqlType to convert to a string.</param>
-		/// <returns>A string that can be used for the column type when creating the table.</returns>
-		protected virtual string SqlTypeToString(TimeSqlType sqlType)
-		{
-			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
-		}
-
 		
 		/// <summary>
 		/// Checks to see if the name has been quoted.
