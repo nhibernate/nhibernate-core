@@ -692,7 +692,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\ANSIOuterJoinFragment.cs"
+                    RelPath = "Sql\ANSIJoinFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -723,6 +723,16 @@
                 />
                 <File
                     RelPath = "Sql\Insert.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\JoinFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\OracleJoinFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

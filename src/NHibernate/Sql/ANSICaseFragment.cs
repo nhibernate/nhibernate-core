@@ -11,7 +11,7 @@ namespace NHibernate.Sql {
 	public class ANSICaseFragment : CaseFragment {
 		private string returnColumnName;
 
-		private SortedList cases = new SortedList();
+		private IDictionary cases = new SequencedHashMap();
 
 		public override CaseFragment SetReturnColumnName(string returnColumnName) {
 			this.returnColumnName = returnColumnName;

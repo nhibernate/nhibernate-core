@@ -15,7 +15,7 @@ namespace NHibernate.Mapping {
 	public class Value {
 		private ArrayList columns = new ArrayList();
 		private IType type;
-		private Hashtable identifierGeneratorProperties;
+		private IDictionary identifierGeneratorProperties;
 		private string identifierGeneratorStrategy = "assigned";
 		private string nullValue;
 		private Table table;
@@ -26,8 +26,8 @@ namespace NHibernate.Mapping {
 		public int ColumnSpan {
 			get { return columns.Count; }
 		}
-		public IEnumerator GetColumnEnumerator() {
-			return columns.GetEnumerator();
+		public ICollection ColumnCollection {
+			get { return columns; }
 		}
 		public IList ConstraintColumns {
 			get { return columns; }
@@ -37,9 +37,8 @@ namespace NHibernate.Mapping {
 			set {
 				this.type = type;
 				int count = 0;
-				IEnumerator iter = GetColumnEnumerator();
-				while (iter.MoveNext()) {
-					Column col = (Column) iter.Current;
+				
+				foreach(Column col in ColumnCollection) {
 					col.Type = type;
 					col.TypeIndex = count++;
 				}
@@ -55,7 +54,8 @@ namespace NHibernate.Mapping {
 		}
 
 		public void CreateForeignKeyOfClass(System.Type persistentClass) {
-			//TODO: finish
+			ForeignKey fk = table.CreateForeignKey( ConstraintColumns );
+			fk.ReferencedClass = persistentClass;
 		}
 
 		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect) {
@@ -65,8 +65,47 @@ namespace NHibernate.Mapping {
 		}
 
 		public void SetTypeByReflection(System.Type propertyClass, string propertyName) {
-			//TODO: finish
+			try {
+				if (type==null) {
+					type = ReflectHelper.ReflectedPropertyType(propertyClass, propertyName);
+					int count = 0;
+					foreach(Column col in ColumnCollection) {
+						col.Type = type;
+						col.TypeIndex = count++;
+					}
+				}
+			} catch (HibernateException he) {
+				throw new MappingException("Problem trying to set property type by reflection", he);
+			}
 		}
+
+		public int OuterJoinFetchSetting {
+			get { //TODO: FINish
+				return -1; 
+			}
+		}
+
+		public string IdentifierGeneratorStrategy {
+			get { return identifierGeneratorStrategy; }
+			set { identifierGeneratorStrategy = value; }
+		}
+
+		public IDictionary IdentifierGeneratorProperties {
+			get { return identifierGeneratorProperties; }
+			set { identifierGeneratorProperties = value; }
+		}
+
+		public bool IsComposite {
+			get { return false; }
+		}
+
+		public string NullValue {
+			get { return nullValue; }
+			set { nullValue = value; }
+		}
+
+		
+
 
 		
 	}

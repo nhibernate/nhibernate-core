@@ -57,24 +57,22 @@ namespace NHibernate.Mapping {
 		public int ColumnSpan {
 			get { return columns.Count; }
 		}
-		public IEnumerator GetColumnEnumerator() {
-			return columns.Values.GetEnumerator();
+		public ICollection ColumnCollection {
+			get { return columns.Values; }
 		}
-		public IEnumerator GetIndexEnumerator() {
-			return indexes.Values.GetEnumerator();
+		public ICollection IndexCollection {
+			get { return indexes.Values; }
 		}
-		public IEnumerator GetForeignKeyEnumerator() {
-			return foreignKeys.Values.GetEnumerator();
+		public ICollection ForeignKeyCollection {
+			get { return foreignKeys.Values; }
 		}
-		public IEnumerator GetUniqueKeyEnumerator() {
-			return uniqueKeys.Values.GetEnumerator();
+		public ICollection UniqueKeyCollection {
+			get { return uniqueKeys.Values; }
 		}
 
 		public string SqlAlterString(Dialect.Dialect dialect, IMapping p, DataTable tableInfo) {
-			IEnumerator iter = GetColumnEnumerator();
 			StringBuilder buf = new StringBuilder(50);
-			while(iter.MoveNext()) {
-				Column col = (Column) iter.Current;
+			foreach(Column col in ColumnCollection) {
 				DataColumn columnInfo = tableInfo.Columns[ col.Name ];
 
 				if (columnInfo == null) {
@@ -96,8 +94,130 @@ namespace NHibernate.Mapping {
 		}
 
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p) {
-			//TODO: finish
-			return null;
+			StringBuilder buf = new StringBuilder("create table ")
+				.Append( QualifiedName )
+				.Append( " (");
+
+			bool identityColumn = idValue!=null && idValue.CreateIdentifierGenerator(dialect) is IdentityGenerator;
+
+			// try to find out the name of the pk to create it as identity if the identitygenerator is used
+			string pkname = null;
+			if (primaryKey != null && identityColumn ) {
+				foreach(Column col in primaryKey.ColumnCollection) {
+					pkname = col.Name; //should only go through this loop once
+				}
+			}
+			int i = 0;
+			foreach(Column col in ColumnCollection) {
+				i++;
+				buf.Append( col.Name)
+					.Append(' ')
+					.Append( col.GetSqlType(dialect, p) );
+
+				if ( identityColumn && col.Name.Equals(pkname) ) {
+					buf.Append(' ')
+						.Append( dialect.IdentityColumnString);
+				} else {
+					if (col.IsNullable) {
+						buf.Append( dialect.NullColumnString );
+					} else {
+						buf.Append(" not null" );
+					}
+				}
+
+				if ( col.IsUnique && dialect.SupportsUnique ) {
+					buf.Append(" unique");
+				}
+				if ( i < ColumnCollection.Count ) buf.Append(StringHelper.CommaSpace);
+			}
+			if (primaryKey != null) {
+				//if ( dialect is HSQLDialect && identityColumn ) {
+				//	//ugly hack...
+				//} else {
+				buf.Append(',').Append( primaryKey.SqlConstraintString(dialect) );
+				//}
+			}
+			if ( dialect.SupportsUnique ) {
+				foreach(UniqueKey uk in UniqueKeyCollection) {
+					buf.Append(',').Append( uk.SqlConstraintString(dialect) );
+				}
+			}
+			buf.Append(StringHelper.ClosedParen);
+
+			return buf.ToString();
+		}
+
+		public string SqlDropString(Dialect.Dialect dialect) {
+			return "drop table " + QualifiedName + dialect.CascadeConstraintsString;
+		}
+
+		public PrimaryKey PrimaryKey {
+			get { return primaryKey; }
+			set { primaryKey = value; }
+		}
+
+		public Index GetIndex(string name) {
+			Index index = (Index) indexes[name];
+
+			if (index == null) {
+				index = new Index();
+				index.Name = name;
+				index.Table = this;
+				indexes.Add(name, index);
+			}
+
+			return index;
+		}
+
+		public UniqueKey GetUniqueKey(string name) {
+			UniqueKey uk = (UniqueKey) uniqueKeys[name];
+
+			if (uk == null) {
+				uk = new UniqueKey();
+				uk.Name = name;
+				uk.Table = this;
+				uniqueKeys.Add(name, uk);
+			}
+			return uk;
+		}
+
+		public ForeignKey CreateForeignKey(IList columns) {
+			string name = "FK" + UniqueColumnString( columns );
+			ForeignKey fk = (ForeignKey) foreignKeys[name];
+
+			if (fk == null) {
+				fk = new ForeignKey();
+				fk.Name = name;
+				fk.Table = this;
+				foreignKeys.Add(name, fk);
+			}
+			foreach(Column col in columns) {
+				fk.AddColumn( col );
+			}
+			return fk;
+		}
+
+		public string UniqueColumnString(ICollection col) {
+			int result = 0;
+			foreach(object obj in col) {
+				result += obj.GetHashCode();
+			}
+			//TODO: change
+			//return ( Integer.toHexString( name.hashCode() ) + Integer.toHexString(result) ).toUpperCase();
+			return name + result.ToString();
+		}
+
+		public string Schema {
+			get { return schema; }
+			set { schema = value; }
+		}
+
+		public int UniqueInteger {
+			get { return uniqueInteger; }
+		}
+
+		public void SetIdentifierValue(Value idValue) {
+			this.idValue = idValue;
 		}
 
 	

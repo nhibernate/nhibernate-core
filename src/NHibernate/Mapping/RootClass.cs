@@ -1,10 +1,9 @@
 using System;
+using System.Collections;
+using NHibernate.Cache;
 
-namespace NHibernate.Mapping
-{
-	/// <summary>
-	/// Summary description for RootClass.
-	/// </summary>
+namespace NHibernate.Mapping {
+	
 	public class RootClass
 	{
 		public RootClass()

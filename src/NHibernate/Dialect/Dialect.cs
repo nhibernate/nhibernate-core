@@ -4,6 +4,7 @@ using System.Text;
 using System.Collections;
 
 using NHibernate.Util;
+using NHibernate.Sql;
 
 namespace NHibernate.Dialect {
 
@@ -26,6 +27,7 @@ namespace NHibernate.Dialect {
 		}
 
 		private TypeNames typeNames = new TypeNames("$1");
+		private IDictionary properties = new Hashtable();
 		
 		/// <summary>
 		/// Characters used for quoting sql identifiers
@@ -240,5 +242,34 @@ namespace NHibernate.Dialect {
 			}
 		}
 
+		/// <summary>
+		/// Retrieve a set of default Hibernate properties for this database.
+		/// </summary>
+		public IDictionary DefaultProperties {
+			get { return properties; }
+		}
+
+		/// <summary>
+		/// Completely optional cascading drop clause
+		/// </summary>
+		public virtual string CascadeConstraintsString {
+			get { return StringHelper.EmptyString; }
+		}
+
+		/// <summary>
+		/// Create an <c>JoinFragment</c> for this dialect
+		/// </summary>
+		/// <returns></returns>
+		public JoinFragment CreateOuterJoinFragment() {
+			return new ANSIJoinFragment();
+		}
+
+		/// <summary>
+		/// Create an <c>CaseFragment</c> for this dialect
+		/// </summary>
+		/// <returns></returns>
+		public CaseFragment CreateCaseFragment() {
+			return new ANSICaseFragment();
+		}
 	}
 }
