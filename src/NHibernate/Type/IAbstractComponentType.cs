@@ -1,6 +1,6 @@
 using System;
 
-//using NHibernate.Engine;
+using NHibernate.Engine;
 
 namespace NHibernate.Type {
 
@@ -19,9 +19,9 @@ namespace NHibernate.Type {
 		
 		object GetPropertyValue(object component, int i);
 		
-		//public object Instantiate(object parent, ISessionImplementor session);
+		object Instantiate(object parent, ISessionImplementor session);
 		
-		//public Cascades.CascadeStyle Cascade(int i);
+		//Cascades.CascadeStyle Cascade(int i);
 		
 		int EnableJoinedFetch(int i);
 	}
