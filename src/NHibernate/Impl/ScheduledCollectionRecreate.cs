@@ -7,17 +7,17 @@ namespace NHibernate.Impl
 	
 	internal sealed class ScheduledCollectionRecreate : ScheduledCollectionAction 
 	{
-		private PersistentCollection collection;
+		private PersistentCollection _collection;
 
 		public ScheduledCollectionRecreate(PersistentCollection collection, CollectionPersister persister, object id, ISessionImplementor session) : base(persister, id, session) 
 		{
-			this.collection = collection;
+			_collection = collection;
 		}
 
 		public override void Execute() 
 		{
-			Persister.Softlock(Id);
-			Persister.Recreate(collection, Id, Session);
+			Persister.Softlock( Id );
+			Persister.Recreate( _collection, Id, Session );
 		}
 	}
 }

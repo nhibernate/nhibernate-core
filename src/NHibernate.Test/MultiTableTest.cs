@@ -649,5 +649,25 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
+		[Test]
+		public void DynamicUpdate() 
+		{
+			ISession s = sessions.OpenSession();
+			Simple simple = new Simple();
+
+			simple.Name = "saved";
+			object id = s.Save( simple );
+			s.Flush();
+
+			simple.Name = "updated";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			simple = (Simple)s.Load( typeof(Simple), id );
+			Assert.AreEqual( "updated", simple.Name, "name should have been updated" );
+			s.Close();
+		}
+
 	}
 }

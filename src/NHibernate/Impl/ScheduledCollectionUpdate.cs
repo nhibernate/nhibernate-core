@@ -8,37 +8,37 @@ namespace NHibernate.Impl
 	internal sealed class ScheduledCollectionUpdate : ScheduledCollectionAction 
 	{
 		
-		private readonly PersistentCollection collection;
-		private readonly bool emptySnapshot;
+		private readonly PersistentCollection _collection;
+		private readonly bool _emptySnapshot;
 		
 		public ScheduledCollectionUpdate(PersistentCollection collection, CollectionPersister persister, object id, bool emptySnapshot, ISessionImplementor session) : base(persister, id, session) 
 		{
-			this.collection = collection;
-			this.emptySnapshot = emptySnapshot;
+			_collection = collection;
+			_emptySnapshot = emptySnapshot;
 		}
 
 		public override void Execute() 
 		{
-			Persister.Softlock(Id);
-			if ( !collection.WasInitialized ) 
+			Persister.Softlock( Id );
+			if( !_collection.WasInitialized ) 
 			{
-				if ( !collection.HasQueuedAdds ) throw new AssertionFailure("bug processing queued adds");
+				if ( !_collection.HasQueuedAdds ) throw new AssertionFailure("bug processing queued adds");
 				//do nothing - we only need to notify the cache...
 			}
-			else if ( collection.Empty ) 
+			else if( _collection.Empty ) 
 			{
-				if( !emptySnapshot ) Persister.Remove(Id, Session);
+				if( !_emptySnapshot ) Persister.Remove( Id, Session );
 			}
-			else if ( collection.NeedsRecreate(Persister) ) 
+			else if( _collection.NeedsRecreate( Persister ) ) 
 			{
-				if( !emptySnapshot ) Persister.Remove(Id, Session);
-				Persister.Recreate(collection, Id, Session);
+				if( !_emptySnapshot ) Persister.Remove( Id, Session );
+				Persister.Recreate( _collection, Id, Session );
 			}
 			else 
 			{
-				Persister.DeleteRows(collection, Id, Session);
-				Persister.UpdateRows(collection, Id, Session);
-				Persister.InsertRows(collection, Id, Session);
+				Persister.DeleteRows( _collection, Id, Session );
+				Persister.UpdateRows( _collection, Id, Session );
+				Persister.InsertRows( _collection, Id, Session );
 
 			}
 			

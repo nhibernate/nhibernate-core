@@ -7,17 +7,17 @@ namespace NHibernate.Impl {
 	internal sealed class ScheduledCollectionRemove : ScheduledCollectionAction 
 	{
 		
-		private bool emptySnapshot;
+		private bool _emptySnapshot;
 		
 		public ScheduledCollectionRemove(CollectionPersister persister, object id, bool emptySnapshot, ISessionImplementor session) : base(persister, id, session) 
 		{
-			this.emptySnapshot = emptySnapshot;
+			_emptySnapshot = emptySnapshot;
 		}
 
 		public override void Execute() 
 		{
-			Persister.Softlock(Id);
-			if(!emptySnapshot) Persister.Remove(Id, Session);
+			Persister.Softlock( Id );
+			if( !_emptySnapshot ) Persister.Remove( Id, Session );
 		}
 	}
 }

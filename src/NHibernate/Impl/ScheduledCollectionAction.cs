@@ -8,40 +8,40 @@ namespace NHibernate.Impl
 	
 	internal abstract class ScheduledCollectionAction : SessionImpl.IExecutable 
 	{
-		private CollectionPersister persister;
-		private object id;
-		private ISessionImplementor session;
+		private CollectionPersister _persister;
+		private object _id;
+		private ISessionImplementor _session;
 
 		public ScheduledCollectionAction(CollectionPersister persister, object id, ISessionImplementor session) 
 		{
-			this.persister = persister;
-			this.session = session;
-			this.id = id;
+			_persister = persister;
+			_session = session;
+			_id = id;
 		}
 
 		public void AfterTransactionCompletion() 
 		{
-			persister.ReleaseSoftlock(id);
+			_persister.ReleaseSoftlock( _id );
 		}
 
 		public object[] PropertySpaces 
 		{
-			get { return new string[] { persister.QualifiedTableName }; } //TODO: cache the array on the persister
+			get { return new string[] { _persister.QualifiedTableName }; } //TODO: cache the array on the persister
 		}
 
 		public CollectionPersister Persister 
 		{
-			get { return persister;}
+			get { return _persister;}
 		}
 
 		public object Id 
 		{
-			get { return id;}
+			get { return _id;}
 		}
 
 		public ISessionImplementor Session 
 		{
-			get { return session;}
+			get { return _session;}
 		}
 
 		public abstract void Execute();

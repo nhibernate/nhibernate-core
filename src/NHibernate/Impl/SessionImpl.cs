@@ -2521,7 +2521,7 @@ namespace NHibernate.Impl
 					IType[] types = persister.PropertyTypes;
 
 					// wrap up any new collections directly referenced by the object
-					// or its compoents
+					// or its components
 
 					// NOTE: we need to do the wrap here even if its not "dirty",
 					// because nested collections need wrapping but changes to
