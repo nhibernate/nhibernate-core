@@ -520,7 +520,7 @@ namespace NHibernate.Collection {
 				if (log.IsDebugEnabled ) log.Debug("Deleting collection: " + role + "#" + id);
 
 				//IDbCommand st = session.Batcher.PrepareBatchStatement( SQLDeleteString );
-				IDbCommand st = session.Preparer.PrepareCommand(SqlDeleteRowString);
+				IDbCommand st = session.Preparer.PrepareCommand(SqlDeleteString);
 
 				try {
 					WriteKey(st, id, false, session);
