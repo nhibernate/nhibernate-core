@@ -1,27 +1,96 @@
 <?xml version="1.0" ?>
-<project name="NHibernate" default="build" basedir=".">
-	<csc target="library" output="bin/nant/NHibernate.exe" debug="false">
-		<references>
-			<includes name="bin/nunit.framework.dll" />
-			<includes name="bin/log4net.dll" />
-			<includes name="System" />
-			<includes name="System.XML" />
-			<includes name="System.Data" />
-			<includes name="System.Runtime.Remoting" />
-		</references>
-		<sources>
-			<includes name="**/*.cs" />
-			<excludes name="Dialect/*.cs" />
-			<includes name="Dialect/Dialect.cs" />
-		</sources>
-	</csc>
+<project name="NHibernate" default="buildDebug" basedir="." xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd">
+	<property name="nant.settings.currentframework" value="net-1.1" />
+
+	<property name="external.bin" value="../../external-bin" />
+	
+	<target name="buildDebug">
+		<delete dir="bin/Debug" failonerror="false" />
+		<mkdir dir="bin/Debug" />
+		<csc target="library" output="bin/Debug/NHibernate.dll" debug="true">
+			<references>
+				<includes name="System.dll" />
+				<includes name="System.XML.dll" />
+				<includes name="System.Data.dll" />
+				<includes name="${external.bin}/log4net.dll" />
+			</references>
+			<resources prefix="NHibernate" dynamicprefix="true">
+				<includes name="*.xsd" />
+				<includes name="**/*.xml" />
+				<excludes name="bin/**/*.xml" />
+			</resources>
+			<sources>
+				<includes name="**/*.cs" />
+				<excludes name="Cache/*Test.cs" />
+				<excludes name="Eg/**" />
+				<excludes name="InternalTest/**/*.cs" />
+				<excludes name="Test/**/*.cs" />
+				<excludes name="Util/*Test.cs" />
+				<excludes name="Dialect/DB2Dialect.cs" />
+				<excludes name="Dialect/HSQLDialect.cs" />
+				<excludes name="Dialect/InterbaseDialect.cs" />
+				<excludes name="Dialect/Oracle9Dialect.cs" />
+				<excludes name="Dialect/OracleDialect.cs" />
+				<excludes name="Dialect/SAPDBDialect.cs" />
+				<excludes name="Sql/ANSIOuterJoinFragment.cs" />
+			</sources>
+		</csc>
+		<copy todir="bin/Debug">
+			<fileset basedir="${external.bin}">
+				<includes name="log4net.*" />
+			</fileset>
+		</copy>
+			
+	</target>
+	
+	<target name="buildRelease">
+		<delete dir="bin/Release" failonerror="false" />
+		<mkdir dir="bin/Release" />
+		<csc target="library" output="bin/Release/NHibernate.dll" debug="false">
+			<references>
+				<includes name="System.dll" />
+				<includes name="System.XML.dll" />
+				<includes name="System.Data.dll" />
+				<includes name="${external.bin}/log4net.dll" />
+			</references>
+			<resources prefix="NHibernate" dynamicprefix="true">
+				<includes name="*.xsd" />
+				<includes name="**/*.xml" />
+				<excludes name="bin/**/*.xml" />
+			</resources>
+			<sources>
+				<includes name="**/*.cs" />
+				<excludes name="Cache/*Test.cs" />
+				<excludes name="Eg/**" />
+				<excludes name="InternalTest/**/*.cs" />
+				<excludes name="Util/*Test.cs" />
+				<excludes name="Dialect/DB2Dialect.cs" />
+				<excludes name="Dialect/HSQLDialect.cs" />
+				<excludes name="Dialect/InterbaseDialect.cs" />
+				<excludes name="Dialect/MySQLDialect.cs" />
+				<excludes name="Dialect/Oracle9Dialect.cs" />
+				<excludes name="Dialect/OracleDialect.cs" />
+				<excludes name="Dialect/SAPDBDialect.cs" />
+				<excludes name="Sql/ANSIOuterJoinFragment.cs" />
+			</sources>
+		</csc>
+		<copy todir="bin/Release">
+			<fileset basedir="${external.bin}">
+				<includes name="log4net.*" />
+			</fileset>
+		</copy>
+			
+	</target>
+	
+	<!--
 	<csc target="exe" output="bin/nant/hbm2ddl.exe" debug="false">
 		<references>
-			<!--<includes name="bin/nant/NHibernate.dll" />-->
+			- - <includes name="bin/nant/NHibernate.dll" /> - -
 			<includes name="bin/Debug/NHibernate.dll" />
 		</references>
 		<sources>
 			<includes name="Tool/hbm2ddl/SchemaExport.cs" />
 		</sources>
 	</csc>
+	-->
 </project>
