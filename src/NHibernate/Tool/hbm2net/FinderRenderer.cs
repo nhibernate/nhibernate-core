@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	/// <summary> <p>Title: Basic Finder Generator for Hibernate 2</p>
@@ -31,14 +31,14 @@ namespace NHibernate.tool.hbm2java
 	/// is the field in teh foreign class that joins to this object (in case there are more than one collection of these
 	/// objects in the foreign class).
 	/// 
-	/// After you've defined your finders, the second thing to do is to create a config file for hbm2java of the format:
+	/// After you've defined your finders, the second thing to do is to create a config file for hbm2net of the format:
 	/// 
 	/// <codegen>
-	/// <generate renderer="NHibernate.tool.hbm2java.BasicRenderer"/>
-	/// <generate suffix="Finder" renderer="NHibernate.tool.hbm2java.FinderRenderer"/>
+	/// <generate renderer="NHibernate.tool.hbm2net.BasicRenderer"/>
+	/// <generate suffix="Finder" renderer="NHibernate.tool.hbm2net.FinderRenderer"/>
 	/// </codegen>
 	/// 
-	/// And then use the param to hbm2java --config=xxx.xml where xxx.xml is the config file you
+	/// And then use the param to hbm2net --config=xxx.xml where xxx.xml is the config file you
 	/// just created.
 	/// 
 	/// An optional parameter is meta tag at the class level of the format:
@@ -330,7 +330,7 @@ namespace NHibernate.tool.hbm2java
 		
 		
 		//UPGRADE_TODO: Class 'java.util.HashMap' was converted to 'System.Collections.Hashtable' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilHashMap"'
-		//UPGRADE_NOTE: The initialization of  'primitiveToObject' was moved to static method 'NHibernate.tool.hbm2java.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
+		//UPGRADE_NOTE: The initialization of  'primitiveToObject' was moved to static method 'NHibernate.tool.hbm2net.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
 		internal static System.Collections.IDictionary primitiveToObject;
 		
 		
@@ -392,7 +392,7 @@ namespace NHibernate.tool.hbm2java
 		/// this to some other more general class
 		/// </summary>
 		//UPGRADE_TODO: Class 'java.util.HashMap' was converted to 'System.Collections.Hashtable' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilHashMap"'
-		//UPGRADE_NOTE: The initialization of  'hibType' was moved to static method 'NHibernate.tool.hbm2java.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
+		//UPGRADE_NOTE: The initialization of  'hibType' was moved to static method 'NHibernate.tool.hbm2net.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
 		internal static System.Collections.IDictionary hibType;
 		
 		

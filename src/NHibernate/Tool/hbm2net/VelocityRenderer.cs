@@ -9,7 +9,7 @@ using VelocityContext = NVelocity.VelocityContext;
 using VelocityEngine = NVelocity.App.VelocityEngine;
 using RuntimeConstants = NVelocity.Runtime.RuntimeConstants_Fields;
 
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	/// <author>  MAX
@@ -23,8 +23,8 @@ namespace NHibernate.tool.hbm2java
 		/*
 		* (non-Javadoc)
 		* 
-		* @see NHibernate.tool.hbm2java.Renderer#render(java.lang.String,
-		*      java.lang.String, NHibernate.tool.hbm2java.ClassMapping,
+		* @see NHibernate.tool.hbm2net.Renderer#render(java.lang.String,
+		*      java.lang.String, NHibernate.tool.hbm2net.ClassMapping,
 		*      java.util.Map, java.io.PrintWriter)
 		*/
 		public override void  render(System.String savedToPackage, System.String savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter writer)
@@ -59,7 +59,7 @@ namespace NHibernate.tool.hbm2java
 			context.Put("classimports", new JavaTool().genImports(classMapping));
 			
 			// Second run - writes to file (allows for placing imports correctly and optimized ;)
-			ve.Evaluate(context, writer, "hbm2java", sw.ToString());
+			ve.Evaluate(context, writer, "hbm2net", sw.ToString());
 		}
 	}
 }

@@ -10,7 +10,7 @@ using StringInputStream = System.IO.StringReader;
 using ResourceNotFoundException = NVelocity.Exception.ResourceNotFoundException;
 using Resource = NVelocity.Runtime.Resource.Resource;
 using ResourceLoader = NVelocity.Runtime.Resource.Loader.ResourceLoader;
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	/// <author>  MAX

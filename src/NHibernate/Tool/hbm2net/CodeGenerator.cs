@@ -9,7 +9,7 @@ using MultiMap = System.Collections.Hashtable;
 using Document = System.Xml.XmlDocument;
 using Element = System.Xml.XmlElement;
 
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	
@@ -56,7 +56,7 @@ namespace NHibernate.tool.hbm2java
 							//builder.setValidation(false);
 							Document document = new System.Xml.XmlDocument();
 							document.Load(args[i].Substring(9));
-							globalMetas = MetaAttributeHelper.loadAndMergeMetaMap((System.Xml.XmlElement)(document.FirstChild), null);
+							globalMetas = MetaAttributeHelper.loadAndMergeMetaMap((System.Xml.XmlElement)(document["codegen"]), null);
 							System.Collections.IEnumerator generateElements = document.GetElementsByTagName("generate").GetEnumerator();
 							
 							//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
@@ -95,11 +95,12 @@ namespace NHibernate.tool.hbm2java
 				{
 					// parse the mapping file
 					//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
-					
-					Document document = new System.Xml.XmlDocument();
+					System.Xml.NameTable nt = new System.Xml.NameTable();
+					nt.Add("urn:nhibernate-mapping-2.0");
+					Document document = new System.Xml.XmlDocument(nt);
 					document.Load((System.String) iter.Current);
 					
-					Element rootElement = document.FirstChild as System.Xml.XmlElement;
+					Element rootElement = document["hibernate-mapping"];
 					
 					System.Xml.XmlAttribute a = rootElement.Attributes["package"];
 					System.String pkg = null;

@@ -5,7 +5,7 @@
 * Window>Preferences>Java>Code Generation>Code Template
 */
 using System;
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	/// <author>  max
@@ -33,11 +33,11 @@ namespace NHibernate.tool.hbm2java
 		{
 			if ((System.Object) savedToPackage != null && !savedToPackage.Trim().Equals(""))
 			{
-				return "package " + savedToPackage + ";";
+				return "namespace " + savedToPackage + "";
 			}
 			else if ((System.Object) classMapping.GeneratedPackageName != null)
 			{
-				return "package " + classMapping.GeneratedPackageName + ";";
+				return "namespace " + classMapping.GeneratedPackageName + "";
 			}
 			return "";
 		}

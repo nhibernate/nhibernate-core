@@ -2,7 +2,7 @@
 using System;
 using StringHelper = NHibernate.Util.StringHelper;
 
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	/*
@@ -112,7 +112,7 @@ namespace NHibernate.tool.hbm2java
 				if ((System.Object) fqn != null)
 				{
 					
-					int lastDot = fqn.LastIndexOf(".");
+					int lastDot = fqn.LastIndexOf(",");
 					if (lastDot < 0)
 					{
 						name = fqn;
@@ -144,14 +144,18 @@ namespace NHibernate.tool.hbm2java
 		static ClassName()
 		{
 			{
-				PRIMITIVES.Add("byte");
-				PRIMITIVES.Add("short");
-				PRIMITIVES.Add("int");
-				PRIMITIVES.Add("long");
-				PRIMITIVES.Add("float");
-				PRIMITIVES.Add("double");
-				PRIMITIVES.Add("char");
-				PRIMITIVES.Add("boolean");
+				PRIMITIVES.Add("Byte");
+				PRIMITIVES.Add("Short");
+				PRIMITIVES.Add("Int32");
+				PRIMITIVES.Add("Long");
+				PRIMITIVES.Add("Float");
+				PRIMITIVES.Add("Double");
+				PRIMITIVES.Add("Char");
+				PRIMITIVES.Add("Boolean");
+				PRIMITIVES.Add("String");
+				PRIMITIVES.Add("Ticks");
+				PRIMITIVES.Add("TrueFalse");
+				PRIMITIVES.Add("YesNo");
 			}
 		}
 	}

@@ -3,7 +3,7 @@ using System;
 using StringHelper = NHibernate.Util.StringHelper;
 using Element = System.Xml.XmlElement;
 
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	
@@ -32,14 +32,14 @@ namespace NHibernate.tool.hbm2java
 			
 		}
 		
-		private System.String rendererClass = "NHibernate.tool.hbm2java.BasicRenderer";
+		private System.String rendererClass = "NHibernate.tool.hbm2net.BasicRenderer";
 		private System.String baseDirName = "generated";
 		private System.String packageName = null;
 		//UPGRADE_NOTE: The initialization of  'suffix' was moved to method 'InitBlock'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
 		private System.String suffix;
 		//UPGRADE_NOTE: The initialization of  'prefix' was moved to method 'InitBlock'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
 		private System.String prefix;
-		private System.String extension = "java";
+		private System.String extension = "cs";
 		private bool lowerFirstLetter = false;
 		
 		private System.Collections.Specialized.NameValueCollection params_Renamed;
@@ -57,42 +57,46 @@ namespace NHibernate.tool.hbm2java
 			System.String value_Renamed = null;
 			
 			// set rendererClass field
-			if ((System.Object) (this.rendererClass = generateElement.Attributes["renderer"].Value) == null)
+			if ((System.Object) (this.rendererClass = (generateElement.Attributes["renderer"] == null?null:generateElement.Attributes["renderer"].Value)) == null)
 			{
 				throw new System.Exception("attribute renderer is required.");
 			}
 			
 			// set dirName field
-			if ((System.Object) (value_Renamed = generateElement.Attributes["dir"].Value) != null)
+			if ((System.Object) (value_Renamed = (generateElement.Attributes["dir"] == null?null:generateElement.Attributes["dir"].Value)) != null)
 			{
 				this.baseDirName = value_Renamed;
 			}
 			
 			// set packageName field
-			this.packageName = generateElement.Attributes["package"].Value;
+			this.packageName = (generateElement.Attributes["package"] == null?null:generateElement.Attributes["package"].Value);
 			
 			// set prefix
-			if ((System.Object) (value_Renamed = generateElement.Attributes["prefix"].Value) != null)
+			if ((System.Object) (value_Renamed = (generateElement.Attributes["prefix"] == null?null:generateElement.Attributes["prefix"].Value)) != null)
 			{
 				this.prefix = value_Renamed;
 			}
 			
 			// set suffix
-			if ((System.Object) (value_Renamed = generateElement.Attributes["suffix"].Value) != null)
+			if ((System.Object) (value_Renamed = (generateElement.Attributes["suffix"] == null?null:generateElement.Attributes["suffix"].Value)) != null)
 			{
 				this.suffix = value_Renamed;
 			}
 			
 			// set extension
-			if ((System.Object) (value_Renamed = generateElement.Attributes["extension"].Value) != null)
+			if ((System.Object) (value_Renamed = (generateElement.Attributes["extension"] == null?null:generateElement.Attributes["extension"].Value)) != null)
 			{
 				this.extension = value_Renamed;
 			}
 			
 			// set lowerFirstLetter
-			value_Renamed = generateElement.Attributes["lowerFirstLetter"].Value;
+			value_Renamed = (generateElement.Attributes["lowerFirstLetter"] == null?null:generateElement.Attributes["lowerFirstLetter"].Value);
 			//UPGRADE_NOTE: Exceptions thrown by the equivalent in .NET of method 'java.lang.Boolean.valueOf' may be different. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1099"'
-			this.lowerFirstLetter = System.Boolean.Parse(value_Renamed);
+			try
+			{
+				this.lowerFirstLetter = System.Boolean.Parse(value_Renamed);
+			}
+			catch{}
 			
 			//UPGRADE_TODO: Format of property file may need to be changed. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1089"'
 			params_Renamed = new System.Collections.Specialized.NameValueCollection();

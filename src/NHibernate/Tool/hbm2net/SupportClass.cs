@@ -1007,6 +1007,7 @@ public class SupportClass
 	/// <returns>An Object containing the new instance.</returns>
 	public static System.Object CreateNewInstance(System.Type classType)
 	{
+		if (classType == null) throw new Exception("Class not found");
 		System.Object instance = null;
 		System.Type[] constructor = new System.Type[]{};
 		System.Reflection.ConstructorInfo[] constructors = null;
@@ -1042,7 +1043,7 @@ public class SupportClass
 	/// <param name="stream">Output sream used to write to</param>
 	public static void WriteStackTrace(System.Exception throwable, System.IO.TextWriter stream)
 	{
-		stream.Write(throwable.StackTrace);
+		stream.Write(throwable.ToString());
 		stream.Flush();
 	}
 

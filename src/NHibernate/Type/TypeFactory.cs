@@ -104,6 +104,7 @@ namespace NHibernate.Type
 			TypeFactory.GetTrueFalseType(); 
 			TypeFactory.GetTypeType(); 
 			TypeFactory.GetYesNoType(); 
+			TypeFactory.GetTicksType();
 
 			getTypeDelegatesWithLength.Add(TypeFactory.GetBinaryType().Name, new GetNullableTypeWithLength(GetBinaryType));
 			getTypeDelegatesWithLength.Add(TypeFactory.GetDoubleType().Name, new GetNullableTypeWithLength(GetDoubleType));

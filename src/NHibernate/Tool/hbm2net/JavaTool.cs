@@ -7,7 +7,7 @@
 using System;
 using StringHelper = NHibernate.Util.StringHelper;
 
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	/// <author>  MAX
@@ -32,11 +32,11 @@ namespace NHibernate.tool.hbm2java
 		{
 			if ((System.Object) cm.GeneratedPackageName != null)
 			{
-				return "package " + cm.GeneratedPackageName + ";";
+				return "namespace " + cm.GeneratedPackageName + "";
 			}
 			else
 			{
-				return "// default package";
+				return "// default namespace";
 			}
 		}
 		
@@ -294,7 +294,7 @@ namespace NHibernate.tool.hbm2java
 			{
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
-				buf.Append("import " + imports.Current + ";\n");
+				buf.Append("using " + imports.Current + ";\n");
 			}
 			
 			

@@ -8,7 +8,7 @@ using System;
 using MultiMap = System.Collections.Hashtable;
 using Element = System.Xml.XmlElement;
 
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	/// <author>  MAX
 	/// 

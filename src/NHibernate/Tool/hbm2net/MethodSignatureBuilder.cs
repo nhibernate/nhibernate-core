@@ -1,5 +1,5 @@
 using System;
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	/// <summary> Build method signatures given lots of parameters

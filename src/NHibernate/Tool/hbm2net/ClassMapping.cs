@@ -12,7 +12,7 @@ using MultiMap = System.Collections.Hashtable;
 using System.Xml;
 using IType = NHibernate.Type.IType;
 
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	
@@ -522,27 +522,27 @@ namespace NHibernate.tool.hbm2java
 				Element property = (Element) properties.Current;
 				
 				MultiMap metaForProperty = MetaAttributeHelper.loadAndMergeMetaMap(property, MetaAttribs);
-				System.String propertyName = property.Attributes["name"].Value;
+				System.String propertyName = (property.Attributes["name"] == null?null:property.Attributes["name"].Value);
 				if ((System.Object) propertyName == null || propertyName.Trim().Equals(string.Empty))
 				{
 					continue; //since an id doesn't necessarily need a name
 				}
 				
 				// ensure that the type is specified
-				System.String type = property.Attributes["type"].Value;
+				System.String type = (property.Attributes["type"] == null?null:property.Attributes["type"].Value);
 				if ((System.Object) type == null && cmpid != null)
 				{
 					// for composite-keys
-					type = property.Attributes["class"].Value;
+					type = (property.Attributes["class"] == null?null:property.Attributes["class"].Value);
 				}
 				if ("timestamp".Equals(property.LocalName))
 				{
-					type = "java.util.Date";
+					type = "System.DateTime";
 				}
 				
 				if ("any".Equals(property.LocalName))
 				{
-					type = "java.lang.Object";
+					type = "System.Object";
 				}
 				
 				if ((System.Object) type == null || type.Trim().Equals(string.Empty))
@@ -559,9 +559,9 @@ namespace NHibernate.tool.hbm2java
 				if (property == id)
 				{
 					Element generator = property["generator"];
-					System.String unsavedValue = property["unsaved-value"].Value;
+					System.String unsavedValue = (property.Attributes["unsaved-value"] == null?null:property.Attributes["unsaved-value"].Value);
 					bool mustBeNullable = ((System.Object) unsavedValue != null && unsavedValue.Equals("null"));
-					bool generated = !generator["class"].Value.Equals("assigned");
+					bool generated = !(generator.Attributes["class",""] == null?string.Empty:generator.Attributes["class",""].Value).Equals("assigned");
 					ClassName rtype = getFieldType(type, mustBeNullable, false);
 					addImport(rtype);
 					FieldProperty idField = new FieldProperty(property, this, propertyName, rtype, false, true, generated, metaForProperty);
@@ -569,14 +569,14 @@ namespace NHibernate.tool.hbm2java
 				}
 				else
 				{
-					System.String notnull = property.Attributes["not-null"].Value;
+					System.String notnull = (property.Attributes["not-null"] == null?null:property.Attributes["not-null"].Value);
 					// if not-null property is missing lets see if it has been
 					// defined at column level
 					if ((System.Object) notnull == null)
 					{
 						Element column = property["column"];
 						if (column != null)
-							notnull = column.Attributes["not-null"].Value;
+							notnull = (column.Attributes["not-null"] == null?null:column.Attributes["not-null"].Value);
 					}
 					bool nullable = ((System.Object) notnull == null || notnull.Equals("false"));
 					bool key = property.LocalName.StartsWith("key-"); //a composite id property
@@ -781,7 +781,7 @@ namespace NHibernate.tool.hbm2java
 				System.String propertyName = collection.Attributes["name"].Value;
 				
 				//		Small hack to switch over to sortedSet/sortedMap if sort is specified. (that is sort != unsorted)
-				System.String sortValue = collection.Attributes["sort"].Value;
+				System.String sortValue = (collection.Attributes["sort"] == null?null:collection.Attributes["sort"].Value);
 				if ((System.Object) sortValue != null && !"unsorted".Equals(sortValue) && !"".Equals(sortValue.Trim()))
 				{
 					if ("map".Equals(xmlName))
@@ -882,7 +882,7 @@ namespace NHibernate.tool.hbm2java
 				Element array = (Element) arrays.Current;
 				MultiMap metaForArray = MetaAttributeHelper.loadAndMergeMetaMap(array, inheritedMeta);
 				System.String role = array.Attributes["name"].Value;
-				System.String elementClass = array.Attributes["element-class"].Value;
+				System.String elementClass = (array.Attributes["element-class"] == null?null:array.Attributes["element-class"].Value);
 				if ((System.Object) elementClass == null)
 				{
 					Element elt = array["element"];

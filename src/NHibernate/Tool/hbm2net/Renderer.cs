@@ -1,6 +1,6 @@
 //$Id$
 using System;
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	

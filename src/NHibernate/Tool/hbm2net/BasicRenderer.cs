@@ -2,7 +2,7 @@
 using System;
 using StringHelper = NHibernate.Util.StringHelper;
 
-namespace NHibernate.tool.hbm2java
+namespace NHibernate.tool.hbm2net
 {
 	
 	public class BasicRenderer:AbstractRenderer
@@ -484,7 +484,7 @@ namespace NHibernate.tool.hbm2java
 		}
 		
 		//UPGRADE_TODO: Class 'java.util.HashMap' was converted to 'System.Collections.Hashtable' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilHashMap"'
-		//UPGRADE_NOTE: The initialization of  'primitiveToObject' was moved to static method 'NHibernate.tool.hbm2java.BasicRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
+		//UPGRADE_NOTE: The initialization of  'primitiveToObject' was moved to static method 'NHibernate.tool.hbm2net.BasicRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
 		internal static System.Collections.IDictionary primitiveToObject;
 		
 		public virtual int doFieldAccessors(ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StringWriter writer, System.String vetoSupport, System.String changeSupport)
