@@ -9,7 +9,7 @@
 	<target name="build">
 		<exec 
 			program="${nant.settings.currentframework.frameworkdirectory}\ilasm" 
-			commandline="HashCodeProvider.il /dll /output:..\..\external-bin\HashCodeProvider.dll" 
+			commandline="HashCodeProvider.il /dll /output:..\..\external-bin\HashCodeProvider.dll /key:..\NHibernate.snk" 
 		/>	
 		<copy file="HashCodeProvider.license.txt" todir="../../external-bin" />
 	</target>
