@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<!--
+	This mapping is to test for a class not having the correct
+	name.
+-->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<!-- it is missing the assembly name --> 
+	<class name="NHibernate.Test.MappingExceptions.A">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="Name" />
+	</class>
+
+</hibernate-mapping>

@@ -375,6 +375,34 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MappingExceptions\A.ClassNotFound.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MappingExceptions\A.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MappingExceptions\A.Valid.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MappingExceptions\AddClassFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MappingExceptions\AddResourceFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MappingExceptions\AddXmlFileFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MappingTest\TableFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
