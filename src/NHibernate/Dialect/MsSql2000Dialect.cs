@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Dialect 
@@ -37,6 +38,26 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 	
+		/// <summary>
+		/// MsSql allows the use of SELECT SCOPE_IDENTITY to be in the same
+		/// Command as the INSERT
+		/// </summary>
+		/// <value>true</value>
+		public override bool SupportsIdentitySelectInInsert
+		{
+			get	{ return true;	}
+		}
+		
+		/// <summary>
+		/// Add the Identity Select string to the Insert Sql.
+		/// </summary>
+		/// <param name="insertSql">The SqlString that contains the INSERT sql.</param>
+		/// <returns>A new SqlString with <c>; SELECT SCOPE_IDENTITY()</c> at the end.</returns>
+		public override SqlString AddIdentitySelectToInsert(SqlString insertSql)
+		{
+			return insertSql.Append( new SqlString("; SELECT SCOPE_IDENTITY()") );
+		}
+
 		public override bool SupportsIdentityColumns 
 		{
 			get { return true; }

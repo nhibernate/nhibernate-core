@@ -195,6 +195,27 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Does this Dialect allow adding a Sql String at the end of the 
+		/// INSERT statement to retrieve the new Identity value.
+		/// </summary>
+		/// <value>defaults to false</value>
+		/// <remarks>
+		/// <para>
+		/// If the Dialect supports this then only one Command will need to be executed
+		/// against the Database to do the Insert and get the Id.
+		/// </para>
+		/// <para>
+		/// If this is overridden and returns <c>true</c> then the Dialect
+		/// is expected to override the method <see cref="AddIdentitySelectToInsert(SqlString)"/>
+		/// </para>
+		/// </remarks>
+		public virtual bool SupportsIdentitySelectInInsert 
+		{
+			get { return false; }
+		}
+
+
+		/// <summary>
 		/// Does this dialect support identity column key generation?
 		/// </summary>
 		public virtual bool SupportsIdentityColumns 
@@ -208,6 +229,11 @@ namespace NHibernate.Dialect
 		public virtual bool SupportsSequences 
 		{
 			get { return false; }
+		}
+
+		public virtual SqlString AddIdentitySelectToInsert(SqlString insertSql) 
+		{
+			throw new NotSupportedException("This Dialect does not implement AddIdentitySelectToInsert");
 		}
 
 		/// <summary>
