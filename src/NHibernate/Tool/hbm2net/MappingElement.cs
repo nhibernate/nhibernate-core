@@ -8,7 +8,7 @@ using System;
 using MultiMap = System.Collections.Hashtable;
 using Element = System.Xml.XmlElement;
 
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	/// <author>  MAX
 	/// 
@@ -72,16 +72,12 @@ namespace NHibernate.tool.hbm2net
 		/// <summary>Returns true if this element has the meta attribute </summary>
 		public virtual bool hasMeta(System.String attribute)
 		{
-			//UPGRADE_ISSUE: Method 'java.util.Map.containsKey' was not converted. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1000"'
 			return metaattribs.ContainsKey(attribute);
 		}
 		
 		/* Given a key, return the list of metaattribs. Can return null! */
-		//UPGRADE_ISSUE: Class hierarchy differences between ''java.util.List'' and ''SupportClass.ListCollectionSupport'' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 		public virtual SupportClass.ListCollectionSupport getMeta(System.String attribute)
 		{
-			//UPGRADE_ISSUE: Class hierarchy differences between ''java.util.List'' and ''SupportClass.ListCollectionSupport'' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
-			//UPGRADE_TODO: Method 'java.util.Map.get' was converted to 'System.Collections.IDictionary.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilMapget_javalangObject"'
 			return (SupportClass.ListCollectionSupport) metaattribs[attribute];
 		}
 		
@@ -94,7 +90,6 @@ namespace NHibernate.tool.hbm2net
 		/// </returns>
 		public virtual System.String getMetaAsString(System.String attribute)
 		{
-			//UPGRADE_ISSUE: Class hierarchy differences between ''java.util.List'' and ''SupportClass.ListCollectionSupport'' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 			SupportClass.ListCollectionSupport c = getMeta(attribute);
 			
 			return MetaAttributeHelper.getMetaAsString(c);
@@ -112,7 +107,6 @@ namespace NHibernate.tool.hbm2net
 		
 		public virtual bool getMetaAsBool(System.String attribute, bool defaultValue)
 		{
-			//UPGRADE_ISSUE: Class hierarchy differences between ''java.util.List'' and ''SupportClass.ListCollectionSupport'' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 			SupportClass.ListCollectionSupport c = getMeta(attribute);
 			
 			return MetaAttributeHelper.getMetaAsBool(c, defaultValue);

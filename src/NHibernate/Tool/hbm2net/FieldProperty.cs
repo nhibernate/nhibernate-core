@@ -2,7 +2,7 @@ using System;
 using MultiMap = System.Collections.Hashtable;
 using Element = System.Xml.XmlElement;
 
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	
 	
@@ -83,7 +83,6 @@ namespace NHibernate.tool.hbm2net
 			}
 			
 		}
-		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions.
 		/// <summary> Returns the foreignClass.</summary>
 		/// <returns> ClassName
 		/// </returns>

@@ -5,7 +5,7 @@
 * Window>Preferences>Java>Code Generation>Code Template
 */
 using System;
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	
 	/// <author>  max

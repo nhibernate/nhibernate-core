@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	
 	/// <summary> <p>Title: Basic Finder Generator for Hibernate 2</p>
@@ -34,8 +34,8 @@ namespace NHibernate.tool.hbm2net
 	/// After you've defined your finders, the second thing to do is to create a config file for hbm2net of the format:
 	/// 
 	/// <codegen>
-	/// <generate renderer="NHibernate.tool.hbm2net.BasicRenderer"/>
-	/// <generate suffix="Finder" renderer="NHibernate.tool.hbm2net.FinderRenderer"/>
+	/// <generate renderer="NHibernate.Tool.hbm2net.BasicRenderer"/>
+	/// <generate suffix="Finder" renderer="NHibernate.Tool.hbm2net.FinderRenderer"/>
 	/// </codegen>
 	/// 
 	/// And then use the param to hbm2net --config=xxx.xml where xxx.xml is the config file you
@@ -58,6 +58,8 @@ namespace NHibernate.tool.hbm2net
 	/// </version>
 	public class FinderRenderer:AbstractRenderer
 	{
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 		public FinderRenderer()
 		{
 			InitBlock();
@@ -246,7 +248,7 @@ namespace NHibernate.tool.hbm2net
 					if (foreignClass == null)
 					{
 						// Can't find the class, return
-						//log.error("Could not find the class " + field.ForeignClass.Name);
+						log.Error("Could not find the class " + field.ForeignClass.Name);
 						return ;
 					}
 					FieldProperty foreignField = null;
@@ -267,7 +269,7 @@ namespace NHibernate.tool.hbm2net
 					else
 					{
 						// Can't find the field, return
-						//log.error("Could not find the field " + fieldName + " that was supposed to be in class " + field.ForeignClass.Name);
+						log.Error("Could not find the field " + fieldName + " that was supposed to be in class " + field.ForeignClass.Name);
 						return ;
 					}
 					
@@ -330,7 +332,7 @@ namespace NHibernate.tool.hbm2net
 		
 		
 		//UPGRADE_TODO: Class 'java.util.HashMap' was converted to 'System.Collections.Hashtable' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilHashMap"'
-		//UPGRADE_NOTE: The initialization of  'primitiveToObject' was moved to static method 'NHibernate.tool.hbm2net.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
+		//UPGRADE_NOTE: The initialization of  'primitiveToObject' was moved to static method 'NHibernate.Tool.hbm2net.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
 		internal static System.Collections.IDictionary primitiveToObject;
 		
 		
@@ -392,7 +394,7 @@ namespace NHibernate.tool.hbm2net
 		/// this to some other more general class
 		/// </summary>
 		//UPGRADE_TODO: Class 'java.util.HashMap' was converted to 'System.Collections.Hashtable' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilHashMap"'
-		//UPGRADE_NOTE: The initialization of  'hibType' was moved to static method 'NHibernate.tool.hbm2net.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
+		//UPGRADE_NOTE: The initialization of  'hibType' was moved to static method 'NHibernate.Tool.hbm2net.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
 		internal static System.Collections.IDictionary hibType;
 		
 		
@@ -421,7 +423,6 @@ namespace NHibernate.tool.hbm2net
 		}
 		static FinderRenderer()
 		{
-			//log = LogFactory.getLog(typeof(FinderRenderer));
 			primitiveToObject = new System.Collections.Hashtable();
 			hibType = new System.Collections.Hashtable();
 		}

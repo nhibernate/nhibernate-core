@@ -1,5 +1,5 @@
 using System;
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	
 	

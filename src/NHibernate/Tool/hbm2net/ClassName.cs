@@ -1,7 +1,7 @@
 using System;
 using StringHelper = NHibernate.Util.StringHelper;
 
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	
 	/*
@@ -70,7 +70,6 @@ namespace NHibernate.tool.hbm2net
 			
 		}
 		
-		//UPGRADE_NOTE: Final was removed from the declaration of 'PRIMITIVES '. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1003"'
 		internal static readonly SupportClass.SetSupport PRIMITIVES = new SupportClass.HashSetSupport();
 		
 		public ClassName(System.String fqn)
@@ -106,6 +105,8 @@ namespace NHibernate.tool.hbm2net
 		private void  initFullyQualifiedName(System.String fqn)
 		{
 			this.fullyQualifiedName = fqn;
+			if (fullyQualifiedName.IndexOf(",")>0)
+				fullyQualifiedName = fullyQualifiedName.Substring(0,fullyQualifiedName.IndexOf(","));
 			if (!Primitive)
 			{
 				if ((System.Object) fqn != null)

@@ -1,5 +1,5 @@
 using System;
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	
 	/// <summary>  Renderer that generates a StateLess-SessionBean per entity.
@@ -21,7 +21,7 @@ namespace NHibernate.tool.hbm2net
 	{
 		
 		/* (non-Javadoc)
-		* @see NHibernate.tool.hbm2net.Renderer#render(java.lang.String, java.lang.String, NHibernate.tool.hbm2net.ClassMapping, java.util.Map, java.io.PrintWriter)
+		* @see NHibernate.Tool.hbm2net.Renderer#render(java.lang.String, java.lang.String, NHibernate.Tool.hbm2net.ClassMapping, java.util.Map, java.io.PrintWriter)
 		*/
 		public override void  render(System.String savedToPackage, System.String savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter mainwriter)
 		{

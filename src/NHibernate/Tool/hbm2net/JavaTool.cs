@@ -7,7 +7,7 @@
 using System;
 using StringHelper = NHibernate.Util.StringHelper;
 
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	
 	/// <author>  MAX
@@ -62,7 +62,6 @@ namespace NHibernate.tool.hbm2net
 			{
 				name = field.getMetaAsString("property-type");
 			}
-			//UPGRADE_TODO: Method 'java.util.Map.get' was converted to 'System.Collections.IDictionary.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilMapget_javalangObject"'
 			ClassMapping cmap = (ClassMapping) class2classmap[name];
 			
 			if (cmap != null)
@@ -78,7 +77,6 @@ namespace NHibernate.tool.hbm2net
 		public virtual System.String getTrueTypeName(ClassName cn, System.Collections.IDictionary class2classmap)
 		{
 			System.String name = cn.FullyQualifiedName;
-			//UPGRADE_TODO: Method 'java.util.Map.get' was converted to 'System.Collections.IDictionary.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilMapget_javalangObject"'
 			ClassMapping cmap = (ClassMapping) class2classmap[name];
 			
 			if (cmap != null)
@@ -196,14 +194,11 @@ namespace NHibernate.tool.hbm2net
 		
 		public virtual System.String getImplements(ClassMapping cmap)
 		{
-			//UPGRADE_ISSUE: Class hierarchy differences between ''java.util.List'' and ''SupportClass.ListCollectionSupport'' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
-			//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 			SupportClass.ListCollectionSupport interfaces = new SupportClass.ListCollectionSupport();
 			
 			//			implement proxy, but NOT if the proxy is the class it self!
 			if ((System.Object) cmap.Proxy != null && (!cmap.Proxy.Equals(cmap.FullyQualifiedName)))
 			{
-				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.List.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				interfaces.Add(cmap.Proxy);
 			}
 			
@@ -211,14 +206,12 @@ namespace NHibernate.tool.hbm2net
 			{
 				if (cmap.SuperClassMapping != null && cmap.SuperClassMapping.Interface)
 				{
-					//UPGRADE_TODO: The equivalent in .NET for method 'java.util.List.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 					interfaces.Add(cmap.SuperClassMapping.ClassName.FullyQualifiedName);
 				}
 				if (cmap.getMeta("implements") != null)
 				{
 					interfaces.AddAll(cmap.getMeta("implements"));
 				}
-				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.List.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				interfaces.Add(typeof(System.Runtime.Serialization.ISerializable).FullName);
 			}
 			else
@@ -230,7 +223,6 @@ namespace NHibernate.tool.hbm2net
 			if (interfaces.Count > 0)
 			{
 				System.Text.StringBuilder sbuf = new System.Text.StringBuilder();
-				//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
 				bool first = true;
 				for (System.Collections.IEnumerator iter = interfaces.GetEnumerator(); iter.MoveNext(); )
 				{
@@ -238,10 +230,7 @@ namespace NHibernate.tool.hbm2net
 						first = false;
 					else
 						sbuf.Append(",");
-					//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
-					//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 					sbuf.Append(JavaTool.shortenType(iter.Current.ToString(), cmap.Imports));
-					//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
 				}
 				return sbuf.ToString();
 			}
@@ -251,11 +240,9 @@ namespace NHibernate.tool.hbm2net
 			}
 		}
 		
-		//UPGRADE_ISSUE: Class hierarchy differences between ''java.util.List'' and ''SupportClass.ListCollectionSupport'' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 		public virtual System.String fieldsAsParameters(SupportClass.ListCollectionSupport fieldslist, ClassMapping classMapping, System.Collections.IDictionary class2classmap)
 		{
 			System.Text.StringBuilder buf = new System.Text.StringBuilder();
-			//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
 			bool first = true;
 			for (System.Collections.IEnumerator fields = fieldslist.GetEnumerator(); fields.MoveNext(); )
 			{
@@ -263,19 +250,15 @@ namespace NHibernate.tool.hbm2net
 					first = false;
 				else
 					buf.Append(", ");
-				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 				FieldProperty field = (FieldProperty) fields.Current;
 				buf.Append(JavaTool.shortenType(JavaTool.getTrueTypeName(field, class2classmap), classMapping.Imports) + " " + field.FieldName);
-				//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
 			}
 			return buf.ToString();
 		}
 		
-		//UPGRADE_ISSUE: Class hierarchy differences between ''java.util.List'' and ''SupportClass.ListCollectionSupport'' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 		public virtual System.String fieldsAsArguments(SupportClass.ListCollectionSupport fieldslist, ClassMapping classMapping, System.Collections.IDictionary class2classmap)
 		{
 			System.Text.StringBuilder buf = new System.Text.StringBuilder();
-			//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
 			bool first = true;
 			for (System.Collections.IEnumerator fields = fieldslist.GetEnumerator(); fields.MoveNext(); )
 			{
@@ -284,10 +267,8 @@ namespace NHibernate.tool.hbm2net
 				else
 					buf.Append(", ");
 
-				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 				FieldProperty field = (FieldProperty) fields.Current;
 				buf.Append(field.FieldName);
-				//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
 			}
 			return buf.ToString();
 		}
@@ -296,24 +277,17 @@ namespace NHibernate.tool.hbm2net
 		{
 			System.Text.StringBuilder buf = new System.Text.StringBuilder();
 			
-			//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
 			for (System.Collections.IEnumerator imports = classMapping.Imports.GetEnumerator(); imports.MoveNext(); )
 			{
-				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
-				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 				buf.Append("using " + imports.Current + ";\n");
 			}
 			
 			
-			//UPGRADE_ISSUE: Class hierarchy differences between ''java.util.List'' and ''SupportClass.ListCollectionSupport'' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 			SupportClass.ListCollectionSupport imports2 = classMapping.getMeta("extra-import");
 			if (imports2 != null)
 			{
-				//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
 				for (System.Collections.IEnumerator it = imports2.GetEnumerator(); it.MoveNext(); )
 				{
-					//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
-					//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 					System.String cname = it.Current.ToString();
 					buf.Append("using " + cname + ";\n");
 				}

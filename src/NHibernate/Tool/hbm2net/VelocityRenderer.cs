@@ -9,7 +9,7 @@ using VelocityContext = NVelocity.VelocityContext;
 using VelocityEngine = NVelocity.App.VelocityEngine;
 using RuntimeConstants = NVelocity.Runtime.RuntimeConstants_Fields;
 
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	
 	/// <author>  MAX
@@ -25,22 +25,12 @@ namespace NHibernate.tool.hbm2net
 		/*
 		* (non-Javadoc)
 		* 
-		* @see NHibernate.tool.hbm2net.Renderer#render(java.lang.String,
-		*      java.lang.String, NHibernate.tool.hbm2net.ClassMapping,
+		* @see NHibernate.Tool.hbm2net.Renderer#render(java.lang.String,
+		*      java.lang.String, NHibernate.Tool.hbm2net.ClassMapping,
 		*      java.util.Map, java.io.PrintWriter)
 		*/
 		public override void  render(System.String savedToPackage, System.String savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter writer)
 		{
-			
-			//UPGRADE_TODO: Format of property file may need to be changed. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1089"'
-//			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
-			//p.SetProperty( "runtime.log.logsystem.log4net.category", "x");
-//			//UPGRADE_TODO: Method 'java.util.Properties.setProperty' was converted to 'System.Collections.Specialized.NameValueCollection.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073"'
-//			p["resource.loader"] = "class";
-//			//UPGRADE_TODO: Method 'java.util.Properties.setProperty' was converted to 'System.Collections.Specialized.NameValueCollection.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073"'
-//			p["class.resource.loader.class"] = typeof(ClasspathResourceLoader).getName();
-			
-			
 			VelocityContext context = new VelocityContext();
 			
 			context.Put("savedToPackage", savedToPackage);
@@ -68,6 +58,11 @@ namespace NHibernate.tool.hbm2net
 	
 		public override void configure(System.Collections.Specialized.NameValueCollection props)
 		{
+			//			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
+			//			p.SetProperty( "runtime.log.logsystem.log4net.category", "x");
+			//			p["resource.loader"] = "class";
+			//			p["class.resource.loader.class"] = typeof(ClasspathResourceLoader).getName();
+			System.IO.File.Delete("nvelocity.log");
 			base.configure (props);
 			ve = new VelocityEngine();
 			ve.Init();

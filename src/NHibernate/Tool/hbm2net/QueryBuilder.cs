@@ -1,6 +1,6 @@
 using System;
 using Type = NHibernate.Type.TypeType;
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	
 	/// <summary> Build queries for use in finder generation.</summary>

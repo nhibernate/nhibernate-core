@@ -2,7 +2,7 @@ using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 
-namespace NHibernate.tool.hbm2net
+namespace NHibernate.Tool.hbm2net
 {
 	/// <summary>
 	/// Summary description for DOMRenderer.
