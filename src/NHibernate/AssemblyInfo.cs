@@ -19,5 +19,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersionAttribute("0.4.0.0")]
 [assembly: AssemblyInformationalVersionAttribute("0.4")]
 [assembly: AssemblyFileVersionAttribute("0.4.0.0")]
-[assembly: AssemblyKeyFileAttribute("..\\NHibernate.snk")]
+//[assembly: AssemblyKeyFileAttribute("..\\NHibernate.snk")]
 
