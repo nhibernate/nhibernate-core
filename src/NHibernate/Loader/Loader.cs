@@ -102,16 +102,12 @@ namespace NHibernate.Loader
 		/// attemp to initialize that collection
 		/// </remarks>
 		/// <param name="session"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
+		/// <param name="parameters"></param>
 		/// <param name="optionalObject"></param>
 		/// <param name="optionalID"></param>
 		/// <param name="optionalCollection"></param>
 		/// <param name="optionalCollectionOwner"></param>
 		/// <param name="returnProxies"></param>
-		/// <param name="selection"></param>
-		/// <param name="namedParams"></param>
-		/// <param name="lockModes"></param>
 		/// <returns></returns>
 		private IList DoFind(
 			ISessionImplementor session,

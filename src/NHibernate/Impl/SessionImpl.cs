@@ -525,7 +525,10 @@ namespace NHibernate.Impl
 		{
 			get 
 			{
-				if (batcher==null) batcher = new NonBatchingBatcher(this); //TODO: should check something, no?
+				if (batcher==null) 
+				{
+					batcher = new NonBatchingBatcher(this);
+				}
 				return batcher;
 			}
 		}

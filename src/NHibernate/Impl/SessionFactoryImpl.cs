@@ -73,7 +73,8 @@ namespace NHibernate.Impl
 		[NonSerialized] private IDictionary namedQueries;
 		[NonSerialized] private IDictionary imports;
 		[NonSerialized] private IDictionary properties;
-		// TODO: figure out why this is commented out in nh and not h2.0.3
+		// templates are related to XmlDatabinder - nothing like that yet 
+		// in NHibernate.
 		//[NonSerialized] private Templates templates;
 		[NonSerialized] private IInterceptor interceptor;
 
