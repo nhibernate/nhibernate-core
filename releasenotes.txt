@@ -1,21 +1,26 @@
-PreAlpha Build 0.2.0.0
+Alpha Build 0.2.0.0
 ======================== 
-- Removed support for <dynabean> mapping since it doesn't exist in .net
-- Fixed bug in nhibernate.build file when not signing NHibernate.dll
+- Removed support for <dynabean> mapping since it doesn't exist in .net.
+- Fixed bug in nhibernate.build file when not signing NHibernate.dll.
 - Fixed bug with Hql and SetParameter() where there were 2 parameters with same name.
-- Fixed bug with Hql and "IN (:namedParam)"
-- Fixed bug with Hql and multi column IType
+- Fixed bug with Hql and "IN (:namedParam)".
+- Fixed bug with Hql and multi column IType.
+- Fixed bug with Hql and scalar queries 
 - Fixed bug with NullReferenceException and TypeType class.
 - ISession.Filter() is now working.
 - Compiled Queries and Filters are now cached.
 - Refactored Hql to use a SqlString instead of string containing sql.
 - Dialect has had public API changed because of Sql to SqlCommand refactoring.
-- IPreparer has had methods removed from public API
+- IPreparer has had methods removed from public API.
 - type="System.Object" no longer matches to SerializableType - instead it matches to ObjectType.  Use type="Serializable" instead.
 - Added "access" attribute for NHibernate to get to fields and properties with no setters.  See NHibernate.Property.PropertyAccessorFactory for all valid value types and how to plug in your own implementation of IPropertyAccessor.
 - Added Types to read BLOB/CLOB columns to a byte[]/string Property.
+- Modified Expression.Sql() to require use of SqlString if parameters are used.
 - TypeFactory was modified to allow the attribute "type" to be the Assembly Qualified Name, Full Name, NHibernate IType.Name, or Hibernate name to help with porting hibernate hbm.xml files and Net2Hbm that John is writing.
-- Fixed bug with Hql and scalar queries 
+- hibernate.connection.isolation configuration now affects the IDbTransaction's IsolationLevel, it is parsed as the name value of the IsolationLevel enum - "Chaos", "ReadCommitted", "ReadUncommitted", "RepeatableRead", "Serializable", and "Unspecified".
+- ICriteria.SetMaxResults() is now working.
+- IQuery.SetMaxResults().Enumerable() is now working.
+- Modifed Test Fixtures to help isolate problems caused by DataProviders.
 
 PreAlpha Build 0.1.0.0
 ======================== 
