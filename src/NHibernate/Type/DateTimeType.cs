@@ -1,9 +1,8 @@
 using System;
 using System.Data;
-
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
 	/// <summary>
 	/// Maps a <see cref="System.DateTime" /> Property to a <see cref="DbType.DateTime"/> column that 
@@ -16,100 +15,150 @@ namespace NHibernate.Type
 	/// </remarks>
 	public class DateTimeType : ValueTypeType, IIdentifierType, ILiteralType, IVersionType
 	{
-		
-		internal DateTimeType() : base( new DateTimeSqlType() ) 
+		/// <summary></summary>
+		internal DateTimeType() : base( new DateTimeSqlType() )
 		{
 		}
 
-		public override object Get(IDataReader rs, int index) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, int index )
 		{
-			DateTime dbValue = Convert.ToDateTime(rs[index]); 
-			return new DateTime(dbValue.Year, dbValue.Month, dbValue.Day, dbValue.Hour, dbValue.Minute, dbValue.Second);
+			DateTime dbValue = Convert.ToDateTime( rs[ index ] );
+			return new DateTime( dbValue.Year, dbValue.Month, dbValue.Day, dbValue.Hour, dbValue.Minute, dbValue.Second );
 		}
 
-		public override object Get(IDataReader rs, string name) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, string name )
 		{
-			return Get(rs,rs.GetOrdinal(name));// rs.[name];
+			return Get( rs, rs.GetOrdinal( name ) ); // rs.[name];
 		}
 
-		public override System.Type ReturnedClass 
+		/// <summary></summary>
+		public override System.Type ReturnedClass
 		{
-			get { return typeof(DateTime); }
+			get { return typeof( DateTime ); }
 		}
 
-		public override void Set(IDbCommand st, object value, int index) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		public override void Set( IDbCommand st, object value, int index )
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
+			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
 			parm.DbType = DbType.DateTime;
 			//TODO: figure out if this is a good solution for NULL DATES
-			if((DateTime)value<new DateTime(1753,1,1))
+			if( ( DateTime ) value < new DateTime( 1753, 1, 1 ) )
 			{
 				parm.Value = DBNull.Value;
 			}
-			else 
+			else
 			{
-				DateTime dateValue = (DateTime)value;
-				parm.Value = new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute, dateValue.Second);
+				DateTime dateValue = ( DateTime ) value;
+				parm.Value = new DateTime( dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute, dateValue.Second );
 			}
 		}
 
-		public override bool Equals(object x, object y) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public override bool Equals( object x, object y )
 		{
-			if (x==y) return true;
+			if( x == y )
+			{
+				return true;
+			}
 			// DateTime can't be null because it is a struct - so comparing 
 			// them this way is useless - instead use the magic number...
 			//if (x==null || y==null) return false;
 
-			DateTime date1 = (x==null)? DateTime.MinValue : (DateTime) x;
-			DateTime date2 = (y==null)? DateTime.MinValue : (DateTime) y;
+			DateTime date1 = ( x == null ) ? DateTime.MinValue : ( DateTime ) x;
+			DateTime date2 = ( y == null ) ? DateTime.MinValue : ( DateTime ) y;
 
 			//return date1.Equals(date2);
-			return (date1.Year == date2.Year &&
+			return ( date1.Year == date2.Year &&
 				date1.Month == date2.Month &&
 				date1.Day == date2.Day &&
 				date1.Hour == date2.Hour &&
 				date1.Minute == date2.Minute &&
-				date1.Second == date2.Second);
+				date1.Second == date2.Second );
 		}
 
-		public override string Name 
+		/// <summary></summary>
+		public override string Name
 		{
 			get { return "DateTime"; }
 		}
 
-		public override string ToXML(object val) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="val"></param>
+		/// <returns></returns>
+		public override string ToXML( object val )
 		{
-			return ((DateTime)val).ToShortDateString();
+			return ( ( DateTime ) val ).ToShortDateString();
 		}
 
-		public override bool HasNiceEquals 
+		/// <summary></summary>
+		public override bool HasNiceEquals
 		{
 			get { return true; }
 		}
 
-		public object StringToObject(string xml) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public object StringToObject( string xml )
 		{
-			return DateTime.Parse(xml);
+			return DateTime.Parse( xml );
 		}
 
-		public override string ObjectToSQLString(object value) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override string ObjectToSQLString( object value )
 		{
 			return "'" + value.ToString() + "'";
 		}
 
 		#region IVersionType Members
 
-		public object Next(object current) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="current"></param>
+		/// <returns></returns>
+		public object Next( object current )
 		{
 			return Seed;
 		}
-		
-		public object Seed 
+
+		/// <summary></summary>
+		public object Seed
 		{
 			get { return DateTime.Now; }
 		}
 
 		#endregion
-
 	}
 }

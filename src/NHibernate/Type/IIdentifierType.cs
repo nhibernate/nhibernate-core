@@ -1,12 +1,10 @@
-using System;
-
-namespace NHibernate.Type {
-
+namespace NHibernate.Type
+{
 	/// <summary>
 	/// An <see cref="IType"/> that may be used as an identifier.
 	/// </summary>
-	public interface IIdentifierType : IType {
-
+	public interface IIdentifierType : IType
+	{
 		/// <summary>
 		/// When implemented by a class, converts the xml string from the 
 		/// mapping file to the .NET object.
@@ -18,6 +16,6 @@ namespace NHibernate.Type {
 		/// call System.Type.Parse without verifying that it is a parsable value
 		/// for the System.Type.
 		/// </remarks>
-		object StringToObject(string xml);
+		object StringToObject( string xml );
 	}
 }

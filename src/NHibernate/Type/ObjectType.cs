@@ -1,14 +1,12 @@
 using System;
 using System.Data;
-
 using NHibernate.Engine;
-using NHibernate.Util;
 using NHibernate.Loader;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
-namespace NHibernate.Type {
-	
-
+namespace NHibernate.Type
+{
 	///<summary>
 	///	Handles "any" mappings and the old deprecated "object" type.
 	///</summary>
@@ -37,187 +35,331 @@ namespace NHibernate.Type {
 	///	simple_table					4
 	///	
 	///</remarks>
-	public class ObjectType : AbstractType, IAbstractComponentType, IAssociationType {
-
+	public class ObjectType : AbstractType, IAbstractComponentType, IAssociationType
+	{
 		private readonly IType identifierType;
 		private readonly IType metaType;
 
-		internal ObjectType(IType metaType, IType identifierType) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="metaType"></param>
+		/// <param name="identifierType"></param>
+		internal ObjectType( IType metaType, IType identifierType )
+		{
 			this.identifierType = identifierType;
 			this.metaType = metaType;
 		}
-	
-		internal ObjectType() : this(NHibernate.Class, NHibernate.Serializable) 
+
+		/// <summary></summary>
+		internal ObjectType() : this( NHibernate.Class, NHibernate.Serializable )
 		{
 		}
-		
-		public override object DeepCopy(object value) {
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override object DeepCopy( object value )
+		{
 			return value;
 		}
 
-		public override bool Equals(object x, object y) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public override bool Equals( object x, object y )
+		{
 			return x == y;
 		}
 
-		public override int GetColumnSpan(IMapping session) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override int GetColumnSpan( IMapping session )
+		{
 			/*
 			 * This is set at 2 in Hibernate to support the old depreciated
 			 * version of using type="object".  We are removing that support so
 			 * I don't know if we need to keep this in.
-			 */ 
+			 */
 			return 2;
 		}
 
-		public override string Name {
+		/// <summary></summary>
+		public override string Name
+		{
 			get { return "Object"; }
 		}
 
-		public override bool HasNiceEquals {
+		/// <summary></summary>
+		public override bool HasNiceEquals
+		{
 			get { return false; }
 		}
 
-		public override bool IsMutable {
+		/// <summary></summary>
+		public override bool IsMutable
+		{
 			get { return false; }
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner) {
-			throw new NotSupportedException("object is a multicolumn type");
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
+		{
+			throw new NotSupportedException( "object is a multicolumn type" );
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="names"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
+		{
 			//if ( names.length!=2 ) throw new HibernateException("object type mapping must specify exactly two columns");
-		
-			System.Type clazz = (System.Type) metaType.NullSafeGet(rs, names[0], session, owner);
-			object id = identifierType.NullSafeGet(rs, names[1], session, owner);
-			if (clazz==null || id==null) {
+
+			System.Type clazz = ( System.Type ) metaType.NullSafeGet( rs, names[ 0 ], session, owner );
+			object id = identifierType.NullSafeGet( rs, names[ 1 ], session, owner );
+			if( clazz == null || id == null )
+			{
 				return null;
 			}
-			else {
-				return session.Load(clazz, id);
+			else
+			{
+				return session.Load( clazz, id );
 			}
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="session"></param>
+		public override void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session )
+		{
 			object id;
 			System.Type clazz;
 
-			if (value == null) {
+			if( value == null )
+			{
 				id = null;
 				clazz = null;
-			} 
-			else {
-				id = session.GetEntityIdentifierIfNotUnsaved(value);
+			}
+			else
+			{
+				id = session.GetEntityIdentifierIfNotUnsaved( value );
 				clazz = value.GetType();
 			}
-			metaType.NullSafeSet(st, clazz, index, session);
-			identifierType.NullSafeSet(st, id, index+1, session); // metaType must be single-column type
+			metaType.NullSafeSet( st, clazz, index, session );
+			identifierType.NullSafeSet( st, id, index + 1, session ); // metaType must be single-column type
 		}
 
-		public override System.Type ReturnedClass {
-			get { return typeof(object); }
-		}
-
-		
-		public override SqlType[] SqlTypes(IMapping mapping) {
-			return ArrayHelper.Join(
-				metaType.SqlTypes(mapping),
-				identifierType.SqlTypes(mapping));
-
-		}
-
-		public override string ToXML(object value, ISessionFactoryImplementor factory) {
-			return NHibernate.Entity( value.GetType() ).ToXML(value, factory);
-		}
-
-		[Serializable]
-		public sealed class ObjectTypeCacheEntry 
+		/// <summary></summary>
+		public override System.Type ReturnedClass
 		{
+			get { return typeof( object ); }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		public override SqlType[ ] SqlTypes( IMapping mapping )
+		{
+			return ArrayHelper.Join(
+				metaType.SqlTypes( mapping ),
+				identifierType.SqlTypes( mapping ) );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public override string ToXML( object value, ISessionFactoryImplementor factory )
+		{
+			return NHibernate.Entity( value.GetType() ).ToXML( value, factory );
+		}
+
+		/// <summary></summary>
+		[Serializable]
+		public sealed class ObjectTypeCacheEntry
+		{
+			/// <summary></summary>
 			public System.Type clazz;
+			/// <summary></summary>
 			public object id;
-			public ObjectTypeCacheEntry(System.Type clazz, object id) 
+
+			/// <summary>
+			/// 
+			/// </summary>
+			/// <param name="clazz"></param>
+			/// <param name="id"></param>
+			public ObjectTypeCacheEntry( System.Type clazz, object id )
 			{
 				this.clazz = clazz;
 				this.id = id;
 			}
 		}
 
-		public override object Assemble(object cached, ISessionImplementor session, object owner) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cached"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object Assemble( object cached, ISessionImplementor session, object owner )
 		{
-			ObjectTypeCacheEntry e = (ObjectTypeCacheEntry) cached;
-			return (cached==null) ? null : session.Load(e.clazz, e.id);
+			ObjectTypeCacheEntry e = ( ObjectTypeCacheEntry ) cached;
+			return ( cached == null ) ? null : session.Load( e.clazz, e.id );
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override object Disassemble( object value, ISessionImplementor session )
 		{
-			return (value==null) ? null : new ObjectTypeCacheEntry( value.GetType(), session.GetEntityIdentifier(value) );
+			return ( value == null ) ? null : new ObjectTypeCacheEntry( value.GetType(), session.GetEntityIdentifier( value ) );
 		}
 
-		public override bool IsObjectType {
+		/// <summary></summary>
+		public override bool IsObjectType
+		{
 			get { return true; }
 		}
 
-		public Cascades.CascadeStyle Cascade(int i) { 
-			return Cascades.CascadeStyle.StyleNone; 
-		} 
-    
-		public OuterJoinLoaderType EnableJoinedFetch(int i) { 
-			return OuterJoinLoaderType.Lazy; 
-		} 
-    
-		private static readonly string[] PROPERTY_NAMES = new string[] { "class", "id" }; 
-    
-		public string[] PropertyNames {
-			get {
-				return ObjectType.PROPERTY_NAMES; 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public Cascades.CascadeStyle Cascade( int i )
+		{
+			return Cascades.CascadeStyle.StyleNone;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public OuterJoinLoaderType EnableJoinedFetch( int i )
+		{
+			return OuterJoinLoaderType.Lazy;
+		}
+
+		private static readonly string[ ] PROPERTY_NAMES = new string[ ] {"class", "id"};
+
+		/// <summary></summary>
+		public string[ ] PropertyNames
+		{
+			get { return ObjectType.PROPERTY_NAMES; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="i"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object GetPropertyValue( Object component, int i, ISessionImplementor session )
+		{
+			return ( i == 0 ) ?
+				component.GetType() :
+				Id( component, session );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object[ ] GetPropertyValues( Object component, ISessionImplementor session )
+		{
+			return new object[ ] {component.GetType(), Id( component, session )};
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		private object Id( object component, ISessionImplementor session )
+		{
+			try
+			{
+				return session.GetEntityIdentifierIfNotUnsaved( component );
+			}
+			catch( TransientObjectException )
+			{
+				return null;
 			}
 		}
 
-		public object GetPropertyValue(Object component, int i, ISessionImplementor session) {    
-                   return (i==0) ? 
-                           component.GetType() : 
-                           Id(component, session); 
-        } 
-    
-        public object[] GetPropertyValues(Object component, ISessionImplementor session) { 
-                return new object[] { component.GetType(), Id(component, session) }; 
-        } 
-    
-		private object Id(object component, ISessionImplementor session) { 
-				try { 
-					return session.GetEntityIdentifierIfNotUnsaved(component); 
-				} 
-				catch (TransientObjectException) { 
-					return null; 
-				} 
-		} 
-	
-		public IType[] Subtypes {
-			get {
-				return new IType[] { metaType, identifierType };
-			}
-		} 
-    
-        public void SetPropertyValues(object component, object[] values) { 
-                throw new NotSupportedException(); 
-        } 
-  
-		public override bool IsComponentType {
-			get {
-				return true;
-			}
+		/// <summary></summary>
+		public IType[ ] Subtypes
+		{
+			get { return new IType[ ] {metaType, identifierType}; }
 		}
 
-		public ForeignKeyType ForeignKeyType { 
-			get {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="values"></param>
+		public void SetPropertyValues( object component, object[ ] values )
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary></summary>
+		public override bool IsComponentType
+		{
+			get { return true; }
+		}
+
+		/// <summary></summary>
+		public ForeignKeyType ForeignKeyType
+		{
+			get
+			{
 				//return AssociationType.FOREIGN_KEY_TO_PARENT; //TODO: this is better but causes a transient object exception... 
-				return ForeignKeyType.ForeignKeyFromParent; 
+				return ForeignKeyType.ForeignKeyFromParent;
 			}
-		} 
+		}
 
-		public override bool IsAssociationType {
-			get {
-				return true;
-			}
+		/// <summary></summary>
+		public override bool IsAssociationType
+		{
+			get { return true; }
 		}
 	}
 }

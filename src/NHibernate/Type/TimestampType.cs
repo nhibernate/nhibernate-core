@@ -1,9 +1,8 @@
 using System;
 using System.Data;
-
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
 	/// <summary>
 	/// This is almost the exact same type as the DateTime except it can be used
@@ -28,23 +27,37 @@ namespace NHibernate.Type
 	/// </remarks>
 	public class TimestampType : ValueTypeType, IVersionType, ILiteralType
 	{
-		internal TimestampType() : base( new DateTimeSqlType() ) 
+		/// <summary></summary>
+		internal TimestampType() : base( new DateTimeSqlType() )
 		{
 		}
 
-		public override object Get(IDataReader rs, int index) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, int index )
 		{
-			return Convert.ToDateTime(rs[index]);
+			return Convert.ToDateTime( rs[ index ] );
 		}
 
-		public override object Get(IDataReader rs, string name) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, string name )
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get( rs, rs.GetOrdinal( name ) );
 		}
 
-		public override System.Type ReturnedClass 
+		/// <summary></summary>
+		public override System.Type ReturnedClass
 		{
-			get { return typeof(DateTime); }
+			get { return typeof( DateTime ); }
 		}
 
 		/// <summary>
@@ -56,60 +69,90 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// No null values will be written to the IDbCommand for this Type. 
 		/// </remarks>
-		public override void Set(IDbCommand st, object value, int index) 
+		public override void Set( IDbCommand st, object value, int index )
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
+			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
 
-			if( !(value is DateTime) ) 
+			if( !( value is DateTime ) )
 			{
 				parm.Value = DateTime.Now;
 			}
-			else 
+			else
 			{
 				parm.Value = value;
 			}
 		}
 
-		public override string Name 
+		/// <summary></summary>
+		public override string Name
 		{
 			get { return "Timestamp"; }
 		}
 
-		public override string ToXML(object val) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="val"></param>
+		/// <returns></returns>
+		public override string ToXML( object val )
 		{
-			return ((DateTime)val).ToShortTimeString();
+			return ( ( DateTime ) val ).ToShortTimeString();
 		}
 
-		public override bool Equals(object x, object y) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public override bool Equals( object x, object y )
 		{
-			if (x==y) return true;
-			if (x==null || y==null) return false;
+			if( x == y )
+			{
+				return true;
+			}
+			if( x == null || y == null )
+			{
+				return false;
+			}
 
-			long xTime = ((DateTime)x).Ticks;
-			long yTime = ((DateTime)y).Ticks;
+			long xTime = ( ( DateTime ) x ).Ticks;
+			long yTime = ( ( DateTime ) y ).Ticks;
 			return xTime == yTime; //TODO: Fixup
 		}
 
-		public override bool HasNiceEquals 
+		/// <summary></summary>
+		public override bool HasNiceEquals
 		{
 			get { return true; }
 		}
 
 		#region IVersionType Members
 
-		public object Next(object current) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="current"></param>
+		/// <returns></returns>
+		public object Next( object current )
 		{
 			return Seed;
 		}
-		
-		public object Seed 
+
+		/// <summary></summary>
+		public object Seed
 		{
 			get { return DateTime.Now; }
 		}
 
 		#endregion
 
-		public override string ObjectToSQLString(object value) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override string ObjectToSQLString( object value )
 		{
 			return "'" + value.ToString() + "'";
 		}

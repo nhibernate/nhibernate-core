@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 
@@ -11,29 +9,53 @@ namespace NHibernate.Type
 	/// </summary>
 	public class IdentifierBagType : PersistentCollectionType
 	{
-		public IdentifierBagType(string role) : base(role)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		public IdentifierBagType( string role ) : base( role )
 		{
 		}
 
-		public override PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="persister"></param>
+		/// <returns></returns>
+		public override PersistentCollection Instantiate( ISessionImplementor session, CollectionPersister persister )
 		{
-			return new IdentifierBag(session);
+			return new IdentifierBag( session );
 		}
 
-		public override System.Type ReturnedClass 
+		/// <summary></summary>
+		public override System.Type ReturnedClass
 		{
-			get { return typeof(ICollection); }
+			get { return typeof( ICollection ); }
 		}
 
-		public override PersistentCollection Wrap(ISessionImplementor session, object collection)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public override PersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return new IdentifierBag(session, (ICollection)collection);
+			return new IdentifierBag( session, ( ICollection ) collection );
 		}
 
-
-		public override PersistentCollection AssembleCachedCollection(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="persister"></param>
+		/// <param name="disassembled"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override PersistentCollection AssembleCachedCollection( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner )
 		{
-			return new IdentifierBag(session, persister, disassembled, owner);
+			return new IdentifierBag( session, persister, disassembled, owner );
 		}
 
 

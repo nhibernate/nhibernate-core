@@ -1,88 +1,117 @@
 using System;
 using System.Data;
 using System.Reflection;
-using System.Collections;
-
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Loader;
+using NHibernate.Property;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
-namespace NHibernate.Type {
-	
-	public class ComponentType : AbstractType, IAbstractComponentType {
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ComponentType));
+namespace NHibernate.Type
+{
+	/// <summary></summary>
+	public class ComponentType : AbstractType, IAbstractComponentType
+	{
+		private static readonly ILog log = LogManager.GetLogger( typeof( ComponentType ) );
 
 		private System.Type componentClass;
 		private ConstructorInfo contructor;
-		private IType[] types;
-		private Property.IGetter[] getters;
-		private Property.ISetter[] setters;
-		private string[] propertyNames;
+		private IType[ ] types;
+		private IGetter[ ] getters;
+		private ISetter[ ] setters;
+		private string[ ] propertyNames;
 		private int propertySpan;
-		private Cascades.CascadeStyle[] cascade;
-		private OuterJoinLoaderType[] joinedFetch;
-		private string parentProperty;
-		private Property.ISetter parentSetter;
+		private Cascades.CascadeStyle[ ] cascade;
+		private OuterJoinLoaderType[ ] joinedFetch;
+		private string parentProperty; // not used !?!
+		private ISetter parentSetter;
 		//TODO: This is new...
-		private Property.IGetter parentGetter;
+		private IGetter parentGetter; // not used !?!
 
-		public override SqlType[] SqlTypes(IMapping mapping) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		public override SqlType[ ] SqlTypes( IMapping mapping )
+		{
 			//not called at runtime so doesn't matter if its slow :)
-			SqlType[] sqlTypes = new SqlType[ GetColumnSpan(mapping) ];
-			int n=0;
-			for (int i=0;i<propertySpan; i++) {
-				SqlType[] subtypes = types[i].SqlTypes(mapping);
-				for (int j=0; j<subtypes.Length; j++) {
-					sqlTypes[n++] = subtypes[j];
+			SqlType[ ] sqlTypes = new SqlType[GetColumnSpan( mapping )];
+			int n = 0;
+			for( int i = 0; i < propertySpan; i++ )
+			{
+				SqlType[ ] subtypes = types[ i ].SqlTypes( mapping );
+				for( int j = 0; j < subtypes.Length; j++ )
+				{
+					sqlTypes[ n++ ] = subtypes[ j ];
 				}
 			}
 			return sqlTypes;
 		}
 
-		public override int GetColumnSpan(IMapping mapping) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		public override int GetColumnSpan( IMapping mapping )
+		{
 			int span = 0;
-			for (int i=0; i<propertySpan; i++) {
-				span += types[i].GetColumnSpan(mapping);
+			for( int i = 0; i < propertySpan; i++ )
+			{
+				span += types[ i ].GetColumnSpan( mapping );
 			}
 			return span;
 		}
 
-		public ComponentType(System.Type componentClass,
-			string[] properties,
-			Property.IGetter[] propertyGetters,
-			Property.ISetter[] propertySetters,
-			bool foundCustomAcessor,
-			IType[] types,
-			OuterJoinLoaderType[] joinedFetch,
-			Cascades.CascadeStyle[] cascade,
-			string parentProperty,
-			bool embedded ) {
-			
-			
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="componentClass"></param>
+		/// <param name="properties"></param>
+		/// <param name="propertyGetters"></param>
+		/// <param name="propertySetters"></param>
+		/// <param name="foundCustomAcessor"></param>
+		/// <param name="types"></param>
+		/// <param name="joinedFetch"></param>
+		/// <param name="cascade"></param>
+		/// <param name="parentProperty"></param>
+		/// <param name="embedded"></param>
+		public ComponentType( System.Type componentClass,
+		                      string[ ] properties,
+		                      IGetter[ ] propertyGetters,
+		                      ISetter[ ] propertySetters,
+		                      bool foundCustomAcessor, // not used !?!
+		                      IType[ ] types,
+		                      OuterJoinLoaderType[ ] joinedFetch,
+		                      Cascades.CascadeStyle[ ] cascade,
+		                      string parentProperty,
+		                      bool embedded ) // not used !?!
+		{
 			this.componentClass = componentClass;
 			this.types = types;
 			propertySpan = properties.Length;
 			getters = propertyGetters;
 			setters = propertySetters;
-			string[] getterNames = new string[propertySpan];
-			string[] setterNames = new string[propertySpan];
-			System.Type[] propTypes = new System.Type[propertySpan];
-			for (int i=0; i<propertySpan; i++) 
+			string[ ] getterNames = new string[propertySpan];
+			string[ ] setterNames = new string[propertySpan];
+			System.Type[ ] propTypes = new System.Type[propertySpan];
+			for( int i = 0; i < propertySpan; i++ )
 			{
-				getterNames[i] = getters[i].PropertyName;
-				setterNames[i] = setters[i].PropertyName;
-				propTypes[i] = getters[i].ReturnType;
+				getterNames[ i ] = getters[ i ].PropertyName;
+				setterNames[ i ] = setters[ i ].PropertyName;
+				propTypes[ i ] = getters[ i ].ReturnType;
 			}
 
-			if(parentProperty==null) 
+			if( parentProperty == null )
 			{
 				parentSetter = null;
 				parentGetter = null;
 			}
-			else 
+			else
 			{
-				Property.IPropertyAccessor pa = Property.PropertyAccessorFactory.GetPropertyAccessor(null);
+				IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor( null );
 				parentSetter = pa.GetSetter( componentClass, parentProperty );
 				parentGetter = pa.GetGetter( componentClass, parentProperty );
 			}
@@ -90,203 +119,403 @@ namespace NHibernate.Type {
 			this.propertyNames = properties;
 			this.cascade = cascade;
 			this.joinedFetch = joinedFetch;
-			contructor = ReflectHelper.GetDefaultConstructor(componentClass);
+			contructor = ReflectHelper.GetDefaultConstructor( componentClass );
 
 		}
 
-		public override bool IsPersistentCollectionType {
+		/// <summary></summary>
+		public override bool IsPersistentCollectionType
+		{
 			get { return false; }
 		}
-		public override bool IsComponentType {
+
+		/// <summary></summary>
+		public override bool IsComponentType
+		{
 			get { return true; }
 		}
-		public override bool IsEntityType {
+
+		/// <summary></summary>
+		public override bool IsEntityType
+		{
 			get { return false; }
 		}
 
-		public override System.Type ReturnedClass {
+		/// <summary></summary>
+		public override System.Type ReturnedClass
+		{
 			get { return componentClass; }
 		}
 
-		public override bool Equals(object x, object y) {
-			if (x==y) return true;
-			if (x==null || y==null) return false;
-			for (int i=0; i<propertySpan; i++) {
-				if ( !types[i].Equals( getters[i].Get(x) , getters[i].Get(y) ) ) return false;
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public override bool Equals( object x, object y )
+		{
+			if( x == y )
+			{
+				return true;
+			}
+			if( x == null || y == null )
+			{
+				return false;
+			}
+			for( int i = 0; i < propertySpan; i++ )
+			{
+				if( !types[ i ].Equals( getters[ i ].Get( x ), getters[ i ].Get( y ) ) )
+				{
+					return false;
+				}
 			}
 			return true;
 		}
 
-		public override bool IsDirty(object x, object y, ISessionImplementor session) {
-			if (x==y) return false;
-			if (x==null || y==null) return true;
-			for (int i=0; i<getters.Length; i++) {
-				if (types[i].IsDirty( getters[i].Get(x), getters[i].Get(y), session ) ) return true;
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override bool IsDirty( object x, object y, ISessionImplementor session )
+		{
+			if( x == y )
+			{
+				return false;
+			}
+			if( x == null || y == null )
+			{
+				return true;
+			}
+			for( int i = 0; i < getters.Length; i++ )
+			{
+				if( types[ i ].IsDirty( getters[ i ].Get( x ), getters[ i ].Get( y ), session ) )
+				{
+					return true;
+				}
 			}
 			return false;
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="names"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
+		{
 			int begin = 0;
-			bool notNull=false;
-			object[] values = new object[propertySpan];
-			for (int i=0; i<propertySpan; i++) {
-				int length = types[i].GetColumnSpan( session.Factory );
-				string[] range = ArrayHelper.Slice(names, begin, length);
-				object val = types[i].NullSafeGet(rs, range, session, owner);
-				if (val!=null) notNull=true;
-				values[i] = val;
-				begin+=length;
+			bool notNull = false;
+			object[ ] values = new object[propertySpan];
+			for( int i = 0; i < propertySpan; i++ )
+			{
+				int length = types[ i ].GetColumnSpan( session.Factory );
+				string[ ] range = ArrayHelper.Slice( names, begin, length );
+				object val = types[ i ].NullSafeGet( rs, range, session, owner );
+				if( val != null )
+				{
+					notNull = true;
+				}
+				values[ i ] = val;
+				begin += length;
 			}
 
-			if (notNull) {
-				object result = Instantiate(owner, session);
-				for (int i=0; i<propertySpan; i++) {
-					setters[i].Set(result, values[i]);
+			if( notNull )
+			{
+				object result = Instantiate( owner, session );
+				for( int i = 0; i < propertySpan; i++ )
+				{
+					setters[ i ].Set( result, values[ i ] );
 				}
 				return result;
-			} else {
+			}
+			else
+			{
 				return null;
 			}
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int begin, ISessionImplementor session) {
-			object[] subvalues = NullSafeGetValues(value);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="begin"></param>
+		/// <param name="session"></param>
+		public override void NullSafeSet( IDbCommand st, object value, int begin, ISessionImplementor session )
+		{
+			object[ ] subvalues = NullSafeGetValues( value );
 
-			for (int i=0; i<propertySpan; i++) {
-				types[i].NullSafeSet(st, subvalues[i], begin, session);
-				begin += types[i].GetColumnSpan( session.Factory );
+			for( int i = 0; i < propertySpan; i++ )
+			{
+				types[ i ].NullSafeSet( st, subvalues[ i ], begin, session );
+				begin += types[ i ].GetColumnSpan( session.Factory );
 			}
 		}
 
-		private object[] NullSafeGetValues(object value) {
-			if (value==null) {
+		private object[ ] NullSafeGetValues( object value )
+		{
+			if( value == null )
+			{
 				return new object[propertySpan];
-			} else {
-				return GetPropertyValues(value);
+			}
+			else
+			{
+				return GetPropertyValues( value );
 			}
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner) {
-			return NullSafeGet(rs, new string[] {name}, session, owner);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
+		{
+			return NullSafeGet( rs, new string[ ] {name}, session, owner );
 		}
 
-		public object GetPropertyValue(object component, int i, ISessionImplementor session) {
-			return GetPropertyValue(component, i);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="i"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object GetPropertyValue( object component, int i, ISessionImplementor session )
+		{
+			return GetPropertyValue( component, i );
 		}
 
-		public object GetPropertyValue(object component, int i) {
-			return getters[i].Get(component);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public object GetPropertyValue( object component, int i )
+		{
+			return getters[ i ].Get( component );
 		}
 
-		public object[] GetPropertyValues(object component, ISessionImplementor session) {
-			return GetPropertyValues(component);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object[ ] GetPropertyValues( object component, ISessionImplementor session )
+		{
+			return GetPropertyValues( component );
 		}
 
-		public object[] GetPropertyValues(object component) {
-			object[] values = new object[propertySpan];
-			for (int i=0; i<propertySpan; i++) {
-				values[i] = GetPropertyValue(component, i);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <returns></returns>
+		public object[ ] GetPropertyValues( object component )
+		{
+			object[ ] values = new object[propertySpan];
+			for( int i = 0; i < propertySpan; i++ )
+			{
+				values[ i ] = GetPropertyValue( component, i );
 			}
 			return values;
 		}
 
-		public void SetPropertyValues(object component, object[] values) {
-			for (int i=0; i<propertySpan; i++) {
-				setters[i].Set( component, values[i] );
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="values"></param>
+		public void SetPropertyValues( object component, object[ ] values )
+		{
+			for( int i = 0; i < propertySpan; i++ )
+			{
+				setters[ i ].Set( component, values[ i ] );
 			}
 		}
 
-		public IType[] Subtypes {
+		/// <summary></summary>
+		public IType[ ] Subtypes
+		{
 			get { return types; }
 		}
 
-		public override string Name {
+		/// <summary></summary>
+		public override string Name
+		{
 			get { return componentClass.Name; }
 		}
 
-		public override string ToXML(object value, ISessionFactoryImplementor factory) {
-			return (value==null) ? null : value.ToString();
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public override string ToXML( object value, ISessionFactoryImplementor factory )
+		{
+			return ( value == null ) ? null : value.ToString();
 		}
 
-		public string[] PropertyNames {
+		/// <summary></summary>
+		public string[ ] PropertyNames
+		{
 			get { return propertyNames; }
 		}
 
-		public override object DeepCopy(object component) {
-			if (component==null) return null;
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <returns></returns>
+		public override object DeepCopy( object component )
+		{
+			if( component == null )
+			{
+				return null;
+			}
 
-			object[] values = GetPropertyValues(component);
-			for (int i=0; i<propertySpan; i++) {
-				values[i] = types[i].DeepCopy(values[i]);
+			object[ ] values = GetPropertyValues( component );
+			for( int i = 0; i < propertySpan; i++ )
+			{
+				values[ i ] = types[ i ].DeepCopy( values[ i ] );
 			}
 
 			object result = Instantiate();
-			SetPropertyValues(result, values);
+			SetPropertyValues( result, values );
 			return result;
 		}
 
-		public object Instantiate() {
-			try {
-				return contructor.Invoke(null);
-			} catch (Exception e) {
-				throw new InstantiationException("Could not instantiate component: ", componentClass, e);
+		/// <summary></summary>
+		public object Instantiate()
+		{
+			try
+			{
+				return contructor.Invoke( null );
+			}
+			catch( Exception e )
+			{
+				throw new InstantiationException( "Could not instantiate component: ", componentClass, e );
 			}
 		}
 
-		public object Instantiate(object parent, ISessionImplementor session) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="parent"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object Instantiate( object parent, ISessionImplementor session )
+		{
 			object result = Instantiate();
-			try {
-				if (parentSetter!=null && parent!=null) parentSetter.Set(result, session.ProxyFor(parent) );
+			try
+			{
+				if( parentSetter != null && parent != null )
+				{
+					parentSetter.Set( result, session.ProxyFor( parent ) );
+				}
 				return result;
-			} catch(Exception e) {
-				throw new InstantiationException("Could not set component parent for: ",  componentClass, e);
+			}
+			catch( Exception e )
+			{
+				throw new InstantiationException( "Could not set component parent for: ", componentClass, e );
 			}
 		}
 
-		public Cascades.CascadeStyle Cascade(int i) {
-			return cascade[i];
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public Cascades.CascadeStyle Cascade( int i )
+		{
+			return cascade[ i ];
 		}
 
-		public override bool IsMutable {
+		/// <summary></summary>
+		public override bool IsMutable
+		{
 			get { return true; }
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session) {
-			if (value==null) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override object Disassemble( object value, ISessionImplementor session )
+		{
+			if( value == null )
+			{
 				return null;
-			} else {
-				object[] values = GetPropertyValues(value);
-				for (int i=0; i<types.Length; i++) {
-					values[i] = types[i].Disassemble(values[i], session);
+			}
+			else
+			{
+				object[ ] values = GetPropertyValues( value );
+				for( int i = 0; i < types.Length; i++ )
+				{
+					values[ i ] = types[ i ].Disassemble( values[ i ], session );
 				}
 				return values;
 			}
 		}
 
-		public override object Assemble(object obj, ISessionImplementor session, object owner) {
-			if (obj==null) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object Assemble( object obj, ISessionImplementor session, object owner )
+		{
+			if( obj == null )
+			{
 				return null;
-			} else {
-				object[] values = (object[]) obj;
-				object[] assembled = new object[values.Length];
-				for (int i=0; i<types.Length; i++) {
-					assembled[i] = types[i].Assemble( values[i], session, owner);
+			}
+			else
+			{
+				object[ ] values = ( object[ ] ) obj;
+				object[ ] assembled = new object[values.Length];
+				for( int i = 0; i < types.Length; i++ )
+				{
+					assembled[ i ] = types[ i ].Assemble( values[ i ], session, owner );
 				}
 				object result = Instantiate();
-				SetPropertyValues(result, assembled);
+				SetPropertyValues( result, assembled );
 				return result;
 			}
 		}
 
-		public override bool HasNiceEquals {
+		/// <summary></summary>
+		public override bool HasNiceEquals
+		{
 			get { return false; }
 		}
 
-		public OuterJoinLoaderType EnableJoinedFetch(int i) {
-			return joinedFetch[i];
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public OuterJoinLoaderType EnableJoinedFetch( int i )
+		{
+			return joinedFetch[ i ];
 		}
-								
+
 
 	}
 }

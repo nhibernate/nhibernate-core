@@ -1,19 +1,16 @@
-using System;
-
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
-
 	/// <summary>
 	/// An <see cref="IType"/> that may be used to version data.
 	/// </summary>
-	public interface IVersionType : IType 
+	public interface IVersionType : IType
 	{
 		/// <summary>
 		/// When implemented by a class, increments the version.
 		/// </summary>
 		/// <param name="current">The current version</param>
 		/// <returns>an instance of the <see cref="IType"/> that has been incremented.</returns>
-		object Next(object current);
+		object Next( object current );
 
 		/// <summary>
 		/// When implemented by a class, gets an initial version.
@@ -21,6 +18,6 @@ namespace NHibernate.Type
 		/// <value>Returns an instance of the <see cref="IType"/></value>
 		object Seed { get; }
 
-		
+
 	}
 }

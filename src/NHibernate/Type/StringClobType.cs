@@ -1,5 +1,3 @@
-using System;
-
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -15,17 +13,23 @@ namespace NHibernate.Type
 	/// </remarks>
 	public class StringClobType : StringType
 	{
-		internal StringClobType() : base( new StringClobSqlType() ) 
+		/// <summary></summary>
+		internal StringClobType() : base( new StringClobSqlType() )
 		{
 		}
 
-		internal StringClobType(StringSqlType sqlType) : base(sqlType) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlType"></param>
+		internal StringClobType( StringSqlType sqlType ) : base( sqlType )
 		{
 		}
 
+		/// <summary></summary>
 		public override string Name
 		{
-			get	{return "StringClob"; }
+			get { return "StringClob"; }
 		}
 	}
 }

@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Type
 {
 	/// <summary>
@@ -7,6 +5,7 @@ namespace NHibernate.Type
 	/// </summary>
 	public class ClobType
 	{
+		/// <summary></summary>
 		public ClobType()
 		{
 			//

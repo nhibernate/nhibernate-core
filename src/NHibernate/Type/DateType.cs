@@ -2,80 +2,133 @@ using System;
 using System.Data;
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
-	
 	/// <summary>
 	/// Maps the Year, Month, and Day of a <see cref="System.DateTime"/> Property to a 
 	/// <see cref="DbType.Date"/> column
 	/// </summary>
-	public class DateType : ValueTypeType, IIdentifierType, ILiteralType 
+	public class DateType : ValueTypeType, IIdentifierType, ILiteralType
 	{
-
-		internal DateType() : base( new DateSqlType() ) 
+		/// <summary></summary>
+		internal DateType() : base( new DateSqlType() )
 		{
 		}
 
-	    public override object Get(IDataReader rs, int index) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, int index )
 		{
-			DateTime dbValue = Convert.ToDateTime(rs[index]);
-			return new DateTime(dbValue.Year, dbValue.Month, dbValue.Day);
+			DateTime dbValue = Convert.ToDateTime( rs[ index ] );
+			return new DateTime( dbValue.Year, dbValue.Month, dbValue.Day );
 		}
 
-		public override object Get(IDataReader rs, string name) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, string name )
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get( rs, rs.GetOrdinal( name ) );
 		}
 
-		public override System.Type ReturnedClass 
+		/// <summary></summary>
+		public override System.Type ReturnedClass
 		{
-			get { return typeof(DateTime); }
+			get { return typeof( DateTime ); }
 		}
 
-		public override void Set(IDbCommand st, object value, int index) {
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			if((DateTime)value<new DateTime(1753,1,1))
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		public override void Set( IDbCommand st, object value, int index )
+		{
+			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
+			if( ( DateTime ) value < new DateTime( 1753, 1, 1 ) )
 			{
 				parm.Value = DBNull.Value;
 			}
-			else 
+			else
 			{
-
 				parm.DbType = DbType.Date;
 				parm.Value = value;
 			}
 		}
 
-		public override bool Equals(object x, object y) {
-			if (x==y) return true;
-			if (x==null || y==null) return false;
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public override bool Equals( object x, object y )
+		{
+			if( x == y )
+			{
+				return true;
+			}
+			if( x == null || y == null )
+			{
+				return false;
+			}
 
-			DateTime date1 = (DateTime) x;
-			DateTime date2 = (DateTime) y;
+			DateTime date1 = ( DateTime ) x;
+			DateTime date2 = ( DateTime ) y;
 
 			return date1.Day == date2.Day
-				&& date1.Month == date2.Month 
+				&& date1.Month == date2.Month
 				&& date1.Year == date2.Year;
 		}
 
-		public override string Name {
+		/// <summary></summary>
+		public override string Name
+		{
 			get { return "Date"; }
 		}
 
-		public override string ToXML(object val) {
-			return ((DateTime)val).ToShortDateString();
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="val"></param>
+		/// <returns></returns>
+		public override string ToXML( object val )
+		{
+			return ( ( DateTime ) val ).ToShortDateString();
 		}
 
-		public override bool HasNiceEquals {
+		/// <summary></summary>
+		public override bool HasNiceEquals
+		{
 			get { return true; }
 		}
 
-		public object StringToObject(string xml) {
-			return DateTime.Parse(xml);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public object StringToObject( string xml )
+		{
+			return DateTime.Parse( xml );
 		}
 
-		public override string ObjectToSQLString(object value) {
-			return "'" + ((DateTime)value).ToShortDateString() + "'";
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override string ObjectToSQLString( object value )
+		{
+			return "'" + ( ( DateTime ) value ).ToShortDateString() + "'";
 		}
 	}
 }

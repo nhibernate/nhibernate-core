@@ -1,107 +1,177 @@
-using System;
 using System.Collections;
 using System.Data;
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
 	/// <summary>
 	/// PersistentCollectionType.
 	/// </summary>
-	public abstract class PersistentCollectionType : AbstractType, IAssociationType	
+	public abstract class PersistentCollectionType : AbstractType, IAssociationType
 	{
-		
 		private readonly string role;
-		private static readonly SqlType[] NoSqlTypes = {};
+		private static readonly SqlType[ ] NoSqlTypes = {};
 
-		protected PersistentCollectionType(string role) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		protected PersistentCollectionType( string role )
 		{
 			this.role = role;
 		}
 
-		public virtual string Role 
+		/// <summary></summary>
+		public virtual string Role
 		{
 			get { return role; }
 		}
 
-		public override bool IsPersistentCollectionType 
+		/// <summary></summary>
+		public override bool IsPersistentCollectionType
 		{
 			get { return true; }
 		}
 
-		public override sealed bool Equals(object x, object y) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public override sealed bool Equals( object x, object y )
 		{
-            // proxies? - comment in h2.0.3 also
-			return x==y;
+			// proxies? - comment in h2.0.3 also
+			return x == y;
 		}
 
-		public abstract PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="persister"></param>
+		/// <returns></returns>
+		public abstract PersistentCollection Instantiate( ISessionImplementor session, CollectionPersister persister );
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
 		{
-			throw new AssertionFailure("bug in PersistentCollectionType");
-		}
-	
-		public override object NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner) 
-		{
-			return ResolveIdentifier( Hydrate(rs, name, session, owner), session, owner );
+			throw new AssertionFailure( "bug in PersistentCollectionType" );
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object NullSafeGet( IDataReader rs, string[ ] name, ISessionImplementor session, object owner )
+		{
+			return ResolveIdentifier( Hydrate( rs, name, session, owner ), session, owner );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cmd"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="session"></param>
+		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
 		{
 		}
 
-		public virtual object GetCollection(object id, object owner, ISessionImplementor session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="owner"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public virtual object GetCollection( object id, object owner, ISessionImplementor session )
 		{
 			// added the owner
 			PersistentCollection collection = session.GetLoadingCollection( role, id );
-			if(collection!=null) return collection.GetCachedValue(); //TODO: yuck... call another method - H2.0.3comment
-
-			CollectionPersister persister = session.Factory.GetCollectionPersister(role);
-			collection = persister.GetCachedCollection(id, owner, session);
-			if(collection!=null) 
+			if( collection != null )
 			{
-				session.AddInitializedCollection(collection, persister, id);
+				return collection.GetCachedValue();
+			} //TODO: yuck... call another method - H2.0.3comment
+
+			CollectionPersister persister = session.Factory.GetCollectionPersister( role );
+			collection = persister.GetCachedCollection( id, owner, session );
+			if( collection != null )
+			{
+				session.AddInitializedCollection( collection, persister, id );
 				return collection.GetCachedValue();
 			}
-			else 
+			else
 			{
-				collection = Instantiate(session, persister);
-				session.AddUninitializedCollection(collection, persister, id);
-				return collection.GetInitialValue(persister.IsLazy);
+				collection = Instantiate( session, persister );
+				session.AddUninitializedCollection( collection, persister, id );
+				return collection.GetInitialValue( persister.IsLazy );
 			}
 
 		}
 
-		public override SqlType[] SqlTypes(IMapping session) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override SqlType[ ] SqlTypes( IMapping session )
 		{
 			return NoSqlTypes;
 		}
-	
-		public override int GetColumnSpan(IMapping session) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override int GetColumnSpan( IMapping session )
 		{
 			return 0;
-		}	
-	
-		public override string ToXML(object value, ISessionFactoryImplementor factory) 
-		{
-			return (value==null) ? null : value.ToString();
 		}
-	
-		public override object DeepCopy(object value) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public override string ToXML( object value, ISessionFactoryImplementor factory )
+		{
+			return ( value == null ) ? null : value.ToString();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override object DeepCopy( object value )
 		{
 			return value;
 		}
-	
-		public override string Name 
+
+		/// <summary></summary>
+		public override string Name
 		{
 			get { return ReturnedClass.Name; }
 		}
 
-		
+
 		/// <summary>
 		/// Returns a reference to the elements in the collection.  
 		/// </summary>
@@ -112,100 +182,156 @@ namespace NHibernate.Type
 		/// such as Maps and Sets should override this so that the Elements are returned - not a
 		/// DictionaryEntry.
 		/// </remarks>
-		public virtual ICollection GetElementsCollection(object collection) 
+		public virtual ICollection GetElementsCollection( object collection )
 		{
-			return ( (ICollection)collection );
+			return ( ( ICollection ) collection );
 		}
-	
-		public override bool IsMutable 
+
+		/// <summary></summary>
+		public override bool IsMutable
 		{
 			get { return false; }
 		}
-	
-		public override object Disassemble(object value, ISessionImplementor session) {
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override object Disassemble( object value, ISessionImplementor session )
+		{
 			return null;
 			// commented out in h2.0.3 also
-//			if (value==null) {
-//				return null;
-//			}
-//			else {
-//				object id = session.GetLoadedCollectionKey( (PersistentCollection) value );
-//				if (id==null)
-//					throw new AssertionFailure("Null collection id");
-//				return id;
-//			}
+			//			if (value==null) {
+			//				return null;
+			//			}
+			//			else {
+			//				object id = session.GetLoadedCollectionKey( (PersistentCollection) value );
+			//				if (id==null)
+			//					throw new AssertionFailure("Null collection id");
+			//				return id;
+			//			}
 		}
 
-		public override object Assemble(object cached, ISessionImplementor session, object owner) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cached"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object Assemble( object cached, ISessionImplementor session, object owner )
 		{
-			object id = session.GetEntityIdentifier(owner);
-			if(id==null) 
+			object id = session.GetEntityIdentifier( owner );
+			if( id == null )
 			{
-				throw new AssertionFailure("bug re-assembling collection reference");
+				throw new AssertionFailure( "bug re-assembling collection reference" );
 			}
-			return ResolveIdentifier(id, session, owner);
+			return ResolveIdentifier( id, session, owner );
 		}
-	
-		public override bool IsDirty(object old, object current, ISessionImplementor session) 
-		{		
-			System.Type ownerClass = session.Factory.GetCollectionPersister(role).OwnerClass;
-		
-			if ( !session.Factory.GetPersister(ownerClass).IsVersioned ) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override bool IsDirty( object old, object current, ISessionImplementor session )
+		{
+			System.Type ownerClass = session.Factory.GetCollectionPersister( role ).OwnerClass;
+
+			if( !session.Factory.GetPersister( ownerClass ).IsVersioned )
 			{
 				// collections don't dirty an unversioned parent entity
 				return false;
 			}
-			else 
+			else
 			{
-				return base.IsDirty(old, current, session);
+				return base.IsDirty( old, current, session );
 			}
 		}
 
-		public override bool HasNiceEquals 
+		/// <summary></summary>
+		public override bool HasNiceEquals
 		{
 			get { return false; }
 		}
-	
-		public abstract PersistentCollection Wrap(ISessionImplementor session, object collection);
-	
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public abstract PersistentCollection Wrap( ISessionImplementor session, object collection );
+
 		/**
 		 * Note: return true because this type is castable to IAssociationType. Not because
 		 * all collections are associations.
 		 */
-		public override bool IsAssociationType 
+
+		/// <summary></summary>
+		public override bool IsAssociationType
 		{
 			get { return true; }
 		}
-	
-		public virtual ForeignKeyType ForeignKeyType 
+
+		/// <summary></summary>
+		public virtual ForeignKeyType ForeignKeyType
 		{
-			get { return ForeignKeyType.ForeignKeyToParent;	}
+			get { return ForeignKeyType.ForeignKeyToParent; }
 		}
-	
-		public override object Hydrate(IDataReader rs, string[] name, ISessionImplementor session, object owner) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object Hydrate( IDataReader rs, string[ ] name, ISessionImplementor session, object owner )
 		{
-			return session.GetEntityIdentifier(owner);
+			return session.GetEntityIdentifier( owner );
 		}
-	
-		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object ResolveIdentifier( object value, ISessionImplementor session, object owner )
 		{
-			if (value==null) 
+			if( value == null )
 			{
 				return null;
 			}
-			else 
+			else
 			{
 				// h2.1 changed this to use sesion.GetCollection( role, value, owner ) and 
 				// move the impl of GetCollection from this class to the ISession.
-				return GetCollection( value, owner, session);
+				return GetCollection( value, owner, session );
 			}
 		}
-	
-		public virtual bool IsArrayType 
+
+		/// <summary></summary>
+		public virtual bool IsArrayType
 		{
 			get { return false; }
 		}
-	
-		public abstract PersistentCollection AssembleCachedCollection(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="persister"></param>
+		/// <param name="disassembled"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public abstract PersistentCollection AssembleCachedCollection( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner );
 	}
 }

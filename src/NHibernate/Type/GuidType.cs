@@ -1,55 +1,84 @@
 using System;
 using System.Data;
-
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
 	/// <summary>
 	/// Maps a <see cref="System.Guid"/> Property 
 	/// to a <see cref="DbType.Guid"/> column.
 	/// </summary>
-	public class GuidType : ValueTypeType, IDiscriminatorType 
+	public class GuidType : ValueTypeType, IDiscriminatorType
 	{
-	
-		internal GuidType() : base( new GuidSqlType() ) 
+		/// <summary></summary>
+		internal GuidType() : base( new GuidSqlType() )
 		{
 		}
 
-		public override object Get(IDataReader rs, int index) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, int index )
 		{
-			return new Guid( Convert.ToString(rs[index]) );
+			return new Guid( Convert.ToString( rs[ index ] ) );
 		}
 
-		public override object Get(IDataReader rs, string name) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, string name )
 		{
-			return new Guid( Convert.ToString(rs[name]) );
+			return new Guid( Convert.ToString( rs[ name ] ) );
 		}
 
-		public override System.Type ReturnedClass 
+		/// <summary></summary>
+		public override System.Type ReturnedClass
 		{
-			get { return typeof(System.Guid); }
+			get { return typeof( Guid ); }
 		}
-		
-		public override void Set(IDbCommand cmd, object value, int index) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cmd"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		public override void Set( IDbCommand cmd, object value, int index )
 		{
-			IDataParameter parm = cmd.Parameters[index] as IDataParameter;
+			IDataParameter parm = cmd.Parameters[ index ] as IDataParameter;
 			parm.Value = value;
 		}
 
-		public override string Name 
+		/// <summary></summary>
+		public override string Name
 		{
 			get { return "Guid"; }
 		}
 
-		public override string ObjectToSQLString(object value) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override string ObjectToSQLString( object value )
 		{
 			return "'" + value.ToString() + "'";
 		}
 
-		public object StringToObject(string xml) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public object StringToObject( string xml )
 		{
-			return new Guid(xml);
+			return new Guid( xml );
 		}
 
 	}

@@ -1,20 +1,19 @@
 using System;
-
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
 	/// <summary>
 	/// Superclass of nullable immutable types.
 	/// </summary>
-	public abstract class ImmutableType : NullableType 
+	public abstract class ImmutableType : NullableType
 	{
 		/// <summary>
 		/// Initialize a new instance of the ImmutableType class using a 
 		/// <see cref="SqlType"/>. 
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
-		protected ImmutableType(SqlType sqlType) : base(sqlType) 
+		protected ImmutableType( SqlType sqlType ) : base( sqlType )
 		{
 		}
 
@@ -29,7 +28,7 @@ namespace NHibernate.Type
 		/// made to it would require the <see cref="ValueType"/> to be unboxed and
 		/// then reboxed.
 		/// </remarks>
-		public override sealed object DeepCopyNotNull(object val) 
+		public override sealed object DeepCopyNotNull( object val )
 		{
 			return val;
 		}
@@ -42,7 +41,7 @@ namespace NHibernate.Type
 		/// This has been "sealed" because any subclasses are expected to be immutable.  If
 		/// the type is mutable then they should inherit from <see cref="MutableType"/>.
 		/// </remarks>
-		public override sealed bool IsMutable 
+		public override sealed bool IsMutable
 		{
 			get { return false; }
 		}
@@ -60,10 +59,10 @@ namespace NHibernate.Type
 		/// a well-behaived <c>Equals()</c>.  If the <see cref="ImmutableType"/> does 
 		/// not implement the <c>Equals()</c> then set this to <c>false</c>.
 		/// </remarks>
-		public override bool HasNiceEquals 
+		public override bool HasNiceEquals
 		{
 			get { return true; }
 		}
-		
+
 	}
 }

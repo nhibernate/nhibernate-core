@@ -9,55 +9,113 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.String"/> Property 
 	/// to a <see cref="DbType.AnsiString"/> column.
 	/// </summary>
-	public class AnsiStringType : ImmutableType, IDiscriminatorType 
+	public class AnsiStringType : ImmutableType, IDiscriminatorType
 	{
-		internal AnsiStringType() : base( new AnsiStringSqlType() ) 
+		/// <summary></summary>
+		internal AnsiStringType() : base( new AnsiStringSqlType() )
 		{
-		}
-		internal AnsiStringType(AnsiStringSqlType sqlType) : base(sqlType) {}
-
-		public override object Get(IDataReader rs, int index) 
-		{
-			return Convert.ToString(rs[index]);
 		}
 
-		public override object Get(IDataReader rs, string name) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlType"></param>
+		internal AnsiStringType( AnsiStringSqlType sqlType ) : base( sqlType )
 		{
-			return Convert.ToString(rs[name]);
 		}
-		public override System.Type ReturnedClass 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, int index )
 		{
-			get { return typeof(string); }
+			return Convert.ToString( rs[ index ] );
 		}
-		public override void Set(IDbCommand st, object value, int index) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, string name )
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
+			return Convert.ToString( rs[ name ] );
+		}
+
+		/// <summary></summary>
+		public override System.Type ReturnedClass
+		{
+			get { return typeof( string ); }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		public override void Set( IDbCommand st, object value, int index )
+		{
+			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
 			parm.Value = value;
 		}
 
-		public override string Name 
+		/// <summary></summary>
+		public override string Name
 		{
 			get { return "AnsiString"; }
 		}
-		public string ObjectToSQLString(object value) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public string ObjectToSQLString( object value )
 		{
-			return "'" + (string) value + "'";
+			return "'" + ( string ) value + "'";
 		}
-		public object StringToObject(string xml) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public object StringToObject( string xml )
 		{
 			return xml;
 		}
 
-		public override bool Equals(object x, object y) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public override bool Equals( object x, object y )
 		{
-			return ObjectUtils.Equals(x, y);
+			return ObjectUtils.Equals( x, y );
 		}
 
-		public override string ToXML(object value) 
+		/// <summary></summary>
+		public override int GetHashCode()
 		{
-			return (string) value;
+			return base.GetHashCode();
+		}
+
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override string ToXML( object value )
+		{
+			return ( string ) value;
 		}
 	}
 }
-
-

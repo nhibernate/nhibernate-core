@@ -1,17 +1,12 @@
 using System;
 using System.Collections;
 using System.Globalization;
-
-using NHibernate;
-using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
-using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
-
 	/// <summary>
 	/// Used internally to obtain instances of IType.
 	/// </summary>
@@ -22,18 +17,17 @@ namespace NHibernate.Type
 	/// correct IType.  Instead use TypeFactory.GetString(300) and keep a local variable that holds
 	/// a reference to the IType.
 	/// </remarks>
-	public class TypeFactory 
+	public class TypeFactory
 	{
-
-		private enum TypeClassification 
+		private enum TypeClassification
 		{
 			Plain,
 			Length,
 			PrecisionScale
 		}
 
-		private static char[] precisionScaleSplit = new char[] {'(', ')', ','};
-		private static char[] lengthSplit = new char[]{'(', ')'};
+		private static char[ ] precisionScaleSplit = new char[ ] {'(', ')', ','};
+		private static char[ ] lengthSplit = new char[ ] {'(', ')'};
 
 		/*
 		 * Maps the string representation of the type to the IType.  The string 
@@ -53,66 +47,68 @@ namespace NHibernate.Type
 		 * "NHibernate.Type.StringType" -> instance of StringType with default l
 		 * "String(l)" -> instance of StringType with specified l
 		 * "System.String(l)" -> instance of StringType with specified l
-		 */ 
-		private static Hashtable typeByTypeOfName = Hashtable.Synchronized(new Hashtable(79));
-		
-		private static Hashtable getTypeDelegatesWithLength = Hashtable.Synchronized(new Hashtable(7));
-		private static Hashtable getTypeDelegatesWithPrecision = Hashtable.Synchronized(new Hashtable(3));
+		 */
+		private static Hashtable typeByTypeOfName = Hashtable.Synchronized( new Hashtable( 79 ) );
 
-		private delegate NullableType GetNullableType();
-		private delegate NullableType GetNullableTypeWithLength(int length);
-		private delegate NullableType GetNullableTypeWithPrecision(byte precision, byte scale);
+		private static Hashtable getTypeDelegatesWithLength = Hashtable.Synchronized( new Hashtable( 7 ) );
+		private static Hashtable getTypeDelegatesWithPrecision = Hashtable.Synchronized( new Hashtable( 3 ) );
 
+//		private delegate NullableType GetNullableType();
 
-		static TypeFactory() 
+		private delegate NullableType GetNullableTypeWithLength( int length );
+
+		private delegate NullableType GetNullableTypeWithPrecision( byte precision, byte scale );
+
+		/// <summary></summary>
+		static TypeFactory()
 		{
 			//basicTypes.Add(NHibernate.Blob.Name, NHibernate.Blob);
 			//basicTypes.Add(NHibernate.Clob.Name, NHibernate.Clob);
-			
+
 			//basicTypes.Add(NHibernate.Currency.Name, NHibernate.Currency);
-			
+
 			// the Timezone class .NET is not even close to the java.util.Timezone class - in
 			// .NET all you can do is get the local Timezone - there is no "factory" method to
 			// get a Timezone by name...
 			//basicTypes.Add(NHibernate.Timezone.Name, NHibernate.Timezone);
-			
+
 			// set up the mappings of .NET Classes/Structs to their NHibernate types.
-			typeByTypeOfName[ typeof(System.Byte[]).Name ] = NHibernate.Binary ;
-			typeByTypeOfName[ typeof(System.Byte[]).AssemblyQualifiedName ] = NHibernate.Binary ;
-			typeByTypeOfName[ typeof(System.Boolean).FullName ] = NHibernate.Boolean;
-			typeByTypeOfName[ typeof(System.Boolean).AssemblyQualifiedName ] = NHibernate.Boolean;
-			typeByTypeOfName[ typeof(System.Byte).FullName ] = NHibernate.Byte;
-			typeByTypeOfName[ typeof(System.Byte).AssemblyQualifiedName ] = NHibernate.Byte;
-			typeByTypeOfName[ typeof(System.Char).FullName ] = NHibernate.Character;
-			typeByTypeOfName[ typeof(System.Char).AssemblyQualifiedName ] = NHibernate.Character;
-			typeByTypeOfName[ typeof(System.Globalization.CultureInfo).FullName ] = NHibernate.CultureInfo;
-			typeByTypeOfName[ typeof(System.Globalization.CultureInfo).AssemblyQualifiedName ] = NHibernate.CultureInfo;
-			typeByTypeOfName[ typeof(System.DateTime).FullName ] = NHibernate.DateTime;
-			typeByTypeOfName[ typeof(System.DateTime).AssemblyQualifiedName ] = NHibernate.DateTime;
-			typeByTypeOfName[ typeof(System.Decimal).FullName ] = NHibernate.Decimal;
-			typeByTypeOfName[ typeof(System.Decimal).AssemblyQualifiedName ] = NHibernate.Decimal;
-			typeByTypeOfName[ typeof(System.Double).FullName ] = NHibernate.Double;
-			typeByTypeOfName[ typeof(System.Double).AssemblyQualifiedName ] = NHibernate.Double;
-			typeByTypeOfName[ typeof(System.Guid).FullName ] = NHibernate.Guid;
-			typeByTypeOfName[ typeof(System.Guid).AssemblyQualifiedName ] = NHibernate.Guid;
-			typeByTypeOfName[ typeof(System.Int16).FullName ] = NHibernate.Int16;
-			typeByTypeOfName[ typeof(System.Int16).AssemblyQualifiedName ] = NHibernate.Int16;
-			typeByTypeOfName[ typeof(System.Int32).FullName ] = NHibernate.Int32;
-			typeByTypeOfName[ typeof(System.Int32).AssemblyQualifiedName ] = NHibernate.Int32;
-			typeByTypeOfName[ typeof(System.Int64).FullName ] = NHibernate.Int64;
-			typeByTypeOfName[ typeof(System.Int64).AssemblyQualifiedName ] = NHibernate.Int64;
-			typeByTypeOfName[ typeof(System.SByte).FullName ] = NHibernate.SByte;
-			typeByTypeOfName[ typeof(System.SByte).AssemblyQualifiedName ] = NHibernate.SByte;
-			typeByTypeOfName[ typeof(System.Single).FullName ] = NHibernate.Single;
-			typeByTypeOfName[ typeof(System.Single).AssemblyQualifiedName ] = NHibernate.Single;
-			typeByTypeOfName[ typeof(System.String).FullName ] = NHibernate.String;
-			typeByTypeOfName[ typeof(System.String).AssemblyQualifiedName ] = NHibernate.String;
-			typeByTypeOfName[ typeof(System.TimeSpan).FullName ] = NHibernate.TimeSpan;
-			typeByTypeOfName[ typeof(System.TimeSpan).AssemblyQualifiedName ] = NHibernate.TimeSpan;
-			
+			typeByTypeOfName[ typeof( Byte[ ] ).Name ] = NHibernate.Binary;
+			typeByTypeOfName[ typeof( Byte[ ] ).AssemblyQualifiedName ] = NHibernate.Binary;
+			typeByTypeOfName[ typeof( Boolean ).FullName ] = NHibernate.Boolean;
+			typeByTypeOfName[ typeof( Boolean ).AssemblyQualifiedName ] = NHibernate.Boolean;
+			typeByTypeOfName[ typeof( Byte ).FullName ] = NHibernate.Byte;
+			typeByTypeOfName[ typeof( Byte ).AssemblyQualifiedName ] = NHibernate.Byte;
+			typeByTypeOfName[ typeof( Char ).FullName ] = NHibernate.Character;
+			typeByTypeOfName[ typeof( Char ).AssemblyQualifiedName ] = NHibernate.Character;
+			typeByTypeOfName[ typeof( CultureInfo ).FullName ] = NHibernate.CultureInfo;
+			typeByTypeOfName[ typeof( CultureInfo ).AssemblyQualifiedName ] = NHibernate.CultureInfo;
+			typeByTypeOfName[ typeof( DateTime ).FullName ] = NHibernate.DateTime;
+			typeByTypeOfName[ typeof( DateTime ).AssemblyQualifiedName ] = NHibernate.DateTime;
+			typeByTypeOfName[ typeof( Decimal ).FullName ] = NHibernate.Decimal;
+			typeByTypeOfName[ typeof( Decimal ).AssemblyQualifiedName ] = NHibernate.Decimal;
+			typeByTypeOfName[ typeof( Double ).FullName ] = NHibernate.Double;
+			typeByTypeOfName[ typeof( Double ).AssemblyQualifiedName ] = NHibernate.Double;
+			typeByTypeOfName[ typeof( Guid ).FullName ] = NHibernate.Guid;
+			typeByTypeOfName[ typeof( Guid ).AssemblyQualifiedName ] = NHibernate.Guid;
+			typeByTypeOfName[ typeof( Int16 ).FullName ] = NHibernate.Int16;
+			typeByTypeOfName[ typeof( Int16 ).AssemblyQualifiedName ] = NHibernate.Int16;
+			typeByTypeOfName[ typeof( Int32 ).FullName ] = NHibernate.Int32;
+			typeByTypeOfName[ typeof( Int32 ).AssemblyQualifiedName ] = NHibernate.Int32;
+			typeByTypeOfName[ typeof( Int64 ).FullName ] = NHibernate.Int64;
+			typeByTypeOfName[ typeof( Int64 ).AssemblyQualifiedName ] = NHibernate.Int64;
+			typeByTypeOfName[ typeof( SByte ).FullName ] = NHibernate.SByte;
+			typeByTypeOfName[ typeof( SByte ).AssemblyQualifiedName ] = NHibernate.SByte;
+			typeByTypeOfName[ typeof( Single ).FullName ] = NHibernate.Single;
+			typeByTypeOfName[ typeof( Single ).AssemblyQualifiedName ] = NHibernate.Single;
+			typeByTypeOfName[ typeof( String ).FullName ] = NHibernate.String;
+			typeByTypeOfName[ typeof( String ).AssemblyQualifiedName ] = NHibernate.String;
+			typeByTypeOfName[ typeof( TimeSpan ).FullName ] = NHibernate.TimeSpan;
+			typeByTypeOfName[ typeof( TimeSpan ).AssemblyQualifiedName ] = NHibernate.TimeSpan;
+
 			// add the mappings of the NHibernate specific names that are used in type=""
-			typeByTypeOfName[ NHibernate.AnsiString.Name ] = NHibernate.AnsiString ;
-			typeByTypeOfName[ NHibernate.Binary.Name ] = NHibernate.Binary ;
+			typeByTypeOfName[ NHibernate.AnsiString.Name ] = NHibernate.AnsiString;
+			typeByTypeOfName[ NHibernate.Binary.Name ] = NHibernate.Binary;
 			typeByTypeOfName[ NHibernate.BinaryBlob.Name ] = NHibernate.BinaryBlob;
 			typeByTypeOfName[ NHibernate.Boolean.Name ] = NHibernate.Boolean;
 			typeByTypeOfName[ NHibernate.Byte.Name ] = NHibernate.Byte;
@@ -136,25 +132,25 @@ namespace NHibernate.Type
 			typeByTypeOfName[ NHibernate.YesNo.Name ] = NHibernate.YesNo;
 			typeByTypeOfName[ NHibernate.Ticks.Name ] = NHibernate.Ticks;
 			typeByTypeOfName[ NHibernate.TimeSpan.Name ] = NHibernate.TimeSpan;
-			
+
 			typeByTypeOfName[ NHibernate.Class.Name ] = NHibernate.Class;
-			typeByTypeOfName[ typeof(System.Type).FullName ] = NHibernate.Class;
-			typeByTypeOfName[ typeof(System.Type).AssemblyQualifiedName ] = NHibernate.Class;
+			typeByTypeOfName[ typeof( System.Type ).FullName ] = NHibernate.Class;
+			typeByTypeOfName[ typeof( System.Type ).AssemblyQualifiedName ] = NHibernate.Class;
 
 			// need to do add the key "Serializable" because the hbm files will have a 
 			// type="Serializable", but the SerializableType returns the Name as 
 			// "serializable - System.Object for the default SerializableType.
 			typeByTypeOfName[ "Serializable" ] = NHibernate.Serializable;
 			typeByTypeOfName[ NHibernate.Serializable.Name ] = NHibernate.Serializable;
-			
+
 			// object needs to have both class and serializable setup before it can
 			// be created.
-			typeByTypeOfName[ typeof(System.Object).FullName ] = NHibernate.Object;
-			typeByTypeOfName[ typeof(System.Object).AssemblyQualifiedName ] = NHibernate.Object;
+			typeByTypeOfName[ typeof( Object ).FullName ] = NHibernate.Object;
+			typeByTypeOfName[ typeof( Object ).AssemblyQualifiedName ] = NHibernate.Object;
 			typeByTypeOfName[ NHibernate.Object.Name ] = NHibernate.Object;
-			
+
 			// These are in here for Hibernate mapping compatibility
-			typeByTypeOfName[ "binary" ] = NHibernate.Binary ;
+			typeByTypeOfName[ "binary" ] = NHibernate.Binary;
 			typeByTypeOfName[ "boolean" ] = NHibernate.Boolean;
 			typeByTypeOfName[ "byte" ] = NHibernate.Byte;
 			typeByTypeOfName[ "character" ] = NHibernate.Character;
@@ -174,21 +170,24 @@ namespace NHibernate.Type
 			typeByTypeOfName[ "true_false" ] = NHibernate.TrueFalse;
 			typeByTypeOfName[ "yes_no" ] = NHibernate.YesNo;
 			typeByTypeOfName[ "object" ] = NHibernate.Object;
-			
-			
-			getTypeDelegatesWithLength.Add(NHibernate.AnsiString.Name, new GetNullableTypeWithLength(GetAnsiStringType));
-			getTypeDelegatesWithLength.Add(NHibernate.Binary.Name, new GetNullableTypeWithLength(GetBinaryType));
-			getTypeDelegatesWithLength.Add(NHibernate.Serializable.Name, new GetNullableTypeWithLength(GetSerializableType));
-			getTypeDelegatesWithLength.Add(NHibernate.String.Name, new GetNullableTypeWithLength(GetStringType));
-			getTypeDelegatesWithLength.Add(NHibernate.Class.Name, new GetNullableTypeWithLength(GetTypeType));
-			
-			getTypeDelegatesWithPrecision.Add(NHibernate.Decimal.Name, new GetNullableTypeWithPrecision(GetDecimalType));
-			
-		}
-	
 
-		private TypeFactory() { throw new NotSupportedException(); }
-		
+
+			getTypeDelegatesWithLength.Add( NHibernate.AnsiString.Name, new GetNullableTypeWithLength( GetAnsiStringType ) );
+			getTypeDelegatesWithLength.Add( NHibernate.Binary.Name, new GetNullableTypeWithLength( GetBinaryType ) );
+			getTypeDelegatesWithLength.Add( NHibernate.Serializable.Name, new GetNullableTypeWithLength( GetSerializableType ) );
+			getTypeDelegatesWithLength.Add( NHibernate.String.Name, new GetNullableTypeWithLength( GetStringType ) );
+			getTypeDelegatesWithLength.Add( NHibernate.Class.Name, new GetNullableTypeWithLength( GetTypeType ) );
+
+			getTypeDelegatesWithPrecision.Add( NHibernate.Decimal.Name, new GetNullableTypeWithPrecision( GetDecimalType ) );
+
+		}
+
+
+		private TypeFactory()
+		{
+			throw new NotSupportedException();
+		}
+
 		/// <summary>
 		/// Gets the classification of the Type based on the string.
 		/// </summary>
@@ -212,20 +211,30 @@ namespace NHibernate.Type
 		/// <c>TypeClassification.Plain</c>.
 		/// </para>
 		/// </remarks>
-		private static TypeClassification GetTypeClassification(string typeName) 
+		private static TypeClassification GetTypeClassification( string typeName )
 		{
-			int indexOfOpenParen = typeName.IndexOf("(");
+			int indexOfOpenParen = typeName.IndexOf( "(" );
 			int indexOfComma = 0;
-			if (indexOfOpenParen >= 0)
-				indexOfComma = typeName.IndexOf(",", indexOfOpenParen);
-
-			if(indexOfOpenParen >= 0) 
+			if( indexOfOpenParen >= 0 )
 			{
-				if(indexOfComma >= 0) return TypeClassification.PrecisionScale;
-				else return TypeClassification.Length;
+				indexOfComma = typeName.IndexOf( ",", indexOfOpenParen );
 			}
-			else 
+
+			if( indexOfOpenParen >= 0 )
+			{
+				if( indexOfComma >= 0 )
+				{
+					return TypeClassification.PrecisionScale;
+				}
+				else
+				{
+					return TypeClassification.Length;
+				}
+			}
+			else
+			{
 				return TypeClassification.Plain;
+			}
 
 		}
 
@@ -239,67 +248,76 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This method will return null if the name is not found in the basicNameMap.
 		/// </remarks>
-		public static IType Basic(string name) 
+		public static IType Basic( string name )
 		{
 			string typeName = String.Empty;
 
 			// Use the basic name (such as String or String(255)) to get the
 			// instance of the IType object.
 			IType returnType = null;
-			returnType = (IType)typeByTypeOfName[name];
-			if(returnType!=null) 
+			returnType = ( IType ) typeByTypeOfName[ name ];
+			if( returnType != null )
+			{
 				return returnType;
+			}
 
 			// if we get to here then the basic type with the length or precision/scale
 			// combination doesn't exists - so lets figure out which one we have and 
 			// invoke the appropriate delegate
-			TypeClassification typeClassification = GetTypeClassification(name);
+			TypeClassification typeClassification = GetTypeClassification( name );
 
-			if(typeClassification==TypeClassification.PrecisionScale) 
+			if( typeClassification == TypeClassification.PrecisionScale )
 			{
-
 				//precision/scale based
 				GetNullableTypeWithPrecision precisionDelegate;
 				byte precision;
 				byte scale;
-		
-				string[] parsedName =  name.Split(precisionScaleSplit);
-				if(parsedName.Length < 4) 
-					throw new ApplicationException("The name " + name + " is not a valid Precision/Scale name");
 
-				typeName = parsedName[0].Trim();
-				precision = Byte.Parse(parsedName[1].Trim());
-				scale = Byte.Parse(parsedName[2].Trim());
+				string[ ] parsedName = name.Split( precisionScaleSplit );
+				if( parsedName.Length < 4 )
+				{
+					throw new ApplicationException( "The name " + name + " is not a valid Precision/Scale name" );
+				}
 
-				if(getTypeDelegatesWithPrecision.ContainsKey(typeName)==false)
+				typeName = parsedName[ 0 ].Trim();
+				precision = Byte.Parse( parsedName[ 1 ].Trim() );
+				scale = Byte.Parse( parsedName[ 2 ].Trim() );
+
+				if( getTypeDelegatesWithPrecision.ContainsKey( typeName ) == false )
+				{
 					return null;
-				
-				precisionDelegate = (GetNullableTypeWithPrecision)getTypeDelegatesWithPrecision[typeName];
-				return precisionDelegate(precision, scale);
+				}
+
+				precisionDelegate = ( GetNullableTypeWithPrecision ) getTypeDelegatesWithPrecision[ typeName ];
+				return precisionDelegate( precision, scale );
 
 			}
-			else if (typeClassification==TypeClassification.Length) 
+			else if( typeClassification == TypeClassification.Length )
 			{
 				//length based
 				GetNullableTypeWithLength lengthDelegate;
 				int length;
-					
-				string[] parsedName =  name.Split(lengthSplit);
-				if(parsedName.Length < 3) 
-					throw new ApplicationException("The name " + name + " is not a valid Length name");
 
-				typeName = parsedName[0].Trim();
-				length = Int32.Parse(parsedName[1].Trim());
+				string[ ] parsedName = name.Split( lengthSplit );
+				if( parsedName.Length < 3 )
+				{
+					throw new ApplicationException( "The name " + name + " is not a valid Length name" );
+				}
 
-				if(getTypeDelegatesWithLength.ContainsKey(typeName)==false)
+				typeName = parsedName[ 0 ].Trim();
+				length = Int32.Parse( parsedName[ 1 ].Trim() );
+
+				if( getTypeDelegatesWithLength.ContainsKey( typeName ) == false )
 					// we were not able to find a delegate to get the Type
+				{
 					return null;
-				
-				lengthDelegate = (GetNullableTypeWithLength)getTypeDelegatesWithLength[typeName];
-				return lengthDelegate(length);
+				}
+
+				lengthDelegate = ( GetNullableTypeWithLength ) getTypeDelegatesWithLength[ typeName ];
+				return lengthDelegate( length );
 			}
 
-			else 
+			else
 			{
 				// it is not in the basicNameMap and typeByTypeOfName
 				// nor is it a Length or Precision/Scale based type
@@ -310,58 +328,62 @@ namespace NHibernate.Type
 
 		}
 
-		private static IType AddToTypeOfName(string key, IType type) 
+		private static IType AddToTypeOfName( string key, IType type )
 		{
-			typeByTypeOfName.Add(key, type);
-			typeByTypeOfName.Add(type.Name, type);
+			typeByTypeOfName.Add( key, type );
+			typeByTypeOfName.Add( type.Name, type );
 			return type;
 		}
 
-		private static IType AddToTypeOfNameWithLength(string key, IType type) 
+		private static IType AddToTypeOfNameWithLength( string key, IType type )
 		{
-			typeByTypeOfName.Add(key, type);
+			typeByTypeOfName.Add( key, type );
 			return type;
 		}
 
-		private static IType AddToTypeOfNameWithPrecision(string key, IType type) 
+		private static IType AddToTypeOfNameWithPrecision( string key, IType type )
 		{
-			typeByTypeOfName.Add(key, type);
+			typeByTypeOfName.Add( key, type );
 			return type;
 		}
 
+		// not used !?!
+//		private static string GetKeyForLengthBased( IType type )
+//		{
+//			NullableType nullableType = type as NullableType;
+//			if( nullableType != null )
+//			{
+//				return GetKeyForLengthBased( type.Name, nullableType.SqlType.Length );
+//			}
+//			else
+//			{
+//				throw new ApplicationException( "Can't get a Key for a Length Based item of IType = " + type.Name );
+//			}
+//		}
 
-		private static string GetKeyForLengthBased(IType type) 
-		{
-			NullableType nullableType = type as NullableType;
-			if(nullableType!=null) 
-			{
-				return GetKeyForLengthBased(type.Name, nullableType.SqlType.Length);
-			}
-			else
-			{
-				throw new ApplicationException("Can't get a Key for a Length Based item of IType = " + type.Name);
-			}
-		}
-
-		private static string GetKeyForLengthBased(string name, int length)
+		private static string GetKeyForLengthBased( string name, int length )
 		{
 			return name + "(" + length + ")";
 		}
 
-		private static string GetKeyForPrecisionScaleBased(IType type) 
-		{
-			NullableType nullableType = type as NullableType;
-			if(nullableType!=null) 
-				return GetKeyForPrecisionScaleBased(nullableType.Name, nullableType.SqlType.Precision, nullableType.SqlType.Scale);
-			else
-				throw new ApplicationException("Can't get a Key for a Precision Scale Based item of IType = " + type.Name);
-		}
+		// not used !?!
+//		private static string GetKeyForPrecisionScaleBased( IType type )
+//		{
+//			NullableType nullableType = type as NullableType;
+//			if( nullableType != null )
+//			{
+//				return GetKeyForPrecisionScaleBased( nullableType.Name, nullableType.SqlType.Precision, nullableType.SqlType.Scale );
+//			}
+//			else
+//			{
+//				throw new ApplicationException( "Can't get a Key for a Precision Scale Based item of IType = " + type.Name );
+//			}
+//		}
 
-		private static string GetKeyForPrecisionScaleBased(string name, byte precision, byte scale) 
+		private static string GetKeyForPrecisionScaleBased( string name, byte precision, byte scale )
 		{
 			return name + "(" + precision + ", " + scale + ")";
 		}
-
 
 
 		/// <summary>
@@ -378,89 +400,105 @@ namespace NHibernate.Type
 		/// IPersistentEnum.  If none of those are implemented then we will serialize the Type to the
 		/// database using NHibernate.Type.SerializableType(typeName)  
 		/// </remarks>
-		public static IType HueristicType(string typeName) 
+		public static IType HueristicType( string typeName )
 		{
-			IType type = TypeFactory.Basic(typeName);
-			
-			if (type==null) {
+			IType type = TypeFactory.Basic( typeName );
 
-				string[] parsedTypeName;
-				TypeClassification typeClassification = GetTypeClassification(typeName);
-				if(typeClassification==TypeClassification.Length)
-					parsedTypeName = typeName.Split(lengthSplit);
-				else if (typeClassification == TypeClassification.PrecisionScale)
-					parsedTypeName = typeName.Split(precisionScaleSplit);
+			if( type == null )
+			{
+				string[ ] parsedTypeName;
+				TypeClassification typeClassification = GetTypeClassification( typeName );
+				if( typeClassification == TypeClassification.Length )
+				{
+					parsedTypeName = typeName.Split( lengthSplit );
+				}
+				else if( typeClassification == TypeClassification.PrecisionScale )
+				{
+					parsedTypeName = typeName.Split( precisionScaleSplit );
+				}
 				else
-					parsedTypeName = new string[] {typeName};
+				{
+					parsedTypeName = new string[ ] {typeName};
+				}
 
 
 				System.Type typeClass;
-				try 
+				try
 				{
-					typeClass = ReflectHelper.ClassForName(parsedTypeName[0]); //typeName);
+					typeClass = ReflectHelper.ClassForName( parsedTypeName[ 0 ] ); //typeName);
 				}
-				catch (Exception) 
+				catch( Exception )
 				{
 					typeClass = null;
 				}
 
-				if (typeClass!=null) 
+				if( typeClass != null )
 				{
-					if ( typeof(IType).IsAssignableFrom(typeClass) ) 
+					if( typeof( IType ).IsAssignableFrom( typeClass ) )
 					{
-						try 
+						try
 						{
-							type = (IType) Activator.CreateInstance(typeClass);
+							type = ( IType ) Activator.CreateInstance( typeClass );
 						}
-						catch (Exception e) 
+						catch( Exception e )
 						{
-							throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e);
+							throw new MappingException( "Could not instantiate IType " + typeClass.Name + ": " + e );
 						}
 					}
-					else if ( typeof(ICompositeUserType).IsAssignableFrom(typeClass) ) 
+					else if( typeof( ICompositeUserType ).IsAssignableFrom( typeClass ) )
 					{
-						type = new CompositeCustomType(typeClass);
+						type = new CompositeCustomType( typeClass );
 					}
-					else if ( typeof(IUserType).IsAssignableFrom(typeClass) ) 
+					else if( typeof( IUserType ).IsAssignableFrom( typeClass ) )
 					{
-						type = new CustomType(typeClass);
+						type = new CustomType( typeClass );
 					}
-					else if ( typeof(ILifecycle).IsAssignableFrom(typeClass) ) 
+					else if( typeof( ILifecycle ).IsAssignableFrom( typeClass ) )
 					{
-						type = NHibernate.Entity(typeClass);
+						type = NHibernate.Entity( typeClass );
 					}
-					else if ( typeClass.IsEnum ) 
+					else if( typeClass.IsEnum )
 					{
-						type = NHibernate.Enum(typeClass);
+						type = NHibernate.Enum( typeClass );
 					}
-					else if ( typeClass.IsSerializable ) 
+					else if( typeClass.IsSerializable )
 					{
-						if(typeClassification==TypeClassification.Length)
-							type = GetSerializableType(typeClass, Int32.Parse(parsedTypeName[1]));
+						if( typeClassification == TypeClassification.Length )
+						{
+							type = GetSerializableType( typeClass, Int32.Parse( parsedTypeName[ 1 ] ) );
+						}
 						else
-							type = GetSerializableType(typeClass);
+						{
+							type = GetSerializableType( typeClass );
+						}
 					}
 				}
 			}
 			return type;
 		}
 
-		public static NullableType GetAnsiStringType() 
+		/// <summary></summary>
+		public static NullableType GetAnsiStringType()
 		{
 			return NHibernate.AnsiString;
 		}
 
-		public static NullableType GetAnsiStringType(int length) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="length"></param>
+		/// <returns></returns>
+		public static NullableType GetAnsiStringType( int length )
 		{
-			string key = GetKeyForLengthBased(NHibernate.AnsiString.Name, length);
-			
-			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) 
+			string key = GetKeyForLengthBased( NHibernate.AnsiString.Name, length );
+
+			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
+			if( returnType == null )
 			{
-				returnType = new AnsiStringType( SqlTypeFactory.GetAnsiString(length) );
-				AddToTypeOfNameWithLength(key, returnType);
+				returnType = new AnsiStringType( SqlTypeFactory.GetAnsiString( length ) );
+				AddToTypeOfNameWithLength( key, returnType );
 			}
-			return returnType;		
+			return returnType;
 		}
 
 
@@ -479,7 +517,7 @@ namespace NHibernate.Type
 		/// with the default length those keys will also be added.
 		/// </para>
 		/// </remarks>
-		public static NullableType GetBinaryType() 
+		public static NullableType GetBinaryType()
 		{
 			return NHibernate.Binary;
 		}
@@ -494,28 +532,31 @@ namespace NHibernate.Type
 		/// been added to the basicNameMap with the keys <c>Byte[](length)</c> and 
 		/// <c>NHibernate.Type.BinaryType(length)</c>.
 		/// </remarks>
-		public static NullableType GetBinaryType(int length) 
+		public static NullableType GetBinaryType( int length )
 		{
 			//HACK: don't understand why SerializableType calls this with length=0
-			if(length==0) return NHibernate.Binary;
-
-			string key = GetKeyForLengthBased(NHibernate.Binary.Name, length);
-			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) 
+			if( length == 0 )
 			{
-				returnType = new BinaryType(SqlTypeFactory.GetBinary(length));
-				AddToTypeOfNameWithLength(key, returnType);
+				return NHibernate.Binary;
+			}
+
+			string key = GetKeyForLengthBased( NHibernate.Binary.Name, length );
+			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
+			if( returnType == null )
+			{
+				returnType = new BinaryType( SqlTypeFactory.GetBinary( length ) );
+				AddToTypeOfNameWithLength( key, returnType );
 			}
 
 			return returnType;
-			
+
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetBooleanType() 
+		public static NullableType GetBooleanType()
 		{
 			return NHibernate.Boolean;
 		}
@@ -524,7 +565,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetByteType() 
+		public static NullableType GetByteType()
 		{
 			return NHibernate.Byte;
 		}
@@ -533,7 +574,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetCharType() 
+		public static NullableType GetCharType()
 		{
 			return NHibernate.Character;
 		}
@@ -542,7 +583,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetCultureInfoType() 
+		public static NullableType GetCultureInfoType()
 		{
 			return NHibernate.CultureInfo;
 		}
@@ -551,7 +592,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetDateTimeType() 
+		public static NullableType GetDateTimeType()
 		{
 			return NHibernate.DateTime;
 		}
@@ -560,17 +601,17 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetDateType() 
+		public static NullableType GetDateType()
 		{
 			return NHibernate.Date;
 		}
 
-		
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetDecimalType() 
+		public static NullableType GetDecimalType()
 		{
 			return NHibernate.Decimal;
 		}
@@ -581,25 +622,25 @@ namespace NHibernate.Type
 		/// <param name="precision"></param>
 		/// <param name="scale"></param>
 		/// <returns></returns>
-		public static NullableType GetDecimalType(byte precision, byte scale) 
-		{			
-			string key = GetKeyForPrecisionScaleBased(NHibernate.Decimal.Name, precision, scale);
-			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) 
+		public static NullableType GetDecimalType( byte precision, byte scale )
+		{
+			string key = GetKeyForPrecisionScaleBased( NHibernate.Decimal.Name, precision, scale );
+			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
+			if( returnType == null )
 			{
-				returnType = new DecimalType( SqlTypeFactory.GetDecimal(precision, scale) );
-				AddToTypeOfNameWithPrecision(key, returnType);
+				returnType = new DecimalType( SqlTypeFactory.GetDecimal( precision, scale ) );
+				AddToTypeOfNameWithPrecision( key, returnType );
 			}
 
 			return returnType;
-			
+
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetDoubleType() 
+		public static NullableType GetDoubleType()
 		{
 			return NHibernate.Double;
 		}
@@ -608,7 +649,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetGuidType() 
+		public static NullableType GetGuidType()
 		{
 			return NHibernate.Guid;
 		}
@@ -617,7 +658,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetInt16Type() 
+		public static NullableType GetInt16Type()
 		{
 			return NHibernate.Int16;
 		}
@@ -626,7 +667,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetInt32Type() 
+		public static NullableType GetInt32Type()
 		{
 			return NHibernate.Int32;
 		}
@@ -635,7 +676,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetInt64Type() 
+		public static NullableType GetInt64Type()
 		{
 			return NHibernate.Int64;
 		}
@@ -644,7 +685,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static IType GetObjectType() 
+		public static IType GetObjectType()
 		{
 			return NHibernate.Object;
 		}
@@ -653,7 +694,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetSingleType() 
+		public static NullableType GetSingleType()
 		{
 			return NHibernate.Single;
 		}
@@ -662,10 +703,10 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetSerializableType() 
+		public static NullableType GetSerializableType()
 		{
 			return NHibernate.Serializable;
-			
+
 		}
 
 		/// <summary>
@@ -687,19 +728,19 @@ namespace NHibernate.Type
 		/// with the default length, those keys will also be added.
 		/// </para>
 		/// </remarks>
-		public static NullableType GetSerializableType(System.Type serializableType) 
+		public static NullableType GetSerializableType( System.Type serializableType )
 		{
 			string key = serializableType.AssemblyQualifiedName;
-			
-			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) 
+
+			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
+			if( returnType == null )
 			{
-				returnType = new SerializableType(serializableType); 
-				AddToTypeOfName(key, returnType);
+				returnType = new SerializableType( serializableType );
+				AddToTypeOfName( key, returnType );
 			}
 
 			return returnType;
-			
+
 		}
 
 		/// <summary>
@@ -708,19 +749,19 @@ namespace NHibernate.Type
 		/// <param name="serializableType"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public static NullableType GetSerializableType(System.Type serializableType, int length) 
+		public static NullableType GetSerializableType( System.Type serializableType, int length )
 		{
-			string key = GetKeyForLengthBased(serializableType.AssemblyQualifiedName, length);
-			
-			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) 
+			string key = GetKeyForLengthBased( serializableType.AssemblyQualifiedName, length );
+
+			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
+			if( returnType == null )
 			{
-				returnType = new SerializableType(serializableType, SqlTypeFactory.GetBinary(length));
-				AddToTypeOfNameWithLength(key, returnType);
+				returnType = new SerializableType( serializableType, SqlTypeFactory.GetBinary( length ) );
+				AddToTypeOfNameWithLength( key, returnType );
 			}
 
 			return returnType;
-			
+
 		}
 
 		/// <summary>
@@ -728,26 +769,26 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public static NullableType GetSerializableType(int length) 
+		public static NullableType GetSerializableType( int length )
 		{
-			string key = GetKeyForLengthBased(NHibernate.Serializable.Name, length);
-			
-			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) 
+			string key = GetKeyForLengthBased( NHibernate.Serializable.Name, length );
+
+			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
+			if( returnType == null )
 			{
-				returnType = new SerializableType(typeof(object), SqlTypeFactory.GetBinary(length));
-				AddToTypeOfNameWithLength(key, returnType);
+				returnType = new SerializableType( typeof( object ), SqlTypeFactory.GetBinary( length ) );
+				AddToTypeOfNameWithLength( key, returnType );
 			}
 
 			return returnType;
-			
+
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetStringType() 
+		public static NullableType GetStringType()
 		{
 			return NHibernate.String;
 		}
@@ -757,35 +798,35 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public static NullableType GetStringType(int length) 
+		public static NullableType GetStringType( int length )
 		{
-			string key = GetKeyForLengthBased(NHibernate.String.Name, length);
-			
-			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) 
+			string key = GetKeyForLengthBased( NHibernate.String.Name, length );
+
+			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
+			if( returnType == null )
 			{
-				returnType = new StringType( SqlTypeFactory.GetString(length) );
-				AddToTypeOfNameWithLength(key, returnType);
+				returnType = new StringType( SqlTypeFactory.GetString( length ) );
+				AddToTypeOfNameWithLength( key, returnType );
 			}
 
 			return returnType;
-			
+
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetTicksType() 
+		public static NullableType GetTicksType()
 		{
-			return NHibernate.Ticks;			
+			return NHibernate.Ticks;
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetTimeSpanType() 
+		public static NullableType GetTimeSpanType()
 		{
 			return NHibernate.TimeSpan;
 		}
@@ -794,8 +835,8 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetTimestampType() 
-		{	
+		public static NullableType GetTimestampType()
+		{
 			return NHibernate.Timestamp;
 		}
 
@@ -821,7 +862,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetTypeType() 
+		public static NullableType GetTypeType()
 		{
 			return NHibernate.Class;
 		}
@@ -831,21 +872,21 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public static NullableType GetTypeType(int length) 
+		public static NullableType GetTypeType( int length )
 		{
-			string key = GetKeyForLengthBased(typeof(TypeType).FullName, length);
-			
-			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) 
+			string key = GetKeyForLengthBased( typeof( TypeType ).FullName, length );
+
+			NullableType returnType = ( NullableType ) typeByTypeOfName[ key ];
+			if( returnType == null )
 			{
-				returnType = new TypeType( SqlTypeFactory.GetString(length) );
-				AddToTypeOfNameWithLength(key, returnType);
+				returnType = new TypeType( SqlTypeFactory.GetString( length ) );
+				AddToTypeOfNameWithLength( key, returnType );
 			}
 
 			return returnType;
-			
+
 		}
-		
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -855,7 +896,7 @@ namespace NHibernate.Type
 			return NHibernate.YesNo;
 		}
 
-		
+
 		// Association Types
 
 		/// <summary>
@@ -864,9 +905,9 @@ namespace NHibernate.Type
 		/// <param name="persistentClass"></param>
 		/// <param name="foreignKeyType"></param>
 		/// <returns></returns>
-		public static IType OneToOne(System.Type persistentClass, ForeignKeyType foreignKeyType) 
+		public static IType OneToOne( System.Type persistentClass, ForeignKeyType foreignKeyType )
 		{
-			return new OneToOneType(persistentClass, foreignKeyType);
+			return new OneToOneType( persistentClass, foreignKeyType );
 		}
 
 		/// <summary>
@@ -874,54 +915,97 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public static IType ManyToOne(System.Type persistentClass) 
+		public static IType ManyToOne( System.Type persistentClass )
 		{
-			return new ManyToOneType(persistentClass);
+			return new ManyToOneType( persistentClass );
 		}
 
 		// Collection Types:
-	
-		
-		public static PersistentCollectionType Array(string role, System.Type elementClass) 
+
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		/// <param name="elementClass"></param>
+		/// <returns></returns>
+		public static PersistentCollectionType Array( string role, System.Type elementClass )
 		{
-			return new ArrayType(role, elementClass);
-		}
-		
-		public static PersistentCollectionType List(string role) 
-		{
-			return new ListType(role);
-		}
-		
-		public static PersistentCollectionType Bag(string role) 
-		{
-			return new BagType(role);
-		}
-		
-		public static PersistentCollectionType IdBag(string role) 
-		{
-			return new IdentifierBagType(role);
+			return new ArrayType( role, elementClass );
 		}
 
-		public static PersistentCollectionType Map(string role) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		/// <returns></returns>
+		public static PersistentCollectionType List( string role )
 		{
-			return new MapType(role);
-		}
-		
-		public static PersistentCollectionType Set(string role) 
-		{
-			return new SetType(role);
-		}
-		
-		public static PersistentCollectionType SortedMap(string role, IComparer comparer) 
-		{
-			return new SortedMapType(role, comparer);
+			return new ListType( role );
 		}
 
-		public static PersistentCollectionType SortedSet(string role, IComparer comparer) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		/// <returns></returns>
+		public static PersistentCollectionType Bag( string role )
 		{
-			return new SortedSetType(role, comparer);
+			return new BagType( role );
 		}
-		
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		/// <returns></returns>
+		public static PersistentCollectionType IdBag( string role )
+		{
+			return new IdentifierBagType( role );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		/// <returns></returns>
+		public static PersistentCollectionType Map( string role )
+		{
+			return new MapType( role );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		/// <returns></returns>
+		public static PersistentCollectionType Set( string role )
+		{
+			return new SetType( role );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		/// <param name="comparer"></param>
+		/// <returns></returns>
+		public static PersistentCollectionType SortedMap( string role, IComparer comparer )
+		{
+			return new SortedMapType( role, comparer );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		/// <param name="comparer"></param>
+		/// <returns></returns>
+		public static PersistentCollectionType SortedSet( string role, IComparer comparer )
+		{
+			return new SortedSetType( role, comparer );
+		}
+
 
 		/// <summary>
 		/// Deep copy values in the first array into the second
@@ -930,14 +1014,17 @@ namespace NHibernate.Type
 		/// <param name="types"></param>
 		/// <param name="copy"></param>
 		/// <param name="target"></param>
-		public static void DeepCopy(object[] values, IType[] types, bool[] copy, object[] target) 
+		public static void DeepCopy( object[ ] values, IType[ ] types, bool[ ] copy, object[ ] target )
 		{
-			for ( int i=0; i<types.Length; i++ ) 
+			for( int i = 0; i < types.Length; i++ )
 			{
-				if ( copy[i] ) target[i] = types[i].DeepCopy( values[i] );
+				if( copy[ i ] )
+				{
+					target[ i ] = types[ i ].DeepCopy( values[ i ] );
+				}
 			}
 		}
-	
+
 		/// <summary>
 		/// Determine if any of the given field values are dirty,
 		/// returning an array containing indexes of
@@ -949,29 +1036,33 @@ namespace NHibernate.Type
 		/// <param name="check"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public static int[] FindDirty(IType[] types, object[] x, object[] y, bool[] check, ISessionImplementor session) 
+		public static int[ ] FindDirty( IType[ ] types, object[ ] x, object[ ] y, bool[ ] check, ISessionImplementor session )
 		{
-			int[] results = null;
+			int[ ] results = null;
 			int count = 0;
-			for (int i=0; i<types.Length; i++) {
-				if ( check[i] && types[i].IsDirty( x[i], y[i], session ) ) 
+			for( int i = 0; i < types.Length; i++ )
+			{
+				if( check[ i ] && types[ i ].IsDirty( x[ i ], y[ i ], session ) )
 				{
-					if (results==null) results = new int[ types.Length ];
-					results[count++]=i;
+					if( results == null )
+					{
+						results = new int[types.Length];
+					}
+					results[ count++ ] = i;
 				}
 			}
-			if (count==0) 
+			if( count == 0 )
 			{
 				return null;
 			}
-			else 
+			else
 			{
-				int[] trimmed = new int[count];
-				System.Array.Copy(results, 0, trimmed, 0, count);
+				int[ ] trimmed = new int[count];
+				System.Array.Copy( results, 0, trimmed, 0, count );
 				return trimmed;
 			}
 		}
-	
+
 		/*
 		/// <summary>
 		/// Return <tt>-1</tt> if non-dirty, or the index of the first dirty value otherwise

@@ -1,5 +1,3 @@
-using System;
-
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -7,14 +5,14 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Superclass for mutable nullable types.
 	/// </summary>
-	public abstract class MutableType : NullableType 
+	public abstract class MutableType : NullableType
 	{
 		/// <summary>
 		/// Initialize a new instance of the MutableType class using a 
 		/// <see cref="SqlType"/>. 
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
-		protected MutableType(SqlType sqlType) : base(sqlType) 
+		protected MutableType( SqlType sqlType ) : base( sqlType )
 		{
 		}
 
@@ -26,11 +24,11 @@ namespace NHibernate.Type
 		/// This has been "sealed" because any subclasses are expected to be mutable.  If
 		/// the type is immutable then they should inherit from <see cref="ImmutableType"/>.
 		/// </remarks>
-		public override sealed bool IsMutable 
+		public override sealed bool IsMutable
 		{
 			get { return true; }
 		}
-		
+
 
 		///	<summary>
 		///	Gets whether or not this IType contains 
@@ -45,7 +43,8 @@ namespace NHibernate.Type
 		/// a well-behaived <c>Equals()</c>.  If the <see cref="MutableType"/> does implement
 		/// the <c>Equals()</c> then set this to <c>true</c>.
 		/// </remarks>
-		public override bool HasNiceEquals {
+		public override bool HasNiceEquals
+		{
 			get { return false; } //default ... may be overridden
 		}
 	}

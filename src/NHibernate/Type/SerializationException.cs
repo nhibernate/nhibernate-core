@@ -1,13 +1,20 @@
 using System;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
 	/// <summary>
 	/// Thrown when a property cannot be serialized/deserialized
 	/// </summary>
 	[Serializable]
-	public class SerializationException : HibernateException 
+	public class SerializationException : HibernateException
 	{
-		public SerializationException(string message, Exception root) : base(message, root) { }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="root"></param>
+		public SerializationException( string message, Exception root ) : base( message, root )
+		{
+		}
 	}
 }

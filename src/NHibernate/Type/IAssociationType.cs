@@ -1,23 +1,29 @@
-using System;
-
 using NHibernate.Engine;
 
-namespace NHibernate.Type {
-
+namespace NHibernate.Type
+{
 	/// <summary>
 	/// Represents directionality of the foreign key constraint
 	/// </summary>
-	public abstract class ForeignKeyType {
-		protected ForeignKeyType() { }
+	public abstract class ForeignKeyType
+	{
+		/// <summary></summary>
+		protected ForeignKeyType()
+		{
+		}
 
-		private class ForeignKeyToParentClass : ForeignKeyType {
-			public override bool CascadeNow(CascadePoint cascadePoint) {
+		private class ForeignKeyToParentClass : ForeignKeyType
+		{
+			public override bool CascadeNow( CascadePoint cascadePoint )
+			{
 				return cascadePoint != CascadePoint.CascadeBeforeInsertAfterDelete;
 			}
 		}
 
-		private class ForeignKeyFromParentClass : ForeignKeyType {
-			public override bool CascadeNow(CascadePoint cascadePoint) {
+		private class ForeignKeyFromParentClass : ForeignKeyType
+		{
+			public override bool CascadeNow( CascadePoint cascadePoint )
+			{
 				return cascadePoint != CascadePoint.CascadeAfterInsertBeforeDelete;
 			}
 		}
@@ -25,7 +31,7 @@ namespace NHibernate.Type {
 		/// <summary>
 		/// Should we cascade at this cascade point?
 		/// </summary>
-		public abstract bool CascadeNow(CascadePoint cascadePoint);
+		public abstract bool CascadeNow( CascadePoint cascadePoint );
 
 		/// <summary>
 		/// A foreign key from child to parent
@@ -42,8 +48,8 @@ namespace NHibernate.Type {
 	/// <summary>
 	/// An <see cref="IType"/> that represents some kind of association between entities.
 	/// </summary>
-	public interface IAssociationType {
-
+	public interface IAssociationType
+	{
 		/// <summary>
 		/// When implemented by a class, gets the type of foreign key directionality 
 		/// of this association.

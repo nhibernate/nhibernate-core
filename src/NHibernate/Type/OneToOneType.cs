@@ -1,67 +1,124 @@
 using System;
 using System.Data;
-
-using NHibernate.SqlTypes;
 using NHibernate.Engine;
-using NHibernate.Type;
+using NHibernate.SqlTypes;
 
-
-namespace NHibernate.Type {
-
+namespace NHibernate.Type
+{
 	/// <summary>
 	/// A one-to-one association to an entity
 	/// </summary>
-	public class OneToOneType : EntityType, IAssociationType {
-
-		private static readonly SqlType[] NoSqlTypes = new SqlType[0];
+	public class OneToOneType : EntityType, IAssociationType
+	{
+		private static readonly SqlType[ ] NoSqlTypes = new SqlType[0];
 
 		private readonly ForeignKeyType foreignKeyType;
-	
-		public override int GetColumnSpan(IMapping session) {
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override int GetColumnSpan( IMapping session )
+		{
 			return 0;
 		}
 
-		public override SqlType[] SqlTypes(IMapping session) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override SqlType[ ] SqlTypes( IMapping session )
+		{
 			return NoSqlTypes;
 		}
-	
-		public OneToOneType(System.Type persistentClass, ForeignKeyType foreignKeyType) : base(persistentClass) {
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="foreignKeyType"></param>
+		public OneToOneType( System.Type persistentClass, ForeignKeyType foreignKeyType ) : base( persistentClass )
+		{
 			this.foreignKeyType = foreignKeyType;
 		}
-	
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session) {
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cmd"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="session"></param>
+		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
+		{
 			//nothing to do
 		}
-	
-		public override bool IsOneToOne {
+
+		/// <summary></summary>
+		public override bool IsOneToOne
+		{
 			get { return true; }
 		}
-		
-		public override bool IsDirty(object old, object current, ISessionImplementor session) {
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override bool IsDirty( object old, object current, ISessionImplementor session )
+		{
 			return false;
 		}
-	
-		public virtual ForeignKeyType ForeignKeyType {
+
+		/// <summary></summary>
+		public virtual ForeignKeyType ForeignKeyType
+		{
 			get { return foreignKeyType; }
 		}
-	
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
-			return session.GetEntityIdentifier(owner);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="names"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
+		{
+			return session.GetEntityIdentifier( owner );
 		}
-	
-		public override object ResolveIdentifier(object value, ISessionImplementor session, Object owner) {
-			if (value==null) return null;
-		
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object ResolveIdentifier( object value, ISessionImplementor session, Object owner )
+		{
+			if( value == null )
+			{
+				return null;
+			}
+
 			System.Type clazz = PersistentClass;
-			
+
 			return IsNullable ?
-			session.InternalLoadOneToOne(clazz, value) :
-			session.InternalLoad(clazz, value);
+				session.InternalLoadOneToOne( clazz, value ) :
+				session.InternalLoad( clazz, value );
 		}
-	
-		public virtual bool IsNullable {
-			get { return foreignKeyType==ForeignKeyType.ForeignKeyToParent; }
+
+		/// <summary></summary>
+		public virtual bool IsNullable
+		{
+			get { return foreignKeyType == ForeignKeyType.ForeignKeyToParent; }
 		}
-		
+
 	}
 }

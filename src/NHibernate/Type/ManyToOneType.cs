@@ -1,38 +1,64 @@
-using System;
 using System.Data;
-
-using NHibernate.Mapping;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type {
-
+namespace NHibernate.Type
+{
 	/// <summary>
 	/// A many-to-one association to an entity
 	/// </summary>
-	public class ManyToOneType : EntityType, IAssociationType {
-
-		public override int GetColumnSpan(IMapping session) {
-            return session.GetIdentifierType( PersistentClass ).GetColumnSpan(session);
+	public class ManyToOneType : EntityType, IAssociationType
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override int GetColumnSpan( IMapping session )
+		{
+			return session.GetIdentifierType( PersistentClass ).GetColumnSpan( session );
 		}
 
-		public override SqlType[] SqlTypes(IMapping session) {
-			return session.GetIdentifierType( PersistentClass ).SqlTypes(session);
-		}
-	
-		public ManyToOneType(System.Type persistentClass) : base(persistentClass) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override SqlType[ ] SqlTypes( IMapping session )
+		{
+			return session.GetIdentifierType( PersistentClass ).SqlTypes( session );
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		public ManyToOneType( System.Type persistentClass ) : base( persistentClass )
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cmd"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="session"></param>
+		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
+		{
 			session.Factory.GetIdentifierType( PersistentClass )
-			.NullSafeSet(cmd, GetIdentifier(value, session), index, session);
+				.NullSafeSet( cmd, GetIdentifier( value, session ), index, session );
 		}
-		
-		public override bool IsOneToOne {
+
+		/// <summary></summary>
+		public override bool IsOneToOne
+		{
 			get { return false; }
 		}
 
-		public virtual ForeignKeyType ForeignKeyType {
+		/// <summary></summary>
+		public virtual ForeignKeyType ForeignKeyType
+		{
 			get { return ForeignKeyType.ForeignKeyFromParent; }
 		}
 
@@ -46,10 +72,10 @@ namespace NHibernate.Type {
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.
 		/// </returns>
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner) 
+		public override object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
 		{
 			return session.Factory.GetIdentifierType( PersistentClass )
-			.NullSafeGet(rs, names, session, owner);
+				.NullSafeGet( rs, names, session, owner );
 		}
 
 		/// <summary>
@@ -62,12 +88,13 @@ namespace NHibernate.Type {
 		/// The object that is identified by the parameter <c>value</c> or <c>null</c> if the parameter
 		/// <c>value</c> is also <c>null</c>. 
 		/// </returns>
-		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner) {
-			if (value==null) 
+		public override object ResolveIdentifier( object value, ISessionImplementor session, object owner )
+		{
+			if( value == null )
 			{
 				return null;
-			} 
-			else 
+			}
+			else
 			{
 				return session.InternalLoad( PersistentClass, value );
 			}

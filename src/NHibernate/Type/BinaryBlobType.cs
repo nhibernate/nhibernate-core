@@ -1,6 +1,3 @@
-using System;
-using System.Data;
-
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -15,17 +12,23 @@ namespace NHibernate.Type
 	/// </remarks>
 	public class BinaryBlobType : BinaryType
 	{
-		internal BinaryBlobType() : base( new BinaryBlobSqlType() ) 
+		/// <summary></summary>
+		internal BinaryBlobType() : base( new BinaryBlobSqlType() )
 		{
 		}
 
-		internal BinaryBlobType(BinarySqlType sqlType) : base(sqlType) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlType"></param>
+		internal BinaryBlobType( BinarySqlType sqlType ) : base( sqlType )
 		{
 		}
 
+		/// <summary></summary>
 		public override string Name
 		{
-			get	{return "BinaryBlob"; }
+			get { return "BinaryBlob"; }
 		}
 
 	}

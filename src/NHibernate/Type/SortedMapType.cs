@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 
@@ -13,14 +11,25 @@ namespace NHibernate.Type
 	{
 		private IComparer comparer;
 
-		public SortedMapType(string role, IComparer comparer) : base(role)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="role"></param>
+		/// <param name="comparer"></param>
+		public SortedMapType( string role, IComparer comparer ) : base( role )
 		{
 			this.comparer = comparer;
 		}
 
-		public override PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="persister"></param>
+		/// <returns></returns>
+		public override PersistentCollection Instantiate( ISessionImplementor session, CollectionPersister persister )
 		{
-			SortedMap sortedMap = new SortedMap(session, comparer);
+			SortedMap sortedMap = new SortedMap( session, comparer );
 			return sortedMap;
 		}
 
@@ -28,14 +37,28 @@ namespace NHibernate.Type
 		// because they have different Interfaces for Sorted/UnSorted - since .NET
 		// doesn't have that I don't need to override it.
 
-		public override PersistentCollection Wrap(ISessionImplementor session, object collection) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public override PersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return new SortedMap(session, (IDictionary)collection, comparer);			
+			return new SortedMap( session, ( IDictionary ) collection, comparer );
 		}
 
-		public override PersistentCollection AssembleCachedCollection(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="persister"></param>
+		/// <param name="disassembled"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override PersistentCollection AssembleCachedCollection( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner )
 		{
-			return new SortedMap(session, persister, comparer, disassembled, owner);
+			return new SortedMap( session, persister, comparer, disassembled, owner );
 		}
 	}
 }

@@ -1,10 +1,9 @@
-using System;
-using System.Data;
 using System.Collections;
+using System.Data;
 using NHibernate.Metadata;
 
-namespace NHibernate {
-	
+namespace NHibernate
+{
 	/// <summary>
 	/// Creates <c>ISession</c>s.
 	/// </summary>
@@ -19,21 +18,21 @@ namespace NHibernate {
 	/// These properties are defined on <c>Environment</c>
 	/// </para>
 	/// </remarks>
-	public interface ISessionFactory {
-		
+	public interface ISessionFactory
+	{
 		/// <summary>
 		/// Open a <c>ISession</c> on the given connection
 		/// </summary>
 		/// <param name="conn">A connection provided by the application</param>
 		/// <returns>A session</returns>
-		ISession OpenSession(IDbConnection conn);
+		ISession OpenSession( IDbConnection conn );
 
 		/// <summary>
 		/// Create database connection and open a <c>ISession</c> on it, specifying an interceptor
 		/// </summary>
 		/// <param name="interceptor">A session-scoped interceptor</param>
 		/// <returns>A session</returns>
-		ISession OpenSession(IInterceptor interceptor);
+		ISession OpenSession( IInterceptor interceptor );
 
 		/// <summary>
 		/// Open a <c>ISession</c> on the given connection, specifying an interceptor
@@ -41,7 +40,7 @@ namespace NHibernate {
 		/// <param name="conn">A connection provided by the application</param>
 		/// <param name="interceptor">A session-scoped interceptor</param>
 		/// <returns>A session</returns>
-		ISession OpenSession(IDbConnection conn, IInterceptor interceptor);
+		ISession OpenSession( IDbConnection conn, IInterceptor interceptor );
 
 		/// <summary>
 		/// Create a database connection and open a <c>ISession</c> on it
@@ -60,14 +59,14 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="persistentType"></param>
 		/// <returns></returns>
-		IClassMetadata GetClassMetadata(System.Type persistentType);
+		IClassMetadata GetClassMetadata( System.Type persistentType );
 
 		/// <summary>
 		/// Get the <c>CollectionMetadata</c> associated with the named collection role
 		/// </summary>
 		/// <param name="roleName"></param>
 		/// <returns></returns>
-		ICollectionMetadata GetCollectionMetadata(string roleName);
+		ICollectionMetadata GetCollectionMetadata( string roleName );
 
 		/// <summary>
 		/// Get all <c>ClassMetadata</c> as a <c>IDictionary</c> from <c>Type</c>
@@ -89,7 +88,7 @@ namespace NHibernate {
 		/// to ensure that there are no open <c>Session</c>s before calling
 		/// <c>close()</c>. 
 		/// </summary>
-		void Close(); 
+		void Close();
 
 		/// <summary>
 		/// Evict all entries from the process-level cache.  This method occurs outside
@@ -97,7 +96,7 @@ namespace NHibernate {
 		/// any transaction isolation semantics of the usage strategy.  Use with care.
 		/// </summary>
 		/// <param name="persistentClass"></param>
-		void Evict(System.Type persistentClass);
+		void Evict( System.Type persistentClass );
 
 		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
@@ -106,24 +105,24 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <param name="id"></param>
-		void Evict(System.Type persistentClass, object id);
+		void Evict( System.Type persistentClass, object id );
 
-		
+
 		/// <summary>
 		/// Evict all entries from the process-level cache.  This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
 		/// any transaction isolation semantics of the usage strategy.  Use with care.
 		/// </summary>
 		/// <param name="roleName"></param>
-		void EvictCollection(string roleName);
+		void EvictCollection( string roleName );
 
 		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
 		/// any transaction isolation semantics of the usage strategy.  Use with care.
 		/// </summary>
-		/// <param name="persistentClass"></param>
+		/// <param name="roleName"></param>
 		/// <param name="id"></param>
-		void EvictCollection(string roleName, object id);
+		void EvictCollection( string roleName, object id );
 	}
 }

@@ -1,19 +1,18 @@
 using System;
 using System.Data;
-
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
-namespace NHibernate.Type {
-	
+namespace NHibernate.Type
+{
 	/// <summary>
 	/// Maps the Assembly Qualified Name of a <see cref="System.Type"/> to a 
-	/// <see cref="DbType.Stirng" /> column.
+	/// <see cref="DbType.String" /> column.
 	/// </summary>
-	public class TypeType : ImmutableType 
+	public class TypeType : ImmutableType
 	{
-
-		internal TypeType() : base( new StringSqlType() ) 
+		/// <summary></summary>
+		internal TypeType() : base( new StringSqlType() )
 		{
 		}
 
@@ -22,7 +21,7 @@ namespace NHibernate.Type {
 		/// <see cref="SqlType"/>. 
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
-		internal TypeType(StringSqlType sqlType) : base(sqlType) 
+		internal TypeType( StringSqlType sqlType ) : base( sqlType )
 		{
 		}
 
@@ -35,22 +34,22 @@ namespace NHibernate.Type {
 		/// <exception cref="TypeLoadException">
 		/// Thrown when the value in the database can not be loaded as a <see cref="System.Type"/>
 		/// </exception>
-		public override object Get(IDataReader rs, int index) 
+		public override object Get( IDataReader rs, int index )
 		{
-			string str = (string) NHibernate.String.Get(rs, index);
-			if (str == null) 
+			string str = ( string ) NHibernate.String.Get( rs, index );
+			if( str == null )
 			{
 				return null;
 			}
-			else 
+			else
 			{
-				try 
+				try
 				{
-					return ReflectHelper.ClassForName(str);
+					return ReflectHelper.ClassForName( str );
 				}
-				catch (TypeLoadException) 
+				catch( TypeLoadException )
 				{
-					throw new HibernateException("Class not found: " + str);
+					throw new HibernateException( "Class not found: " + str );
 				}
 			}
 		}
@@ -70,9 +69,9 @@ namespace NHibernate.Type {
 		/// <exception cref="TypeLoadException">
 		/// Thrown when the value in the database can not be loaded as a <see cref="System.Type"/>
 		/// </exception>
-		public override object Get(IDataReader rs, string name) 
+		public override object Get( IDataReader rs, string name )
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get( rs, rs.GetOrdinal( name ) );
 
 		}
 
@@ -87,22 +86,22 @@ namespace NHibernate.Type {
 		/// This uses the <see cref="NHibernate.String.Set(IDbCommand, Object,Int32)"/> method of the 
 		/// <see cref="NHibernate.String"/> object to do the work.
 		/// </remarks>
-		public override void Set(IDbCommand cmd, object value, int index) 
+		public override void Set( IDbCommand cmd, object value, int index )
 		{
-			NHibernate.String.Set(cmd, ( (System.Type) value ).AssemblyQualifiedName, index);
+			NHibernate.String.Set( cmd, ( ( System.Type ) value ).AssemblyQualifiedName, index );
 		}
-	
+
 		/// <summary>
 		/// A representation of the value to be embedded in an XML element 
 		/// </summary>
-		/// <param name="val">The <see cref="System.Type"/> that contains the values.
+		/// <param name="value">The <see cref="System.Type"/> that contains the values.
 		/// </param>
 		/// <returns>An Xml formatted string that contains the Assembly Qualified Name.</returns>
-		public override string ToXML(object value) 
+		public override string ToXML( object value )
 		{
-			return ( (System.Type) value ).AssemblyQualifiedName;
+			return ( ( System.Type ) value ).AssemblyQualifiedName;
 		}
-	
+
 		/// <summary>
 		/// Gets the <see cref="System.Type"/> that will be returned 
 		/// by the <c>NullSafeGet()</c> methods.
@@ -110,28 +109,34 @@ namespace NHibernate.Type {
 		/// <value>
 		/// A <see cref="System.Type"/> from the .NET framework.
 		/// </value>
-		public override System.Type ReturnedClass 
+		public override System.Type ReturnedClass
 		{
-			get { return typeof(System.Type); }
+			get { return typeof( System.Type ); }
 		}
-	
-		public override bool Equals(object x, object y) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public override bool Equals( object x, object y )
 		{
-			
-			if(x==null && y==null) 
+			if( x == null && y == null )
 			{
 				return true;
 			}
-			
-			if(x==null || y==null) 
+
+			if( x == null || y == null )
 			{
 				return false;
 			}
 
-			return x.Equals(y);
+			return x.Equals( y );
 		}
-	
-		public override string Name 
+
+		/// <summary></summary>
+		public override string Name
 		{
 			get { return "Type"; }
 		}

@@ -178,7 +178,7 @@
 		When implemented by a class, returns a deep copy of the persistent 
 		state, stopping at entities and at collections.
 		</summary>
-		<param name="value">A Collection element or Entity field</param>
+		<param name="val">A Collection element or Entity field</param>
 		<returns>A deep copy of the object.</returns>
 	</member>
 	

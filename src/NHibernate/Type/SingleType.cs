@@ -1,11 +1,9 @@
 using System;
 using System.Data;
-
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
-	
 	/// <summary>
 	/// Maps a <see cref="System.Single" /> Property to an 
 	/// <see cref="DbType.Single" /> column.
@@ -14,39 +12,65 @@ namespace NHibernate.Type
 	/// Verify through your database's documentation if there is a column type that
 	/// matches up with the capabilities of <see cref="System.Single" />  
 	/// </remarks>
-	public class SingleType : ValueTypeType 
+	public class SingleType : ValueTypeType
 	{
-		internal SingleType() : base( new SingleSqlType() ) 
+		/// <summary></summary>
+		internal SingleType() : base( new SingleSqlType() )
 		{
 		}
 
-		public override object Get(IDataReader rs, int index)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, int index )
 		{
-			return Convert.ToSingle(rs[index]);
+			return Convert.ToSingle( rs[ index ] );
 		}
 
-		public override object Get(IDataReader rs, string name) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, string name )
 		{
-			return Convert.ToSingle(rs[name]);
+			return Convert.ToSingle( rs[ name ] );
 		}
 
-		public override System.Type ReturnedClass 
+		/// <summary></summary>
+		public override System.Type ReturnedClass
 		{
-			get { return typeof(System.Single); }
+			get { return typeof( Single ); }
 		}
 
-		public override void Set(IDbCommand st, object value, int index) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		public override void Set( IDbCommand st, object value, int index )
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
+			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
 			parm.Value = value;
 		}
 
-		public override string Name 
+		/// <summary></summary>
+		public override string Name
 		{
 			get { return "Single"; }
 		}
 
-		public override string ObjectToSQLString(object value) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override string ObjectToSQLString( object value )
 		{
 			return value.ToString();
 		}

@@ -1,11 +1,9 @@
-using System;
-
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// Maps a <see cref="System.Boolean" /> to a 1 char <see cref="DbType.AnsiStringFixedLength" /> column 
+	/// Maps a <see cref="System.Boolean" /> to a 1 char <see cref="System.Data.DbType.AnsiStringFixedLength" /> column 
 	/// that stores a <code>'Y'/'N'</code> to indicate <code>true/false</code>.
 	/// </summary>
 	/// <remarks>
@@ -16,24 +14,27 @@ namespace NHibernate.Type
 	/// in ADO.NET there is not one specifically for char, so you need to tell schema
 	/// export to create a char(1) column.
 	/// </remarks>
-	public class YesNoType : CharBooleanType 
+	public class YesNoType : CharBooleanType
 	{
-
-		internal YesNoType() : base( new AnsiStringFixedLengthSqlType(1) ) 
+		/// <summary></summary>
+		internal YesNoType() : base( new AnsiStringFixedLengthSqlType( 1 ) )
 		{
 		}
 
-		protected override sealed string TrueString 
+		/// <summary></summary>
+		protected override sealed string TrueString
 		{
 			get { return "Y"; }
 		}
 
-		protected override sealed string FalseString 
+		/// <summary></summary>
+		protected override sealed string FalseString
 		{
 			get { return "N"; }
 		}
 
-		public override string Name 
+		/// <summary></summary>
+		public override string Name
 		{
 			get { return "YesNo"; }
 		}

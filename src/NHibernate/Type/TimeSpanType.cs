@@ -1,84 +1,131 @@
 using System;
 using System.Data;
-
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
-	
 	/// <summary>
 	/// Maps a <see cref="System.TimeSpan" /> Property to an <see cref="DbType.Int64" /> column 
 	/// </summary>
 	public class TimeSpanType : ValueTypeType, IVersionType, ILiteralType
 	{
-		internal TimeSpanType() : base( new Int64SqlType() ) 
+		/// <summary></summary>
+		internal TimeSpanType() : base( new Int64SqlType() )
 		{
 		}
 
-		public override object Get(IDataReader rs, int index) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, int index )
 		{
-			return new TimeSpan( Convert.ToInt64(rs[index]) );
+			return new TimeSpan( Convert.ToInt64( rs[ index ] ) );
 		}
 
-		public override object Get(IDataReader rs, string name) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, string name )
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get( rs, rs.GetOrdinal( name ) );
 		}
 
-		public override System.Type ReturnedClass 
+		/// <summary></summary>
+		public override System.Type ReturnedClass
 		{
-			get { return typeof(TimeSpan); }
+			get { return typeof( TimeSpan ); }
 		}
 
-		public override void Set(IDbCommand st, object value, int index) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		public override void Set( IDbCommand st, object value, int index )
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			parm.Value = ((TimeSpan)value).Ticks;
+			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
+			parm.Value = ( ( TimeSpan ) value ).Ticks;
 		}
 
-		public override string Name 
+		/// <summary></summary>
+		public override string Name
 		{
 			get { return "TimeSpan"; }
 		}
 
-		public override string ToXML(object val) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="val"></param>
+		/// <returns></returns>
+		public override string ToXML( object val )
 		{
-			return ((TimeSpan)val).Ticks.ToString();
+			return ( ( TimeSpan ) val ).Ticks.ToString();
 		}
 
-		public override bool Equals(object x, object y) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public override bool Equals( object x, object y )
 		{
-			if (x==y) return true;
-			if (x==null || y==null) return false;
+			if( x == y )
+			{
+				return true;
+			}
+			if( x == null || y == null )
+			{
+				return false;
+			}
 
-			long xTime = ((TimeSpan)x).Ticks;
-			long yTime = ((TimeSpan)y).Ticks;
-			return xTime == yTime; 
+			long xTime = ( ( TimeSpan ) x ).Ticks;
+			long yTime = ( ( TimeSpan ) y ).Ticks;
+			return xTime == yTime;
 		}
 
-		public override bool HasNiceEquals 
+		/// <summary></summary>
+		public override bool HasNiceEquals
 		{
 			get { return true; }
 		}
 
 		#region IVersionType Members
 
-		public object Next(object current) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="current"></param>
+		/// <returns></returns>
+		public object Next( object current )
 		{
 			return Seed;
 		}
-		
-		public object Seed 
+
+		/// <summary></summary>
+		public object Seed
 		{
 			get { return new TimeSpan( DateTime.Now.Ticks ); }
 		}
 
 		#endregion
 
-		public override string ObjectToSQLString(object value) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override string ObjectToSQLString( object value )
 		{
-			return "'" + ((TimeSpan)value).Ticks.ToString() + "'";
+			return "'" + ( ( TimeSpan ) value ).Ticks.ToString() + "'";
 		}
 	}
 }
-

@@ -1,50 +1,49 @@
 using System;
 using System.Data;
-
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
-
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
 	/// <summary>
 	/// The base implementation of the <see cref="IType"/> interface.
 	/// Mapping of the built in Type hierarchy.
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractType : IType 
+	public abstract class AbstractType : IType
 	{
 		/// <summary>
 		/// Gets a value indicating if the <see cref="AbstractType"/> is an <see cref="IAssociationType"/>.
 		/// </summary>
 		/// <value>false - by default an <see cref="AbstractType"/> is not an <see cref="IAssociationType"/>.</value>
-		public virtual bool IsAssociationType {
-			get { return false;	}
+		public virtual bool IsAssociationType
+		{
+			get { return false; }
 		}
-	
+
 		/// <summary>
 		/// Gets a value indicating if the <see cref="AbstractType"/> is a <see cref="PersistentCollectionType"/>.
 		/// </summary>
 		/// <value>false - by default an <see cref="AbstractType"/> is not a <see cref="PersistentCollectionType"/>.</value>
-		public virtual bool IsPersistentCollectionType 
+		public virtual bool IsPersistentCollectionType
 		{
 			get { return false; }
 		}
-	
+
 		/// <summary>
 		/// Gets a value indicating if the <see cref="AbstractType"/> is an <see cref="IAbstractComponentType"/>.
 		/// </summary>
 		/// <value>false - by default an <see cref="AbstractType"/> is not an <see cref="IAbstractComponentType"/>.</value>
-		public virtual bool IsComponentType 
+		public virtual bool IsComponentType
 		{
-			get { return false;	}
+			get { return false; }
 		}
-	
+
 		/// <summary>
 		/// Gets a value indicating if the <see cref="AbstractType"/> is a <see cref="EntityType"/>.
 		/// </summary>
 		/// <value>false - by default an <see cref="AbstractType"/> is not a <see cref="EntityType"/>.</value>
-		public virtual bool IsEntityType 
+		public virtual bool IsEntityType
 		{
 			get { return false; }
 		}
@@ -53,13 +52,11 @@ namespace NHibernate.Type
 		///Gets a value indicating if the implementation is an "object" type
 		/// </summary>
 		/// <value>false - by default an <see cref="AbstractType"/> is not a "object" type.</value>
-		public virtual bool IsObjectType 
+		public virtual bool IsObjectType
 		{
-			get 
-			{
-				return false;
-			}
+			get { return false; }
 		}
+
 		/// <summary>
 		/// Disassembles the object into a cacheable representation.
 		/// </summary>
@@ -69,16 +66,18 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual object Disassemble(object value, ISessionImplementor session) 
+		public virtual object Disassemble( object value, ISessionImplementor session )
 		{
-			if (value==null) {
+			if( value == null )
+			{
 				return null;
 			}
-			else {
-				return DeepCopy(value);
+			else
+			{
+				return DeepCopy( value );
 			}
 		}
-	
+
 		/// <summary>
 		/// Reconstructs the object from its cached "disassembled" state.
 		/// </summary>
@@ -89,17 +88,19 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual object Assemble(object cached, ISessionImplementor session, object owner) 
+		public virtual object Assemble( object cached, ISessionImplementor session, object owner )
 		{
-			if ( cached==null ) {
+			if( cached == null )
+			{
 				return null;
 			}
-			else {
-				return DeepCopy(cached);
+			else
+			{
+				return DeepCopy( cached );
 			}
 		}
-		
-	
+
+
 		/// <summary>
 		/// Should the parent be considered dirty, given both the old and current 
 		/// field or element value?
@@ -109,11 +110,11 @@ namespace NHibernate.Type
 		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
 		/// <returns>true if the field is dirty</returns>
 		/// <remarks>This method uses <c>IType.Equals(object, object)</c> to determine the value of IsDirty.</remarks>
-		public virtual bool IsDirty(object old, object current, ISessionImplementor session) 
+		public virtual bool IsDirty( object old, object current, ISessionImplementor session )
 		{
-			return !Equals(old, current);
+			return !Equals( old, current );
 		}
-	
+
 
 		/// <summary>
 		/// Retrives an instance of the mapped class, or the identifier of an entity 
@@ -131,11 +132,11 @@ namespace NHibernate.Type
 		/// This method uses the <c>IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)</c> method
 		/// to Hydrate this <see cref="AbstractType"/>.
 		/// </remarks>
-		public virtual object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner) 
+		public virtual object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
 		{
-			return NullSafeGet(rs, names, session, owner);
+			return NullSafeGet( rs, names, session, owner );
 		}
-				
+
 		/// <summary>
 		/// Maps identifiers to Entities or Collections. 
 		/// </summary>
@@ -146,35 +147,35 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// There is nothing done in this method other than return the value parameter passed in.
 		/// </remarks>
-		public virtual object ResolveIdentifier(object value, ISessionImplementor session, object owner) 
+		public virtual object ResolveIdentifier( object value, ISessionImplementor session, object owner )
 		{
 			return value;
 		}
-				
+
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
 		/// /> 
-		public abstract object DeepCopy(object val);
+		public abstract object DeepCopy( object val );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.SqlTypes"]/*'
 		/// /> 
-		public abstract SqlType[] SqlTypes(IMapping mapping);
+		public abstract SqlType[ ] SqlTypes( IMapping mapping );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.GetColumnSpan"]/*'
 		/// /> 
-		public abstract int GetColumnSpan(IMapping mapping);
+		public abstract int GetColumnSpan( IMapping mapping );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Equals"]/*'
 		/// /> 
-		public abstract new bool Equals(object x, object y);  //We need "new" because object.Equal is not marked as virtual. Is it correct?
+		new public abstract bool Equals( object x, object y ); //We need "new" because object.Equal is not marked as virtual. Is it correct? Or because this is *abstract* so we're not really overriding it?
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'
 		/// /> 
-		public abstract bool IsMutable {get;}
+		public abstract bool IsMutable { get; }
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.Name"]/*'
@@ -189,17 +190,17 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		public abstract object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string, ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, Object owner);
-	
+		public abstract object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, Object owner );
+
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		/// /> 
-		public abstract void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session); 
+		public abstract void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.ReturnedClass"]/*'
@@ -209,6 +210,6 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ToXML"]/*'
 		/// /> 
-		public abstract string ToXML(object value, ISessionFactoryImplementor factory);
+		public abstract string ToXML( object value, ISessionFactoryImplementor factory );
 	}
 }

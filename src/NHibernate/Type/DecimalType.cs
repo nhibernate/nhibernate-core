@@ -1,57 +1,90 @@
 using System;
 using System.Data;
-
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type 
+namespace NHibernate.Type
 {
-
 	/// <summary>
 	/// Maps a <see cref="System.Decimal"/> Property 
 	/// to a <see cref="DbType.Decimal"/> column.
 	/// </summary>
 	public class DecimalType : ValueTypeType, IIdentifierType
 	{
-		internal DecimalType() : this( new DecimalSqlType() ) 
-		{
-		}
-		
-		internal DecimalType(DecimalSqlType sqlType) : base(sqlType) 
+		/// <summary></summary>
+		internal DecimalType() : this( new DecimalSqlType() )
 		{
 		}
 
-		public override object Get(IDataReader rs, int index) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlType"></param>
+		internal DecimalType( DecimalSqlType sqlType ) : base( sqlType )
 		{
-			return Convert.ToDecimal(rs[index]);
 		}
 
-		public override object Get(IDataReader rs, string name) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, int index )
 		{
-			return Convert.ToDecimal(rs[name]);
+			return Convert.ToDecimal( rs[ index ] );
 		}
 
-		public override System.Type ReturnedClass 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public override object Get( IDataReader rs, string name )
 		{
-			get { return typeof(Decimal); }
+			return Convert.ToDecimal( rs[ name ] );
 		}
 
-		public override void Set(IDbCommand st, object value, int index) 
+		/// <summary></summary>
+		public override System.Type ReturnedClass
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
+			get { return typeof( Decimal ); }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		public override void Set( IDbCommand st, object value, int index )
+		{
+			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
 			parm.Value = value;
 		}
 
-		public override string Name 
+		/// <summary></summary>
+		public override string Name
 		{
 			get { return "Decimal"; }
 		}
 
-		public object StringToObject(string xml) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public object StringToObject( string xml )
 		{
-			return long.Parse(xml);
+			return long.Parse( xml );
 		}
 
-		public override string ObjectToSQLString(object value) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override string ObjectToSQLString( object value )
 		{
 			return value.ToString();
 		}
