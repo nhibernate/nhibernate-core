@@ -527,18 +527,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\CVS\Entries"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "Hql\CVS\Repository"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "Hql\CVS\Root"
-                    BuildAction = "None"
-                />
-                <File
                     RelPath = "Id\IConfigurable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -565,6 +553,11 @@
                 />
                 <File
                     RelPath = "Id\UUIDStringGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\AbstractEntityLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -1,17 +1,132 @@
 using System;
+using NHibernate.Loader;
+using NHibernate.Type;
 
-namespace NHibernate.Persister
-{
+namespace NHibernate.Persister {
+	
 	/// <summary>
-	/// Summary description for ILoadable.
+	/// Implemented by <c>ClassPersister</c> that uses <c>Loader</c>. THere are several optional
+	/// operations used only by loaders that inherit <c>OuterJoinLoader</c>
 	/// </summary>
-	public class ILoadable
-	{
-		public ILoadable()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
-		}
+	public interface ILoadable : IClassPersister {
+		
+		/// <summary>
+		/// The names of columns used to persist the identifier
+		/// </summary>
+		string[] IdentifierColumnNames { get; }
+
+		/// <summary>
+		/// Does the persistent class have subclasses?
+		/// </summary>
+		bool HasSubclasses { get; }
+
+		/// <summary>
+		/// The discriminator type
+		/// </summary>
+		IDiscriminatorType DiscriminatorType { get; }
+
+		/// <summary>
+		/// Get the concrete subclass corresponding to the given discriminator value
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		System.Type GetSubclassForDiscriminatorValue(object value);
+
+		/// <summary>
+		/// Get the column names for the numbered property of <c>this</c> class
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		string[] GetPropertyColumnNames(int i);
+
+		/// <summary>
+		/// The fully-qualified tablename used to persist this class
+		/// </summary>
+		string TableName { get; }
+
+		/// <summary>
+		/// How many properties are there, for this class and all subclasses? (optional operation)
+		/// </summary>
+		/// <returns></returns>
+		int CountSubclassProperties();
+
+		/// <summary>
+		/// May this property be fetched using an SQL outerjoin?
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		OuterJoinLoaderType EnableJoinedFetch(int i);
+
+		/// <summary>
+		/// Is this property defined on a subclass of the mapped class?
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		bool IsDefinedOnSubclass(int i);
+
+		/// <summary>
+		/// Get an array of the types of all properties of all subclasses (optional operation)
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		IType GetSubclassPropertyType(int i);
+
+		/// <summary>
+		/// Given the number of a property of a subclass, and a table alias, return the aliased column names
+		/// (optional operation)
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		string[] ToColumns(string name, int i);
+	
+		/// <summary>
+		/// Get the table alias for the particular subclass state (optional operation)
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		string GetConcreteClassAlias(string alias);
+
+		/// <summary>
+		/// Given a query alias and an identifying suffix, render the identifier select fragment
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="suffix"></param>
+		/// <returns></returns>
+		string IdentifierSelectFragment(string name, string suffix);
+
+		/// <summary>
+		/// Given a query alias and an identifying suffix, render the property select fragment
+		/// (optional operation)
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="suffix"></param>
+		/// <returns></returns>
+		string PropertySelectFragment(string alias, string suffix);
+
+		/// <summary>
+		/// Get the main from table fragment, given a query alias (optional operation)
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		string FromTableFragment(string alias);
+
+		/// <summary>
+		/// Get the where clause part of any joins (optional operation)
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="innerJoin"></param>
+		/// <param name="includeSubclasses"></param>
+		/// <returns></returns>
+		string WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
+
+		/// <summary>
+		/// Get the from clause part of any joins (optional operation)
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="innerJoin"></param>
+		/// <param name="includeSubclasses"></param>
+		/// <returns></returns>
+		string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 	}
 }
