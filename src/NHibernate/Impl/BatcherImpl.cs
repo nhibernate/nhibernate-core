@@ -239,7 +239,9 @@ namespace NHibernate.Impl
 			//TODO: fix this up a little bit - don't like it having the same name and just
 			// turning around and calling a diff method.
 			CloseQueryCommand( cmd, reader );
-			LogClosePreparedCommands();
+			// CloseQueryCommand contains the logging so we don't need to call it 
+			// here - putting it in CloseQueryCommand(IDbCommand) will ensure it always gets called.
+			//LogClosePreparedCommands(); 
 		}
 
 		public void CloseCommands() 
@@ -286,7 +288,7 @@ namespace NHibernate.Impl
 				return; // NOTE: early exit!
 			}
 
-//			CloseCommand( cmd, null );
+			LogClosePreparedCommands();
 		}
 
 		public void CloseQueryCommand(IDbCommand st, IDataReader reader) 
@@ -344,31 +346,36 @@ namespace NHibernate.Impl
 
 		private static void LogOpenPreparedCommands() 
 		{
-			if ( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled ) 
 			{
 				log.Debug( "about to open: " + openCommandCount + " open IDbCommands, " + openReaderCount + " open DataReaders" );
+				openCommandCount++;
 			}
-			openCommandCount++;
 		}
 
 		private static void LogClosePreparedCommands() 
 		{
-			openCommandCount--;
-
-			if ( log.IsDebugEnabled ) 
+			if( log.IsDebugEnabled ) 
 			{
+				openCommandCount--;
 				log.Debug( "done closing: " + openCommandCount + " open IDbCommands, " + openReaderCount + " open DataReaders" );
 			}
 		}
 
 		private static void LogOpenReaders() 
 		{
-			openReaderCount++;
+			if( log.IsDebugEnabled ) 
+			{
+				openReaderCount++;
+			}
 		}
 
 		private static void LogCloseReaders() 
 		{
-			openReaderCount--;
+			if( log.IsDebugEnabled ) 
+			{
+				openReaderCount--;
+			}
 		}
 
 		
