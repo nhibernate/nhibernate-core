@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Text;
 using System.Collections;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using NHibernate.Type;
 using NHibernate.Cache;
@@ -254,6 +255,10 @@ namespace NHibernate.Impl
 		[NonSerialized] private int cascading = 0;
 
 		[NonSerialized] private IBatcher batcher;
+
+		// For serialization
+		[NonSerialized] private SerializationInfo siInfo;
+
 		private IPreparer preparer;
 
 		
@@ -526,10 +531,72 @@ namespace NHibernate.Impl
 			}
 		}
 
-		//TODO: add serialization / deserialization stuff here
-		// private void readObject
-		// private void writeObject
-		
+		SessionImpl(SerializationInfo info, StreamingContext context)
+		{
+			//The graph is not valid until OnDeserialization() has been called.
+			siInfo = info; 
+		}
+
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			if ( IsConnected ) throw new InvalidOperationException("Cannot serialize a Session while connected");
+			if ( insertions.Count!=0 || deletions.Count!=0 )
+				throw new InvalidOperationException("Cannot serialize a Session which has work waiting to be flushed");
+					
+			log.Info("serializing session");
+
+			info.AddValue("entries", entries);
+			info.AddValue("collections", collections);
+			info.AddValue("arrayHolders", arrayHolders);
+		}
+
+		public void OnDeserialization(Object sender)
+		{
+			log.Info("deserializing session");
+			entries = (IdentityMap)siInfo.GetValue("entries", typeof(IdentityMap));
+			collections = (IdentityMap)siInfo.GetValue("collections", typeof(IdentityMap));
+			arrayHolders = (IdentityMap)siInfo.GetValue("arrayHolders", typeof(IdentityMap));
+			InitTransientCollections();
+			foreach(DictionaryEntry e in collections)
+			{
+				try
+				{
+					((PersistentCollection)e.Key).SetSession(this);
+					CollectionEntry ce = (CollectionEntry)e.Value;
+					ce.loadedPersister = factory.GetCollectionPersister(ce.Role);
+				}
+				catch (HibernateException he)
+				{
+					// Different from h2.0.3
+					throw new InvalidOperationException(he.Message);
+				}
+			}
+			
+			IDictionary newProxiesByKey = new Hashtable(proxiesByKey);
+			foreach(object proxy in proxiesByKey)
+			{
+				if (proxy is HibernateProxy)
+					HibernateProxyHelper.GetLazyInitializer(proxy as HibernateProxy).SetSession(this);
+				else
+					newProxiesByKey.Remove(proxy);
+			}
+			proxiesByKey = newProxiesByKey;
+			newProxiesByKey = null;
+
+			foreach(EntityEntry e in entries)
+			{
+				try
+				{
+					e.Persister = factory.GetPersister(e.ClassName);
+				}
+				catch (MappingException me)
+				{
+					// Different from h2.0.3
+					throw new InvalidOperationException(me.Message);
+				}
+			}
+		}
+
 		internal SessionImpl(IDbConnection connection, SessionFactoryImpl factory, bool autoClose, long timestamp, IInterceptor interceptor) 
 		{
 			this.connection = connection;
