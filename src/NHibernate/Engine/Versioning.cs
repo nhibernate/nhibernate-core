@@ -2,11 +2,13 @@ using System;
 using NHibernate.Persister;
 using NHibernate.Type;
 
-namespace NHibernate.Engine {
+namespace NHibernate.Engine 
+{
 	/// <summary>
 	/// Utility methods for managing versions and timestamps
 	/// </summary>
-	public class Versioning {
+	public class Versioning 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Versioning));
 		
 
@@ -16,7 +18,8 @@ namespace NHibernate.Engine {
 		/// <param name="version"></param>
 		/// <param name="versionType"></param>
 		/// <returns></returns>
-		public static object Increment(object version, IVersionType versionType) {
+		public static object Increment(object version, IVersionType versionType) 
+		{
 			object next = versionType.Next(version);
 			if ( log.IsDebugEnabled ) log.Debug("Incrementing: " + version + " to " + next);
 			return next;
@@ -27,7 +30,8 @@ namespace NHibernate.Engine {
 		/// </summary>
 		/// <param name="versionType"></param>
 		/// <returns></returns>
-		public static object Seed(IVersionType versionType) {
+		public static object Seed(IVersionType versionType) 
+		{
 			object seed = versionType.Seed;
 			if ( log.IsDebugEnabled ) log.Debug("Seeding: " + seed);
 			return seed;
@@ -40,20 +44,26 @@ namespace NHibernate.Engine {
 		/// <param name="versionProperty"></param>
 		/// <param name="versionType"></param>
 		/// <returns></returns>
-		public static bool SeedVersion(object[] fields, int versionProperty, IVersionType versionType) {
-			if ( fields[versionProperty] == null ) {
+		public static bool SeedVersion(object[] fields, int versionProperty, IVersionType versionType) 
+		{
+			if ( fields[versionProperty] == null ) 
+			{
 				fields[versionProperty] = Seed(versionType);
 				return true;
-			} else {
+			} 
+			else 
+			{
 				return false;
 			}
 		}
 
-		private static object GetVersion(object[] fields, int versionProperty, IVersionType versionType) {
+		private static object GetVersion(object[] fields, int versionProperty, IVersionType versionType) 
+		{
 			return fields[versionProperty];
 		}
 
-		private static void SetVersion(object[] fields, object version, int versionProperty, IVersionType versionType) {
+		private static void SetVersion(object[] fields, object version, int versionProperty, IVersionType versionType) 
+		{
 			fields[versionProperty] = version;
 		}
 
@@ -63,7 +73,8 @@ namespace NHibernate.Engine {
 		/// <param name="fields"></param>
 		/// <param name="version"></param>
 		/// <param name="persister"></param>
-		public static void SetVersion(object[] fields, object version, IClassPersister persister) {
+		public static void SetVersion(object[] fields, object version, IClassPersister persister) 
+		{
 			SetVersion( fields, version, persister.VersionProperty, persister.VersionType );
 		}
 
@@ -73,7 +84,8 @@ namespace NHibernate.Engine {
 		/// <param name="fields"></param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public static object GetVersion(object[] fields, IClassPersister persister) {
+		public static object GetVersion(object[] fields, IClassPersister persister) 
+		{
 			return persister.IsVersioned ? GetVersion( fields, persister.VersionProperty, persister.VersionType) : null;
 		}
 

@@ -3,18 +3,21 @@ using System;
 using NHibernate.Collection;
 using NHibernate.Persister;
 
-namespace NHibernate.Engine {
+namespace NHibernate.Engine 
+{
 	/// <summary>
 	/// A globally unique identifier of an instance, consisting of the user-visible identifier
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public sealed class Key {
+	public sealed class Key 
+	{
 		private object id;
 		private object identifierSpace;
 
-		private Key(object id, object identifierSpace) {
-			if (id==null) throw new AssertionFailure("null identifier");
+		private Key(object id, object identifierSpace) 
+		{
+			if (id==null) throw new ArgumentException("null identifier", "id");
 			this.id = id;
 			this.identifierSpace = identifierSpace;
 		}
@@ -31,25 +34,31 @@ namespace NHibernate.Engine {
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="p"></param>
+		//TODO:not in H2.0.3
+		[Obsolete("This ctor is not in H2.0.3")] 
 		public Key(object id, CollectionPersister p) : this ( id, p.QualifiedTableName ) { }
 
 		/// <summary>
 		/// The user-visible identifier
 		/// </summary>
-		public object Identifier {
+		public object Identifier 
+		{
 			get { return id; }
 		}
 
-		public override bool Equals(object other) {
+		public override bool Equals(object other) 
+		{
 			Key otherKey = other as Key;
 			return otherKey.identifierSpace.Equals(this.identifierSpace) && otherKey.id.Equals(this.id);
 		}
 
-		public override int GetHashCode() {
+		public override int GetHashCode() 
+		{
 			return id.GetHashCode();
 		}
 
-		public override string ToString() { 
+		public override string ToString() 
+		{ 
 			return id.ToString(); 
 		} 
 
