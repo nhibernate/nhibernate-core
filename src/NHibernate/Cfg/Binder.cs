@@ -778,6 +778,12 @@ namespace NHibernate.Cfg {
 					BindComponent(subnode, component, null, model.Role + ".index", model.IsOneToMany, mappings);
 					model.Index = component;
 				}
+				else if ( "index-many-to-any".Equals(name) ) 
+				{
+					Any any = new Any( model.Table );
+					BindAny( subnode, any, model.IsOneToMany );
+					model.Index = any;
+				} 
 			}
 			if ( !model.IsInverse ) model.Index.CreateForeignKey();
 
