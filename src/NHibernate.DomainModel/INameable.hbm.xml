@@ -8,6 +8,7 @@
         <id 
 			name="Key" 
 			column="key_"
+			unsaved-value="0"
 		>
         	<generator class="native"/>
         </id>

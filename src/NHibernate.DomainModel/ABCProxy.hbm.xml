@@ -2,7 +2,7 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="NHibernate.DomainModel.A, NHibernate.DomainModel" discriminator-value="0"
 		proxy="NHibernate.DomainModel.A, NHibernate.DomainModel">
-		<id name="Id" unsaved-value="null" type="Int64">
+		<id name="Id" unsaved-value="0" type="Int64">
 			<generator class="native" />
 		</id>
 		<discriminator column="clazz" type="Int32" force="true" not-null="false" />
@@ -28,7 +28,7 @@
 	</class>
 	<class name="NHibernate.DomainModel.D, NHibernate.DomainModel" discriminator-value="0"
 		proxy="NHibernate.DomainModel.D, NHibernate.DomainModel">
-		<id name="Id" unsaved-value="null" type="Int64">
+		<id name="Id" unsaved-value="0" type="Int64">
 			<generator class="assigned" />
 		</id>
 		<property name="Amount" type="Double" />

@@ -8,6 +8,7 @@
 		<id 
 			column="master_key" 
 			type="Int64"
+			unsaved-value="0"
 		>
 			<generator class="native"/>
 		</id>
@@ -83,6 +84,7 @@
 		<id 
 			column="detail_key" 
 			type="Int64"
+			unsaved-value="0"
 		>
 			<generator class="native"/>
 		</id>

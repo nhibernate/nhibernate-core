@@ -18,6 +18,7 @@
 		<id 
 			name="Id" 
 			column="container_id"
+			unsaved-value="0"
 		>
 			<generator class="native" />
 		</id>

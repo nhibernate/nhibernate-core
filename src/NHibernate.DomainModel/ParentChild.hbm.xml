@@ -4,7 +4,7 @@
 	<class 
 		name="NHibernate.DomainModel.Parent, NHibernate.DomainModel"
 	>
-		<id name="Id" type="Int64">
+		<id name="Id" type="Int64" unsaved-value="0">
 			<generator class="native"> 
 				<!--seqhilo-->
 				<!--<param>foo_seq</param>-->
@@ -22,7 +22,7 @@
 	<class 
 		name="NHibernate.DomainModel.Child, NHibernate.DomainModel"
 	>
-		<id name="Id" type="Int64">
+		<id name="Id" type="Int64" unsaved-value="0">
 			<generator class="assigned"/>
 		</id>
 		<property name="X"/>

@@ -12,6 +12,7 @@
         <id 
 			type="Int64" 
 			column="id_" 
+			unsaved-value="0"
 		>
             <generator class="native"/>
         </id>
@@ -153,6 +154,7 @@
     	<id 
     		type="Int64" 
     		column="id_"
+    		unsaved-value="0"
     	>
     		<generator class="native"/>
     	</id>

@@ -6,9 +6,10 @@
 	>
 		<id 
 			name="Id" 
-			unsaved-value="null"
+			unsaved-value="0"
 		>
-			<generator class="native" />
+			<generator class="assigned" />
+			<!-- unsaved-value used to be null and generator was increment in h2.0.3 -->
 		</id>
 		
 		<discriminator 
@@ -60,7 +61,7 @@
 	>
 		<id 
 			name="Id" 
-			unsaved-value="null"
+			unsaved-value="0"
 		>
 			<generator class="assigned" />
 		</id>
