@@ -39,11 +39,28 @@ namespace NHibernate.Test
 		internal static void AssertEquals(IList expected, IList actual) 
 		{
 
-			Assertion.AssertEquals(expected.Count, actual.Count);
+			AssertEquals(expected, actual, true);
+		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="expected"></param>
+		/// <param name="actual"></param>
+		/// <param name="indexMatters">A boolean indicating if the List are compared at Index or by Contains.</param>
+		internal static void AssertEquals(IList expected, IList actual, bool indexMatters) 
+		{
+			Assert.AreEqual(expected.Count, actual.Count);
 			for(int i = 0; i < expected.Count; i++) 
 			{
-				Assertion.AssertEquals("The item at index " + i + " was not equal", expected[i], actual[i]);
+				if(indexMatters) 
+				{
+					Assert.IsTrue(expected[i].Equals(actual[i]), "The item at index " + i + " was not equal" );
+				}
+				else 
+				{
+					Assert.IsTrue(actual.Contains(expected[i]), "The item " + expected[i].ToString() + " could not be found in the actual List.");
+				}
 			}
 		}
 

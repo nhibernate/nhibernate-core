@@ -884,7 +884,7 @@ namespace NHibernate.Test
 			{
 				ObjectAssertion.AssertEquals(expected.StringArray, actual.StringArray);
 				ObjectAssertion.AssertEquals(expected.Int32Array, actual.Int32Array);
-				ObjectAssertion.AssertEquals(expected.StringBag, actual.StringBag);
+				ObjectAssertion.AssertEquals(expected.StringBag, actual.StringBag, false);
 				ObjectAssertion.AssertEquals(expected.StringList, actual.StringList);
 				ObjectAssertion.AssertEquals(expected.StringMap, actual.StringMap, true);
 				ObjectAssertion.AssertEquals(expected.StringSet, actual.StringSet, false);
