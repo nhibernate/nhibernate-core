@@ -280,7 +280,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("ISession not fully serializable - http://jira.nhibernate.org:8080/browse/NH-60")]
 		public void Serialization() 
 		{
 			
@@ -537,7 +537,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void CustomPersister() 
 		{
 		}

@@ -19,25 +19,25 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void SetProperties() 
 		{
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void NothingToUpdate() 
 		{
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void SQLFunctions() 
 		{
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void BlobClob() 
 		{
 		}

@@ -17,7 +17,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void Performance() 
 		{
 		}

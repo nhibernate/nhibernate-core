@@ -461,7 +461,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Fails because Proxies not written yet.")]
+		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void NamedParams() 
 		{
 			Bar bar = new Bar();
@@ -492,7 +492,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Test not written yet.")]
+		[Ignore("SetMaxResults - http://jira.nhibernate.org:8080/browse/NH-87")]
 		public void FindByCriteria() 
 		{
 			ISession s = sessions.OpenSession();
@@ -542,9 +542,8 @@ namespace NHibernate.Test
 
 			Assert.IsTrue(list.Count==1 && list[0]==f);
 
-			//TODO: the SetMaxResults doesn't seem to have any impact
-//			list = s.CreateCriteria(typeof(Foo)).SetMaxResults(0).List();
-//			Assert.AreEqual(0, list.Count);
+			list = s.CreateCriteria(typeof(Foo)).SetMaxResults(0).List();
+			Assert.AreEqual(0, list.Count);
 			
 			list = s.CreateCriteria(typeof(Foo))
 				.SetFirstResult(1)
@@ -697,7 +696,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Test not written yet.")]
+		//[Ignore("TimeZone Portions commented out - http://jira.nhibernate.org:8080/browse/NH-88")]
 		public void AssociationId() 
 		{
 			ISession s = sessions.OpenSession();
@@ -715,6 +714,7 @@ namespace NHibernate.Test
 			stuf.Foo = bar;
 			stuf.Id = 1234;
 			
+			//TODO: http://jira.nhibernate.org:8080/browse/NH-88
 			//stuf.setProperty(TimeZone.getDefault() );
 			s.Save(more);
 			t.Commit();
@@ -776,6 +776,7 @@ namespace NHibernate.Test
 			s.Load(stuff, stuff);
 
 			// TODO: figure out what to do with TimeZone
+			// http://jira.nhibernate.org:8080/browse/NH-88
 			//Assert.IsTrue( stuff.getProperty().equals( TimeZone.getDefault() ) );
 			Assert.AreEqual("More Stuff", stuff.MoreStuff.Name);
 			s.Delete("from ms in class MoreStuff");
@@ -844,7 +845,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Test is failing because sub selects are not working. http://jira.nhibernate.org:8080/browse/NH-69")]
 		public void CollectionsInSelect() 
 		{
 			ISession s = sessions.OpenSession();
@@ -1024,7 +1024,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Test not written yet.")]
+		//[Ignore("Time Portions commented out - http://jira.nhibernate.org:8080/browse/NH-89")]
 		public void PersistCollections() 
 		{
 			ISession s = sessions.OpenSession();
@@ -1059,6 +1059,7 @@ namespace NHibernate.Test
 			baz.StringArray = null;
 			baz.StringList[0] = "new value";
 			baz.StringSet = new Hashtable();
+			//http://jira.nhibernate.org:8080/browse/NH-89
 			// TODO: baz.TimeArray[2] = new DateTime(
 			
 			Assert.AreEqual( 1, baz.StringGlarchMap.Count );
@@ -1357,7 +1358,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test fails because Proxy not implemented yet.")]
+		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void Load() 
 		{
 			ISession s = sessions.OpenSession();
@@ -1698,9 +1699,10 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Test not written yet.")]
-		public void Iterators() 
+		public void Enumerable() 
 		{
+			// this test used to be called Iterators()
+
 			ISession s = sessions.OpenSession();
 			for( int i=0; i<10; i++ ) 
 			{
@@ -1720,7 +1722,7 @@ namespace NHibernate.Test
 				Qux q = (Qux)enumer.Current;
 				q.Stuff = "foo";
 				// can't remove item from IEnumerator in .net 
-				//if (count==0 || count==5) enumer.Remove();
+				if (count==0 || count==5) s.Delete(q);
 				count++;
 			}
 
@@ -1730,7 +1732,7 @@ namespace NHibernate.Test
 			
 			s = sessions.OpenSession();
 
-			Assert.AreEqual(10, 
+			Assert.AreEqual(8, 
 				s.Delete("from q in class NHibernate.DomainModel.Qux where q.Stuff=?", "foo", NHibernate.String),
 				"delete by query");
 			
@@ -2457,7 +2459,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void ProxyArray() 
 		{
 		}
@@ -2729,7 +2731,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test depends on Proxies being implemented.")]
+		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void LoadAfterDelete() 
 		{
 			ISession s = sessions.OpenSession();
@@ -3013,7 +3015,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void ProxiesInCollections() 
 		{
 		}

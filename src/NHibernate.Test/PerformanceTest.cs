@@ -61,7 +61,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("User should comment this out if they want it to run.  Does not test any functions.")]
 		public void Many() 
 		{
 			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
@@ -136,19 +135,19 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Have not written yet.")]
+		[Ignore("Test not written yet.")]
 		public void Simultaneous() 
 		{
 		}
 
 		[Test]
-		[Ignore("Have not written yet.")]
+		[Ignore("Test not written yet.")]
 		public void HibernateOnly() 
 		{
 		}
 
 		[Test]
-		[Ignore("Have not written yet.")]
+		[Ignore("Test not written yet.")]
 		public void AdoNetOnly()
 		{
 		}

@@ -222,13 +222,12 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void Container() 
 		{
 		}
 		
 		[Test]
-		//[Ignore("Test not yet written")]
 		public void CascadeCompositeElements() 
 		{
 			Container c = new Container();
@@ -292,31 +291,31 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void Bag() 
 		{
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void CircularCascade() 
 		{
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void DeleteEmpty() 
 		{
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void Locking() 
 		{
 		}
 
 		[Test]
-		[Ignore("Test not yet written")]
+		[Ignore("Test not written yet.")]
 		public void ObjectType() 
 		{
 		}
