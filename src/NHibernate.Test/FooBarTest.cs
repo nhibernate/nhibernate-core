@@ -301,7 +301,6 @@ namespace NHibernate.Test
 
 			System.Text.Encoding encoding = new System.Text.UnicodeEncoding();
 
-			// TODO: not sure about this here...
 			byte[] bytes = encoding.GetBytes("ffo");
 			l2.Add(bytes);
 			l2.Add( encoding.GetBytes("foo") );
@@ -350,6 +349,7 @@ namespace NHibernate.Test
 		[Ignore("Test not written yet.")]
 		public void ForceOuterJoin() 
 		{
+			
 		}
 
 		[Test]
@@ -375,9 +375,57 @@ namespace NHibernate.Test
 
 		
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void OneToOneGenerator() 
 		{
+			ISession s = sessions.OpenSession();
+			X x = new X();
+			Y y = new Y();
+			x.Y = y;
+			y.TheX = x;
+
+			object yId = s.Save(y);
+			object xId = s.Save(x);
+
+			Assert.AreEqual( yId, xId);
+			s.Flush();
+
+			Assert.IsTrue( s.Contains(y) && s.Contains(x) );
+			s.Close();
+
+			Assert.AreEqual( x.Id, y.Id);
+
+
+			s = sessions.OpenSession();
+			x = new X();
+			y = new Y();
+
+			x.Y = y;
+			y.TheX = x;
+
+			s.Save(y);
+			s.Flush();
+
+			Assert.IsTrue( s.Contains(y) && s.Contains(x) );
+			s.Close();
+
+			Assert.AreEqual( x.Id, y.Id);
+
+
+			s = sessions.OpenSession();
+			x = new X();
+			y = new Y();
+			x.Y = y;
+			y.TheX = x;
+			xId = s.Save(x);
+
+			Assert.AreEqual(xId, y.Id);
+			Assert.AreEqual(xId, x.Id);
+			s.Flush();
+
+			Assert.IsTrue( s.Contains(y) && s.Contains(x) );
+			s.Delete("from X x");
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
@@ -393,15 +441,45 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void SaveAddDelete() 
 		{
+			ISession s = sessions.OpenSession();
+			Baz baz = new Baz();
+			IDictionary bars = new Hashtable();
+			baz.CascadingBars = bars;
+			s.Save(baz);
+			s.Flush();
+
+			baz.CascadingBars.Add( new Bar(), new object() );
+			s.Delete(baz);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Fails because Proxies not written yet.")]
 		public void NamedParams() 
 		{
+			Bar bar = new Bar();
+			Bar bar2 = new Bar();
+			bar.Name = "Bar";
+			bar2.Name = "Bar Two";
+			Baz baz = new Baz();
+			baz.CascadingBars = new Hashtable();
+			baz.CascadingBars.Add( bar, new object() );
+			bar.Baz = baz;
+
+			ISession s = sessions.OpenSession();
+			s.Save(baz);
+			s.Save(bar2);
+
+			// TODO: at this point it fails because of SessionImpl.ProxyFor
+			IList list = s.Find("from Bar bar left join bar.Baz baz left join baz.CascadingBars b where bar.Name like 'Bar %'");
+			object row = list[0];
+			Assert.IsTrue( row is object[] && ( (object[])row).Length==3 );
+
+
 		}
 
 		[Test]
@@ -411,9 +489,85 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		//[Ignore("Test not written yet.")]
 		public void FindByCriteria() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo f = new Foo();
+			s.Save(f);
+			s.Flush();
+
+			//TODO: need to add PropertyExpressions to Expression namespace.
+			IList list = s.CreateCriteria(typeof(Foo))
+				.Add( Expression.Expression.Eq( "integer", f.integer ) )
+				//.Add( Expression.Expression.EqProperty("integer", "integer") )
+				.Add( Expression.Expression.Like( "string", f.@string) )
+				.Add( Expression.Expression.In("boolean", new bool[] {f.boolean, f.boolean} ) )
+				.SetFetchMode("foo", FetchMode.Eager)
+				.SetFetchMode("baz", FetchMode.Lazy)
+				.List();
+
+			Assert.IsTrue( list.Count==1 && list[0]==f );
+
+			list = s.CreateCriteria( typeof(Foo) ).Add(
+				Expression.Expression.Disjunction()
+				.Add( Expression.Expression.Eq( "integer", f.integer ) )
+				.Add( Expression.Expression.Like( "string", f.@string ) )
+				.Add( Expression.Expression.Eq( "boolean", f.boolean ) )
+				)
+				.Add( Expression.Expression.IsNotNull("boolean") )
+				.List();
+
+			Assert.IsTrue( list.Count==1 && list[0]==f );
+
+			Expression.Expression andExpression;
+			Expression.Expression orExpression;
+
+			andExpression = Expression.Expression.And( Expression.Expression.Eq( "integer", f.integer ), Expression.Expression.Like( "string", f.@string ) );
+			orExpression = Expression.Expression.Or( andExpression, Expression.Expression.Eq( "boolean", f.boolean ) );
+
+			list = s.CreateCriteria(typeof(Foo))
+				.Add( orExpression )
+				.List();
+
+			Assert.IsTrue( list.Count==1 && list[0]==f );
+
+			
+			list = s.CreateCriteria(typeof(Foo))
+				.SetMaxResults(5)
+				.AddOrder(Expression.Order.Asc("Date"))
+				.List();
+
+			Assert.IsTrue(list.Count==1 && list[0]==f);
+
+			list = s.CreateCriteria(typeof(Foo)).SetMaxResults(0).List();
+			Assert.AreEqual(0, list.Count);
+
+			list = s.CreateCriteria(typeof(Foo))
+				.SetFirstResult(1)
+				.AddOrder( Expression.Order.Asc("Date") )
+				.AddOrder( Expression.Order.Desc("String") )
+				.List();
+
+			Assert.AreEqual(0, list.Count);
+
+			f.foo = new Foo();
+			s.Save(f.foo);
+			s.Flush();
+			s.Close();
+
+			//TODO: some HSQLDialect specific code here
+			//TODO: resume here
+//			s = sessions.OpenSession();
+//			list = s.CreateCriteria(Foo)
+//				.Add( Expression.Expression.Eq( "integer", f.integer ) )
+//				.Add( Expression.Expression.Like( "string", f.@string ) )
+//				.Add( Expression.Expression.In( "boolean", new bool[] { f.boolean, f.boolean } ) )
+//				.Add( Expression.Expression.IsNotNull("foo") );
+				
+
+
+
 		}
 
 		[Test]
