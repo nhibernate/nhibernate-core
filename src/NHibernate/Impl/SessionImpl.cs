@@ -76,7 +76,7 @@ namespace NHibernate.Impl {
 		[NonSerialized] private ArrayList executions;
 
 		[NonSerialized] private int dontFlushFromFind = 0;
-		[NonSerialized] private bool reentrantCallback = false;
+		[NonSerialized] private bool reentrantCallback = false; //leaving in despite warning, WIP.
 		[NonSerialized] private int cascading = 0;
 
 		[NonSerialized] private IBatcher batcher;
@@ -799,7 +799,7 @@ namespace NHibernate.Impl {
 			collectionRemovals.Add( new ScheduledCollectionRemove(role, id, this) );
 		}
 
-		//TODO: rename this method
+		// TODO: rename this method
 		private void RemoveCollectionsFor(IType type, object id, object value) {
 			if ( type.IsPersistentCollectionType ) {
 				CollectionPersister persister = GetCollectionPersister( ( (PersistentCollectionType) type).Role );
@@ -1830,7 +1830,7 @@ namespace NHibernate.Impl {
 				PersistentCollection coll = (PersistentCollection) me.Key;
 				CollectionEntry ce = (CollectionEntry) me.Value;
 
-				//TODO: move this to the entry
+				// TODO: move this to the entry
 
 				if ( ce.dorecreate ) collectionCreations.Add( new ScheduledCollectionRecreate(coll, ce.currentPersister, ce.currentKey, this) );
 				if ( ce.doremove ) collectionRemovals.Add( new ScheduledCollectionRemove(ce.loadedPersister, ce.loadedKey, this) );
