@@ -108,68 +108,15 @@ namespace NHibernate.Dialect {
 			get { return "DEFAULT VALUES"; }
 		}
 
+		[Obsolete("See the Dialect class for reason")]
 		public override bool UseNamedParameters {
 			get { return true; }
 		}
 
+		[Obsolete("See the Dialect class for reason")]
 		public override string NamedParametersPrefix {
 			get { return "@"; }
-		}
-
-		public override string SqlTypeToString(SqlType sqlType) {
-			switch(sqlType.DbType) {
-				case DbType.AnsiStringFixedLength: 
-					return SqlTypeToString((AnsiStringFixedLengthSqlType)sqlType);
-					//break;
-				case DbType.Binary :
-					return SqlTypeToString((BinarySqlType)sqlType);
-					//break;
-				case DbType.Boolean :
-					return "TINYINT";
-					//break;
-				case DbType.Byte:
-					return "TINYINT";
-					//break;
-				case DbType.Currency:
-					return "MONEY";
-					//break;
-				case DbType.Date:
-					return "DATETIME";
-
-				case DbType.DateTime:
-					return "DATETIME";
-					//break;
-				case DbType.Decimal:
-					return SqlTypeToString("DECIMAL", sqlType.Precision, sqlType.Scale);
-					//break;
-				case DbType.Double:
-					return SqlTypeToString("FLOAT", sqlType.Length);
-					//break;
-				case DbType.Int16:
-					return "SMALLINT";
-					//break;
-				case DbType.Int32:
-					return "INT";
-					//break;
-				case DbType.Int64:
-					return "BIGINT";
-					//break;
-				case DbType.Single:
-					return SqlTypeToString("FLOAT", sqlType.Length);
-					//break;
-				case DbType.StringFixedLength:
-					return SqlTypeToString((StringFixedLengthSqlType)sqlType);
-					//break;
-				case DbType.String:
-					return SqlTypeToString((StringSqlType)sqlType);
-					//break;
-				default:
-					throw new ApplicationException("Unmapped DBType");
-					//break;
-			}
-
-		}
-						
+		}						
 			
 		private string SqlTypeToString(string name, int length) {
 			return name + "(" + length + ")";
@@ -179,29 +126,92 @@ namespace NHibernate.Dialect {
 			return name + "(" + precision + ", " + scale + ")";
 		}
 
-		private string SqlTypeToString(AnsiStringFixedLengthSqlType sqlType) {
+		protected override string SqlTypeToString(AnsiStringFixedLengthSqlType sqlType) 
+		{
 			
-			if(sqlType.Length <= 8000) {
+			if(sqlType.Length <= 8000) 
+			{
 				return SqlTypeToString("CHAR", sqlType.Length);
 			}
-			else {
+			else 
+			{
 				return "TEXT"; // should use the IType.ClobType
 			}
 					
 		}
 
-		private string SqlTypeToString(BinarySqlType sqlType) {
+		protected override  string SqlTypeToString(BinarySqlType sqlType) 
+		{
 			
-			if(sqlType.Length <= 8000) {
+			if(sqlType.Length <= 8000) 
+			{
 				return SqlTypeToString("VARBINARY", sqlType.Length);
 			}
-			else {
+			else 
+			{
 				return "IMAGE"; // should use the IType.BlobType
 			}
 					
 		}
+		
+		protected override string SqlTypeToString(BooleanSqlType sqlType)
+		{
+			return "TINYINT";
+		}
 
-		private string SqlTypeToString(StringFixedLengthSqlType sqlType) {
+		
+		protected override string SqlTypeToString(ByteSqlType sqlType)
+		{
+			return "TINYINT";
+		}
+
+		protected override string SqlTypeToString(CurrencySqlType sqlType)
+		{
+			return "MONEY";
+		}
+
+		protected override string SqlTypeToString(DateSqlType sqlType)
+		{
+			return "DATETIME";
+		}
+
+		protected override string SqlTypeToString(DateTimeSqlType sqlType)
+		{
+			return "DATETIME";
+		}
+
+		protected override string SqlTypeToString(DecimalSqlType sqlType)
+		{
+			return SqlTypeToString("DECIMAL", sqlType.Precision, sqlType.Scale);
+		}
+
+		protected override string SqlTypeToString(DoubleSqlType sqlType)
+		{
+			return SqlTypeToString("FLOAT", sqlType.Length);
+		}
+
+		protected override string SqlTypeToString(Int16SqlType sqlType)
+		{
+			return "SMALLINT";
+		}
+
+		protected override string SqlTypeToString(Int32SqlType sqlType)
+		{
+			return "INT";
+		}
+
+		protected override string SqlTypeToString(Int64SqlType sqlType)
+		{
+			return "BIGINT";
+		}
+
+		protected override string SqlTypeToString(SingleSqlType sqlType)
+		{
+			return SqlTypeToString("FLOAT", sqlType.Length);
+		}
+
+		protected override string SqlTypeToString(StringFixedLengthSqlType sqlType) 
+		{
 			
 			if(sqlType.Length <= 4000) {
 				return SqlTypeToString("NCHAR", sqlType.Length);
@@ -212,7 +222,7 @@ namespace NHibernate.Dialect {
 					
 		}
 
-		private string SqlTypeToString(StringSqlType sqlType) {
+		protected override string SqlTypeToString(StringSqlType sqlType) {
 			
 			if(sqlType.Length <= 4000) {
 				return SqlTypeToString("NVARCHAR", sqlType.Length);

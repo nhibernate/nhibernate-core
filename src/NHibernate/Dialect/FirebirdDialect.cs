@@ -99,61 +99,6 @@ namespace NHibernate.Dialect
 				return true;
 			}
 		}
-
-		public override string SqlTypeToString(SqlType sqlType) 
-		{
-			switch(sqlType.DbType) 
-			{
-				case DbType.AnsiStringFixedLength: 
-					return SqlTypeToString((AnsiStringFixedLengthSqlType)sqlType);
-					//break;
-				case DbType.Binary :
-					return SqlTypeToString((BinarySqlType)sqlType);
-					//break;
-				case DbType.Boolean :
-					return "SMALLINT";
-					//break;
-				case DbType.Byte:
-					return "SMALLINT";
-					//break;
-				case DbType.Currency:
-					return "DECIMAL(15,4)";
-					//break;
-				case DbType.Date:
-					return "DATE";
-				case DbType.DateTime:
-					return "TIMESTAMP";
-					//break;
-				case DbType.Decimal:
-					return SqlTypeToString("DECIMAL", sqlType.Precision, sqlType.Length);
-					//break;
-				case DbType.Double:
-					return "DOUBLE PRECISION";
-					//break;
-				case DbType.Int16:
-					return "SMALLINT";
-					//break;
-				case DbType.Int32:
-					return "INTEGER";
-					//break;
-				case DbType.Int64:
-					return "BIGINT";
-					//break;
-				case DbType.Single:
-					return "FLOAT";
-					//break;
-				case DbType.StringFixedLength:
-					return SqlTypeToString((StringFixedLengthSqlType)sqlType);
-					//break;
-				case DbType.String:
-					return SqlTypeToString((StringSqlType)sqlType);
-					//break;
-				default:
-					throw new ApplicationException("Unmapped DBType");
-					//break;
-			}
-
-		}
 						
 			
 		private string SqlTypeToString(string name, int length) 
@@ -167,7 +112,7 @@ namespace NHibernate.Dialect
 			return name + "(" + precision + ", " + scale + ")";
 		}
 
-		private string SqlTypeToString(AnsiStringFixedLengthSqlType sqlType) 
+		protected override string SqlTypeToString(AnsiStringFixedLengthSqlType sqlType) 
 		{
 			
 			if(sqlType.Length <= 8000) 
@@ -181,13 +126,70 @@ namespace NHibernate.Dialect
 					
 		}
 
-		private string SqlTypeToString(BinarySqlType sqlType) 
+		protected override  string SqlTypeToString(BinarySqlType sqlType) 
 		{
 			return "BLOB"; // should use the IType.BlobType
 		}
-
-		private string SqlTypeToString(StringFixedLengthSqlType sqlType) 
+		
+		protected override string SqlTypeToString(BooleanSqlType sqlType)
 		{
+			return "SMALLINT";
+		}
+
+		
+		protected override string SqlTypeToString(ByteSqlType sqlType)
+		{
+			return "SMALLINT";
+		}
+
+		protected override string SqlTypeToString(CurrencySqlType sqlType)
+		{
+			return "DECIMAL(15,4)";
+		}
+
+		protected override string SqlTypeToString(DateSqlType sqlType)
+		{
+			return "DATE";
+		}
+
+		protected override string SqlTypeToString(DateTimeSqlType sqlType)
+		{
+			return "TIMESTAMP";
+		}
+
+		protected override string SqlTypeToString(DecimalSqlType sqlType)
+		{
+			return SqlTypeToString("DECIMAL", sqlType.Precision, sqlType.Scale);
+		}
+
+		protected override string SqlTypeToString(DoubleSqlType sqlType)
+		{
+			return "DOUBLE PRECISION";
+		}
+
+		protected override string SqlTypeToString(Int16SqlType sqlType)
+		{
+			return "SMALLINT";
+		}
+
+		protected override string SqlTypeToString(Int32SqlType sqlType)
+		{
+			return "INTEGER";
+		}
+
+		protected override string SqlTypeToString(Int64SqlType sqlType)
+		{
+			return "BIGINT";
+		}
+
+		protected override string SqlTypeToString(SingleSqlType sqlType)
+		{
+			return "FLOAT";
+		}
+
+		protected override string SqlTypeToString(StringFixedLengthSqlType sqlType) 
+		{
+			
 			if(sqlType.Length <= 4000) 
 			{
 				return SqlTypeToString("CHAR", sqlType.Length);
@@ -199,7 +201,7 @@ namespace NHibernate.Dialect
 					
 		}
 
-		private string SqlTypeToString(StringSqlType sqlType) 
+		protected override string SqlTypeToString(StringSqlType sqlType) 
 		{
 			
 			if(sqlType.Length <= 4000) 
@@ -212,6 +214,7 @@ namespace NHibernate.Dialect
 			}
 					
 		}
+
 
 	}
 }
