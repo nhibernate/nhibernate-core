@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="net.sf.hibernate.test.Fee" table="`the fees`">
-		<id type="string" name="key" column="id_" length="64" unsaved-value="null">
+	<class name="NHibernate.DomainModel.Fee, NHibernate.DomainModel" table="`the fees`">
+		<id type="String" name="key" column="id_" length="64" unsaved-value="null">
 			<generator class="uuid.hex" />
 		</id>
 		<property name="fi" />
@@ -11,7 +11,7 @@
 		<property name="count" column="count_" />
 		<set name="fees">
 			<key column="fee_id" />
-			<element column="str_" type="string" />
+			<element column="str_" type="String" />
 		</set>
 		<component name="compon" update="false">
 			<property name="name" />

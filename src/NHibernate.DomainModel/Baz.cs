@@ -24,6 +24,25 @@ namespace NHibernate.DomainModel
  public class Baz : IComparable
  {
 
+	 /// <summary>
+	 /// Holds the _collectionComponent
+	 /// </summary> 
+	 private NestingComponent _collectionComponent;
+
+	 /// <summary>
+	 /// Gets or sets the _collectionComponent
+	 /// </summary> 
+	 public NestingComponent collectionComponent
+	 {
+		 get 
+		 {
+			 return _collectionComponent; 
+		 }
+		 set 
+		 {
+			 _collectionComponent = value;
+		 }
+	 }
 	#region Fields
 	/// <summary>
 	/// Holder for code

@@ -49,14 +49,14 @@ namespace NHibernate.Test
 
 		public void ExecuteStatement(string sql, bool error)
 		{
-			SqlConnection conn = null;
-			SqlTransaction tran = null;
+			IDbConnection conn = null;
+			IDbTransaction tran = null;
 			try
 			{
 				conn = new SqlConnection("Server=localhost;initial catalog=nhibernate;User ID=someuser;Password=somepwd");
 				conn.Open();
 				tran = conn.BeginTransaction();
-				System.Data.SqlClient.SqlCommand comm = conn.CreateCommand();
+				IDbCommand comm = conn.CreateCommand();
 				comm.CommandText = sql;
 				comm.Transaction = tran;
 				comm.CommandType = CommandType.Text;

@@ -95,7 +95,7 @@
 		<map name="stringDateMap" lazy="true" sort="NHibernate.DomainModel.ReverseComparator, NHibernate.DomainModel">
 			<key column="id_"/>
 			<index column="map_key" type="String" length="32"/>
-			<element column="map_value" type="date"/>
+			<element column="map_value" type="DateTime"/>
 		</map>
 	
 		<array name="fooArray" element-class="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel" where="i&lt;8">
@@ -113,7 +113,7 @@
 		</bag>
 	
 		<idbag name="idFooBag" lazy="true" table="baz_id_foo" cascade="all">
-			<collection-id column="pkid" type="long"> 
+			<collection-id column="pkid" type="Int64"> 
 				<generator class="hilo"/>
 			</collection-id>
 			<key column="baz"/>
@@ -121,7 +121,7 @@
 		</idbag>
 	
 		<idbag name="byteBag" lazy="true" table="baz_byte_bag" cascade="all">
-			<collection-id column="pkid" type="long"> 
+			<collection-id column="pkid" type="Int64"> 
 				<generator class="hilo"/>
 			</collection-id>
 			<key column="baz"/>
@@ -202,11 +202,11 @@
 		
 		<map name="anyToAny" lazy="true">
 			<key column="baz"/>
-			<index-many-to-any id-type="long">
+			<index-many-to-any id-type="Int64">
 				<column name="ind_clazz_"/>
 				<column name="ind_id_"/>
 			</index-many-to-any>
-			<many-to-any id-type="long">
+			<many-to-any id-type="Int64">
 				<column name="el_clazz_"/>
 				<column name="el_id_"/>
 			</many-to-any>
@@ -231,7 +231,7 @@
 				</bag>
 				<bag name="floats" table="baz_floats_bag">
 					<key column="baz_compon_id"/>
-					<element type="float" column="float_value"/>
+					<element type="Int64" column="float_value"/>
 				</bag>
 			</component>
 		</component>

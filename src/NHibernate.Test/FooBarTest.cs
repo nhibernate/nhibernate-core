@@ -13,17 +13,17 @@ namespace NHibernate.Test
 		public void SetUp()
 		{
 			ExportSchema(new string[] {   "FooBar.hbm.xml",
+										  "Glarch.hbm.xml",
+										  "Fee.hbm.xml",
+										  "Qux.hbm.xml",
+										  "Fum.hbm.xml",
 										  "Baz.hbm.xml"
-										  //										  "Qux.hbm.xml",
-										  //										  "Glarch.hbm.xml",
 										  //										  "Simple.hbm.xml",
-										  //										  "Fum.hbm.xml",
 										  //										  "Fumm.hbm.xml",
 										  //										  "Fo.hbm.xml",
 										  //										  "One.hbm.xml",
 										  //										  "Many.hbm.xml",
 										  //										  "Immutable.hbm.xml",
-										  //										  "Fee.hbm.xml",
 										  //										  "Vetoer.hbm.xml",
 										  //										  "Holder.hbm.xml",
 										  //										  "Location.hbm.xml",

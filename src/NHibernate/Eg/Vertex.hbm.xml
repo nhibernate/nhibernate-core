@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" ?>
+<?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="NHibernate.Eg.Vertex" table="vertex">
 		<!--<jcs-cache usage="read-write"/>-->
@@ -16,7 +16,7 @@
 			<key column="source" />
 			<one-to-many class="NHibernate.Eg.Edge" />
 		</list>
-		<property name="CreationDate" type="date" />
+		<property name="CreationDate" type="DateTime" />
 		<subclass name="NHibernate.Eg.Source">
 			<property column="Strength" name="SourceStrength" />
 		</subclass>

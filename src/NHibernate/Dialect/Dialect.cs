@@ -50,7 +50,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// Characters used for quoting sql identifiers
 		/// </summary>
-		public const string Quote = "'\"[";
+		public const string Quote = "`'\"[";
 		public const string ClosedQuote = "'\"]";
 
 		/// <summary>

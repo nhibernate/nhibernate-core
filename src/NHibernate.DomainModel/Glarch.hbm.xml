@@ -1,55 +1,55 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="net.sf.hibernate.test.Glarch" table="`glarchez`" proxy="net.sf.hibernate.test.GlarchProxy"
-		dynamic-update="true">
+	<class name="NHibernate.DomainModel.Glarch, NHibernate.DomainModel" table="`glarchez`"
+		proxy="NHibernate.DomainModel.GlarchProxy, NHibernate.DomainModel" dynamic-update="true">
 		<!--<jcs-cache usage="read-write"/>-->
-		<id type="string" column="tha_key" length="32">
+		<id type="String" column="tha_key" length="32">
 			<generator class="uuid.hex" />
 		</id>
 		<version name="version" />
 		<property name="name" column="namecvbnmasdf" />
 		<!-- <property name="currency"/> -->
-		<many-to-one name="next" column="next_" class="net.sf.hibernate.test.Glarch" />
+		<many-to-one name="next" column="next_" class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel" />
 		<property name="order" column="order_" />
 		<dynabean name="dynaBean" dynaclass="foo">
-			<property name="foo" type="string" />
-			<property name="bar" type="integer" />
+			<property name="foo" type="String" />
+			<property name="bar" type="Int32" />
 		</dynabean>
 		<property name="x" />
 		<list name="strings">
 			<key column="glarch_key" />
 			<index column="`!@#   i`" />
-			<element type="string" column="`tha_stryng`" />
+			<element type="String" column="`tha_stryng`" />
 		</list>
 		<list name="fooComponents" lazy="true" cascade="all">
 			<key column="glarch_key" />
 			<index column="tha_indecks" />
-			<composite-element class="net.sf.hibernate.test.FooComponent">
+			<composite-element class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
 				<property name="name" column="name_" />
 				<property name="count" column="count_" />
-				<nested-composite-element name="subcomponent" class="net.sf.hibernate.test.FooComponent">
+				<nested-composite-element name="subcomponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
 					<property name="name" column="x_" />
 					<property name="count" column="y_" />
 				</nested-composite-element>
 				<many-to-one name="fee" cascade="all" outer-join="true" />
 			</composite-element>
 		</list>
-		<array name="proxyArray" element-class="net.sf.hibernate.test.GlarchProxy">
+		<array name="proxyArray" element-class="NHibernate.DomainModel.GlarchProxy, NHibernate.DomainModel">
 			<key column="array_key" />
 			<index column="array_indecks" />
-			<one-to-many class="net.sf.hibernate.test.Glarch" />
+			<one-to-many class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel" />
 		</array>
 		<set name="proxySet">
 			<key column="set_key" />
-			<one-to-many class="net.sf.hibernate.test.Glarch" />
+			<one-to-many class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel" />
 		</set>
 		<property name="immutable" update="false" />
 		<property name="derivedVersion" insert="false" update="false" column="version" />
-		<property name="any" type="object">
+		<any name="any" id-type="System.Object">
 			<column name="`any_id of object`" />
 			<column name="`any_class of object`" />
-		</property>
-		<property name="multiple" type="net.sf.hibernate.test.MultiplicityType">
+		</any>
+		<property name="multiple" type="NHibernate.DomainModel.MultiplicityType, NHibernate.DomainModel">
 			<column name="count_" />
 			<column name="glarch_" />
 		</property>

@@ -10,6 +10,6 @@
 		<many-to-one name="Sink" not-null="true" />
 		<property name="Length" column="edge_length" />
 		<property name="Capacity" column="edge_cpcty" />
-		<property name="CreationDate" type="date" />
+		<property name="CreationDate" type="DateTime" />
 	</class>
 </hibernate-mapping>

@@ -249,8 +249,18 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Fum.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Fum.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "FumCompositeID.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Fumm.hbm.xml"
@@ -302,6 +312,11 @@
                 />
                 <File
                     RelPath = "Multiplicity.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MultiplicityType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

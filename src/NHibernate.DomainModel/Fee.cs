@@ -7,13 +7,13 @@ namespace NHibernate.DomainModel
 	public class Fee
 	{
 		public Fee _fee;
-		public Fee anotherFee;
-		public String fi;
-		public String key;
-		public System.Collections.IDictionary fees;
-		private Qux qux;
-		private FooComponent compon;
-		private int count;
+		public Fee _anotherFee;
+		public String _fi;
+		public String _key;
+		public System.Collections.IDictionary _fees;
+		private Qux _qux;
+		private FooComponent _compon;
+		private int _count;
 	
 		public Fee() 
 		{
@@ -23,94 +23,94 @@ namespace NHibernate.DomainModel
 		{
 			get
 			{
-				return fee;
+				return _fee;
 			}
 			set
 			{
 	
-				this.fee = value;
+				this._fee = value;
 			}
 		}	
-		public string Fi
+		public string fi
 		{
 			get
 
 			{
-				return fi;
+				return _fi;
 			}
 			set
 			{
-				this.fi = value;
+				this._fi = value;
 			}
 		}
-		public string Key
+		public string key
 		{
 			get
 			{
-				return key;
+				return _key;
 			}
 			set
 			{
-				this.key = value;
-			}
-		}
-	
-		public System.Collections.IDictionary Fees
-		{
-			get
-			{
-				return fees;
-			}
-			set
-			{
-				this.fees = value;
+				this._key = value;
 			}
 		}
 	
-		public Fee AnotherFee
+		public System.Collections.IDictionary fees
 		{
 			get
 			{
-				return anotherFee;
+				return _fees;
 			}
 			set
 			{
-				this.anotherFee = value;
+				this._fees = value;
 			}
 		}
 	
-		public Qux Qux
+		public Fee anotherFee
 		{
 			get
 			{
-				return qux;
+				return _anotherFee;
 			}
 			set
 			{
-				this.qux = value;
+				this._anotherFee = value;
 			}
 		}
 	
-		public FooComponent Compon
+		public Qux qux
 		{
 			get
 			{
-				return compon;
+				return _qux;
 			}
 			set
 			{
-				this.compon = value;
+				this._qux = value;
+			}
+		}
+	
+		public FooComponent compon
+		{
+			get
+			{
+				return _compon;
+			}
+			set
+			{
+				this._compon = value;
 			}
 		}	
-		public int Count
+		public int count
 		{
 			get
 			{
-				return count;
+				return _count;
 			}
 			set
 			{
-				count = value;
+				_count = value;
 			}
 		}
 	}

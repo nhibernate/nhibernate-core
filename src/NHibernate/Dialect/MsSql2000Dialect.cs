@@ -143,6 +143,11 @@ namespace NHibernate.Dialect
 			return "DATETIME";
 		}
 
+		protected override string SqlTypeToString(TimeSqlType sqlType)
+		{
+			return "DATETIME";
+		}
+
 		protected override string SqlTypeToString(DecimalSqlType sqlType)
 		{
 			return SqlTypeToString("DECIMAL", sqlType.Precision, sqlType.Scale);
