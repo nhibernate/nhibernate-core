@@ -60,8 +60,6 @@ namespace NHibernate.Tool.hbm2net
 	
 		public override void configure(System.Collections.Specialized.NameValueCollection props)
 		{
-			//			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
-			//			p.SetProperty( "runtime.log.logsystem.log4net.category", "x");
 			System.IO.File.Delete("nvelocity.log");
 			base.configure (props);
 			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
@@ -70,7 +68,7 @@ namespace NHibernate.Tool.hbm2net
 			{
 				log.Info("No template file was specified, using default");				
 				p.SetProperty("resource.loader", "class");
-				p.SetProperty("class.resource.loader.class", "NHibernate.Tool.hbm2net.StringResourceLoader;hbm2net");
+				p.SetProperty("class.resource.loader.class", "NHibernate.Tool.hbm2net.StringResourceLoader;NHibernate.Tool.hbm2net");
 				templatename = new System.IO.StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Tool.hbm2net.convert.vm")).ReadToEnd();
 			}
 			ve = new VelocityEngine();

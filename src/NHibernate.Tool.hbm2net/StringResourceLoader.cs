@@ -5,11 +5,13 @@
 * Window - Preferences - Java - Code Generation - Code and Comments
 */
 using System;
-using ExtendedProperties = Commons.Collections.ExtendedProperties;
+using System.IO;
+using System.Text;
+using Commons.Collections;
+using NVelocity.Runtime.Resource;
+using NVelocity.Runtime.Resource.Loader;
 using StringInputStream = System.IO.StringReader;
-using ResourceNotFoundException = NVelocity.Exception.ResourceNotFoundException;
-using Resource = NVelocity.Runtime.Resource.Resource;
-using ResourceLoader = NVelocity.Runtime.Resource.Loader.ResourceLoader;
+
 namespace NHibernate.Tool.hbm2net
 {
 	
@@ -34,15 +36,15 @@ namespace NHibernate.Tool.hbm2net
 		/* (non-Javadoc)
 		* @see org.apache.velocity.runtime.resource.loader.ResourceLoader#getResourceStream(java.lang.String)
 		*/
-		public override System.IO.Stream getResourceStream(System.String source)
+		public override Stream getResourceStream(String source)
 		{
-			return new System.IO.MemoryStream(System.Text.Encoding.ASCII.GetBytes(source));
+			return new MemoryStream(Encoding.ASCII.GetBytes(source));
 		}
 		
 		/* (non-Javadoc)
 		* @see org.apache.velocity.runtime.resource.loader.ResourceLoader#isSourceModified(org.apache.velocity.runtime.resource.Resource)
 		*/
-		public override bool isSourceModified(NVelocity.Runtime.Resource.Resource resource)
+		public override bool isSourceModified(Resource resource)
 		{
 			return false;
 		}
@@ -50,9 +52,9 @@ namespace NHibernate.Tool.hbm2net
 		/* (non-Javadoc)
 		* @see org.apache.velocity.runtime.resource.loader.ResourceLoader#getLastModified(org.apache.velocity.runtime.resource.Resource)
 		*/
-		public override long getLastModified(NVelocity.Runtime.Resource.Resource resource)
+		public override long getLastModified(Resource resource)
 		{
-			return (System.DateTime.Now.Ticks - 621355968000000000) / 10000;
+			return (DateTime.Now.Ticks - 621355968000000000) / 10000;
 		}
 	}
 }
