@@ -2666,9 +2666,24 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		//[Ignore("Test not written yet.")]
 		public void UserProvidedConnection() 
 		{
+			Connection.IConnectionProvider prov = Connection.ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
+			ISession s = sessions.OpenSession( prov.GetConnection() );
+			ITransaction tx = s.BeginTransaction();
+			s.Find("from foo in class NHibernate.DomainModel.Fo");
+			tx.Commit();
+
+			IDbConnection c = s.Disconnect();
+			Assert.IsNotNull(c);
+
+			s.Reconnect(c);
+			tx = s.BeginTransaction();
+			s.Find("from foo in class NHibernate.DomainModel.Fo");
+			tx.Commit();
+			Assert.AreSame( c, s.Close() );
+			c.Close();
 		}
 
 		[Test]
