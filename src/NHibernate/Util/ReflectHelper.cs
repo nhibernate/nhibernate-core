@@ -46,10 +46,6 @@ namespace NHibernate.Util
 				// can't determine which one to use.
 				return true;
 			}
-			catch( Exception )
-			{
-				return false;
-			}
 
 		}
 

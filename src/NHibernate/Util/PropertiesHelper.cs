@@ -6,8 +6,13 @@ namespace NHibernate.Util
 {
 	//Much of this code is taken from Maverick.NET
 	/// <summary></summary>
-	public class PropertiesHelper
+	public sealed class PropertiesHelper
 	{
+		private PropertiesHelper()
+		{
+			// should not be created	
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -119,11 +124,11 @@ namespace NHibernate.Util
 
 
 		/// <summary></summary>
-		public const string TagParam = "param";
+		public static readonly string TagParam = "param";
 		/// <summary></summary>
-		public const string AttrValue = "value";
+		public static readonly string AttrValue = "value";
 		/// <summary></summary>
-		public const string AttrName = "name";
+		public static readonly string AttrName = "name";
 
 		/// <summary>
 		/// Extracts a set of param child nodes from the specified node

@@ -254,13 +254,16 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-		/// 
+		/// Converts a <see cref="String"/> in the format of "true", "t", "false", or "f" to
+		/// a <see cref="Boolean"/>.
 		/// </summary>
-		/// <param name="tfString"></param>
-		/// <returns></returns>
-		public static bool BooleanValue( string tfString )
+		/// <param name="value">The string to convert.</param>
+		/// <returns>
+		/// The <c>value</c> converted to a <see cref="Boolean"/> .
+		/// </returns>
+		public static bool BooleanValue( string value )
 		{
-			string trimmed = tfString.Trim().ToLower();
+			string trimmed = value.Trim().ToLower();
 			return trimmed.Equals( "true" ) || trimmed.Equals( "t" );
 		}
 
