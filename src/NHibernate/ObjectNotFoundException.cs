@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace NHibernate 
 {
@@ -32,5 +33,12 @@ namespace NHibernate
 		{
 			get { return type; }
 		}
+		public ObjectNotFoundException(string msg, Exception root) : this(msg, root.Message, typeof(ObjectNotFoundException)) {}
+
+		public ObjectNotFoundException(string msg) : this(msg, msg, typeof(ObjectNotFoundException)) {}
+
+		public ObjectNotFoundException(Exception root) : this(root.Message, root.Message, typeof(ObjectNotFoundException)) {}
+
+		protected ObjectNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace NHibernate
 {
@@ -24,5 +25,13 @@ namespace NHibernate
 		{
 			get { return base.Message + type.FullName; }
 		}
+
+		public InstantiationException(string s, Exception root) : this(s, typeof(InstantiationException), root) {}
+
+		public InstantiationException(string s) : this(s, typeof(InstantiationException), new InvalidOperationException("Invalid Operation")) {}
+
+		public InstantiationException() : this("Exception occured", typeof(InstantiationException), new InvalidOperationException("Invalid Operation")) {}
+
+		protected InstantiationException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }

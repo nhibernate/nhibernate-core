@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace NHibernate 
 {
@@ -12,5 +13,7 @@ namespace NHibernate
 		public CallbackException(string message) : base(message) {}
 
 		public CallbackException(string message, Exception e) : base(message, e) {}
+
+		protected CallbackException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }

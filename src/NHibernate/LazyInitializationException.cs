@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace NHibernate 
 {
@@ -9,14 +10,18 @@ namespace NHibernate
 	[Serializable]
 	public class LazyInitializationException : Exception 
 	{
-		public LazyInitializationException(Exception root) : base("Hibernate lazy instantiation problem", root) {}
+		public LazyInitializationException(Exception root) : this(root.Message) {}
 
 		public LazyInitializationException(string msg) : base(msg) 
 		{
 			log4net.LogManager.GetLogger( typeof(LazyInitializationException) ).Error(msg, this);
 		}
 
-		public LazyInitializationException(string msg, Exception root) : base(msg, root) { }
+		public LazyInitializationException(string msg, Exception root) : this(msg + " " + root.Message) {}
+
+		public LazyInitializationException() : this("LazyInitalizationException") {}
+
+		protected LazyInitializationException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
 	}
 }

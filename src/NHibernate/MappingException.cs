@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace NHibernate 
 {
@@ -14,5 +15,9 @@ namespace NHibernate
 		public MappingException(Exception root) : base(root) { }
 
 		public MappingException(string msg) : base(msg) {}
+
+		public MappingException() : base() {}
+
+		protected MappingException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }

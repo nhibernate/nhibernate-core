@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace NHibernate 
 {
@@ -24,5 +25,15 @@ namespace NHibernate
 		{
 			get { return base.Message + ": " + identifier; }
 		}
+
+		public ObjectDeletedException(string msg, Exception root) : this(msg, root.Message) {}
+
+		public ObjectDeletedException(string msg) : this(msg, msg) {}
+
+		public ObjectDeletedException(Exception root) : this(root.Message, root.Message) {}
+
+		public ObjectDeletedException() : this(string.Empty, string.Empty) {}
+
+		protected ObjectDeletedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }

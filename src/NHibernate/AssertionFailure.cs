@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace NHibernate 
 {
@@ -22,5 +23,7 @@ namespace NHibernate
 		{
 			log4net.LogManager.GetLogger( typeof(AssertionFailure) ).Error("An AssertionFailure occured - this may indicate a bug in NHibernate", e);
 		}
+
+		protected AssertionFailure(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }
