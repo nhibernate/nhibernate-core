@@ -69,18 +69,12 @@ namespace NHibernate.Test.SqlCommandTest
 			}
 			Assert.AreEqual(3, numOfParameters, "3 parameters");
 
-			Parameter firstParam = new Parameter();
-			firstParam.SqlType = new SqlTypes.Int64SqlType();
-			firstParam.Name = "identity_column";
-		
-			Parameter secondParam = new Parameter();
-			secondParam.SqlType = new SqlTypes.Int32SqlType();
-			secondParam.Name = "version_column";
-
-			Parameter thirdParam = new Parameter();
-			thirdParam.SqlType = new SqlTypes.Int32SqlType();
-			thirdParam.Name = "where_frag_column";
-
+			Parameter firstParam = new Parameter( "identity_column", new SqlTypes.Int64SqlType() );
+			
+			Parameter secondParam = new Parameter( "version_column", new SqlTypes.Int32SqlType() );
+			
+			Parameter thirdParam = new Parameter( "where_frag_column", new SqlTypes.Int32SqlType() );
+			
 			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "First Parameter Type");
 			Assert.AreEqual(firstParam.Name, actualParams[0].Name, "First Parameter Name");
 

@@ -56,9 +56,7 @@ namespace NHibernate.Test.ExpressionTest
 			string expectedSql = "simple_alias.address = :address";
 			Parameter[] expectedParams = new Parameter[1];
 			
-			Parameter firstAndParam = new Parameter();
-			firstAndParam.SqlType = new SqlTypes.StringSqlType();
-			firstAndParam.Name = "address";
+			Parameter firstAndParam = new Parameter( "address", new SqlTypes.StringSqlType() );
 			expectedParams[0] = firstAndParam;
 
 			builder.Add( "$alias.address = " );

@@ -57,22 +57,14 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual(4, numOfParameters, "Four parameters");
 
 			
-			Parameter firstParam = new Parameter();
-			firstParam.SqlType = new SqlTypes.Int32SqlType();
-			firstParam.Name = "intColumn";
-		
-			Parameter secondParam = new Parameter();
-			secondParam.SqlType = new SqlTypes.Int64SqlType();
-			secondParam.Name = "longColumn";
-
-			Parameter thirdParam = new Parameter();
-			thirdParam.SqlType = new SqlTypes.DecimalSqlType();
-			thirdParam.Name = "decimalColumn";
-		
-			Parameter fourthParam = new Parameter();
-			fourthParam.SqlType = new SqlTypes.Int32SqlType();
-			fourthParam.Name = "versionColumn";
-
+			Parameter firstParam = new Parameter( "intColumn", new SqlTypes.Int32SqlType() );
+			
+			Parameter secondParam = new Parameter( "longColumn", new SqlTypes.Int64SqlType() );
+			
+			Parameter thirdParam = new Parameter( "decimalColumn", new SqlTypes.DecimalSqlType() );
+			
+			Parameter fourthParam = new Parameter( "versionColumn", new SqlTypes.Int32SqlType() );
+			
 			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "firstParam Type");
 			Assert.AreEqual(firstParam.Name, actualParams[0].Name, "firstParam Name");
 

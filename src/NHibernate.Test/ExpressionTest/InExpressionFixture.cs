@@ -34,10 +34,7 @@ namespace NHibernate.Test.ExpressionTest
 
 			for(int i = 0 ; i < expectedParams.Length; i++) 
 			{
-				Parameter param = new Parameter();
-				param.SqlType = new SqlTypes.Int32SqlType();
-				param.TableAlias = "simple_alias";
-				param.Name = "count_" + "_" + i;
+				Parameter param = new Parameter( "count_" + "_" + i, "simple_alias", new SqlTypes.Int32SqlType() );
 				expectedParams[i] = param;
 			}
 

@@ -15,73 +15,135 @@ namespace NHibernate.Test.SqlCommandTest
 	[TestFixture]
 	public class SqlStringParameterFixture
 	{
-	
+		/*
+		 * "The equals() method implements an equivalence relation: 
+				- It is reflexive: For any reference value x, x.equals(x) should return true
+				- It is symmetric: For any reference values x and y, x.equals(y) should return 
+					true if and only if y.equals(x) returns true
+				- It is transitive: For any reference values x, y, and z, if x.equals(y) returns 
+					true and y.equals(z) returns true, then x.equals(z) should return true
+				- It is consistent: For any reference values x and y, multiple invocations of 
+					x.equals(y) consistently return true or consistently return false, provided no 
+					information used in equals comparisons on the object is modified
+				- For any non-null reference value x, x.equals(null) should return false"
+		*/
+			
+		[Test]
+		public void EqualsSameType()
+		{
+			Parameter x = new Parameter( "name", "alias", new SqlTypes.Int32SqlType() );
+			Parameter y = new Parameter( "name", "alias", new SqlTypes.Int32SqlType() );
+			Parameter z = new Parameter( "name", "alias", new SqlTypes.Int32SqlType() );
+			
+			Assert.IsTrue( x.Equals(y) );
+			Assert.IsTrue( y.Equals(x) );
+			Assert.IsTrue( y.Equals(z) );
+			Assert.IsTrue( x.Equals(z) );
+			Assert.IsFalse( x.Equals(null) );
+
+			y = new Parameter( "name2", "alias", new SqlTypes.Int32SqlType() );
+
+			Assert.IsFalse( x.Equals(y) );
+			Assert.IsFalse( y.Equals(x) );
+		}
+
+		[Test]
+		public void EqualsLengthType()
+		{
+			ParameterLength x = new ParameterLength( "name", "alias", new SqlTypes.AnsiStringSqlType(5) );
+			ParameterLength y = new ParameterLength( "name", "alias", new SqlTypes.AnsiStringSqlType(5) );
+			ParameterLength z = new ParameterLength( "name", "alias", new SqlTypes.AnsiStringSqlType(5) );
+			
+			Assert.IsTrue( x.Equals(y) );
+			Assert.IsTrue( y.Equals(x) );
+			Assert.IsTrue( y.Equals(z) );
+			Assert.IsTrue( x.Equals(z) );
+			Assert.IsFalse( x.Equals(null) );
+
+			y = new ParameterLength( "name2", "alias", new SqlTypes.AnsiStringSqlType(5) );
+
+			Assert.IsFalse( x.Equals(y) );
+			Assert.IsFalse( y.Equals(x) );
+		}
+
+		[Test]
+		public void EqualsLengthDiffType()
+		{
+			Parameter x = new Parameter( "name", "alias", new SqlTypes.AnsiStringSqlType(5) );
+			ParameterLength y = new ParameterLength( "name", "alias", new SqlTypes.AnsiStringSqlType(5) );
+			
+			// even though these contain the exact same values - they should not be 
+			// equal because they are different types
+			Assert.IsFalse( x.Equals(y) );
+			Assert.IsFalse( y.Equals(x) );
+		}
+
+		[Test]
+		public void EqualsPrecisionDiffType()
+		{
+			Parameter x = new Parameter( "name", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
+			ParameterPrecisionScale y = new ParameterPrecisionScale( "name", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
+			
+			// even though these contain the exact same values - they should not be 
+			// equal because they are different types
+			Assert.IsFalse( x.Equals(y) );
+			Assert.IsFalse( y.Equals(x) );
+		}
+
+		[Test]
+		public void EqualsPrecisionType()
+		{
+			ParameterPrecisionScale x = new ParameterPrecisionScale( "name", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
+			ParameterPrecisionScale y = new ParameterPrecisionScale( "name", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
+			ParameterPrecisionScale z = new ParameterPrecisionScale( "name", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
+			
+			Assert.IsTrue( x.Equals(y) );
+			Assert.IsTrue( y.Equals(x) );
+			Assert.IsTrue( y.Equals(z) );
+			Assert.IsTrue( x.Equals(z) );
+			Assert.IsFalse( x.Equals(null) );
+
+			y = new ParameterPrecisionScale( "name2", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
+
+			Assert.IsFalse( x.Equals(y) );
+			Assert.IsFalse( y.Equals(x) );
+		}
+
+		
+
 		[Test]
 		public void TestParameterClone()
 		{
-			Parameter original = new Parameter();
+			Parameter original = new Parameter( "originalName", new SqlTypes.Int32SqlType() );
 			Parameter cloned = null;
-
-			original.SqlType = new SqlTypes.Int32SqlType();
-			original.Name = "originalName";
 			
 			cloned = (Parameter)original.Clone();
 
 			Assert.IsTrue((original==cloned)==false, "Not the same object by ==");
 			Assert.AreEqual(original.SqlType.DbType, cloned.SqlType.DbType, "Same DbType");
 			Assert.AreEqual(original.Name, cloned.Name, "Same Name");
-			
-			// change some of the values of the clone to ensure the original doesn't change
-
-			cloned.SqlType = new SqlTypes.StringSqlType();
-			cloned.Name = "Cloned name";
-
-			Assert.IsTrue(cloned.SqlType.DbType!=original.SqlType.DbType, "Should not the same db type anymore");
-			Assert.IsTrue(cloned.Name!=original.Name, "Should not the same name anymore");
-			
-
 		}
 
 		[Test]
 		public void TestParameterLengthClone()
 		{
-			ParameterLength original = new ParameterLength();
+			ParameterLength original = new ParameterLength( "originalName", new SqlTypes.StringSqlType(275) );
 			ParameterLength cloned = null;
 
-			original.SqlType = new SqlTypes.StringSqlType(275);
-			original.Name = "originalName";
-			original.Length = 275;
-			
 			cloned = (ParameterLength)original.Clone();
 
 			Assert.IsTrue((original==cloned)==false, "Not the same object by ==");
 			Assert.AreEqual(original.SqlType.DbType, cloned.SqlType.DbType, "Same DbType");
 			Assert.AreEqual(original.Name, cloned.Name, "Same Name");
 			Assert.AreEqual(original.Length, cloned.Length, "Same Length");
-			
-			// change some of the values of the clone to ensure the original doesn't change
-
-			cloned.SqlType = new SqlTypes.AnsiStringSqlType(175);
-			cloned.Name = "Cloned name";
-			cloned.Length = 175;
-
-			Assert.IsTrue(cloned.SqlType.DbType!=original.SqlType.DbType, "Should not the same db type anymore");
-			Assert.IsTrue(cloned.Name!=original.Name, "Should not the same name anymore");
-			Assert.IsTrue(cloned.Length!=original.Length, "Should not the same length anymore");
-
 		}
 
 		[Test]
 		public void TestParameterPrecisionClone()
 		{
-			ParameterPrecisionScale original = new ParameterPrecisionScale();
+			ParameterPrecisionScale original = new ParameterPrecisionScale( "originalName", new SqlTypes.DecimalSqlType(19, 5) );
 			ParameterPrecisionScale cloned = null;
 
-			original.SqlType = new SqlTypes.DecimalSqlType(19, 5);
-			original.Name = "originalName";
-			original.Precision = 19;
-			original.Scale = 5;
-			
 			cloned = (ParameterPrecisionScale)original.Clone();
 
 			Assert.IsTrue((original==cloned)==false, "Not the same object by ==");
@@ -90,20 +152,6 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual(original.Precision, cloned.Precision, "Same Precision");
 			Assert.AreEqual(original.Scale, cloned.Scale, "Same Scale");
 			
-			// change some of the values of the clone to ensure the original doesn't change
-
-			// I know AnsiString is not a precision based but for this example we just need
-			// to make sure the clonging is working...
-			cloned.SqlType = new SqlTypes.AnsiStringSqlType();
-			cloned.Name = "Cloned name";
-			cloned.Precision = 15;
-			cloned.Scale = 4;
-
-			Assert.IsTrue(cloned.SqlType.DbType!=original.SqlType.DbType, "Should not the same db type anymore");
-			Assert.IsTrue(cloned.Name!=original.Name, "Should not the same name anymore");
-			Assert.IsTrue(cloned.Precision!=original.Precision, "Should not the same Precision anymore");
-			Assert.IsTrue(cloned.Scale!=original.Scale, "Should not the same Scale anymore");
-
 		}
 		
 		[Test]
@@ -117,14 +165,10 @@ namespace NHibernate.Test.SqlCommandTest
 
 			Parameter[] origParams = new Parameter[2];
 			
-			origParams[0] = new Parameter();
-			origParams[0].SqlType = new SqlTypes.Int32SqlType();
-			origParams[0].Name = "OP1";
+			origParams[0] = new Parameter( "OP1", new SqlTypes.Int32SqlType() );
 			
-			origParams[1] = new Parameter();
-			origParams[1].SqlType = new SqlTypes.Int64SqlType();
-			origParams[1].Name = "OP2";
-
+			origParams[1] = new Parameter( "OP2", new SqlTypes.Int64SqlType() );
+			
 			sqlBuilder.Add("UPDATE tablename set param0 = ")
 				.Add(origParams[0])
 				.Add(", param1 =")
@@ -144,8 +188,7 @@ namespace NHibernate.Test.SqlCommandTest
 
 			// modify the first parameter of the clone to ensure they are not the same
 			cloned.SqlParts[0] = "UPDATE changedtablename set param0 = ";
-			Parameter lastParamPart = (Parameter)cloned.SqlParts[3];
-			lastParamPart.Name = "modifiedOP2";
+			cloned.SqlParts[3] = new Parameter( "modifiedOP2" );
 
 			Assert.IsTrue(cloned.ToString()!=original.ToString(), "Should not be the same ToString()");
 

@@ -64,11 +64,7 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual(expectedSql , sqlString.ToString(), "SQL String");
 			Assert.AreEqual(1, numOfParams, "One parameter");
 
-			Parameter firstParam = new Parameter();
-			firstParam.SqlType = new SqlTypes.Int64SqlType();
-			firstParam.TableAlias = "select_test_alias";
-			firstParam.Name = "identity_column";
-
+			Parameter firstParam = new Parameter( "identity_column", "select_test_alias", new SqlTypes.Int64SqlType() );
 			Assert.AreEqual(firstParam.SqlType.DbType, expectedParam.SqlType.DbType, "First Parameter Type");
 			Assert.AreEqual(firstParam.TableAlias, expectedParam.TableAlias, "First Parameter TableAlias");
 			Assert.AreEqual(firstParam.Name, expectedParam.Name, "First Parameter Name");

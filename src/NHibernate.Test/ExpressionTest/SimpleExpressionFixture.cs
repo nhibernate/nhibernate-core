@@ -41,11 +41,7 @@ namespace NHibernate.Test.ExpressionTest
 			// be a ParameterLength unless in the mapping file it is defined as
 			// type="String(200)" -> in the mapping file it is now defined as 
 			// type="String" length="200"
-			Parameter firstAndParam = new Parameter();
-			firstAndParam.SqlType = new SqlTypes.StringSqlType();
-			firstAndParam.TableAlias = "simple_alias";
-			firstAndParam.Name = "address";
-
+			Parameter firstAndParam = new Parameter( "address", "simple_alias", new SqlTypes.StringSqlType() );
 			expectedParams[0] = firstAndParam;
 
 			CompareSqlStrings(sqlString, expectedSql, expectedParams);
@@ -82,11 +78,7 @@ namespace NHibernate.Test.ExpressionTest
 			string expectedSql = "simple_alias.date_ >= :simple_alias.date_";
 			Parameter[] expectedParams = new Parameter[1];
 			
-			Parameter firstAndParam = new Parameter();
-			firstAndParam.SqlType = new SqlTypes.DateTimeSqlType();
-			firstAndParam.TableAlias = "simple_alias";
-			firstAndParam.Name = "date_";
-
+			Parameter firstAndParam = new Parameter( "date_", "simple_alias", new SqlTypes.DateTimeSqlType() );
 			expectedParams[0] = firstAndParam;
 
 			CompareSqlStrings(sqlString, expectedSql, expectedParams);

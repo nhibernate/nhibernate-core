@@ -29,11 +29,7 @@ namespace NHibernate.Test.ExpressionTest
 
 			string expectedSql = "not simple_alias.address = :simple_alias.address";
 			
-			Parameter firstParam = new Parameter();
-			firstParam.SqlType = new SqlTypes.StringSqlType();
-			firstParam.TableAlias = "simple_alias";
-			firstParam.Name = "address";
-
+			Parameter firstParam = new Parameter( "address", "simple_alias", new SqlTypes.StringSqlType() );
 			CompareSqlStrings(sqlString, expectedSql, new Parameter[] {firstParam});
 			
 			session.Close();
