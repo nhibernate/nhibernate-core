@@ -192,7 +192,7 @@ namespace NHibernate.Impl
 	/// NOT THREADSAFE
 	/// </remarks>
 	[Serializable]
-	internal class SessionImpl : ISessionImplementor, IDisposable  
+	internal class SessionImpl : ISessionImplementor
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SessionImpl));
 
@@ -3345,10 +3345,12 @@ namespace NHibernate.Impl
 				CollectionPersister persister = GetCollectionPersister(loadingRole);
 				foreach (LoadingCollectionEntry lce in loadingCollections.Values) 
 				{
-					//lce.collection.EndRead();
-					lce.Collection.EndRead(persister, lce.Owner);
-					AddInitializedCollection(lce.Collection, persister, lce.Id);
-					persister.Cache(lce.Id, lce.Collection, this);
+					if(lce.Initialize) 
+					{
+						lce.Collection.EndRead(persister, lce.Owner);
+						AddInitializedCollection(lce.Collection, persister, lce.Id);
+						persister.Cache(lce.Id, lce.Collection, this);
+					}
 				}
 
 				loadingCollections.Clear();
@@ -3577,10 +3579,14 @@ namespace NHibernate.Impl
 			this.connection = conn;
 		}
 
-		//~SessionImpl() {
+		#region System.IDisposable Members
+
+		/// <summary>
+		/// Just in case the user forgot to Commit() or Close()
+		/// </summary>
 		void IDisposable.Dispose() 
 		{
-			log.Debug("running Session.Finalize()");
+			log.Debug("running ISession.Dispose()");
 
 			// it was never disconnected
 			if (connection!=null) 
@@ -3598,6 +3604,9 @@ namespace NHibernate.Impl
 				}
 			}
 		}
+
+		#endregion
+
 
 		public static void Handle(Exception e) 
 		{
