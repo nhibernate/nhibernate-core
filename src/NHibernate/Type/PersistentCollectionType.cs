@@ -29,7 +29,7 @@ namespace NHibernate.Type {
 		}
 
 		public override sealed bool Equals(object x, object y) {
-            //TODO: proxies?
+            // proxies?
 			return x==y;
 		}
 
@@ -87,8 +87,8 @@ namespace NHibernate.Type {
 		//public Iterator getElementsIterator(Object collection) {
 		//	return ( (java.util.Collection) collection ).iterator();
 		//}
-		public virtual IEnumerator GetElementsEnumerator(object collection) {
-			return ( (IEnumerable)collection ).GetEnumerator();
+		public ICollection GetElementsCollection(object collection) {
+			return ( (ICollection )collection );
 		}
 	
 		public override bool IsMutable {

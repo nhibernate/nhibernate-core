@@ -62,8 +62,33 @@ namespace NHibernate.Collection {
 
 		private string role;
 
-		public CollectionPersister(Mapping.Collection  collection, Configuration datastore, ISessionFactoryImplementor factory) {
-			//TODO: finish
+		public CollectionPersister(Mapping.Collection collection, Configuration datastore, ISessionFactoryImplementor factory) {
+			collectionType = collection.Type;
+			role = collection.Role;
+			ownerClass = collection.OwnerClass;
+
+			sqlOrderByString = collection.OrderBy;
+			hasOrder = sqlOrderByString!=null;
+			sqlWhereString = collection.Where;
+			hasWhere = sqlWhereString!=null;
+
+			cache = collection.Cache;
+
+			keyType = collection.Key.Type;
+			int span = collection.Key.ColumnSpan;
+			keyColumnNames = new string[span];
+			int k=0;
+			foreach(Column col in collection.Key.ColumnCollection) {
+				keyColumnNames[k] = col.Name;
+				k++;
+			}
+
+			isSet = collection.IsSet;
+			isOneToMany = collection.IsOneToMany;
+			primitiveArray = collection.IsPrimitiveArray;
+			array = collection.IsArray;
+
+			
 		}
 
 		public ICollectionInitializer Initializer {

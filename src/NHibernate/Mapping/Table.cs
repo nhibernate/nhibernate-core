@@ -9,7 +9,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Mapping {
 	
-	public class Table {//: IRelationalModel {
+	public class Table : IRelationalModel {
 		
 		private string name;
 		private string schema;

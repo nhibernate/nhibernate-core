@@ -1,7 +1,12 @@
 using System;
 
-namespace NHibernate.Loader
-{
+namespace NHibernate.Loader {
+
+	public enum OuterJoinLoaderType {
+		Eager = -1,
+		Auto = 0,
+		Lazy = -1
+	}
 	/// <summary>
 	/// Summary description for OuterJoinLoader.
 	/// </summary>

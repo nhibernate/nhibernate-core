@@ -24,16 +24,16 @@ namespace NHibernate.Mapping {
 			this.table = table;
 		}
 
-		public void AddColumn(Column column) {
+		public virtual void AddColumn(Column column) {
 			if ( !columns.Contains(column) ) columns.Add(column);
 		}
-		public int ColumnSpan {
+		public virtual int ColumnSpan {
 			get { return columns.Count; }
 		}
-		public ICollection ColumnCollection {
+		public virtual ICollection ColumnCollection {
 			get { return columns; }
 		}
-		public IList ConstraintColumns {
+		public virtual IList ConstraintColumns {
 			get { return columns; }
 		}
 		public virtual IType Type {
@@ -54,7 +54,7 @@ namespace NHibernate.Mapping {
 			set { table = value; }
 		}
 
-		public void CreateForeignKey() {
+		public virtual void CreateForeignKey() {
 		}
 
 		public void CreateForeignKeyOfClass(System.Type persistentClass) {
@@ -68,7 +68,7 @@ namespace NHibernate.Mapping {
 			return null;
 		}
 
-		public void SetTypeByReflection(System.Type propertyClass, string propertyName) {
+		public virtual void SetTypeByReflection(System.Type propertyClass, string propertyName) {
 			try {
 				if (type==null) {
 					type = ReflectHelper.ReflectedPropertyType(propertyClass, propertyName);
@@ -83,9 +83,12 @@ namespace NHibernate.Mapping {
 			}
 		}
 
-		public int OuterJoinFetchSetting {
-			get { //TODO: FINish
-				return -1; 
+		public virtual OuterJoinLoaderType OuterJoinFetchSetting {
+			get { 
+				return OuterJoinLoaderType.Lazy; 
+			}
+			set {
+				throw new NotSupportedException();
 			}
 		}
 
@@ -99,7 +102,7 @@ namespace NHibernate.Mapping {
 			set { identifierGeneratorProperties = value; }
 		}
 
-		public bool IsComposite {
+		public virtual bool IsComposite {
 			get { return false; }
 		}
 

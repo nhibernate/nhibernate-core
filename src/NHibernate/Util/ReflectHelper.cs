@@ -43,9 +43,9 @@ namespace NHibernate.Util {
 				this.propertyName = propertyName;
 			}
 
-			public void Get(object target) {
+			public object Get(object target) {
 				try {
-					property.GetValue(target, new object[0]);
+					return property.GetValue(target, new object[0]);
 				} catch (Exception e) {
 					throw new PropertyAccessException(e, "Exception occurrded", false, clazz, propertyName);
 				}

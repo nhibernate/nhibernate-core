@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NHibernate.Type;
 using NHibernate.Proxy;
 using NHibernate.Persister;
@@ -177,15 +178,53 @@ namespace NHibernate.Engine {
 								cascadeVia = cascadeTo;
 							}
 							PersistentCollectionType pctype = (PersistentCollectionType) type;
-							//TODO: finish
+							CollectionPersister persister = session.GetFactory().GetCollectionPersister( pctype.Role );
+							IType elemType = persister.ElementType;
+							ICollection iter;
+							if (action.ShouldCascadeCollection(child)) {
+								if ( log.IsDebugEnabled ) log.Debug( "cascading to collection: " + pctype.Role );
+								iter = pctype.GetElementsCollection(child);
+							} else {
+								if (child is PersistentCollection) {
+									PersistentCollection pc = (PersistentCollection) child;
+									if ( pc.HasQueuedAdds ) {
+										iter = pc.QueuedAddsCollection;
+									} else {
+										iter = null;
+									}
+								} else {
+									iter = null;
+								}
+							} if (iter!=null) {
+								  foreach(object obj in iter) {
+									  Cascade(session, obj, elemType, action, cascadeVia);
+								  }
+							  }
 						}
+					}
+				} else if (type.IsComponentType ) {
+					IAbstractComponentType ctype = ((IAbstractComponentType) type);
+					object[] children = ctype.GetPropertyValues(child);
+					IType[] types = ctype.Subtypes;
+					for (int i=0; i<types.Length; i++) {
+						if (ctype.Cascade(i).DoCascade(action) )
+							Cascade(session, children[i], types[i], action, cascadeTo);
 					}
 				}
 			}
 		}
 
 		public static void Cascade(ISessionImplementor session, IClassPersister persister, object parent, Cascades.CascadingAction action, CascadePoint cascadeTo) {
-			//TODO: Finish
+			if ( persister.HasCascades ) {
+				if ( log.IsDebugEnabled ) log.Debug( "processing cascasdes for: " + persister.ClassName);
+				IType[] types = persister.PropertyTypes;
+				Cascades.CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
+				for (int i=0; i<types.Length; i++) {
+					if ( cascadeStyles[i].DoCascade(action) )
+						Cascade(session, persister.GetPropertyValue(parent, i), types[i], action, cascadeTo );
+				}
+				if ( log.IsDebugEnabled ) log.Debug( "done processing cascades for: " + persister.ClassName );
+			}
 		}
 		
 
