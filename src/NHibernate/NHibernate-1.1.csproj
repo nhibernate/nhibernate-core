@@ -169,11 +169,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "IPersistentEnum.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "IQuery.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
