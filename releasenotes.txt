@@ -5,8 +5,8 @@ PreAlpha Build 0.1.0.0
 - Added Examples into CVS and zip.
 - ConnectionProvider uses settings passed to it by ConnectionProviderFactory instead of default settings.
 - Hbm2Net moved from NHibernate folder to its own folder and NAnt Tasks for it contributed by Kevin Williams.
-- Adding properties to Cfg instead of using app.config/web.config or hbm.cfg.xml now supported.
-- In hbm.cfg.xml, an assembly where the resource can be found is now needed - ie: <mapping resource="" assembly="" />.
+- Adding properties to Cfg instead of using app.config/web.config or cfg.xml now supported.
+- In cfg.xml, an assembly where the resource can be found is now needed - ie: <mapping resource="" assembly="" />.
 - nhibernate-configuration-2.0.xsd schema was updated to .net friendly names and all cfg.xml files are now validated.
 - Fixed bug with classes having dynamic-insert and dynamic-update causing IndexOutOfRangeExceptions.
 - Modified length of string for CultureInfoType.
@@ -20,7 +20,6 @@ PreAlpha Build 0.1.0.0
 - Fixed problem with hql subselects referencing a class in main query.
 - Limited support for Serializing a Session.  Sometimes a Refresh() is needed after Deserialization.      
 - Fixed bug with sending a one-to-many collection to be updated that involves inserting a new row.
-
 
 PreAlpha Build 6
 ======================== 
