@@ -41,7 +41,7 @@ namespace NHibernate.Mapping
 
 		public bool IsUpdateable 
 		{
-			get { return updateable; }
+			get { return updateable && !IsFormula ; }
 			set { updateable = value; }
 		}
 
