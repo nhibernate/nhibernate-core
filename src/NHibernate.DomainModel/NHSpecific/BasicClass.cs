@@ -11,7 +11,6 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private int _id;
 
-		private byte[] _binaryProperty;
 		private bool _booleanProperty;
 		private byte _byteProperty;
 		private char _characterProperty;
