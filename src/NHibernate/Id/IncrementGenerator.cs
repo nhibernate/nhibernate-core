@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 
 using NHibernate.Dialect;
 using NHibernate.Engine;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -55,13 +57,11 @@ namespace NHibernate.Id
 
 		public void Configure(IType type, System.Collections.IDictionary parms, Dialect.Dialect d)
 		{
-			string table = parms["table"];
-			if(table==null) table = parms[IncrementGenerator.Table);
+			string table = PropertiesHelper.GetString("table", parms, (string)parms[IncrementGenerator.Table]);
 
-			string column = parms["column"];
-			if(column==null) parms[IncrementGenerator.PK];
+			string column = PropertiesHelper.GetString("column", parms, (string)parms[IncrementGenerator.PK]);
 
-			string schema = parms[IncrementGenerator.Schema];
+			string schema = (string) parms[Schema];
 
 			sql = "select max(" + column + ") from " + ( schema==null ? table : schema + ":" + table );
 
@@ -85,7 +85,7 @@ namespace NHibernate.Id
 				rs = cmd.ExecuteReader();
 				if(rs.Read()) 
 				{
-					next = rs[0] + 1;
+					next = rs.GetInt64(0) + 1;
 				}
 				else 
 				{
