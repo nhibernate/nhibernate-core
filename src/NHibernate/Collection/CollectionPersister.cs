@@ -26,7 +26,7 @@ namespace NHibernate.Collection {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CollectionPersister));
 
 		private string sqlSelectString;
-		private string sqlDeleteString;
+		private string sqlDeleteString; 
 		private string sqlInsertRowString;
 		private string sqlUpdateRowString;
 		private string sqlDeleteRowString;
@@ -55,7 +55,7 @@ namespace NHibernate.Collection {
 		private System.Type elementClass;
 		private ICacheConcurrencyStrategy cache;
 		private PersistentCollectionType collectionType;
-		private int enableJoinedFetch;
+		private OuterJoinLoaderType enableJoinedFetch;
 		private System.Type ownerClass;
 
 		private ICollectionInitializer loader;
@@ -88,6 +88,72 @@ namespace NHibernate.Collection {
 			primitiveArray = collection.IsPrimitiveArray;
 			array = collection.IsArray;
 
+			if (isOneToMany) {
+				EntityType type = collection.OneToMany.Type;
+				elementType = type;
+				PersistentClass associatedClass = datastore.GetClassMapping( type.PersistentClass );
+				span = associatedClass.Identifier.ColumnSpan;
+				elementColumnNames = new string[span];
+				int j=0;
+				foreach(Column col in associatedClass.Key.ColumnCollection) {
+					elementColumnNames[j] = col.Name;
+					j++;
+				}
+				Table table = associatedClass.Table;
+				qualifiedTableName = table.GetQualifiedName( factory.DefaultSchema );
+				enableJoinedFetch = OuterJoinLoaderType.Eager;
+			} else {
+				Table table = collection.Table;
+				qualifiedTableName = table.GetQualifiedName( factory.DefaultSchema );
+				elementType = collection.Element.Type;
+				span = collection.Element.ColumnSpan;
+				elementColumnNames = new string[span];
+				enableJoinedFetch = collection.Element.OuterJoinFetchSetting;
+
+				int i=0;
+				foreach(Column col in collection.Element.ColumnCollection) {
+					elementColumnNames[i] = col.Name;
+					i++;
+				}
+			}
+			unquotedElementColumnNames = StringHelper.UnQuote(elementColumnNames);
+
+			if ( hasIndex = collection.IsIndexed ) {
+				IndexedCollection indexedMap = (IndexedCollection) collection;
+				indexType = indexedMap.Index.Type;
+				int indexSpan = indexedMap.Index.ColumnSpan;
+				indexColumnNames = new string[indexSpan];
+				int i=0;
+				foreach(Column indexCol in indexedMap.Index.ColumnCollection) {
+					indexColumnNames[i++] = indexCol.Name;
+				}
+				rowSelectColumnNames = indexColumnNames;
+				rowSelectType = indexType;
+				unquotedIndexColumnNames = StringHelper.UnQuote(indexColumnNames);
+			} else {
+				indexType = null;
+				indexColumnNames = null;
+				unquotedIndexColumnNames = null;
+				rowSelectColumnNames = elementColumnNames;
+				rowSelectType = elementType;
+			}
+
+			sqlSelectString = SqlSelectString();
+			sqlDeleteString = SqlDeleteString();
+			sqlInsertRowString = SqlInsertRowString();
+			sqlUpdateRowString = SqlUpdateRowString();
+			sqlDeleteRowString = SqlDeleteRowString();
+			isLazy = collection.IsLazy;
+
+			isInverse = collection.IsInverse;
+
+			if (collection.IsArray ) {
+				elementClass = ( (Mapping.Array) collection ).ElementClass;
+			} else {
+				// for non-arrays, we don't need to know the element class
+				elementClass = null;
+			}
+			loader = CreateCollectionQuery(factory);
 			
 		}
 
@@ -165,7 +231,7 @@ namespace NHibernate.Collection {
 			return result.ToString();
 		}
 
-		public int EnableJoinFetch {
+		public OuterJoinLoaderType EnableJoinFetch {
 			get { return enableJoinedFetch; }
 		}
 
@@ -360,31 +426,165 @@ namespace NHibernate.Collection {
 		}
 
 		public void Remove(object id, ISessionImplementor session) {
-		
+			
+			if (!isInverse) {
+				if (log.IsDebugEnabled ) log.Debug("Deleting collection: " + role + "#" + id);
+
+				IDbCommand st = session.Batcher.PrepareBatchStatement( SQLDeleteString );
+
+				try {
+					WriteKey(st, id, false, session);
+					session.Batcher.AddToBatch(-1);
+				} catch (Exception e) {
+					throw e;
+				}
+			}
 		}
+		
 
 		public void Recreate(PersistentCollection collection, object id, ISessionImplementor session) {
-		
+			
+			if (!isInverse) {
+				if (log.IsDebugEnabled) log.Debug("Inserting collection: " + role + "#" + id);
+
+				
+				ICollection entries = collection.Entries();
+				if (entries.Count > 0) {
+					IDbCommand st = session.Batcher.PrepareBatchStatement( SQLInsertRowString );
+
+					int i=0;
+					try {
+						foreach(object entry in entries) {
+							if (collection.EntryExists(entry, i)) {
+								WriteKey(st, id, false, session);
+								collection.WriteTo(st, this, entry, i, false);
+								session.Batcher.AddToBatch(1);
+							}
+							i++;
+						}
+					} catch (Exception e) {
+						throw e;
+					}
+				}
+			}
+
+
 		}
 
 		public void DeleteRows(PersistentCollection collection, object id, ISessionImplementor session) {
 		
+			if (!isInverse) {
+				
+				if (log.IsDebugEnabled) log.Debug("Deleting rows of collection: " + role + "#" + id);
+
+				ICollection entries = collection.GetDeletes(elementType);
+				if (entries.Count > 0) {
+					IDbCommand st = session.Batcher.PrepareBatchStatement( SQLDeleteRowString );
+					try {
+						foreach(object entry in entries) {
+							WriteKey(st, id, false, session);
+							WriteRowSelect(st, entry, session);
+							session.Batcher.AddToBatch(-1);
+						}
+					} catch (Exception e) {
+						throw e;
+					}
+				}
+			}
 		}
 
 		public void Update(object id, PersistentCollection collection, ISessionImplementor session) {
-		
+
+			IDbCommand st = null;
+			ICollection entries = collection.Entries();
+			int i=0;
+			try {
+				foreach(object entry in entries) {
+					if (collection.NeedsUpdating(entry, i, elementType)) {
+						if (st==null) st = session.Batcher.PrepareBatchStatement( SQLUpdateRowString );
+						WriteKey(st, id, true, session);
+						collection.WriteTo(st, this, entry, i, true);
+						session.Batcher.AddToBatch(1);
+					}
+					i++;
+				}
+			} catch (Exception e) {
+				throw e;
+			}
 		}
 
 		public void UpdateOneToMany(object id, PersistentCollection collection, ISessionImplementor session) {
 
+			IDbCommand rmvst = null;
+			int i=0;
+			ICollection entries = collection.Entries();
+			try {
+				foreach(object entry in entries) {
+					if (collection.NeedsUpdating(entry, i, elementType) ) {
+						if (rmvst==null) rmvst = session.Batcher.PrepareBatchStatement( SQLDeleteRowString );
+						WriteKey(rmvst, id, false, session);
+						WriteIndex(rmvst, collection.GetIndex(entry, i), false, session);
+						session.Batcher.AddToBatch(-1);
+					}
+					i++;
+				}
+			} catch(Exception e) {
+				throw e;
+			}
+			// finish all the removes first to take care of possible unique constraints
+			// and so that we can take advantage of batching
+			IDbCommand insst = null;
+			i=0;
+			entries = collection.Entries();
+			try {
+				foreach( object entry in entries) {
+					if (collection.NeedsUpdating(entry, i, elementType) ) {
+						if (insst==null) insst = session.Batcher.PrepareBatchStatement( SQLInsertRowString );
+						WriteKey(insst, id, false, session);
+						collection.WriteTo(insst, this, entry, i, false);
+						session.Batcher.AddToBatch(1);
+					}
+					i++;
+				}
+			} catch (Exception e) {
+				throw e;
+			}
 		}
 
 		public void UpdateRows(PersistentCollection collection, object id, ISessionImplementor session) {
+			if (!isInverse) {
+				if (log.IsDebugEnabled) log.Debug("Updating rows of collection: " + role + "#" + id);
 
+				if (isOneToMany) {
+					UpdateOneToMany(id, collection, session);
+				} else {
+					Update(id, collection, session);
+				}
+			}
 		}
 
 		public void InsertRows(PersistentCollection collection, object id, ISessionImplementor session) {
 			
+			if (!isInverse) {
+				if (log.IsDebugEnabled) log.Debug("Inserting rows of collection: " + role + "#" + id);
+
+				ICollection entries = collection.Entries();
+				IDbCommand st = null;
+				int i=0;
+				try {
+					foreach(object entry in entries) {
+						if (collection.NeedsInserting(entry, i, elementType)) {
+							if (st==null) st = session.Batcher.PrepareBatchStatement(SQLInsertRowString);
+							WriteKey(st, id, false, session);
+							collection.WriteTo(st, this, entry, i, false);
+							session.Batcher.AddToBatch(1);
+						}
+						i++;
+					}
+				} catch (Exception e) {
+					throw e;
+				}
+			}
 		}
 
 		public string Role {

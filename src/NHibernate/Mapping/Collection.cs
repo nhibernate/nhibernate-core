@@ -76,11 +76,11 @@ namespace NHibernate.Mapping {
 		public abstract PersistentCollectionType Type { get; }
 		public abstract System.Type WrapperClass { get; }
 
-		public bool IsPrimitiveArray {
+		public virtual bool IsPrimitiveArray {
 			get { return false; }
 		}
 
-		public bool IsArray {
+		public virtual bool IsArray {
 			get { return false; }
 		}
 

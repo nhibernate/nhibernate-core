@@ -1,17 +1,13 @@
 using System;
 
-namespace NHibernate.Mapping
-{
-	/// <summary>
-	/// Summary description for PrimitiveArray.
-	/// </summary>
-	public class PrimitiveArray
-	{
-		public PrimitiveArray()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
+namespace NHibernate.Mapping {
+	
+	public class PrimitiveArray : Array {
+		
+		public PrimitiveArray(PersistentClass owner) : base(owner) {}
+
+		public override bool IsPrimitiveArray {
+			get { return true; }
 		}
 	}
 }

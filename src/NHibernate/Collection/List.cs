@@ -4,6 +4,7 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
 
+
 namespace NHibernate.Collection {
 
 	/// <summary>

@@ -32,7 +32,23 @@ namespace NHibernate.Engine {
 		/// </summary>
 		/// <param name="holder"></param>
 		void AddArrayHolder(ArrayHolder holder);
+
+		/// <summary>
+		/// Register an uninitialized <c>PersistentColleciton</c> that will be lazily initialized
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="persister"></param>
+		/// <param name="id"></param>
+		void AddUninitializedCollection(PersistentCollection collection, CollectionPersister persister, object id);
 		
+		/// <summary>
+		/// Register an initialized <c>PersistentCollection</c>
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="persister"></param>
+		/// <param name="id"></param>
+		void AddInitializedCollection(PersistentCollection collection, CollectionPersister persister, object id);
+
 		/// <summary>
 		/// Set the "shallow dirty" status of the collection. Called when the collection detects
 		/// taht the client is modifying it
@@ -40,18 +56,18 @@ namespace NHibernate.Engine {
 		void Dirty(PersistentCollection collection);
 
 		/// <summary>
-		/// Is this the readonly end of a bidirectional association?
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
-		bool IsCollectionReadOnly(PersistentCollection collection);
-
-		/// <summary>
 		/// Initialize the collection (if not already initialized)
 		/// </summary>
 		/// <param name="coolection"></param>
 		/// <param name="writing"></param>
 		void Initialize(PersistentCollection coolection, bool writing);
+
+		/// <summary>
+		/// Is this the readonly end of a bidirectional association?
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		bool IsCollectionReadOnly(PersistentCollection collection);		
 	
 		/// <summary>
 		/// Notify the session that the transaction completed, so we no longer own the old locks.
@@ -107,26 +123,21 @@ namespace NHibernate.Engine {
 		object InternalLoadOneToOne(System.Type persistentClass, object id);
 
 		/// <summary>
-		/// Register an uninitialized PersistentCollection that will be lazily initializable
+		/// Load an instance immediately. Do not return a proxy
 		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="persister"></param>
+		/// <param name="persistentClass"></param>
 		/// <param name="id"></param>
-		void AddUninitializedCollection(PersistentCollection collection, CollectionPersister persister, object id);
-		
-		/// <summary>
-		/// Register an initialized PersistentCollection
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="persister"></param>
-		/// <param name="id"></param>
-		void AddInitializedCollection(PersistentCollection collection, CollectionPersister persister, object id);
-
+		/// <returns></returns>
 		/// <summary>
 		/// System time before the start of the transaction
 		/// </summary>
 		/// <returns></returns>
 		long Timestamp { get; }
+
+		/// <summary>
+		/// Get the prepared statement <c>Batcher</c> for this session
+		/// </summary>
+		IBatcher Batcher { get; }
 	
 	}
 }
