@@ -9,22 +9,33 @@ namespace NHibernate.DomainModel
 		private FumCompositeID _id;
 		private Fum _fo;
 		private Qux[] _quxArray;
-		private IList _friends;
+		private IDictionary _friends;
 		private DateTime _lastUpdated;
 	
 		public Fum() {}
 		public Fum(FumCompositeID id)
 		{
 			this.id = id;
-			friends = new ArrayList();
+			friends = new Hashtable();
+			//TODO: H2.0.3 - this is diff from H2.0.3 because I am getting a null exception
+			// when executing the Sql.  H203 uses the CalendarType which we don't have so
+			// I am using DateTime instead...
+			_lastUpdated = DateTime.Now;
+			
 			FumCompositeID fid = new FumCompositeID();
-			fid.date= new DateTime();
+			fid.date= new DateTime(2004, 4, 29, 9, 50, 0, 0);
 			fid.@short= (short) ( id.@short + 33 );
 			fid.@string= id.@string + "dd";
+			
 			Fum f = new Fum();
 			f.id = fid;
 			f.fum="FRIEND";
-			friends.Add(f);
+			//TODO: H2.0.3 - this is diff from H2.0.3 because I am getting a null exception
+			// when executing the Sql.  H203 uses the CalendarType which we don't have so
+			// I am using DateTime instead...
+			f.lastUpdated = DateTime.Now;
+
+			friends.Add(f, new object());
 		}
 		public string fum
 		{
@@ -73,7 +84,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 	
-		public IList friends
+		public IDictionary friends
 		{
 			get
 			{
@@ -91,11 +102,16 @@ namespace NHibernate.DomainModel
 			if (friends==null) return LifecycleVeto.NoVeto;
 			try 
 			{
-				IEnumerator iter = friends.GetEnumerator();
-				while ( iter.MoveNext() ) 
+				foreach(DictionaryEntry de in friends) 
 				{
-					s.Delete( iter.Current );
+					s.Delete(de.Key);
 				}
+						
+//				IEnumerator iter = friends.GetEnumerator();
+//				while ( iter.MoveNext() ) 
+//				{
+//					s.Delete( iter.Current );
+//				}
 			}
 			catch (Exception e) 
 			{
@@ -115,11 +131,16 @@ namespace NHibernate.DomainModel
 			if (friends==null) return LifecycleVeto.NoVeto;
 			try 
 			{
-				IEnumerator iter = friends.GetEnumerator();
-				while ( iter.MoveNext() ) 
+				foreach(DictionaryEntry de in friends) 
 				{
-					s.Save( iter.Current );
+					s.Save(de.Key);
 				}
+
+//				IEnumerator iter = friends.GetEnumerator();
+//				while ( iter.MoveNext() ) 
+//				{
+//					s.Save( iter.Current );
+//				}
 			}
 			catch (Exception e) 
 			{

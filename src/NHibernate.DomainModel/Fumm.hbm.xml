@@ -1,14 +1,15 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="net.sf.hibernate.test.Fumm">
-		<composite-id name="id">
+	<class name="NHibernate.DomainModel.Fumm, NHibernate.DomainModel">
+		<composite-id name="Id">
 			<key-property name="string">
 				<column name="string_" length="10" />
 			</key-property>
 			<key-property name="short" column="short_" />
 			<key-property name="date" column="date_" type="DateTime" />
 		</composite-id>
-		<property name="locale" />
-		<one-to-one name="fum" cascade="all" constrained="true" />
+		
+		<property name="Locale" />
+		<one-to-one name="Fum" cascade="all" constrained="true" />
 	</class>
 </hibernate-mapping>
