@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Collections;
 using NHibernate.Util;
 
@@ -55,7 +56,7 @@ namespace NHibernate.Sql {
 		/// </summary>
 		/// <param name="typecode">the type key</param>
 		/// <returns>the default type name associated with the specified key</returns>
-		public string Get(int typecode) {
+		public string Get(SqlDbType typecode) {
 			return (string) defaults[typecode];
 		}
 
@@ -66,7 +67,7 @@ namespace NHibernate.Sql {
 		/// <param name="size">the (maximum) type size/length</param>
 		/// <returns>The associated name with smallest capacity >= size if available and the
 		/// default type name otherwise</returns>
-		public string Get(int typecode, int size) {
+		public string Get(SqlDbType typecode, int size) {
 			IDictionary map = weighted[typecode] as IDictionary;
 			if (map != null && map.Count > 0) {
 				foreach(int entrySize in map.Keys) {
@@ -88,14 +89,14 @@ namespace NHibernate.Sql {
 		/// <param name="typecode">the type key</param>
 		/// <param name="size">the (maximum) type size/length</param>
 		/// <param name="value">The associated name</param>
-		public void Put(int typecode, int capacity, string value) {
+		public void Put(SqlDbType typecode, int capacity, string value) {
 			SortedList map = weighted[ typecode ] as SortedList;
 			if (map==null)
 				weighted[typecode] = map = new SortedList();
 			map[capacity] = value;
 		}
 
-		public void Put(int typecode, string value) {
+		public void Put(SqlDbType typecode, string value) {
 			defaults[typecode] = value;
 		}
 

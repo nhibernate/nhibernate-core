@@ -321,6 +321,11 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <File
+                    RelPath = "Dialect\GenericDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <Folder RelPath = "Id\" />
                 <File
                     RelPath = "Metadata\ClassMetadata.cs"
@@ -348,6 +353,36 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Sql\ConditionalFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\DecodeCaseFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\Delete.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\InFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\Insert.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\OracleOuterJoinFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Sql\OuterJoinFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -364,6 +399,11 @@
                 />
                 <File
                     RelPath = "Type\HibernateType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\ILiteralType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
