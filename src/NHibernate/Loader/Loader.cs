@@ -2,12 +2,10 @@ using System;
 using System.Collections;
 using System.Data;
 
-using NHibernate.Cfg;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.SqlCommand;
-using NHibernate.Transaction;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -282,7 +280,6 @@ namespace NHibernate.Loader
 		/// to the <c>IDataReader</c>
 		/// </remarks>
 		/// <param name="persister"></param>
-		/// <param name="suffix"></param>
 		/// <param name="id"></param>
 		/// <param name="rs"></param>
 		/// <param name="session"></param>
@@ -334,7 +331,7 @@ namespace NHibernate.Loader
 		/// <param name="suffixes"></param>
 		/// <param name="keys"></param>
 		/// <param name="optionalObject"></param>
-		/// <param name="optionalobjectKey"></param>
+		/// <param name="optionalObjectKey"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
 		private object[] GetRow(
@@ -573,10 +570,7 @@ namespace NHibernate.Loader
 		/// database to Load an Entity.
 		/// </summary>
 		/// <param name="sqlString">The SqlString to convert into a prepared IDbCommand.</param>
-		/// <param name="values">The values that should be bound to the parameters in the IDbCommand</param>
-		/// <param name="types">The IType for the value</param>
-		/// <param name="namedParams">The HQL named parameters.</param>
-		/// <param name="selection">The RowSelection to help setup the CommandTimeout</param>
+		/// <param name="parameters">The <see cref="QueryParameters"/> to use for the IDbCommand.</param>
 		/// <param name="scroll">TODO: find out where this is used...</param>
 		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
 		/// <returns>An IDbCommand that is ready to be executed.</returns>

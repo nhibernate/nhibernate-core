@@ -3,9 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Text;
-using System.Text.RegularExpressions;
 
 using Iesi.Collections;
 
@@ -71,6 +69,16 @@ namespace NHibernate.Hql
 		private bool distinct = false;
 		private bool compiled; //protected 
 		private SqlCommand.SqlString sqlString;
+
+		/// <summary>
+		/// Indicates if the SqlString has been fully populated - it goes
+		/// through a 2 phase process.  The first part is the parsing of the
+		/// hql and it puts in placeholders for the parameters, the second phase 
+		/// puts in the actual types for the parameters.  The completion of 
+		/// the second phase is when <c>isSqlStringPopulated==true</c>.
+		/// </summary>
+		private bool isSqlStringPopulated;
+
 		private System.Type holderClass;
 		private ConstructorInfo holderConstructor;
 		private bool hasScalars;
@@ -1236,6 +1244,8 @@ namespace NHibernate.Hql
 			}
 		}
 
+		private object prepareCommandLock = new object();
+
 		/// <summary>
 		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
 		/// database to Load an Entity.
@@ -1253,113 +1263,120 @@ namespace NHibernate.Hql
 		/// </remarks>
 		protected override IDbCommand PrepareCommand(SqlString sqlString, QueryParameters parameters, bool scroll, ISessionImplementor session) 
 		{
-			SqlString sql = null;
-
-			// when there is no untyped Parameters then we can avoid the need to create
-			// a new sql string and just return the existing one because it is ready 
-			// to be prepared and executed.
-			if(sqlString.ContainsUntypedParameter==false) 
+			lock( prepareCommandLock ) 
 			{
-				sql = sqlString;
-			}
-			else 
-			{
-
-				// holds the index of the sqlPart that should be replaced
-				int sqlPartIndex = 0;
-
-				// holds the index of the paramIndexes array that is the current position
-				int paramIndex = 0;
-
-				sql = sqlString.Clone();
-				int[] paramIndexes = sql.ParameterIndexes;
-
-				// if there are no Parameters in the SqlString then there is no reason to 
-				// bother with this code.
-				if( paramIndexes.Length > 0 ) 
+				if( !isSqlStringPopulated ) 
 				{
-				
-					for( int i=0; i<parameters.PositionalParameterTypes.Length; i++ ) 
+					SqlString sql = null;
+
+					// when there is no untyped Parameters then we can avoid the need to create
+					// a new sql string and just return the existing one because it is ready 
+					// to be prepared and executed.
+					if(sqlString.ContainsUntypedParameter==false) 
 					{
-						string[] colNames = new string[ parameters.PositionalParameterTypes[i].GetColumnSpan(factory)];
-						for( int j=0; j<colNames.Length; j++ ) 
-						{
-							colNames[j] = "p" + paramIndex.ToString() + j.ToString();
-						}
-
-						Parameter[] sqlParameters = Parameter.GenerateParameters( factory, colNames , parameters.PositionalParameterTypes[i] );
-
-						foreach(Parameter param in sqlParameters) 
-						{
-							sqlPartIndex = paramIndexes[paramIndex];
-							sql.SqlParts[sqlPartIndex] = param;
-						
-							paramIndex++;
-						}
+						sql = sqlString;
 					}
-
-					if( parameters.NamedParameters!=null && parameters.NamedParameters.Count > 0 ) 
+					else 
 					{
-						// convert the named parameters to an array of types
-						ArrayList paramTypeList = new ArrayList();
-				
-						foreach( DictionaryEntry e in parameters.NamedParameters ) 
+
+						// holds the index of the sqlPart that should be replaced
+						int sqlPartIndex = 0;
+
+						// holds the index of the paramIndexes array that is the current position
+						int paramIndex = 0;
+
+						sql = sqlString.Clone();
+						int[] paramIndexes = sql.ParameterIndexes;
+
+						// if there are no Parameters in the SqlString then there is no reason to 
+						// bother with this code.
+						if( paramIndexes.Length > 0 ) 
 						{
-							string name = (string) e.Key;
-							TypedValue typedval = (TypedValue) e.Value;
-							int[] locs = GetNamedParameterLocs(name);
-
-							for( int i=0; i<locs.Length; i++ ) 
-							{
-								int lastInsertedIndex = paramTypeList.Count;
-
-								int insertAt = locs[i];
 						
-								// need to make sure that the ArrayList is populated with null objects
-								// up to the index we are about to add the values into.  An Index Out 
-								// of Range exception will be thrown if we add an element at an index
-								// that is greater than the Count.
-								if(insertAt >= lastInsertedIndex)
+							for( int i=0; i<parameters.PositionalParameterTypes.Length; i++ ) 
+							{
+								string[] colNames = new string[ parameters.PositionalParameterTypes[i].GetColumnSpan(factory)];
+								for( int j=0; j<colNames.Length; j++ ) 
 								{
-									for(int j=lastInsertedIndex; j<=insertAt; j++) 
+									colNames[j] = "p" + paramIndex.ToString() + j.ToString();
+								}
+
+								Parameter[] sqlParameters = Parameter.GenerateParameters( factory, colNames , parameters.PositionalParameterTypes[i] );
+
+								foreach(Parameter param in sqlParameters) 
+								{
+									sqlPartIndex = paramIndexes[paramIndex];
+									sql.SqlParts[sqlPartIndex] = param;
+								
+									paramIndex++;
+								}
+							}
+
+							if( parameters.NamedParameters!=null && parameters.NamedParameters.Count > 0 ) 
+							{
+								// convert the named parameters to an array of types
+								ArrayList paramTypeList = new ArrayList();
+						
+								foreach( DictionaryEntry e in parameters.NamedParameters ) 
+								{
+									string name = (string) e.Key;
+									TypedValue typedval = (TypedValue) e.Value;
+									int[] locs = GetNamedParameterLocs(name);
+
+									for( int i=0; i<locs.Length; i++ ) 
 									{
-										paramTypeList.Add(null);
+										int lastInsertedIndex = paramTypeList.Count;
+
+										int insertAt = locs[i];
+								
+										// need to make sure that the ArrayList is populated with null objects
+										// up to the index we are about to add the values into.  An Index Out 
+										// of Range exception will be thrown if we add an element at an index
+										// that is greater than the Count.
+										if(insertAt >= lastInsertedIndex)
+										{
+											for(int j=lastInsertedIndex; j<=insertAt; j++) 
+											{
+												paramTypeList.Add(null);
+											}
+										}
+								
+										paramTypeList[insertAt] = typedval.Type; 
 									}
 								}
-						
-								paramTypeList[insertAt] = typedval.Type; 
-							}
-						}
 
-						for( int i=0; i<paramTypeList.Count; i++ ) 
-						{
-							IType type = (IType)paramTypeList[i];
-							string[] colNames = new string[type.GetColumnSpan(factory)];
+								for( int i=0; i<paramTypeList.Count; i++ ) 
+								{
+									IType type = (IType)paramTypeList[i];
+									string[] colNames = new string[type.GetColumnSpan(factory)];
 
-							for( int j=0; j<colNames.Length; j++ ) 
-							{
-								colNames[j] = "p" + paramIndex.ToString() + j.ToString();
-							}
+									for( int j=0; j<colNames.Length; j++ ) 
+									{
+										colNames[j] = "p" + paramIndex.ToString() + j.ToString();
+									}
 
-							Parameter[] sqlParameters = Parameter.GenerateParameters( factory, colNames , type );
+									Parameter[] sqlParameters = Parameter.GenerateParameters( factory, colNames , type );
 
-							foreach(Parameter param in sqlParameters) 
-							{
-								sqlPartIndex = paramIndexes[paramIndex];
-								sql.SqlParts[sqlPartIndex] = param;
-						
-								paramIndex++;
+									foreach(Parameter param in sqlParameters) 
+									{
+										sqlPartIndex = paramIndexes[paramIndex];
+										sql.SqlParts[sqlPartIndex] = param;
+								
+										paramIndex++;
+									}
+								}
 							}
 						}
 					}
+
+					// replace the local field used by the SqlString property with the one we just built 
+					// that has the correct parameters
+					this.sqlString = sql;
+					isSqlStringPopulated = true;
 				}
 			}
 
-			// replace the local field used by the SqlString property with the one we just built 
-			// that has the correct parameters
-			this.sqlString = sql;
-
-			return base.PrepareCommand(sql, parameters, scroll, session);
+			return base.PrepareCommand( this.sqlString, parameters, scroll, session );
 		}
 	}
 }
