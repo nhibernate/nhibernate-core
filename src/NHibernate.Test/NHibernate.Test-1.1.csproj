@@ -90,11 +90,6 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
-                />
-                <Reference
                     Name = "log4net"
                     AssemblyName = "log4net"
                     HintPath = "..\..\lib\net\1.1\log4net.dll"
@@ -103,6 +98,11 @@
                     Name = "Iesi.Collections"
                     AssemblyName = "Iesi.Collections"
                     HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
+                />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
                 />
             </References>
         </Build>
@@ -250,6 +250,11 @@
                 />
                 <File
                     RelPath = "DialectTest\MsSqlDialectFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DriverTest\NullReferenceFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
