@@ -11,6 +11,23 @@ namespace NHibernate.Dialect
 	/// <summary>
 	/// A SQL dialect for MySQL
 	/// </summary>
+	/// <remarks>
+	/// The MySQLDialect defaults the following configuration properties:
+	/// <list type="table">
+	///		<listheader>
+	///			<term>Property</term>
+	///			<description>Default Value</description>
+	///		</listheader>
+	///		<item>
+	///			<term>hibernate.use_outer_join</term>
+	///			<description><c>true</c></description>
+	///		</item>
+	///		<item>
+	///			<term>hibernate.connection.driver_class</term>
+	///			<description><see cref="NHibernate.Driver.MySqlDataDriver" /></description>
+	///		</item>
+	/// </list>
+	/// </remarks>
 	public class MySQLDialect : Dialect
 	{
 		/// <summary></summary>

@@ -13,6 +13,23 @@ namespace NHibernate.Dialect
 	/// It's a immature version, it just work.
 	/// An SQL dialect for Oracle 9
 	/// </summary>
+	/// <remarks>
+	/// The Oracle9Dialect defaults the following configuration properties:
+	/// <list type="table">
+	///		<listheader>
+	///			<term>Property</term>
+	///			<description>Default Value</description>
+	///		</listheader>
+	///		<item>
+	///			<term>hibernate.use_outer_join</term>
+	///			<description><c>true</c></description>
+	///		</item>
+	///		<item>
+	///			<term>hibernate.connection.driver_class</term>
+	///			<description><see cref="NHibernate.Driver.OracleClientDriver" /></description>
+	///		</item>
+	/// </list>
+	/// </remarks>
 	public class Oracle9Dialect : Dialect
 	{
 		private readonly IDictionary aggregateFunctions = new Hashtable();

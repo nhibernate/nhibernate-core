@@ -7,6 +7,23 @@ namespace NHibernate.Dialect
 	/// <summary>
 	/// An SQL dialect compatible with Microsoft SQL Server 2000.
 	/// </summary>
+	/// <remarks>
+	/// The MsSql2000Dialect defaults the following configuration properties:
+	/// <list type="table">
+	///		<listheader>
+	///			<term>Property</term>
+	///			<description>Default Value</description>
+	///		</listheader>
+	///		<item>
+	///			<term>hibernate.use_outer_join</term>
+	///			<description><c>true</c></description>
+	///		</item>
+	///		<item>
+	///			<term>hibernate.connection.driver_class</term>
+	///			<description><see cref="NHibernate.Driver.SqlClientDriver" /></description>
+	///		</item>
+	/// </list>
+	/// </remarks>
 	public class MsSql2000Dialect : Dialect
 	{
 		/// <summary></summary>

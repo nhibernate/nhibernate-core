@@ -8,6 +8,23 @@ namespace NHibernate.Dialect
 	/// <summary>
 	///  An SQL dialect for PostgreSQL.
 	/// </summary>
+	/// <remarks>
+	/// The PostgreSQLDialect defaults the following configuration properties:
+	/// <list type="table">
+	///		<listheader>
+	///			<term>Property</term>
+	///			<description>Default Value</description>
+	///		</listheader>
+	///		<item>
+	///			<term>hibernate.use_outer_join</term>
+	///			<description><c>true</c></description>
+	///		</item>
+	///		<item>
+	///			<term>hibernate.connection.driver_class</term>
+	///			<description><see cref="NHibernate.Driver.NpgsqlDriver" /></description>
+	///		</item>
+	/// </list>
+	/// </remarks>
 	public class PostgreSQLDialect : Dialect
 	{
 		/// <summary></summary>

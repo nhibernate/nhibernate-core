@@ -6,6 +6,19 @@ namespace NHibernate.Dialect
 	/// <summary>
 	/// Summary description for FirebirdDialect.
 	/// </summary>
+	/// <remarks>
+	/// The DB2Dialect defaults the following configuration properties:
+	/// <list type="table">
+	///		<listheader>
+	///			<term>Property</term>
+	///			<description>Default Value</description>
+	///		</listheader>
+	///		<item>
+	///			<term>hibernate.connection.driver_class</term>
+	///			<description><see cref="NHibernate.Driver.FirebirdDriver" /></description>
+	///		</item>
+	/// </list>
+	/// </remarks>
 	public class FirebirdDialect : Dialect
 	{
 		/// <summary></summary>
