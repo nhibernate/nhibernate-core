@@ -26,7 +26,6 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void SimpleSqlStringTest() 
 		{
-			
 			ISession session = factory.OpenSession();
 			
 			NExpression.Expression andExpression = NExpression.Expression.Eq("Address", "12 Adress");
@@ -36,10 +35,13 @@ namespace NHibernate.Test.ExpressionTest
 			string expectedSql = "simple_alias.address = :simple_alias.address";
 			Parameter[] expectedParams = new Parameter[1];
 			
-			ParameterLength firstAndParam = new ParameterLength();
-			firstAndParam.DbType = DbType.String;
+			// even though a String parameter is a Size based Parameter it will not
+			// be a ParameterLength unless in the mapping file it is defined as
+			// type="String(200)" -> in the mapping file it is now defined as 
+			// type="String" length="200"
+			Parameter firstAndParam = new Parameter();
+			firstAndParam.SqlType = new SqlTypes.StringSqlType();
 			firstAndParam.TableAlias = "simple_alias";
-			firstAndParam.Length = 200;
 			firstAndParam.Name = "address";
 
 			expectedParams[0] = firstAndParam;

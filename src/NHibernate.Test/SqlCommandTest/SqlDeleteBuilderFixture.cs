@@ -51,17 +51,17 @@ namespace NHibernate.Test.SqlCommandTest
 
 
 			Parameter firstParam = new Parameter();
-			firstParam.DbType = DbType.Decimal;
+			firstParam.SqlType = new SqlTypes.DecimalSqlType();
 			firstParam.Name = "decimalColumn";
 		
 			Parameter secondParam = new Parameter();
-			secondParam.DbType = DbType.Int32;
+			secondParam.SqlType = new SqlTypes.Int32SqlType();
 			secondParam.Name = "versionColumn";
 
-			Assertion.AssertEquals("firstParam Type", firstParam.DbType, actualParams[0].DbType);
+			Assertion.AssertEquals("firstParam Type", firstParam.SqlType.DbType, actualParams[0].SqlType.DbType);
 			Assertion.AssertEquals("firstParam Name", firstParam.Name, actualParams[0].Name);
 
-			Assertion.AssertEquals("secondParam Type", secondParam.DbType, actualParams[1].DbType);
+			Assertion.AssertEquals("secondParam Type", secondParam.SqlType.DbType, actualParams[1].SqlType.DbType);
 			Assertion.AssertEquals("secondParam Name", secondParam.Name, actualParams[1].Name);
 
 			

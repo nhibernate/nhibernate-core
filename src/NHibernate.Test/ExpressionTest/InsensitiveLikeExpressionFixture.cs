@@ -31,12 +31,11 @@ namespace NHibernate.Test.ExpressionTest
 			string expectedSql = "lower(simple_alias.address) like :simple_alias.address";
 			Parameter[] expectedParams = new Parameter[1];
 
-			ParameterLength firstParam = new ParameterLength();
-			firstParam.DbType = DbType.String;
+			Parameter firstParam = new Parameter();
+			firstParam.SqlType = new SqlTypes.StringSqlType();
 			firstParam.TableAlias = "simple_alias";
 			firstParam.Name = "address";
-			firstParam.Length = 200;
-
+			
 			expectedParams[0] = firstParam;
 
 			CompareSqlStrings(sqlString, expectedSql, expectedParams);

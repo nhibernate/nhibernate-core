@@ -58,31 +58,31 @@ namespace NHibernate.Test.SqlCommandTest
 
 			
 			Parameter firstParam = new Parameter();
-			firstParam.DbType = DbType.Int32;
+			firstParam.SqlType = new SqlTypes.Int32SqlType();
 			firstParam.Name = "intColumn";
 		
 			Parameter secondParam = new Parameter();
-			secondParam.DbType = DbType.Int64;
+			secondParam.SqlType = new SqlTypes.Int64SqlType();
 			secondParam.Name = "longColumn";
 
 			Parameter thirdParam = new Parameter();
-			thirdParam.DbType = DbType.Decimal;
+			thirdParam.SqlType = new SqlTypes.DecimalSqlType();
 			thirdParam.Name = "decimalColumn";
 		
 			Parameter fourthParam = new Parameter();
-			fourthParam.DbType = DbType.Int32;
+			fourthParam.SqlType = new SqlTypes.Int32SqlType();
 			fourthParam.Name = "versionColumn";
 
-			Assertion.AssertEquals("firstParam Type", firstParam.DbType, actualParams[0].DbType);
+			Assertion.AssertEquals("firstParam Type", firstParam.SqlType.DbType, actualParams[0].SqlType.DbType);
 			Assertion.AssertEquals("firstParam Name", firstParam.Name, actualParams[0].Name);
 
-			Assertion.AssertEquals("secondParam Type", secondParam.DbType, actualParams[1].DbType);
+			Assertion.AssertEquals("secondParam Type", secondParam.SqlType.DbType, actualParams[1].SqlType.DbType);
 			Assertion.AssertEquals("secondParam Name", secondParam.Name, actualParams[1].Name);
 
-			Assertion.AssertEquals("thirdParam Type", thirdParam.DbType, actualParams[2].DbType);
+			Assertion.AssertEquals("thirdParam Type", thirdParam.SqlType.DbType, actualParams[2].SqlType.DbType);
 			Assertion.AssertEquals("thirdParam Name", thirdParam.Name, actualParams[2].Name);
 
-			Assertion.AssertEquals("fourthParam Type", fourthParam.DbType, actualParams[3].DbType);
+			Assertion.AssertEquals("fourthParam Type", fourthParam.SqlType.DbType, actualParams[3].SqlType.DbType);
 			Assertion.AssertEquals("fourthParam Name", fourthParam.Name, actualParams[3].Name);
 		
 				

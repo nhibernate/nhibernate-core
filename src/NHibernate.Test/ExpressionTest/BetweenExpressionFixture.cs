@@ -31,13 +31,13 @@ namespace NHibernate.Test.ExpressionTest
 			Parameter[] expectedParams = new Parameter[2];
 
 			Parameter firstBetweenParam = new Parameter();
-			firstBetweenParam.DbType = DbType.Int32;
+			firstBetweenParam.SqlType = new SqlTypes.Int32SqlType(); 
 			firstBetweenParam.TableAlias = "simple_alias";
 			firstBetweenParam.Name = "count__lo";
 			expectedParams[0] = firstBetweenParam;
 			
 			Parameter secondBetweenParam = new Parameter();
-			secondBetweenParam.DbType = DbType.Int32;
+			secondBetweenParam.SqlType = new SqlTypes.Int32SqlType();
 			secondBetweenParam.TableAlias = "simple_alias";
 			secondBetweenParam.Name = "count__hi";
 			expectedParams[1] = secondBetweenParam;

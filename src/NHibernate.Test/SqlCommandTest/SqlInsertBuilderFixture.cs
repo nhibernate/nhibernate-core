@@ -52,17 +52,17 @@ namespace NHibernate.Test.SqlCommandTest
 			Assertion.AssertEquals("Two parameters", 2, numOfParameters);
 
 			Parameter firstParam = new Parameter();
-			firstParam.DbType = DbType.Int32;
+			firstParam.SqlType = new SqlTypes.Int32SqlType();
 			firstParam.Name = "intColumn";
 		
 			Parameter secondParam = new Parameter();
-			secondParam.DbType = DbType.Int64;
+			secondParam.SqlType = new SqlTypes.Int64SqlType();
 			secondParam.Name = "longColumn";
 
-			Assertion.AssertEquals("First Parameter Type", firstParam.DbType, actualParams[0].DbType);
+			Assertion.AssertEquals("First Parameter Type", firstParam.SqlType.DbType, actualParams[0].SqlType.DbType);
 			Assertion.AssertEquals("First Parameter Name", firstParam.Name, actualParams[0].Name);
 
-			Assertion.AssertEquals("Second Parameter Type", secondParam.DbType, actualParams[1].DbType);
+			Assertion.AssertEquals("Second Parameter Type", secondParam.SqlType.DbType, actualParams[1].SqlType.DbType);
 			Assertion.AssertEquals("Second Parameter Name", secondParam.Name, actualParams[1].Name);
 		
 				
