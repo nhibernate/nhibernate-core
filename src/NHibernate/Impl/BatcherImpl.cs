@@ -76,9 +76,7 @@ namespace NHibernate.Impl
 			ExecuteBatch();
 			LogOpenPreparedCommands();
 			
-			//return JoinTransaction( factory.GetPreparedStatement( session.Connection, sql, false) );
 			return session.Preparer.PrepareCommand(sql);
-
 		}
 		
 		public IDbCommand PrepareQueryCommand(SqlString sql, bool scrollable) 
@@ -87,7 +85,6 @@ namespace NHibernate.Impl
 			// to ado.net since DataReader is forward only
 			LogOpenPreparedCommands();
 			IDbCommand command = session.Preparer.PrepareCommand(sql);
-			//factory.GetPreparedStatement( session.Connection, sql, false );
 			
 			// not sure if this is needed because fetch size doesn't apply
 			factory.SetFetchSize(command);
@@ -166,7 +163,6 @@ namespace NHibernate.Impl
 		public void CloseCommand(IDbCommand cmd) 
 		{
 			LogClosePreparedCommands();
-			// factory.ClosePreparedStatement(cmd);
 		}
 
 		private void CloseQueryCommand(IDbCommand cmd) 

@@ -108,21 +108,6 @@ namespace NHibernate.Engine
 		string GetImportedClassName(string name);
 
 		/// <summary>
-		/// Dispose of a prepared statement
-		/// </summary>
-		/// <param name="ps"></param>
-		void ClosePreparedStatement(IDbCommand ps);
-
-		/// <summary>
-		/// Obtain a prepared statement
-		/// </summary>
-		/// <param name="conn"></param>
-		/// <param name="sql"></param>
-		/// <param name="scrollable"></param>
-		/// <returns></returns>
-		IDbCommand GetPreparedStatement(IDbConnection conn, string sql, bool scrollable);
-
-		/// <summary>
 		/// The ADO.NET batch size 
 		/// </summary>
 		int ADOBatchSize { get; } //TODO: Depricate, should always be 0

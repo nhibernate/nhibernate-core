@@ -37,7 +37,6 @@ namespace NHibernate.Cfg
 		public const string ConnectionDriver = "hibernate.connection.driver_class";
 		public const string ConnectionString = "hibernate.connection.connection_string";
 		public const string Isolation = "hibernate.connection.isolation";
-		public const string StatementCacheSize = "hibernate.statement_cache.size";
 		public const string SessionFactoryName = "hibernate.session_factory_name";
 		public const string Dialect = "hibernate.dialect";
 		public const string DefaultSchema = "hibernate.default_schema";
@@ -56,7 +55,7 @@ namespace NHibernate.Cfg
 		public const string StatementBatchSize = "hibernate.jdbc.batch_size";
 		public const string StatementFetchSize = "hibernate.jdbc.fetch_size";
 		public const string UseScrollableResultSet = "hibernate.jdbc.use_scrollable_resultset";
-
+		
 		static Environment() 
 		{
 			log4net.Config.DOMConfigurator.Configure();

@@ -1413,11 +1413,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Ps\PreparedStatementCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "SqlCommand\Alias.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
