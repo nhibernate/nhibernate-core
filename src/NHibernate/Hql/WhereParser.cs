@@ -39,7 +39,7 @@ namespace NHibernate.Hql
 			{
 				if (booleanOperatorsAsRegEx.Length != 0)
 					return booleanOperatorsAsRegEx;
-				StringBuilder sb = new StringBuilder("(?:");
+				StringBuilder sb = new StringBuilder(@"(?:\(|");
 				foreach(string s in booleanOperators)
 				{
 					sb.Append(s);
