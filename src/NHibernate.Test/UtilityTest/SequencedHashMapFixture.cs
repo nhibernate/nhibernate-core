@@ -102,6 +102,19 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
+		public void GetEnumeratorEmpty() 
+		{
+			bool noEntries = true;
+
+			foreach( DictionaryEntry de in _emptyShm ) 
+			{
+				noEntries = false;
+			}
+
+			Assert.IsTrue( noEntries, "should not have any entries in the enumerator" );
+		}
+
+		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void GetEnumeratorModifyExceptionFromAdd() 
 		{
@@ -226,6 +239,19 @@ namespace NHibernate.Test.UtilityTest
 			{
 				Assert.Fail("should not be a value:" + obj);
 			}
+		}
+
+		[Test]
+		public void ValuesEmpty() 
+		{
+			bool noValues = true;
+
+			foreach( object obj in _emptyShm.Values ) 
+			{
+				noValues = false;
+			}
+
+			Assert.IsTrue( noValues, "should have no values." );
 		}
 
 		[Test]
