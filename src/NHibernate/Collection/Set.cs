@@ -182,7 +182,7 @@ namespace NHibernate.Collection {
 		/// </summary>
 		public void Add(object key, object value) {
 			Write();
-			map[key] = value;
+			map.Add(key, value);
 		}
 		
 		/// <summary>
