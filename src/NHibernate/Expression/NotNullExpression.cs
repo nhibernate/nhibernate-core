@@ -7,23 +7,27 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Expression {
+namespace NHibernate.Expression 
+{
 
 	/// <summary>
-	/// NotNullExpression
+	/// Constrains a property to be non-null
 	/// </summary>
-	public class NotNullExpression : Expression {
+	public class NotNullExpression : Expression 
+	{
 
 		private readonly string propertyName;
 	
 		private static readonly TypedValue[] NoValues = new TypedValue[0];
 	
-		internal NotNullExpression(string propertyName) {
+		internal NotNullExpression(string propertyName) 
+		{
 			this.propertyName = propertyName;
 		}
 
 
-		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) {
+		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) 
+		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
@@ -33,7 +37,8 @@ namespace NHibernate.Expression {
 			
 			bool andNeeded = false;
 			
-			for(int i = 0; i < columnNames.Length; i++){
+			for(int i = 0; i < columnNames.Length; i++)
+			{
 				if(andNeeded) sqlBuilder.Add(" AND ");
 				andNeeded = true;
 
@@ -45,11 +50,13 @@ namespace NHibernate.Expression {
 			return sqlBuilder.ToSqlString();
 		}
 	
-		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {
+		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) 
+		{
 			return NoValues;
 		}
 
-		public override string ToString() {
+		public override string ToString() 
+		{
 			return propertyName + " is not null";
 		}
 	}

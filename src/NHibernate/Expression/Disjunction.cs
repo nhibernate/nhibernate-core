@@ -3,11 +3,12 @@ using System;
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// Summary description for Disjunction.
+	/// An Expression that Junctions together multiple Expressions with an <c>or</c>
 	/// </summary>
 	public class Disjunction : Junction
 	{
-		protected override string Op {
+		protected override string Op 
+		{
 			get { return " or "; }
 		}
 	}

@@ -69,17 +69,16 @@ namespace NHibernate.Expression
 			Parameter[] parameters = Parameter.GenerateParameters(factory, alias, paramColumnNames, propertyType);
 
 			
-			bool andNeeded = false;
-			
-			for(int i = 0; i < columnNames.Length; i++){
-				if(andNeeded) sqlBuilder.Add(" AND ");
-				andNeeded = true;
-
+			for(int i = 0; i < columnNames.Length; i++)
+			{
+				if(i > 0) sqlBuilder.Add(" AND ");
+				
 				sqlBuilder.Add(columnNames[i])
 					.Add(Op)
 					.Add(parameters[i]);
 
 			}
+
 			return sqlBuilder.ToSqlString();
 		}
 

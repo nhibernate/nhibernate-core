@@ -10,8 +10,7 @@ namespace NHibernate.Expression
 {
 
 	/// <summary>
-	/// An Expression that combines two other <see cref="Expression"/>s with an 
-	/// <c>"and"</c> or <c>"or"</c> between them.
+	/// Base Class of binary logical expressions.
 	/// </summary>
 	public abstract class LogicalExpression : Expression 
 	{

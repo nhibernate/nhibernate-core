@@ -1,13 +1,17 @@
 using System;
 
-namespace NHibernate.Expression {
+namespace NHibernate.Expression 
+{
 	
-	public class GeExpression : SimpleExpression {
+	public class GeExpression : SimpleExpression 
+	{
 
-		internal GeExpression(string propertyName, object value) : base (propertyName, value) {
+		internal GeExpression(string propertyName, object value) : base (propertyName, value) 
+		{
 		}
 
-		protected override string Op {
+		protected override string Op 
+		{
 			get { return " >= "; }
 		}
 	}

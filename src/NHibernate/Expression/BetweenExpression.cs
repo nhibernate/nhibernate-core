@@ -15,11 +15,9 @@ namespace NHibernate.Expression
 	/// </summary>
 	public class BetweenExpression : Expression 
 	{
-
 		private readonly string propertyName;
 		private readonly object lo;
 		private readonly object hi;
-	
 		
 		/// <summary>
 		/// Initialize a new instance of the BetweenExpression class for
@@ -48,7 +46,8 @@ namespace NHibernate.Expression
 
 			// we need to create a _lo and _hi parameter for each column.  The 	columnNames
 			// doesn't return a seperate column for the _lo and _hi so we need to...
-			for(int i = 0; i < paramColumnNames.Length; i++){
+			for(int i = 0; i < paramColumnNames.Length; i++)
+			{
 				loParamColumnNames[i] = paramColumnNames[i] + "_lo";
 				hiParamColumnNames[i] = paramColumnNames[i] + "_hi";
 			}
@@ -60,7 +59,8 @@ namespace NHibernate.Expression
 			
 			bool andNeeded = false;
 			
-			for(int i = 0; i < columnNames.Length; i++){
+			for(int i = 0; i < columnNames.Length; i++)
+			{
 				if(andNeeded) sqlBuilder.Add(" AND ");
 				andNeeded = true;
 
@@ -74,14 +74,16 @@ namespace NHibernate.Expression
 			return sqlBuilder.ToSqlString();
 		}
 	
-		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {
+		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) 
+		{
 			return new TypedValue[] { 
 				GetTypedValue(sessionFactory, persistentClass, propertyName, lo),
 				GetTypedValue(sessionFactory, persistentClass, propertyName, hi) 
 				};
 		}
 
-		public override string ToString() {
+		public override string ToString() 
+		{
 			return propertyName + " between " + lo + " and " + hi;
 		}	
 	}

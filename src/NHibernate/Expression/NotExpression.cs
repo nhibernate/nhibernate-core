@@ -5,18 +5,22 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Expression {
+namespace NHibernate.Expression 
+{
 	/// <summary>
-	/// Summary description for NotExpression.
+	/// Negates another expression.
 	/// </summary>
-	public class NotExpression : Expression {
+	public class NotExpression : Expression 
+	{
 		private Expression expression;
 
-		internal NotExpression(Expression expression) {
+		internal NotExpression(Expression expression) 
+		{
 			this.expression = expression;
 		}
 
-		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) {
+		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) 
+		{
 			//TODO: set default capacity
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add("not ");
@@ -25,7 +29,8 @@ namespace NHibernate.Expression {
 			return builder.ToSqlString();
 		}
 
-		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) {
+		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) 
+		{
 			return expression.GetTypedValues(sessionFactory, persistentClass);
 		}
 

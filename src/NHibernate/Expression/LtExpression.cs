@@ -1,13 +1,17 @@
 using System;
 
-namespace NHibernate.Expression {
+namespace NHibernate.Expression 
+{
 	
-	public class LtExpression : SimpleExpression {
+	public class LtExpression : SimpleExpression 
+	{
 
-		internal LtExpression(string propertyName, object value) : base (propertyName, value) {
+		internal LtExpression(string propertyName, object value) : base (propertyName, value) 
+		{
 		}
 
-		protected override string Op {
+		protected override string Op 
+		{
 			get { return "<"; }
 		}
 	}

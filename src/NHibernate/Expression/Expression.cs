@@ -208,7 +208,6 @@ namespace NHibernate.Expression
 		/// <param name="value"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		//TODO: get this Expression.Sql to work
 		public static Expression Sql(string sql, object value, IType type) 
 		{
 			return new SQLExpression(sql, new object[] { value }, new IType[] { type } );
@@ -219,7 +218,6 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		//TODO: get Expression.Sql to work
 		public static Expression Sql(string sql) 
 		{
 			return new SQLExpression(sql, NoObjects, NoTypes);
