@@ -14,8 +14,6 @@ namespace NHibernate.Util {
 		public const string ClosedParen = ")";
 		public const string SqlParameter = "?";
 
-//		public static Dialect.Dialect Dialect;
-
 		[Obsolete("Use String.Join() instead of this method. It does the same thing")]
 		public static string Join(string separator, string[] strings) {
 			return string.Join(separator, strings);
@@ -188,26 +186,5 @@ namespace NHibernate.Util {
 			}
 			return results;
 		}
-//
-//		[Obsolete("Should directly call Dialect instead")]
-//		public static string UnQuote(string name) {
-//			return Dialect.UnQuote(name);
-//		}
-//
-//		[Obsolete("Should directly call Dialect instead")]
-//		public static void UnQuoteInPlace(string[] names) 
-//		{
-//			for (int i=0; i<names.Length; i++)
-//				names[i] = UnQuote(names[i]);
-//		}
-//
-//		[Obsolete("Should directly call Dialect instead")]
-//		public static string[] UnQuote(string[] names) 
-//		{
-//			string[] unquoted = new string[ names.Length ];
-//			for (int i=0; i<names.Length; i++)
-//				unquoted[i] = UnQuote(names[i]);
-//			return unquoted;
-//		}
 	}
 }
