@@ -9,6 +9,9 @@ namespace NHibernate.Type {
 	/// </summary>
 	public interface IAssociationType {
 
+		// TODO: there's some compilation problem to solve here
+
+		/*
 		public static abstract class ForeignKeyType {
 			
 			protected ForeignKeyType() {}
@@ -20,6 +23,7 @@ namespace NHibernate.Type {
 			/// <returns></returns>
 			public abstract bool CascadeNow(int cascadePoint);
 		}
+		*/
 
 		/*
 		 * TODO: Translate in correct C# this code! Do we need a static constructor?
@@ -48,6 +52,6 @@ namespace NHibernate.Type {
 		/// <summary>
 		/// Get the foreign key directionality of this association
 		/// </summary>
-		public ForeignKeyType ForeignKeyType { get; }
+		// ForeignKeyType ForeignKeyType { get; }
 	}
 }

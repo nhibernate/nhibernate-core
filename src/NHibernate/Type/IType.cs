@@ -18,19 +18,18 @@ namespace NHibernate.Type {
 		// What do we do with GetReturnedClass? It returns a java.lang.Class
 		// What do we do with method that required ResultSet param?
 		
-		
 		/// <summary>
 		/// Return true if the implementation is castable to AssociationType.
 		/// This does not necessarily imply that the type actually represents an association.
 		/// </summary>
 		/// <returns></returns>
-		public bool IsAssociationType { get; }
+		bool IsAssociationType { get; }
 		
 		/// <summary>
 		/// Is this type a collection type?
 		/// </summary>
 		/// <returns></returns>
-		public bool IsPersistentCollectionType { get; }
+		bool IsPersistentCollectionType { get; }
 
 		/// <summary>
 		/// Is this type a component type?
@@ -38,13 +37,13 @@ namespace NHibernate.Type {
 		/// A component type may own collections or associations and hence must provide certain extra functionality.
 		/// </summary>
 		/// <returns></returns>
-		public bool IsComponentType	{ get; }
+		bool IsComponentType	{ get; }
 	
 		/// <summary>
 		/// Is this type an entity type?
 		/// </summary>
 		/// <returns></returns>
-		public bool IsEntityType { get; }
+		bool IsEntityType { get; }
 	
 		/// <summary>
 		/// Is this an "object" type,
@@ -52,7 +51,7 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <returns></returns>
 		/// <exception cref="MappingException">MappingException</exception>
-		public boolean IsObjectType { get; }
+		bool IsObjectType { get; }
 	
 		/// <summary>
 		/// Return the SQL typecodes for the columns mapped by this type.
@@ -60,7 +59,7 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="mapping">Mapping</param>
 		/// <returns>Typecodes</returns>
-		public Types[] SqlTypes(IMapping mapping);
+		Types[] SqlTypes(IMapping mapping);
 	
 		/// <summary>
 		/// How many columns are used to persist this type?
@@ -68,7 +67,7 @@ namespace NHibernate.Type {
 		/// <param name="mapping"></param>
 		/// <returns></returns>
 		/// <exception cref="MappingException">MappingException</exception>
-		public int GetColumnSpan(IMapping mapping);
+		int GetColumnSpan(IMapping mapping);
 	
 		/* TODO:
 		
@@ -87,7 +86,7 @@ namespace NHibernate.Type {
 		/// <param name="y"></param>
 		/// <returns></returns>
 		/// <exception cref="HibernateException">HibernateException</exception>
-		public bool Equals(object x, object y);
+		bool Equals(object x, object y);
 		
 		/// <summary>
 		/// Should the parent be considered dirty, given both the old and current field or element value?
@@ -96,7 +95,7 @@ namespace NHibernate.Type {
 		/// <param name="current">the current value</param>
 		/// <param name="session"></param>
 		/// <returns>true if the field is dirty</returns>
-		public bool IsDirty(object old, object current, ISessionImplementor session);
+		bool IsDirty(object old, object current, ISessionImplementor session);
 	
 		/* TODO:
 		 
@@ -166,14 +165,14 @@ namespace NHibernate.Type {
 		/// Returns the abbreviated name of the type.
 		/// </summary>
 		/// <returns>the Hibernate type name</returns>
-		public string Name { get; }
+		string Name { get; }
 	
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.
 		/// </summary>
 		/// <param name="value">generally a collection element or entity field</param>
 		/// <returns></returns>
-		public object DeepCopy(object value);
+		object DeepCopy(object val);
 	
 		/// <summary>
 		/// Are objects of this type mutable?
@@ -181,7 +180,7 @@ namespace NHibernate.Type {
 		/// entities and collections are considered immutable because they manage their own internal state.)
 		/// </summary>
 		/// <returns></returns>
-		public bool IsMutable { get; }
+		bool IsMutable { get; }
 	
 		/**TODO:
 		 * Return a cacheable "disassembled" representation of the object.

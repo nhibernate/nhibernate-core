@@ -11,13 +11,13 @@ namespace NHibernate.Type {
 		/// Generate an initial version.
 		/// Return an instance of the type.
 		/// </summary>
-		public object Seed { get; }
+		object Seed { get; }
 
 		/// <summary>
 		/// Increment the version.
 		/// </summary>
 		/// <param name="current">the current version</param>
 		/// <returns>an instance of the type</returns>
-		public object Next(object current);
+		object Next(object current);
 	}
 }

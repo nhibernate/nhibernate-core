@@ -12,6 +12,6 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="xml">the value of <code>discriminator-value</code> or <code>unsaved-value</code> attribute</param>
 		/// <returns></returns>
-		public object StringToObject(string xml);
+		object StringToObject(string xml);
 	}
 }

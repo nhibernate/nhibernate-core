@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// </summary>
 	public abstract class NullableType : AbstractType {
 
-		private static readonly ILog log = LogManager.GetLogger(StringHelper.Qualifier(typeof(IType)));
+		private static readonly ILog log = LogManager.GetLogger(StringHelper.Qualifier((typeof(IType)).ToString()));  //Is it correct?
 
 		//Needs PreparedStatement implementation
 		//
@@ -88,18 +88,18 @@ namespace NHibernate.Type
 		}
 		*/
 	
-		public sealed int GetColumnSpan(IMapping session) {
+		public override int GetColumnSpan(IMapping session) {
 			return 1;
 		}
 	
-		public sealed Types[] sqlTypes(Mapping session) {
-			return new Types[] { SqlType() };
+		public override Types[] SqlTypes(IMapping session) {
+			return new Types[] { SqlType };
 		}
 	
 		public abstract object DeepCopyNotNull(object val);
 	
-		public sealed object DeepCopy(object val) {
-			return (value==null) ? null : DeepCopyNotNull(val);
+		public override object DeepCopy(object val) {
+			return (val==null) ? null : DeepCopyNotNull(val);
 		}
 	}
 }
