@@ -120,15 +120,18 @@ namespace NHibernate.Test
 		public void CompositeID() 
 		{
 			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
 			Fum fum = new Fum( FumTest.FumKey("fum") );
 			fum.FumString = "fee fi fo";
 			s.Save(fum);
 
 			Assert.AreSame( fum, s.Load( typeof(Fum), FumTest.FumKey("fum"), LockMode.Upgrade ) );
-			s.Flush();
+			//s.Flush();
+			t.Commit();
 			s.Close();
 
 			s = sessions.OpenSession();
+			t = s.BeginTransaction();
 			fum = (Fum) s.Load( typeof(Fum), FumTest.FumKey("fum"), LockMode.Upgrade );
 			Assert.IsNotNull(fum, "Load by composite key");
 
@@ -144,10 +147,12 @@ namespace NHibernate.Test
 			Assert.AreEqual(fum, (Fum)list2[0], "Find one Composite Keyed object");
 
 			fum.Fo = null;
-			s.Flush();
+			//s.Flush();
+			t.Commit();
 			s.Close();
 
 			s = sessions.OpenSession();
+			t = s.BeginTransaction();
 			IEnumerator enumerator = s.Enumerable("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").GetEnumerator();
 			int i = 0;
 			while(enumerator.MoveNext()) 
@@ -158,7 +163,8 @@ namespace NHibernate.Test
 			}
 
 			Assert.AreEqual(2, i, "Iterate on Composite Key");
-			s.Flush();
+			//s.Flush();
+			t.Commit();
 			s.Close();
 
 		}
