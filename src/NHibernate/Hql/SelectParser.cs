@@ -29,6 +29,7 @@ namespace NHibernate.Hql
 		public SelectParser()
 		{
 			//TODO: would be nice to use false, but issues with MS SQL
+			//TODO: H2.0.3 why not getting info from Dialect?
 			pathExpressionParser.UseThetaStyleJoin = true;
 			aggregatePathExpressionParser.UseThetaStyleJoin = true;
 		}
@@ -173,7 +174,7 @@ namespace NHibernate.Hql
 			{
 				if (!ready) throw new QueryException(", expected in SELECT");
 				
-				ParserHelper.Parse(pathExpressionParser, token, ParserHelper.PathSeparators, q);
+				ParserHelper.Parse(pathExpressionParser, q.Unalias( token ), ParserHelper.PathSeparators, q);
 				if (pathExpressionParser.IsCollectionValued) 
 				{
 					q.AddCollection(
@@ -191,6 +192,7 @@ namespace NHibernate.Hql
 				ready = false;
 			}
 		}
+
 		public bool AggregateHasArgs(String funcToken, QueryTranslator q) 
 		{
 			IDictionary funcMap = q.AggregateFunctions;
