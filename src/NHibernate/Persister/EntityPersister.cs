@@ -167,7 +167,7 @@ namespace NHibernate.Persister {
 			get { return discriminatorSQLString; }
 		}
 
-		public System.Type[] SubclassClosure {
+		public virtual System.Type[] SubclassClosure {
 			get { return subclassClosure; }
 		}
 		public override System.Type GetSubclassForDiscriminatorValue(object value) {
@@ -202,7 +202,7 @@ namespace NHibernate.Persister {
 			get { return SqlUpdateString; }
 		}
 
-		protected string GenerateDeleteString() {
+		protected virtual string GenerateDeleteString() {
 			return new Delete()
 				.SetTableName( TableName )
 				.SetPrimaryKeyColumnNames( IdentifierColumnNames )
@@ -210,7 +210,7 @@ namespace NHibernate.Persister {
 				.ToStatementString();
 		}
 
-		protected string GenerateInsertString(bool identityInsert, bool[] includeProperty) {
+		protected virtual string GenerateInsertString(bool identityInsert, bool[] includeProperty) {
 			Insert insert = new Insert(dialect)
 				.SetTableName( TableName );
 			for (int i=0; i<hydrateSpan; i++) {
@@ -229,7 +229,7 @@ namespace NHibernate.Persister {
 		/// Generate the SQL that selects a row by id using <c>FOR UPDATE</c>
 		/// </summary>
 		/// <returns></returns>
-		protected string GenerateSelectForUpdateString() {
+		protected virtual string GenerateSelectForUpdateString() {
 			return GenerateSelectString() + " for update";
 		}
 
@@ -237,11 +237,11 @@ namespace NHibernate.Persister {
 		/// Generate the SQL taht selects a row by id using <c>FOR UPDATE</c>
 		/// </summary>
 		/// <returns></returns>
-		protected string GenerateSelectForUpdateNowaitString() {
+		protected virtual string GenerateSelectForUpdateNowaitString() {
 			return GenerateSelectString() + " for update nowait";
 		}
 
-		protected string GenerateSelectString() {
+		protected virtual string GenerateSelectString() {
 			SimpleSelect select = new SimpleSelect()
 				.SetTableName( TableName )
 				.AddColumns( IdentifierColumnNames )
@@ -250,7 +250,7 @@ namespace NHibernate.Persister {
 			return select.AddCondition( IdentifierColumnNames, "=?" ).ToStatementString();
 		}
 
-		protected string GenerateUpdateString(bool[] includeProperty) {
+		protected virtual string GenerateUpdateString(bool[] includeProperty) {
 			Update update = new Update()
 				.SetTableName( TableName )
 				.SetPrimaryKeyColumnNames( IdentifierColumnNames )
@@ -261,7 +261,7 @@ namespace NHibernate.Persister {
 			return update.ToStatementString();
 		}
 
-		protected string GenerateLockString() {
+		protected virtual string GenerateLockString() {
 			SimpleSelect select = new SimpleSelect()
 				.SetTableName( TableName )
 				.AddColumn( IdentifierColumnNames[0])
@@ -282,7 +282,7 @@ namespace NHibernate.Persister {
 		/// <param name="st"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected int Dehydrate(object id, object[] fields, bool[] includeProperty, IDbCommand st, ISessionImplementor session) {
+		protected virtual int Dehydrate(object id, object[] fields, bool[] includeProperty, IDbCommand st, ISessionImplementor session) {
 			if (log.IsDebugEnabled ) log.Debug("Dehydrating entity: " + ClassName + '#' + id);
 
 			int index = 1;
@@ -485,7 +485,7 @@ namespace NHibernate.Persister {
 			}
 		}
 
-		protected void Update(object id, object[] fields, bool[] includeProperty, object oldVersion, object obj, string sql, ISessionImplementor session) {
+		protected virtual void Update(object id, object[] fields, bool[] includeProperty, object oldVersion, object obj, string sql, ISessionImplementor session) {
 			if (log.IsDebugEnabled ) {
 				log.Debug("Updating entity: " + ClassName + '#' + id);
 				if ( IsVersioned ) log.Debug( "Existing version: " + oldVersion + " -> New Version: " + fields[ VersionProperty ] );
@@ -711,7 +711,7 @@ namespace NHibernate.Persister {
 			}
 		}
 
-		public string[] TableNames {
+		public virtual string[] TableNames {
 			get { return tableNames; }
 		}
 

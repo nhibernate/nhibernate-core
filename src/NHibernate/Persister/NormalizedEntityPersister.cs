@@ -150,7 +150,7 @@ namespace NHibernate.Persister {
 		public override string DiscriminatorSQLString {
 			get { return discriminatorSQLString; }
 		}
-		public System.Type[] SubclassClosure {
+		public virtual System.Type[] SubclassClosure {
 			get { return subclassClosure; }
 		}
 		public override System.Type GetSubclassForDiscriminatorValue(object value) {
@@ -204,7 +204,7 @@ namespace NHibernate.Persister {
 		/// Generate the SQL that deletes rows by id (and version)
 		/// </summary>
 		/// <returns></returns>
-		protected string[] GenerateDeleteStrings() {
+		protected virtual string[] GenerateDeleteStrings() {
 			string[] result = new string[ tableNames.Length ];
 			for (int i=0; i<tableNames.Length; i++ ) {
 				Delete delete = new Delete()
@@ -222,7 +222,7 @@ namespace NHibernate.Persister {
 		/// <param name="identityInsert"></param>
 		/// <param name="includeProperty"></param>
 		/// <returns></returns>
-		protected string[] GenerateInsertStrings(bool identityInsert, bool[] includeProperty) {
+		protected virtual string[] GenerateInsertStrings(bool identityInsert, bool[] includeProperty) {
 			string[] result = new string[tableNames.Length];
 			for (int j=0; j<tableNames.Length; j++) {
 				Insert insert = new Insert(dialect)
@@ -250,7 +250,7 @@ namespace NHibernate.Persister {
 		/// </summary>
 		/// <param name="includeProperty"></param>
 		/// <returns></returns>
-		protected string[] GenerateUpdateStrings(bool[] includeProperty) {
+		protected virtual string[] GenerateUpdateStrings(bool[] includeProperty) {
 			string[] result = new string[ tableNames.Length ];
 			for (int j=0; j<tableNames.Length; j++ ) {
 				Update update = new Update()
@@ -272,7 +272,7 @@ namespace NHibernate.Persister {
 			return result;
 		}
 
-		protected string GenerateLockString() {
+		protected virtual string GenerateLockString() {
 			SimpleSelect select = new SimpleSelect()
 				.SetTableName( TableName )
 				.AddColumn( IdentifierColumnNames[0] )
@@ -293,7 +293,7 @@ namespace NHibernate.Persister {
 		/// <param name="statements"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected int Dehydrate(object id, object[] fields, bool[] includeProperty, IDbCommand[] statements, ISessionImplementor session) {
+		protected virtual int Dehydrate(object id, object[] fields, bool[] includeProperty, IDbCommand[] statements, ISessionImplementor session) {
 			if (log.IsDebugEnabled ) log.Debug("Dehydrating entity: " + ClassName + '#' + id);
 
 			int versionParm = 0;
@@ -526,7 +526,7 @@ namespace NHibernate.Persister {
 			}
 		}
 
-		protected void Update(object id, object[] fields, bool[] includeProperty, bool[] includeTable, object oldVersion, object obj, string[] sql, ISessionImplementor session) {
+		protected virtual void Update(object id, object[] fields, bool[] includeProperty, bool[] includeTable, object oldVersion, object obj, string[] sql, ISessionImplementor session) {
 			if (log.IsDebugEnabled ) {
 				log.Debug("Updating entity: " + ClassName + '#' + id);
 				if ( IsVersioned ) log.Debug("Existing version: " + oldVersion + " -> New version: " + fields[ VersionProperty ] );
