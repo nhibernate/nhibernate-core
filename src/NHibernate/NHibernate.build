@@ -56,7 +56,6 @@
 				<excludes name="InternalTest/**/*.cs" />
 				<excludes name="Test/**/*.cs" />
 				<excludes name="Util/*Test.cs" />
-				<excludes name="Dialect/DB2Dialect.cs" />
 				<excludes name="Dialect/HSQLDialect.cs" />
 				<excludes name="Dialect/InterbaseDialect.cs" />
 				<excludes name="Dialect/SAPDBDialect.cs" />

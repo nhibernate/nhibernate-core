@@ -455,6 +455,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\DB2Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -511,6 +516,11 @@
                 />
                 <File
                     RelPath = "Dialect\TypeNames.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\DB2Driver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -431,8 +431,29 @@ namespace NHibernate.Driver
 			
 			public int GetOrdinal(string colName) 
 			{
-				return (int)fieldNameToIndex[colName];
+				// Martijn Boland, 20041106: perform a case-sensitive search first and if that returns
+				// null, perform a case-insensitive search (as being described in the IDataRecord 
+				// interface, see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfSystemDataIDataRecordClassItemTopic1.asp.
+				// This is necessary for databases that don't preserve the case of field names when
+				// they are created without quotes (e.g. DB2, PostgreSQL).
+				if( fieldNameToIndex[colName]!=null )
+				{
+					return (int)fieldNameToIndex[ colName ];
+				}
+				else
+				{
+					string colNameUpper = colName.ToUpper();
+					foreach( DictionaryEntry entry in fieldNameToIndex )
+					{
+						if( entry.Key.ToString().ToUpper()==colNameUpper ) 
+						{
+							return (int)entry.Value;
+						}
+					}
+					throw new IndexOutOfRangeException( String.Format( "No column with the specified name was found: {0}.", colName ) );
+				}
 			}
+
 
 			public object GetValue(int rowIndex, int colIndex) 
 			{
