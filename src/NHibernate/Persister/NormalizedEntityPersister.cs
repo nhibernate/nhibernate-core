@@ -964,7 +964,8 @@ namespace NHibernate.Persister
 					//TODO: change this to catch a Sql Exception and log it
 				catch (Exception e) 
 				{
-					throw e;
+					// TODO: log exception
+					throw;
 				} 
 				finally 
 				{
@@ -1049,10 +1050,10 @@ namespace NHibernate.Persister
 				}
 
 			} 
-				//TODO: change this to SQLException catching and log it
+			//TODO: change this to SQLException catching and log it
 			catch( Exception e ) 
 			{
-				throw e;
+				throw;
 			} 
 			finally 
 			{
@@ -1129,10 +1130,10 @@ namespace NHibernate.Persister
 				log.Debug("Natively generated identity: " + id);
 
 			} 
-				//TODO: change this to SQLException and log it
+			//TODO: change this to SQLException and log it
 			catch (Exception e) 
 			{
-				throw e;
+				throw;
 			} 
 			finally 
 			{
@@ -1151,10 +1152,10 @@ namespace NHibernate.Persister
 					Dehydrate(id, fields, notNull, i, statement, session);
 					session.Batcher.ExecuteNonQuery( statement );
 				} 
-					//TODO: change this to SQLException and log it
+				//TODO: change this to SQLException and log it
 				catch ( Exception e) 
 				{
-					throw e;
+					throw;
 				} 
 				finally 
 				{
@@ -1200,9 +1201,11 @@ namespace NHibernate.Persister
 					Check( session.Batcher.ExecuteNonQuery( statements[i] ), id );
 				}
 			} 
+			//TODO: change to SqlException
 			catch (Exception e) 
 			{
-				throw e;
+				// TODO: log info
+				throw;
 			} 
 			finally 
 			{
@@ -1304,8 +1307,9 @@ namespace NHibernate.Persister
 				}
 			} 
 			// TODO: change to SQLException and log
-			catch (Exception e) {
-				throw e;
+			catch (Exception e) 
+			{
+				throw;
 			} 
 			finally 
 			{

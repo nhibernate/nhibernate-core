@@ -685,9 +685,11 @@ namespace NHibernate.Collection
 					WriteKey(st, id, false, session);
 					session.Batcher.AddToBatch(-1);
 				} 
+				// TODO: change to SqlException
 				catch (Exception e) 
 				{
-					throw e;
+					session.Batcher.AbortBatch( e );
+					throw;
 				}
 				if (log.IsDebugEnabled ) log.Debug("done deleting collection");
 
@@ -721,9 +723,11 @@ namespace NHibernate.Collection
 							i++;
 						}
 					} 
+					//TODO: change to SqlException
 					catch (Exception e) 
 					{
-						throw e;
+						session.Batcher.AbortBatch( e );
+						throw;
 					}
 					if( log.IsDebugEnabled) log.Debug("done inserting collection");
 				}
@@ -753,9 +757,11 @@ namespace NHibernate.Collection
 							session.Batcher.AddToBatch(-1);
 						}
 					} 
+					// TODO: change to SqlException
 					catch (Exception e) 
 					{
-						throw e;
+						session.Batcher.AbortBatch( e );
+						throw;
 					}
 					
 					if( log.IsDebugEnabled ) log.Debug("done deleting collection rows");
@@ -789,9 +795,11 @@ namespace NHibernate.Collection
 					i++;
 				}
 			} 
+			// TODO: change to SqlException
 			catch (Exception e) 
 			{
-				throw e;
+				session.Batcher.AbortBatch( e );
+				throw;
 			}
 		}
 
@@ -817,10 +825,11 @@ namespace NHibernate.Collection
 					i++;
 				}
 			} 
+			// TODO: change to SqlException
 			catch(Exception e) 
 			{
 				session.Batcher.AbortBatch( e );
-				throw e;
+				throw;
 			}
 
 			// finish all the removes first to take care of possible unique constraints
@@ -845,9 +854,11 @@ namespace NHibernate.Collection
 					i++;
 				}
 			} 
+			//TODO: change to SqlException
 			catch (Exception e) 
 			{
-				throw e;
+				session.Batcher.AbortBatch( e );
+				throw;
 			}
 		}
 
@@ -897,10 +908,12 @@ namespace NHibernate.Collection
 						}
 						i++;
 					}
-				} 
+				}
+				//TODO: change to SqlException
 				catch (Exception e) 
 				{
-					throw e;
+					session.Batcher.AbortBatch( e );
+					throw;
 				}
 
 				if( log.IsDebugEnabled ) log.Debug("done inserting rows");

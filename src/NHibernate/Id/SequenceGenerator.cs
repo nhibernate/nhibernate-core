@@ -53,9 +53,11 @@ namespace NHibernate.Id
 				log.Debug("sequence ID generated: " + result);
 				return result;
 			} 
+			// TODO: change to SQLException
 			catch (Exception e) 
 			{
-				throw e;
+				// TODO: add code to log the sql exception
+				throw;
 			} 
 			finally 
 			{

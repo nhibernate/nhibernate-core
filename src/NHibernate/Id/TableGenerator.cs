@@ -114,10 +114,11 @@ namespace NHibernate.Id
 						result = rs.GetInt32(0);
 						rs.Close();
 					} 
+					// TODO: change to SqlException
 					catch (Exception e) 
 					{
 						log.Error("could not read a hi value", e);
-						throw e;
+						throw;
 					} 
 					finally 
 					{
@@ -134,10 +135,11 @@ namespace NHibernate.Id
 
 						rows = ups.ExecuteNonQuery();
 					} 
+					// TODO: change to SqlException
 					catch (Exception e) 
 					{
 						log.Error("could not update hi value in: " + tableName, e);
-						throw e;
+						throw;
 					} 
 					finally 
 					{

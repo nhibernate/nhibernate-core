@@ -1477,7 +1477,16 @@ namespace NHibernate.Impl
 			{ 
 				//mainly a CallbackException
 				RollbackDeletion(entry, delete);
-				SessionImpl.Handle(e); //rethrow exception
+				if (e is HibernateException) 
+				{
+					throw;
+				} 
+				else 
+				{
+					log.Error("unexpected exception", e);
+					throw new HibernateException("unexpected exception", e);
+				}
+				
 			}
 		}
 
@@ -3835,20 +3844,6 @@ namespace NHibernate.Impl
 		}
 
 		#endregion
-
-
-		public static void Handle(Exception e) 
-		{
-			if (e is HibernateException) 
-			{
-				throw (HibernateException) e;
-			} 
-			else 
-			{
-				log.Error("unexpected exception", e);
-				throw new HibernateException("unexpected exception", e);
-			}
-		}
 
 		public ICollection Filter(object collection, string filter) 
 		{

@@ -237,9 +237,11 @@ namespace NHibernate.Loader
 
 				}
 			}
+			// TODO: change to SqlException
 			catch (Exception e) 
 			{
-				throw e;
+				// TODO: log the SqlException
+				throw;
 			} 
 			finally 
 			{

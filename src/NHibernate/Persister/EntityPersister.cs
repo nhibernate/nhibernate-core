@@ -803,10 +803,11 @@ namespace NHibernate.Persister
 				session.Batcher.AddToBatch(1);
 
 			}
-				//TODO: add SQLException catching here...
+			//TODO: add SQLException catching here...
 			catch (Exception e ) 
 			{
-				throw e;
+				session.Batcher.AbortBatch( e );
+				throw;
 			}
 		}
 
@@ -876,10 +877,11 @@ namespace NHibernate.Persister
 
 				return id;
 			} 
-				//TODO: add SQLException logging here
+			//TODO: add SQLException logging here
 			catch (Exception e) 
 			{
-				throw e;
+				// TODO: log it
+				throw;
 			} 
 			finally 
 			{
@@ -935,10 +937,18 @@ namespace NHibernate.Persister
 					session.Batcher.AddToBatch(1);
 				}
 			}
-				// TODO: h2.0.3 - add some Sql Exception logging here
+			// TODO: h2.0.3 - add some Sql Exception logging here
 			catch (Exception e) 
 			{
-				throw e;
+				if( IsVersioned ) 
+				{
+					//TODO: add some logging.
+				}
+				else 
+				{
+					session.Batcher.AbortBatch( e );
+				}
+				throw;
 			}
 			finally 
 			{
@@ -1044,7 +1054,7 @@ namespace NHibernate.Persister
 					session.Batcher.AbortBatch(e);
 				}
 
-				throw e;
+				throw;
 			} 
 			finally 
 			{
