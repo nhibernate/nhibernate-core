@@ -1,9 +1,7 @@
-using System;
 using System.Collections;
 using System.Text;
-
+using log4net;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -12,10 +10,10 @@ namespace NHibernate.Engine
 	/// </summary>
 	public class QueryParameters
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(QueryParameters) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( QueryParameters ) );
 
-		private IType[] _positionalParameterTypes;
-		private object[] _positionalParameterValues;
+		private IType[ ] _positionalParameterTypes;
+		private object[ ] _positionalParameterValues;
 		private RowSelection _rowSelection;
 		private IDictionary _lockModes;
 		private IDictionary _namedParameters;
@@ -25,7 +23,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="positionalParameterTypes">An array of <see cref="IType"/> objects for the parameters.</param>
 		/// <param name="positionalParameterValues">An array of <see cref="object"/> objects for the parameters.</param>
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues)
+		public QueryParameters( IType[ ] positionalParameterTypes, object[ ] positionalParameterValues )
 			: this( positionalParameterTypes, positionalParameterValues, null, null )
 		{
 		}
@@ -37,7 +35,7 @@ namespace NHibernate.Engine
 		/// <param name="positionalParameterValues">An array of <see cref="object"/> objects for the parameters.</param>
 		/// <param name="lockModes">An <see cref="IDictionary"/> that is hql alias keyed to a LockMode value.</param>
 		/// <param name="rowSelection"></param>
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary lockModes, RowSelection rowSelection)
+		public QueryParameters( IType[ ] positionalParameterTypes, object[ ] positionalParameterValues, IDictionary lockModes, RowSelection rowSelection )
 			: this( positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection )
 		{
 		}
@@ -50,7 +48,7 @@ namespace NHibernate.Engine
 		/// <param name="namedParameters">An <see cref="IDictionary"/> that is <c>parameter name</c> keyed to a <see cref="TypedValue"/> value.</param>
 		/// <param name="lockModes">An <see cref="IDictionary"/> that is <c>hql alias</c> keyed to a LockMode value.</param>
 		/// <param name="rowSelection"></param>
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection) 
+		public QueryParameters( IType[ ] positionalParameterTypes, object[ ] positionalParameterValues, IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection )
 		{
 			_positionalParameterTypes = positionalParameterTypes;
 			_positionalParameterValues = positionalParameterValues;
@@ -85,7 +83,7 @@ namespace NHibernate.Engine
 		/// Gets or sets an array of <see cref="IType"/> objects that is stored at the index 
 		/// of the Parameter.
 		/// </summary>
-		public IType[] PositionalParameterTypes
+		public IType[ ] PositionalParameterTypes
 		{
 			get { return _positionalParameterTypes; }
 			set { _positionalParameterTypes = value; }
@@ -95,15 +93,16 @@ namespace NHibernate.Engine
 		/// Gets or sets an array of <see cref="object"/> objects that is stored at the index 
 		/// of the Parameter.
 		/// </summary>
-		public object[] PositionalParameterValues
+		public object[ ] PositionalParameterValues
 		{
 			get { return _positionalParameterValues; }
 			set { _positionalParameterValues = value; }
 		}
 
-		public bool HasRowSelection 
+		/// <summary></summary>
+		public bool HasRowSelection
 		{
-			get { return _rowSelection!=null; }
+			get { return _rowSelection != null; }
 		}
 
 		/// <summary>
@@ -122,41 +121,42 @@ namespace NHibernate.Engine
 		/// If the Lengths of <see cref="PositionalParameterTypes"/> and 
 		/// <see cref="PositionalParameterValues"/> are not equal.
 		/// </exception>
-		public void ValidateParameters() 
+		public void ValidateParameters()
 		{
-			int typesLength = PositionalParameterTypes!=null ? 0 : PositionalParameterTypes.Length;
-			int valuesLength = PositionalParameterValues!=null ? 0 : PositionalParameterValues.Length;
+			int typesLength = PositionalParameterTypes != null ? 0 : PositionalParameterTypes.Length;
+			int valuesLength = PositionalParameterValues != null ? 0 : PositionalParameterValues.Length;
 
-			if( typesLength!=valuesLength ) 
+			if( typesLength != valuesLength )
 			{
 				throw new QueryException( "Number of positional parameter types (" + typesLength + ") does not match number of positional parameter values (" + valuesLength + ")" );
 			}
 		}
 
-		internal void LogParameters() 
+		/// <summary></summary>
+		internal void LogParameters()
 		{
 			StringBuilder builder = new StringBuilder();
-			
-			if( PositionalParameterTypes!=null && PositionalParameterTypes.Length>0 ) 
+
+			if( PositionalParameterTypes != null && PositionalParameterTypes.Length > 0 )
 			{
-				for( int i=0; i<PositionalParameterTypes.Length; i++ ) 
+				for( int i = 0; i < PositionalParameterTypes.Length; i++ )
 				{
-					if( PositionalParameterTypes[i]!=null ) 
+					if( PositionalParameterTypes[ i ] != null )
 					{
-						builder.Append( PositionalParameterTypes[i].Name );
+						builder.Append( PositionalParameterTypes[ i ].Name );
 					}
-					else 
+					else
 					{
 						builder.Append( "null type" );
 					}
 
 					builder.Append( " = " );
 
-					if( PositionalParameterValues[i]!=null ) 
+					if( PositionalParameterValues[ i ] != null )
 					{
-						builder.Append( PositionalParameterValues[i].ToString() );
+						builder.Append( PositionalParameterValues[ i ].ToString() );
 					}
-					else 
+					else
 					{
 						builder.Append( "null value" );
 					}
@@ -164,7 +164,7 @@ namespace NHibernate.Engine
 					builder.Append( ", " );
 				}
 			}
-			else 
+			else
 			{
 				builder.Append( "No Types and Values" );
 			}

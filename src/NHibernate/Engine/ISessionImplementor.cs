@@ -2,41 +2,39 @@ using System;
 using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Persister;
-using NHibernate.Type;
 
-namespace NHibernate.Engine 
+namespace NHibernate.Engine
 {
 	/// <summary>
 	/// Defines the internal contract between the <c>Session</c> and other parts of Hibernate
 	/// such as implementors of <c>Type</c> or <c>ClassPersister</c>
 	/// </summary>
-	public interface ISessionImplementor : ISession 
+	public interface ISessionImplementor : ISession
 	{
-
 		/// <summary>
 		/// Get the pre-flush identifier of the collection
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		object GetLoadedCollectionKey(PersistentCollection collection);
+		object GetLoadedCollectionKey( PersistentCollection collection );
 
 		/// <summary>
 		/// Get the snapshot of the pre-flush collection state
 		/// </summary>
-		object GetSnapshot(PersistentCollection collection);
+		object GetSnapshot( PersistentCollection collection );
 
 		/// <summary>
 		/// Get the <c>PersistentCollection</c> object for an array
 		/// </summary>
 		/// <param name="array"></param>
 		/// <returns></returns>
-		ArrayHolder GetArrayHolder(object array);
+		ArrayHolder GetArrayHolder( object array );
 
 		/// <summary>
 		/// Register a <c>PersistentCollection</c> object for an array
 		/// </summary>
 		/// <param name="holder"></param>
-		void AddArrayHolder(ArrayHolder holder);
+		void AddArrayHolder( ArrayHolder holder );
 
 		/// <summary>
 		/// Register an uninitialized <c>PersistentColleciton</c> that will be lazily initialized
@@ -44,35 +42,35 @@ namespace NHibernate.Engine
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		void AddUninitializedCollection(PersistentCollection collection, CollectionPersister persister, object id);
-		
+		void AddUninitializedCollection( PersistentCollection collection, CollectionPersister persister, object id );
+
 		/// <summary>
 		/// Register an initialized <c>PersistentCollection</c>
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		void AddInitializedCollection(PersistentCollection collection, CollectionPersister persister, object id);
+		void AddInitializedCollection( PersistentCollection collection, CollectionPersister persister, object id );
 
 		/// <summary>
 		/// Set the "shallow dirty" status of the collection. Called when the collection detects
 		/// that the client is modifying it
 		/// </summary>
-		void Dirty(PersistentCollection collection);
+		void Dirty( PersistentCollection collection );
 
 		/// <summary>
 		/// Initialize the collection (if not already initialized)
 		/// </summary>
 		/// <param name="coolection"></param>
 		/// <param name="writing"></param>
-		void Initialize(PersistentCollection coolection, bool writing);
+		void Initialize( PersistentCollection coolection, bool writing );
 
 		/// <summary>
 		/// Is this the "inverse" end of a bidirectional association?
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		bool IsInverseCollection(PersistentCollection collection);
+		bool IsInverseCollection( PersistentCollection collection );
 
 		/// <summary>
 		/// new in h2.0.3 and no javadoc
@@ -80,8 +78,8 @@ namespace NHibernate.Engine
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		PersistentCollection GetLoadingCollection(CollectionPersister persister, object id);
-		
+		PersistentCollection GetLoadingCollection( CollectionPersister persister, object id );
+
 		/// <summary>
 		/// new in h2.0.3 and no javadoc
 		/// 
@@ -91,21 +89,21 @@ namespace NHibernate.Engine
 		/// <param name="id"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		PersistentCollection GetLoadingCollection(CollectionPersister persister, object id, object owner);
-		
+		PersistentCollection GetLoadingCollection( CollectionPersister persister, object id, object owner );
+
 		/// <summary>
 		/// new in h2.0.3 and no javadoc
 		/// </summary>
 		/// <param name="role"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		PersistentCollection GetLoadingCollection(String role, object id);
-		
+		PersistentCollection GetLoadingCollection( String role, object id );
+
 		/// <summary>
 		/// new in h2.0.3 and no javadoc
 		/// </summary>
 		void EndLoadingCollections();
-	
+
 
 		/// <summary>
 		/// Load an instance without checking if it was deleted. If it does not exist, throw an exception.
@@ -117,7 +115,7 @@ namespace NHibernate.Engine
 		/// A proxy of the object or an instance of the object if the <c>persistentClass</c> does not have a proxy.
 		/// </returns>
 		/// <exception cref="ObjectNotFoundException">No object could be found with that <c>id</c>.</exception>
-		object InternalLoad(System.Type persistentClass, object id);
+		object InternalLoad( System.Type persistentClass, object id );
 
 		/// <summary>
 		/// Load an instance without checking if it was deleted. If it does not exist, return <tt>null</tt>.
@@ -126,7 +124,7 @@ namespace NHibernate.Engine
 		/// <param name="persistentClass"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		object InternalLoadOneToOne(System.Type persistentClass, object id);
+		object InternalLoadOneToOne( System.Type persistentClass, object id );
 
 		/// <summary>
 		/// Load an instance immediately. Do not return a proxy.
@@ -134,14 +132,15 @@ namespace NHibernate.Engine
 		/// <param name="persistentClass"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		object ImmediateLoad(System.Type persistentClass, object id);
+		object ImmediateLoad( System.Type persistentClass, object id );
 
-		/// <summary>
-		/// Load an instance immediately. Do not return a proxy
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
+//		/// <summary>
+//		/// Load an instance immediately. Do not return a proxy
+//		/// </summary>
+//		/// <param name="persistentClass"></param>
+//		/// <param name="id"></param>
+//		/// <returns></returns>
+
 		/// <summary>
 		/// System time before the start of the transaction
 		/// </summary>
@@ -154,7 +153,7 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		ISessionFactoryImplementor Factory { get; }
 
-		
+
 		/// <summary>
 		/// Get the prepared statement <c>Batcher</c> for this session
 		/// </summary>
@@ -165,22 +164,22 @@ namespace NHibernate.Engine
 		/// (needed for identity-column key generation)
 		/// </summary>
 		/// <param name="obj"></param>
-		void PostInsert(object obj);
+		void PostInsert( object obj );
 
 		/// <summary>
 		/// After actually deleting a row, record the fact that the instance no longer exists on the
 		/// database (needed for identity-column key generation)
 		/// </summary>
 		/// <param name="obj"></param>
-		void PostDelete(object obj);
-	
+		void PostDelete( object obj );
+
 		/// <summary>
 		/// After actually updating a row, record the fact that the database state has been update.
 		/// </summary>
 		/// <param name="obj">The <see cref="object"/> instance that was saved.</param>
 		/// <param name="updatedState">A updated snapshot of the values in the object.</param>
 		/// <param name="nextVersion">The new version to assign to the <c>obj</c>.</param>
-		void PostUpdate(object obj, object[] updatedState, object nextVersion);
+		void PostUpdate( object obj, object[ ] updatedState, object nextVersion );
 
 		/// <summary>
 		/// Execute a <c>Find()</c> query
@@ -188,7 +187,7 @@ namespace NHibernate.Engine
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		IList Find(string query, QueryParameters parameters);
+		IList Find( string query, QueryParameters parameters );
 
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
@@ -196,7 +195,7 @@ namespace NHibernate.Engine
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		IEnumerable Enumerable(string query, QueryParameters parameters);
+		IEnumerable Enumerable( string query, QueryParameters parameters );
 
 		/// <summary>
 		/// Execute a filter
@@ -205,7 +204,7 @@ namespace NHibernate.Engine
 		/// <param name="filter"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		IList Filter(object collection, string filter, QueryParameters parameters);
+		IList Filter( object collection, string filter, QueryParameters parameters );
 
 		/// <summary>
 		/// Collection from a filter
@@ -214,14 +213,14 @@ namespace NHibernate.Engine
 		/// <param name="filter"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters);
+		IEnumerable EnumerableFilter( object collection, string filter, QueryParameters parameters );
 
 		/// <summary>
 		/// Get the <c>IClassPersister</c> for an object
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		IClassPersister GetPersister(object obj);
+		IClassPersister GetPersister( object obj );
 
 		/// <summary>
 		/// Add an uninitialized instance of an entity class, as a placeholder to ensure object identity.
@@ -230,7 +229,7 @@ namespace NHibernate.Engine
 		/// <param name="key"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
-		void AddUninitializedEntity(Key key, object obj, LockMode lockMode);
+		void AddUninitializedEntity( Key key, object obj, LockMode lockMode );
 
 		/// <summary>
 		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading
@@ -240,20 +239,20 @@ namespace NHibernate.Engine
 		/// <param name="values"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
-		void PostHydrate(IClassPersister persister, object id, object[] values, object obj, LockMode lockMode);
-	
+		void PostHydrate( IClassPersister persister, object id, object[ ] values, object obj, LockMode lockMode );
+
 		/// <summary>
 		/// Perform the second step of 2-phase load (ie. fully initialize the entity instance)
 		/// </summary>
 		/// <param name="obj"></param>
-		void InitializeEntity(object obj);
+		void InitializeEntity( object obj );
 
 		/// <summary>
 		/// Get the entity instance associated with the given <c>Key</c>
 		/// </summary>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		object GetEntity(Key key);
+		object GetEntity( Key key );
 
 		/// <summary>
 		/// Return the existing proxy associated with the given <c>Key</c>, or the second
@@ -263,14 +262,14 @@ namespace NHibernate.Engine
 		/// <param name="key">The <see cref="Key"/> that identifies the entity.</param>
 		/// <param name="impl"></param>
 		/// <returns>Returns a the Proxy for the class or the parameter impl.</returns>
-		object ProxyFor(IClassPersister persister, Key key, object impl);
+		object ProxyFor( IClassPersister persister, Key key, object impl );
 
 		/// <summary>
 		/// Return the existing proxy associated with the given object. (Slower than the form above)
 		/// </summary>
 		/// <param name="impl"></param>
 		/// <returns></returns>
-		object ProxyFor(object impl);
+		object ProxyFor( object impl );
 
 		/// <summary>
 		/// Notify the session that the transaction completed, so we no longer own the old locks.
@@ -283,7 +282,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		object GetEntityIdentifier(object obj);
+		object GetEntityIdentifier( object obj );
 
 		/// <summary>
 		/// Return the identifer of the persistent or transient object, or throw
@@ -291,10 +290,14 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		object GetEntityIdentifierIfNotUnsaved(object obj);
+		object GetEntityIdentifierIfNotUnsaved( object obj );
 
-		
-		bool IsSaved(object obj); 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		bool IsSaved( object obj );
 
 		/// <summary>
 		/// Instantiate the entity class, initializing with the given identifier
@@ -302,27 +305,27 @@ namespace NHibernate.Engine
 		/// <param name="clazz"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		object Instantiate(System.Type clazz, object id);
+		object Instantiate( System.Type clazz, object id );
 
 		/// <summary>
 		/// Set the lock mode of the entity to the given lock mode
 		/// </summary>
 		/// <param name="entity"></param>
 		/// <param name="lockMode"></param>
-		void SetLockMode(object entity, LockMode lockMode);
+		void SetLockMode( object entity, LockMode lockMode );
 
 		/// <summary>
 		/// Get the current version of the entity
 		/// </summary>
 		/// <param name="entity"></param>
-		object GetVersion(object entity);
+		object GetVersion( object entity );
 
 		/// <summary>
 		/// Get the lock mode of the entity
 		/// </summary>
 		/// <param name="entity"></param>
 		/// <returns></returns>
-		LockMode GetLockMode(object entity);
+		LockMode GetLockMode( object entity );
 
 		/// <summary>
 		/// Get the collection orphans (entities which were removed from
@@ -330,7 +333,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="coll"></param>
 		/// <returns></returns>
-		ICollection GetOrphans(PersistentCollection coll);
+		ICollection GetOrphans( PersistentCollection coll );
 
 	}
 }

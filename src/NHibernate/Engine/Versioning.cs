@@ -1,16 +1,16 @@
-using System;
+using log4net;
 using NHibernate.Persister;
 using NHibernate.Type;
 
-namespace NHibernate.Engine 
+namespace NHibernate.Engine
 {
 	/// <summary>
 	/// Utility methods for managing versions and timestamps
 	/// </summary>
-	public class Versioning 
+	public class Versioning
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Versioning));
-		
+		private static readonly ILog log = LogManager.GetLogger( typeof( Versioning ) );
+
 
 		/// <summary>
 		/// Increment the given version number
@@ -18,10 +18,13 @@ namespace NHibernate.Engine
 		/// <param name="version">The value of the current version.</param>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
 		/// <returns>Returns the next value for the version.</returns>
-		public static object Increment(object version, IVersionType versionType) 
+		public static object Increment( object version, IVersionType versionType )
 		{
-			object next = versionType.Next(version);
-			if ( log.IsDebugEnabled ) log.Debug("Incrementing: " + version + " to " + next);
+			object next = versionType.Next( version );
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Incrementing: " + version + " to " + next );
+			}
 			return next;
 		}
 
@@ -30,10 +33,13 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
 		/// <returns>A seed value to initialize the versioned property with.</returns>
-		public static object Seed(IVersionType versionType) 
+		public static object Seed( IVersionType versionType )
 		{
 			object seed = versionType.Seed;
-			if ( log.IsDebugEnabled ) log.Debug("Seeding: " + seed);
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Seeding: " + seed );
+			}
 			return seed;
 		}
 
@@ -44,14 +50,14 @@ namespace NHibernate.Engine
 		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
 		/// <returns><c>true</c> if the version property needs to be seeded with an initial value.</returns>
-		public static bool SeedVersion(object[] fields, int versionProperty, IVersionType versionType) 
+		public static bool SeedVersion( object[ ] fields, int versionProperty, IVersionType versionType )
 		{
-			if ( fields[versionProperty]==null ) 
+			if( fields[ versionProperty ] == null )
 			{
-				fields[versionProperty] = Seed(versionType);
+				fields[ versionProperty ] = Seed( versionType );
 				return true;
-			} 
-			else 
+			}
+			else
 			{
 				return false;
 			}
@@ -64,9 +70,9 @@ namespace NHibernate.Engine
 		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
 		/// <returns>The value of the version.</returns>
-		private static object GetVersion(object[] fields, int versionProperty, IVersionType versionType) 
+		private static object GetVersion( object[ ] fields, int versionProperty, IVersionType versionType )
 		{
-			return fields[versionProperty];
+			return fields[ versionProperty ];
 		}
 
 		/// <summary>
@@ -76,9 +82,9 @@ namespace NHibernate.Engine
 		/// <param name="version">The value the version should be set to in the <c>fields</c> parameter.</param>
 		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
-		private static void SetVersion(object[] fields, object version, int versionProperty, IVersionType versionType) 
+		private static void SetVersion( object[ ] fields, object version, int versionProperty, IVersionType versionType )
 		{
-			fields[versionProperty] = version;
+			fields[ versionProperty ] = version;
 		}
 
 		/// <summary>
@@ -87,7 +93,7 @@ namespace NHibernate.Engine
 		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
 		/// <param name="version">The value the version should be set to in the <c>fields</c> parameter.</param>
 		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for persisting the values of the <c>fields</c> parameter.</param>
-		public static void SetVersion(object[] fields, object version, IClassPersister persister) 
+		public static void SetVersion( object[ ] fields, object version, IClassPersister persister )
 		{
 			SetVersion( fields, version, persister.VersionProperty, persister.VersionType );
 		}
@@ -101,12 +107,10 @@ namespace NHibernate.Engine
 		/// The value of the version contained in the <c>fields</c> parameter or null if the
 		/// Entity is not versioned.
 		/// </returns>
-		public static object GetVersion(object[] fields, IClassPersister persister) 
+		public static object GetVersion( object[ ] fields, IClassPersister persister )
 		{
-			return persister.IsVersioned ? GetVersion( fields, persister.VersionProperty, persister.VersionType) : null;
+			return persister.IsVersioned ? GetVersion( fields, persister.VersionProperty, persister.VersionType ) : null;
 		}
-
-
 
 
 	}

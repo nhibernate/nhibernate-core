@@ -1,18 +1,16 @@
-using System;
-
-namespace NHibernate.Engine 
+namespace NHibernate.Engine
 {
 	/// <summary>
 	/// Information to determine how to run an IDbCommand and what
 	/// records to return from the IDataReader.
 	/// </summary>
-	public sealed class RowSelection 
+	public sealed class RowSelection
 	{
 		/// <summary>
 		/// Indicates that the no value has been set on the Property.
 		/// </summary>
 		public static readonly int NoValue = -1;
-		
+
 		private int firstRow = 0;
 		private int maxRows = RowSelection.NoValue;
 		private int timeout = RowSelection.NoValue;
@@ -22,7 +20,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <value>The Index of the First Rows to Select</value>
 		/// <remarks>Defaults to 0 unless specifically set.</remarks>
-		public int FirstRow 
+		public int FirstRow
 		{
 			get { return firstRow; }
 			set { firstRow = value; }
@@ -33,7 +31,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <value>The Maximum Number of Rows to Select</value>
 		/// <remarks>Defaults to NoValue unless specifically set.</remarks>
-		public int MaxRows 
+		public int MaxRows
 		{
 			get { return maxRows; }
 			set { maxRows = value; }
@@ -44,7 +42,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <value>The Query Timeout</value>
 		/// <remarks>Defaults to NoValue unless specifically set.</remarks>
-		public int Timeout 
+		public int Timeout
 		{
 			get { return timeout; }
 			set { timeout = value; }

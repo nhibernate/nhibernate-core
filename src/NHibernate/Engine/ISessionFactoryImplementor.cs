@@ -1,25 +1,23 @@
-using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Collection;
 using NHibernate.Connection;
 using NHibernate.Persister;
-using NHibernate.Collection;
-using NHibernate.Dialect;
 using NHibernate.Type;
 
-namespace NHibernate.Engine 
+namespace NHibernate.Engine
 {
 	/// <summary>
 	/// Defines the internal contract between the <c>ISessionFactory</c> and other parts of NHibernate
 	/// such as implementors of <c>IType</c>.
 	/// </summary>
-	public interface ISessionFactoryImplementor : IMapping, ISessionFactory 
+	public interface ISessionFactoryImplementor : IMapping, ISessionFactory
 	{
 		/// <summary>
 		/// TODO: determine if this is more appropriate for ISessionFactory
 		/// </summary>
-		IConnectionProvider ConnectionProvider {get;}
-		
+		IConnectionProvider ConnectionProvider { get; }
+
 		/// <summary>
 		/// Gets the IsolationLevel an IDbTransaction should be set to.
 		/// </summary>
@@ -31,7 +29,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Get the persister for a class
 		/// </summary>
-		IClassPersister GetPersister(System.Type clazz);
+		IClassPersister GetPersister( System.Type clazz );
 
 		/// <summary>
 		/// Get the persister for the named class
@@ -39,7 +37,7 @@ namespace NHibernate.Engine
 		/// <param name="className">The name of the class that is persisted.</param>
 		/// <returns>The <see cref="IClassPersister"/> for the class.</returns>
 		/// <exception cref="MappingException">If no <see cref="IClassPersister"/> can be found.</exception>
-		IClassPersister GetPersister(string className);
+		IClassPersister GetPersister( string className );
 
 		/// <summary>
 		/// Get the persister for the named class
@@ -48,14 +46,14 @@ namespace NHibernate.Engine
 		/// <param name="throwException"><c>true</c> if the exception should be thrown if no <see cref="IClassPersister"/> is found.</param>
 		/// <returns>The <see cref="IClassPersister"/> for the class.</returns>
 		/// <exception cref="MappingException">If no <see cref="IClassPersister"/> can be found and throwException is <c>true</c>.</exception>
-		IClassPersister GetPersister(string className, bool throwException);
+		IClassPersister GetPersister( string className, bool throwException );
 
 		/// <summary>
 		/// Get the persister object for a collection role
 		/// </summary>
 		/// <param name="role"></param>
 		/// <returns></returns>
-		CollectionPersister GetCollectionPersister(string role);
+		CollectionPersister GetCollectionPersister( string role );
 
 		/// <summary>
 		/// Is outerjoin fetching enabled?
@@ -83,14 +81,14 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="queryString"></param>
 		/// <returns></returns>
-		IType[] GetReturnTypes(string queryString);
+		IType[ ] GetReturnTypes( string queryString );
 
 		/// <summary>
 		/// Get the named parameter names for a query
 		/// </summary>
 		/// <param name="queryString"></param>
 		/// <returns></returns>
-		ICollection GetNamedParameters(string queryString);
+		ICollection GetNamedParameters( string queryString );
 
 		/// <summary>
 		/// Obtain an ADO.NET connection
@@ -102,20 +100,20 @@ namespace NHibernate.Engine
 		/// Release an ADO.NET connection
 		/// </summary>
 		/// <param name="conn"></param>
-		void CloseConnection(IDbConnection conn);
+		void CloseConnection( IDbConnection conn );
 
 		/// <summary>
 		/// Get the names of all persistent classes that implement/extend the given interface/class
 		/// </summary>
 		/// <param name="clazz"></param>
 		/// <returns></returns>
-		string[] GetImplementors(System.Type clazz);
+		string[ ] GetImplementors( System.Type clazz );
 
 		/// <summary>
 		/// Get a class name, using query language imports
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		string GetImportedClassName(string name);
+		string GetImportedClassName( string name );
 	}
 }

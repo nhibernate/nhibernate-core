@@ -1,9 +1,8 @@
 using System;
 using System.Data;
-
 using NHibernate.SqlCommand;
 
-namespace NHibernate.Engine 
+namespace NHibernate.Engine
 {
 	/// <summary>
 	/// Manages <see cref="IDbCommand">IDbCommands</see> and <see cref="IDataReader">IDataReaders</see> for a session. 
@@ -20,7 +19,7 @@ namespace NHibernate.Engine
 	/// error checking and making sure the correct number of rows were affected.
 	/// </para>
 	/// </remarks>
-	public interface IBatcher 
+	public interface IBatcher
 	{
 		/// <summary>
 		/// Get a prepared statement for using in loading / querying.
@@ -34,7 +33,7 @@ namespace NHibernate.Engine
 		/// This does NOT add anything to the batch - it only creates the IDbCommand and 
 		/// does NOT cause the batch to execute...
 		/// </remarks>
-		IDbCommand PrepareQueryCommand(SqlString sql, bool scrollable);
+		IDbCommand PrepareQueryCommand( SqlString sql, bool scrollable );
 
 		/// <summary>
 		/// Closes the <see cref="IDbCommand"/> &amp; the <see cref="IDataReader"/> that was
@@ -42,7 +41,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="cmd">The <see cref="IDbCommand"/> to close.</param>
 		/// <param name="reader">The <see cref="IDataReader"/> to close.</param>
-		void CloseQueryCommand(IDbCommand cmd, IDataReader reader);
+		void CloseQueryCommand( IDbCommand cmd, IDataReader reader );
 
 		/// <summary>
 		/// Get a non-batchable prepared statement to use for inserting / deleting / updating.
@@ -50,14 +49,14 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="sql">The SqlString to convert to an IDbCommand.</param>
 		/// <returns></returns>
-		IDbCommand PrepareCommand(SqlString sql);
+		IDbCommand PrepareCommand( SqlString sql );
 
 		/// <summary>
 		/// Close a IDbCommand opened using <c>PrepareStatement()</c>
 		/// </summary>
 		/// <param name="cm">The <see cref="IDbCommand"/> to ensure is closed.</param>
 		/// <param name="reader">The <see cref="IDataReader"/> to ensure is closed.</param>
-		void CloseCommand(IDbCommand cm, IDataReader reader);
+		void CloseCommand( IDbCommand cm, IDataReader reader );
 
 		/// <summary>
 		/// Get a batchable prepared statement to use for inserting / deleting / updating
@@ -69,7 +68,7 @@ namespace NHibernate.Engine
 		/// </remarks>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		IDbCommand PrepareBatchCommand(SqlString sql);
+		IDbCommand PrepareBatchCommand( SqlString sql );
 
 		/// <summary>
 		/// Add an insert / delete / update to the current batch (might be called multiple times
@@ -80,7 +79,7 @@ namespace NHibernate.Engine
 		/// A negative number in expectedRowCount means that you don't know how many rows to 
 		/// expect.
 		/// </remarks>
-		void AddToBatch(int expectedRowCount);
+		void AddToBatch( int expectedRowCount );
 
 		/// <summary>
 		/// Execute the batch
@@ -102,7 +101,7 @@ namespace NHibernate.Engine
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="IDataReader"/>s it can have are followed.
 		/// </remarks>
-		IDataReader ExecuteReader(IDbCommand cmd);
+		IDataReader ExecuteReader( IDbCommand cmd );
 
 		/// <summary>
 		/// Executes the <see cref="IDbCommand"/>. 
@@ -112,13 +111,14 @@ namespace NHibernate.Engine
 		/// <remarks>
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="IDataReader"/>s it can have are followed.
-		int ExecuteNonQuery(IDbCommand cmd);
+		/// </remarks>
+		int ExecuteNonQuery( IDbCommand cmd );
 
 		/// <summary>
 		/// Must be called when an exception occurs.
 		/// </summary>
 		/// <param name="e"></param>
-		void AbortBatch(Exception e);
+		void AbortBatch( Exception e );
 
 		/// <summary>
 		/// Generates an <see cref="IDbCommand"/> from a <see cref="SqlString"/>.
@@ -128,7 +128,7 @@ namespace NHibernate.Engine
 		/// <remarks>
 		/// A wrapper for calling the <c>IDriver.GenerateCommand</c> that adds logging.
 		/// </remarks>
-		IDbCommand Generate(SqlString sqlString); 
+		IDbCommand Generate( SqlString sqlString );
 
 	}
 }

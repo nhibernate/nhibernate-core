@@ -1,22 +1,20 @@
-using System;
-
-namespace NHibernate.Engine 
+namespace NHibernate.Engine
 {
 	/// <summary>
 	/// Defines a complete "snapshot" of a particular collection.
 	/// </summary>
-	public interface ICollectionSnapshot 
+	public interface ICollectionSnapshot
 	{
 		/// <summary>
 		/// Gets the identifier of the Entity that owns this Collection.
 		/// </summary>
 		object Key { get; }
-		
+
 		/// <summary>
 		/// Gets the role that identifies this Collection.
 		/// </summary>
 		string Role { get; }
-		
+
 		/// <summary>
 		/// Gets the snapshot copy of the Collection's elements.
 		/// </summary>
@@ -27,7 +25,7 @@ namespace NHibernate.Engine
 		object Snapshot { get; }
 
 		/// <summary>
-		/// Gets a <see cref="Boolean"/> indicating if some action has been performed on the
+		/// Gets a <see cref="bool"/> indicating if some action has been performed on the
 		/// actual collection instance that has modified it.
 		/// </summary>
 		bool Dirty { get; }
@@ -38,9 +36,9 @@ namespace NHibernate.Engine
 		void SetDirty();
 
 		/// <summary>
-		/// Gets a <see cref="Boolean"/> indicating if the underlying collection has been
+		/// Gets a <see cref="bool"/> indicating if the underlying collection has been
 		/// initialized yet.
 		/// </summary>
-		bool IsInitialized{ get; }
+		bool IsInitialized { get; }
 	}
 }
