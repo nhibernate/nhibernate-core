@@ -3,20 +3,20 @@ using System;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// YesNoType.
+	/// TrueFalseType.
 	/// </summary>
-	public class YesNoType : CharBooleanType {
+	public class TrueFalseType: CharBooleanType {
 
 		protected override sealed string TrueString {
-			get { return "Y"; }
+			get { return "T"; }
 		}
 
 		protected override sealed string FalseString {
-			get { return "N"; }
+			get { return "F"; }
 		}
 
 		public override string Name {
-			get { return "yes_no"; }
+			get { return "true_false"; }
 		}
 	}
 }
