@@ -229,7 +229,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("This is not working until I get parameters and HQL working better.")]
 		public void Cache() 
 		{
 			ISession s = sessions.OpenSession();
