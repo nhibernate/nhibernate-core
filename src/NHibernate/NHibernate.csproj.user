@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP>
         <Build>
-            <Settings ReferencePath = "C:\Program Files\log4net1.2.0-beta5\build\bin\ReleaseStrong\;C:\Program Files\NUnit V2.0\bin\" >
+            <Settings ReferencePath = "C:\Program Files\log4net1.2.0-beta5\build\bin\ReleaseStrong\;C:\Program Files\NUnit V2.0\bin\;F:\DOTNET\Log4Net\log4net1.2.0-beta5\build\bin\Release\" >
                 <Config
                     Name = "Debug"
                     EnableASPDebugging = "false"
@@ -40,7 +40,7 @@
             CopyProjectDestinationFolder = ""
             CopyProjectUncPath = ""
             CopyProjectOption = "0"
-            ProjectView = "ProjectFiles"
+            ProjectView = "ShowAllFiles"
             ProjectTrust = "0"
         />
     </CSHARP>
