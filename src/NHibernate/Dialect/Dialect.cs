@@ -339,6 +339,8 @@ namespace NHibernate.Dialect {
 		{
 			switch(sqlType.DbType) 
 			{
+				case DbType.AnsiString:
+					return SqlTypeToString((AnsiStringSqlType)sqlType);
 				case DbType.AnsiStringFixedLength: 
 					return SqlTypeToString((AnsiStringFixedLengthSqlType)sqlType);
 				case DbType.Binary :
@@ -357,6 +359,8 @@ namespace NHibernate.Dialect {
 					return SqlTypeToString((DecimalSqlType)sqlType);
 				case DbType.Double:
 					return SqlTypeToString((DoubleSqlType)sqlType);
+				case DbType.Guid:
+					return SqlTypeToString((GuidSqlType)sqlType);
 				case DbType.Int16:
 					return SqlTypeToString((Int16SqlType)sqlType);
 				case DbType.Int32:
@@ -369,6 +373,8 @@ namespace NHibernate.Dialect {
 					return SqlTypeToString((StringFixedLengthSqlType)sqlType);
 				case DbType.String:
 					return SqlTypeToString((StringSqlType)sqlType);
+				case DbType.Time:
+					return SqlTypeToString((TimeSqlType)sqlType);
 				default:
 					throw new ApplicationException("Unmapped DBType");
 					//break;
@@ -376,9 +382,18 @@ namespace NHibernate.Dialect {
 
 		}
 
-
 		/// <summary>
 		/// Converts an AnsiStringSqlType to the Database specific column type. 
+		/// </summary>
+		/// <param name="sqlType">The SqlType to convert to a string.</param>
+		/// <returns>A string that can be used for the column type when creating the table.</returns>
+		protected virtual string SqlTypeToString(AnsiStringSqlType sqlType)
+		{
+			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
+		}
+
+		/// <summary>
+		/// Converts an AnsiStringFixedLengthSqlType to the Database specific column type. 
 		/// </summary>
 		/// <param name="sqlType">The SqlType to convert to a string.</param>
 		/// <returns>A string that can be used for the column type when creating the table.</returns>
@@ -468,6 +483,16 @@ namespace NHibernate.Dialect {
 		}
 		
 		/// <summary>
+		/// Converts an GuidSqlType to the Database specific column type. 
+		/// </summary>
+		/// <param name="sqlType">The SqlType to convert to a string.</param>
+		/// <returns>A string that can be used for the column type when creating the table.</returns>
+		protected virtual string SqlTypeToString(GuidSqlType sqlType)
+		{
+			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
+		}
+
+		/// <summary>
 		/// Converts an Int16SqlType to the Database specific column type. 
 		/// </summary>
 		/// <param name="sqlType">The SqlType to convert to a string.</param>
@@ -517,13 +542,22 @@ namespace NHibernate.Dialect {
 			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
 		}
 		
-		
 		/// <summary>
 		/// Converts an StringSqlType to the Database specific column type. 
 		/// </summary>
 		/// <param name="sqlType">The SqlType to convert to a string.</param>
 		/// <returns>A string that can be used for the column type when creating the table.</returns>
 		protected virtual string SqlTypeToString(StringSqlType sqlType)
+		{
+			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
+		}
+
+		/// <summary>
+		/// Converts an TimeSqlType to the Database specific column type. 
+		/// </summary>
+		/// <param name="sqlType">The SqlType to convert to a string.</param>
+		/// <returns>A string that can be used for the column type when creating the table.</returns>
+		protected virtual string SqlTypeToString(TimeSqlType sqlType)
 		{
 			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
 		}

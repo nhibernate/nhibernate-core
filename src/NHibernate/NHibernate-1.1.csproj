@@ -1303,6 +1303,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlCommand\ForUpdateFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlCommand\ISqlStringBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1373,6 +1378,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlTypes\AnsiStringSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlTypes\BinarySqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1413,6 +1423,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlTypes\GuidSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlTypes\Int16SqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1449,6 +1464,11 @@
                 />
                 <File
                     RelPath = "SqlTypes\StringSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\TimeSqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

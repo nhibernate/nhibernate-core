@@ -273,5 +273,11 @@ namespace NHibernate.Dialect {
 			}
 					
 		}
+
+		protected override string SqlTypeToString(TimeSqlType sqlType)
+		{
+			return "TIME";
+		}
+
 	}
 }

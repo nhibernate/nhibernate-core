@@ -126,6 +126,18 @@ namespace NHibernate.Dialect {
 			return name + "(" + precision + ", " + scale + ")";
 		}
 
+		protected override string SqlTypeToString(AnsiStringSqlType sqlType)
+		{
+			if(sqlType.Length <= 8000) 
+			{
+				return SqlTypeToString("VARCHAR", sqlType.Length);
+			}
+			else 
+			{
+				return "TEXT"; // should use the IType.ClobType
+			}
+		}
+
 		protected override string SqlTypeToString(AnsiStringFixedLengthSqlType sqlType) 
 		{
 			
@@ -140,7 +152,7 @@ namespace NHibernate.Dialect {
 					
 		}
 
-		protected override  string SqlTypeToString(BinarySqlType sqlType) 
+		protected override string SqlTypeToString(BinarySqlType sqlType) 
 		{
 			
 			if(sqlType.Length <= 8000) 
@@ -188,6 +200,11 @@ namespace NHibernate.Dialect {
 		protected override string SqlTypeToString(DoubleSqlType sqlType)
 		{
 			return SqlTypeToString("FLOAT", sqlType.Length);
+		}
+
+		protected override string SqlTypeToString(GuidSqlType sqlType)
+		{
+			return "UNIQUEIDENTIFIER";
 		}
 
 		protected override string SqlTypeToString(Int16SqlType sqlType)
