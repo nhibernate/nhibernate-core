@@ -22,6 +22,10 @@ namespace NHibernate.Dialect
 	///			<term>hibernate.connection.driver_class</term>
 	///			<description><see cref="NHibernate.Driver.SqlClientDriver" /></description>
 	///		</item>
+	///		<item>
+	///			<term>hibernate.prepare_sql</term>
+	///			<description><c>false</c></description>
+	///		</item>
 	/// </list>
 	/// </remarks>
 	public class MsSql2000Dialect : Dialect
@@ -66,6 +70,7 @@ namespace NHibernate.Dialect
 
 			DefaultProperties[ Environment.OuterJoin ] = "true";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.SqlClientDriver";
+			DefaultProperties[ Environment.PrepareSql ] = "false";
 		}
 
 		/// <summary></summary>
