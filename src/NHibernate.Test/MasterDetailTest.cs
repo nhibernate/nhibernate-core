@@ -397,6 +397,7 @@ namespace NHibernate.Test
 			System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 			f.Serialize(stream, s);
 			stream.Position = 0;
+			Console.WriteLine(stream.Length);
 
 			s = (ISession)f.Deserialize(stream);
 			stream.Close();
