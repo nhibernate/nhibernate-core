@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class 
+		name="NHibernate.Examples.Cascades.Parent, NHibernate.Examples"
+		table="cas_parent"
+	>
+		<id name="Id" type="Int32" unsaved-value="0">
+			<generator class="native" />
+		</id>	
+		
+		<property name="Name" type="String(50)" />
+		
+		<set name="ChildrenSet" inverse="true" cascade="all" table="cas_p_c">
+			<key column="parent_id"/>
+			<one-to-many class="NHibernate.Examples.Cascades.Child, NHibernate.Examples"/>
+		</set>
+		
+		<map name="Aliases" cascade="all" table="p_alias">
+			<key column="a_id" />
+			<index column="a_index" type="String(15)" />
+			<one-to-many class="NHibernate.Examples.Cascades.Alias, NHibernate.Examples" />
+		</map>
+	</class>
+</hibernate-mapping>

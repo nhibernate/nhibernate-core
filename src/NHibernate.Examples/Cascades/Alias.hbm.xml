@@ -1,0 +1,14 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class 
+		name="NHibernate.Examples.Cascades.Alias, NHibernate.Examples"
+		table="cas_alias"
+	>
+		<id name="Id" type="Int32" unsaved-value="0">
+			<generator class="native" />
+		</id>	
+		
+		<property name="Name" type="String(50)" />
+		<property name="Type" type="String(2)" />
+		
+	</class>
+</hibernate-mapping>

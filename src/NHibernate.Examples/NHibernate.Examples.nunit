@@ -1,0 +1,9 @@
+<NUnitProject>
+  <Settings activeconfig="Debug" />
+  <Config name="Debug" appbase="bin\Debug" configfile="NHibernate.Examples.dll.config" binpathtype="Auto">
+    <assembly path="NHibernate.Examples.dll" />
+  </Config>
+  <Config name="Release" appbase="bin\Release" configfile="NHibernate.Examples.dll.config" binpathtype="Auto">
+    <assembly path="NHibernate.Examples.dll" />
+  </Config>
+</NUnitProject>

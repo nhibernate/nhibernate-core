@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class name="NHibernate.Examples.ForumQuestions.T1104613.A, NHibernate.Examples" table="a">
+		<id name="Key" column="a_id" type="String">
+			<generator class="uuid.hex" />
+		</id>
+		<property name="Name" />
+		<many-to-one name="ManyToOne" not-null="true" outer-join="true" />
+		<list name="OuterJoins" table="a_oj_list">
+			<key column="a_id" />
+			<index column="a_oj_index" />
+			<many-to-many 
+				class="NHibernate.Examples.ForumQuestions.T1104613.AOuterJoin, NHibernate.Examples"
+				outer-join="true"
+			/>
+		</list>
+	</class>
+	<class name="NHibernate.Examples.ForumQuestions.T1104613.AOuterJoin, NHibernate.Examples" table="a_oj">
+		<id column="a_oj_id" name="Key">
+			<generator class="uuid.hex" />
+		</id>
+		<property name="Name" unique="true" not-null="true" length="50" />
+	</class>
+	
+	<class name="NHibernate.Examples.ForumQuestions.T1104613.AManyToOne, NHibernate.Examples" table="a_mto">
+		<id column="a_mto_id" name="Key">
+			<generator class="uuid.hex" />
+		</id>
+		<property name="Name" unique="true" not-null="true" length="50" />
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+    <class name="NHibernate.Examples.QuickStart.User, NHibernate.Examples" table="users">
+		<id name="Id" column="LogonId" type="String(20)">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="UserName" column="Name" type="String(40)"/>
+		<property name="Password" type="String(20)"/>
+		<property name="EmailAddress" type="String(40)"/>
+		<property name="LastLogon" type="DateTime"/>
+	</class>
+	
+</hibernate-mapping>
+
+
+

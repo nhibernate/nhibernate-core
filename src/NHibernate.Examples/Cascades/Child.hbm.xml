@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class 
+		name="NHibernate.Examples.Cascades.Child, NHibernate.Examples"
+		table="cas_child"
+	>
+		<id name="Id" type="Int32" unsaved-value="0">
+			<generator class="native" />
+		</id>	
+		
+		<property name="Name" type="String(50)" />
+		<many-to-one name="SingleParent" column="parent_id" class="NHibernate.Examples.Cascades.Parent, NHibernate.Examples" />
+		
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="NHibernate.Examples" 
+	default="build" 
+	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+>
+
+	<!--
+        Required properties:
+            * build.dir             - (path) root level to build to, assemblies will go in ${build.dir}/bin
+            * build.debug           - (true|false) debug build?
+            * current.build.defines - framework-specific build defines
+    -->
+	<target name="build" description="Simple Examples for NHibernate">
+		
+		<csc 
+			target="library" 
+			define="${current.build.defines}" 
+			debug="${build.debug}"
+			output="${build.dir}/bin/${nant.project.name}.dll" 
+		>
+		
+			<references basedir="${build.dir}/bin">
+				<includes name="System.dll" />
+				<includes name="System.XML.dll" />
+				<includes name="System.Data.dll" />
+				<includes name="NHibernate.dll" />
+				<includes name="nunit.framework.dll" />
+			</references>
+			
+			<resources prefix="NHibernate.Examples" dynamicprefix="true">
+				<includes name="**/*.xml" />
+				<excludes name="bin/**/*.xml" />
+			</resources>
+			
+			<sources failonempty="true">
+				<includes name="**/*.cs" />
+			</sources>
+			
+			
+		</csc>
+		
+		<copy 
+			file="App.config"
+			tofile="${build.dir}/bin/${nant.project.name}.dll.config" 
+		/>	
+	</target>
+	
+</project>
