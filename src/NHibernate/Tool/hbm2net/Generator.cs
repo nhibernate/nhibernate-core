@@ -33,7 +33,7 @@ namespace NHibernate.Tool.hbm2net
 			
 		}
 		
-		private System.String rendererClass = "NHibernate.Tool.hbm2net.BasicRenderer";
+		private System.String rendererClass = "NHibernate.Tool.hbm2net.VelocityRenderer";
 		private System.String baseDirName = "generated";
 		private System.String packageName = null;
 		private System.String suffix;
@@ -41,7 +41,7 @@ namespace NHibernate.Tool.hbm2net
 		private System.String extension = "cs";
 		private bool lowerFirstLetter = false;
 		
-		public static System.Collections.Specialized.NameValueCollection params_Renamed;
+		public static System.Collections.Specialized.NameValueCollection params_Renamed = new System.Collections.Specialized.NameValueCollection();
 		
 		/// <summary> Constructs a new Generator using the defaults.</summary>
 		public Generator()
@@ -96,7 +96,6 @@ namespace NHibernate.Tool.hbm2net
 			}
 			catch{}
 			
-			params_Renamed = new System.Collections.Specialized.NameValueCollection();
 			System.Collections.IEnumerator iter = generateElement.GetElementsByTagName("param").GetEnumerator();
 			while (iter.MoveNext())
 			{

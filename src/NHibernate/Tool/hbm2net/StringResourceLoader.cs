@@ -20,7 +20,9 @@ namespace NHibernate.Tool.hbm2net
 	/// </author>
 	public class StringResourceLoader:ResourceLoader
 	{
-		
+		public StringResourceLoader()
+		{
+		}
 		/* (non-Javadoc)
 		* @see org.apache.velocity.runtime.resource.loader.ResourceLoader#init(org.apache.commons.collections.ExtendedProperties)
 		*/

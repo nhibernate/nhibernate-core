@@ -77,7 +77,6 @@ namespace NHibernate.Tool.hbm2net
 					try
 					{
 						log.Info(iter.Current.ToString());
-						Console.WriteLine(iter.Current.ToString());
 						// parse the mapping file
 						System.Xml.NameTable nt = new System.Xml.NameTable();
 						nt.Add("urn:nhibernate-mapping-2.0");
@@ -108,10 +107,9 @@ namespace NHibernate.Tool.hbm2net
 					}
 					catch(Exception exc)
 					{
-						Console.WriteLine(exc);
+						log.Error("Error in map",exc);
 					}
 				}
-				
 				// generate source files
 				for (System.Collections.IEnumerator iterator = generators.GetEnumerator(); iterator.MoveNext(); )
 				{

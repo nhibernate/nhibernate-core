@@ -19,7 +19,9 @@ namespace NHibernate.Tool.hbm2net
 	/// </author>
 	public class VelocityRenderer:AbstractRenderer
 	{
-        private VelocityEngine ve;
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		
+		private VelocityEngine ve;
 		private NVelocity.Template template;
 		
 		/*
@@ -60,13 +62,20 @@ namespace NHibernate.Tool.hbm2net
 		{
 			//			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
 			//			p.SetProperty( "runtime.log.logsystem.log4net.category", "x");
-			//			p["resource.loader"] = "class";
-			//			p["class.resource.loader.class"] = typeof(ClasspathResourceLoader).getName();
 			System.IO.File.Delete("nvelocity.log");
 			base.configure (props);
+			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
+			string templatename = props["template"];
+			if (templatename == null)
+			{
+				log.Info("No template file was specified, using default");				
+				p.SetProperty("resource.loader", "class");
+				p.SetProperty("class.resource.loader.class", "NHibernate.Tool.hbm2net.StringResourceLoader;hbm2net");
+				templatename = new System.IO.StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("hbm2net.convert.vm")).ReadToEnd();
+			}
 			ve = new VelocityEngine();
-			ve.Init();
-			template = ve.GetTemplate((props["template"] == null)?"pojo.vm":props["template"]);
+			ve.Init(p);
+			template = ve.GetTemplate(templatename);
 		}
 	}
 }
