@@ -124,7 +124,7 @@ namespace NHibernate.Loader
 
 			if( collectionPersister.HasWhere )
 			{
-				whereSqlString.Append( " and " ).Append( collectionPersister.GetSQLWhereString( alias ) );
+				whereSqlString = whereSqlString.Append( " and " ).Append( collectionPersister.GetSQLWhereString( alias ) );
 			}
 
 			JoinFragment ojf = MergeOuterJoins( associations );
