@@ -1,0 +1,39 @@
+<project 
+	name="NHibernate.Tasks" 
+	default="build" 
+	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+>
+	
+	<!--
+        Required properties:
+            * build.dir             - (path) root level to build to, assemblies will go in ${build.dir}/bin
+            * build.debug           - (true|false) debug build?
+            * current.build.defines - framework-specific build defines
+    -->
+    
+	<target name="build" description="NAnt Tasks that use NHibernate's Toolset.">
+		
+		<csc	
+			output="${build.dir}/bin/${nant.project.name}.dll"
+			define="${current.build.defines}" 
+			target="library"
+			debug="${build.debug}"
+			doc="${build.dir}/bin/${nant.project.name}.xml"
+			nowarn="1591"
+			verbose="true"
+		>
+			<sources failonempty="true">
+				<includes name="*.cs" />
+			</sources>
+			
+			<references basedir="${build.dir}/bin">
+				<includes name="System.dll" />
+				<includes name="DotNetMock.dll" />
+				<includes name="NHibernate.dll" />
+				<includes name="NAnt.Core.dll" />
+				<includes name="log4net.dll" />
+			</references>
+		</csc>
+	</target>
+	
+</project>
