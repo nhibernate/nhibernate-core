@@ -43,61 +43,31 @@ namespace NHibernate.DomainModel
 		
 		public string FumString
 		{
-			get
-			{
-				return _fum;
-			}
-			set
-			{
-				this._fum = value;
-			}
+			get { return _fum; }
+			set { this._fum = value; }
 		}
 	
 		public FumCompositeID Id
 		{
-			get
-			{
-				return _id;
-			}
-			set
-			{
-				this._id = value;
-			}
+			get { return _id; }
+			set { this._id = value; }
 		}
 		public Fum Fo
 		{
-			get
-			{
-				return _fo;
-			}
-			set
-			{
-				this._fo = value;
-			}
+			get { return _fo; }
+			set { this._fo = value; }
 		}
 	
 		public Qux[] QuxArray
 		{
-			get
-			{
-				return _quxArray;
-			}
-			set
-			{
-				this._quxArray = value;
-			}
+			get { return _quxArray; }
+			set { this._quxArray = value; }
 		}
 	
 		public IDictionary Friends
 		{
-			get
-			{
-				return _friends;
-			}
-			set	
-			{
-				this._friends = value;
-			}
+			get { return _friends; }
+			set	{ this._friends = value; }
 		}
 	
 	
@@ -149,14 +119,8 @@ namespace NHibernate.DomainModel
 	
 		public DateTime LastUpdated
 		{
-			get
-			{
-				return m_LastUpdated;
-			}
-			set
-			{
-				m_LastUpdated = value;
-			}
+			get { return m_LastUpdated; }
+			set { m_LastUpdated = value; }
 		}
 
 	}

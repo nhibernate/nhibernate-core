@@ -26,6 +26,8 @@
 		<property name="TrueFalseProperty" type="TrueFalse" column="tf_p" length="1"/>
 		<property name="YesNoProperty" type="YesNo" column="yn_p" length="1"/>
 		
+		<property name="PrivateField" column="priv_fld" access="field.camelcase-underscore" />
+		
 		<array name="StringArray" table="bc_starr"  >
 			<key column="bc_id" />
 			<index column="sa_idx" />

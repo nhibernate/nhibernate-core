@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Reflection;
 
 using NHibernate.Util;
@@ -10,14 +11,20 @@ namespace NHibernate.Property
 	/// </summary>
 	public class PropertyAccessorFactory
 	{
-		private static readonly IPropertyAccessor basicPropertyAccessor = new BasicPropertyAccessor();
-		private static readonly IPropertyAccessor fieldAccessor = new FieldAccessor();
-		private static readonly IPropertyAccessor fieldCamelCaseAccessor = new FieldAccessor( new CamelCaseStrategy() );
-		private static readonly IPropertyAccessor fieldCamelCaseUnderscoreAccessor = new FieldAccessor( new CamelCaseUnderscoreStrategy() );
-		private static readonly IPropertyAccessor fieldPascalCaseMUnderscoreAccessor = new FieldAccessor( new PascalCaseMUnderscoreStrategy() );
-		private static readonly IPropertyAccessor noSetterCamelCaseAccessor = new NoSetterAccessor( new CamelCaseStrategy() );
-		private static readonly IPropertyAccessor noSetterCamelCaseUnderscoreAccessor = new NoSetterAccessor( new CamelCaseUnderscoreStrategy() );
-		private static readonly IPropertyAccessor noSetterPascalCaseMUnderscoreAccessor = new NoSetterAccessor( new PascalCaseMUnderscoreStrategy() );
+		private static IDictionary accessors;
+		
+		static PropertyAccessorFactory() 
+		{
+			accessors = new Hashtable(13);
+			accessors["property"] = new BasicPropertyAccessor();
+			accessors["field"] = new FieldAccessor();
+			accessors["field.camelcase"] = new FieldAccessor( new CamelCaseStrategy() );
+			accessors["field.camelcase-underscore"] = new FieldAccessor( new CamelCaseUnderscoreStrategy() );
+			accessors["field.pascalcase-m-underscore"] = new FieldAccessor( new PascalCaseMUnderscoreStrategy() ) ;
+			accessors["nosetter.camelcase"] = new NoSetterAccessor( new CamelCaseStrategy() );
+			accessors["nosetter.camelcase-underscore"] = new NoSetterAccessor( new CamelCaseUnderscoreStrategy() );
+			accessors["nosetter.pascalcase-m-underscore"] = new NoSetterAccessor( new PascalCaseMUnderscoreStrategy() );
+		}
 
 		private PropertyAccessorFactory()
 		{
@@ -25,10 +32,19 @@ namespace NHibernate.Property
 		}
 
 		/// <summary>
-		/// Gets or creates the IPropertyAccessor specified by the type.
+		/// Gets an <see cref="IDictionary"/> of the built in <see cref="IPropertyAccessor"/> strategies.
+		/// </summary>
+		/// <value>An <see cref="IDictionary"/> of the built in <see cref="IPropertyAccessor"/> strategies.</value>
+		public static IDictionary PropertyAccessors 
+		{
+			get { return accessors; }
+		}
+
+		/// <summary>
+		/// Gets or creates the <see cref="IPropertyAccessor" /> specified by the type.
 		/// </summary>
 		/// <param name="type"></param>
-		/// <returns></returns>
+		/// <returns>The <see cref="IPropertyAccessor"/> specified by the type.</returns>
 		/// <remarks>
 		/// <para>
 		/// The built in ways of accessing the values of Properties in your domain class are:
@@ -118,33 +134,22 @@ namespace NHibernate.Property
 		/// </remarks>
 		public static IPropertyAccessor GetPropertyAccessor(string type) 
 		{
-			if( type==null || "property".Equals(type) ) return basicPropertyAccessor;
-			
-			switch(type) 
+			// if not type is specified then fall back to the default of using
+			// the property.
+			if( type==null ) 
 			{
-				case "field" :
-					return fieldAccessor;
+				type = "property";
+			}
 
-				case "field.camelcase" :
-					return fieldCamelCaseAccessor;
-
-				case "field.camelcase-underscore" :
-					return fieldCamelCaseUnderscoreAccessor;
-
-				case "field.pascalcase-m-underscore" :
-					return fieldPascalCaseMUnderscoreAccessor;
-
-				case "nosetter.camelcase" :
-					return noSetterCamelCaseAccessor;
-
-				case "nosetter.camelcase-underscore" :
-					return noSetterCamelCaseUnderscoreAccessor;
-
-				case "nosetter.pascalcase-m-underscore" :
-					return noSetterPascalCaseMUnderscoreAccessor;
-
+			// attempt to find it in the built in types
+			IPropertyAccessor accessor = accessors[type] as IPropertyAccessor;
+			if( accessor!=null ) 
+			{
+				return accessor;
 			}
 			
+			// was not a built in type so now check to see if it is custom
+			// accessor.
 			System.Type accessorClass;
 			try 
 			{

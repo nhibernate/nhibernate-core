@@ -27,6 +27,8 @@ namespace NHibernate.DomainModel.NHSpecific
 		private bool _trueFalseProperty;
 		private bool _yesNoProperty;
 		
+		private int _privateField;
+
 		private string[] _stringArray;
 		private int[] _int32Array;
 		private IList _stringBag;
@@ -134,6 +136,21 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			get {return _yesNoProperty;}
 			set {_yesNoProperty = value;}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <remarks>
+		/// NHibernate knows nothing about this Property.  This Property
+		/// is provided so the Test Fixtures can set and get the value of the
+		/// field <c>_privateField</c> to make sure that NHibernate is reading
+		/// and writing the field correctly.
+		/// </remarks>
+		public int ValueOfPrivateField
+		{
+			get { return _privateField; }
+			set { _privateField = value; }
 		}
 
 		public string[] StringArray 

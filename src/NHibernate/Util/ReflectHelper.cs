@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
 using System.Reflection;
+
+using NHibernate.Property;
 using NHibernate.Type;
 
 namespace NHibernate.Util 
@@ -9,9 +12,6 @@ namespace NHibernate.Util
 	/// </summary>
 	public sealed class ReflectHelper
 	{
-		//TODO: this dependency is kind of bad - H2.0.3 comment
-		private static readonly Property.BasicPropertyAccessor basicPropertyAccessor = new Property.BasicPropertyAccessor();
-		
 		private static System.Type[] NoClasses = new System.Type[0];
 		private static System.Type[] Object = new System.Type[] { typeof(object) };
 		
@@ -52,15 +52,52 @@ namespace NHibernate.Util
 
 		//TODO: most calls to this will be replaced by the Mapping.Property.GetGetter() but
 		// there will still be a call from hql into this.
-		public static Property.IGetter GetGetter(System.Type theClass, string propertyName) 
+		/// <summary>
+		/// Finds the <see cref="IGetter"/> for the property in the <see cref="System.Type"/>.
+		/// </summary>
+		/// <param name="theClass">The <see cref="System.Type"/> to find the Property/Field in.</param>
+		/// <param name="propertyName">The name of the Property/Field to find.</param>
+		/// <returns>The <see cref="IGetter"/> for the property.</returns>
+		/// <remarks>
+		/// <para>
+		/// This does not use the <c>access=""</c> attribute specified in the mapping.  It
+		/// first checks to see if there is a Property in your class with the same name.  If
+		/// no Property is found then it moves through each <see cref="IPropertyAccessor"/> strategy
+		/// and tries to find an <see cref="IGetter"/> through them.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="PropertyNotFoundException">
+		/// No Property or Field with the <c>propertyName</c> could be found.
+		/// </exception>
+		public static IGetter GetGetter(System.Type theClass, string propertyName) 
 		{
+			IPropertyAccessor accessor = null;
+
+			// first try the basicPropertyAccessor since that will be the most likely
+			// strategy used.
 			try 
 			{
-				return basicPropertyAccessor.GetGetter(theClass, propertyName);
+				accessor = (IPropertyAccessor)PropertyAccessorFactory.PropertyAccessors["property"];
+				return accessor.GetGetter(theClass, propertyName);
 			}
-			catch (PropertyNotFoundException pnfe) 
+			catch( PropertyNotFoundException pnfe ) 
 			{
-				//TODO: figure out how we are going to know the field accessor to use here...
+				// the basic "property" strategy did not work so try the rest of them
+				foreach( DictionaryEntry de in Property.PropertyAccessorFactory.PropertyAccessors ) 
+				{
+					try 
+					{
+						accessor = (IPropertyAccessor)de.Value;
+						return accessor.GetGetter( theClass, propertyName );
+					}
+					catch( PropertyNotFoundException ) 
+					{
+						// ignore this exception because we want to try and move through
+						// the rest of the accessor strategies.
+					}
+
+				}
+
 				throw pnfe;
 			}
 		}

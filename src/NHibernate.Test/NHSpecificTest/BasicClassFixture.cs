@@ -20,6 +20,31 @@ namespace NHibernate.Test.NHSpecificTest
 			ExportSchema( new string[] { "NHSpecific.BasicClass.hbm.xml"}, true );
 		}
 
+		/// <summary>
+		/// This is a test for <a href="http://jira.nhibernate.org/browse/NH-134">NH-134</a>.
+		/// </summary>
+		/// <remarks>
+		/// It checks to make sure that NHibernate can use the correct accessor to get the
+		/// type="" attribute through reflection.
+		/// </remarks>
+		[Test]
+		public void TestPrivateFieldAccess() 
+		{
+			ISession s = sessions.OpenSession();
+
+			BasicClass bc = new BasicClass();
+			bc.Id = 1;
+			bc.ValueOfPrivateField = 5;
+			s.Save( bc );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			bc = (BasicClass)s.Load( typeof(BasicClass), (int)1 );
+			Assert.AreEqual( 5, bc.ValueOfPrivateField, "private field accessor" );
+			s.Close();
+		}
+
 		[Test]
 		public void TestCRUD() 
 		{

@@ -395,6 +395,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "PropertyTest\FieldGetterFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "PropertyTest\NoSetterAccessorFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -32,7 +32,7 @@ namespace NHibernate.Property
 
 		public System.Type ReturnType
 		{
-			get { return field.ReflectedType; }
+			get { return field.FieldType; }
 		}
 
 		public string PropertyName
