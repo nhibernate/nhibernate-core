@@ -30,17 +30,17 @@ namespace NHibernate.Driver
 
 		public override bool UseNamedPrefixInSql 
 		{
-			get {return false;}
+			get {return true;}
 		}
 
 		public override bool UseNamedPrefixInParameter 
 		{
-			get {return false;}
+			get {return true;}
 		}
 
 		public override string NamedPrefix 	
 		{
-			get {return "";}
+			get {return "@";}
 		}
 	}
 }
