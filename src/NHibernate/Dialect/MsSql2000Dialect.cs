@@ -14,10 +14,8 @@ namespace NHibernate.Dialect
 
 		public MsSql2000Dialect() : base() 
 		{
-			/*
-			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");
-			getDefaultProperties().setProperty(Environment.STATEMENT_BATCH_SIZE, NO_BATCH);
-			*/
+			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
+			DefaultProperties[Cfg.Environment.StatementBatchSize] = NoBatch;
 		}
 
 		public override string AddColumnString 

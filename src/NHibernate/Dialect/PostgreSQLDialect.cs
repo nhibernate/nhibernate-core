@@ -28,11 +28,9 @@ namespace NHibernate.Dialect {
 			Types.BLOB, "BYTEA" );
 			Types.NUMERIC, "NUMERIC" );
 			*/
-
-			/*
-			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");
-			getDefaultProperties().setProperty(Environment.STATEMENT_BATCH_SIZE, DEFAULT_BATCH_SIZE);
-			*/
+			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
+			DefaultProperties[Cfg.Environment.StatementBatchSize] = DefaultBatchSize;
+			
 		}
 
 		public override string AddColumnString {

@@ -27,8 +27,8 @@ namespace NHibernate.Dialect
 
 		private static readonly IDictionary aggregateFunctions = new Hashtable();
 
-		const string DefaultBatchSize = "15";
-		const string NoBatch = "0";
+		protected const string DefaultBatchSize = "15";
+		protected const string NoBatch = "0";
 
 		static Dialect() 
 		{

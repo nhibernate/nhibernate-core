@@ -30,10 +30,8 @@ namespace NHibernate.Dialect {
 			Types.CLOB, "TEXT" );
 			*/			
 		
-			/*
-			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");
-			getDefaultProperties().setProperty(Environment.STATEMENT_BATCH_SIZE, NO_BATCH);
-			*/
+			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
+			DefaultProperties[Cfg.Environment.StatementBatchSize] = NoBatch;
 		}
 
 		public override string AddColumnString {

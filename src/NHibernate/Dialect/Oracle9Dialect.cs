@@ -23,11 +23,9 @@ namespace NHibernate.Dialect
 
 		public Oracle9Dialect() : base() 
 		{
-			/* TODO:
-			getDefaultProperties().setProperty(Environment.USE_STREAMS_FOR_BINARY, "true");
-			getDefaultProperties().setProperty(Environment.STATEMENT_BATCH_SIZE, DEFAULT_BATCH_SIZE);
-			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");
-			*/
+//			DefaultProperties[Cfg.Environment.UseStreamsForBinary] = "true";
+			DefaultProperties[Cfg.Environment.StatementBatchSize] = DefaultBatchSize;
+			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
 
 			// add all the functions from the base into this instance
 			foreach(DictionaryEntry de in base.AggregateFunctions) 
