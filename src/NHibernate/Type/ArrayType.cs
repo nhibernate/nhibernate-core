@@ -19,7 +19,7 @@ namespace NHibernate.Type {
 			get { return arrayClass; }
 		}
 
-		protected override PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister) {
+		public override PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister) {
 			return new ArrayHolder(session, persister);
 		}
 

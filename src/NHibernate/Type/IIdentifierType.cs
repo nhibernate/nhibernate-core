@@ -3,15 +3,21 @@ using System;
 namespace NHibernate.Type {
 
 	/// <summary>
-	/// An IType that may be used as an identifier.
+	/// An <see cref="IType"/> that may be used as an identifier.
 	/// </summary>
 	public interface IIdentifierType : IType {
 
 		/// <summary>
-		/// Convert the value from the mapping file to a Java object.
+		/// When implemented by a class, converts the xml string from the 
+		/// mapping file to the .NET object.
 		/// </summary>
-		/// <param name="xml">the value of <code>discriminator-value</code> or <code>unsaved-value</code> attribute</param>
-		/// <returns></returns>
+		/// <param name="xml">The value of <c>discriminator-value</c> or <c>unsaved-value</c> attribute.</param>
+		/// <returns>The string converted to the object.</returns>
+		/// <remarks>
+		/// This method needs to be able to handle any string.  It should not just 
+		/// call System.Type.Parse without verifying that it is a parsable value
+		/// for the System.Type.
+		/// </remarks>
 		object StringToObject(string xml);
 	}
 }

@@ -1,0 +1,67 @@
+using System;
+using System.Data;
+
+using NHibernate.SqlTypes;
+
+namespace NHibernate.Type {
+	
+	public class DateTimeType : MutableType, IIdentifierType, ILiteralType {
+		
+		public DateTimeType(DateTimeSqlType sqlType) : base(sqlType) {
+		}
+
+		public override object Get(IDataReader rs, int index) {
+			return rs.GetDateTime(index);
+		}
+
+		public override object Get(IDataReader rs, string name) {
+			return Get(rs,rs.GetOrdinal(name));// rs.[name];
+		}
+
+		public override System.Type ReturnedClass {
+			get { return typeof(DateTime); }
+		}
+		public override void Set(IDbCommand st, object value, int index) {
+			IDataParameter parm = st.Parameters[index] as IDataParameter;
+			parm.DbType = DbType.DateTime;
+			//TODO: figure out if this is a good solution for NULL DATES
+			if(value.Equals(System.DateTime.MinValue)) {
+				parm.Value = DBNull.Value;
+			}
+			else {
+				parm.Value = value;
+			}
+		}
+
+		public override bool Equals(object x, object y) {
+			if (x==y) return true;
+			// DateTime can't be null because it is a struct - so comparing 
+			// them this way is useless - instead use the magic number...
+			//if (x==null || y==null) return false;
+
+			DateTime date1 = (x==null)? DateTime.MinValue : (DateTime) x;
+			DateTime date2 = (y==null)? DateTime.MinValue : (DateTime) y;
+
+			return date1.Equals(date2);
+		}
+		public override string Name {
+			get { return "DateTime"; }
+		}
+		public override string ToXML(object val) {
+			return ((DateTime)val).ToShortDateString();
+		}
+		public override object DeepCopyNotNull(object value) {
+			DateTime old = (DateTime) value;
+			return new DateTime(old.Year, old.Month, old.Day, old.Hour, old.Minute, old.Second, old.Millisecond);
+		}
+		public override bool HasNiceEquals {
+			get { return true; }
+		}
+		public object StringToObject(string xml) {
+			return DateTime.Parse(xml);
+		}
+		public string ObjectToSQLString(object value) {
+			return "'" + value.ToString() + "'";
+		}
+	}
+}

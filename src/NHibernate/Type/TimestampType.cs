@@ -1,27 +1,37 @@
 using System;
 using System.Data;
 
+using NHibernate.SqlTypes;
+
 namespace NHibernate.Type {
 	
+	/// <summary>
+	/// This is almost the exact same type as the DateTime except it can be used
+	/// in the version column.  It is not a SQL Server "timestamp" column.
+	/// </summary>
 	public class TimestampType : MutableType, IVersionType, ILiteralType{
 		
-		public override object Get(IDataReader rs, string name) {
-			return rs[name];
+		public TimestampType(DateTimeSqlType sqlType) : base(sqlType) {
 		}
+
+		public override object Get(IDataReader rs, int index) {
+			return rs.GetDateTime(index);
+		}
+
+		public override object Get(IDataReader rs, string name) {
+			return Get(rs, rs.GetOrdinal(name));// rs.[name];
+		}
+
 		public override System.Type ReturnedClass {
 			get { return typeof(DateTime); }
 		}
 		public override void Set(IDbCommand st, object value, int index) {
 			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			parm.DbType = DbType.DateTime;
 			parm.Value = value;
 		}
 
-		public override DbType SqlType {
-			get { return DbType.DateTime; }
-		}
 		public override string Name {
-			get { return "timestamp"; }
+			get { return "Timestamp"; }
 		}
 		public override string ToXML(object val) {
 			return ((DateTime)val).ToShortTimeString();

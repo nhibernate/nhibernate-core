@@ -4,6 +4,7 @@ using System.Data;
 using NHibernate.Mapping;
 using NHibernate.Engine;
 using NHibernate.Sql;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 
@@ -16,8 +17,8 @@ namespace NHibernate.Type {
             return session.GetIdentifierType( PersistentClass ).GetColumnSpan(session);
 		}
 
-		public override DbType[] SqlTypes(IMapping session) {
-            return session.GetIdentifierType( PersistentClass ).SqlTypes(session);
+		public override SqlType[] SqlTypes(IMapping session) {
+			return session.GetIdentifierType( PersistentClass ).SqlTypes(session);
 		}
 	
 		public ManyToOneType(System.Type persistentClass) : base(persistentClass) {

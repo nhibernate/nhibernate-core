@@ -2,6 +2,7 @@ using System;
 using System.Data;
 
 using NHibernate.Sql;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 
@@ -10,14 +11,21 @@ namespace NHibernate.Type {
 	/// </summary>
 	public class CharacterType : PrimitiveType , IDiscriminatorType	{
 
-		public override object Get(IDataReader rs, string name) {
-            string str = rs[name].ToString();
+		internal CharacterType(StringFixedLengthSqlType sqlType) : base(sqlType) {
+		}
+
+		public override object Get(IDataReader rs, int index) {
+			string str = rs.GetString(index);
 			if (str==null) {
 				return null;
 			}
 			else {
 				return str[0];
 			}	
+		}
+
+		public override object Get(IDataReader rs, string name) {
+            return Get(rs, rs.GetOrdinal(name));
 		}
 	
 		public override System.Type PrimitiveClass {
@@ -31,13 +39,9 @@ namespace NHibernate.Type {
 		public override void Set(IDbCommand cmd, object value, int index) {
 			( (IDataParameter) cmd.Parameters[index] ).Value = (char) value;
 		}
-	
-		public override DbType SqlType {
-			get { return DbType.SByte; }
-		}
 
 		public override string Name {
-			get { return "character"; }
+			get { return "Character"; }
 		}
 	
 		public override string ObjectToSQLString(object value) {

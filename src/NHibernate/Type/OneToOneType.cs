@@ -2,8 +2,10 @@ using System;
 using System.Data;
 
 using NHibernate.Sql;
+using NHibernate.SqlTypes;
 using NHibernate.Engine;
 using NHibernate.Type;
+
 
 namespace NHibernate.Type {
 
@@ -12,14 +14,15 @@ namespace NHibernate.Type {
 	/// </summary>
 	public class OneToOneType : EntityType, IAssociationType {
 
-		private static readonly DbType[] NoSqlTypes = new DbType[0];
+		private static readonly SqlType[] NoSqlTypes = new SqlType[0];
+
 		private readonly ForeignKeyType foreignKeyType;
 	
 		public override int GetColumnSpan(IMapping session) {
 			return 0;
 		}
 
-		public override DbType[] SqlTypes(IMapping session) {
+		public override SqlType[] SqlTypes(IMapping session) {
 			return NoSqlTypes;
 		}
 	

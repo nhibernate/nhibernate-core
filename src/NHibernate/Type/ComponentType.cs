@@ -2,9 +2,11 @@ using System;
 using System.Data;
 using System.Reflection;
 using System.Collections;
+
 using NHibernate.Engine;
-using NHibernate.Util;
 using NHibernate.Loader;
+using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type {
 	
@@ -23,14 +25,12 @@ namespace NHibernate.Type {
 		private string parentProperty;
 		private ReflectHelper.Setter parentSetter;
 
-		//TODO: implement optimizer
-		
-		public override DbType[] SqlTypes(IMapping mapping) {
+		public override SqlType[] SqlTypes(IMapping mapping) {
 			//not called at runtime so doesn't matter if its slow :)
-			DbType[] sqlTypes = new DbType[ GetColumnSpan(mapping) ];
+			SqlType[] sqlTypes = new SqlType[ GetColumnSpan(mapping) ];
 			int n=0;
 			for (int i=0;i<propertySpan; i++) {
-				DbType[] subtypes = types[i].SqlTypes(mapping);
+				SqlType[] subtypes = types[i].SqlTypes(mapping);
 				for (int j=0; j<subtypes.Length; j++) {
 					sqlTypes[n++] = subtypes[j];
 				}
@@ -46,13 +46,15 @@ namespace NHibernate.Type {
 			return span;
 		}
 
-		public ComponentType(	System.Type componentClass,
+		public ComponentType(System.Type componentClass,
 			string[] properties,
 			IType[] types,
 			OuterJoinLoaderType[] joinedFetch,
 			Cascades.CascadeStyle[] cascade,
 			string parentProperty,
 			bool embedded ) {
+			
+			
 			this.componentClass = componentClass;
 			this.types = types;
 			propertySpan = properties.Length;

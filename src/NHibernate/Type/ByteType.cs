@@ -2,6 +2,7 @@ using System;
 using System.Data;
 
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 
@@ -10,8 +11,15 @@ namespace NHibernate.Type {
 	/// </summary>
 	public class ByteType : PrimitiveType, IDiscriminatorType {
 		
+		internal ByteType(ByteSqlType sqlType) : base(sqlType) {
+		}
+
+		public override object Get(IDataReader rs, int index) {
+			return rs.GetByte(index);
+		}
+
 		public override object Get(IDataReader rs, string name) {
-			return (byte)rs[name];
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		public override System.Type PrimitiveClass {
@@ -26,12 +34,8 @@ namespace NHibernate.Type {
 			( (IDataParameter)cmd.Parameters[index] ).Value = (byte) value;
 		}
 
-		public override DbType SqlType {
-			get { return DbType.Byte; }
-		}
-
 		public override string Name {
-			get { return "byte"; }
+			get { return "Byte"; }
 		}
 
 		public override string ObjectToSQLString(object value) {

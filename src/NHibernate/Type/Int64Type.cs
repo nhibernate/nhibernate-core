@@ -4,29 +4,26 @@ using System.Data;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
-
-	/// <summary>
-	/// DecimalType
-	/// </summary>
-	public class DecimalType : PrimitiveType, IIdentifierType, IVersionType {
 	
-		internal DecimalType(DecimalSqlType sqlType) : base(sqlType) {
+	public class Int64Type : PrimitiveType, IIdentifierType, IVersionType {
+		
+		internal Int64Type(Int64SqlType sqlType) : base(sqlType) {
 		}
 
 		public override object Get(IDataReader rs, int index) {
-			return rs.GetDecimal(index);
+			return rs.GetInt64(index);
 		}
 
 		public override object Get(IDataReader rs, string name) {
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name));// rs.[name];
 		}
 
 		public override System.Type PrimitiveClass {
-			get { return typeof(Decimal); }
+			get { return typeof(System.Int64); }
 		}
 
 		public override System.Type ReturnedClass {
-			get { return typeof(Decimal); }
+			get { return typeof(System.Int64); }
 		}
 
 		public override void Set(IDbCommand st, object value, int index) {
@@ -35,7 +32,7 @@ namespace NHibernate.Type {
 		}
 
 		public override string Name {
-			get { return "Decimal"; }
+			get { return "Int64"; }
 		}
 
 		public object StringToObject(string xml) {
@@ -43,7 +40,7 @@ namespace NHibernate.Type {
 		}
 
 		public object Next(object current) {
-			return ((Decimal)current) + 1;
+			return ((long)current) + 1;
 		}
 
 		public object Seed {

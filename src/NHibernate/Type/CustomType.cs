@@ -4,6 +4,7 @@ using System.Data;
 
 using log4net;
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 
@@ -15,7 +16,7 @@ namespace NHibernate.Type {
 
 		private readonly IUserType userType;
 		private readonly string name;
-		private readonly DbType[] types;
+		private readonly SqlType[] sqlTypes;
 
 		protected IUserType UserType {
 			get {
@@ -47,18 +48,18 @@ namespace NHibernate.Type {
 			catch (InvalidCastException ice) {
 				throw new MappingException( userTypeClass.Name + " must implement NHibernate.IUserType", ice );
 			}
-			types = userType.SqlTypes;
+			sqlTypes = userType.SqlTypes;
 			if ( !userType.ReturnedType.IsSerializable ) {
 				LogManager.GetLogger(typeof(CustomType)).Warn("custom type is not Serializable: " + userTypeClass);
 			}
 		}
-
-		public override DbType[] SqlTypes(IMapping pi) {
-			return types;
-		}
 		
+		public override SqlType[] SqlTypes(IMapping mapping) {
+			return sqlTypes;
+		}
+
 		public override int GetColumnSpan(IMapping session) {
-			return types.Length;
+			return sqlTypes.Length;
 		}
 		
 		public override System.Type ReturnedClass {

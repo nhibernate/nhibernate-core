@@ -2,15 +2,21 @@ using System;
 using System.Data;
 using System.Globalization;
 
+using NHibernate.SqlTypes;
+
 namespace NHibernate.Type {
 
 	/// <summary>
-	/// CultureInfoType.
+	/// CultureInfoType for using a System.Globalization.CultureInfo an the 
+	/// culture name (not the Culture ID) is stored in the DB.
 	/// </summary>
 	public class CultureInfoType : ImmutableType, ILiteralType {
 
-		public override object Get(IDataReader rs, string name) {
-			string str = (string) NHibernate.String.Get(rs, name);
+		internal CultureInfoType(StringSqlType sqlType) : base(sqlType) {
+		}
+
+		public override object Get(IDataReader rs, int index) {
+			string str = (string) NHibernate.String.Get(rs, index);
 			if (str == null) {
 				return null;
 			}
@@ -19,16 +25,16 @@ namespace NHibernate.Type {
 			}
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index) {
-			NHibernate.String.Set(cmd, value.ToString(), index);
+		public override object Get(IDataReader rs, string name) {
+			return Get(rs, rs.GetOrdinal(name));
 		}
-	
-		public override DbType SqlType {
-			get { return NHibernate.String.SqlType; }
+
+		public override void Set(IDbCommand cmd, object value, int index) {
+			NHibernate.String.Set(cmd, ((CultureInfo)value).Name, index);
 		}
 	
 		public override string ToXML(object value) {
-			return value.ToString();
+			return ((CultureInfo)value).Name;
 		}
 	
 		public override System.Type ReturnedClass {

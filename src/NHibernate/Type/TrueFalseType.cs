@@ -1,11 +1,18 @@
 using System;
 
+using NHibernate.SqlTypes;
+
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// TrueFalseType.
+	/// Maps a System.Boolean to a single character column that stores a 
+	/// "T"/F" to indicate true/false.
 	/// </summary>
-	public class TrueFalseType: CharBooleanType {
+	public class TrueFalseType: CharBooleanType 
+	{
+
+		internal TrueFalseType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType) {
+		}
 
 		protected override sealed string TrueString {
 			get { return "T"; }
@@ -16,7 +23,7 @@ namespace NHibernate.Type
 		}
 
 		public override string Name {
-			get { return "true_false"; }
+			get { return "TrueFalse"; }
 		}
 	}
 }

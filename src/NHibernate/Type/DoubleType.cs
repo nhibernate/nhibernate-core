@@ -1,11 +1,21 @@
 using System;
 using System.Data;
 
+using NHibernate.SqlTypes;
+
 namespace NHibernate.Type {
 	
 	public class DoubleType : PrimitiveType {
+		
+		internal DoubleType(DoubleSqlType sqlType) : base(sqlType) {
+		}
+
+		public override object Get(IDataReader rs, int index) {
+			return rs.GetDouble(index);
+		}
+
 		public override object Get(IDataReader rs, string name) {
-			return rs[name];
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		public override System.Type PrimitiveClass {
@@ -18,16 +28,11 @@ namespace NHibernate.Type {
 
 		public override void Set(IDbCommand st, object value, int index) {
 			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			parm.DbType = DbType.Double;
 			parm.Value = value;
 		}
 
-		public override DbType SqlType {
-			get { return DbType.Double; }
-		}
-
 		public override string Name {
-			get { return "double"; }
+			get { return "Double"; }
 		}
 
 		public override string ObjectToSQLString(object value) {

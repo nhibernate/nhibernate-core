@@ -4,6 +4,7 @@ using System.Data;
 using NHibernate.Type;
 using NHibernate.Engine;
 using NHibernate.Loader;
+using NHibernate.SqlTypes;
 
 using log4net;
 
@@ -140,16 +141,17 @@ namespace NHibernate.Type {
 			object value,
 			int index,
 			ISessionImplementor session) {
+			
 			userType.NullSafeSet(cmd, value, index, session);
 		}
 
-		public override DbType[] SqlTypes(IMapping mapping) {
+		public override SqlType[] SqlTypes(IMapping mapping) {
 
 			IType[] types = userType.PropertyTypes;
-			DbType[] result = new DbType[ GetColumnSpan(mapping) ];
+			SqlType[] result = new SqlType[ GetColumnSpan(mapping) ];
 			int n=0;
 			for (int i=0; i<types.Length; i++) {
-				DbType[] sqlTypes = types[i].SqlTypes(mapping);
+				SqlType[] sqlTypes = types[i].SqlTypes(mapping);
 				for ( int k=0; k<sqlTypes.Length; k++ ) result[n++] = sqlTypes[k];
 			}
 			return result;

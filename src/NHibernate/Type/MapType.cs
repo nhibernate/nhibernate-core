@@ -11,7 +11,7 @@ namespace NHibernate.Type {
 		public MapType(string role) : base(role) {
 		}
 
-		protected override PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister) {
+		public override PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister) {
 			return new Map(session);
 		}
 

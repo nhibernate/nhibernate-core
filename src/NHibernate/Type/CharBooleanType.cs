@@ -2,6 +2,7 @@ using System;
 using System.Data;
 
 using NHibernate.Sql;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 
@@ -13,8 +14,11 @@ namespace NHibernate.Type {
 		protected abstract string TrueString { get; }
 		protected abstract string FalseString { get; }
 
-		public override object Get(IDataReader rs, string name) {
-            string code = rs[name].ToString();
+		internal CharBooleanType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType) {
+		}
+
+		public override object Get(IDataReader rs, int index) {
+			string code = rs.GetString(index);
 			if (code==null) {
 				return null;
 			}
@@ -23,12 +27,12 @@ namespace NHibernate.Type {
 			}
 		}
 
-		public override void Set(IDbCommand cmd, Object value, int index) {
-			( (IDataParameter) cmd.Parameters[index] ).Value = ( ( (bool)value ) ? TrueString : FalseString );
+		public override object Get(IDataReader rs, string name) {
+            return Get(rs, rs.GetOrdinal(name));
 		}
 
-		public override DbType SqlType {
-			get { return DbType.AnsiStringFixedLength; }
+		public override void Set(IDbCommand cmd, Object value, int index) {
+			( (IDataParameter) cmd.Parameters[index] ).Value = ( ( (bool)value ) ? TrueString : FalseString );
 		}
 		
 		public override string ObjectToSQLString(object value) {

@@ -40,13 +40,15 @@ namespace NHibernate.Type {
 	}
 
 	/// <summary>
-	/// A type that represents some kind of association between entities.
+	/// An <see cref="IType"/> that represents some kind of association between entities.
 	/// </summary>
 	public interface IAssociationType {
 
 		/// <summary>
-		/// The foreign key directionality of this association
+		/// When implemented by a class, gets the type of foreign key directionality 
+		/// of this association.
 		/// </summary>
+		/// <value>The <see cref="ForeignKeyType"/> of this association.</value>
 		ForeignKeyType ForeignKeyType { get; }
 
 	}

@@ -4,9 +4,39 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Util;
 using NHibernate.Loader;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
+
+	///<summary>
+	///	Handles "any" mappings and the old deprecated "object" type.
+	///</summary>
+	///<remarks>
+	///	The identifierType is any NHibernate IType that can be serailized by default.
+	///	For example, you can specify the identifierType as an Int32 or a custom identifier
+	///	type that you built.  The identifierType matches to one or many columns.
+	///	
+	///	The metaType maps to a single column.  By default it stores the name of the Type
+	///	that the Identifier identifies.  
+	///	
+	///	For example, we can store a link to any table.  It will have the results
+	///	class_name					id_col1
+	///	========================================
+	///	Simple, AssemblyName			5
+	///	DiffClass, AssebmlyName			5
+	///	Simple, AssemblyName			4
+	///	
+	///	You can also provide you own type that might map the name of the class to a table
+	///	with a giant switch statemet or a good naming convention for your class->table.  The
+	///	data stored might look like
+	///	class_name					id_col1
+	///	========================================
+	///	simple_table					5
+	///	diff_table						5
+	///	simple_table					4
+	///	
+	///</remarks>
 	public class ObjectType : AbstractType, IAbstractComponentType, IAssociationType {
 
 		private readonly IType identifierType;
@@ -17,7 +47,8 @@ namespace NHibernate.Type {
 			this.metaType = metaType;
 		}
 	
-		public ObjectType() : this(NHibernate.Class, NHibernate.Serializable) {
+		public ObjectType() : this(TypeFactory.GetTypeType(), TypeFactory.GetSerializableType()) {
+			//NHibernate.Class, NHibernate.Serializable) {
 		}
 		
 		public override object DeepCopy(object value) {
@@ -29,11 +60,16 @@ namespace NHibernate.Type {
 		}
 
 		public override int GetColumnSpan(IMapping session) {
+			/*
+			 * This is set at 2 in Hibernate to support the old depreciated
+			 * version of using type="object".  We are removing that support so
+			 * I don't know if we need to keep this in.
+			 */ 
 			return 2;
 		}
 
 		public override string Name {
-			get { return "object"; }
+			get { return "Object"; }
 		}
 
 		public override bool HasNiceEquals {
@@ -68,7 +104,8 @@ namespace NHibernate.Type {
 			if (value == null) {
 				id = null;
 				clazz = null;
-			} else {
+			} 
+			else {
 				id = session.GetEntityIdentifierIfNotUnsaved(value);
 				clazz = value.GetType();
 			}
@@ -80,13 +117,12 @@ namespace NHibernate.Type {
 			get { return typeof(object); }
 		}
 
-		private static readonly DbType[] theSqlTypes = new DbType[] { DbType.String, DbType.Binary };
-
-		public override DbType[] SqlTypes(IMapping mapping) {
+		
+		public override SqlType[] SqlTypes(IMapping mapping) {
 			return ArrayHelper.Join(
 				metaType.SqlTypes(mapping),
-				identifierType.SqlTypes(mapping)
-				);
+				identifierType.SqlTypes(mapping));
+
 		}
 
 		public override string ToXML(object value, ISessionFactoryImplementor factory) {

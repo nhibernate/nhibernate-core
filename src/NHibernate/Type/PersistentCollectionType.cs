@@ -5,6 +5,7 @@ using System.Data;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Sql;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 
@@ -14,8 +15,8 @@ namespace NHibernate.Type {
 	public abstract class PersistentCollectionType : AbstractType, IAssociationType	{
 		
 		private readonly string role;
-		private static readonly DbType[] NoSqlTypes = {};
-		
+		private static readonly SqlType[] NoSqlTypes = {};
+
 		public PersistentCollectionType(string role) {
 			this.role = role;
 		}
@@ -33,7 +34,7 @@ namespace NHibernate.Type {
 			return x==y;
 		}
 
-		protected abstract PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister);
+		public abstract PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister);
 
 		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner) {
 			throw new AssertionFailure("bug in PersistentCollectionType");
@@ -61,8 +62,8 @@ namespace NHibernate.Type {
 
 		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session) {
 		}
-	
-		public override DbType[] SqlTypes(IMapping session) {
+
+		public override SqlType[] SqlTypes(IMapping session) {
 			return NoSqlTypes;
 		}
 	

@@ -1,39 +1,70 @@
 using System;
-using System.IO;
 using System.Data;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 	
-	public class SerializableType : MutableType {
+	/// <summary>
+	/// Maps an instance of a System.Type that has the SerializableAttribute to
+	/// a Binary column.  
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// The Serializabletype should be used when you know that Bytes are 
+	/// not going to be greater than 8,000
+	/// </para>
+	/// <para>
+	/// The base class is <see cref="MutableType"/> because the data is stored in 
+	/// a byte[].  The System.Array does not have a nice "equals" method so we must
+	/// do a custom implementation.
+	/// </para>
+	/// </remarks>
+	public class SerializableType : MutableType 
+	{
 		private System.Type serializableClass;
 
-		public SerializableType(System.Type serializableClass) {
+		private BinaryType binaryType;
+
+		public SerializableType(System.Type serializableClass) : this(serializableClass, SqlTypeFactory.GetBinary(255)) {
+			
+		}
+		
+		internal SerializableType(System.Type serializableClass, BinarySqlType sqlType) : base(sqlType) {
 			this.serializableClass = serializableClass;
+			binaryType = (BinaryType)TypeFactory.GetBinaryType(sqlType.Length);
 		}
 
 		public override void Set(IDbCommand st, object value, int index) {
-			NHibernate.Binary.Set(st, ToBytes(value), index);
+			binaryType.Set(st, ToBytes(value), index);
 		}
-		public override object Get(IDataReader rs, string name) {
-			byte[] bytes = (byte[]) NHibernate.Binary.Get(rs, name);
+
+		public override object Get(IDataReader rs, int index) {
+			byte[] bytes = (byte[]) binaryType.Get(rs, index);
 			if ( bytes == null ) {
 				return null;
 			} else {
 				return FromBytes(bytes);
 			}
 		}
+
+		public override object Get(IDataReader rs, string name) {
+			return Get(rs, rs.GetOrdinal(name));
+		}
+
 		public override System.Type ReturnedClass {
 			get { return serializableClass; }
 		}
 		public override bool Equals(object x, object y) {
 			if (x==y) return true;
 			if (x==null || y==null) return false;
-			return NHibernate.Binary.Equals(ToBytes(x), ToBytes(y));
+			return binaryType.Equals(ToBytes(x), ToBytes(y));
 		}
 		public override string ToXML(object value) {
-			return (value==null) ? null : NHibernate.Binary.ToXML( ToBytes(value) );
+			return (value==null) ? null : binaryType.ToXML( ToBytes(value) );
 		}
 		public override string Name {
 			get { return serializableClass.FullName; }
@@ -58,10 +89,6 @@ namespace NHibernate.Type {
 			} catch (Exception e) {
 				throw new SerializationException("Could not deserialize a serializable property: ", e);
 			}
-		}
-
-		public override DbType SqlType {
-			get { return NHibernate.Binary.SqlType; }
 		}
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner) {

@@ -2,215 +2,130 @@ using System;
 using System.Data;
 
 using NHibernate.Sql;
+using NHibernate.SqlTypes;
 using NHibernate.Engine;
 
 namespace NHibernate.Type {
-	/// <summary>
-	/// Defines a mapping from a .NET type to an Generic SQL datatype.
-	/// This interface is intended to be implemented by applications that need custom types.
-	/// </summary>
-	/// <remarks>Implementors should usually be immutable and MUST definately be threadsafe</remarks>
-	public interface IType {
-
-
+	/// <include file='IType.cs.xmldoc' 
+	///		path='//members[@type="IType"]/member[@name="T:IType"]/*'
+	/// /> 
+	public interface IType 
+	{
 		// QUESTION:
 		// How do we implement Serializable interface? Standard .NET pattern or other?
 		
-		/// <summary>
-		/// Return true if the implementation is castable to AssociationType.
-		/// This does not necessarily imply that the type actually represents an association.
-		/// </summary>
-		/// <returns></returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.IsAssociationType"]/*'
+		/// /> 
 		bool IsAssociationType { get; }
 		
-		/// <summary>
-		/// Is this type a collection type?
-		/// </summary>
-		/// <returns></returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.IsPersistentCollectionType"]/*'
+		/// /> 
 		bool IsPersistentCollectionType { get; }
 
-		/// <summary>
-		/// Is this type a component type?
-		/// If so, the implementation must be castable to <tt>AbstractComponentType</tt>.
-		/// A component type may own collections or associations and hence must provide certain extra functionality.
-		/// </summary>
-		/// <returns></returns>
-		bool IsComponentType	{ get; }
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.IsComponentType"]/*'
+		/// /> 
+		bool IsComponentType { get; }
 	
-		/// <summary>
-		/// Is this type an entity type?
-		/// </summary>
-		/// <returns></returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.IsEntityType"]/*'
+		/// /> 
 		bool IsEntityType { get; }
 	
-		/// <summary>
-		/// Is this an "object" type,
-		/// ie. a reference to a persistent entity that is not modelled as a (foreign key) association.
-		/// </summary>
-		/// <returns></returns>
-		/// <exception cref="MappingException">MappingException</exception>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.IsObjectType"]/*'
+		/// /> 
 		bool IsObjectType { get; }
 	
-		/// <summary>
-		/// Return the SQL typecodes for the columns mapped by this type.
-		/// The codes are defined on NHibernate.Sql.Types.
-		/// </summary>
-		/// <param name="mapping">Mapping</param>
-		/// <returns>Typecodes</returns>
-		DbType[] SqlTypes(IMapping mapping);
-	
-		/// <summary>
-		/// How many columns are used to persist this type?
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns></returns>
-		/// <exception cref="MappingException">MappingException</exception>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.SqlTypes"]/*'
+		/// /> 
+		SqlType[] SqlTypes(IMapping mapping);
+
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.GetColumnSpan"]/*'
+		/// /> 
 		int GetColumnSpan(IMapping mapping);
 	
-		/// <summary>
-		/// The class returned by <c>NullSafeGet()</c> methods. This is used to establish the
-		/// class of an array of this type
-		/// </summary>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.ReturnedClass"]/*'
+		/// /> 
 		System.Type ReturnedClass { get; }
 		
 	
-		/// <summary>
-		/// Compare two instances of the class mapped by this type for persistence "equality", ie. Equality of persistent state.
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.Equals"]/*'
+		/// /> 
 		bool Equals(object x, object y);
 		
-		/// <summary>
-		/// Should the parent be considered dirty, given both the old and current field or element value?
-		/// </summary>
-		/// <param name="old">the old value</param>
-		/// <param name="current">the current value</param>
-		/// <param name="session">the session</param>
-		/// <returns>true if the field is dirty</returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.IsDirty"]/*'
+		/// /> 
 		bool IsDirty(object old, object current, ISessionImplementor session);
 	
 
-		/// <summary>
-		/// Retrieve an instance of the mapped class from an ADO.NET resultset.
-		/// Implementors should handle possibility of null values.
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="names"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String[], ISessionImplementor, Object)"]/*'
+		/// /> 
 		object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 
-		/// <summary>
-		/// Retrieve an instance of the mapped class from an ADO.NET data reader. Implementations
-		/// should handle possibility of null values.
-		/// </summary>
-		/// <remarks>
-		/// This method might be called if the type is known to be a single-column type.
-		/// </remarks>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String, ISessionImplementor, Object)"]/*'
+		/// /> 
 		object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, Object owner);
 	
-		/// <summary>
-		/// Write an instance of the mapped class to a prepared statement. Implementors should
-		/// handle possibility of null values.
-		/// </summary>
-		/// <remarks>
-		/// A multi-column type should be written to parameters starting from <c>Index</c>.
-		/// </remarks>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		/// <param name="session"></param>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
+		/// /> 
 		void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
 	
 
-		/// <summary>
-		/// A representation of the value to be embedded in an XML element
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.ToXML"]/*'
+		/// /> 
 		string ToXML(object value, ISessionFactoryImplementor factory);
 
 		
-		/// <summary>
-		/// Returns the abbreviated name of the type.
-		/// </summary>
-		/// <returns>the Hibernate type name</returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.Name"]/*'
+		/// /> 
 		string Name { get; }
 	
-		/// <summary>
-		/// Return a deep copy of the persistent state, stopping at entities and at collections.
-		/// </summary>
-		/// <param name="value">generally a collection element or entity field</param>
-		/// <returns></returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
+		/// /> 
 		object DeepCopy(object val);
 	
-		/// <summary>
-		/// Are objects of this type mutable?
-		/// (With respect to the referencing object...
-		/// entities and collections are considered immutable because they manage their own internal state.)
-		/// </summary>
-		/// <returns></returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'
+		/// /> 
 		bool IsMutable { get; }
 
-		/// <summary>
-		/// Return a cacheable "disassembled" representation of the object.
-		/// </summary>
-		/// <param name="value">the value to cache</param>
-		/// <param name="session">the sesion</param>
-		/// <returns>the disassembled, deep cloned state</returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name=M:IType.Disassemble"]/*'
+		/// /> 
 		object Disassemble(object value, ISessionImplementor session);
 	
-		/// <summary>
-		/// Reconstruct the object from its cached "disassembled" state.
-		/// </summary>
-		/// <param name="cached">the disassembled state from the cache</param>
-		/// <param name="session">the session</param>
-		/// <param name="owner">the parent entity object</param>
-		/// <returns>the object</returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.Assemble"]/*'
+		/// /> 
 		object Assemble(object cached, ISessionImplementor session, object owner);
 
-		/// <summary>
-		/// Does this type implement a well-behaved <c>Equals()</c> method?
-		/// </summary>
-		/// <remarks>
-		/// Strickly, if this method returns <c>true</c> then <c>x.Equals(y)</c> implies
-		/// <c>IType.Equals(x, y)</c> and alos <c>IType.Equals(x, y)</c> implies that
-		/// probably <c>x.Equals(y)</c>
-		/// </remarks>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.HasNiceEquals"]/*'
+		/// /> 
 		bool HasNiceEquals { get; }
 	
-		/// <summary>
-		/// Retrieve an instance of the mapped class, or the identifier of an entity or collection
-		/// from an ADO.NET result set
-		/// </summary>
-		/// <remarks>
-		/// This is useful for 2-phase property initialization - the second phase is a call to
-		/// <c>ResolveIdentifier()</c>
-		/// </remarks>
-		/// <param name="rs"></param>
-		/// <param name="names">the column names</param>
-		/// <param name="session">the session</param>
-		/// <param name="owner">the parent entity</param>
-		/// <returns>an identifier or actual object</returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.Hydrate"]/*'
+		/// /> 
 		object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 	
-		/// <summary>
-		/// Map identifiers to entities or collections. This is the second phase of 2-phase property
-		/// initialization
-		/// </summary>
-		/// <param name="value">an identifier or value returned by <c>Hydrate()</c></param>
-		/// <param name="session">The session</param>
-		/// <param name="owner">The parent entity</param>
-		/// <returns></returns>
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.ResolveIdentifier"]/*'
+		/// /> 
 		object ResolveIdentifier(object value, ISessionImplementor session, object owner);
 
 	}

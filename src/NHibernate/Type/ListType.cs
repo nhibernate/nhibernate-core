@@ -10,7 +10,7 @@ namespace NHibernate.Type {
 		public ListType(string role) : base(role) {
 		}
 
-		protected override PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister) {
+		public override PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister) {
 			return new List(session);
 		}
 

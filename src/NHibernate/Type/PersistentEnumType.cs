@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {
 
@@ -13,37 +14,67 @@ namespace NHibernate.Type {
 
 		private readonly System.Type enumClass;
 		
-		public PersistentEnumType(System.Type enumClass) {
+		public PersistentEnumType(System.Type enumClass) : base(GetUnderlyingSqlType(enumClass)) {
 			if(enumClass.IsEnum)
 				this.enumClass = enumClass;
 			else
 				throw new MappingException(enumClass.Name + " did not inherit from System.Enum" );
 		}
 
-		protected DbType UnderlyingDbType { //Not overridable. These are the DbTypes.
-			get {
-				switch( Enum.GetUnderlyingType(enumClass).FullName ) {
-					case "System.Byte":
-						return DbType.Byte;
-					case "System.Int16":
-						return DbType.Int16;
-					case "System.Int32":
-						return DbType.Int32;
-					case "System.Int64":
-						return DbType.Int64;
-					case "System.SByte":
-						return DbType.SByte;
-					case "System.UInt16":
-						return DbType.UInt16;
-					case "System.UInt32":
-						return DbType.UInt32;
-					case "System.UInt64":
-						return DbType.UInt64;
-					default:
-						throw new HibernateException( "Unknown UnderlyingDbType for Enum"); //Impossible exception
-				}
+		/// <summary>
+		/// Determines what the NHibernate SqlType should be based on the 
+		/// values contain in the Enum
+		/// </summary>
+		/// <param name="enumClass">The Enumeration class to get the values from.</param>
+		/// <returns>The SqlType for this EnumClass</returns>
+		public static SqlType GetUnderlyingSqlType (System.Type enumClass) { 
+			switch( Enum.GetUnderlyingType(enumClass).FullName ) {
+				case "System.Byte":
+					return SqlTypeFactory.GetByte();// DbType.Byte;
+				case "System.Int16":
+					return SqlTypeFactory.GetInt16(); // DbType.Int16;
+				case "System.Int32":
+					return SqlTypeFactory.GetInt32(); //DbType.Int32;
+				case "System.Int64":
+					return SqlTypeFactory.GetInt64(); //DbType.Int64;
+				case "System.SByte":
+					return SqlTypeFactory.GetByte(); //DbType.SByte;
+				case "System.UInt16":
+					return SqlTypeFactory.GetInt16(); //DbType.UInt16;
+				case "System.UInt32":
+					return SqlTypeFactory.GetInt32(); //DbType.UInt32;
+				case "System.UInt64":
+					return SqlTypeFactory.GetInt64(); //DbType.UInt64;
+				default:
+					throw new HibernateException( "Unknown UnderlyingDbType for Enum"); //Impossible exception
 			}
+		
 		}
+
+//		protected DbType UnderlyingDbType { //Not overridable. These are the DbTypes.
+//			get {
+//				switch( Enum.GetUnderlyingType(enumClass).FullName ) {
+//					case "System.Byte":
+//						return DbType.Byte;
+//					case "System.Int16":
+//						return DbType.Int16;
+//					case "System.Int32":
+//						return DbType.Int32;
+//					case "System.Int64":
+//						return DbType.Int64;
+//					case "System.SByte":
+//						return DbType.SByte;
+//					case "System.UInt16":
+//						return DbType.UInt16;
+//					case "System.UInt32":
+//						return DbType.UInt32;
+//					case "System.UInt64":
+//						return DbType.UInt64;
+//					default:
+//						throw new HibernateException( "Unknown UnderlyingDbType for Enum"); //Impossible exception
+//				}
+//			}
+//		}
 
 		public virtual object GetInstance(object code) {
 			try {
@@ -90,7 +121,6 @@ namespace NHibernate.Type {
 	
 		public override void Set(IDbCommand cmd, object value, int index) {
 			IDataParameter par = (IDataParameter) cmd.Parameters[index];
-			par.DbType = this.UnderlyingDbType;
 			if (value==null) {
 				par.Value = DBNull.Value;
 			}
@@ -99,8 +129,8 @@ namespace NHibernate.Type {
 			}
 		}
 
-		public override object Get(IDataReader rs, string name) {
-			object code = rs[name];
+		public override object Get(IDataReader rs, int index) {
+			object code = rs[index];
 			if ( code==DBNull.Value || code==null) {
 				return null;
 			}
@@ -108,11 +138,9 @@ namespace NHibernate.Type {
 				return GetInstance(code);
 			}
 		}
-	
-		public override DbType SqlType {
-			get {
-				return this.UnderlyingDbType;
-			}
+
+		public override object Get(IDataReader rs, string name) {
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		public override string Name {

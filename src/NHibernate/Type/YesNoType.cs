@@ -1,11 +1,17 @@
 using System;
 
+using NHibernate.SqlTypes;
+
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// YesNoType.
+	/// Maps a System.Boolean to a single character column that stores a 
+	/// "Y"/"N" to indicate true/false.
 	/// </summary>
 	public class YesNoType : CharBooleanType {
+
+		internal YesNoType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType) {
+		}
 
 		protected override sealed string TrueString {
 			get { return "Y"; }
@@ -16,7 +22,7 @@ namespace NHibernate.Type
 		}
 
 		public override string Name {
-			get { return "yes_no"; }
+			get { return "YesNo"; }
 		}
 	}
 }
