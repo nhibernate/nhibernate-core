@@ -218,6 +218,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Custom.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "CustomPersister.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
