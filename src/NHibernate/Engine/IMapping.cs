@@ -1,12 +1,18 @@
-using System;
 using NHibernate.Type;
 
-namespace NHibernate.Engine {
+namespace NHibernate.Engine
+{
 	/// <summary>
 	/// Defines operations common to "compiled" mappings (ie. <c>SessionFactory</c>) and
 	/// "uncompiled" mappings (ie <c>Configuration</c> that are used by implementors of <c>IType</c>
 	/// </summary>
-	public interface IMapping {
-		IType GetIdentifierType(System.Type persistentType);
+	public interface IMapping
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persistentType"></param>
+		/// <returns></returns>
+		IType GetIdentifierType( System.Type persistentType );
 	}
 }
