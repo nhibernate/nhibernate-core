@@ -56,7 +56,7 @@ namespace NHibernate.Test.ExpressionTest
 		/// <param name="expectedString"></param>
 		protected void CompareSqlStrings(SqlString actualSqlString, string expectedString) 
 		{
-			Assertion.AssertEquals("SqlString.ToString()", expectedString, actualSqlString.ToString());
+			Assert.AreEqual(expectedString, actualSqlString.ToString(), "SqlString.ToString()");
 		}
 
 		protected void CompareSqlStrings(SqlString actualSqlString, string expectedString, int expectedNumOfParameters) 
@@ -65,8 +65,8 @@ namespace NHibernate.Test.ExpressionTest
 			int numOfParameters = 0;
 
 			GetParameters(actualSqlString, ref actualParameters, ref numOfParameters);
-			Assertion.AssertEquals("SqlString.ToString()", expectedString, actualSqlString.ToString());
-			Assertion.AssertEquals("Num of Parameters", expectedNumOfParameters, numOfParameters);
+			Assert.AreEqual(expectedString, actualSqlString.ToString(), "SqlString.ToString()");
+			Assert.AreEqual(expectedNumOfParameters, numOfParameters, "Num of Parameters");
 
 		}
 
@@ -77,13 +77,13 @@ namespace NHibernate.Test.ExpressionTest
 
 			GetParameters(actualSqlString, ref actualParameters, ref numOfParameters);
 
-			Assertion.AssertEquals("SqlString.ToString()", expectedString, actualSqlString.ToString());
-			Assertion.AssertEquals("Num of Parameters", expectedParameters.Length, numOfParameters);
+			Assert.AreEqual(expectedString, actualSqlString.ToString(), "SqlString.ToString()");
+			Assert.AreEqual(expectedParameters.Length, numOfParameters, "Num of Parameters");
 
 
 			for(int i = 0; i < expectedParameters.Length; i++) 
 			{
-				Assertion.AssertEquals("Parameter[" + i + "]", expectedParameters[i], actualParameters[i]);
+				Assert.AreEqual(expectedParameters[i], actualParameters[i], "Parameter[" + i + "]");
 			}
 		}
 

@@ -44,7 +44,7 @@ namespace NHibernate.Test.SqlCommandTest
 
 			string expectedSql = "UPDATE test_update_builder SET intColumn = :intColumn, longColumn = :longColumn, literalColumn = 0, stringColumn = 5 WHERE decimalColumn = :decimalColumn AND versionColumn = :versionColumn AND a=b";
 
-			Assertion.AssertEquals("SQL String", expectedSql , sqlString.ToString());
+			Assert.AreEqual(expectedSql , sqlString.ToString(), "SQL String");
 			
 			foreach(object part in sqlString.SqlParts) 
 			{
@@ -54,7 +54,7 @@ namespace NHibernate.Test.SqlCommandTest
 					numOfParameters++;
 				}
 			}
-			Assertion.AssertEquals("Four parameters", 4, numOfParameters);
+			Assert.AreEqual(4, numOfParameters, "Four parameters");
 
 			
 			Parameter firstParam = new Parameter();
@@ -73,17 +73,17 @@ namespace NHibernate.Test.SqlCommandTest
 			fourthParam.SqlType = new SqlTypes.Int32SqlType();
 			fourthParam.Name = "versionColumn";
 
-			Assertion.AssertEquals("firstParam Type", firstParam.SqlType.DbType, actualParams[0].SqlType.DbType);
-			Assertion.AssertEquals("firstParam Name", firstParam.Name, actualParams[0].Name);
+			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "firstParam Type");
+			Assert.AreEqual(firstParam.Name, actualParams[0].Name, "firstParam Name");
 
-			Assertion.AssertEquals("secondParam Type", secondParam.SqlType.DbType, actualParams[1].SqlType.DbType);
-			Assertion.AssertEquals("secondParam Name", secondParam.Name, actualParams[1].Name);
+			Assert.AreEqual(secondParam.SqlType.DbType, actualParams[1].SqlType.DbType, "secondParam Type");
+			Assert.AreEqual(secondParam.Name, actualParams[1].Name, "secondParam Name");
 
-			Assertion.AssertEquals("thirdParam Type", thirdParam.SqlType.DbType, actualParams[2].SqlType.DbType);
-			Assertion.AssertEquals("thirdParam Name", thirdParam.Name, actualParams[2].Name);
+			Assert.AreEqual(thirdParam.SqlType.DbType, actualParams[2].SqlType.DbType, "thirdParam Type");
+			Assert.AreEqual(thirdParam.Name, actualParams[2].Name, "thirdParam Name");
 
-			Assertion.AssertEquals("fourthParam Type", fourthParam.SqlType.DbType, actualParams[3].SqlType.DbType);
-			Assertion.AssertEquals("fourthParam Name", fourthParam.Name, actualParams[3].Name);
+			Assert.AreEqual(fourthParam.SqlType.DbType, actualParams[3].SqlType.DbType, "fourthParam Type");
+			Assert.AreEqual(fourthParam.Name, actualParams[3].Name, "fourthParam Name");
 		
 				
 		}

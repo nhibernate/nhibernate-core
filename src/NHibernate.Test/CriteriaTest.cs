@@ -51,15 +51,15 @@ namespace NHibernate.Test
 				.Add(Expression.Expression.Eq("Address","Street 12"))
 				.List();
 			
-			Assertion.AssertEquals(1, results2.Count);
+			Assert.AreEqual(1, results2.Count);
 
 			Simple simple2 = (Simple)results2[0];
 
-			Assertion.AssertNotNull("Unable to load object", simple2);
-			Assertion.AssertEquals("Load failed", simple1.Count, simple2.Count);
-			Assertion.AssertEquals("Load failed", simple1.Name, simple2.Name);
-			Assertion.AssertEquals("Load failed", simple1.Address, simple2.Address);
-			Assertion.AssertEquals("Load failed", simple1.Date.ToString(), simple2.Date.ToString());
+			Assert.IsNotNull(simple2, "Unable to load object");
+			Assert.AreEqual(simple1.Count, simple2.Count, "Load failed");
+			Assert.AreEqual(simple1.Name, simple2.Name, "Load failed");
+			Assert.AreEqual(simple1.Address, simple2.Address, "Load failed");
+			Assert.AreEqual(simple1.Date.ToString(), simple2.Date.ToString(), "Load failed");
 
 			s2.Delete("from Simple");
 

@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
 
-			Assertion.AssertNotNull(bc[index]);
+			Assert.IsNotNull(bc[index]);
 			AssertPropertiesEqual(bc[index-1], bc[index]);
 
 			bc[index].Int32Array[1] = 15;
@@ -767,7 +767,7 @@ namespace NHibernate.Test.NHSpecificTest
 				.Add(Expression.Expression.Eq("Id", id))
 				.List();
 
-			Assertion.AssertEquals(0, results.Count);
+			Assert.AreEqual(0, results.Count);
 
 			s.Close();
 		}
@@ -818,7 +818,7 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual(expected.CultureInfoProperty, actual.CultureInfoProperty, "CultureInfoProperty");
 			Assert.AreEqual(expected.DateTimeProperty, actual.DateTimeProperty, "DateTimeProperty");
 			Assert.AreEqual(expected.DecimalProperty, actual.DecimalProperty, "DecimalProperty using Assert should be AreEqual");
-			Assertion.Assert("DecimalProperty", expected.DecimalProperty.Equals(actual.DecimalProperty));
+			Assert.IsTrue(expected.DecimalProperty.Equals(actual.DecimalProperty), "DecimalProperty");
 //			Assert.AreEqual(expected.DoubleProperty, actual.DoubleProperty, 0, "DoubleProperty");
 			Assert.AreEqual(expected.Int16Property, actual.Int16Property, "Int16Property");
 			Assert.AreEqual(expected.Int32Property, actual.Int32Property, "Int32Property");
@@ -831,12 +831,12 @@ namespace NHibernate.Test.NHSpecificTest
 			
 			if(includeCollections) 
 			{
-				ObjectAssertion.AssertEquals(expected.StringArray, actual.StringArray);
-				ObjectAssertion.AssertEquals(expected.Int32Array, actual.Int32Array);
-				ObjectAssertion.AssertEquals(expected.StringBag, actual.StringBag, false);
-				ObjectAssertion.AssertEquals(expected.StringList, actual.StringList);
-				ObjectAssertion.AssertEquals(expected.StringMap, actual.StringMap, true);
-				ObjectAssertion.AssertEquals(expected.StringSet, actual.StringSet, false);
+				ObjectAssert.AssertEquals(expected.StringArray, actual.StringArray);
+				ObjectAssert.AssertEquals(expected.Int32Array, actual.Int32Array);
+				ObjectAssert.AssertEquals(expected.StringBag, actual.StringBag, false);
+				ObjectAssert.AssertEquals(expected.StringList, actual.StringList);
+				ObjectAssert.AssertEquals(expected.StringMap, actual.StringMap, true);
+				ObjectAssert.AssertEquals(expected.StringSet, actual.StringSet, false);
 			}
 		}
 

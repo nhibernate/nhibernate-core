@@ -8,27 +8,27 @@ using NHibernate.DomainModel.NHSpecific;
 namespace NHibernate.Test
 {
 	/// <summary>
-	/// Helps with Assertions with two Objects.
+	/// Helps with Asserts with two Objects.
 	/// </summary>
 	[TestFixture]
-	public class ObjectAssertion
+	public class ObjectAssert
 	{
-		public ObjectAssertion()
+		public ObjectAssert()
 		{
 		}
 
 		internal static void AssertPropertiesEqual(JoinedSubclassBase expected, JoinedSubclassBase actual) 
 		{
-			Assertion.AssertEquals(expected.Id, actual.Id);
-			Assertion.AssertEquals(expected.TestDateTime, actual.TestDateTime);
-			Assertion.AssertEquals(expected.TestLong, actual.TestLong);
-			Assertion.AssertEquals(expected.TestString, actual.TestString);
+			Assert.AreEqual(expected.Id, actual.Id);
+			Assert.AreEqual(expected.TestDateTime, actual.TestDateTime);
+			Assert.AreEqual(expected.TestLong, actual.TestLong);
+			Assert.AreEqual(expected.TestString, actual.TestString);
 		}
 
 		internal static void AssertPropertiesEqual(JoinedSubclassOne expected, JoinedSubclassOne actual) 
 		{
-			ObjectAssertion.AssertPropertiesEqual((JoinedSubclassBase)expected, (JoinedSubclassBase)actual);
-			Assertion.AssertEquals(expected.OneTestLong, actual.OneTestLong);
+			ObjectAssert.AssertPropertiesEqual((JoinedSubclassBase)expected, (JoinedSubclassBase)actual);
+			Assert.AreEqual(expected.OneTestLong, actual.OneTestLong);
 		}
 
 		/// <summary>
@@ -73,13 +73,13 @@ namespace NHibernate.Test
 		/// <param name="compareValues">Set it to false when you only care about the keys, specifically with Sets.</param>
 		internal static void AssertEquals(IDictionary expected, IDictionary actual, bool compareValues) 
 		{
-			Assertion.AssertEquals(expected.Count, actual.Count);
+			Assert.AreEqual(expected.Count, actual.Count);
 
 			foreach(DictionaryEntry de in expected) 
 			{
-				Assertion.Assert(actual.Contains(de.Key));
+				Assert.IsTrue(actual.Contains(de.Key));
 				if(compareValues)
-					Assertion.AssertEquals("The item identified by the key " + de.Key.ToString(), expected[de.Key], actual[de.Key]);	
+					Assert.AreEqual(expected[de.Key], actual[de.Key], "The item identified by the key " + de.Key.ToString());
 			}
 		}
 
@@ -95,20 +95,20 @@ namespace NHibernate.Test
 			actualWithEqualValues["ZERO"] = "zero";
 			actualWithEqualValues["ONE"] = "one";
 
-			ObjectAssertion.AssertEquals(expected, actualWithEqualValues, true);
+			ObjectAssert.AssertEquals(expected, actualWithEqualValues, true);
 
 		}
 
 		public static void AssertEquals(DateTime expected, DateTime actual, bool useMilliseconds) 
 		{
-			Assertion.AssertEquals("Year", expected.Year, actual.Year);
-			Assertion.AssertEquals("Month", expected.Month, actual.Month);
-			Assertion.AssertEquals("Day", expected.Day, actual.Day);
-			Assertion.AssertEquals("Hour", expected.Hour, actual.Hour);
-			Assertion.AssertEquals("Minute", expected.Minute, actual.Minute);
-			Assertion.AssertEquals("Second", expected.Second, actual.Second);
+			Assert.AreEqual(expected.Year, actual.Year, "Year");
+			Assert.AreEqual(expected.Month, actual.Month, "Month");
+			Assert.AreEqual(expected.Day, actual.Day, "Day");
+			Assert.AreEqual(expected.Hour, actual.Hour, "Hour");
+			Assert.AreEqual(expected.Minute, actual.Minute, "Minute");
+			Assert.AreEqual(expected.Second, actual.Second, "Second");
 			if(useMilliseconds)
-				Assertion.AssertEquals("Millisecond", expected.Millisecond, actual.Millisecond);
+				Assert.AreEqual(expected.Millisecond, actual.Millisecond, "Millisecond");
 
 		}
 

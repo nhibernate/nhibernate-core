@@ -55,12 +55,12 @@ namespace NHibernate.Test.NHSpecificTest {
 			JoinedSubclassBase oneBase2 = (JoinedSubclassBase)s2.Load(typeof(JoinedSubclassBase), oneId);
 
 			// do some quick checks to make sure s2 loaded an object with the same data as s2 saved.
-			ObjectAssertion.AssertPropertiesEqual(base1, base2);
+			ObjectAssert.AssertPropertiesEqual(base1, base2);
 			
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded
 			// the sublcass
 			JoinedSubclassOne one2 = oneBase2 as JoinedSubclassOne;
-			Assertion.AssertNotNull(one2);
+			Assert.IsNotNull(one2);
 
 			// lets update the objects
 			base2.TestString = "Did it get updated";
@@ -85,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest {
 				.Add(Expression.Expression.In("TestString", new string[] {"Did it get updated", "Updated JoinedSubclassOne String" }))
 				.List();
 
-			Assertion.AssertEquals(2, results3.Count);
+			Assert.AreEqual(2, results3.Count);
 
 			JoinedSubclassBase base3 = null;
 			JoinedSubclassOne one3 = null;
@@ -99,8 +99,8 @@ namespace NHibernate.Test.NHSpecificTest {
 			}
 
 			// verify the properties got updated
-			ObjectAssertion.AssertPropertiesEqual(base2, base3);
-			ObjectAssertion.AssertPropertiesEqual(one2, one3);
+			ObjectAssert.AssertPropertiesEqual(base2, base3);
+			ObjectAssert.AssertPropertiesEqual(one2, one3);
 
 			s3.Delete(base3);
 			s3.Delete(one3);

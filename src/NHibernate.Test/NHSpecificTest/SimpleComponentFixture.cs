@@ -28,9 +28,9 @@ namespace NHibernate.Test.NHSpecificTest
 
 			SimpleComponent simpleComp = (SimpleComponent)s.Load(typeof(SimpleComponent), 10);
 
-			Assertion.AssertEquals(10, simpleComp.Key);
-			Assertion.AssertEquals("TestCreated", simpleComp.Audit.CreatedUserId);
-			Assertion.AssertEquals("TestUpdated", simpleComp.Audit.UpdatedUserId);
+			Assert.AreEqual(10, simpleComp.Key);
+			Assert.AreEqual("TestCreated", simpleComp.Audit.CreatedUserId);
+			Assert.AreEqual("TestUpdated", simpleComp.Audit.UpdatedUserId);
 
 			t.Commit();
 			s.Close();

@@ -57,7 +57,7 @@ namespace NHibernate.Test.SqlCommandTest
 				.ToString();
 				
 
-			Assertion.AssertEquals("SQL String", expectedSql , sqlString.ToString());
+			Assert.AreEqual(expectedSql , sqlString.ToString(), "SQL String");
 			
 			foreach(object part in sqlString.SqlParts) 
 			{
@@ -67,7 +67,7 @@ namespace NHibernate.Test.SqlCommandTest
 					numOfParameters++;
 				}
 			}
-			Assertion.AssertEquals("3 parameters", 3, numOfParameters);
+			Assert.AreEqual(3, numOfParameters, "3 parameters");
 
 			Parameter firstParam = new Parameter();
 			firstParam.SqlType = new SqlTypes.Int64SqlType();
@@ -81,14 +81,14 @@ namespace NHibernate.Test.SqlCommandTest
 			thirdParam.SqlType = new SqlTypes.Int32SqlType();
 			thirdParam.Name = "where_frag_column";
 
-			Assertion.AssertEquals("First Parameter Type", firstParam.SqlType.DbType, actualParams[0].SqlType.DbType);
-			Assertion.AssertEquals("First Parameter Name", firstParam.Name, actualParams[0].Name);
+			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "First Parameter Type");
+			Assert.AreEqual(firstParam.Name, actualParams[0].Name, "First Parameter Name");
 
-			Assertion.AssertEquals("Second Parameter Type", secondParam.SqlType.DbType, actualParams[1].SqlType.DbType);
-			Assertion.AssertEquals("Second Parameter Name", secondParam.Name, actualParams[1].Name);
+			Assert.AreEqual(secondParam.SqlType.DbType, actualParams[1].SqlType.DbType, "Second Parameter Type");
+			Assert.AreEqual(secondParam.Name, actualParams[1].Name, "Second Parameter Name");
 		
-			Assertion.AssertEquals("Third Parameter Type", thirdParam.SqlType.DbType, actualParams[2].SqlType.DbType);
-			Assertion.AssertEquals("Third Parameter Name", thirdParam.Name, actualParams[2].Name);
+			Assert.AreEqual(thirdParam.SqlType.DbType, actualParams[2].SqlType.DbType, "Third Parameter Type");
+			Assert.AreEqual(thirdParam.Name, actualParams[2].Name, "Third Parameter Name");
 			
 		}
 

@@ -86,20 +86,20 @@ namespace NHibernate.Test.NHSpecificTest
 					.Add(Expression.Expression.Eq("Id", secondId))
 					.List();
 
-			Assertion.AssertEquals(1, results2.Count);
+			Assert.AreEqual(1, results2.Count);
 			ClassWithCompositeId theSecondClass2 = (ClassWithCompositeId)results2[0];
 
 			ClassWithCompositeId theClass2Copy = (ClassWithCompositeId)s2.Load(typeof(ClassWithCompositeId), id);
 			
 			// verify the same results through Criteria & Load were achieved
-			Assertion.AssertSame(theClass2, theClass2Copy);
+			Assert.AreSame(theClass2, theClass2Copy);
 
 			// compare them to the objects created in the first session
-			Assertion.AssertEquals(theClass.Id, theClass2.Id);
-			Assertion.AssertEquals(theClass.OneProperty, theClass2.OneProperty);
+			Assert.AreEqual(theClass.Id, theClass2.Id);
+			Assert.AreEqual(theClass.OneProperty, theClass2.OneProperty);
 
-			Assertion.AssertEquals(theSecondClass.Id, theSecondClass2.Id);
-			Assertion.AssertEquals(theSecondClass.OneProperty, theSecondClass2.OneProperty);
+			Assert.AreEqual(theSecondClass.Id, theSecondClass2.Id);
+			Assert.AreEqual(theSecondClass.OneProperty, theSecondClass2.OneProperty);
 
 			// test the update functionallity
 			theClass2.OneProperty = 6;
@@ -119,8 +119,8 @@ namespace NHibernate.Test.NHSpecificTest
 			ClassWithCompositeId theSecondClass3 = (ClassWithCompositeId)s3.Load(typeof(ClassWithCompositeId), secondId);
 
 			// check the update properties
-			Assertion.AssertEquals(theClass3.OneProperty, theClass2.OneProperty);
-			Assertion.AssertEquals(theSecondClass3.OneProperty, theSecondClass2.OneProperty);
+			Assert.AreEqual(theClass3.OneProperty, theClass2.OneProperty);
+			Assert.AreEqual(theSecondClass3.OneProperty, theSecondClass2.OneProperty);
 			
 			// test the delete method
 			s3.Delete(theClass3);
@@ -146,7 +146,7 @@ namespace NHibernate.Test.NHSpecificTest
 				.Add(Expression.Expression.Eq("Id", secondId))
 				.List();
 
-			Assertion.AssertEquals(0, results.Count);
+			Assert.AreEqual(0, results.Count);
 
 		}
 

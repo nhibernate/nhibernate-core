@@ -118,7 +118,7 @@ namespace NHibernate.Test.DialectTest
 
 			actualUnquoted = d.UnQuote(new string[] {tableThatNeedsToBeQuoted[BeforeQuoteIndex], tableAlreadyQuoted[BeforeQuoteIndex] } );
 
-			ObjectAssertion.AssertEquals(expectedUnquoted, actualUnquoted, true);
+			ObjectAssert.AssertEquals(expectedUnquoted, actualUnquoted, true);
 
 		}
 

@@ -92,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest
 				previousId = currentId;
 				currentId = friend.Id;
 
-				Assertion.Assert("Current should have a higher Id than previous", currentId > previousId);
+				Assert.IsTrue(currentId > previousId, "Current should have a higher Id than previous");
 			}
 
 			t.Commit();

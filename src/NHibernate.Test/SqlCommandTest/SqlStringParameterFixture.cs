@@ -27,17 +27,17 @@ namespace NHibernate.Test.SqlCommandTest
 			
 			cloned = (Parameter)original.Clone();
 
-			Assertion.Assert("Not the same object by ==", (original==cloned)==false);
-			Assertion.AssertEquals("Same DbType", original.SqlType.DbType, cloned.SqlType.DbType);
-			Assertion.AssertEquals("Same Name", original.Name, cloned.Name);
+			Assert.IsTrue((original==cloned)==false, "Not the same object by ==");
+			Assert.AreEqual(original.SqlType.DbType, cloned.SqlType.DbType, "Same DbType");
+			Assert.AreEqual(original.Name, cloned.Name, "Same Name");
 			
 			// change some of the values of the clone to ensure the original doesn't change
 
 			cloned.SqlType = new SqlTypes.StringSqlType();
 			cloned.Name = "Cloned name";
 
-			Assertion.Assert("Should not the same db type anymore",  cloned.SqlType.DbType!=original.SqlType.DbType);
-			Assertion.Assert("Should not the same name anymore",  cloned.Name!=original.Name);
+			Assert.IsTrue(cloned.SqlType.DbType!=original.SqlType.DbType, "Should not the same db type anymore");
+			Assert.IsTrue(cloned.Name!=original.Name, "Should not the same name anymore");
 			
 
 		}
@@ -54,10 +54,10 @@ namespace NHibernate.Test.SqlCommandTest
 			
 			cloned = (ParameterLength)original.Clone();
 
-			Assertion.Assert("Not the same object by ==", (original==cloned)==false);
-			Assertion.AssertEquals("Same DbType", original.SqlType.DbType, cloned.SqlType.DbType);
-			Assertion.AssertEquals("Same Name", original.Name, cloned.Name);
-			Assertion.AssertEquals("Same Length", original.Length, cloned.Length);
+			Assert.IsTrue((original==cloned)==false, "Not the same object by ==");
+			Assert.AreEqual(original.SqlType.DbType, cloned.SqlType.DbType, "Same DbType");
+			Assert.AreEqual(original.Name, cloned.Name, "Same Name");
+			Assert.AreEqual(original.Length, cloned.Length, "Same Length");
 			
 			// change some of the values of the clone to ensure the original doesn't change
 
@@ -65,9 +65,9 @@ namespace NHibernate.Test.SqlCommandTest
 			cloned.Name = "Cloned name";
 			cloned.Length = 175;
 
-			Assertion.Assert("Should not the same db type anymore",  cloned.SqlType.DbType!=original.SqlType.DbType);
-			Assertion.Assert("Should not the same name anymore",  cloned.Name!=original.Name);
-			Assertion.Assert("Should not the same length anymore",  cloned.Length!=original.Length);
+			Assert.IsTrue(cloned.SqlType.DbType!=original.SqlType.DbType, "Should not the same db type anymore");
+			Assert.IsTrue(cloned.Name!=original.Name, "Should not the same name anymore");
+			Assert.IsTrue(cloned.Length!=original.Length, "Should not the same length anymore");
 
 		}
 
@@ -84,11 +84,11 @@ namespace NHibernate.Test.SqlCommandTest
 			
 			cloned = (ParameterPrecisionScale)original.Clone();
 
-			Assertion.Assert("Not the same object by ==", (original==cloned)==false);
-			Assertion.AssertEquals("Same DbType", original.SqlType.DbType, cloned.SqlType.DbType);
-			Assertion.AssertEquals("Same Name", original.Name, cloned.Name);
-			Assertion.AssertEquals("Same Precision", original.Precision, cloned.Precision);
-			Assertion.AssertEquals("Same Scale", original.Scale, cloned.Scale);
+			Assert.IsTrue((original==cloned)==false, "Not the same object by ==");
+			Assert.AreEqual(original.SqlType.DbType, cloned.SqlType.DbType, "Same DbType");
+			Assert.AreEqual(original.Name, cloned.Name, "Same Name");
+			Assert.AreEqual(original.Precision, cloned.Precision, "Same Precision");
+			Assert.AreEqual(original.Scale, cloned.Scale, "Same Scale");
 			
 			// change some of the values of the clone to ensure the original doesn't change
 
@@ -99,10 +99,10 @@ namespace NHibernate.Test.SqlCommandTest
 			cloned.Precision = 15;
 			cloned.Scale = 4;
 
-			Assertion.Assert("Should not the same db type anymore",  cloned.SqlType.DbType!=original.SqlType.DbType);
-			Assertion.Assert("Should not the same name anymore",  cloned.Name!=original.Name);
-			Assertion.Assert("Should not the same Precision anymore",  cloned.Precision!=original.Precision);
-			Assertion.Assert("Should not the same Scale anymore",  cloned.Scale!=original.Scale);
+			Assert.IsTrue(cloned.SqlType.DbType!=original.SqlType.DbType, "Should not the same db type anymore");
+			Assert.IsTrue(cloned.Name!=original.Name, "Should not the same name anymore");
+			Assert.IsTrue(cloned.Precision!=original.Precision, "Should not the same Precision anymore");
+			Assert.IsTrue(cloned.Scale!=original.Scale, "Should not the same Scale anymore");
 
 		}
 		
@@ -135,19 +135,19 @@ namespace NHibernate.Test.SqlCommandTest
 
 			cloned = original.Clone();
 
-			Assertion.Assert("Not the same SqlString by ==", (original==cloned)==false);
-			Assertion.AssertEquals("Same # of parts", original.SqlParts.Length, cloned.SqlParts.Length);
-			Assertion.Assert("First param not the same by ==", (original.SqlParts[1]==cloned.SqlParts[1])==false);
-			Assertion.Assert("Second param not the same by ==", (original.SqlParts[3]==cloned.SqlParts[3])==false);
+			Assert.IsTrue((original==cloned)==false, "Not the same SqlString by ==");
+			Assert.AreEqual(original.SqlParts.Length, cloned.SqlParts.Length, "Same # of parts");
+			Assert.IsTrue((original.SqlParts[1]==cloned.SqlParts[1])==false, "First param not the same by ==");
+			Assert.IsTrue((original.SqlParts[3]==cloned.SqlParts[3])==false, "Second param not the same by ==");
 
-			Assertion.AssertEquals("The ToString() is the same", original.ToString(), cloned.ToString());
+			Assert.AreEqual(original.ToString(), cloned.ToString(), "The ToString() is the same");
 
 			// modify the first parameter of the clone to ensure they are not the same
 			cloned.SqlParts[0] = "UPDATE changedtablename set param0 = ";
 			Parameter lastParamPart = (Parameter)cloned.SqlParts[3];
 			lastParamPart.Name = "modifiedOP2";
 
-			Assertion.Assert("Should not be the same ToString()", cloned.ToString()!=original.ToString());
+			Assert.IsTrue(cloned.ToString()!=original.ToString(), "Should not be the same ToString()");
 
 		}
 	}

@@ -59,9 +59,9 @@ namespace NHibernate.Test
 			Simple otherSimple2 = (Simple)s2.Load(typeof(Simple), otherKey);
 
 			// verify each property was saved as expected
-			Assertion.AssertNotNull("Unable to load object", simple2);
-			Assertion.AssertNotNull(otherSimple2);
-			Assertion.AssertSame(simple2.Other, otherSimple2);
+			Assert.IsNotNull(simple2, "Unable to load object");
+			Assert.IsNotNull(otherSimple2);
+			Assert.AreSame(simple2.Other, otherSimple2);
 
 			// update
 			simple2.Count = 999;
@@ -82,10 +82,10 @@ namespace NHibernate.Test
 			Simple simple3 = (Simple)s3.Find( "from Simple as s where s.id = ? and '?'='?'", key, NHibernate.Int64 )[0];
 			Simple otherSimple3;
 
-			Assertion.AssertEquals(simple2.Count, simple3.Count);
-			Assertion.AssertEquals(simple2.Name, simple3.Name);
-			Assertion.AssertEquals(simple2.Address, simple3.Address);
-			Assertion.AssertEquals(simple2.Date, simple3.Date);
+			Assert.AreEqual(simple2.Count, simple3.Count);
+			Assert.AreEqual(simple2.Name, simple3.Name);
+			Assert.AreEqual(simple2.Address, simple3.Address);
+			Assert.AreEqual(simple2.Date, simple3.Date);
 			
 			// note that the Other will not be the same object because
 			// they were loaded in 2 different sessions
@@ -100,7 +100,7 @@ namespace NHibernate.Test
 
 			// verify there is no other Simple objects in the db
 			ISession s4 = sessions.OpenSession();
-			Assertion.AssertEquals(0, s4.CreateCriteria(typeof(Simple)).List().Count);
+			Assert.AreEqual(0, s4.CreateCriteria(typeof(Simple)).List().Count);
 			s4.Close();
 
 		}

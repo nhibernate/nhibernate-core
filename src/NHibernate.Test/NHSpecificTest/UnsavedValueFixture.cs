@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s1.Close();
 
 			// simple should have been inserted - generating a new key for it
-			Assertion.Assert("Id should not be zero", unsavedToSave.Id != 0);
+			Assert.IsTrue(unsavedToSave.Id != 0, "Id should not be zero");
 
 			// use the ICriteria interface to get another instance in a different
 			// session
@@ -46,12 +46,12 @@ namespace NHibernate.Test.NHSpecificTest
 				.Add(Expression.Expression.Eq("Id", unsavedToSave.Id))
 				.List();
 			
-			Assertion.AssertEquals("Should have found a match for the new Id", 1, results2.Count);
+			Assert.AreEqual(1, results2.Count, "Should have found a match for the new Id");
 			
 			UnsavedType unsavedToUpdate = (UnsavedType)results2[0];
 
 			// make sure it has the same Id
-			Assertion.AssertEquals("Should have the same Id", unsavedToSave.Id, unsavedToUpdate.Id);
+			Assert.AreEqual(unsavedToSave.Id, unsavedToUpdate.Id, "Should have the same Id");
 
 			t2.Commit();
 			s2.Close();
@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			// make sure it has the same Id - if the Id has changed then that means it
 			// was inserted.
-			Assertion.AssertEquals("Should have the same Id", unsavedToSave.Id, unsavedToUpdate.Id);
+			Assert.AreEqual(unsavedToSave.Id, unsavedToUpdate.Id, "Should have the same Id");
 
 			// lets get a list of all the rows in the table to make sure 
 			// that there has not been any extra inserts
@@ -78,11 +78,11 @@ namespace NHibernate.Test.NHSpecificTest
 			ITransaction t4 = s4.BeginTransaction();
 
 			IList results4 = s4.CreateCriteria(typeof(UnsavedType)).List();
-			Assertion.AssertEquals("Should only be one item", 1, results4.Count);
+			Assert.AreEqual(1, results4.Count, "Should only be one item");
 
 			// lets make sure the object was updated
 			UnsavedType unsavedToDelete = (UnsavedType)results4[0];
-			Assertion.AssertEquals(unsavedToUpdate.TypeName, unsavedToDelete.TypeName);
+			Assert.AreEqual(unsavedToUpdate.TypeName, unsavedToDelete.TypeName);
 
 			s4.Delete(unsavedToDelete);
  
@@ -95,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest
 			try 
 			{
 				UnsavedType unsavedNull = (UnsavedType)s5.Load(typeof(UnsavedType), unsavedToDelete.Id);
-				Assertion.AssertNull(unsavedNull);
+				Assert.IsNull(unsavedNull);
 			}
 			catch(ObjectNotFoundException onfe) 
 			{

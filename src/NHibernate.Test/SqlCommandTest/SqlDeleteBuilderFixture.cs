@@ -39,7 +39,7 @@ namespace NHibernate.Test.SqlCommandTest
 			
 
 			string expectedSql = "DELETE FROM test_delete_builder WHERE decimalColumn = :decimalColumn AND versionColumn = :versionColumn AND a=b";
-			Assertion.AssertEquals("SQL String", expectedSql , sqlString.ToString());
+			Assert.AreEqual(expectedSql , sqlString.ToString(), "SQL String");
 			
 			foreach(object part in sqlString.SqlParts) {
 				if(part is Parameter) {
@@ -47,7 +47,7 @@ namespace NHibernate.Test.SqlCommandTest
 					numOfParameters++;
 				}
 			}
-			Assertion.AssertEquals("Two parameters", 2, numOfParameters);
+			Assert.AreEqual(2, numOfParameters, "Two parameters");
 
 
 			Parameter firstParam = new Parameter();
@@ -58,11 +58,11 @@ namespace NHibernate.Test.SqlCommandTest
 			secondParam.SqlType = new SqlTypes.Int32SqlType();
 			secondParam.Name = "versionColumn";
 
-			Assertion.AssertEquals("firstParam Type", firstParam.SqlType.DbType, actualParams[0].SqlType.DbType);
-			Assertion.AssertEquals("firstParam Name", firstParam.Name, actualParams[0].Name);
+			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "firstParam Type");
+			Assert.AreEqual(firstParam.Name, actualParams[0].Name, "firstParam Name");
 
-			Assertion.AssertEquals("secondParam Type", secondParam.SqlType.DbType, actualParams[1].SqlType.DbType);
-			Assertion.AssertEquals("secondParam Name", secondParam.Name, actualParams[1].Name);
+			Assert.AreEqual(secondParam.SqlType.DbType, actualParams[1].SqlType.DbType, "secondParam Type");
+			Assert.AreEqual(secondParam.Name, actualParams[1].Name, "secondParam Name");
 
 			
 				

@@ -92,8 +92,8 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.IsNotNull(bcBinaryLoaded);
 			Assert.IsFalse(bcBinary==bcBinaryLoaded);
 
-			ObjectAssertion.AssertEquals(bcBinary.DefaultSize, bcBinaryLoaded.DefaultSize);
-			ObjectAssertion.AssertEquals(bcBinary.WithSize, bcBinaryLoaded.WithSize);
+			ObjectAssert.AssertEquals(bcBinary.DefaultSize, bcBinaryLoaded.DefaultSize);
+			ObjectAssert.AssertEquals(bcBinary.WithSize, bcBinaryLoaded.WithSize);
 
 			s.Delete(bcBinaryLoaded);
 			s.Flush();
@@ -127,7 +127,7 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual( 10, bcBinary.DefaultSize.Length );
 			Assert.AreEqual( 126, bcBinary.DefaultSize[1] );
 			// WithSize should not have been updated
-			ObjectAssertion.AssertEquals( bcBinary.WithSize, GetByteArray(10) );
+			ObjectAssert.AssertEquals( bcBinary.WithSize, GetByteArray(10) );
 			
 			// lets modify WithSize
 			bcBinary.WithSize = GetByteArray(20);
@@ -141,7 +141,7 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual( 10, bcBinary.DefaultSize.Length );
 			Assert.AreEqual( 126, bcBinary.DefaultSize[1] );
 
-			ObjectAssertion.AssertEquals( bcBinary.WithSize, GetByteArray(20) );
+			ObjectAssert.AssertEquals( bcBinary.WithSize, GetByteArray(20) );
 
 			s.Delete(bcBinary);
 			s.Flush();
