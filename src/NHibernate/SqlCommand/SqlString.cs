@@ -200,6 +200,37 @@ namespace NHibernate.SqlCommand
 			}
 
 		}
+
+		/// <summary>
+		/// Replaces all occurrences of a specified <see cref="String"/> in this instance, 
+		/// with another specified <see cref="String"/> .
+		/// </summary>
+		/// <param name="oldValue">A String to be replaced.</param>
+		/// <param name="newValue">A String to replace all occurrences of oldValue. </param>
+		/// <returns>
+		/// A new SqlString with oldValue replaced by the newValue.  The new SqlString is 
+		/// in the Compacted form.
+		/// </returns>
+		public SqlString Replace(string oldValue, string newValue) 
+		{
+			// compacting returns a new SqlString object, so we are free to modify
+			// any of the parts because it has not been put in a hashtable so we can
+			// consider it mutable - there is no danger yet in changing the value that
+			// GetHashCode would return.
+			SqlString compacted = this.Compact();
+
+			for( int i=0; i<compacted.SqlParts.Length; i++ ) 
+			{
+				string sqlPart = compacted.SqlParts[i] as string;
+				if( sqlPart!=null ) 
+				{
+					compacted.SqlParts[i] = sqlPart.Replace( oldValue, newValue );
+				}
+			}
+
+			return compacted;
+		}
+
 		/// <summary>
 		/// Determines whether the beginning of this SqlString matches the specified System.String
 		/// </summary>
