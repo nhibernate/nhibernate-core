@@ -49,6 +49,46 @@ namespace NHibernate.Util
 
 		}
 
+		/// <summary>
+		/// Finds the <see cref="IGetter"/> for the property in the <see cref="System.Type"/>.
+		/// </summary>
+		/// <param name="theClass"></param>
+		/// <param name="propertyName"></param>
+		/// <param name="propertyAccessorName"></param>
+		/// <returns></returns>
+		/// <remarks>
+		/// This one takes a propertyAccessor name as we might know the correct strategy by now so we avoid Exceptions which are costly
+		/// </remarks>
+		public static IGetter GetGetter( System.Type theClass, string propertyName, string propertyAccessorName )
+		{
+			IPropertyAccessor accessor = null;
+
+			try
+			{
+				// first try the named strategy since that will be the most likely strategy used.
+				accessor = ( IPropertyAccessor ) PropertyAccessorFactory.PropertyAccessors[ propertyAccessorName ];
+				return accessor.GetGetter( theClass, propertyName );
+			}
+			catch( PropertyNotFoundException )
+			{
+				// the basic named strategy did not work so try the rest of them
+				foreach( DictionaryEntry de in PropertyAccessorFactory.PropertyAccessors )
+				{
+					try
+					{
+						accessor = ( IPropertyAccessor ) de.Value;
+						return accessor.GetGetter( theClass, propertyName );
+					}
+					catch( PropertyNotFoundException )
+					{
+						// ignore this exception because we want to try and move through
+						// the rest of the accessor strategies.
+					}
+				}
+				throw;
+			}
+		}
+
 		//TODO: most calls to this will be replaced by the Mapping.Property.GetGetter() but
 		// there will still be a call from hql into this.
 		/// <summary>
@@ -70,35 +110,8 @@ namespace NHibernate.Util
 		/// </exception>
 		public static IGetter GetGetter( System.Type theClass, string propertyName )
 		{
-			IPropertyAccessor accessor = null;
-
-			// first try the basicPropertyAccessor since that will be the most likely
-			// strategy used.
-			try
-			{
-				accessor = ( IPropertyAccessor ) PropertyAccessorFactory.PropertyAccessors[ "property" ];
-				return accessor.GetGetter( theClass, propertyName );
-			}
-			catch( PropertyNotFoundException )
-			{
-				// the basic "property" strategy did not work so try the rest of them
-				foreach( DictionaryEntry de in PropertyAccessorFactory.PropertyAccessors )
-				{
-					try
-					{
-						accessor = ( IPropertyAccessor ) de.Value;
-						return accessor.GetGetter( theClass, propertyName );
-					}
-					catch( PropertyNotFoundException )
-					{
-						// ignore this exception because we want to try and move through
-						// the rest of the accessor strategies.
-					}
-
-				}
-
-				throw;
-			}
+			// first try the basicPropertyAccessor since that will be the most likely strategy used.
+			return GetGetter( theClass, propertyName, "property" );
 		}
 
 		//TODO: add a method in here ReflectedPropertyClass and replace most calls to GetGetter
@@ -110,12 +123,13 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="theClass">The <see cref="System.Type"/> to find the Property in.</param>
 		/// <param name="name">The name of the property/field to find in the class.</param>
+		/// <param name="propertyAccess"></param>
 		/// <returns>
 		/// The NHibernate <see cref="IType"/> for the named property.
 		/// </returns>
-		public static IType ReflectedPropertyType( System.Type theClass, string name )
+		public static IType ReflectedPropertyType( System.Type theClass, string name, string propertyAccess )
 		{
-			return TypeFactory.HueristicType( GetGetter( theClass, name ).ReturnType.AssemblyQualifiedName );
+			return TypeFactory.HueristicType( GetGetter( theClass, name, propertyAccess ).ReturnType.AssemblyQualifiedName );
 		}
 
 		/// <summary>
