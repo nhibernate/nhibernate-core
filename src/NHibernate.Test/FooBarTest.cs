@@ -1026,51 +1026,264 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void CreateUpdate() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			s.Save(foo);
+			foo.String = "dirty";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			Foo foo2 = new Foo();
+			s.Load( foo2, foo.Key );
+			Assert.IsTrue( foo.EqualsFoo(foo2), "create-update" );
+			s.Delete(foo2);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			foo = new Foo();
+			s.Save(foo, "assignedid");
+			foo.String = "dirty";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			s.Load(foo2, "assignedid");
+			Assert.IsTrue( foo.EqualsFoo(foo2), "create-update" );
+			s.Delete(foo2);
+			s.Flush();
+			s.Close();
+
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Update() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			s.Save(foo);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			FooProxy foo2 = (FooProxy)s.Load( typeof(Foo), foo.Key );
+			foo2.String = "dirty";
+			foo2.Boolean = false;
+			foo2.Bytes = new byte[] {1,2,3};
+			foo2.Date = DateTime.Today;
+			foo2.Short = 69;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			Foo foo3 = new Foo();
+			s.Load( foo3, foo.Key );
+			Assert.IsTrue( foo2.EqualsFoo(foo3), "update" );
+			s.Delete(foo3);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void UpdateCollections() 
 		{
+			ISession s = sessions.OpenSession();
+			Holder baz = new Holder();
+			baz.Name = "123";
+			Foo f1 = new Foo();
+			Foo f2 = new Foo();
+			Foo f3 = new Foo();
+			One o = new One();
+			baz.Ones = new ArrayList();
+			baz.Ones.Add(o);
+			Foo[] foos = new Foo[] { f1, null, f2 };
+			baz.FooArray = foos;
+			// in h2.0.3 this is a Set
+			baz.Foos = new Hashtable();
+			baz.Foos.Add( f1, new object() );
+			s.Save(f1);
+			s.Save(f2);
+			s.Save(f3);
+			s.Save(o);
+			s.Save(baz);
+			s.Flush();
+			s.Close();
+
+			baz.Ones[0] = null;
+			baz.Ones.Add(o);
+			baz.Foos.Add( f2, new object() );
+			foos[0] = f3;
+			foos[1] = f1;
+
+			s = sessions.OpenSession();
+			s.SaveOrUpdate(baz);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			Holder h = (Holder)s.Load( typeof(Holder), baz.Id );
+			Assert.IsNull( h.Ones[0] );
+			Assert.IsNotNull( h.Ones[1] );
+			Assert.IsNotNull( h.FooArray[0] );
+			Assert.IsNotNull( h.FooArray[1] );
+			Assert.IsNotNull( h.FooArray[2] );
+			Assert.AreEqual( 2, h.Foos.Count );
+			
+			// new to nh to make sure right items in right index
+			Assert.AreEqual( f3.Key, h.FooArray[0].Key ); 
+			Assert.AreEqual( o.Key, ((One)h.Ones[1]).Key ); 
+			Assert.AreEqual ( f1.Key, h.FooArray[1].Key );
+			Assert.AreEqual ( f2.Key, h.FooArray[2].Key );
+			s.Close();
+
+			baz.Foos.Remove(f1);
+			baz.Foos.Remove(f2);
+			baz.FooArray[0] = null;
+			baz.FooArray[1] = null;
+			baz.FooArray[2] = null;
+			
+			s = sessions.OpenSession();
+			s.SaveOrUpdate(baz);
+			s.Delete("from f in class NHibernate.DomainModel.Foo");
+			baz.Ones.Remove(o);
+			s.Delete("from o in class NHibernate.DomainModel.One");
+			s.Delete(baz);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Test fails because Proxy not implemented yet.")]
 		public void Load() 
 		{
+			ISession s = sessions.OpenSession();
+			Qux q = new Qux();
+			s.Save(q);
+			BarProxy b = new Bar();
+			s.Save(b);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			q = (Qux)s.Load( typeof(Qux), q.Key );
+			b = (BarProxy)s.Load( typeof(Foo), b.Key );
+			string tempKey = b.Key;
+			Assert.IsFalse( NHibernate.IsInitialized(b), "b should have been an unitialized Proxy" );
+			string tempBarString = b.BarString;
+			Assert.IsTrue( NHibernate.IsInitialized(b), "b should have been an initialized Proxy" );
+			BarProxy b2 = (BarProxy)s.Load( typeof(Bar), b.Key );
+			Qux q2 = (Qux)s.Load( typeof(Qux), q.Key );
+			Assert.AreSame( q, q2, "loaded same Qux" );
+			Assert.AreSame( b, b2, "loaded same BarProxy" );
+			s.Delete(q2);
+			s.Delete(b2);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Create() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			s.Save(foo);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			Foo foo2 = new Foo();
+			s.Load( foo2, foo.Key );
+
+			Assert.IsTrue( foo.EqualsFoo(foo2), "create" );
+			s.Delete(foo2);
+			s.Flush();
+			s.Close();
+			
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Callback() 
 		{
+			ISession s = sessions.OpenSession();
+			Qux q = new Qux("0");
+			s.Save(q);
+			q.Child = ( new Qux("1") );
+			s.Save( q.Child );
+			
+			Qux q2 = new Qux("2");
+			q2.Child = q.Child;
+			
+			Qux q3 = new Qux("3");
+			q.Child.Child = q3;
+			s.Save(q3);
+
+			Qux q4 = new Qux("4");
+			q4.Child = q3;
+
+			s.Save(q4);
+			s.Save(q2);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			IList l = s.Find("from q in class NHibernate.DomainModel.Qux");
+			Assert.AreEqual(5, l.Count);
+			
+			s.Delete( l[0] );
+			s.Delete( l[1] );
+			s.Delete( l[2] );
+			s.Delete( l[3] );
+			s.Delete( l[4] );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Polymorphism() 
 		{
+			ISession s = sessions.OpenSession();
+			Bar bar = new Bar();
+			s.Save(bar);
+			bar.BarString = "bar bar";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			FooProxy foo = (FooProxy)s.Load( typeof(Foo), bar.Key );
+			Assert.IsTrue( foo is BarProxy, "polymorphic" );
+			Assert.IsTrue( ((BarProxy)foo).BarString.Equals( bar.BarString ), "subclass property" );
+			s.Delete(foo);
+			s.Flush();
+			s.Close();
+										  
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void RemoveContains() 
 		{
+			ISession s = sessions.OpenSession();
+			Baz baz = new Baz();
+			baz.SetDefaults();
+			s.Save(baz);
+			s.Flush();
+
+			Assert.IsTrue( s.Contains(baz) );
+			
+			s.Evict(baz);
+			Assert.IsFalse( s.Contains(baz), "baz should have been evicted" );
+
+			Baz baz2 = (Baz)s.Load( typeof(Baz), baz.Code );
+			Assert.IsFalse(baz==baz2, "should be different objects because Baz not contained in Session");
+
+			s.Delete(baz2);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
