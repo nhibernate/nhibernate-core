@@ -90,6 +90,7 @@ namespace NHibernate.Type
 			TypeFactory.GetCharacterType();
 			TypeFactory.GetCultureInfoType();
 			TypeFactory.GetDateTimeType(); 
+			TypeFactory.GetDateType(); 
 			TypeFactory.GetDecimalType();  
 			TypeFactory.GetDoubleType(); 
 			TypeFactory.GetInt16Type();
@@ -516,6 +517,24 @@ namespace NHibernate.Type
 			return returnType;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public static NullableType GetDateType() 
+		{
+			string key = typeof(DateType).FullName;
+			NullableType returnType = (NullableType)typeByTypeOfName[key];
+			if(returnType==null) 
+			{
+				returnType = new DateType(SqlTypeFactory.GetDate());
+				AddToTypeOfName(key, returnType);
+			}
+
+			return returnType;
+		}
+
+		
 		/// <summary>
 		/// 
 		/// </summary>

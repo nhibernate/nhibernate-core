@@ -392,7 +392,7 @@ namespace NHibernate.Cfg {
 				try {
 					model.Type = 
 						TypeFactory.ManyToOne( ReflectHelper.ClassForName( typeNode.Value)); 
-				} catch (Exception e) {
+				} catch {
 					throw new MappingException("could not find class: " + typeNode.Value);
 				}
 			}

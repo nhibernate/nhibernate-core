@@ -550,6 +550,7 @@ namespace NHibernate.Loader {
 		private IDataReader GetResultSet(IDbCommand st, RowSelection selection, ISessionImplementor session) {
 			try {
 				SetMaxRows(st, selection);
+				log.Info(st.CommandText);
 				IDataReader rs = st.ExecuteReader();
 				// some more useLimit code
 				Advance(rs, selection, session);

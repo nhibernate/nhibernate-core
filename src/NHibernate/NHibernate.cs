@@ -50,6 +50,11 @@ namespace NHibernate {
 		public static readonly NullableType DateTime = TypeFactory.GetDateTimeType(); 
 		
 		/// <summary>
+		/// NHibernate date type
+		/// </summary>
+		public static readonly NullableType Date = TypeFactory.GetDateType(); 
+
+		/// <summary>
 		/// NHibernate decimal type
 		/// </summary>
 		public static readonly NullableType Decimal = TypeFactory.GetDecimalType(); 

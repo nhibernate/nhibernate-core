@@ -1949,6 +1949,14 @@ namespace NHibernate.Impl {
 				ExecuteAll( collectionUpdates );
 				ExecuteAll( collectionCreations );
 				ExecuteAll( deletions );
+
+				// have to do this here because ICollection does not have a remove method
+				insertions.Clear();
+				updates.Clear();
+				collectionRemovals.Clear();
+				collectionUpdates.Clear();
+				collectionCreations.Clear();
+				deletions.Clear();
 			} catch (Exception e) {
 				throw new ADOException("could not synchronize database state with session", e);
 			}

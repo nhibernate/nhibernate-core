@@ -136,6 +136,9 @@ namespace NHibernate.Hql {
 			}
 			
 			compiled = true;
+			
+			PostInstantiate();
+
 		}
 		
 		/// <summary>
@@ -809,7 +812,7 @@ namespace NHibernate.Hql {
 
 		//TODO: implement this method - in here for compilation
 		protected override LockMode[] GetLockModes(IDictionary lockModes) {
-			return null;
+			return new LockMode[] {LockMode.Write};
 		}
 
 

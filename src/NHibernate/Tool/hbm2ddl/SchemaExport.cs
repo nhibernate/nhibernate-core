@@ -135,7 +135,11 @@ namespace NHibernate.Tool.hbm2ddl {
 			} catch (Exception e) {
 				if (transaction != null) 
 				{
+					try 
+					{
 					transaction.Rollback();
+					}
+					catch {}
 				}
 				Console.Write(e.StackTrace);
 				throw new HibernateException( e.Message );

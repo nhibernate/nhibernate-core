@@ -50,6 +50,13 @@ namespace NHibernate.SqlCommand {
 			}
 		}
 
+		// override to prevent compiler warning CS0659
+		// TODO: this may need a different impl
+		public override int GetHashCode()
+		{
+			return base.GetHashCode ();
+		}
+
 
 	}
 }

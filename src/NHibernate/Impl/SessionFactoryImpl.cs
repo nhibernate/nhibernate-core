@@ -357,7 +357,7 @@ namespace NHibernate.Impl {
 		public IDbCommand GetPreparedStatement(IDbConnection conn, string sql, bool scrollable) {
 
 			if ( log.IsDebugEnabled ) log.Debug("prepared statement get: " + sql);
-			if ( showSql ) Console.WriteLine("Hibernate: " + sql);
+			if ( showSql ) log.Debug("Hibernate: " + sql);
 
 			//TODO: what would be the implications of hooking up the PreparedStatment (IDbCommand) to
 			// the IDbTransaction at this point.  I am a little nervous about this because the SessionFactory

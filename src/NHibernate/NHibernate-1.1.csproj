@@ -85,17 +85,6 @@
                     HintPath = "..\..\external-bin\log4net.dll"
                 />
                 <Reference
-                    Name = "NHibernate.DomainModel-1.1"
-                    Project = "{E3482030-5828-4112-9906-D4C5153DCE3F}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "C:\Program Files\OSS.NET\NUnit V2.1\\bin\nunit.framework.dll"
-                    AssemblyFolderKey = "hklm\dn\nunit.framework"
-                />
-                <Reference
                     Name = "System.Web"
                     AssemblyName = "System.Web"
                     HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
@@ -104,6 +93,11 @@
                     Name = "System.Drawing"
                     AssemblyName = "System.Drawing"
                     HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\external-bin\nunit.framework.dll"
                 />
             </References>
         </Build>
@@ -456,6 +450,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\FirebirdDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\GenericDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -487,6 +486,11 @@
                 />
                 <File
                     RelPath = "Driver\DriverBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\FirebirdDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1389,6 +1393,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlTypes\DateSqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlTypes\DateTimeSqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1545,6 +1554,11 @@
                 />
                 <File
                     RelPath = "Type\DateTimeType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\DateType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -119,7 +119,15 @@ namespace NHibernate.SqlCommand
 			
 		}
 
-		public override string ToString() {
+		// override to prevent compiler warning CS0659
+		// TODO: this may need a different impl
+		public override int GetHashCode()
+		{
+			return base.GetHashCode ();
+		}
+
+		public override string ToString() 
+		{
 			return (tableAlias==null || tableAlias==String.Empty)? 
 				":" + name : 
 				":" + tableAlias + "." + name;
