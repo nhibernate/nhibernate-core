@@ -491,10 +491,13 @@ namespace NHibernate.Collection
 		/// </remarks>
 		public void ForceInitialization()
 		{
-			if( initializing ) throw new AssertionFailure("force initialize loading collection");
-			if( session == null ) throw new HibernateException("collection is not associated with any session");
-			if( !session.IsConnected ) throw new HibernateException("disconnected session");
-			if( !initialized ) session.InitializeCollection( this, false );
+			if (!initialized)
+			{
+				if( initializing ) throw new AssertionFailure("force initialize loading collection");
+				if( session == null ) throw new HibernateException("collection is not associated with any session");
+				if( !session.IsConnected ) throw new HibernateException("disconnected session");
+				session.InitializeCollection( this, false );
+			}
 		}
 
 		/// <summary>
