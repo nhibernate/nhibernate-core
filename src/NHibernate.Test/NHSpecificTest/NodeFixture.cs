@@ -84,29 +84,11 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.IsTrue(levelOneNode2.DestinationNodes.Contains(levelTwoSecondNode2), "Level one goes to TwoSecond");
 
 			Assert.IsTrue(levelOneNode2.PreviousNodes.Contains(startNode2), "Level One can be reached through Start Node");
-			
-//			// TODO: get rid of this HACK that was used to find out what was causing the problem
-//			// lets test out my theory that the problem is the "END" node being loaded during flush by just loading
-//			// it before the flush.  If it loads before the flush I don't think there will be any problems.  See
-//			// http://jira.nhibernate.org:8080/browse/NH-20 for what I think is happening...
-//			foreach(Node node2 in levelOneNode2.DestinationNodes.Keys) 
-//			{
-//				System.Diagnostics.Debug.WriteLine("touching node2's destinations = " + node2.DestinationNodes.Count);
-//				foreach(Node node3 in node2.DestinationNodes.Keys) 
-//				{
-//					System.Diagnostics.Debug.WriteLine("touching node3's destinations - " + node3.DestinationNodes.Count);
-//				}
-//			}
-
-			//foreach
 
 			t2.Commit();
 			s2.Close();
 
 		}
 
-
-
-	
 	}
 }
