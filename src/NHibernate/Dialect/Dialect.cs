@@ -134,6 +134,14 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Does this dialect support the <c>FOR UDPATE</c> syntax?
+		/// </summary>
+		public virtual bool SupportsForUpdateOf
+		{
+			get { return true; }
+		}
+
+		/// <summary>
 		/// Does this dialect support the Oracle-style <c>FOR UPDATE NOWAIT</c> syntax?
 		/// </summary>
 		public virtual bool SupportsForUpdateNoWait 
@@ -416,6 +424,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// The opening quote for a quoted identifier.
 		/// </summary>
+		[Obsolete("Should use Quote functions")]
 		public virtual char OpenQuote 
 		{
 			get { return '"'; }
@@ -424,6 +433,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// The closing quote for a quoted identifier.
 		/// </summary>
+		[Obsolete("Should use Quote functions")]
 		public virtual char CloseQuote 
 		{
 			get { return '"'; }
@@ -710,6 +720,38 @@ namespace NHibernate.Dialect
 		protected virtual string SqlTypeToString(TimeSqlType sqlType)
 		{
 			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
+		}
+
+		/// <summary>
+		/// Quotes a name for being used as a tablename
+		/// </summary>
+		/// <param name="tableName">Name of the table</param>
+		/// <returns>Quoted name</returns>
+		protected virtual string QuoteForTableName(string tableName)
+		{
+			return tableName;
+		}
+
+		/// <summary>
+		/// Quotes a name for being used as a columnname
+		/// </summary>
+		/// <remarks>Original implementation calls <see cref="QuoteForTableName"/></remarks>
+		/// <param name="columnName">Name of the column</param>
+		/// <returns>Quoted name</returns>
+		protected virtual string QuoteForColumnName(string columnName)
+		{
+			return QuoteForTableName(columnName);
+		}
+
+		/// <summary>
+		/// Quotes a name for being used as a aliasname
+		/// </summary>
+		/// <remarks>Original implementation calls <see cref="QuoteForTableName"/></remarks>
+		/// <param name="columnName">Name of the alias</param>
+		/// <returns>Quoted name</returns>
+		protected virtual string QuoteForAliasName(string aliasName)
+		{
+			return QuoteForTableName(aliasName);
 		}
 
 		public class CountQueryFunctionInfo : IQueryFunctionInfo 

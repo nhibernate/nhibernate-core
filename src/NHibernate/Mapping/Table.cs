@@ -69,6 +69,7 @@ namespace NHibernate.Mapping
 			}
 		}
 
+		[Obsolete("Should use Quote functions")]
 		public string GetQuotedName(Dialect.Dialect dialect) 
 		{
 			return quoted ? 

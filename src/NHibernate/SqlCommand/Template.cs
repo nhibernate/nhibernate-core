@@ -188,6 +188,7 @@ namespace NHibernate.SqlCommand
 			return result.ToString();
 		}
 
+		[Obsolete("Should use Quote functions")]
 		private static string Quote(string column, Dialect.Dialect dialect) 
 		{
 			if ( column[0] == '`' ) 

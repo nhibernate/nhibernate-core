@@ -62,7 +62,6 @@ namespace NHibernate.Hql
 		//--- END NOTE ---
 		private IDictionary replacements;
 		private int count = 0;
-		private int nameCount=0;
 		private int parameterCount = 0;
 		private string queryString;
 		private bool distinct = false;
@@ -549,6 +548,7 @@ namespace NHibernate.Hql
 				suffixes[i] = (size==1) ? String.Empty : i.ToString() + StringHelper.Underscore;
 				names[i] = name;
 				includeInSelect[i] = !entitiesToFetch.Contains(name);
+				if ( includeInSelect[i] ) selectLength++;
 				if ( name.Equals(collectionOwnerName) ) collectionOwnerColumn = i;
 			}
 
@@ -1154,9 +1154,7 @@ namespace NHibernate.Hql
 			{
 				return sql;
 			}
-				//TODO: H2.0.3: change the dialect class!!!
-				//else if (dialect.SupportsForUpdateOf)
-			else if (dialect.SupportsForUpdate)
+			else if (dialect.SupportsForUpdateOf)
 			{
 				LockMode upgradeType = null;
 				ForUpdateFragment updateClause = new ForUpdateFragment();
