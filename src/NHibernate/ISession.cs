@@ -454,19 +454,11 @@ namespace NHibernate
 		/// <summary>
 		/// Get the current Unit of Work and return the associated <c>ITransaction</c> object.
 		/// </summary>
-		/// <remarks>
-		/// I don't know if Hibernate is capable of having 2 Transaction objects for the same session - 
-		/// it doesn't look like it is.  Adding this method remove that ability from NHibernate because
-		/// we would be limiting a Session to one Active Transaction at a time.  This is all necessary because when creating
-		/// an IDbCommand object you need to tell it the IDbTransaction to use.  There is no property of the
-		/// IDbConnection object that gives you the current IDbTransaction.
-		/// </remarks>
 		/// <exception cref="HibernateException">There was no Active IDbTransaction for this Session</exception>
 		/// TODO: DESIGNQUESTION: We might have it return null to indicate there is no Transaction for this Session
 		/// instead of throwing an Exception because that would allow other methods to just do null checks instead 
 		/// of error checking...
 		ITransaction Transaction {get;}
-
 		
 		/// <summary>
 		/// Creates a new <c>Criteria</c> for the entity class.

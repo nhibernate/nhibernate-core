@@ -307,13 +307,11 @@ namespace NHibernate.Cfg {
 					XmlAttribute indexNode = subnode.Attributes["index"];
 					if ( indexNode!=null && table!=null ) 
 					{
-						//TODO: what do you do about associations?? (second pass compile)
 						table.GetIndex( indexNode.Value ).AddColumn(col);
 					}
 					XmlAttribute uniqueNode = subnode.Attributes["unique-key"];
 					if ( uniqueNode!=null && table!=null ) 
 					{
-						//TODO: what do you do about associations?? (second pass compile)
 						table.GetUniqueKey( uniqueNode.Value ).AddColumn(col);
 					}
 				}

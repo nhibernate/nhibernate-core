@@ -10,19 +10,6 @@ namespace NHibernate.Impl
 {
 	/// <summary>
 	/// Manages prepared statements and batching. Class exists to enfores seperation of concerns
-	/// TODO: RESEARCH how ADO.NET batching compares to JDBC batching - I am not at all familiar with
-	/// this concept nor where/how it is used in Hibernate
-	/// 
-	/// From reading the Hibernate source code it looks like Java's JDBC drivers have the ability
-	/// to process SQL Statements in batches.  I have looked through the newsgroups and documentation
-	/// and it doesn't appear that ADO.Net has any similar concept.  It might be convenient just to leave
-	/// this in here and use the NonBatchingBatcher.
-	/// 
-	/// http://java.sun.com/docs/books/tutorial/jdbc/jdbc2dot0/batchupdates.html explains how PreparedStatements
-	/// handle batch updating - I don't see that concept in ADO.NET at all because the main interface is the IDbCommand
-	/// and it handles a command - about the only way to batch would be just to keep adding on to the CommandText and
-	/// adding more Parameters.  I think that would get a little ugly for the performance gain - don't know what the gain
-	/// would be because I don't want to even think about writing that code :)
 	/// </summary>
 	internal abstract class BatcherImpl : IBatcher 
 	{
@@ -52,20 +39,6 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Gets the current Command that is contained for this Batch
 		/// </summary>
-		/// <remarks>
-		/// In the java version you make a PreparedStatement and then append values to the 
-		/// parameters such as:
-		/// ps.setInt(1, 1);
-		/// ps.setString(2, "Second Param");
-		/// ps.addBatch();
-		/// If I am reading the javadoc correctly now you can go back to the PreparedStatement
-		/// and add more values such as
-		/// ps.setInt(1, 2);
-		/// ps.SetString(2, "Second Param, on Second evaluation of PreparedStatement);
-		/// ps.addBatch();
-		/// 
-		/// </remarks>
-		/// <returns></returns>
 		protected IDbCommand GetCommand() 
 		{
 			return batchCommand;

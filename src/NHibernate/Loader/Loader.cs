@@ -509,7 +509,6 @@ namespace NHibernate.Loader
 		/// <param name="rs"></param>
 		/// <param name="selection"></param>
 		/// <param name="session"></param>
-		/// TODO: how applicable is this in .NET - DataReaders are forward only I thought...
 		protected void Advance(IDataReader rs, RowSelection selection, ISessionImplementor session) {
 			int firstRow = Loader.GetFirstRow(selection);
 			if(firstRow!=0) 

@@ -194,10 +194,6 @@ namespace NHibernate.Persister
 
 			//MULTITABLES
 			
-			// TODO - find out when multitables are used??  I have only come at this through the debug
-			// for the base class (RootClass).  This might become a little bit more clear when I come at this through
-			// the subclass (Subclass).
-
 			// these two will later be converted into arrays for the fields tableNames and tableKeyColumns
 			ArrayList tables = new ArrayList();
 			ArrayList keyColumns = new ArrayList();
@@ -255,8 +251,6 @@ namespace NHibernate.Persister
 			this.subclassTableNameClosure = (string[]) subtables.ToArray( typeof(string) );
 			this.subclassTableKeyColumns = (string[][]) keyColumns.ToArray( typeof(string[]) );
 			
-			//TODO: figure out exactly how this field is being used.  I know that for our Simple example
-			// the values for the base class are isClassOrSuperclassTable[0] = true; [1] = false;
 			this.isClassOrSuperclassTable = new bool[ this.subclassTableNameClosure.Length ];
 			for (int j=0; j<subclassTableNameClosure.Length; j++ ) 
 			{

@@ -7,35 +7,8 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Superclass for mutable nullable types.
 	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This might be the point where we branch out from Hibernate's design and move 
-	/// to a StructType and an ObjectType because these follow along the lines of a 
-	/// Mutable/Immutable Type design.
-	/// </para>
-	/// <para>
-	/// I still need to think about that though...
-	/// </para>
-	/// <para>
-	/// The only types that are Mutable are <see cref="BinaryType"/>, 
-	/// <see cref="DateTimeType"/>, <see cref="SerializableType"/>, and
-	/// <see cref="TimestampType"/>.  I don't know what makes them mutable
-	/// but I am pretty sure that <see cref="BinaryType"/> and <see cref="SerializableType"/>
-	/// don't implement a nice equals because they are based on System.Byte[] array.  In 
-	/// DOTNET arrays don't implement a nice equals.  Arrays don't override 
-	/// Object.Equals(Object) so they inherit Objects implementation - which is reference
-	/// based.
-	/// </para>
-	/// <para>
-	/// I don't know what about the <see cref="DateTimeType"/> and <see cref="TimestampType"/>
-	/// makes them mutable in Java.  It might have something to do with milliseconds and ticks
-	/// and how some databases store the values.
-	/// </para>
-	/// </remarks>
 	public abstract class MutableType : NullableType 
 	{
-		
-		
 		/// <summary>
 		/// Initialize a new instance of the MutableType class using a 
 		/// <see cref="SqlType"/>. 

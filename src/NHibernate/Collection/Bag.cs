@@ -342,7 +342,6 @@ namespace NHibernate.Collection
 		public override IEnumerator GetEnumerator()
 		{
 			Read();
-			//TODO: H2.0.3 has an IteratorProxy - do we need??
 			return bag.GetEnumerator();
 		}
 
