@@ -7,11 +7,11 @@ using NHibernate.Engine;
 namespace NHibernate.Type {
 	
 	public class ArrayType : PersistentCollectionType {
-		private System.Type elementClass;
+		//private System.Type elementClass;
 		private System.Type arrayClass;
 
 		public ArrayType(string role, System.Type elementClass) : base(role) {
-			this.elementClass = elementClass;
+			//this.elementClass = elementClass;
 			arrayClass = Array.CreateInstance(elementClass,0).GetType();
 		}
 

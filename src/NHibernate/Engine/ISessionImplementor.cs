@@ -175,6 +175,14 @@ namespace NHibernate.Engine {
 		void PostDelete(object obj);
 	
 		/// <summary>
+		/// After actually updating a row, record the fact that the database state has been update.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="updatedState"></param>
+		/// <param name="nextVersion"></param>
+		void PostUpdate(object obj, object[] updatedState, object nextVersion);
+
+		/// <summary>
 		/// Execute a <c>Find()</c> query
 		/// </summary>
 		/// <param name="query"></param>

@@ -571,6 +571,10 @@ namespace NHibernate.Persister {
 			}
 		}
 
+		public virtual bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier 
+		{
+			get { return HasIdentifierProperty || hasEmbeddedIdentifier;}
+		}
 
 		public abstract string QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
 		public abstract string DiscriminatorSQLString { get; }

@@ -156,6 +156,13 @@ namespace NHibernate.Persister {
 		bool HasIdentifierProperty { get; }
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		//TODO: Added in H2.0.3 - what exactly does it do...
+		bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier{get;}
+
+		/// <summary>
 		/// Get the identifier of an instance ( throw an exception if no identifier property)
 		/// </summary>
 		/// <param name="obj"></param>

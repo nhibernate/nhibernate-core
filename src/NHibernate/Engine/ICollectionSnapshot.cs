@@ -8,5 +8,6 @@ namespace NHibernate.Engine {
 		object Snapshot { get; }
 		bool Dirty { get; }
 		void SetDirty();
+		bool IsInitialized{get;}
 	}
 }

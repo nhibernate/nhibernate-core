@@ -45,19 +45,23 @@ namespace NHibernate.Type {
 		}
 
 		public virtual object GetCollection(object id, object owner, ISessionImplementor session) {
-		
+			PersistentCollection collection = session.GetLoadingCollection(role, id);
+			if(collection!=null) return collection.GetCachedValue(); //TODO: yuck... call another method - H2.0.3comment
+
 			CollectionPersister persister = session.Factory.GetCollectionPersister(role);
-			
-			PersistentCollection collection = persister.GetCachedCollection(id, owner, session);
-			if (collection!=null) {
+			collection = persister.GetCachedCollection(id, owner, session);
+			if(collection!=null) 
+			{
 				session.AddInitializedCollection(collection, persister, id);
 				return collection.GetCachedValue();
 			}
-			else {
+			else 
+			{
 				collection = Instantiate(session, persister);
 				session.AddUninitializedCollection(collection, persister, id);
-				return collection.GetInitialValue( persister.IsLazy );
+				return collection.GetInitialValue(persister.IsLazy);
 			}
+
 		}
 
 		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session) {
@@ -97,19 +101,23 @@ namespace NHibernate.Type {
 		}
 	
 		public override object Disassemble(object value, ISessionImplementor session) {
-			if (value==null) {
-				return null;
-			}
-			else {
-				object id = session.GetLoadedCollectionKey( (PersistentCollection) value );
-				if (id==null)
-					throw new AssertionFailure("Null collection id");
-				return id;
-			}
+			return null;
+//			if (value==null) {
+//				return null;
+//			}
+//			else {
+//				object id = session.GetLoadedCollectionKey( (PersistentCollection) value );
+//				if (id==null)
+//					throw new AssertionFailure("Null collection id");
+//				return id;
+//			}
 		}
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner) {
-			return ResolveIdentifier(cached, session, owner);
+			object id = session.GetEntityIdentifier(owner);
+			if(id==null) throw new AssertionFailure("bug re-assembling collection reference");
+			return ResolveIdentifier(id, session, owner);
+			//return ResolveIdentifier(cached, session, owner);
 		}
 	
 		public override bool IsDirty(object old, object current, ISessionImplementor session) {

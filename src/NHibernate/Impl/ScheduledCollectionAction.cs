@@ -24,6 +24,16 @@ namespace NHibernate.Impl {
 			get { return new string[] { persister.QualifiedTableName }; } //TODO: cache the array on the persister
 		}
 
+		public object Id 
+		{
+			get { return id;}
+		}
+
+		public ISessionImplementor Session 
+		{
+			get { return session;}
+		}
+
 		public abstract void Execute();
 	}
 }

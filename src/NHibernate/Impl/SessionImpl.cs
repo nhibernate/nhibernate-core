@@ -188,7 +188,8 @@ namespace NHibernate.Impl {
 		// Note: we *could* treat updates the same way we treat collection actions
 		// (discarding them at the end of a "shortcircuited" auto-flush) and then
 		// we would keep them in a list
-		[NonSerialized] private IDictionary updates;
+		//[NonSerialized] private IDictionary updates;
+		[NonSerialized] private ArrayList updates;
 		// Actually the semantics of the next three are really "Bag"
 		// Note that, unlike objects, collection insertions, updates,
 		// deletions are not really remembered between flushes. We
@@ -306,7 +307,8 @@ namespace NHibernate.Impl {
 		/// of a collection with respect to its persistent state
 		/// </summary>
 		[Serializable]
-		public class CollectionEntry : ICollectionSnapshot {
+		public class CollectionEntry : ICollectionSnapshot 
+		{
 			internal bool dirty;
 			[NonSerialized] internal bool reached;
 			[NonSerialized] internal bool processed;
@@ -318,20 +320,25 @@ namespace NHibernate.Impl {
 			[NonSerialized] internal CollectionPersister loadedPersister;
 			[NonSerialized] internal object currentKey;
 			internal object loadedKey;
-			internal object snapshot;
+			internal object snapshot; //session-start/post-flush persistent state
 			internal  string role;
 			
-			public CollectionEntry() {
+			public CollectionEntry() 
+			{
 				this.dirty = false;
 				this.initialized = true;
 			}
-			public CollectionEntry(CollectionPersister loadedPersister, object loadedID, bool initialized) {
+
+			public CollectionEntry(CollectionPersister loadedPersister, object loadedID, bool initialized) 
+			{
 				this.dirty = false;
 				this.initialized = initialized;
 				this.loadedKey = loadedID;
 				SetLoadedPersister(loadedPersister);
 			}
-			public CollectionEntry(ICollectionSnapshot cs, ISessionFactoryImplementor factory) {
+
+			public CollectionEntry(ICollectionSnapshot cs, ISessionFactoryImplementor factory) 
+			{
 				this.dirty = cs.Dirty;
 				this.snapshot = cs.Snapshot;
 				this.loadedKey = cs.Key;
@@ -340,74 +347,117 @@ namespace NHibernate.Impl {
 			}
 
 			//default behavior; will be overridden in deep lazy collections
-			public virtual bool IsDirty(PersistentCollection coll) {
+			public virtual bool IsDirty(PersistentCollection coll) 
+			{
 				if ( dirty || (
 					!coll.IsDirectlyAccessible && !loadedPersister.ElementType.IsMutable
-					) ) {
+					) ) 
+				{
 					return dirty;
-				} else {
+				} 
+				else 
+				{
 					return !coll.EqualsSnapshot( loadedPersister.ElementType );
 				}
 			}
-			public void PreFlush(PersistentCollection collection) {
+
+			public void PreFlush(PersistentCollection collection) 
+			{
 				// if the collection is initialized and it was previously persistent
 				// initialize the dirty flag
 				dirty = ( initialized && loadedPersister!=null && IsDirty(collection) ) ||
 					(!initialized && dirty ); //only need this so collection with queued adds will be removed from JCS cache
 
-				if ( log.IsDebugEnabled && dirty && loadedPersister!=null ) {
+				if ( log.IsDebugEnabled && dirty && loadedPersister!=null ) 
+				{
 					log.Debug("Collection dirty: " + MessageHelper.InfoString(loadedPersister, loadedKey) );
 				}
 
-				doupdate=false;
-				doremove=false;
-				dorecreate=false;
-				reached=false;
+				doupdate = false;
+				doremove = false;
+				dorecreate = false;
+				reached = false;
+				processed = false;
 			}
-			public void PostInitialize(PersistentCollection collection) {
+
+			public void PostInitialize(PersistentCollection collection) 
+			{
 				snapshot = collection.GetSnapshot(loadedPersister);
 			}
+
 			// called after a *successful* flush
-			public void PostFlush(PersistentCollection collection) {
-				if (!processed) throw new AssertionFailure("Hibernate has a bug processing collections");
+			public void PostFlush(PersistentCollection collection) 
+			{
+				if (!processed) 
+					throw new AssertionFailure("Hibernate has a bug processing collections");
 				loadedKey = currentKey;
 				SetLoadedPersister( currentPersister );
 				dirty = false;
-				if ( initialized && ( doremove || dorecreate || doupdate ) ) {
+				if ( initialized && ( doremove || dorecreate || doupdate ) ) 
+				{
 					snapshot = collection.GetSnapshot(loadedPersister); //re-snapshot
 				}
 			}
-			public bool Dirty {
+
+			public bool Dirty 
+			{
 				get { return dirty; }
 			}
-			public object Key {
+			public object Key 
+			{
 				get { return loadedKey; }
 			}
-			public string Role {
+			public string Role 
+			{
 				get { return role; }
 			}
-			public object Snapshot {
+			public object Snapshot 
+			{
 				get { return snapshot; }
 			}
 
-			public bool SnapshotIsEmpty {
+			public bool SnapshotIsEmpty 
+			{
 				get {
 					//TODO: implementation here is non-extensible ... 
 					//should use polymorphism 
+//					return initialized && snapshot!=null && ( 
+//						( snapshot is IList && ( (IList) snapshot ).Count==0 ) || // if snapshot is a collection 
+//						( snapshot is Map && ( (Map) snapshot ).Count==0 ) || // if snapshot is a map 
+//						(snapshot.GetType().IsArray && ( (Array) snapshot).Length==0 )// if snapshot is an array 
+//						); 
+					
+					// TODO: in .NET an IList, IDictionary, and Array are all collections so we might be able
+					// to just cast it to a ICollection instead of all the diff collections.
 					return initialized && snapshot!=null && ( 
 						( snapshot is IList && ( (IList) snapshot ).Count==0 ) || // if snapshot is a collection 
-						( snapshot is Map && ( (Map) snapshot ).Count==0 ) || // if snapshot is a map 
+						( snapshot is IDictionary && ( (IDictionary) snapshot ).Count==0 ) || // if snapshot is a map 
 						(snapshot.GetType().IsArray && ( (Array) snapshot).Length==0 )// if snapshot is an array 
 						); 
 				}
 			} 
 
-			public void SetDirty() {
+			public void SetDirty() 
+			{
 				dirty = true;
 			}
-			private void SetLoadedPersister(CollectionPersister persister) {
+			
+			private void SetLoadedPersister(CollectionPersister persister) 
+			{
 				loadedPersister = persister;
 				if (persister!=null) role=persister.Role;
+			}
+
+			public bool IsInitialized 
+			{
+				get { return initialized;}
+			}
+
+			//TODO: new in H2.0.3 - where is it used??
+			public bool IsNew 
+			{
+				// TODO: is this correct implementation
+				get { return initialized && (snapshot==null); }
 			}
 		}
 
@@ -493,7 +543,7 @@ namespace NHibernate.Impl {
 		private void InitTransientCollections() {
 			insertions = new ArrayList(20);
 			deletions = new ArrayList(20);
-			updates = new Hashtable(20);
+			updates = new ArrayList(20);
 			collectionCreations = new ArrayList(20);
 			collectionRemovals = new ArrayList(20);
 			collectionUpdates = new ArrayList(20);
@@ -569,8 +619,12 @@ namespace NHibernate.Impl {
 			return entries.Contains(obj);
 		}
 
-		//add a new collection (ie an initialized one, instantiated by the application)
-		private void AddCollectionEntry(PersistentCollection collection) {
+		/// <summary>
+		/// Add a new collection (ie an initialized one, instantiated by the application)
+		/// </summary>
+		/// <param name="collection"></param>
+		private void AddNewCollection(PersistentCollection collection) 
+		{
 			CollectionEntry ce = new CollectionEntry();
 			collections[collection] = ce;
 			collection.CollectionSnapshot = ce;
@@ -1491,6 +1545,7 @@ namespace NHibernate.Impl {
 					// what we need them to be next time.
 					collectionCreations.Clear();
 					collectionUpdates.Clear();
+					updates.Clear();
 					// collection deletes are a special case since Update() can add
 					// deletions of collections not loaded by the session.
 					for (int i=collectionRemovals.Count-1; i>=oldSize; i-- ) {
@@ -1924,7 +1979,7 @@ namespace NHibernate.Impl {
 		}
 
 		private bool AreTablesToBeUpdated(IList tables) {
-			return AreTablesToUpdated( updates.Values, tables) ||
+			return AreTablesToUpdated( updates, tables) ||
 				AreTablesToUpdated( insertions, tables) ||
 				AreTablesToUpdated( deletions, tables) ||
 				AreTablesToUpdated( collectionUpdates, tables) ||
@@ -1948,7 +2003,7 @@ namespace NHibernate.Impl {
 
 			try {
 				ExecuteAll( insertions );
-				ExecuteAll( updates.Values );
+				ExecuteAll( updates );
 				ExecuteAll( collectionRemovals );
 				ExecuteAll( collectionUpdates );
 				ExecuteAll( collectionCreations );
@@ -1972,18 +2027,36 @@ namespace NHibernate.Impl {
 
 		public void PostDelete(object obj) {
 			EntityEntry e = RemoveEntry(obj);
+			e.status = Status.Gone;
 			Key key = new Key(e.id, e.persister);
 			RemoveEntity(key);
 			proxiesByKey.Remove(key);
+		}
+
+		public void PostUpdate(object obj, object[] updatedState, object nextVersion) 
+		{
+			EntityEntry e = GetEntry(obj);
+			e.loadedState = updatedState;
+			e.lockMode = LockMode.Write;
+			if(e.persister.IsVersioned) 
+			{
+				//TODO: h2.0.3 - the e.version should exist but it does not in NH
+				//e.version = nextVersion;
+				e.persister.SetPropertyValue(obj, e.persister.VersionProperty, nextVersion);
+			}
 		}
 
 		private void ExecuteAll(ICollection coll) {
 			foreach(IExecutable e in coll) {
 				executions.Add(e);
 				e.Execute();
+				//TODO: h2.0.3 has this but not NH
+				// iter.remove -> coll.Remove()??
 			}
 			if ( batcher!=null ) batcher.ExecuteBatch();
 		}
+
+		
 
 		/// <summary>
 		/// 1. detect any dirty entities
@@ -2046,12 +2119,14 @@ namespace NHibernate.Impl {
 					bool substitute = Wrap(values, types); // substitutes into values by side-effect
 
 					bool cannotDirtyCheck;
+					bool interceptorHandledDirtyCheck;
 
 					int[] dirtyProperties = interceptor.FindDirty(obj, entry.id, values, entry.loadedState, persister.PropertyNames, types);
 
 
 					if ( dirtyProperties==null ) {
 						// interceptor returned null, so do the dirtycheck ourself, if possible
+						interceptorHandledDirtyCheck = false;
 						cannotDirtyCheck = entry.loadedState==null; // object loaded by update()
 						if ( !cannotDirtyCheck ) {
 							dirtyProperties = persister.FindDirty(values, entry.loadedState, obj, this);
@@ -2059,59 +2134,84 @@ namespace NHibernate.Impl {
 					} else {
 						// the interceptor handled the dirty checking
 						cannotDirtyCheck = false;
+						interceptorHandledDirtyCheck = true;
 					}
 
 					// compare to cached state (ignoring nested collections)
 					if ( persister.IsMutable &&
-							(cannotDirtyCheck ||
-								(dirtyProperties!=null && dirtyProperties.Length!=0 ) ||
-								(status==Status.Loaded && persister.IsVersioned && persister.HasCollections && SearchForDirtyCollections(values, types) )
-							)
-						) {
+						(cannotDirtyCheck ||
+						(dirtyProperties!=null && dirtyProperties.Length!=0 ) ||
+						(status==Status.Loaded && persister.IsVersioned && persister.HasCollections && SearchForDirtyCollections(values, types) )
+						)
+						) 
+					{
 						// its dirty!
 
-						if ( log.IsDebugEnabled ) log.Debug("Updating entity: " + MessageHelper.InfoString(persister, entry.id) );
-
-						substitute = interceptor.OnFlushDirty(
-							obj, entry.id, values, entry.loadedState, persister.PropertyNames, types)
-							|| substitute;
-
-						//if (status==LOADED) {
-						if (status==Status.Loaded) {
-
-							if ( persister.ImplementsValidatable ) ((IValidatable) obj).Validate();
-
-							object[] copiedValues = new object[values.Length];
-							TypeFactory.DeepCopy(values, types, persister.PropertyUpdateability, copiedValues);
-							entry.loadedState = copiedValues; // for next time
-							entry.nextLockMode = LockMode.Write; // if this flush goes ahead, we will have a write lock
+						if ( log.IsDebugEnabled ) 
+						{
+							if(status == Status.Deleted) 
+							{ 
+								log.Debug("Updating deleted entity: " + MessageHelper.InfoString(persister, entry.id) );
+							}
+							else 
+							{
+								log.Debug("Updating entity: " + MessageHelper.InfoString(persister, entry.id) );
+							}
 						}
 
-						// increment the version number (if necessary)
-						if ( persister.IsVersioned ) {
-							if (status!=Status.Deleted) entry.nextVersion = Versioning.Increment( entry.lastVersion, persister.VersionType );
-							Versioning.SetVersion(values, entry.CurrentVersion, persister);
+						// give the Interceptor a chance to modify property values
+						bool intercepted = interceptor.OnFlushDirty(
+							obj, entry.id, values, entry.loadedState, persister.PropertyNames, types);
+
+						//no we might need to recalculate the dirtyProperties array
+						if(intercepted && !cannotDirtyCheck && !interceptorHandledDirtyCheck) 
+						{
+							dirtyProperties = persister.FindDirty(values, entry.loadedState, obj, this);
+						}
+						// if the properties were modified by the Interceptor, we need to set them back to the object
+						substitute = substitute || intercepted;
+
+						// validate() instances of Validatable
+						if(status == Status.Loaded && persister.ImplementsValidatable) 
+						{
+							((IValidatable)obj).Validate();
 						}
 
-						// schedule the update
+						//increment the version number (if necessary)
+						// TODO: H2.0.3 need to add entry.version field
+						object nextVersion = entry.lastVersion;
+						if(persister.IsVersioned) 
+						{
+							if(status!=Status.Deleted) nextVersion = Versioning.Increment(entry.lastVersion, persister.VersionType);
+							Versioning.SetVersion(values, nextVersion, persister);
+						}
+						
+						object[] updatedState = null;
+						if(status==Status.Loaded)
+						{
+							updatedState = new object[values.Length];
+							TypeFactory.DeepCopy(values, types, persister.PropertyUpdateability, updatedState);
+						}
+						
 						updates.Add(
-							new Key(entry.id, persister),
-							new ScheduledUpdate( entry.id, values, dirtyProperties, entry.lastVersion, obj, persister, this )
+							new ScheduledUpdate(entry.id, values, dirtyProperties, entry.lastVersion, nextVersion, obj, updatedState, persister, this)
 							);
 					}
-
-					if (status==Status.Deleted) {
-						entry.status = Status.Gone;
-					} else {
-
-						// now update the object .. has to be outside if block because of nested
-						// collections
-						if (substitute) persister.SetPropertyValues(obj, values);
-
-						// search for collections by reachability, updating their roles.
-						// we don't want to touch collections reachable from a deleted object
+					
+					if(status==Status.Deleted) 
+					{
+						//entry.status = Status.Gone;
+					}
+					else 
+					{
+						// now update the object... has to be outside the main if block above (because of collections)
+						if(substitute) persister.SetPropertyValues(obj, values);
+						
+						// search for collections by reachability, updating their role.
+						// we don't want to touch collections reachable from a deleted object.
 						UpdateReachables(values, types, obj);
 					}
+					
 				}
 			}
 		}
@@ -2177,6 +2277,23 @@ namespace NHibernate.Impl {
 			}
 		}
 
+		public bool IsSaved(object obj) 
+		{
+			if(obj is HibernateProxy) return true;
+
+			EntityEntry entry = GetEntry(obj);
+			if(entry!=null) return true;
+
+			object isUnsaved = interceptor.IsUnsaved(obj);
+			if(isUnsaved!=null) return !(bool)isUnsaved;
+
+			IClassPersister persister = GetPersister(obj);
+			if(!persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier) return false; // I _think_ that this is reasonable!
+
+			object id = persister.GetIdentifier(obj);
+			return !persister.IsUnsaved(id);
+		}
+
 		/// <summary>
 		/// Get the id value for an object that is actually associated with the session.
 		/// This is a bit stricter than getEntityIdentifierIfNotUnsaved().
@@ -2205,43 +2322,67 @@ namespace NHibernate.Impl {
 
 			if (obj is HibernateProxy) {
 				return HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) obj ).Identifier;
-			} else {
+			} 
+			else 
+			{
 				EntityEntry entry = GetEntry(obj);
-				if ( entry!=null) return entry.id;
+				if(entry!=null) 
+				{
+					return entry.id;
+				}
+				else 
+				{
 
-				IClassPersister persister = GetPersister(obj);
-				object id;
-				try {
-					// we only allow this case to support Session.Update()
-					id = persister.GetIdentifier(obj);
-				} catch (HibernateException) {
-					// transient instance with no identifier property
-					id = null;
+					object isUnsaved = interceptor.IsUnsaved(obj);
+					
+					if(isUnsaved!=null && ((bool)isUnsaved)) 
+						ThrowTransientObjectException(obj);
+				
+					IClassPersister persister = GetPersister(obj);
+					if(!persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier)
+						ThrowTransientObjectException(obj);
+
+					object id = persister.GetIdentifier(obj);
+					if(persister.IsUnsaved(id)) 
+						ThrowTransientObjectException(obj);
+
+					return id;
 				}
 
-				object isUnsaved = (id==null) ? true : interceptor.IsUnsaved(obj);
-				if ( ( isUnsaved!=null && isUnsaved.Equals(true) ) || persister.IsUnsaved(id) ) {
-					throw new TransientObjectException(
-						"object references an unsaved transient instance - save the transient instance before flushing"
-						);
-				}
-				return id;
 			}
 		}
 
+		private static void ThrowTransientObjectException(object obj) 
+		{
+			throw new TransientObjectException(
+				"object references an unsaved transient instance - save the transient instance before flushing: " +
+				obj.GetType().Name
+				);
+		}
 		/// <summary>
 		/// process any unreferenced collections and then inspect all known collections,
 		/// scheduling creates/removes/updates
 		/// </summary>
 		private void FlushCollections() {
 
+			int unreferencedCount = 0;
+			int scheduledCount = 0;
+			int recreateCount = 0;
+			int removeCount = 0;
+			int updateCount = 0;
+
 			log.Debug("Processing unreferenced collections");
 
 			//foreach(DictionaryEntry e in collections) {
 			foreach(DictionaryEntry e in collections.EntryDictionary) {
-				if ( ! ( (CollectionEntry) e.Value ).reached )
+				if ( ! ( (CollectionEntry) e.Value ).reached ) 
+				{
 					UpdateUnreachableCollection( (PersistentCollection) e.Key );
+					unreferencedCount++;
+				}
+					
 			}
+			log.Debug("Processed " + unreferencedCount + " unreachable collections.");
 
 			// schedule updates to collections:
 
@@ -2254,10 +2395,27 @@ namespace NHibernate.Impl {
 
 				// TODO: move this to the entry
 
-				if ( ce.dorecreate ) collectionCreations.Add( new ScheduledCollectionRecreate(coll, ce.currentPersister, ce.currentKey, this) );
-				if ( ce.doremove ) collectionRemovals.Add( new ScheduledCollectionRemove(ce.loadedPersister, ce.loadedKey, ce.SnapshotIsEmpty, this) );
-				if ( ce.doupdate ) collectionUpdates.Add( new ScheduledCollectionUpdate(coll, ce.loadedPersister, ce.loadedKey, ce.SnapshotIsEmpty, this) );
+				if ( ce.dorecreate ) 
+				{
+					collectionCreations.Add( new ScheduledCollectionRecreate(coll, ce.currentPersister, ce.currentKey, this) );
+					recreateCount++;
+				}
+				if ( ce.doremove ) 
+				{
+					collectionRemovals.Add( new ScheduledCollectionRemove(ce.loadedPersister, ce.loadedKey, ce.SnapshotIsEmpty, this) );
+					removeCount++;
+				}
+
+				if ( ce.doupdate )
+				{
+					collectionUpdates.Add( new ScheduledCollectionUpdate(coll, ce.loadedPersister, ce.loadedKey, ce.SnapshotIsEmpty, this) );
+					updateCount++;
+				}
+
+				scheduledCount++;
 			}
+
+			log.Debug("Processed " + scheduledCount + " for recreate (" + recreateCount + "), remove (" + removeCount + "), and update (" + updateCount + ")");
 		}
 
 		private void PostFlush() {
@@ -2323,33 +2481,62 @@ namespace NHibernate.Impl {
 
 			if (obj==null) return null;
 
-			if ( type.IsComponentType ) {
+			if ( type.IsComponentType ) 
+			{
 				IAbstractComponentType componentType = (IAbstractComponentType) type;
 				object[] values = componentType.GetPropertyValues(obj, this);
 				if ( Wrap( values, componentType.Subtypes ) ) componentType.SetPropertyValues(obj, values);
 			}
 
-			if ( type.IsPersistentCollectionType ) {
+			if ( type.IsPersistentCollectionType ) 
+			{
 
-				if ( obj is PersistentCollection ) {
+				if ( obj is PersistentCollection ) 
+				{
 					//TODO: this looks out of synch with H2.0.3
 					PersistentCollection pc = (PersistentCollection) obj;
-					if ( pc.SetSession(this) ) AddCollectionEntry(pc); // (if it wasn't initialized, the user stuffed up, not hibernate
+					if ( pc.SetSession(this) ) 
+					{
+						ICollectionSnapshot snapshot = pc.CollectionSnapshot;
+						if(snapshot.IsInitialized) 
+						{
+							AddNewCollection(pc);  //AddCollectionEntry(pc);
+						}
+						else 
+						{
+							object id = snapshot.Key;
+							if(id==null) throw new HibernateException("reference created to previously dereferenced uninitialized collection");
+							AddUninitializedCollection(pc, GetCollectionPersister(snapshot.Role), id);
+							pc.ForceLoad();
+							// ugly & inefficient little hack to force collection to be recreated
+							// after "disconnected" collection replaces the "connected" one
+							// H2.0.3 comments
+							//GetCollectionEntry(pc).loadedKey = null;
+							//GetCollectionEntry(pc).loadedPersister = null;
+							AddNewCollection(pc);
+							//AddCollectionEntry(pc);
+						}
+						//AddCollectionEntry(pc); // (if it wasn't initialized, the user stuffed up, not hibernate
+					}
 				
-				} else if ( obj.GetType().IsArray ) {
+				} 
+				else if ( obj.GetType().IsArray ) {
 
 					// TODO: we could really re-use the existing arrayholder
 					// for this new array (if it exists)
 					ArrayHolder ah = GetArrayHolder(obj);
-					if (ah==null) {
+					if (ah==null) 
+					{
 						ah = new ArrayHolder(this, obj);
-						AddCollectionEntry(ah);
+						AddNewCollection(ah); //AddCollectionEntry(ah);
 						AddArrayHolder(ah);
 					}
-				} else {
+				} 
+				else 
+				{
 					PersistentCollection pc = ((PersistentCollectionType) type).Wrap(this, obj);
 					if ( log.IsDebugEnabled ) log.Debug( "Wrapped collection in role: " + ((PersistentCollectionType) type).Role);
-					AddCollectionEntry(pc);
+					AddNewCollection(pc); // AddCollectionEntry(pc);
 					obj = pc;
 				}
 			}
@@ -2428,9 +2615,12 @@ namespace NHibernate.Impl {
 		/// <param name="coll"></param>
 		private void UpdateUnreachableCollection(PersistentCollection coll) {
 			CollectionEntry entry = GetCollectionEntry(coll);
-			if ( log.IsDebugEnabled && entry.loadedPersister!=null ) log.Debug(
-																		 "collection dereferenced: " + MessageHelper.InfoString(entry.loadedPersister, entry.loadedKey)
-																		 );
+			
+			if ( log.IsDebugEnabled && entry.loadedPersister!=null ) 
+				log.Debug("collection dereferenced: " + MessageHelper.InfoString(entry.loadedPersister, entry.loadedKey));
+
+			// TODO: H2.0.3 has code here for OrphanDeletes - looks like we are missing a method in CollectionPersister.hasOrphanDelete()
+			//if(entry.loadedPersister!=null && entry.loadedPersister.h
 			entry.currentPersister=null;
 			entry.currentKey=null;
 
@@ -2446,17 +2636,21 @@ namespace NHibernate.Impl {
 		/// <param name="entry"></param>
 		private void PrepareCollectionForUpdate(PersistentCollection coll, CollectionEntry entry) {
 
-			// TODO: figure out if this message is accurate.  seems to work fine without this
-			//if ( entry.processed ) throw new AssertionFailure("hibernate has a bug processing collections");
+			// TODO: figure out if this message is accurate.  why does it have a bug???
+			if ( entry.processed ) throw new AssertionFailure("hibernate has a bug processing collections");
 
 			entry.processed = true;
 
-			if ( entry.loadedPersister!=null || entry.currentPersister!=null ) { // it is or was referenced _somewhere_
+			// it is or was referenced _somewhere_
+			if ( entry.loadedPersister!=null || entry.currentPersister!=null ) { 
 
 				if (
 					entry.loadedPersister!=entry.currentPersister || //if either its role changed,
 					!entry.currentPersister.KeyType.Equals(entry.loadedKey, entry.currentKey) // or its key changed
 					) {
+
+					//TODO: h2.0.3 has code in here for OrphanDeletes
+
 
 					if (entry.currentPersister!=null) entry.dorecreate = true; //we will need to create new entry
 
@@ -2467,7 +2661,8 @@ namespace NHibernate.Impl {
 							coll.ForceLoad();
 						}
 					}
-				} else if (entry.dirty ) { // else if it's elements changed
+				} 
+				else if (entry.dirty ) { // else if it's elements changed
 					entry.doupdate = true;
 				}
 			}
@@ -2705,6 +2900,8 @@ namespace NHibernate.Impl {
 			CollectionEntry ce = GetCollectionEntry(collection);
 			return ce!=null && ce.loadedPersister.IsInverse;
 		}
+
+		//TODO: h2.0.3 add a method GetOrphans()
 
 		/// <summary>
 		/// called by a collection that wants to initialize itself
