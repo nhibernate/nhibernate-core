@@ -1,17 +1,40 @@
 using System;
+using System.Collections;
+
+using NHibernate.Collection;
+using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// Summary description for BagType.
+	/// 
 	/// </summary>
-	public class BagType
+	public class BagType : PersistentCollectionType
 	{
-		public BagType()
+		public BagType(string role) : base(role)
 		{
-			//
-			// TODO: Add constructor logic here
-			//
 		}
+
+		public override PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister) 
+		{
+			return new Bag(session);
+		}
+
+		public override System.Type ReturnedClass 
+		{
+			get { return typeof(IList); }
+		}
+
+		public override PersistentCollection Wrap(ISessionImplementor session, object collection)
+		{
+			return new Bag(session, (ICollection)collection);
+		}
+
+
+		public override PersistentCollection AssembleCachedCollection(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) 
+		{
+			return new Bag(session, persister, disassembled, owner);
+		}
+
 	}
 }

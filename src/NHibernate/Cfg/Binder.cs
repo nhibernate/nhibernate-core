@@ -950,6 +950,19 @@ namespace NHibernate.Cfg {
 				return xmlTag;
 			}
 
+			private static CollectionType BAG = new CollectionTypeBag("bag");
+			private class CollectionTypeBag : CollectionType 
+			{
+				public CollectionTypeBag(string xmlTag) : base(xmlTag) {}
+				public override Mapping.Collection Create(XmlNode node, string prefix, PersistentClass owner, Mappings mappings)
+				{
+					Bag bag = new Bag(owner);
+					Binder.BindCollection(node, bag, prefix, mappings);
+					return bag;
+				}
+
+			}
+
 			private static CollectionType MAP = new CollectionTypeMap("map");
 			private class CollectionTypeMap : CollectionType {
 				public CollectionTypeMap(string xmlTag) : base(xmlTag) { }
@@ -1003,6 +1016,7 @@ namespace NHibernate.Cfg {
 			private static Hashtable Instances = new Hashtable();
 			static CollectionType() {
 				Instances.Add(MAP.ToString(), MAP);
+				Instances.Add(BAG.ToString(), BAG);
 				Instances.Add(SET.ToString(), SET);
 				Instances.Add(LIST.ToString(), LIST);
 				Instances.Add(ARRAY.ToString(), ARRAY);

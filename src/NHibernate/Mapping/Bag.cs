@@ -9,19 +9,18 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class Bag : Collection
 	{
-		public Bag(PersistentClass owner) : base(owner) {
+		public Bag(PersistentClass owner) : base(owner) 
+		{
 		}
 
-		public override PersistentCollectionType Type {
-			get {
-				return null; //TODO: return TypeFactory.Bag( Role );
-			}
+		public override PersistentCollectionType Type 
+		{
+			get { return TypeFactory.Bag( Role );}
 		}
 	
-		public override System.Type WrapperClass {
-			get {
-				return typeof(NHibernateBag);
-			}
+		public override System.Type WrapperClass 
+		{
+			get { return typeof(NHibernateBag); }
 		}
 
 	}

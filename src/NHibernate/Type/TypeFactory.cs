@@ -1012,10 +1012,10 @@ namespace NHibernate.Type
 			return new ListType(role);
 		}
 		
-		/*public static PersistentCollectionType Bag(string role) 
-		 * {
+		public static PersistentCollectionType Bag(string role) 
+		{
 			return new BagType(role);
-		}*/
+		}
 		
 		public static PersistentCollectionType Map(string role) 
 		{
