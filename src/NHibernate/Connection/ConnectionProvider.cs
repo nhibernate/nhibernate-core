@@ -13,8 +13,8 @@ namespace NHibernate.Connection
 	public abstract class ConnectionProvider : IConnectionProvider
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( ConnectionProvider ) );
-		private string connString = null;
-		private IDriver driver = null;
+		private string connString;
+		private IDriver driver;
 
 		/// <summary>
 		/// Closes the <see cref="IDbConnection"/>.
