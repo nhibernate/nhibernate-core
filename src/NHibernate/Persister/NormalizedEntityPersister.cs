@@ -1048,7 +1048,7 @@ namespace NHibernate.Persister
 
 				// write the value of fields onto the prepared statements - we MUST use the state at the time
 				// the insert was issued (cos of foreign key constraints).
-				Dehydrate(id, fields, PropertyInsertability, insertCmds, session);
+				Dehydrate(id, fields, notNull, insertCmds, session);
 
 				for (int i = 0; i < tableNames.Length; i++) 
 				{

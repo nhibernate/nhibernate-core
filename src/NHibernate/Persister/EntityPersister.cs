@@ -648,8 +648,8 @@ namespace NHibernate.Persister
 		/// Marshall the fields of a persistent instance to a prepared statement
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="fields"></param>
-		/// <param name="includeProperty"></param>
+		/// <param name="fields">The fields to write to the command.</param>
+		/// <param name="includeProperty">A bool indicating if the Property should be written to the Command</param>
 		/// <param name="st"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
@@ -823,6 +823,8 @@ namespace NHibernate.Persister
 		/// Persist an object, using a natively generated identifier
 		/// </summary>
 		/// <param name="fields"></param>
+		/// <param name="notNull"></param>
+		/// <param name="sql"></param>
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
@@ -850,7 +852,7 @@ namespace NHibernate.Persister
 
 			try 
 			{
-				Dehydrate(null, fields, PropertyInsertability, statement, session);
+				Dehydrate(null, fields, notNull, statement, session);
 			} 
 			catch (Exception e) 
 			{
