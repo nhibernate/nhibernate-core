@@ -1,0 +1,84 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="NHibernate" 
+	default="build" 
+	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+>
+
+	<!--
+        Required properties:
+            * build.dir             - (path) root level to build to, assemblies will go in ${build.dir}/bin
+            * build.debug           - (true|false) debug build?
+            * current.build.defines - framework-specific build defines
+			* project.version		- full project version
+			* project.version.major	- the major number of the build
+			* project.version.minor - the minor number of the build
+			* project.version.build - the build number
+			* sign					- indicates if the Assembly should be signed
+    -->
+    
+	<property name="keyFile" value="..\NHibernate.snk" />
+	
+	<target name="build" description="Build NHibernate">
+		<!-- ensure the AssemblyInfo is writable -->
+		<attrib file="AssemblyInfo.cs" readonly="false" />
+		
+		<asminfo output="AssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import name="System.Reflection" />
+				<import name="System.Runtime.CompilerServices" />
+			</imports>
+			<attributes>
+				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
+				<attribute type="AssemblyDescriptionAttribute" value="An object persistence library for relational databases." />
+				<attribute type="AssemblyCompanyAttribute" value="nhibernate.sourceforge.net" />
+				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
+				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
+				<attribute type="AssemblyVersionAttribute" value="${project.version}" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="${project.version.major}.${project.version.minor}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${project.version}" />
+				<attribute type="AssemblyKeyFileAttribute" value="${keyFile}" if="${sign}"/>
+			</attributes>
+		</asminfo>
+
+		<csc 
+			target="library" 
+			define="${current.build.defines}" 
+			debug="${build.debug}" 
+			output="${build.dir}/bin/${nant.project.name}.dll" 
+			doc="${build.dir}/bin/${nant.project.name}.xml"
+		>
+			
+			<sources failonempty="true">
+				<includes name="**/*.cs" />
+				<excludes name="Eg/**" />
+				<excludes name="InternalTest/**/*.cs" />
+				<excludes name="Test/**/*.cs" />
+				<excludes name="Util/*Test.cs" />
+				<excludes name="Dialect/DB2Dialect.cs" />
+				<excludes name="Dialect/HSQLDialect.cs" />
+				<excludes name="Dialect/InterbaseDialect.cs" />
+				<excludes name="Dialect/SAPDBDialect.cs" />
+				<excludes name="Tool/hbm2net/*.cs" />
+			</sources>
+			
+			<resources prefix="NHibernate" dynamicprefix="true">
+				<includes name="*.xsd" />
+				<includes name="**/*.xml" />
+				<excludes name="bin/**/*.xml" />
+			</resources>
+			
+			<references basedir="${build.dir}/bin">
+				<includes name="System.dll" />
+				<includes name="System.XML.dll" />
+				<includes name="System.Data.dll" />
+				<includes name="log4net.dll" />
+				<includes name="HashCodeProvider.dll" />
+			</references>
+	
+		</csc>
+		
+	</target>
+	
+</project>
