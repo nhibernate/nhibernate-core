@@ -1548,21 +1548,160 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Versioning() 
 		{
+			ISession s = sessions.OpenSession();
+			GlarchProxy g = new Glarch();
+			s.Save(g);
+			GlarchProxy g2 = new Glarch();
+			s.Save(g2);
+			object gid = s.GetIdentifier(g);
+			object g2id = s.GetIdentifier(g2);
+			g.Name = "glarch";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+			s.Lock(g, LockMode.Upgrade);
+			g2 = (GlarchProxy)s.Load( typeof(Glarch), g2id );
+			Assert.AreEqual(1, g.Version, "g's version");
+			Assert.AreEqual(1, g.DerivedVersion, "g's derived version");
+			Assert.AreEqual(0, g2.Version, "g2's version");
+			g.Name = "foo";
+			Assert.AreEqual(1, s.Find("from g in class NHibernate.DomainModel.Glarch where g.Version=2").Count, "find by version");
+			g.Name = "bar";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+			g2 = (GlarchProxy)s.Load( typeof(Glarch), g2id );
+
+			Assert.AreEqual(3, g.Version, "g's version");
+			Assert.AreEqual(3, g.DerivedVersion, "g's derived version");
+			Assert.AreEqual(0, g2.Version, "g2's version");
+
+			g.Next = null;
+			g2.Next = g;
+			s.Delete(g2);
+			s.Delete(g);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void VersionedCollections() 
 		{
+			ISession s = sessions.OpenSession();
+			GlarchProxy g = new Glarch();
+			s.Save(g);
+			g.ProxyArray = new GlarchProxy[] {g};
+			string gid = (string) s.GetIdentifier(g);
+			ArrayList list = new ArrayList();
+			list.Add("foo");
+			g.Strings = list;
+			// <sets> in h2.0.3
+			IDictionary hashset = new Hashtable();
+			hashset[g] = new object();
+			g.ProxySet = hashset;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+			Assert.AreEqual( 1, g.Strings.Count );
+			Assert.AreEqual( 1, g.ProxyArray.Length );
+			Assert.AreEqual( 1, g.ProxySet.Count );
+			Assert.AreEqual( 1, g.Version, "version collection before");
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+			Assert.AreEqual( "foo", g.Strings[0] );
+			Assert.AreSame( g, g.ProxyArray[0] );
+			IEnumerator enumer = g.ProxySet.Keys.GetEnumerator();
+			enumer.MoveNext();
+			Assert.AreSame( g, enumer.Current );
+			Assert.AreEqual(1, g.Version, "versioned collection before");
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+			Assert.AreEqual( 1, g.Version, "versioned collection before");
+			g.Strings.Add("bar");
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+			Assert.AreEqual( 2, g.Version, "versioned collection after" );
+			Assert.AreEqual( 2, g.Strings.Count, "versioned collection after" );
+			g.ProxyArray = null;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+			Assert.AreEqual( 3, g.Version, "versioned collection after" );
+			Assert.AreEqual( 0, g.ProxyArray.Length, "version collection after" );
+			g.FooComponents = new ArrayList();
+			g.ProxyArray = null;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+			Assert.AreEqual( 4, g.Version, "versioned collection after");
+			s.Delete(g);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		//[Ignore("Test not written yet.")]
 		public void RecursiveLoad() 
 		{
+			// Non polymorphisc class (there is an implementation optimization
+			// being tested here) - from h2.0.3 - what does that mean?
+			ISession s = sessions.OpenSession();
+			GlarchProxy last = new Glarch();
+			s.Save(last);
+			last.Order = 0;
+			for( int i=0; i<5; i++ ) 
+			{
+				GlarchProxy next = new Glarch();
+				s.Save(next);
+				last.Next = next;
+				last = next;
+				last.Order = (short)(i+1);
+			}
+
+			IEnumerator enumer = s.Enumerable("from g in class NHibernate.DomainModel.Glarch").GetEnumerator();
+			while( enumer.MoveNext() ) 
+			{
+				object obj = enumer.Current;
+			}
+
+			IList list = s.Find("from g in class NHibernate.DomainModel.Glarch");
+			Assert.AreEqual( 6, list.Count, "recursive find" );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			list = s.Find("from g in class NHibernate.DomainModel.Glarch");
+			Assert.AreEqual( 6, list.Count, "recursive iter" );
+			list = s.Find("from g in class NHibernate.DomainModel.Glarch where g.Next is not null");
+			Assert.AreEqual( 5, list.Count, "exclude the null next" );
+			s.Flush();
+			s.Close();
+//			TODO: resume here
+//			s = sessions.OpenSession();
+//			enumer = s.Enumerable("from g in class NHibernate.DomainModel.Glarch order by g.Order asc").GetEnumerator();
+//			while (
 		}
 		
 		[Test]
