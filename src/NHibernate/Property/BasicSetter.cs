@@ -41,9 +41,25 @@ namespace NHibernate.Property
 			{
 				property.SetValue( target, value, new object[0] );
 			}
+			catch( ArgumentException ae )
+			{
+				// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
+				// would be thrown, but it doesn't hurt to make sure.
+				if( property.PropertyType.IsAssignableFrom( value.GetType() )==false )
+				{
+					// add some details to the error message - there have been a few forum posts an they are 
+					// all related to an ISet and IDictionary mixups.
+					string msg = String.Format( "The type {0} can not be assigned to a property of type {1}", value.GetType().ToString(), property.PropertyType.ToString() );
+					throw new PropertyAccessException( ae, msg, true, clazz, propertyName );
+				}
+				else
+				{
+					throw new PropertyAccessException( ae, "ArgumentException while setting the property value by reflection", true, clazz, propertyName );
+				}
+			}
 			catch( Exception e )
 			{
-				throw new PropertyAccessException( e, "Exception occurred", true, clazz, propertyName );
+				throw new PropertyAccessException( e, "could not set a property value by reflection", true, clazz, propertyName );
 			}
 		}
 

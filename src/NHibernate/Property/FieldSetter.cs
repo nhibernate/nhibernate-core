@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Text;
 
 namespace NHibernate.Property
 {
@@ -40,6 +41,22 @@ namespace NHibernate.Property
 			try
 			{
 				field.SetValue( target, value );
+			}
+			catch( ArgumentException ae )
+			{
+				// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
+				// would be thrown, but it doesn't hurt to make sure.
+				if( field.FieldType.IsAssignableFrom( value.GetType() )==false )
+				{
+					// add some details to the error message - there have been a few forum posts an they are 
+					// all related to an ISet and IDictionary mixups.
+					string msg = String.Format( "The type {0} can not be assigned to a field of type {1}", value.GetType().ToString(), field.FieldType.ToString() );
+					throw new PropertyAccessException( ae, msg, true, clazz, name );
+				}
+				else
+				{
+					throw new PropertyAccessException( ae, "ArgumentException while setting the field value by reflection", true, clazz, name );
+				}
 			}
 			catch( Exception e )
 			{
