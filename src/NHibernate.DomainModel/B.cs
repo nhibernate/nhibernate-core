@@ -61,31 +61,19 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for count
 	/// </summary>
-	public Int32 Count
+	public virtual Int32 Count
 	{
-		get
-		{
-			return this._count;
-		}
-		set
-		{
-			this._count = value;
-		}
+		get { return _count; }
+		set { _count = value; }
 	}
 	
 	/// <summary>
 	/// Get/set for map
 	/// </summary>
-	public System.Collections.IDictionary Map
+	public virtual System.Collections.IDictionary Map
 	{
-		get
-		{
-			return this._map;
-		}
-		set
-		{
-			this._map = value;
-		}
+		get { return _map; }
+		set { _map = value; }
 	}
 	
 	#endregion

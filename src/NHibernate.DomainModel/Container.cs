@@ -96,61 +96,61 @@ namespace NHibernate.DomainModel
 		private Iesi.Collections.ISet _ternarySet;
 
 		
-		public IList OneToMany
+		public virtual IList OneToMany
 		{
 			get { return _oneToMany; }
 			set { _oneToMany = value; }
 		}
 
-		public IList ManyToMany
+		public virtual IList ManyToMany
 		{
 			get { return _manyToMany; }
 			set { _manyToMany = value; }
 		}
 
-		public IList Components
+		public virtual IList Components
 		{
 			get { return _components; }
 			set { _components = value; }
 		}
 
-		public Iesi.Collections.ISet Composites
+		public virtual Iesi.Collections.ISet Composites
 		{
 			get { return _composites; }
 			set { _composites = value; }
 		}
 
-		public IList Cascades
+		public virtual IList Cascades
 		{
 			get { return _cascades; }
 			set { _cascades = value; }
 		}
 
-		public long Id
+		public virtual long Id
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
 
-		public IList Bag
+		public virtual IList Bag
 		{
 			get { return _bag; }
 			set { _bag = value; }
 		}
 
-		public IList LazyBag
+		public virtual IList LazyBag
 		{
 			get { return _lazyBag; }
 			set { _lazyBag = value; }
 		}
 
-		public IDictionary TernaryMap
+		public virtual IDictionary TernaryMap
 		{
 			get { return _ternaryMap; }
 			set { _ternaryMap = value; }
 		}
 
-		public Iesi.Collections.ISet TernarySet
+		public virtual Iesi.Collections.ISet TernarySet
 		{
 			get { return _ternarySet; }
 			set { _ternarySet = value; }

@@ -350,6 +350,36 @@ namespace NHibernate.Test
 		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void ForceOuterJoin() 
 		{
+			if( ((Engine.ISessionFactoryImplementor)sessions).EnableJoinedFetch==false ) 
+			{
+				// don't bother to run the test if we can't test it
+				return;
+			}
+
+			ISession s = sessions.OpenSession();
+			Glarch g = new Glarch();
+			FooComponent fc = new FooComponent();
+			fc.Glarch = g;
+			FooProxy f = new Foo();
+			FooProxy f2 = new Foo();
+			f.Component = fc;
+			f.TheFoo = f2;
+			s.Save( f2 );
+			object id = s.Save( f );
+			object gid = s.GetIdentifier( f.Component.Glarch );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			f = (FooProxy)s.Load( typeof(Foo), id );
+			Assert.IsFalse( NHibernate.IsInitialized( f ) );
+			Assert.IsTrue( NHibernate.IsInitialized( f.Component.Glarch ) ); //outer-join="true"
+			Assert.IsFalse( NHibernate.IsInitialized( f.TheFoo ) ); //outer-join="auto"
+			Assert.AreEqual( gid, s.GetIdentifier( f.Component.Glarch ) );
+			s.Delete( f );
+			s.Delete( f.TheFoo );
+			s.Flush();
+			s.Close();
 			
 		}
 
@@ -541,6 +571,45 @@ namespace NHibernate.Test
 			object row = list[0];
 			Assert.IsTrue( row is object[] && ( (object[])row).Length==3 );
 
+			IQuery q = s.CreateQuery( 
+				"select bar, b " +
+				"from Bar bar " +
+				"left join bar.Baz baz left join baz.CascadingBars b " +
+				"where (bar.Name in (:nameList) or bar.Name in (:nameList)) and bar.String = :stringVal" );
+			
+			IList nameList = new ArrayList();
+			nameList.Add( "bar" );
+			nameList.Add( "Bar" );
+			nameList.Add( "Bar Two" );
+			q.SetParameterList( "nameList", nameList );
+			q.SetParameter( "stringVal", "a string" );
+			list = q.List();
+			// a check for SAPDialect here
+			Assert.AreEqual( 2, list.Count );
+
+			q = s.CreateQuery( 
+				"select bar, b " +
+				"from Bar bar " + 
+				"inner join bar.Baz baz inner join baz.CascadingBars b " +
+				"where bar.Name like 'bar%'" );
+			list = q.List();
+			Assert.AreEqual( 1, list.Count );
+
+			q = s.CreateQuery( 
+				"select bar, b " +
+				"from Bar bar " +
+				"left join bar.Baz baz left join baz.CascadingBars b " +
+				"where bar.Name like :name and b.Name like :name" );
+
+			// add a check for HSQLDialect
+			q.SetString( "name", "Bar%" );
+			list = q.List();
+			Assert.AreEqual( 1, list.Count );
+
+			s.Delete( baz );
+			s.Delete( bar2 );
+			s.Flush();
+			s.Close();
 
 		}
 
@@ -2853,6 +2922,53 @@ namespace NHibernate.Test
 		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void ProxyArray() 
 		{
+			ISession s = sessions.OpenSession();
+			GlarchProxy g = new Glarch();
+			Glarch g1 = new Glarch();
+			Glarch g2 = new Glarch();
+			g.ProxyArray = new GlarchProxy[] { g1, g2 };
+			Glarch g3 = new Glarch();
+			s.Save( g3 );
+			g2.ProxyArray = new GlarchProxy[] { null, g3, g };
+
+			object emptyObject = new object();
+			Iesi.Collections.ISet hashset = new Iesi.Collections.HashedSet();
+			hashset.Add( g1 );
+			hashset.Add( g2 );
+			g.ProxySet = hashset;
+			s.Save( g );
+			s.Save( g1 );
+			s.Save( g2 );
+			object id = s.GetIdentifier( g );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), id );
+			Assert.AreEqual( 2, g.ProxyArray.Length, "array of proxies" );
+			Assert.IsNotNull( g.ProxyArray[0], "array of proxies" );
+			Assert.IsNull( g.ProxyArray[1].ProxyArray[0], "deferred load test" );
+			Assert.AreEqual( g, g.ProxyArray[1].ProxyArray[2], "deferred load test" );
+			Assert.AreEqual( 2, g.ProxySet.Count, "set of proxies" );
+
+			IEnumerator enumer = s.Enumerable( "from g in class NHibernate.DomainModel.Glarch" ).GetEnumerator();
+			while( enumer.MoveNext() ) 
+			{
+				s.Delete( enumer.Current );
+			}
+
+			s.Flush();
+			s.Disconnect();
+
+			// serialize and then deserialize the session.
+			System.IO.Stream stream = new System.IO.MemoryStream();
+			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			formatter.Serialize(stream, s);
+			stream.Position = 0;
+			s = (ISession)formatter.Deserialize(stream);
+			stream.Close();
+
+			s.Close();
 		}
 
 		[Test]
@@ -3168,7 +3284,7 @@ namespace NHibernate.Test
 			// ObjectNotFoundException
 			catch(LazyInitializationException lie) 
 			{
-				Assert.IsNotNull(lie); //getting ride of 'lie' is never used compile warning
+				Assert.IsNotNull( lie ); //getting ride of 'lie' is never used compile warning
 				err = true;
 			}
 			Assert.IsTrue(err);
@@ -3403,6 +3519,64 @@ namespace NHibernate.Test
 		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void ProxiesInCollections() 
 		{
+			ISession s = sessions.OpenSession();
+			Baz baz = new Baz();
+			Bar bar = new Bar();
+			Bar bar2 = new Bar();
+			s.Save( bar );
+			object bar2id = s.Save( bar2 );
+			baz.FooArray = new Foo[] { bar, bar2 };
+
+			object emptyObject = new object();
+			Iesi.Collections.ISet hashset = new Iesi.Collections.HashedSet();
+			bar = new Bar();
+			s.Save( bar );
+			hashset.Add( bar );
+			baz.FooSet = hashset;
+			hashset = new Iesi.Collections.HashedSet();
+			hashset.Add( new Bar() );
+			hashset.Add( new Bar() );
+			baz.CascadingBars = hashset;
+			ArrayList list = new ArrayList();
+			list.Add( new Foo() );
+			baz.FooBag = list;
+			object id = s.Save( baz );
+			IEnumerator enumer = baz.CascadingBars.GetEnumerator();
+			enumer.MoveNext();
+			object bid = ((Bar)enumer.Current).Key;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			BarProxy barprox = (BarProxy)s.Load( typeof(Bar), bid );
+			BarProxy bar2prox = (BarProxy)s.Load( typeof(Bar), bar2id );
+			Assert.IsTrue( bar2prox is Proxy.INHibernateProxy );
+			Assert.IsTrue( barprox is Proxy.INHibernateProxy );
+			baz = (Baz)s.Load( typeof(Baz), id );
+			enumer = baz.CascadingBars.GetEnumerator();
+			enumer.MoveNext();
+			BarProxy b1 = (BarProxy)enumer.Current;
+			enumer.MoveNext();
+			BarProxy b2 = (BarProxy)enumer.Current;
+			Assert.IsTrue( 
+				( b1==barprox && !(b2 is Proxy.INHibernateProxy) )
+				|| ( b2==barprox && !(b1 is Proxy.INHibernateProxy) ) ); //one-to-many
+			Assert.IsTrue( baz.FooArray[0] is Proxy.INHibernateProxy ); //many-to-many
+			Assert.AreEqual( bar2prox, baz.FooArray[1] );
+			if( ((Engine.ISessionFactoryImplementor)sessions).EnableJoinedFetch ) 
+			{
+				enumer = baz.FooBag.GetEnumerator();
+				enumer.MoveNext();
+				Assert.IsFalse( enumer.Current is Proxy.INHibernateProxy ); // many-to-many outer-join="true"
+		}
+
+			enumer = baz.FooSet.GetEnumerator();
+			enumer.MoveNext();
+			Assert.IsFalse( enumer.Current is Proxy.INHibernateProxy ); //one-to-many
+			s.Delete( "from o in class Baz" );
+			s.Delete( "from o in class Foo" );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
@@ -3416,7 +3590,6 @@ namespace NHibernate.Test
 		public void PSCache() 
 		{
 		}
-
 
 	}
 }

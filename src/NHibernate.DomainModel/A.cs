@@ -1,4 +1,3 @@
-
 using System;
 
 namespace NHibernate.DomainModel
@@ -47,31 +46,19 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for id
 	/// </summary>
-	public Int64 Id
-	{
-		get
+	public virtual Int64 Id
 		{
-			return _id;
-		}
-		set
-		{
-			_id = value;
-		}
+		get { return _id; }
+		set	{ _id = value; }
 	}
 	
 	/// <summary>
 	/// Get/set for name
 	/// </summary>
-	public String Name
+	public virtual String Name
 	{
-		get
-		{
-			return _name;
-		}
-		set
-		{
-			_name = value;
-		}
+		get { return _name; }
+		set { _name = value; }
 	}
 	
 	#endregion

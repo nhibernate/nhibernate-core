@@ -28,25 +28,25 @@ namespace NHibernate.DomainModel
 
 		#endregion 
 
-		public Container Container 
+		public virtual Container Container 
 		{
 			get { return _container; }
 			set { _container = value; }
 		}
 
-		public long Id 
+		public virtual long Id 
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
 
-		public IList Bag 
+		public virtual IList Bag 
 		{
 			get { return _bag; }
 			set { _bag = value; }
 		}
 
-		public IList LazyBag 
+		public virtual IList LazyBag 
 		{
 			get { return _lazyBag; }
 			set { _lazyBag = value; }

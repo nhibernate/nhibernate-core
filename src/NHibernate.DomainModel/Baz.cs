@@ -38,7 +38,6 @@ namespace NHibernate.DomainModel
 	private System.Collections.IDictionary _cachedMap;
 	private System.Collections.IDictionary _stringGlarchMap;
 	private System.Collections.IDictionary _anyToAny;
-	//private System.Collections.IDictionary _fooSet;
 	private Iesi.Collections.ISet _fooSet;
 	private Iesi.Collections.ISet _stringSet;
 	private Iesi.Collections.ISet _topFoos;
