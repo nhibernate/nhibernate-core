@@ -134,7 +134,7 @@ namespace NHibernate.Dialect {
 					return "BIT";
 					//break;
 				case DbType.Byte:
-					return "BIT";
+					return "TINYINT UNSIGNED";
 					//break;
 				case DbType.Currency:
 					return "MONEY";
