@@ -62,6 +62,8 @@ namespace NHibernate.Collection {
 
 		private string role;
 
+		private Dialect.Dialect dialect;
+
 		public CollectionPersister(Mapping.Collection collection, Configuration datastore, ISessionFactoryImplementor factory) {
 			collectionType = collection.Type;
 			role = collection.Role;
@@ -154,7 +156,7 @@ namespace NHibernate.Collection {
 				elementClass = null;
 			}
 			loader = CreateCollectionQuery(factory);
-			
+			this.dialect = factory.Dialect;
 		}
 
 		public ICollectionInitializer Initializer {
@@ -330,14 +332,14 @@ namespace NHibernate.Collection {
 
 		private string SqlDeleteString() {
 			if (isOneToMany) {
-				Update update = new Update()
+				Update update = new Update(dialect)
 					.SetTableName(qualifiedTableName)
 					.AddColumns(keyColumnNames, "null");
 				if (hasIndex) update.AddColumns(indexColumnNames, "null");
 				return update.SetPrimaryKeyColumnNames(keyColumnNames)
 					.ToStatementString();
 			} else {
-				return new Delete()
+				return new Delete(dialect)
 					.SetTableName(qualifiedTableName)
 					.SetPrimaryKeyColumnNames(keyColumnNames)
 					.ToStatementString();
@@ -346,7 +348,7 @@ namespace NHibernate.Collection {
 
 		private string SqlInsertRowString() {
 			if (isOneToMany) {
-				Update update = new Update()
+				Update update = new Update(dialect)
 					.SetTableName(qualifiedTableName)
 					.AddColumns(keyColumnNames);
 				if (hasIndex) update.AddColumns(indexColumnNames);
@@ -366,7 +368,7 @@ namespace NHibernate.Collection {
 			if (isOneToMany) {
 				return null;
 			} else {
-				return new Update()
+				return new Update(dialect)
 					.SetTableName(qualifiedTableName)
 					.AddColumns(elementColumnNames)
 					.SetPrimaryKeyColumnNames( ArrayHelper.Join(keyColumnNames, rowSelectColumnNames) )
@@ -377,13 +379,13 @@ namespace NHibernate.Collection {
 		private string SqlDeleteRowString() {
 			string[] pkColumns = ArrayHelper.Join(keyColumnNames, rowSelectColumnNames);
 			if (isOneToMany) {
-				Update update = new Update()
+				Update update = new Update(dialect)
 					.SetTableName(qualifiedTableName)
 					.AddColumns(keyColumnNames, "null");
 				if (hasIndex) update.AddColumns(indexColumnNames, "null");
 				return update.SetPrimaryKeyColumnNames(pkColumns).ToStatementString();
 			} else {
-				return new Delete()
+				return new Delete(dialect)
 					.SetTableName(qualifiedTableName)
 					.SetPrimaryKeyColumnNames(pkColumns)
 					.ToStatementString();

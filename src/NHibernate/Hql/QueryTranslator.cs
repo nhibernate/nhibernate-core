@@ -20,7 +20,7 @@ using System.Runtime.CompilerServices;
 
 namespace NHibernate.Hql {
 	/// <summary> 
-	/// An instance of <tt>QueryTranslator</tt> translates a Hibernate query string to SQL.
+	/// An instance of <c>QueryTranslator</c> translates a Hibernate query string to SQL.
 	/// </summary>
 	public class QueryTranslator : BaseLoader {
 		private static readonly log4net.ILog log  = log4net.LogManager.GetLogger(typeof(QueryTranslator));
