@@ -152,7 +152,7 @@ namespace NHibernate.tool.hbm2net
 		
 		public virtual System.String getExtends(ClassMapping cmap)
 		{
-			System.String extendz = null;
+			System.String extendz = string.Empty;
 			
 			if (cmap.Interface)
 			{
@@ -243,7 +243,7 @@ namespace NHibernate.tool.hbm2net
 			}
 			else
 			{
-				return null;
+				return string.Empty;
 			}
 		}
 		

@@ -1,0 +1,86 @@
+${javaTool.getPackageDeclaration($clazz)}
+{
+
+${classimports}
+
+#if($clazz.hasMeta("class-description"))
+/**
+$javaTool.toJavaDoc($clazz.getMetaAsString("class-description"),0) */
+#else
+/**
+ * POJO for $clazz.generatedName
+ * @author hbm2net
+ */
+#end
+$clazz.modifiers $clazz.scope $clazz.declarationType $clazz.generatedName#if(($javaTool.hasExtends($clazz))||($javaTool.hasImplements($clazz))) : #end $javaTool.getExtends($clazz) $javaTool.getImplements($clazz) {
+
+#if(!$clazz.isInterface())
+	// Fields
+#foreach($field in $clazz.Fields())  
+	## nullable persistent comment not included
+	$field.FieldScope() $javaTool.getTrueTypeName($field, $class2classmap) $field.fieldName;
+#end
+
+	// Constructors
+
+	#if($clazz.getAllFieldsForFullConstructor().size()>0)
+    /** default constructor */
+    public ${clazz.generatedName}() {
+    }
+    #end
+	
+	/** full constructor */
+	public ${clazz.generatedName}($javaTool.fieldsAsParameters($clazz.AllFieldsForFullConstructor(),$clazz,$class2classmap))
+    #if(!$clazz.FieldsForSupersFullConstructor().isEmpty()) 
+	    : base($javaTool.fieldsAsArguments($clazz.FieldsForSupersFullConstructor(),$clazz,$class2classmap));	    
+    #end
+    {
+    #foreach($field in $clazz.getLocalFieldsForFullConstructor())  
+        this.$field.fieldName = $field.fieldName;
+    #end
+    }
+	
+	#if(($clazz.AllFieldsForFullConstructor().size() > 0) && $clazz.needsMinimalConstructor())
+	/** minimal constructor */
+    public ${clazz.generatedName}($javaTool.fieldsAsParameters($clazz.AllFieldsForMinimalConstructor(),$clazz,$class2classmap)) {
+	#if(!${clazz.FieldsForSupersMinimalConstructor().isEmpty()}) 
+	    super($javaTool.fieldsAsArguments($clazz.FieldsForSupersMinimalConstructor(),$clazz,$class2classmap));	    
+    #end
+    #foreach($field in $clazz.LocalFieldsForMinimalConstructor())  
+        this.$field.fieldName = $field.fieldName;
+    #end
+	}     
+    #end
+
+## Property accessors
+	#foreach($field in $clazz.Fields())
+	#if($property.hasMeta("field-description"))
+	/**
+	$javaTool.toJavaDoc($clazz.getMetaAsString("field-description"),4) */
+	#end
+	## getter
+    $field.PropertyGetScope() ${javaTool.getTrueTypeName($field, $class2classmap)} $field.GetterSignature() {
+		return this.$field.fieldName;
+	}
+	
+	## setter
+	$field.PropertySetScope() void set$field.AccessorName()($javaTool.getTrueTypeName($field, $class2classmap) $field.FieldName()) {
+		this.$field.fieldName = $field.fieldName;
+	}
+	#end    
+#else ## if !interface
+	## Property accessors for interface
+	#foreach($field in $clazz.getFields())
+	#if($property.hasMeta("field-description"))
+	/**
+	$javaTool.toJavaDoc($clazz.getMetaAsString("field-description"),4) */
+	#end
+	## getter
+$field.PropertyGetScope() ${javaTool.getTrueTypeName($field, $class2classmap)} $field.GetterSignature();
+	
+	## setter
+	$field.PropertySetScope() void set$field.AccessorName()($javaTool.getTrueTypeName($field, $class2classmap) $field.FieldName());
+	#end
+#end
+}
+}
