@@ -22,6 +22,7 @@ namespace NHibernate.Test
 			ExportSchema( new string[] { "Simple.hbm.xml"} );
 		}
 
+		[Test]
 		public void TestCRUD() 
 		{
 			long key = 10;
@@ -107,7 +108,8 @@ namespace NHibernate.Test
 		}
 
 		
-		private void OldTestCase()
+		[Test]
+		public void SetPropertiesOnQuery()
 		{
 			DateTime now = DateTime.Now;
 			
@@ -115,48 +117,31 @@ namespace NHibernate.Test
 			ITransaction t = s.BeginTransaction();
 			
 			// create a new
+			long key = 10;
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
 			simple.Address = "Street 12";
 			simple.Date = now;
 			simple.Count = 99;
 			
-			s.Save(simple, 10);
+			s.Save(simple, key);
 			
 			t.Commit();
-			s.Close();
-
 			
-			// BUG: It looks like the problem is coming here because we now have the sample Entity loaded
-			// twice in the entries field for this Session.  I don't understand why that would happen
-			// because a Dictionary should not allow a key to be in there twice...
+			t = s.BeginTransaction();
+
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 			q.SetProperties(simple);
 			
 			Simple loadedSimple = (Simple)q.List()[0];
-			// Check if save failed
-			Assertion.AssertEquals("Save failed", 99,             simple.Count);
-			Assertion.AssertEquals("Save failed", "Simple 1",     simple.Name);
-			Assertion.AssertEquals("Save failed", "Street 12",    simple.Address);
-			Assertion.AssertEquals("Save failed", now.ToString(), simple.Date.ToString());
-			// Check if load failed
-			Assertion.AssertNotNull("Unable to load object",              loadedSimple);
-			Assertion.AssertEquals("Load failed", simple.Count,           loadedSimple.Count);
-			Assertion.AssertEquals("Load failed", simple.Name,            loadedSimple.Name);
-			Assertion.AssertEquals("Load failed", simple.Address,         loadedSimple.Address);
-			Assertion.AssertEquals("Load failed", simple.Date.ToString(), loadedSimple.Date.ToString());
+			Assert.AreEqual(key, loadedSimple.Key);
+			Assert.AreEqual(99, loadedSimple.Count);
+			Assert.AreEqual("Simple 1", loadedSimple.Name);
+			Assert.AreEqual("Street 12", loadedSimple.Address);
+			Assert.AreEqual(now.ToString(), loadedSimple.Date.ToString());
 
-			// The INSERT, UPDATE amd SELECT are performed due to some hacks, 
-			// see Impl\SessionImpl.cs class AdoHack
-			// Btw: when something goes wrong, the transaction remains opened ;-)
-
-			// When you set a breakpoint at this line, you'll see the record in the database
-			((Transaction.Transaction)t).AdoTransaction.Commit();
-
-			//s.Delete(simple);
-			//
-			// note: this line fails!!!!
-			//
+			s.Delete(simple);
+			
 			t.Commit();
 			s.Close();
 			
