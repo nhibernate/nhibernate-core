@@ -730,8 +730,6 @@ namespace NHibernate.Impl
 				if ( p.HasCache ) p.CacheConcurrencyStrategy.Destroy();
 			}
 
-			//TODO: H2.0.3
-			//if (statementCache!=null) statementCache.CloseAll();
 			try 
 			{
 				connectionProvider.Close();
