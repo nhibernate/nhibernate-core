@@ -38,6 +38,7 @@ namespace NHibernate.Collection {
 		public Map(ISessionImplementor session, IDictionary map) : base(session) {
 			this.map = map;
 			initialized = true;
+			directlyAccessible = true;
 		}
 
 		public int Count {
