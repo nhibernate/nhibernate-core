@@ -31,8 +31,6 @@ namespace NHibernate.Cfg
 
 		private static IDictionary properties = new Hashtable();
 		
-		private const string Version = "prealpha";
-
 		public const string ConnectionProvider = "hibernate.connection.provider";
 		public const string ConnectionDriver = "hibernate.connection.driver_class";
 		public const string ConnectionString = "hibernate.connection.connection_string";
