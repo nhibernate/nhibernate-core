@@ -376,6 +376,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlCommandTest\SqlStringBuilderFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommandTest\SqlStringFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlCommandTest\SqlStringParameterFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
