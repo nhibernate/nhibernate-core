@@ -30,8 +30,7 @@ namespace NHibernate.Cfg
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Environment));
 
 		private static IDictionary properties = new Hashtable();
-		private static IDictionary isolationLevels = new Hashtable();
-
+		
 		private const string Version = "prealpha";
 
 		public const string ConnectionProvider = "hibernate.connection.provider";
@@ -61,12 +60,6 @@ namespace NHibernate.Cfg
 		static Environment() 
 		{
 			log4net.Config.DOMConfigurator.Configure();
-
-			isolationLevels.Add( System.Data.IsolationLevel.Chaos, "NONE" );
-			isolationLevels.Add( System.Data.IsolationLevel.ReadUncommitted, "READ_UNCOMMITTED" );
-			isolationLevels.Add( System.Data.IsolationLevel.ReadCommitted, "READ_COMMITTED" );
-			isolationLevels.Add( System.Data.IsolationLevel.RepeatableRead, "REPEATABLE_READ" );
-			isolationLevels.Add( System.Data.IsolationLevel.Serializable, "SERIALIZABLE" );
 
 			NameValueCollection props = System.Configuration.ConfigurationSettings.GetConfig("nhibernate") as NameValueCollection;
 			if (props==null) 
