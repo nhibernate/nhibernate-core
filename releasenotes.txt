@@ -18,7 +18,7 @@ PreAlpha Build 0.1.0.0
 - Fixed IndexOutOfRangeException with NormalizedEntityPersister for versioned entities.
 - Added ObjectType to TypeFactory and NHibernate.
 - Fixed problem with hql subselects referencing a class in main query.
-- Session is now Serializable.  
+- Limited support for Serializing a Session.  Sometimes a Refresh() is needed after Deserialization.      
 - Fixed bug with sending a one-to-many collection to be updated that involves inserting a new row.
 
 
