@@ -32,7 +32,7 @@
 	-->
 	<property name="project.name" value="nhibernate" />
 	<property name="project.version.major" value="0" />
-	<property name="project.version.minor" value="7" />
+	<property name="project.version.minor" value="8" />
 	<property name="project.version.build" value="0" />
 	<property name="project.version.revision" value="0" />
 	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
