@@ -65,14 +65,7 @@ namespace NHibernate.Util
 		/// <returns>A Collection of DictionaryEntries</returns>
 		public static ICollection ConcurrentEntries(IDictionary map) 
 		{
-			IList list = new ArrayList(map.Count);
-			foreach(DictionaryEntry de in map) 
-			{
-				DictionaryEntry newEntry = new DictionaryEntry(((IdentityKey)de.Key).Key, de.Value);
-				list.Add(newEntry);
-			}
-
-			return list;
+			return ((IdentityMap)map).EntryList;
 		}
 
 		/// <summary>
@@ -229,38 +222,7 @@ namespace NHibernate.Util
 		{
 			map.CopyTo(array, i);
 		}
-
-		/// <summary>
-		/// Provides a snapshot VIEW in the form of a Dictionary of the contents of the IdentityMap.
-		/// You can safely iterate over this VIEW and modify the actual IdentityMap because the
-		/// VIEW is a copy of the contents, not a reference to the existing Map.
-		/// 
-		/// The view of the IdentityMap where the key-value pair is
-		/// key - the underlying object, NOT the IdentityKey
-		/// value - the same value object as in the Dictionary
-		/// </summary>
-		/// <remarks>
-		/// In Java there is a Set class so this returns an Set that contains the Map.Entry 
-		/// (DictionaryEntry struct) interface.  Since there is no equivalent I am just going to 
-		/// return a Dictionary that contains the Key & Value instead of a Set of the Entries
-		/// </remarks>
-		public IDictionary EntryDictionary 
-		{
-			get 
-			{
-				ICollection coll = IdentityMap.ConcurrentEntries(this);
-				
-				Hashtable entryHashtable = new Hashtable(coll.Count);
-				foreach(DictionaryEntry de in coll) 
-				{
-					entryHashtable.Add(de.Key, de.Value);
-				}
-				
-				return entryHashtable;
-			}
-		}
 		
-
 		/// <summary>
 		/// Provides a snapshot VIEW in the form of a List of the contents of the IdentityMap.
 		/// You can safely iterate over this VIEW and modify the actual IdentityMap because the
@@ -272,12 +234,12 @@ namespace NHibernate.Util
 		{
 			get 
 			{
-
-				ICollection coll = IdentityMap.ConcurrentEntries(this);
-				IList list = new ArrayList(coll.Count);
-				foreach(DictionaryEntry de in map) 
+				IList list = new ArrayList(map.Count);
+				foreach(DictionaryEntry de in map)
 				{
-					DictionaryEntry newEntry = new DictionaryEntry(de.Key, de.Value);
+					// add the underlying Key behind the IdentityKey.Key and the Value (the value
+					// is not wrapping anything) to the List
+					DictionaryEntry newEntry = new DictionaryEntry(((IdentityKey)de.Key).Key, de.Value);
 					list.Add(newEntry);
 				}
 

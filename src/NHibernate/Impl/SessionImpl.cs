@@ -2373,8 +2373,8 @@ namespace NHibernate.Impl {
 
 			log.Debug("Processing unreferenced collections");
 
-			//foreach(DictionaryEntry e in collections) {
-			foreach(DictionaryEntry e in collections.EntryDictionary) {
+			foreach(DictionaryEntry e in IdentityMap.ConcurrentEntries(collections))// collections.EntryList) 
+			{
 				if ( ! ( (CollectionEntry) e.Value ).reached ) 
 				{
 					UpdateUnreachableCollection( (PersistentCollection) e.Key );
@@ -2388,8 +2388,8 @@ namespace NHibernate.Impl {
 
 			log.Debug("scheduling collection removes/(re)creates/updates");
 
-			//foreach(DictionaryEntry me in collections) {
-			foreach(DictionaryEntry me in collections.EntryDictionary) {
+			foreach(DictionaryEntry me in IdentityMap.ConcurrentEntries(collections)) // collections.EntryList) 
+			{
 				PersistentCollection coll = (PersistentCollection) me.Key;
 				CollectionEntry ce = (CollectionEntry) me.Value;
 
@@ -2422,13 +2422,13 @@ namespace NHibernate.Impl {
 
 			log.Debug("post flush");
 
-			//foreach(DictionaryEntry de in collections) {
-			foreach(DictionaryEntry de in collections.EntryDictionary) {
+			foreach(DictionaryEntry de in IdentityMap.ConcurrentEntries(collections)) // collections.EntryList) 
+			{
 				((CollectionEntry) de.Value).PostFlush( (PersistentCollection) de.Key );
 			}
 
-			//foreach(DictionaryEntry de in entries) {
-			foreach(DictionaryEntry de in entries.EntryDictionary) {
+			foreach(DictionaryEntry de in IdentityMap.ConcurrentEntries(entries)) //entries.EntryList) 
+			{
 				EntityEntry entry = (EntityEntry) de.Value;
 				object obj = de.Key;
 
@@ -2443,11 +2443,8 @@ namespace NHibernate.Impl {
 			// initialize dirty flags for arrays + collections with composte elements
 			// and reset reached, doupdate, etc
 
-			//foreach(DictionaryEntry de in collections) {
-			//IDictionary entryDictionary = collections.GetEntryDictionary();
-			foreach(DictionaryEntry de in collections.EntryDictionary) {
-			//foreach(DictionaryEntry de in entryDictionary) {
-				//((CollectionEntry)de.Value).PreFlush( (PersistentCollection) de.Key );
+			foreach(DictionaryEntry de in IdentityMap.ConcurrentEntries(collections)) // collections.EntryList) 
+			{
 				CollectionEntry ce = (CollectionEntry)de.Value;
 				PersistentCollection pc = (PersistentCollection)de.Key;
 
