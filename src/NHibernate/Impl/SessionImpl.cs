@@ -5436,24 +5436,93 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object DoCopy( object obj, object id, IDictionary copiedAlready )
 		{
-			/*
 			if ( obj == null )
 			{
 				return null;
 			}
 
-			if ( obj is IHibenateProxy )
+			if ( obj is INHibernateProxy )
 			{
-				ILazyInitializer li = HibernateProxyHelper.
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) obj );
+				if ( li.IsUninitialized )
+				{
+					return Load( li.PersistentClass, li.Identifier ); // EARLY EXIT!
+				}
 			}
 
-			if ( copiedAlready.Contains( obj )
+			if ( copiedAlready.Contains( obj ) )
 			{
 				return obj;		// EARLY EXIT!
 			}
-			*/
 
-			return null;
+			EntityEntry entry = GetEntry( obj );
+			if ( entry != null )
+			{
+				if ( id != null && entry.Id.Equals( id ) ) 
+				{
+					return obj;	//EARLY EXIT!
+				}
+				// else copy from one persistent instance to another!
+			}
+
+			System.Type clazz = obj.GetType() ;
+			IClassPersister persister = GetPersister( clazz );
+
+			object result;
+			object target;
+			if ( id == null && persister.IsUnsaved( obj ) )
+			{
+				copiedAlready[ obj ] = obj;
+				SaveWithGeneratedIdentifier( obj, Cascades.CascadingAction.ActionCopy, copiedAlready );
+				result = obj;		// TODO: Handle it's proxy (reassociate it, I suppose)
+				target = obj;
+			}
+			else
+			{
+				if ( id == null )
+				{
+					id = persister.GetIdentifier( obj );
+				}
+				result = Get( clazz, id );
+				if ( result == null )
+				{
+					copiedAlready[ obj ] = obj;
+					SaveWithGeneratedIdentifier( obj, Cascades.CascadingAction.ActionCopy, copiedAlready );
+					result = obj;		// TODO: Could it have a proxy?
+					target = obj;
+				}
+				else
+				{
+					target = Unproxy( result );
+					copiedAlready[ obj ] = target;
+					if ( target == obj )
+					{
+						return result;
+					}
+					else if ( NHibernateUtil.GetClass( result ) != clazz )
+					{
+						throw new WrongClassException( "class of the given object did not match class of persistent copy", id, clazz );
+					}
+					else if ( persister.IsVersioned && !persister.VersionType.Equals( persister.GetVersion( result ), persister.GetVersion( obj ) ) )
+					{
+						throw new StaleObjectStateException( clazz, id );
+					}
+
+					// cascade first, so that all unsaved objected get saved before we actually copy
+					Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionCopy, Engine.CascadePoint.CascadeOnCopy, copiedAlready );
+				}
+			}
+
+			// no need to handle the version differently
+			object[] copiedValues = TypeFactory.Copy(
+				persister.GetPropertyValues( obj ),
+				persister.GetPropertyValues( target ),
+				persister.PropertyTypes,
+				this,
+				target, copiedAlready );
+
+			persister.SetPropertyValues( target, copiedValues );
+			return result;
 		}
 	}
 }
