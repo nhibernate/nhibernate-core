@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	internal sealed class ScheduledIdentityInsertion : ScheduledEntityAction, IExecutable
 	{
 		private readonly object[] state;
-		private CacheEntry cacheEntry;
+		//private CacheEntry cacheEntry;
 		private object generatedId;
 
 		/// <summary>
@@ -45,7 +45,11 @@ namespace NHibernate.Impl
 			*/
 		}
 
-		public override void AfterTransactionCompletion( )
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sucess"></param>
+		public override void AfterTransactionCompletion( bool sucess )
 		{
 			// TODO: renable
 			/*

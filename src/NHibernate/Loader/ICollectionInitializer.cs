@@ -12,15 +12,6 @@ namespace NHibernate.Loader
 		/// Initialize the given collection
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="collection"></param>
-		/// <param name="owner"></param>
-		/// <param name="session"></param>
-		void Initialize( object id, PersistentCollection collection, object owner, ISessionImplementor session );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
 		/// <param name="session"></param>
 		void Initialize( object id, ISessionImplementor session);
 	}

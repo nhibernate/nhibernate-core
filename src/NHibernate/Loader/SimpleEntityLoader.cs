@@ -14,10 +14,10 @@ namespace NHibernate.Loader
 	/// </summary>
 	public class SimpleEntityLoader : Loader, IUniqueEntityLoader
 	{
-		private ILoadable[ ] persister;
-		private IType[ ] idType;
+		private readonly ILoadable[ ] persister;
+		private readonly IType idType;
 		private SqlString sqlString;
-		private LockMode[ ] lockMode;
+		private readonly LockMode[ ] lockMode;
 
 		/// <summary>
 		/// 
@@ -29,7 +29,7 @@ namespace NHibernate.Loader
 		public SimpleEntityLoader( ILoadable persister, SqlString sqlString, LockMode lockMode, Dialect.Dialect d ) : base( d )
 		{
 			this.persister = new ILoadable[ ] {persister};
-			this.idType = new IType[ ] {persister.IdentifierType};
+			this.idType = persister.IdentifierType;
 			this.sqlString = sqlString;
 			this.lockMode = new LockMode[ ] {lockMode};
 			PostInstantiate();
@@ -43,10 +43,22 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary></summary>
+		protected override int[] Owners
+		{
+			get { return null; }
+		}
+
+		/// <summary></summary>
+		protected override bool IsSingleRowLoader
+		{
+			get { return true; }
+		}
+
+		/// <summary></summary>
 		protected override ILoadable[ ] Persisters
 		{
 			get { return persister; }
-			set { persister = value; }
+			set { throw new NotSupportedException( "cannot assign to the Persisters property" ); }
 		}
 
 		/// <summary></summary>
@@ -71,11 +83,10 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		public object Load( ISessionImplementor session, object id, object obj )
 		{
-			IList list = LoadEntity( session, new object[ ] {id}, idType, obj, id, false );
+			IList list = LoadEntity( session, id, idType, obj, id );
 			if( list.Count == 1 )
 			{
 				return list[ 0 ];
-				//return ( (object[]) list[0] )[0];
 			}
 			else if( list.Count == 0 )
 			{
@@ -111,6 +122,5 @@ namespace NHibernate.Loader
 		{
 			return row[ 0 ];
 		}
-
 	}
 }

@@ -60,11 +60,15 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override ICollection GetOrphans( object snapshot )
 		{
+			/*
 			IDictionary sn = ( IDictionary ) snapshot;
 			ArrayList result = new ArrayList( sn.Keys.Count );
 			result.AddRange( sn.Keys );
-			PersistentCollection.IdentityRemoveAll( result, internalSet, session );
+			PersistentCollection.IdentityRemoveAll( result, internalSet, Session );
 			return result;
+			*/
+			IDictionary sn = ( IDictionary ) snapshot;
+			return PersistentCollection.GetOrphans( sn.Keys, internalSet, Session );
 		}
 
 		/// <summary>
@@ -83,7 +87,7 @@ namespace NHibernate.Collection
 				foreach( object obj in internalSet )
 				{
 					object oldValue = snapshot[ obj ];
-					if( oldValue == null || elementType.IsDirty( oldValue, obj, session ) )
+					if( oldValue == null || elementType.IsDirty( oldValue, obj, Session ) )
 					{
 						return false;
 					}
@@ -123,7 +127,7 @@ namespace NHibernate.Collection
 		{
 			internalSet = collection;
 			SetInitialized();
-			directlyAccessible = true;
+			DirectlyAccessible = true;
 		}
 
 		/// <summary>
@@ -138,7 +142,7 @@ namespace NHibernate.Collection
 			object[ ] array = ( object[ ] ) disassembled;
 			for( int i = 0; i < array.Length; i += 2 )
 			{
-				internalSet.Add( persister.ElementType.Assemble( array[ i ], session, owner ) );
+				internalSet.Add( persister.ElementType.Assemble( array[ i ], Session, owner ) );
 			}
 			SetInitialized();
 		}
@@ -390,7 +394,7 @@ namespace NHibernate.Collection
 		/// <param name="writeOrder"></param>
 		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
-			persister.WriteElement( st, entry, writeOrder, session );
+			persister.WriteElement( st, entry, writeOrder, Session );
 		}
 
 		/// <summary>
@@ -402,7 +406,7 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
 		{
-			object element = persister.ReadElement(rs, owner, session);
+			object element = persister.ReadElement(rs, owner, Session);
 			tempList.Add( element );
 			return element;
 		}
@@ -422,14 +426,12 @@ namespace NHibernate.Collection
 		/// that was populated during <c>ReadFrom()</c> and write it to the underlying 
 		/// Set.
 		/// </summary>
-		public override void EndRead()
+		public override bool EndRead()
 		{
 			internalSet.AddAll( tempList );
 			tempList = null;
 			SetInitialized();
-			// TODO: h2.1 synch to return bool instead of IsCacheable (NH specific code)
-			IsCacheable = true;
-			// return true;
+			return true;
 		}
 
 		/// <summary>
@@ -452,7 +454,7 @@ namespace NHibernate.Collection
 
 			foreach( object obj in internalSet )
 			{
-				result[ i++ ] = persister.ElementType.Disassemble( obj, session );
+				result[ i++ ] = persister.ElementType.Disassemble( obj, Session );
 			}
 			return result;
 		}
@@ -482,7 +484,7 @@ namespace NHibernate.Collection
 				//object testKey = e.Key;
 				object oldKey = snapshot[ obj ];
 
-				if( oldKey != null && elemType.IsDirty( obj, oldKey, session ) )
+				if( oldKey != null && elemType.IsDirty( obj, oldKey, Session ) )
 				{
 					deletes.Add( obj );
 				}
@@ -506,7 +508,7 @@ namespace NHibernate.Collection
 			// note that it might be better to iterate the snapshot but this is safe,
 			// assuming the user implements equals() properly, as required by the Set
 			// contract!
-			return oldKey == null || elemType.IsDirty( oldKey, entry, session );
+			return oldKey == null || elemType.IsDirty( oldKey, entry, Session );
 
 		}
 
@@ -543,7 +545,5 @@ namespace NHibernate.Collection
 		{
 			return true;
 		}
-
-
 	}
 }

@@ -247,7 +247,8 @@ namespace NHibernate.Test
 			multi = (Multi)s.Load( typeof(Simple), mid );
 			simp = (Simple)s.Load( typeof(Simple), sid );
 			Assert.IsFalse( simp is Multi );
-			Assert.IsTrue( multi is Multi );
+			// Can't see the point of this test since the variable is declared as Multi!
+			//Assert.IsTrue( multi is Multi );
 			Assert.AreEqual( "extra23", multi.ExtraProp );
 			Assert.AreEqual( "newer name", multi.Name );
 			t.Commit();
@@ -363,7 +364,8 @@ namespace NHibernate.Test
 			multi = (Multi)s.Load( typeof(Simple), multiId );
 			simp = (Simple)s.Load( typeof(Simple), simpId );
 			Assert.IsFalse( simp is Multi );
-			Assert.IsTrue( multi is Multi );
+			// Can't see the point of this test since the variable is declared as Multi!
+			//Assert.IsTrue( multi is Multi );
 			Assert.AreEqual( "extra23", multi.ExtraProp );
 			Assert.AreEqual( "newer name", multi.Name );
 			t.Commit();

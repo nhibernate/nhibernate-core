@@ -57,7 +57,8 @@ namespace NHibernate.Impl
 		#region SessionImpl.IExecutable Members
 
 		/// <summary></summary>
-		public void AfterTransactionCompletion()
+		/// <param name="success"></param>
+		public void AfterTransactionCompletion( bool success )
 		{
 			if ( persister.HasCache )
 			{
@@ -86,6 +87,17 @@ namespace NHibernate.Impl
 			if ( persister.HasCache ) 
 			{
 				lck = persister.Cache.Lock( id, null ); //collections don't have version numbers :-(
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		protected void Evict( )
+		{
+			if ( persister.HasCache )
+			{
+				persister.Cache.Evict( id );
 			}
 		}
 

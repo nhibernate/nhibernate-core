@@ -24,11 +24,12 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Called after the Transaction has been completed.
 		/// </summary>
+		/// <param name="success"></param>
 		/// <remarks>
 		/// Actions should make sure that the Cache is notified about
 		/// what just happened.
 		/// </remarks>
-		void AfterTransactionCompletion();
+		void AfterTransactionCompletion( bool success );
 
 		/// <summary>
 		/// The spaces (tables) that are affectd by this Executable action.

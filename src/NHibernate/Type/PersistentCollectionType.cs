@@ -45,8 +45,9 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override sealed bool Equals( object x, object y )
 		{
-			// proxies? - comment in h2.0.3 also
-			return x == y;
+			return x == y ||
+				( x is PersistentCollection && ( (PersistentCollection) x ).IsWrapper( y ) ) ||
+				( y is PersistentCollection && ( (PersistentCollection) y ).IsWrapper( x ) );
 		}
 
 		/// <summary>
@@ -172,16 +173,6 @@ namespace NHibernate.Type
 		public override object Disassemble( object value, ISessionImplementor session )
 		{
 			return null;
-			// commented out in h2.0.3 also
-			//			if (value==null) {
-			//				return null;
-			//			}
-			//			else {
-			//				object id = session.GetLoadedCollectionKey( (PersistentCollection) value );
-			//				if (id==null)
-			//					throw new AssertionFailure("Null collection id");
-			//				return id;
-			//			}
 		}
 
 		/// <summary>
@@ -201,6 +192,13 @@ namespace NHibernate.Type
 			return ResolveIdentifier( id, session, owner );
 		}
 
+		private bool IsOwnerVersioned( ISessionImplementor session )
+		{
+			System.Type ownerClass = session.Factory.GetCollectionPersister( role ).OwnerClass;
+
+			return session.Factory.GetPersister( ownerClass ).IsVersioned;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -210,17 +208,10 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override bool IsDirty( object old, object current, ISessionImplementor session )
 		{
-			System.Type ownerClass = session.Factory.GetCollectionPersister( role ).OwnerClass;
+			// collections don't dirty an unversioned parent entity
 
-			if( !session.Factory.GetPersister( ownerClass ).IsVersioned )
-			{
-				// collections don't dirty an unversioned parent entity
-				return false;
-			}
-			else
-			{
-				return base.IsDirty( old, current, session );
-			}
+			// TODO: I don't like this implementation; it would be better if this was handled by SearchForDirtyCollections();
+			return IsOwnerVersioned( session ) && base.IsDirty( old, current, session );
 		}
 
 		/// <summary></summary>
@@ -261,9 +252,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
 		{
-			// TODO: Uncomment once CollectionPersister knows about IJoinable
-			//return (IJoinable) factory.GetCollectionPersister( role );
-			return null;
+			return (IJoinable) factory.GetCollectionPersister( role );
 		}
 
 		/// <summary>
@@ -325,26 +314,77 @@ namespace NHibernate.Type
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override bool IsModified(object old, object current, ISessionImplementor session)
+		{
+			return false;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="factory"></param>
 		/// <returns></returns>
 		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
 		{
 			try
 			{
-				// TODO: Uncomment once CollectionPersister knows about IQueryableCollection
-				//IQueryableCollection collectionPersister = (IQueryableCollection) factory.GetCollectionPersister( role );
-				IQueryableCollection collectionPersister = null;
+				IQueryableCollection collectionPersister = (IQueryableCollection) factory.GetCollectionPersister( role );
 				if ( collectionPersister.ElementType.IsEntityType )
 				{
 					throw new MappingException( string.Format( "collection was not an association: {0}", collectionPersister.Role ) ) ;
 				}
 				return collectionPersister.ElementPersister.MappedClass;
 			}
-			catch ( InvalidCastException )
+			catch ( InvalidCastException ice)
 			{
-				// TODO: Change to a mapping error
-				throw;
+				throw new MappingException( "collection role is not queryable", ice );
 			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="original"></param>
+		/// <param name="target"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <param name="copiedAlready"></param>
+		/// <returns></returns>
+		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		{
+			if ( original == null )
+			{
+				return null;
+			}
+			if ( !NHibernateUtil.IsInitialized( original ) )
+			{
+				return target;
+			}
+
+			IList originalCopy = new ArrayList( (IList) original );
+			IList result = target == null ? (IList) Instantiate( session, session.Factory.GetCollectionPersister( role ) ) : (IList) target;
+			result.Clear();
+			IType elemType = GetElementType( session.Factory );
+			foreach ( object obj in originalCopy )
+			{
+				result.Add( elemType.Copy( obj, null, session, owner, copiedAlready ) );
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public IType GetElementType( ISessionFactoryImplementor factory )
+		{
+			return factory.GetCollectionPersister( Role ).ElementType;
 		}
 	}
 }

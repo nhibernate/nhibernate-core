@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using NHibernate.Dialect;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -40,11 +41,23 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary></summary>
-		public SqlString ToSqlStringFragment()
+		public SqlString ToSqlStringFragment( Dialect.Dialect dialect )
 		{
-			return aliases.Length == 0 ?
-				new SqlString( String.Empty ) :
-				new SqlString( " for update of " + aliases + ( nowait ? " nowait" : String.Empty ) );
+			if ( aliases.Length == 0 )
+			{
+				return new SqlString( String.Empty );
+			}
+			bool nowait = NoWait && dialect.SupportsForUpdateNoWait;
+			if ( dialect.SupportsForUpdateOf )
+			{
+				return new SqlString( " for update of " + aliases + ( nowait ? " nowait" : String.Empty ) );
+			}
+			else if ( dialect.SupportsForUpdate )
+			{
+				return new SqlString( " for update" + ( nowait ? " nowait" : String.Empty ) );
+			}
+			else
+				return new SqlString( String.Empty );
 		}
 
 	}

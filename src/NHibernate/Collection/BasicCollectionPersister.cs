@@ -145,7 +145,7 @@ namespace NHibernate.Collection
 		/// <param name="collection"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected int DoUpdateRows( object id, PersistentCollection collection, ISessionImplementor session )
+		protected override int DoUpdateRows( object id, PersistentCollection collection, ISessionImplementor session )
 		{
 			try
 			{
@@ -163,12 +163,11 @@ namespace NHibernate.Collection
 							{
 								st = session.Batcher.PrepareBatchCommand( SqlUpdateRowString );
 							}
-							WriteKey( st, id, false, session );
 							if ( !HasIdentifier )
 							{
 								WriteKey( st, id, true, session );
 							}
-							collection.WriteTo( st, this, entry, i, false );
+							collection.WriteTo( st, this, entry, i, true );
 							session.Batcher.AddToBatch( 1 );
 							count++;
 						}
@@ -234,8 +233,7 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override SqlString SelectFragment( string alias, string suffix, bool includeCollectionColumns )
 		{
-			// TODO: Changed from Null to SqlString( string.Empty ) as per Java
-			return includeCollectionColumns ? SelectFragment( alias ) : new SqlString( string.Empty ) ;
+			return includeCollectionColumns ? SelectFragment( alias ) : null ;
 		}
 	}
 }

@@ -27,8 +27,7 @@ namespace NHibernate.Impl
 		public override void Execute()
 		{
 			Persister.Recreate( _collection, Id, Session );
-			// TODO: Commented out as isn't in the 2.1 implementation - test
-			//Persister.Softlock( Id );
+			Evict();
 		}
 	}
 }

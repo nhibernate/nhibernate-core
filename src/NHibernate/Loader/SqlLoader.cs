@@ -235,7 +235,7 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		public IList List( ISessionImplementor session, QueryParameters queryParameters )
 		{
-			// TODO: Uncomment once 
+			// TODO: 2.1 Uncomment once SQL Loading implemented
 			//return List( session, queryParameters, querySpaces, resultTypes ) ;
 			return null ;
 		}

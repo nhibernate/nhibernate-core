@@ -203,6 +203,12 @@ namespace NHibernate.Hql
 		}
 
 		/// <summary></summary>
+		protected override int[] Owners
+		{
+			get { return owners; }
+		}
+
+		/// <summary></summary>
 		protected bool HasScalarValues
 		{
 			get { return hasScalars; }
@@ -812,8 +818,7 @@ namespace NHibernate.Hql
 
 			if( CollectionPersister != null )
 			{
-				sql.AddSelectFragmentString( ((CollectionPersister) collectionPersister).MultiselectClauseFragment( fetchName ) );
-				//sql.AddSelectFragmentString( collectionPersister.SelectFragment( fetchName ) );
+				sql.AddSelectFragmentString( collectionPersister.SelectFragment( fetchName ) );
 			}
 			if( hasScalars || shallowQuery )
 			{
@@ -953,13 +958,23 @@ namespace NHibernate.Hql
 				//there _was_ a select clause
 				int c = 0;
 				bool nolast = false; //real hacky...
+				int parenCount = 0;  // used to count the nesting of parentheses
 				foreach( object next in scalarSelectTokens )
 				{
 					if( next is string )
 					{
 						string token = ( string ) next;
 						string lc = token.ToLower();
-						if( lc.Equals( StringHelper.CommaSpace ) )
+
+						if( StringHelper.OpenParen.Equals( token ) )
+						{
+							parenCount++;
+						}
+						else if( StringHelper.ClosedParen.Equals( token ) )
+						{
+							parenCount--;
+						}
+						else if( lc.Equals( StringHelper.CommaSpace ) )
 						{
 							if( nolast )
 							{
@@ -967,12 +982,13 @@ namespace NHibernate.Hql
 							}
 							else
 							{
-								if( !isSubselect )
+								if( !isSubselect && parenCount == 0 )
 								{
 									buf.Append( " as " ).Append( ScalarName( c++, 0 ) );
 								}
 							}
 						}
+
 						buf.Append( token );
 						if( lc.Equals( "distinct" ) || lc.Equals( "all" ) )
 						{
@@ -1253,6 +1269,18 @@ namespace NHibernate.Hql
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="queryParameters"></param>
+		/// <returns></returns>
+		public IList List( ISessionImplementor session, QueryParameters queryParameters )
+		{
+			LogQuery( queryString, sqlString.ToString() );
+			return List( session, queryParameters, QuerySpaces, actualReturnTypes );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="parameters"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
@@ -1260,7 +1288,7 @@ namespace NHibernate.Hql
 		{
 			SqlString sqlWithLock = ApplyLocks( SqlString, parameters.LockModes, session.Factory.Dialect );
 
-			IDbCommand st = PrepareCommand(
+			IDbCommand st = PrepareQueryCommand(
 				sqlWithLock,
 				parameters, false, session );
 
@@ -1410,6 +1438,7 @@ namespace NHibernate.Hql
 		}
 
 
+		/*
 		/// <summary>
 		/// 
 		/// </summary>
@@ -1421,6 +1450,7 @@ namespace NHibernate.Hql
 		{
 			return base.Find( session, parameters, returnProxies );
 		}
+		*/
 
 		/// <summary>
 		/// 
@@ -1580,7 +1610,7 @@ namespace NHibernate.Hql
 					updateClause.NoWait = true;
 				}
 
-				return sql.Append( updateClause.ToSqlStringFragment() );
+				return sql.Append( updateClause.ToSqlStringFragment( dialect ) );
 			}
 			else
 			{
@@ -1646,7 +1676,7 @@ namespace NHibernate.Hql
 		/// the SqlString.  If there are any untyped parameters this replaces them using the types and
 		/// namedParams parameters.
 		/// </remarks>
-		protected override IDbCommand PrepareCommand( SqlString sqlString, QueryParameters parameters, bool scroll, ISessionImplementor session )
+		protected override IDbCommand PrepareQueryCommand( SqlString sqlString, QueryParameters parameters, bool scroll, ISessionImplementor session )
 		{
 			lock( prepareCommandLock )
 			{
@@ -1759,7 +1789,7 @@ namespace NHibernate.Hql
 				}
 			}
 
-			return base.PrepareCommand( this.sqlString, parameters, scroll, session );
+			return base.PrepareQueryCommand( this.sqlString, parameters, scroll, session );
 		}
 	}
 }

@@ -83,7 +83,7 @@ namespace NHibernate.Collection
 			}
 			for( int i = 0; i < sn.Length; i++ )
 			{
-				PersistentCollection.IdentityRemove( result, arr[ i ], session );
+				PersistentCollection.IdentityRemove( result, arr[ i ], Session );
 			}
 			return result;
 		}
@@ -134,7 +134,7 @@ namespace NHibernate.Collection
 			}
 			for( int i = 0; i < xlen; i++ )
 			{
-				if( elementType.IsDirty( snapshot.GetValue( i ), array.GetValue( i ), session ) )
+				if( elementType.IsDirty( snapshot.GetValue( i ), array.GetValue( i ), Session ) )
 				{
 					return false;
 				}
@@ -176,8 +176,8 @@ namespace NHibernate.Collection
 		/// <param name="writeOrder"></param>
 		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
-			persister.WriteElement( st, entry, writeOrder, session );
-			persister.WriteIndex( st, i, writeOrder, session );
+			persister.WriteElement( st, entry, writeOrder, Session );
+			persister.WriteIndex( st, i, writeOrder, Session );
 		}
 
 		/// <summary>
@@ -189,8 +189,8 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
 		{
-			object element = persister.ReadElement(rs, owner, session);
-			int index = ( int ) persister.ReadIndex( rs, session );
+			object element = persister.ReadElement(rs, owner, Session);
+			int index = ( int ) persister.ReadIndex( rs, Session );
 			for( int i = tempList.Count; i <= index; i++ )
 			{
 				tempList.Insert( i, null );
@@ -223,7 +223,7 @@ namespace NHibernate.Collection
 		/// that was populated during <c>ReadFrom()</c> and write it to the underlying 
 		/// array.
 		/// </summary>
-		public override void EndRead()
+		public override bool EndRead()
 		{
 			SetInitialized();
 			array = System.Array.CreateInstance( elementClass, tempList.Count );
@@ -235,9 +235,7 @@ namespace NHibernate.Collection
 			}
 			tempList = null;
 			
-			// TODO: h2.1 synch to return bool instead of IsCacheable (NH specific code)
-			IsCacheable = true;
-			//return true;
+			return true;
 		}
 
 		/// <summary>
@@ -278,7 +276,7 @@ namespace NHibernate.Collection
 
 			for( int i = 0; i < cached.Length; i++ )
 			{
-				array.SetValue( persister.ElementType.Assemble( cached[ i ], session, owner ), i );
+				array.SetValue( persister.ElementType.Assemble( cached[ i ], Session, owner ), i );
 			}
 			SetInitialized();
 		}
@@ -294,7 +292,7 @@ namespace NHibernate.Collection
 			object[ ] result = new object[length];
 			for( int i = 0; i < length; i++ )
 			{
-				result[ i ] = persister.ElementType.Disassemble( array.GetValue( i ), session );
+				result[ i ] = persister.ElementType.Disassemble( array.GetValue( i ), Session );
 			}
 			return result;
 		}
@@ -370,7 +368,7 @@ namespace NHibernate.Collection
 			return i < sn.Length &&
 				sn.GetValue( i ) != null &&
 				array.GetValue( i ) != null &&
-				elemType.IsDirty( array.GetValue( i ), sn.GetValue( i ), session );
+				elemType.IsDirty( array.GetValue( i ), sn.GetValue( i ), Session );
 		}
 
 		/// <summary>

@@ -90,7 +90,10 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlDeleteBuilder</returns>
 		public SqlDeleteBuilder AddWhereFragment( string whereSql )
 		{
-			whereStrings.Add( new SqlString( whereSql ) );
+			if ( whereSql != null && whereSql.Length > 0 )
+			{
+				whereStrings.Add( new SqlString( whereSql ) );
+			}
 			return this;
 		}
 

@@ -10,7 +10,7 @@ namespace NHibernate.Persister
 	/// the <c>OuterJoinLoader</c> hierarchy and may be an element
 	/// of a one-to-many association.
 	/// </summary>
-	public interface IOuterJoinLoadable
+	public interface IOuterJoinLoadable : ILoadable, IJoinable
 	{
 		/// <summary>
 		/// Get the names of columns used to persist the identifier
@@ -21,8 +21,6 @@ namespace NHibernate.Persister
 		/// Get the name of the column used as a discriminator
 		/// </summary>
 		string DiscriminatorColumnName { get; }
-
-		//USED BY OuterJoinLoader + subclasses
 
 		/// <summary>
 		/// How many properties are there, for this class and all subclasses? (optional operation)
@@ -82,23 +80,6 @@ namespace NHibernate.Persister
 		string[ ] ToColumns( string name, int i );
 
 		/// <summary>
-		/// Given a query alias and an identifying suffix, render the identifier select fragment
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
-		SqlString IdentifierSelectFragment( string name, string suffix );
-
-		/// <summary>
-		/// Given a query alias and an identifying suffix, render the property select fragment
-		/// (optional operation)
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
-		SqlString PropertySelectFragment( string alias, string suffix );
-
-		/// <summary>
 		/// Get the main from table fragment, given a query alias (optional operation)
 		/// </summary>
 		/// <param name="alias"></param>
@@ -112,23 +93,5 @@ namespace NHibernate.Persister
 		/// <param name="suffix"></param>
 		/// <returns></returns>
 		SqlString SelectFragment( string alias, string suffix );
-
-		/// <summary>
-		/// Get the where clause part of any joins (optional operation)
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="innerJoin"></param>
-		/// <param name="includeSubclasses"></param>
-		/// <returns></returns>
-		SqlString WhereJoinFragment( string alias, bool innerJoin, bool includeSubclasses );
-
-		/// <summary>
-		/// Get the from clause part of any joins (optional operation)
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="innerJoin"></param>
-		/// <param name="includeSubclasses"></param>
-		/// <returns></returns>
-		SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses );
 	}
 }

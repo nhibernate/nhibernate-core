@@ -1096,24 +1096,43 @@ namespace NHibernate.Type
 			}
 		}
 
-		/*
+
 		/// <summary>
-		/// Return <tt>-1</tt> if non-dirty, or the index of the first dirty value otherwise
+		/// Determine if any of the given field values are modified,
+		/// returning an array containing indexes of
+		/// the dirty fields or null if no fields are modified.
 		/// </summary>
 		/// <param name="types"></param>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <param name="owner"></param>
-		/// <param name="factory"></param>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="check"></param>
+		/// <param name="session"></param>
 		/// <returns></returns>
-		public static int FindDirty(IType[] types, object[] x, object[] y, object owner, ISessionFactoryImplementor factory) {
-			for (int i=0; i<types.Length; i++) {
-				if ( types[i].IsDirty( x[i], y[i], owner, factory ) ) {
-					return i;
+		public static int[ ] FindModified( IType[ ] types, object[ ] old, object[ ] current, bool[ ] check, ISessionImplementor session )
+		{
+			int[ ] results = null;
+			int count = 0;
+			for( int i = 0; i < types.Length; i++ )
+			{
+				if( check[ i ] && types[ i ].IsModified( old[ i ], current[ i ], session ) )
+				{
+					if( results == null )
+					{
+						results = new int[types.Length];
+					}
+					results[ count++ ] = i;
 				}
 			}
-			return -1;
+			if( count == 0 )
+			{
+				return null;
+			}
+			else
+			{
+				int[ ] trimmed = new int[count];
+				System.Array.Copy( results, 0, trimmed, 0, count );
+				return trimmed;
+			}
 		}
-		*/
 	}
 }

@@ -75,6 +75,18 @@ namespace NHibernate.Type
 			return false;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override bool IsModified( object old, object current, ISessionImplementor session )
+		{
+			return false;
+		}
+
 		/// <summary></summary>		
 		public override bool UsePrimaryKeyAsForeignKey
 		{

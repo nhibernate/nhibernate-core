@@ -29,18 +29,13 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public override void Execute()
 		{
-			// TODO: 2.1 Remove this clause
-			if ( Persister.HasCache )
-			{
-				Persister.Cache.Lock( Id, null );
-			}
-
 			// if there were no entries in the snapshot of the collection then there
 			// is nothing to remove so verify that the snapshot was not empty.
 			if( !_emptySnapshot )
 			{
 				Persister.Remove( Id, Session );
 			}
+			Evict();
 		}
 	}
 }

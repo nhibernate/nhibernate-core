@@ -38,7 +38,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public override void AfterTransactionCompletion()
+		public override void AfterTransactionCompletion( bool success )
 		{
 			if( Persister.HasCache )
 			{

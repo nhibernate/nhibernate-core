@@ -64,6 +64,20 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
+		public override bool IsModified(object old, object current, ISessionImplementor session)
+		{
+			if ( current == null )
+			{
+				return old != null;
+			}
+			if ( old == null )
+			{
+				return current != null ;
+			}
+			return GetIdentifierOrUniqueKeyType( session.Factory ).IsModified( old, GetIdentifier( current, session ), session );
+		}
+
+		/// <summary></summary>
 		public override ForeignKeyType ForeignKeyType
 		{
 			get { return ForeignKeyType.ForeignKeyFromParent; }

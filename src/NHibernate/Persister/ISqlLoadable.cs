@@ -1,4 +1,5 @@
 using System;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Persister
@@ -22,7 +23,7 @@ namespace NHibernate.Persister
 		/// <param name="alias"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		string SelectFragment( string alias, string suffix );
+		SqlString SelectFragment( string alias, string suffix );
 
 		/// <summary>
 		/// Get the type

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -54,7 +55,6 @@ namespace NHibernate.Type
 		/// /> 
 		System.Type ReturnedClass { get; }
 
-
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Equals"]/*'
 		/// /> 
@@ -65,6 +65,10 @@ namespace NHibernate.Type
 		/// /> 
 		bool IsDirty( object old, object current, ISessionImplementor session );
 
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.IsModified"]/*'
+		/// /> 
+		bool IsModified( object oldHydratedState, object currentState, ISessionImplementor session );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String[], ISessionImplementor, Object)"]/*'
@@ -81,12 +85,10 @@ namespace NHibernate.Type
 		/// /> 
 		void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session );
 
-
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ToXML"]/*'
 		/// /> 
 		string ToXML( object value, ISessionFactoryImplementor factory );
-
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.Name"]/*'
@@ -128,5 +130,9 @@ namespace NHibernate.Type
 		/// /> 
 		object ResolveIdentifier( object value, ISessionImplementor session, object owner );
 
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.Copy"]/*'
+		/// /> 
+		object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready );
 	}
 }

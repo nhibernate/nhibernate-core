@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Reflection;
 using Iesi.Collections;
 using log4net;
@@ -7,6 +8,7 @@ using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Id;
+using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
@@ -25,7 +27,7 @@ namespace NHibernate.Persister
 	/// <remarks>
 	/// May be considred an immutable view of the mapping object
 	/// </remarks>
-	public abstract class AbstractEntityPersister : AbstractPropertyMapping, IQueryable, IClassMetadata
+	public abstract class AbstractEntityPersister : AbstractPropertyMapping, IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( AbstractEntityPersister ) );
 
@@ -49,7 +51,7 @@ namespace NHibernate.Persister
 		private readonly bool hasCollections;
 		private readonly bool hasCascades;
 		private readonly bool mutable;
-		//private readonly bool selectBeforeUpdate;
+		private readonly bool selectBeforeUpdate;
 		private readonly System.Type superclass;
 		private readonly bool dynamicUpdate;
 		private readonly bool dynamicInsert;
@@ -58,7 +60,7 @@ namespace NHibernate.Persister
 		private readonly int batchSize;
 		private readonly IType entityType;
 		private readonly ConstructorInfo constructor;
-		//private readonly string rootClassName;
+		private readonly string rootClassName;
 
 		// The optional SQL string defined in the where attribute
 		private readonly string sqlWhereString;
@@ -92,7 +94,7 @@ namespace NHibernate.Persister
 		private readonly IGetter versionGetter;
 		private readonly int versionProperty;
 		//private Cascades.VersionValue unsavedVersionValues;
-		private readonly bool jdbcBatchVersionData;
+		//private readonly bool batchVersionData;
 
 		// other properties (for this concrete class only, not the subclass closure)
 		private readonly int hydrateSpan;		
@@ -219,9 +221,15 @@ namespace NHibernate.Persister
 		{
 			return new SelectFragment( Dialect )
 				.SetSuffix( suffix )
-				.AddColumns( name, IdentifierColumnNames )
+				.AddColumns( name, IdentifierColumnNames, IdentifierAliases )
 				.ToSqlStringFragment( false );
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		protected abstract SqlString VersionSelectString { get; }
 
 		/// <summary>
 		/// 
@@ -323,7 +331,35 @@ namespace NHibernate.Persister
 				{
 					for( int i = 0; i < props.Length; i++ )
 					{
-						log.Debug( className + StringHelper.Dot + propertyNames[ props[ i ] ] + " is dirty" );
+						log.Debug( StringHelper.Qualify( className, propertyNames[ props[ i ] ] ) + " is dirty" );
+					}
+				}
+				return props;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="obj"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public virtual int[ ] FindModified( object[ ] old, object[ ] current, object obj, ISessionImplementor session )
+		{
+			int[ ] props = TypeFactory.FindModified( propertyTypes, old, current, propertyUpdateability, session );
+			if( props == null )
+			{
+				return null;
+			}
+			else
+			{
+				if( log.IsDebugEnabled )
+				{
+					for( int i = 0; i < props.Length; i++ )
+					{
+						log.Debug( StringHelper.Qualify( className, propertyNames[ props[ i ] ] ) + " is dirty" );
 					}
 				}
 				return props;
@@ -657,13 +693,12 @@ namespace NHibernate.Persister
 			dialect = factory.Dialect;
 
 			// CLASS
-
 			className = model.MappedClass.FullName;
-			//rootClassName = model.RootClass.FullName;
+			rootClassName = model.RootClazz.Name;
 			mappedClass = model.MappedClass;
 
 			mutable = model.IsMutable;
-			//selectBeforeUpdate = model.HasSelectBeforeUpdate;
+			selectBeforeUpdate = model.SelectBeforeUpdate;
 			dynamicUpdate = model.DynamicUpdate;
 			dynamicInsert = model.DynamicInsert;
 			sqlWhereString = model.Where;
@@ -684,9 +719,10 @@ namespace NHibernate.Persister
 			
 			entityType = NHibernateUtil.Entity( mappedClass );
 
+			// TODO : 2.1 Implement OptimisiticLockVersion
 			/*
 			optimisticLockMode = model.OptimisticLockMode;
-			if ( optmisticLockMode > Versiong.OptimisticLockVersion && !dynamicUpdate )
+			if ( optimisticLockMode > Version.OptimisticLockVersion && !dynamicUpdate )
 			{
 				throw new MappingException( string.Format( "optimistic-lock setting requires dynamic-update=\'true\': {0}", className ) );
 			}
@@ -700,7 +736,6 @@ namespace NHibernate.Persister
 			}
 			
 			// IDENTIFIER
-
 			hasEmbeddedIdentifier = model.HasEmbeddedIdentifier;
 			IValue idValue = model.Identifier;
 			identifierType = idValue.Type;
@@ -749,11 +784,9 @@ namespace NHibernate.Persister
 			proxyIdentifierProperty = proxyGetIdentifierMethod;
 
 			// HYDRATE SPAN
-
 			hydrateSpan = model.PropertyClosureCollection.Count;
 
 			// IDENTIFIER 
-
 			int idColumnSpan = model.Identifier.ColumnSpan;
 			identifierColumnNames = new string[ idColumnSpan ];
 			identifierAliases = new string[ idColumnSpan ];
@@ -772,7 +805,6 @@ namespace NHibernate.Persister
 			identitySelectString = useIdentityColumn ? dialect.IdentitySelectString : null;
 
 			// UNSAVED-VALUE:
-
 			string unsavedValue = model.Identifier.NullValue;
 			if( unsavedValue == null || "null".Equals( unsavedValue ) )
 			{
@@ -817,7 +849,7 @@ namespace NHibernate.Persister
 				versionColumnName = null;
 			}
 
-			// TODO: Bring versioning up to 2.1 standards
+			// TODO: 2.1 Bring versioning up to standards
 			if( model.IsVersioned )
 			{
 				//versionPropertyName = model.Version.Name;
@@ -956,9 +988,9 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public string[] GetIdentifierAliases( string suffix )
 		{
-			// NOTE: this assumes something about how propertySelectFragment is implemented by the subclass!
+			// NOTE: this assumes something about how PropertySelectFragment is implemented by the subclass!
 			// was toUnqotedAliasStrings( getIdentiferColumnNames() ) before - now tried
-			// to remove that unqoting and missing aliases..
+			// to remove that unquoting and missing aliases..
 			return new Alias(suffix).ToAliasStrings( IdentifierAliases, dialect );
 		}
 
@@ -970,7 +1002,7 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public string[] GetPropertyAliases( string suffix, int i )
 		{
-			// NOTE: this assumes something about how propertySelectFragment is implemented by the subclass!
+			// NOTE: this assumes something about how pPropertySelectFragment is implemented by the subclass!
 			return new Alias(suffix).ToUnquotedAliasStrings( GetPropertyColumnNames( i ), dialect );
 		}
 
@@ -981,9 +1013,9 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public string GetDiscriminatorAlias( string suffix )
 		{
-			// NOTE: this assumes something about how propertySelectFragment is implemented by the subclass!
+			// NOTE: this assumes something about how PropertySelectFragment is implemented by the subclass!
 			// was toUnqotedAliasStrings( getdiscriminatorColumnName() ) before - now tried
-			// to remove that unqoting and missing aliases..		
+			// to remove that unquoting and missing aliases..		
 			return hasSubclasses ?
 				new Alias(suffix).ToAliasString( DiscriminatorAlias, dialect ) :
 				null;
@@ -1001,8 +1033,8 @@ namespace NHibernate.Persister
 			// aliases for identifier
 			if ( HasIdentifierProperty )
 			{
-				subclassPropertyAliases.Add( IdentifierPropertyName, identifierAliases );
-				subclassPropertyAliases.Add( PathExpressionParser.EntityID, identifierAliases ) ;
+				subclassPropertyAliases[ IdentifierPropertyName ] = identifierAliases;
+				subclassPropertyAliases[ PathExpressionParser.EntityID ] = identifierAliases;
 			}
 
 			if ( HasEmbeddedIdentifier )
@@ -1014,13 +1046,13 @@ namespace NHibernate.Persister
 
 				for ( int i = 0; i < idPropertyNames.Length; i++ ) 
 				{
-					subclassPropertyAliases.Add( idPropertyNames[i], new string[] { identifierAliases[i] } );
+					subclassPropertyAliases[ idPropertyNames[i] ] = new string[] { identifierAliases[i] };
 				}
 			}
 
 			if ( IsPolymorphic )
 			{
-				subclassPropertyAliases.Add( PathExpressionParser.EntityClass, new string[] { DiscriminatorAlias } );
+				subclassPropertyAliases[ PathExpressionParser.EntityClass ] = new string[] { DiscriminatorAlias };
 			}
 		}
 
@@ -1049,10 +1081,10 @@ namespace NHibernate.Persister
 					// used for loading entities by a unique key
 					if ( prop.Value.IsUnique )
 					{
-						uniqueKeyColumns.Add( propName, cols );
+						uniqueKeyColumns[ propName ] = cols;
 					}
 
-					subclassPropertyAliases.Add( propName, aliases );
+					subclassPropertyAliases[ propName ] = aliases ;
 				}
 			}
 		}
@@ -1278,8 +1310,9 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		protected IUniqueEntityLoader CreateEntityLoader( ISessionFactoryImplementor factory )
 		{
-			// TODO : Use the batching strategy class as per 2.1
-			return new EntityLoader( this, 1, factory );
+			Loader.Loader nonBatchLoader = new EntityLoader( this, 1, factory );
+			// TODO : 2.1 - Use the batching strategy class
+			return nonBatchLoader as IUniqueEntityLoader;
 		}
 
 		/// <summary>
@@ -1367,14 +1400,187 @@ namespace NHibernate.Persister
 		public abstract object Load( object id, object optionalObject, LockMode lockMode, ISessionImplementor session );
 
 		/// <summary>
-		/// 
+		/// Do a version check
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="version"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
 		/// <param name="session"></param>
-		public abstract void Lock( object id, object version, object obj, LockMode lockMode, ISessionImplementor session );
+		public virtual void Lock( object id, object version, object obj, LockMode lockMode, ISessionImplementor session )
+		{
+			if( lockMode != LockMode.None )
+			{
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "Locking entity: " + MessageHelper.InfoString( this, id ) );
+					if( IsVersioned )
+					{
+						log.Debug( "Version: " + version );
+					}
+				}
+
+				IDbCommand st = session.Batcher.PrepareCommand( GetLockString( lockMode ) );
+				IDataReader rs = null;
+
+				try
+				{
+					IdentifierType.NullSafeSet( st, id, 0, session );
+					if( IsVersioned )
+					{
+						VersionType.NullSafeSet( st, version, IdentifierColumnNames.Length, session );
+					}
+
+					rs = session.Batcher.ExecuteReader( st );
+					if( !rs.Read() )
+					{
+						throw new StaleObjectStateException( MappedClass, id );
+					}
+				} 
+				catch( Exception e )
+				{
+					//TODO: change this to catch a Sql Exception and log it
+					log.Error( e.Message, e );
+					throw;
+				}
+				finally
+				{
+					session.Batcher.CloseCommand( st, rs );
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="session"></param>
+		/// <param name="rs"></param>
+		/// <returns></returns>
+		protected object GetGeneratedIdentity( object obj, ISessionImplementor session, IDataReader rs )
+		{
+			//object id;
+
+			return null;
+			/*
+			try
+			{
+				if ( !rs.Read() )
+				{
+					throw new HibernateException( "The database returned no natively generated identity value" );
+				}
+				id = IdentifierGeneratorFactory.Get( rs, IdentifierType, session, obj );
+			}
+			finally
+			{
+				rs.Close();
+			}
+			*/
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="version"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object[] GetCurrentPersistentState( object id, object version, ISessionImplementor session )
+		{
+			return null;
+			/*
+			if ( !hasSelectBeforeUpdate )
+			{
+				return null;
+			}
+
+			if ( log.IsDebugEnabled )
+			{
+				log.Debug( "Getting current persistent state for: " + MessageHelper.InfoString( this, id ) );
+			}
+
+			IType[] types = PropertyTypes;
+			object[] values = new object[ types.Length ];
+			bool[] includeProperty = PropertyUpdateability;
+			try
+			{
+				IDbCommand st = session.Batcher.PrepareCommand( ConcreteSelectString );
+				IDataReader rs = null;
+				try
+				{
+					IdentifierType.NullSafeGet( st, id, 0, session );
+					if ( IsVersioned )
+					{
+						VersionType.NullSafeSet( st, version, IdentifierColumnNames.Length, session );
+					}
+					rs = session.Batcher.GetResultSet( st );
+					if ( !rs.Read() )
+					{
+						throw new StaleObjectStateException( MappedClass, id );
+					}
+					for ( int i = 0; i < types.Length; i++ )
+					{
+						if ( includeProperty[ i ] )
+						{
+							values[ i ] = types[ i ].Hydrate( rs, GetPropertyAliases( "", i ), session, null ); //null owner ok??
+						}
+					}
+				}
+				finally
+				{
+					session.Batcher.CloseCommand( st, rs );
+				}
+			}
+			catch ( Exception ex )
+			{
+				throw new HibernateException( "error retrieving current persistent state", ex );
+			}
+
+			return values;
+			*/
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object CurrentVersion( object id, ISessionImplementor session )
+		{
+			if ( log.IsDebugEnabled )
+			{
+				log.Debug( "Getting version: " + MessageHelper.InfoString( this, id ) );
+			}
+
+			try
+			{
+				IDbCommand st = session.Batcher.PrepareQueryCommand( VersionSelectString, false );
+				IDataReader rs = null;
+				try
+				{
+					IdentifierType.NullSafeSet( st, id, 1, session );
+					rs = session.Batcher.ExecuteReader( st );
+					if ( !rs.Read() )
+					{
+						return null;
+					}
+					if ( !IsVersioned ) 
+					{
+						return this;
+					}
+					return VersionType.NullSafeGet( rs, VersionColumnName, session, null );
+				}
+				finally
+				{
+					session.Batcher.CloseQueryCommand( st, rs );
+				}
+			}
+			catch ( Exception ex )
+			{
+				throw new HibernateException( "could not retrieve version: " + MessageHelper.InfoString( this, id ), ex );
+			}
+		}
 
 		/// <summary>
 		/// 
@@ -1388,10 +1594,11 @@ namespace NHibernate.Persister
 		/// <param name="id"></param>
 		/// <param name="fields"></param>
 		/// <param name="dirtyFields"></param>
+		/// <param name="oldFields"></param>
 		/// <param name="oldVersion"></param>
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
-		public abstract void Update( object id, object[ ] fields, int[ ] dirtyFields, object oldVersion, object obj, ISessionImplementor session );
+		public abstract void Update( object id, object[ ] fields, int[ ] dirtyFields, object[ ] oldFields, object oldVersion, object obj, ISessionImplementor session );
 		
 		/// <summary></summary>
 		public abstract int CountSubclassProperties();
@@ -1414,7 +1621,7 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public SqlString SelectFragment( string alias, string suffix )
 		{
-			return IdentifierSelectFragment( alias, suffix).Append( PropertySelectFragment(alias, suffix) );
+			return IdentifierSelectFragment( alias, suffix ).Append( PropertySelectFragment( alias, suffix ) );
 		}
 
 		/// <summary>
@@ -1588,9 +1795,7 @@ namespace NHibernate.Persister
 		}
 		#endregion
 
-		/// <summary>
-		/// 
-		/// </summary>
+		/// <summary></summary>
 		protected abstract string VersionedTableName { get; }
 
 		/// <summary>
@@ -1602,10 +1807,34 @@ namespace NHibernate.Persister
 			return null;
 		}
 
+		/// <summary></summary>
+		public abstract bool IsCacheInvalidationRequired { get; }
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>
 		protected abstract SqlString ConcreteSelectString { get; }
+
+
+		/// <summary>
+		/// Transform the array of property indexes to an array of booleans
+		/// </summary>
+		/// <param name="dirtyProperties"></param>
+		/// <returns></returns>
+		protected bool[ ] GetPropertiesToUpdate( int[] dirtyProperties )
+		{
+			bool[ ] propsToUpdate = new bool[ HydrateSpan ] ;
+			for ( int j = 0; j < dirtyProperties.Length; j++ )
+			{
+				propsToUpdate[ dirtyProperties[ j ] ] = true;
+			}
+			if ( IsVersioned )
+			{
+				propsToUpdate[ VersionProperty ] = true;
+			}
+
+			return propsToUpdate;
+		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -55,6 +56,21 @@ namespace NHibernate.Type
 		public virtual bool IsObjectType
 		{
 			get { return false; }
+		}
+
+		/// <summary>
+		/// Says whether the value has been modified
+		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public virtual bool IsModified(
+			object old,
+			object current,
+			ISessionImplementor session )
+		{
+			return IsDirty( old, current, session );
 		}
 
 		/// <summary>
@@ -136,6 +152,26 @@ namespace NHibernate.Type
 		{
 			return NullSafeGet( rs, names, session, owner );
 		}
+
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="original"></param>
+		/// <param name="current"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <param name="copiedAlready"></param>
+		/// <returns></returns>
+		public virtual object Copy( object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		{
+			if ( original == null )
+			{
+				return null;
+			}
+			return Assemble( Disassemble( original, session ), session, owner );
+		}
+
 
 		/// <summary>
 		/// Maps identifiers to Entities or Collections. 

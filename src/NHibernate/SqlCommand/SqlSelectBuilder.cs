@@ -169,7 +169,11 @@ namespace NHibernate.SqlCommand
 		/// <returns>This SqlSelectBuilder</returns>
 		public SqlSelectBuilder AddWhereClause( SqlString whereSqlString )
 		{
-			whereSqlStrings.Add( whereSqlString );
+			// Don't add empty condition's - we get extra ANDs
+			if ( whereSqlString.ToString() != string.Empty )
+			{
+				whereSqlStrings.Add( whereSqlString );
+			}
 			return this;
 		}
 

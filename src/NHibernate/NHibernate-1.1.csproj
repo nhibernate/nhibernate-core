@@ -349,6 +349,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cache\ILockable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cache\ISoftLock.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -445,11 +450,6 @@
                 />
                 <File
                     RelPath = "Collection\BasicCollectionPersister.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collection\CollectionPersister.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1799,6 +1799,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlCommand\WhereBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlTypes\AnsiStringFixedLengthSqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1940,6 +1945,11 @@
                 />
                 <File
                     RelPath = "Transaction\TransactionFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Transform\IResultTransformer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -152,6 +152,16 @@ namespace NHibernate.Persister
 		int[ ] FindDirty( object[ ] x, object[ ] y, object owner, ISessionImplementor session );
 
 		/// <summary>
+		/// Compare the state of an instance to the current database state
+		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="owner"></param>
+		/// <param name="session"></param>
+		/// <returns>return <c>null</c> or the indicies of the modified properties</returns>
+		int[ ] FindModified( object[ ] old, object[ ] current, object owner, ISessionImplementor session );
+
+		/// <summary>
 		/// Does the class have a property holding the identifier value?
 		/// </summary>
 		bool HasIdentifierProperty { get; }
@@ -269,10 +279,11 @@ namespace NHibernate.Persister
 		/// <param name="id"></param>
 		/// <param name="fields"></param>
 		/// <param name="dirtyFields"></param>
+		/// <param name="oldFields"></param>
 		/// <param name="oldVersion"></param>
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
-		void Update( object id, object[ ] fields, int[ ] dirtyFields, object oldVersion, object obj, ISessionImplementor session );
+		void Update( object id, object[ ] fields, int[ ] dirtyFields, object[ ] oldFields, object oldVersion, object obj, ISessionImplementor session );
 
 		/// <summary>
 		/// Get the Hibernate types of the class properties
@@ -325,6 +336,11 @@ namespace NHibernate.Persister
 		string IdentifierPropertyName { get; }
 
 		/// <summary>
+		/// Should we always invalidate the cache instead of recaching updated state
+		/// </summary>
+		bool IsCacheInvalidationRequired { get; }
+
+		/// <summary>
 		/// Does this class have a cache?
 		/// </summary>
 		bool HasCache { get; }
@@ -344,13 +360,6 @@ namespace NHibernate.Persister
 		/// </summary>
 		bool IsBatchLoadable { get; }
 
-		/* TODO : 2.1 features - not sure if we need for SQL loading
-
-		/// <summary>
-		/// Get the proxy interface that instances of <em>this</em> concrete class will be cast to (optional operation).
-		/// </summary>
-		object ConcreteProxyClass { get; }
-
 		/// <summary>
 		/// Get the current database state of the object, in a "hydrated" form, without resolving identifiers
 		/// </summary>
@@ -369,6 +378,5 @@ namespace NHibernate.Persister
 		/// <param name="session"></param>
 		/// <returns></returns>
 		object CurrentVersion( object id, ISessionImplementor session );
-		*/
 	}
 }

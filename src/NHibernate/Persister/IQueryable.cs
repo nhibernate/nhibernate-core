@@ -38,14 +38,25 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSublcasses );
 
-		/*
 		/// <summary>
-		/// Given a query alias and a property path, return the qualified column name
+		/// Given a query alias and an identifying suffix, render the intentifier select fragment.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="suffix"></param>
+		/// <returns></returns>
+		SqlString IdentifierSelectFragment( string name, string suffix );
+
+		/// <summary>
+		/// Given a query alias and an identifying suffix, render the property select fragment.
 		/// </summary>
 		/// <param name="alias"></param>
-		/// <param name="property"></param>
+		/// <param name="suffix"></param>
 		/// <returns></returns>
-		string[ ] ToColumns( string alias, string property );
-		*/
+		SqlString PropertySelectFragment( string alias, string suffix );
+
+		/// <summary>
+		/// Get the names of columns used to persist the identifier
+		/// </summary>
+		string[] IdentifierColumnNames { get; }
 	}
 }

@@ -59,6 +59,14 @@ namespace NHibernate.Type
 		/// <summary>
 		/// 
 		/// </summary>
+		public System.Type PrimitiveClass
+		{
+			get { return typeof( bool ); }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		public override System.Type ReturnedClass
 		{
 			get { return typeof( bool ); }

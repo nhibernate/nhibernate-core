@@ -1172,18 +1172,21 @@ namespace NHibernate.Test
 
 			s = sessions.OpenSession();
 			baz = (Baz) ( (object[])s.Find("select baz, baz from baz in class NHibernate.DomainModel.Baz")[0] )[1];
+			Assert.AreEqual( 1, baz.CascadingBars.Count, "baz.CascadingBars.Count" );
 			Foo foo = new Foo();
 			s.Save(foo);
 			Foo foo2 = new Foo();
 			s.Save(foo2);
 			baz.FooArray = new Foo[] { foo, foo, null, foo2 } ;
 			baz.FooSet.Add(foo );
-			baz.Customs.Add( new string[] {"new", "custom"} );
+			baz.Customs.Add( new string[] { "new", "custom" } );
 			baz.StringArray = null;
 			baz.StringList[0] = "new value";
 			baz.StringSet = new Iesi.Collections.HashedSet();
 			
-			Assert.AreEqual( 1, baz.StringGlarchMap.Count );
+			// HACK: 2.1 - The java (and old NH) version has the result of this as 1, I can't see why it should be since we explicitly put 2 items into StringGlarchMap?
+			//Assert.AreEqual( 2, baz.StringGlarchMap.Count, "baz.StringGlarchMap.Count" );
+			Assert.AreEqual( 1, baz.StringGlarchMap.Count, "baz.StringGlarchMap.Count" );
 			IList list;
 
 			// disable this for dbs with no subselects
@@ -1359,7 +1362,7 @@ namespace NHibernate.Test
 				Assert.IsNotNull(onfe, "should not find a Qux with id of 666 when Proxies are not implemented.");
 			}
 
-			Assert.AreEqual( 1, s.Delete("from g in class Glarch") );
+			Assert.AreEqual( 1, s.Delete("from g in class Glarch"), "Delete('from g in class Glarch')" );
 			s.Flush();
 			s.Disconnect();
 

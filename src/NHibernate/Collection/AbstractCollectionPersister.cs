@@ -381,7 +381,7 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public string GetSQLWhereString( string alias )
 		{
-			if( sqlWhereStringTemplate != null )
+			if( hasWhere )
 			{
 				return StringHelper.Replace( sqlWhereStringTemplate, Template.Placeholder, alias );
 			}
@@ -928,110 +928,6 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="collection"></param>
-		/// <param name="session"></param>
-		public void Update( object id, PersistentCollection collection, ISessionImplementor session )
-		{
-			IDbCommand st = null;
-			ICollection entries = collection.Entries();
-			int i = 0;
-			try
-			{
-				foreach( object entry in entries )
-				{
-					if( collection.NeedsUpdating( entry, i, elementType ) )
-					{
-						if( st == null )
-						{
-							st = session.Batcher.PrepareBatchCommand( SqlUpdateRowString );
-						}
-						if( !hasIdentifier )
-						{
-							WriteKey( st, id, true, session );
-						}
-						collection.WriteTo( st, this, entry, i, true );
-						session.Batcher.AddToBatch( 1 );
-					}
-					i++;
-				}
-			} 
-				// TODO: change to SqlException
-			catch( Exception e )
-			{
-				session.Batcher.AbortBatch( e );
-				throw;
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="collection"></param>
-		/// <param name="session"></param>
-		public void UpdateOneToMany( object id, PersistentCollection collection, ISessionImplementor session )
-		{
-			IDbCommand rmvst = null;
-			int i = 0;
-			ICollection entries = collection.Entries();
-			try
-			{
-				foreach( object entry in entries )
-				{
-					if( collection.NeedsUpdating( entry, i, elementType ) )
-					{
-						if( rmvst == null )
-						{
-							rmvst = session.Batcher.PrepareBatchCommand( SqlDeleteRowString );
-						}
-						WriteKey( rmvst, id, false, session );
-						WriteIndex( rmvst, collection.GetIndex( entry, i ), false, session );
-						session.Batcher.AddToBatch( -1 );
-					}
-					i++;
-				}
-			} 
-				// TODO: change to SqlException
-			catch( Exception e )
-			{
-				session.Batcher.AbortBatch( e );
-				throw;
-			}
-
-			// finish all the removes first to take care of possible unique constraints
-			// and so that we can take advantage of batching
-			IDbCommand insst = null;
-			i = 0;
-			entries = collection.Entries();
-			try
-			{
-				foreach( object entry in entries )
-				{
-					if( collection.NeedsUpdating( entry, i, elementType ) )
-					{
-						if( insst == null )
-						{
-							insst = session.Batcher.PrepareBatchCommand( SqlInsertRowString );
-						}
-						WriteKey( insst, id, false, session );
-						collection.WriteTo( insst, this, entry, i, false );
-						session.Batcher.AddToBatch( 1 );
-					}
-					i++;
-				}
-			} 
-				//TODO: change to SqlException
-			catch( Exception e )
-			{
-				session.Batcher.AbortBatch( e );
-				throw;
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="id"></param>
 		/// <param name="session"></param>
@@ -1041,25 +937,27 @@ namespace NHibernate.Collection
 			{
 				if( log.IsDebugEnabled )
 				{
-					log.Debug( "Updating rows of collection: " + role + "#" + id );
+					log.Debug( string.Format( "Updating rows of collection: {0}#{1}", role, id ) );
 				}
 
 				// update all the modified entries
-				if( IsOneToMany )
-				{
-					UpdateOneToMany( id, collection, session );
-				}
-				else
-				{
-					Update( id, collection, session );
-				}
+				int count = DoUpdateRows( id, collection, session );
 
 				if( log.IsDebugEnabled )
 				{
-					log.Debug( "done updating rows" );
+					log.Debug( string.Format( "done updating rows: {0} updated", count ) );
 				}
 			}
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="collection"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		protected abstract int DoUpdateRows( object key, PersistentCollection collection, ISessionImplementor session );
 
 		/// <summary>
 		/// 
@@ -1084,13 +982,12 @@ namespace NHibernate.Collection
 				ICollection entries = collection.Entries();
 				try
 				{
+					// Moved the IDbCommand outside the loop otherwise, don't get the logic of this, it will be reinitialised each time round
+					IDbCommand st = null;
 					foreach( object entry in entries )
 					{
-						// This is as per the java, don't get the logic of this, it will be reinitialised each time round the loop anyway
-						IDbCommand st = null;
 						if( collection.NeedsInserting( entry, i, elementType ) )
 						{
-							// This is as per the java, don't get the logic of this, it will be reinitialised each time round the loop anyway
 							if( st == null )
 							{
 								st = session.Batcher.PrepareBatchCommand( SqlInsertRowString );
@@ -1257,7 +1154,7 @@ namespace NHibernate.Collection
 		public SqlString SelectFragment( string alias )
 		{
 			SelectFragment frag = new SelectFragment( factory.Dialect )
-				.SetSuffix( String.Empty )
+				.SetSuffix( String.Empty )		//always ignore suffix for collection columns
 				.AddColumns( alias, keyColumnNames, keyColumnAliases )
 				.AddColumns( alias, elementColumnNames, elementColumnAliases );
 			if( hasIndex )

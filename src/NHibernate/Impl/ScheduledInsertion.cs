@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	internal class ScheduledInsertion : ScheduledEntityAction
 	{
 		private readonly object[ ] state;
-		private CacheEntry entry;
+		private CacheEntry cacheEntry;
 		private readonly object version;
 
 		/// <summary>
@@ -31,29 +31,26 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public override void Execute()
 		{
+			// Don't need to lock the cache here, since if someone
+			// else inserted the same pk first, the insert would fail
 			Persister.Insert( Id, state, Instance, Session );
 			Session.PostInsert( Instance );
 
-			/*
-			if ( Persister.HasCache && Persister.IsCacheInvalidationRequired )
+			if ( Persister.HasCache && !Persister.IsCacheInvalidationRequired )
 			{
 				cacheEntry = new CacheEntry( Instance, Persister, Session );
-				Persister.Cache.Put( Id, cacheEntry );
+				Persister.Cache.Insert( Id, cacheEntry );
 			}
-			*/
 		}
 
 		/// <summary></summary>
-		public override void AfterTransactionCompletion()
+		public override void AfterTransactionCompletion( bool success )
 		{
 			// Make 100% certain that this is called before any subsequent ScheduledUpdate.AfterTransactionCompletion()!!
-			/*
-			if ( Persister.HasCache && Persister.IsCacheInvalidationRequired )
+			if ( success && Persister.HasCache && !Persister.IsCacheInvalidationRequired )
 			{
-				cacheEntry = new CacheEntry( Instance, Persister, Session );
 				Persister.Cache.AfterInsert( Id, cacheEntry, version );
 			}
-			*/
 		}
 	}
 }

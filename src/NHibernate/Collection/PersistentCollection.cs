@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using Iesi.Collections;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -9,7 +10,7 @@ namespace NHibernate.Collection
 {
 	/// <summary>
 	/// Persistent collections are treated as value objects by Hibernate.
-	/// ie. they have no independent existence beyond the object holding
+	/// i.e. they have no independent existence beyond the object holding
 	/// a reference to them. Unlike instances of entity classes, they are
 	/// automatically deleted when unreferenced and automatically become
 	/// persistent when held by a persistent object. Collections can be
@@ -40,11 +41,9 @@ namespace NHibernate.Collection
 
 		/// <summary></summary>
 		[NonSerialized]
-		protected ISessionImplementor session;
+		private ISessionImplementor session;
 
-		/// <summary></summary>
-		protected bool initialized;
-		private bool initializing;
+		private bool initialized;
 
 		[NonSerialized]
 		private ArrayList additions;
@@ -53,7 +52,10 @@ namespace NHibernate.Collection
 
 		/// <summary></summary>
 		[NonSerialized]
-		protected bool directlyAccessible;
+		private bool directlyAccessible;
+
+		[NonSerialized]
+		private bool initializing;
 
 		//careful: these methods do not initialize the collection
 		
@@ -63,53 +65,69 @@ namespace NHibernate.Collection
 		/// <summary></summary>
 		public abstract bool Empty { get; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// Called by any read-only method of the collection interface
+		/// </summary>
 		public void Read()
 		{
 			Initialize( false );
 		}
 
+		/// <summary></summary>
+		protected ISessionImplementor Session
+		{
+			get { return session; }
+		}
+
+		/// <summary>
+		/// Is the collection currently connected to an open session?
+		/// </summary>
 		private bool IsConnectedToSession
 		{
 			get { return session != null && session.IsOpen; }
 		}
 
 		/// <summary></summary>
+		protected bool DirectlyAccessible
+		{
+			set { directlyAccessible = value; }
+		}
+
+		/// <summary>
+		/// Called by any writer method of the collection interface
+		/// </summary>
 		protected void Write()
 		{
 			Initialize( true );
-			if( IsConnectedToSession )
-			{
-				session.Dirty( this );
-			}
-			else
-			{
-				collectionSnapshot.SetDirty();
-			}
+			collectionSnapshot.SetDirty();
 		}
 
-		private bool MayQueueAdd
+		/// <summary>
+		/// Is this collection in a state that would allow us to "queue" additions?
+		/// </summary>
+		private bool IsQueueAdditionEnabled
 		{
-			get
+			get 
 			{
-				return
-					!initialized &&
-						IsConnectedToSession &&
-						session.IsInverseCollection( this );
+				return !initialized &&
+					IsConnectedToSession &&
+					session.IsInverseCollection( this );
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Queue an addition
+		/// </summary>
 		protected bool QueueAdd( object element )
 		{
-			if( MayQueueAdd )
+			if( IsQueueAdditionEnabled )
 			{
 				if( additions == null )
 				{
 					additions = new ArrayList( 10 );
 				}
 				additions.Add( element );
-				session.Dirty( this ); //needed so that we remove this collection from the JCS cache
+				collectionSnapshot.SetDirty(); //needed so that we remove this collection from the JCS cache
 				return true;
 			}
 			else
@@ -118,10 +136,12 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Queue additions
+		/// </summary>
 		protected bool QueueAddAll( ICollection coll )
 		{
-			if( MayQueueAdd )
+			if( IsQueueAdditionEnabled )
 			{
 				if( additions == null )
 				{
@@ -136,9 +156,9 @@ namespace NHibernate.Collection
 			}
 		}
 
-		//TODO: H2.0.3 new method
 		/// <summary>
-		/// 
+		/// After reading all existing elements from the database,
+		/// add the queued elements to the underlying collection.
 		/// </summary>
 		/// <param name="coll"></param>
 		public virtual void DelayedAddAll( ICollection coll )
@@ -147,6 +167,7 @@ namespace NHibernate.Collection
 		}
 
 		// TODO: h2.0.3 synhc - I don't see AddAll in the H code...
+		// NB This is needed by Set/SortedSet to fulfil ISet contract
 		/// <summary>
 		/// 
 		/// </summary>
@@ -165,7 +186,6 @@ namespace NHibernate.Collection
 		protected ArrayList Additions
 		{
 			get { return additions; }
-			set { additions = value; }
 		}
 
 		/// <summary>
@@ -185,7 +205,14 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Not called by Hibernate, but used by non-NET serialization, eg. SOAP libraries.
+		/// </summary>
+		public PersistentCollection()
+		{
+		}
+
+		/// <summary>
+		/// Not called by Hibernate, but used by non-NET serialization, eg. SOAP libraries.
 		/// </summary>
 		/// <param name="session"></param>
 		protected PersistentCollection( ISessionImplementor session )
@@ -207,15 +234,6 @@ namespace NHibernate.Collection
 			return this;
 		}
 
-		/*
-		/// <summary></summary>
-		public virtual object GetCachedValue()
-		{
-			initialized = true; //TODO: only needed for query FETCH so should move out of here
-			return this;
-		}
-		*/
-
 		/// <summary>
 		/// Override on some subclasses
 		/// </summary>
@@ -232,56 +250,21 @@ namespace NHibernate.Collection
 		/// This should be overridden by sub collections that use temporary collections
 		/// to store values read from the db.
 		/// </p>
-		/// <p>
-		/// This is also responsible for determining if the collection is cacheable by
-		/// setting the property <see cref="IsCacheable"/>.  When NH is synched with h2.1 
-		/// this method will be changed to return that bool instead of setting the property,
-		/// but this accomplishes the same thing until then.
-		/// </p>
 		/// </remarks>
-		public virtual void EndRead()
+		public virtual bool EndRead()
 		{
-			// TODO:SYNCH:hib2.1 has this return a bool
 			SetInitialized();
 			//do this bit after setting initialized to true or it will recurse
-			if (additions!=null) 
+			if ( additions != null ) 
 			{
-				DelayedAddAll(additions);
-				additions=null;
-				// can't cache the collection because it contains additions that are 
-				// not in the database - those additions can't be put in the cache
-				// because they might throw TransientObjectExceptions when attempting
-				// to get their database identifier.
-				IsCacheable = false;
-				//return false;
+				DelayedAddAll( additions );
+				additions = null;
+				return false;
 			}
 			else 
 			{
-				// nothing happened that would prevent this collection from being safe
-				// to cache.
-				IsCacheable = true;
-				//return true;
+				return true;
 			}
-		}
-
-		private bool _isCacheable;
-
-		/// <summary>
-		/// Gets or sets a boolean indicating if this collection can be put into the 
-		/// cache.
-		/// </summary>
-		/// <remarks>
-		/// This is a method new to NHibernate and is in here until the Loader design
-		/// can get synched up with h2.1's loader design.  In h2.1 the <c>EndRead()</c>
-		/// method returns a bool that is used by the ISession to determine wether or
-		/// not the Collection can go in cache.  Right now, the only thing that can keep 
-		/// a collection from being cached is if Delayed Adds are supported - ie, adding
-		/// items to the collection without fully initializing it.
-		/// </remarks>
-		internal bool IsCacheable
-		{
-			get { return _isCacheable; }
-			set { _isCacheable = value; }
 		}
 
 		/// <summary>
@@ -317,6 +300,15 @@ namespace NHibernate.Collection
 					throw new LazyInitializationException( "Failed to lazily initialize a collection - no session" );
 				}
 			}
+		}
+
+		/// <summary>
+		/// Mark the collection as initialized.
+		/// </summary>
+		protected void SetInitialized()
+		{
+			initializing = false;
+			initialized = true;
 		}
 
 		/// <summary>
@@ -413,7 +405,6 @@ namespace NHibernate.Collection
 		/// <returns>The value of the Identifier.</returns>
 		public abstract object ReadFrom( IDataReader reader, ICollectionPersister role, object owner );
 
-		/*
 		/// <summary>
 		/// 
 		/// </summary>
@@ -423,20 +414,6 @@ namespace NHibernate.Collection
 		/// <param name="i"></param>
 		/// <param name="writeOrder"></param>
 		public abstract void WriteTo( IDbCommand st, ICollectionPersister role, object entry, int i, bool writeOrder );
-		*/
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="role"></param>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="writeOrder"></param>
-		/// <remarks>This is the 2.1 version, should be abstract, but trying to avoid lots of cascading changes</remarks>
-		public virtual void WriteTo( IDbCommand st, ICollectionPersister role, object entry, int i, bool writeOrder )
-		{
-		}
 
 		/// <summary>
 		/// 
@@ -517,7 +494,7 @@ namespace NHibernate.Collection
 			if( initializing ) throw new AssertionFailure("force initialize loading collection");
 			if( session == null ) throw new HibernateException("collection is not associated with any session");
 			if( !session.IsConnected ) throw new HibernateException("disconnected session");
-			if( !initialized ) session.InitializeCollection(this, false);
+			if( !initialized ) session.InitializeCollection( this, false );
 		}
 
 		/// <summary>
@@ -575,7 +552,17 @@ namespace NHibernate.Collection
 		/// <summary></summary>
 		public ICollection QueuedAddsCollection
 		{
-			get { return additions; }
+			get 
+			{ 
+				if ( HasQueuedAdds )
+				{	
+					return additions; 
+				}
+				else
+				{
+					return new ArrayList();
+				}
+			}
 		}
 
 		/// <summary></summary>
@@ -583,21 +570,6 @@ namespace NHibernate.Collection
 		{
 			get { return collectionSnapshot; }
 			set { collectionSnapshot = value; }
-		}
-
-		// looks like it is used by IdentifierBag
-		/// <summary>
-		/// By default, no operation is performed.  This provides a hook to get an identifer of the
-		/// collection row for <see cref="IdentifierBag"/>.
-		/// </summary>
-		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
-		/// <param name="entry">
-		/// The entry to preInsert.  If this is a Map this will be a DictionaryEntry.  If this is
-		/// a List then it will be the object at that index.
-		/// </param>
-		/// <param name="i">The index of the Entry while enumerating through the Collection.</param>
-		public virtual void PreInsert( ICollectionPersister persister, object entry, int i )
-		{
 		}
 
 		/// <summary>
@@ -619,7 +591,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Get all "orphaned" elements
 		/// </summary>
 		/// <param name="snapshot"></param>
 		/// <returns></returns>
@@ -638,6 +610,53 @@ namespace NHibernate.Collection
 			{
 				PersistentCollection.IdentityRemove( list, enumer.Current, session );
 			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="oldElements"></param>
+		/// <param name="currentElements"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		protected static ICollection GetOrphans( ICollection oldElements, ICollection currentElements, ISessionImplementor session )
+		{
+			// short-circuit(s)
+			if ( currentElements.Count == 0 )
+			{
+				// no new elements, the old list contains only Orphans
+				return oldElements;
+			}
+			if ( oldElements.Count == 0 )
+			{
+				// no old elements, so no Orphans neither
+				return oldElements;
+			}
+
+			// create the collection holding the orphans
+			IList res = new ArrayList();
+
+			// collect EntityIdentifier(s) of the *current* elements - add them into a HashSet for fast access
+			ISet currentIds = new HashedSet();
+			foreach ( object current in currentElements )
+			{
+				if ( session.IsSaved( current ) )
+				{
+					currentIds.Add( session.GetEntityIdentifierIfNotUnsaved( current ) );
+				}
+			}
+
+			// iterate over the *old* list
+			foreach ( object old in oldElements )
+			{
+				object id = session.GetEntityIdentifierIfNotUnsaved( old );
+				if ( !currentIds.Contains( id ) )
+				{
+					res.Add( old );
+				}
+			}
+
+			return res;
 		}
 
 		/// <summary>
@@ -670,15 +689,6 @@ namespace NHibernate.Collection
 					list.RemoveAt( indexOfEntityToRemove );
 				}
 			}
-		}
-
-		/// <summary>
-		/// Mark the collection as initialized.
-		/// </summary>
-		protected void SetInitialized()
-		{
-			initializing = false;
-			initialized = true;
 		}
 
 		#region - Hibernate Collection Proxy Classes

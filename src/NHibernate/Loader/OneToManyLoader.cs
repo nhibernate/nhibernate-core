@@ -12,6 +12,10 @@ namespace NHibernate.Loader
 	/// <summary>
 	/// Loads one-to-many associations
 	/// </summary>
+	/// <remarks>
+	/// The collection persister must implement IQueryableCollection. For
+	/// other collections, create a customized subclass of Loader.
+	/// </remarks>
 	public class OneToManyLoader : OuterJoinLoader, ICollectionInitializer
 	{
 		private IQueryableCollection collectionPersister;
@@ -37,90 +41,31 @@ namespace NHibernate.Loader
 			collectionPersister = collPersister;
 			idType = collectionPersister.KeyType;
 
-			//ILoadable persister = ( ILoadable ) factory.GetPersister( ( ( EntityType ) collPersister.ElementType ).AssociatedClass );
-			ILoadable persister = ( ILoadable ) collPersister.ElementPersister;
+			IOuterJoinLoadable persister = ( IOuterJoinLoadable ) collPersister.ElementPersister;
 
-			string alias = ToAlias( collectionPersister.TableName, 0 );
-
-			SqlString whereSqlString = null;
-
-			if( collectionPersister.HasWhere )
-			{
-				whereSqlString = new SqlString( collectionPersister.GetSQLWhereString( alias ) );
-			}
-
+			string alias = GenerateRootAlias( collPersister.Role );
 			IList associations = WalkTree( persister, alias, factory );
 
-			int joins = associations.Count;
-			Suffixes = new string[joins + 1];
-			for( int i = 0; i <= joins; i++ )
-			{
-				Suffixes[ i ] = ( joins == 0 ) ? String.Empty : i.ToString() + StringHelper.Underscore;
-			}
-
-			JoinFragment ojf = OuterJoins( associations );
-
-			SqlSelectBuilder selectBuilder = new SqlSelectBuilder( factory );
-
-			selectBuilder.SetSelectClause(
-				collectionPersister.SelectFragment( alias ).ToString() +
-					( joins == 0 ? String.Empty : "," + SelectString( associations ) ) +
-					", " +
-					SelectString( persister, alias, Suffixes[ joins ] )
-				);
-
-
-			selectBuilder.SetFromClause(
-				persister.FromTableFragment( alias ).Append(
-					persister.FromJoinFragment( alias, true, true )
-					)
-				);
-
-			selectBuilder.SetWhereClause( alias, collectionPersister.KeyColumnNames, collectionPersister.KeyType );
-			if( collectionPersister.HasWhere )
-			{
-				selectBuilder.AddWhereClause( whereSqlString );
-			}
-
-			selectBuilder.SetOuterJoins(
-				ojf.ToFromFragmentString,
-				ojf.ToWhereFragmentString.Append(
-					persister.WhereJoinFragment( alias, true, true )
-					)
-				);
-
-			if( collectionPersister.HasOrdering )
-			{
-				selectBuilder.SetOrderByClause( collectionPersister.GetSQLOrderByString( alias ) );
-			}
-
-			this.SqlString = selectBuilder.ToSqlString();
-
-
-			Persisters = new ILoadable[joins + 1];
-			LockModeArray = CreateLockModeArray( joins + 1, LockMode.None );
-			for( int i = 0; i < joins; i++ )
-			{
-				Persisters[ i ] = ( ( OuterJoinableAssociation ) associations[ i ] ).Subpersister;
-			}
-			Persisters[ joins ] = persister;
+			InitStatementString( collPersister, persister, alias, associations, batchSize, factory );
+			InitClassPersisters( persister, associations );
 
 			PostInstantiate();
 		}
 
 		/// <summary>
-		/// 
+		/// Disable a join back to this same association
 		/// </summary>
+		/// <param name="type"></param>
 		/// <param name="mappingDefault"></param>
 		/// <param name="path"></param>
 		/// <param name="table"></param>
 		/// <param name="foreignKeyColumns"></param>
 		/// <returns></returns>
-		protected override bool EnableJoinedFetch( bool mappingDefault, string path, string table, string[ ] foreignKeyColumns )
+		protected override bool IsJoinedFetchEnabled( IType type, bool mappingDefault, string path, string table, string[] foreignKeyColumns )
 		{
-			return mappingDefault && (
-				!table.Equals( collectionPersister.TableName ) ||
-				!ArrayHelper.Equals( foreignKeyColumns, collectionPersister.KeyColumnNames )
+			return base.IsJoinedFetchEnabled( type, mappingDefault, path, table, foreignKeyColumns) && (
+				!table.Equals( collectionPersister.TableName ) || 
+				!ArrayHelper.Equals( foreignKeyColumns, collectionPersister.KeyColumnNames ) 
 				);
 		}
 
@@ -134,22 +79,80 @@ namespace NHibernate.Loader
 		/// 
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="collection"></param>
-		/// <param name="owner"></param>
-		/// <param name="session"></param>
-		public void Initialize( object id, PersistentCollection collection, object owner, ISessionImplementor session )
-		{
-			LoadCollection( session, id, idType, owner, collection );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
 		/// <param name="session"></param>
 		public void Initialize( object id, ISessionImplementor session )
 		{
 			LoadCollection( session, id, idType );
+		}
+
+		private void InitClassPersisters( IOuterJoinLoadable persister, IList associations )
+		{
+			int joins = associations.Count;
+			LockModeArray = CreateLockModeArray( joins + 1, LockMode.None );
+
+			Persisters = new ILoadable[joins + 1];
+			SetOwners( new int[ joins + 1 ] );
+			for( int i = 0; i < joins; i++ )
+			{
+				OuterJoinableAssociation oj = ( OuterJoinableAssociation ) associations[ i ];
+				Persisters[ i ] = (ILoadable) oj.Joinable;
+				Owners[ i ] = ToOwner( oj, joins, oj.IsOneToOne );
+			}
+			Persisters[ joins ] = persister;
+			Owners[ joins ] = -1;
+
+			if ( ArrayHelper.IsAllNegative( Owners ) )
+			{
+				SetOwners( null );
+			}
+		}
+
+		private void InitStatementString(
+			IQueryableCollection collPersister,
+			IOuterJoinLoadable persister,
+			string alias,
+			IList associations,
+			int batchSize,
+			ISessionFactoryImplementor factory
+			)
+		{
+			int joins = associations.Count;
+
+			Suffixes = GenerateSuffixes( joins + 1 );
+
+			SqlString whereSqlString = WhereString( factory, alias, collPersister.KeyColumnNames, collPersister.KeyType, batchSize );
+
+			if( collectionPersister.HasWhere )
+			{
+				whereSqlString.Append( " and " ).Append( collectionPersister.GetSQLWhereString( alias ) );
+			}
+
+			JoinFragment ojf = MergeOuterJoins( associations );
+
+			SqlSelectBuilder selectBuilder = new SqlSelectBuilder( factory )
+				.SetSelectClause(
+					collectionPersister.SelectFragment( alias, Suffixes[ joins ], true ).ToString() +
+					SelectString( associations, factory )
+				)
+				.SetFromClause(
+					persister.FromTableFragment( alias ).Append(
+					persister.FromJoinFragment( alias, true, true )
+					)
+				)
+				.AddWhereClause( whereSqlString )
+				.SetOuterJoins(
+					ojf.ToFromFragmentString,
+					ojf.ToWhereFragmentString.Append(
+					persister.WhereJoinFragment( alias, true, true )
+					)
+				);
+
+			if( collectionPersister.HasOrdering )
+			{
+				selectBuilder.SetOrderByClause( collectionPersister.GetSQLOrderByString( alias ) );
+			}
+
+			this.SqlString = selectBuilder.ToSqlString();
 		}
 	}
 }

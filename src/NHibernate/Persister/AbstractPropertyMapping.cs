@@ -23,9 +23,9 @@ namespace NHibernate.Persister
 	/// </summary>
 	public abstract class AbstractPropertyMapping : IPropertyMapping
 	{
-		private Hashtable typesByPropertyPath = new Hashtable();
-		private Hashtable columnsByPropertyPath = new Hashtable();
-		private Hashtable formulaTemplatesByPropertyPath = new Hashtable();
+		private readonly Hashtable typesByPropertyPath = new Hashtable();
+		private readonly Hashtable columnsByPropertyPath = new Hashtable();
+		private readonly Hashtable formulaTemplatesByPropertyPath = new Hashtable();
 
 		/// <summary>
 		/// 
@@ -95,12 +95,17 @@ namespace NHibernate.Persister
 		protected void AddPropertyPath( string path, IType type, string[] columns )
 		{
 			// HACK: Test for use so we don't attempt to duplicate - differs from the java code
+			/*
 			if ( !typesByPropertyPath.ContainsKey( path ) )
 			{
 				typesByPropertyPath.Add( path, type );
 				columnsByPropertyPath.Add( path, columns );
 				HandlePath( path, type );
 			}
+			*/
+			typesByPropertyPath[ path ] = type;
+			columnsByPropertyPath[ path ] = columns;
+			HandlePath( path, type );
 		}
 
 		/// <summary>
@@ -112,12 +117,17 @@ namespace NHibernate.Persister
 		protected void AddFormulaPropertyPath( string path, IType type, string template )
 		{
 			// HACK: Test for use so we don't attempt to duplicate - differs from the java code
+			/*
 			if ( !typesByPropertyPath.ContainsKey( path ) )
 			{
 				typesByPropertyPath.Add( path, type );
 				formulaTemplatesByPropertyPath.Add( path, template );
 				HandlePath( path, type );
 			}
+			*/
+			typesByPropertyPath[ path ] = type ;
+			formulaTemplatesByPropertyPath[ path ] = template ;
+			HandlePath( path, type );
 		}
 
 		/// <summary>

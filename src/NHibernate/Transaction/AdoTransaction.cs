@@ -137,7 +137,7 @@ namespace NHibernate.Transaction
 			}
 			finally
 			{
-				session.AfterTransactionCompletion();
+				session.AfterTransactionCompletion( true );
 			}
 		}
 
@@ -169,7 +169,7 @@ namespace NHibernate.Transaction
 			}
 			finally
 			{
-				session.AfterTransactionCompletion();
+				session.AfterTransactionCompletion( false );
 			}
 		}
 

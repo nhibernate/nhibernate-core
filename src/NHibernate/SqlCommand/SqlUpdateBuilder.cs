@@ -158,7 +158,11 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder</returns>
 		public SqlUpdateBuilder AddWhereFragment( string whereSql )
 		{
-			whereStrings.Add( new SqlString( whereSql ) );
+			// Don't add empty condition's - we get extra ANDs
+			if ( whereSql != null && whereSql.Length > 0 )
+			{
+				whereStrings.Add( new SqlString( whereSql ) );
+			}
 			return this;
 		}
 

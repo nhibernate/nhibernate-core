@@ -3,6 +3,7 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister;
+using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -355,6 +356,28 @@ namespace NHibernate.Type
 				//return AssociationType.FOREIGN_KEY_TO_PARENT; //TODO: this is better but causes a transient object exception... 
 				return ForeignKeyType.ForeignKeyFromParent;
 			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override bool IsModified(object old, object current, ISessionImplementor session)
+		{
+			if ( old == null )
+			{
+				return current != null;
+			}
+			if ( current == null )
+			{
+				return old != null;
+			}
+			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) old;
+
+			return holder.clazz != NHibernateProxyHelper.GetClass( current ) || identifierType.IsModified( holder.id, Id( current, session ), session );
 		}
 
 		/// <summary></summary>

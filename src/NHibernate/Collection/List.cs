@@ -39,7 +39,7 @@ namespace NHibernate.Collection
 			IList sn = ( IList ) snapshot;
 			ArrayList result = new ArrayList( sn.Count );
 			result.AddRange( sn );
-			PersistentCollection.IdentityRemoveAll( result, list, session );
+			PersistentCollection.IdentityRemoveAll( result, list, Session );
 			return result;
 		}
 
@@ -57,7 +57,7 @@ namespace NHibernate.Collection
 			}
 			for( int i = 0; i < list.Count; i++ )
 			{
-				if( elementType.IsDirty( list[ i ], sn[ i ], session ) )
+				if( elementType.IsDirty( list[ i ], sn[ i ], Session ) )
 				{
 					return false;
 				}
@@ -92,7 +92,7 @@ namespace NHibernate.Collection
 		{
 			this.list = list;
 			SetInitialized();
-			directlyAccessible = true;
+			DirectlyAccessible = true;
 		}
 
 		/// <summary>
@@ -300,8 +300,8 @@ namespace NHibernate.Collection
 		/// <param name="writeOrder"></param>
 		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
-			persister.WriteElement( st, entry, writeOrder, session );
-			persister.WriteIndex( st, i, writeOrder, session );
+			persister.WriteElement( st, entry, writeOrder, Session );
+			persister.WriteIndex( st, i, writeOrder, Session );
 		}
 
 		/// <summary>
@@ -313,8 +313,8 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
 		{
-			object element = persister.ReadElement(rs, owner, session);
-			int index = (int)persister.ReadIndex( rs, session );
+			object element = persister.ReadElement(rs, owner, Session);
+			int index = (int)persister.ReadIndex( rs, Session );
 
 			for( int i=list.Count; i<=index; i++ )
 			{
@@ -343,7 +343,7 @@ namespace NHibernate.Collection
 			object[ ] array = ( object[ ] ) disassembled;
 			for( int i = 0; i < array.Length; i++ )
 			{
-				list.Add( persister.ElementType.Assemble( array[ i ], session, owner ) );
+				list.Add( persister.ElementType.Assemble( array[ i ], Session, owner ) );
 			}
 			SetInitialized();
 		}
@@ -359,7 +359,7 @@ namespace NHibernate.Collection
 			object[ ] result = new object[length];
 			for( int i = 0; i < length; i++ )
 			{
-				result[ i ] = persister.ElementType.Disassemble( list[ i ], session );
+				result[ i ] = persister.ElementType.Disassemble( list[ i ], Session );
 			}
 			return result;
 		}
@@ -419,7 +419,7 @@ namespace NHibernate.Collection
 		public override bool NeedsUpdating( object entry, int i, IType elemType )
 		{
 			IList sn = ( IList ) GetSnapshot();
-			return i < sn.Count && sn[ i ] != null && list[ i ] != null && elemType.IsDirty( list[ i ], sn[ i ], session );
+			return i < sn.Count && sn[ i ] != null && list[ i ] != null && elemType.IsDirty( list[ i ], sn[ i ], Session );
 		}
 
 		/// <summary>

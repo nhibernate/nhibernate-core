@@ -91,9 +91,10 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public static ICollectionPersister CreateCollectionPersister( Configuration cfg, Mapping.Collection model, ISessionFactoryImplementor factory )
 		{
-			return new CollectionPersister( model, cfg, factory );
-			
 			/*
+			return new CollectionPersister( model, cfg, factory );
+			*/
+			
 			System.Type persisterClass = model.CollectionPersisterClass;
 			if ( persisterClass == null )
 			{
@@ -106,7 +107,6 @@ namespace NHibernate.Persister
 			{
 				return Create( persisterClass, cfg, model, factory );
 			}
-			*/
 		}
 
 		/// <summary>

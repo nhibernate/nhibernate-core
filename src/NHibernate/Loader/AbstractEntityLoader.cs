@@ -4,6 +4,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Loader
@@ -11,7 +12,7 @@ namespace NHibernate.Loader
 	/// <summary></summary>
 	public abstract class AbstractEntityLoader : OuterJoinLoader
 	{
-		private ILoadable persister;
+		private readonly IOuterJoinLoadable persister;
 		private ICollectionPersister collectionPersister;
 		private int collectionOwner;
 		private string alias;
@@ -22,159 +23,42 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="factory"></param>
-		public AbstractEntityLoader( ILoadable persister, ISessionFactoryImplementor factory ) : base( factory.Dialect )
+		public AbstractEntityLoader( IOuterJoinLoadable persister, ISessionFactoryImplementor factory ) : base( factory.Dialect )
 		{
 			this.persister = persister;
-			alias = ToAlias( persister.ClassName, 0 );
-		}
-
-		/// <summary></summary>
-		protected string Alias
-		{
-			get { return alias; }
-		}
-
-		/// <summary>
-		/// Gets the <see cref="ILoadable"/> Persister.
-		/// </summary>
-		protected ILoadable Persister
-		{
-			get { return persister; }
+			alias = GenerateRootAlias( persister.ClassName );
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="selectBuilder"></param>
-		/// <param name="factory"></param>
-		protected void RenderStatement( SqlSelectBuilder selectBuilder, ISessionFactoryImplementor factory )
-		{
-			RenderStatement( selectBuilder, String.Empty, factory );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="selectBuilder"></param>
-		/// <param name="orderBy"></param>
-		/// <param name="factory"></param>
-		protected void RenderStatement( SqlSelectBuilder selectBuilder, string orderBy, ISessionFactoryImplementor factory )
-		{
-			IList associations = WalkTree( persister, alias, factory );
-
-			int joins = associations.Count;
-			Suffixes = new string[joins + 1];
-			for( int i = 0; i <= joins; i++ )
-			{
-				Suffixes[ i ] = ( joins == 0 ) ? String.Empty : i.ToString() + StringHelper.Underscore;
-			}
-
-			JoinFragment ojf = OuterJoins( associations );
-
-			selectBuilder.SetSelectClause(
-				( joins == 0 ? String.Empty : SelectString( associations ) + "," ) +
-					SelectString( persister, alias, Suffixes[ joins ] )
-				)
-				.SetFromClause
-				(
-				persister.FromTableFragment( alias ).Append(
-					persister.FromJoinFragment( alias, true, true )
-					)
-				)
-				.SetOuterJoins
-				(
-				ojf.ToFromFragmentString,
-				ojf.ToWhereFragmentString.Append(
-					UseQueryWhereFragment ?
-						( ( IQueryable ) persister ).QueryWhereFragment( alias, true, true ) :
-						persister.WhereJoinFragment( alias, true, true )
-					)
-				)
-				.SetOrderByClause( orderBy );
-
-			Persisters = new ILoadable[joins + 1];
-			//			classPersisters = new ILoadable[joins+1];
-			LockModeArray = CreateLockModeArray( joins + 1, LockMode.None );
-			for( int i = 0; i < joins; i++ )
-			{
-				Persisters[ i ] = ( ( OuterJoinableAssociation ) associations[ i ] ).Subpersister;
-			}
-			Persisters[ joins ] = persister;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
+		/// <param name="associations"></param>
 		/// <param name="condition"></param>
 		/// <param name="factory"></param>
-		protected void RenderStatement( SqlString condition, ISessionFactoryImplementor factory )
+		protected void RenderStatement( IList associations, SqlString condition, ISessionFactoryImplementor factory )
 		{
-			RenderStatement( condition, String.Empty, factory );
+			InitStatementString( associations, condition, string.Empty, factory );
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="condition"></param>
-		/// <param name="orderBy"></param>
-		/// <param name="factory"></param>
-		protected void RenderStatement( SqlString condition, string orderBy, ISessionFactoryImplementor factory )
+		/// <param name="spaces"></param>
+		protected void AddAllToPropertySpaces( object[] spaces )
 		{
-			SqlSelectBuilder sqlBuilder = new SqlSelectBuilder( factory );
-
-			IList associations = WalkTree( persister, alias, factory );
-
-			int joins = associations.Count;
-			Suffixes = new string[joins + 1];
-			for( int i = 0; i <= joins; i++ )
+			for ( int i = 0; i < spaces.Length; i++ )
 			{
-				Suffixes[ i ] = ( joins == 0 ) ? String.Empty : i.ToString() + StringHelper.Underscore;
+				AddToPropertySpaces( spaces[ i ] );
 			}
-
-			JoinFragment ojf = OuterJoins( associations );
-			sqlBuilder.SetSelectClause(
-				( joins == 0 ? String.Empty : SelectString( associations ) + "," ) +
-					SelectString( persister, alias, Suffixes[ joins ] )
-				);
-
-			sqlBuilder.SetFromClause(
-				persister.FromTableFragment( alias ).Append(
-					persister.FromJoinFragment( alias, true, true )
-					)
-				);
-
-			sqlBuilder.AddWhereClause( condition );
-
-			sqlBuilder.SetOuterJoins(
-				ojf.ToFromFragmentString,
-				ojf.ToWhereFragmentString.Append
-					(
-					UseQueryWhereFragment ?
-						( ( IQueryable ) persister ).QueryWhereFragment( alias, true, true ) :
-						persister.WhereJoinFragment( alias, true, true ) )
-				);
-
-			sqlBuilder.SetOrderByClause( orderBy );
-
-			this.SqlString = sqlBuilder.ToSqlString();
-
-			Persisters = new ILoadable[joins + 1];
-			LockModeArray = CreateLockModeArray( joins + 1, LockMode.None );
-			for( int i = 0; i < joins; i++ )
-			{
-				Persisters[ i ] = ( ( OuterJoinableAssociation ) associations[ i ] ).Subpersister;
-			}
-			Persisters[ joins ] = persister;
 		}
 
 		/// <summary>
-		/// Should we sue the discriminator, to narrow the select to
-		/// instances of the queried subclass?
+		/// 
 		/// </summary>
-		/// <value>False, unless overridden</value>
-		protected virtual bool UseQueryWhereFragment
+		/// <param name="space"></param>
+		protected virtual void AddToPropertySpaces( object space )
 		{
-			get { return false; }
+			throw new NotSupportedException( "only criteria queries need to autoflush" );
 		}
 
 		/// <summary>
@@ -187,7 +71,7 @@ namespace NHibernate.Loader
 
 			collectionOwner = -1;	// if no collection found
 			classPersisters = new ILoadable[ joins + 1 ];
-			owners = new int[ joins + 1 ];
+			SetOwners( new int[ joins + 1 ] );
 			aliases = new string[ joins + 1 ];
 			LockModeArray = CreateLockModeArray( joins + 1, LockMode.None );
 			int i = 0;
@@ -197,7 +81,7 @@ namespace NHibernate.Loader
 				if ( subpersister is ILoadable )
 				{
 					classPersisters[ i ] = (ILoadable) subpersister;
-					owners[ i ] = ToOwner( oj, joins, oj.IsOneToOne );
+					Owners[ i ] = ToOwner( oj, joins, oj.IsOneToOne );
 					aliases[ i ] = oj.Subalias;
 					if ( oj.JoinType == JoinType.InnerJoin )
 					{
@@ -228,34 +112,117 @@ namespace NHibernate.Loader
 				}
 			}
 			classPersisters[ joins ] = persister;
-			owners[ joins ] = -1;
+			Owners[ joins ] = -1;
 			aliases[ joins ] = alias;
 
-			if ( ArrayHelper.IsAllNegative( owners ) )
+			if ( ArrayHelper.IsAllNegative( Owners ) )
 			{
-				owners = null;
+				SetOwners( null );
 			}
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="spaces"></param>
-		protected void AddAllToPropertySpaces( object[] spaces )
+		/// <param name="associations"></param>
+		/// <param name="condition"></param>
+		/// <param name="orderBy"></param>
+		/// <param name="factory"></param>
+		protected void InitStatementString( IList associations, SqlString condition, string orderBy, ISessionFactoryImplementor factory )
 		{
-			for ( int i = 0; i < spaces.Length; i++ )
-			{
-				AddToPropertySpaces( spaces[ i ] );
-			}
+			int joins = CountClassPersisters( associations );
+
+			Suffixes = GenerateSuffixes( joins + 1 );
+
+			JoinFragment ojf = MergeOuterJoins( associations );
+
+			SqlString = new SqlSelectBuilder( factory )
+				.SetSelectClause( 
+					persister.SelectFragment( alias, Suffixes[ joins ] ) +
+					SelectString( associations, factory )
+				)
+				.SetFromClause( 
+					persister.FromTableFragment( alias ).Append( 
+					persister.FromJoinFragment( alias, true, true ) )
+				)
+				.AddWhereClause( condition )
+				.SetOuterJoins( 
+					ojf.ToFromFragmentString,
+					ojf.ToWhereFragmentString
+				)
+				.AddWhereClause( GetWhereFragment() )
+				.SetOrderByClause( orderBy )
+				.ToSqlString();
+		}
+
+		/// <summary>
+		/// Don't bother with the discriminator, unless overridded by subclass
+		/// </summary>
+		/// <returns></returns>
+		protected virtual SqlString GetWhereFragment( )
+		{
+			return persister.WhereJoinFragment( alias, true, true );
+		}
+
+		/// <summary>
+		/// Gets the <see cref="ILoadable"/> Persister.
+		/// </summary>
+		protected ILoadable Persister
+		{
+			get { return persister; }
+		}
+
+		/// <summary></summary>
+		protected string Alias
+		{
+			get { return alias; }
+			set { Alias = value; }
+		}
+
+		/// <summary></summary>
+		protected override ICollectionPersister CollectionPersister
+		{
+			get { return collectionPersister; }
+		}
+
+		/// <summary></summary>
+		protected override int CollectionOwner
+		{
+			get { return collectionOwner; }
+		}
+
+		/// <summary></summary>
+		protected string[] EntityAliases
+		{
+			get { return aliases; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="space"></param>
-		protected void AddToPropertySpaces( object space )
+		/// <param name="type"></param>
+		/// <param name="mappingDefault"></param>
+		/// <param name="path"></param>
+		/// <param name="table"></param>
+		/// <param name="foreignKeyColumns"></param>
+		/// <returns></returns>
+		protected override bool IsJoinedFetchEnabled( 
+			IType type,
+			bool mappingDefault,
+			string path,
+			string table,
+			string[] foreignKeyColumns )
 		{
-			throw new NotSupportedException( "only criteria queries need to autoflush" );
+			return mappingDefault;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			return this.GetType().Name + " for " + Persister.ClassName;
 		}
 	}
 }

@@ -33,10 +33,6 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public override void Execute()
 		{
-			if ( Persister.HasCache )
-			{
-				Persister.Cache.Remove( Id );
-			}
 			if( !_collection.WasInitialized )
 			{
 				if( !_collection.HasQueuedAdds )
@@ -77,7 +73,7 @@ namespace NHibernate.Impl
 				Persister.UpdateRows( _collection, Id, Session );
 				Persister.InsertRows( _collection, Id, Session );
 			}
-
+			Evict();
 		}
 	}
 }

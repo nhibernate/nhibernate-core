@@ -37,13 +37,6 @@ namespace NHibernate.Engine
 		void AddArrayHolder( ArrayHolder holder );
 
 		/// <summary>
-		/// Set the "shallow dirty" status of the collection. Called when the collection detects
-		/// that the client is modifying it
-		/// </summary>
-		/// TODO: (2.1) This method no longer required.
-		void Dirty( PersistentCollection collection );
-
-		/// <summary>
 		/// Initialize the collection (if not already initialized)
 		/// </summary>
 		/// <param name="coolection"></param>
@@ -58,25 +51,18 @@ namespace NHibernate.Engine
 		bool IsInverseCollection( PersistentCollection collection );
 
 		/// <summary>
-		/// new in h2.0.3 and no javadoc
+		/// new in h2.1 and no javadoc
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
+		/// <param name="resultSetId"></param>
 		/// <returns></returns>
-		PersistentCollection GetLoadingCollection( ICollectionPersister persister, object id );
+		PersistentCollection GetLoadingCollection( ICollectionPersister persister, object id, object resultSetId );
 
 		/// <summary>
-		/// new in h2.0.3 and no javadoc
+		/// new in h2.1 and no javadoc
 		/// </summary>
-		/// <param name="role"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		PersistentCollection GetLoadingCollection( String role, object id );
-
-		/// <summary>
-		/// new in h2.0.3 and no javadoc
-		/// </summary>
-		void EndLoadingCollections();
+		void EndLoadingCollections( ICollectionPersister persister, object resultSetId );
 
 		/// <summary>
 		/// new in h2.1 and no javadoc
@@ -273,9 +259,10 @@ namespace NHibernate.Engine
 
 		/// <summary>
 		/// Notify the session that the transaction completed, so we no longer own the old locks.
-		/// (Also we shold release cache softlocks).
+		/// (Also we shold release cache softlocks). May be called multiple times during the transaction
+		/// completion process.
 		/// </summary>
-		void AfterTransactionCompletion();
+		void AfterTransactionCompletion( bool successful );
 
 		/// <summary>
 		/// Return the identifier of the persistent object, or null if transient

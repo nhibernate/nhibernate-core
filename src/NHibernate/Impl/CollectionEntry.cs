@@ -92,6 +92,10 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		internal ICollectionPersister currentPersister;
 
+		/// <summary></summary>
+		[NonSerialized]
+		internal object currentKey;
+
 		/// <summary>
 		/// The <see cref="ICollectionPersister"/> when the Collection was loaded.
 		/// </summary>
@@ -102,20 +106,16 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		internal ICollectionPersister loadedPersister;
 
-		/// <summary></summary>
-		[NonSerialized]
-		internal object currentKey;
-
 		/// <summary>
 		/// The identifier of the Entity that is the owner of this Collection 
 		/// during the load or post flush.
 		/// </summary>
 		internal object loadedKey;
 
-		/// <summary></summary>
-		internal object snapshot; //session-start/post-flush persistent state
+		/// <summary>session-start/post-flush persistent state</summary>
+		internal object snapshot;
 
-		/// <summary></summary>
+		/// <summary>allow the snapshot to be serialized</summary>
 		internal string role;
 
 		/// <summary>
@@ -127,12 +127,14 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public CollectionEntry()
 		{
+			//a newly wrapped collection is NOT dirty (or we get unnecessary version updates)
+			this.dirty = false;
 			// A newly wrapped collection is NOT dirty (or we get unnecessary version updates)
 			//this.dirty = false;
 			this.initialized = true;
 
 			// New collections that get found and wrapped during flush shouldn't be ignored
-			//this.ignore = false;
+			this.ignore = false;
 		}
 
 		public CollectionEntry( ICollectionPersister loadedPersister, object loadedID )
@@ -150,9 +152,8 @@ namespace NHibernate.Impl
 		/// <param name="ignore">A boolean indicating whether to ignore the collection during current (or next) flush.</param>
 		public CollectionEntry( ICollectionPersister loadedPersister, object loadedID, bool ignore )
 		{
-			// dirty & initialized are set to false by the runtime
-			//this.dirty = false;
-			//this.initialized = false;
+			this.dirty = false;
+			this.initialized = false;
 			this.loadedKey = loadedID;
 			SetLoadedPersister( loadedPersister );
 			this.ignore = ignore;
@@ -176,7 +177,7 @@ namespace NHibernate.Impl
 			this.initialized = true;
 			// Detached collections that get found and reattached during flush
 			// shouldn't be ignored
-			//this.ignore = false;
+			this.ignore = false;
 			SetLoadedPersister( factory.GetCollectionPersister( cs.Role ) );
 		}
 
@@ -276,10 +277,10 @@ namespace NHibernate.Impl
 				collection.PostFlush();
 
 				// if it was initialized or any of the scheduled actions were performed then
-				// need to resnpashot the contents of the collection.
+				// need to resnapshot the contents of the collection.
 				if( initialized && ( doremove || dorecreate || doupdate ) )
 				{
-					InitSnapshot(collection, loadedPersister);
+					InitSnapshot( collection, loadedPersister );
 				}
 			}
 		}
@@ -373,9 +374,8 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public bool IsNew
 		{
-			// TODO: is this correct implementation - h2.0.3
+			// TODO: is this correct implementation
 			get { return initialized && ( snapshot == null ); }
 		}
 	}
-
 }

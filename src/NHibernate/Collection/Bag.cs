@@ -41,7 +41,7 @@ namespace NHibernate.Collection
 			}
 
 			SetInitialized();
-			directlyAccessible = true;
+			DirectlyAccessible = true;
 		}
 
 		/// <summary>
@@ -90,7 +90,7 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, object owner )
 		{
-			object element = persister.ReadElement( reader, owner, session );
+			object element = persister.ReadElement( reader, owner, Session );
 			bag.Add( element );
 			return element;
 		}
@@ -105,7 +105,7 @@ namespace NHibernate.Collection
 		/// <param name="writeOrder"></param>
 		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
-			persister.WriteElement( st, entry, writeOrder, session );
+			persister.WriteElement( st, entry, writeOrder, Session );
 		}
 
 		/// <summary>
@@ -187,7 +187,7 @@ namespace NHibernate.Collection
 			IList sn = ( IList ) snapshot;
 			ArrayList result = new ArrayList();
 			result.AddRange( sn );
-			PersistentCollection.IdentityRemoveAll( result, bag, session );
+			PersistentCollection.IdentityRemoveAll( result, bag, Session );
 			return result;
 		}
 
@@ -203,7 +203,7 @@ namespace NHibernate.Collection
 
 			for( int i = 0; i < length; i++ )
 			{
-				result[ i ] = persister.ElementType.Disassemble( bag[ i ], session );
+				result[ i ] = persister.ElementType.Disassemble( bag[ i ], Session );
 			}
 
 			return result;
@@ -221,7 +221,7 @@ namespace NHibernate.Collection
 			object[] array = ( object[] ) disassembled;
 			for( int i = 0; i < array.Length; i++ )
 			{
-				bag.Add( persister.ElementType.Assemble( array[ i ], session, owner ) );
+				bag.Add( persister.ElementType.Assemble( array[ i ], Session, owner ) );
 			}
 			SetInitialized();
 		}
@@ -544,7 +544,5 @@ namespace NHibernate.Collection
 		{
 			return entry != null;
 		}
-
-
 	}
 }

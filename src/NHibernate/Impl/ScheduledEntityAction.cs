@@ -85,7 +85,8 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Called when the Transaction this action occurred in has completed.
 		/// </summary>
-		public abstract void AfterTransactionCompletion();
+		/// <param name="success"></param>
+		public abstract void AfterTransactionCompletion( bool success );
 
 		/// <summary>
 		/// Execute the action using the <see cref="IClassPersister"/>.

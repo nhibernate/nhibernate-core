@@ -25,10 +25,8 @@ namespace NHibernate.Collection
 	[Serializable]
 	public class IdentifierBag : PersistentCollection, IList
 	{
-		private IList values;
-
-		// TODO: h2.1 changed this to index->id, haven't made that change in nh yet.
-		private IDictionary identifiers; //element -> id 
+		private IList values;	//element
+		private IDictionary identifiers; //index -> id 
 
 		/// <summary>
 		/// 
@@ -47,7 +45,7 @@ namespace NHibernate.Collection
 		{
 			IList list = coll as IList;
 
-			if( list!=null )
+			if( list != null )
 			{
 				values = list;
 			}
@@ -61,7 +59,7 @@ namespace NHibernate.Collection
 			}
 
 			SetInitialized();
-			directlyAccessible = true;
+			DirectlyAccessible = true;
 			identifiers = new Hashtable();
 		}
 
@@ -73,15 +71,15 @@ namespace NHibernate.Collection
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
-			
 			BeforeInitialize( persister );
 			object[ ] array = ( object[ ] ) disassembled;
 
 			for( int i = 0; i < array.Length; i += 2 )
 			{
-				object obj = persister.ElementType.Assemble( array[ i + 1 ], session, owner );
-				identifiers[ obj ] = persister.IdentifierType.Assemble( array[ i ], session, owner );
-				values.Add( obj );
+				//object obj = persister.ElementType.Assemble( array[ i + 1 ], session, owner );
+				//identifiers[ obj ] = persister.IdentifierType.Assemble( array[ i ], session, owner );
+				identifiers[ i / 2 ] = persister.IdentifierType.Assemble( array[ i ], Session, owner );
+				values.Add( persister.ElementType.Assemble( array[ i + 1 ], Session, owner ) );
 			}
 
 			SetInitialized();
@@ -265,13 +263,14 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object Disassemble( ICollectionPersister persister )
 		{
-			object[ ] result = new object[values.Count*2];
+			object[ ] result = new object[ values.Count * 2 ];
 
 			int i = 0;
-			foreach( object obj in values )
+			for( int j = 0; j < values.Count; j++ )
 			{
-				result[ i++ ] = persister.IdentifierType.Disassemble( identifiers[ obj ], session );
-				result[ i++ ] = persister.ElementType.Disassemble( obj, session );
+				object val = values[ j ];
+				result[ i++ ] = persister.IdentifierType.Disassemble( identifiers[ j ], Session );
+				result[ i++ ] = persister.ElementType.Disassemble( val, Session );
 			}
 
 			return result;
@@ -319,24 +318,23 @@ namespace NHibernate.Collection
 				return false;
 			}
 
-			int i = 0;
-			foreach( object obj in values )
+			for( int i = 0; i < values.Count; i++ )
 			{
-				object id = identifiers[ i++ ];
+				object val = values[ i ];
+				object id = identifiers[ i ];
 				if( id == null )
 				{
 					return false;
 				}
 
 				object old = snap[ id ];
-				if( elementType.IsDirty( old, obj, session ) )
+				if( elementType.IsDirty( old, val, Session ) )
 				{
 					return false;
 				}
 			}
 
 			return true;
-
 		}
 
 		/// <summary>
@@ -349,12 +347,11 @@ namespace NHibernate.Collection
 			IDictionary snap = ( IDictionary ) GetSnapshot();
 			IList deletes = new ArrayList( snap.Keys );
 
-			int i = 0;
-			foreach( object obj in values )
+			for( int i = 0; i < values.Count; i++ )
 			{
-				if( obj != null )
+				if( values[ i ] != null )
 				{
-					deletes.Remove( identifiers[ i++ ] );
+					deletes.Remove( identifiers[ i ] );
 				}
 			}
 
@@ -409,7 +406,7 @@ namespace NHibernate.Collection
 			}
 
 			object old = snap[ id ];
-			return entry != null && old != null && elemType.IsDirty( old, entry, session );
+			return old != null && elemType.IsDirty( old, entry, Session );
 		}
 
 		/// <summary>
@@ -421,9 +418,9 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, object owner )
 		{
-			object element = persister.ReadElement( reader, owner, session );
+			object element = persister.ReadElement( reader, owner, Session );
 			values.Add( element );
-			identifiers[ values.Count - 1 ] = persister.ReadIdentifier( reader, session );
+			identifiers[ values.Count - 1 ] = persister.ReadIdentifier( reader, Session );
 			return element;
 		}
 
@@ -453,30 +450,39 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override ICollection GetOrphans( object snapshot )
 		{
+			/*
 			IDictionary sn = ( IDictionary ) GetSnapshot();
 			ArrayList result = new ArrayList();
 			result.AddRange( sn.Values );
 			PersistentCollection.IdentityRemoveAll( result, values, session );
 			return result;
+			*/
+
+			return PersistentCollection.GetOrphans( ( ( IDictionary ) snapshot).Values, values, Session );
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		public override void PreInsert( ICollectionPersister persister, object entry, int i )
+		public override void PreInsert( ICollectionPersister persister )
 		{
 			try
 			{
-				object id = persister.IdentifierGenerator.Generate( session, entry );
-				// TODO: native ids
-				identifiers[ i ] = id;
+				int i = 0;
+				foreach( object entry in values )
+				{
+					int loc = i++;
+					if( !identifiers.Contains( loc ) ) 		// TODO: native ids
+					{
+						object id = persister.IdentifierGenerator.Generate( Session, entry );
+						identifiers[ loc ] = id;
+					}
+				}
 			}
 			catch( Exception sqle )
 			{
-				throw new ADOException( "Could not generate collection row id.", sqle );
+				throw new ADOException( "Could not generate idbag row id.", sqle );
 			}
 		}
 
@@ -490,10 +496,9 @@ namespace NHibernate.Collection
 		/// <param name="writeOrder"></param>
 		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
-			persister.WriteElement( st, entry, writeOrder, session );
-			persister.WriteIdentifier( st, identifiers[ i ], writeOrder, session );
+			persister.WriteElement( st, entry, writeOrder, Session );
+			// TODO: if not using identity columns:
+			persister.WriteIdentifier( st, identifiers[ i ], writeOrder, Session );
 		}
-
-
 	}
 }

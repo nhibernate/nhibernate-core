@@ -141,7 +141,7 @@ namespace NHibernate.Collection
 		/// <param name="collection"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected int DoUpdateRows( object id, PersistentCollection collection, ISessionImplementor session )
+		protected override int DoUpdateRows( object id, PersistentCollection collection, ISessionImplementor session )
 		{
 			// we finish all the "removes" first to take care of possible unique 
 			// constraints and so that we can take better advantage of batching
@@ -235,8 +235,7 @@ namespace NHibernate.Collection
 			if ( includeCollectionColumns )
 			{
 				// Super impl will ignore suffix for collection columns!
-				//return SelectFragment( alias ).Append( StringHelper.CommaSpace );
-				return SelectFragment( alias );
+				return SelectFragment( alias ).Append( StringHelper.CommaSpace ).Append( ojl.SelectFragment( alias, suffix ) );
 			}
 			else
 			{

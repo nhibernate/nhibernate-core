@@ -8,19 +8,24 @@ using NHibernate.Type;
 namespace NHibernate.Loader
 {
 	/// <summary>
-	/// Load an entity using outerjoin fetching to fetch associated entities
+	/// Load an entity using outerjoin fetching to fetch associated entities.
 	/// </summary>
+	/// <remarks>
+	/// The <tt>ClassPersister</tt> must implement <tt>Loadable</tt>. For other entities,
+	/// create a customized subclass of <tt>Loader</tt>.
+	/// </remarks>
 	public class EntityLoader : AbstractEntityLoader, IUniqueEntityLoader
 	{
-		private IType[ ] idType;
+		private readonly IType uniqueKeyType;
+		private readonly bool batchLoader;
 
 		/// <summary>
 		/// 
-		/// </summary>
+		/// </summary>C:\Devel\Sourceforge\NHibernate\nhibernate\src\NHibernate\Loader\EntityLoader.cs
 		/// <param name="persister"></param>
 		/// <param name="batchSize"></param>
 		/// <param name="factory"></param>
-		public EntityLoader( ILoadable persister, int batchSize, ISessionFactoryImplementor factory ) : this( persister, persister.IdentifierColumnNames, persister.IdentifierType, batchSize, factory )
+		public EntityLoader( IOuterJoinLoadable persister, int batchSize, ISessionFactoryImplementor factory ) : this( persister, persister.IdentifierColumnNames, persister.IdentifierType, batchSize, factory )
 		{
 		}
 
@@ -32,17 +37,30 @@ namespace NHibernate.Loader
 		/// <param name="uniqueKeyType"></param>
 		/// <param name="batchSize"></param>
 		/// <param name="factory"></param>
-		public EntityLoader( ILoadable persister, string[] uniqueKey, IType uniqueKeyType, int batchSize, ISessionFactoryImplementor factory ) : base( persister, factory )
+		public EntityLoader( IOuterJoinLoadable persister, string[] uniqueKey, IType uniqueKeyType, int batchSize, ISessionFactoryImplementor factory ) : base( persister, factory )
 		{
-			idType = new IType[ ] {persister.IdentifierType};
+			this.uniqueKeyType = uniqueKeyType;
 
-			SqlSelectBuilder selectBuilder = new SqlSelectBuilder( factory );
-			selectBuilder.SetWhereClause( Alias, persister.IdentifierColumnNames, persister.IdentifierType );
-
-			RenderStatement( selectBuilder, factory );
-			this.SqlString = selectBuilder.ToSqlString();
+			IList associations = WalkTree( persister, Alias, factory );
+			InitClassPersisters( associations );
+			SqlString whereString = WhereString( factory, Alias, uniqueKey, uniqueKeyType, batchSize );
+			RenderStatement( associations, whereString, factory );
 
 			PostInstantiate();
+
+			batchLoader = batchSize > 1;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="id"></param>
+		/// <param name="optionalObject"></param>
+		/// <returns></returns>
+		public object Load( ISessionImplementor session, object id, object optionalObject )
+		{
+			return Load( session, id, optionalObject, id );
 		}
 
 		/// <summary>
@@ -55,30 +73,18 @@ namespace NHibernate.Loader
 		{
 			return Load( session, id, null, null );
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="id"></param>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		public object Load( ISessionImplementor session, object id, object obj )
-		{
-			return Load( session, id, obj, id );
-		}
 	
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="id"></param>
-		/// <param name="obj"></param>
+		/// <param name="optionalObject"></param>
 		/// <param name="optionalId"></param>
 		/// <returns></returns>
-		public object Load( ISessionImplementor session, object id, object obj, object optionalId )
+		public object Load( ISessionImplementor session, object id, object optionalObject, object optionalId )
 		{
-			IList list = LoadEntity( session, new object[ ] {id}, idType, obj, optionalId, false );
+			IList list = LoadEntity( session, id, uniqueKeyType, optionalObject, optionalId );
 			if( list.Count == 1 )
 			{
 				return list[ 0 ];
@@ -114,6 +120,12 @@ namespace NHibernate.Loader
 		protected override object GetResultColumnOrRow( object[ ] row, IDataReader rs, ISessionImplementor session )
 		{
 			return row[ row.Length - 1 ];
+		}
+
+		/// <summary></summary>
+		protected override bool IsSingleRowLoader
+		{
+			get { return !batchLoader; }
 		}
 	}
 }

@@ -114,5 +114,20 @@ namespace NHibernate
 		/// <param name="mode">The Fetch mode.</param>
 		/// <returns></returns>
 		ICriteria SetFetchMode( string associationPath, FetchMode mode );
+
+		/// <summary>
+		/// Set the lock mode of the current entity
+		/// </summary>
+		/// <param name="lockMode">the lock mode</param>
+		/// <returns></returns>
+		ICriteria SetLockMode( LockMode lockMode );
+
+		/// <summary>
+		/// Set the lock mode of the aliased entity
+		/// </summary>
+		/// <param name="alias">an alias</param>
+		/// <param name="lockMode">the lock mode</param>
+		/// <returns></returns>
+		ICriteria SetLockMode( string alias, LockMode lockMode );
 	}
 }

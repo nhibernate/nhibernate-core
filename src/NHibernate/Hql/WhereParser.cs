@@ -461,6 +461,7 @@ namespace NHibernate.Hql
 				IQueryable persister = q.GetPersisterUsingImports( token );
 				if( persister != null ) // the name of a class
 				{
+					// TODO: 2.1 - Use DiscriminatorSQLValue and compare to null/not null rather than DiscriminatorSQLString
 					AppendToken( q, persister.DiscriminatorSQLString );
 				}
 				else

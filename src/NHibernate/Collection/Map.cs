@@ -42,7 +42,7 @@ namespace NHibernate.Collection
 			IDictionary sn = ( IDictionary ) snapshot;
 			ArrayList result = new ArrayList( sn.Values.Count );
 			result.AddRange( sn.Values );
-			PersistentCollection.IdentityRemoveAll( result, map.Values, session );
+			PersistentCollection.IdentityRemoveAll( result, map.Values, Session );
 			return result;
 		}
 
@@ -60,7 +60,7 @@ namespace NHibernate.Collection
 			}
 			foreach( DictionaryEntry entry in map )
 			{
-				if( elementType.IsDirty( entry.Value, xmap[ entry.Key ], session ) )
+				if( elementType.IsDirty( entry.Value, xmap[ entry.Key ], Session ) )
 				{
 					return false;
 				}
@@ -95,7 +95,7 @@ namespace NHibernate.Collection
 		{
 			this.map = map;
 			SetInitialized();
-			directlyAccessible = true;
+			DirectlyAccessible = true;
 		}
 
 		/// <summary>
@@ -290,8 +290,8 @@ namespace NHibernate.Collection
 		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
 			DictionaryEntry e = ( DictionaryEntry ) entry;
-			persister.WriteElement( st, e.Value, writeOrder, session );
-			persister.WriteIndex( st, e.Key, writeOrder, session );
+			persister.WriteElement( st, e.Value, writeOrder, Session );
+			persister.WriteIndex( st, e.Key, writeOrder, Session );
 		}
 
 		/// <summary>
@@ -303,8 +303,8 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
 		{
-			object element = persister.ReadElement(rs, owner, session);
-			object index = persister.ReadIndex( rs, session );
+			object element = persister.ReadElement(rs, owner, Session);
+			object index = persister.ReadIndex( rs, Session );
 
 			map[ index ] = element;
 			return element;
@@ -333,8 +333,8 @@ namespace NHibernate.Collection
 			object[ ] array = ( object[ ] ) disassembled;
 			for( int i = 0; i < array.Length; i += 2 )
 			{
-				map[ persister.IndexType.Assemble( array[ i ], session, owner ) ] =
-					persister.ElementType.Assemble( array[ i + 1 ], session, owner );
+				map[ persister.IndexType.Assemble( array[ i ], Session, owner ) ] =
+					persister.ElementType.Assemble( array[ i + 1 ], Session, owner );
 			}
 			SetInitialized();
 		}
@@ -350,8 +350,8 @@ namespace NHibernate.Collection
 			int i = 0;
 			foreach( DictionaryEntry e in map )
 			{
-				result[ i++ ] = persister.IndexType.Disassemble( e.Key, session );
-				result[ i++ ] = persister.ElementType.Disassemble( e.Value, session );
+				result[ i++ ] = persister.IndexType.Disassemble( e.Key, Session );
+				result[ i++ ] = persister.ElementType.Disassemble( e.Value, Session );
 			}
 			return result;
 		}
@@ -401,7 +401,7 @@ namespace NHibernate.Collection
 			IDictionary sn = ( IDictionary ) GetSnapshot();
 			DictionaryEntry e = ( DictionaryEntry ) entry;
 			object snValue = sn[ e.Key ];
-			return ( e.Value != null && snValue != null && elemType.IsDirty( snValue, e.Value, session ) );
+			return ( e.Value != null && snValue != null && elemType.IsDirty( snValue, e.Value, Session ) );
 		}
 
 		/// <summary>

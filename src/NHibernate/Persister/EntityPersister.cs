@@ -74,9 +74,6 @@ namespace NHibernate.Persister
 		private static readonly object NullDiscriminator = new object();
 		private static readonly object NotNullDiscriminator = new object();
 
-//		private readonly string[ ] StringArray = {};
-//		private readonly IType[ ] TypeArray = {};
-
 		private static readonly ILog log = LogManager.GetLogger( typeof( EntityPersister ) );
 
 		/// <summary>
@@ -123,12 +120,14 @@ namespace NHibernate.Persister
 					{
 						discriminatorValue = null;
 						discriminatorSQLString = "null";
+						discriminatorInsertable = false;
 					}
 					else
 					{
 						discriminatorValue = discriminatorType.StringToObject( model.DiscriminatorValue );
 						discriminatorSQLString = discriminatorType.ObjectToSQLString( discriminatorValue );
 					}
+					discriminatorSQLValue = discriminatorSQLString;
 				} 
 					// TODO: add a ClassCastException here to catch illegal disc types
 				catch( Exception e )
@@ -141,12 +140,12 @@ namespace NHibernate.Persister
 				}
 
 				distinctColumns.Add( discriminatorColumnName );
-
 			}
 			else
 			{
 				forceDiscriminator = false;
 				discriminatorColumnName = null;
+				discriminatorInsertable = false;
 				discriminatorValue = null;
 				discriminatorType = null;
 				discriminatorSQLString = null;
@@ -206,7 +205,7 @@ namespace NHibernate.Persister
 						throw new MappingException( msg , e );
 					}
 
-					if( discriminatorInsertable) 
+					if( discriminatorInsertable ) 
 					{
 						distinctColumns.Add( discriminatorColumnName );
 					}
@@ -217,6 +216,7 @@ namespace NHibernate.Persister
 				forceDiscriminator = false;
 				discriminatorInsertable = false;
 				discriminatorColumnName = null;
+				discriminatorAlias = null;
 				discriminatorValue = null;
 				discriminatorType = null;
 				discriminatorValue = null;
@@ -383,6 +383,11 @@ namespace NHibernate.Persister
 					}
 				}
 			}
+
+			// This is in PostInstatiate as it needs identifier info
+			//InitLockers();
+
+			InitSubclassPropertyAliasesMap( model );
 		}
 
 		/// <summary>
@@ -634,8 +639,8 @@ namespace NHibernate.Persister
 		/// <returns>A SqlString for an Insert</returns>
 		protected virtual SqlString GenerateInsertString( bool identityInsert, bool[ ] includeProperty )
 		{
-			SqlInsertBuilder builder = new SqlInsertBuilder( factory );
-			builder.SetTableName( TableName );
+			SqlInsertBuilder builder = new SqlInsertBuilder( factory )
+				.SetTableName( TableName );
 
 			for( int i = 0; i < HydrateSpan; i++ )
 			{
@@ -702,11 +707,7 @@ namespace NHibernate.Persister
 
 			if( HasSubclasses )
 			{
-				// TODO: Investigate why this breaks NewSessionLifecycle test
-				// NB Seems to actually be a cascaded failure to delete a transient object which has a null key
-				// then trying to rollback the existing transaction - which fails badly.
-				//builder.AddColumn( DiscriminatorColumnName, DiscriminatorAlias );
-				builder.AddColumn( DiscriminatorColumnName );
+				builder.AddColumn( DiscriminatorColumnName, DiscriminatorAlias );
 			}
 
 			// add the parameters to use in the WHERE clause
@@ -1219,33 +1220,26 @@ namespace NHibernate.Persister
 		/// <param name="id"></param>
 		/// <param name="fields"></param>
 		/// <param name="dirtyFields"></param>
+		/// <param name="oldFields"></param>
 		/// <param name="oldVersion"></param>
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
-		public override void Update( object id, object[ ] fields, int[ ] dirtyFields, object oldVersion, object obj, ISessionImplementor session )
+		public override void Update( object id, object[ ] fields, int[ ] dirtyFields, object[ ] oldFields, object oldVersion, object obj, ISessionImplementor session )
 		{
+			bool[] propsToUpdate;
+			SqlString updateString;
+
 			if( UseDynamicUpdate && dirtyFields != null )
 			{
-				bool[ ] propsToUpdate = new bool[ HydrateSpan ];
-				for( int i = 0; i < HydrateSpan; i++ )
-				{
-					bool dirty = false;
-					for( int j = 0; j < dirtyFields.Length; j++ )
-					{
-						if( dirtyFields[ j ] == i )
-						{
-							dirty = true;
-						}
-					}
-					propsToUpdate[ i ] = dirty || VersionProperty == i;
-					//don't need to check property mutability (dirty checking algorithm handles that)
-				}
-				Update( id, fields, propsToUpdate, oldVersion, obj, GenerateUpdateString( propsToUpdate ), session );
+				propsToUpdate = GetPropertiesToUpdate( dirtyFields );
+				updateString = GenerateUpdateString( propsToUpdate, oldFields );
 			}
 			else
 			{
-				Update( id, fields, PropertyUpdateability, oldVersion, obj, SqlUpdateString, session );
+				propsToUpdate = PropertyUpdateability;
+				updateString = SqlUpdateString;
 			}
+			Update( id, fields, propsToUpdate, oldVersion, obj, updateString, session );
 		}
 
 
@@ -1427,12 +1421,12 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public override SqlString PropertySelectFragment( string alias, string suffix )
 		{
-			SelectFragment frag = new SelectFragment( factory.Dialect );
-
-			frag.SetSuffix( suffix );
+			SelectFragment frag = new SelectFragment( factory.Dialect )
+				.SetSuffix( suffix )
+				.SetUsedAliases( IdentifierAliases );
 			if( HasSubclasses )
 			{
-				frag.AddColumn( alias, DiscriminatorColumnName );
+				frag.AddColumn( alias, DiscriminatorColumnName, DiscriminatorAlias );
 			}
 
 			return frag.AddColumns( alias, subclassColumnClosure, subclassColumnAliasClosure )
@@ -1471,9 +1465,21 @@ namespace NHibernate.Persister
 		}
 
 		/// <summary></summary>
+		public override bool IsCacheInvalidationRequired
+		{
+			get { return hasFormulaProperties || ( !IsVersioned && UseDynamicUpdate ); }
+		}
+
+		/// <summary></summary>
 		protected override string VersionedTableName
 		{
 			get	{ return qualifiedTableName; }
+		}
+
+		/// <summary></summary>
+		protected override SqlString VersionSelectString
+		{
+			get { return sqlVersionSelectString; }
 		}
 	}
 }

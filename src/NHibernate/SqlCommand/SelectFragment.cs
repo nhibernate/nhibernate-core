@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Text;
+using Iesi.Collections;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -13,6 +14,7 @@ namespace NHibernate.SqlCommand
 		private IList columns = new ArrayList();
 		private IList columnAliases = new ArrayList();
 		private Dialect.Dialect dialect;
+		private string[] usedAliases;
 
 		/// <summary>
 		/// 
@@ -21,6 +23,15 @@ namespace NHibernate.SqlCommand
 		public SelectFragment( Dialect.Dialect d )
 		{
 			this.dialect = d;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public SelectFragment SetUsedAliases( string[] usedAliases )
+		{
+			this.usedAliases = usedAliases;
+			return this;
 		}
 
 		/// <summary>
@@ -172,19 +183,33 @@ namespace NHibernate.SqlCommand
 		public SqlString ToSqlStringFragment( bool includeLeadingComma )
 		{
 			StringBuilder buf = new StringBuilder( columns.Count*10 );
+			HashedSet columnsUnique = new HashedSet();
 
+			if ( usedAliases != null )
+			{
+				columnsUnique.AddAll( usedAliases );
+			}
+
+			bool found = false;
 			for( int i = 0; i < columns.Count; i++ )
 			{
 				string col = columns[ i ] as string;
-				if( i > 0 || includeLeadingComma )
-				{
-					buf.Append( StringHelper.CommaSpace );
-				}
-
 				string columnAlias = columnAliases[ i ] as string;
-				buf.Append( col )
-					.Append( " as " )
-					.Append( new Alias( suffix ).ToAliasString( columnAlias, dialect ) );
+
+				if ( columnsUnique.Add( columnAlias ) )
+				{
+					if( found || includeLeadingComma )
+					{
+						buf.Append( StringHelper.CommaSpace );
+					}
+
+					buf.Append( col )
+						.Append( " as " )
+						.Append( new Alias( suffix ).ToAliasString( columnAlias, dialect ) );
+
+					// Set the flag for the next time
+					found = true;
+				}
 			}
 			return new SqlString( buf.ToString() );
 		}

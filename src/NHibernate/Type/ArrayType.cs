@@ -8,8 +8,8 @@ namespace NHibernate.Type
 	/// <summary></summary>
 	public class ArrayType : PersistentCollectionType
 	{
-		//private System.Type elementClass;
-		private System.Type arrayClass;
+		private readonly System.Type elementClass;
+		private readonly System.Type arrayClass;
 
 		/// <summary>
 		/// 
@@ -18,7 +18,7 @@ namespace NHibernate.Type
 		/// <param name="elementClass"></param>
 		public ArrayType( string role, System.Type elementClass ) : base( role )
 		{
-			//this.elementClass = elementClass;
+			this.elementClass = elementClass;
 			arrayClass = System.Array.CreateInstance( elementClass, 0 ).GetType();
 		}
 
@@ -93,6 +93,37 @@ namespace NHibernate.Type
 		public override bool IsArrayType
 		{
 			get { return true; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="original"></param>
+		/// <param name="target"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <param name="copiedAlready"></param>
+		/// <returns></returns>
+		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		{
+			if ( original == null ) 
+			{
+				return null;
+			}
+			if ( original == target )
+			{
+				return target;
+			}
+			object[] orig = (object[]) original;
+			int length = orig.Length;
+			object[] result = (object[]) System.Array.CreateInstance( elementClass, length );
+
+			IType elemType = GetElementType( session.Factory );
+			for ( int i = 0; i < length; i++ )
+			{
+				result[ i ] = elemType.Copy( orig[ i ], null, session, owner, copiedAlready );
+			}
+			return result;
 		}
 	}
 }
