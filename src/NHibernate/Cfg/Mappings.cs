@@ -55,10 +55,18 @@ namespace NHibernate.Cfg
 			return (Mapping.Collection) collections[role];
 		}
 
+		/// <summary>
+		/// Adds an import to allow for the full class name <c>Namespace.BusClass</c> 
+		/// to be referenced as <c>BusClass</c> or some other name in Hql.
+		/// </summary>
+		/// <param name="className">The name of the class that is being renamed.</param>
+		/// <param name="rename">The new name to use in Hql for the class.</param>
 		public void AddImport(string className, string rename) 
 		{
-			if ( imports.Contains(rename) && (string)imports[rename] != className)
+			if ( imports.Contains(rename) && (string)imports[rename] != className) 
+			{
 				throw new MappingException("duplicate import: " + rename);
+			}
 			imports.Add(rename, className); 
 		}
 

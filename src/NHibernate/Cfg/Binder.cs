@@ -1,13 +1,14 @@
 using System;
-using System.Xml;
 using System.Collections;
+using System.Text;
+using System.Xml;
+
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.Persister;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Text;
 
 namespace NHibernate.Cfg {
 	
@@ -66,9 +67,18 @@ namespace NHibernate.Cfg {
 				"true".Equals( insertNode.Value	);
 
 			//import
+			
+			// we automattically want to add an import of the Assembly Qualified Name (includes version, 
+			// culture, public-key) to the className supplied in the hbm.xml file.  The most common use-case
+			// will have it contain the "FullClassname, AssemblyName", it might contain version, culture, 
+			// public key, etc...) but should not assume it does.
+			mapping.AddImport( model.PersistentClazz.AssemblyQualifiedName, StringHelper.GetFullClassname(className) );
+
+			// if we are supposed to auto-import the Class then add an import to get from the Classname
+			// to the Assembly Qualified Class Name
 			if (mapping.IsAutoImport) 
 			{
-				mapping.AddImport( StringHelper.GetFullClassname(className), StringHelper.GetClassname(className) );
+				mapping.AddImport( model.PersistentClazz.AssemblyQualifiedName, StringHelper.GetClassname(className) );
 			}
 		}
 
