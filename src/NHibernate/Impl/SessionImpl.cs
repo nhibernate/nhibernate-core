@@ -790,7 +790,6 @@ namespace NHibernate.Impl {
 			}
 
 			AddEntity(key, obj);
-			//AddEntry(obj, LOADED, values, id, Versioning.GetVersion(values, persister), LockMode.Write, identityCol, persister);
 			AddEntry(obj, Status.Loaded, values, id, Versioning.GetVersion(values, persister), LockMode.Write, identityCol, persister);
 			
 			if (!identityCol) insertions.Add( new ScheduledInsertion( id, values, obj, persister, this ) );
