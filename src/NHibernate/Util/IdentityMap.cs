@@ -30,7 +30,8 @@ namespace NHibernate.Util {
 		}
 
 		public void Add(object key, object val) {
-			map.Add(key, val);
+			if( !map.ContainsKey(key) )
+				map.Add(key, val);
 		}
 
 		public void Clear() {
