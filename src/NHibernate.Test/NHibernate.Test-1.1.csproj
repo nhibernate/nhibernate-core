@@ -157,6 +157,11 @@
                     BuildAction = "None"
                 />
                 <File
+                    RelPath = "NodeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ObjectAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
