@@ -594,6 +594,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Driver\OracleDataClientDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Driver\SqlClientDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
