@@ -61,5 +61,11 @@ namespace NHibernate.Engine {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		object Instantiate(System.Type clazz, object id);
+
+		/// <summary>
+		/// Get the creating SessionFactoryImplementor
+		/// </summary>
+		/// <returns></returns>
+		ISessionFactoryImplementor GetFactory();
 	}
 }
