@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="doc" 
+	default="build" 
+	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+>
+
+	<property name="lang" value="en" />
+	
+	<target name="build" description="Generates html from docbook files.">
+	
+		<!-- 
+			I have not figured out a way to modify the Path through NAnt so you
+			need to make sure that xsltproc is in the path
+		-->
+		<mkdir dir="html-single\${lang}" failonerror="false" />
+		
+		<exec program="xsltproc" commandline="--output html-single\${lang}\reference.html ${lang}\styles\html.xsl ${lang}\master.xml" />
+		
+		
+	</target>
+</project>

@@ -1,0 +1,165 @@
+<chapter id="mapping">
+	<title>Basic O/R Mapping</title>
+
+	<sect1 id="mapping-declaration">
+		<title>Mapping declaration</title>
+
+		<para>
+			Object/relational mappings are defined in an XML document. The mapping document
+			is designed to be readable and hand-editable. The mapping language is .NET-centric,
+			meaning that mappings are constructed around persistent class declarations, not
+			table declarations.
+		</para>
+	
+		<para>
+			Note that, even though many Hibernate users choose to define XML mappings be hand,
+			a number of tools exist to generate the mapping document, including XDoclet,
+			Middlegen and AndroMDA.
+		</para>
+
+		<para>
+			Lets kick off with an example mapping:
+		</para>
+
+		<programlisting><![CDATA[
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+        <class name="Eg.Cat, Eg" table="CATS" discriminator-value="C">
+                <id name="Id" column="uid" type="Int64">
+                        <generator class="hilo"/>
+                </id>
+                <discriminator column="subclass" type="Char"/>
+                <property name="Birthdate" type="Date"/>
+                <property name="Color" not-null="true"/>
+                <property name="Sex" not-null="true" update="false"/>
+                <property name="Weight"/>
+                <many-to-one name="Mate" column="mate_id"/>
+                <set name="Kittens">
+                        <key column="mother_id"/>
+                        <one-to-many class="Cat"/>
+                </set>
+                <subclass name="DomesticCat" discriminator-value="D">
+                        <property name="Name" type="String"/>
+                </subclass>
+        </class>
+
+        <class name="Eg.Dog, Eg">
+                <!-- mapping for Dog could go here -->
+        </class>
+
+</hibernate-mapping>
+]]></programlisting>
+
+		<para>
+				We will now discuss the content of the mapping document. We will only describe the 
+				document elements and attributes that are used by Hibernate at runtime. The mapping 
+				document also contains some extra optional attributes and elements that affect the 
+				database schemas exported by the schema export tool. (For example the <literal>
+				not-null</literal> attribute.)
+		</para>
+
+		<sect2 id="mapping-declaration-doctype">
+			<title>Schema</title>
+
+			<para>
+				All XML mappings have to use the nhibernate-mapping-2.0 schema. The actual schema may be found 
+				in the NHibernate source directory, or as an Embedded Resource in <literal>NHibernate.dll</literal>. 
+				NHibernate will always use the Embedded Resource as the source for the schema.
+			</para>
+			
+			<para>
+				To get intellisense while working with the <literal>hibernate-mapping</literal> xml inside of VisualStudio.NET 
+				you should copy the schema to the folder 
+				<literal>C:\Program Files\Microsoft Visual Studio .NET 2003\Common7\Packages\schemas\xml</literal>
+			</para>
+		</sect2>
+
+		<sect2 id="mapping-declaration-mapping">
+			<title>hibernate-mapping</title>
+
+			<para>
+				This element has four optional attributes. The <literal>schema</literal> attribute
+				specifies that tables referred to by this mapping belong to the named schema. If specified, 
+				tablenames will be qualified by the given schema name. If missing, tablenames will be 
+				unqualified. The <literal>default-cascade</literal> attribute specifies what cascade style
+				should be assumed for properties and collections which do not specify a 
+				<literal>cascade</literal> attribute. The <literal>auto-import</literal> attribute lets us
+				use unqualified class names in the query language, by default.  The <literal>default-access</literal>
+				attribute tells us how to access property values.
+			</para>
+ 
+			<programlistingco>
+
+				<programlisting>
+&lt;hibernate-mapping
+         schema="schemaName" <co id="hm1-co" linkends="hm1" />
+         default-cascade="none|save-update" <co id="hm2-co" linkends="hm2" />
+         auto-import="true|false" <co id="hm3-co" linkends="hm3" />
+         default-access="property|field|nosetter|ClassName" <co id="hm4-co" linkends="hm4" />
+ &gt;
+				</programlisting>
+				<calloutlist>
+						<callout arearefs="hm1-co" id="hm1">
+							<para>
+								<literal>schema</literal> (optional): The name of a database schema.
+							</para>
+						</callout>
+	
+						<callout arearefs="hm2-co" id="hm2">
+							<para>
+								<literal>default-cascade</literal> (optional - defaults to <literal>none</literal>): 
+								A default cascade style.
+							</para>
+						</callout>
+	
+						<callout arearefs="hm3-co" id="hm3">
+							<para>
+								<literal>auto-import</literal> (optional - defaults to <literal>true</literal>):
+								Specifies whether we can use unqualified class names (of classes in this mapping)
+								in the query language.
+							</para>
+						</callout>
+						<callout arearefs="hm4-co" id="hm4">
+							<para>
+								<literal>default-access</literal> (optional - defaults to <literal>property</literal>):
+								The strategy NHibernate should use for accessing the property value.
+							</para>
+						</callout>
+						
+					</calloutlist>
+			</programlistingco>
+			
+			<para>
+				If you have two persistent classes with the same (unqualified) name, you should set 
+				<literal>auto-import="false"</literal>. NHibernate will throw an exception if you attempt
+				to assign two classes to the same "imported" name.
+			</para>
+	
+		</sect2>
+	
+	</sect1>
+
+	<sect1 id="mapping-quotedidentifiers">
+			<title>SQL quoted identifiers</title>
+			<para>
+				You may force NHibernate to quote an identifier in the generated SQL by enclosing the table or
+				column name in backticks in the mapping document.  NHibernate will use the correct quotation
+				style for the SQL <literal>Dialect</literal> (usually double quotes, but brackets for SQL
+				Server and backticks for MySQL).
+			</para>
+
+			<programlisting><![CDATA[
+<class name="LineItem" table="`Line Item`">
+    <id name="id" column="`Item Id`">
+        <generator class="assigned"/>
+    </id>
+    <property name="itemNumber" column="`Item #`"/>
+    ...
+</class>]]>
+			</programlisting>
+
+    </sect1>
+
+</chapter>
+
