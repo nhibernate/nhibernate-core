@@ -13,14 +13,6 @@ namespace NHibernate.Impl
 		private int[] dirtyFields;
 		private object[] updatedState;
 
-		[Obsolete("The ctor with more params should be used")]
-		public ScheduledUpdate(object id, object[] fields, int[] dirtyProperties, object lastVersion, object instance, IClassPersister persister, ISessionImplementor session) : base(session, id, instance, persister) 
-		{
-			this.fields = fields;
-			this.lastVersion = lastVersion;
-			this.dirtyFields = dirtyProperties;
-		}
-
 		public ScheduledUpdate(object id, object[] fields, int[] dirtyProperties, object lastVersion, object nextVersion, object instance, object[] updatedState, IClassPersister persister, ISessionImplementor session) : base(session, id, instance, persister) 
 		{
 			this.fields = fields;

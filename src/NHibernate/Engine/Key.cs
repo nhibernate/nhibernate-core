@@ -30,15 +30,6 @@ namespace NHibernate.Engine
 		public Key(object id, IClassPersister p) : this ( id, p.IdentifierSpace ) { }
 
 		/// <summary>
-		/// Construct a unique identifier for a collection instance
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="p"></param>
-		//TODO:not in H2.0.3
-		[Obsolete("This ctor is not in H2.0.3")] 
-		public Key(object id, CollectionPersister p) : this ( id, p.QualifiedTableName ) { }
-
-		/// <summary>
 		/// The user-visible identifier
 		/// </summary>
 		public object Identifier 
