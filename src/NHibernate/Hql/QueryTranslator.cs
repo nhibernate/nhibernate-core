@@ -662,19 +662,29 @@ namespace NHibernate.Hql {
 			pathJoins.Add( path, join.Copy() );
 		}
 
-		protected override void BindNamedParameters(IDbCommand ps, IDictionary namedParams, int start, ISessionImplementor session) {
-			if (namedParams != null) {
-				foreach (DictionaryEntry e in namedParams) {
+		protected override int BindNamedParameters(IDbCommand ps, IDictionary namedParams, int start, ISessionImplementor session) 
+		{
+			if (namedParams != null) 
+			{
+				int result = 0;
+				foreach (DictionaryEntry e in namedParams) 
+				{
 					string name = (string) e.Key;
 					TypedValue typedval = (TypedValue) e.Value;
 					int[] locs = GetNamedParameterLocs(name);
-					for (int i = 0; i < locs.Length; i++) {
-
+					for (int i = 0; i < locs.Length; i++) 
+					{
 						// Hack: parametercollection starts at 0
 						typedval.Type.NullSafeSet(ps, typedval.Value, Impl.AdoHack.ParameterPos(locs[i] + start), session);
 						// end-of Hack
 					}
+					result += locs.Length;
 				}
+				return result;
+			}
+			else 
+			{
+				return 0;
 			}
 		}
 

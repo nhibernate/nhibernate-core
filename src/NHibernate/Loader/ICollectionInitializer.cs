@@ -2,11 +2,13 @@ using System;
 using NHibernate.Collection;
 using NHibernate.Engine;
 
-namespace NHibernate.Loader {
+namespace NHibernate.Loader 
+{
 	/// <summary>
 	/// An interface for collection loaders
 	/// </summary>
-	public interface ICollectionInitializer {
+	public interface ICollectionInitializer 
+	{
 		
 		/// <summary>
 		/// Initialize the given collection

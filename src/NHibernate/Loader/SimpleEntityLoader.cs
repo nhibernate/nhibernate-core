@@ -10,30 +10,22 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Loader {
+namespace NHibernate.Loader 
+{
 	/// <summary>
 	/// Loads entity instances one instance per select (ie without outerjoin fetching)
 	/// </summary>
-	public class SimpleEntityLoader : Loader, IUniqueEntityLoader {
+	public class SimpleEntityLoader : Loader, IUniqueEntityLoader 
+	{
 		private ILoadable[] persister;
 		private IType[] idType;
-		//TODO: remove this field
-		private string sql;
 		private SqlString sqlString;
 		private LockMode[] lockMode;
 		
 		private string[] NoSuffix = new string[] { String.Empty };
 
-		//TODO: remove this ctor
-		public SimpleEntityLoader(ILoadable persister, string sql, LockMode lockMode) {
-			this.persister = new ILoadable[] { persister };
-			this.idType = new IType[] { persister.IdentifierType };
-			this.sql = sql;
-			this.lockMode = new LockMode[] {lockMode};
-			PostInstantiate();
-		}
-
-		public SimpleEntityLoader(ILoadable persister, SqlString sqlString, LockMode lockMode) {
+		public SimpleEntityLoader(ILoadable persister, SqlString sqlString, LockMode lockMode) 
+		{
 			this.persister = new ILoadable[] { persister };
 			this.idType = new IType[] { persister.IdentifierType };
 			this.sqlString = sqlString;
@@ -41,39 +33,39 @@ namespace NHibernate.Loader {
 			PostInstantiate();
 		}
 
-		//TODO: remove this Property
-		public override string SQLString {
-			get { return sql; }
-		}
-
-		public override SqlString SqlString {
+		public override SqlString SqlString 
+		{
 			get {return sqlString;}
 		}
 
-		public override ILoadable[] Persisters {
+		public override ILoadable[] Persisters 
+		{
 			get { return persister; }
 		}
-		protected override CollectionPersister CollectionPersister {
+		protected override CollectionPersister CollectionPersister 
+		{
 			get { return null; }
 		}
-		protected override string[] Suffixes {
+		protected override string[] Suffixes 
+		{
 			get { return NoSuffix; }
 			set { throw new NotImplementedException(); }
 		}
 
-//		protected override LockMode[] LockMode {
-//			get { return lockMode; }
-//		}
-
-		public object Load(ISessionImplementor session, object id, object obj) {
+		public object Load(ISessionImplementor session, object id, object obj) 
+		{
 			IList list = LoadEntity(session, new object[] { id }, idType, obj, id, false);
-			if (list.Count==1) {
-				return ( (object[]) list[0] )[0];
+			if (list.Count==1) 
+			{
+				return list[0];
+				//return ( (object[]) list[0] )[0];
 			} 
-			else if (list.Count==0) {
+			else if (list.Count==0) 
+			{
 				return null;
 			} 
-			else {
+			else 
+			{
 				throw new HibernateException("More than one row with the given identifier was found: " + id + ", for class: " + persister[0].ClassName );
 			}
 		}

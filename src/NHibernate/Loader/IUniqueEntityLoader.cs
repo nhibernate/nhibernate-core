@@ -1,10 +1,10 @@
 using System;
 using NHibernate.Engine;
 
-namespace NHibernate.Loader {
-
-	public interface IUniqueEntityLoader {
-		
+namespace NHibernate.Loader 
+{
+	public interface IUniqueEntityLoader 
+	{
 		/// <summary>
 		/// Load an entity instance. If <c>OptionalObject</c> is supplied, load the entity
 		/// state into the given (uninitialized) object

@@ -12,15 +12,18 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Loader {
+namespace NHibernate.Loader 
+{
 
-	public enum OuterJoinLoaderType {
+	public enum OuterJoinLoaderType 
+	{
 		Lazy = -1, 
 		Auto = 0,
 		Eager = 1
 	}
 	
-	public class OuterJoinLoader : Loader {
+	public class OuterJoinLoader : Loader 
+	{
 		
 		protected static readonly IType[] NoTypes = new IType[0];
 		protected static readonly string[][] NoStringArrays = new string[0][];
@@ -28,15 +31,14 @@ namespace NHibernate.Loader {
 		protected static readonly ILoadable[] NoPersisters = new ILoadable[0];
 		protected ILoadable[] classPersisters;
 		protected LockMode[] lockModeArray;
-		//TODO: remove this field
-		protected string sql;
 		
 		protected SqlString sqlString;
 		protected string[] suffixes;
 		private Dialect.Dialect dialect;
 
 		
-		public OuterJoinLoader(Dialect.Dialect dialect) {
+		public OuterJoinLoader(Dialect.Dialect dialect) 
+		{
 			this.dialect = dialect;
 		}
 
@@ -65,7 +67,8 @@ namespace NHibernate.Loader {
 		/// <param name="alias"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public IList WalkTree(ILoadable persister, string alias, ISessionFactoryImplementor session) {
+		public IList WalkTree(ILoadable persister, string alias, ISessionFactoryImplementor session) 
+		{
 			IList associations = new ArrayList();
 			WalkClassTree(persister, alias, associations, new ArrayList(), String.Empty, session);
 			return associations;
@@ -78,20 +81,25 @@ namespace NHibernate.Loader {
 		/// <param name="alias"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected IList WalkCollectionTree(CollectionPersister persister, string alias, ISessionFactoryImplementor session) {
+		protected IList WalkCollectionTree(CollectionPersister persister, string alias, ISessionFactoryImplementor session) 
+		{
 			IList associations = new ArrayList();
 
-			if ( session.EnableJoinedFetch ) {
-
+			if ( session.EnableJoinedFetch ) 
+			{
 				IType type = persister.ElementType;
-				if (type.IsEntityType) {
+				if (type.IsEntityType) 
+				{
 					EntityType etype = (EntityType) type;
-					if ( AutoEager( persister.EnableJoinFetch, etype, session) ) {
+					// we do NOT need to call this.EnableJoinedFetch() here
+					if ( AutoEager( persister.EnableJoinFetch, etype, session) ) 
+					{
 						string[] columns = StringHelper.Prefix( persister.ElementColumnNames, alias + StringHelper.Dot);
 						WalkAssociationTree(etype, columns, persister, alias, associations, new ArrayList(),  String.Empty, session);
 					}
 				} 
-				else if (type.IsComponentType) {
+				else if (type.IsComponentType) 
+				{
 					WalkCompositeElementTree( (IAbstractComponentType) type, persister.ElementColumnNames, persister, alias, associations, new ArrayList(), String.Empty, session);
 				}
 			}
@@ -118,7 +126,8 @@ namespace NHibernate.Loader {
 			IList associations,
 			IList classPersisters,
 			string path,
-			ISessionFactoryImplementor session) {
+			ISessionFactoryImplementor session) 
+		{
 
 			ILoadable subpersister = (ILoadable)session.GetPersister(type.PersistentClass);
 
@@ -189,11 +198,13 @@ namespace NHibernate.Loader {
 		/// <param name="classPersisters"></param>
 		/// <param name="path"></param>
 		/// <param name="session"></param>
-		private void WalkClassTree(ILoadable persister, string alias, IList associations, IList classPersisters, string path, ISessionFactoryImplementor session) {
+		private void WalkClassTree(ILoadable persister, string alias, IList associations, IList classPersisters, string path, ISessionFactoryImplementor session) 
+		{
 			if ( !session.EnableJoinedFetch ) return;
 
 			int n = persister.CountSubclassProperties();
-			for (int i=0; i<n; i++) {
+			for (int i=0; i<n; i++) 
+			{
 				IType type = persister.GetSubclassPropertyType(i);
 				if (type.IsEntityType) {
 					WalkAssociationTree (
@@ -205,11 +216,11 @@ namespace NHibernate.Loader {
 						classPersisters,
 						path,
 						session
-						);
-					
+					);
 					
 				} 
-				else if ( type.IsComponentType ) {
+				else if ( type.IsComponentType ) 
+				{
 					string subpath = SubPath(path, persister.GetSubclassPropertyName(i) );
 					string[] columns = persister.GetSubclassPropertyColumnNames(i);
 					string[] aliasedColumns = persister.ToColumns(alias, i);
@@ -223,7 +234,9 @@ namespace NHibernate.Loader {
 						alias, 
 						associations, 
 						classPersisters, 
-						subpath, session);
+						subpath, 
+						session
+					);
 				}
 			}
 		}
@@ -248,19 +261,22 @@ namespace NHibernate.Loader {
 			IList associations, 
 			IList classPersisters, 
 			string path,
-			ISessionFactoryImplementor session) {
+			ISessionFactoryImplementor session) 
+		{
 
 			if (!session.EnableJoinedFetch ) return;
 
 			IType[] types = act.Subtypes;
 			string[] propertyNames = act.PropertyNames;
 			int begin = 0;
-			for (int i=0; i<types.Length; i++) {
+			for (int i=0; i<types.Length; i++) 
+			{
 				int length = types[i].GetColumnSpan(session);
 				string[] range = ArrayHelper.Slice(cols, begin, length);
 				string[] aliasedRange = ArrayHelper.Slice(aliasedCols, begin, length);
 
-				if ( types[i].IsEntityType ) {
+				if ( types[i].IsEntityType ) 
+				{
 					EntityType etype = (EntityType) types[i];
 					
 					//TODO: workaround for problem with 1-to-1 defined on a subclass
@@ -268,15 +284,15 @@ namespace NHibernate.Loader {
 					
 					string subpath = SubPath(path, propertyNames[i]);
 					bool autoEager = AutoEager(act.EnableJoinedFetch(i), etype, session);
-					//TODO: looks like I need to fix the persister class
-
+				
 					bool enable = EnableJoinedFetch(autoEager, subpath, persister.GetSubclassPropertyTableName(propertyNumber), range);
 					
 					if(enable)
 						WalkAssociationTree(etype, aliasedRange, persister, alias, associations, classPersisters, subpath, session);
 
 				} 
-				else if ( types[i].IsComponentType ) {
+				else if ( types[i].IsComponentType ) 
+				{
 					string subpath = SubPath(path, propertyNames[i]);
 
 					WalkComponentTree ( (IAbstractComponentType) types[i], propertyNumber, range, aliasedRange, persister, alias, associations, classPersisters, subpath, session);
@@ -305,30 +321,34 @@ namespace NHibernate.Loader {
 			IList associations,
 			IList classPersisters,
 			string path,
-			ISessionFactoryImplementor session ) {
-		
+			ISessionFactoryImplementor session ) 
+		{
 			if(!session.EnableJoinedFetch) return;
 
 			IType[] types = act.Subtypes;
 			string[] propertyNames = act.PropertyNames;
 			int begin = 0;
 
-			for(int i=0; i < types.Length; i++){
+			for(int i=0; i < types.Length; i++)
+			{
 				int length = types[i].GetColumnSpan(session);
 				string[] range = ArrayHelper.Slice(cols, begin, length);
  
-				if(types[i].IsEntityType) {
+				if(types[i].IsEntityType) 
+				{
 					EntityType etype = (EntityType) types[i];
 					string subpath = SubPath(path, propertyNames[i]);
 					bool autoEager = AutoEager(act.EnableJoinedFetch(i), etype, session );
 					bool enable = EnableJoinedFetch(autoEager, subpath, persister.QualifiedTableName, range);
 
-					if(enable) {
+					if(enable) 
+					{
 						string[] columns = StringHelper.Prefix(range, alias + StringHelper.Dot);
 						WalkAssociationTree(etype, columns, persister, alias, associations, classPersisters, subpath, session);
 					}
 				}
-				else if(types[i].IsComponentType) {
+				else if(types[i].IsComponentType) 
+				{
 					string subpath = SubPath(path, propertyNames[i]);
 					WalkCompositeElementTree(
 						(IAbstractComponentType) types[i],
@@ -338,7 +358,8 @@ namespace NHibernate.Loader {
 						associations,
 						classPersisters,
 						subpath,
-						session);
+						session
+					);
 															
 				}
 				begin+=length;
@@ -347,24 +368,22 @@ namespace NHibernate.Loader {
 		}
 
 
-		protected bool AutoEager(OuterJoinLoaderType config, EntityType type, ISessionFactoryImplementor session) {
+		protected bool AutoEager(OuterJoinLoaderType config, EntityType type, ISessionFactoryImplementor session) 
+		{
 			if (config==OuterJoinLoaderType.Eager) return true;
 			if (config==OuterJoinLoaderType.Lazy) return false;
 			IClassPersister persister = session.GetPersister( type.PersistentClass );
 			return !persister.HasProxy || ( type.IsOneToOne && ((OneToOneType) type).IsNullable );
 		}
 
-		//TODO: remove this property
-		public override string SQLString {
-			get { return sql; }
-		}
-
-		public override SqlString SqlString {
+		public override SqlString SqlString 
+		{
 			get { return sqlString;}
 		}
 
 
-		public override ILoadable[] Persisters {
+		public override ILoadable[] Persisters 
+		{
 			get { return classPersisters; } 
 		}
 
@@ -375,7 +394,8 @@ namespace NHibernate.Loader {
 		/// <returns></returns>
 		public string SelectString(IList associations) {
 			StringBuilder buf = new StringBuilder( associations.Count * 100 );
-			for (int i=0; i<associations.Count; i++) {
+			for (int i=0; i<associations.Count; i++) 
+			{
 				OuterJoinableAssociation join = (OuterJoinableAssociation) associations[i];
 				AppendSelectString( buf, join.Subpersister, join.Subalias, Suffixes[i] );
 				if ( i<associations.Count-1) buf.Append(StringHelper.CommaSpace);
@@ -390,7 +410,8 @@ namespace NHibernate.Loader {
 		/// <param name="alias"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		protected string SelectString(ILoadable persister, string alias, string suffix) {
+		protected static string SelectString(ILoadable persister, string alias, string suffix) 
+		{
 			StringBuilder buf = new StringBuilder(30);
 			AppendSelectString(buf, persister, alias, suffix);
 			return buf.ToString();
@@ -403,23 +424,28 @@ namespace NHibernate.Loader {
 		/// <param name="persister"></param>
 		/// <param name="alias"></param>
 		/// <param name="suffix"></param>
-		private void AppendSelectString(StringBuilder buf, ILoadable persister, string alias, string suffix) {
+		private static void AppendSelectString(StringBuilder buf, ILoadable persister, string alias, string suffix) 
+		{
 			buf.Append( persister.IdentifierSelectFragment(alias,suffix) )
 				.Append( persister.PropertySelectFragment(alias, suffix) );
 		}
 
-		protected override string[] Suffixes {
+		protected override string[] Suffixes 
+		{
 			get { return suffixes; }
 			set { suffixes = value; }
 		}
 
-		protected string Alias(string tableName, int n) {
-			tableName = StringHelper.Unqualify(tableName);
+		protected string Alias(string tableName, int n) 
+		{
+			tableName = StringHelper.Unqualify(tableName); //TODO: this is broken if we have quoted identifier with a "."
 
-			return (new Alias(7, n.ToString() + StringHelper.Underscore)).ToAliasString(tableName);
+			//TODO: H2.0.3 - changes tableName to lower case - don't know why it is needed...
+			return (new Alias(10, n.ToString() + StringHelper.Underscore)).ToAliasString(tableName);
 		}
 
-		protected override CollectionPersister CollectionPersister {
+		protected override CollectionPersister CollectionPersister 
+		{
 			get { return null; }
 		}
 
@@ -428,9 +454,11 @@ namespace NHibernate.Loader {
 		/// </summary>
 		/// <param name="associations"></param>
 		/// <returns></returns>
-		public JoinFragment OuterJoins(IList associations) {
+		public JoinFragment OuterJoins(IList associations) 
+		{
 			JoinFragment outerjoin = dialect.CreateOuterJoinFragment();
-			foreach(OuterJoinLoader.OuterJoinableAssociation oj in associations) {
+			foreach(OuterJoinLoader.OuterJoinableAssociation oj in associations) 
+			{
 				outerjoin.AddJoin(
 					oj.Subpersister.TableName,
 					oj.Subalias,
@@ -446,21 +474,29 @@ namespace NHibernate.Loader {
 			return outerjoin;
 		}
 
-		protected override LockMode[] GetLockModes(IDictionary lockModes){
+		protected override LockMode[] GetLockModes(IDictionary lockModes)
+		{
 			return lockModeArray;
 		}
 
-		protected LockMode[] createLockModeArray(int length, LockMode lockMode) {
+		protected LockMode[] createLockModeArray(int length, LockMode lockMode) 
+		{
 			LockMode[] lmArray = new LockMode[length];
-			lmArray[0] = lockMode;
+			for(int i = 0 ; i < length; i++) 
+			{
+				lmArray[i] = lockMode;
+			}
 			return lmArray;
 		}
 
-		private string SubPath(string path, string property) {
-			if(path==null || path.Length==0) {
+		private string SubPath(string path, string property) 
+		{
+			if(path==null || path.Length==0) 
+			{
 				return property;
 			}
-			else {
+			else 
+			{
 				return path + StringHelper.Dot + property;
 			}
 		}

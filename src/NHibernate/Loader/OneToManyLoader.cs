@@ -10,16 +10,26 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Loader {
+namespace NHibernate.Loader 
+{
 	/// <summary>
 	/// Loads one-to-many associations
 	/// </summary>
-	public class OneToManyLoader : OuterJoinLoader, ICollectionInitializer	{
-		
+	public class OneToManyLoader : OuterJoinLoader, ICollectionInitializer	
+	{
 		private CollectionPersister collectionPersister;
 		private IType idType;
 		
-		public OneToManyLoader(CollectionPersister collPersister, ISessionFactoryImplementor factory) : base ( factory.Dialect ) {
+		protected override bool EnableJoinedFetch(bool mappingDefault, string path, string table, string[] foreignKeyColumns)
+		{
+			return mappingDefault && (
+				!table.Equals(collectionPersister.QualifiedTableName) ||
+				!ArrayHelper.Equals(foreignKeyColumns, collectionPersister.KeyColumnNames)
+			);
+		}
+
+		public OneToManyLoader(CollectionPersister collPersister, ISessionFactoryImplementor factory) : base ( factory.Dialect ) 
+		{
 			collectionPersister = collPersister;
 			idType = collectionPersister.KeyType;
 
@@ -44,7 +54,8 @@ namespace NHibernate.Loader {
 
 			SqlSelectBuilder selectBuilder = new SqlSelectBuilder(factory);
 			
-			selectBuilder.SetSelectClause(collectionPersister.SelectClauseFragment(alias) +
+			selectBuilder.SetSelectClause(
+				collectionPersister.SelectClauseFragment(alias) +
 				(joins==0 ? String.Empty : "," + SelectString(associations) ) +
 				", " +
 				SelectString( persister, alias, suffixes[joins] )
@@ -71,10 +82,10 @@ namespace NHibernate.Loader {
 
 
 			classPersisters = new ILoadable[joins+1];
+			lockModeArray = createLockModeArray(joins+1, LockMode.None);
 			for (int i=0; i<joins; i++) classPersisters[i] = ((OuterJoinableAssociation) associations[i]).Subpersister;
 			classPersisters[joins] = persister;
 			
-			lockModeArray = createLockModeArray(joins+1, LockMode.None);
 			PostInstantiate();
 		}
 
