@@ -3,74 +3,93 @@ using System.Collections;
 
 using NExpression = NHibernate.Expression;
 
-namespace NHibernate.Impl {
+namespace NHibernate.Impl 
+{
 	/// <summary>
-	/// Summary description for CriteriaImpl.
+	/// Implementation of the <see cref="ICriteria"/> interface
 	/// </summary>
-	internal class CriteriaImpl : ICriteria {
+	internal class CriteriaImpl : ICriteria 
+	{
 		private IList expressions = new ArrayList();
-		private NExpression.Junction conjunction = NExpression.Expression.Conjunction();
-
 		private IList orderings = new ArrayList();
+		private IDictionary fetchModes = new Hashtable();
+
 		private int maxResults;
 		private int firstResult;
 		private int timeout;
 		private System.Type persistentClass;
 		private SessionImpl session;
 	
-		public ICriteria SetMaxResults(int maxResults) {
+		private NExpression.Junction conjunction = NExpression.Expression.Conjunction();
+
+		
+		public ICriteria SetMaxResults(int maxResults) 
+		{
 			this.maxResults = maxResults;
 			return this;
 		}
-		public ICriteria SetFirstResult(int firstResult) {
+		
+		public ICriteria SetFirstResult(int firstResult) 
+		{
 			this.firstResult = firstResult;
 			return this;
 		}
-		public ICriteria SetTimeout(int timeout) {
+		
+		public ICriteria SetTimeout(int timeout) 
+		{
 			this.timeout = timeout;
 			return this;
 		}
 	
-		public ICriteria Add(NExpression.Expression expression) {
+		public ICriteria Add(NExpression.Expression expression) 
+		{
 			expressions.Add(expression);
 			conjunction.Add(expression);
 			return this;
 		}
 	
 		//ADDED this
-		public NExpression.Expression Expression {
+		public NExpression.Expression Expression 
+		{
 			get {return conjunction;}
 		}
 
-		public int MaxResults {
+		public int MaxResults 
+		{
 			get { return maxResults; }
 		}
-		public int FirstResult {
+		public int FirstResult 
+		{
 			get { return firstResult; }
 		}
-		public int Timeout {
+		public int Timeout 
+		{
 			get { return timeout; }
 		}
 	
-		public CriteriaImpl(System.Type persistentClass, SessionImpl session) {
+		public CriteriaImpl(System.Type persistentClass, SessionImpl session) 
+		{
 			this.persistentClass = persistentClass;
 			this.session = session;
 		}
 	
-		public IList List() {
+		public IList List() 
+		{
 			return session.Find(this);
-	
 		}
 	
-		public IEnumerator IterateExpressions() {
+		public IEnumerator IterateExpressions() 
+		{
 			return expressions.GetEnumerator();
 		}
 	
-		public IEnumerator IterateOrderings() { 
+		public IEnumerator IterateOrderings() 
+		{ 
 			return orderings.GetEnumerator(); 
 		} 
     
-		public System.Type PersistentClass {
+		public System.Type PersistentClass 
+		{
 			get { return persistentClass; }
 		}
 	
@@ -78,9 +97,21 @@ namespace NHibernate.Impl {
 			return expressions.ToString();
 		}
 
-		public ICriteria AddOrder(NExpression.Order ordering) { 
+		public ICriteria AddOrder(NExpression.Order ordering) 
+		{ 
 			orderings.Add(ordering); 
 			return this; 
 		}          
+
+		public FetchMode GetFetchMode(string path) 
+		{
+			return (FetchMode)fetchModes[path];
+		}
+
+		public ICriteria SetFetchMode(string associationPath, FetchMode mode)
+		{
+			fetchModes[associationPath] = mode;
+			return this;
+		}
 	}
 }
