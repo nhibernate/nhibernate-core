@@ -1,15 +1,13 @@
-using System;
-
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
-namespace NHibernate.Persister 
+namespace NHibernate.Persister
 {
 	/// <summary>
 	/// Extends the generic <c>IClassPersister</c> contract to add operations required
 	/// by the query language
 	/// </summary>
-	public interface IQueryable : ILoadable 
+	public interface IQueryable : ILoadable
 	{
 		/// <summary>
 		/// Is this class mapped as a subclass of another class?
@@ -37,7 +35,7 @@ namespace NHibernate.Persister
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		IType GetPropertyType(string path);
+		IType GetPropertyType( string path );
 
 		/// <summary>
 		/// Get the where clause fragment, give a query alias
@@ -46,14 +44,14 @@ namespace NHibernate.Persister
 		/// <param name="innerJoin"></param>
 		/// <param name="includeSublcasses"></param>
 		/// <returns></returns>
-		SqlString QueryWhereFragment(string alias, bool innerJoin, bool includeSublcasses);
-		
+		SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSublcasses );
+
 		/// <summary>
 		/// Given a query alias and a property path, return the qualified column name
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <param name="property"></param>
 		/// <returns></returns>
-		string[] ToColumns(string alias, string property);
+		string[ ] ToColumns( string alias, string property );
 	}
 }

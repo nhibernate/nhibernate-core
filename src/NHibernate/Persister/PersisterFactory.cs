@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-
 using NHibernate.Engine;
 using NHibernate.Mapping;
 
@@ -18,7 +17,7 @@ namespace NHibernate.Persister
 		{
 		}
 
-		private static readonly System.Type[] PersisterConstructorArgs = new System.Type[] { typeof(PersistentClass), typeof(ISessionFactoryImplementor) };
+		private static readonly System.Type[ ] PersisterConstructorArgs = new System.Type[ ] {typeof( PersistentClass ), typeof( ISessionFactoryImplementor )};
 
 
 		/// <summary>
@@ -27,21 +26,21 @@ namespace NHibernate.Persister
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static IClassPersister Create(PersistentClass model, ISessionFactoryImplementor factory) 
+		public static IClassPersister Create( PersistentClass model, ISessionFactoryImplementor factory )
 		{
 			System.Type persisterClass = model.Persister;
 
-			if( persisterClass==null || persisterClass==typeof(EntityPersister) ) 
+			if( persisterClass == null || persisterClass == typeof( EntityPersister ) )
 			{
-				return new EntityPersister(model, factory);
+				return new EntityPersister( model, factory );
 			}
-			else if ( persisterClass==typeof(NormalizedEntityPersister) ) 
+			else if( persisterClass == typeof( NormalizedEntityPersister ) )
 			{
-				return new NormalizedEntityPersister(model, factory);
+				return new NormalizedEntityPersister( model, factory );
 			}
-			else 
+			else
 			{
-				return Create(persisterClass, model, factory);
+				return Create( persisterClass, model, factory );
 			}
 		}
 
@@ -52,26 +51,26 @@ namespace NHibernate.Persister
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static IClassPersister Create(System.Type persisterClass, PersistentClass model, ISessionFactoryImplementor factory ) 
+		public static IClassPersister Create( System.Type persisterClass, PersistentClass model, ISessionFactoryImplementor factory )
 		{
 			ConstructorInfo pc;
-			try 
+			try
 			{
-				pc = persisterClass.GetConstructor(PersisterFactory.PersisterConstructorArgs);
+				pc = persisterClass.GetConstructor( PersisterFactory.PersisterConstructorArgs );
 			}
-			catch(Exception e) 
+			catch( Exception e )
 			{
-				throw new MappingException("Could not get constructor for " + persisterClass.Name, e);
+				throw new MappingException( "Could not get constructor for " + persisterClass.Name, e );
 			}
 
-			try 
+			try
 			{
-				return (IClassPersister) pc.Invoke( new object[] {model, factory} );
+				return ( IClassPersister ) pc.Invoke( new object[ ] {model, factory} );
 			}
-			//TODO: add more specialized error catches
-			catch (Exception e) 
+				//TODO: add more specialized error catches
+			catch( Exception e )
 			{
-				throw new MappingException("Could not instantiate persister " + persisterClass.Name, e);
+				throw new MappingException( "Could not instantiate persister " + persisterClass.Name, e );
 			}
 
 		}
