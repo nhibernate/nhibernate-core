@@ -62,11 +62,11 @@ namespace NHibernate.Dialect
 			Register( DbType.StringFixedLength, 4000, "CHAR($1)");
 			Register( DbType.String, "VARCHAR(255)" );
 			Register( DbType.String, 4000, "VARCHAR($1)" );
-			Register( DbType.String, 1073741823, "BLOB" );// should use the IType.ClobType
+			Register( DbType.String, 1073741823, "BLOB SUB_TYPE 1" );// should use the IType.ClobType
 			
-			Register( DbType.Binary, "BLOB(8000)");
-			Register( DbType.Binary, 8000, "BLOB($1)");
-			Register( DbType.Binary, 2147483647, "BLOB" );// should use the IType.BlobType
+			Register( DbType.Binary, "BLOB(8000) SUB_TYPE 0");
+			Register( DbType.Binary, 8000, "BLOB($1) SUB_TYPE 0");
+			Register( DbType.Binary, 2147483647, "BLOB SUB_TYPE 0" );// should use the IType.BlobType
 		}
 
 		public override string AddColumnString
@@ -121,14 +121,14 @@ namespace NHibernate.Dialect
 			}
 			else 
 			{
-				return "BLOB"; // should use the IType.ClobType
+				return "BLOB SUB_TYPE 1"; // should use the IType.ClobType
 			}
 					
 		}
 
 		protected override  string SqlTypeToString(BinarySqlType sqlType) 
 		{
-			return "BLOB"; // should use the IType.BlobType
+			return "BLOB SUB_TYPE 0"; // should use the IType.BlobType
 		}
 		
 		protected override string SqlTypeToString(BooleanSqlType sqlType)
@@ -144,7 +144,7 @@ namespace NHibernate.Dialect
 
 		protected override string SqlTypeToString(CurrencySqlType sqlType)
 		{
-			return "DECIMAL(15,4)";
+			return "DECIMAL(16,4)";
 		}
 
 		protected override string SqlTypeToString(DateSqlType sqlType)
@@ -196,7 +196,7 @@ namespace NHibernate.Dialect
 			}
 			else 
 			{
-				return "BLOB"; // should use the IType.ClobType
+				return "BLOB SUB_TYPE 1"; // should use the IType.ClobType
 			}
 					
 		}
@@ -210,7 +210,7 @@ namespace NHibernate.Dialect
 			}
 			else 
 			{
-				return "BLOB";
+				return "BLOB SUB_TYPE 1";
 			}
 					
 		}
