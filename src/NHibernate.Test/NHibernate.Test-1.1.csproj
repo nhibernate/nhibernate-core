@@ -154,6 +154,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "hibernate.cfg.xml"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "MasterDetailTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -218,6 +222,11 @@
                 />
                 <File
                     RelPath = "CacheTest\CacheFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CfgTest\ConfigurationFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
