@@ -3,29 +3,23 @@ using System.Data;
 
 namespace NHibernate.DomainModel
 {
-
 	public class MultiplicityType : ICompositeUserType 
 	{
-		private static string[] PROP_NAMES = new String[] { 
+		private static readonly string[] PROP_NAMES = new String[] { 
 															  "count", "glarch" 
 														  };
-		private static Type.IType[] TYPES = new Type.IType[] { 
-														   NHibernate.Int32, NHibernate.GetSerializable(typeof(Glarch))
+		private static readonly Type.IType[] TYPES = new Type.IType[] { 
+														   NHibernate.Int32, NHibernate.Entity(typeof(Glarch))
 													   };
 		public String[] PropertyNames
 		{
-			get
-			{
-				return PROP_NAMES;
-			}
+			get { return PROP_NAMES; }
 		}
 		public Type.IType[] PropertyTypes
 		{
-			get
-		{
-			return TYPES;
+			get { return TYPES; }
 		}
-		}
+
 		public object GetPropertyValue(object component, int property) 
 		{
 			Multiplicity o = (Multiplicity) component;
@@ -48,10 +42,7 @@ namespace NHibernate.DomainModel
 		}
 		public System.Type ReturnedClass
 		{
-			get
-			{
-				return typeof(Multiplicity);
-			}
+			get { return typeof(Multiplicity); }
 		}
 		public new bool Equals(object x, object y) 
 		{
@@ -65,9 +56,9 @@ namespace NHibernate.DomainModel
 		public object NullSafeGet(IDataReader rs, String[] names, Engine.ISessionImplementor session, Object owner)
 		{
 			int c = (int) NHibernate.Int32.NullSafeGet( rs, names[0], session, owner);
-			GlarchProxy g = (GlarchProxy) NHibernate.GetSerializable(typeof(Glarch)).NullSafeGet(rs, names[1], session, owner);
+			GlarchProxy g = (GlarchProxy) NHibernate.Entity(typeof(Glarch)).NullSafeGet(rs, names[1], session, owner);
 			Multiplicity m = new Multiplicity();
-			m.count = c==0 ? 0 : c;
+			m.count = ( c==0 ? 0 : c );
 			m.glarch = g;
 			return m;
 		}
@@ -85,11 +76,13 @@ namespace NHibernate.DomainModel
 			else 
 			{
 				g = o.glarch;
-				c =o.count;
+				c = o.count;
 			}
 			NHibernate.Int32.NullSafeSet(st, c, index, session);
-			NHibernate.GetSerializable(typeof(Glarch)).NullSafeSet(st, g, index+1, session);
+			NHibernate.Entity(typeof(Glarch)).NullSafeSet(st, g, index+1, session);
+
 		}
+
 		public object DeepCopy(object value) 
 		{
 			if (value==null) return null;
@@ -101,10 +94,7 @@ namespace NHibernate.DomainModel
 		}
 		public bool IsMutable
 		{
-			get
-			{
-				return true;
-			}
+			get { return true; }
 		}
 		public object Assemble(object cached, Engine.ISessionImplementor session, Object owner) 
 		{

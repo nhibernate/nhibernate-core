@@ -359,6 +359,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "INameable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "INamed.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -393,8 +398,18 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Location.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Location.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Many.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Many.hbm.xml"
@@ -406,7 +421,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Middle.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MiddleKey.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Mono.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MoreStuff.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Multi.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -439,8 +474,23 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "One.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "One.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Outer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "OuterKey.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Parent.cs"

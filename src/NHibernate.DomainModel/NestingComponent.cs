@@ -16,14 +16,8 @@ namespace NHibernate.DomainModel
 		/// </summary> 
 		public ComponentCollection Nested
 		{
-			get 
-			{
-				return _nested; 
-			}
-			set 
-			{
-				_nested = value;
-			}
+			get { return _nested; }
+			set { _nested = value; }
 		}
 	}
 }
