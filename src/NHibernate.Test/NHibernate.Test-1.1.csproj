@@ -100,11 +100,6 @@
                     HintPath = "C:\Program Files\OSS.NET\NUnit V2.1\\bin\nunit.framework.dll"
                     AssemblyFolderKey = "hklm\dn\nunit.framework"
                 />
-                <Reference
-                    Name = "NHibernate.Connection.ByteFX"
-                    Project = "{AAA8FB2E-FEAE-4F70-B6FE-9E0A07A3FABD}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
             </References>
         </Build>
         <Files>

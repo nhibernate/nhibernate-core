@@ -11,10 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.DomainModel-1.1"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Connection.ByteFX", "NHibernate.Connection.ByteFX\NHibernate.Connection.ByteFX.csproj", "{AAA8FB2E-FEAE-4F70-B6FE-9E0A07A3FABD}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -33,10 +29,6 @@ Global
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug.Build.0 = Debug|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.ActiveCfg = Release|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.Build.0 = Release|.NET
-		{AAA8FB2E-FEAE-4F70-B6FE-9E0A07A3FABD}.Debug.ActiveCfg = Debug|.NET
-		{AAA8FB2E-FEAE-4F70-B6FE-9E0A07A3FABD}.Debug.Build.0 = Debug|.NET
-		{AAA8FB2E-FEAE-4F70-B6FE-9E0A07A3FABD}.Release.ActiveCfg = Release|.NET
-		{AAA8FB2E-FEAE-4F70-B6FE-9E0A07A3FABD}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
