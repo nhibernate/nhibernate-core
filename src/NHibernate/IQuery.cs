@@ -168,6 +168,7 @@ namespace NHibernate {
 		/// <param name="obj">Any PONO</param>
 		IQuery SetProperties(object obj);
 
+		IQuery SetAnsiString(int position, string val);
 		IQuery SetString(int position, string val);
 		IQuery SetCharacter(int position, char val);
 		IQuery SetByte(int position, byte val);
@@ -182,6 +183,7 @@ namespace NHibernate {
 		IQuery SetTime(int position, DateTime val);
 		IQuery SetTimestamp(int position, DateTime val);
 
+		IQuery SetAnsiString(string name, string val);
 		IQuery SetString(string name, string val);
 		IQuery SetCharacter(string name, char val);
 		IQuery SetByte(string name, byte val);

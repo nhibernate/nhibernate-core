@@ -88,6 +88,12 @@ namespace NHibernate.Impl {
 			return this;
 		}
 
+		public IQuery SetAnsiString(int position, string val) 
+		{
+			SetParameter(position, val, NHibernate.AnsiString);
+			return this;
+		}
+
 		public IQuery SetString(int position, string val) {
 			SetParameter(position, val, NHibernate.String);
 			return this;
@@ -153,6 +159,11 @@ namespace NHibernate.Impl {
 			return this;
 		}
 
+		public IQuery SetAnsiString(string name, string val) 
+		{
+			SetParameter(name, val, NHibernate.AnsiString);
+			return this;
+		}
 
 		public IQuery SetString(string name, string val) {
 			SetParameter(name, val, NHibernate.String);
