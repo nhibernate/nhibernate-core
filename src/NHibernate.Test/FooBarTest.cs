@@ -66,7 +66,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("unknown problem")]
+		[Ignore("HQL is broke")]
 		public void Sortables()
 		{
 			ISession s = sessions.OpenSession();
@@ -89,7 +89,16 @@ namespace NHibernate.Test
 				.List();
 			b = (Baz) result[0];
 			Assert.IsTrue( b.sortablez.Count==3 );
-			Assert.AreEqual( ( (Sortable) b.sortablez[0] ).name, "bar" );
+			
+			// compare the first item in the "Set" sortablez - can't reference
+			// the first item using b.sortablez[0] because it thinks 0 is the
+			// DictionaryEntry key - not the index.
+			foreach(DictionaryEntry de in b.sortablez) 
+			{
+				Assert.AreEqual( ((Sortable)de.Key).name, "bar");
+				break;
+			}
+		
 			s.Flush();
 			t.Commit();
 			s.Close();
