@@ -1,15 +1,15 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Text;
-using System.Collections;
 
-using NHibernate.Util;
 using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
-namespace NHibernate.Dialect {
-
+namespace NHibernate.Dialect 
+{
 	/// <summary>
 	/// Represents a dialect of SQL implemented by a particular RDBMS. Sublcasses
 	/// implement Hibernate compatibility with differen systems
@@ -18,13 +18,22 @@ namespace NHibernate.Dialect {
 	/// Subclasses should provide a public default constructor that <c>Register()</c>
 	/// a set of type mappings and default Hibernate properties.
 	/// </remarks>
-	public abstract class Dialect {
+	public abstract class Dialect 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Dialect));
+
+		private static readonly IDictionary aggregateFunctions = new Hashtable();
 
 		const string DefaultBatchSize = "15";
 		const string NoBatch = "0";
 
-		protected Dialect() {
+		static Dialect() 
+		{
+			//TODO: H2.0.3 - add QueryFunctions in here
+		}
+
+		protected Dialect() 
+		{
 			log.Info( "Using dialect: " + this );
 		}
 
@@ -87,51 +96,61 @@ namespace NHibernate.Dialect {
 		/// <summary>
 		/// Does this dialect support the <c>ALTER TABLE</c> syntax?
 		/// </summary>
-		public virtual bool HasAlterTable {
+		public virtual bool HasAlterTable 
+		{
 			get { return true; }
 		}
 
 		/// <summary>
 		/// Do we need to drop constraints before dropping tables in the dialect?
 		/// </summary>
-		public virtual bool DropConstraints {
+		public virtual bool DropConstraints 
+		{
 			get { return true; }
 		}
 
 		/// <summary>
 		/// Do we need to qualify index names with the schema name?
 		/// </summary>
-		public virtual bool QualifyIndexName {
+		public virtual bool QualifyIndexName 
+		{
 			get { return true; }
 		}
 
 		/// <summary>
 		/// Does this dialect support the <c>FOR UDPATE</c> syntax?
 		/// </summary>
-		public virtual bool SupportsForUpdate {
+		public virtual bool SupportsForUpdate 
+		{
 			get { return true; }
 		}
 
 		/// <summary>
 		/// Does this dialect support the Oracle-style <c>FOR UPDATE NOWAIT</c> syntax?
 		/// </summary>
-		public virtual bool SupportsForUpdateNoWait {
+		public virtual bool SupportsForUpdateNoWait 
+		{
 			get { return false; }
 		}
 
 		/// <summary>
 		/// Does this dialect support the <c>UNIQUE</c> column syntax?
 		/// </summary>
-		public virtual bool SupportsUnique {
+		public virtual bool SupportsUnique 
+		{
 			get { return true; }
 		}
 
 		/// <summary>
 		/// The syntax used to add a column to a table. Note this is deprecated
 		/// </summary>
-		public abstract string AddColumnString { get; }
+		public virtual string AddColumnString 
+		{ 
+			get { throw new NotSupportedException("No add column syntax supported by Dialect"); }
+		}
 
-		public virtual string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey) {
+		public virtual string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey) 
+		{
 			return new StringBuilder(30)
 				.Append(" add constraint ")
 				.Append(constraintName)
@@ -146,28 +165,32 @@ namespace NHibernate.Dialect {
 		/// The syntax used to add a primary key constraint to a table
 		/// </summary>
 		/// <param name="constraintName"></param>
-		public virtual string GetAddPrimaryKeyConstraintString(string constraintName) {
+		public virtual string GetAddPrimaryKeyConstraintString(string constraintName) 
+		{
 			return " add constraint " + constraintName + " primary key ";
 		}
 
 		/// <summary>
 		/// The keyword used to specify a nullable column
 		/// </summary>
-		public virtual string NullColumnString {
+		public virtual string NullColumnString 
+		{
 			get { return String.Empty; }
 		}
 
 		/// <summary>
 		/// Does this dialect support identity column key generation?
 		/// </summary>
-		public virtual bool SupportsIdentityColumns {
+		public virtual bool SupportsIdentityColumns 
+		{
 			get { return false; }
 		}
 
 		/// <summary>
 		/// Does this dialect support sequences?
 		/// </summary>
-		public virtual bool SupportsSequences {
+		public virtual bool SupportsSequences 
+		{
 			get { return false; }
 		}
 
@@ -175,28 +198,32 @@ namespace NHibernate.Dialect {
 		/// The syntax that returns the identity value of the last insert, if native
 		/// key generation is supported
 		/// </summary>
-		public virtual string IdentitySelectString {
+		public virtual string IdentitySelectString 
+		{
 			get { throw new MappingException("Dialect does not support native key generation"); }
 		}
 
 		/// <summary>
 		/// The keyword used to specify an identity column, if native key generation is supported
 		/// </summary>
-		public virtual string IdentityColumnString {
+		public virtual string IdentityColumnString 
+		{
 			get { throw new MappingException("Dialect does not support native key generation"); }
 		}
 
 		/// <summary>
 		/// The keyword used to insert a generated value into an identity column (or null)
 		/// </summary>
-		public virtual string IdentityInsertString {
+		public virtual string IdentityInsertString 
+		{
 			get { return null; }
 		}
 
 		/// <summary>
 		/// The keyword used to insert a row without specifying any column values
 		/// </summary>
-		public virtual string NoColumnsInsertString {
+		public virtual string NoColumnsInsertString 
+		{
 			get { return "values ( )"; }
 		}
 
@@ -205,7 +232,8 @@ namespace NHibernate.Dialect {
 		/// </summary>
 		/// <param name="sequenceName">The name of the sequence</param>
 		/// <returns></returns>
-		public virtual string GetSequenceNextValString(string sequenceName) {
+		public virtual string GetSequenceNextValString(string sequenceName) 
+		{
 			throw new MappingException("Dialect does not support sequences");
 		}
 
@@ -214,7 +242,8 @@ namespace NHibernate.Dialect {
 		/// </summary>
 		/// <param name="sequenceName"></param>
 		/// <returns></returns>
-		public virtual string GetCreateSequenceString(string sequenceName) {
+		public virtual string GetCreateSequenceString(string sequenceName) 
+		{
 			throw new MappingException("Dialect does not support sequences");
 		}
 
@@ -223,31 +252,41 @@ namespace NHibernate.Dialect {
 		/// </summary>
 		/// <param name="sequenceName"></param>
 		/// <returns></returns>
-		public virtual string GetDropSequenceString(string sequenceName) {
+		public virtual string GetDropSequenceString(string sequenceName) 
+		{
 			throw new MappingException("Dialect does not support sequences");
 		}
 
-		public virtual string QuerySequenceString {
+		public virtual string QuerySequenceString 
+		{
 			get { return null; }
 		}
 
-		public static Dialect GetDialect() {
+		public static Dialect GetDialect() 
+		{
 			string dialectName = Cfg.Environment.Properties[Cfg.Environment.Dialect] as string;
             if (dialectName==null) throw new HibernateException("The dialect was not set. Set the property hibernate.dialect.");
-			try {
+			try 
+			{
 				return (Dialect) Activator.CreateInstance(ReflectHelper.ClassForName(dialectName));
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				throw new HibernateException("Could not instanciate dialect class", e);
 			}
 		}
 
-		public static Dialect GetDialect(IDictionary props) {
+		public static Dialect GetDialect(IDictionary props) 
+		{
 			if (props==null) return GetDialect();
 			string dialectName = (string) props[Cfg.Environment.Dialect];
 			if (dialectName==null) return GetDialect();
-			try {
+			try 
+			{
 				return (Dialect) Activator.CreateInstance(ReflectHelper.ClassForName(dialectName));
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				throw new HibernateException("could not instantiate dialect class", e);
 			}
 		}
@@ -255,14 +294,16 @@ namespace NHibernate.Dialect {
 		/// <summary>
 		/// Retrieve a set of default Hibernate properties for this database.
 		/// </summary>
-		public IDictionary DefaultProperties {
+		public IDictionary DefaultProperties 
+		{
 			get { return properties; }
 		}
 
 		/// <summary>
 		/// Completely optional cascading drop clause
 		/// </summary>
-		public virtual string CascadeConstraintsString {
+		public virtual string CascadeConstraintsString 
+		{
 			get { return String.Empty; }
 		}
 
@@ -270,7 +311,8 @@ namespace NHibernate.Dialect {
 		/// Create an <c>JoinFragment</c> for this dialect
 		/// </summary>
 		/// <returns></returns>
-		public virtual JoinFragment CreateOuterJoinFragment() {
+		public virtual JoinFragment CreateOuterJoinFragment() 
+		{
 			return new ANSIJoinFragment();
 		}
 
@@ -278,17 +320,117 @@ namespace NHibernate.Dialect {
 		/// Create an <c>CaseFragment</c> for this dialect
 		/// </summary>
 		/// <returns></returns>
-		public virtual SqlCommand.CaseFragment CreateCaseFragment() {
+		public virtual SqlCommand.CaseFragment CreateCaseFragment() 
+		{
 			return new SqlCommand.ANSICaseFragment();
 		}
 
 		/// <summary>
 		/// The name of the SQL function that transforms a string to lowercase
 		/// </summary>
-		public virtual string LowercaseFunction {
-			get {
-				return "lower";
-			}
+		public virtual string LowercaseFunction 
+		{
+			get {return "lower";}
+		}
+
+		/// <summary>
+		/// Does this Diealect have some kind of <c>LIMIT</c> syntax?
+		/// </summary>
+		/// <value>False, unless overridden.</value>
+		public virtual bool SupportsLimit 
+		{
+			get { return false;}
+		}
+
+		/// <summary>
+		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c> 
+		/// </summary>
+		/// <param name="querySelect"></param>
+		/// <returns>The modified SQL</returns>
+		public virtual string GetLimitString(String querySelect) 
+		{
+			//TODO: H2.0.3 - this might need to the a SqlString or an IDbCommand depending
+			// on when it comes in.  Need to look at Loader to know for sure...
+			throw new NotSupportedException("Paged Queries not supported");
+		}
+
+		/// <summary>
+		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
+		/// </summary>
+		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
+		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
+		public virtual SqlString GetLimitString(SqlString querySqlString) 
+		{
+			throw new NotSupportedException("Paged Queries not supported");
+		}
+
+
+		/// <summary>
+		/// Does the <c>LIMIT</c> clause specify arguments in the "reverse" order
+		/// limit, offset instead of offset, limit?
+		/// </summary>
+		/// <value>False, unless overridden.</value>
+		/// <remarks>Inheritors should return true if the correct order is limit, offset</remarks>
+		public bool BindLimitParametersInReverseOrder 
+		{
+			get { return false;}
+		}
+
+		/// <summary>
+		/// Does the <c>LIMIT</c> clause come at the start of the 
+		/// <c>SELECT</c> statement rather than at the end?
+		/// </summary>
+		/// <value>false, unless overridden</value>
+		public bool BindLimitParametersFirst 
+		{
+			get { return false;}
+		}
+		
+		/// <summary>
+		/// Does the <c>LIMIT</c> clause take a "maximum" row number
+		/// instead of a total number of returned rows?
+		/// </summary>
+		/// <returns>false, unless overridden</returns>
+		public bool UseMaxForLimit
+		{
+			get { return false;}
+		}
+
+		/// <summary>
+		/// Should we use a <c>LIMIT</c> clause when there is no first result
+		/// specified?
+		/// </summary>
+		public bool PreferLimit
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// The opening quote for a quoted identifier.
+		/// </summary>
+		public char OpenQuote 
+		{
+			get { return '"'; }
+		}
+
+		/// <summary>
+		/// The closing quote for a quoted identifier.
+		/// </summary>
+		public char CloseQuote 
+		{
+			get { return '"'; }
+		}
+
+		/// <summary>
+		/// Aggregate SQL functions as defined in general.
+		/// </summary>
+		/// <remarks>
+		/// The results of this method should be integrated with the 
+		/// specialization's data.
+		/// </remarks>
+		public IDictionary AggregateFunctions 
+		{
+			get { return aggregateFunctions;}
 		}
 
 		/// <summary>
@@ -300,10 +442,9 @@ namespace NHibernate.Dialect {
 		/// have to be built.
 		/// </remarks>
 		[Obsolete("This method will be removed once the class ADOHack is gone.  The Driver should be used instead.")]
-		public virtual bool UseNamedParameters {
-			get {
-				return false;
-			}
+		public virtual bool UseNamedParameters 
+		{
+			get { return false; }
 		}
 
 		/// <summary>
@@ -316,11 +457,12 @@ namespace NHibernate.Dialect {
 		/// have to be built.
 		/// </remarks>
 		[Obsolete("This method will be removed once ADOHack is gone.  The Driver should be used instead.")]
-		public virtual string NamedParametersPrefix {
-			get {
-				return String.Empty;
-			}
+		public virtual string NamedParametersPrefix 
+		{
+			get { return String.Empty; }
 		}
+
+		
 
 		/// <summary>
 		/// Converts the SqlType to the Dialect specific column type string used when
