@@ -447,6 +447,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Ps\PreparedStatementCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Sql\ANSICaseFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -543,6 +548,11 @@
                 />
                 <File
                     RelPath = "Util\ArrayHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\IdentityMap.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
