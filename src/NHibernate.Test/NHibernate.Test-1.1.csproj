@@ -267,11 +267,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Types\DecimalTypeTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "TypesTest\DecimalTypeFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
