@@ -227,8 +227,7 @@ namespace NHibernate.Hql {
 		}
 
 		internal string CreateNameFor(System.Type type) {
-			string typeName = type.Name;
-			return Prefix( StringHelper.Unqualify(typeName) ) + NextCount() + StringHelper.Underscore;
+			return Prefix(type.Name) + NextCount() + StringHelper.Underscore;
 		}
 
 		internal string CreateNameForCollection(string role) {
