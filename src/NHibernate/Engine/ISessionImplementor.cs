@@ -309,6 +309,9 @@ namespace NHibernate.Engine {
 		/// <returns></returns>
 		object GetEntityIdentifierIfNotUnsaved(object obj);
 
+		
+		bool IsSaved(object obj); 
+
 		/// <summary>
 		/// Instantiate the entity class, initializing with the given identifier
 		/// </summary>
