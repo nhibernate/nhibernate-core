@@ -10,7 +10,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type {
 
 	/// <summary>
-	/// A specific PersistentCollectionType for a Role.
+	/// PersistentCollectionType.
 	/// </summary>
 	public abstract class PersistentCollectionType : AbstractType, IAssociationType	{
 		
@@ -40,68 +40,8 @@ namespace NHibernate.Type {
 			throw new AssertionFailure("bug in PersistentCollectionType");
 		}
 	
-		/// <summary>
-		/// Returns a fully initialized Collection - be careful when calling this because it might
-		/// open another DataReader!!!
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner) {
 			return ResolveIdentifier( Hydrate(rs, name, session, owner), session, owner );
-		}
-
-		/// <summary>
-		/// Gets a Collection without opening a DataReader.  
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <param name="partOfComponent"></param>
-		/// <returns>
-		/// The Collection returned from here is a lazy-load Collection regardless of what the map says.  To
-		/// load this Collection partOfComponent must be true and then ResolveIdentifier must be called.  This 
-		/// method is only intended to be used by ComponentType to solve the problem of Getting a Collection
-		/// opens a second DataReader.
-		/// </returns>
-		public object NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner, bool partOfComponent) 
-		{
-			object id = session.GetEntityIdentifier(owner);
-			PersistentCollection collection = session.GetLoadingCollection(role, id);
-			if(collection!=null) return collection.GetCachedValue(); //TODO: yuck... call another method - H2.0.3comment
-
-			CollectionPersister persister = session.Factory.GetCollectionPersister(role);
-			collection = persister.GetCachedCollection(id, owner, session);
-			if(collection!=null) 
-			{
-				session.AddInitializedCollection(collection, persister, id);
-				return collection.GetCachedValue();
-			}
-			else 
-			{
-			
-				collection = Instantiate(session, persister);
-				session.AddUninitializedCollection(collection, persister, id);
-				
-				// hard coding in lazy here because we don't want it to load during it's Get - just
-				// initialize the Collection class as if it is being lazy loaded - we'll get back to
-				// loading it during ResolveIdentifier...
-				collection.GetInitialValue(true);
-
-				// if we get to here then we have just created a lazy loaded (ie - uninitialized )Collection that might 
-				// be a part of a Component.  If it is part of a component then we need to mark it as
-				// needing to be a part of the batch that gets ResolveIdentifier called where it will be Initialized
-				// according to the IsLazy property of the Persister
-				if(partOfComponent) 
-				{
-					session.AddUnresolvedComponentCollection(id, role, collection);
-				}
-
-				return collection;
-			}
 		}
 
 		public virtual object GetCollection(object id, object owner, ISessionImplementor session) {
@@ -215,15 +155,6 @@ namespace NHibernate.Type {
 			return session.GetEntityIdentifier(owner);
 		}
 	
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value">The id of the owner.</param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		/// <remarks>
-		/// </remarks>
 		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner) {
 			if (value==null) {
 				return null;
@@ -233,47 +164,6 @@ namespace NHibernate.Type {
 			}
 		}
 	
-		/// <summary>
-		/// Resolves Collection that might be part of a Component.
-		/// </summary>
-		/// <param name="value">The id of the owner.</param>
-		/// <param name="session">The current Session.</param>
-		/// <param name="owner">The owner of the collection.</param>
-		/// <param name="partOfComponent">Indicates if this Collection is a part of a Component.</param>
-		/// <returns>A fully initialized collection according to its Persister's IsLazy property.</returns>
-		public object ResolveIdentifier(object value, ISessionImplementor session, object owner, bool partOfComponent) 
-		{
-			if(partOfComponent==false) return ResolveIdentifier(value, session, owner);
-			
-			// check to see if this Collection is part of a Component and it has already been Instantiated
-			// and just needs to GetInitialValue because it has already been Instantiated and Added to the 
-			// Session in NullSafeGet
-			object id = value;
-			
-			PersistentCollection collection = session.GetUnresolvedComponentCollection(id, role);
-			
-			if(collection==null) 
-			{
-				// when the collection is null that means it is not an UnresolvedComponentCollection
-				// so we can let ResolveIdentifier get it however it needs to.
-				return ResolveIdentifier(id, session, owner);
-			}
-			else 
-			{
-				// we already have a collection 
-				CollectionPersister persister = session.Factory.GetCollectionPersister(role);
-				collection.GetInitialValue(persister.IsLazy);
-				
-				// we have resolved the Collection in the Component so remove it from the unresolved
-				session.RemoveUnresolvedComponentCollection(id, role);
-
-				return collection;
-			}
-
-			
-			
-		}
-
 		public virtual bool IsArrayType {
 			get { return false; }
 		}

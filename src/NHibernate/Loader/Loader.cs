@@ -759,12 +759,26 @@ namespace NHibernate.Loader
 				//TODO: H2.0.3 - uses session.Batcher.GetResultSet(st) instead
 				// of directly executing the reader
 				IDataReader rs = st.ExecuteReader();
-				if( !UseLimit(selection, session.Factory.Dialect) ) 
+				
+				//TODO: make this a much smarter implementation that looks at the Type
+				// that is being loaded and determines wether or not to wrap this IDataReader
+				// in a NDataReader.  I believe the problem of multiple readers being opened
+				// are occuring in <composite-id> with <many-to-one> and <component> with
+				// a <collection>, <many-to-one>, and <one-to-one> inside of them.  I believe
+				// this is caused when the NullSafeGet() method calls other methods that can 
+				// potentially perform a Load of another object.
+				if(!session.Factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders) 
 				{
-					Advance(rs, selection, session);
+					rs = new Driver.NDataReader(rs); 
 				}
-				return rs;
-			}
+
+				if( !UseLimit(selection, session.Factory.Dialect) ) 
+				{ 
+					Advance(rs, selection, session); 
+				} 
+
+				return rs; 
+			} 
 			catch (Exception sqle) 
 			{
 				ClosePreparedStatement(st, selection, session);
