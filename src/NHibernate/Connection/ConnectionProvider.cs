@@ -37,17 +37,20 @@ namespace NHibernate.Connection
 		/// <exception cref="HibernateException">Thrown when a ConnectionString could not be found or the Driver Class could not be loaded.</exception>
 		public virtual void Configure(IDictionary settings) 
 		{
-			log.Info("Configuring ConnectionProvider");
+			log.Info( "Configuring ConnectionProvider" );
 			
 			// default the poolSize to 0 if no setting was made because most of the .net DataProvider
 			// do their own connection pooling.  This would be useful to change to some higher number
 			// if the .net DataProvider did not provide their own connection pooling.  I don't know of
 			// any instances of this yet.
-			poolSize = PropertiesHelper.GetInt32(Cfg.Environment.PoolSize, settings, 0);
-			log.Info("NHibernate connection pool size: " + poolSize);
+			poolSize = PropertiesHelper.GetInt32( Cfg.Environment.PoolSize, settings, 0 );
+			log.Info( "NHibernate connection pool size: " + poolSize );
 
 			connString = settings[ Cfg.Environment.ConnectionString ] as string;
-			if (connString==null) throw new HibernateException("Could not find connection string setting");
+			if (connString==null) 
+			{
+				throw new HibernateException("Could not find connection string setting");
+			}
 			
 			ConfigureDriver(settings);
 			
