@@ -4104,7 +4104,7 @@ namespace NHibernate.Impl
 
 				if( batcher!=null )
 				{
-					// TODO: add batcher.Dispose() when IDisposable implemented by IBatcher
+					batcher.Dispose();
 				}
 
 				// it is important to call Cleanup because that marks the Session as being

@@ -19,11 +19,9 @@ namespace NHibernate.Impl
 		private static int openCommandCount;
 		private static int openReaderCount;
 
-		/// <summary></summary>
-		protected readonly ISessionImplementor session;
+		private readonly ISessionImplementor session;
 
-		/// <summary></summary>
-		protected readonly ISessionFactoryImplementor factory;
+		private readonly ISessionFactoryImplementor factory;
 
 		// batchCommand used to be called batchUpdate - that name to me implied that updates
 		// were being sent - however this could be just INSERT/DELETE/SELECT SQL statement not
@@ -34,14 +32,16 @@ namespace NHibernate.Impl
 		private ISet commandsToClose = new HashedSet();
 		private ISet readersToClose = new HashedSet();
 
-		// key = SqlString
-		// value = IDbCommand
+		/// <summary>
+		/// An IDictionary with a key of a SqlString and 
+		/// a value of an IDbCommand.
+		/// </summary>
 		private IDictionary commands;
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="BatcherImpl"/> class.
 		/// </summary>
-		/// <param name="session"></param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> this Batcher is executing in.</param>
 		public BatcherImpl( ISessionImplementor session )
 		{
 			this.session = session;
@@ -50,11 +50,13 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Gets the current Command that is contained for this Batch
+		/// Gets the current <see cref="IDbCommand"/> that is contained for this Batch
 		/// </summary>
-		protected IDbCommand GetCommand()
+		/// <value>The current <see cref="IDbCommand"/>.</value>
+		protected IDbCommand CurrentCommand
 		{
-			return batchCommand;
+			// in h2.0.3 this was a method GetCommand
+			get { return batchCommand; }
 		}
 
 		/// <summary>
@@ -160,8 +162,11 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IDbCommand PrepareCommand( SqlString sql )
 		{
+			// a new IDbCommand is being prepared and a new (potential) batch
+			// started - so execute the current batch of commands.
 			ExecuteBatch();
-			LogOpenPreparedCommands();
+
+			LogOpenPreparedCommand();
 
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
@@ -180,7 +185,7 @@ namespace NHibernate.Impl
 		{
 			//TODO: figure out what to do with scrollable - don't think it applies
 			// to ado.net since DataReader is forward only
-			LogOpenPreparedCommands();
+			LogOpenPreparedCommand();
 
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
@@ -203,6 +208,7 @@ namespace NHibernate.Impl
 			IDbCommand cmd = batchCommand;
 			batchCommand = null;
 			batchCommandSql = null;
+			CloseCommand( cmd, null );
 			// close the statement closeStatement(cmd)
 		}
 
@@ -246,7 +252,7 @@ namespace NHibernate.Impl
 			}
 
 			readersToClose.Add( reader );
-			LogOpenReaders();
+			LogOpenReader();
 			return reader;
 		}
 
@@ -292,7 +298,7 @@ namespace NHibernate.Impl
 			{
 				try
 				{
-					LogCloseReaders();
+					LogCloseReader();
 					reader.Close();
 				}
 				catch( Exception e )
@@ -311,7 +317,7 @@ namespace NHibernate.Impl
 				catch( Exception e )
 				{
 					// no big deal
-					log.Warn( "Could not close a JDBC statement", e );
+					log.Warn( "Could not close ADO.NET Command", e );
 				}
 			}
 			commandsToClose.Clear();
@@ -330,7 +336,7 @@ namespace NHibernate.Impl
 				return; // NOTE: early exit!
 			}
 
-			LogClosePreparedCommands();
+			LogClosePreparedCommand();
 		}
 
 		/// <summary>
@@ -350,7 +356,7 @@ namespace NHibernate.Impl
 			{
 				if( reader != null )
 				{
-					LogCloseReaders();
+					LogCloseReader();
 					reader.Close();
 				}
 			}
@@ -363,6 +369,8 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public void ExecuteBatch()
 		{
+			// if there is currently a command that a batch is
+			// being built for then execute it
 			if( batchCommand != null )
 			{
 				IDbCommand ps = batchCommand;
@@ -386,24 +394,42 @@ namespace NHibernate.Impl
 		protected abstract void DoExecuteBatch( IDbCommand ps );
 
 		/// <summary>
-		/// 
+		/// Adds the expected row count into the batch.
 		/// </summary>
-		/// <param name="expectedRowCount"></param>
+		/// <param name="expectedRowCount">The number of rows expected to be affected by the query.</param>
+		/// <remarks>
+		/// If Batching is not supported, then this is when the Command should be executed.  If Batching
+		/// is supported then it should hold of on executing the batch until explicitly told to.
+		/// </remarks>
 		public abstract void AddToBatch( int expectedRowCount );
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="ISessionFactoryImplementor"/> the Batcher was
+		/// created in.
+		/// </summary>
+		/// <value>
+		/// The <see cref="ISessionFactoryImplementor"/> the Batcher was
+		/// created in.
+		/// </value>
 		protected ISessionFactoryImplementor Factory
 		{
 			get { return factory; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="ISessionImplementor"/> the Batcher is handling the 
+		/// sql actions for.
+		/// </summary>
+		/// <value>
+		/// The <see cref="ISessionImplementor"/> the Batcher is handling the 
+		/// sql actions for.
+		/// </value>
 		protected ISessionImplementor Session
 		{
 			get { return session; }
 		}
 
-		private static void LogOpenPreparedCommands()
+		private static void LogOpenPreparedCommand()
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -412,7 +438,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private static void LogClosePreparedCommands()
+		private static void LogClosePreparedCommand()
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -421,7 +447,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private static void LogOpenReaders()
+		private static void LogOpenReader()
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -429,13 +455,99 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private static void LogCloseReaders()
+		private static void LogCloseReader()
 		{
 			if( log.IsDebugEnabled )
 			{
 				openReaderCount--;
 			}
 		}
+
+		#region IDisposable Members
+		
+		/// <summary>
+		/// A flag to indicate if <c>Disose()</c> has been called.
+		/// </summary>
+		private bool _isAlreadyDisposed;
+
+		/// <summary>
+		/// Finalizer that ensures the object is correctly disposed of.
+		/// </summary>
+		~BatcherImpl()
+		{
+			Dispose( false );
+		}
+
+		/// <summary>
+		/// Takes care of freeing the managed and unmanaged resources that 
+		/// this class is responsible for.
+		/// </summary>
+		public void Dispose()
+		{
+			log.Debug( "running BatcherImpl.Dispose()" );
+			Dispose( true );
+		}
+
+		/// <summary>
+		/// Takes care of freeing the managed and unmanaged resources that 
+		/// this class is responsible for.
+		/// </summary>
+		/// <param name="isDisposing">Indicates if this BatcherImpl is being Disposed of or Finalized.</param>
+		/// <remarks>
+		/// If this BatcherImpl is being Finalized (<c>isDisposing==false</c>) then make sure not
+		/// to call any methods that could potentially bring this BatcherImpl back to life.
+		/// </remarks>
+		protected virtual void Dispose(bool isDisposing)
+		{
+			if( _isAlreadyDisposed )
+			{
+				// don't dispose of multiple times.
+				return;
+			}
+
+			// free managed resources that are being managed by the AdoTransaction if we
+			// know this call came through Dispose()
+			if( isDisposing )
+			{
+				foreach( IDataReader reader in readersToClose )
+				{
+					try
+					{
+						LogCloseReader();
+						reader.Dispose();
+					}
+					catch( Exception e )
+					{
+						log.Warn( "Could not dispose IDataReader", e );
+					}
+				}
+				readersToClose.Clear();
+
+				foreach( IDbCommand cmd in commandsToClose )
+				{
+					try
+					{
+						LogClosePreparedCommand();
+						cmd.Dispose();
+					}
+					catch( Exception e )
+					{
+						// no big deal
+						log.Warn( "Could not dispose of ADO.NET Command", e );
+					}
+				}
+				commandsToClose.Clear();
+			}
+
+			// free unmanaged resources here
+			
+			_isAlreadyDisposed = true;
+			// nothing for Finalizer to do - so tell the GC to ignore it
+			GC.SuppressFinalize( this );
+			
+		}
+
+		#endregion
 
 
 	}
