@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="HashCodeProvider" 
+	default="build" 
+	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+>
+
+	<target name="build">
+		<exec 
+			program="${nant.settings.currentframework.frameworkdirectory}\ilasm" 
+			commandline="HashCodeProvider.il /dll /output:..\..\external-bin\HashCodeProvider.dll" 
+		/>	
+		<copy file="HashCodeProvider.license.txt" todir="../../external-bin" />
+	</target>
+	
+	
+</project>
