@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using NHibernate.Cache;
 
-namespace NHibernate.Mapping {
-	
-	public class RootClass : PersistentClass {
+namespace NHibernate.Mapping 
+{	
+	public class RootClass : PersistentClass 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(RootClass));
+		
 		public const string DefaultIdentifierColumnName = "id";
 		public const string DefaultDiscriminatorColumnName = "class";
 
@@ -20,25 +22,33 @@ namespace NHibernate.Mapping {
 		private bool explicitPolymorphism;
 		private System.Type persister;
 		private bool forceDiscriminator;
+		private string where;
 
-		public override Property IdentifierProperty {
+		public override Property IdentifierProperty 
+		{
 			get { return identifierProperty; }
 			set { identifierProperty = value; }
 		}
-		public override Value Identifier {
+
+		public override Value Identifier 
+		{
 			get { return identifier; }
 			set { identifier = value; }
 		}
-		public override bool HasIdentifierProperty {
+
+		public override bool HasIdentifierProperty 
+		{
 			get { return identifierProperty != null; }
 		}
 
-		public override Value Discriminator {
+		public override Value Discriminator 
+		{
 			get { return discriminator; }
 			set { discriminator = value; }
 		}
 
-		public override bool IsInherited {
+		public override bool IsInherited 
+		{
 			get { return false; }
 		}
 		
@@ -49,15 +59,18 @@ namespace NHibernate.Mapping {
 		/// This value is set to True when a subclass is added and should not be set
 		/// through any other method - so no setter is declared for this property.
 		/// </remarks>
-		public override bool IsPolymorphic {
+		public override bool IsPolymorphic 
+		{
 			get { return polymorphic; }
-			//set { polymorphic = value; }
 		}
 
-		public override RootClass RootClazz {
+		public override RootClass RootClazz 
+		{
 			get { return this; }
 		}
-		public override ICollection PropertyClosureCollection {
+
+		public override ICollection PropertyClosureCollection 
+		{
 			get { return PropertyCollection; }
 		}
 		
@@ -66,69 +79,92 @@ namespace NHibernate.Mapping {
 		/// </summary>
 		/// <remarks>
 		/// The RootClass should only have one item in the Collection - the Table that it comes from.
-		/// TODO: why an ICollection - I don't know why the signature calls for an ICollection.
 		/// </remarks>
-		public override ICollection TableClosureCollection {
-			get { 
+		public override ICollection TableClosureCollection 
+		{
+			get 
+			{ 
 				ArrayList retVal = new ArrayList();
 				retVal.Add( Table );
 				return retVal;
 			}
 		}
-		public override void AddSubclass(Subclass subclass) {
+
+		public override void AddSubclass(Subclass subclass) 
+		{
 			base.AddSubclass(subclass);
 			polymorphic = true;
 		}
 
-		public override bool IsExplicitPolymorphism {
+		public override bool IsExplicitPolymorphism 
+		{
 			get { return explicitPolymorphism; }
 			set { explicitPolymorphism = value; }
 		}
 
-		public override Property Version {
+		public override Property Version 
+		{
 			get { return version; }
 			set { version = value; }
 		}
-		public override bool IsVersioned {
+
+		public override bool IsVersioned 
+		{
 			get { return version != null; }
 		}
 
-		public override ICacheConcurrencyStrategy Cache {
+		public override ICacheConcurrencyStrategy Cache 
+		{
 			get { return cache; }
 			set { cache = value; }
 		}
 
-		public override bool IsMutable {
+		public override bool IsMutable 
+		{
 			get { return mutable; }
 			set { mutable = value; }
 		}
-		public override bool HasEmbeddedIdentifier {
+
+		public override bool HasEmbeddedIdentifier 
+		{
 			get { return embeddedIdentifier; }
 			set { embeddedIdentifier = value; }
 		}
 
-		public override System.Type Persister {
+		public override System.Type Persister 
+		{
 			get { return persister; }
 			set { persister = value; }
 		}
 
-		public override Table RootTable {
+		public override Table RootTable 
+		{
 			get { return Table; }
 		}
 
-		public override PersistentClass Superclass {
+		public override PersistentClass Superclass 
+		{
 			get { return null; }
-			set { throw new InvalidOperationException(); }
+			set { throw new InvalidOperationException("Can not set the Superclass on a RootClass."); }
 		}
 
-		public override Value Key {
+		public override Value Key 
+		{
 			get { return Identifier; }
 			set { throw new InvalidOperationException(); }
 		}
 
-		public override bool IsForceDiscriminator {
+		public override bool IsForceDiscriminator 
+		{
 			get { return forceDiscriminator; }
 			set { this.forceDiscriminator = value; }
 		}
+
+		public override string Where
+		{
+			get { return where; } 
+			set { where = value; }
+		}
+
 	}
 }

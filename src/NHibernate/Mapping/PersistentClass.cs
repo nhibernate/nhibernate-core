@@ -72,12 +72,14 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public virtual ICollection SubclassCollection 
 		{
-			get { 
+			get 
+			{ 
 				ArrayList retVal = new ArrayList();
 				
 				// check to see if there are any subclass in our subclasses 
 				// and add them into the collection
-				foreach(Subclass sc in subclasses) {
+				foreach(Subclass sc in subclasses) 
+				{
 					retVal.AddRange(sc.SubclassCollection);
 				}
 
@@ -121,19 +123,19 @@ namespace NHibernate.Mapping
 			get { return persistentClass.FullName; }
 		}
 
-		public abstract bool IsMutable { get; set;} // set??
+		public abstract bool IsMutable { get; set;} 
 		public abstract bool HasIdentifierProperty { get; }
-		public abstract Property IdentifierProperty { get; set; } //set??
-		public abstract Value Identifier { get; set; } //set??
-		public abstract Property Version { get; set; } //set??
-		public abstract Value Discriminator { get; set; } //set??
+		public abstract Property IdentifierProperty { get; set; }
+		public abstract Value Identifier { get; set; } 
+		public abstract Property Version { get; set; } 
+		public abstract Value Discriminator { get; set; } 
 		public abstract bool IsInherited { get;  } 
 		// see the comment in RootClass about why the polymorphic setter is commented out
-		public abstract bool IsPolymorphic { get; } //set; }
+		public abstract bool IsPolymorphic { get; } 
 		public abstract bool IsVersioned { get;}
-		public abstract ICacheConcurrencyStrategy Cache { get; set;} //set??
-		public abstract PersistentClass Superclass { get; set; }  //set??
-		public abstract bool IsExplicitPolymorphism { get; set;}//set??
+		public abstract ICacheConcurrencyStrategy Cache { get; set;} 
+		public abstract PersistentClass Superclass { get; set; }  
+		public abstract bool IsExplicitPolymorphism { get; set;}
 
 		public abstract ICollection PropertyClosureCollection { get; }
 		public abstract ICollection TableClosureCollection { get; }
@@ -182,21 +184,20 @@ namespace NHibernate.Mapping
 
 		public virtual bool IsForceDiscriminator {
 			get { return false; }
-			set { //??? 
-			}
+			set { throw new NotImplementedException("subclasses need to override this method");	}
 		}
 
-		public abstract bool HasEmbeddedIdentifier { get; set;} //set??
-		public abstract System.Type Persister { get; set;} //set??
+		public abstract bool HasEmbeddedIdentifier { get; set;} 
+		public abstract System.Type Persister { get; set;} 
 		public abstract Table RootTable { get; }
 		public abstract RootClass RootClazz { get; }
-		public abstract Value Key { get; set; } //set??
+		public abstract Value Key { get; set; } 
 
 		public virtual void CreatePrimaryKey() 
 		{
 			PrimaryKey pk = new PrimaryKey();
 			pk.Table = table;
-			pk.Name = PKAlias.ToAliasString(table.Name); // StringHelper.Suffix( table.Name, "PK" );
+			pk.Name = PKAlias.ToAliasString(table.Name); 
 			table.PrimaryKey = pk;
 
 			foreach(Column col in Key.ColumnCollection) 
@@ -205,12 +206,7 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		//TODO: H2.0.3 - make abstract...
-		public virtual string Where 
-		{ 
-			get { return ""; } 
-		}
-
-		
+		public abstract string Where { get; set; }
+				
 	}
 }

@@ -211,7 +211,8 @@ namespace NHibernate.Mapping
 			if (primaryKey != null) 
 			{
 				//if ( dialect is HSQLDialect && identityColumn ) {
-				//	//ugly hack...
+				// // skip the primary key definition	
+				// //ugly hack...
 				//} else {
 				buf.Append(',').Append( primaryKey.SqlConstraintString(dialect) );
 				//}
@@ -271,7 +272,8 @@ namespace NHibernate.Mapping
 			string name = "FK" + UniqueColumnString( columns );
 			ForeignKey fk = (ForeignKey) foreignKeys[name];
 
-			if (fk == null) {
+			if (fk == null) 
+			{
 				fk = new ForeignKey();
 				fk.Name = name;
 				fk.Table = this;
@@ -295,7 +297,8 @@ namespace NHibernate.Mapping
 			{
 				// this is marked as unchecked because the GetHashCode could potentially
 				// cause an integer overflow.  This way if there is an overflow it will
-				// just roll back over.
+				// just roll back over - since we are not doing any computations based
+				// on this number then a rollover is no big deal.
 				unchecked{ result += obj.GetHashCode(); }
 			}
 			
