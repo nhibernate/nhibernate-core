@@ -21,6 +21,12 @@ namespace NHibernate.SqlCommand
 		{
 		}
 
+		public bool NoWait 
+		{
+			get { return nowait;}
+			set { nowait = value;}
+		}
+
 		public ForUpdateFragment AddTableAlias(string alias) 
 		{
 			if(aliases.Length > 0 ) aliases.Append(StringHelper.CommaSpace);
