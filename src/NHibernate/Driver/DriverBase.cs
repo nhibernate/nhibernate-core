@@ -188,6 +188,10 @@ namespace NHibernate.Driver
 		/// </remarks>
 		protected virtual IDbDataParameter GenerateParameter( IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect )
 		{
+			if( name != null && parameter != null && parameter.SqlType == null )
+			{
+				throw new QueryException( String.Format( "No value assigned to parameter '{0}': be sure to set values for named parameters.", name ) );
+			}
 			IDbDataParameter dbParam = command.CreateParameter();
 			dbParam.DbType = parameter.SqlType.DbType;
 
