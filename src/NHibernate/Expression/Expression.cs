@@ -229,7 +229,7 @@ namespace NHibernate.Expression
 		/// <param name="values"></param>
 		/// <param name="types"></param>
 		/// <returns></returns>
-		public static Expression Sql(string sql, object[] values, IType[] types) 
+		public static Expression Sql(SqlString sql, object[] values, IType[] types) 
 		{
 			return new SQLExpression(sql, values, types);
 		}
@@ -241,7 +241,7 @@ namespace NHibernate.Expression
 		/// <param name="value"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public static Expression Sql(string sql, object value, IType type) 
+		public static Expression Sql(SqlString sql, object value, IType type) 
 		{
 			return new SQLExpression(sql, new object[] { value }, new IType[] { type } );
 		}
@@ -251,9 +251,19 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		public static Expression Sql(string sql) 
+		public static Expression Sql(SqlString sql) 
 		{
 			return new SQLExpression(sql, NoObjects, NoTypes);
+		}
+
+		/// <summary>
+		/// Apply a constraint expressed in SQL
+		/// </summary>
+		/// <param name="sql"></param>
+		/// <returns></returns>
+		public static Expression Sql(string sql) 
+		{
+			return new SQLExpression(new SqlString(sql), NoObjects, NoTypes);
 		}
 
 	

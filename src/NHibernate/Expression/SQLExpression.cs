@@ -5,17 +5,22 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Expression {
-
+namespace NHibernate.Expression 
+{
 	/// <summary>
-	/// SQLExpression
+	/// Creates a SQLExpression
 	/// </summary>
-	public class SQLExpression : Expression {
+	/// <remarks>
+	/// This allows for database specific Expressions at the cost of needing to 
+	/// write a correct <see cref="SqlString"/>.
+	/// </remarks>
+	public class SQLExpression : Expression
+	{
 
-		private readonly string sql;
+		private readonly SqlString sql;
 		private readonly TypedValue[] typedValues;
 
-		internal SQLExpression(string sql, object[] values, IType[] types) 
+		internal SQLExpression(SqlString sql, object[] values, IType[] types) 
 		{
 			this.sql = sql;
 			typedValues = new TypedValue[values.Length];
@@ -28,7 +33,7 @@ namespace NHibernate.Expression {
 
 		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias) 
 		{
-			return new SqlString(StringHelper.Replace(sql, "$alias", alias));
+			return sql.Replace( "$alias", alias );
 		}
 
 		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass) 
@@ -38,7 +43,7 @@ namespace NHibernate.Expression {
 
 		public override string ToString() 
 		{
-			return sql;
+			return sql.ToString();
 		}
 	}
 }
