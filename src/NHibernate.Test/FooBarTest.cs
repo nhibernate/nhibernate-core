@@ -788,9 +788,32 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		//[Ignore("Test not written yet.")]
 		public void CascadeSave() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Baz baz = new Baz();
+			IList list = new ArrayList();
+			list.Add( new Fee() );
+			list.Add( new Fee() );
+			baz.Fees = list;
+			s.Save(baz);
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+
+			baz = (Baz)s.Load( typeof(Baz), baz.Code );
+			Assert.AreEqual(2, baz.Fees.Count);
+			s.Delete(baz);
+
+			//TODO: don't have an s.iterate() equivalent built
+			IList fees = s.Find("from fee in class Fee");
+			Assert.AreEqual(0, fees.Count);
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
@@ -824,9 +847,87 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Test is failing becuase of Arrays in hql and a reference to them.")]
 		public void CollectionsInSelect() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Foo[] foos = new Foo[] { null, new Foo() };
+			s.Save(foos[1]);
+			Baz baz = new Baz();
+			baz.SetDefaults();
+			baz.FooArray = foos;
+			s.Save(baz);
+			Baz baz2 = new Baz();
+			baz2.SetDefaults();
+			s.Save(baz2);
+
+			Bar bar = new Bar();
+			bar.Baz = baz;
+			s.Save(bar);
+
+			IList list = s.Find("select new Result(foo.String, foo.Long, foo.Integer) from foo in class Foo");
+			Assert.AreEqual( 2, list.Count );
+			Assert.IsTrue( list[0] is Result );
+			Assert.IsTrue( list[1] is Result );
+
+			list = s.Find("select new Result( baz.Name, foo.Long, count(elements(baz.FooArray)) ) from Baz baz join baz.FooArray foo group by baz.Name, foo.Long");
+			Assert.AreEqual( 1, list.Count );
+			Assert.IsTrue( list[0] is Result );
+			Result r = (Result)list[0];
+
+			Assert.AreEqual( baz.Name, r.Name );
+			Assert.AreEqual( 1, r.Count );
+			Assert.AreEqual( foos[1].Long, r.Amount );
+
+
+			list = s.Find("select new Result( baz.Name, max(foo.Long), count(foo) ) from Baz baz join baz.FooArray foo group by baz.Name");
+			Assert.AreEqual(1, list.Count);
+			Assert.IsTrue( list[0] is Result );
+			r = (Result)list[0];
+			Assert.AreEqual( baz.Name, r.Name );
+			Assert.AreEqual( 1, r.Count );
+			// TODO: figure out a better way
+			// in hibernate this is hard coded as 696969696969696938l which is very dependant upon 
+			// how the test are run because it is calculated on a global static variable...
+			// maybe a better way to test this would be to assume that the first 
+			Assert.AreEqual( 696969696969696969L, r.Amount );
+
+			s.Find("select max( elements(bar.Baz.FooArray) ) from Bar as bar");
+			// the following test is disable for databases with no subselects... also for Interbase (not sure why) - comment from h2.0.3
+			if( !(dialect is Dialect.MySQLDialect) 
+				//&& !(dialect is Dialect.HSQLDialect) - don't have in nh yet
+				//&& !(dialect is Dialect.MckoiDialect) - commented out in h2.0.3 also
+				//&& !(dialect is Dialect.SAPDBDialect) - don't have in nh yet
+				//&& !(dialect is Dialect.PointbaseDialect) - don't have in nh yet
+				) 
+			{
+				s.Find("select count(*) from Baz as baz where 1 in indices(baz.FooArray)");
+				s.Find("select count(*) from Bar as bar where 'abc' in elements(bar.Baz.FooArray)");
+				s.Find("select count(*) from Bar as bar where 1 in indices(bar.Baz.FooArray)");
+				s.Find("select count(*) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)");
+				s.Find("select max( elements(bar.Baz.FooArray) ) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)");
+				//s.Find("select count(*) from Bar as bar where 1 in (from bar.Component.Glarch.ProxyArray g where g.Name='foo')");
+				//s.Find("select count(*) from Bar as bar where 1 in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')");
+				//s.Find("select count(*) from Bar as bar left outer join bar.Component.Glarch.ProxyArray as pg where 1 in (from g in bar.Component.Glarch.ProxyArray)");
+			}
+            // TODO: it looks like we are having problems with arrays - FooArray to foo and then getting a property of the item
+			// in the array.
+			list = s.Find("from Baz baz left join baz.FooToGlarch join fetch baz.FooArray foo left join fetch foo.TheFoo");
+			Assert.AreEqual( 1, list.Count );
+			Assert.AreEqual( 2, ((object[])list[0]).Length );
+
+
+			s.Delete(bar);
+
+
+
+			s.Delete(baz);
+			s.Delete(baz2);
+			s.Delete(foos[1]);
+			t.Commit();
+			s.Close();
+
 		}
 
 		[Test]
