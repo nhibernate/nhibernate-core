@@ -53,49 +53,78 @@
  */
 
 
-using System;
+using System.Text;
 
-namespace NHibernate.Util 
+namespace NHibernate.Util
 {
 	/// <summary>
 	/// Summary description for ObjectUtils.
 	/// </summary>
-	public sealed class ObjectUtils 
+	public sealed class ObjectUtils
 	{
-
-		private ObjectUtils() 
+		private ObjectUtils()
 		{
 			// not creatable
 		}
-		
-		public static object DefaultIfNull(object obj, object defaultVal) {
-			return (obj != null ? obj : defaultVal);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="defaultVal"></param>
+		/// <returns></returns>
+		public static object DefaultIfNull( object obj, object defaultVal )
+		{
+			return ( obj != null ? obj : defaultVal );
 		}
 
-		public static new bool Equals(object obj1, object obj2) {
-			if (obj1 == obj2) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj1"></param>
+		/// <param name="obj2"></param>
+		/// <returns></returns>
+		new public static bool Equals( object obj1, object obj2 )
+		{
+			if( obj1 == obj2 )
+			{
 				return true;
 			}
-			if ( (obj1 == null) || (obj2 == null)) {
+			if( ( obj1 == null ) || ( obj2 == null ) )
+			{
 				return false;
 			}
-			return obj1.Equals(obj2);
+			return obj1.Equals( obj2 );
 		}
 
-		public static string IdentityToString(object obj) {
-			if (obj == null) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public static string IdentityToString( object obj )
+		{
+			if( obj == null )
+			{
 				return null;
 			}
-			return new System.Text.StringBuilder()
-				.Append(obj.GetType().FullName)
-				.Append('@')
-				.Append(obj.GetHashCode())
+			return new StringBuilder()
+				.Append( obj.GetType().FullName )
+				.Append( '@' )
+				.Append( obj.GetHashCode() )
 				.ToString();
 		}
 
+		private class NullClass
+		{
+		}
 
-		private class NullClass { }
 		private static object theNull = new NullClass();
-		public static object Null { get { return theNull; } }
+
+		/// <summary></summary>
+		public static object Null
+		{
+			get { return theNull; }
+		}
 	}
 }

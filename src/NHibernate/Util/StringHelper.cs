@@ -1,57 +1,93 @@
 using System;
-using System.Text;
 using System.Collections;
+using System.Text;
 
-namespace NHibernate.Util 
+namespace NHibernate.Util
 {
-	
-	public sealed class StringHelper 
+	/// <summary></summary>
+	public sealed class StringHelper
 	{
-		private StringHelper() 
+		private StringHelper()
 		{
 			// not creatable
 		}
 
+		/// <summary></summary>
 		public const char Dot = '.';
+		/// <summary></summary>
 		public const char Underscore = '_';
+		/// <summary></summary>
 		public const string CommaSpace = ", ";
+		/// <summary></summary>
 		public const string Comma = ",";
+		/// <summary></summary>
 		public const string OpenParen = "(";
+		/// <summary></summary>
 		public const string ClosedParen = ")";
+		/// <summary></summary>
 		public const string SqlParameter = "?";
 
-		public static string Repeat(string str, int times) {
-			StringBuilder buf = new StringBuilder(str.Length * times);
-			for (int i=0; i<times; i++)
-				buf.Append(str);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="str"></param>
+		/// <param name="times"></param>
+		/// <returns></returns>
+		public static string Repeat( string str, int times )
+		{
+			StringBuilder buf = new StringBuilder( str.Length*times );
+			for( int i = 0; i < times; i++ )
+				buf.Append( str );
 			return buf.ToString();
 		}
 
-		public static string Replace(string template, string placeholder, string replacement) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="template"></param>
+		/// <param name="placeholder"></param>
+		/// <param name="replacement"></param>
+		/// <returns></returns>
+		public static string Replace( string template, string placeholder, string replacement )
+		{
 			// sometimes a null value will get passed in here -> SqlWhereStrings are a good example
-			if(template==null) return null;
+			if( template == null ) return null;
 
-			int loc = template.IndexOf(placeholder);
-			if (loc<0) {
+			int loc = template.IndexOf( placeholder );
+			if( loc < 0 )
+			{
 				return template;
-			} else {
-				return new StringBuilder( template.Substring(0, loc) )
-					.Append(replacement)
+			}
+			else
+			{
+				return new StringBuilder( template.Substring( 0, loc ) )
+					.Append( replacement )
 					.Append( Replace(
-					template.Substring( loc + placeholder.Length ),
-					placeholder,
-					replacement
-					) ).ToString();
+						template.Substring( loc + placeholder.Length ),
+						placeholder,
+						replacement
+						) ).ToString();
 			}
 		}
 
-		public static string ReplaceOnce(string template, string placeholder, string replacement) {
-			int loc = template.IndexOf(placeholder);
-			if (loc < 0) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="template"></param>
+		/// <param name="placeholder"></param>
+		/// <param name="replacement"></param>
+		/// <returns></returns>
+		public static string ReplaceOnce( string template, string placeholder, string replacement )
+		{
+			int loc = template.IndexOf( placeholder );
+			if( loc < 0 )
+			{
 				return template;
-			} else {
-				return new StringBuilder( template.Substring(0, loc) )
-					.Append(replacement)
+			}
+			else
+			{
+				return new StringBuilder( template.Substring( 0, loc ) )
+					.Append( replacement )
 					.Append( template.Substring( loc + placeholder.Length ) )
 					.ToString();
 			}
@@ -65,9 +101,9 @@ namespace NHibernate.Util
 		/// <param name="separators">separators for the tokens of the list</param>
 		/// <param name="list">the string that will be broken into tokens</param>
 		/// <returns></returns>
-		public static string[] Split(string separators, string list) 
+		public static string[ ] Split( string separators, string list )
 		{
-			return list.Split(separators.ToCharArray());
+			return list.Split( separators.ToCharArray() );
 		}
 
 		/// <summary>
@@ -81,23 +117,36 @@ namespace NHibernate.Util
 		/// This is more powerful than Split because you have the option of including or 
 		/// not including the seperators in the tokens.
 		/// </remarks>
-		public static string[] Split(string separators, string list, bool include) 
+		public static string[ ] Split( string separators, string list, bool include )
 		{
-			StringTokenizer tokens = new StringTokenizer(list, separators, include);
+			StringTokenizer tokens = new StringTokenizer( list, separators, include );
 			ArrayList results = new ArrayList();
-			foreach(string token in tokens) 
+			foreach( string token in tokens )
 			{
 				results.Add( token );
 			}
-			return (string[]) results.ToArray(typeof(string));
+			return ( string[ ] ) results.ToArray( typeof( string ) );
 		}
 
-		public static string Unqualify(string qualifiedName) {
-			return Unqualify(qualifiedName, ".");
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="qualifiedName"></param>
+		/// <returns></returns>
+		public static string Unqualify( string qualifiedName )
+		{
+			return Unqualify( qualifiedName, "." );
 		}
 
-		public static string Unqualify(string qualifiedName, string seperator) {
-			return qualifiedName.Substring( qualifiedName.LastIndexOf(seperator) + 1 );
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="qualifiedName"></param>
+		/// <param name="seperator"></param>
+		/// <returns></returns>
+		public static string Unqualify( string qualifiedName, string seperator )
+		{
+			return qualifiedName.Substring( qualifiedName.LastIndexOf( seperator ) + 1 );
 		}
 
 		/// <summary>
@@ -106,9 +155,9 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="typeName"></param>
 		/// <returns></returns>
-		public static string GetFullClassname(string typeName) 
+		public static string GetFullClassname( string typeName )
 		{
-			return typeName.Trim().Split(' ', ',')[0];
+			return typeName.Trim().Split( ' ', ',' )[ 0 ];
 		}
 
 		/// <summary>
@@ -117,89 +166,158 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="typeName"></param>
 		/// <returns></returns>
-		public static string GetClassname(string typeName) 
+		public static string GetClassname( string typeName )
 		{
-			string[] splitClassname = GetFullClassname(typeName).Split('.');
+			string[ ] splitClassname = GetFullClassname( typeName ).Split( '.' );
 
-			return splitClassname[splitClassname.Length-1];
-
+			return splitClassname[ splitClassname.Length - 1 ];
 		}
 
-		public static string Qualifier(string qualifiedName) {
-			int loc = qualifiedName.LastIndexOf(".");
-			if ( loc< 0 ) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="qualifiedName"></param>
+		/// <returns></returns>
+		public static string Qualifier( string qualifiedName )
+		{
+			int loc = qualifiedName.LastIndexOf( "." );
+			if( loc < 0 )
+			{
 				return String.Empty;
-			} else {
-				return qualifiedName.Substring(0, loc);
+			}
+			else
+			{
+				return qualifiedName.Substring( 0, loc );
 			}
 		}
 
-		public static string[] Suffix(string[] columns, string suffix) {
-			if (suffix == null)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="columns"></param>
+		/// <param name="suffix"></param>
+		/// <returns></returns>
+		public static string[ ] Suffix( string[ ] columns, string suffix )
+		{
+			if( suffix == null )
 				return columns;
-			string[] qualified = new string[columns.Length];
-			for ( int i=0; i<columns.Length; i++) {
-				qualified[i] = Suffix(columns[i], suffix);
+			string[ ] qualified = new string[columns.Length];
+			for( int i = 0; i < columns.Length; i++ )
+			{
+				qualified[ i ] = Suffix( columns[ i ], suffix );
 			}
 			return qualified;
 		}
 
-		public static string Suffix(string name, string suffix) {
-			return (suffix == null) ?
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="suffix"></param>
+		/// <returns></returns>
+		public static string Suffix( string name, string suffix )
+		{
+			return ( suffix == null ) ?
 				name :
 				name + suffix;
 		}
 
-		public static string[] Prefix(string [] columns, string prefix) {
-			if (prefix == null)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="columns"></param>
+		/// <param name="prefix"></param>
+		/// <returns></returns>
+		public static string[ ] Prefix( string[ ] columns, string prefix )
+		{
+			if( prefix == null )
 				return columns;
-			string[] qualified = new string[columns.Length];
-			for (int i=0; i<columns.Length; i++) {
-				qualified[i] = prefix + columns[i];
+			string[ ] qualified = new string[columns.Length];
+			for( int i = 0; i < columns.Length; i++ )
+			{
+				qualified[ i ] = prefix + columns[ i ];
 			}
 			return qualified;
 		}
 
-		public static string Root(string qualifiedName) {
-			int loc = qualifiedName.IndexOf(".");
-			return (loc<0)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="qualifiedName"></param>
+		/// <returns></returns>
+		public static string Root( string qualifiedName )
+		{
+			int loc = qualifiedName.IndexOf( "." );
+			return ( loc < 0 )
 				? qualifiedName
-				: qualifiedName.Substring(0, loc);
+				: qualifiedName.Substring( 0, loc );
 		}
 
-		public static bool BooleanValue(string tfString) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tfString"></param>
+		/// <returns></returns>
+		public static bool BooleanValue( string tfString )
+		{
 			string trimmed = tfString.Trim().ToLower();
-			return trimmed.Equals("true") || trimmed.Equals("t");
+			return trimmed.Equals( "true" ) || trimmed.Equals( "t" );
 		}
 
-		public static string ToString(object[] array) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="array"></param>
+		/// <returns></returns>
+		public static string ToString( object[ ] array )
+		{
 			int len = array.Length;
-			
-			// if there is no value in the array then return no string...
-			if(len==0) return String.Empty;
 
-			StringBuilder buf = new StringBuilder(len * 12);
-			for (int i=0; i<len - 1; i++) {
-				buf.Append( array[i] ).Append(StringHelper.CommaSpace);
+			// if there is no value in the array then return no string...
+			if( len == 0 ) return String.Empty;
+
+			StringBuilder buf = new StringBuilder( len*12 );
+			for( int i = 0; i < len - 1; i++ )
+			{
+				buf.Append( array[ i ] ).Append( StringHelper.CommaSpace );
 			}
-			return buf.Append( array[len-1]).ToString();
+			return buf.Append( array[ len - 1 ] ).ToString();
 		}
 
-		public static string[] Multiply(string str, IEnumerator placeholders, IEnumerator replacements) {
-			string[] result = new string[] { str };
-			while( placeholders.MoveNext() ) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="str"></param>
+		/// <param name="placeholders"></param>
+		/// <param name="replacements"></param>
+		/// <returns></returns>
+		public static string[ ] Multiply( string str, IEnumerator placeholders, IEnumerator replacements )
+		{
+			string[ ] result = new string[ ] {str};
+			while( placeholders.MoveNext() )
+			{
 				replacements.MoveNext();
-				result = Multiply( result, placeholders.Current as string, replacements.Current as string[]);
+				result = Multiply( result, placeholders.Current as string, replacements.Current as string[ ] );
 			}
 			return result;
 		}
 
-		public static string[] Multiply(string[] strings, string placeholder, string[] replacements) {
-			string[] results = new string[replacements.Length * strings.Length ];
-			int n=0;
-			for ( int i=0; i<replacements.Length; i++ ) {
-				for (int j=0; j<strings.Length; j++) {
-					results[n++] = ReplaceOnce(strings[j], placeholder, replacements[i]);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="strings"></param>
+		/// <param name="placeholder"></param>
+		/// <param name="replacements"></param>
+		/// <returns></returns>
+		public static string[ ] Multiply( string[ ] strings, string placeholder, string[ ] replacements )
+		{
+			string[ ] results = new string[replacements.Length*strings.Length];
+			int n = 0;
+			for( int i = 0; i < replacements.Length; i++ )
+			{
+				for( int j = 0; j < strings.Length; j++ )
+				{
+					results[ n++ ] = ReplaceOnce( strings[ j ], placeholder, replacements[ i ] );
 				}
 			}
 			return results;
