@@ -45,6 +45,35 @@
 			<xs:enumeration value="delete-orphan"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:attributeGroup name="baseClassAttributes">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="proxy" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>default: no proxy interface </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="dynamic-update" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="dynamic-insert" type="xs:boolean" use="optional" default="false"/>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="baseAssociationAttributes">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="access" type="propertyAccess" use="optional"/>
+		<xs:attribute name="table" type="xs:string" use="optional"/>
+		<xs:attribute name="schema" type="xs:string" use="optional"/>
+		<xs:attribute name="lazy" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="cascade" type="cascadeStyle" use="optional"/>
+		<xs:attribute name="where" type="xs:string" use="optional"/>
+		<xs:attribute name="inverse" type="xs:boolean" use="optional" default="false"/>
+	</xs:attributeGroup>
+	<xs:simpleType name="unsavedValueType">
+		<xs:annotation>
+			<xs:documentation>Values used to restrict composite-id, does not apply to meta/column/generator</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="any"/>
+			<xs:enumeration value="none"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:element name="hibernate-mapping">
 		<xs:annotation>
 			<xs:documentation>hibernate-mapping is the document root.</xs:documentation>
@@ -74,6 +103,8 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="auto-import" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="namespace" type="xs:string" use="optional"/>
+			<xs:attribute name="assembly" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="import">
@@ -121,37 +152,30 @@
 					<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="table" type="xs:string">
+			<xs:attributeGroup ref="baseClassAttributes"/>
+			<xs:attribute name="table" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>default: unqualified classname </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="schema" type="xs:string">
+			<xs:attribute name="schema" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>default: no value </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="proxy" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>default: no proxy interface </xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="discriminator-value" type="xs:string">
+			<xs:attribute name="discriminator-value" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>default: unqualified class name | none  </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="mutable" type="xs:boolean" default="true"/>
-			<xs:attribute name="polymorphism" type="polymorphismType" default="implicit"/>
-			<xs:attribute name="where" type="xs:string">
+			<xs:attribute name="mutable" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="polymorphism" type="polymorphismType" use="optional" default="implicit"/>
+			<xs:attribute name="persister" type="xs:string" use="optional"/>
+			<xs:attribute name="where" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>default: none  </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="persister" type="xs:string"/>
-			<xs:attribute name="dynamic-update" type="xs:boolean" default="false"/>
-			<xs:attribute name="dynamic-insert" type="xs:boolean" default="false"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="id">
@@ -190,14 +214,7 @@
 			<xs:attribute name="class" type="xs:string"/>
 			<xs:attribute name="name" type="xs:string"/>
 			<xs:attribute name="access" type="propertyAccess"/>
-			<xs:attribute name="unsaved-value" default="none">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="any"/>
-						<xs:enumeration value="none"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="unsaved-value" type="unsavedValueType" default="none"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="discriminator">
@@ -263,20 +280,13 @@
 				</xs:choice>
 				<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="proxy" type="xs:string" use="optional">
-				<xs:annotation>
-					<xs:documentation>default: no proxy interface </xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
+			<xs:attributeGroup ref="baseClassAttributes"/>
+			<xs:attribute name="extends" type="xs:string" use="optional"/>
 			<xs:attribute name="discriminator-value" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>default: unqualified class name | none  </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="dynamic-update" type="xs:boolean" use="optional" default="false"/>
-			<xs:attribute name="dynamic-insert" type="xs:boolean" use="optional" default="false"/>
-			<xs:attribute name="extends" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="joined-subclass">
@@ -303,21 +313,14 @@
 				</xs:choice>
 				<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="proxy" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>default: no proxy interface </xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="table" type="xs:string">
+			<xs:attributeGroup ref="baseClassAttributes"/>
+			<xs:attribute name="extends" type="xs:string" use="optional"/>
+			<xs:attribute name="schema" type="xs:string" use="optional"/>
+			<xs:attribute name="table" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>default: unqualified classname </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="schema" type="xs:string"/>
-			<xs:attribute name="dynamic-update" type="xs:boolean" default="false"/>
-			<xs:attribute name="dynamic-insert" type="xs:boolean" default="false"/>
-			<xs:attribute name="extends" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="property">
@@ -392,31 +395,6 @@
 			<xs:attribute name="schema" type="xs:string"/>
 			<xs:attribute name="element-class" type="xs:string"/>
 			<xs:attribute name="cascade" type="cascadeStyle"/>
-			<xs:attribute name="where" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="bag">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
-				<xs:element ref="key"/>
-				<xs:choice>
-					<xs:element ref="element"/>
-					<xs:element ref="one-to-many"/>
-					<xs:element ref="many-to-many"/>
-					<xs:element ref="composite-element"/>
-					<xs:element ref="many-to-any"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
-			<xs:attribute name="table" type="xs:string"/>
-			<xs:attribute name="schema" type="xs:string"/>
-			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
-			<xs:attribute name="inverse" type="xs:boolean" default="false"/>
-			<xs:attribute name="cascade" type="cascadeStyle"/>
-			<xs:attribute name="order-by" type="xs:string"/>
 			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
@@ -608,31 +586,6 @@
 			<xs:attribute name="length" type="xs:positiveInteger"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="list">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
-				<xs:element ref="key"/>
-				<xs:element ref="index"/>
-				<xs:choice>
-					<xs:element ref="element"/>
-					<xs:element ref="one-to-many"/>
-					<xs:element ref="many-to-many"/>
-					<xs:element ref="composite-element"/>
-					<xs:element ref="many-to-any"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
-			<xs:attribute name="table" type="xs:string"/>
-			<xs:attribute name="schema" type="xs:string"/>
-			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
-			<xs:attribute name="inverse" type="xs:boolean" default="false"/>
-			<xs:attribute name="cascade" type="cascadeStyle"/>
-			<xs:attribute name="where" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="many-to-any">
 		<xs:complexType>
 			<xs:sequence>
@@ -669,38 +622,6 @@
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
 			<xs:attribute name="update" type="xs:boolean" default="true"/>
 			<xs:attribute name="insert" type="xs:boolean" default="true"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="map">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
-				<xs:element ref="key"/>
-				<xs:choice>
-					<xs:element ref="index"/>
-					<xs:element ref="composite-index"/>
-					<xs:element ref="index-many-to-many"/>
-					<xs:element ref="index-many-to-any"/>
-				</xs:choice>
-				<xs:choice>
-					<xs:element ref="element"/>
-					<xs:element ref="one-to-many"/>
-					<xs:element ref="many-to-many"/>
-					<xs:element ref="composite-element"/>
-					<xs:element ref="many-to-any"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
-			<xs:attribute name="table" type="xs:string"/>
-			<xs:attribute name="schema" type="xs:string"/>
-			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
-			<xs:attribute name="inverse" type="xs:boolean" default="false"/>
-			<xs:attribute name="sort" type="xs:string" default="unsorted"/>
-			<xs:attribute name="cascade" type="cascadeStyle"/>
-			<xs:attribute name="order-by" type="xs:string"/>
-			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="meta">
@@ -773,6 +694,42 @@
 			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="list">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:element ref="key"/>
+				<xs:element ref="index"/>
+				<xs:choice>
+					<xs:element ref="element"/>
+					<xs:element ref="one-to-many"/>
+					<xs:element ref="many-to-many"/>
+					<xs:element ref="composite-element"/>
+					<xs:element ref="many-to-any"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attributeGroup ref="baseAssociationAttributes"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="bag">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:element ref="key"/>
+				<xs:choice>
+					<xs:element ref="element"/>
+					<xs:element ref="one-to-many"/>
+					<xs:element ref="many-to-many"/>
+					<xs:element ref="composite-element"/>
+					<xs:element ref="many-to-any"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attributeGroup ref="baseAssociationAttributes"/>
+			<xs:attribute name="order-by" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="set">
 		<xs:complexType>
 			<xs:sequence>
@@ -787,16 +744,34 @@
 					<xs:element ref="many-to-any"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
-			<xs:attribute name="table" type="xs:string"/>
-			<xs:attribute name="schema" type="xs:string"/>
-			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
-			<xs:attribute name="sort" type="xs:string" default="unsorted"/>
-			<xs:attribute name="inverse" type="xs:boolean" default="false"/>
-			<xs:attribute name="cascade" type="cascadeStyle"/>
+			<xs:attributeGroup ref="baseAssociationAttributes"/>
 			<xs:attribute name="order-by" type="xs:string"/>
-			<xs:attribute name="where" type="xs:string"/>
+			<xs:attribute name="sort" type="xs:string" default="unsorted"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="map">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:element ref="key"/>
+				<xs:choice>
+					<xs:element ref="index"/>
+					<xs:element ref="composite-index"/>
+					<xs:element ref="index-many-to-many"/>
+					<xs:element ref="index-many-to-any"/>
+				</xs:choice>
+				<xs:choice>
+					<xs:element ref="element"/>
+					<xs:element ref="one-to-many"/>
+					<xs:element ref="many-to-many"/>
+					<xs:element ref="composite-element"/>
+					<xs:element ref="many-to-any"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attributeGroup ref="baseAssociationAttributes"/>
+			<xs:attribute name="order-by" type="xs:string"/>
+			<xs:attribute name="sort" type="xs:string" default="unsorted"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
