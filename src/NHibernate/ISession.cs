@@ -52,7 +52,7 @@ namespace NHibernate
 	///				tx.Commit();
 	///			} catch (Exception e) {
 	///				if (tx != null) tx.Rollback();
-	///				throw e;
+	///				throw;
 	///			} finally {
 	///				sess.Close();
 	///			}
@@ -190,6 +190,27 @@ namespace NHibernate
 		/// <param name="obj">An "empty" instance of the persistent class</param>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
 		void Load( object obj, object id );
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <param name="clazz">a persistent class</param>
+		/// <param name="id">an identifier</param>
+		/// <returns>a persistent instance or null</returns>
+		object Get(System.Type clazz, object id);
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. Obtain the specified lock mode if the instance
+		/// exists.
+		/// </summary>
+		/// <param name="clazz">a persistent class</param>
+		/// <param name="id">an identifier</param>
+		/// <param name="lockMode">the lock mode</param>
+		/// <returns>a persistent instance or null</returns>
+		object Get(System.Type clazz, object id, LockMode lockMode);
 
 		/// <summary>
 		/// Persist the given transient instance, first assigning a generated identifier.

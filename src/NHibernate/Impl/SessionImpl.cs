@@ -2333,19 +2333,16 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Load the data for the object with the specified id into a newly created object
 		/// using "for update", if supported. A new key will be assigned to the object.
-		/// This should return an existing proxy where appropriate.
+		/// This method always hits the db, and does not create proxies. It should return
+		/// an existing proxy where appropriate.
 		/// </summary>
 		/// <param name="clazz"></param>
 		/// <param name="id"></param>
 		/// <param name="lockMode"></param>
+		/// <param name="allowNull"></param>
 		/// <returns></returns>
-		public object Load( System.Type clazz, object id, LockMode lockMode )
+		private object DoLoad( System.Type clazz, object id, LockMode lockMode, bool allowNull )
 		{
-			if( lockMode == LockMode.Write )
-			{
-				throw new HibernateException( "invalid lock mode for Load()" );
-			}
-
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "loading " + MessageHelper.InfoString( clazz, id ) + " in lock mode: " + lockMode );
@@ -2375,10 +2372,67 @@ namespace NHibernate.Impl
 				}
 			}
 
-			ThrowObjectNotFound( result, id, persister.MappedClass );
+			if( !allowNull ) ThrowObjectNotFound( result, id, persister.MappedClass );
 
-			// retunr existing proxy (if one exists)
+			// return existing proxy (if one exists)
 			return ProxyFor( persister, new Key( id, persister ), result );
+		}
+
+		/// <summary>
+		/// Load the data for the object with the specified id into a newly created object
+		/// using "for update", if supported. A new key will be assigned to the object.
+		/// This should return an existing proxy where appropriate.
+		/// 
+		/// If the object does not exist in the database, an exception is thrown.
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <param name="lockMode"></param>
+		/// <returns></returns>
+		/// <exception cref="ObjectNotFoundException">
+		/// Thrown when the object with the specified id does not exist in the database.
+		/// </exception>
+		public object Load( System.Type clazz, object id, LockMode lockMode )
+		{
+			if( lockMode == LockMode.Write )
+			{
+				throw new HibernateException( "invalid lock mode for Load()" );
+			}
+
+			if( lockMode == LockMode.None )
+			{
+				// we don't necessarily need to hit the db in this case
+				return Load( clazz, id );
+			}
+
+			return DoLoad( clazz, id, lockMode, false );
+		}
+
+		/// <summary>
+		/// Load the data for the object with the specified id into a newly created object
+		/// using "for update", if supported. A new key will be assigned to the object.
+		/// This should return an existing proxy where appropriate.
+		/// 
+		/// If the object does not exist in the database, null is returned.
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <param name="lockMode"></param>
+		/// <returns></returns>
+		public object Get( System.Type clazz, object id, LockMode lockMode )
+		{
+			if( lockMode == LockMode.Write )
+			{
+				throw new HibernateException( "invalid lock mode for Get()" );
+			}
+
+			if( lockMode == LockMode.None )
+			{
+				// we don't necessarily need to hit the db in this case
+				return Load( clazz, id );
+			}
+
+			return DoLoad( clazz, id, lockMode, true );
 		}
 
 		/// <summary>
