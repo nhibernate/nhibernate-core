@@ -12,25 +12,32 @@ namespace NHibernate
 	/// exposes some extra functionality beyond that provided by <c>ISession.Iterate()</c> and
 	/// <c>ISession.Find()</c>;
 	/// <list>
-	///		<item>A particulare page of the result set may be selected by calling 
-	///		<c>SetMaxResults()</c>, <c>SetFirstResult</c></item>
+	///		<item>
+	///			A particulare page of the result set may be selected by calling 
+	///			<c>SetMaxResults()</c>, <c>SetFirstResult()</c>.  The generated sql
+	///			depends on the capabilities of the <see cref="Dialect.Dialect"/>.  Some
+	///			Dialects are for databases that have built in paging (LIMIT) and those capabilities
+	///			will be used to limit the number of records returned by the sql statement. 
+	///			If the database does not support LIMITs then all of the records will be returned,
+	///			but the objects created will be limited to the specific results requested.
+	///		</item>
 	///		<item>Named query parameters may be used</item>
 	/// </list>
 	/// <para>
 	/// Named query parameters are tokens of the form <c>:name</c> in the query string. A value is bound
 	/// to the <c>Int32</c> parameter <c>:foo</c> by calling
 	/// <code>
-	///		SetParameter("foo", foo, NHibernate.Int32);
+	///		SetParameter("foo", foo, NHibernateUtil.Int32);
 	/// </code>
 	/// for example. A name may appear multiple times in the query string.
 	/// </para>
 	/// <para>
-	///	JDBC-stype <c>?</c> parameters are also supported. To bind a value to a JDBC-style
-	///	parameter use a set method that accepts an <c>int</c> positional argument - numbered from
+	///	Unnamed parameters <c>?</c> are also supported. To bind a value to an unnamed
+	///	parameter use a Set method that accepts an <c>Int32</c> positional argument - numbered from
 	///	zero.
 	/// </para>
 	/// <para>
-	/// You may not mix and match JDBC-style parameters and named parameters in the same query.
+	/// You may not mix and match unnamed parameters and named parameters in the same query.
 	/// </para>
 	/// <para>
 	/// Queries are executed by calling <c>List()</c> or <c>Iterate()</c>. A query
