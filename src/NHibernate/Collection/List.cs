@@ -98,9 +98,17 @@ namespace NHibernate.Collection {
 			return new EnumeratorProxy(list.GetEnumerator());
 		}
 
-		
+		public override void DelayedAddAll(ICollection coll)
+		{
+			foreach(object obj in coll) 
+			{
+				list.Add(obj);
+			}
+		}
 
-		public int Add(object obj) {
+
+		public int Add(object obj) 
+		{
 			if ( !QueueAdd(obj) ) {
 				Write();
 				return list.Add(obj);
@@ -123,20 +131,20 @@ namespace NHibernate.Collection {
 			list.Clear();
 		}
 
-		public object this [ int arg0 ] {
+		public object this [ int index ] {
 			get {
 				Read();
-				return list[arg0];
+				return list[index];
 			}
 			set {
 				Write();
-				list[arg0] = value;
+				list[index] = value;
 			}
 		}
 
-		public void RemoveAt(int arg0) {
+		public void RemoveAt(int index) {
 			Write();
-			list.RemoveAt(arg0);
+			list.RemoveAt(index);
 		}
 
 		public int IndexOf(object obj) {

@@ -175,10 +175,7 @@ namespace NHibernate.Collection {
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="owner"></param>
-		public virtual void EndRead(CollectionPersister persister, object owner) 
-		{
-			// override on baseclasses - will eventually make abstract.
-		}
+		public abstract void EndRead(CollectionPersister persister, object owner) ;
 
 		public void Initialize(bool writing) 
 		{
