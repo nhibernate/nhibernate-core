@@ -24,7 +24,7 @@ namespace NHibernate.Test
 										   "Many.hbm.xml",
 										   "Immutable.hbm.xml",
 										   "Fee.hbm.xml",
-										   //"Vetoer.hbm.xml",
+										   "Vetoer.hbm.xml",
 										   "Holder.hbm.xml",
 										   "ParentChild.hbm.xml",
 										   "Simple.hbm.xml",
