@@ -26,6 +26,13 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
+			<xs:attribute name='default-access' default='property'>
+				<xs:annotation>
+					<xs:documentation>
+					Can specify how the default access to Get/Set the values for the property
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name='auto-import' default='true'>
 				<xs:simpleType>
 					<xs:restriction base='xs:string'>
@@ -160,6 +167,7 @@
 				<xs:element ref='generator' />
 			</xs:sequence>
 			<xs:attribute name='name' />
+			<xs:attribute name='access' />
 			<xs:attribute name='column' />
 			<xs:attribute name='type' />
 			<xs:attribute name='length' />
@@ -187,6 +195,7 @@
 			</xs:sequence>
 			<xs:attribute name='class' />
 			<xs:attribute name='name' />
+			<xs:attribute name='access' />
 			<xs:attribute name='unsaved-value' default='none'>
 				<xs:simpleType>
 					<xs:restriction base='xs:string'>
@@ -242,6 +251,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='column' />
 			<xs:attribute name='type' default='Int32' />
 		</xs:complexType>
@@ -254,6 +264,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='column' />
 		</xs:complexType>
 	</xs:element>
@@ -381,6 +392,7 @@
 				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='type' />
 			<xs:attribute name='column' />
 			<xs:attribute name='length' />
@@ -444,6 +456,7 @@
 			<xs:attribute name='id-type' use='required' />
 			<xs:attribute name='meta-type' />
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='cascade' default='none'>
 				<xs:simpleType>
 					<xs:restriction base='xs:string'>
@@ -471,6 +484,7 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='table' />
 			<xs:attribute name='schema' />
 			<xs:attribute name='element-class' />
@@ -503,6 +517,7 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='table' />
 			<xs:attribute name='schema' />
 			<xs:attribute name='lazy' default='false'>
@@ -593,6 +608,7 @@
 			</xs:sequence>
 			<xs:attribute name='class' />
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='update' default='true'>
 				<xs:simpleType>
 					<xs:restriction base='xs:string'>
@@ -684,6 +700,7 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='table' />
 			<xs:attribute name='schema' />
 			<xs:attribute name='lazy' default='false'>
@@ -765,6 +782,7 @@
 				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='class' />
 			<xs:attribute name='column' />
 		</xs:complexType>
@@ -775,6 +793,7 @@
 				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='type' />
 			<xs:attribute name='column' />
 			<xs:attribute name='length' />
@@ -796,6 +815,7 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='table' />
 			<xs:attribute name='schema' />
 			<xs:attribute name='lazy' default='false'>
@@ -864,6 +884,7 @@
 				<xs:element ref='column' minOccurs='0' maxOccurs='unbounded' />
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='class' />
 			<xs:attribute name='column' />
 			<xs:attribute name='not-null' default='false'>
@@ -940,6 +961,7 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='table' />
 			<xs:attribute name='schema' />
 			<xs:attribute name='lazy' default='false'>
@@ -999,6 +1021,7 @@
 			</xs:sequence>
 			<xs:attribute name='class' use='required' />
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name='one-to-many'>
@@ -1012,6 +1035,7 @@
 				<xs:element ref='meta' minOccurs='0' maxOccurs='unbounded' />
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='class' />
 			<xs:attribute name='cascade'>
 				<xs:simpleType>
@@ -1062,6 +1086,7 @@
 				<xs:element ref='element' />
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='table' />
 			<xs:attribute name='schema' />
 			<xs:attribute name='where' />
@@ -1087,6 +1112,7 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='name' use='required' />
+			<xs:attribute name='access' />
 			<xs:attribute name='table' />
 			<xs:attribute name='schema' />
 			<xs:attribute name='lazy' default='false'>
