@@ -71,7 +71,8 @@ namespace NHibernate.Loader
 			object[] valueArray = values.ToArray();
 			IType[] typeArray = (IType[]) types.ToArray(typeof(IType));
 		
-			return Find(session, valueArray, typeArray, true, criteria.Selection, null, null);
+			QueryParameters qp = new QueryParameters( typeArray, valueArray, null, criteria.Selection );
+			return Find( session, qp, true );
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IDataReader rs, ISessionImplementor session) 

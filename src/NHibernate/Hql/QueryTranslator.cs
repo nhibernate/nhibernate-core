@@ -923,17 +923,16 @@ namespace NHibernate.Hql
 			}
 		}
 
-		public IEnumerable GetEnumerable(object[] values, IType[] types, RowSelection selection, 
-			IDictionary namedParams, IDictionary lockModes, ISessionImplementor session) 
+		public IEnumerable GetEnumerable(QueryParameters parameters, ISessionImplementor session) 
 		{
-			SqlString sqlWithLock = ApplyLocks(SqlString, lockModes, session.Factory.Dialect);
+			SqlString sqlWithLock = ApplyLocks(SqlString, parameters.LockModes, session.Factory.Dialect);
 
 			IDbCommand st = PrepareCommand(
 				sqlWithLock,
-				values, types, namedParams, selection, false, session);
+				parameters, false, session);
 			
-			IDataReader rs = GetResultSet( st, selection, session );
-			return new EnumerableImpl(rs, st, session, ReturnTypes, ScalarColumnNames, selection );
+			IDataReader rs = GetResultSet( st, parameters.RowSelection, session );
+			return new EnumerableImpl(rs, st, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection );
 			
 		}
 
@@ -1056,16 +1055,10 @@ namespace NHibernate.Hql
 			return names;
 		}
 
-		public IList FindList(
-			ISessionImplementor session,
-			object[] values,
-			IType[] types,
-			bool returnProxies,
-			RowSelection selection,
-			IDictionary namedParams,
-			IDictionary lockModes) 
+
+		public IList FindList(ISessionImplementor session, QueryParameters parameters, bool returnProxies) 
 		{
-			return base.Find(session, values, types, returnProxies, selection, namedParams, lockModes);
+			return base.Find( session, parameters, returnProxies ); 
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IDataReader rs, ISessionImplementor session) 
@@ -1234,16 +1227,12 @@ namespace NHibernate.Hql
 			}
 		}
 
-		
 		/// <summary>
 		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
 		/// database to Load an Entity.
 		/// </summary>
 		/// <param name="sqlString">The SqlString to convert into a prepared IDbCommand.</param>
-		/// <param name="values">The values that should be bound to the parameters in the IDbCommand</param>
-		/// <param name="types">The IType for the value</param>
-		/// <param name="namedParams">The HQL named parameters.</param>
-		/// <param name="selection">The RowSelection to help setup the CommandTimeout</param>
+		/// <param name="parameters"></param>
 		/// <param name="scroll">TODO: find out where this is used...</param>
 		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
 		/// <returns>An IDbCommand that is ready to be executed.</returns>
@@ -1253,7 +1242,7 @@ namespace NHibernate.Hql
 		/// the SqlString.  If there are any untyped parameters this replaces them using the types and
 		/// namedParams parameters.
 		/// </remarks>
-		protected override IDbCommand PrepareCommand(SqlString sqlString, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
+		protected override IDbCommand PrepareCommand(SqlString sqlString, QueryParameters parameters, bool scroll, ISessionImplementor session) 
 		{
 			SqlString sql = null;
 
@@ -1281,17 +1270,17 @@ namespace NHibernate.Hql
 				if( paramIndexes.Length > 0 ) 
 				{
 				
-					for( int i=0; i<types.Length; i++ ) 
+					for( int i=0; i<parameters.PositionalParameterTypes.Length; i++ ) 
 					{
-						string[] colNames = new string[types[i].GetColumnSpan(factory)];
+						string[] colNames = new string[ parameters.PositionalParameterTypes[i].GetColumnSpan(factory)];
 						for( int j=0; j<colNames.Length; j++ ) 
 						{
 							colNames[j] = "p" + paramIndex.ToString() + j.ToString();
 						}
 
-						Parameter[] parameters = Parameter.GenerateParameters( factory, colNames , types[i] );
+						Parameter[] sqlParameters = Parameter.GenerateParameters( factory, colNames , parameters.PositionalParameterTypes[i] );
 
-						foreach(Parameter param in parameters) 
+						foreach(Parameter param in sqlParameters) 
 						{
 							sqlPartIndex = paramIndexes[paramIndex];
 							sql.SqlParts[sqlPartIndex] = param;
@@ -1300,12 +1289,12 @@ namespace NHibernate.Hql
 						}
 					}
 
-					if( namedParams!=null && namedParams.Count > 0 ) 
+					if( parameters.NamedParameters!=null && parameters.NamedParameters.Count > 0 ) 
 					{
 						// convert the named parameters to an array of types
 						ArrayList paramTypeList = new ArrayList();
 				
-						foreach( DictionaryEntry e in namedParams ) 
+						foreach( DictionaryEntry e in parameters.NamedParameters ) 
 						{
 							string name = (string) e.Key;
 							TypedValue typedval = (TypedValue) e.Value;
@@ -1343,9 +1332,9 @@ namespace NHibernate.Hql
 								colNames[j] = "p" + paramIndex.ToString() + j.ToString();
 							}
 
-							Parameter[] parameters = Parameter.GenerateParameters( factory, colNames , type );
+							Parameter[] sqlParameters = Parameter.GenerateParameters( factory, colNames , type );
 
-							foreach(Parameter param in parameters) 
+							foreach(Parameter param in sqlParameters) 
 							{
 								sqlPartIndex = paramIndexes[paramIndex];
 								sql.SqlParts[sqlPartIndex] = param;
@@ -1361,7 +1350,7 @@ namespace NHibernate.Hql
 			// that has the correct parameters
 			this.sqlString = sql;
 
-			return base.PrepareCommand(sql, values, types, namedParams, selection, scroll, session);
+			return base.PrepareCommand(sql, parameters, scroll, session);
 		}
 	}
 }

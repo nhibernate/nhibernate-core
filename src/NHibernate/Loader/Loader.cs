@@ -92,8 +92,7 @@ namespace NHibernate.Loader
 		{
 			return false;
 		}
-
-
+			
 		/// <summary>
 		/// Execute an SQL query and attempt to instantiate instances of the class mapped by the given
 		/// persister from each row of the <c>IDataReader</c>.
@@ -116,20 +115,16 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		private IList DoFind(
 			ISessionImplementor session,
-			object[] values,
-			IType[] types,
+			QueryParameters parameters,
 			object optionalObject,
 			object optionalID,
 			PersistentCollection optionalCollection,
 			object optionalCollectionOwner,
-			bool returnProxies,
-			RowSelection selection,
-			IDictionary namedParams,
-			IDictionary lockModes) 
+			bool returnProxies)  
 		{
 
-			int maxRows = (selection==null || selection.MaxRows==RowSelection.NoValue) ?
-				int.MaxValue : selection.MaxRows;
+			int maxRows = ( parameters.RowSelection==null || parameters.RowSelection.MaxRows==RowSelection.NoValue ) ?
+				int.MaxValue : parameters.RowSelection.MaxRows;
 
 			ILoadable[] persisters = Persisters;
 			int cols = persisters.Length;
@@ -138,7 +133,7 @@ namespace NHibernate.Loader
 			bool returnsEntities = cols > 0;
 			string[] suffixes = Suffixes;
 
-			LockMode[] lockModeArray = GetLockModes(lockModes);
+			LockMode[] lockModeArray = GetLockModes( parameters.LockModes );
 		
 			// this is a CollectionInitializer and we are loading up a single collection
 			bool singleCollection = collectionPersister!=null && optionalCollection!=null;
@@ -163,10 +158,12 @@ namespace NHibernate.Loader
 			IDbCommand st = null;
 
 			st = PrepareCommand(
-				ApplyLocks(SqlString, lockModes, session.Factory.Dialect), 
-				values, types, namedParams, selection, false, session);
+				ApplyLocks(SqlString, parameters.LockModes, session.Factory.Dialect), 
+				parameters, 
+				false, 
+				session);
 
-			IDataReader rs = GetResultSet(st, selection, session);
+			IDataReader rs = GetResultSet(st, parameters.RowSelection, session);
 
 			try 
 			{
@@ -546,6 +543,14 @@ namespace NHibernate.Loader
 				( dialect.PreferLimit || GetFirstRow(selection)!=0);
 		}
 
+//		[Obsolete("use QueryParameters instead.")]
+//		protected virtual IDbCommand PrepareCommand(SqlString sqlString, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
+//		{
+//			QueryParameters qp = new QueryParameters( types, values, namedParams, null, selection );
+//			return PrepareCommand( sqlString, qp, scroll, session );
+// 
+//		}
+
 		/// <summary>
 		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
 		/// database to Load an Entity.
@@ -558,49 +563,49 @@ namespace NHibernate.Loader
 		/// <param name="scroll">TODO: find out where this is used...</param>
 		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
 		/// <returns>An IDbCommand that is ready to be executed.</returns>
-		protected virtual IDbCommand PrepareCommand(SqlString sqlString, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
+		protected virtual IDbCommand PrepareCommand(SqlString sqlString, QueryParameters parameters, bool scroll, ISessionImplementor session) 
 		{
 			Dialect.Dialect dialect = session.Factory.Dialect;
 			
-			bool useLimit = UseLimit(selection, dialect);
-			bool scrollable =  scroll || (!useLimit && GetFirstRow(selection)!=0);
+			bool useLimit = UseLimit( parameters.RowSelection, dialect );
+			bool scrollable =  scroll || (!useLimit && GetFirstRow(parameters.RowSelection)!=0);
 			if(useLimit) sqlString = dialect.GetLimitString(sqlString);
 
 			IDbCommand command = session.Batcher.PrepareQueryCommand( sqlString, scrollable ); 
 
 			try 
 			{
-				if (selection!=null && selection.Timeout!=RowSelection.NoValue) 
+				if( parameters.RowSelection!=null && parameters.RowSelection.Timeout!=RowSelection.NoValue) 
 				{
-					command.CommandTimeout = selection.Timeout;
+					command.CommandTimeout = parameters.RowSelection.Timeout;
 				}
 				
 				int colIndex = 0;
 
 				if( useLimit && dialect.BindLimitParametersFirst ) 
 				{
-					BindLimitParameters(command, colIndex, selection, session);
+					BindLimitParameters(command, colIndex, parameters.RowSelection, session);
 					colIndex+=2;
 				}
 
-				for (int i=0; i < values.Length; i++) 
+				for (int i=0; i < parameters.PositionalParameterValues.Length; i++) 
 				{
-					types[i].NullSafeSet( command, values[i], colIndex, session);
-					colIndex += types[i].GetColumnSpan( session.Factory );
+					parameters.PositionalParameterTypes[i].NullSafeSet( command, parameters.PositionalParameterValues[i], colIndex, session);
+					colIndex += parameters.PositionalParameterTypes[i].GetColumnSpan( session.Factory );
 				}
 				
 				//if (namedParams!=null)	
-				colIndex += BindNamedParameters(command, namedParams, colIndex, session);
+				colIndex += BindNamedParameters(command, parameters.NamedParameters, colIndex, session);
 				
 				if( useLimit && !dialect.BindLimitParametersFirst ) 
 				{
-					BindLimitParameters(command, colIndex, selection, session);
+					BindLimitParameters(command, colIndex, parameters.RowSelection, session);
 				}
 
-				if(!useLimit) SetMaxRows(command, selection);
-				if(selection!=null && selection.Timeout!=RowSelection.NoValue) 
+				if(!useLimit) SetMaxRows( command, parameters.RowSelection );
+				if(parameters.RowSelection!=null && parameters.RowSelection.Timeout!=RowSelection.NoValue) 
 				{
-					command.CommandTimeout = selection.Timeout;
+					command.CommandTimeout = parameters.RowSelection.Timeout;
 				}
 
 			}
@@ -718,9 +723,10 @@ namespace NHibernate.Loader
 			IType[] types,
 			object optionalObject,
 			object optionalID,
-			bool returnProxies) {
-
-			return DoFind(session, values, types, optionalObject, optionalID, null, null, returnProxies, null, null, null);
+			bool returnProxies) 
+		{
+			QueryParameters qp = new QueryParameters( types, values );
+			return DoFind( session, qp, optionalObject, optionalID, null, null, returnProxies );
 		}
 
 		protected IList LoadCollection(
@@ -730,33 +736,21 @@ namespace NHibernate.Loader
 			object owner,
 			PersistentCollection collection) 
 		{
-			return DoFind(session, new object[] {id}, new IType[] {type}, null, null, collection, owner, true, null, null, null);
+			QueryParameters qp = new QueryParameters( new IType[] {type}, new object[] {id} );
+			return DoFind( session, qp, null, null, collection, owner, true ); 
 		}
 
 		/// <summary>
 		/// Called by subclasses that implement queries.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		/// <param name="returnProxies"></param>
-		/// <param name="selection"></param>
-		/// <param name="namedParams"></param>
-		/// <param name="lockModes"></param>
-		/// <returns></returns>
 		protected virtual IList Find(
 			ISessionImplementor session,
-			object[] values,
-			IType[] types,
-			bool returnProxies,
-			RowSelection selection,
-			IDictionary namedParams,
-			IDictionary lockModes) 
+			QueryParameters parameters,
+			bool returnProxies) 
 		{
-			return DoFind(session, values, types, null, null, null, null, returnProxies, selection, namedParams, lockModes);
+			return DoFind( session, parameters, null, null, null, null, returnProxies );
 		}
-
-
+		
 		private string[][] suffixedKeyColumns;
 		private string[][] suffixedVersionColumnNames;
 		private string[][][] suffixedPropertyColumns;

@@ -26,12 +26,18 @@ namespace NHibernate.Impl {
 			selection = new RowSelection();
 		}
 
-		public virtual IEnumerable Enumerable() {
-			IDictionary namedParams = new Hashtable( namedParameters );
-			
-			string query = BindParameterLists(namedParams);
-			return session.Enumerable(query, (object[]) values.ToArray(typeof(object)), 
-				(IType[]) types.ToArray(typeof(IType)), selection, namedParams, lockModes);
+		public virtual IEnumerable Enumerable() 
+		{
+			//TODO: see if there is a better way to implement
+			QueryParameters qp = new QueryParameters( 
+				(IType[])types.ToArray( typeof(IType) ),
+				(object[])values.ToArray( typeof(object) ), 
+				new Hashtable( namedParameters ),
+				lockModes,
+				selection );
+
+			string query = BindParameterLists( qp.NamedParameters );
+			return session.Enumerable( query, qp );
 		}
 
 	    public IDictionary LockModes
@@ -44,12 +50,18 @@ namespace NHibernate.Impl {
 			lockModes[alias] = lockMode;    
 		}
 
-	    public virtual IList List() {
-			IDictionary namedParams = new Hashtable( namedParameters );
-			
-			string query = BindParameterLists(namedParams);
-			return session.Find(query, (object[]) values.ToArray(typeof(object)), (IType[]) types.ToArray(typeof(IType)), 
-				selection, namedParams, lockModes);
+	    public virtual IList List() 
+		{
+			//TODO: see if there is a better way to implement
+			QueryParameters qp = new QueryParameters( 
+				(IType[])types.ToArray( typeof(IType) ),
+				(object[])values.ToArray( typeof(object) ), 
+				new Hashtable( namedParameters ),
+				lockModes,
+				selection );
+
+			string query = BindParameterLists( qp.NamedParameters );
+			return session.Find( query, qp );
 		}
 
 		public IQuery SetMaxResults(int maxResults) {

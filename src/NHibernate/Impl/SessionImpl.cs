@@ -1563,18 +1563,18 @@ namespace NHibernate.Impl
 
 		public IList Find(string query, object[] values, IType[] types) 
 		{
-			return Find(query, values, types, null, null, null);
+			return Find(query, new QueryParameters( types, values ) ) ;
 		}
 
-		public IList Find(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams,
-			IDictionary lockModes) 
+		public IList Find(string query, QueryParameters parameters) 
 		{
-
 			if ( log.IsDebugEnabled ) 
 			{
 				log.Debug( "find: " + query);
-				if (values.Length!=0) log.Debug( "parameters: " + StringHelper.ToString(values) );
+				parameters.LogParameters();
 			}
+
+			parameters.ValidateParameters();
 
 			QueryTranslator[] q = GetQueries(query, false);
 
@@ -1590,14 +1590,15 @@ namespace NHibernate.Impl
 					IList currentResults;
 					try 
 					{
-						currentResults = q[i].FindList(this, values, types, true, selection, namedParams, lockModes);
+						currentResults = q[i].FindList(this, parameters, true);
 					} 
 					catch (Exception e) 
 					{
 						throw new ADOException("Could not execute query", e);
 					}
 					
-					for (int j=0;j<results.Count;j++) {
+					for (int j=0;j<results.Count;j++) 
+					{
 						currentResults.Add( results[j] );
 					}
 					results = currentResults;
@@ -1608,6 +1609,7 @@ namespace NHibernate.Impl
 				dontFlushFromFind--;
 			}
 			return results;
+
 		}
 
 		private QueryTranslator[] GetQueries(string query, bool scalar) 
@@ -1642,16 +1644,15 @@ namespace NHibernate.Impl
 
 		public IEnumerable Enumerable(string query, object[] values, IType[] types) 
 		{
-			return Enumerable(query, values, types, null, null, null);
+			return Enumerable( query, new QueryParameters( types, values ) );
 		}
 
-		public IEnumerable Enumerable(string query, object[] values, IType[] types, RowSelection selection, 
-			IDictionary namedParams, IDictionary lockModes) 
+		public IEnumerable Enumerable(string query, QueryParameters parameters) 
 		{
 			if ( log.IsDebugEnabled ) 
 			{
 				log.Debug( "GetEnumerable: " + query );
-				if (values.Length!=0) log.Debug( "parameters: " + StringHelper.ToString(values) );
+				parameters.LogParameters();
 			}
 
 			QueryTranslator[] q = GetQueries(query, true);
@@ -1661,14 +1662,17 @@ namespace NHibernate.Impl
 			IEnumerable result = null;
 			IEnumerable[] results = null;
 			bool many = q.Length>1;
-			if (many) results = new IEnumerable[q.Length];
+			if( many ) 
+			{
+				results = new IEnumerable[q.Length];
+			}
 
 			//execute the queries and return all results as a single enumerable
 			for (int i=0; i<q.Length; i++) 
 			{
 				try 
 				{
-					result = q[i].GetEnumerable(values, types, selection, namedParams, lockModes, this);
+					result = q[i].GetEnumerable( parameters, this );
 				} 
 				catch (Exception e) 
 				{
@@ -1682,9 +1686,6 @@ namespace NHibernate.Impl
 
 			return many ? new JoinedEnumerable(results) : result;
 		}
-
-		//TODO: new in H2.0.3 - missing parameters.
-		//public IScrollableResults scroll() {}
 
 		public int Delete(string query) 
 		{
@@ -3605,21 +3606,24 @@ namespace NHibernate.Impl
 
 		public ICollection Filter(object collection, string filter) 
 		{
-			return Filter( collection, filter, new object[1], new IType[1], null, null, null);
+			QueryParameters qp = new QueryParameters( new IType[1], new object[1] );
+			return Filter( collection, filter, qp );
 		}
 
 		public ICollection Filter(object collection, string filter, object value, IType type) 
 		{
-			return Filter( collection, filter, new object[] { null, value }, new IType[] { null, type }, null, null, null );
+			QueryParameters qp = new QueryParameters( new IType[] { null, type }, new object[] { null, value } );
+			return Filter( collection, filter, qp );
 		}
 
 		public ICollection Filter(object collection, string filter, object[] values, IType[] types) 
 		{
 			object[] vals = new object[ values.Length + 1 ];
 			IType[] typs = new IType[ values.Length + 1 ];
-			Array.Copy(values, 0, vals, 1, values.Length);
-			Array.Copy(types, 0, typs, 1, types.Length);
-			return Filter(collection, filter, vals, typs, null, null, null);
+			Array.Copy( values, 0, vals, 1, values.Length );
+			Array.Copy( types, 0, typs, 1, types.Length );
+			QueryParameters qp = new QueryParameters( typs, vals );
+			return Filter( collection, filter, qp );
 		}
 
 		/// <summary>
@@ -3629,18 +3633,15 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="filter"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		/// <param name="selection"></param>
-		/// <param name="namedParams"></param>
+		/// <param name="parameters"></param>
 		/// <param name="scalar"></param>
 		/// <returns></returns>
-		private FilterTranslator GetFilterTranslator(object collection, string filter, object[] values, IType[] types, RowSelection selection, IDictionary namedParams, bool scalar) 
+		private FilterTranslator GetFilterTranslator(object collection, string filter, QueryParameters parameters, bool scalar) 
 		{
 			if ( log.IsDebugEnabled ) 
 			{
 				log.Debug( "filter: " + filter );
-				if ( values.Length!=0 ) log.Debug( "parameters: " + StringHelper.ToString(values) );
+				parameters.LogParameters();
 			}
 
 			if ( !(collection is PersistentCollection) ) 
@@ -3672,23 +3673,26 @@ namespace NHibernate.Impl
 				}
 			}
 			
-			values[0] = e.loadedKey;
-			types[0] = e.loadedPersister.KeyType;
+			parameters.PositionalParameterValues[0] = e.loadedKey;
+			parameters.PositionalParameterTypes[0] = e.loadedPersister.KeyType;
 
 			return q;
 
 		}
 
-		public IList Filter(object collection, string filter, object[] values, IType[] types, RowSelection selection, 
-			IDictionary namedParams, IDictionary lockModes) 
+		public IList Filter(object collection, string filter, QueryParameters parameters) 
 		{
-
 			string[] concreteFilters = QueryTranslator.ConcreteQueries(filter, factory);
 			FilterTranslator[] filters = new FilterTranslator[ concreteFilters.Length ];
 
 			for ( int i=0; i<concreteFilters.Length; i++ ) 
 			{
-				filters[i] = GetFilterTranslator(collection, concreteFilters[i], values, types, selection, namedParams, false);
+				filters[i] = GetFilterTranslator(
+					collection, 
+					concreteFilters[i], 
+					parameters, 
+					false );
+					
 			}
 
 			dontFlushFromFind++; // stops flush being called multiple times if this method is recursively called
@@ -3701,7 +3705,7 @@ namespace NHibernate.Impl
 					IList currentResults;
 					try 
 					{
-						currentResults = filters[i].FindList(this, values, types, true, selection, namedParams, lockModes);
+						currentResults = filters[i].FindList( this, parameters, true );
 					} 
 					catch (Exception e) 
 					{
@@ -3721,16 +3725,18 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		public IEnumerable EnumerableFilter(object collection, string filter, object[] values, IType[] types, 
-			RowSelection selection, IDictionary namedParams, IDictionary lockModes) 
+		public IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters) 
 		{
-
 			string[] concreteFilters = QueryTranslator.ConcreteQueries(filter, factory);
 			FilterTranslator[] filters = new FilterTranslator[ concreteFilters.Length ];
 
 			for (int i=0; i<concreteFilters.Length; i++ ) 
 			{
-				filters[i] = GetFilterTranslator(collection, concreteFilters[i], values, types, selection, namedParams, true);
+				filters[i] = GetFilterTranslator(
+					collection, 
+					concreteFilters[i], 
+					parameters,
+					true);
 			}
 
 			if (filters.Length==0) return new ArrayList(0);
@@ -3745,7 +3751,7 @@ namespace NHibernate.Impl
 			{
 				try 
 				{ 
-					result = filters[i].GetEnumerable(values, types, selection, namedParams, lockModes, this);
+					result = filters[i].GetEnumerable( parameters, this );
 				} 
 				catch (Exception e) 
 				{

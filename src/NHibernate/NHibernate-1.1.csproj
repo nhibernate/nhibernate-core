@@ -605,6 +605,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Engine\QueryParameters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Engine\RowSelection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

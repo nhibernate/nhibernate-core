@@ -183,52 +183,36 @@ namespace NHibernate.Engine
 		/// Execute a <c>Find()</c> query
 		/// </summary>
 		/// <param name="query"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		/// <param name="selection"></param>
-		/// <param name="namedParams"></param>
+		/// <param name="parameters"></param>
 		/// <returns></returns>
-		IList Find(string query, object[] values, IType[] types, RowSelection selection, IDictionary namedParams,
-			IDictionary lockModes);
-	
+		IList Find(string query, QueryParameters parameters);
+
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
 		/// </summary>
 		/// <param name="query"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		/// <param name="selection"></param>
-		/// <param name="namedParams"></param>
+		/// <param name="parameters"></param>
 		/// <returns></returns>
-		IEnumerable Enumerable(string query, object[] values, IType[] types, RowSelection selection, 
-			IDictionary namedParams, IDictionary lockModes);
+		IEnumerable Enumerable(string query, QueryParameters parameters);
 
 		/// <summary>
 		/// Execute a filter
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="filter"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		/// <param name="selection"></param>
-		/// <param name="namedParams"></param>
+		/// <param name="parameters"></param>
 		/// <returns></returns>
-		IList Filter(object collection, string filter, object[] values, IType[] types, RowSelection selection, 
-			IDictionary namedParams, IDictionary lockModes);
+		IList Filter(object collection, string filter, QueryParameters parameters);
 
 		/// <summary>
 		/// Collection from a filter
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="filter"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		/// <param name="selection"></param>
-		/// <param name="namedParams"></param>
+		/// <param name="parameters"></param>
 		/// <returns></returns>
-		IEnumerable EnumerableFilter(object collection, string filter, object[] values, IType[] types, RowSelection selection, 
-			IDictionary namedParams, IDictionary lockModes);
-		
+		IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters);
+
 		/// <summary>
 		/// Get the <c>IClassPersister</c> for an object
 		/// </summary>

@@ -21,16 +21,26 @@ namespace NHibernate.Impl
 
 		public override IEnumerable Enumerable() 
 		{
-			IDictionary namedParams = new Hashtable( NamedParams );
-			string query = BindParameterLists( namedParams );
-			return Session.EnumerableFilter( collection, query, ValueArray(), TypeArray(), Selection, namedParams, LockModes);
+			//TODO: see if there is a better way to implement
+			QueryParameters qp = new QueryParameters( TypeArray(), ValueArray() );
+			qp.NamedParameters = new Hashtable( NamedParams );
+			qp.RowSelection = Selection;
+			qp.LockModes = LockModes;
+
+			string query = BindParameterLists( qp.NamedParameters );
+			return Session.EnumerableFilter( collection, query, qp );
 		}
 
 		public override IList List() 
 		{
-			IDictionary namedParams = new Hashtable( NamedParams );
-			string query = BindParameterLists( namedParams );
-			return Session.Filter( collection, query, ValueArray(), TypeArray(), Selection, namedParams, LockModes);
+			//TODO: see if there is a better way to implement
+			QueryParameters qp = new QueryParameters( TypeArray(), ValueArray() );
+			qp.NamedParameters = new Hashtable( NamedParams );
+			qp.RowSelection = Selection;
+			qp.LockModes = LockModes;
+
+			string query = BindParameterLists( qp.NamedParameters );
+			return Session.Filter( collection, query, qp );
 		}
 
 		private IType[] TypeArray() 
