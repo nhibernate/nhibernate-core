@@ -32,46 +32,7 @@ namespace NHibernate.Test.SqlCommandTest
 
 		}
 
-		[Test]
-		public void EndsWith() 
-		{
-			SqlString sql = new SqlString( new string[] {"select", " from table" } );
-			Assert.IsTrue( sql.EndsWith("ble") );
-			Assert.IsFalse( sql.EndsWith("'") );
-		}
-
-		[Test]
-		public void EndsWithEmptyString() 
-		{
-			SqlString sql = new SqlString( new string[] { "", "select", " from table", "" } );
-			Assert.IsTrue( sql.EndsWith("ble") );
-			Assert.IsFalse( sql.EndsWith("'") );
-		}
-
-		[Test]
-		public void EndsWithParameter() 
-		{
-			SqlString sql = new SqlString( new object[] { "", "select", " from table where id = ", new Parameter() } );
-			Assert.IsFalse( sql.EndsWith("'") );
-			Assert.IsFalse( sql.EndsWith("") );
-		}
-
-		[Test]
-		public void StartsWith() 
-		{
-			SqlString sql = new SqlString( new string[] {"select", " from table" } );
-			Assert.IsTrue( sql.StartsWith("s") );
-			Assert.IsFalse( sql.StartsWith(",") );
-		}
-
-		[Test]
-		public void StartsWithEmptyString() 
-		{
-			SqlString sql = new SqlString( new string[] { "", "select", " from table" } );
-			Assert.IsTrue( sql.StartsWith("s") );
-			Assert.IsFalse( sql.StartsWith(",") );
-		}
-
+		
 		[Test]
 		public void CompactWithNoParams() 
 		{
@@ -119,6 +80,111 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual( 2, compacted.SqlParts.Length );
 			Assert.AreEqual( ":p1:p2", compacted.ToString() );
 
+		}
+
+		[Test]
+		public void ContainsUntypedParameterWithoutParam() 
+		{
+			SqlString sql = new SqlString( new string[] {"select", " from table"} );
+			Assert.IsFalse( sql.ContainsUntypedParameter );
+		}
+
+		[Test]
+		public void ContainsUntypedParameterWithParam() 
+		{
+			Parameter p1 = new Parameter();
+			p1.SqlType = new SqlTypes.Int32SqlType();
+			p1.Name = "p1";
+		
+			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", p1} );
+			Assert.IsFalse( sql.ContainsUntypedParameter );
+		}
+
+		[Test]
+		public void ContainsUntypedParameterWithUntypedParam() 
+		{
+			
+			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", new Parameter()} );
+			Assert.IsTrue( sql.ContainsUntypedParameter );
+		}
+
+		[Test]
+		public void ContainsUntypedParameterWithMixedUntypedParam() 
+		{
+			Parameter p1 = new Parameter();
+			p1.SqlType = new SqlTypes.Int32SqlType();
+			p1.Name = "p1";
+
+			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", new Parameter(), " and b = " , p1} );
+			Assert.IsTrue( sql.ContainsUntypedParameter );
+		}
+
+		[Test]
+		public void EndsWith() 
+		{
+			SqlString sql = new SqlString( new string[] {"select", " from table" } );
+			Assert.IsTrue( sql.EndsWith("ble") );
+			Assert.IsFalse( sql.EndsWith("'") );
+		}
+
+		[Test]
+		public void EndsWithEmptyString() 
+		{
+			SqlString sql = new SqlString( new string[] { "", "select", " from table", "" } );
+			Assert.IsTrue( sql.EndsWith("ble") );
+			Assert.IsFalse( sql.EndsWith("'") );
+		}
+
+		[Test]
+		public void EndsWithParameter() 
+		{
+			SqlString sql = new SqlString( new object[] { "", "select", " from table where id = ", new Parameter() } );
+			Assert.IsFalse( sql.EndsWith("'") );
+			Assert.IsFalse( sql.EndsWith("") );
+		}
+
+		[Test]
+		public void ParameterIndexesNoParams() 
+		{
+			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where 'a'='a'" } );
+			
+			Assert.AreEqual( 0, sql.ParameterIndexes.Length );
+		}
+
+		[Test]
+		public void ParameterIndexOneParam() 
+		{
+			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", new Parameter() } );
+			
+			Assert.AreEqual( 1, sql.ParameterIndexes.Length );
+			Assert.AreEqual( 3, sql.ParameterIndexes[0] );
+		}
+
+
+		[Test]
+		public void ParameterIndexManyParam() 
+		{
+			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", new Parameter(), " and c = ", new Parameter() } );
+			
+			Assert.AreEqual( 2, sql.ParameterIndexes.Length );
+			Assert.AreEqual( 3, sql.ParameterIndexes[0] );
+			Assert.AreEqual( 5, sql.ParameterIndexes[1] );
+		}
+
+		[Test]
+		public void StartsWith() 
+		{
+			SqlString sql = new SqlString( new string[] {"select", " from table" } );
+			Assert.IsTrue( sql.StartsWith("s") );
+			Assert.IsFalse( sql.StartsWith(",") );
+		}
+
+		[Test]
+		public void StartsWithEmptyString() 
+		{
+			SqlString sql = new SqlString( new string[] { "", "select", " from table" } );
+			Assert.IsTrue( sql.StartsWith("s") );
+			Assert.IsFalse( sql.StartsWith(",") );
 		}
 
 		[Test]

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Text;
 
 namespace NHibernate.SqlCommand 
@@ -15,7 +16,8 @@ namespace NHibernate.SqlCommand
 	public class SqlString : ICloneable 
 	{
 		readonly object[] sqlParts;
-		
+		private int[] parameterIndexes;
+
 		public SqlString(string sqlPart) : this(new object[] {sqlPart}) 
 		{
 		}
@@ -119,6 +121,31 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Gets a bool that indicates if there is a Parameter that has a null SqlType.
+		/// </summary>
+		/// <value>true if there is a Parameter with a null SqlType.</value>
+		public bool ContainsUntypedParameter 
+		{
+			get 
+			{
+				for(int i=0; i<sqlParts.Length; i++) 
+				{
+					Parameter paramPart = sqlParts[i] as Parameter;
+					if(paramPart!=null) 
+					{
+						if( paramPart.SqlType==null ) 
+						{
+							// only need to find one null SqlType
+							return true;
+						}
+					}
+				}
+
+				return false;
+			}
+		}
+
+		/// <summary>
 		/// Determines whether the end of this instance matches the specified String.
 		/// </summary>
 		/// <param name="value">A string to seek at the end.</param>
@@ -144,6 +171,35 @@ namespace NHibernate.SqlCommand
 			return false;
 		}
 
+		/// <summary>
+		/// Gets the indexes of the Parameters in the SqlParts
+		/// </summary>
+		/// <value>
+		/// An Int32 array that contains the indexes of the Parameters in the SqlPart array.
+		/// </value>
+		public int[] ParameterIndexes
+		{
+			get
+			{
+				// only calculate this one time because this object is immutable.
+				if( parameterIndexes==null ) 
+				{
+					ArrayList paramList = new ArrayList();
+					for(int i=0; i<sqlParts.Length; i++) 
+					{
+						if(sqlParts[i] is Parameter) 
+						{
+							paramList.Add(i);
+						}
+					}
+
+					parameterIndexes = (int[])paramList.ToArray( typeof(int) );
+				}
+
+				return parameterIndexes ;
+			}
+
+		}
 		/// <summary>
 		/// Determines whether the beginning of this SqlString matches the specified System.String
 		/// </summary>
