@@ -588,7 +588,6 @@ namespace NHibernate.Persister {
 		public abstract OuterJoinLoaderType EnableJoinedFetch(int i);
 		public abstract string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 		public abstract string FromTableFragment(string alias);
-		public abstract string GetConcreteClassAlias(string alias);
 		public abstract string[] GetPropertyColumnNames(int i);
 		public abstract System.Type GetSubclassForDiscriminatorValue(object value);
 		public abstract IType GetSubclassPropertyType(int i);

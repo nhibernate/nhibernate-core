@@ -1181,11 +1181,6 @@ namespace NHibernate.Persister {
 			return name + StringHelper.Underscore + tableNumber;
 		}
 
-		public override string GetConcreteClassAlias(string alias) {
-			int tab = tableNumbers[ tableNumbers.Length - 1 ];
-			return alias + ( (tab==0) ? String.Empty : StringHelper.Underscore + tab.ToString() );
-		}
-
 		public override string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses) {
 			return Outerjoin(alias, innerJoin, includeSubclasses).ToFromFragmentString;
 		}

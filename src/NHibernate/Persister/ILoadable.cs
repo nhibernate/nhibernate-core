@@ -109,14 +109,6 @@ namespace NHibernate.Persister {
 		string[] ToColumns(string name, int i);
 	
 		/// <summary>
-		/// Get the table alias for the particular subclass state (optional operation)
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		//TODO:H2.0.3 not in h2.0.3 - where is it used...
-		string GetConcreteClassAlias(string alias);
-
-		/// <summary>
 		/// Given a query alias and an identifying suffix, render the identifier select fragment
 		/// </summary>
 		/// <param name="name"></param>

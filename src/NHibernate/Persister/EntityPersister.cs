@@ -938,10 +938,6 @@ namespace NHibernate.Persister {
 				.ToSqlStringFragment().ToString();
 		}
 
-		public override string GetConcreteClassAlias(string alias) {
-			return alias;
-		}
-
 		public override string FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses) {
 			return String.Empty;
 		}
