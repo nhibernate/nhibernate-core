@@ -16,7 +16,7 @@
             </imageobject>
 			-->
             <imageobject role="html">
-                <imagedata fileref="../shared/images/overview.gif" format="GIF" align="center"/>
+                <imagedata fileref="images/overview.gif" format="GIF" align="center"/>
             </imageobject>
         </mediaobject>
         <para>
@@ -39,7 +39,7 @@
             </imageobject>
 			-->
             <imageobject role="html">
-                <imagedata fileref="../shared/images/lite.gif" format="GIF" align="center"/>
+                <imagedata fileref="images/lite.gif" format="GIF" align="center"/>
             </imageobject>
         </mediaobject>
         
@@ -56,7 +56,7 @@
             </imageobject>
 			-->
             <imageobject role="html">
-                <imagedata fileref="../shared/images/full_cream.gif" format="GIF" align="center"/>
+                <imagedata fileref="images/full_cream.gif" format="GIF" align="center"/>
             </imageobject>
         </mediaobject>
 

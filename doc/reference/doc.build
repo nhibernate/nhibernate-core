@@ -15,10 +15,16 @@
 		-->
 		<mkdir dir="html-single/${lang}" failonerror="false" />
 		<mkdir dir="html-single/${lang}/styles" failonerror="false" />
+		<mkdir dir="html-single/${lang}/images" failonerror="false" />
 		
 		<exec program="xsltproc" commandline="--output html-single\${lang}\reference.html ${lang}\styles\html.xsl ${lang}\master.xml" />
 		
 		<copy file="${lang}/styles/html.css" tofile="html-single/${lang}/styles/html.css" />
+		<copy todir="html-single">
+			<fileset>
+				<includes name="${lang}/images/*.gif" />
+			</fileset>
+		</copy>
 	</target>
 	
 </project>
