@@ -1,4 +1,3 @@
-//$Id$
 using System;
 using CompositeUserType = NHibernate.ICompositeUserType;
 using UserType = NHibernate.IUserType;
@@ -643,8 +642,8 @@ namespace NHibernate.tool.hbm2net
 			
 			// collections
 			doCollections(classPackage, classElement, "list", "System.Collections.ICollection", "System.Collections.ArrayList", MetaAttribs);
-			doCollections(classPackage, classElement, "map", "java.util.Map", "java.util.HashMap", MetaAttribs);
-			doCollections(classPackage, classElement, "set", "java.util.Set", "java.util.HashSet", MetaAttribs);
+			doCollections(classPackage, classElement, "map", "System.Collections.IDictionary", "System.Collections.Hashtable", MetaAttribs);
+			doCollections(classPackage, classElement, "set", "System.Collections.IDictionary", "System.Collections.Hashtable", MetaAttribs);
 			//UPGRADE_ISSUE: Method 'java.lang.System.getProperty' was not converted. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1000_javalangSystemgetProperty_javalangString_javalangString"'
 			doCollections(classPackage, classElement, "bag", "java.util.List", "java.util.ArrayList", MetaAttribs);
 			//UPGRADE_ISSUE: Method 'java.lang.System.getProperty' was not converted. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1000_javalangSystemgetProperty_javalangString_javalangString"'
@@ -970,6 +969,8 @@ namespace NHibernate.tool.hbm2net
 			System.Type clazz = null;
 			try
 			{
+				if (type.IndexOf("(")>0)
+					type = type.Substring(0, type.IndexOf("("));
 				clazz = ReflectHelper.ClassForName(type);
 				
 				if (typeof(UserType).IsAssignableFrom(clazz))
@@ -992,12 +993,14 @@ namespace NHibernate.tool.hbm2net
 					return t;
 				}
 			}
-//			//UPGRADE_NOTE: Exception 'java.lang.ClassNotFoundException' was converted to 'System.Exception' which has different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1100"'
-//			catch (System.lo e)
-//			{
-//				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Throwable.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
-//				//log.warn("Could not find UserType: " + type + ". Using the type '" + type + "' directly instead. (" + e.ToString() + ")");
-//			}
+			//UPGRADE_NOTE: Exception 'java.lang.ClassNotFoundException' was converted to 'System.Exception' which has different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1100"'
+			catch (System.IO.FileNotFoundException e)
+			{
+				if (type.IndexOf(",")>0)
+					type = type.Substring(0, type.IndexOf(","));
+				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Throwable.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
+				//log.warn("Could not find UserType: " + type + ". Using the type '" + type + "' directly instead. (" + e.ToString() + ")");
+			}
 			catch (System.UnauthorizedAccessException iae)
 			{
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Throwable.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
@@ -1006,6 +1009,7 @@ namespace NHibernate.tool.hbm2net
 			//UPGRADE_NOTE: Exception 'java.lang.InstantiationException' was converted to 'System.Exception' which has different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1100"'
 			catch (System.Exception e)
 			{
+				Console.WriteLine(e);
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Throwable.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				//log.warn("Error while trying to resolve UserType. Using the type '" + type + "' directly instead. (" + e.ToString() + ")");
 			}

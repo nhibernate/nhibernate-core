@@ -1,4 +1,6 @@
 using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 
 namespace NHibernate.tool.hbm2net
 {
@@ -7,5 +9,8 @@ namespace NHibernate.tool.hbm2net
 	/// </summary>
 	public class DOMRenderer : AbstractRenderer
 	{
+		public override void render(String savedToPackage, String savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter writer)
+		{
+		}
 	}
 }

@@ -1,4 +1,3 @@
-//$Id$
 using System;
 using MultiMap = System.Collections.Hashtable;
 using Element = System.Xml.XmlElement;

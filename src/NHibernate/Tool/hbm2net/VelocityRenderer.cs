@@ -50,6 +50,8 @@ namespace NHibernate.tool.hbm2net
 			context.Put("class2classmap", class2classmap);
 			
 			context.Put("javaTool", new JavaTool());
+
+			context.Put("runtimeversion", Guid.Empty.GetType().Assembly.ImageRuntimeVersion);
 			
 			System.IO.StringWriter sw = new System.IO.StringWriter();
 			

@@ -1,6 +1,3 @@
-/*
-* $Id$
-*/
 using System;
 using MappingException = NHibernate.MappingException;
 
