@@ -7,7 +7,7 @@
 		table="class_w_com_id"
 	>
 		<composite-id name="Id" class="NHibernate.DomainModel.NHSpecific.CompositeId, NHibernate.DomainModel">
-			<key-property name="KeyString" column="string_" type="String(20)" />
+			<key-property name="KeyString" column="string_" type="String(20)" length="20"/>
 			<key-property name="KeyShort" column="short_"/>
 			<key-property name="KeyDateTime" column="date_" type="DateTime"/>
 		</composite-id>

@@ -9,7 +9,7 @@
 			<generator class="assigned" />
 		</id>
 		
-		<property name="FullName" type="String(45)" column="full_name" />
+		<property name="FullName" type="String(45)" column="full_name" length="45"/>
 		<property name="FavoriteDate" type="DateTime" column="favorite_date" />
 		
 		<many-to-one name="Sex" class="NHibernate.DomainModel.NHSpecific.SexType, NHibernate.DomainModel" column="sex_type_id"/>

@@ -12,7 +12,7 @@
 		
 		<property name="BooleanProperty" type="Boolean" column="bool_p"/>
 		<property name="ByteProperty" type="Byte" column="byte_p"/>
-		<property name="CharacterProperty" type="Char" column="char_p"/>
+		<property name="CharacterProperty" type="Char" column="char_p" length="1"/>
 		<property name="ClassProperty" type="Type" column="class_p"/>
 		<property name="CultureInfoProperty" type="CultureInfo" column="cinfo_p"/>
 		<property name="DateTimeProperty" type="DateTime" column="dtm_p"/>
@@ -25,13 +25,13 @@
 		<property name="SingleProperty" type="Single" column="flt_p"/>
 		<property name="StringProperty" type="String" column="str_p"/>
 		<property name="TicksProperty" type="Ticks" column="ticks_p"/>
-		<property name="TrueFalseProperty" type="TrueFalse" column="tf_p"/>
-		<property name="YesNoProperty" type="YesNo" column="yn_p"/>
+		<property name="TrueFalseProperty" type="TrueFalse" column="tf_p" length="1"/>
+		<property name="YesNoProperty" type="YesNo" column="yn_p" length="1"/>
 		
 		<array name="StringArray" table="bc_starr"  >
 			<key column="bc_id" />
 			<index column="sa_idx" />
-			<element column="str_val" type="String(100)" />
+			<element column="str_val" type="String(100)" length="100"/>
 		</array>
 		
 		<primitive-array name="Int32Array" table="bc_inarr">
@@ -42,24 +42,24 @@
 		
 		<bag name="StringBag" table="bc_stbag">
 			<key column="bc_id" />
-			<element column="str_value" type="String(25)" />
+			<element column="str_value" type="String(25)" length="25"/>
 		</bag>
 		
 		<list name="StringList" table="bc_stlst">
 			<key column="bc_id" />
 			<index column="lst_idx" />
-			<element column="str_val" type="String(300)" />
+			<element column="str_val" type="String(300)" length="300" />
 		</list>
 		
 		<map name="StringMap" table="bc_stmap" >
 			<key column="bc_id"/>
-			<index column="strm_idx" type="String(10)" />
-			<element column="str_val" type="String(50)" />
+			<index column="strm_idx" type="String(10)" length="10" />
+			<element column="str_val" type="String(50)"  length="50"/>
 		</map>
 		
 		<set name="StringSet" table="bc_stset">
 			<key column="bc_id" />
-			<element column="str_val" type="String(25)"/>
+			<element column="str_val" type="String(25)" length="25"/>
 		</set>
 		
 		

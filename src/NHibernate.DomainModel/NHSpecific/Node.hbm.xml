@@ -2,7 +2,7 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
     <class name="NHibernate.DomainModel.NHSpecific.Node, NHibernate.DomainModel"> 
-		<id name="Id" column="id" type="String(10)">
+		<id name="Id" column="id" type="String(10)" length="10">
 			<generator class="assigned" />
 		</id>
 		
