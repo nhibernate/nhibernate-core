@@ -48,6 +48,14 @@ namespace NHibernate.Cfg {
 		public const string QuerySubstitutions = "hibernate.query.substitutions";
 		public const string QueryImports = "hibernate.query.imports";
 
+		// MikeD added these while synching up SessionFactoryImpl.  Not sure if they have any ado.net
+		// equivalents - we can probably remove these and remove the SessionFactoryImpl code that
+		// uses them.
+		public const string PoolSize = "hibernate.connection.pool_size";
+		public const string StatementBatchSize = "hibernate.jdbc.batch_size";
+		public const string StatementFetchSize = "hibernate.jdbc.fetch_size";
+		public const string UseScrollableResultSet = "hibernate.jdbc.use_scrollable_resultset";
+
 		static Environment() {
 			log4net.Config.DOMConfigurator.Configure();
 
