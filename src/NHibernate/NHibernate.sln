@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate", "NHibernate.csproj", "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Debug.ActiveCfg = Debug|.NET
+		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Debug.Build.0 = Debug|.NET
+		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Release.ActiveCfg = Release|.NET
+		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

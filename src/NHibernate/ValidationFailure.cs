@@ -1,0 +1,17 @@
+using System;
+
+namespace NHibernate {
+
+	/// <summary>
+	/// Thrown from <c>IValidatable.Validate()</c> when an invariant was violated. Some applications
+	/// might subclass this exception in order to provide more information about the violation
+	/// </summary>
+	public class ValidationFailure : HibernateException {
+
+		public ValidationFailure(string msg) : base(msg) {}
+
+		public ValidationFailure(string msg, Exception e) : base(msg, e) {}
+
+		public ValidationFailure(Exception e) : base("A validation failure occured", e) {}
+	}
+}
