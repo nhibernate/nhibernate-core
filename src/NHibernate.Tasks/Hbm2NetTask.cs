@@ -60,15 +60,15 @@ namespace NHibernate.Tasks
 			StringBuilder sb = new StringBuilder();
 			if(_output != null)
 			{
-				sb.Append("--output=" + _output + " ");
+				sb.Append("--output=\"" + _output + "\" ");
 			}
 			if(_config != null)
 			{
-				sb.Append("--config=" + _config + " ");
+				sb.Append("--config=\"" + _config + "\" ");
 			}
 			foreach(string filename in _set.FileNames)
 			{
-				sb.Append(filename + " ");
+				sb.Append("\"" + filename + "\" ");
 			}
 			_args = sb.ToString();
 			
