@@ -416,6 +416,7 @@ namespace NHibernate.Hql {
 				persisters[i] = GetPersisterForName(name);
 				suffixes[i] = (size==1) ? String.Empty : i.ToString() + StringHelper.Underscore;
 				names[i] = name;
+				//TODO: this looks different from H2.0.3 - specifically collectionOwnerColumn is set here
 			}
 
 			string scalarSelect = RenderScalarSelect();
