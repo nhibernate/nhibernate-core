@@ -107,7 +107,7 @@ namespace NHibernate.Collection {
 		}
 		public void Add(object key, object value) {
 			Write();
-			map[key] = value;
+			map.Add(key, value);
 		}
 		public bool Contains(object key) {
 			Read();
