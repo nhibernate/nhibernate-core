@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"  namespace="NHibernate.DomainModel" assembly="NHibernate.DomainModel" >
+	<subclass name="C2" discriminator-value="2" extends="B">
+		<property name="address" column="c2"/>
+	</subclass>
+</hibernate-mapping>

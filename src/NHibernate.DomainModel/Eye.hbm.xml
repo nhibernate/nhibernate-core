@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" default-cascade="save-update" namespace="NHibernate.DomainModel" assembly="NHibernate.DomainModel"  default-access="field.camelcase">
+	<class name="Eye" lazy="true">
+		<id name="id" unsaved-value="0">
+			<generator class="hilo"/>
+		</id>
+		<property name="name"/>
+		<set name="jays" inverse="true" outer-join="true" cascade="all">
+			<key column="eye"/>
+			<one-to-many class="Jay"/>
+		</set>
+		<many-to-one name="jay" outer-join="true"/>
+	</class>
+	<class name="Jay" lazy="true">
+		<id name="id" unsaved-value="0">
+			<generator class="hilo"/>
+		</id>
+		<many-to-one name="eye" outer-join="true"/>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.DomainModel" default-access="property">
+	<class name="NHibernate.DomainModel.Up" discriminator-value="null">
+		<composite-id>
+			<key-property name="Id1"/>
+			<key-property name="Id2"/>
+		</composite-id>
+		<discriminator column="value_" type="long" not-null="false"/>
+		<subclass name="NHibernate.DomainModel.Down" discriminator-value="not null">
+			<property name="Value" column="value_" type="long"/>
+		</subclass>
+	</class>
+</hibernate-mapping>
