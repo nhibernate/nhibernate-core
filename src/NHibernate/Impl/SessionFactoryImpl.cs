@@ -743,7 +743,7 @@ namespace NHibernate.Impl
 		public void Evict(System.Type persistentClass, object id) 
 		{
 			IClassPersister p = GetPersister(persistentClass);
-			if(p.HasCache) p.Cache.Release(id);
+			if(p.HasCache) p.Cache.Remove(id);
 		}
 
 		public void Evict(System.Type persistentClass) 
