@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Data;
 using log4net;
@@ -12,7 +13,7 @@ namespace NHibernate.Impl
 	/// <remarks>
 	/// This is the IteratorImpl in H2.0.3
 	/// </remarks>
-	internal class EnumerableImpl : IEnumerable, IEnumerator
+	internal class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( EnumerableImpl ) );
 
@@ -147,6 +148,28 @@ namespace NHibernate.Impl
 			//can't reset the reader...we are SOL
 		}
 
+		#region IDisposable Members
 
+		/// <summary>
+		/// Releases resources that the EnumerableImpl acquired.
+		/// </summary>
+		/// <remarks>
+		/// The command is closed and the reader is disposed.  This allows other ADO.NET
+		/// related actions to occur without needing to move all the way through the
+		/// EnumerableImpl.
+		/// </remarks>
+		public void Dispose()
+		{
+			log.Debug( "disposing of enumerator" );
+			// if there is still a possibility of moving next then we need to clean up
+			// the resources - otherwise the cleanup has already been done.
+			if( _hasNext ) 
+			{
+				_currentResults = null;
+				_sess.Batcher.CloseQueryCommand( _cmd, _reader );
+			}
+		}
+
+		#endregion
 	}
 }
