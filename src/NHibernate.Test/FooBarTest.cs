@@ -644,7 +644,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("ISession.Filter is not working.  http://jira.nhibernate.org:8080/browse/NH-80")]
 		public void CollectionWhere() 
 		{
 			Foo foo1 = new Foo();
@@ -667,8 +666,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 1, baz.FooArray.Length );
 			Assert.AreEqual( 1, s.Find("from Baz baz, baz.FooArray foo").Count );
 			Assert.AreEqual( 2, s.Find("from Foo foo").Count );
-			// TODO: filter is not working because QueryKeyCacheFactor is null
-			//Assert.AreEqual( 1, s.Filter(baz.FooArray, "").Count );
+			Assert.AreEqual( 1, s.Filter(baz.FooArray, "").Count );
 
 			s.Delete("from Foo foo");
 			s.Delete(baz);
