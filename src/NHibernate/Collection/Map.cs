@@ -1,17 +1,229 @@
 using System;
+using System.Data;
+using System.Collections;
+using NHibernate.Engine;
+using NHibernate.Type;
 
-namespace NHibernate.Collection
-{
-	/// <summary>
-	/// Summary description for Map.
-	/// </summary>
-	public class Map
-	{
-		public Map()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
+namespace NHibernate.Collection {
+	
+	public class Map : PersistentCollection, IDictionary {
+		
+		protected IDictionary map;
+
+		protected override object Snapshot(CollectionPersister persister) {
+			Hashtable clonedMap = new Hashtable( map.Count );
+			foreach(DictionaryEntry e in map) {
+				clonedMap[e.Key] = persister.ElementType.DeepCopy( e.Value );
+			}
+			return clonedMap;
 		}
-	}
+
+		public override bool EqualsSnapshot(IType elementType) {
+			IDictionary xmap = (IDictionary) GetSnapshot();
+			if ( xmap.Count!=this.map.Count ) return false;
+			foreach(DictionaryEntry entry in map) {
+				if ( elementType.IsDirty( entry.Value, xmap[entry.Key], session)) return false;
+			}
+			return true;
+		}
+
+		public Map(ISessionImplementor session) : base(session) { }
+
+		public override void BeforeInitialize(CollectionPersister persister) {
+			//TODO: check this
+			//this.map = persister.HasOrdering ? LinkedHashCollectionHelper.CreateLinkedHashMap() : new Hashtable();
+			this.map = new Hashtable();
+		}
+
+		public Map(ISessionImplementor session, IDictionary map) : base(session) {
+			this.map = map;
+			initialized = true;
+		}
+
+		public int Count {
+			get {
+				Read();
+				return map.Count;
+			}
+		}
+
+		public bool IsSynchronized {
+			get { return false; }
+		}
+		public bool IsFixedSize {
+			get { return false; }
+		}
+		public bool IsReadOnly {
+			get { return false; }
+		}
+		public object SyncRoot {
+			get { return this; }
+		}
+		public ICollection Keys {
+			get { return null; }
+			//TODO: FINISH
+		}
+		public ICollection Values {
+			get { return null; }
+			//TODO: FINISH
+		}
+		public IEnumerator GetEnumerator() {
+			return null;
+			//TODO: FINISH
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() {
+			Read();
+			return null;
+			//TODO: FINISH
+		}
+
+		IDictionaryEnumerator IDictionary.GetEnumerator() {
+			Read();
+			return null;
+		}
+
+		public void CopyTo(System.Array array, int index) {
+			Read();
+			map.CopyTo(array, index);
+		}
+		public void Add(object key, object value) {
+			Write();
+			map[key] = value;
+		}
+		public bool Contains(object key) {
+			Read();
+			return map.Contains(key);
+		}
+
+		public object this [object key] {
+			get {
+				Read();
+				return map[key];
+			}
+			set {
+				Write();
+				map[key] = value;
+			}
+		}
+
+		public void Remove(object key) {
+			Write();
+			map.Remove(key);
+		}
+
+		public void Clear() {
+			Write();
+			map.Clear();
+		}
+
+		public override void ReplaceElements(IDictionary replacements) {
+			int n=0;
+			foreach(DictionaryEntry e in map) {
+				object val = e.Value;
+				object r;
+				if ( val!=null && (r=replacements[val])!=null )
+					map[e.Key] = r;
+					//e.Value = r;
+				n++;
+			}
+			if ( n!=replacements.Count ) throw new HibernateException("Application error: don't use mutable values for keys of maps");
+		}
+
+		public override ICollection Elements() {
+			return map.Values;
+		}
+		public override bool Empty {
+			get { return map.Count==0; }
+		}
+		public override string ToString() {
+			Read();
+			return map.ToString();
+		}
+
+		public override void WriteTo(IDbCommand st, CollectionPersister persister, object entry, int i, bool writeOrder) {
+			DictionaryEntry e = (DictionaryEntry) entry;
+			persister.WriteElement(st, e.Value, writeOrder, session);
+			persister.WriteIndex(st, e.Key, writeOrder, session);
+		}
+
+		public override object ReadFrom(IDataReader rs, CollectionPersister persister, object owner) {
+			object element = persister.ReadElement(rs, owner, session);
+			object index = persister.ReadIndex(rs, session);
+			map[index] = element;
+			return element;
+		}
+
+		public override ICollection Entries() {
+			ArrayList entries = new ArrayList();
+			foreach(DictionaryEntry entry in map) {
+				entries.Add(entry);
+			}
+			return entries;
+		}
+
+		public override void ReadEntries(ICollection entries) {
+			foreach(DictionaryEntry entry in entries) {
+				map[entry.Key] = entry.Value;
+			}
+		}
+
+		public Map(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) : base(session) {
+			BeforeInitialize(persister);
+			object[] array = (object[]) disassembled;
+			for (int i=0; i<array.Length; i+=2)
+				map[ persister.IndexType.Assemble( array[i], session, owner) ] =
+					persister.ElementType.Assemble( array[i+1], session, owner );
+			initialized = true;
+		}
+
+		public override object Disassemble(CollectionPersister persister) {
+			object[] result = new object[map.Count * 2];
+			int i=0;
+			foreach(DictionaryEntry e in map) {
+				result[i++] = persister.IndexType.Disassemble( e.Key, session );
+				result[i++] = persister.ElementType.Disassemble( e.Value, session );
+			}
+			return result;
+		}
+
+		public override ICollection GetDeletes(IType elemType) {
+			IList deletes = new ArrayList();
+			foreach(DictionaryEntry e in ((IDictionary)GetSnapshot())) {
+				object key = e.Key;
+				if ( e.Value!=null && map[key]==null ) deletes.Add(key);
+			}
+			return deletes;
+		}
+		public override bool NeedsInserting(object entry, int i, IType elemType) {
+			IDictionary sn = (IDictionary) GetSnapshot();
+			DictionaryEntry e = (DictionaryEntry) entry;
+			return (e.Value!=null && sn[e.Key] == null);
+		}
+
+		public override bool NeedsUpdating(object entry, int i, IType elemType) {
+			IDictionary sn = (IDictionary) GetSnapshot();
+			DictionaryEntry e = (DictionaryEntry) entry;
+			object snValue = sn[e.Key];
+			return (e.Value != null && snValue!=null && elemType.IsDirty(snValue, e.Value, session) );
+		}
+		public override object GetIndex(object entry, int i) {
+			return ((DictionaryEntry)entry).Key;
+		}
+		public override bool Equals(object other) {
+			Read();
+			return map.Equals(other);
+		}
+		public override int GetHashCode() {
+			Read();
+			return map.GetHashCode();
+		}
+
+		public override bool EntryExists(object entry, int i) {
+			return ( (DictionaryEntry)entry).Value!=null;
+		}
+
+
+		
+		}
 }

@@ -13,15 +13,11 @@ namespace NHibernate.Collection {
 		}
 
 		public List Query(string queryString) {
-			/*
 			try {
 				return new List( session, (IList) session.Filter(this, queryString) );
 			} catch(HibernateException he) {
 				throw he;
 			}
-			*/
-			//TODO: uncomment
-			return null;
 		}
 
 		public ICollection Select(string queryString) {

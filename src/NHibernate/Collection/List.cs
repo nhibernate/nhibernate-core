@@ -9,7 +9,7 @@ namespace NHibernate.Collection {
 	/// <summary>
 	/// A persistent wrapper for an IList
 	/// </summary>
-	public abstract class List : ODMGCollection , IList {
+	public class List : ODMGCollection , IList {
 		private IList list;
 
 		protected override object Snapshot(CollectionPersister persister) {
@@ -80,6 +80,8 @@ namespace NHibernate.Collection {
 			Read();
 			return new EnumeratorProxy(list.GetEnumerator());
 		}
+
+		
 
 		public int Add(object obj) {
 			if ( !QueueAdd(obj) ) {
