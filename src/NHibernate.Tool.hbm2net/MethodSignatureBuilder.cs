@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Text;
+
 namespace NHibernate.Tool.hbm2net
 {
 	
@@ -13,11 +16,11 @@ namespace NHibernate.Tool.hbm2net
 		private void  InitBlock()
 		{
 			//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
-			paramList = new System.Collections.ArrayList();
+			paramList = new ArrayList();
 			//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
-			throwsList = new System.Collections.ArrayList();
+			throwsList = new ArrayList();
 		}
-		virtual public System.String Name
+		virtual public String Name
 		{
 			get
 			{
@@ -30,7 +33,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String ReturnType
+		virtual public String ReturnType
 		{
 			get
 			{
@@ -43,7 +46,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String AccessModifier
+		virtual public String AccessModifier
 		{
 			get
 			{
@@ -57,7 +60,7 @@ namespace NHibernate.Tool.hbm2net
 			
 		}
 		//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
-		virtual public System.Collections.ArrayList ParamList
+		virtual public ArrayList ParamList
 		{
 			get
 			{
@@ -71,17 +74,17 @@ namespace NHibernate.Tool.hbm2net
 			
 		}
 		
-		private System.String name = "";
-		private System.String returnType = "";
-		private System.String accessModifier = "";
+		private String name = "";
+		private String returnType = "";
+		private String accessModifier = "";
 		//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 		//UPGRADE_NOTE: The initialization of  'paramList' was moved to method 'InitBlock'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
-		private System.Collections.ArrayList paramList;
+		private ArrayList paramList;
 		//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 		//UPGRADE_NOTE: The initialization of  'throwsList' was moved to method 'InitBlock'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
-		private System.Collections.ArrayList throwsList;
+		private ArrayList throwsList;
 		
-		public MethodSignatureBuilder(System.String methodName, System.String returnType, System.String accessModifier)
+		public MethodSignatureBuilder(String methodName, String returnType, String accessModifier)
 		{
 			InitBlock();
 			name = methodName;
@@ -89,14 +92,14 @@ namespace NHibernate.Tool.hbm2net
 			this.accessModifier = accessModifier;
 		}
 		
-		public virtual System.String buildMethodSignature()
+		public virtual String buildMethodSignature()
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder(accessModifier + " " + returnType + " " + name + "(");
+			StringBuilder sb = new StringBuilder(accessModifier + " " + returnType + " " + name + "(");
 			
 			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			for (int i = 0; i < paramList.Count; i++)
 			{
-				System.String param = (System.String) paramList[i];
+				String param = (String) paramList[i];
 				sb.Append(param);
 				
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
@@ -114,7 +117,7 @@ namespace NHibernate.Tool.hbm2net
 				{
 					sb.Append(" throws ");
 				}
-				System.String thr = (System.String) throwsList[i];
+				String thr = (String) throwsList[i];
 				sb.Append(thr);
 				
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
@@ -128,13 +131,13 @@ namespace NHibernate.Tool.hbm2net
 			return sb.ToString();
 		}
 		
-		public virtual void  addParam(System.String param)
+		public virtual void  addParam(String param)
 		{
 			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			this.paramList.Add(param);
 		}
 		
-		public virtual void  addThrows(System.String throwsString)
+		public virtual void  addThrows(String throwsString)
 		{
 			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			this.throwsList.Add(throwsString);

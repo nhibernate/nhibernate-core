@@ -1,5 +1,6 @@
 using System;
-using StringHelper = NHibernate.Util.StringHelper;
+using System.Collections;
+using System.Text;
 using MultiHashMap = System.Collections.Hashtable;
 using MultiMap = System.Collections.Hashtable;
 using Element = System.Xml.XmlElement;
@@ -19,16 +20,16 @@ namespace NHibernate.Tool.hbm2net
 		
 		internal class MetaAttribute
 		{
-			internal System.String value_Renamed;
+			internal String value_Renamed;
 			internal bool inheritable = true;
 			
-			internal MetaAttribute(System.String value_Renamed, bool inherit)
+			internal MetaAttribute(String value_Renamed, bool inherit)
 			{
 				this.value_Renamed = value_Renamed;
 				this.inheritable = inherit;
 			}
 			
-			public override System.String ToString()
+			public override String ToString()
 			{
 				return value_Renamed;
 			}
@@ -37,8 +38,6 @@ namespace NHibernate.Tool.hbm2net
 		/// <summary> Load meta attributes from jdom element into a MultiMap.
 		/// 
 		/// </summary>
-		/// <param name="">element
-		/// </param>
 		/// <returns> MultiMap
 		/// </returns>
 		static protected internal MultiMap loadMetaMap(Element element)
@@ -48,19 +47,19 @@ namespace NHibernate.Tool.hbm2net
 			metaAttributeList.AddAll(element.SelectNodes("meta", CodeGenerator.nsmgr));
 			metaAttributeList.AddAll(element.SelectNodes("urn:meta", CodeGenerator.nsmgr));
 			
-			for (System.Collections.IEnumerator iter = metaAttributeList.GetEnumerator(); iter.MoveNext(); )
+			for (IEnumerator iter = metaAttributeList.GetEnumerator(); iter.MoveNext(); )
 			{
 				Element metaAttrib = (Element) iter.Current;
 				// does not use getTextNormalize() or getTextTrim() as that would remove the formatting in new lines in items like description for javadocs.
-				System.String attribute = (metaAttrib.Attributes["attribute"] == null?string.Empty:metaAttrib.Attributes["attribute"].Value);
-				System.String value_Renamed = metaAttrib.InnerText;
-				System.String inheritStr = (metaAttrib.Attributes["inherit"] == null?null:metaAttrib.Attributes["inherit"].Value);
+				String attribute = (metaAttrib.Attributes["attribute"] == null?string.Empty:metaAttrib.Attributes["attribute"].Value);
+				String value_Renamed = metaAttrib.InnerText;
+				String inheritStr = (metaAttrib.Attributes["inherit"] == null?null:metaAttrib.Attributes["inherit"].Value);
 				bool inherit = true;
-				if ((System.Object) inheritStr != null)
+				if ((Object) inheritStr != null)
 				{
 					try
 					{
-						inherit = System.Boolean.Parse(inheritStr);
+						inherit = Boolean.Parse(inheritStr);
 					}
 					catch{}
 				}
@@ -78,10 +77,6 @@ namespace NHibernate.Tool.hbm2net
 		/// Values specified always overrules/replaces the inherited values.
 		/// 
 		/// </summary>
-		/// <param name="">local
-		/// </param>
-		/// <param name="">inherited
-		/// </param>
 		/// <returns> a MultiMap with all values from local and extra values
 		/// from inherited
 		/// </returns>
@@ -92,15 +87,15 @@ namespace NHibernate.Tool.hbm2net
 			
 			if (inherited != null)
 			{
-				for (System.Collections.IEnumerator iter = new SupportClass.SetSupport(inherited.Keys).GetEnumerator(); iter.MoveNext(); )
+				for (IEnumerator iter = new SupportClass.SetSupport(inherited.Keys).GetEnumerator(); iter.MoveNext(); )
 				{
-					System.String key = (System.String) iter.Current;
+					String key = (String) iter.Current;
 					
 					if (!local.ContainsKey(key))
 					{
 						// inheriting a meta attribute only if it is inheritable
-						System.Collections.ArrayList ml = (System.Collections.ArrayList) inherited[key];
-						for (System.Collections.IEnumerator iterator = ml.GetEnumerator(); iterator.MoveNext(); )
+						ArrayList ml = (ArrayList) inherited[key];
+						for (IEnumerator iterator = ml.GetEnumerator(); iterator.MoveNext(); )
 						{
 							MetaAttribute element = (MetaAttribute) iterator.Current;
 							if (element.inheritable)
@@ -118,10 +113,6 @@ namespace NHibernate.Tool.hbm2net
 			return result;
 		}
 		/// <summary> Method loadAndMergeMetaMap.</summary>
-		/// <param name="">classElement
-		/// </param>
-		/// <param name="">inheritedMeta
-		/// </param>
 		/// <returns> MultiMap
 		/// </returns>
 		public static MultiMap loadAndMergeMetaMap(Element classElement, MultiMap inheritedMeta)
@@ -129,15 +120,11 @@ namespace NHibernate.Tool.hbm2net
 			return mergeMetaMaps(loadMetaMap(classElement), inheritedMeta);
 		}
 		
-		/// <param name="">collection
-		/// </param>
-		/// <param name="">string
-		/// </param>
-		public static System.String getMetaAsString(SupportClass.ListCollectionSupport meta, System.String seperator)
+		public static String getMetaAsString(SupportClass.ListCollectionSupport meta, String seperator)
 		{
-			System.Text.StringBuilder buf = new System.Text.StringBuilder();
+			StringBuilder buf = new StringBuilder();
 			bool first = true;
-			for (System.Collections.IEnumerator iter = meta.GetEnumerator(); iter.MoveNext(); )
+			for (IEnumerator iter = meta.GetEnumerator(); iter.MoveNext(); )
 			{
 				if (first)
 					first = false;
@@ -167,7 +154,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 		}
 		
-		internal static System.String getMetaAsString(SupportClass.ListCollectionSupport c)
+		internal static String getMetaAsString(SupportClass.ListCollectionSupport c)
 		{
 			if (c == null || c.IsEmpty())
 			{
@@ -175,10 +162,10 @@ namespace NHibernate.Tool.hbm2net
 			}
 			else
 			{
-				System.Text.StringBuilder sb = new System.Text.StringBuilder();
-				for (System.Collections.IEnumerator iter = c.GetEnumerator(); iter.MoveNext(); )
+				StringBuilder sb = new StringBuilder();
+				for (IEnumerator iter = c.GetEnumerator(); iter.MoveNext(); )
 				{
-					System.Object element = iter.Current;
+					Object element = iter.Current;
 					sb.Append(element.ToString());
 				}
 				return sb.ToString();

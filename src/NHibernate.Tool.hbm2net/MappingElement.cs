@@ -70,13 +70,13 @@ namespace NHibernate.Tool.hbm2net
 		}
 		
 		/// <summary>Returns true if this element has the meta attribute </summary>
-		public virtual bool hasMeta(System.String attribute)
+		public virtual bool hasMeta(String attribute)
 		{
 			return metaattribs.ContainsKey(attribute);
 		}
 		
 		/* Given a key, return the list of metaattribs. Can return null! */
-		public virtual SupportClass.ListCollectionSupport getMeta(System.String attribute)
+		public virtual SupportClass.ListCollectionSupport getMeta(String attribute)
 		{
 			return (SupportClass.ListCollectionSupport) metaattribs[attribute];
 		}
@@ -84,28 +84,26 @@ namespace NHibernate.Tool.hbm2net
 		/// <summary> Returns all meta items as one large string.
 		/// 
 		/// </summary>
-		/// <param name="">string
-		/// </param>
 		/// <returns> String
 		/// </returns>
-		public virtual System.String getMetaAsString(System.String attribute)
+		public virtual String getMetaAsString(String attribute)
 		{
 			SupportClass.ListCollectionSupport c = getMeta(attribute);
 			
 			return MetaAttributeHelper.getMetaAsString(c);
 		}
 		
-		public virtual System.String getMetaAsString(System.String attribute, System.String seperator)
+		public virtual String getMetaAsString(String attribute, String seperator)
 		{
 			return MetaAttributeHelper.getMetaAsString(getMeta(attribute), seperator);
 		}
 		
-		public virtual bool getMetaAsBool(System.String attribute)
+		public virtual bool getMetaAsBool(String attribute)
 		{
 			return getMetaAsBool(attribute, false);
 		}
 		
-		public virtual bool getMetaAsBool(System.String attribute, bool defaultValue)
+		public virtual bool getMetaAsBool(String attribute, bool defaultValue)
 		{
 			SupportClass.ListCollectionSupport c = getMeta(attribute);
 			

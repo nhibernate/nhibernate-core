@@ -1,11 +1,7 @@
-/*
-* Created on 12-10-2003
-*
-* To change the template for this generated file go to
-* Window - Preferences - Java - Code Generation - Code and Comments
-*/
 using System;
-using StringHelper = NHibernate.Util.StringHelper;
+using System.Collections;
+using System.Text;
+using NHibernate.Util;
 
 namespace NHibernate.Tool.hbm2net
 {
@@ -24,13 +20,11 @@ namespace NHibernate.Tool.hbm2net
 		/// Returns "// default package" if no package declarition available.
 		/// 
 		/// </summary>
-		/// <param name="">cm
-		/// </param>
 		/// <returns>
 		/// </returns>
-		public virtual System.String getPackageDeclaration(ClassMapping cm)
+		public virtual String getPackageDeclaration(ClassMapping cm)
 		{
-			if ((System.Object) cm.GeneratedPackageName != null)
+			if ((Object) cm.GeneratedPackageName != null)
 			{
 				return "namespace " + cm.GeneratedPackageName + "";
 			}
@@ -54,9 +48,9 @@ namespace NHibernate.Tool.hbm2net
 		/// </param>
 		/// <returns> String return either name or the proxy name of the classmap
 		/// </returns>
-		static public System.String getTrueTypeName(FieldProperty field, System.Collections.IDictionary class2classmap)
+		static public String getTrueTypeName(FieldProperty field, IDictionary class2classmap)
 		{
-			System.String name = (field.ClassType != null)?field.ClassType.FullyQualifiedName:field.FullyQualifiedTypeName;
+			String name = (field.ClassType != null)?field.ClassType.FullyQualifiedName:field.FullyQualifiedTypeName;
 			
 			if (field.getMeta("property-type") != null)
 			{
@@ -66,7 +60,7 @@ namespace NHibernate.Tool.hbm2net
 			
 			if (cmap != null)
 			{
-				if ((System.Object) cmap.Proxy != null)
+				if ((Object) cmap.Proxy != null)
 				{
 					return cmap.Proxy;
 				}
@@ -74,14 +68,14 @@ namespace NHibernate.Tool.hbm2net
 			return name;
 		}
 		
-		public virtual System.String getTrueTypeName(ClassName cn, System.Collections.IDictionary class2classmap)
+		public virtual String getTrueTypeName(ClassName cn, IDictionary class2classmap)
 		{
-			System.String name = cn.FullyQualifiedName;
+			String name = cn.FullyQualifiedName;
 			ClassMapping cmap = (ClassMapping) class2classmap[name];
 			
 			if (cmap != null)
 			{
-				if ((System.Object) cmap.Proxy != null)
+				if ((Object) cmap.Proxy != null)
 				{
 					return cmap.Proxy;
 				}
@@ -94,15 +88,11 @@ namespace NHibernate.Tool.hbm2net
 		/// java.util.Date.
 		/// 
 		/// </summary>
-		/// <param name="">type
-		/// </param>
-		/// <param name="">imports
-		/// </param>
 		/// <returns> String
 		/// </returns>
-		static public System.String shortenType(System.String type, SupportClass.SetSupport imports)
+		static public String shortenType(String type, SupportClass.SetSupport imports)
 		{
-			System.String result = type;
+			String result = type;
 			if (imports.Contains(type))
 			{
 				result = type.Substring(type.LastIndexOf(StringHelper.Dot) + 1);
@@ -123,11 +113,9 @@ namespace NHibernate.Tool.hbm2net
 		/// comment.
 		/// Prefix each line with a star ('*').
 		/// </summary>
-		/// <param name="">string
-		/// </param>
-		public virtual System.String toJavaDoc(System.String string_Renamed, int indent)
+		public virtual String toJavaDoc(String string_Renamed, int indent)
 		{
-			System.Text.StringBuilder result = new System.Text.StringBuilder();
+			StringBuilder result = new StringBuilder();
 			string padding = new String(' ', indent);
 			
 			if (string_Renamed != null)
@@ -151,12 +139,12 @@ namespace NHibernate.Tool.hbm2net
 		
 		public virtual bool hasExtends(ClassMapping cmap)
 		{
-			return (System.Object) getExtends(cmap) != string.Empty;
+			return (Object) getExtends(cmap) != string.Empty;
 		}
 		
-		public virtual System.String getExtends(ClassMapping cmap)
+		public virtual String getExtends(ClassMapping cmap)
 		{
-			System.String extendz = string.Empty;
+			String extendz = string.Empty;
 			
 			if (cmap.Interface)
 			{
@@ -166,14 +154,14 @@ namespace NHibernate.Tool.hbm2net
 				}
 				if (cmap.getMeta(extendz) != null)
 				{
-					if ((System.Object) extendz != null)
+					if ((Object) extendz != null)
 					{
 						extendz += ",";
 					}
 					extendz = cmap.getMetaAsString("extends");
 				}
 			}
-			else if ((System.Object) cmap.SuperClass != null)
+			else if ((Object) cmap.SuperClass != null)
 			{
 				if (cmap.SuperClassMapping != null && cmap.SuperClassMapping.Interface)
 				{
@@ -194,15 +182,15 @@ namespace NHibernate.Tool.hbm2net
 		
 		public virtual bool hasImplements(ClassMapping cmap)
 		{
-			return (System.Object) getImplements(cmap) != string.Empty;
+			return (Object) getImplements(cmap) != string.Empty;
 		}
 		
-		public virtual System.String getImplements(ClassMapping cmap)
+		public virtual String getImplements(ClassMapping cmap)
 		{
 			SupportClass.ListCollectionSupport interfaces = new SupportClass.ListCollectionSupport();
 			
 			//			implement proxy, but NOT if the proxy is the class it self!
-			if ((System.Object) cmap.Proxy != null && (!cmap.Proxy.Equals(cmap.FullyQualifiedName)))
+			if ((Object) cmap.Proxy != null && (!cmap.Proxy.Equals(cmap.FullyQualifiedName)))
 			{
 				interfaces.Add(cmap.Proxy);
 			}
@@ -227,9 +215,9 @@ namespace NHibernate.Tool.hbm2net
 			
 			if (interfaces.Count > 0)
 			{
-				System.Text.StringBuilder sbuf = new System.Text.StringBuilder();
+				StringBuilder sbuf = new StringBuilder();
 				bool first = true;
-				for (System.Collections.IEnumerator iter = interfaces.GetEnumerator(); iter.MoveNext(); )
+				for (IEnumerator iter = interfaces.GetEnumerator(); iter.MoveNext(); )
 				{
 					if (first)
 						first = false;
@@ -245,11 +233,11 @@ namespace NHibernate.Tool.hbm2net
 			}
 		}
 		
-		public virtual System.String fieldsAsParameters(SupportClass.ListCollectionSupport fieldslist, ClassMapping classMapping, System.Collections.IDictionary class2classmap)
+		public virtual String fieldsAsParameters(SupportClass.ListCollectionSupport fieldslist, ClassMapping classMapping, IDictionary class2classmap)
 		{
-			System.Text.StringBuilder buf = new System.Text.StringBuilder();
+			StringBuilder buf = new StringBuilder();
 			bool first = true;
-			for (System.Collections.IEnumerator fields = fieldslist.GetEnumerator(); fields.MoveNext(); )
+			for (IEnumerator fields = fieldslist.GetEnumerator(); fields.MoveNext(); )
 			{
 				if (first)
 					first = false;
@@ -261,11 +249,11 @@ namespace NHibernate.Tool.hbm2net
 			return buf.ToString();
 		}
 		
-		public virtual System.String fieldsAsArguments(SupportClass.ListCollectionSupport fieldslist, ClassMapping classMapping, System.Collections.IDictionary class2classmap)
+		public virtual String fieldsAsArguments(SupportClass.ListCollectionSupport fieldslist, ClassMapping classMapping, IDictionary class2classmap)
 		{
-			System.Text.StringBuilder buf = new System.Text.StringBuilder();
+			StringBuilder buf = new StringBuilder();
 			bool first = true;
-			for (System.Collections.IEnumerator fields = fieldslist.GetEnumerator(); fields.MoveNext(); )
+			for (IEnumerator fields = fieldslist.GetEnumerator(); fields.MoveNext(); )
 			{
 				if (first)
 					first = false;
@@ -278,11 +266,11 @@ namespace NHibernate.Tool.hbm2net
 			return buf.ToString();
 		}
 		
-		public virtual System.String genImports(ClassMapping classMapping)
+		public virtual String genImports(ClassMapping classMapping)
 		{
-			System.Text.StringBuilder buf = new System.Text.StringBuilder();
+			StringBuilder buf = new StringBuilder();
 			
-			for (System.Collections.IEnumerator imports = classMapping.Imports.GetEnumerator(); imports.MoveNext(); )
+			for (IEnumerator imports = classMapping.Imports.GetEnumerator(); imports.MoveNext(); )
 			{
 				buf.Append("using " + imports.Current + ";\n");
 			}
@@ -291,9 +279,9 @@ namespace NHibernate.Tool.hbm2net
 			SupportClass.ListCollectionSupport imports2 = classMapping.getMeta("extra-import");
 			if (imports2 != null)
 			{
-				for (System.Collections.IEnumerator it = imports2.GetEnumerator(); it.MoveNext(); )
+				for (IEnumerator it = imports2.GetEnumerator(); it.MoveNext(); )
 				{
-					System.String cname = it.Current.ToString();
+					String cname = it.Current.ToString();
 					buf.Append("using " + cname + ";\n");
 				}
 			}

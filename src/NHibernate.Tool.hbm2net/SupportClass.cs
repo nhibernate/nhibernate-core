@@ -10,6 +10,10 @@
 //
 
 using System;
+using System.Collections;
+using System.IO;
+using System.Reflection;
+using System.Xml;
 
 namespace NHibernate.Tool.hbm2net
 {
@@ -21,13 +25,13 @@ namespace NHibernate.Tool.hbm2net
 		/// <summary>
 		/// This class contains different methods to manage Collections.
 		/// </summary>
-		public class CollectionSupport : System.Collections.CollectionBase
+		public class CollectionSupport : CollectionBase
 		{
 			/// <summary>
 			/// Creates an instance of the Collection by using an inherited constructor.
 			/// </summary>
 			public CollectionSupport() : base()
-			{			
+			{
 			}
 
 			/// <summary>
@@ -35,22 +39,22 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="element">The element to be added.</param>
 			/// <returns>Returns true if the element was successfuly added. Otherwise returns false.</returns>
-			public virtual bool Add(System.Object element)
+			public virtual bool Add(Object element)
 			{
 				return (this.List.Add(element) != -1);
-			}	
+			}
 
 			/// <summary>
 			/// Adds all the elements contained in the specified collection.
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be added.</param>
 			/// <returns>Returns true if all the elements were successfuly added. Otherwise returns false.</returns>
-			public virtual bool AddAll(System.Collections.ICollection collection)
+			public virtual bool AddAll(ICollection collection)
 			{
 				bool result = false;
-				if (collection!=null)
+				if (collection != null)
 				{
-					System.Collections.IEnumerator tempEnumerator = new System.Collections.ArrayList(collection).GetEnumerator();
+					IEnumerator tempEnumerator = new ArrayList(collection).GetEnumerator();
 					while (tempEnumerator.MoveNext())
 					{
 						if (tempEnumerator.Current != null)
@@ -68,7 +72,7 @@ namespace NHibernate.Tool.hbm2net
 			/// <returns>Returns true if all the elements were successfuly added. Otherwise returns false.</returns>
 			public virtual bool AddAll(CollectionSupport collection)
 			{
-				return this.AddAll((System.Collections.ICollection)collection);
+				return this.AddAll((ICollection) collection);
 			}
 
 			/// <summary>
@@ -76,7 +80,7 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="element"> The element that will be verified.</param>
 			/// <returns>Returns true if the element is contained in the collection. Otherwise returns false.</returns>
-			public virtual bool Contains(System.Object element)
+			public virtual bool Contains(Object element)
 			{
 				return this.List.Contains(element);
 			}
@@ -86,10 +90,10 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be verified.</param>
 			/// <returns>Returns true if all the elements are contained in the collection. Otherwise returns false.</returns>
-			public virtual bool ContainsAll(System.Collections.ICollection collection)
+			public virtual bool ContainsAll(ICollection collection)
 			{
 				bool result = false;
-				System.Collections.IEnumerator tempEnumerator = new System.Collections.ArrayList(collection).GetEnumerator();
+				IEnumerator tempEnumerator = new ArrayList(collection).GetEnumerator();
 				while (tempEnumerator.MoveNext())
 					if (!(result = this.Contains(tempEnumerator.Current)))
 						break;
@@ -103,7 +107,7 @@ namespace NHibernate.Tool.hbm2net
 			/// <returns>Returns true if all the elements are contained in the collection. Otherwise returns false.</returns>
 			public virtual bool ContainsAll(CollectionSupport collection)
 			{
-				return this.ContainsAll((System.Collections.ICollection) collection);
+				return this.ContainsAll((ICollection) collection);
 			}
 
 			/// <summary>
@@ -120,7 +124,7 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="element">The element to be removed.</param>
 			/// <returns>Returns true if the element was successfuly removed. Otherwise returns false.</returns>
-			public virtual bool Remove(System.Object element)
+			public virtual bool Remove(Object element)
 			{
 				bool result = false;
 				if (this.Contains(element))
@@ -136,10 +140,10 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be removed.</param>
 			/// <returns>Returns true if all the elements were successfuly removed. Otherwise returns false.</returns>
-			public virtual bool RemoveAll(System.Collections.ICollection collection)
-			{ 
+			public virtual bool RemoveAll(ICollection collection)
+			{
 				bool result = false;
-				System.Collections.IEnumerator tempEnumerator = new System.Collections.ArrayList(collection).GetEnumerator();
+				IEnumerator tempEnumerator = new ArrayList(collection).GetEnumerator();
 				while (tempEnumerator.MoveNext())
 				{
 					if (this.Contains(tempEnumerator.Current))
@@ -154,8 +158,8 @@ namespace NHibernate.Tool.hbm2net
 			/// <param name="collection">The collection used to extract the elements that will be removed.</param>
 			/// <returns>Returns true if all the elements were successfuly removed. Otherwise returns false.</returns>
 			public virtual bool RemoveAll(CollectionSupport collection)
-			{ 
-				return this.RemoveAll((System.Collections.ICollection) collection);
+			{
+				return this.RemoveAll((ICollection) collection);
 			}
 
 			/// <summary>
@@ -163,17 +167,17 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="collection">The collection used to verify the elements that will be retained.</param>
 			/// <returns>Returns true if all the elements were successfully removed. Otherwise returns false.</returns>
-			public virtual bool RetainAll(System.Collections.ICollection collection)
+			public virtual bool RetainAll(ICollection collection)
 			{
 				bool result = false;
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
+				IEnumerator tempEnumerator = this.GetEnumerator();
 				CollectionSupport tempCollection = new CollectionSupport();
 				tempCollection.AddAll(collection);
 				while (tempEnumerator.MoveNext())
 					if (!tempCollection.Contains(tempEnumerator.Current))
 					{
 						result = this.Remove(tempEnumerator.Current);
-					
+
 						if (result == true)
 						{
 							tempEnumerator = this.GetEnumerator();
@@ -189,18 +193,18 @@ namespace NHibernate.Tool.hbm2net
 			/// <returns>Returns true if all the elements were successfully removed. Otherwise returns false.</returns>
 			public virtual bool RetainAll(CollectionSupport collection)
 			{
-				return this.RetainAll((System.Collections.ICollection) collection);
+				return this.RetainAll((ICollection) collection);
 			}
 
 			/// <summary>
 			/// Obtains an array containing all the elements of the collection.
 			/// </summary>
 			/// <returns>The array containing all the elements of the collection</returns>
-			public virtual System.Object[] ToArray()
-			{	
+			public virtual Object[] ToArray()
+			{
 				int index = 0;
-				System.Object[] objects = new System.Object[this.Count];
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
+				Object[] objects = new Object[this.Count];
+				IEnumerator tempEnumerator = this.GetEnumerator();
 				while (tempEnumerator.MoveNext())
 					objects[index++] = tempEnumerator.Current;
 				return objects;
@@ -211,10 +215,10 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="objects">The array into which the elements of the collection will be stored.</param>
 			/// <returns>The array containing all the elements of the collection.</returns>
-			public virtual System.Object[] ToArray(System.Object[] objects)
-			{	
+			public virtual Object[] ToArray(Object[] objects)
+			{
 				int index = 0;
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
+				IEnumerator tempEnumerator = this.GetEnumerator();
 				while (tempEnumerator.MoveNext())
 					objects[index++] = tempEnumerator.Current;
 				return objects;
@@ -225,19 +229,20 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="array">The array containing the elements used to populate the new CollectionSupport object.</param>
 			/// <returns>A CollectionSupport object populated with the contents of array.</returns>
-			public static CollectionSupport ToCollectionSupport(System.Object[] array)
+			public static CollectionSupport ToCollectionSupport(Object[] array)
 			{
-				CollectionSupport tempCollectionSupport = new CollectionSupport();             
+				CollectionSupport tempCollectionSupport = new CollectionSupport();
 				tempCollectionSupport.AddAll(array);
 				return tempCollectionSupport;
 			}
 		}
 
 		/*******************************/
+
 		/// <summary>
 		/// This class contains different methods to manage list collections.
 		/// </summary>
-		public class ListCollectionSupport : System.Collections.ArrayList
+		public class ListCollectionSupport : ArrayList
 		{
 			/// <summary>
 			/// Creates a new instance of the class ListCollectionSupport.
@@ -245,12 +250,12 @@ namespace NHibernate.Tool.hbm2net
 			public ListCollectionSupport() : base()
 			{
 			}
- 
+
 			/// <summary>
 			/// Creates a new instance of the class ListCollectionSupport.
 			/// </summary>
 			/// <param name="collection">The collection to insert into the new object.</param>
-			public ListCollectionSupport(System.Collections.ICollection collection) : base(collection)
+			public ListCollectionSupport(ICollection collection) : base(collection)
 			{
 			}
 
@@ -267,7 +272,7 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>          
 			/// <param name="valueToInsert">The value to insert in the array list.</param>
 			/// <returns>Returns true after adding the value.</returns>
-			public virtual bool Add(System.Object valueToInsert)
+			public virtual bool Add(Object valueToInsert)
 			{
 				base.Insert(this.Count, valueToInsert);
 				return true;
@@ -279,12 +284,12 @@ namespace NHibernate.Tool.hbm2net
 			/// <param name="index">Position at which to add the first element from the specified collection.</param>
 			/// <param name="list">The list used to extract the elements that will be added.</param>
 			/// <returns>Returns true if all the elements were successfuly added. Otherwise returns false.</returns>
-			public virtual bool AddAll(int index, System.Collections.IList list)
+			public virtual bool AddAll(int index, IList list)
 			{
 				bool result = false;
-				if (list!=null)
+				if (list != null)
 				{
-					System.Collections.IEnumerator tempEnumerator = new System.Collections.ArrayList(list).GetEnumerator();
+					IEnumerator tempEnumerator = new ArrayList(list).GetEnumerator();
 					int tempIndex = index;
 					while (tempEnumerator.MoveNext())
 					{
@@ -295,12 +300,12 @@ namespace NHibernate.Tool.hbm2net
 				return result;
 			}
 
-			public virtual bool AddAll(int index, System.Xml.XmlNodeList list)
+			public virtual bool AddAll(int index, XmlNodeList list)
 			{
 				bool result = false;
-				if (list!=null)
+				if (list != null)
 				{
-					System.Collections.IEnumerator tempEnumerator = list.GetEnumerator();
+					IEnumerator tempEnumerator = list.GetEnumerator();
 					int tempIndex = index;
 					while (tempEnumerator.MoveNext())
 					{
@@ -316,14 +321,14 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be added.</param>
 			/// <returns>Returns true if all the elements were successfuly added. Otherwise returns false.</returns>
-			public virtual bool AddAll(System.Collections.IList collection)
+			public virtual bool AddAll(IList collection)
 			{
-				return this.AddAll(this.Count,collection);
+				return this.AddAll(this.Count, collection);
 			}
 
-			public virtual bool AddAll(System.Xml.XmlNodeList collection)
+			public virtual bool AddAll(XmlNodeList collection)
 			{
-				return this.AddAll(this.Count,collection);
+				return this.AddAll(this.Count, collection);
 			}
 
 			/// <summary>
@@ -333,25 +338,25 @@ namespace NHibernate.Tool.hbm2net
 			/// <returns>Returns true if all the elements were successfuly added. Otherwise returns false.</returns>
 			public virtual bool AddAll(CollectionSupport collection)
 			{
-				return this.AddAll(this.Count,collection);
+				return this.AddAll(this.Count, collection);
 			}
 
 			/// <summary>
 			/// Adds all the elements contained into the specified support class collection, starting at the specified position.
 			/// </summary>
 			/// <param name="index">Position at which to add the first element from the specified collection.</param>
-			/// <param name="list">The list used to extract the elements that will be added.</param>
+			/// <param name="collection">The list used to extract the elements that will be added.</param>
 			/// <returns>Returns true if all the elements were successfuly added. Otherwise returns false.</returns>
 			public virtual bool AddAll(int index, CollectionSupport collection)
 			{
-				return this.AddAll(index,(System.Collections.IList)collection);
+				return this.AddAll(index, (IList) collection);
 			}
-		
+
 			/// <summary>
 			/// Creates a copy of the ListCollectionSupport.
 			/// </summary>
 			/// <returns> A copy of the ListCollectionSupport.</returns>
-			public virtual System.Object ListCollectionClone()
+			public virtual Object ListCollectionClone()
 			{
 				return MemberwiseClone();
 			}
@@ -361,7 +366,7 @@ namespace NHibernate.Tool.hbm2net
 			/// Returns an iterator of the collection.
 			/// </summary>
 			/// <returns>An IEnumerator.</returns>
-			public virtual System.Collections.IEnumerator ListIterator()
+			public virtual IEnumerator ListIterator()
 			{
 				return base.GetEnumerator();
 			}
@@ -371,10 +376,10 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be removed.</param>
 			/// <returns>Returns true if all the elements were successfuly removed. Otherwise returns false.</returns>
-			public virtual bool RemoveAll(System.Collections.ICollection collection)
-			{ 
+			public virtual bool RemoveAll(ICollection collection)
+			{
 				bool result = false;
-				System.Collections.IEnumerator tempEnumerator = new System.Collections.ArrayList(collection).GetEnumerator();
+				IEnumerator tempEnumerator = new ArrayList(collection).GetEnumerator();
 				while (tempEnumerator.MoveNext())
 				{
 					result = true;
@@ -383,25 +388,25 @@ namespace NHibernate.Tool.hbm2net
 				}
 				return result;
 			}
-		
+
 			/// <summary>
 			/// Removes all the elements contained into the specified collection.
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be removed.</param>
 			/// <returns>Returns true if all the elements were successfuly removed. Otherwise returns false.</returns>
 			public virtual bool RemoveAll(CollectionSupport collection)
-			{ 
-				return this.RemoveAll((System.Collections.ICollection) collection);
-			}		
+			{
+				return this.RemoveAll((ICollection) collection);
+			}
 
 			/// <summary>
 			/// Removes the value in the specified index from the list.
 			/// </summary>          
 			/// <param name="index">The index of the value to remove.</param>
 			/// <returns>Returns the value removed.</returns>
-			public virtual System.Object RemoveElement(int index)
+			public virtual Object RemoveElement(int index)
 			{
-				System.Object objectRemoved = this[index];
+				Object objectRemoved = this[index];
 				this.RemoveAt(index);
 				return objectRemoved;
 			}
@@ -411,9 +416,8 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="element">The element to be removed.</param>
 			/// <returns>Returns true if the element was successfuly removed. Otherwise returns false.</returns>
-			public virtual bool RemoveElement(System.Object element)
+			public virtual bool RemoveElement(Object element)
 			{
-
 				bool result = false;
 				if (this.Contains(element))
 				{
@@ -427,9 +431,9 @@ namespace NHibernate.Tool.hbm2net
 			/// Removes the first value from an array list.
 			/// </summary>          
 			/// <returns>Returns the value removed.</returns>
-			public virtual System.Object RemoveFirst()
+			public virtual Object RemoveFirst()
 			{
-				System.Object objectRemoved = this[0];
+				Object objectRemoved = this[0];
 				this.RemoveAt(0);
 				return objectRemoved;
 			}
@@ -438,10 +442,10 @@ namespace NHibernate.Tool.hbm2net
 			/// Removes the last value from an array list.
 			/// </summary>
 			/// <returns>Returns the value removed.</returns>
-			public virtual System.Object RemoveLast()
+			public virtual Object RemoveLast()
 			{
-				System.Object objectRemoved = this[this.Count-1];
-				base.RemoveAt(this.Count-1);
+				Object objectRemoved = this[this.Count - 1];
+				base.RemoveAt(this.Count - 1);
 				return objectRemoved;
 			}
 
@@ -450,16 +454,16 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="collection">The collection used to verify the elements that will be retained.</param>
 			/// <returns>Returns true if all the elements were successfully removed. Otherwise returns false.</returns>
-			public virtual bool RetainAll(System.Collections.ICollection collection)
+			public virtual bool RetainAll(ICollection collection)
 			{
 				bool result = false;
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
+				IEnumerator tempEnumerator = this.GetEnumerator();
 				ListCollectionSupport tempCollection = new ListCollectionSupport(collection);
 				while (tempEnumerator.MoveNext())
 					if (!tempCollection.Contains(tempEnumerator.Current))
 					{
 						result = this.RemoveElement(tempEnumerator.Current);
-					
+
 						if (result == true)
 						{
 							tempEnumerator = this.GetEnumerator();
@@ -467,7 +471,7 @@ namespace NHibernate.Tool.hbm2net
 					}
 				return result;
 			}
-		
+
 			/// <summary>
 			/// Removes all the elements that aren't contained into the specified collection.
 			/// </summary>
@@ -475,24 +479,24 @@ namespace NHibernate.Tool.hbm2net
 			/// <returns>Returns true if all the elements were successfully removed. Otherwise returns false.</returns>
 			public virtual bool RetainAll(CollectionSupport collection)
 			{
-				return this.RetainAll((System.Collections.ICollection) collection);
-			}		
+				return this.RetainAll((ICollection) collection);
+			}
 
 			/// <summary>
 			/// Verifies if all the elements of the specified collection are contained into the current collection.
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be verified.</param>
 			/// <returns>Returns true if all the elements are contained in the collection. Otherwise returns false.</returns>
-			public virtual bool ContainsAll(System.Collections.ICollection collection)
+			public virtual bool ContainsAll(ICollection collection)
 			{
 				bool result = false;
-				System.Collections.IEnumerator tempEnumerator = new System.Collections.ArrayList(collection).GetEnumerator();
+				IEnumerator tempEnumerator = new ArrayList(collection).GetEnumerator();
 				while (tempEnumerator.MoveNext())
-					if(!(result = this.Contains(tempEnumerator.Current)))
+					if (!(result = this.Contains(tempEnumerator.Current)))
 						break;
 				return result;
 			}
-		
+
 			/// <summary>
 			/// Verifies if all the elements of the specified collection are contained into the current collection.
 			/// </summary>
@@ -500,8 +504,8 @@ namespace NHibernate.Tool.hbm2net
 			/// <returns>Returns true if all the elements are contained in the collection. Otherwise returns false.</returns>
 			public virtual bool ContainsAll(CollectionSupport collection)
 			{
-				return this.ContainsAll((System.Collections.ICollection) collection);
-			}		
+				return this.ContainsAll((ICollection) collection);
+			}
 
 			/// <summary>
 			/// Returns a new list containing a portion of the current list between a specified range. 
@@ -512,11 +516,11 @@ namespace NHibernate.Tool.hbm2net
 			public virtual ListCollectionSupport SubList(int startIndex, int endIndex)
 			{
 				int index = 0;
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
+				IEnumerator tempEnumerator = this.GetEnumerator();
 				ListCollectionSupport result = new ListCollectionSupport();
-				for(index = startIndex; index < endIndex; index++)
+				for (index = startIndex; index < endIndex; index++)
 					result.Add(this[index]);
-				return (ListCollectionSupport)result;
+				return result;
 			}
 
 			/// <summary>
@@ -524,12 +528,12 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="objects">The array into which the elements of the collection will be stored.</param>
 			/// <returns>The array containing all the elements of the collection.</returns>
-			public virtual System.Object[] ToArray(System.Object[] objects)
-			{	
+			public virtual Object[] ToArray(Object[] objects)
+			{
 				if (objects.Length < this.Count)
-					objects = new System.Object[this.Count];
+					objects = new Object[this.Count];
 				int index = 0;
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
+				IEnumerator tempEnumerator = this.GetEnumerator();
 				while (tempEnumerator.MoveNext())
 					objects[index++] = tempEnumerator.Current;
 				return objects;
@@ -540,32 +544,32 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="index">The position to set the iterator.</param>
 			/// <returns>An IEnumerator at the specified position.</returns>
-			public virtual System.Collections.IEnumerator ListIterator(int index)
+			public virtual IEnumerator ListIterator(int index)
 			{
-				if ((index < 0) || (index > this.Count)) throw new System.IndexOutOfRangeException();			
-				System.Collections.IEnumerator tempEnumerator= this.GetEnumerator();
+				if ((index < 0) || (index > this.Count)) throw new IndexOutOfRangeException();
+				IEnumerator tempEnumerator = this.GetEnumerator();
 				if (index > 0)
 				{
-					int i=0;
+					int i = 0;
 					while ((tempEnumerator.MoveNext()) && (i < index - 1))
 						i++;
 				}
-				return tempEnumerator;			
+				return tempEnumerator;
 			}
-	
+
 			/// <summary>
 			/// Gets the last value from a list.
 			/// </summary>
 			/// <returns>Returns the last element of the list.</returns>
-			public virtual System.Object GetLast()
+			public virtual Object GetLast()
 			{
-				if (this.Count == 0) throw new System.ArgumentOutOfRangeException();
+				if (this.Count == 0) throw new ArgumentOutOfRangeException();
 				else
 				{
 					return this[this.Count - 1];
-				}									 
+				}
 			}
-		
+
 			/// <summary>
 			/// Return whether this list is empty.
 			/// </summary>
@@ -574,67 +578,67 @@ namespace NHibernate.Tool.hbm2net
 			{
 				return (this.Count == 0);
 			}
-		
+
 			/// <summary>
 			/// Replaces the element at the specified position in this list with the specified element.
 			/// </summary>
 			/// <param name="index">Index of element to replace.</param>
 			/// <param name="element">Element to be stored at the specified position.</param>
 			/// <returns>The element previously at the specified position.</returns>
-			public virtual System.Object Set(int index, System.Object element)
+			public virtual Object Set(int index, Object element)
 			{
-				System.Object result = this[index];
+				Object result = this[index];
 				this[index] = element;
 				return result;
-			} 
+			}
 
 			/// <summary>
 			/// Returns the element at the specified position in the list.
 			/// </summary>
 			/// <param name="index">Index of element to return.</param>
-			/// <param name="element">Element to be stored at the specified position.</param>
 			/// <returns>The element at the specified position in the list.</returns>
-			public virtual System.Object Get(int index)
+			public virtual Object Get(int index)
 			{
 				return this[index];
 			}
 		}
 
 		/*******************************/
+
 		/// <summary>
 		/// This class manages a set of elements.
 		/// </summary>
-		public class SetSupport : System.Collections.ArrayList
+		public class SetSupport : ArrayList
 		{
 			/// <summary>
 			/// Creates a new set.
 			/// </summary>
-			public SetSupport(): base()
-			{           
+			public SetSupport() : base()
+			{
 			}
 
 			/// <summary>
 			/// Creates a new set initialized with System.Collections.ICollection object
 			/// </summary>
 			/// <param name="collection">System.Collections.ICollection object to initialize the set object</param>
-			public SetSupport(System.Collections.ICollection collection): base(collection)
-			{           
+			public SetSupport(ICollection collection) : base(collection)
+			{
 			}
 
 			/// <summary>
 			/// Creates a new set initialized with a specific capacity.
 			/// </summary>
 			/// <param name="capacity">value to set the capacity of the set object</param>
-			public SetSupport(int capacity): base(capacity)
-			{           
+			public SetSupport(int capacity) : base(capacity)
+			{
 			}
-	 
+
 			/// <summary>
 			/// Adds an element to the set.
 			/// </summary>
 			/// <param name="objectToAdd">The object to be added.</param>
 			/// <returns>True if the object was added, false otherwise.</returns>
-			public new virtual bool Add(object objectToAdd)
+			new public virtual bool Add(object objectToAdd)
 			{
 				if (this.Contains(objectToAdd))
 					return false;
@@ -644,18 +648,18 @@ namespace NHibernate.Tool.hbm2net
 					return true;
 				}
 			}
-	 
+
 			/// <summary>
 			/// Adds all the elements contained in the specified collection.
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be added.</param>
 			/// <returns>Returns true if all the elements were successfuly added. Otherwise returns false.</returns>
-			public virtual bool AddAll(System.Collections.ICollection collection)
+			public virtual bool AddAll(ICollection collection)
 			{
 				bool result = false;
-				if (collection!=null)
+				if (collection != null)
 				{
-					System.Collections.IEnumerator tempEnumerator = new System.Collections.ArrayList(collection).GetEnumerator();
+					IEnumerator tempEnumerator = new ArrayList(collection).GetEnumerator();
 					while (tempEnumerator.MoveNext())
 					{
 						if (tempEnumerator.Current != null)
@@ -664,7 +668,7 @@ namespace NHibernate.Tool.hbm2net
 				}
 				return result;
 			}
-		
+
 			/// <summary>
 			/// Adds all the elements contained in the specified support class collection.
 			/// </summary>
@@ -672,24 +676,24 @@ namespace NHibernate.Tool.hbm2net
 			/// <returns>Returns true if all the elements were successfuly added. Otherwise returns false.</returns>
 			public virtual bool AddAll(CollectionSupport collection)
 			{
-				return this.AddAll((System.Collections.ICollection)collection);
+				return this.AddAll((ICollection) collection);
 			}
-	 
+
 			/// <summary>
 			/// Verifies that all the elements of the specified collection are contained into the current collection. 
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be verified.</param>
 			/// <returns>True if the collection contains all the given elements.</returns>
-			public virtual bool ContainsAll(System.Collections.ICollection collection)
+			public virtual bool ContainsAll(ICollection collection)
 			{
 				bool result = false;
-				System.Collections.IEnumerator tempEnumerator = collection.GetEnumerator();
+				IEnumerator tempEnumerator = collection.GetEnumerator();
 				while (tempEnumerator.MoveNext())
 					if (!(result = this.Contains(tempEnumerator.Current)))
 						break;
 				return result;
 			}
-		
+
 			/// <summary>
 			/// Verifies if all the elements of the specified collection are contained into the current collection.
 			/// </summary>
@@ -697,9 +701,9 @@ namespace NHibernate.Tool.hbm2net
 			/// <returns>Returns true if all the elements are contained in the collection. Otherwise returns false.</returns>
 			public virtual bool ContainsAll(CollectionSupport collection)
 			{
-				return this.ContainsAll((System.Collections.ICollection) collection);
-			}		
-	 
+				return this.ContainsAll((ICollection) collection);
+			}
+
 			/// <summary>
 			/// Verifies if the collection is empty.
 			/// </summary>
@@ -708,13 +712,13 @@ namespace NHibernate.Tool.hbm2net
 			{
 				return (this.Count == 0);
 			}
-	 	 
+
 			/// <summary>
 			/// Removes an element from the set.
 			/// </summary>
 			/// <param name="elementToRemove">The element to be removed.</param>
 			/// <returns>True if the element was removed.</returns>
-			public new virtual bool Remove(object elementToRemove)
+			new public virtual bool Remove(object elementToRemove)
 			{
 				bool result = false;
 				if (this.Contains(elementToRemove))
@@ -722,16 +726,16 @@ namespace NHibernate.Tool.hbm2net
 				base.Remove(elementToRemove);
 				return result;
 			}
-		
+
 			/// <summary>
 			/// Removes all the elements contained in the specified collection.
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be removed.</param>
 			/// <returns>True if all the elements were successfuly removed, false otherwise.</returns>
-			public virtual bool RemoveAll(System.Collections.ICollection collection)
-			{ 
+			public virtual bool RemoveAll(ICollection collection)
+			{
 				bool result = false;
-				System.Collections.IEnumerator tempEnumerator = collection.GetEnumerator();
+				IEnumerator tempEnumerator = collection.GetEnumerator();
 				while (tempEnumerator.MoveNext())
 				{
 					if ((result == false) && (this.Contains(tempEnumerator.Current)))
@@ -740,27 +744,27 @@ namespace NHibernate.Tool.hbm2net
 				}
 				return result;
 			}
-		
+
 			/// <summary>
 			/// Removes all the elements contained into the specified collection.
 			/// </summary>
 			/// <param name="collection">The collection used to extract the elements that will be removed.</param>
 			/// <returns>Returns true if all the elements were successfuly removed. Otherwise returns false.</returns>
 			public virtual bool RemoveAll(CollectionSupport collection)
-			{ 
-				return this.RemoveAll((System.Collections.ICollection) collection);
-			}		
+			{
+				return this.RemoveAll((ICollection) collection);
+			}
 
 			/// <summary>
 			/// Removes all the elements that aren't contained in the specified collection.
 			/// </summary>
 			/// <param name="collection">The collection used to verify the elements that will be retained.</param>
 			/// <returns>True if all the elements were successfully removed, false otherwise.</returns>
-			public virtual bool RetainAll(System.Collections.ICollection collection)
+			public virtual bool RetainAll(ICollection collection)
 			{
 				bool result = false;
-				System.Collections.IEnumerator tempEnumerator = collection.GetEnumerator();
-				SetSupport tempSet = (SetSupport)collection;
+				IEnumerator tempEnumerator = collection.GetEnumerator();
+				SetSupport tempSet = (SetSupport) collection;
 				while (tempEnumerator.MoveNext())
 					if (!tempSet.Contains(tempEnumerator.Current))
 					{
@@ -769,7 +773,7 @@ namespace NHibernate.Tool.hbm2net
 					}
 				return result;
 			}
-		
+
 			/// <summary>
 			/// Removes all the elements that aren't contained into the specified collection.
 			/// </summary>
@@ -777,18 +781,18 @@ namespace NHibernate.Tool.hbm2net
 			/// <returns>Returns true if all the elements were successfully removed. Otherwise returns false.</returns>
 			public virtual bool RetainAll(CollectionSupport collection)
 			{
-				return this.RetainAll((System.Collections.ICollection) collection);
-			}		
-	 
+				return this.RetainAll((ICollection) collection);
+			}
+
 			/// <summary>
 			/// Obtains an array containing all the elements of the collection.
 			/// </summary>
 			/// <returns>The array containing all the elements of the collection.</returns>
-			public new virtual object[] ToArray()
+			new public virtual object[] ToArray()
 			{
 				int index = 0;
-				object[] tempObject= new object[this.Count];
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
+				object[] tempObject = new object[this.Count];
+				IEnumerator tempEnumerator = this.GetEnumerator();
 				while (tempEnumerator.MoveNext())
 					tempObject[index++] = tempEnumerator.Current;
 				return tempObject;
@@ -802,13 +806,15 @@ namespace NHibernate.Tool.hbm2net
 			public virtual object[] ToArray(object[] objects)
 			{
 				int index = 0;
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
+				IEnumerator tempEnumerator = this.GetEnumerator();
 				while (tempEnumerator.MoveNext())
 					objects[index++] = tempEnumerator.Current;
 				return objects;
 			}
 		}
+
 		/*******************************/
+
 		/// <summary>
 		/// This class manages a tree set collection of sorted elements.
 		/// </summary>
@@ -820,15 +826,15 @@ namespace NHibernate.Tool.hbm2net
 			public TreeSetSupport()
 			{
 			}
-			 	
+
 			/// <summary>
 			/// Create a new TreeSetSupport with a specific collection.
 			/// </summary>
 			/// <param name="collection">The collection used to iniciatilize the TreeSetSupport</param>
-			public TreeSetSupport(System.Collections.ICollection collection): base(collection)
+			public TreeSetSupport(ICollection collection) : base(collection)
 			{
 			}
-	 
+
 			/// <summary>
 			/// Creates a copy of the TreeSetSupport.
 			/// </summary>
@@ -851,6 +857,7 @@ namespace NHibernate.Tool.hbm2net
 		}
 
 		/*******************************/
+
 		/// <summary> 
 		/// This class contains methods to manage a sorted collection.
 		/// </summary>
@@ -862,81 +869,82 @@ namespace NHibernate.Tool.hbm2net
 			public SortedSetSupport() : base()
 			{
 			}
-				
+
 			/// <summary>
 			/// Create a new SortedSetSupport with a specific collection.
 			/// </summary>
 			/// <param name="collection">The collection used to iniciatilize the SortedSetSupport</param>
-			public SortedSetSupport(System.Collections.ICollection collection): base(collection)
+			public SortedSetSupport(ICollection collection) : base(collection)
 			{
 			}
-	 
+
 			/// <summary>
 			/// Returns the first element from the set.
 			/// </summary>
 			/// <returns>Returns the first element from the set.</returns>
-			public virtual System.Object First()
+			public virtual Object First()
 			{
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
+				IEnumerator tempEnumerator = this.GetEnumerator();
 				tempEnumerator.MoveNext();
 				return tempEnumerator.Current;
 			}
-	 
+
 			/// <summary>
 			/// Returns a view of elements until the specified element.
 			/// </summary>
 			/// <returns>Returns a sorted set of elements that are strictly less than the specified element.</returns>
-			public virtual SortedSetSupport HeadSet(System.Object toElement)
+			public virtual SortedSetSupport HeadSet(Object toElement)
 			{
 				SortedSetSupport tempSortedSet = new SortedSetSupport();
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
-				while((tempEnumerator.MoveNext() && ((tempEnumerator.Current.ToString().CompareTo(toElement.ToString())) < 0)))
+				IEnumerator tempEnumerator = this.GetEnumerator();
+				while ((tempEnumerator.MoveNext() && ((tempEnumerator.Current.ToString().CompareTo(toElement.ToString())) < 0)))
 					tempSortedSet.Add(tempEnumerator.Current);
 				return tempSortedSet;
 			}
-	 
+
 			/// <summary>
 			/// Returns the last element of the set.
 			/// </summary>
 			/// <returns>Returns the last element from the set.</returns>
-			public virtual System.Object Last()
+			public virtual Object Last()
 			{
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
-				System.Object element = null;
-				while(tempEnumerator.MoveNext())
-					if (tempEnumerator.Current!= null)
+				IEnumerator tempEnumerator = this.GetEnumerator();
+				Object element = null;
+				while (tempEnumerator.MoveNext())
+					if (tempEnumerator.Current != null)
 						element = tempEnumerator.Current;
 				return element;
 			}
-	 
+
 			/// <summary>
 			/// Returns a view of elements from the specified element.
 			/// </summary>
 			/// <returns>Returns a sorted set of elements that are greater or equal to the specified element.</returns>
-			public virtual SortedSetSupport TailSet(System.Object fromElement)
+			public virtual SortedSetSupport TailSet(Object fromElement)
 			{
 				SortedSetSupport tempSortedSet = new SortedSetSupport();
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
-				while((tempEnumerator.MoveNext() && (!((System.Int32)tempEnumerator.Current >= (System.Int32)fromElement))))
+				IEnumerator tempEnumerator = this.GetEnumerator();
+				while ((tempEnumerator.MoveNext() && (!((Int32) tempEnumerator.Current >= (Int32) fromElement))))
 					tempSortedSet.Add(tempEnumerator.Current);
 				return tempSortedSet;
 			}
-	 
+
 			/// <summary>
 			/// Returns a view of elements between the specified elements.
 			/// </summary>
 			/// <returns>Returns a sorted set of elements from the first specified element to the second specified element.</returns>
-			public virtual SortedSetSupport SubSet(System.Object fromElement, System.Object toElement)
+			public virtual SortedSetSupport SubSet(Object fromElement, Object toElement)
 			{
 				SortedSetSupport tempSortedSet = new SortedSetSupport();
-				System.Collections.IEnumerator tempEnumerator = this.GetEnumerator();
-				while((tempEnumerator.MoveNext() && ((!((System.Int32)tempEnumerator.Current  >= (System.Int32)fromElement))) && (!((System.Int32)tempEnumerator.Current  < (System.Int32)toElement))))
+				IEnumerator tempEnumerator = this.GetEnumerator();
+				while ((tempEnumerator.MoveNext() && ((!((Int32) tempEnumerator.Current >= (Int32) fromElement))) && (!((Int32) tempEnumerator.Current < (Int32) toElement))))
 					tempSortedSet.Add(tempEnumerator.Current);
 				return tempSortedSet;
 			}
 		}
 
 		/*******************************/
+
 		/// <summary>
 		/// This class manages different operation with collections.
 		/// </summary>
@@ -952,6 +960,7 @@ namespace NHibernate.Tool.hbm2net
 
 
 		/*******************************/
+
 		/// <summary> 
 		/// This class manages a hash set of elements.
 		/// </summary>
@@ -961,18 +970,18 @@ namespace NHibernate.Tool.hbm2net
 			/// Creates a new hash set collection.
 			/// </summary>
 			public HashSetSupport()
-			{     
+			{
 			}
-	       
+
 			/// <summary>
 			/// Creates a new hash set collection.
 			/// </summary>
 			/// <param name="collection">The collection to initialize the hash set with.</param>
-			public HashSetSupport(System.Collections.ICollection collection)
+			public HashSetSupport(ICollection collection)
 			{
 				this.AddRange(collection);
 			}
-	       
+
 			/// <summary>
 			/// Creates a new hash set with the given capacity.
 			/// </summary>
@@ -981,7 +990,7 @@ namespace NHibernate.Tool.hbm2net
 			{
 				this.Capacity = capacity;
 			}
-	    
+
 			/// <summary>
 			/// Creates a new hash set with the given capacity.
 			/// </summary>
@@ -1001,55 +1010,59 @@ namespace NHibernate.Tool.hbm2net
 				return MemberwiseClone();
 			}
 		}
+
 		/*******************************/
+
 		/// <summary>
 		/// Creates an instance of a received Type.
 		/// </summary>
 		/// <param name="classType">The Type of the new class instance to return.</param>
 		/// <returns>An Object containing the new instance.</returns>
-		public static System.Object CreateNewInstance(System.Type classType)
+		public static Object CreateNewInstance(System.Type classType)
 		{
 			if (classType == null) throw new Exception("Class not found");
-			System.Object instance = null;
-			System.Type[] constructor = new System.Type[]{};
-			System.Reflection.ConstructorInfo[] constructors = null;
-       
+			Object instance = null;
+			System.Type[] constructor = new System.Type[] {};
+			ConstructorInfo[] constructors = null;
+
 			constructors = classType.GetConstructors();
 
 			if (constructors.Length == 0)
-				throw new System.UnauthorizedAccessException();
+				throw new UnauthorizedAccessException();
 			else
 			{
-				for(int i = 0; i < constructors.Length; i++)
+				for (int i = 0; i < constructors.Length; i++)
 				{
-					System.Reflection.ParameterInfo[] parameters = constructors[i].GetParameters();
+					ParameterInfo[] parameters = constructors[i].GetParameters();
 
 					if (parameters.Length == 0)
 					{
-						instance = classType.GetConstructor(constructor).Invoke(new System.Object[]{});
+						instance = classType.GetConstructor(constructor).Invoke(new Object[] {});
 						break;
 					}
-					else if (i == constructors.Length -1)     
-						throw new System.MethodAccessException();
-				}                       
+					else if (i == constructors.Length - 1)
+						throw new MethodAccessException();
+				}
 			}
 			return instance;
 		}
 
 
 		/*******************************/
+
 		/// <summary>
 		/// Writes the exception stack trace to the received stream
 		/// </summary>
 		/// <param name="throwable">Exception to obtain information from</param>
 		/// <param name="stream">Output sream used to write to</param>
-		public static void WriteStackTrace(System.Exception throwable, System.IO.TextWriter stream)
+		public static void WriteStackTrace(Exception throwable, TextWriter stream)
 		{
 			stream.Write(throwable.ToString());
 			stream.Flush();
 		}
 
 		/*******************************/
+
 		/// <summary>
 		/// Adds a new key-and-value pair into the hash table
 		/// </summary>
@@ -1057,30 +1070,31 @@ namespace NHibernate.Tool.hbm2net
 		/// <param name="key">Key used to obtain the value</param>
 		/// <param name="newValue">Value asociated with the key</param>
 		/// <returns>The old element associated with the key</returns>
-		public static System.Object PutElement(System.Collections.IDictionary collection, System.Object key, System.Object newValue)
+		public static Object PutElement(IDictionary collection, Object key, Object newValue)
 		{
-			System.Object element = collection[key];
+			Object element = collection[key];
 			collection[key] = newValue;
 			return element;
 		}
 
 		/*******************************/
+
 		/// <summary>
 		/// Copies all of the elements from the source Dictionary to target Dictionary. These elements will replace any elements that 
 		/// target Dictionary had for any of the elements currently in the source dictionary.
 		/// </summary>
 		/// <param name="target">Target Dictionary.</param>
 		/// <param name="source">Source Dictionary.</param>
-		public static void PutAll(System.Collections.IDictionary target, System.Collections.IDictionary source)
+		public static void PutAll(IDictionary target, IDictionary source)
 		{
-			System.Collections.ICollection tempCollection1 = source.Keys;
-			System.Collections.ICollection tempCollection2 = source.Values;
+			ICollection tempCollection1 = source.Keys;
+			ICollection tempCollection2 = source.Values;
 
-			System.Array tempArray1 = System.Array.CreateInstance(typeof(System.Object), tempCollection1.Count);
-			System.Array tempArray2 = System.Array.CreateInstance(typeof(System.Object), tempCollection2.Count);
+			Array tempArray1 = Array.CreateInstance(typeof (Object), tempCollection1.Count);
+			Array tempArray2 = Array.CreateInstance(typeof (Object), tempCollection2.Count);
 
-			System.Int32 tempInt1 = new System.Int32();
-			System.Int32 tempInt2 = new System.Int32();
+			Int32 tempInt1 = new Int32();
+			Int32 tempInt2 = new Int32();
 
 			tempCollection1.CopyTo(tempArray1, tempInt1);
 			tempCollection2.CopyTo(tempArray2, tempInt2);

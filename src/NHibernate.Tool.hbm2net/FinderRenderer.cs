@@ -1,4 +1,8 @@
 using System;
+using System.Collections;
+using System.IO;
+using System.Reflection;
+using log4net;
 
 namespace NHibernate.Tool.hbm2net
 {
@@ -58,7 +62,7 @@ namespace NHibernate.Tool.hbm2net
 	/// </version>
 	public class FinderRenderer:AbstractRenderer
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		public FinderRenderer()
 		{
@@ -69,38 +73,34 @@ namespace NHibernate.Tool.hbm2net
 			object tempObject;
 			tempObject = "Character";
 			primitiveToObject["char"] = tempObject;
-			System.Object generatedAux = tempObject;
 			
 			object tempObject2;
 			tempObject2 = "Byte";
 			primitiveToObject["byte"] = tempObject2;
-			System.Object generatedAux2 = tempObject2;
+
 			object tempObject3;
 			tempObject3 = "Short";
 			primitiveToObject["short"] = tempObject3;
-			System.Object generatedAux3 = tempObject3;
+
 			object tempObject4;
 			tempObject4 = "Integer";
 			primitiveToObject["int"] = tempObject4;
-			System.Object generatedAux4 = tempObject4;
+
 			object tempObject5;
 			tempObject5 = "Long";
 			primitiveToObject["long"] = tempObject5;
-			System.Object generatedAux5 = tempObject5;
-			
+
 			object tempObject6;
 			tempObject6 = "Boolean";
 			primitiveToObject["boolean"] = tempObject6;
-			System.Object generatedAux6 = tempObject6;
 			
 			object tempObject7;
 			tempObject7 = "Float";
 			primitiveToObject["float"] = tempObject7;
-			System.Object generatedAux7 = tempObject7;
+
 			object tempObject8;
 			tempObject8 = "Double";
 			primitiveToObject["double"] = tempObject8;
-			System.Object generatedAux8 = tempObject8;
 
 			hibType["char"] = "Hibernate.CHARACTER";
 			
@@ -122,37 +122,28 @@ namespace NHibernate.Tool.hbm2net
 			object tempObject9;
 			tempObject9 = "Hibernate.DOUBLE";
 			hibType["double"] = tempObject9;
-			System.Object generatedAux9 = tempObject9;
 			
 			object tempObject10;
 			tempObject10 = "Hibernate.STRING";
 			hibType["String"] = tempObject10;
-			System.Object generatedAux10 = tempObject10;
 			
 			object tempObject11;
 			tempObject11 = "Hibernate.LOCALE";
 			hibType["Locale"] = tempObject11;
-			System.Object generatedAux11 = tempObject11;
 		}
 		
-		private const System.String MT_FINDERMETHOD = "finder-method";
-		private const System.String MT_FOREIGNFINDERMETHOD = "foreign-finder-name";
-		private const System.String MT_FOREIGNFINDERFIELD = "foreign-finder-field";
-		private const System.String MT_FOREIGNJOINFIELD = "foreign-join-field";
+		private const String MT_FINDERMETHOD = "finder-method";
+		private const String MT_FOREIGNFINDERMETHOD = "foreign-finder-name";
+		private const String MT_FOREIGNFINDERFIELD = "foreign-finder-field";
+		private const String MT_FOREIGNJOINFIELD = "foreign-join-field";
 		
 	
 		
 		
 		/// <summary> Render finder classes.</summary>
-		/// <param name="">classMapping
-		/// </param>
-		/// <param name="">class2classmap
-		/// </param>
-		/// <param name="">mainwriter
-		/// </param>
 		/// <exception cref="">  Exception
 		/// </exception>
-		public override void  render(System.String savedToPackage, System.String savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter mainwriter)
+		public override void  render(String savedToPackage, String savedToClass, ClassMapping classMapping, IDictionary class2classmap, StreamWriter mainwriter)
 		{
 			
 			genPackageDelaration(savedToPackage, classMapping, mainwriter);
@@ -160,11 +151,11 @@ namespace NHibernate.Tool.hbm2net
 			
 			// switch to another writer to be able to insert the actually
 			// used imports when whole class has been rendered.
-			System.IO.StringWriter writer = new System.IO.StringWriter();
+			StringWriter writer = new StringWriter();
 			
 			writer.WriteLine("/** Automatically generated Finder class for " + savedToClass + ".\n" + " * @author Hibernate FinderGenerator " + " **/");
 			
-			System.String classScope = "public";
+			String classScope = "public";
 			writer.Write(classScope + " class " + savedToClass);
 			
 			// always implements Serializable
@@ -175,7 +166,7 @@ namespace NHibernate.Tool.hbm2net
 			
 			// switch to another writer to be able to insert the
 			// veto- and changeSupport fields
-			System.IO.StringWriter propWriter = new System.IO.StringWriter();
+			StringWriter propWriter = new StringWriter();
 			
 			doFinders(classMapping, class2classmap, propWriter);
 			
@@ -193,20 +184,14 @@ namespace NHibernate.Tool.hbm2net
 		/// finderName</meta> block defined. Also, create a findAll(Session) method.
 		/// 
 		/// </summary>
-		/// <param name="">classMapping
-		/// </param>
-		/// <param name="">class2classmap
-		/// </param>
-		/// <param name="">writer
-		/// </param>
-		public virtual void  doFinders(ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StringWriter writer)
+		public virtual void  doFinders(ClassMapping classMapping, IDictionary class2classmap, StringWriter writer)
 		{
 			// Find out of there is a system wide way to get sessions defined
-			System.String sessionMethod = classMapping.getMetaAsString("session-method").Trim();
+			String sessionMethod = classMapping.getMetaAsString("session-method").Trim();
 			
 			// fields
 			//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
-			for (System.Collections.IEnumerator fields = classMapping.Fields.GetEnumerator(); fields.MoveNext(); )
+			for (IEnumerator fields = classMapping.Fields.GetEnumerator(); fields.MoveNext(); )
 			{
 				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 				FieldProperty field = (FieldProperty) fields.Current;
@@ -214,7 +199,7 @@ namespace NHibernate.Tool.hbm2net
 				if (field.getMeta(MT_FINDERMETHOD) != null)
 				{
 					
-					System.String finderName = field.getMetaAsString(MT_FINDERMETHOD);
+					String finderName = field.getMetaAsString(MT_FINDERMETHOD);
 					
 					if ("".Equals(sessionMethod))
 					{
@@ -235,9 +220,9 @@ namespace NHibernate.Tool.hbm2net
 				}
 				else if (field.getMeta(MT_FOREIGNFINDERMETHOD) != null)
 				{
-					System.String finderName = field.getMetaAsString(MT_FOREIGNFINDERMETHOD);
-					System.String fieldName = field.getMetaAsString(MT_FOREIGNFINDERFIELD);
-					System.String joinFieldName = field.getMetaAsString(MT_FOREIGNJOINFIELD);
+					String finderName = field.getMetaAsString(MT_FOREIGNFINDERMETHOD);
+					String fieldName = field.getMetaAsString(MT_FOREIGNFINDERFIELD);
+					String joinFieldName = field.getMetaAsString(MT_FOREIGNJOINFIELD);
 					
 					// Build the query
 					QueryBuilder qb = new QueryBuilder();
@@ -253,7 +238,7 @@ namespace NHibernate.Tool.hbm2net
 					}
 					FieldProperty foreignField = null;
 					//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
-					for (System.Collections.IEnumerator foreignFields = foreignClass.Fields.GetEnumerator(); foreignFields.MoveNext(); )
+					for (IEnumerator foreignFields = foreignClass.Fields.GetEnumerator(); foreignFields.MoveNext(); )
 					{
 						//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 						FieldProperty f = (FieldProperty) foreignFields.Current;
@@ -333,17 +318,13 @@ namespace NHibernate.Tool.hbm2net
 		
 		//UPGRADE_TODO: Class 'java.util.HashMap' was converted to 'System.Collections.Hashtable' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilHashMap"'
 		//UPGRADE_NOTE: The initialization of  'primitiveToObject' was moved to static method 'NHibernate.Tool.hbm2net.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
-		internal static System.Collections.IDictionary primitiveToObject;
+		internal static IDictionary primitiveToObject;
 		
 		
 		/// <summary>  Generate the imports for the finder class.
 		/// 
 		/// </summary>
-		/// <param name="">classMapping
-		/// </param>
-		/// <param name="">writer
-		/// </param>
-		public virtual void  doImports(ClassMapping classMapping, System.IO.StreamWriter writer)
+		public virtual void  doImports(ClassMapping classMapping, StreamWriter writer)
 		{
 			// imports is not included from the class it self as this is a separate generated class.
 			/*   classMapping.getImports().add("java.io.Serializable");
@@ -369,19 +350,15 @@ namespace NHibernate.Tool.hbm2net
 		/// <summary>  Gets the fieldAsObject attribute of the FinderRenderer object
 		/// 
 		/// </summary>
-		/// <param name="">prependThis
-		/// </param>
-		/// <param name="">field
-		/// </param>
 		/// <returns>
 		/// </returns>
-		public static System.String getFieldAsObject(bool prependThis, FieldProperty field)
+		public static String getFieldAsObject(bool prependThis, FieldProperty field)
 		{
 			ClassName type = field.ClassType;
 			if (type != null && type.Primitive && !type.Array)
 			{
 				//UPGRADE_TODO: Method 'java.util.Map.get' was converted to 'System.Collections.IDictionary.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilMapget_javalangObject"'
-				System.String typeName = (System.String) primitiveToObject[type.Name];
+				String typeName = (String) primitiveToObject[type.Name];
 				typeName = "new " + typeName + "( ";
 				typeName += (prependThis?"this.":"");
 				return typeName + field.FieldName + " )";
@@ -395,24 +372,20 @@ namespace NHibernate.Tool.hbm2net
 		/// </summary>
 		//UPGRADE_TODO: Class 'java.util.HashMap' was converted to 'System.Collections.Hashtable' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilHashMap"'
 		//UPGRADE_NOTE: The initialization of  'hibType' was moved to static method 'NHibernate.Tool.hbm2net.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
-		internal static System.Collections.IDictionary hibType;
+		internal static IDictionary hibType;
 		
 		
 		/// <summary>  Return the hibernate type string for the given field
 		/// 
 		/// </summary>
-		/// <param name="">prependThis
-		/// </param>
-		/// <param name="">field
-		/// </param>
 		/// <returns>
 		/// </returns>
-		public static System.String getFieldAsHibernateType(bool prependThis, FieldProperty field)
+		public static String getFieldAsHibernateType(bool prependThis, FieldProperty field)
 		{
 			ClassName type = field.ClassType;
 			//UPGRADE_TODO: Method 'java.util.Map.get' was converted to 'System.Collections.IDictionary.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilMapget_javalangObject"'
-			System.String hibTypeString = (System.String) hibType[type.Name];
-			if ((System.Object) hibTypeString != null)
+			String hibTypeString = (String) hibType[type.Name];
+			if ((Object) hibTypeString != null)
 			{
 				return hibTypeString;
 			}
@@ -423,8 +396,8 @@ namespace NHibernate.Tool.hbm2net
 		}
 		static FinderRenderer()
 		{
-			primitiveToObject = new System.Collections.Hashtable();
-			hibType = new System.Collections.Hashtable();
+			primitiveToObject = new Hashtable();
+			hibType = new Hashtable();
 		}
 	}
 }

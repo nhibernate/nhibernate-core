@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Text;
 using Type = NHibernate.Type.TypeType;
 namespace NHibernate.Tool.hbm2net
 {
@@ -11,11 +13,11 @@ namespace NHibernate.Tool.hbm2net
 		private void  InitBlock()
 		{
 			//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
-			objects = new System.Collections.ArrayList();
+			objects = new ArrayList();
 			//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
-			joinConditions = new System.Collections.ArrayList();
+			joinConditions = new ArrayList();
 			//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
-			criteria = new System.Collections.ArrayList();
+			criteria = new ArrayList();
 			//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 			params_Renamed = new SupportClass.ListCollectionSupport();
 			//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
@@ -31,11 +33,11 @@ namespace NHibernate.Tool.hbm2net
 		}
 		/// <returns> The query in string form
 		/// </returns>
-		virtual public System.String Query
+		virtual public String Query
 		{
 			get
 			{
-				System.Text.StringBuilder sb = new System.Text.StringBuilder("select ");
+				StringBuilder sb = new StringBuilder("select ");
 				
 				// Foreign class is what we're selecting from
 				sb.Append(foreignClass.Name.ToLower() + " from ");
@@ -66,7 +68,7 @@ namespace NHibernate.Tool.hbm2net
 					//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 					for (int i = 0; i < criteria.Count; i++)
 					{
-						System.String thisCriteria = (System.String) criteria[i];
+						String thisCriteria = (String) criteria[i];
 						sb.Append(" " + thisCriteria + " ");
 						//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 						if (i < criteria.Count - 1)
@@ -89,17 +91,17 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String ParamTypesAsString
+		virtual public String ParamTypesAsString
 		{
 			get
 			{
-				System.String types = "new Type[] {";
+				String types = "new Type[] {";
 				// Always need the local class as an association type
 				types += ("Hibernate.association(" + localClass.Name + ".class), ");
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				for (int i = 0; i < criteriaParamTypes.Count; i++)
 				{
-					System.String s = (System.String) criteriaParamTypes[i];
+					String s = (String) criteriaParamTypes[i];
 					types += s;
 					//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 					if (i != criteriaParamTypes.Count - 1)
@@ -120,17 +122,17 @@ namespace NHibernate.Tool.hbm2net
 			}
 			
 		}
-		virtual public System.String ParamsAsString
+		virtual public String ParamsAsString
 		{
 			get
 			{
-				System.String types = "new Object[] {";
+				String types = "new Object[] {";
 				// Always joining via the local class
 				types += (localClass.Name.ToLower() + ", ");
 				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				for (int i = 0; i < params_Renamed.Count; i++)
 				{
-					System.String s = (System.String) params_Renamed[i];
+					String s = (String) params_Renamed[i];
 					types += s;
 					//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 					if (i != params_Renamed.Count - 1)
@@ -143,21 +145,21 @@ namespace NHibernate.Tool.hbm2net
 			
 		}
 		
-		public const System.String CRITERIA_EQUALS = "=";
-		public const System.String CRITERIA_GREATER_THAN = ">";
-		public const System.String CRITERIA_LESS_THAN = "<";
-		public const System.String CRITERIA_LIKE = "LIKE";
+		public const String CRITERIA_EQUALS = "=";
+		public const String CRITERIA_GREATER_THAN = ">";
+		public const String CRITERIA_LESS_THAN = "<";
+		public const String CRITERIA_LIKE = "LIKE";
 		
 		// List of strings that will later be put together to form the query
 		//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 		//UPGRADE_NOTE: The initialization of  'objects' was moved to method 'InitBlock'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
-		private System.Collections.ArrayList objects;
+		private ArrayList objects;
 		//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 		//UPGRADE_NOTE: The initialization of  'joinConditions' was moved to method 'InitBlock'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
-		private System.Collections.ArrayList joinConditions;
+		private ArrayList joinConditions;
 		//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 		//UPGRADE_NOTE: The initialization of  'criteria' was moved to method 'InitBlock'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
-		private System.Collections.ArrayList criteria;
+		private ArrayList criteria;
 		//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.ArrayList' and 'System.Collections.ArrayList' may cause compilation errors. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1186"'
 		//UPGRADE_NOTE: The initialization of  'params_Renamed' was moved to method 'InitBlock'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
 		private SupportClass.ListCollectionSupport params_Renamed;
@@ -167,14 +169,14 @@ namespace NHibernate.Tool.hbm2net
 		
 		private ClassMapping localClass = null;
 		private ClassMapping foreignClass = null;
-		private System.String joinFieldName = "";
+		private String joinFieldName = "";
 		
 		public QueryBuilder()
 		{
 			InitBlock();
 		}
 		
-		public virtual void  setForeignClass(ClassName foreignClass, System.Collections.IDictionary classMappings, System.String joinFieldName)
+		public virtual void  setForeignClass(ClassName foreignClass, IDictionary classMappings, String joinFieldName)
 		{
 			//UPGRADE_TODO: Method 'java.util.Map.get' was converted to 'System.Collections.IDictionary.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilMapget_javalangObject"'
 			ClassMapping classMapToAdd = (ClassMapping) classMappings[foreignClass.FullyQualifiedName];
@@ -182,9 +184,9 @@ namespace NHibernate.Tool.hbm2net
 			this.joinFieldName = joinFieldName;
 		}
 		
-		public virtual void  addCritera(ClassMapping criteriaClass, FieldProperty field, System.String condition)
+		public virtual void  addCritera(ClassMapping criteriaClass, FieldProperty field, String condition)
 		{
-			System.String newCritera = criteriaClass.Name.ToLower() + "." + field.FieldName + condition + "?";
+			String newCritera = criteriaClass.Name.ToLower() + "." + field.FieldName + condition + "?";
 			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			params_Renamed.Add(FinderRenderer.getFieldAsObject(false, field));
 			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'

@@ -1,13 +1,15 @@
 using System;
+using System.Collections;
+using System.Collections.Specialized;
+using System.IO;
+
 namespace NHibernate.Tool.hbm2net
 {
-	
-	
 	public interface Renderer
 		{
 			
 			/// <summary>Called with the optional list of properties from config.xml </summary>
-			void  configure(System.Collections.Specialized.NameValueCollection properties);
+			void  configure(NameValueCollection properties);
 			
 			/// <summary> </summary>
 			/// <param name="savedToPackage">what package is this class placed in
@@ -21,7 +23,7 @@ namespace NHibernate.Tool.hbm2net
 			/// <param name="writer">where we want the output
 			/// @throws Exception
 			/// </param>
-			void  render(System.String savedToPackage, System.String savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter writer);
+			void  render(String savedToPackage, String savedToClass, ClassMapping classMapping, IDictionary class2classmap, StreamWriter writer);
 			
 			/// <summary> Called by the generator to determine the package name of the rendered class.
 			/// 
@@ -30,7 +32,7 @@ namespace NHibernate.Tool.hbm2net
 			/// </param>
 			/// <returns> the package name the class should be saved to
 			/// </returns>
-			System.String getSaveToPackage(ClassMapping classMapping);
+			String getSaveToPackage(ClassMapping classMapping);
 			
 			/// <summary> Called by the generator to determine the class name of the rendered class.
 			/// 
@@ -39,6 +41,6 @@ namespace NHibernate.Tool.hbm2net
 			/// </param>
 			/// <returns> the class name the class should be saved to
 			/// </returns>
-			System.String getSaveToClassName(ClassMapping classMapping);
+			String getSaveToClassName(ClassMapping classMapping);
 		}
 }
