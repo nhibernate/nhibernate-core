@@ -1,9 +1,10 @@
 using System;
 
-namespace NHibernate {
-	
-	public class CallbackException : HibernateException {
-		
+namespace NHibernate 
+{
+	[Serializable]
+	public class CallbackException : HibernateException 
+	{
 		public CallbackException(Exception root) : base("An exception occured in a callback", root) {}
 
 		public CallbackException(string message) : base(message) {}
