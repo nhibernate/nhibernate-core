@@ -2320,7 +2320,7 @@ namespace NHibernate.Impl {
 			if ( type.IsPersistentCollectionType ) {
 
 				if ( obj is PersistentCollection ) {
-
+					//TODO: this looks out of synch with H2.0.3
 					PersistentCollection pc = (PersistentCollection) obj;
 					if ( pc.SetSession(this) ) AddCollectionEntry(pc); // (if it wasn't initialized, the user stuffed up, not hibernate
 				
