@@ -99,6 +99,12 @@ namespace NHibernate.Type {
 			return (IType) basicTypes[name];
 		}
 
+		/// <summary>
+		/// Uses hueristics to deduce a Hibernate type given a string naming the type or
+		/// Java class. Return an instance of <c>NHibernate.Type.IType</c>
+		/// </summary>
+		/// <param name="typeName"></param>
+		/// <returns></returns>
 		public static IType HueristicType(string typeName) {
 			IType type = TypeFactory.Basic(typeName);
 			if (type==null) {

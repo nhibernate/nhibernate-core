@@ -9,7 +9,7 @@ namespace NHibernate {
 		
 		public MappingException(string msg, Exception root) : base(msg, root) {}
 
-		public MappingException(Exception root) : base(root) {}
+		public MappingException(Exception root) : base(root) { }
 
 		public MappingException(string msg) : base(msg) {}
 	}

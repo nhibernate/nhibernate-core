@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP>
         <Build>
-            <Settings ReferencePath = "C:\Program Files\log4net1.2.0-beta5\build\bin\ReleaseStrong\;C:\Program Files\NUnit V2.0\bin\;F:\DOTNET\Log4Net\log4net1.2.0-beta5\build\bin\Release\" >
+            <Settings ReferencePath = "C:\Program Files\log4net1.2.0-beta5\build\bin\ReleaseStrong\;C:\Program Files\NUnit V2.0\bin\;F:\DOTNET\Log4Net\log4net1.2.0-beta5\build\bin\Release\;C:\Documents and Settings\Owner\My Documents\Visual Studio Projects\log4net1.2.0-beta5\build\bin\ReleaseStrong\" >
                 <Config
                     Name = "Debug"
                     EnableASPDebugging = "false"
