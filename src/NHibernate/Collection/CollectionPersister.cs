@@ -678,20 +678,12 @@ namespace NHibernate.Collection
 			{
 				if (log.IsDebugEnabled ) log.Debug("Deleting collection: " + role + "#" + id);
 
-				//IDbCommand st = session.Batcher.PrepareBatchStatement( SQLDeleteString );
-				IDbCommand st = session.Preparer.PrepareCommand(SqlDeleteString);
+				IDbCommand st = session.Batcher.PrepareBatchCommand( SqlDeleteString );
 
 				try 
 				{
 					WriteKey(st, id, false, session);
-					//TODO: this is hackish for expected row count
-					int expectedRowCount = -1;
-					int rowCount = st.ExecuteNonQuery();
-
-					//negative expected row count means we don't know how many rows to expect
-					if ( expectedRowCount>0 && expectedRowCount!=rowCount )
-						throw new HibernateException("SQL update or deletion failed (row not found)");
-					//session.Batcher.AddToBatch(-1);
+					session.Batcher.AddToBatch(-1);
 				} 
 				catch (Exception e) 
 				{
@@ -712,8 +704,7 @@ namespace NHibernate.Collection
 				ICollection entries = collection.Entries();
 				if (entries.Count > 0) 
 				{
-					//IDbCommand st = session.Batcher.PrepareBatchStatement( SQLInsertRowString );
-					IDbCommand st = session.Preparer.PrepareCommand(SqlInsertRowString);
+					IDbCommand st = session.Batcher.PrepareBatchCommand( SqlInsertRowString );
 
 					int i=0;
 					try 
@@ -759,21 +750,14 @@ namespace NHibernate.Collection
 				ICollection entries = collection.GetDeletes(elementType);
 				if (entries.Count > 0) 
 				{
-					IDbCommand st = session.Preparer.PrepareCommand(SqlDeleteRowString);
+					IDbCommand st = session.Batcher.PrepareBatchCommand( SqlDeleteRowString ); 
 					try 
 					{
 						foreach(object entry in entries) 
 						{
 							if(!hasIdentifier) WriteKey(st, id, false, session);
 							WriteRowSelect(st, entry, session);
-							//TODO: this is hackish for expected row count
-							int expectedRowCount = -1;
-							int rowCount = st.ExecuteNonQuery();
-
-							//negative expected row count means we don't know how many rows to expect
-							if ( expectedRowCount>0 && expectedRowCount!=rowCount )
-								throw new HibernateException("SQL update or deletion failed (row not found)");
-							//session.Batcher.AddToBatch(-1);
+							session.Batcher.AddToBatch(-1);
 						}
 					} 
 					catch (Exception e) 
@@ -801,17 +785,13 @@ namespace NHibernate.Collection
 				{
 					if (collection.NeedsUpdating(entry, i, elementType)) 
 					{
-						if (st==null) st = session.Preparer.PrepareCommand(SqlUpdateRowString); //st = session.Batcher.PrepareBatchStatement( SQLUpdateRowString );
+						if (st==null) 
+						{
+							st = session.Batcher.PrepareBatchCommand( SqlUpdateRowString ); 
+						}
 						if(!hasIdentifier) WriteKey(st, id, true, session);
 						collection.WriteTo(st, this, entry, i, true);
-						//TODO: this is hackish for expected row count
-						int expectedRowCount = 1;
-						int rowCount = st.ExecuteNonQuery();
-
-						//negative expected row count means we don't know how many rows to expect
-						if ( expectedRowCount>0 && expectedRowCount!=rowCount )
-							throw new HibernateException("SQL update or deletion failed (row not found)");
-						//session.Batcher.AddToBatch(1);
+						session.Batcher.AddToBatch(1);
 					}
 					i++;
 				}
@@ -833,23 +813,20 @@ namespace NHibernate.Collection
 				{
 					if (collection.NeedsUpdating(entry, i, elementType) ) 
 					{
-						if (rmvst==null)  rmvst = session.Preparer.PrepareCommand(SqlDeleteRowString);//rmvst = session.Batcher.PrepareBatchStatement( SQLDeleteRowString );
+						if (rmvst==null) 
+						{
+							rmvst = session.Batcher.PrepareBatchCommand( SqlDeleteRowString ); 
+						}
 						WriteKey(rmvst, id, false, session);
 						WriteIndex(rmvst, collection.GetIndex(entry, i), false, session);
-						//TODO: this is hackish for expected row count
-						int expectedRowCount = -1;
-						int rowCount = rmvst.ExecuteNonQuery();
-
-						//negative expected row count means we don't know how many rows to expect
-						if ( expectedRowCount>0 && expectedRowCount!=rowCount )
-							throw new HibernateException("SQL update or deletion failed (row not found)");
-						//session.Batcher.AddToBatch(-1);
+						session.Batcher.AddToBatch(-1);
 					}
 					i++;
 				}
 			} 
 			catch(Exception e) 
 			{
+				session.Batcher.AbortBatch( e );
 				throw e;
 			}
 
@@ -864,17 +841,13 @@ namespace NHibernate.Collection
 				{
 					if (collection.NeedsUpdating(entry, i, elementType) ) 
 					{
-						if (insst==null) insst = session.Preparer.PrepareCommand(SqlInsertRowString); //session.Batcher.PrepareBatchStatement( SQLInsertRowString );
+						if (insst==null) 
+						{
+							insst = session.Batcher.PrepareBatchCommand( SqlInsertRowString ); 
+						}
 						WriteKey(insst, id, false, session);
 						collection.WriteTo(insst, this, entry, i, false);
-						//TODO: this is hackish for expected row count
-						int expectedRowCount = 1;
-						int rowCount = insst.ExecuteNonQuery();
-
-						//negative expected row count means we don't know how many rows to expect
-						if ( expectedRowCount>0 && expectedRowCount!=rowCount )
-							throw new HibernateException("SQL update or deletion failed (row not found)");
-						//session.Batcher.AddToBatch(1);
+						session.Batcher.AddToBatch(1);
 					}
 					i++;
 				}
@@ -921,17 +894,13 @@ namespace NHibernate.Collection
 						if (collection.NeedsInserting(entry, i, elementType)) 
 						{
 							collection.PreInsert(this, entry, i); //TODO: (Big): this here screws up batching! H2.0.3 comment
-							if (st==null) st = session.Preparer.PrepareCommand(SqlInsertRowString); //st = session.Batcher.PrepareBatchStatement(SQLInsertRowString);
+							if (st==null) 
+							{
+								st = session.Batcher.PrepareBatchCommand(SqlInsertRowString); 
+							}
 							WriteKey(st, id, false, session);
 							collection.WriteTo(st, this, entry, i, false);
-							//TODO: this is hackish for expected row count
-							int expectedRowCount = 1;
-							int rowCount = st.ExecuteNonQuery();
-
-							//negative expected row count means we don't know how many rows to expect
-							if ( expectedRowCount>0 && expectedRowCount!=rowCount )
-								throw new HibernateException("SQL update or deletion failed (row not found)");
-							//session.Batcher.AddToBatch(1);
+							session.Batcher.AddToBatch(1);
 						}
 						i++;
 					}
