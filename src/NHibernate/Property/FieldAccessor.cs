@@ -13,7 +13,17 @@ namespace NHibernate.Property
 	/// </remarks>
 	public class FieldAccessor : IPropertyAccessor
 	{
-		
+		protected IFieldNamingStrategy namingStragety;
+
+		public FieldAccessor() 
+		{
+		}
+
+		public FieldAccessor(IFieldNamingStrategy namingStragety) 
+		{
+			this.namingStragety = namingStragety;
+		}
+
 		#region IPropertyAccessor Members
 
 		public IGetter GetGetter(System.Type theClass, string propertyName)
@@ -57,9 +67,16 @@ namespace NHibernate.Property
 		/// <remarks>
 		/// This uses the convention that a Property named <c>Id</c> will have a field </c>id</c>
 		/// </remarks>
-		protected virtual string GetFieldName(string propertyName) 
+		private string GetFieldName(string propertyName) 
 		{
-			return propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
+			if(namingStragety==null) 
+			{
+				return propertyName;
+			}
+			else 
+			{
+				return namingStragety.GetFieldName(propertyName);
+			}
 		}
 	}
 }

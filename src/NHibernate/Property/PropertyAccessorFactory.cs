@@ -12,8 +12,9 @@ namespace NHibernate.Property
 	{
 		private static readonly IPropertyAccessor basicPropertyAccessor = new BasicPropertyAccessor();
 		private static readonly IPropertyAccessor fieldAccessor = new FieldAccessor();
-		private static readonly IPropertyAccessor fieldUnderscoreAccessor = new FieldUnderscorePrefixAccessor();
-		private static readonly IPropertyAccessor fieldMUnderscoreAccessor = new FieldMUnderscorePrefixAccessor();
+		private static readonly IPropertyAccessor fieldCamelCaseAccessor = new FieldAccessor( new CamelCaseStrategy() );
+		private static readonly IPropertyAccessor fieldCamelCaseUnderscoreAccessor = new FieldAccessor( new CamelCaseUnderscoreStrategy() );
+		private static readonly IPropertyAccessor fieldPascalCaseMUnderscoreAccessor = new FieldAccessor( new PascalCaseMUnderscoreStrategy() );
 
 
 		private PropertyAccessorFactory()
@@ -29,10 +30,12 @@ namespace NHibernate.Property
 			{
 				case "field" :
 					return fieldAccessor;
-				case "field.underscore" :
-					return fieldUnderscoreAccessor;
-				case "field.munderscore" :
-					return fieldMUnderscoreAccessor;
+				case "field.camelcase" :
+					return fieldCamelCaseAccessor;
+				case "field.camelcase-underscore" :
+					return fieldCamelCaseUnderscoreAccessor;
+				case "field.pascalcase-m-underscore" :
+					return fieldPascalCaseMUnderscoreAccessor;
 			}
 			
 			System.Type accessorClass;

@@ -28,10 +28,10 @@ namespace NHibernate.Test.PropertyTest
 		[SetUp]
 		public virtual void SetUp() 
 		{
-			_accessor = new FieldAccessor();
+			_accessor = PropertyAccessorFactory.GetPropertyAccessor("field");
 			_getter = _accessor.GetGetter( typeof(FieldClass), "Id" );
 			_setter = _accessor.GetSetter( typeof(FieldClass), "Id" );
-			_instance = new FieldClass(6, -1, 0);
+			_instance = new FieldClass( 0, 6, -1, 2);
 		}
 
 		[Test]

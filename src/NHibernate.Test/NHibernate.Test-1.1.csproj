@@ -356,6 +356,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "PropertyTest\CamelCaseFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\CamelCaseUnderscoreFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "PropertyTest\FieldAccessorFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -366,12 +376,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "PropertyTest\FieldMUnderscorePrefixAccessorFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PropertyTest\FieldUnderscorePrefixAccessorFixture.cs"
+                    RelPath = "PropertyTest\PascalCaseMUnderscoreFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

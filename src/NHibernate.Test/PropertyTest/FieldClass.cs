@@ -7,21 +7,24 @@ namespace NHibernate.Test.PropertyTest
 	/// </summary>
 	public class FieldClass 
 	{
+		private int Id;
 		private int _id;
-		private int m_id;
+		private int m_Id;
 		private int id;
 
-		public FieldClass( int underscoreId, int mUnderscoreId, int Id ) 
+		public FieldClass(int Id, int underscoreId, int mUnderscoreId, int camelId ) 
 		{
+			this.Id = Id;
 			_id = underscoreId;
-			m_id = mUnderscoreId;
-			id = Id;
+			m_Id = mUnderscoreId;
+			id = camelId;
 		}
 
 		public void Increment() 
 		{
+			Id++;
 			_id++;
-			m_id++;
+			m_Id++;
 			id++;
 		}
 	}

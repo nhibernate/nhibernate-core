@@ -1338,6 +1338,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Property\CamelCaseStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Property\CamelCaseUnderscoreStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Property\FieldAccessor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1348,17 +1358,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Property\FieldMUnderscorePrefixAccessor.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Property\FieldSetter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Property\FieldUnderscorePrefixAccessor.cs"
+                    RelPath = "Property\IFieldNamingStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1374,6 +1379,11 @@
                 />
                 <File
                     RelPath = "Property\ISetter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Property\PascalCaseMUnderscoreStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
