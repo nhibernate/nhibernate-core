@@ -119,6 +119,8 @@ namespace NHibernate.Dialect
 				case DbType.Currency:
 					return "DECIMAL(15,4)";
 					//break;
+				case DbType.Date:
+					return "DATE";
 				case DbType.DateTime:
 					return "TIMESTAMP";
 					//break;

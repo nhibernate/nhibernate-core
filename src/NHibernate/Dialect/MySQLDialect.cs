@@ -139,6 +139,9 @@ namespace NHibernate.Dialect {
 				case DbType.Currency:
 					return "MONEY";
 					//break;
+				case DbType.Date:
+					return "DATE";
+
 				case DbType.DateTime:
 					return "DATETIME";
 					//break;
