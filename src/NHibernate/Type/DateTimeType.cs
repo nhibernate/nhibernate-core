@@ -85,8 +85,10 @@ namespace NHibernate.Type
 
 		public override object DeepCopyNotNull(object value) 
 		{
-			DateTime old = (DateTime) value;
-			return new DateTime(old.Year, old.Month, old.Day, old.Hour, old.Minute, old.Second);
+			// take advantage of the fact that unboxing with the cast
+			// and then reboxing with the return as an object will
+			// return a different box.  
+			return (DateTime)value;
 		}
 
 		public override bool HasNiceEquals 
