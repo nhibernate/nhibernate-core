@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Util;
@@ -59,7 +60,14 @@ namespace NHibernate.Dialect
 		/// <returns>the default type name associated with the specified key</returns>
 		public string Get( DbType typecode )
 		{
-			return ( string ) defaults[ typecode ];
+			string result = ( string ) defaults[ typecode ];
+
+			if( result == null )
+			{
+				throw new ArgumentException("Dialect does not support DbType." + typecode,
+					"typecode");
+			}
+			return result;
 		}
 
 		/// <summary>
