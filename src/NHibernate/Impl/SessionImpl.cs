@@ -38,6 +38,36 @@ namespace NHibernate.Impl
 			// and the NamedParametersPrefix Properties in Dialect and all subclasses.
 			if (dialect.UseNamedParameters)
 			{
+				/* 
+				 * (?<param>\?)
+				 * Capture to <param>
+				 *		?
+				 * 
+				 * "select a,b,c from a=? and b=? and c=?"
+				 * Splitting: select a,b,c from a=? and b=? and c=?
+				 *		[0] => select a,b,c from a=
+				 *		[1] => ?
+				 *		[2] =>  and b=
+				 *		[3] => ?
+				 *		[4] =>  and c=
+				 *		[5] => ?
+				 *		[6] => 
+				 * (?<param>@\w*\b) -> actual string for Ms Sql 2000 Dialect (@=named param prefix
+				 * Capture to <param>
+				 *		:
+				 *		Any word character
+				 *		* (zero or more times)
+				 *		Word boundy between //w and //W
+				 * 
+				 * takes a string like "select a,b,c from a=@p1 and b=@p2 c='@'"
+				 * and splits it into
+				 * Splitting: select a,b,c from a=@p1 and b=@p2 and c='@'
+				 *		[0] => select a,b,c from a=
+				 *		[1] => @p1
+				 *		[2] =>  and b=
+				 *		[3] => @p2
+				 *		[4] =>  and c='@'
+				 */ 
 				Regex parser = new Regex("(?<param>" + dialect.NamedParametersPrefix + "\\w*\\b)", RegexOptions.None); //.Compiled);
 				string[] tokens = parser.Split(sql);
 				if  (tokens.Length > 0)	
@@ -67,7 +97,7 @@ namespace NHibernate.Impl
 					IDbDataParameter param;
 
 					param = cmd.CreateParameter();
-					param.ParameterName = paramIdx.ToString();
+					param.ParameterName = dialect.UseNamedParameters ? dialect.NamedParametersPrefix + "p" + paramIdx.ToString() : paramIdx.ToString();
 					cmd.Parameters.Add(param);
 					paramIdx++;
 					idx++;
@@ -77,6 +107,28 @@ namespace NHibernate.Impl
 
 		public static void ReplaceHqlParameters(Dialect.Dialect dialect, IDbCommand cmd) 
 		{
+			/*
+			 * (?<param>\[<\w*>\])
+			 * Capture to <param>
+			 *		[<
+			 *		Any word character
+			 *		*(zero or more times)
+			 *		>]
+			 * 
+			 * select a,b,c from a=[<parama>] and b=[<paramb>] 
+			 * for the life of me I could not figure out why the params would be wrapped
+			 * with a "[<" and ">]" - turns out in Hql.WhereParser.DoTokens one of the original
+			 * developers changed it to that from "?" -> that is what I would prefer to use
+			 * instead of this silly parameter and regexp use...
+			 * 
+			 * Splitting: select a,b,c from a=[<parama>] and b=[<paramb>]
+			 *	[0] => select a,b,c from a=
+			 *	[1] => [<parama>]
+			 *	[2] =>  and b=
+			 *	[3] => [<paramb>]
+			 *	[4] => 
+			 *
+			 */ 
 			Regex parser = new Regex("(?<param>\\[<\\w*>\\])", RegexOptions.Compiled);
 			string[] tokens;
 			string sql = cmd.CommandText;
