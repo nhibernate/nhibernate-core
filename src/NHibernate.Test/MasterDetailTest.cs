@@ -702,6 +702,19 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			c = (Category) s.Load( typeof(Category), id );
 			Assert.AreEqual( 1, c.Subcategories.Count );
+			
+			// modify the collection in another session
+			ISession s2 = sessions.OpenSession();
+			Category c2 = (Category)s2.Load( typeof(Category), id );
+			c2.Subcategories.Add( new Category() );
+			s2.Flush();
+			s2.Close();
+
+			// now lets refresh the collection and see if it picks up 
+			// the new objects
+			s.Refresh( c );
+			Assert.AreEqual( 2, c.Subcategories.Count, "should have gotten the addition from s2" );
+			
 			s.Delete(c);
 			s.Flush();
 			s.Close();

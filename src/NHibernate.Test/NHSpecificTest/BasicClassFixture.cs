@@ -689,6 +689,30 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		[Test]
+		public void BagRefresh() 
+		{
+			int id = 1;
+			int originalCount;
+
+			BasicClass basicClass = InsertBasicClass(id);
+			originalCount = basicClass.StringBag.Count;
+
+			ISession s = sessions.OpenSession();
+			ISession s2 = sessions.OpenSession();
+
+			BasicClass bc = (BasicClass)s.Load( typeof(BasicClass), id );
+			BasicClass bc2 = (BasicClass)s2.Load( typeof(BasicClass), id );
+
+			bc2.StringBag.Add( "refresh value" );
+			s2.Flush();
+			s2.Close();
+
+			s.Refresh( bc );
+			Assert.AreEqual( originalCount + 1, bc.StringBag.Count, "was refreshed correctly" );
+			s.Close();
+		}
+
+		[Test]
 		public void TestListCRUD() 
 		{
 			int maxIndex = 5;
