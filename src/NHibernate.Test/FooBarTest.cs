@@ -680,8 +680,7 @@ namespace NHibernate.Test
 			f = (Foo) list[0];
 			Assert.IsTrue(NHibernate.IsInitialized(f.TheFoo));
 			
-			//TODO: this is initialized because Proxies are not implemented yet.
-			//Assert.IsFalse( NHibernate.IsInitialized(f.component.Glarch) );
+			Assert.IsFalse( NHibernate.IsInitialized(f.Component.Glarch) );
 
 			s.Delete(f.TheFoo);
 			s.Delete(f);
@@ -1338,22 +1337,8 @@ namespace NHibernate.Test
 				}
 			}
 
-			//TODO: once proxies is implemented get rid of the try-catch and notFound
-			bool notFound = false;
-			try 
-			{
-				s.Load( typeof(Qux), (long)666 ); //nonexistent
-			}
-			catch(ObjectNotFoundException onfe) 
-			{
-				notFound = true;
-				Assert.IsNotNull(onfe, "should not find a Qux with id of 666 when Proxies are not implemented.");
-			}
-			Assert.IsTrue( 
-				notFound, 
-				"without proxies working - an ObjectNotFoundException should have been thrown.  " + 
-				"If Proxies are implemented then you need to change this code" 
-				);
+			s.Load( typeof(Qux), (long)666 ); //nonexistent
+
 
 			Assert.AreEqual( 1, s.Delete("from g in class Glarch") );
 			s.Flush();
@@ -1366,24 +1351,8 @@ namespace NHibernate.Test
 			s = (ISession)formatter.Deserialize(stream);
 			stream.Close();
 
-			//TODO: once proxies is implemented get rid of the try-catch and notFound
-			notFound = false;
-			try 
-			{
-				s.Load( typeof(Qux), (long)666 ) ; //nonexistent
-			}
-			catch(HibernateException he) 
-			{
-				notFound = true;
-				Assert.IsNotNull( he, "should have a session disconnected error when finding a Qux with id of 666 and Proxies are not implemented.");
-			}
-			Assert.IsTrue( 
-				notFound, 
-				"without proxies working - an ADOException/HibernateException should have been thrown.  " + 
-				"If Proxies are implemented then you need to change this code because the ISession does " +
-				"not need to be connected to the db when building a Proxy."
-				);
-			
+			s.Load( typeof(Qux), (long)666 ) ; //nonexistent
+
 			s.Close();
 		}
 

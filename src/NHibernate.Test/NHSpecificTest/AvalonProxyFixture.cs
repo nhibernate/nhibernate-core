@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest
 				
 			// serialize and then deserialize the session.
 			System.IO.Stream stream = new System.IO.MemoryStream();
-			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter( );
 			formatter.Serialize(stream, s);
 			stream.Position = 0;
 			s = (ISession)formatter.Deserialize(stream);

@@ -61,6 +61,7 @@
 	</class>
 	<class 
 		name="NHibernate.DomainModel.D, NHibernate.DomainModel" 
+		proxy="NHibernate.DomainModel.D, NHibernate.DomainModel"
 		discriminator-value="0"
 	>
 		<!-- 

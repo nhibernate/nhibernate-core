@@ -17,6 +17,7 @@ namespace NHibernate.Proxy
 	/// class that is similar to the java.lang.reflect.Proxy or if a library similar
 	/// to cglib was made in .net.
 	/// </remarks>
+	[Serializable]
 	public abstract class LazyInitializer
 	{
 		/// <summary>
@@ -27,6 +28,7 @@ namespace NHibernate.Proxy
 
 		protected object _target = null;
 		protected object _id;
+		[NonSerialized]
 		protected ISessionImplementor _session;
 		protected System.Type _persistentClass;
 		protected PropertyInfo _identifierPropertyInfo;
@@ -103,7 +105,9 @@ namespace NHibernate.Proxy
 		/// with the instantiated target.
 		/// </summary>
 		/// <param name="info">The <see cref="SerializationInfo"/> to write the object to.</param>
-		protected abstract void AddSerializationInfo(SerializationInfo info);
+		protected virtual void AddSerializationInfo(SerializationInfo info)
+		{
+		}
 
 		public object Identifier 
 		{
@@ -175,6 +179,9 @@ namespace NHibernate.Proxy
 		public virtual object Invoke(MethodBase method, params object[] args)
 		{
 			// all Proxies must implement INHibernateProxy which extends ISerializable
+			// not true anymore - DynamicProxy now handles the serialization.  All Proxy
+			// Generators should make sure that ISerializable is implemented if their 
+			// Proxy doesn't do it by default.
 			if( method.Name.Equals("GetObjectData") ) 
 			{
 				SerializationInfo info = (SerializationInfo)args[0];

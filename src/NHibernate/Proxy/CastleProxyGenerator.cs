@@ -3,20 +3,20 @@ using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using Apache.Avalon.DynamicProxy;
-using Apache.Avalon.DynamicProxy.Builder;
-using Apache.Avalon.DynamicProxy.Builder.CodeGenerators;
+using Castle.DynamicProxy;
+using Castle.DynamicProxy.Builder;
+using Castle.DynamicProxy.Builder.CodeGenerators;
 
 using NHibernate.Engine;
 
 namespace NHibernate.Proxy
 {
 	/// <summary>
-	/// An <see cref="IProxyGenerator"/> that uses the Apache.Avalon.DynamicProxy library.
+	/// An <see cref="IProxyGenerator"/> that uses the Castle.DynamicProxy library.
 	/// </summary>
-	public class AvalonProxyGenerator : IProxyGenerator
+	public class CastleProxyGenerator : IProxyGenerator
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(AvalonProxyGenerator) );
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(CastleProxyGenerator) );
 
 		// key = mapped type
 		// value = proxy type
@@ -26,9 +26,9 @@ namespace NHibernate.Proxy
 		private ModuleScope _scope;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AvalonProxyGenerator"/> class.
+		/// Initializes a new instance of the <see cref="CastleProxyGenerator"/> class.
 		/// </summary>
-		internal AvalonProxyGenerator()
+		internal CastleProxyGenerator()
 		{
 			cachedProxyTypes = new Hashtable();
 
@@ -36,7 +36,7 @@ namespace NHibernate.Proxy
 
 			// the EnhanceTypeDelegate will add custom code gen that DynamicProxy does not provide
 			// by default.
-			_context = new GeneratorContext( new EnhanceTypeDelegate( EnhanceInterfaceType ), null );
+			_context = new GeneratorContext( );// new EnhanceTypeDelegate( EnhanceInterfaceType ), null );
 		}
 
 		/// <summary>
@@ -67,7 +67,7 @@ namespace NHibernate.Proxy
 		#region IProxyGenerator Methods
 
 		/// <summary>
-		/// Build a proxy using the Apache.Avalon.DynamicProxy library.
+		/// Build a proxy using the Castle.DynamicProxy library.
 		/// </summary>
 		/// <param name="persistentClass">.</param>
 		/// <param name="interfaces">The extra interfaces the Proxy should implement.</param>
@@ -77,13 +77,13 @@ namespace NHibernate.Proxy
 		/// <returns>A fully built <c>INHibernateProxy</c>.</returns>
 		public INHibernateProxy GetProxy(System.Type persistentClass, System.Type concreteProxy, System.Type[] interfaces, PropertyInfo identifierPropertyInfo, object id, ISessionImplementor session) 
 		{
-			
+			object generatedProxy = null;
 			try 
 			{	
-				AvalonLazyInitializer initializer = new AvalonLazyInitializer( persistentClass, concreteProxy, interfaces, id, identifierPropertyInfo, session );
+				CastleLazyInitializer initializer = new CastleLazyInitializer( persistentClass, concreteProxy, interfaces, id, identifierPropertyInfo, session );
 				System.Type proxyType = null;
 
-				// if I try to generate a proxy twice for the same type the Avalon library will do the same
+				// if I try to generate a proxy twice for the same type the Castle library will do the same
 				// in one ModuleBuilder.  The ModuleBuilder throws an exception (not suprisingly) when you try
 				// to define the same type twice in it.  So nh needs to keep a cache of the proxy types that have
 				// already been generated.
@@ -91,13 +91,13 @@ namespace NHibernate.Proxy
 				{
 					proxyType = cachedProxyTypes[ concreteProxy ] as System.Type;
 
-					if( proxyType==null ) 
+					// if the pc is an interface then we need to add the interface to the 
+					// interfaces array that was passed in because it only includes the extra
+					// interfaces for that persistent class.
+					//if( persistentClass.IsInterface ) 
+					if( concreteProxy.IsInterface )
 					{
-						// if the pc is an interface then we need to add the interface to the 
-						// interfaces array that was passed in because it only includes the extra
-						// interfaces for that persistent class.
-						//if( persistentClass.IsInterface ) 
-						if( concreteProxy.IsInterface )
+						if( proxyType==null ) 
 						{
 							//TODO: figure out if this is necessary because the concreteProxy is
 							// already included in the interfaces array...
@@ -105,28 +105,41 @@ namespace NHibernate.Proxy
 							interfaces.CopyTo( temp, 0 );
 							temp[ interfaces.Length ] = concreteProxy; //persistentClass;
 							interfaces = temp;
-					
-							InterfaceProxyGenerator _interfaceGenerator = new InterfaceProxyGenerator( _scope, _context );
-							proxyType = _interfaceGenerator.GenerateCode( interfaces ); 
 				
+							InterfaceProxyGenerator _interfaceGenerator = new InterfaceProxyGenerator( _scope, _context );
+							proxyType = _interfaceGenerator.GenerateCode( interfaces );
+							
+							cachedProxyTypes[ concreteProxy ] = proxyType;
 						}
-						else 
+						// don't understand why a Interface proxy requires 2 arg constructor and a Class Interface
+						// proxy only requires 1 - TODO: email Hammett about this.
+						// hack with new object() because an interface proxy is expecting an actual target instance - we
+						// don't have that yet and don't want to create it until it is actually needed.
+						generatedProxy = Activator.CreateInstance( proxyType, new object[] { initializer, new object() } );
+			
+					}
+					else 
+					{
+						if( proxyType==null ) 
 						{
-							AvalonCustomProxyGenerator _classGenerator = new AvalonCustomProxyGenerator( _scope, _context );
+							CastleCustomProxyGenerator _classGenerator = new CastleCustomProxyGenerator( _scope, _context );
 							proxyType = _classGenerator.GenerateCode( concreteProxy );
+							
+							cachedProxyTypes[ concreteProxy ] = proxyType;
 						}
-
-						cachedProxyTypes[ concreteProxy ] = proxyType;
+						
+						generatedProxy = Activator.CreateInstance( proxyType, new object[] { initializer } );
+			
 					}
 				}
-				object generatedProxy = Activator.CreateInstance( proxyType, new object[] { initializer } );
+				//object generatedProxy = Activator.CreateInstance( proxyType, new object[] { initializer } );
 				return (INHibernateProxy)generatedProxy;
 
 			}
 			catch(Exception e) 
 			{
-				log.Error("Avalon Dynamic Class Generator failed", e);
-				throw new HibernateException( "Avalon Dynamic Class Generator failed", e);
+				log.Error("Castle Dynamic Class Generator failed", e);
+				throw new HibernateException( "Castle Dynamic Class Generator failed", e);
 			}
 		}
 
@@ -137,10 +150,10 @@ namespace NHibernate.Proxy
 		/// <returns>The <see cref="LazyInitializer"/> that contains the details of the Proxied object.</returns>
 		public LazyInitializer GetLazyInitializer(INHibernateProxy proxy) 
 		{
-			// have to hard code in "handler" - very dependant on them not changing their
+			// have to hard code in "__interceptor" - very dependant on them not changing their
 			// implementation - email Hammet about this - or atleast to provide a static
 			// field 
-			object fieldValue = proxy.GetType().GetField( "handler" ).GetValue( proxy );
+			object fieldValue = proxy.GetType().GetField( "__interceptor" ).GetValue( proxy );
 			return (LazyInitializer)fieldValue;
 		}
 

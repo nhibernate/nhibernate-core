@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-using Apache.Avalon.DynamicProxy;
+using Castle.DynamicProxy;
 
 using NHibernate.Engine;
 
@@ -14,7 +14,7 @@ namespace NHibernate.Proxy
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(ProxyGeneratorFactory) );
 
-		private static IProxyGenerator _generator = new AvalonProxyGenerator();
+		private static IProxyGenerator _generator = new CastleProxyGenerator();
 		
 		public static IProxyGenerator GetProxyGenerator() 
 		{

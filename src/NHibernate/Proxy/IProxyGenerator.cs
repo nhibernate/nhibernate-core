@@ -12,7 +12,7 @@ namespace NHibernate.Proxy
 	{
 		
 		/// <summary>
-		/// Build a proxy using the Apache.Avalon.DynamicProxy library.
+		/// Build a proxy using the Castle.DynamicProxy library.
 		/// </summary>
 		/// <param name="persistentClass">The PersistentClass to proxy.</param>
 		/// <param name="interfaces">The extra interfaces the Proxy should implement.</param>

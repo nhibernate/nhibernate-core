@@ -100,9 +100,9 @@
                     HintPath = "..\..\external-bin\HashCodeProvider.dll"
                 />
                 <Reference
-                    Name = "Apache.Avalon.DynamicProxy"
-                    AssemblyName = "Apache.Avalon.DynamicProxy"
-                    HintPath = "..\..\external-bin\Apache.Avalon.DynamicProxy.dll"
+                    Name = "Castle.DynamicProxy"
+                    AssemblyName = "Castle.DynamicProxy"
+                    HintPath = "..\..\external-bin\Castle.DynamicProxy.dll"
                 />
             </References>
         </Build>
@@ -1368,22 +1368,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Proxy\AvalonCustomProxyGenerator.cs"
+                    RelPath = "Proxy\CastleCustomProxyGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Proxy\AvalonLazyInitializer.cs"
+                    RelPath = "Proxy\CastleLazyInitializer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Proxy\AvalonProxyDeserializer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Proxy\AvalonProxyGenerator.cs"
+                    RelPath = "Proxy\CastleProxyGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

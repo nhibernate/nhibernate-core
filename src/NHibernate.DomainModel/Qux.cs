@@ -81,7 +81,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _foo
 		/// </summary> 
-		public FooProxy Foo
+		public virtual FooProxy Foo
 		{
 			get { return _foo; }
 			set { _foo = value; }
@@ -90,7 +90,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _created
 		/// </summary> 
-		public bool Created
+		public virtual bool Created
 		{
 			get { return _created;  }
 			set { _created = value; }
@@ -99,7 +99,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _deleted
 		/// </summary> 
-		public bool Deleted
+		public virtual bool Deleted
 		{
 			get { return _deleted; }
 			set { _deleted = value; }
@@ -108,7 +108,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _loaded
 		/// </summary> 
-		public bool Loaded
+		public virtual bool Loaded
 		{
 			get { return _loaded; }
 			set { _loaded = value; }
@@ -117,7 +117,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _stored
 		/// </summary> 
-		public bool Stored
+		public virtual bool Stored
 		{
 			get { return _stored; }
 			set { _stored = value; }
@@ -126,13 +126,13 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _key
 		/// </summary> 
-		public long Key
+		public virtual long Key
 		{
 			get { return _key; }
 			set { _key = value; }
 		}
 
-		public long TheKey
+		public virtual long TheKey
 		{
 			set { _key = value; }
 		}
@@ -140,7 +140,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _stuff
 		/// </summary> 
-		public string Stuff
+		public virtual string Stuff
 		{
 			get { return _stuff; }
 			set { _stuff = value; }
@@ -149,7 +149,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _fums (&lt;set&gt;)
 		/// </summary> 
-		public IDictionary Fums
+		public virtual IDictionary Fums
 		{
 			get { return _fums; }
 			set { _fums = value; }
@@ -158,13 +158,13 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _moreFums
 		/// </summary> 
-		public IList MoreFums
+		public virtual IList MoreFums
 		{
 			get { return _moreFums; }
 			set { _moreFums = value; }
 		}
 	
-		public Qux Child
+		public virtual Qux Child
 		{
 			get
 			{
@@ -179,7 +179,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _childKey
 		/// </summary> 
-		public long ChildKey
+		public virtual long ChildKey
 		{
 			get { return _childKey;  }
 			set { _childKey = value; }

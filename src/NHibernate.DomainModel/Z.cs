@@ -10,13 +10,13 @@ namespace NHibernate.DomainModel
 		private long _id;
 		private W _w;
 		
-		public long Id
+		public virtual long Id
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
 
-		public W W
+		public virtual W W
 		{
 			get { return _w; }
 			set { _w = value; }
