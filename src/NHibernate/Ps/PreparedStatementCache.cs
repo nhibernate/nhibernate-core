@@ -7,7 +7,14 @@ namespace NHibernate.Ps {
 
 	/// <summary>
 	/// A cache for <c>PreparedStatement</c>s that is reasonably efficient for small
-	/// maximum cache sizes
+	/// maximum cache sizes.  
+	/// 
+	/// Does ADO.NET have any concept of a PreparedStatement - somehow I think that PreparedStatements
+	/// are a Java specific thing.  The best way I can think of to implement a PreparedStatement cache is
+	/// to build a prePrepared() IDbCommand cache - the IDbCommand object has to have an open Connection set or
+	/// the Prepare() method will throw an exception.  
+	/// 
+	/// IMHO this is not that important of a feature to have to get NHibernate working...
 	/// </summary>
 	public class PreparedStatementCache {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PreparedStatementCache));
