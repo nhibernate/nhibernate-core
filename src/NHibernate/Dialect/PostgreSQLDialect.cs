@@ -24,8 +24,8 @@ namespace NHibernate.Dialect
 			Register( DbType.Currency, "decimal(16,4)");
 			Register( DbType.Date, "date");
 			Register( DbType.DateTime, "timestamp" );
-			Register( DbType.Decimal, "decimal(18,0)" ); // NUMERIC(18,0) is equivalent to DECIMAL(18,0)
-			Register( DbType.Decimal, 18, "decimal(18, $1)");
+			Register( DbType.Decimal, "decimal(19,5)" );
+			Register( DbType.Decimal, 19, "decimal(18, $1)");
 			Register( DbType.Double, "float8" ); 
 			Register( DbType.Int16, "int2" );
 			Register( DbType.Int32, "int4" );
