@@ -239,7 +239,7 @@ namespace NHibernate.Impl
 			//TODO: fix this up a little bit - don't like it having the same name and just
 			// turning around and calling a diff method.
 			CloseQueryCommand( cmd, reader );
-			//LogClosePreparedCommands();
+			LogClosePreparedCommands();
 		}
 
 		public void CloseCommands() 
