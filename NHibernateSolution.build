@@ -71,9 +71,7 @@
 		depends="init" 
 		description="Builds code that NHibernate depends on but is not a core peice of NHibernate.  The built dll/exes will be distributed in the lib folder so there should be no need for a user to build it."
 	>
-		<!--
 		<nant target="build" buildfile="src/HashCodeProvider/HashCodeProvider.build" />
-		-->
 		<nant target="build" buildfile="src/Iesi.Collections/Iesi.Collections.build" />
 		
 	</target>
