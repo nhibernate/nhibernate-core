@@ -1,4 +1,3 @@
-//$Id$
 using System;
 using System.Collections;
 using NHibernate;
@@ -23,6 +22,7 @@ namespace NHibernate.Hql {
 		private bool expectingIn;
 		private bool expectingAs;
 		private bool afterJoinType;
+		private bool afterFetch;
 		private ILoadable classPersister;
 		private JoinType joinType = JoinType.None;
 
@@ -39,59 +39,95 @@ namespace NHibernate.Hql {
 			
 			// start by looking for HQL keywords....
 			string lcToken = token.ToLower();
-			if ( lcToken.Equals(StringHelper.Comma) ) {
-				if (!expectingJoin) throw new QueryException("unexpected token: ");
+			if ( lcToken.Equals(StringHelper.Comma) ) 
+			{
+				if (!expectingJoin) throw new QueryException("unexpected token: ,");
 				expectingJoin = false;
-			} else if ( lcToken.Equals("join") ) {
-				if (!afterJoinType) {
-					if (!expectingJoin) throw new QueryException("unexpected token: join");
+				expectingAs = false;
+			} 
+			else if ( lcToken.Equals("join") ) 
+			{
+				if (!afterJoinType) 
+				{
+					if (!expectingJoin|expectingAs) throw new QueryException("unexpected token: join");
 					// inner joings can be abbreviated to 'join'
 					joinType = JoinType.InnerJoin;
 					expectingJoin = false;
-				} else {
+					expectingAs = false;
+				} 
+				else 
+				{
 					afterJoinType = false;
 				}
-			} else if ( lcToken.Equals("outer") ) {
+			} 
+			else if ( lcToken.Equals("fetch") ) 
+			{
+				if ( q.IsShallowQuery ) throw new QueryException("fetch may not be used with scroll() or iterate()");
+				if (joinType==JoinType.None) throw new QueryException("unexpected token: fetch");
+				if (joinType==JoinType.FullJoin || joinType==JoinType.RightOuterJoin) 
+					throw new QueryException("fetch may only be used with inner join or left outer join");
+				afterFetch = true;
+			}
+			else if ( lcToken.Equals("outer") ) 
+			{
 				// 'outer' is optional and is ignored)
-				if ( !afterJoinType || (joinType!=JoinType.LeftOuterJoin && joinType!=JoinType.RightOuterJoin) ) {
+				if ( !afterJoinType || (joinType!=JoinType.LeftOuterJoin && joinType!=JoinType.RightOuterJoin) ) 
+				{
 					throw new QueryException("unexpected token: outer");
 				}
-			} else if ( joinTypes.Contains(lcToken) ) {
+			} 
+			else if ( joinTypes.Contains(lcToken) ) 
+			{
 				if (!expectingJoin) throw new QueryException("unexpected token: " + token);
 				joinType = (JoinType) joinTypes[lcToken];
 				afterJoinType = true;
 				expectingJoin = false;
-			} else if (lcToken.Equals("class")) {
+				expectingAs = false;
+			} 
+			else if (lcToken.Equals("class")) 
+			{
 				if (!afterIn) throw new QueryException("unexpected token: class");
 				if (joinType!=JoinType.None) throw new QueryException("outer or full join must be followed by path expression");
 				afterClass = true;
-			} else if ( lcToken.Equals("in") ) {
+			} 
+			else if ( lcToken.Equals("in") ) 
+			{
 				if (!expectingIn) throw new QueryException("unexpected token: in");
 				afterIn = true;
 				expectingIn = false;
-			} else if ( lcToken.Equals("as") ) {
+			} 
+			else if ( lcToken.Equals("as") ) 
+			{
 				if (!expectingAs) throw new QueryException("unexpected token: as");
 				afterAs = true;
 				expectingAs = false;
-			}  else {
+			}  
+			else 
+			{
 				if (afterJoinType) throw new QueryException("join expected: " + token);
 				if (expectingJoin) throw new QueryException("unexpected token: " + token);
 				if (expectingIn) throw new QueryException("in expected: " + token);
 
 				// now anything that is not a HQL keyword
 
-				if ( afterAs || expectingAs ) {
+				if ( afterAs || expectingAs ) 
+				{
 					// (AS is always optional, for consistentcy with SQL/OQL
 
 					// process the "new" HQL stype where aliases are assigned
 					// _after_ the class name or path expression ie using the
 					// AS construction
 
-					if (classPersister!=null) {
+					if (classPersister!=null) 
+					{
 						q.AddFromClass(token, classPersister);
-					} else if (entityName!=null) {
+					} 
+					else if (entityName!=null) 
+					{
 						q.SetAliasName(token, entityName);
-					} else {
+					} 
+					else 
+					{
 						throw new QueryException("unexpected: as " + token);
 					}
 					afterAs = false;
@@ -100,20 +136,27 @@ namespace NHibernate.Hql {
 					entityName = null;
 					classPersister = null;
 
-				} else if (afterIn) {
+				} 
+				else if (afterIn) 
+				{
 					// process the "old" HQL style where aliases appear _first
 					// ie using the IN or IN CLASS constructions
 
 					if (alias==null) throw new QueryException("alias not specified for: " + token);
 					if (joinType!=JoinType.None) throw new QueryException("outer or full join must be followed by path expressions");
 
-					if (afterClass) {
+					if (afterClass) 
+					{
 						// treat it as a classname
 						ILoadable p = q.GetPersisterUsingImports(token);
 						if (p==null) throw new QueryException("persister not found: " + token);
 						q.AddFromClass(alias, p);
-					} else {
+					} 
+					else 
+					{
 						// treat it as a path expression
+						peParser.JoinType = JoinType.InnerJoin;
+						peParser.UseThetaStyleJoin = true;
 						ParserHelper.Parse(peParser, q.Unalias(token), ParserHelper.PathSeparators, q);
 						if ( !peParser.IsCollectionValued ) throw new QueryException("pathe expression did not resolve to collection: " + token);
 						string nm = peParser.AddFromCollection(q);
@@ -124,38 +167,71 @@ namespace NHibernate.Hql {
 					afterIn = false;
 					afterClass = false;
 					expectingJoin = true;
-				} else {
+				} 
+				else 
+				{
 					// handle a path expression or class name that appears
 					// at the start, in the "new" HQL style or an alias that
 					// appears at the start in the "old HQL stype
 					ILoadable p = q.GetPersisterUsingImports(token);
-					if (p!=null) {
+					if (p!=null) 
+					{
 						// starts with the name of a mapped class (new style)
 						if (joinType!=JoinType.None) throw new QueryException("outer or full join must be followed by path expression");
 						classPersister = p;
+						entityName = q.CreateNameFor( p.MappedClass );
+						q.AddFromClass( entityName, p );
 						expectingAs = true;
-					} else if ( token.IndexOf('.') < 0 ) {
+					} 
+					else if ( token.IndexOf('.') < 0 ) 
+					{
 						// starts with an alias (old style)
 						// semi-bad thing about this: can't re-alias another alias...
 						alias = token;
 						expectingIn = true;
-					} else {
+					} 
+					else 
+					{
 						// starts with a path expression (new style)
 
 						// force HQL style: from Person p inner join p.cars c
 						
 						//allow ODMG OQL style: from Person p, p.cars c
-						if (joinType!=JoinType.None) peParser.JoinType = joinType;
+						if (joinType!=JoinType.None)
+						{
+							peParser.JoinType = joinType;
+						}
+						else
+						{
+							peParser.JoinType = JoinType.InnerJoin;
+						}
+						peParser.UseThetaStyleJoin = q.IsSubquery;
 
 						ParserHelper.Parse(peParser, q.Unalias(token), ParserHelper.PathSeparators, q);
-						if ( peParser.IsCollectionValued ) {
+						if ( peParser.IsCollectionValued ) 
+						{
 							entityName = peParser.AddFromCollection(q);
-						} else {
+						} 
+						else 
+						{
 							entityName = peParser.AddFromAssociation(q);
 						}
-						expectingAs = true;
 						joinType = JoinType.None;
 						peParser.JoinType = JoinType.InnerJoin;
+
+						if (afterFetch) 
+						{
+						
+							if ( peParser.IsCollectionValued ) 
+							{
+								q.SetCollectionToFetch( peParser.CollectionRole, peParser.CollectionName, peParser.CollectionOwnerName );
+							}
+							q.addEntityToFetch(entityName);
+						
+							afterFetch = false;
+						}
+
+						expectingAs = true;
 					}
 				}
 			}

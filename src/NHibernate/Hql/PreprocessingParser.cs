@@ -4,14 +4,17 @@ using System.Collections.Specialized;
 using System.Text;
 using NHibernate.Util;
 
-namespace NHibernate.Hql {
+namespace NHibernate.Hql 
+{
 	/// <summary>
 	/// </summary>
-	public class PreprocessingParser : IParser {
+	public class PreprocessingParser : IParser 
+	{
 		private static StringCollection operators;
 		private static IDictionary collectionProps;
 
-		static PreprocessingParser() {
+		static PreprocessingParser() 
+		{
 			operators = new StringCollection();
 			operators.Add("<=");
 			operators.Add(">=");
@@ -47,20 +50,27 @@ namespace NHibernate.Hql {
 		private string currentCollectionProp;
 		
 		
-		public PreprocessingParser(IDictionary replacements) {
+		public PreprocessingParser(IDictionary replacements) 
+		{
 			this.replacements = replacements;
 		}
 		
-		public void  Token(string token, QueryTranslator q) {
+		public void  Token(string token, QueryTranslator q) 
+		{
 			
 			//handle quoted strings
-			if (quoted) {
+			if (quoted) 
+			{
 				quotedString.Append(token);
 			}
-			if ("'".Equals(token)) {
-				if (quoted) {
+			if ("'".Equals(token)) 
+			{
+				if (quoted) 
+				{
 					token = quotedString.ToString();
-				} else {
+				} 
+				else 
+				{
 					quotedString = new StringBuilder(20).Append(token);
 				}
 				quoted = !quoted;
@@ -75,19 +85,27 @@ namespace NHibernate.Hql {
 			token = (substoken == null) ? token : substoken;
 			
 			//handle HQL2 collection syntax
-			if (currentCollectionProp != null) {
-				if (StringHelper.OpenParen.Equals(token)) {
+			if (currentCollectionProp != null) 
+			{
+				if (StringHelper.OpenParen.Equals(token)) 
+				{
 					return;
-				} else if (StringHelper.ClosedParen.Equals(token)) {
+				} 
+				else if (StringHelper.ClosedParen.Equals(token)) 
+				{
 					currentCollectionProp = null;
 					return ;
-				} else {
+				} 
+				else 
+				{
 					token += StringHelper.Dot + currentCollectionProp;
 				}
 			}
-			else {
+			else 
+			{
 				string prop = (string) collectionProps[token.ToLower()];
-				if (prop != null) {
+				if (prop != null) 
+				{
 					currentCollectionProp = prop;
 					return ;
 				}
@@ -95,16 +113,22 @@ namespace NHibernate.Hql {
 			
 			
 			//handle <=, >=, !=, is not, not between, not in
-			if (lastToken == null) {
+			if (lastToken == null) 
+			{
 				lastToken = token;
-			} else {
+			} 
+			else 
+			{
 				string doubleToken = (token.Length > 1)? 
 					lastToken + ' ' + token : 
 					lastToken + token;
-				if (operators.Contains(doubleToken.ToLower())) {
+				if (operators.Contains(doubleToken.ToLower())) 
+				{
 					parser.Token(doubleToken, q);
 					lastToken = null;
-				} else {
+				} 
+				else 
+				{
 					parser.Token(lastToken, q);
 					lastToken = token;
 				}
@@ -112,12 +136,14 @@ namespace NHibernate.Hql {
 			
 		}
 		
-		public virtual void  Start(QueryTranslator q) {
+		public virtual void  Start(QueryTranslator q) 
+		{
 			quoted = false;
 			parser.Start(q);
 		}
 		
-		public virtual void  End(QueryTranslator q) {
+		public virtual void  End(QueryTranslator q) 
+		{
 			if (lastToken != null) parser.Token(lastToken, q);
 			parser.End(q);
 			lastToken = null;

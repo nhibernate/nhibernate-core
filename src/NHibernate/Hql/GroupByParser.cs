@@ -1,15 +1,16 @@
-//$Id$
 using System;
 using System.Collections;
 using NHibernate;
 using NHibernate.Util;
 
-namespace NHibernate.Hql {
+namespace NHibernate.Hql 
+{
 	
 	/// <summary> 
 	/// Parses the GROUP BY clause of an aggregate query
 	/// </summary>
-	public class GroupByParser : IParser {
+	public class GroupByParser : IParser 
+	{
 		//this is basically a copy/paste of OrderByParser ... might be worth refactoring
 	
 		// This uses a PathExpressionParser but notice that compound paths are not valid,
@@ -22,21 +23,32 @@ namespace NHibernate.Hql {
 		
 		private PathExpressionParser pathExpressionParser = new PathExpressionParser();
 		
-		public void Token(string token, QueryTranslator q) {
+		public void Token(string token, QueryTranslator q) 
+		{
 			
-			if (q.IsName(StringHelper.Root(token))) {
+			if (q.IsName(StringHelper.Root(token))) 
+			{
 				ParserHelper.Parse(pathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
 				q.AppendGroupByToken(pathExpressionParser.WhereColumn);
 				pathExpressionParser.AddAssociation(q);
-			} else {
+			} 
+			else 
+			{
 				q.AppendGroupByToken(token);
 			}
 		}
 		
-		public void Start(QueryTranslator q) {
+		public void Start(QueryTranslator q) 
+		{
 		}
 		
-		public void End(QueryTranslator q) {
+		public void End(QueryTranslator q) 
+		{
+		}
+
+		public GroupByParser()
+		{
+			pathExpressionParser.UseThetaStyleJoin = true;
 		}
 	}
 }

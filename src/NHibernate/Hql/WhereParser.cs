@@ -7,7 +7,8 @@ using NHibernate.Persister;
 using NHibernate.Util;
 using NHibernate.Sql;
 
-namespace NHibernate.Hql {	
+namespace NHibernate.Hql 
+{	
 	/// <summary> Parses the where clause of a hibernate query and translates it to an
 	/// SQL where clause.
 	/// </summary>
@@ -22,7 +23,8 @@ namespace NHibernate.Hql {
 	// FOOS.ID, FOOS.BAR_ID, etc) and PathExpressionParser (which does much
 	// the same thing it does now)
 	
-	public class WhereParser : IParser {
+	public class WhereParser : IParser 
+	{
 		private PathExpressionParser pathExpressionParser = new PathExpressionParser();
 
 
@@ -31,7 +33,13 @@ namespace NHibernate.Hql {
 		private static StringCollection booleanOperators = new StringCollection(); //tokens that would indicate a sub expression is a boolean expression
 		private static IDictionary negations = new Hashtable();
 
-		static WhereParser() {
+		public WhereParser()
+		{
+			pathExpressionParser.UseThetaStyleJoin = true;
+		}
+
+		static WhereParser() 
+		{
 			expressionTerminators.Add("and");
 			expressionTerminators.Add("or");
 			expressionTerminators.Add(StringHelper.ClosedParen);
@@ -123,9 +131,7 @@ namespace NHibernate.Hql {
 		// foo.Bar.Baz + a.B.C          (maps to: bar.Baz + b.C and foo.Bar = bar.id and a.B = b.id)
 		// ( foo.Bar.Baz + 1.0 ) < 2.0  (maps to: ( bar.Baz + 1.0 ) < 2.0 and foo.Bar = bar.id)
 		
-		//private bool quoted = false; //Inside a quoted string
 		private bool betweenSpecialCase = false; //Inside a BETWEEN ... AND ... expression
-		//private int bracketsSinceFunction = 0; //How deep inside in IN are we?
 		private bool negated = false;
 		
 		private bool inSubselect = false;
@@ -144,61 +150,77 @@ namespace NHibernate.Hql {
 		
 
 
-		private string GetElementName(PathExpressionParser.CollectionElement element, QueryTranslator q) {
+		private string GetElementName(PathExpressionParser.CollectionElement element, QueryTranslator q) 
+		{
 			string name;
-			if (element.IsOneToMany) {
+			if (element.IsOneToMany) 
+			{
 				name = element.Alias;
 			}
-			else {
+			else 
+			{
 				IType type = element.Type;
 				System.Type clazz;
 
-				if (type.IsEntityType) {
+				if (type.IsEntityType) 
+				{
 					//ie. a many-to-many
 					clazz = ((EntityType) type).PersistentClass;
 					name = pathExpressionParser.ContinueFromManyToMany(clazz, element.ElementColumns, q);
-				} else {
+				} 
+				else 
+				{
 					throw new QueryException("illegally dereferenced collection element");
 				}
 			}
 			return name;
 		}
 		
-		public void Token(string token, QueryTranslator q) {
+		public void Token(string token, QueryTranslator q) 
+		{
 			
 			string lcToken = token.ToLower();
 			
 			//Cope with [,]
 			
-			if (token.Equals("[") && !expectingPathContinuation) {
+			if (token.Equals("[") && !expectingPathContinuation) 
+			{
 				expectingPathContinuation = false;
 				if (expectingIndex == 0) throw new QueryException("unexpected [");
 				return ;
-			} else if (token.Equals("]")) {
+			} 
+			else if (token.Equals("]")) 
+			{
 				expectingIndex--;
 				expectingPathContinuation = true;
 				return ;
 			}
 			
 			//Cope with a continued path expression (ie. ].baz)
-			if (expectingPathContinuation) {
+			if (expectingPathContinuation) 
+			{
 				
 				expectingPathContinuation = false;
 				
 				PathExpressionParser.CollectionElement element = pathExpressionParser.LastCollectionElement();
 				
-				if (token.StartsWith(".")) { // the path expression continues after a ]
+				if (token.StartsWith(".")) 
+				{ // the path expression continues after a ]
 					
 					DoPathExpression(GetElementName(element, q) + token, q); // careful with this!
 					
 					AddToCurrentJoin(element);
 					return ; //NOTE: EARLY EXIT!
 					
-				} else if (token.Equals("[")) {
+				} 
+				else if (token.Equals("[")) 
+				{
 					DoPathExpression(GetElementName(element, q), q);
 					AddToCurrentJoin(element);
 					return ; //NOTE: EARLY EXIT!
-				} else {
+				} 
+				else 
+				{
 					// the path expression ends at the ]
 					if (element.ElementColumns.Length != 1) throw new QueryException("path expression ended in composite collection element");
 					AppendToken(q, element.ElementColumns[0]);
@@ -210,18 +232,24 @@ namespace NHibernate.Hql {
 			
 			//Cope with a subselect
 			
-			if (!inSubselect && (lcToken.Equals("select") || lcToken.Equals("from"))) {
+			if (!inSubselect && (lcToken.Equals("select") || lcToken.Equals("from"))) 
+			{
 				inSubselect = true;
 				subselect = new StringBuilder(20);
 			}
-			if (inSubselect && token.Equals(StringHelper.ClosedParen)) {
+			if (inSubselect && token.Equals(StringHelper.ClosedParen)) 
+			{
 				bracketsSinceSelect--;
 				
-				if (bracketsSinceSelect == - 1) {
+				if (bracketsSinceSelect == - 1) 
+				{
 					QueryTranslator subq = new QueryTranslator();
-					try {
+					try 
+					{
 						subq.Compile(q, subselect.ToString());
-					} catch (MappingException me) {
+					} 
+					catch (MappingException me) 
+					{
 						throw new QueryException("MappingException occurred compiling subquery", me);
 					}
 					AppendToken(q, subq.SQLString);
@@ -229,7 +257,8 @@ namespace NHibernate.Hql {
 					bracketsSinceSelect = 0;
 				}
 			}
-			if (inSubselect) {
+			if (inSubselect) 
+			{
 				if (token.Equals(StringHelper.OpenParen)) bracketsSinceSelect++;
 				subselect.Append(token).Append(' ');
 				return ;
@@ -239,18 +268,21 @@ namespace NHibernate.Hql {
 			SpecialCasesBefore(lcToken);
 			
 			//Close extra brackets we opened
-			if (!betweenSpecialCase && expressionTerminators.Contains(lcToken)) {
+			if (!betweenSpecialCase && expressionTerminators.Contains(lcToken)) 
+			{
 				CloseExpression(q, lcToken);
 			}
 			
 			//take note when this is a boolean expression
 			
-			if (booleanOperators.Contains(lcToken)) {
+			if (booleanOperators.Contains(lcToken)) 
+			{
 				booleanTests.RemoveAt(booleanTests.Count-1);
 				booleanTests.Add(true);
 			}
 			
-			if (lcToken.Equals("not")) {
+			if (lcToken.Equals("not")) 
+			{
 				nots[nots.Count-1] = !((bool) nots[nots.Count-1]);
 				negated = !negated;
 				return ; //NOTE: early return
@@ -262,7 +294,8 @@ namespace NHibernate.Hql {
 			
 			//Open any extra brackets we might need.
 			
-			if (!betweenSpecialCase && expressionOpeners.Contains(lcToken)) {
+			if (!betweenSpecialCase && expressionOpeners.Contains(lcToken)) 
+			{
 				OpenExpression(q, lcToken);
 			}
 			
@@ -272,12 +305,15 @@ namespace NHibernate.Hql {
 			
 		}
 		
-		public void Start(QueryTranslator q) {
+		public void Start(QueryTranslator q) 
+		{
 			Token(StringHelper.OpenParen, q);
 		}
 		
-		public void End(QueryTranslator q) {
-			if (expectingPathContinuation) {
+		public void End(QueryTranslator q) 
+		{
+			if (expectingPathContinuation) 
+			{
 				expectingPathContinuation = false;
 				PathExpressionParser.CollectionElement element = pathExpressionParser.LastCollectionElement();
 				if (element.ElementColumns.Length != 1) throw new QueryException("path expression ended in composite collection element");
@@ -287,12 +323,15 @@ namespace NHibernate.Hql {
 			Token(StringHelper.ClosedParen, q);
 		}
 		
-		private void CloseExpression(QueryTranslator q, string lcToken) {
+		private void CloseExpression(QueryTranslator q, string lcToken) 
+		{
 			bool lastBoolTest = (bool) booleanTests[booleanTests.Count-1];
 			booleanTests.RemoveAt(booleanTests.Count-1);
-			if (lastBoolTest) {
+			if (lastBoolTest) 
+			{
 				//it was a boolean expression
-				if (booleanTests.Count > 0) {
+				if (booleanTests.Count > 0) 
+				{
 					// the next one up must also be
 					booleanTests[booleanTests.Count-1] = true;
 				}
@@ -303,7 +342,9 @@ namespace NHibernate.Hql {
 				AppendToken(q, lastJoin.ToString());
 				
 				
-			} else {
+			} 
+			else 
+			{
 				//unaryCounts.removeLast(); //check that its zero? (As an assertion)
 				StringBuilder join = (StringBuilder) joins[joins.Count-1];
 				joins.RemoveAt(joins.Count-1);
@@ -317,21 +358,25 @@ namespace NHibernate.Hql {
 			if (!StringHelper.ClosedParen.Equals(lcToken)) AppendToken(q, StringHelper.ClosedParen);
 		}
 		
-		private void OpenExpression(QueryTranslator q, string lcToken) {
+		private void OpenExpression(QueryTranslator q, string lcToken) 
+		{
 			nots.Add(false);
 			booleanTests.Add(false);
 			joins.Add(new StringBuilder());
 			if (!StringHelper.OpenParen.Equals(lcToken)) AppendToken(q, StringHelper.OpenParen);
 		}
 		
-		private void Preprocess(string token, QueryTranslator q) { 
+		private void Preprocess(string token, QueryTranslator q) 
+		{ 
 			// ugly hack for cases like "foo.bar.collection.elements" 
 			// (multi-part path expression ending in elements or indices) 
 			string[] tokens = StringHelper.Split(".", token, true); 
 			if ( tokens.Length>5 && 
-				( "elements".Equals( tokens[tokens.Length-1] ) || "indices".Equals( tokens[tokens.Length-1] ) ) ) { 
+				( "elements".Equals( tokens[tokens.Length-1] ) || "indices".Equals( tokens[tokens.Length-1] ) ) ) 
+			{ 
 				pathExpressionParser.Start(q); 
-				for( int i=0; i<tokens.Length-3; i++ ) { 
+				for( int i=0; i<tokens.Length-3; i++ ) 
+				{ 
 					pathExpressionParser.Token( tokens[i], q); 
 				} 
 				pathExpressionParser.Token(null, q); 
@@ -342,73 +387,103 @@ namespace NHibernate.Hql {
 		} 
     
 
-		private void DoPathExpression(string token, QueryTranslator q) {
+		private void DoPathExpression(string token, QueryTranslator q) 
+		{
 
 			Preprocess( token, q );
 
 			Util.StringTokenizer tokens = new Util.StringTokenizer(token, ".", true);
 			pathExpressionParser.Start(q);
-			foreach(string tok in tokens) {
+			foreach(string tok in tokens) 
+			{
 				pathExpressionParser.Token(tok, q);
 			}
 			pathExpressionParser.End(q);
-			if (pathExpressionParser.IsCollectionValued) {
+			if (pathExpressionParser.IsCollectionValued) 
+			{
 				OpenExpression(q, String.Empty);
 				AppendToken(q, pathExpressionParser.GetCollectionSubquery() );
 				q.AddIdentifierSpace(pathExpressionParser.CollectionTable);
 				CloseExpression(q, String.Empty);
-			} else {
-				if (pathExpressionParser.IsExpectingCollectionIndex) {
+			} 
+			else 
+			{
+				if (pathExpressionParser.IsExpectingCollectionIndex) 
+				{
 					expectingIndex++;
-				} else {
+				} 
+				else 
+				{
 					AddJoin( pathExpressionParser.WhereJoin, q );
 					AppendToken( q, pathExpressionParser.WhereColumn );
 				}
 			}
 		}
 
-		private void AddJoin( JoinFragment ojf, QueryTranslator q ) {
+		private void AddJoin( JoinFragment ojf, QueryTranslator q ) 
+		{
 			JoinFragment fromClause = q.CreateJoinFragment();
 			fromClause.AddJoins( ojf.ToFromFragmentString, String.Empty );
 			q.AddJoin( pathExpressionParser.Name, fromClause );
 			AddToCurrentJoin( ojf.ToWhereFragmentString );		
 		}
 		
-		private void DoToken(string token, QueryTranslator q) {
-			if (q.IsName(StringHelper.Root(token))) { //path expression
+		private void DoToken(string token, QueryTranslator q) 
+		{
+			if (q.IsName(StringHelper.Root(token))) 
+			{ //path expression
 				DoPathExpression(q.Unalias(token), q);
-			} else if (token.StartsWith(ParserHelper.HqlVariablePrefix)) {
+			} 
+			else if (token.StartsWith(ParserHelper.HqlVariablePrefix)) 
+			{
 				//named query parameter
 				q.AddNamedParameter(token.Substring(1));
 				AppendToken(q, "[<" + token.Substring(1) + ">]"); // THEO
-			} else {
+			} 
+			else 
+			{
 				IQueryable p = q.GetPersisterUsingImports(token);
-				if (p != null) { // the name of a class
+				if (p != null) 
+				{ // the name of a class
 					AppendToken(q, p.DiscriminatorSQLString);
-				} else {
+				} 
+				else 
+				{
 					object constant;
 
 					if (	token.IndexOf((System.Char) StringHelper.Dot) > - 1 &&
-							(constant = ReflectHelper.GetConstantValue(token)) != null)	{
+						(constant = ReflectHelper.GetConstantValue(token)) != null)	
+					{
 						IType type;
-						try {
+						try 
+						{
 							type = TypeFactory.HueristicType(constant.GetType().Name);
-						} catch (MappingException me) {
+						} 
+						catch (MappingException me) 
+						{
 							throw new QueryException(me);
 						}
 						if (type == null) throw new QueryException("Could not determine type of: " + token);
-						try {
+						try 
+						{
 							AppendToken(q, ((ILiteralType) type).ObjectToSQLString(constant));
-						} catch (System.Exception e) {
+						} 
+						catch (System.Exception e) 
+						{
 							throw new QueryException("Could not format constant value to SQL literal: " + token, e);
 						}
-					} else {
+					} 
+					else 
+					{
 						//anything else
 						
 						string negatedToken = negated ? (string) negations[token.ToLower()] : null;
-						if (negatedToken != null && (!betweenSpecialCase || !"or".Equals(negatedToken))) {
+						if (negatedToken != null && (!betweenSpecialCase || !"or".Equals(negatedToken))) 
+						{
 							AppendToken(q, negatedToken);
-						} else {
+						} 
+						else 
+						{
 							AppendToken(q, token);
 						}
 					}
@@ -416,30 +491,40 @@ namespace NHibernate.Hql {
 			}
 		}
 		
-		private void  AddToCurrentJoin(string sql) {
+		private void  AddToCurrentJoin(string sql) 
+		{
 			((StringBuilder) joins[joins.Count-1]).Append(sql);
 		}
 
-		private void AddToCurrentJoin(PathExpressionParser.CollectionElement ce) {
+		private void AddToCurrentJoin(PathExpressionParser.CollectionElement ce) 
+		{
 			AddToCurrentJoin( ce.Join.ToWhereFragmentString + ce.IndexValue.ToString() );
 		}
 		
-		private void  SpecialCasesBefore(string lcToken) {
-			if (lcToken.Equals("between") || lcToken.Equals("not between")) {
+		private void  SpecialCasesBefore(string lcToken) 
+		{
+			if (lcToken.Equals("between") || lcToken.Equals("not between")) 
+			{
 				betweenSpecialCase = true;
 			}
 		}
 		
-		private void  SpecialCasesAfter(string lcToken) {
-			if (betweenSpecialCase && lcToken.Equals("and")) {
+		private void  SpecialCasesAfter(string lcToken) 
+		{
+			if (betweenSpecialCase && lcToken.Equals("and")) 
+			{
 				betweenSpecialCase = false;
 			}
 		}
 		
-		protected virtual void AppendToken(QueryTranslator q, string token) {
-			if (expectingIndex > 0) {
+		protected virtual void AppendToken(QueryTranslator q, string token) 
+		{
+			if (expectingIndex > 0) 
+			{
 				pathExpressionParser.LastCollectionElementIndexValue = token;
-			} else {
+			} 
+			else 
+			{
 				q.AppendWhereToken(token);
 			}
 		}

@@ -1,4 +1,3 @@
-//$Id$
 using System;
 
 namespace NHibernate.Hql {

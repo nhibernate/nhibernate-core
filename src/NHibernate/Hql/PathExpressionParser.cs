@@ -8,12 +8,14 @@ using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.Sql;
 
-namespace NHibernate.Hql {
+namespace NHibernate.Hql 
+{
 	/// <summary> 
 	/// Parses an expression of the form foo.bar.baz and builds up an expression
 	/// involving two less table joins than there are path components.
 	/// </summary>
-	public class PathExpressionParser : IParser {
+	public class PathExpressionParser : IParser 
+	{
 
 		//TODO: this class does too many things! we need a different 
 		//kind of path expression parser for each of the different 
@@ -32,32 +34,54 @@ namespace NHibernate.Hql {
 		private int dotcount;
 		protected string currentName;
 		protected string currentProperty;
-		protected JoinFragment join;
+		protected QueryJoinFragment join;
 		protected string[] columns;
 		protected string[] collectionElementColumns;
 		protected string collectionName;
 		private string collectionRole;
 		private string collectionTable;
+		private string collectionOwnerName;
 		protected IType collectionElementType;
 		private string componentPath;
 		protected IType type;
 		private string path;
-		private bool skippedId;
 		private bool ignoreInitialJoin;
 		private bool continuation;
 		private JoinType joinType = JoinType.InnerJoin; //default mode
+		private bool useThetaStyleJoin = true;
 
-		public JoinType JoinType {
-			get { return joinType; }
-			set { joinType = value; }
+		public JoinType JoinType 
+		{
+			get
+			{ 
+				return joinType; 
+			}
+			set 
+			{ 
+				joinType = value; 
+			}
 		}
 
-		private void AddJoin(string table, string name, string[] rhsCols, QueryTranslator q) {
+		public bool UseThetaStyleJoin
+		{
+			get
+			{
+				return useThetaStyleJoin;
+			}
+			set
+			{
+				useThetaStyleJoin = value;
+			}
+		}
+
+		private void AddJoin(string table, string name, string[] rhsCols, QueryTranslator q) 
+		{
 			string[] lhsCols = CurrentColumns(q);
 			join.AddJoin(table, name, lhsCols, rhsCols, joinType);
 		}
 
-		public string ContinueFromManyToMany(System.Type clazz, string[] joinColumns, QueryTranslator q) {
+		public string ContinueFromManyToMany(System.Type clazz, string[] joinColumns, QueryTranslator q) 
+		{
 			Start(q);
 			continuation = true;
 			currentName = q.CreateNameFor(clazz);
@@ -67,70 +91,109 @@ namespace NHibernate.Hql {
 			return currentName;
 		}
 
-		public void IgnoreInitialJoin() { 
+		public void IgnoreInitialJoin() 
+		{ 
 			ignoreInitialJoin = true; 
 		} 
 
-		public void Token(string token, QueryTranslator q) {
-
+		public void Token(string token, QueryTranslator q) 
+		{
 			if (token!=null) path += token;
 			
 			string alias = q.GetPathAlias(path);
-			if (alias != null) {
+			if (alias != null) 
+			{
 				Reset(q); //reset the dotcount (but not the path)
 				currentName = alias; //after reset!
-				if(!ignoreInitialJoin) {
+				if(!ignoreInitialJoin) 
+				{
 					JoinFragment ojf = q.GetPathJoin(path);
 					join.AddCondition( ojf.ToWhereFragmentString ); //after reset!
+					// we don't need to worry about any condition in the ON clause
+					// here (toFromFragmentString), since anything in the ON condition 
+					// is already applied to the whole query
 				}
-			} else if (".".Equals(token)) {
+			} 
+			else if (".".Equals(token)) 
+			{
 				dotcount++;
-			} else {
-				if (dotcount == 0) {
-					if (!continuation) {
+			} 
+			else 
+			{
+				if (dotcount == 0) 
+				{
+					if (!continuation) 
+					{
 						if (!q.IsName(token)) throw new QueryException("undefined alias: " + token);
 						currentName = token;
 					}
-				} else if (dotcount == 1) {
-					if (currentName != null) {
+				} 
+				else if (dotcount == 1) 
+				{
+					if (currentName != null) 
+					{
 						currentProperty = token;
-					} else if (collectionName != null) {
+					} 
+					else if (collectionName != null) 
+					{
 						CollectionPersister p = q.GetCollectionPersister(collectionRole);
 						DoCollectionProperty(token, p, collectionName);
 						continuation = false;
-					} else {
+					} 
+					else 
+					{
 						throw new QueryException("unexpected");
 					}
-				} else { // dotcount>=2
+				} 
+				else 
+				{ // dotcount>=2
 					
 					// Do the corresponding RHS
 					IType propertyType = GetPropertyType(q);
 					
-					if (propertyType == null) {
+					if (propertyType == null) 
+					{
 						throw new QueryException("unresolved property: " + currentProperty);
 					}
 					
-					if (propertyType.IsComponentType || propertyType.IsObjectType) {
-						if (componentPath == null) {
+					if (propertyType.IsComponentType || propertyType.IsObjectType) 
+					{
+						if (componentPath == null) 
+						{
 							componentPath = token;
-						} else {
-							componentPath += StringHelper.Dot + token;
+						} 
+						else 
+						{
+							if (token != null)
+								componentPath += StringHelper.Dot + token;
 						}
-					} else {
-						
-						if (propertyType.IsEntityType) {
+					} 
+					else 
+					{
+						if (propertyType.IsEntityType) 
+						{
 							System.Type memberClass = ((EntityType) propertyType).PersistentClass;
 							IQueryable memberPersister = q.GetPersister(memberClass);
 							if (
 								// if its "id"
 								EntityID.Equals(token) || (
-									//or its the id property name
-									memberPersister.HasIdentifierProperty &&
-									memberPersister.IdentifierPropertyName.Equals(token))) {
+								//or its the id property name
+								memberPersister.HasIdentifierProperty &&
+								memberPersister.IdentifierPropertyName.Equals(token))) 
+							{
 								// special shortcut for id properties, skip the join!
 								// this must only occur at the _end_ of a path expression
-								skippedId = true;
-							} else {
+								if (componentPath == null)
+								{
+									componentPath = "id";
+								}
+								else
+								{
+									componentPath += ".id";
+								}
+							} 
+							else 
+							{
 								
 								string name = q.CreateNameFor(memberClass);
 								q.AddType(name, memberClass);
@@ -139,26 +202,29 @@ namespace NHibernate.Hql {
 								currentName = name;
 								currentProperty = token;
 								q.AddPathAliasAndJoin(path.Substring(0, (path.LastIndexOf((System.Char) StringHelper.Dot)) - (0)), name, join);
-								
+								componentPath = null;
 							}
-							componentPath = null;
-						} else if (propertyType.IsPersistentCollectionType) {
+						} 
+						else if (propertyType.IsPersistentCollectionType) 
+						{
 							
 							collectionRole = ((PersistentCollectionType) propertyType).Role;
 							CollectionPersister p = q.GetCollectionPersister(collectionRole);
 							string[] colNames = p.KeyColumnNames;
 							
 							string name = q.CreateNameForCollection(collectionRole);
-							
 							AddJoin( p.QualifiedTableName, name, colNames, q);
 							if ( p.HasWhere ) join.AddCondition( p.GetSQLWhereString(name) );
 							DoCollectionProperty(token, p, name);
 							collectionName = name;
+							collectionOwnerName = currentName;
 							collectionTable = p.QualifiedTableName;
 							currentName = null;
 							currentProperty = null;
 							componentPath = null;
-						} else {
+						} 
+						else 
+						{
 							if (token != null) throw new QueryException("dereferenced: " + currentProperty);
 						}
 						
@@ -168,28 +234,38 @@ namespace NHibernate.Hql {
 			}
 		}
 
-		private string PropertyPath {
-			get {
-				if (currentProperty == null) {
+		private string PropertyPath 
+		{
+			get 
+			{
+				if (currentProperty == null) 
+				{
 					return EntityID;
-				} else {
+				} 
+				else 
+				{
 					return currentProperty + 
-						(skippedId ? StringHelper.Dot + EntityID : String.Empty) + 
 						((componentPath == null) ? String.Empty : StringHelper.Dot + componentPath);
 				}
 			}
 		}
 
-		private void SetType(QueryTranslator q) {
-			if (currentProperty == null) {
+		private void SetType(QueryTranslator q) 
+		{
+			if (currentProperty == null) 
+			{
 				IClassPersister p = q.GetPersisterForName(currentName);
+				//TODO: entity == assoc??
 				type = NHibernate.Association(p.MappedClass);
-			} else {
+			} 
+			else 
+			{
 				type = GetPropertyType(q);
 			}
 		}
 		
-		protected IType GetPropertyType(QueryTranslator q) {
+		protected IType GetPropertyType(QueryTranslator q) 
+		{
 			string path = PropertyPath;
 			IType type = q.GetPersisterForName(currentName).GetPropertyType(path);
 
@@ -199,15 +275,17 @@ namespace NHibernate.Hql {
 			return type;
 		}
 
-		protected string[] CurrentColumns(QueryTranslator q) {
+		protected string[] CurrentColumns(QueryTranslator q) 
+		{
 			string path = PropertyPath;
 			string[] columns = q.GetPersisterForName(currentName).ToColumns(currentName, path);
 			if (columns==null) throw new QueryException("could not resolve property columns: " + path);
 			return columns;
 		}
 
-		private void Reset(QueryTranslator q) {
-			join = q.CreateJoinFragment();
+		private void Reset(QueryTranslator q) 
+		{
+			join = q.CreateJoinFragment(useThetaStyleJoin);
 			dotcount = 0;
 			currentName = null;
 			currentProperty = null;
@@ -221,32 +299,40 @@ namespace NHibernate.Hql {
 			collectionName = null;
 			columns = null;
 			expectingCollectionIndex = false;
-			skippedId = false;
 			continuation = false;
 		}
 
-		public void Start(QueryTranslator q) {
-			if (!continuation) {
+		public void Start(QueryTranslator q) 
+		{
+			if (!continuation) 
+			{
 				Reset(q);
 				path = String.Empty;
 			}
 		}
 
-		public virtual void End(QueryTranslator q) {
+		public virtual void End(QueryTranslator q) 
+		{
 			ignoreInitialJoin = false;
-			if ( IsCollectionValued ) {
+			if ( IsCollectionValued ) 
+			{
 				columns = collectionElementColumns;
 				type = collectionElementType;
-			} else {
+			} 
+			else 
+			{
 				
-				if (!continuation) {
+				if (!continuation) 
+				{
 					IType propertyType = GetPropertyType(q);
-					if ( propertyType != null && propertyType.IsPersistentCollectionType ) {
+					if ( propertyType != null && propertyType.IsPersistentCollectionType ) 
+					{
 						collectionRole = ((PersistentCollectionType) propertyType).Role;
 						collectionName = q.CreateNameForCollection(collectionRole);
 					}
 				}
-				if (collectionRole != null) {
+				if (collectionRole != null) 
+				{
 
 					//special case; expecting: [index]
 					CollectionPersister memberPersister = q.GetCollectionPersister(collectionRole);
@@ -255,8 +341,20 @@ namespace NHibernate.Hql {
 					string[] indexCols = memberPersister.IndexColumnNames;
 					if ( indexCols.Length!=1 ) throw new QueryException("composite-index appears in []: " + path);
 					string[] keyCols = memberPersister.KeyColumnNames;
+
+					JoinFragment ojf = q.CreateJoinFragment(useThetaStyleJoin);
+					ojf.AddCrossJoin( memberPersister.QualifiedTableName, collectionName );
+					if ( memberPersister.IsOneToMany ) 
+					{
+						ILoadable persister = q.GetPersister( ( (EntityType) memberPersister.ElementType ).PersistentClass );
+						ojf.AddJoins(
+							persister.FromJoinFragment(collectionName, true, false),
+							persister.WhereJoinFragment(collectionName, true, false)
+							);
+					}
 					
-					if (!continuation) {
+					if (!continuation) 
+					{
 						AddJoin( memberPersister.QualifiedTableName, collectionName, keyCols, q);
 					}
 					join.AddCondition(collectionName, indexCols, " = ");
@@ -274,10 +372,10 @@ namespace NHibernate.Hql {
 					SetExpectingCollectionIndex();
 					
 					q.AddCollection(collectionName, collectionRole);
-					JoinFragment ojf = q.CreateJoinFragment();
-					ojf.AddCrossJoin( memberPersister.QualifiedTableName, collectionName );
 					q.AddJoin(collectionName, ojf);
-				} else {
+				} 
+				else 
+				{
 					columns = CurrentColumns(q);
 					SetType(q);
 				}
@@ -289,7 +387,8 @@ namespace NHibernate.Hql {
 			
 		}
 
-		public sealed class CollectionElement {
+		public sealed class CollectionElement 
+		{
 			public IType Type;
 			public bool IsOneToMany;
 			public string Alias;
@@ -301,45 +400,78 @@ namespace NHibernate.Hql {
 		private bool expectingCollectionIndex;
 		private ArrayList collectionElements = new ArrayList();
 
-		public CollectionElement LastCollectionElement() {
+		public CollectionElement LastCollectionElement() 
+		{
 			CollectionElement ce = (CollectionElement) collectionElements[collectionElements.Count-1];
 			collectionElements.RemoveAt(collectionElements.Count-1);
 			return ce; //remove last
 		}
-		public string LastCollectionElementIndexValue {
-			set {
 
+		public string LastCollectionElementIndexValue 
+		{
+			set 
+			{
 				((CollectionElement) collectionElements[collectionElements.Count-1]).IndexValue.Append(value); //getlast
 			}
 		}
-		public bool IsExpectingCollectionIndex {
-			get { return expectingCollectionIndex; }
-			set { expectingCollectionIndex = value; }
+
+		public bool IsExpectingCollectionIndex 
+		{
+			get 
+			{ 
+				return expectingCollectionIndex; 
+			}
+			set 
+			{ 
+				expectingCollectionIndex = value; 
+			}
 		}
-		protected virtual void SetExpectingCollectionIndex() {
+
+		protected virtual void SetExpectingCollectionIndex() 
+		{
 			expectingCollectionIndex = true;
 		}
 
-		public JoinFragment WhereJoin {
-			get { return join; }
+		public JoinFragment WhereJoin 
+		{
+			get 
+			{ 
+				return join; 
+			}
 		}
-		public string WhereColumn {
-			get {
+
+		public string WhereColumn 
+		{
+			get 
+			{
 				if (columns.Length != 1) throw new QueryException("path expression ends in a composite value");
 				return columns[0];
 			}
 		}
-		public string[] WhereColumns {
-			get	{ return columns; }			
+
+		public string[] WhereColumns 
+		{
+			get	
+			{ 
+				return columns; 
+			}
 		}
-		public IType WhereColumnType {
-			get	{ return type; }			
+
+		public IType WhereColumnType 
+		{
+			get	
+			{ 
+				return type; 
+			}
 		}
-		public string Name {
+
+		public string Name 
+		{
 			get { return currentName==null ? collectionName : currentName; }
 		}
 
-		public string GetCollectionSubquery() {
+		public string GetCollectionSubquery() 
+		{
 
 			return new StringBuilder("SELECT ")
 				.Append(String.Join(", ", collectionElementColumns))
@@ -353,20 +485,24 @@ namespace NHibernate.Hql {
 				.ToString();
 		}
 
-		public bool IsCollectionValued {
+		public bool IsCollectionValued 
+		{
 			get { return collectionElementColumns!=null; }
 		}
 		
-		public void AddAssociation(QueryTranslator q) {
+		public void AddAssociation(QueryTranslator q) 
+		{
 			q.AddJoin( Name, join );
 		}
 		
-		public string AddFromAssociation(QueryTranslator q) {
+		public string AddFromAssociation(QueryTranslator q) 
+		{
 			q.AddFrom(currentName, join);
 			return currentName;
 		}
 
-		public string AddFromCollection(QueryTranslator q) {
+		public string AddFromCollection(QueryTranslator q) 
+		{
 			if ( collectionElementType==null ) throw new QueryException(
 												   "must specify 'elements' for collection valued property in from clause: " + path
 												   );
@@ -378,9 +514,12 @@ namespace NHibernate.Hql {
 			CollectionPersister persister = q.GetCollectionPersister(collectionRole);
 
 			string elementName;
-			if ( persister.IsOneToMany ) {
+			if ( persister.IsOneToMany ) 
+			{
 				elementName = collectionName;
-			} else {
+			} 
+			else 
+			{
 				q.AddCollection(collectionName, collectionRole);
 				ILoadable p = q.GetPersister(clazz);
 				elementName = q.CreateNameFor(clazz);
@@ -392,55 +531,90 @@ namespace NHibernate.Hql {
 			return elementName;
 		}
 
-		public string CollectionName {
-			get { return collectionName; }
+		public string CollectionName 
+		{
+			get 
+			{ 
+				return collectionName; 
+			}
 		}
-		public string CollectionRole {
-			get { return collectionRole; }
+		public string CollectionRole 
+		{
+			get 
+			{ 
+				return collectionRole; 
+			}
 		}
-		public string CollectionTable {
-			get { return collectionTable; }
+		public string CollectionTable 
+		{
+			get 
+			{ 
+				return collectionTable; 
+			}
 		}
 
-		private void DoCollectionProperty(string token, CollectionPersister memberPersister, string name) {
-			if (token.Equals(CollectionElements)) {
+		private void DoCollectionProperty(string token, CollectionPersister memberPersister, string name) 
+		{
+			if (token.Equals(CollectionElements)) 
+			{
 				string[] cols = memberPersister.ElementColumnNames;
 				collectionElementColumns = StringHelper.Prefix(cols, name + StringHelper.Dot);
 				collectionElementType = memberPersister.ElementType;
-			} else if (token.Equals(CollectionIndices)) {
+			} 
+			else if (token.Equals(CollectionIndices)) 
+			{
 				if (!memberPersister.HasIndex) throw new QueryException("unindexed collection before .indices");
 				string[] cols = memberPersister.IndexColumnNames;
 				collectionElementColumns = StringHelper.Prefix(cols, name + StringHelper.Dot);
 				collectionElementType = memberPersister.IndexType;
-			} else if (token.Equals(CollectionSize)) {
+			} 
+			else if (token.Equals(CollectionSize)) 
+			{
 				collectionElementColumns = new string[] { "count(*)" };
 				collectionElementType = NHibernate.Int32;
-			} else if (token.Equals(CollectionMaxIndex)) {
+			} 
+			else if (token.Equals(CollectionMaxIndex)) 
+			{
 				if (!memberPersister.HasIndex) throw new QueryException("unindexed collection before .maxIndex");
 				string[] cols = memberPersister.IndexColumnNames;
 				if (cols.Length != 1) throw new QueryException("composite collection index in maxIndex");
 				collectionElementColumns = new string[] { "max(" + cols[0] + StringHelper.ClosedParen };
 				collectionElementType = memberPersister.IndexType;
-			} else if (token.Equals(CollectionMinIndex)) {
+			} 
+			else if (token.Equals(CollectionMinIndex)) 
+			{
 				if (!memberPersister.HasIndex) throw new QueryException("unindexed collection before .minIndex");
 				string[] cols = memberPersister.IndexColumnNames;
 				if (cols.Length != 1) throw new QueryException("composite collection index in minIndex");
 				collectionElementColumns = new string[] { "min(" + cols[0] + StringHelper.ClosedParen };
 				collectionElementType = memberPersister.IndexType;
-			} else if (token.Equals(CollectionMaxElement)) {
+			} 
+			else if (token.Equals(CollectionMaxElement)) 
+			{
 				string[] cols = memberPersister.ElementColumnNames;
 				if (cols.Length != 1) throw new QueryException("composite collection element in maxElement");
 				collectionElementColumns = new string[] {"max(" + cols[0] + StringHelper.ClosedParen };
 				collectionElementType = memberPersister.ElementType;
-			} else if (token.Equals(CollectionMinElement)) {
+			} 
+			else if (token.Equals(CollectionMinElement)) 
+			{
 				string[] cols = memberPersister.ElementColumnNames;
 				if (cols.Length != 1) throw new QueryException("composite collection element in minElement");
 				collectionElementColumns = new string[] {"min(" + cols[0] + StringHelper.ClosedParen};
 				collectionElementType = memberPersister.ElementType;
-			} else {
+			} 
+			else 
+			{
 				throw new QueryException("expecting 'elements' or 'indices' after " + path);
 			}
 		}
-		
+
+		public String CollectionOwnerName
+		{
+			get
+			{
+				return collectionOwnerName;
+			}
+		}
 	}
 }
