@@ -11,6 +11,7 @@ namespace NHibernate.Mapping {
 		public Map(PersistentClass owner) : base(owner) { }
 
 		public override PersistentCollectionType Type {
+			//TODO: fix up when SortedMap is implemented.
 			//get { return IsSorted ? TypeFactory.SortedMap( Role, Comparator ) : TypeFactory.Map( Role );
 			get { return TypeFactory.Map( Role ); } //TODO: get sorted
 		}

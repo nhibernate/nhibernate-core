@@ -9,6 +9,9 @@ using NHibernate.Engine;
 
 namespace NHibernate.Mapping {
 	
+	/// <summary>
+	/// Represents a Table in a database that an object gets mapped against.
+	/// </summary>
 	public class Table : IRelationalModel {
 		
 		private string name;
@@ -26,10 +29,19 @@ namespace NHibernate.Mapping {
 			uniqueInteger = tableCounter++;
 		}
 
+		/// <summary>
+		/// Returns the QualifiedName for the table by combining the Schema and Name property.
+		/// </summary>
 		public string QualifiedName {
 			get { return (schema == null) ? name : schema + StringHelper.Dot + name; }
 		}
 
+		/// <summary>
+		/// Returns the QualifiedName for the table using the specified Qualifier
+		/// </summary>
+		/// <param name="defaultQualifier">The Qualifier to use when accessing the table.</param>
+		/// <returns>A String representing the Qualified name.</returns>
+		/// <remarks>If this were used with MSSQL it would return a dbo.table_name.</remarks>
 		public string GetQualifiedName(string defaultQualifier) {
 			return (schema==null) ? ( (defaultQualifier==null) ? name : defaultQualifier + StringHelper.Dot + name ) : QualifiedName;
 		}
@@ -198,13 +210,26 @@ namespace NHibernate.Mapping {
 		}
 
 		public string UniqueColumnString(ICollection col) {
+			string uniqueName;
 			int result = 0;
 			foreach(object obj in col) {
 				result += obj.GetHashCode();
 			}
-			//TODO: change
+			/*
+			 * I was running into the problem of FKs being genrated with negative numbers.
+			 * So the sql being sent to generate the FK was "FK-1234" - SqlServer2000 does
+			 * not like that.  So I'll change the "-" to an "_" to try and workaround that 
+			 * problem
+			 */
 			//return ( Integer.toHexString( name.hashCode() ) + Integer.toHexString(result) ).toUpperCase();
-			return name + result.ToString();
+			if(result < 0) {
+				result = result * -1;
+				uniqueName = name + "_" + result.ToString();
+			}
+			else {
+				uniqueName = name + result.ToString();
+			}
+			return uniqueName; //name + result.ToString();
 		}
 
 		public string Schema {

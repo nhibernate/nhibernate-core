@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.Sql;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Mapping {
 	
@@ -60,12 +61,13 @@ namespace NHibernate.Mapping {
 			set { typeIndex = value; }
 		}
 
-		public DbType GetAutoSqlType(IMapping mapping) {
+		public SqlType GetAutoSqlType(IMapping mapping) {
 			try {
-				return Type.SqlTypes(mapping)[ TypeIndex ];
-			} catch (Exception e) {
+				return Type.SqlTypes(mapping)[TypeIndex];
+			}
+			catch(Exception e) {
 				throw new MappingException(
-					"Could not determine type for column " + name + " of type " + type.GetType().FullName + ": " + e.GetType().FullName, e);
+					"GetAutoSqlType - Could not determine type for column " + name + " of type " + type.GetType().FullName + ": " + e.GetType().FullName, e);
 			}
 		}
 
@@ -75,22 +77,22 @@ namespace NHibernate.Mapping {
 		}
 
 		public string GetSqlType(Dialect.Dialect dialect, IMapping mapping) {
-			return (sqlType==null) ? dialect.GetTypeName( GetAutoSqlType(mapping), Length ) : sqlType;
-		}
+			string returnString;
 
-		public DbType GetSqlType(IMapping mapping) {
-			try {
-				return Type.SqlTypes(mapping)[TypeIndex];
+			if(sqlType==null) {
+				SqlType sqlTypeObject = GetAutoSqlType(mapping);
+//				if(sqlTypeObject!=null) {
+					returnString = dialect.SqlTypeToString(sqlTypeObject);
+//				}
+//				else {
+//					returnString = dialect.GetTypeName( GetAutoDbType(mapping), Length );
+//				}
 			}
-			catch(Exception e) {
-				throw new MappingException(
-					"Could not determine type for column " +
-					name +
-					" of type " +
-					type.GetType().Name +
-					": " +
-					e.GetType().Name, e);
+			else {
+				returnString = sqlType;
 			}
+
+			return returnString;
 		}
 
 		public override bool Equals(object obj) {

@@ -24,13 +24,14 @@ namespace NHibernate.Mapping {
 		private string where;
 		private PersistentClass owner;
 		private bool sorted;
-		private object comparator; //should be Comparator
+		//private object comparator; //should be Comparator
+		private IComparer comparer;
 
 		protected Collection(PersistentClass owner) {
 			this.owner = owner;
 		}
 
-		public bool IsSet {
+		public virtual bool IsSet {
 			get { return false; }
 		}
 
@@ -58,9 +59,9 @@ namespace NHibernate.Mapping {
 			set { sorted = value; }
 		}
 
-		public object Comparator {
-			get { return comparator; }
-			set { comparator = value; }
+		public IComparer Comparer {
+			get { return comparer; }
+			set { comparer = value; }
 		}
 
 		public bool IsLazy {

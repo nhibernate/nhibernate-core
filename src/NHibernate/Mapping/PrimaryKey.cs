@@ -14,6 +14,7 @@ namespace NHibernate.Mapping {
 			foreach(Column col in ColumnCollection) {
 				buf.Append(col.Name);
 				if (i < ColumnCollection.Count-1) buf.Append(StringHelper.CommaSpace);
+				i++;
 			}
 			return buf.Append(StringHelper.ClosedParen).ToString();
 		}
@@ -26,6 +27,7 @@ namespace NHibernate.Mapping {
 			foreach(Column col in ColumnCollection) {
 				buf.Append( col.Name);
 				if (i < ColumnCollection.Count - 1) buf.Append(StringHelper.CommaSpace);
+				i++;
 			}
 			return buf.Append(StringHelper.ClosedParen).ToString();
 		}

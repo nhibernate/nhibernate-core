@@ -50,16 +50,23 @@ namespace NHibernate.Mapping {
 		public override bool IsInherited {
 			get { return true; }
 		}
+		
+		/// <summary>
+		/// The subclass is always a polymorphic version of its superclass
+		/// TODO: make sure my OO jargon is correct here.
+		/// </summary>
 		public override bool IsPolymorphic {
 			get { return true; }
-			set { throw new InvalidOperationException(); }
+			//set { throw new InvalidOperationException(); }
 		}
 		public override void AddProperty(Property p) {
 			base.AddProperty(p);
 			Superclass.AddSubclassProperty(p);
 		}
 		public override Table Table {
-			get { return Superclass.Table; }
+			get { 
+				return base.Table;
+			}
 			set {
 				base.Table = value;
 				Superclass.AddSubclassTable(value);

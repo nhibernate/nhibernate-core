@@ -7,7 +7,7 @@ namespace NHibernate.Mapping
 	public class Any : Value
 	{
 		private IType identifierType;
-		private IType metaType = NHibernate.Class;
+		private IType metaType = TypeFactory.GetTypeType();
 
 		public Any(Table table) : base(table){
 		}

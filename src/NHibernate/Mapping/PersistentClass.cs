@@ -45,12 +45,25 @@ namespace NHibernate.Mapping {
 			}
 		}
 
+		/// <summary>
+		/// Gets the Collection of Subclasses for this PersistentClass.  It will
+		/// recursively go through Subclasses so that if a Subclass has Subclasses
+		/// it will pick those up also.
+		/// </summary>
 		public virtual ICollection SubclassCollection {
 			get { 
 				ArrayList retVal = new ArrayList();
+				
+				// check to see if there are any subclass in our subclasses 
+				// and add them into the collection
 				foreach(Subclass sc in subclasses) {
 					retVal.AddRange(sc.SubclassCollection);
 				}
+
+				// finally add the subclasses from this PersistentClass into
+				// the collection to return
+				retVal.AddRange(subclasses);
+
 				return retVal;
 			}
 		}
@@ -88,7 +101,8 @@ namespace NHibernate.Mapping {
 		public abstract Property Version { get; set; }
 		public abstract Value Discriminator { get; set; }
 		public abstract bool IsInherited { get;  }
-		public abstract bool IsPolymorphic { get; set; }
+		// see the comment in RootClass about why the polymorphic setter is commented out
+		public abstract bool IsPolymorphic { get; } //set; }
 		public abstract bool IsVersioned { get;}
 		public abstract ICacheConcurrencyStrategy Cache { get; set;}
 		public abstract PersistentClass Superclass { get; set; }
@@ -111,6 +125,12 @@ namespace NHibernate.Mapping {
 				return retVal;
 			}
 		}
+		
+		/// <summary>
+		/// Returns an ICollection of all of the Tables that the subclass finds its information
+		/// in.  
+		/// </summary>
+		/// <remarks>It adds the TableClosureCollection and the subclassTables into the ICollection.</remarks>
 		public virtual ICollection SubclassTableClosureCollection {
 			get {
 				ArrayList retVal = new ArrayList();

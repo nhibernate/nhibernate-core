@@ -8,7 +8,7 @@ namespace NHibernate.Mapping {
 		public IntegerValue(Table table) : base(table) { }
 
 		public override IType Type {
-			get { return NHibernate.Integer; }
+			get { return NHibernate.Int32; }
 		}
 	}
 }

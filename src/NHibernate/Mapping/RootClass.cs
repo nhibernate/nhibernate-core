@@ -41,9 +41,17 @@ namespace NHibernate.Mapping {
 		public override bool IsInherited {
 			get { return false; }
 		}
+		
+		/// <summary>
+		/// Indicates if the object has subclasses
+		/// </summary>
+		/// <remarks>
+		/// This value is set to True when a subclass is added and should not be set
+		/// through any other method - so no setter is declared for this property.
+		/// </remarks>
 		public override bool IsPolymorphic {
 			get { return polymorphic; }
-			set { polymorphic = value; }
+			//set { polymorphic = value; }
 		}
 
 		public override RootClass RootClazz {
@@ -52,6 +60,14 @@ namespace NHibernate.Mapping {
 		public override ICollection PropertyClosureCollection {
 			get { return PropertyCollection; }
 		}
+		
+		/// <summary>
+		/// Returns all of the Tables the Root class covers.
+		/// </summary>
+		/// <remarks>
+		/// The RootClass should only have one item in the Collection - the Table that it comes from.
+		/// TODO: why an ICollection - I don't know why the signature calls for an ICollection.
+		/// </remarks>
 		public override ICollection TableClosureCollection {
 			get { 
 				ArrayList retVal = new ArrayList();
@@ -61,7 +77,7 @@ namespace NHibernate.Mapping {
 		}
 		public override void AddSubclass(Subclass subclass) {
 			base.AddSubclass(subclass);
-			IsPolymorphic = true;
+			polymorphic = true;
 		}
 
 		public override bool IsExplicitPolymorphism {
