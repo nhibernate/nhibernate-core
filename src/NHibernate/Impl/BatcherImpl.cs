@@ -101,7 +101,11 @@ namespace NHibernate.Impl
 				}
 
 				command.Connection = session.Connection;
-				JoinTransaction( command );
+				if( session.Transaction!=null ) 
+				{
+					session.Transaction.Enlist( command );
+				}
+
 			
 				if( factory.ConnectionProvider.Driver.SupportsPreparingCommands ) 
 				{
@@ -114,56 +118,6 @@ namespace NHibernate.Impl
 					"While preparing " + command.CommandText + " an error occurred"
 					, e);
 			}
-		}
-
-		/// <summary>
-		/// Joins the Command to the Transaction and ensures that the Session and IDbCommand are in 
-		/// the same Transaction.
-		/// </summary>
-		/// <param name="command">The command to setup the Transaction on.</param>
-		/// <returns>A IDbCommand with a valid Transaction property.</returns>
-		/// TODO: move this into ITransaction and let the Transaction figure out how to
-		/// get the Command to be a part of it.  When .net 2.0 and the new transaction interface
-		/// comes out it will probably have its own strategy...
-		private void JoinTransaction(IDbCommand command) 
-		{
-			IDbTransaction sessionAdoTrx = null;
-			
-			// at this point in the code if the Transaction is not null then we know we
-			// have a Transaction object that has the .AdoTransaction property.  In the future
-			// we will have a seperate object to represent an AdoTransaction and won't have a 
-			// generic Transaction class - the existing Transaction class will become Abstract.
-			if(this.session.Transaction!=null) sessionAdoTrx = ((Transaction.Transaction)session.Transaction).AdoTransaction;
-
-
-			// if the sessionAdoTrx is null then we don't want the command to be a part of
-			// any Transaction - so lets set the command trx to null
-			if(sessionAdoTrx==null) 
-			{
-				if(command.Transaction!=null) 
-				{
-					log.Warn("set a nonnull IDbCommand.Transaction to null because the Session had no Transaction");
-				}
-				command.Transaction = null;
-			}
-
-			// make sure these are the same transaction - I don't know why we would have a command
-			// in a different Transaction than the Session, but I don't understand all of the code
-			// well enough yet to verify that.
-			else if (sessionAdoTrx!=command.Transaction) 
-			{
-				
-				// got into here because the command was being initialized and had a null Transaction - probably
-				// don't need to be confused by that - just a normal part of initialization...
-				if(command.Transaction!=null) 
-				{
-					log.Warn("The IDbCommand had a different Transaction than the Session.  This can occur when " +
-						"Disconnecting and Reconnecting Sessions because the PreparedCommand Cache is Session specific.");
-				}
-		
-				command.Transaction = sessionAdoTrx; 
-			}
-
 		}
 
 		public IDbCommand PrepareBatchCommand(SqlString sql) 

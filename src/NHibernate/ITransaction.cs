@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 namespace NHibernate {
 	/// <summary>
@@ -42,5 +43,13 @@ namespace NHibernate {
 		/// </remarks>
 		bool WasCommitted { get; }
 		
+		/// <summary>
+		/// Enlist the <see cref="IDbCommand"/> in the current Transaction.
+		/// </summary>
+		/// <param name="command">The <see cref="IDbCommand"/> to enlist.</param>
+		/// <remarks>
+		/// It is okay for this to be a no op implementation.
+		/// </remarks>
+		void Enlist(IDbCommand command);
 	}
 }
