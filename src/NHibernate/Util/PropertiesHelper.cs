@@ -3,10 +3,17 @@ using System.Xml;
 using System.Collections;
 using System.Collections.Specialized;
 
-namespace NHibernate.Util {
-	
+namespace NHibernate.Util 
+{
 	//Much of this code is taken from Maverick.NET
-	public class PropertiesHelper {
+	public class PropertiesHelper 
+	{
+		public static bool GetBoolean(string property, IDictionary properties, bool defaultValue) 
+		{
+			return properties[ property ]==null ?
+				defaultValue :
+				bool.Parse( properties[property] as string );
+		}
 
 		public static bool GetBoolean(string property, IDictionary properties) {
 			return properties[property] == null ?
