@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
-  <import class="net.sf.hibernate.test.Result"/>
-  <import class="net.sf.hibernate.test.Named"/>
+  <import class="NHibernate.DomainModel.Result, NHibernate.DomainModel"/>
+  <import class="NHibernate.DomainModel.Named, NHibernate.DomainModel"/>
 
   <class 
-  	name="net.sf.hibernate.test.Foo"
+  	name="NHibernate.DomainModel.Foo, NHibernate.DomainModel"
   	table="`foos`"
-  	proxy="net.sf.hibernate.test.FooProxy"
+  	proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel"
   	discriminator-value="F"
   	dynamic-update="true"
   	dynamic-insert="true">
@@ -24,7 +24,7 @@
     <version name="version"/>
     <!--<version name="versionCalendar" type="calendar"/>-->
     <!--<timestamp name="versionTimestamp"/>-->
-    <many-to-one name="foo" class="net.sf.hibernate.test.Foo">
+    <many-to-one name="foo" class="NHibernate.DomainModel.Foo, NHibernate.DomainModel">
         <column name="foo" length="36" index="fbmtoidx"/>
     </many-to-one>
     <property name="long">
@@ -59,7 +59,7 @@
     </property>
     <property name="byte" column="byte_"/>
     <property name="yesno" type="yes_no"/>
-    <property name="blob" type="net.sf.hibernate.test.Foo$Struct" column="blobb_"/>
+    <property name="blob" type="NHibernate.DomainModel.Foo$Struct, NHibernate.DomainModel" column="blobb_"/>
     <property name="nullBlob" type="serializable"/>
     <property name="status" column="`status_@###`"/>
     <property name="binary" column="bin_"/>
@@ -67,17 +67,17 @@
     
     <property name="formula" formula="1/2 * int_"/>
     
-    <property name="custom" type="net.sf.hibernate.test.DoubleStringType">
+    <property name="custom" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
         <column name="first_name" length="66"/>
         <column name="surname" length="66"/>
     </property>
-    <many-to-one name="dependent" class="net.sf.hibernate.test.Fee" cascade="all" not-null="true"/>
+    <many-to-one name="dependent" class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" cascade="all" not-null="true"/>
     <component name="component">
       <property name="count" column="count_" type="int" not-null="true"/> 
       <property name="name">
         <column name="name_" length="32" not-null="true"/> 
       </property>
-      <many-to-one name="glarch" column="g__" cascade="all" class="net.sf.hibernate.test.Glarch" outer-join="true"/>
+      <many-to-one name="glarch" column="g__" cascade="all" class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel" outer-join="true"/>
       <property name="null" column="cmpnt_null_"/>
       <component name="subcomponent">
         <property name="count" column="subcount"/>
@@ -87,7 +87,7 @@
           <index column="i"/>
           <element column="date_" type="time"/>
         </array>
-        <many-to-one name="fee" column="fee_sub" cascade="all" class="net.sf.hibernate.test.Fee" outer-join="false"/>
+        <many-to-one name="fee" column="fee_sub" cascade="all" class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" outer-join="false"/>
       </component>
       <array name="importantDates" table="foo_dates">
         <key column="foo_id"/>
@@ -99,28 +99,28 @@
       <property name="name" column="null_cmpnt_"/>
     </component>
     <subclass
-    	name="net.sf.hibernate.test.Trivial"
-    	proxy="net.sf.hibernate.test.FooProxy" 
+    	name="NHibernate.DomainModel.Trivial, NHibernate.DomainModel"
+    	proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel" 
     	discriminator-value="T"/>
     <subclass 
-    	name="net.sf.hibernate.test.Abstract" 
-    	proxy="net.sf.hibernate.test.AbstractProxy" 
+    	name="NHibernate.DomainModel.Abstract, NHibernate.DomainModel" 
+    	proxy="NHibernate.DomainModel.AbstractProxy, NHibernate.DomainModel" 
     	discriminator-value="null">
         <set name="abstracts">
             <key column="abstract_id"/>
-            <one-to-many class="net.sf.hibernate.test.Abstract"/>
+            <one-to-many class="NHibernate.DomainModel.Abstract, NHibernate.DomainModel"/>
         </set>
         <property name="time" column="the_time"/>
         <subclass 
-        	name="net.sf.hibernate.test.Bar" 
-        	proxy="net.sf.hibernate.test.BarProxy"
+        	name="NHibernate.DomainModel.Bar, NHibernate.DomainModel" 
+        	proxy="NHibernate.DomainModel.BarProxy, NHibernate.DomainModel"
         	discriminator-value="B">
           <many-to-one name="baz"/>
           <property name="barString">
             <column name="bar_string" length="24"/>
           </property>
           <property name="name" column="name_name"/>
-          <component name="barComponent" class="net.sf.hibernate.test.FooComponent">
+          <component name="barComponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
             <parent name="parent"/>
             <property name="count" column="bar_count"/>
             <property name="name" length="64"/>
