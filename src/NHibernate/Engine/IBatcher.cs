@@ -10,6 +10,10 @@ namespace NHibernate.Engine {
 	/// Abstracts ADO.NET batching to maintain the illusion
 	/// that a single logical batch exists for the whole session, even when batching is disabled.
 	/// Provides transparent <c>IDbCommand</c> caching.
+	/// 
+	/// TODO: DESIGNQUESTION: we might want to use this to tie together the Connection.IConnection and Transaction.ITransaction because
+	/// of how closely ADO.NET ties together the IDbConnection and IDbTransaction and IDbCommand - namely that creating
+	/// a IDbCommand from an IDbConnection doesn't automattically give it the IDbTransaction.
 	/// </remarks>
 	public interface IBatcher {
 		
@@ -19,6 +23,9 @@ namespace NHibernate.Engine {
 		/// <remarks>
 		/// If not explicitly released by <c>CloseQueryStatement()</c>, it will be 
 		/// released when the session is closed or disconnected.
+		/// 
+		/// This does NOT add anything to the batch - it only creates the IDbCommand and 
+		/// does NOT cause the batch to execute...
 		/// </remarks>
 		IDbCommand PrepareQueryStatement(string sql);
 

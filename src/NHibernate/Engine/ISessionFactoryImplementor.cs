@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Connection;
 using NHibernate.Persister;
 using NHibernate.Collection;
 using NHibernate.Dialect;
@@ -12,6 +13,12 @@ namespace NHibernate.Engine {
 	/// such as implementors of <c>IType</c>.
 	/// </summary>
 	public interface ISessionFactoryImplementor : IMapping, ISessionFactory {
+		
+		/// <summary>
+		/// TODO: determine if this is more appropriate for ISessionFactory
+		/// </summary>
+		IConnectionProvider ConnectionProvider {get;}
+		
 		
 		/// <summary>
 		/// Get the persister for a class

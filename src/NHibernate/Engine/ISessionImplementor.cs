@@ -72,6 +72,39 @@ namespace NHibernate.Engine {
 		bool IsInverseCollection(PersistentCollection collection);
 
 		/// <summary>
+		/// new in h2.0.3 and no javadoc
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		PersistentCollection GetLoadingCollection(CollectionPersister persister, object id);
+		
+		/// <summary>
+		/// new in h2.0.3 and no javadoc
+		/// 
+		/// MikeD added to help with EndRead of Collections...
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="id"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		PersistentCollection GetLoadingCollection(CollectionPersister persister, object id, object owner);
+		
+		/// <summary>
+		/// new in h2.0.3 and no javadoc
+		/// </summary>
+		/// <param name="role"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		PersistentCollection GetLoadingCollection(String role, object id);
+		
+		/// <summary>
+		/// new in h2.0.3 and no javadoc
+		/// </summary>
+		void EndLoadingCollections();
+	
+
+		/// <summary>
 		/// Load an instance without checking if it was deleted. If it does not exist, throw an exception.
 		/// This method may create a new proxy or return an existing proxy.
 		/// </summary>
@@ -120,6 +153,12 @@ namespace NHibernate.Engine {
 		/// Get the prepared statement <c>Batcher</c> for this session
 		/// </summary>
 		IBatcher Batcher { get; }
+
+		/// <summary>
+		/// Get the NHibernate Command Preparer for this Session.
+		/// </summary>
+		IPreparer Preparer {get; }
+		//TODO: this will eventually replace the Batcher...
 
 		/// <summary>
 		/// After actually inserting a row, record the fact taht the instance exists on the database
@@ -265,5 +304,36 @@ namespace NHibernate.Engine {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		object Instantiate(System.Type clazz, object id);
+
+		/// <summary>
+		/// Set the lock mode of the entity to the given lock mode
+		/// </summary>
+		/// <param name="entity"></param>
+		/// <param name="lockMode"></param>
+		void SetLockMode(object entity, LockMode lockMode);
+
+		/// <summary>
+		/// Get the current version of the entity
+		/// </summary>
+		/// <param name="entity"></param>
+		//TODO: remove this comment
+		object GetVersion(object entity);
+
+		/// <summary>
+		/// Get the lock mode of the entity
+		/// </summary>
+		/// <param name="entity"></param>
+		/// <returns></returns>
+		LockMode GetLockMode(object entity);
+
+		/// <summary>
+		/// Get the collection orphans (entities which were removed from
+		/// the collection
+		/// </summary>
+		/// <param name="coll"></param>
+		/// <returns></returns>
+		//TODO: remove this comment
+		//ICollection GetOrphans(PersistentCollection coll);
+
 	}
 }
