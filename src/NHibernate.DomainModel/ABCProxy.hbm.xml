@@ -2,27 +2,27 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="NHibernate.DomainModel.A, NHibernate.DomainModel" discriminator-value="0"
 		proxy="NHibernate.DomainModel.A, NHibernate.DomainModel">
-		<id name="id" unsaved-value="null" type="Int64">
+		<id name="Id" unsaved-value="null" type="Int64">
 			<generator class="native" />
 		</id>
 		<discriminator column="clazz" type="Int32" force="true" not-null="false" />
-		<property name="name" />
+		<property name="Name" />
 		<subclass name="NHibernate.DomainModel.B, NHibernate.DomainModel" discriminator-value="null"
 			proxy="NHibernate.DomainModel.B, NHibernate.DomainModel">
-			<property name="count" column="count_" type="Int32" />
-			<map name="map">
+			<property name="Count" column="count_" type="Int32" />
+			<map name="Map">
 				<key column="BID" />
 				<index column="MAPKEY" type="String" />
 				<element column="MAPVAL" type="Int32" />
 			</map>
 			<subclass name="NHibernate.DomainModel.C1, NHibernate.DomainModel" discriminator-value="1"
 				proxy="NHibernate.DomainModel.C1, NHibernate.DomainModel">
-				<property name="address" column="c1" />
-				<one-to-one name="d" class="NHibernate.DomainModel.D, NHibernate.DomainModel" />
+				<property name="Address" column="c1" />
+				<one-to-one name="D" class="NHibernate.DomainModel.D, NHibernate.DomainModel" />
 			</subclass>
 			<subclass name="NHibernate.DomainModel.C2, NHibernate.DomainModel" discriminator-value="2"
 				proxy="NHibernate.DomainModel.C2, NHibernate.DomainModel">
-				<property name="address" column="c2" />
+				<property name="Address" column="c2" />
 			</subclass>
 		</subclass>
 	</class>

@@ -66,7 +66,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for address
 	/// </summary>
-	public String address
+	public String Address
 	{
 		get
 		{

@@ -185,6 +185,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Category.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Child.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -197,6 +201,10 @@
                     RelPath = "Circular.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Circular.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "ClassWithCompositeId.cs"
@@ -364,6 +372,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "INameable.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "INamed.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -421,9 +433,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MasterDetail.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Middle.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Middle.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "MiddleKey.cs"
@@ -444,6 +464,10 @@
                     RelPath = "Multi.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Multi.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Multiplicity.cs"
@@ -568,6 +592,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SingleSeveral.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Sortable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -646,6 +674,10 @@
                     RelPath = "W.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WZ.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "X.cs"

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+    <class 
+		name="NHibernate.DomainModel.INameable, NHibernate.DomainModel"
+	>
+        <id 
+			name="Key" 
+			column="key_"
+		>
+        	<generator class="native"/>
+        </id>
+        <discriminator column="clazz"/>
+        <property name="Name"/>
+        
+        <subclass 
+			name="NHibernate.DomainModel.BasicNameable, NHibernate.DomainModel"
+		/>
+    </class>
+
+</hibernate-mapping>

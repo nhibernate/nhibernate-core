@@ -73,7 +73,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for address
 	/// </summary>
-	public String address
+	public String Address
 	{
 		get
 		{
@@ -88,7 +88,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for d
 	/// </summary>
-	public D d
+	public D D
 	{
 		get
 		{

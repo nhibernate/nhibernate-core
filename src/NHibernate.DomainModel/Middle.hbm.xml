@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+    <class 
+		name="NHibernate.DomainModel.Inner, NHibernate.DomainModel" 
+		table="CID_IN"
+	>
+        <composite-id name="Id">
+            <key-property 
+				name="akey" 
+				type="String(10)" 
+				length="10" 
+				column="AKEY"
+			/>
+            <key-property 
+				name="bkey" 
+				type="String(10)" 
+				length="10" 
+				column="BKEY"
+			/>
+        </composite-id>
+        
+        <property 
+			name="Dudu" 
+			length="10" 
+			column="DUDU" 
+			not-null="true" 
+			type="String(10)"
+		/>
+		
+    </class>
+
+    <class 
+		name="NHibernate.DomainModel.Middle, NHibernate.DomainModel" 
+		table="CID_MID"
+	>
+        <composite-id name="Id">
+            <key-many-to-one name="sup">
+                <column 
+					length="10" 
+					name="AKEY"
+				/>
+                <column 
+					length="10" 
+					name="BKEY"
+				/>
+            </key-many-to-one>
+            <key-property 
+				name="One" 
+				type="String(10)" 
+				length="10" 
+				column="ONE"
+			/>
+            <key-property 
+				name="Two" 
+				type="String(10)" 
+				length="10" 
+				column="TWO"
+			/>
+        </composite-id>
+        <property 
+			column="BLA" 
+			length="10" 
+			name="Bla" 
+			not-null="true" 
+			type="String(10)"
+		/>
+    </class>
+
+    <class 
+		name="NHibernate.DomainModel.Outer, NHibernate.DomainModel" 
+		table="CID_OUT"
+	>
+        <composite-id name="Id">
+            <key-many-to-one name="master">
+                <column name="AKEY"/>
+                <column name="BKEY"/>
+                <column name="ONE"/>
+                <column name="TWO"/>
+            </key-many-to-one>
+            <key-property 
+				name="detailId" 
+				type="String(10)" 
+				column="ID" 
+				length="10"
+			/>
+        </composite-id>
+        <property 
+			name="Bubu" 
+			column="BUBU" 
+			length="10" 
+			type="String(10)"
+		/>
+    </class>
+
+</hibernate-mapping>

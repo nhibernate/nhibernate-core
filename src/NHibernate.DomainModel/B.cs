@@ -71,7 +71,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for count
 	/// </summary>
-	public Int32 count
+	public Int32 Count
 	{
 		get
 		{
@@ -86,7 +86,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for map
 	/// </summary>
-	public System.Collections.IDictionary map
+	public System.Collections.IDictionary Map
 	{
 		get
 		{

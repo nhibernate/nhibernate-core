@@ -1,0 +1,182 @@
+<?xml version="1.0"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+    <class 
+    	name="NHibernate.DomainModel.Simple, NHibernate.DomainModel" 
+    	table="rootclass" 
+    	dynamic-insert="true" 
+    	dynamic-update="true"
+    >
+        <jcs-cache usage="read-write"/>
+        <id 
+			type="Int64" 
+			column="id_" 
+		>
+            <generator class="native"/>
+        </id>
+        
+        <version 
+			name="Count" 
+			column="count_"
+		/>
+        <property name="Name"/>
+        <property name="Address"/>
+        <property 
+			name="Date" 
+			column="date_"
+		/>
+        
+        <joined-subclass 
+        	name="NHibernate.DomainModel.Mono, NHibernate.DomainModel" 
+        	table="mono"
+        	dynamic-insert="true" 
+    		dynamic-update="true"
+    	>
+        	<key column="superid"/>
+        	<set 
+        		name="Strings" 
+        		table="monostrings"
+        	>
+        		<key column="monoid_"/>
+        		<element 
+        			type="String" 
+        			column="str_"
+        		/>
+        	</set>
+        </joined-subclass>
+        
+        <joined-subclass 
+			name="NHibernate.DomainModel.TrivialClass, NHibernate.DomainModel"
+		>
+        	<key column="tcid"/>
+        </joined-subclass>
+        
+	    <joined-subclass 
+	    	name="NHibernate.DomainModel.LessSimple, NHibernate.DomainModel" 
+	    	table="leafsubclass"
+	    	dynamic-insert="true" 
+    		dynamic-update="true"
+    	>
+	        <key column="id__"/>
+	        <property 
+				name="Intprop" 
+				not-null="true"
+			/>
+	        <one-to-one 
+				name="Other" 
+				class="NHibernate.DomainModel.LessSimple, NHibernate.DomainModel"
+			/>
+	        <many-to-one 
+				name="Another" 
+				column="other1" 
+				class="NHibernate.DomainModel.Simple, NHibernate.DomainModel"
+	        />
+	        <many-to-one 
+				name="Yetanother" 
+				column="other3" 
+				class="NHibernate.DomainModel.LessSimple, NHibernate.DomainModel"
+	        />
+	        <property name="foo"/>
+	        <set 
+				name="Set" 
+				lazy="false"
+	        >
+	        	<key column="parent"/>
+	        	<one-to-many class="NHibernate.DomainModel.Simple, NHibernate.DomainModel"/>
+	        </set>
+	        <bag 
+				name="Bag" 
+				lazy="true" 
+				table="simple_simple"
+			>
+	        	<key column="simple1"/>
+	        	<many-to-many 
+	        		column="simple2" 
+	        		class="NHibernate.DomainModel.Simple"
+	        	/>
+	        </bag>
+	        <one-to-one name="Mypo"/>
+	    </joined-subclass>
+	    
+	    <joined-subclass 
+			name="NHibernate.DomainModel.Multi, NHibernate.DomainModel" 
+			table="nonleafsubclass"
+		>
+	    	<key column="sid"/>
+	        <property name="extraProp"/>
+	        <many-to-one 
+				name="Other" 
+				column="other2" 
+				class="NHibernate.DomainModel.Multi, NHibernate.DomainModel" 
+			/>
+	        <many-to-one name="Po"/>
+	        
+	        <component	
+				name="comp" 
+				class="NHibernate.DomainModel.Multi$Component, NHibernate.DomainModel"
+			>
+			<!-- TODO: figure out how to reflect on a nested type -->
+	        	<property name="cal"/>
+	        	<property name="floaty"/>
+	        </component>
+	        
+	        <joined-subclass 
+				name="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel" 
+				table="leafsubsubclass"
+			>
+	        	<key column="sid"/>
+	        	<property name="amount"/>
+	        	<bag 
+	        		name="Children" 
+	        		lazy="true" 
+	        		inverse="true"
+	        	>
+	        		<key column="parent"/>
+	        		<one-to-many class="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel"/>
+	        	</bag>
+	        	<many-to-one name="parent"/>
+				<list name="moreChildren" lazy="true">
+	        		<key column="another_parent"/>
+	        		<index column="list_ind"/>
+	        		<one-to-many class="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel"/>
+	        	</list>
+	        </joined-subclass>
+	        
+	    </joined-subclass>
+
+    </class>
+    
+    <class 
+    	name="NHibernate.DomainModel.Po, NHibernate.DomainModel"
+    	dynamic-insert="true"
+    >
+    	<id 
+    		type="Int64" 
+    		column="id_"
+    	>
+    		<generator class="native"/>
+    	</id>
+    	<property 
+    		name="Value" 
+    		column="value_"
+    	/>
+    	<list 
+    		name="list" 
+    		cascade="all"
+    	>
+    		<key column="list_po"/>
+    		<index column="i"/>
+    		<one-to-many class="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel" />
+    	</list>
+    	<set 
+    		name="Set" 
+    		inverse="true" 
+    		cascade="all"
+    	>
+    		<key column="po" />
+    		<one-to-many class="NHibernate.DomainModel.Multi, NHibernate.DomainModel" />
+    	</set>
+    </class>
+
+</hibernate-mapping>
