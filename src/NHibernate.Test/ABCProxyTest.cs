@@ -30,12 +30,12 @@ namespace NHibernate.Test
 			C1 c1 = new C1();
 			D d = new D();
 			d.amount =213.34f;
-			c1.address = "foo bar";
-			c1.count = 23432;
-			c1.name = "c1";
-			c1.d = d;
+			c1.Address = "foo bar";
+			c1.Count = 23432;
+			c1.Name = "c1";
+			c1.D = d;
 			s.Save(c1);
-			d.id = c1.id;
+			d.id = c1.Id;
 			s.Save(d);
 			t.Commit();
 			s.Close();
@@ -43,18 +43,18 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
 			// Test won't run after this line because of proxy initalization problems
-			A c1a = (A) s.Load(typeof(A), c1.id );
+			A c1a = (A) s.Load(typeof(A), c1.Id );
 			Assert.IsFalse( NHibernate.IsInitialized(c1a) );
-			Assert.IsTrue( c1a.name.Equals("c1") );
+			Assert.IsTrue( c1a.Name.Equals("c1") );
 			t.Commit();
 			s.Close();
 		
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
-			B c1b = (B) s.Load( typeof(B), c1.id );
+			B c1b = (B) s.Load( typeof(B), c1.Id );
 			Assert.IsTrue(
-				(c1b.count==23432) &&
-				c1b.name.Equals("c1")
+				(c1b.Count==23432) &&
+				c1b.Name.Equals("c1")
 				);
 			t.Commit();
 			s.Close();
@@ -153,7 +153,7 @@ namespace NHibernate.Test
 			s.Save(b);
 			Hashtable map = new Hashtable();
 			map.Add("3", 1 ); 
-			b.map = map;
+			b.Map = map;
 			s.Flush();
 			s.Delete(b);
 			t.Commit();
@@ -163,7 +163,7 @@ namespace NHibernate.Test
 			map = new Hashtable();
 			map.Add("3", 1); 
 			b = new B();
-			b.map = map;
+			b.Map = map;
 			s.Save(b);
 			s.Flush();
 			s.Delete(b);
