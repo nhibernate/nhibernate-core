@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	
 	<class 
 		name="NHibernate.DomainModel.Parent, NHibernate.DomainModel"
@@ -13,7 +13,7 @@
 		<property name="X"/>
 		<property name="Count" column="count_"/>
 		<one-to-one name="Child"/>
-        <property name="Any" type="Object">
+        <property name="Any">
         	<column name="any_id"/>
         	<column name="any_class"/>
         </property>

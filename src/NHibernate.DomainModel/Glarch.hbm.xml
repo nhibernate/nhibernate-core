@@ -116,10 +116,10 @@
 			column="version" 
 		/>
 		
-		<any name="Any" id-type="System.Object">
+		<property name="Any" type="Object">
 			<column name="`any_id of object`" />
 			<column name="`any_class of object`" />
-		</any>
+		</property>
 		
 		<property 
 			name="Multiple" 
