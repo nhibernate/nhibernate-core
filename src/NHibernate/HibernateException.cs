@@ -11,14 +11,24 @@ namespace NHibernate
 	[Serializable]
 	public class HibernateException : ApplicationException 
 	{
-		public HibernateException() : base (String.Empty) { }
+		public HibernateException() : base( String.Empty ) 
+		{ 
+		}
 
-		public HibernateException(Exception e) : base(String.Empty, e) { }
+		public HibernateException(Exception e) : base( e.Message, e ) 
+		{ 
+		}
 
-		public HibernateException(string message, Exception e) : base(message, e) { }
+		public HibernateException(string message, Exception e) : base( message, e )
+		{ 
+		}
 
-		public HibernateException(string message) : base(message) { }
+		public HibernateException(string message) : base( message ) 
+		{ 
+		}
 
-		protected HibernateException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		protected HibernateException(SerializationInfo info, StreamingContext context) : base(info, context) 
+		{ 
+		}
 	}
 }
