@@ -14,6 +14,25 @@ namespace NHibernate.Test.TypesTest
 	public class DateTimeTypeFixture 
 	{
 		[Test]
+		public void Next() 
+		{
+			DateTimeType type = (DateTimeType)NHibernate.DateTime;
+			object current = DateTime.Parse( "2004-01-01" );
+			object next = type.Next( current );
+			
+			Assert.IsTrue( next is DateTime, "Next should be DateTime" );
+			Assert.IsTrue( (DateTime)next > (DateTime)current, "next should be greater than current (could be equal depending on how quickly this occurs)" );
+			
+		}
+
+		[Test]
+		public void Seed() 
+		{
+			DateTimeType type = (DateTimeType)NHibernate.DateTime;
+			Assert.IsTrue( type.Seed is DateTime, "seed should be DateTime" );
+		}
+
+		[Test]
 		public void DeepCopyNotNull() 
 		{
 			NullableType type = NHibernate.DateTime;

@@ -48,8 +48,9 @@ namespace NHibernate.Type {
 			return ((long)current) + 1;
 		}
 
-		public object Seed {
-			get { return 0; }
+		public object Seed 
+		{
+			get { return (long)0; }
 		}
 
 		#endregion

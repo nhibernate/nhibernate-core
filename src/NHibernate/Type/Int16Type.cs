@@ -47,12 +47,12 @@ namespace NHibernate.Type {
 
 		public object Next(object current) 
 		{
-			return ((short)current) + 1;
+			return (short)( (short)current + 1 );
 		}
 		
 		public object Seed 
 		{
-			get { return 0; }
+			get { return (short)0; }
 		}
 
 		#endregion
