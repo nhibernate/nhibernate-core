@@ -1,12 +1,10 @@
-using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Xml;
+using log4net;
+using log4net.Config;
 
-using NHibernate.Util;
-
-namespace NHibernate.Cfg 
+namespace NHibernate.Cfg
 {
 	/// <summary>
 	/// Provides access to configuration info
@@ -25,46 +23,63 @@ namespace NHibernate.Cfg
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class Environment 
+	public class Environment
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Environment));
+		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
 
 		private static IDictionary properties = new Hashtable();
-		
+
+		/// <summary></summary>
 		public const string ConnectionProvider = "hibernate.connection.provider";
+		/// <summary></summary>
 		public const string ConnectionDriver = "hibernate.connection.driver_class";
+		/// <summary></summary>
 		public const string ConnectionString = "hibernate.connection.connection_string";
+		/// <summary></summary>
 		public const string Isolation = "hibernate.connection.isolation";
+		/// <summary></summary>
 		public const string SessionFactoryName = "hibernate.session_factory_name";
+		/// <summary></summary>
 		public const string Dialect = "hibernate.dialect";
+		/// <summary></summary>
 		public const string DefaultSchema = "hibernate.default_schema";
+		/// <summary></summary>
 		public const string ShowSql = "hibernate.show_sql";
+		/// <summary></summary>
 		public const string OuterJoin = "hibernate.use_outer_join";
+		/// <summary></summary>
 		public const string OutputStylesheet = "hibernate.xml.output_stylesheet";
+		/// <summary></summary>
 		public const string TransactionStrategy = "hibernate.transaction.factory_class";
+		/// <summary></summary>
 		public const string TransactionManagerStrategy = "hibernate.transaction.manager_lookup_class";
+		/// <summary></summary>
 		public const string QuerySubstitutions = "hibernate.query.substitutions";
+		/// <summary></summary>
 		public const string QueryImports = "hibernate.query.imports";
+		/// <summary></summary>
 		public const string CacheProvider = "hibernate.cache.provider_class";
+		/// <summary></summary>
 		public const string PrepareSql = "hibernate.prepare_sql";
 
-		static Environment() 
+		/// <summary></summary>
+		static Environment()
 		{
-			log4net.Config.DOMConfigurator.Configure();
+			DOMConfigurator.Configure();
 
-			NameValueCollection props = System.Configuration.ConfigurationSettings.GetConfig("nhibernate") as NameValueCollection;
-			if (props==null) 
+			NameValueCollection props = ConfigurationSettings.GetConfig( "nhibernate" ) as NameValueCollection;
+			if( props == null )
 			{
-				log.Debug("no hibernate settings in app.config/web.config were found");
+				log.Debug( "no hibernate settings in app.config/web.config were found" );
 				return;
 			}
-			
-			foreach(string key in props.Keys) 
+
+			foreach( string key in props.Keys )
 			{
-				properties[key] = props[key];
+				properties[ key ] = props[ key ];
 			}
 
-			
+
 		}
 
 		/// <summary>
@@ -73,22 +88,23 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// This is the replacement for hibernate.properties
 		/// </remarks>
-		public static IDictionary Properties 
+		public static IDictionary Properties
 		{
-			get 
-			{ 
-				IDictionary copy = new Hashtable(properties.Count);
-				foreach(DictionaryEntry de in properties) 
+			get
+			{
+				IDictionary copy = new Hashtable( properties.Count );
+				foreach( DictionaryEntry de in properties )
 				{
-					copy[de.Key] = de.Value;
+					copy[ de.Key ] = de.Value;
 				}
 				return copy;
 			}
 		}
 
-		public static bool UseStreamsForBinary 
+		/// <summary></summary>
+		public static bool UseStreamsForBinary
 		{
-			get { return true; }			
+			get { return true; }
 		}
 	}
 }

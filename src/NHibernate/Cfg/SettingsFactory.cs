@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Text;
-
+using log4net;
 using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Dialect;
@@ -16,98 +16,109 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public sealed class SettingsFactory
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(SettingsFactory) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( SettingsFactory ) );
 
 		private SettingsFactory()
 		{
 			//should not be publically creatable
 		}
 
-		public static Settings BuildSettings(IDictionary properties) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="properties"></param>
+		/// <returns></returns>
+		public static Settings BuildSettings( IDictionary properties )
 		{
 			Settings settings = new Settings();
 
 			Dialect.Dialect dialect = null;
-			try 
+			try
 			{
 				dialect = Dialect.Dialect.GetDialect( properties );
 				IDictionary temp = new Hashtable();
-				
-				foreach( DictionaryEntry de in dialect.DefaultProperties ) 
+
+				foreach( DictionaryEntry de in dialect.DefaultProperties )
 				{
 					temp[ de.Key ] = de.Value;
 				}
-				foreach( DictionaryEntry de in properties ) 
+				foreach( DictionaryEntry de in properties )
 				{
 					temp[ de.Key ] = de.Value;
 				}
 				properties = temp;
-			} 
-			catch( HibernateException he ) 
+			}
+			catch( HibernateException he )
 			{
 				log.Warn( "No dialect set - using GenericDialect: " + he.Message );
 				dialect = new GenericDialect();
 			}
 
-			
-			bool useOuterJoin = PropertiesHelper.GetBoolean(Cfg.Environment.OuterJoin, properties, true);
+
+			bool useOuterJoin = PropertiesHelper.GetBoolean( Environment.OuterJoin, properties, true );
 			log.Info( "use outer join fetching: " + useOuterJoin );
 
-			IConnectionProvider connectionProvider = ConnectionProviderFactory.NewConnectionProvider(properties);
+			IConnectionProvider connectionProvider = ConnectionProviderFactory.NewConnectionProvider( properties );
 			ITransactionFactory transactionFactory = new TransactionFactory(); //Transaction BuildTransactionFactory(properties);
 
-			string isolationString = PropertiesHelper.GetString( Cfg.Environment.Isolation, properties, String.Empty );
+			string isolationString = PropertiesHelper.GetString( Environment.Isolation, properties, String.Empty );
 			IsolationLevel isolation = IsolationLevel.Unspecified;
-			if( isolationString.Length > 0) 
+			if( isolationString.Length > 0 )
 			{
-				try 
+				try
 				{
-					isolation = (IsolationLevel)Enum.Parse( typeof(IsolationLevel), isolationString );
+					isolation = ( IsolationLevel ) Enum.Parse( typeof( IsolationLevel ), isolationString );
 					log.Info( "Using Isolation Level: " + isolation.ToString() );
 				}
-				catch( ArgumentException ae ) 
+				catch( ArgumentException ae )
 				{
 					log.Error( "error configuring IsolationLevel " + isolationString, ae );
-					throw new HibernateException( 
+					throw new HibernateException(
 						"The isolation level of " + isolationString + " is not a valid IsolationLevel.  Please " +
-						"use one of the Member Names from the IsolationLevel.", ae );
+							"use one of the Member Names from the IsolationLevel.", ae );
 				}
 			}
 
-			string defaultSchema = properties[Cfg.Environment.DefaultSchema] as string;
-			if ( defaultSchema!=null) log.Info ("Default schema set to: " + defaultSchema);
-			
-			bool showSql = PropertiesHelper.GetBoolean( Cfg.Environment.ShowSql, properties, false );
-			if (showSql) log.Info("echoing all SQL to stdout");
+			string defaultSchema = properties[ Environment.DefaultSchema ] as string;
+			if( defaultSchema != null )
+			{
+				log.Info( "Default schema set to: " + defaultSchema );
+			}
+
+			bool showSql = PropertiesHelper.GetBoolean( Environment.ShowSql, properties, false );
+			if( showSql )
+			{
+				log.Info( "echoing all SQL to stdout" );
+			}
 
 			// queries:
 
-			IDictionary querySubstitutions = PropertiesHelper.ToDictionary( Cfg.Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties );
-			if ( log.IsInfoEnabled ) 
+			IDictionary querySubstitutions = PropertiesHelper.ToDictionary( Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties );
+			if( log.IsInfoEnabled )
 			{
-				StringBuilder sb = new StringBuilder("Query language substitutions: ");
-				foreach(DictionaryEntry entry in querySubstitutions) 
+				StringBuilder sb = new StringBuilder( "Query language substitutions: " );
+				foreach( DictionaryEntry entry in querySubstitutions )
 				{
-					sb.AppendFormat("{0}={1};", entry.Key, entry.Value);
+					sb.AppendFormat( "{0}={1};", entry.Key, entry.Value );
 				}
-				log.Info(sb.ToString());
+				log.Info( sb.ToString() );
 			}
 
 			string cacheClassName = PropertiesHelper.GetString( Environment.CacheProvider, properties, "NHibernate.Cache.HashtableCacheProvider" );
 			ICacheProvider cacheProvider = null;
 			log.Info( "cache provider: " + cacheClassName );
-			try 
+			try
 			{
-				cacheProvider = (ICacheProvider) Activator.CreateInstance( ReflectHelper.ClassForName( cacheClassName ) );
+				cacheProvider = ( ICacheProvider ) Activator.CreateInstance( ReflectHelper.ClassForName( cacheClassName ) );
 			}
-			catch( Exception e ) 
+			catch( Exception e )
 			{
 				throw new HibernateException( "could not instantiate CacheProvider: " + cacheClassName, e );
 			}
-			
+
 			bool prepareSql = PropertiesHelper.GetBoolean( Environment.PrepareSql, properties, true );
 
-			string sessionFactoryName = (string) properties[ Cfg.Environment.SessionFactoryName ];
+			string sessionFactoryName = ( string ) properties[ Environment.SessionFactoryName ];
 
 			settings.DefaultSchemaName = defaultSchema;
 			settings.IsShowSqlEnabled = showSql;
@@ -123,7 +134,7 @@ namespace NHibernate.Cfg
 
 			return settings;
 
-			
+
 		}
 
 	}

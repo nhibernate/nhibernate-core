@@ -1,10 +1,7 @@
-using System;
 using System.Collections;
 using System.Data;
-
 using NHibernate.Cache;
 using NHibernate.Connection;
-using NHibernate.Dialect;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg
@@ -25,67 +22,78 @@ namespace NHibernate.Cfg
 		private ICacheProvider _cacheProvider;
 		private string _defaultSchemaName;
 		private bool _prepareSql;
-		
+
+		/// <summary></summary>
 		public bool IsShowSqlEnabled
 		{
 			get { return _isShowSqlEnabled; }
 			set { _isShowSqlEnabled = value; }
 		}
 
+		/// <summary></summary>
 		public bool IsOuterJoinFetchEnabled
 		{
 			get { return _isOuterJoinFetchEnabled; }
 			set { _isOuterJoinFetchEnabled = value; }
 		}
 
+		/// <summary></summary>
 		public IDictionary QuerySubstitutions
 		{
 			get { return _querySubstitutions; }
 			set { _querySubstitutions = value; }
 		}
 
+		/// <summary></summary>
 		public Dialect.Dialect Dialect
 		{
 			get { return _dialect; }
 			set { _dialect = value; }
 		}
 
+		/// <summary></summary>
 		public string DefaultSchemaName
 		{
 			get { return _defaultSchemaName; }
 			set { _defaultSchemaName = value; }
 		}
 
+		/// <summary></summary>
 		public IsolationLevel IsolationLevel
 		{
 			get { return _isolationLevel; }
 			set { _isolationLevel = value; }
 		}
-		
+
+		/// <summary></summary>
 		public IConnectionProvider ConnectionProvider
 		{
 			get { return _connectionProvider; }
 			set { _connectionProvider = value; }
 		}
 
+		/// <summary></summary>
 		public ITransactionFactory TransactionFactory
 		{
 			get { return _transactionFactory; }
 			set { _transactionFactory = value; }
 		}
 
+		/// <summary></summary>
 		public string SessionFactoryName
 		{
 			get { return _sessionFactoryName; }
 			set { _sessionFactoryName = value; }
 		}
 
+		/// <summary></summary> 
 		public ICacheProvider CacheProvider
 		{
 			get { return _cacheProvider; }
 			set { _cacheProvider = value; }
 		}
 
+		/// <summary></summary>
 		public bool PrepareSql
 		{
 			get { return _prepareSql; }
