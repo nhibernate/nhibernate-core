@@ -354,7 +354,210 @@
 				There is an alternative <literal>&lt;composite-id&gt;</literal> declaration to allow access to
 				legacy data with composite keys. We strongly discourage its use for anything else.
 			</para>
-            
+	
+		</sect2>
+		
+		<sect2 id="mapping-declaration-property">
+			<title>property</title>
+
+			<para>
+				The <literal>&lt;property&gt;</literal> element declares a persistent, 
+				property of the class.
+			</para>
+	        
+			<programlistingco>
+                <programlisting>&lt;property
+        name="propertyName"<co id="property1-co" linkends="property1" />
+        column="column_name"<co id="property2-co" linkends="property2" />
+        type="typename"<co id="property3-co" linkends="property3" />
+        update="true|false"<co id="property4-co" linkends="property4" />
+        insert="true|false"<co id="property5-co" linkends="property5" />
+        formula="arbitrary SQL expression"<co id="property6-co" linkends="property6" />
+        access="field|property|nosetter|ClassName"<co id="property7-co" linkends="property7" />
+/&gt;</programlisting>
+				<calloutlist>
+					<callout arearefs="property1-co" id="property1">
+						<para>
+							<literal>name</literal>: the name of the property in the same case as the Propery in your API
+						</para>
+					</callout>                   
+					<callout arearefs="property2-co" id="property2">
+						<para>
+							<literal>column</literal> (optional - defaults to the property name): the name
+							of the mapped database table column.
+						</para>
+					</callout>
+					<callout arearefs="property3-co" id="property3">
+						<para>
+							<literal>type</literal> (optional): a name that indicates the NHibernate type.
+						</para>
+					</callout>
+					<callout arearefs="property4-co" id="property4">
+						<para>
+							<literal>update</literal> (optional - defaults to <literal>true</literal>) :
+							specifies that the mapped columns should be included in SQL <literal>UPDATE</literal> 
+						</para>
+					</callout>
+					<callout arearefs="property5-co" id="property5">
+						<para>
+							<literal>insert</literal> (optional - defaults to <literal>true</literal>) :
+							specifies that the mapped columns should be included in SQL 
+							<literal>INSERT</literal> statements. Setting both <literal>insert</literal>
+							and <literal>update</literal> to <literal>false</literal>
+							allows a pure "derived" property whose value is initialized from some other
+							property that maps to the same colum(s) or by a trigger or other application.
+						</para>
+					</callout>
+					<callout arearefs="property6-co" id="property6">
+						<para>
+							<literal>formula</literal> (optional): an SQL expression that defines the value for a
+							<emphasis>computed</emphasis> property. Computed properties do not have a column
+							mapping of their own.
+						</para>
+					</callout>
+					<callout arearefs="property7-co" id="property7">
+						<para>
+							<literal>access</literal> (optional - defaults to <literal>property</literal>): The
+							strategy NHibernate should use for accessing the property value.
+						</para>
+					</callout>
+				</calloutlist>
+			</programlistingco>
+
+			<para>
+				<emphasis>typename</emphasis> could be:
+			</para>
+
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						The name of a NHibernate basic type (eg. <literal>Int32, String, Char,
+						DateTime, Timstamp, Single, Byte[], Object, ...</literal>).
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The name of a .NET type with a default basic type (eg. <literal>System.Int16, System.Single,
+						System.Char, System.String, System.DateTime, System.Byte[], ...</literal>).
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The name of a your of <literal>System.Enum </literal> (eg. <literal>Eg.Color</literal>).
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The name of a serializable .NET type.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The type of a custom type (eg. <literal>Illflow.Type.MyCustomType, Illflow</literal>).
+					</para>
+				</listitem>
+			</orderedlist>
+
+			<para>
+				If you do not specify a type, NHibernate will use reflection upon the named
+				property to take a guess at the correct NHibernate type. NHibernate will try to
+				interpret the name of the return class of the property getter using rules 2, 3,
+				4 in that order. However, this is not always enough.
+				In certain cases you will still need the <literal>type</literal>
+				attribute. (For example, to distinguish between <literal>NHibernate.DateTime</literal> and
+				<literal>NHibernate.Timestamp</literal>, or to specify a custom type.)
+			</para>
+			
+			<para>
+				The <literal>access</literal> attribute lets you control how NHibernate will access
+				the value of the property at runtime.  The value of the <literal>access</literal> attribute should
+				be text formatted as <literal>access-strategy.naming-strategy</literal>.  The 
+				<literal>.naming-stragey</literal> is not always required.
+				<variablelist>
+					<title>Access Strategy</title>
+					<varlistentry>
+						<term><literal>property</literal></term>
+						<listitem>
+							<para>
+								The default implementation.  NHibernate uses the get/set of your Property.  No
+								Naming Strategy should be used with this Access Strategy because the 
+								<literal>name</literal> attribute is the name of your Property.
+							</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><literal>field</literal></term>
+						<listitem>
+							<para>
+								NHibernate will access the Field directly.  NHibernate uses the <literal>&lt;name&gt;</literal>
+								as the name of the field.  This can be used when a Property's get and set have extra
+								actions in them that you don't want to occur when NHibernate is populating or reading the object.  
+								If you want the name of the Property and not the Field to be what the consumers of your API 
+								use with HQL, then a Naming Strategy is needed.
+							</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><literal>nosetter</literal></term>
+						<listitem>
+							<para>
+								NHibernate will access the Field directly when setting the value and will use the
+								Property when getting the value.  This can be used when a Property only exposes a get because
+								the consumers of your API can't change the value directly.  A Naming Strategy is required
+								because NHibernate uses the <literal>name</literal> attribute as the Property so it needs to 
+								be told what the name of the Field is.
+							</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><literal>ClassName</literal></term>
+						<listitem>
+							<para>
+								If NHibernate's built in Access Strategies are not what is needed for your situation
+								then you can build your own by implementing the interface 
+								<literal>NHibernate.Property.IPropertyAccessor</literal>.  The value of the 
+								<literal>access</literal> attribute should be an Assembly Qualified Name that can be 
+								loaded with <literal>Activator.CreateInstance(string AssemblyQualifiedName)</literal>.
+							</para>
+						</listitem>
+					</varlistentry>
+				</variablelist>
+			</para>
+			
+			<para>
+				<variablelist>
+					<title>Naming Strategy</title>
+					<varlistentry>
+						<term><literal>camelcase</literal></term>
+						<listitem>
+							<para>
+								The <literal>name</literal> attribute is converted to CamelCase to find the Field.
+								<literal>&lt;property name="Foo" ... &gt;</literal> uses the Field <literal>foo</literal>.
+							</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><literal>camelcase-underscore</literal></term>
+						<listitem>
+							<para>
+								The <literal>name</literal> attribute is converted to CamelCase and prefixed with an
+								underscore to find the Field.
+								<literal>&lt;property name="Foo" ... &gt;</literal> uses the Field <literal>_foo</literal>.
+							</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><literal>pascalcase-m-underscore</literal></term>
+						<listitem>
+							<para>
+								The <literal>name</literal> attribute is prefixed with the character
+								m and an underscore to find the Field.
+								<literal>&lt;property name="Foo" ... &gt;</literal> uses the Field <literal>m_Foo</literal>.
+							</para>
+						</listitem>
+					</varlistentry>
+				</variablelist>
+			</para>
 		</sect2>
 	</sect1>
 
