@@ -67,5 +67,28 @@ namespace NHibernate.Collection {
 		public string QualifiedTableName {
 			get { return qualifiedTableName; }
 		}
+
+		public bool IsLazy {
+			get { return isLazy; }
+		}
+
+		public PersistentCollection GetCachedCollection(object id, object owner, ISessionImplementor s) {
+			if (cache==null) {
+				return null;
+			}
+			else {
+				object cached = cache.Get( id, s.Timestamp );
+				if (cached==null) {
+					return null;
+				}
+				else {
+					return collectionType.AssembleCachedCollection(s, this, cached, owner);
+				}
+			}
+		}
+
+		public System.Type OwnerClass {
+			get { return ownerClass; }
+		}
 	}
 }

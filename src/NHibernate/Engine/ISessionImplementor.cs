@@ -9,6 +9,13 @@ namespace NHibernate.Engine {
 	public interface ISessionImplementor : ISession {
 
 		/// <summary>
+		/// Get the pre-flush identifier of the collection
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		object GetLoadedCollectionKey(PersistentCollection collection);
+
+		/// <summary>
 		/// Get the snapshot of the pre-flush collection state
 		/// </summary>
 		object GetSnapshot(PersistentCollection collection);
@@ -85,5 +92,28 @@ namespace NHibernate.Engine {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		object InternalLoadOneToOne(System.Type persistentClass, object id);
+
+		/// <summary>
+		/// Register an uninitialized PersistentCollection that will be lazily initializable
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="persister"></param>
+		/// <param name="id"></param>
+		void AddUninitializedCollection(PersistentCollection collection, CollectionPersister persister, object id);
+		
+		/// <summary>
+		/// Register an initialized PersistentCollection
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="persister"></param>
+		/// <param name="id"></param>
+		void AddInitializedCollection(PersistentCollection collection, CollectionPersister persister, object id);
+
+		/// <summary>
+		/// System time before the start of the transaction
+		/// </summary>
+		/// <returns></returns>
+		long Timestamp { get; }
+	
 	}
 }
