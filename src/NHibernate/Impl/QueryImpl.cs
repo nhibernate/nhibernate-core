@@ -5,6 +5,7 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
+using NHibernate.Proxy;
 
 namespace NHibernate.Impl {
 	
@@ -25,15 +26,15 @@ namespace NHibernate.Impl {
 		}
 
 		public virtual IEnumerable Enumerable() {
-			IDictionary namedParams = new Hashtable();
-			foreach(DictionaryEntry de in namedParameters) namedParams.Add( de.Key, de.Value );
+			IDictionary namedParams = new Hashtable( namedParameters );
+			
 			string query = BindParameterLists(namedParams);
 			return session.Enumerable(query, (object[]) values.ToArray(typeof(object)), (IType[]) types.ToArray(typeof(IType)), selection, namedParams);
 		}
 
 		public virtual IList List() {
-			IDictionary namedParams = new Hashtable();
-			foreach(DictionaryEntry de in namedParameters) namedParams.Add( de.Key, de.Value );
+			IDictionary namedParams = new Hashtable( namedParameters );
+			
 			string query = BindParameterLists(namedParams);
 			return session.Find(query, (object[]) values.ToArray(typeof(object)), (IType[]) types.ToArray(typeof(IType)), selection, namedParams);
 		}
@@ -131,7 +132,7 @@ namespace NHibernate.Impl {
 			return this;
 		}
 		public IQuery SetEntity(int position, object val) {
-			SetParameter(position, val, NHibernate.Association( val.GetType() ) );
+			SetParameter(position, val, NHibernate.Association( HibernateProxyHelper.GetClass(val)));
 			return this;
 		}
 		public IQuery SetEnum(int position, IPersistentEnum val) {
@@ -197,7 +198,7 @@ namespace NHibernate.Impl {
 			return this;
 		}
 		public IQuery SetEntity(string name, object val) {
-			SetParameter(name, val, NHibernate.Association( val.GetType() ) );
+			SetParameter(name, val, NHibernate.Association( HibernateProxyHelper.GetClass( val ) ) );
 			return this;
 		}
 		public IQuery SetEnum(string name, IPersistentEnum val) {
@@ -214,18 +215,32 @@ namespace NHibernate.Impl {
 			SetParameter(position, val, GuessType(val.GetType()) );
 			return this;
 		}
+		
+		private IType GuessType(object param) {
+			System.Type clazz = HibernateProxyHelper.GetClass(param); 
+			return GuessType(clazz);
+		}
+
 		private IType GuessType(System.Type clazz) {
 			string typename = clazz.Name;
 			IType type = TypeFactory.HueristicType(typename);
-			if ( type==null ) {
+			bool serializable = type!=null && type is SerializableType;
+			if ( type==null || serializable ) {
 				try {
 					session.Factory.GetPersister(clazz);
 				} catch (MappingException) {
-					throw new HibernateException("Could not determine a type for class: " + typename);
+					if (serializable) { 
+						return type; 
+					} 
+					else { 
+						throw new HibernateException("Could not determine a type for class: " + typename);
+					}
 				}
-				type = NHibernate.Association(clazz);
+				return NHibernate.Association(clazz);
 			}
-			return type;
+			else {
+				return type;
+			}
 		}
 
 		public IType[] ReturnTypes {
@@ -237,7 +252,7 @@ namespace NHibernate.Impl {
 			return this;
 		}
 
-		private string BindParameterLists(IDictionary namedParams) {
+		protected string BindParameterLists(IDictionary namedParams) {
 			string query = queryString;
 			foreach( DictionaryEntry de in namedParametersLists ) {
 				query = BindParameterList( queryString, (string) de.Key, (TypedValue) de.Value, namedParams );
