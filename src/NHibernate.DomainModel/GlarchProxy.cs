@@ -38,11 +38,7 @@ namespace NHibernate.DomainModel
 			get;
 			set;
 		}	
-		object dynaBean
-		{
-			get;
-			set;
-		}	
+		
 		IDictionary StringSets
 		{
 			get;

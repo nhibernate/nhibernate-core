@@ -3,7 +3,6 @@ using System.Collections;
 
 namespace NHibernate.DomainModel
 {
-	//TODO: figure out what to do with this DynaBean
 	[Serializable]
 	public class Glarch : Super, GlarchProxy, ILifecycle
 	{
@@ -16,7 +15,6 @@ namespace NHibernate.DomainModel
 		private IList _fooComponents;
 		private GlarchProxy[] _proxyArray;
 		private IDictionary _proxySet;
-		[NonSerialized] private object _dynaBean;
 		private string _immutable;
 		private int _derivedVersion;
 		private object _any;
@@ -121,24 +119,6 @@ namespace NHibernate.DomainModel
 	
 		public LifecycleVeto OnSave(ISession s)
 		{
-			/*		DynaClass dc = new BasicDynaClass(
-						"dyna", 
-						BasicDynaBean.class,
-						new DynaProperty[] {
-							new DynaProperty("foo", tString.class),
-							new DynaProperty("bar", Integer.class)
-						} 
-					);
-					try {
-						dynaBean = dc.newInstance();
-					}
-					catch (Exception e) {
-						throw new CallbackException(e);
-					}
-					dynaBean.set("foo", "foo");
-					dynaBean.set("bar", new Integer(66));
-					immutable="never changes!";
-			*/
 			return LifecycleVeto.NoVeto;
 		}
 	
@@ -148,15 +128,6 @@ namespace NHibernate.DomainModel
 		}
 	
 		#endregion
-
-		/// <summary>
-		/// Gets or sets the _dynaBean
-		/// </summary> 
-		public object dynaBean
-		{
-			get { return _dynaBean; }
-			set { _dynaBean = value; }
-		}
 
 		
 		/// <summary>

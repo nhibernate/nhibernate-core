@@ -47,11 +47,6 @@
 			column="order_" 
 		/>
 		
-		<dynabean name="dynaBean" dynaclass="foo">
-			<property name="foo" type="String" />
-			<property name="bar" type="Int32" />
-		</dynabean>
-		
 		<property name="X" />
 		
 		<list name="Strings">
