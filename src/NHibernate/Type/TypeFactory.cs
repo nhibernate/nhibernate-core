@@ -9,9 +9,8 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Type {
-
-	
+namespace NHibernate.Type 
+{
 
 	/// <summary>
 	/// Used internally to obtain instances of IType.
@@ -65,7 +64,8 @@ namespace NHibernate.Type {
 		private delegate NullableType GetNullableTypeWithPrecision(byte precision, byte scale);
 
 
-		static TypeFactory() {
+		static TypeFactory() 
+		{
 			
 			
 			//basicTypes.Add(NHibernate.Blob.Name, NHibernate.Blob);
@@ -323,34 +323,46 @@ namespace NHibernate.Type {
 
 
 				System.Type typeClass;
-				try {
+				try 
+				{
 					typeClass = ReflectHelper.ClassForName(parsedTypeName[0]); //typeName);
 				}
-				catch (Exception) {
+				catch (Exception) 
+				{
 					typeClass = null;
 				}
-				if (typeClass!=null) {
-					if ( typeof(IType).IsAssignableFrom(typeClass) ) {
-						try {
+
+				if (typeClass!=null) 
+				{
+					if ( typeof(IType).IsAssignableFrom(typeClass) ) 
+					{
+						try 
+						{
 							type = (IType) Activator.CreateInstance(typeClass);
 						}
-						catch (Exception e) {
+						catch (Exception e) 
+						{
 							throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e);
 						}
 					}
-					else if ( typeof(ICompositeUserType).IsAssignableFrom(typeClass) ) {
+					else if ( typeof(ICompositeUserType).IsAssignableFrom(typeClass) ) 
+					{
 						type = new CompositeCustomType(typeClass);
 					}
-					else if ( typeof(IUserType).IsAssignableFrom(typeClass) ) {
+					else if ( typeof(IUserType).IsAssignableFrom(typeClass) ) 
+					{
 						type = new CustomType(typeClass);
 					}
-					else if ( typeof(ILifecycle).IsAssignableFrom(typeClass) ) {
+					else if ( typeof(ILifecycle).IsAssignableFrom(typeClass) ) 
+					{
 						type = NHibernate.Association(typeClass);
 					}
-					else if ( typeof(IPersistentEnum).IsAssignableFrom(typeClass) ) {
+					else if ( typeof(IPersistentEnum).IsAssignableFrom(typeClass) ) 
+					{
 						type = NHibernate.Enum(typeClass);
 					}
-					else if ( typeClass.IsSerializable ) {
+					else if ( typeClass.IsSerializable ) 
+					{
 						if(typeClassification==TypeClassification.Length)
 							type = GetSerializableType(typeClass, Int32.Parse(parsedTypeName[1]));
 						else
@@ -418,10 +430,12 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetBooleanType() {
+		public static NullableType GetBooleanType() 
+		{
 			string key = typeof(BooleanType).FullName;
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new BooleanType(SqlTypeFactory.GetBoolean());
 				AddToTypeOfName(key, returnType);
 			}
@@ -434,10 +448,12 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetByteType() {
+		public static NullableType GetByteType() 
+		{
 			string key = typeof(ByteType).FullName;
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new ByteType(SqlTypeFactory.GetByte());
 				AddToTypeOfName(key, returnType);
 			}
@@ -450,10 +466,12 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetCharacterType() {
+		public static NullableType GetCharacterType() 
+		{
 			string key = GetKeyForLengthBased(typeof(CharacterType).FullName, 1);
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new CharacterType(SqlTypeFactory.GetStringFixedLength(1));
 				AddToTypeOfName(key, returnType);
 			}
@@ -465,11 +483,12 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetCultureInfoType() {
-
+		public static NullableType GetCultureInfoType() 
+		{
 			string key = typeof(CultureInfoType).FullName;
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				//TODO: I believe 10 is still set way to high.  If I read the doco correctly
 				// then at most it should be 5...
 				returnType = new CultureInfoType(SqlTypeFactory.GetString(10));
@@ -484,11 +503,12 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetDateTimeType() {
-			
+		public static NullableType GetDateTimeType() 
+		{
 			string key = typeof(DateTimeType).FullName;
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new DateTimeType(SqlTypeFactory.GetDateTime());
 				AddToTypeOfName(key, returnType);
 			}
@@ -500,10 +520,12 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetDecimalType() {
+		public static NullableType GetDecimalType() 
+		{
 			string key = typeof(DecimalType).FullName;
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = GetDecimalType(19,0);
 				AddToTypeOfName(key, returnType);
 			}
@@ -518,11 +540,12 @@ namespace NHibernate.Type {
 		/// <param name="precision"></param>
 		/// <param name="scale"></param>
 		/// <returns></returns>
-		public static NullableType GetDecimalType(byte precision, byte scale) {
-			
+		public static NullableType GetDecimalType(byte precision, byte scale) 
+		{			
 			string key = GetKeyForPrecisionScaleBased(typeof(DecimalType).FullName, precision, scale);
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new DecimalType(SqlTypeFactory.GetDecimal(precision, scale));
 				AddToTypeOfNameWithPrecision(key, returnType);
 			}
@@ -535,10 +558,12 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetDoubleType() {
+		public static NullableType GetDoubleType() 
+		{
 			string key = typeof(DoubleType).FullName;
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = GetDoubleType(53);
 				AddToTypeOfName(key, returnType);
 			}
@@ -553,10 +578,12 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public static NullableType GetDoubleType(int length) {
+		public static NullableType GetDoubleType(int length) 
+		{
 			string key = GetKeyForLengthBased(typeof(DoubleType).FullName, length);
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new DoubleType(SqlTypeFactory.GetDouble(length));
 				AddToTypeOfNameWithLength(key, returnType);
 			}
@@ -569,11 +596,12 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetInt16Type() {
-
+		public static NullableType GetInt16Type() 
+		{
 			string key = typeof(Int16Type).FullName;
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new Int16Type(SqlTypeFactory.GetInt16());
 				AddToTypeOfName(key, returnType);
 			}
@@ -586,11 +614,13 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetInt32Type() {
+		public static NullableType GetInt32Type() 
+		{
 
 			string key = typeof(Int32Type).FullName;
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new Int32Type(SqlTypeFactory.GetInt32());
 				AddToTypeOfName(key, returnType);
 			}
@@ -603,8 +633,8 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetInt64Type() {
-
+		public static NullableType GetInt64Type() 
+		{
 			string key = typeof(Int64Type).FullName;
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
@@ -620,10 +650,12 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetSingleType() {
+		public static NullableType GetSingleType() 
+		{
 			string key = typeof(SingleType).FullName;
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = GetSingleType(24);
 				AddToTypeOfName(key, returnType);
 			}
@@ -637,11 +669,13 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public static NullableType GetSingleType(int length) {
+		public static NullableType GetSingleType(int length) 
+		{
 			string key = GetKeyForLengthBased(typeof(SingleType).FullName, length);
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new SingleType(SqlTypeFactory.GetSingle(length));
 				AddToTypeOfNameWithLength(key, returnType);
 			}
@@ -654,10 +688,12 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetSerializableType() {
+		public static NullableType GetSerializableType() 
+		{
 			string key = typeof(SerializableType).FullName;
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = GetSerializableType(255);
 				AddToTypeOfName(key, returnType);
 			}
@@ -690,7 +726,8 @@ namespace NHibernate.Type {
 			string key = serializableType.AssemblyQualifiedName;
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = GetSerializableType(serializableType, 255);
 				AddToTypeOfName(key, returnType);
 			}
@@ -705,11 +742,13 @@ namespace NHibernate.Type {
 		/// <param name="serializableType"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public static NullableType GetSerializableType(System.Type serializableType, int length) {
+		public static NullableType GetSerializableType(System.Type serializableType, int length) 
+		{
 			string key = GetKeyForLengthBased(serializableType.AssemblyQualifiedName, length);
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new SerializableType(serializableType, SqlTypeFactory.GetBinary(length));
 				AddToTypeOfNameWithLength(key, returnType);
 			}
@@ -723,11 +762,13 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public static NullableType GetSerializableType(int length) {
+		public static NullableType GetSerializableType(int length) 
+		{
 			string key = GetKeyForLengthBased(typeof(SerializableType).FullName, length);
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new SerializableType(typeof(object), SqlTypeFactory.GetBinary(length));
 				AddToTypeOfNameWithLength(key, returnType);
 			}
@@ -740,11 +781,13 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetStringType() {
+		public static NullableType GetStringType() 
+		{
 			string key = typeof(StringType).FullName;
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = GetStringType(255);
 				AddToTypeOfName(key, returnType);
 			}
@@ -757,11 +800,13 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public static NullableType GetStringType(int length) {
+		public static NullableType GetStringType(int length) 
+		{
 			string key = GetKeyForLengthBased(typeof(StringType).FullName, length);
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new StringType(SqlTypeFactory.GetString(length));
 				AddToTypeOfNameWithLength(key, returnType);
 			}
@@ -794,12 +839,13 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetTimestampType() {
-			
+		public static NullableType GetTimestampType() 
+		{			
 			string key = typeof(TimestampType).FullName;
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new TimestampType(SqlTypeFactory.GetDateTime());
 				AddToTypeOfName(key, returnType);
 			}
@@ -812,11 +858,13 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetTrueFalseType(){
+		public static NullableType GetTrueFalseType()
+		{
 			string key = typeof(TrueFalseType).FullName;
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new TrueFalseType(SqlTypeFactory.GetAnsiStringFixedLength(1));
 				AddToTypeOfName(key, returnType);
 			}
@@ -829,13 +877,15 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetTypeType() {
+		public static NullableType GetTypeType() 
+		{
 			// this will add the default basic name
 			// for the TypeType it will add this TypeType as Type and Type(255)
 			string key = typeof(TypeType).FullName;
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = GetTypeType(255);
 				AddToTypeOfName(key, returnType);
 			}
@@ -849,11 +899,13 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public static NullableType GetTypeType(int length) {
+		public static NullableType GetTypeType(int length) 
+		{
 			string key = GetKeyForLengthBased(typeof(TypeType).FullName, length);
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new TypeType(SqlTypeFactory.GetString(length));
 				AddToTypeOfNameWithLength(key, returnType);
 			}
@@ -866,11 +918,13 @@ namespace NHibernate.Type {
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static NullableType GetYesNoType(){
+		public static NullableType GetYesNoType()
+		{
 			string key = typeof(YesNoType).FullName;
 			
 			NullableType returnType = (NullableType)typeByTypeOfName[key];
-			if(returnType==null) {
+			if(returnType==null) 
+			{
 				returnType = new YesNoType(SqlTypeFactory.GetAnsiStringFixedLength(1));
 				AddToTypeOfName(key, returnType);
 			}
@@ -888,7 +942,8 @@ namespace NHibernate.Type {
 		/// <param name="persistentClass"></param>
 		/// <param name="foreignKeyType"></param>
 		/// <returns></returns>
-		public static IType OneToOne(System.Type persistentClass, ForeignKeyType foreignKeyType) {
+		public static IType OneToOne(System.Type persistentClass, ForeignKeyType foreignKeyType) 
+		{
 			return new OneToOneType(persistentClass, foreignKeyType);
 		}
 
@@ -897,37 +952,46 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public static IType ManyToOne(System.Type persistentClass) {
+		public static IType ManyToOne(System.Type persistentClass) 
+		{
 			return new ManyToOneType(persistentClass);
 		}
 
 		// Collection Types:
 	
 		
-		public static PersistentCollectionType Array(string role, System.Type elementClass) {
+		public static PersistentCollectionType Array(string role, System.Type elementClass) 
+		{
 			return new ArrayType(role, elementClass);
 		}
 		
-		public static PersistentCollectionType List(string role) {
+		public static PersistentCollectionType List(string role) 
+		{
 			return new ListType(role);
 		}
 		
-		/*public static PersistentCollectionType Bag(string role) {
+		/*public static PersistentCollectionType Bag(string role) 
+		 * {
 			return new BagType(role);
 		}*/
 		
-		public static PersistentCollectionType Map(string role) {
+		public static PersistentCollectionType Map(string role) 
+		{
 			return new MapType(role);
 		}
 		
-		public static PersistentCollectionType Set(string role) {
+		public static PersistentCollectionType Set(string role) 
+		{
 			return new SetType(role);
 		}
 		/*
-		public static PersistentCollectionType SortedMap(string role, IComparer comparer) {
+		public static PersistentCollectionType SortedMap(string role, IComparer comparer) 
+		{
 			return new SortedMapType(role, comparer);
 		}*/
-		public static PersistentCollectionType SortedSet(string role, IComparer comparer) {
+
+		public static PersistentCollectionType SortedSet(string role, IComparer comparer) 
+		{
 			return new SortedSetType(role, comparer);
 		}
 		
@@ -939,8 +1003,10 @@ namespace NHibernate.Type {
 		/// <param name="types"></param>
 		/// <param name="copy"></param>
 		/// <param name="target"></param>
-		public static void DeepCopy(object[] values, IType[] types, bool[] copy, object[] target) {
-			for ( int i=0; i<types.Length; i++ ) {
+		public static void DeepCopy(object[] values, IType[] types, bool[] copy, object[] target) 
+		{
+			for ( int i=0; i<types.Length; i++ ) 
+			{
 				if ( copy[i] ) target[i] = types[i].DeepCopy( values[i] );
 			}
 		}
@@ -956,19 +1022,23 @@ namespace NHibernate.Type {
 		/// <param name="check"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public static int[] FindDirty(IType[] types, object[] x, object[] y, bool[] check, ISessionImplementor session) {
+		public static int[] FindDirty(IType[] types, object[] x, object[] y, bool[] check, ISessionImplementor session) 
+		{
 			int[] results = null;
 			int count = 0;
 			for (int i=0; i<types.Length; i++) {
-				if ( check[i] && types[i].IsDirty( x[i], y[i], session ) ) {
+				if ( check[i] && types[i].IsDirty( x[i], y[i], session ) ) 
+				{
 					if (results==null) results = new int[ types.Length ];
 					results[count++]=i;
 				}
 			}
-			if (count==0) {
+			if (count==0) 
+			{
 				return null;
 			}
-			else {
+			else 
+			{
 				int[] trimmed = new int[count];
 				System.Array.Copy(results, 0, trimmed, 0, count);
 				return trimmed;

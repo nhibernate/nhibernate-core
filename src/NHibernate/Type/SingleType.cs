@@ -3,39 +3,56 @@ using System.Data;
 
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type {
+namespace NHibernate.Type 
+{
 	
-	public class SingleType : PrimitiveType {
+	/// <summary>
+	/// Maps a System.Single Property to an column that can store a single precision number.
+	/// </summary>
+	/// <remarks>
+	/// Verify through your database's documentation if there is a column type that
+	/// matches up with the capabilities of System.Single  
+	/// </remarks>
+	public class SingleType : PrimitiveType 
+	{
 		
-		internal SingleType(SingleSqlType sqlType) : base(sqlType) {
+		internal SingleType(SingleSqlType sqlType) : base(sqlType) 
+		{
 		}
 
-		public override object Get(IDataReader rs, int index) {
+		public override object Get(IDataReader rs, int index)
+		{
 			return rs.GetFloat(index);
 		}
 
-		public override object Get(IDataReader rs, string name) {
+		public override object Get(IDataReader rs, string name) 
+		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
 
-		public override System.Type PrimitiveClass {
+		public override System.Type PrimitiveClass 
+		{
 			get { return typeof(System.Single); }
 		}
 
-		public override System.Type ReturnedClass {
+		public override System.Type ReturnedClass 
+		{
 			get { return typeof(System.Single); }
 		}
 
-		public override void Set(IDbCommand st, object value, int index) {
+		public override void Set(IDbCommand st, object value, int index) 
+		{
 			IDataParameter parm = st.Parameters[index] as IDataParameter;
 			parm.Value = value;
 		}
 
-		public override string Name {
+		public override string Name 
+		{
 			get { return "Single"; }
 		}
 
-		public override string ObjectToSQLString(object value) {
+		public override string ObjectToSQLString(object value) 
+		{
 			return value.ToString();
 		}
 	}

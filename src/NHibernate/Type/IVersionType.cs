@@ -1,11 +1,13 @@
 using System;
 
-namespace NHibernate.Type {
+namespace NHibernate.Type 
+{
 
 	/// <summary>
 	/// An <see cref="IType"/> that may be used to version data.
 	/// </summary>
-	public interface IVersionType : IType {
+	public interface IVersionType : IType 
+	{
 
 		/// <summary>
 		/// When implemented by a class, gets an initial version.
