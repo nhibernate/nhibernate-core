@@ -1,3 +1,18 @@
+Build 0.8.0.0
+======================== 
+- Added "namespace" and "assembly" attributes to hibernate-mapping element.
+- Added lazy="true" as short hand for proxy="full type name"
+- Added insert attribute to discriminator element.
+- Added ability to set INamingStrategy on Configuration class.
+- Added property-ref attribute on many-to-one and one-to-one elements.
+- Added foreign-key attribute on many-to-one and one-to-one elements.
+- Added check attribute to column element.
+- Added sql-query element.
+- Fixed one-to-one so that two queries are no longer issued when one side is null.
+- Fixed bug with ISet.AddAll(ICollection) not being implemented. (Bill Hawes)
+- Modified discriminator element to use "null" or "not null" as the value.
+- Modified Dialect to use Hibernate 2.1 methods.
+
 Build 0.7.0.0
 ======================== 
 - Renamed class NHibernate.NHibernate to NHibernate.NHibernateUtil.  This will break alot of code if you were using ISession.Find with parameters - migrate to IQuery instead.
