@@ -3,13 +3,11 @@ using System;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Expression
-{
+namespace NHibernate.Expression {
 	/// <summary>
 	/// Summary description for NotExpression.
 	/// </summary>
-	public class NotExpression : Expression
-	{
+	public class NotExpression : Expression {
 		private Expression expression;
 
 		internal NotExpression(Expression expression) {

@@ -60,6 +60,19 @@ namespace NHibernate.Util {
 			}
 		}
 
+		public static string[] Split(string seperators, string list) {
+			return Split(seperators, list, false);
+		}
+
+		public static string[] Split(string seperators, string list, bool include) {
+			StringTokenizer tokens = new StringTokenizer(list, seperators, include);
+			ArrayList results = new ArrayList();
+			foreach(string token in tokens) {
+				results.Add( token );
+			}
+			return (string[]) results.ToArray(typeof(string));
+		}
+
 		public static string Unqualify(string qualifiedName) {
 			return Unqualify(qualifiedName, ".");
 		}

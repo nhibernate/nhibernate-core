@@ -5,8 +5,7 @@ using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.Type;
 
-namespace NHibernate.Expression
-{
+namespace NHibernate.Expression {
 	/// <summary>
 	/// An object-oriented representation of expressions that may be used as constraints
 	/// in a Criteria. The expression package may be used by applications

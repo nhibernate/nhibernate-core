@@ -1,7 +1,6 @@
 using System;
 
-namespace NHibernate.Expression
-{
+namespace NHibernate.Expression {
 	
 	public class EqExpression : SimpleExpression {
 

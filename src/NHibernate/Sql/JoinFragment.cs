@@ -3,6 +3,7 @@ using System;
 namespace NHibernate.Sql {
 
 	public enum JoinType {
+		None = -666,
 		InnerJoin = 0,
 		FullJoin = -1,
 		LeftOuterJoin = 1,

@@ -75,22 +75,22 @@ namespace NHibernate.Sql {
 			set { this.distinct = value; }
 		}
 	
-		public IEnumerator WhereTokens {
+		public ICollection WhereTokens {
 			//if ( conjunctiveWhere.length()>0 ) conjunctiveWhere.append(" and ");
 			set { AppendTokens(where, value); }
 		}
 		
-		public IEnumerator GroupByTokens {
+		public ICollection GroupByTokens {
 			//if ( groupBy.length()>0 ) groupBy.append(" and ");
 			set { AppendTokens(groupBy, value); }
 		}
 		
-		public IEnumerator OrderByTokens {
+		public ICollection OrderByTokens {
 			//if ( orderBy.length()>0 ) orderBy.append(" and ");
 			set { AppendTokens(orderBy, value); }
 		}
 		
-		public IEnumerator HavingTokens {
+		public ICollection HavingTokens {
 			//if ( having.length()>0 ) having.append(" and ");
 			set { AppendTokens(having, value); }
 		}
@@ -119,10 +119,9 @@ namespace NHibernate.Sql {
 			return buf.ToString();
 		}
 
-		private void AppendTokens(StringBuilder buf, IEnumerator iter) {
+		private void AppendTokens(StringBuilder buf, ICollection iter) {
 			bool lastSpaceable=true;
-			while ( iter.MoveNext() ) {
-				string token = (string) iter.Current;
+			foreach(string token in iter) {
 				bool spaceable = !dontSpace.Contains(token);
 				if (spaceable && lastSpaceable) buf.Append(' ');
 				lastSpaceable = spaceable;

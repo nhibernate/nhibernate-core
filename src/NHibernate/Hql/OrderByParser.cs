@@ -3,14 +3,11 @@ using System;
 using System.Collections;
 using NHibernate.Util;
 
-namespace NHibernate.Hql
-{	
+namespace NHibernate.Hql {	
 	/// <summary> 
 	/// Parses the ORDER BY clause of a query
 	/// </summary>
-	
-	public class OrderByParser : IParser
-	{
+	public class OrderByParser : IParser {
 		// This uses a PathExpressionParser but notice that compound paths are not valid,
 		// only bare names and simple paths:
 	
@@ -19,34 +16,23 @@ namespace NHibernate.Hql
 		// The reason for this is SQL doesn't let you sort by an expression you are
 		// not returning in the result set.
 
-		private PathExpressionParser pathExpressionParser;
+		private PathExpressionParser pathExpressionParser = new PathExpressionParser();
 		
-		public OrderByParser()
-		{
-			pathExpressionParser = new PathExpressionParser();
-		}
-		
-		public void Token(string token, QueryTranslator q)
-		{
-			
-			if (q.IsName(StringHelper.Root(token)))
-			{
-				ParserHelper.Parse(pathExpressionParser, token, ParserHelper.PathSeparators, q);
+		public void Token(string token, QueryTranslator q) {
+
+			if (q.IsName(StringHelper.Root(token))) {
+				ParserHelper.Parse(pathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
 				q.AppendOrderByToken(pathExpressionParser.WhereColumn);
-				q.AddJoin(pathExpressionParser.WhereJoin);
-			}
-			else
-			{
+				pathExpressionParser.AddAssociation(q);
+			} else {
 				q.AppendOrderByToken(token);
 			}
 		}
 		
-		public void Start(QueryTranslator q)
-		{
+		public void Start(QueryTranslator q) {
 		}
 		
-		public void End(QueryTranslator q)
-		{
+		public void End(QueryTranslator q) {
 		}
 	}
 }
