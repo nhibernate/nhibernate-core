@@ -12,7 +12,7 @@ using NHibernate.Util;
 namespace NHibernate.Loader {
 
 	public enum OuterJoinLoaderType {
-		Eager = -1,
+		Eager = 1,
 		Auto = 0,
 		Lazy = -1
 	}
