@@ -188,16 +188,18 @@ namespace NHibernate.SqlCommand
 			return result.ToString();
 		}
 
-		[Obsolete("Should use Quote functions")]
 		private static string Quote(string column, Dialect.Dialect dialect) 
 		{
+
 			if ( column[0] == '`' ) 
 			{
-				return dialect.OpenQuote + column.Substring(1, column.Length - 2) + dialect.CloseQuote;
+				if (column[column.Length -1] != '`')
+					throw new ArgumentException("missing ` in column " + column);
+				return dialect.QuoteForAliasName(column.Substring(1, column.Length - 2));
 			}
 			else 
 			{
-				return column;
+				return dialect.QuoteForAliasName(column);
 			}
 		}
 

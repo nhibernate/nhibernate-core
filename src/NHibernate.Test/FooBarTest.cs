@@ -34,7 +34,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Fetch keyword is missing from HQL")]
+		//[Ignore("Generated SQL contains bad quoting")]
 		public void FetchInitializedCollection()
 		{
 			ISession s = sessions.OpenSession();

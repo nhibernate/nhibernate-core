@@ -69,12 +69,9 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		[Obsolete("Should use Quote functions")]
 		public string GetQuotedName(Dialect.Dialect dialect) 
 		{
-			return quoted ? 
-				dialect.OpenQuote + name + dialect.CloseQuote :
-				name;
+			return dialect.QuoteForTableName(name);
 		}
 
 		public Column GetColumn(int n) 

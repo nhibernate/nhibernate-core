@@ -727,7 +727,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="tableName">Name of the table</param>
 		/// <returns>Quoted name</returns>
-		protected virtual string QuoteForTableName(string tableName)
+		public virtual string QuoteForTableName(string tableName)
 		{
 			return tableName;
 		}
@@ -738,7 +738,7 @@ namespace NHibernate.Dialect
 		/// <remarks>Original implementation calls <see cref="QuoteForTableName"/></remarks>
 		/// <param name="columnName">Name of the column</param>
 		/// <returns>Quoted name</returns>
-		protected virtual string QuoteForColumnName(string columnName)
+		public virtual string QuoteForColumnName(string columnName)
 		{
 			return QuoteForTableName(columnName);
 		}
@@ -749,7 +749,7 @@ namespace NHibernate.Dialect
 		/// <remarks>Original implementation calls <see cref="QuoteForTableName"/></remarks>
 		/// <param name="columnName">Name of the alias</param>
 		/// <returns>Quoted name</returns>
-		protected virtual string QuoteForAliasName(string aliasName)
+		public virtual string QuoteForAliasName(string aliasName)
 		{
 			return QuoteForTableName(aliasName);
 		}

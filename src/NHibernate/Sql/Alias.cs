@@ -50,7 +50,7 @@ namespace NHibernate.Sql
 			if ( quoteType >= 0 ) 
 			{
 				char endQuote = Dialect.Dialect.ClosedQuote[quoteType];
-				return endQuote + unquoted + endQuote;
+				return begin + unquoted + endQuote;
 			}
 			else 
 			{
