@@ -49,7 +49,7 @@
 			<key column="container_id" />
 			<index column="list_index" />
 			<composite-element 
-				class="NHibernate.DomainModel.Container$ContainerInnerClass, NHibernate.DomainModel"
+				class="NHibernate.DomainModel.Container+ContainerInnerClass, NHibernate.DomainModel"
 			>
 				<property name="Name" />
 				<property 
@@ -67,7 +67,7 @@
 		>
 			<key column="container_id" />
 			<composite-element 
-				class="NHibernate.DomainModel.Container$ContainerInnerClass, NHibernate.DomainModel"
+				class="NHibernate.DomainModel.Container+ContainerInnerClass, NHibernate.DomainModel"
 			>
 				<property name="Name" />
 				<many-to-one name="Simple" />
@@ -82,7 +82,7 @@
 		>
 			<key column="container_id" />
 			<composite-element 
-				class="NHibernate.DomainModel.Container$ContainerInnerClass, NHibernate.DomainModel"
+				class="NHibernate.DomainModel.Container+ContainerInnerClass, NHibernate.DomainModel"
 			>
 				<property name="Name" />
 				<many-to-one 
@@ -136,7 +136,7 @@
 				length="32" 
 			/>
 			<composite-element 
-				class="NHibernate.DomainModel.Container$Ternary, NHibernate.DomainModel"
+				class="NHibernate.DomainModel.Container+Ternary, NHibernate.DomainModel"
 			>
 				<property name="Name" />
 				<many-to-one name="Foo" />
@@ -146,7 +146,7 @@
 		<set name="TernarySet">
 			<key column="container_id" />
 			<composite-element 
-				class="NHibernate.DomainModel.Container$Ternary, NHibernate.DomainModel"
+				class="NHibernate.DomainModel.Container+Ternary, NHibernate.DomainModel"
 			>
 				<property name="Name" />
 				<many-to-one name="Foo" />
