@@ -64,7 +64,7 @@ namespace NHibernate {
 	///	after the exception occurs.
 	/// </para>
 	/// </remarks>
-	public interface ISession {
+	public interface ISession : IDisposable {
 		
 		/// <summary>
 		/// Force the <c>ISession</c> to flush.
