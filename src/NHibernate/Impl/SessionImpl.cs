@@ -553,7 +553,7 @@ namespace NHibernate.Impl {
 			IClassPersister persister) {
 
 			EntityEntry e = new EntityEntry(status, loadedState, id, version, lockMode, existsInDatabase, persister);
-			entries.Add(obj, e);
+			entries[obj] = e;
 			return e;
 		}
 
@@ -572,7 +572,7 @@ namespace NHibernate.Impl {
 		//add a new collection (ie an initialized one, instantiated by the application)
 		private void AddCollectionEntry(PersistentCollection collection) {
 			CollectionEntry ce = new CollectionEntry();
-			collections.Add(collection, ce);
+			collections[collection] = ce;
 			collection.CollectionSnapshot = ce;
 		}
 
@@ -2648,7 +2648,7 @@ namespace NHibernate.Impl {
 		/// <param name="id"></param>
 		public void AddUninitializedCollection(PersistentCollection collection, CollectionPersister persister, object id) {
 			CollectionEntry ce = new CollectionEntry(persister, id, false);
-			collections.Add(collection, ce);
+			collections[collection] = ce;
 			collection.CollectionSnapshot = ce;
 		}
 
@@ -2661,7 +2661,7 @@ namespace NHibernate.Impl {
 		public void AddInitializedCollection(PersistentCollection collection, CollectionPersister persister, object id) {
 			CollectionEntry ce = new CollectionEntry(persister, id, true);
 			ce.PostInitialize(collection);
-			collections.Add(collection, ce);
+			collections[collection] = ce;
 			collection.CollectionSnapshot = ce;
 		}
 
@@ -2672,7 +2672,7 @@ namespace NHibernate.Impl {
 		/// <param name="cs"></param>
 		private void AddInitializedCollection(PersistentCollection collection, ICollectionSnapshot cs) {
 			CollectionEntry ce = new CollectionEntry(cs, factory);
-			collections.Add(collection, ce);
+			collections[collection] = ce;
 			collection.CollectionSnapshot = ce;
 		}
 
@@ -2682,7 +2682,7 @@ namespace NHibernate.Impl {
 
 		//must call after loading array (so array exists for key of map);
 		public void AddArrayHolder(ArrayHolder holder) {
-			arrayHolders.Add(holder.Array, holder);
+			arrayHolders[holder.Array] = holder;
 		}
 
 		private CollectionPersister GetCollectionPersister(string role) {

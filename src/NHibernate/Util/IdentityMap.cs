@@ -116,19 +116,7 @@ namespace NHibernate.Util
 		public void Add(object key, object val) 
 		{
 			IdentityKey identityKey = new IdentityMap.IdentityKey(key);
-			//TODO: remove this - it is unnecessary code because the map indexer takes
-			// care of insert/update when appropriate...
-			if(map.Contains(identityKey)==false)
-			{
-				log.Debug("adding new val to IdentityMap");
-				map.Add(identityKey, val);
-			}
-			else 
-			{
-				log.Debug("updating existing val in IdentityMap");
-				map[identityKey] = val;
-			}
-
+			map.Add(identityKey, val);
 		}
 
 		/// <summary>
@@ -186,10 +174,16 @@ namespace NHibernate.Util
 		/// </summary>
 		public ICollection Keys 
 		{
-			//TODO: fix this because it will return the IdentityKeys, not 
-			// the Keys - probably should be an IList of the Keys encapsulated
-			// by the IdentityKeys
-			get { return map.Keys; }
+			get 
+			{
+				ArrayList keyObjects = new ArrayList(map.Keys.Count);
+				foreach(IdentityKey key in map.Keys) 
+				{
+					keyObjects.Add(key.Key);
+				}
+
+				return keyObjects;
+			}
 		}
 
 		/// <summary>
@@ -299,6 +293,14 @@ namespace NHibernate.Util
 
 			internal IdentityKey(Object key) 
 			{
+				if(key is System.ValueType) {
+					throw new ArgumentException("A ValueType can not be used with IdentityKey.  " + 
+						"The thread at google has a good description about what happens with boxing " + 
+						"and unboxing ValueTypes and why they can not be used as an IdentityKey: " + 
+						"http://groups.google.com/groups?hl=en&lr=&ie=UTF-8&oe=UTF-8&threadm=bds2rm%24ruc%241%40charly.heeg.de&rnum=1&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8%26oe%3DUTF-8%26q%3DSystem.Runtime.CompilerServices.RuntimeHelpers.GetHashCode%26sa%3DN%26tab%3Dwg"
+						,"key");
+
+				}
 				this.key=key;
 			}
 
