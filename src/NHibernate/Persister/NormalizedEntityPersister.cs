@@ -272,7 +272,7 @@ namespace NHibernate.Persister {
 				int columnIndex = 0;
 				foreach(Column col in prop.ColumnCollection ) {
 					propCols[columnIndex] = col.GetQuotedName(dialect);
-					propAliases[columnIndex] = col.Alias(dialect) + tab.UniqueInteger + StringHelper.Underscore;
+					propAliases[columnIndex] = col.Alias(dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore);
 					columnIndex++;
 				}
 				
@@ -311,7 +311,7 @@ namespace NHibernate.Persister {
 					columns.Add( col.GetQuotedName(dialect) );
 					coltables.Add(tabnum);
 					cols[l++] = col.GetQuotedName(dialect);
-					aliases.Add( col.Alias(dialect) + tab.UniqueInteger + StringHelper.Underscore );
+					aliases.Add( col.Alias(dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore ) );
 				}
 				propColumns.Add(cols);
 				joinedFetchesList.Add( prop.Value.OuterJoinFetchSetting );

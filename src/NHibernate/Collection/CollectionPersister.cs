@@ -128,7 +128,7 @@ namespace NHibernate.Collection {
 					i++;
 				}
 			}
-			unquotedElementColumnNames = StringHelper.UnQuote(elementColumnNames);
+			unquotedElementColumnNames = dialect.UnQuote(elementColumnNames); //StringHelper.UnQuote(elementColumnNames);
 
 			if ( hasIndex = collection.IsIndexed ) {
 				IndexedCollection indexedMap = (IndexedCollection) collection;
@@ -142,7 +142,7 @@ namespace NHibernate.Collection {
 				}
 				rowSelectColumnNames = indexColumnNames;
 				rowSelectType = indexType;
-				unquotedIndexColumnNames = StringHelper.UnQuote(indexColumnNames);
+				unquotedIndexColumnNames = dialect.UnQuote(indexColumnNames); // StringHelper.UnQuote(indexColumnNames);
 			} else {
 				indexType = null;
 				indexColumnNames = null;

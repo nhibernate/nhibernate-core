@@ -67,29 +67,63 @@ namespace NHibernate.Dialect
 			get { return "@"; }
 		}						
 
-		public override string QuoteForTableName(string tableName)
+		protected override char CloseQuote
 		{
-			if (tableName[0] == '[') return tableName;
-			return "[" + tableName.Replace("]","]]") + "]";
+			get { return ']';}
 		}
 
-		public override string QuoteForAliasName(string aliasName)
+		protected override char OpenQuote
 		{
-			if (aliasName[0] == '[') return aliasName;
-			return "[" + aliasName.Replace("]","]]") + "]";
+			get { return '[';}
 		}
 
-		public override string QuoteForColumnName(string columnName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		/// <remarks>
+		/// MsSql does not require the OpenQuote to be escaped as long as the first char
+		/// is an OpenQuote.
+		/// </remarks>
+		protected override string Quote(string name) 
 		{
-			if (columnName[0] == '[') return columnName;
-			return "[" + columnName.Replace("]","]]") + "]";
+			return OpenQuote + name.Replace(CloseQuote.ToString(), new string(CloseQuote, 2) ) + CloseQuote;
 		}
+
+//		/// <summary>
+//		/// MsSql ov
+//		/// </summary>
+//		/// <param name="tableName"></param>
+//		/// <returns></returns>
+//		/// <remarks>
+//		/// MsSql needs to override it because it allows the ] to be a valid char 
+//		/// in a table name.
+//		/// </remarks>
+//		public override string QuoteForTableName(string tableName)
+//		{
+//			if ( IsQuoted(tableName) ) return tableName;
+//			return Quote(tableName); // return OpenQuote + tableName.Replace(CloseQuote.ToString(), new string(CloseQuote, 2) ) + CloseQuote;
+//		}
+//
+//		public override string QuoteForAliasName(string aliasName)
+//		{
+//			if ( IsQuoted(aliasName) ) return aliasName;
+//			return Quote(tableName); // return OpenQuote + aliasName.Replace(CloseQuote.ToString(), new string(CloseQuote, 2) ) + CloseQuote;
+//		}
+//
+//		public override string QuoteForColumnName(string columnName)
+//		{
+//			if ( IsQuoted(columnName) ) return columnName;
+//			return Quote(tableName); // return OpenQuote + columnName.Replace(CloseQuote.ToString(), new string(CloseQuote, 2) ) + CloseQuote;
+//		}
 
 		public override string UnQuote(string quoted)
 		{
-			if (quoted[0] == '[')
+			if ( IsQuoted(quoted) )
 				quoted = quoted.Substring(1,quoted.Length - 2);
-			return quoted.Replace("]]","]");
+
+			return quoted.Replace( new string(CloseQuote, 2), CloseQuote.ToString() );
 		}
 
 		private string SqlTypeToString(string name, int length) 

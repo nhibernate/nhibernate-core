@@ -170,12 +170,15 @@ namespace NHibernate.Cfg {
 		/// creating Mapping objects from the Mapping Xml.
 		/// </summary>
 		/// <param name="doc">The validated XmlDocument that contains the Mappings.</param>
-		private void Add(XmlDocument doc) {
+		private void Add(XmlDocument doc) 
+		{
 			try {
-				StringHelper.Dialect = Dialect.Dialect.GetDialect(properties);
-				Binder.BindRoot( doc, CreateMappings(), StringHelper.Dialect);
+				Binder.dialect = Dialect.Dialect.GetDialect(properties);
+				//StringHelper.Dialect = Dialect.Dialect.GetDialect(properties);
+				Binder.BindRoot( doc, CreateMappings());
 			} 
-			catch (MappingException me) {
+			catch (MappingException me) 
+			{
 				log.Error("Could not compile the mapping document", me);
 				throw me;
 			}

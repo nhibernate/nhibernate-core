@@ -69,6 +69,20 @@ namespace NHibernate.Mapping
 					return (new Alias(10, uniqueInteger.ToString() + StringHelper.Underscore)).ToAliasString(name, d);
 		}
 
+		public string Alias(Dialect.Dialect d, string suffix) 
+		{
+			
+			if(quoted)
+				return "y" + uniqueInteger.ToString() + StringHelper.Underscore;
+
+			if( (name.Length + suffix.Length) < 11 ) 
+				return name + suffix;
+				//return name.Substring(0, name.Length - suffix.Length);
+			else
+				return (new Alias(10, uniqueInteger.ToString() + StringHelper.Underscore + suffix) ).ToAliasString(name, d);
+
+		}
+
 		public bool IsNullable 
 		{ 
 			get { return nullable; }

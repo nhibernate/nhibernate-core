@@ -50,6 +50,16 @@ namespace NHibernate.Dialect
 		}
 
 	
+		protected override char CloseQuote
+		{
+			get { return '`';}
+		}
+
+		protected override char OpenQuote
+		{
+			get { return '`';}
+		}
+
 		public override string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey) 
 		{
 			string cols = String.Join(StringHelper.CommaSpace, foreignKey);
