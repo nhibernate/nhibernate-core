@@ -92,8 +92,13 @@ namespace NHibernate.Type {
 		//public Iterator getElementsIterator(Object collection) {
 		//	return ( (java.util.Collection) collection ).iterator();
 		//}
-		public ICollection GetElementsCollection(object collection) {
-			return ( (ICollection )collection );
+		/// <summary>
+		/// Returns a reference to the underlying ICollection
+		/// </summary>
+		/// <param name="collection">The object that holds the ICollection.</param>
+		/// <returns>An ICollection.</returns>
+		public virtual ICollection GetElementsCollection(object collection) {
+			return ( (ICollection)collection );
 		}
 	
 		public override bool IsMutable {

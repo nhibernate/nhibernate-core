@@ -42,6 +42,12 @@ namespace NHibernate.Type {
 			return new Set(session, persister, disassembled, owner);
 		}
 
+		public override ICollection GetElementsCollection(object collection)
+		{
+			return  (ICollection)((IDictionary)collection).Keys;
+		}
+
+
 
 	}
 }
