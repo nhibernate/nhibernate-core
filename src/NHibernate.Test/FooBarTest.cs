@@ -1112,14 +1112,14 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
 			Assert.AreEqual( 2, baz.StringSet.Count );
-			int i = 0;
+			int index = 0;
 			foreach(string key in baz.StringSet.Keys ) 
 			{
 				// h2.0.3 doesn't have this because the Set has a first() and last() method
-				i++;
-				if(i==1) Assert.AreEqual( "one", key );
-				if(i==2) Assert.AreEqual( "two", key );
-				if(i>2) Assert.Fail("should not be more than 2 items in StringSet");
+				index++;
+				if(index==1) Assert.AreEqual( "one", key );
+				if(index==2) Assert.AreEqual( "two", key );
+				if(index>2) Assert.Fail("should not be more than 2 items in StringSet");
 			}
 			Assert.AreEqual( 5, baz.Bag.Count );
 			baz.StringSet.Remove("two");
@@ -1139,7 +1139,7 @@ namespace NHibernate.Test
 			baz.TopGlarchez = new Hashtable();
 			GlarchProxy g = new Glarch();
 			s.Save(g);
-			baz.TopGlarchez['g'] = g;
+			baz.TopGlarchez['G'] = g;
 			Hashtable map = new Hashtable();
 			map[bar] = g;
 			map[bar2] = g;
@@ -1174,7 +1174,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 1, baz.GlarchToFoo.Count );
 
 			enumer = baz.FooToGlarch.Keys.GetEnumerator();
-			for( int j=0; j<2; j++ ) 
+			for( int i=0; i<2; i++ ) 
 			{
 				enumer.MoveNext();
 				Assert.IsTrue( enumer.Current is BarProxy );
@@ -1201,8 +1201,82 @@ namespace NHibernate.Test
 			Assert.AreEqual( 2, baz.TopGlarchez.Count );
 			s.Disconnect();
 				
-			//TODO: add test for deserialization of ISession here!
+			// serialize and then deserialize the session.
+			System.IO.Stream stream = new System.IO.MemoryStream();
+			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			formatter.Serialize(stream, s);
+			stream.Position = 0;
+			s = (ISession)formatter.Deserialize(stream);
+			stream.Close();
 
+			s.Reconnect();
+			baz = (Baz)s.Load( typeof(Baz), baz.Code );
+			s.Delete(baz);
+			s.Delete(baz.TopGlarchez['G']);
+			s.Delete(baz.TopGlarchez['H']);
+
+			IDbCommand cmd = s.Connection.CreateCommand();
+			cmd.CommandText = "update " + dialect.QuoteForTableName("glarchez") + " set baz_map_id=null where baz_map_index='a'";
+			int rows = cmd.ExecuteNonQuery();
+			Assert.AreEqual( 1, rows );
+			Assert.AreEqual( 1, s.Delete("from bar in class NHibernate.DomainModel.Bar") );
+			FooProxy[] arr = baz.FooArray;
+			Assert.AreEqual( 4, arr.Length );
+			Assert.AreEqual( foo.Key, arr[1].Key );
+			for(int i=0; i<arr.Length; i++) 
+			{
+				if(arr[i]!=null) 
+				{
+					s.Delete(arr[i]);
+				}
+			}
+
+			//TODO: once proxies is implemented get rid of the try-catch and notFound
+			bool notFound = false;
+			try 
+			{
+				s.Load( typeof(Qux), (long)666 ); //nonexistent
+			}
+			catch(ObjectNotFoundException onfe) 
+			{
+				notFound = true;
+				Assert.IsNotNull(onfe, "should not find a Qux with id of 666 when Proxies are not implemented.");
+			}
+			Assert.IsTrue( 
+				notFound, 
+				"without proxies working - an ObjectNotFoundException should have been thrown.  " + 
+				"If Proxies are implemented then you need to change this code" 
+				);
+
+			Assert.AreEqual( 1, s.Delete("from g in class Glarch") );
+			s.Flush();
+			s.Disconnect();
+
+			// serialize and then deserialize the session.
+			stream = new System.IO.MemoryStream();
+			formatter.Serialize( stream, s );
+			stream.Position = 0;
+			s = (ISession)formatter.Deserialize(stream);
+			stream.Close();
+
+			//TODO: once proxies is implemented get rid of the try-catch and notFound
+			notFound = false;
+			try 
+			{
+				s.Load( typeof(Qux), (long)666 ) ; //nonexistent
+			}
+			catch(HibernateException he) 
+			{
+				notFound = true;
+				Assert.IsNotNull( he, "should have a session disconnected error when finding a Qux with id of 666 and Proxies are not implemented.");
+			}
+			Assert.IsTrue( 
+				notFound, 
+				"without proxies working - an ADOException/HibernateException should have been thrown.  " + 
+				"If Proxies are implemented then you need to change this code because the ISession does " +
+				"not need to be connected to the db when building a Proxy."
+				);
+			
 			s.Close();
 		}
 
