@@ -102,6 +102,7 @@ namespace NHibernate.Tool.hbm2ddl {
 						if (export) {
 							statement.CommandText = dropSQL[i];
 							statement.CommandType = CommandType.Text;
+							statement.Transaction = transaction;
 							statement.ExecuteNonQuery();
 						}
 					} catch(Exception e) {
@@ -120,6 +121,7 @@ namespace NHibernate.Tool.hbm2ddl {
 							if (export) {
 								statement.CommandText = createSQL[j];
 								statement.CommandType = CommandType.Text;
+								statement.Transaction = transaction;
 								statement.ExecuteNonQuery();
 							}
 						} catch(Exception e) {

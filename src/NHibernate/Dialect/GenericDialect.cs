@@ -15,7 +15,7 @@ namespace NHibernate.Dialect {
 			Register( DbType.Int64, "BIGINT" );
 			Register( DbType.String, "VARCHAR($1)" );
 			Register( DbType.Single, "FLOAT" );
-			Register( DbType.DateTime, "DATE" );
+			Register( DbType.DateTime, "DATETIME" );
 			Register( DbType.Time, "TIMESTAMP" );
 			Register( DbType.Binary, "VARBINARY($1)" );
 			Register( DbType.Decimal, "DECIMAL" );

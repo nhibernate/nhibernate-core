@@ -23,6 +23,12 @@ namespace NHibernate.Id {
 
 		static IdentifierGeneratorFactory() {
 			idgenerators.Add("uuid.string", typeof(UUIDStringGenerator));
+			idgenerators.Add("hilo", typeof(TableHiLoGenerator));
+			idgenerators.Add("assigned", typeof(Assigned));
+			idgenerators.Add("identity", typeof(IdentityGenerator));
+			idgenerators.Add("sequence", typeof(SequenceGenerator));
+			idgenerators.Add("seqhilo", typeof(SequenceHiLoGenerator));
+			idgenerators.Add("vb", typeof(CounterGenerator));
 		}
 
 		public static IIdentifierGenerator Create(string strategy, IType type, IDictionary parms, Dialect.Dialect dialect) {

@@ -85,8 +85,7 @@
                 <Reference
                     Name = "log4net"
                     AssemblyName = "log4net"
-                    HintPath = "C:\log4net1.2.0-beta5\build\bin\Debug\log4net.dll"
-                    Private = "False"
+                    HintPath = "..\..\..\..\..\..\..\Program Files\log4net1.2.0-beta5\build\bin\ReleaseStrong\log4net.dll"
                 />
             </References>
         </Build>
@@ -656,6 +655,11 @@
                 />
                 <File
                     RelPath = "Hql\WhereParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Id\Assigned.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

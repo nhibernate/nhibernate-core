@@ -22,13 +22,16 @@ namespace NHibernate.Connection {
 		}
 		public void Configure(IDictionary settings) {
 			log.Info("Configuring SqlServerConnectionProvider");
-			// TODO: Get the connection string from the settings
+			connString = Cfg.Environment.Properties[ Cfg.Environment.ConnectionString ] as string;
+			if (connString==null) throw new HibernateException("Could not find connection string setting");
 		}
 
 		public IDbConnection GetConnection() {
 			log.Debug("Obtaining SqlConnection");
 			try {
-				return new SqlConnection(connString);
+				IDbConnection conn = new SqlConnection(connString);
+				conn.Open();
+				return conn;
 			} catch (Exception e) {
 				throw new ADOException("Could not create SqlServer connection", e);
 			}

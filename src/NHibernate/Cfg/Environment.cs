@@ -33,10 +33,7 @@ namespace NHibernate.Cfg {
 		private const string Version = "0.1 beta 1";
 
 		public const string ConnectionProvider = "hibernate.connection.provider";
-		public const string DataSource = "hibernate.connection.datasource";
-		public const string User = "hibernate.connection.username";
-		public const string Pass = "hibernate.connection.password";
-		public const string Database = "hibernate.connection.database"; //initial catalog for sql server
+		public const string ConnectionString = "hibernate.connection.connection_string";
 		public const string Isolation = "hibernate.connection.isolation";
 
 		public const string StatementCacheSize = "hibernate.statement_cache.size";

@@ -9,7 +9,9 @@ namespace NHibernate.Util {
 	public class PropertiesHelper {
 
 		public static bool GetBoolean(string property, IDictionary properties) {
-			return bool.Parse(properties[property] as string);
+			return properties[property] == null ?
+				false :
+				bool.Parse(properties[property] as string);
 		}
 		public static int GetInt(string property, IDictionary properties, int defaultValue) {
 			string propValue = properties[property] as string;

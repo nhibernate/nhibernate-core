@@ -11,11 +11,11 @@
                     RemoteDebugEnabled = "false"
                     RemoteDebugMachine = ""
                     StartAction = "Program"
-                    StartArguments = '"/assembly:C:\Documents and Settings\tbarrett\My Documents\Visual Studio Projects\NHibernate\bin\Debug\NHibernate.dll" "/transform:C:\Program Files\NUnit Addin\VisualStudioSummary.xslt" "/testpath:NHibernate.Eg.NetworkDemo"'
+                    StartArguments = '"/assembly:C:\Documents and Settings\Tom Barrett\My Documents\Visual Studio Projects\NHibernate\src\NHibernate\bin\Debug\NHibernate.dll" "/transform:C:\Program Files\NUnit Addin\VisualStudioSummary.xslt" "/testpath:NHibernate.Test.SimpleTest.TestSetPropertes"'
                     StartPage = ""
                     StartProgram = "C:\Program Files\NUnit Addin\nunit.console.exe"
                     StartURL = ""
-                    StartWorkingDirectory = "C:\Documents and Settings\tbarrett\My Documents\Visual Studio Projects\NHibernate\bin\Debug"
+                    StartWorkingDirectory = "C:\Documents and Settings\Tom Barrett\My Documents\Visual Studio Projects\NHibernate\src\NHibernate\bin\Debug"
                     StartWithIE = "false"
                 />
                 <Config

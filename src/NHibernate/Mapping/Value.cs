@@ -63,9 +63,9 @@ namespace NHibernate.Mapping {
 		}
 
 		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect) {
-			//return IdentifierGeneratorFactory.Create(identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect);
-			//TODO: finish
-			return null;
+			
+			return IdentifierGeneratorFactory.Create(identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect);
+
 		}
 
 		public virtual void SetTypeByReflection(System.Type propertyClass, string propertyName) {
