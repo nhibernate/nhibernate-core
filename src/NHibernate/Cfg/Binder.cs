@@ -262,6 +262,14 @@ namespace NHibernate.Cfg {
 							model.IsForceDiscriminator = true;
 						}
 						break;
+
+					case "jcs-cache":
+						model.Cache = Configuration.CreateCache( 
+							subnode.Attributes["usage"].Value,
+							model.PersistentClazz.Name, 
+							model );
+
+						break;
 				}
 			}
 
@@ -1091,6 +1099,13 @@ namespace NHibernate.Cfg {
 					model.Element = element;
 					BindAny(subnode, element, true);
 				} 
+				else if ( "jcs-cache".Equals(name) )
+				{
+					model.Cache = Configuration.CreateCache( 
+						subnode.Attributes["usage"].Value,
+						model.Role, 
+						model.Owner );
+				}
 			}
 
 			if ( !model.IsInverse ) 

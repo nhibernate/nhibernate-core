@@ -702,6 +702,30 @@ namespace NHibernate.Cfg {
 			return this;
 		}
 
+		public static ICacheConcurrencyStrategy CreateCache(string usage, string name, PersistentClass owner) 
+		{
+			log.Info("creating cache region: " + name + ", usage: " + usage);
+
+			ICache cache = new HashtableCache(name);
+
+			switch (usage) 
+			{
+				case "read-only":
+					if (owner.IsMutable) log.Warn("read-only cache configured for mutable: " + name);
+					return new ReadOnlyCache(cache);
+	
+				case "read-write":
+					return new ReadWriteCache(cache);
+					
+				case "nonstrict-read-write":
+					return new NonstrictReadWriteCache(cache);
+					
+				default:
+					throw new MappingException("jcs-cache usage attribute should be read-only, read-write, or nonstrict-read-write only");
+
+			}
+		}
+
 		/// <summary>
 		/// Get the query language imports
 		/// </summary>
