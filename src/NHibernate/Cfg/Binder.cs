@@ -759,8 +759,11 @@ namespace NHibernate.Cfg {
 		}
 
 		private static string GetPropertyName(XmlNode node) {
-			XmlAttribute propertyNameNode = node.Attributes["name"];
-			return (propertyNameNode==null) ? null : propertyNameNode.Value;
+			if (node.Attributes!=null) {
+				XmlAttribute propertyNameNode = node.Attributes["name"];
+				return (propertyNameNode==null) ? null : propertyNameNode.Value;
+			}
+			return null;
 		}
 
 		public abstract class SecondPass {

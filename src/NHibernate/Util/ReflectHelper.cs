@@ -61,7 +61,7 @@ namespace NHibernate.Util {
 		static ReflectHelper() {
 			MethodInfo eq;
 			try {
-				eq = typeof(object).GetMethod("Equals");
+				eq = typeof(object).GetMethod("Equals", BindingFlags.Public);
 			} catch (Exception e) {
 				throw new AssertionFailure("Could not find Object.Equals()", e);
 			}

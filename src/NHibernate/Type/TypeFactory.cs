@@ -38,7 +38,7 @@ namespace NHibernate.Type {
 			basicTypes.Add(NHibernate.String.Name, NHibernate.String);
 			basicTypes.Add(NHibernate.Date.Name, NHibernate.Date);
 			//basicTypes.Add(NHibernate.Time.Name, NHibernate.Time);
-			basicTypes.Add(typeof(CultureInfo).Name, NHibernate.CultureInfo);
+			//basicTypes.Add(typeof(CultureInfo).Name, NHibernate.CultureInfo);
 			basicTypes.Add(NHibernate.CultureInfo.Name, NHibernate.CultureInfo);
 			basicTypes.Add(NHibernate.Timestamp.Name, NHibernate.Timestamp);
 			//basicTypes.Add(NHibernate.Calendar.Name, NHibernate.Calendar);

@@ -5,20 +5,20 @@
 <hibernate-mapping>
 	<class name="NHibernate.Eg.Vertex" table="vertex">
 		<!--<jcs-cache usage="read-write"/>-->
-		<id column="vertex_id" name="key">
+		<id column="vertex_id" name="Key">
 			<generator class="hilo" />
 		</id>
 		<discriminator column="vertex_type" />
 		<version column="version_number" name="Version" />
 		<property name="Name" unique="true" not-null="true" length="50" />
-		<set name="Incoming" lazy="true" inverse="true" cascade="all" order-by="name">
+		<list name="Incoming" lazy="true" inverse="true" cascade="all" order-by="name">
 			<key column="sink" />
 			<one-to-many class="NHibernate.Eg.Edge" />
-		</set>
-		<set name="Outgoing" lazy="true" inverse="true" cascade="all" order-by="name desc">
+		</list>
+		<list name="Outgoing" lazy="true" inverse="true" cascade="all" order-by="name desc">
 			<key column="source" />
 			<one-to-many class="NHibernate.Eg.Edge" />
-		</set>
+		</list>
 		<property name="CreationDate" type="date" />
 		<subclass name="NHibernate.Eg.Source">
 			<property column="Strength" name="sourceStrength" />
