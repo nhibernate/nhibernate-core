@@ -1196,7 +1196,7 @@ namespace NHibernate.Persister
 			{
 				if( IsVersioned )
 				{
-					//TODO: add some logging.
+					session.Batcher.CloseCommand( deleteCmd, null );
 				}
 				else
 				{
@@ -1204,14 +1204,6 @@ namespace NHibernate.Persister
 				}
 				throw;
 			}
-			finally
-			{
-				if( IsVersioned )
-				{
-					session.Batcher.CloseCommand( deleteCmd, null );
-				}
-			}
-
 		}
 
 		/// <summary>

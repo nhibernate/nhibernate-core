@@ -178,6 +178,7 @@ namespace NHibernate.Collection
 				catch( Exception e )
 				{
 					//TODO: change to SqlException
+					// NB This calls cmd.Dispose
 					session.Batcher.AbortBatch( e );
 					throw;
 				}

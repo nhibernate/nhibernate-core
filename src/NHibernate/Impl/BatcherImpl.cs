@@ -281,12 +281,7 @@ namespace NHibernate.Impl
 		/// <param name="reader"></param>
 		public void CloseCommand( IDbCommand cmd, IDataReader reader )
 		{
-			//TODO: fix this up a little bit - don't like it having the same name and just
-			// turning around and calling a diff method.
 			CloseQueryCommand( cmd, reader );
-			// CloseQueryCommand contains the logging so we don't need to call it 
-			// here - putting it in CloseQueryCommand(IDbCommand) will ensure it always gets called.
-			//LogClosePreparedCommands(); 
 		}
 
 		/// <summary>
@@ -328,6 +323,10 @@ namespace NHibernate.Impl
 			try
 			{
 				// no equiv to the java code in here
+				if ( cmd != null )
+				{
+					cmd.Dispose();
+				}
 			}
 			catch( Exception e )
 			{

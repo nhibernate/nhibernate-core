@@ -129,21 +129,20 @@ namespace NHibernate.Id
 					//or read committed isolation level (needed for .net?)
 
 					IDbCommand qps = conn.CreateCommand();
+					IDataReader rs = null;
 					qps.CommandText = query;
 					qps.CommandType = CommandType.Text;
 					qps.Transaction = trans;
 					try
 					{
-						IDataReader rs = qps.ExecuteReader();
+						rs = qps.ExecuteReader();
 						if( !rs.Read() )
 						{
 							string err = "could not read a hi value - you need to populate the table: " + tableName;
 							log.Error( err );
 							throw new IdentifierGenerationException( err );
 						}
-
 						result = Convert.ToInt32( rs[ 0 ] );
-						rs.Close();
 					} 
 						// TODO: change to SqlException
 					catch( Exception e )
@@ -153,6 +152,8 @@ namespace NHibernate.Id
 					}
 					finally
 					{
+						if ( rs != null ) rs.Close();
+						qps.Dispose();
 					}
 
 					IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand( session.Factory.Dialect, updateSql );
@@ -174,6 +175,7 @@ namespace NHibernate.Id
 					}
 					finally
 					{
+						ups.Dispose();
 					}
 
 				}
@@ -182,8 +184,8 @@ namespace NHibernate.Id
 				trans.Commit();
 
 				return result;
-
 			}
+				// TODO: Shouldn't we have a Catch with a rollback here?
 			finally
 			{
 				session.Factory.CloseConnection( conn );

@@ -1292,6 +1292,7 @@ namespace NHibernate.Hql
 				sqlWithLock,
 				parameters, false, session );
 
+			// TODO: 2.1 - Check that something tidies up this cmd/reader
 			IDataReader rs = GetResultSet( st, parameters.RowSelection, session );
 			return new EnumerableImpl( rs, st, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection );
 
