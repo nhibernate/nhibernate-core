@@ -1,47 +1,50 @@
 using System;
 using System.Collections;
-using System.Configuration;
-using System.Data;
+using log4net;
+using Environment = NHibernate.Cfg.Environment;
 
-using NHibernate.Cfg;
-
-namespace NHibernate.Connection 
+namespace NHibernate.Connection
 {
 	/// <summary>
 	/// Instanciates a connection provider given configuration properties.
 	/// </summary>
-	public sealed class ConnectionProviderFactory 
+	public sealed class ConnectionProviderFactory
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ConnectionProviderFactory));
-		
+		private static readonly ILog log = LogManager.GetLogger( typeof( ConnectionProviderFactory ) );
+
 		// cannot be instantiated
-		private ConnectionProviderFactory() 
+		private ConnectionProviderFactory()
 		{
-			throw new InvalidOperationException("ConnectionProviderFactory can not be instantiated.");
+			throw new InvalidOperationException( "ConnectionProviderFactory can not be instantiated." );
 		}
 
-		public static IConnectionProvider NewConnectionProvider(IDictionary settings) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <returns></returns>
+		public static IConnectionProvider NewConnectionProvider( IDictionary settings )
 		{
 			IConnectionProvider connections = null;
-			string providerClass = settings[Cfg.Environment.ConnectionProvider] as string;
-			if (providerClass != null) 
+			string providerClass = settings[ Environment.ConnectionProvider ] as string;
+			if( providerClass != null )
 			{
-				try 
+				try
 				{
-					log.Info("Intitializing connection provider: " + providerClass);
-					connections = (IConnectionProvider) Activator.CreateInstance(System.Type.GetType(providerClass));
-				} 
-				catch (Exception e) 
-				{
-					log.Fatal("Could not instantiate connection provider", e);
-					throw new HibernateException("Could not instantiate connection provider: " + providerClass);
+					log.Info( "Intitializing connection provider: " + providerClass );
+					connections = ( IConnectionProvider ) Activator.CreateInstance( System.Type.GetType( providerClass ) );
 				}
-			} 
-			else 
+				catch( Exception e )
+				{
+					log.Fatal( "Could not instantiate connection provider", e );
+					throw new HibernateException( "Could not instantiate connection provider: " + providerClass );
+				}
+			}
+			else
 			{
 				connections = new UserSuppliedConnectionProvider();
 			}
-			connections.Configure(settings);
+			connections.Configure( settings );
 			return connections;
 		}
 

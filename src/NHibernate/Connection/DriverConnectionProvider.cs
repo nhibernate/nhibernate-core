@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Data;
-
-using NHibernate.Driver;
+using log4net;
 
 namespace NHibernate.Connection
 {
@@ -11,46 +9,55 @@ namespace NHibernate.Connection
 	/// </summary>
 	public class DriverConnectionProvider : ConnectionProvider
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(DriverConnectionProvider));
-		
+		private static readonly ILog log = LogManager.GetLogger( typeof( DriverConnectionProvider ) );
+
+		/// <summary></summary>
 		public DriverConnectionProvider()
 		{
 		}
 
-		
-		public override IDbConnection GetConnection() 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public override IDbConnection GetConnection()
 		{
-			log.Debug("Obtaining IDbConnection from Driver");
-			try 
+			log.Debug( "Obtaining IDbConnection from Driver" );
+			try
 			{
 				IDbConnection conn = Driver.CreateConnection();
-				conn.ConnectionString = ConnectionString; 
+				conn.ConnectionString = ConnectionString;
 				conn.Open();
 				return conn;
-			} 
-			catch (Exception e) 
+			}
+			catch( Exception e )
 			{
-				throw new ADOException("Could not create connection from Driver", e);
+				throw new ADOException( "Could not create connection from Driver", e );
 			}
 		}
 
-		public override bool IsStatementCache 
+		/// <summary></summary>
+		public override bool IsStatementCache
 		{
 			get { return false; }
 		}
 
+		/// <summary></summary>
 		public override void Close()
 		{
-			log.Info("cleaning up connection pool");
+			log.Info( "cleaning up connection pool" );
 		}
 
-		public override void CloseConnection(IDbConnection conn)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="conn"></param>
+		public override void CloseConnection( IDbConnection conn )
 		{
-			base.CloseConnection(conn);
+			base.CloseConnection( conn );
 			//TODO: make sure I want to do this - pretty sure I do because of Oracle problems.
 			conn.Dispose();
 		}
-
 
 
 	}
