@@ -582,11 +582,11 @@ namespace NHibernate.Hql
 			// TODO: for some dialects it would be appropriate to add the renderOrderByProertySelecT() to other select strings
 			MergeJoins( sql.JoinFragment );
 
-			sql.WhereTokens = whereTokens;
+			sql.SetWhereTokens(whereTokens);
 
-			sql.GroupByTokens = groupByTokens;
-			sql.HavingTokens = havingTokens;
-			sql.OrderByTokens = orderByTokens;
+			sql.SetGroupByTokens(groupByTokens);
+			sql.SetHavingTokens(havingTokens);
+			sql.SetOrderByTokens(orderByTokens);
 			
 			if ( CollectionPersister!=null && CollectionPersister.HasOrdering ) 
 			{

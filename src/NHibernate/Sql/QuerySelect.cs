@@ -82,28 +82,28 @@ namespace NHibernate.Sql
 			set { this.distinct = value; }
 		}
 	
-		public ICollection WhereTokens 
+		public void SetWhereTokens(ICollection tokens) 
 		{
 			//if ( conjunctiveWhere.length()>0 ) conjunctiveWhere.append(" and ");
-			set { AppendTokens(where, value); }
+			AppendTokens(where, tokens);
 		}
 		
-		public ICollection GroupByTokens 
+		public void SetGroupByTokens(ICollection tokens)
 		{
 			//if ( groupBy.length()>0 ) groupBy.append(" and ");
-			set { AppendTokens(groupBy, value); }
+			AppendTokens(groupBy, tokens); 
 		}
 		
-		public ICollection OrderByTokens 
+		public void SetOrderByTokens(ICollection tokens) 
 		{
 			//if ( orderBy.length()>0 ) orderBy.append(" and ");
-			set { AppendTokens(orderBy, value); }
+			AppendTokens(orderBy, tokens);
 		}
 		
-		public ICollection HavingTokens 
+		public void SetHavingTokens(ICollection tokens)
 		{
 			//if ( having.length()>0 ) having.append(" and ");
-			set { AppendTokens(having, value); }
+			AppendTokens(having, tokens); 
 		}
 
 		public void AddOrderBy(string orderByString) 
