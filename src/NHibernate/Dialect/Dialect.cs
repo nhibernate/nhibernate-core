@@ -5,6 +5,7 @@ using System.Collections;
 
 using NHibernate.Util;
 using NHibernate.Sql;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Dialect {
 
@@ -152,7 +153,7 @@ namespace NHibernate.Dialect {
 		/// The keyword used to specify a nullable column
 		/// </summary>
 		public virtual string NullColumnString {
-			get { return StringHelper.EmptyString; }
+			get { return String.Empty; }
 		}
 
 		/// <summary>
@@ -261,7 +262,7 @@ namespace NHibernate.Dialect {
 		/// Completely optional cascading drop clause
 		/// </summary>
 		public virtual string CascadeConstraintsString {
-			get { return StringHelper.EmptyString; }
+			get { return String.Empty; }
 		}
 
 		/// <summary>
@@ -304,8 +305,18 @@ namespace NHibernate.Dialect {
 		/// </summary>
 		public virtual string NamedParametersPrefix {
 			get {
-				return StringHelper.EmptyString;
+				return String.Empty;
 			}
+		}
+
+		/// <summary>
+		/// Converts the SqlType to the Dialect specific Sql String used when
+		/// CREATEing the table.
+		/// </summary>
+		/// <param name="sqlType">The SqlType to convert to a string</param>
+		/// <returns>A string that can be used in the table CREATE statement.</returns>
+		public virtual string SqlTypeToString(SqlType sqlType){
+			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
 		}
 	}
 }

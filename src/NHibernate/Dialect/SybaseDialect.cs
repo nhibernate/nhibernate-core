@@ -4,7 +4,7 @@ using System.Data;
 namespace NHibernate.Dialect {
 
 	/// <summary>
-	/// An SQL dialect compatible with Sybase and MS SQL Server.
+	/// An SQL dialect compatible with Sybase.
 	/// </summary>
 	public class SybaseDialect : Dialect {
 
@@ -39,6 +39,7 @@ namespace NHibernate.Dialect {
 			Register( DbType.String, "VARCHAR($1)" );
 			Register( DbType.Single, "FLOAT" );
 			Register( DbType.Double, "DOUBLE PRECISION" );
+			Register( DbType.Date, "DATETIME");
 			Register( DbType.DateTime, "DATETIME" );
 			//Register( DbType.Timestamp, "DATETIME" );
 			//Register( DbType.VarBinary, "VARBINARY($1)" );
