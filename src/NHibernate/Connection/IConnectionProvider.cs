@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Driver;
@@ -5,22 +6,15 @@ using NHibernate.Driver;
 namespace NHibernate.Connection
 {
 	/// <summary>
-	/// A strategy for obtaining ADO.NET connections.
+	/// A strategy for obtaining ADO.NET <see cref="IDbConnection"/>.
 	/// </summary>
 	/// <remarks>
 	/// The <c>IConnectionProvider</c> interface is not intended to be exposed to the application.
-	/// Instead it is used internally by Hibernate to obtain connections. Implementors should provide
-	/// a public default constructor.
+	/// Instead it is used internally by NHibernate to obtain <see cref="IDbConnection"/>. 
+	/// Implementors should provide a public default constructor.
 	/// </remarks>
-	public interface IConnectionProvider
+	public interface IConnectionProvider : IDisposable
 	{
-		/// <summary>
-		/// The Driver this ConnectionProvider should use to communicate with the .NET Data Provider
-		/// </summary>
-		/// <value></value>
-		/// <remarks></remarks>
-		IDriver Driver { get; }
-
 		/// <summary>
 		/// Initialize the connection provider from the given properties.
 		/// </summary>
@@ -28,29 +22,25 @@ namespace NHibernate.Connection
 		void Configure( IDictionary settings );
 
 		/// <summary>
-		/// Grab a connection 
+		/// Dispose of a used <see cref="IDbConnection"/>
 		/// </summary>
-		/// <returns>An ADO.NET connection</returns>
-		IDbConnection GetConnection();
-
-		/// <summary>
-		/// Dispose of a used connection
-		/// </summary>
-		/// <param name="conn">An ADO.NET connection</param>
+		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
 		void CloseConnection( IDbConnection conn );
 
 		/// <summary>
-		/// Does this ConnectionProvider implement a <c>PreparedStatemnt</c> cache?.
+		/// Gets the <see cref="IDriver"/> this ConnectionProvider should use to 
+		/// communicate with the .NET Data Provider
 		/// </summary>
-		/// <remarks>
-		/// If so, Hibernate will not use its own cache
-		/// </remarks>
-		bool IsStatementCache { get; }
+		/// <value>
+		/// The <see cref="IDriver"/> to communicate with the .NET Data Provider.
+		/// </value>
+		IDriver Driver { get; }
 
 		/// <summary>
-		/// Release all resources held by this ConnectionProvider.
+		/// Get an open <see cref="IDbConnection"/>.
 		/// </summary>
-		void Close();
+		/// <returns>An open <see cref="IDbConnection"/>.</returns>
+		IDbConnection GetConnection();
 
 	}
 }

@@ -17,18 +17,30 @@ namespace NHibernate.Connection
 		private static readonly ILog log = LogManager.GetLogger( typeof( UserSuppliedConnectionProvider ) );
 
 		/// <summary>
-		/// 
+		/// Throws an <see cref="InvalidOperationException"/> if this method is called
+		/// because the user is responsible for closing <see cref="IDbConnection"/>s.
 		/// </summary>
-		/// <param name="conn"></param>
+		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
+		/// <exception cref="InvalidOperationException">
+		/// Thrown when this method is called.  User is responsible for closing
+		/// <see cref="IDbConnection"/>s.
+		/// </exception>
 		public override void CloseConnection( IDbConnection conn )
 		{
 			throw new InvalidOperationException( "The User is responsible for closing ADO.NET connection - not NHibernate." );
 		}
 
 		/// <summary>
-		/// 
+		/// Throws an <see cref="InvalidOperationException"/> if this method is called
+		/// because the user is responsible for creating <see cref="IDbConnection"/>s.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>
+		/// No value is returned because an <see cref="InvalidOperationException"/> is thrown.
+		/// </returns>
+		/// <exception cref="InvalidOperationException">
+		/// Thrown when this method is called.  User is responsible for creating
+		/// <see cref="IDbConnection"/>s.
+		/// </exception>
 		public override IDbConnection GetConnection()
 		{
 			throw new InvalidOperationException( "The user must provide an ADO.NET connection - NHibernate is not creating it." );
@@ -48,20 +60,6 @@ namespace NHibernate.Connection
 
 			ConfigureDriver( settings );
 		}
-
-		/// <summary></summary>
-		public override bool IsStatementCache
-		{
-			get { return false; }
-		}
-
-		/// <summary></summary>
-		public override void Close()
-		{
-			// do nothing - don't need to throw an error because this is something
-			// that NHibernate will call.
-		}
-
 
 	}
 }

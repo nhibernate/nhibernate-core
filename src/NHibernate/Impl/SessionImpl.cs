@@ -4055,25 +4055,6 @@ namespace NHibernate.Impl
 		{
 			log.Debug( "running ISession.Dispose()" );
 			Dispose( true );
-
-//			// it was never disconnected
-//			if( connection != null )
-//			{
-//				AfterTransactionCompletion();
-//
-//				if( connection.State == ConnectionState.Closed )
-//				{
-//					log.Warn( "finalizing unclosed session with closed connection" );
-//				}
-//				else
-//				{
-//					log.Warn( "unclosed connection" );
-//					if( autoClose )
-//					{
-//						connection.Close();
-//					}
-//				}
-//			}
 		}
 
 		/// <summary>
@@ -4105,7 +4086,6 @@ namespace NHibernate.Impl
 					// ensure the Locks are downgraded and the Cache releases its softlocks.
 					AfterTransactionCompletion();
 				}
-				//TODO: add a Dispose to IBatcher (NDataReader), & ITransaction
 				
 				// if the Session is responsible for managing the connection then make sure
 				// the connection is disposed of.
@@ -4115,6 +4095,16 @@ namespace NHibernate.Impl
 					{
 						connection.Dispose();
 					}
+				}
+
+				if( transaction!=null )
+				{
+					transaction.Dispose();
+				}
+
+				if( batcher!=null )
+				{
+					// TODO: add batcher.Dispose() when IDisposable implemented by IBatcher
 				}
 
 				// it is important to call Cleanup because that marks the Session as being

@@ -28,7 +28,7 @@ namespace NHibernate.Driver
 		private bool _isMidstream = false;
 
 		/// <summary>
-		/// Initializes a new instance of the NHybridDataReader class.
+		/// Initializes a new instance of the <see cref="NHybridDataReader"/> class.
 		/// </summary>
 		/// <param name="reader">The underlying IDataReader to use.</param>
 		public NHybridDataReader( IDataReader reader ) : this( reader, false )
@@ -131,10 +131,59 @@ namespace NHibernate.Driver
 
 		#region IDisposable Members
 
-		/// <summary></summary>
+		/// <summary>
+		/// A flag to indicate if <c>Disose()</c> has been called.
+		/// </summary>
+		private bool _isAlreadyDisposed;
+
+		/// <summary>
+		/// Finalizer that ensures the object is correctly disposed of.
+		/// </summary>
+		~NHybridDataReader()
+		{
+			Dispose( false );
+		}
+
+		/// <summary>
+		/// Takes care of freeing the managed and unmanaged resources that 
+		/// this class is responsible for.
+		/// </summary>
 		public void Dispose()
 		{
-			_reader.Dispose();
+			log.Debug( "running NHybridDataReader.Dispose()" );
+			Dispose( true );
+		}
+
+		/// <summary>
+		/// Takes care of freeing the managed and unmanaged resources that 
+		/// this class is responsible for.
+		/// </summary>
+		/// <param name="isDisposing">Indicates if this NHybridDataReader is being Disposed of or Finalized.</param>
+		/// <remarks>
+		/// If this NHybridDataReader is being Finalized (<c>isDisposing==false</c>) then make sure not
+		/// to call any methods that could potentially bring this NHybridDataReader back to life.
+		/// </remarks>
+		protected virtual void Dispose(bool isDisposing)
+		{
+			if( _isAlreadyDisposed )
+			{
+				// don't dispose of multiple times.
+				return;
+			}
+
+			// free managed resources that are being managed by the NHybridDataReader if we
+			// know this call came through Dispose()
+			if( isDisposing )
+			{
+				_reader.Dispose();
+			}
+
+			// free unmanaged resources here
+			
+			_isAlreadyDisposed = true;
+			// nothing for Finalizer to do - so tell the GC to ignore it
+			GC.SuppressFinalize( this );
+			
 		}
 
 		#endregion

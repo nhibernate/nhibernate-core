@@ -171,7 +171,15 @@ namespace NHibernate.Driver
 
 		#region IDisposable Members
 
-		/// <summary></summary>
+		/// <summary>
+		/// Takes care of freeing the managed and unmanaged resources that 
+		/// this class is responsible for.
+		/// </summary>
+		/// <remarks>
+		/// There are not any unmanaged resources or any disposable managed 
+		/// resources that this class is holding onto.  It is in here
+		/// to comply with the <see cref="IDataReader"/> interface.
+ 		/// </remarks>
 		public void Dispose()
 		{
 			isClosed = true;

@@ -789,7 +789,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				ConnectionProvider.Close();
+				ConnectionProvider.Dispose();
 			}
 			finally
 			{

@@ -11,15 +11,34 @@ namespace NHibernate.Connection
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( DriverConnectionProvider ) );
 
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DriverConnectionProvider"/> class.
+		/// </summary>
 		public DriverConnectionProvider()
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Closes and Disposes of the <see cref="IDbConnection"/>.
 		/// </summary>
-		/// <returns></returns>
+		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
+		public override void CloseConnection( IDbConnection conn )
+		{
+			base.CloseConnection( conn );
+			//TODO: make sure I want to do this - pretty sure I do because of Oracle problems.
+			conn.Dispose();
+		}
+
+		/// <summary>
+		/// Gets a new open <see cref="IDbConnection"/> through 
+		/// the <see cref="NHibernate.Driver.IDriver"/>.
+		/// </summary>
+		/// <returns>
+		/// An Open <see cref="IDbConnection"/>.
+		/// </returns>
+		/// <exception cref="ADOException">
+		/// If there is any problem creating or opening the <see cref="IDbConnection"/>.
+		/// </exception>
 		public override IDbConnection GetConnection()
 		{
 			log.Debug( "Obtaining IDbConnection from Driver" );
@@ -34,29 +53,6 @@ namespace NHibernate.Connection
 			{
 				throw new ADOException( "Could not create connection from Driver", e );
 			}
-		}
-
-		/// <summary></summary>
-		public override bool IsStatementCache
-		{
-			get { return false; }
-		}
-
-		/// <summary></summary>
-		public override void Close()
-		{
-			log.Info( "cleaning up connection pool" );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="conn"></param>
-		public override void CloseConnection( IDbConnection conn )
-		{
-			base.CloseConnection( conn );
-			//TODO: make sure I want to do this - pretty sure I do because of Oracle problems.
-			conn.Dispose();
 		}
 
 

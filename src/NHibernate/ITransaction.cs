@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 
 namespace NHibernate
@@ -14,8 +15,7 @@ namespace NHibernate
 	/// at most one uncommitted <c>ITransaction</c> associated with a particular <c>ISession</c>
 	/// at a time. Implementors are not intended to be threadsafe.
 	/// </remarks>
-	//TODO: add IDisposable
-	public interface ITransaction
+	public interface ITransaction : IDisposable
 	{
 		/// <summary>
 		/// Flush the associated <c>ISession</c> and end the unit of work.
@@ -32,7 +32,7 @@ namespace NHibernate
 		void Rollback();
 
 		/// <summary>
-		/// Was the transaction folled back or set to rollback only?
+		/// Was the transaction rolled back or set to rollback only?
 		/// </summary>
 		bool WasRolledBack { get; }
 
