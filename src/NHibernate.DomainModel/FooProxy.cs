@@ -52,6 +52,8 @@ namespace NHibernate.DomainModel
 			set;
 		}
 
+		bool EqualsFoo(Foo other);
+
 		void Disconnect();
 
 		byte Byte
