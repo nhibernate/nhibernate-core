@@ -174,6 +174,15 @@ namespace NHibernate {
 		public static IType GetSerializable(System.Type serializableClass) {
 			return new SerializableType(serializableClass);
 		}
+
+		/// <summary>
+		/// A NHibernate serializable type
+		/// </summary>
+		/// <param name="serializableClass"></param>
+		/// <returns></returns>
+		public static IType Any(IType metaType, IType identifierType) {
+			return new ObjectType(metaType, identifierType);
+		}
 		
 		/// <summary>
 		/// A NHibernate persistent object (entity) type
@@ -191,7 +200,12 @@ namespace NHibernate {
 		/// <param name="userTypeClass">a class that implements UserType</param>
 		/// <returns></returns>
 		public static IType Custom(System.Type userTypeClass) {
-			return new CustomType(userTypeClass);
+			if( typeof(ICompositeUserType).IsAssignableFrom( userTypeClass )) {
+				return new CompositeCustomType( userTypeClass );
+			}
+			else {
+				return new CustomType(userTypeClass);
+			}
 		}
 				
 		
@@ -212,13 +226,27 @@ namespace NHibernate {
 			}
 		}
 
+		/// <summary>
+		/// Is the proxy or persistent collection initialized?
+		/// </summary>
+		/// <param name="proxy">a persistable object, proxy, persistent collection or null</param>
+		/// <returns>true if the argument is already initialized, or is not a proxy or collection</returns>
 		public static bool IsInitialized(object proxy) {
 			if ( proxy is HibernateProxy ) {
-				return ((HibernateProxy) proxy).IsUninitialized;
+				return !HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) proxy ).IsUninitialized;
 			} else if ( proxy is PersistentCollection ) {
 				return ( (PersistentCollection) proxy).WasInitialized;
 			} else {
 				return true;
+			}
+		}
+
+		public System.Type GetClass(object proxy) {
+			if(proxy is HibernateProxy) {
+				return HibernateProxyHelper.GetLazyInitializer( (HibernateProxy) proxy ).GetImplementation().GetType();
+			}
+			else {
+				return proxy.GetType();
 			}
 		}
 	
