@@ -442,6 +442,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Id\IdentityGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Id\IIdentifierGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

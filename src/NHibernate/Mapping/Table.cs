@@ -1,4 +1,6 @@
 using System;
+using System.Text;
+using System.Data;
 using System.Collections;
 using NHibernate.Util;
 using NHibernate.Dialect;
@@ -67,6 +69,38 @@ namespace NHibernate.Mapping {
 		public IEnumerator GetUniqueKeyEnumerator() {
 			return uniqueKeys.Values.GetEnumerator();
 		}
+
+		public string SqlAlterString(Dialect.Dialect dialect, IMapping p, DataTable tableInfo) {
+			IEnumerator iter = GetColumnEnumerator();
+			StringBuilder buf = new StringBuilder(50);
+			while(iter.MoveNext()) {
+				Column col = (Column) iter.Current;
+				DataColumn columnInfo = tableInfo.Columns[ col.Name ];
+
+				if (columnInfo == null) {
+					// the column doesnt exist at all
+					if (buf.Length != 0)
+						buf.Append(StringHelper.CommaSpace);
+					buf.Append(col.Name).Append(' ').Append(col.GetSqlType(dialect, p));
+					if (col.IsUnique && dialect.SupportsUnique) {
+						buf.Append(" unique");
+					}
+				}
+			}
+
+			if (buf.Length == 0)
+				return null;
+
+			return new StringBuilder("alter table ").Append(QualifiedName).Append(" add ").Append(buf).ToString();
+
+		}
+
+		public string SqlCreateString(Dialect.Dialect dialect, IMapping p) {
+			//TODO: finish
+			return null;
+		}
+
+	
 
 	}
 }

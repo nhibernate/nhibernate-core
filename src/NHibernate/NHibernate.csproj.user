@@ -40,7 +40,7 @@
             CopyProjectDestinationFolder = ""
             CopyProjectUncPath = ""
             CopyProjectOption = "0"
-            ProjectView = "ShowAllFiles"
+            ProjectView = "ProjectFiles"
             ProjectTrust = "0"
         />
     </CSHARP>
