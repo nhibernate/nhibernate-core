@@ -3,10 +3,7 @@
 	<class name="NHibernate.DomainModel.A, NHibernate.DomainModel" discriminator-value="0"
 		proxy="NHibernate.DomainModel.A, NHibernate.DomainModel">
 		<id name="id" unsaved-value="null" type="Int64">
-			<generator class="increment">
-				<param name="table">A</param>
-				<param name="column">id</param>
-			</generator>
+			<generator class="native" />
 		</id>
 		<discriminator column="clazz" type="Int32" force="true" not-null="false" />
 		<property name="name" />
