@@ -13,6 +13,7 @@ namespace NHibernate.Util {
 				false :
 				bool.Parse(properties[property] as string);
 		}
+		//TODO: rename this GetInt32
 		public static int GetInt(string property, IDictionary properties, int defaultValue) {
 			string propValue = properties[property] as string;
 			return (propValue==null) ? defaultValue : int.Parse(propValue);
