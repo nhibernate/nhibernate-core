@@ -311,6 +311,10 @@
 				<excludes name="**/bin/**" />
 				<excludes name="**/obj/**" />
 				
+				<!-- exclude ReSharper stuff -->
+				<excludes name="**/_ReSharper*" />
+				<excludes name="**/*.resharperoptions" />
+				
 				<!-- exclude any keys that exist on the build machine -->
 				<excludes name="**/*.snk" />
 			
