@@ -23,7 +23,7 @@ namespace NHibernate.DomainModel
 			//TODO: H2.0.3 - this is diff from H2.0.3 because I am getting a null exception
 			// when executing the Sql.  H203 uses the CalendarType which we don't have so
 			// I am using DateTime instead...
-			m_LastUpdated = DateTime.Now;
+			//m_LastUpdated = DateTime.Now;
 			
 			FumCompositeID fid = new FumCompositeID();
 			fid.Date= new DateTime(2004, 4, 29, 9, 50, 0, 0);
@@ -36,7 +36,7 @@ namespace NHibernate.DomainModel
 			//TODO: H2.0.3 - this is diff from H2.0.3 because I am getting a null exception
 			// when executing the Sql.  H203 uses the CalendarType which we don't have so
 			// I am using DateTime instead...
-			f.LastUpdated = DateTime.Now;
+			//f.LastUpdated = DateTime.Now;
 
 			_friends.Add( f );
 		}

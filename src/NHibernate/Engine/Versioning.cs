@@ -49,10 +49,11 @@ namespace NHibernate.Engine
 		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
 		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
+		/// <param name="force">Force the version to initialize</param>
 		/// <returns><c>true</c> if the version property needs to be seeded with an initial value.</returns>
-		public static bool SeedVersion( object[ ] fields, int versionProperty, IVersionType versionType )
+		public static bool SeedVersion( object[ ] fields, int versionProperty, IVersionType versionType, bool force )
 		{
-			if( fields[ versionProperty ] == null )
+			if( fields[ versionProperty ] == null || force )
 			{
 				fields[ versionProperty ] = Seed( versionType );
 				return true;

@@ -30,7 +30,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public string[] ReturnAliases
 		{
-			get { return (string[]) aliases.ToArray( typeof( string[ ] ) ); }
+			get { return (string[]) aliases.ToArray( typeof( string ) ); }
 		}
 
 		/// <summary>
@@ -38,7 +38,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public System.Type[] ReturnClasses
 		{
-			get { return (System.Type[]) aliasedClasses.ToArray( typeof( string[ ] ) ); }
+			get { return (System.Type[]) aliasedClasses.ToArray( typeof( System.Type ) ); }
 		}
 
 		/// <summary>

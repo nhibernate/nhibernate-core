@@ -51,15 +51,82 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
 		public void Copy()
 		{
+			Category catWA = new Category();
+			catWA.Name = "HSQL workaround";
+			Category cat = new Category();
+			cat.Name = "foo";
+			Category subCatBar = new Category();
+			subCatBar.Name = "bar";
+			Category subCatBaz = new Category();
+			subCatBaz.Name = "baz";
+			cat.Subcategories.Add( subCatBar );
+			cat.Subcategories.Add( subCatBaz );
+
+			ISession s = sessions.OpenSession();
+			s.Save( catWA );
+			s.Save( cat );
+			s.Flush();
+			s.Close();
+
+			cat.Name = "new foo";
+			subCatBar.Name = "new bar";
+			cat.Subcategories.Remove( subCatBaz );
+			Category newCat = new Category();
+			newCat.Name = "new";
+			cat.Subcategories.Add( newCat );
+			Category newSubCat = new Category();
+			newSubCat.Name = "new sub";
+			newCat.Subcategories.Add( newSubCat );
+
+			s = sessions.OpenSession();
+			s.SaveOrUpdateCopy( cat );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			cat = (Category) s.CreateQuery( "from Category cat where cat.Name='new foo'").UniqueResult();
+			newSubCat = (Category) s.CreateQuery( "from Category cat where cat.Name='new sub'").UniqueResult();
+			newSubCat.Subcategories.Add( cat );
+			subCatBaz = (Category) s.SaveOrUpdateCopy( newSubCat, subCatBaz.Id );
+			Assert.IsTrue( subCatBaz.Name.Equals( "new sub" ) );
+			Assert.IsTrue( subCatBaz.Subcategories.Count == 1 && subCatBaz.Subcategories[0] == cat );
+			newSubCat.Subcategories.Remove( cat );
+			s.Delete( cat );
+			s.Delete( subCatBaz );
+			s.Delete( catWA );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
 		public void CopyCascade()
 		{
+			ISession s = sessions.OpenSession();
+			Category child = new Category();
+			child.Name = "child";
+			s.Save( child );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			Category parent = new Category();
+			parent.Name = "parent";
+			parent.Subcategories.Add( child );
+			child.Name = "child2";
+
+			// Save parent and cascade update detached child
+			Category persistentParent = (Category) s.SaveOrUpdateCopy( parent );
+			Assert.IsTrue( persistentParent.Subcategories.Count == 1 );
+			Assert.AreEqual( ( (Category) persistentParent.Subcategories[ 0 ] ).Name, "child2" );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			s.Delete( parent );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]

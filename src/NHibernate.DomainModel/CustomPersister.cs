@@ -186,6 +186,11 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
+		public bool IsDefaultVersion( object obj )
+		{
+			return false;
+		}
+
 		public bool HasProxy
 		{
 			get { return false; }

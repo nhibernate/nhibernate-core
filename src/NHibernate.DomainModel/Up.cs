@@ -46,7 +46,7 @@ namespace NHibernate.DomainModel
 			return this.id1.Equals( that.id1 ) && this.id2.Equals( that.id2 );
 		}
 
-		public int GetHashcode()
+		public override int GetHashCode()
 		{
 			return id1.GetHashCode();
 		}

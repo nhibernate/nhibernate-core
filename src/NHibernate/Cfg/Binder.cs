@@ -335,9 +335,10 @@ namespace NHibernate.Cfg
 						BindSimpleValue(subnode, val, false, propertyName, mappings);
 						if ( val.Type==null ) val.Type = ( ("version".Equals(name)) ? NHibernateUtil.Int32 : NHibernateUtil.Timestamp );
 						Mapping.Property timestampProp = new Mapping.Property(val);
-						BindProperty(subnode, timestampProp, mappings);
+						BindProperty( subnode, timestampProp, mappings );
+						MakeVersion( subnode, val );
 						model.Version = timestampProp;
-						model.AddProperty(timestampProp);
+						model.AddProperty( timestampProp );
 						break;
 
 					case "discriminator":
@@ -1117,6 +1118,16 @@ namespace NHibernate.Cfg
 				model.NullValue = "null";
 		}
 
+		private static void MakeVersion( XmlNode node, SimpleValue model )
+		{
+			// VERSION UNSAVED-VALUE
+			XmlAttribute nullValueNode = node.Attributes["unsaved-value"];
+			if (nullValueNode!=null) 
+				model.NullValue = nullValueNode.Value;
+			else
+				model.NullValue = "null";
+		}
+
 		protected static void PropertiesFromXML(XmlNode node, PersistentClass model, Mappings mappings) 
 		{
 			Table table = model.Table;
@@ -1401,15 +1412,15 @@ namespace NHibernate.Cfg
 			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":query", nsmgr ) ) 
 			{
 				string qname = n.Attributes["name"].Value;
-				string query = n.FirstChild.Value;
+				string query = n.InnerText;
 				log.Debug("Named query: " + qname + " -> " + query);
-				model.AddQuery(qname, query);
+				model.AddQuery( qname, query );
 			}
 
 			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":sql-query", nsmgr ) ) 
 			{
 				string qname = n.Attributes["name"].Value;
-				NamedSQLQuery namedQuery = new NamedSQLQuery( n.FirstChild.Value );
+				NamedSQLQuery namedQuery = new NamedSQLQuery( n.InnerText );
 
 				foreach(XmlNode returns in n.SelectNodes( nsPrefix + ":return", nsmgr ) )
 				{
@@ -1433,7 +1444,7 @@ namespace NHibernate.Cfg
 				}
 
 				log.Debug("Named sql query: " + qname + " -> " + namedQuery.QueryString );
-				model.AddSQLQuery(qname, namedQuery);
+				model.AddSQLQuery( qname, namedQuery );
 			}
 
 			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":import", nsmgr) ) 

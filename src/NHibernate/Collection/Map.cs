@@ -79,6 +79,13 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		internal Map( ) : base( )
+		{
+		}
+
+		/// <summary>
 		/// Construct an uninitialized Map.
 		/// </summary>
 		/// <param name="session">The ISession the Map should be a part of.</param>

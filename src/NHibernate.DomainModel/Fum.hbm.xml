@@ -1,63 +1,36 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class 
-		name="NHibernate.DomainModel.Fum, NHibernate.DomainModel"
-	>
-		<composite-id 
-			name="Id" 
-			unsaved-value="any"
-		>
+	<class name="NHibernate.DomainModel.Fum, NHibernate.DomainModel">
+		<composite-id name="Id" unsaved-value="any">
 			<key-property name="String">
-				<column 
-					name="string_" 
-					length="10" 
-				/>
+				<column name="string_" length="10"/>
 			</key-property>
-			<key-property 
-				name="Short" 
-				column="short_" 
-			/>
-			<key-property 
-				name="Date" 
-				column="date_" 
-				type="DateTime" 
-			/>
+			<key-property name="Short" column="short_"/>
+			<key-property name="Date" column="date_" type="DateTime"/>
 		</composite-id>
-		
-		<version 
-			name="LastUpdated" 
-			type="DateTime"
-			access="field.pascalcase-m-underscore" 
-		/>
-		
-		<property 
-			name="FumString" 
-			not-null="true" 
-		/>
-		
+		<version name="LastUpdated" type="DateTime" access="field.pascalcase-m-underscore" unsaved-value="1/1/0001"/>
+		<property name="FumString" not-null="true"/>
 		<many-to-one name="Fo">
-			<column name="fo_string" length="10" />
-			<column name="fo_short" />
-			<column name="fo_date" />
+			<column name="fo_string" length="10"/>
+			<column name="fo_short"/>
+			<column name="fo_date"/>
 		</many-to-one>
-		
 		<set name="Friends">
 			<key>
-				<column name="fr_string" length="10" />
-				<column name="fr_short" />
-				<column name="fr_date" />
+				<column name="fr_string" length="10"/>
+				<column name="fr_short"/>
+				<column name="fr_date"/>
 			</key>
-			<one-to-many class="NHibernate.DomainModel.Fum, NHibernate.DomainModel" />
+			<one-to-many class="NHibernate.DomainModel.Fum, NHibernate.DomainModel"/>
 		</set>
-		
 		<array name="QuxArray">
 			<key>
-				<column name="fum_str_" length="10" />
-				<column name="fum_sho_" />
-				<column name="fum_dat_" />
+				<column name="fum_str_" length="10"/>
+				<column name="fum_sho_"/>
+				<column name="fum_dat_"/>
 			</key>
-			<index column="i" />
-			<one-to-many class="NHibernate.DomainModel.Qux, NHibernate.DomainModel" />
+			<index column="i"/>
+			<one-to-many class="NHibernate.DomainModel.Qux, NHibernate.DomainModel"/>
 		</array>
 	</class>
 </hibernate-mapping>

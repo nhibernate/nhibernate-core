@@ -93,7 +93,7 @@ namespace NHibernate.Persister
 		private readonly IVersionType versionType;
 		private readonly IGetter versionGetter;
 		private readonly int versionProperty;
-		//private Cascades.VersionValue unsavedVersionValues;
+		private Cascades.VersionValue unsavedVersionValue;
 		//private readonly bool batchVersionData;
 
 		// other properties (for this concrete class only, not the subclass closure)
@@ -563,11 +563,59 @@ namespace NHibernate.Persister
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="id"></param>
+		/// <param name="obj"></param>
 		/// <returns></returns>
-		public virtual bool IsUnsaved( object id )
+		public bool IsUnsaved( object obj )
 		{
+			object id;
+			if ( HasIdentifierPropertyOrEmbeddedCompositeIdentifier )
+			{
+				id = GetIdentifier( obj );
+			}
+			else
+			{
+				id = null;
+			}
+			// we always assume a transient instance with a null
+			// identifier or no identifier property is unsaved!
+			if ( id == null )
+			{
+				return true;
+			}
+
+			if ( IsVersioned )
+			{
+				// let this take precedence if defined, since it works for assigned identifiers
+				object result = unsavedVersionValue.IsUnsaved( GetVersion( obj ) );
+				if ( result != null )
+				{
+					return (bool) result;
+				}
+			}
 			return unsavedIdentifierValue.IsUnsaved( id );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public bool IsDefaultVersion( object obj )
+		{
+			// Can't quite factor this out as per IsUnsaved as the true/false decision differs
+			if ( IsVersioned )
+			{
+				object result = unsavedVersionValue.IsUnsaved( GetVersion( obj ) );
+				if ( result != null )
+				{
+					return (bool) result;
+				}
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		/// <summary></summary>
@@ -849,34 +897,61 @@ namespace NHibernate.Persister
 				versionColumnName = null;
 			}
 
-			// TODO: 2.1 Bring versioning up to standards
 			if( model.IsVersioned )
 			{
 				//versionPropertyName = model.Version.Name;
 				versioned = true;
 				versionGetter = model.Version.GetGetter( mappedClass );
-				// TODO: determine if this block is kept
-				// this if-else block is extra logic in nhibernate - not sure if I like it - would rather throw
-				// an exception if there is a bad mapping
-				if( !( model.Version.Type is IVersionType ) )
-				{
-					log.Warn( model.Name + " has version column " + model.Version.Name + ", but the column type " + model.Version.Type.Name + " is not versionable" );
-					//versionPropertyName = null;
-					versioned = false;
-					versionType = null;
-					versionGetter = null;
-				}
-				else
-				{
-					versionType = ( IVersionType ) model.Version.Type;
-				}
+				versionType = ( IVersionType ) model.Version.Type;
 			}
 			else
 			{
 				//versionPropertyName = null;
 				versioned = false;
-				versionType = null;
 				versionGetter = null;
+				versionType = null;
+			}
+
+			// VERSION UNSAVED-VALUE:
+			string versionUnsavedValue = null;
+			if ( model.IsVersioned )
+			{
+				versionUnsavedValue = model.Version.NullValue;
+			}
+
+			if ( versionUnsavedValue == null || "undefined".Equals( versionUnsavedValue ) )
+			{
+				unsavedVersionValue = Cascades.VersionValue.VersionUndefined;
+			}
+			else if ( "null".Equals( versionUnsavedValue ) )
+			{
+				unsavedVersionValue = Cascades.VersionValue.VersionSaveNull;
+			}
+			else if ( "negative".Equals( versionUnsavedValue ) )
+			{
+				unsavedVersionValue = Cascades.VersionValue.VersionNegative;
+				/*
+				 * used to be none and any strategies but this is kind of a nonsense for version
+				 * especially for none since an 'update where' would be generated
+				 * Lot's of hack to support none ?
+				 */
+			}
+			else
+			{
+				// NB This is NHibernate specific - needed so we can specify a default value for dates as we don't have null as a possibility
+				IType idType = model.Identifier.Type;
+				try
+				{
+					unsavedVersionValue = new Cascades.VersionValue( ( ( IVersionType ) versionType ).StringToObject( versionUnsavedValue ) );
+				}
+				catch( InvalidCastException )
+				{
+					throw new MappingException( "Bad version type: " + idType.GetType().Name );
+				}
+				catch( Exception )
+				{
+					throw new MappingException( "Could not parse version unsaved-value: " + versionUnsavedValue );
+				}
 			}
 
 			// PROPERTIES 

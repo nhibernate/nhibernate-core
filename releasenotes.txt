@@ -12,6 +12,8 @@ Build 0.8.0.0
 - Fixed bug with ISet.AddAll(ICollection) not being implemented. (Bill Hawes)
 - Modified discriminator element to use "null" or "not null" as the value.
 - Modified Dialect to use Hibernate 2.1 methods.
+- Added "unsaved-value" to version/timestamp as DateTime can't support null, use 1/1/0001 to align with .NET default value for DateTime
+- Added SaveOrUpdateCopy which allows synchronisation for detached objects
 
 Build 0.7.0.0
 ======================== 

@@ -186,13 +186,13 @@ namespace NHibernate.Engine
 			{
 				public override void Cascade( ISessionImplementor session, object child, object anything )
 				{
-					log.Debug( "cascading to Replicate()" );
-					// TODO: 2.1 implement copy
-					//session.Copy( child, (ReplicationMode) anything );
+					log.Debug( "cascading to Copy()" );
+					session.Copy( child, (IDictionary) anything );
 				}
 
 				public override ICollection CascadableChildrenCollection( PersistentCollectionType collectionType, object collection )
 				{
+					// saves / updates don't cascade to uninitialized collections
 					return Cascades.GetLoadedElementsCollection( collectionType, collection );
 				}
 
@@ -211,8 +211,7 @@ namespace NHibernate.Engine
 				public override void Cascade( ISessionImplementor session, object child, object anything )
 				{
 					log.Debug( "cascading to Replicate()" );
-					// TODO: 2.1 implement replication
-					//session.Replicate( child, (ReplicationMode) anything );
+					session.Replicate( child, (ReplicationMode) anything );
 				}
 
 				public override ICollection CascadableChildrenCollection( PersistentCollectionType collectionType, object collection )
@@ -459,7 +458,7 @@ namespace NHibernate.Engine
 			/// <summary>
 			/// Does the given identifier belong to a new instance
 			/// </summary>
-			public virtual bool IsUnsaved( object version )
+			public virtual object IsUnsaved( object version )
 			{
 				if( log.IsDebugEnabled )
 				{
@@ -472,33 +471,39 @@ namespace NHibernate.Engine
 			/// Assume the transient instance is newly instantiated if the version
 			/// is null, otherwise assume it is a detached instance.
 			/// </summary>
-			public static VersionValue VersionNull = new VersionNullClass();
+			public static VersionValue VersionSaveNull = new VersionSaveNullClass();
 
-			private class VersionNullClass : VersionValue
+			private class VersionSaveNullClass : VersionValue
 			{
-				public override bool IsUnsaved( object version )
+				public override object IsUnsaved( object version )
 				{
 					log.Debug( "version unsaved-value strategy NULL" );
 					return version == null;
 				}
 			}
 
-			/*
 			/// <summary>
 			/// Assume the transient instance is newly instantiated if the version
 			/// is null, otherwise defer to the identifier unsaved-value.
 			/// </summary>
 			public static VersionValue VersionUndefined = new VersionUndefinedClass();
 
-			private class SaveNoneClass : IdentifierValue
+			private class VersionUndefinedClass : VersionValue
 			{
-				public override bool IsUnsaved( object id )
+				public override object IsUnsaved( object version )
 				{
 					log.Debug( "version unsaved-value strategy UNDEFINED" );
-					return false;
+					//return version == null ? true : null;
+					if ( version == null )
+					{
+						return true;
+					}
+					else
+					{
+						return null;
+					}
 				}
 			}
-			*/
 
 			/// <summary>
 			/// Assume the transient instance is newly instantiated if the identifier
@@ -508,7 +513,7 @@ namespace NHibernate.Engine
 
 			private class VersionNegativeClass : VersionValue
 			{
-				public override bool IsUnsaved( object version )
+				public override object IsUnsaved( object version )
 				{
 					log.Debug( "version unsaved-value strategy NEGATIVE" );
 					if ( version is short || version is int || version is long )

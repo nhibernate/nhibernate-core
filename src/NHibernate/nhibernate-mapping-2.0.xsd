@@ -1,4 +1,4 @@
-<xs:schema targetNamespace="urn:nhibernate-mapping-2.0" xmlns="urn:nhibernate-mapping-2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema targetNamespace="urn:nhibernate-mapping-2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:nhibernate-mapping-2.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:simpleType name="propertyAccess">
 		<xs:annotation>
 			<xs:documentation>Property access strategies</xs:documentation>
@@ -89,7 +89,8 @@
 					<xs:element ref="subclass"/>
 					<xs:element ref="joined-subclass"/>
 				</xs:choice>
-				<xs:element ref="query" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="query" type="query" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="sql-query" type="sql-query" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="schema" type="xs:string" use="optional">
 				<xs:annotation>
@@ -247,6 +248,11 @@
 			<xs:attribute name="access" type="propertyAccess"/>
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="type" type="xs:string" default="Int32"/>
+			<xs:attribute name="unsaved-value" type="xs:string" default="null">
+				<xs:annotation>
+					<xs:documentation>any|none|null|0|-1|... </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="timestamp">
@@ -257,6 +263,11 @@
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="access" type="propertyAccess"/>
 			<xs:attribute name="column" type="xs:string"/>
+			<xs:attribute name="unsaved-value" type="xs:string" default="null">
+				<xs:annotation>
+					<xs:documentation>any|none|null|0|-1|... </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="subclass">
@@ -693,11 +704,29 @@
 			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="query">
-		<xs:complexType mixed="true">
-			<xs:attribute name="name" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
+	<xs:complexType name="query">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="name" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="sql-query" mixed="true">
+		<xs:sequence>
+			<xs:element name="return" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="alias" type="xs:string" use="required"/>
+					<xs:attribute name="class" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="synchronize" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="table" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
 	<xs:element name="list">
 		<xs:complexType>
 			<xs:sequence>

@@ -187,11 +187,11 @@ namespace NHibernate.Impl
 			// TODO: precompile and cache named queries
 			namedQueries = new Hashtable( cfg.NamedQueries );
 			namedSqlQueries = new Hashtable( cfg.NamedSQLQueries.Count  );
-			foreach ( NamedSQLQuery nsq in cfg.NamedSQLQueries )
+			foreach ( DictionaryEntry de in cfg.NamedSQLQueries )
 			{
-				namedSqlQueries[ nsq.QueryString ] = new InternalNamedSQLQuery( nsq.QueryString, nsq.ReturnAliases, nsq.ReturnClasses, nsq.SynchronizedTables );
+				NamedSQLQuery nsq = (NamedSQLQuery) de.Value;
+				namedSqlQueries[ de.Key ] = new InternalNamedSQLQuery( nsq.QueryString, nsq.ReturnAliases, nsq.ReturnClasses, nsq.SynchronizedTables );
 			}
-
 
 			imports = new Hashtable( cfg.Imports );
 

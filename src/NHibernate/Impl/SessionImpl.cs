@@ -852,8 +852,7 @@ namespace NHibernate.Impl
 			bool substitute = interceptor.OnSave( obj, id, values, persister.PropertyNames, types );
 
 			if ( persister.IsVersioned )
-				substitute = Versioning.SeedVersion(
-					values, persister.VersionProperty, persister.VersionType ) || substitute;
+				substitute = Versioning.SeedVersion( values, persister.VersionProperty, persister.VersionType, persister.IsDefaultVersion( obj ) ) || substitute;
 
 			if ( persister.HasCollections )
 			{
@@ -1006,7 +1005,7 @@ namespace NHibernate.Impl
 				// Keep the existing version number in the case of replicate!
 				if ( persister.IsVersioned ) 
 				{
-					substitute = Versioning.SeedVersion( values, persister.VersionProperty, persister.VersionType ) || substitute;
+					substitute = Versioning.SeedVersion( values, persister.VersionProperty, persister.VersionType, persister.IsDefaultVersion( obj ) ) || substitute;
 				}
 			}
 
@@ -1256,39 +1255,11 @@ namespace NHibernate.Impl
 			// entity identifier and assume that the entity is persistent if the
 			// id is not "unsaved" (that is, we rely on foreign keys to keep
 			// database integrity)
-
 			EntityEntry e = GetEntry( obj );
 			if( e == null )
 			{
-				IClassPersister persister = GetPersister( obj );
-				if( persister.HasIdentifierProperty )
-				{
-					object id = persister.GetIdentifier( obj );
-					if( id != null )
-					{
-						// see if theres another object that *is* associated with the sesison for that id
-						e = GetEntry( GetEntity( new Key( id, persister ) ) );
-
-						if( e == null )
-						{
-							// look at the id value
-							return persister.IsUnsaved( id );
-						}
-						// else use the other object's entry...
-					}
-					else
-					{
-						// null id, so have to assume transient (because that's safer)
-						return true;
-					}
-				}
-				else
-				{
-					//can't determine the id, so assume transient (because that's safer)
-					return true;
-				}
+				return GetPersister( obj ).IsUnsaved( obj );
 			}
-
 
 			return e.Status == Status.Saving || (
 				earlyInsert ? !e.ExistsInDatabase : nullifiables.Contains( new Key( e.Id, e.Persister ) )
@@ -1620,7 +1591,7 @@ namespace NHibernate.Impl
 				return;
 			}
 
-			object theObj = UnproxyAndReassociate( obj );
+			object theObj = UnproxyAndReassociate( obj ); //a proxy is always "update", never "save"
 
 			EntityEntry e = GetEntry( theObj );
 			if( e != null && e.Status != Status.Deleted )
@@ -1642,32 +1613,22 @@ namespace NHibernate.Impl
 				if( isUnsaved == null )
 				{
 					// use unsaved-value
-					if( persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier )
+					if( persister.IsUnsaved( theObj ) )
 					{
-						object id = persister.GetIdentifier( theObj );
-
-						if( persister.IsUnsaved( id ) )
+						if( log.IsDebugEnabled )
 						{
-							if( log.IsDebugEnabled )
-							{
-								log.Debug( "SaveOrUpdate() unsaved instance with id: " + id );
-							}
-							Save( obj );
+							log.Debug( "SaveOrUpdate() unsaved instance" );
 						}
-						else
-						{
-							if( log.IsDebugEnabled )
-							{
-								log.Debug( "SaveOrUpdate() previously saved instance with id: " + id );
-							}
-							DoUpdate( theObj, id, persister );
-						}
+						Save( obj );
 					}
 					else
 					{
-						// no identifier property ... default to save()
-						log.Debug( "SaveOrUpdate() unsaved instance with no identifier property" );
-						Save( obj );
+						object id = persister.GetIdentifier( theObj );
+						if( log.IsDebugEnabled )
+						{
+							log.Debug( "SaveOrUpdate() previously saved instance with id: " + id );
+						}
+						DoUpdate( theObj, id, persister );
 					}
 				}
 				else
@@ -3611,16 +3572,8 @@ namespace NHibernate.Impl
 				return !( bool ) isUnsaved;
 			}
 
-			IClassPersister persister = GetPersister( obj );
-			if( !persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier )
-			{
-				return false;
-			} // I _think_ that this is reasonable!
-
-			object id = persister.GetIdentifier( obj );
-			return !persister.IsUnsaved( id );
+			return !GetPersister( obj ).IsUnsaved( obj );
 		}
-
 
 		/// <summary>
 		/// Used by OneToOneType and ManyToOneType to determine what id value
@@ -3658,18 +3611,12 @@ namespace NHibernate.Impl
 					}
 
 					IClassPersister persister = GetPersister( obj );
-					if( !persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier )
+					if( persister.IsUnsaved( obj ) )
 					{
 						ThrowTransientObjectException( obj );
 					}
 
-					object id = persister.GetIdentifier( obj );
-					if( persister.IsUnsaved( id ) )
-					{
-						ThrowTransientObjectException( obj );
-					}
-
-					return id;
+					return persister.GetIdentifier( obj );
 				}
 
 			}

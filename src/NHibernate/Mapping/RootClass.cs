@@ -185,7 +185,10 @@ namespace NHibernate.Mapping
 		public override Property Version
 		{
 			get { return version; }
-			set { version = value; }
+			set { 
+				log.Debug( "Hello world" );
+				version = value; 
+			}
 		}
 
 		/// <summary>

@@ -97,11 +97,18 @@ namespace NHibernate.Persister
 		bool IsIdentifierAssignedByInsert { get; }
 
 		/// <summary>
-		/// Does the given identifier value indicate that this is a new transient instance?
+		/// Is this a new transient instance?
 		/// </summary>
-		/// <param name="id"></param>
+		/// <param name="obj"></param>
 		/// <returns></returns>
-		bool IsUnsaved( object id );
+		bool IsUnsaved( object obj );
+
+		/// <summary>
+		/// Does this object have the default version
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		bool IsDefaultVersion( object obj );
 
 		/// <summary>
 		/// Set the given values to the mapped properties of the given object

@@ -93,6 +93,14 @@ namespace NHibernate
 		IList List();
 
 		/// <summary>
+		/// Convenience method to return a single instance that matches
+		/// the query, or null if the query returns no results.
+		/// </summary>
+		/// <returns>the single result or <tt>null</tt></returns>
+		/// <remarks>throws HibernateException if there is more than one matching result</remarks>
+		object UniqueResult();
+
+		/// <summary>
 		/// The maximum number of rows to retrieve
 		/// </summary>
 		/// <param name="maxResults"></param>
