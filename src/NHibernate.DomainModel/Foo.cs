@@ -69,7 +69,7 @@ namespace NHibernate.DomainModel
 		private byte[] _bytes;
 		private System.Globalization.CultureInfo _locale;
 		private String _formula;
-		private string[] _custom;
+		private string[] custom;
 		private int _version;
 		private FooProxy _foo;
 		private Fee _dependent;
@@ -314,8 +314,8 @@ namespace NHibernate.DomainModel
 		/// </summary>
 		public string[] Custom
 		{
-			get { return _custom; }
-			set { _custom = value; }
+			get { return custom; }
+			set { custom = value; }
 		}
 	
 		/// <summary>
@@ -395,7 +395,7 @@ namespace NHibernate.DomainModel
 			_blob = ss;
 			_status=FooStatus.ON;
 			_binary = System.Text.Encoding.ASCII.GetBytes( _string + "yada yada yada" );
-			_custom = new string[]
+			custom = new string[]
 			  {
 				  "foo", "bar" 
 			  };
@@ -465,7 +465,7 @@ namespace NHibernate.DomainModel
 				//&& ( ( _binary == other.Binary ) || _binary.Equals(other.Binary))
 				&& ( _key.Equals(other.Key) )
 				&& ( _locale.Equals(other.Locale) )
-				&& ( ( _custom == other.Custom ) || ( _custom[0].Equals(other.Custom[0]) && _custom[1].Equals(other.Custom[1]) ) )
+				&& ( ( custom == other.Custom ) || ( custom[0].Equals(other.Custom[0]) && custom[1].Equals(other.Custom[1]) ) )
 				;
 		}
 

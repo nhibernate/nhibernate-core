@@ -10,7 +10,7 @@ namespace NHibernate.DomainModel
 		private Fum _fo;
 		private Qux[] _quxArray;
 		private IDictionary _friends; // <set> mapping
-		private DateTime _lastUpdated;
+		private DateTime m_LastUpdated;
 	
 		public Fum() 
 		{
@@ -23,7 +23,7 @@ namespace NHibernate.DomainModel
 			//TODO: H2.0.3 - this is diff from H2.0.3 because I am getting a null exception
 			// when executing the Sql.  H203 uses the CalendarType which we don't have so
 			// I am using DateTime instead...
-			_lastUpdated = DateTime.Now;
+			m_LastUpdated = DateTime.Now;
 			
 			FumCompositeID fid = new FumCompositeID();
 			fid.Date= new DateTime(2004, 4, 29, 9, 50, 0, 0);
@@ -151,11 +151,11 @@ namespace NHibernate.DomainModel
 		{
 			get
 			{
-				return _lastUpdated;
+				return m_LastUpdated;
 			}
 			set
 			{
-				_lastUpdated = value;
+				m_LastUpdated = value;
 			}
 		}
 

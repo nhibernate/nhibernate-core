@@ -20,7 +20,7 @@ namespace NHibernate.DomainModel
 		// since this is a version column a value should be set.  NHibernate is unable
 		// to set it right now because it checks to see if value==null -> since this 
 		// is a struct it is not null...
-		private DateTime _stamp = DateTime.Now;
+		private DateTime stamp = DateTime.Now;
 		// private BigDecimal bigDecimal = new BigDecimal("1234.123"); TODO: how to do in .net
 		private int _x;
 		
@@ -88,12 +88,6 @@ namespace NHibernate.DomainModel
 		{
 			get { return _name; }
 			set { _name = value; }
-		}
-
-		public DateTime Stamp
-		{
-			get { return _stamp; }
-			set { _stamp = value; }
 		}
 
 		public int X

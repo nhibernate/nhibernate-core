@@ -72,11 +72,11 @@
 		<property name="NullBlob" type="Serializable"/>
 		<property name="Status" column="`status_@###`" type="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel"/>
 		<property name="Binary" column="bin_"/>
-		<property name="Locale" column="`localeayzabc123!@#$`" type="locale"/>
+		<property name="Locale" column="`localeayzabc123!@#$`" access="field.camelcase-underscore" type="locale"/>
 	    
 		<property name="Formula" formula="1/2 * int_"/>
 	    
-		<property name="Custom" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
+		<property name="Custom" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel" access="field.camelcase">
 			<column name="first_name" length="66"/>
 			<column name="surname" length="66"/>
 		</property>
@@ -134,6 +134,7 @@
 					cascade="all" 
 					class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" 
 					outer-join="false"
+					access="field.camelcase-underscore"
 				/>
 			</component>
       

@@ -26,7 +26,8 @@
 		
 		<version 
 			name="LastUpdated" 
-			type="DateTime" 
+			type="DateTime"
+			access="field.pascalcase-m-underscore" 
 		/>
 		
 		<property 

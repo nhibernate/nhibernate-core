@@ -15,9 +15,10 @@
 		
 		<!--TODO: make sure this type has an equiv .net type-->
 		<version 
-			name="Stamp" 
+			name="stamp" 
 			type="Timestamp" 
 			column="ts_"
+			access="field"
 		/>
 		
 		<property name="Name"/>
