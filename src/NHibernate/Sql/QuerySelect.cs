@@ -15,6 +15,7 @@ namespace NHibernate.Sql
 		private SqlCommand.JoinFragment joins;
 		private StringBuilder select = new StringBuilder();
 		private StringBuilder where = new StringBuilder();
+		private SqlCommand.SqlStringBuilder whereBuilder = new SqlCommand.SqlStringBuilder();
 		private StringBuilder groupBy = new StringBuilder();
 		private StringBuilder orderBy = new StringBuilder();
 		private StringBuilder having = new StringBuilder();
@@ -85,7 +86,8 @@ namespace NHibernate.Sql
 		public void SetWhereTokens(ICollection tokens) 
 		{
 			//if ( conjunctiveWhere.length()>0 ) conjunctiveWhere.append(" and ");
-			AppendTokens(where, tokens);
+			AppendTokens(whereBuilder, tokens);
+			//AppendTokens(where, tokens);
 		}
 		
 		public void SetGroupByTokens(ICollection tokens)
@@ -112,6 +114,7 @@ namespace NHibernate.Sql
 			orderBy.Append(orderByString);
 		}
 
+		[Obsolete("Should be using ToQuerySqlString instead")]
 		public string ToQueryString() 
 		{
 			StringBuilder buf = new StringBuilder(50)
@@ -154,11 +157,53 @@ namespace NHibernate.Sql
 			return buf.ToString();
 		}
 
+		public SqlCommand.SqlString ToQuerySqlString() 
+		{
+			SqlCommand.SqlStringBuilder builder = new SqlCommand.SqlStringBuilder();
+			
+			builder.Add("select ");
+
+			if (distinct) builder.Add("distinct ");
+			
+			SqlCommand.SqlString from = joins.ToFromFragmentString;
+			if ( from.StartsWith(",") ) 
+			{
+				from = from.Substring(1);
+			}
+			else if ( from.StartsWith(" inner join") ) 
+			{
+				from = from.Substring(11);
+			}
+
+			builder.Add(select.ToString())
+				.Add(" from")
+				.Add( from );
+			
+			SqlCommand.SqlString part1 = joins.ToWhereFragmentString.Trim();
+			SqlCommand.SqlString  part2 =  whereBuilder.ToSqlString().Trim();
+			bool hasPart1 = part1.SqlParts.Length > 0;
+			bool hasPart2 = part2.SqlParts.Length > 0;
+			
+			if (hasPart1 || hasPart2) builder.Add(" where ");
+			if (hasPart1) builder.Add( part1.Substring(4) );
+			if (hasPart2) 
+			{
+				if (hasPart1) builder.Add(" and (");
+				builder.Add(part2);
+				if (hasPart1) builder.Add(")");
+			}
+			if ( groupBy.Length > 0 ) builder.Add(" group by ").Add( groupBy.ToString() );
+			if ( having.Length > 0 ) builder.Add(" having ").Add( having.ToString() );
+			if ( orderBy.Length > 0 ) builder.Add(" order by ").Add( orderBy.ToString() );
+			return builder.ToSqlString();
+		}
+
 		private void AppendTokens(StringBuilder buf, ICollection iter) 
 		{
 			bool lastSpaceable = true;
 			bool lastQuoted = false;
 
+			int debugIndex = 0;
 			foreach(string token in iter) 
 			{
 				bool spaceable = !dontSpace.Contains(token);
@@ -172,6 +217,64 @@ namespace NHibernate.Sql
 				lastSpaceable = spaceable;
 				buf.Append(token);
 				lastQuoted = token.EndsWith("'");
+				debugIndex++;
+			}
+		}
+
+		private void AppendTokens(SqlCommand.SqlStringBuilder builder, ICollection iter) 
+		{
+			bool lastSpaceable = true;
+			bool lastQuoted = false;
+
+			int debugIndex = 0;
+			foreach(object token in iter) 
+			{
+				string tokenString = token as string;
+				SqlCommand.SqlString tokenSqlString = token as SqlCommand.SqlString;
+
+				bool spaceable = !dontSpace.Contains(token);
+				bool quoted = false;
+
+				//TODO: seems HACKish to cast between String and SqlString
+				if(tokenString!=null) 
+				{
+					quoted = tokenString.StartsWith("'");
+				}
+				else 
+				{
+					quoted = tokenSqlString.StartsWith("'");
+				}
+
+				if (spaceable && lastSpaceable) 
+				{
+					if (!quoted || !lastQuoted) builder.Add(" ");
+				}
+
+				lastSpaceable = spaceable;
+				
+				if( token.Equals(StringHelper.SqlParameter) ) 
+				{
+					SqlCommand.Parameter param = new SqlCommand.Parameter();
+					param.Name = "placholder";
+					builder.Add(param);
+				}
+				else 
+				{
+					// not sure if we have a string or a SqlString here and token is a 
+					// reference to an object - so let the builder figure out what the
+					// actual object is
+					builder.AddObject(token);
+				}
+				debugIndex++;
+
+				if( tokenString!=null) 
+				{
+					lastQuoted = tokenString.EndsWith("'");
+				}
+				else 
+				{
+					tokenSqlString.EndsWith("'");
+				}
 			}
 		}
 	}

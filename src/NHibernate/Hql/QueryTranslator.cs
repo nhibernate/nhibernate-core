@@ -18,14 +18,13 @@ using NHibernate.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using BaseLoader = NHibernate.Loader.Loader;
 
 namespace NHibernate.Hql 
 {
 	/// <summary> 
 	/// An instance of <c>QueryTranslator</c> translates a Hibernate query string to SQL.
 	/// </summary>
-	public class QueryTranslator : BaseLoader 
+	public class QueryTranslator : Loader.Loader
 	{
 		private static readonly log4net.ILog log  = log4net.LogManager.GetLogger(typeof(QueryTranslator));
 		private static StringCollection dontSpace = new StringCollection();
@@ -39,7 +38,10 @@ namespace NHibernate.Hql
 		private IDictionary aliasNames = new Hashtable();
 		private ArrayList crossJoins = new ArrayList();
 
+		// contains a List of strings
 		private IList scalarSelectTokens = new ArrayList();
+
+		// contains a List of strings containing Sql or SqlStrings
 		private IList whereTokens = new ArrayList();
 		private IList havingTokens = new ArrayList();
 		private IDictionary joins = new Hashtable();
@@ -69,6 +71,7 @@ namespace NHibernate.Hql
 		private bool distinct = false;
 		protected bool compiled;
 		private string sqlString;
+		private SqlCommand.SqlString realSqlString;
 		private System.Type holderClass;
 		private ConstructorInfo holderConstructor;
 		private bool hasScalars;
@@ -252,6 +255,7 @@ namespace NHibernate.Hql
 			entitiesToFetch.Add(name);
 		}
 
+		[Obsolete("Should use Hql.QueryTranslator.SqlString property instead")]
 		public override string SQLString 
 		{
 			get 
@@ -266,7 +270,8 @@ namespace NHibernate.Hql
 		{
 			get 
 			{
-				throw new InvalidOperationException("SqlString not yet implemented in HQL.QueryTranslator");
+				LogQuery( queryString, realSqlString.ToString() );
+				return realSqlString;
 			}
 		}
 
@@ -410,6 +415,11 @@ namespace NHibernate.Hql
 		}
 
 		internal void AppendWhereToken(string token) 
+		{
+			whereTokens.Add(token);
+		}
+
+		internal void AppendWhereToken(SqlCommand.SqlString token) 
 		{
 			whereTokens.Add(token);
 		}
@@ -610,7 +620,9 @@ namespace NHibernate.Hql
 				AddIdentifierSpace( p.IdentifierSpace );
 			}
 
-			sqlString = sql.ToQueryString();
+//			sqlString = sql.ToQueryString();
+			realSqlString = sql.ToQuerySqlString();
+
 
 			System.Type[] classes = new System.Type[types.Length];
 			for (int i=0; i<types.Length; i++) 
@@ -851,6 +863,7 @@ namespace NHibernate.Hql
 
 			CollectionPersister persister = GetCollectionPersister(collectionRole);
 			string[] keyColumnNames = persister.KeyColumnNames;
+			IType keyType = persister.KeyType;
 			//if (keyColumnNames.Length!=1) throw new QueryException("composite-key collecion in filter: " + collectionRole);
 
 			string collectionName;
@@ -872,7 +885,7 @@ namespace NHibernate.Hql
 					idColumnNames,
 					SqlCommand.JoinType.InnerJoin);
 			}
-			join.AddCondition( collectionName, keyColumnNames, " = ?");
+			join.AddCondition( collectionName, keyColumnNames, " = ", keyType, Factory);
 			if (persister.HasWhere) join.AddCondition(persister.GetSQLWhereString(collectionName));
 			AddFrom(elementName, elemType.PersistentClass, join);
 		}
@@ -933,7 +946,8 @@ namespace NHibernate.Hql
 			//http://jira.nhibernate.org:8080/browse/NH-64
 			// ApplyLocks(SqlString, lockModes, session.Factory.Dialect).ToString(),
 			// this works because it is just appending strings and not doing any 
-			string sqlWithLock = ApplyLocks(new SqlString(SQLString), lockModes, session.Factory.Dialect).ToString();
+//			string sqlWithLock = ApplyLocks(new SqlString(SQLString), lockModes, session.Factory.Dialect).ToString();
+			SqlString sqlWithLock = ApplyLocks(SqlString, lockModes, session.Factory.Dialect);
 
 
 			IDbCommand st = PrepareQueryStatement(
@@ -1288,7 +1302,12 @@ namespace NHibernate.Hql
 		/// </remarks>
 		protected override IDbCommand PrepareQueryStatement(string sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
 		{
-			IType[] paramTypes = null;
+			return PrepareQueryStatement( new SqlString(sql), values, types, namedParams, selection, scroll, session);
+		}
+
+		protected override IDbCommand PrepareQueryStatement(SqlString sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
+		{
+            IType[] paramTypes = null;
 			object[] paramValues = null;
 
 			if(namedParams==null || namedParams.Count==0) 
@@ -1338,37 +1357,44 @@ namespace NHibernate.Hql
 			}
 
 			
-			StringTokenizer tokenizer = new StringTokenizer(sql, StringHelper.SqlParameter, true);
-			string[] tokens =  sql.Split(StringHelper.SqlParameter[0]);
-
-			SqlStringBuilder hqlToSqlBuilder = new SqlStringBuilder(types.Length * 2);
-			
-			IEnumerator tokenEnum = tokenizer.GetEnumerator();
-			string previousToken = String.Empty;
-			string token = String.Empty;
+//			StringTokenizer tokenizer = new StringTokenizer(sql, StringHelper.SqlParameter, true);
+//			string[] tokens =  sql.Split(StringHelper.SqlParameter[0]);
+//
+//			SqlStringBuilder hqlToSqlBuilder = new SqlStringBuilder(types.Length * 2);
+			SqlStringBuilder hqlBuilder = new SqlStringBuilder(sql); //this.SqlString			
+//			IEnumerator tokenEnum = tokenizer.GetEnumerator();
+//			string previousToken = String.Empty;
+//			string token = String.Empty;
 			int paramIndex = 0;
-
-			while(tokenEnum.MoveNext()) 
+//
+//			while(tokenEnum.MoveNext()) 
+			for( int i=0; i<hqlBuilder.Count; i++ ) 
 			{
-				token = (string)tokenEnum.Current;
-				
-				if(token.Equals(StringHelper.SqlParameter) 
-					&& ( EndsWithBoolOperator( previousToken ) ) ) //.EndsWith("=") || previousToken.EndsWith("= ") ) ) 
+//				token = (string)tokenEnum.Current;
+				Parameter partParam = hqlBuilder[i] as Parameter;
+				if(partParam!=null) 
 				{
-					Parameter param = Parameter.GenerateParameters(session.Factory, new string[]{paramIndex.ToString()}, paramTypes[paramIndex])[0];
-					hqlToSqlBuilder.Add(param);
+					Parameter param = Parameter.GenerateParameters(session.Factory, new string[] {paramIndex.ToString()}, paramTypes[paramIndex])[0];
+					hqlBuilder[i] = param;
 					paramIndex++;
 				}
-				else 
-				{
-					hqlToSqlBuilder.Add(token);
-				}
-
-				previousToken = token;
+//				if(token.Equals(StringHelper.SqlParameter) 
+//					&& ( EndsWithBoolOperator( previousToken ) ) ) //.EndsWith("=") || previousToken.EndsWith("= ") ) ) 
+//				{
+//					Parameter param = Parameter.GenerateParameters(session.Factory, new string[]{paramIndex.ToString()}, paramTypes[paramIndex])[0];
+//					hqlToSqlBuilder.Add(param);
+//					paramIndex++;
+//				}
+//				else 
+//				{
+//					hqlToSqlBuilder.Add(token);
+//				}
+//
+//				previousToken = token;
 			}
 			
-			return PrepareCommand(hqlToSqlBuilder.ToSqlString(), paramValues, paramTypes, null, selection, scroll, session);
-			
+//			return PrepareCommand(hqlToSqlBuilder.ToSqlString(), paramValues, paramTypes, null, selection, scroll, session);
+			return PrepareCommand(hqlBuilder.ToSqlString(), paramValues, paramTypes, null, selection, scroll, session);
 		}
 
 		/// <summary>

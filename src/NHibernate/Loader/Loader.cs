@@ -189,7 +189,7 @@ namespace NHibernate.Loader
 				// in the string that contains sql.  SqlString will not parse out parameters - it assumes
 				// a string passed to it is a string.
 				st = PrepareQueryStatement( 
-					ApplyLocks(new SqlString(SQLString), lockModes, session.Factory.Dialect).ToString()
+					ApplyLocks(SqlString, lockModes, session.Factory.Dialect)
 					, values, types, namedParams, selection, false, session );
 			}
 			IDataReader rs = GetResultSet(st, selection, session);
@@ -584,6 +584,13 @@ namespace NHibernate.Loader
 		}
 
 		protected virtual IDbCommand PrepareQueryStatement(string sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
+		{
+			// TODO: this is just a hack because I moved it to Hql.QueryTranslator.  It will be removed
+			// once everything is converted to SqlString instead of strings holding sql...
+			return null;
+		}
+
+		protected virtual IDbCommand PrepareQueryStatement(SqlString sql, object[] values, IType[] types, IDictionary namedParams, RowSelection selection, bool scroll, ISessionImplementor session) 
 		{
 			// TODO: this is just a hack because I moved it to Hql.QueryTranslator.  It will be removed
 			// once everything is converted to SqlString instead of strings holding sql...

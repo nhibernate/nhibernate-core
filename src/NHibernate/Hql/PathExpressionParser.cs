@@ -316,6 +316,7 @@ namespace NHibernate.Hql
 
 		public virtual void End(QueryTranslator q) 
 		{
+			
 			ignoreInitialJoin = false;
 			if ( IsCollectionValued ) 
 			{

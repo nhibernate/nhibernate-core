@@ -167,9 +167,17 @@ namespace NHibernate.Hql
 		// The following variables are stacks that keep information about each subexpression
 		// in the list of nested subexpressions we are currently processing.
 		
-		private ArrayList nots = new ArrayList(); //were an odd or even number of NOTs encountered
-		private ArrayList joins = new ArrayList(); //the join string built up by compound paths inside this expression
-		private ArrayList booleanTests = new ArrayList();//a flag indicating if the subexpression is known to be boolean		
+		//were an odd or even number of NOTs encountered
+		// each item in the list is a System.Boolean
+		private ArrayList nots = new ArrayList(); 
+
+		//the join string built up by compound paths inside this expression 
+		// each item in the list is a StringBuilder.
+		private ArrayList joins = new ArrayList(); 
+
+		//a flag indicating if the subexpression is known to be boolean		
+		// each item in the list is a System.Boolean
+		private ArrayList booleanTests = new ArrayList();
 	
 		private string GetElementName(PathExpressionParser.CollectionElement element, QueryTranslator q) 
 		{
@@ -271,7 +279,8 @@ namespace NHibernate.Hql
 					{
 						throw new QueryException("MappingException occurred compiling subquery", me);
 					}
-					AppendToken(q, subq.SQLString);
+//					AppendToken( q, subq.SQLString);
+					AppendToken(q, subq.SqlString);
 					inSubselect = false;
 					bracketsSinceSelect = 0;
 				}
@@ -457,8 +466,16 @@ namespace NHibernate.Hql
 			else if (token.StartsWith(ParserHelper.HqlVariablePrefix)) //named query parameter
 			{
 				q.AddNamedParameter(token.Substring(1));
-				AppendToken(q, StringHelper.SqlParameter);
-			} 
+//				AppendToken(q, StringHelper.SqlParameter);
+				AppendToken(q, new SqlCommand.SqlString( new object[] { new SqlCommand.Parameter() } ) );
+			}
+			else if ( token.Equals(StringHelper.SqlParameter) ) 
+			{
+				//TODO: this is all new code - I'm just looking for a way to find out when
+				// we are adding a parameter
+//				q.AppendWhereToken(token);
+				q.AppendWhereToken(new SqlCommand.SqlString( new object[] { new SqlCommand.Parameter() } ) );
+			}
 			else 
 			{
 				IQueryable p = q.GetPersisterUsingImports(token);
@@ -538,9 +555,22 @@ namespace NHibernate.Hql
 		
 		protected virtual void AppendToken(QueryTranslator q, string token) 
 		{
+			
 			if (expectingIndex > 0) 
 			{
 				pathExpressionParser.LastCollectionElementIndexValue = token;
+			} 
+			else 
+			{
+				q.AppendWhereToken( new SqlCommand.SqlString(token) );
+			}
+		}
+
+		protected virtual void AppendToken(QueryTranslator q, SqlCommand.SqlString token) 
+		{
+			if (expectingIndex > 0) 
+			{
+				pathExpressionParser.LastCollectionElementIndexValue = token.ToString();
 			} 
 			else 
 			{
