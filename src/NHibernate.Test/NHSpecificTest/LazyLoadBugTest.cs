@@ -1,10 +1,9 @@
 using System;
-using System.Collections;
 
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
-namespace NHibernate.Test 
+namespace NHibernate.Test.NHSpecificTest 
 {
 	[TestFixture]
 	public class LazyLoadBugTest : TestCase 
@@ -41,7 +40,10 @@ namespace NHibernate.Test
 			{
 				LLParent parent2 = (LLParent)s2.Load( typeof(LLParent), parentId );
 
-				// this should throw an exception
+				// this should throw the exception - the property setter access is not mapped correctly.
+				// Because it maintains logic to maintain the collection during the property set it should
+				// tell NHibernate to skip the setter and access the field.  If it doesn't, then throw
+				// a LazyInitializationException.
 				int count = parent2.Children.Count;
 			}
 		}

@@ -46,6 +46,9 @@ namespace NHibernate.DomainModel.NHSpecific {
 			set 
 			{
 				_parent = value;
+				// this is the source of the "bug" - more accurately described as user error
+				// but it raised a Null Pointer Exception instead of a LazyInitializationException
+				// like it should have.  
 				_parent.Children.Add( this );
 			}
 		}
