@@ -15,7 +15,6 @@ namespace NHibernate.Test
 	{
 		protected Configuration cfg;
 		protected ISessionFactory sessions;
-		protected Dialect.Dialect dialect;
 
 		public void ExportSchema(string[] files) 
 		{
@@ -30,8 +29,6 @@ namespace NHibernate.Test
 			{
 				cfg.AddResource("NHibernate.DomainModel." + files[i], Assembly.Load("NHibernate.DomainModel"));
 			}
-
-			dialect = Dialect.Dialect.GetDialect();
 
 			if(exportSchema) new SchemaExport(cfg).Create(true, true);
 

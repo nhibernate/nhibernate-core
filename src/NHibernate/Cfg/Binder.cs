@@ -15,6 +15,7 @@ namespace NHibernate.Cfg {
 
 		private static XmlNamespaceManager nsmgr;
 		private static readonly string nsPrefix = "hbm";
+		private static Dialect.Dialect dialect;
 
 		public static void BindClass(XmlNode node, PersistentClass model, Mappings mapping) {
 			
@@ -109,7 +110,9 @@ namespace NHibernate.Cfg {
 			PropertiesFromXML(node, model, mappings);
 		}
 
-		public static void BindRootClass(XmlNode node, RootClass model, Mappings mappings) {
+		public static void BindRootClass(XmlNode node, RootClass model, Mappings mappings, Dialect.Dialect d) {
+            
+			dialect = d;
 
 			BindClass(node, model, mappings);
 
@@ -724,7 +727,7 @@ namespace NHibernate.Cfg {
 					mappings.AddClass(subclass);
 				} else if ( "joined-subclass".Equals(name) ) {
 					Subclass subclass = new Subclass(model);
-					BindJoinedSubclass( subnode, subclass, mappings );
+					BindJoinedSubclass( subnode, subclass, mappings);
 					model.AddSubclass(subclass);
 					mappings.AddClass(subclass);
 				}
@@ -854,7 +857,7 @@ namespace NHibernate.Cfg {
 			if ( !model.IsIndexed ) model.CreateIndex();
 		}
 
-		public static void BindRoot(XmlDocument doc, Mappings model) {
+		public static void BindRoot(XmlDocument doc, Mappings model, Dialect.Dialect dialect) {
 
 			XmlNode hmNode = doc.DocumentElement;
 			XmlAttribute schemaNode = hmNode.Attributes["schema"];
@@ -874,7 +877,7 @@ namespace NHibernate.Cfg {
 			
 			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":class", nsmgr) ) {
 				RootClass rootclass = new RootClass();
-				Binder.BindRootClass(n, rootclass, model);
+				Binder.BindRootClass(n, rootclass, model, dialect);
 				model.AddClass(rootclass);
 			}
 

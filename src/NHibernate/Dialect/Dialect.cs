@@ -722,6 +722,17 @@ namespace NHibernate.Dialect
 			throw new NotImplementedException("should be implemented by subclass - this will be converted to abstract");
 		}
 
+		
+		/// <summary>
+		/// Unquotes an already quoted name
+		/// </summary>
+		/// <param name="quoted">Quoted string</param>
+		/// <returns>Unquoted string</returns>
+		public virtual string UnQuote(string quoted)
+		{
+			return quoted;
+		}
+
 		/// <summary>
 		/// Quotes a name for being used as a tablename
 		/// </summary>

@@ -26,6 +26,7 @@ namespace NHibernate.Sql
 
 		public string ToAliasString(string sqlIdentifier, Dialect.Dialect dialect) 
 		{
+			return dialect.QuoteForAliasName(sqlIdentifier);
 			char begin = sqlIdentifier[0];
 			int quoteType = Dialect.Dialect.Quote.IndexOf(begin);
 
@@ -66,7 +67,7 @@ namespace NHibernate.Sql
 
 			if(quoteType >= 0) 
 			{
-				unquoted = sqlIdentifier.Substring(1, sqlIdentifier.Length - 1);
+				unquoted = sqlIdentifier.Substring(1, sqlIdentifier.Length - 2);
 			}
 			else 
 			{

@@ -69,17 +69,27 @@ namespace NHibernate.Dialect
 
 		public override string QuoteForTableName(string tableName)
 		{
-			return "[" + tableName + "]";
+			if (tableName[0] == '[') return tableName;
+			return "[" + tableName.Replace("]","]]") + "]";
 		}
 
 		public override string QuoteForAliasName(string aliasName)
 		{
-			return "[" + aliasName + "]";
+			if (aliasName[0] == '[') return aliasName;
+			return "[" + aliasName.Replace("]","]]") + "]";
 		}
 
 		public override string QuoteForColumnName(string columnName)
 		{
-			return "[" + columnName + "]";
+			if (columnName[0] == '[') return columnName;
+			return "[" + columnName.Replace("]","]]") + "]";
+		}
+
+		public override string UnQuote(string quoted)
+		{
+			if (quoted[0] == '[')
+				quoted = quoted.Substring(1,quoted.Length - 2);
+			return quoted.Replace("]]","]");
 		}
 
 		private string SqlTypeToString(string name, int length) 

@@ -14,6 +14,8 @@ namespace NHibernate.Util {
 		public const string ClosedParen = ")";
 		public const string SqlParameter = "?";
 
+		public static Dialect.Dialect Dialect;
+
 		[Obsolete("Use String.Join() instead of this method. It does the same thing")]
 		public static string Join(string separator, string[] strings) {
 			return string.Join(separator, strings);
@@ -131,20 +133,10 @@ namespace NHibernate.Util {
 				return name;
 
 			char quote = name[0];
-			bool nameEscaped = Dialect.Dialect.Quote.IndexOf(quote) > -1;
-			StringBuilder nameBuffer = new StringBuilder(30);
-
-			if (nameEscaped) {
-				nameBuffer.Append( name.Substring(1, name.Length-1) ).Append(suffix);
-			} else {
-				nameBuffer.Append(name).Append(suffix);
-			}
-
-			if (nameEscaped) {
-				nameBuffer.Insert(0, quote);
-				nameBuffer.Append(quote);
-			}
-			return nameBuffer.ToString();
+			if (UnQuote(name) != name)
+				return Dialect.QuoteForColumnName(UnQuote(name) + suffix);
+			else
+				return Dialect.QuoteForColumnName(name + suffix);
 		}
 
 		public static string[] Prefix(string [] columns, string prefix) {
@@ -203,9 +195,7 @@ namespace NHibernate.Util {
 		}
 
 		public static string UnQuote(string name) {
-			return ( Dialect.Dialect.Quote.IndexOf( name[0] ) > -1 )
-				? name.Substring(1, name.Length-1)
-				: name;
+			return Dialect.UnQuote(name);
 		}
 
 		public static void UnQuoteInPlace(string[] names) {
