@@ -46,7 +46,7 @@ namespace NHibernate {
 		public static readonly NullableType Character = new CharType(); 
 		
 		/// <summary>
-		/// NHibernate clob type
+		/// NHibernate Culture Info type
 		/// </summary>
 		public static readonly NullableType CultureInfo = new CultureInfoType(); 
 		
