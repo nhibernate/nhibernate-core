@@ -5,7 +5,8 @@
 		table="quux" 
 	>
 		<!-- 
-			proxy doesn't work yet
+			proxy doesn't work yet - once proxy is working remove the 
+			[Serializable] attribute from the class.
 			proxy="NHibernate.DomainModel.Qux, NHibernate.DomainModel"
 		-->
 		<id name="Key" column="qux_key" unsaved-value="0">

@@ -1,5 +1,8 @@
+using System;
+
 namespace NHibernate.DomainModel
 {
+	[Serializable]
 	public class Super 
 	{
 		protected string _name;

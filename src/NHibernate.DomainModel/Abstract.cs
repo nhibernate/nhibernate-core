@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace NHibernate.DomainModel
 {
+	[Serializable]
 	public abstract class Abstract : Foo, AbstractProxy
 	{
 		private DateTime _time;
