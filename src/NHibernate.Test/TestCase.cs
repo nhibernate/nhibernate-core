@@ -14,6 +14,7 @@ namespace NHibernate.Test
 	public abstract class TestCase 
 	{
 		protected Configuration cfg;
+		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
 
 		public void ExportSchema(string[] files) 
@@ -31,8 +32,9 @@ namespace NHibernate.Test
 			}
 
 			if(exportSchema) new SchemaExport(cfg).Create(true, true);
-
+			
 			sessions = cfg.BuildSessionFactory( );
+			dialect = Dialect.Dialect.GetDialect();
 		}
 
 		/// <summary>
