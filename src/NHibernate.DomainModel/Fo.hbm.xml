@@ -35,7 +35,7 @@
 		<property 
 			name="Serial" 
 			column="serial_" 
-			type="System.Object"
+			type="Serializable"
 			length="4000"
 		/>
 		

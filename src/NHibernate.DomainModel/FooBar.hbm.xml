@@ -35,43 +35,44 @@
 		<many-to-one name="TheFoo" class="NHibernate.DomainModel.Foo, NHibernate.DomainModel">
 			<column name="foo" length="36" index="fbmtoidx"/>
 		</many-to-one>
-		<property name="Long">
+		<property name="Long" type="long">
     		<column name="long_" index="fbmtoidx" unique-key="abc" not-null="true"/>
 		</property>
-		<property name="Integer">
+		<property name="Integer" type="integer">
 			<column name="`@@##integer_  *`" unique-key="abc" not-null="true"/>
 		</property>
-		<property name="Float">
+		<property name="Float" type="float">
 			<column name="float_" unique-key="abc" not-null="true"/>
 		</property>
 		<property name="X"/>
-		<property name="Double" column="double_"/>
+		<property name="Double" column="double_" type="double"/>
 
 		<primitive-array name="Bytes" table="foobytes">
 			<key column="id"/>
 			<index column="i"/>
-			<element column="byte_" type="Byte"/>
+			<element column="byte_" type="byte"/>
 		</primitive-array>
 
-		<property name="Date" type="DateTime" column="date_"/>
+		<!-- note: this is a Hibernate "date" which is the same as a NHibernate "DateTime" -->
+		<property name="Date" column="date_" type="date"/>
 		<property name="Timestamp" type="Timestamp" column="timestamp_"/>
-		<property name="Boolean" column="boolean_"/>
+		<property name="Boolean" column="boolean_" type="boolean"/>
 		<property name="Bool" column="bool_"/>
 		<property name="NullInt32" column="null_"/>
-		<property name="Short" column="short_"/>
-		<property name="Char" column="char_"/>
+		<property name="Short" column="short_" type="short"/>
+		<property name="Char" column="char_" type="character"/>
 		<property name="Zero" column="zero_"/>
 		<property name="Int" column="int_"/>
 		<property name="String">
 			<column name="string_" length="48" index="fbstridx"/>
 		</property>
 		<property name="Byte" column="byte_"/>
-		<property name="YesNo" />
+		<property name="YesNo" type="yes_no"/>
 		<property name="Blob" type="NHibernate.DomainModel.Foo+Struct, NHibernate.DomainModel" column="blobb_"/>
-		<property name="NullBlob" type="System.Object"/>
+		<property name="NullBlob" type="Serializable"/>
 		<property name="Status" column="`status_@###`" type="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel"/>
 		<property name="Binary" column="bin_"/>
-		<property name="Locale" column="`localeayzabc123!@#$`"/>
+		<property name="Locale" column="`localeayzabc123!@#$`" type="locale"/>
 	    
 		<property name="Formula" formula="1/2 * int_"/>
 	    
