@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Property
 {
 	/// <summary>
@@ -8,12 +6,16 @@ namespace NHibernate.Property
 	/// </summary>
 	public class CamelCaseStrategy : IFieldNamingStrategy
 	{
-		
 		#region IFieldNamingStrategy Members
 
-		public string GetFieldName(string propertyName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public string GetFieldName( string propertyName )
 		{
-			return propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
+			return propertyName.Substring( 0, 1 ).ToLower() + propertyName.Substring( 1 );
 		}
 
 		#endregion

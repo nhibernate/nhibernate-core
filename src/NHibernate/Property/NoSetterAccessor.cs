@@ -1,6 +1,3 @@
-using System;
-using System.Reflection;
-
 namespace NHibernate.Property
 {
 	/// <summary>
@@ -14,25 +11,44 @@ namespace NHibernate.Property
 	/// </remarks>
 	public class NoSetterAccessor : IPropertyAccessor
 	{
-		IFieldNamingStrategy namingStrategy;
+		private IFieldNamingStrategy namingStrategy;
 
-		public NoSetterAccessor(IFieldNamingStrategy namingStrategy) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="namingStrategy"></param>
+		public NoSetterAccessor( IFieldNamingStrategy namingStrategy )
 		{
 			this.namingStrategy = namingStrategy;
 		}
-		
+
 		#region IPropertyAccessor Members
 
-		public IGetter GetGetter(System.Type theClass, string propertyName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="theClass"></param>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public IGetter GetGetter( System.Type theClass, string propertyName )
 		{
-			BasicGetter result = BasicPropertyAccessor.GetGetterOrNull(theClass, propertyName);
-			if (result == null) throw new PropertyNotFoundException( "Could not find a setter for property " + propertyName + " in class " + theClass.FullName );
+			BasicGetter result = BasicPropertyAccessor.GetGetterOrNull( theClass, propertyName );
+			if( result == null )
+			{
+				throw new PropertyNotFoundException( "Could not find a setter for property " + propertyName + " in class " + theClass.FullName );
+			}
 			return result;
 		}
 
-		public ISetter GetSetter(System.Type theClass, string propertyName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="theClass"></param>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public ISetter GetSetter( System.Type theClass, string propertyName )
 		{
-			string fieldName = namingStrategy.GetFieldName(propertyName);
+			string fieldName = namingStrategy.GetFieldName( propertyName );
 			return new FieldSetter( FieldAccessor.GetField( theClass, fieldName ), theClass, fieldName );
 		}
 

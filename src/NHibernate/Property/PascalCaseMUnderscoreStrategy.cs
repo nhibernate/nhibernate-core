@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Property
 {
 	/// <summary>
@@ -8,12 +6,16 @@ namespace NHibernate.Property
 	/// </summary>
 	public class PascalCaseMUnderscoreStrategy : IFieldNamingStrategy
 	{
-		
 		#region IFieldNamingStrategy Members
 
-		public string GetFieldName(string propertyName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public string GetFieldName( string propertyName )
 		{
-			return "m_" + propertyName.Substring(0, 1).ToUpper() + propertyName.Substring(1);
+			return "m_" + propertyName.Substring( 0, 1 ).ToUpper() + propertyName.Substring( 1 );
 		}
 
 		#endregion

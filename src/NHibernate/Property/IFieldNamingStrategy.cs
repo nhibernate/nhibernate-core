@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Property
 {
 	/// <summary>
@@ -12,6 +10,6 @@ namespace NHibernate.Property
 		/// </summary>
 		/// <param name="propertyName">The name of the Property.</param>
 		/// <returns>The name of the Field.</returns>
-		string GetFieldName(string propertyName);
+		string GetFieldName( string propertyName );
 	}
 }

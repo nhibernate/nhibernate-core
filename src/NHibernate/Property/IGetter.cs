@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 
 namespace NHibernate.Property
@@ -13,19 +12,19 @@ namespace NHibernate.Property
 		/// </summary>
 		/// <param name="target"></param>
 		/// <returns></returns>
-		object Get(object target);
+		object Get( object target );
 
 		/// <summary>
 		/// Get the declared Type.
 		/// </summary>
 		/// <returns></returns>
-		System.Type ReturnType{ get; }
+		System.Type ReturnType { get; }
 
 		/// <summary>
 		/// Optional operation (return null)
 		/// </summary>
 		/// <returns></returns>
-		string PropertyName { get; } 
+		string PropertyName { get; }
 
 		/// <summary>
 		/// Optional operation (return null)

@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Property
 {
 	/// <summary>
@@ -16,8 +14,8 @@ namespace NHibernate.Property
 		/// <returns></returns>
 		/// <exception cref="PropertyNotFoundException" >
 		/// </exception>
-		IGetter GetGetter(System.Type theClass, string propertyName); 
-		
+		IGetter GetGetter( System.Type theClass, string propertyName );
+
 		/// <summary>
 		/// Create a "setter" for the named attribute
 		/// </summary>
@@ -26,6 +24,6 @@ namespace NHibernate.Property
 		/// <returns></returns>
 		/// <exception cref="PropertyNotFoundException" >
 		/// </exception>
-		ISetter GetSetter(System.Type theClass, string propertyName); 
+		ISetter GetSetter( System.Type theClass, string propertyName );
 	}
 }

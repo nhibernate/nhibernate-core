@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 
 namespace NHibernate.Property
@@ -15,7 +14,7 @@ namespace NHibernate.Property
 		/// <param name="value"></param>
 		/// <exception cref="HibernateException">
 		/// </exception>
-		void Set(object target, object value);
+		void Set( object target, object value );
 
 		/// <summary>
 		/// Optional operation (return null)

@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 
 namespace NHibernate.Property
@@ -16,11 +15,16 @@ namespace NHibernate.Property
 	{
 		private IFieldNamingStrategy namingStrategy;
 
-		public FieldAccessor() 
+		/// <summary></summary>
+		public FieldAccessor()
 		{
 		}
 
-		public FieldAccessor(IFieldNamingStrategy namingStrategy) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="namingStrategy"></param>
+		public FieldAccessor( IFieldNamingStrategy namingStrategy )
 		{
 			this.namingStrategy = namingStrategy;
 		}
@@ -30,36 +34,54 @@ namespace NHibernate.Property
 		/// Property in the hbm.xml file to the name of the field in the class.
 		/// </summary>
 		/// <value>The <see cref="IFieldNamingStrategy"/> or <c>null</c>.</value>
-		public IFieldNamingStrategy NamingStrategy 
+		public IFieldNamingStrategy NamingStrategy
 		{
 			get { return namingStrategy; }
 		}
 
 		#region IPropertyAccessor Members
 
-		public IGetter GetGetter(System.Type theClass, string propertyName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="theClass"></param>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public IGetter GetGetter( System.Type theClass, string propertyName )
 		{
-			string fieldName = GetFieldName(propertyName);
+			string fieldName = GetFieldName( propertyName );
 			return new FieldGetter( GetField( theClass, fieldName ), theClass, fieldName );
 		}
 
-		public ISetter GetSetter(System.Type theClass, string propertyName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="theClass"></param>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		public ISetter GetSetter( System.Type theClass, string propertyName )
 		{
-			string fieldName = GetFieldName(propertyName);
+			string fieldName = GetFieldName( propertyName );
 			return new FieldSetter( GetField( theClass, fieldName ), theClass, fieldName );
 		}
 
 		#endregion
-	
-		internal static FieldInfo GetField(System.Type clazz, string fieldName) 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="fieldName"></param>
+		/// <returns></returns>
+		internal static FieldInfo GetField( System.Type clazz, string fieldName )
 		{
-			if( clazz==null || clazz==typeof(object) )
+			if( clazz == null || clazz == typeof( object ) )
 			{
-				throw new PropertyNotFoundException("field not found: " + fieldName);
+				throw new PropertyNotFoundException( "field not found: " + fieldName );
 			}
 
-			FieldInfo field = clazz.GetField( fieldName, BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly );
-			if(field==null) 
+			FieldInfo field = clazz.GetField( fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
+			if( field == null )
 			{
 				field = GetField( clazz.BaseType, fieldName );
 			}
@@ -78,15 +100,15 @@ namespace NHibernate.Property
 		/// <remarks>
 		/// This uses the convention that a Property named <c>Id</c> will have a field <c>id</c>
 		/// </remarks>
-		private string GetFieldName(string propertyName) 
+		private string GetFieldName( string propertyName )
 		{
-			if( namingStrategy==null ) 
+			if( namingStrategy == null )
 			{
 				return propertyName;
 			}
-			else 
+			else
 			{
-				return namingStrategy.GetFieldName(propertyName);
+				return namingStrategy.GetFieldName( propertyName );
 			}
 		}
 	}
