@@ -61,11 +61,10 @@ namespace NHibernate.Loader
 				);
 
 
-			//TODO: HACK with ToString() because of SetFromClause
 			selectBuilder.SetFromClause(
 				persister.FromTableFragment(alias).Append(
 					persister.FromJoinFragment(alias, true, true)
-				).ToString()
+				)
 			);
 
 			selectBuilder.SetWhereClause(alias, collectionPersister.KeyColumnNames, collectionPersister.KeyType);

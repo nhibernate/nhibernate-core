@@ -423,7 +423,8 @@ namespace NHibernate.Loader
 		/// <param name="suffix"></param>
 		private static void AppendSelectString(StringBuilder buf, ILoadable persister, string alias, string suffix) 
 		{
-			//TODO: HACKs with ToString()
+			// doing a ToString is okay because SelectFragments will have no parameters
+			// and will be just straight strings cotaining sql.
 			buf.Append( persister.IdentifierSelectFragment(alias,suffix).ToString() )
 				.Append( persister.PropertySelectFragment(alias, suffix).ToString() );
 		}

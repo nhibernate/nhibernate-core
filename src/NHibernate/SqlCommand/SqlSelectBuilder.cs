@@ -53,6 +53,18 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Sets the text that should appear after the FROM
+		/// </summary>
+		/// <param name="fromClause">The fromClause in a SqlString</param>
+		/// <returns>The SqlSelectBuilder</returns>
+		public SqlSelectBuilder SetFromClause(SqlString fromClause) 
+		{
+			// it is safe to do this because a fromClause will have no
+			// parameters
+			return SetFromClause( fromClause.ToString() );
+		}
+
+		/// <summary>
 		/// Sets the text that should appear after the ORDER BY.
 		/// </summary>
 		/// <param name="orderByClause">The orderByClause to set</param>

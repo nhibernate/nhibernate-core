@@ -40,12 +40,11 @@ namespace NHibernate.Loader
 				(joins==0 ? String.Empty : SelectString(associations) + ",") +
 				SelectString(persister, alias, suffixes[joins] )
 				)
-				//TODO: HACK with ToString() required because of SetFromClause
 				.SetFromClause
 				(
 					persister.FromTableFragment(alias).Append(
 						persister.FromJoinFragment(alias, true, true)
-					).ToString()
+					)
 				)
 				.SetOuterJoins
 				(			
@@ -86,11 +85,10 @@ namespace NHibernate.Loader
 				SelectString(persister, alias, suffixes[joins] )
 				);
 
-			//TODO: HACK with ToString() because of SetFromClause
 			sqlBuilder.SetFromClause(
 				persister.FromTableFragment(alias).Append(
 					persister.FromJoinFragment(alias, true, true)
-				).ToString()
+				)
 			);
 
 			sqlBuilder.AddWhereClause(condition);
