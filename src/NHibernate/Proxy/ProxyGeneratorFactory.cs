@@ -1,4 +1,4 @@
-using System;
+using log4net;
 
 namespace NHibernate.Proxy
 {
@@ -7,11 +7,12 @@ namespace NHibernate.Proxy
 	/// </summary>
 	public sealed class ProxyGeneratorFactory
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(ProxyGeneratorFactory) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( ProxyGeneratorFactory ) );
 
 		private static IProxyGenerator _generator = new CastleProxyGenerator();
-		
-		public static IProxyGenerator GetProxyGenerator() 
+
+		/// <summary></summary>
+		public static IProxyGenerator GetProxyGenerator()
 		{
 			//TODO: make this read from a configuration file!!!  At this point anybody
 			// could substitue in their own IProxyGenerator and LazyInitializer.

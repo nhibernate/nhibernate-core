@@ -1,5 +1,4 @@
 using System;
-
 using Castle.DynamicProxy;
 using Castle.DynamicProxy.Builder.CodeBuilder;
 using Castle.DynamicProxy.Builder.CodeGenerators;
@@ -11,16 +10,25 @@ namespace NHibernate.Proxy
 	/// a <c>Class</c> and then add the <see cref="INHibernateProxy"/>
 	/// interface to it.
 	/// </summary>
-	[CLSCompliant(false)]
+	[CLSCompliant( false )]
 	public class CastleCustomProxyGenerator : ClassProxyGenerator
 	{
-		public CastleCustomProxyGenerator(ModuleScope scope) 
-			: base(scope)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="scope"></param>
+		public CastleCustomProxyGenerator( ModuleScope scope )
+			: base( scope )
 		{
 		}
 
-		public CastleCustomProxyGenerator(ModuleScope scope, GeneratorContext context) 
-			: base(scope, context) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="scope"></param>
+		/// <param name="context"></param>
+		public CastleCustomProxyGenerator( ModuleScope scope, GeneratorContext context )
+			: base( scope, context )
 		{
 		}
 
@@ -30,30 +38,30 @@ namespace NHibernate.Proxy
 		/// <param name="baseType">The base <see cref="System.Type"/> for the Proxy.</param>
 		/// <param name="interfaces">The extra <see cref="System.Type"/> interfaces for the Proxy to implement.</param>
 		/// <returns>An <see cref="EasyType"/> with the required interfaces added.</returns>
-		protected override EasyType CreateTypeBuilder(System.Type baseType, System.Type[] interfaces)
+		protected override EasyType CreateTypeBuilder( System.Type baseType, System.Type[ ] interfaces )
 		{
 			bool isImplemented = false;
 
 			// check to see if this implements INHibernateProxy - if not then make it
 			// implement the interface
-			for( int i=0; i<interfaces.Length; i++) 
+			for( int i = 0; i < interfaces.Length; i++ )
 			{
-				if( interfaces[i].Equals( typeof(INHibernateProxy) ) )
+				if( interfaces[ i ].Equals( typeof( INHibernateProxy ) ) )
 				{
 					isImplemented = true;
 				}
 			}
 
-			if( isImplemented==false ) 
+			if( isImplemented == false )
 			{
 				int length = interfaces.Length;
-				System.Type[] newInterfaces = new System.Type[ length + 1 ];
+				System.Type[ ] newInterfaces = new System.Type[length + 1];
 				Array.Copy( interfaces, 0, newInterfaces, 0, length );
-				newInterfaces[ length ] = typeof(INHibernateProxy);
+				newInterfaces[ length ] = typeof( INHibernateProxy );
 				interfaces = newInterfaces;
 			}
 
-			return base.CreateTypeBuilder(baseType, interfaces);
+			return base.CreateTypeBuilder( baseType, interfaces );
 		}
 
 	}
