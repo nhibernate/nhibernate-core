@@ -33,10 +33,7 @@
 				<excludes name="Dialect/DB2Dialect.cs" />
 				<excludes name="Dialect/HSQLDialect.cs" />
 				<excludes name="Dialect/InterbaseDialect.cs" />
-				<excludes name="Dialect/Oracle9Dialect.cs" />
-				<excludes name="Dialect/OracleDialect.cs" />
 				<excludes name="Dialect/SAPDBDialect.cs" />
-				<excludes name="Sql/ANSIOuterJoinFragment.cs" />
 				<excludes name="Tool/hbm2net/*.cs" />
 			</sources>
 			

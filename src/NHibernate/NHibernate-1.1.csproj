@@ -480,6 +480,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\Oracle9Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\OracleDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\PostgreSQLDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -531,6 +541,11 @@
                 />
                 <File
                     RelPath = "Driver\OleDbDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\OracleClientDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1314,6 +1329,11 @@
                 />
                 <File
                     RelPath = "Sql\OracleJoinFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\OuterJoinFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
