@@ -392,6 +392,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Connection\OleDbConnectionProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Connection\SqlServerConnectionProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
