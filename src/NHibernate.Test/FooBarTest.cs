@@ -13,28 +13,28 @@ namespace NHibernate.Test
 		public void SetUp()
 		{
 			ExportSchema(new string[] {   "FooBar.hbm.xml",
-										  "Baz.hbm.xml",
-										  "Qux.hbm.xml",
-										  "Glarch.hbm.xml",
-										  "Simple.hbm.xml",
-										  "Fum.hbm.xml",
-										  "Fumm.hbm.xml",
-										  "Fo.hbm.xml",
-										  "One.hbm.xml",
-										  "Many.hbm.xml",
-										  "Immutable.hbm.xml",
-										  "Fee.hbm.xml",
-										  "Vetoer.hbm.xml",
-										  "Holder.hbm.xml",
-										  "Location.hbm.xml",
-										  "Stuff.hbm.xml",
-										  "Container.hbm.xml",
-										  "Simple.hbm.xml",
-										  "XY.hbm.xml"});
+										  "Baz.hbm.xml"
+										  //										  "Qux.hbm.xml",
+										  //										  "Glarch.hbm.xml",
+										  //										  "Simple.hbm.xml",
+										  //										  "Fum.hbm.xml",
+										  //										  "Fumm.hbm.xml",
+										  //										  "Fo.hbm.xml",
+										  //										  "One.hbm.xml",
+										  //										  "Many.hbm.xml",
+										  //										  "Immutable.hbm.xml",
+										  //										  "Fee.hbm.xml",
+										  //										  "Vetoer.hbm.xml",
+										  //										  "Holder.hbm.xml",
+										  //										  "Location.hbm.xml",
+										  //										  "Stuff.hbm.xml",
+										  //										  "Container.hbm.xml",
+										  //										  "XY.hbm.xml"});
+									  });
 		}
 
 		[Test]
-		[Ignore("Maps haven't been converted yet")]
+		//[Ignore("Maps haven't been converted yet")]
 		public void FetchInitializedCollection()
 		{
 			ISession s = sessions.OpenSession();

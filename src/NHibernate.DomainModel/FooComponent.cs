@@ -34,13 +34,13 @@ namespace NHibernate.DomainModel
 		/// </summary>
 		private Int32 _count;
 
-		private DateTime[] importantDates;
+		private DateTime[] _importantDates;
 	
-		private FooComponent subcomponent;
-		private Fee fee = new Fee();
-		private GlarchProxy glarch;
-		private FooProxy parent;
-		private Baz baz;
+		private FooComponent _subcomponent;
+		private Fee _fee = new Fee();
+		private GlarchProxy _glarch;
+		private FooProxy _parent;
+		private Baz _baz;
 	
 		#endregion
 
@@ -111,29 +111,29 @@ namespace NHibernate.DomainModel
 				this._count = value;
 			}
 		}
-		public DateTime[] ImportantDates
+		public DateTime[] importantDates
 		{
 			get
 			{
-				return importantDates;
+				return _importantDates;
 			}
 			set
 			{
-				this.importantDates = value;
+				this._importantDates = value;
 			}
 		}
-		public FooComponent Subcomponent
+		public FooComponent subcomponent
 		{
 			get
 			{
-				return subcomponent;
+				return _subcomponent;
 			}
 			set
 			{
-				this.subcomponent = value;
+				this._subcomponent = value;
 			}
 		}
-		private String Null
+		private String @null
 		{
 			get
 			{
@@ -145,53 +145,53 @@ namespace NHibernate.DomainModel
 					throw new Exception("null component property");
 			}
 		}
-		public Fee Fee
+		public Fee fee
 		{
 			get
 			{
-				return fee;
+				return _fee;
 			}
 			set
 			{
-				this.fee = value;
+				this._fee = value;
 			}
 		}
 	
-		public GlarchProxy Glarch
+		public GlarchProxy glarch
 		{
 			get
 			{
-				return glarch;
+				return _glarch;
 			}
 			set
 			{
-				this.glarch = value;
+				this._glarch = value;
 			}
 		}
 	
-		public FooProxy Parent
+		public FooProxy parent
 		{
 			get
 			{
-				return parent;
+				return _parent;
 			}
 			set
 			{
-				if (parent==null)
+				if (value==null)
 					throw new ArgumentNullException("null parent set");
-				this.parent = value;
+				this._parent = value;
 			}
 		}
 	
-		public Baz Baz
+		public Baz baz
 		{
 			get
 			{
-				return baz;
+				return _baz;
 			}
 			set
 			{
-				this.baz = value;
+				this._baz = value;
 			}
 		}
 	
@@ -212,11 +212,11 @@ namespace NHibernate.DomainModel
 		{
 			String result = "FooComponent: " + name + "=" + count;
 			result+="; dates=[";
-			if ( importantDates!=null) 
+			if ( _importantDates!=null) 
 			{
-				for ( int i=0; i<importantDates.Length; i++ ) 
+				for ( int i=0; i<_importantDates.Length; i++ ) 
 				{
-					result+=(i==0 ?"":", ") + importantDates[i];
+					result+=(i==0 ?"":", ") + _importantDates[i];
 				}
 			}
 			result+="]";

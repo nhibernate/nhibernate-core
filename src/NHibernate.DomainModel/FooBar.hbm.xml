@@ -54,14 +54,14 @@
     <property name="char" column="char_"/>
     <property name="zero" column="zero_"/>
     <property name="int" column="int_"/>
-    <property name="String">
-        <column name="String_" length="48" index="fbstridx"/>
+    <property name="string">
+        <column name="string_" length="48" index="fbstridx"/>
     </property>
     <property name="byte" column="byte_"/>
-    <property name="yesno" type="yes_no"/>
-    <property name="blob" type="NHibernate.DomainModel.Foo$Struct, NHibernate.DomainModel" column="blobb_"/>
-    <property name="nullBlob" type="serializable"/>
-    <property name="status" column="`status_@###`"/>
+    <property name="yesno" />
+    <property name="blob" type="NHibernate.DomainModel.Foo+Struct, NHibernate.DomainModel" column="blobb_"/>
+    <property name="nullBlob" type="System.Object"/>
+    <property name="status" column="`status_@###`" type="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel"/>
     <property name="binary" column="bin_"/>
     <property name="locale" column="`localeayzabc123!@#$`"/>
     
@@ -73,7 +73,7 @@
     </property>
     <many-to-one name="dependent" class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" cascade="all" not-null="true"/>
     <component name="component">
-      <property name="count" column="count_" type="int" not-null="true"/> 
+      <property name="count" column="count_" type="Int32" not-null="true"/> 
       <property name="name">
         <column name="name_" length="32" not-null="true"/> 
       </property>
@@ -85,7 +85,7 @@
         <array name="importantDates" table="foo_times">
           <key column="foo_id"/>
           <index column="i"/>
-          <element column="date_" type="DateTime"/>
+          <element column="date_" type="Time"/>
         </array>
         <many-to-one name="fee" column="fee_sub" cascade="all" class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" outer-join="false"/>
       </component>

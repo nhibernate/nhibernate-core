@@ -685,7 +685,7 @@ namespace NHibernate.DomainModel
 				  "foo", "bar" 
 			  };
 			component = new FooComponent("foo", 12, new DateTime[] { _date, _timestamp, DateTime.MinValue, new DateTime() }, new FooComponent("bar", 666, new DateTime[] { new DateTime(123456L), DateTime.MinValue }, null ) );
-			component.Glarch = new Glarch();
+			component.glarch = new Glarch();
 			dependent = new Fee();
 			dependent.Fi = "belongs to foo # " + key;
 			locale = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
