@@ -142,7 +142,7 @@ namespace NHibernate.Id
 							throw new IdentifierGenerationException( err );
 						}
 
-						result = rs.GetInt32( 0 );
+						result = Convert.ToInt32( rs[ 0 ] );
 						rs.Close();
 					} 
 						// TODO: change to SqlException
