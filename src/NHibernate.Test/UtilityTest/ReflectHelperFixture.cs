@@ -27,6 +27,23 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsFalse( ReflectHelper.OverridesEquals( typeof(IDisposable) ), "IDisposable does not override equals" );
 			Assert.IsTrue( ReflectHelper.OverridesEquals( typeof(BRhf) ), "Base class overrides equals" );
 		}
+
+		[Test]
+		public void NoTypeFoundReturnsNull() 
+		{
+			System.Type noType = ReflectHelper.TypeFromAssembly( "noclass", "noassembly" );
+			Assert.IsNull( noType );
+		}
+
+		[Test]
+		public void TypeFoundInNotLoadedAssembly() 
+		{
+			System.Type httpRequest = ReflectHelper.TypeFromAssembly( "System.Web.HttpRequest", "System.Web" );
+			Assert.IsNotNull( httpRequest );
+
+			System.Type sameType = ReflectHelper.TypeFromAssembly( "System.Web.HttpRequest", "System.Web" );
+			Assert.AreEqual( httpRequest, sameType, "should be the exact same Type" );
+		}
 	}
 
 	public class ARhf 

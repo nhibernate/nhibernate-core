@@ -11,6 +11,8 @@ namespace NHibernate.Util
 	/// </summary>
 	public sealed class ReflectHelper
 	{
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof( ReflectHelper ) );
+
 		private ReflectHelper()
 		{
 			// not creatable
@@ -151,6 +153,53 @@ namespace NHibernate.Util
 		public static System.Type ClassForName( string name )
 		{
 			return System.Type.GetType( name, true );
+		}
+
+		/// <summary>
+		/// Returns a <see cref="System.Type"/> from an already loaded Assembly or an
+		/// Assembly that is loaded with a partial name.
+		/// </summary>
+		/// <param name="className">The full name of the class.</param>
+		/// <param name="assemblyName">
+		/// The name of the assembly.  This can be the full assembly name or just the partial name.
+		/// </param>
+		/// <returns>
+		/// The <see cref="System.Type"/> for the class in the assembly or 
+		/// <c>null</c> if a <see cref="System.Type"/> can't be found.
+		/// </returns>
+		/// <remarks>
+		/// Attempts to get a reference to the type from an already loaded assembly.  If the 
+		/// Type can be found then the Assembly is loaded using LoadWithPartialName.
+		/// </remarks>
+		public static System.Type TypeFromAssembly( string className, string assemblyName ) 
+		{
+			try 
+			{
+				// try to get the Types from an already loaded assembly
+				System.Type type = System.Type.GetType( className + ", " + assemblyName );
+
+				// if the type is null then the assembly is not loaded.
+				if( type==null ) 
+				{
+					// use the partial name because we don't know the public key, version, culture-info of
+					// the assembly on the local machine.
+					Assembly assembly = Assembly.LoadWithPartialName( assemblyName );
+					if( assembly!=null ) 
+					{
+						type = assembly.GetType( className );
+					}
+				}
+
+				return type;
+			}
+			catch( Exception e )
+			{
+				if( log.IsErrorEnabled ) 
+				{
+					log.Error( className + ", " + assemblyName + " could not be loaded.", e );
+				}
+				return null;
+			}
 		}
 
 		/// <summary>
