@@ -34,7 +34,7 @@ namespace NHibernate.Mapping
 		private int batchSize = 1;
 		private bool selectBeforeUpdate;
 		private int optimisticLockMode;
-		private IDictionary metaAttributes;
+		//private IDictionary metaAttributes;
 
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.

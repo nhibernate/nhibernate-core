@@ -14,7 +14,7 @@ namespace NHibernate.Mapping
 		private bool updateable = true;
 		private bool insertable = true;
 		private string propertyAccessorName;
-		private IDictionary metaAttributes;
+		//private IDictionary metaAttributes;
 
 		/// <summary>
 		/// 
