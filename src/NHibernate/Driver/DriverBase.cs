@@ -190,7 +190,7 @@ namespace NHibernate.Driver
 		{
 			if( name != null && parameter != null && parameter.SqlType == null )
 			{
-				throw new QueryException( String.Format( "No value assigned to parameter '{0}': be sure to set values for named parameters.", name ) );
+				throw new QueryException( String.Format( "No type assigned to parameter '{0}': be sure to set types for named parameters.", name ) );
 			}
 			IDbDataParameter dbParam = command.CreateParameter();
 			dbParam.DbType = parameter.SqlType.DbType;
