@@ -13,7 +13,6 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlString : ICloneable 
 	{
-
 		readonly object[] sqlParts;
 		
 		public SqlString(string sqlPart) : this(new object[] {sqlPart}) 
@@ -49,6 +48,44 @@ namespace NHibernate.SqlCommand
 			return new SqlString(temp);
 		}
 
+		#region object Members
+		
+		
+		public override bool Equals(object obj)
+		{
+			SqlString rhs;
+			
+			// Step1: Perform an equals test
+			if(obj==this) return true;
+
+			// Step	2: Instance of check
+			rhs = obj as SqlString;
+			if(rhs==null) return false;
+
+			//Step 3: Check each important field
+			for(int i = 0; i < sqlParts.Length; i++) 
+			{
+				if( this.sqlParts[i].Equals(rhs.SqlParts[i]) == false ) return false;
+			}
+
+			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+
+			unchecked 
+			{
+				for(int i = 0; i < sqlParts.Length; i++) 
+				{
+					hashCode += sqlParts[i].GetHashCode();
+				}
+			}
+
+			return hashCode;
+		}
+
 		/// <summary>
 		/// Returns the SqlString in a string where it looks like
 		/// SELECT col1, col2 FROM table WHERE col1 = :param1
@@ -61,18 +98,21 @@ namespace NHibernate.SqlCommand
 		public override string ToString() 
 		{
 			StringBuilder builder = new StringBuilder(sqlParts.Length * 15);
-			foreach(object part in sqlParts) 
+
+			for(int i = 0; i < sqlParts.Length; i++) 
 			{
-				builder.Append(part.ToString());
+				builder.Append(sqlParts[i].ToString());
 			}
 
 			return builder.ToString();
 		}
 		
+		#endregion
 		
 		#region ICloneable Members
 
-		public SqlString Clone() {
+		public SqlString Clone() 
+		{
 			object[] clonedParts = new object[sqlParts.Length];
 			Parameter param;
 

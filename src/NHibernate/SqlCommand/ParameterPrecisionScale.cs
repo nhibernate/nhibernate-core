@@ -44,7 +44,10 @@ namespace NHibernate.SqlCommand {
 			return param;
 		}
 
-		public override bool Equals(object obj) {
+		#region object Members
+		
+		public override bool Equals(object obj) 
+		{
 			if(base.Equals(obj)) {
 				ParameterPrecisionScale rhs;
 			
@@ -53,21 +56,23 @@ namespace NHibernate.SqlCommand {
 				if(rhs==null) return false;
 
 				//Step 3: Check each important field
-				return this.Precision.Equals(rhs.Precision)
-					&& this.Scale.Equals(rhs.Scale);
+				return this.Precision==rhs.Precision
+					&& this.Scale==rhs.Scale;
 			}
 			else {
 				return false;
 			}
 		}
 
-		// override to prevent compiler warning CS0659
-		// TODO: this may need a different impl
 		public override int GetHashCode()
 		{
-			return base.GetHashCode ();
+			unchecked 
+			{
+				return base.GetHashCode() + precision.GetHashCode() + scale.GetHashCode();
+			}
 		}
 
+		#endregion
 
 	}
 }

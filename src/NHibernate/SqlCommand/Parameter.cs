@@ -139,7 +139,10 @@ namespace NHibernate.SqlCommand
 			return parameters;
 		}
 
-		public override bool Equals(object obj) {
+		#region object Members
+		
+		public override bool Equals(object obj) 
+		{
 			Parameter rhs;
 			
 			// Step1: Perform an equals test
@@ -156,11 +159,20 @@ namespace NHibernate.SqlCommand
 			
 		}
 
-		// override to prevent compiler warning CS0659
-		// TODO: this may need a different impl
 		public override int GetHashCode()
 		{
-			return base.GetHashCode ();
+			int hashCode;
+
+			unchecked 
+			{
+				hashCode = dbType.GetHashCode() + name.GetHashCode();
+				if(tableAlias!=null) 
+				{
+					hashCode += tableAlias.GetHashCode();
+				}
+
+				return hashCode;
+			}
 		}
 
 		public override string ToString() 
@@ -170,10 +182,12 @@ namespace NHibernate.SqlCommand
 				":" + tableAlias + "." + name;
 		}
 
-		
+		#endregion
+
 		#region ICloneable Members
 
-		public Parameter Clone() {
+		public Parameter Clone() 
+		{
 			
 			Parameter paramClone = (Parameter)this.MemberwiseClone(); 
 
