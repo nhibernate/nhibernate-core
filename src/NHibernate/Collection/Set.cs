@@ -158,7 +158,7 @@ namespace NHibernate.Collection {
 			get 
 			{ 
 				Read();
-				return new CollectionProxy(this, map.Keys); 
+				return map.Keys;
 			}
 		}
 
@@ -170,7 +170,7 @@ namespace NHibernate.Collection {
 			get 
 			{ 
 				Read();
-				return new CollectionProxy(this, map.Values);
+				return map.Values;
 			}
 		}
 

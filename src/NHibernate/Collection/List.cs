@@ -97,7 +97,7 @@ namespace NHibernate.Collection
 
 		public override IEnumerator GetEnumerator() {
 			Read();
-			return new EnumeratorProxy(list.GetEnumerator());
+			return list.GetEnumerator();
 		}
 
 		public override void DelayedAddAll(ICollection coll)

@@ -82,10 +82,5 @@ namespace NHibernate.Collection
 
 			initialized = true;
 		}
-
-
-		//TODO: H2.0.3 has an internal class SubSetProxy that inherits from another
-		// undefined class PersistentCollection.SetProxy
-
 	}
 }
