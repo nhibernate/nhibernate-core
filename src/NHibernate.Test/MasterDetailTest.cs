@@ -280,10 +280,83 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("ISession not fully serializable - http://jira.nhibernate.org:8080/browse/NH-60")]
+		//[Ignore("ISession not fully serializable - http://jira.nhibernate.org:8080/browse/NH-60")]
 		public void Serialization() 
 		{
-			
+			ISession s = sessions.OpenSession();
+			Master m = new Master();
+			Detail d1 = new Detail();
+			Detail d2 = new Detail();
+			object mid = s.Save(m);
+			d1.Master=(m);
+			d2.Master=(m);
+			m.AddDetail(d1);
+			m.AddDetail(d2);
+			if ((dialect is Dialect.SybaseDialect) || (dialect is Dialect.MsSql2000Dialect))
+			{
+				s.Save(d1);
+			}
+			else 
+			{
+				s.Save( d1, 666L );
+			}
+			s.Flush();
+			s.Disconnect();
+			System.IO.MemoryStream stream = new System.IO.MemoryStream();
+			System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+//			f.Serialize(stream, s);
+//			stream.Position = 0;
+//			Console.WriteLine(stream.Length);
+			//TODO
+//			s = (Session) new ObjectInputStream( new ByteArrayInputStream(bytes) ).readObject();
+			s.Reconnect();
+			Master m2 = (Master) s.Load(typeof(Master), mid);
+			Assert.IsTrue( m2.Details.Count==2, "serialized state" );
+			foreach(Detail d in m2.Details.Keys)
+			{
+				Assert.IsTrue( d.Master==m2, "deserialization" );
+				try 
+				{
+					s.GetIdentifier(d);
+					s.Delete(d);
+				}
+				catch (Exception e) {}
+			}
+			s.Delete(m2);
+			s.Flush();
+			s.Close();
+		
+			s = sessions.OpenSession();
+			mid = s.Save( new Master() );
+			object mid2 = s.Save( new Master() );
+			s.Flush();
+			s.Disconnect();
+//			stream = new System.IO.MemoryStream();
+//			f.Serialize(stream, s);
+//			stream.Position = 0;
+//			Console.WriteLine(stream.Length);
+			//TODO
+//			s = (Session) new ObjectInputStream( new ByteArrayInputStream(bytes) ).readObject();
+			s.Reconnect();
+			s.Delete( s.Load(typeof(Master), mid) );
+			s.Delete( s.Load(typeof(Master), mid2) );
+			s.Flush();
+			s.Close();
+		
+			s = sessions.OpenSession();
+			string db = s.Connection.Database; //force session to grab a connection
+			try 
+			{
+				stream = new System.IO.MemoryStream();
+				f.Serialize(stream, s);
+			}
+			catch (Exception e) 
+			{
+				Assert.IsTrue(e is InvalidOperationException, "illegal state" );
+				s.Close();
+				return;
+			}
+			Assert.IsTrue(false, "serialization should have failed"); 
 		}
 
 		[Test]
