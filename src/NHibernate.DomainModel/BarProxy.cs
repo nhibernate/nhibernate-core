@@ -5,21 +5,21 @@ namespace NHibernate.DomainModel
 {
 	public interface BarProxy : AbstractProxy 
 	{
-		Baz baz
+		Baz Baz
 		{
 			get;
 			set;
 		}
-		FooComponent barComponent
+		FooComponent BarComponent
 		{
 			get;
 			set;
 		}
-		string barString
+		string BarString
 		{
 			get;
 		}
-		object @object
+		object Object
 		{
 			get;
 			set;

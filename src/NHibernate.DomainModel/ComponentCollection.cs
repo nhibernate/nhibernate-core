@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace NHibernate.DomainModel
 {
+	[Serializable]
 	public class ComponentCollection 
 	{
 		/// <summary>
@@ -13,7 +14,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _foos
 		/// </summary> 
-		public IList foos
+		public IList Foos
 		{
 			get 
 			{
@@ -34,7 +35,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _str
 		/// </summary> 
-		public string str
+		public string Str
 		{
 			get 
 			{
@@ -53,7 +54,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _floats
 		/// </summary> 
-		public IList floats
+		public IList Floats
 		{
 			get 
 			{

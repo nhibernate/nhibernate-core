@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace NHibernate.DomainModel
 {
+	[Serializable]
 	public class NestingComponent 
 	{
 		/// <summary>
@@ -13,7 +14,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _nested
 		/// </summary> 
-		public ComponentCollection nested
+		public ComponentCollection Nested
 		{
 			get 
 			{

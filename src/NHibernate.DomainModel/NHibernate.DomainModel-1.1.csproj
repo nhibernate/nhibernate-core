@@ -117,6 +117,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Assignable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "AuditComponent.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -146,6 +151,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "BasicNameable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Baz.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -153,6 +163,11 @@
                 <File
                     RelPath = "Baz.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Blobber.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "C1.cs"
@@ -165,6 +180,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Category.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Child.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -172,6 +192,11 @@
                 <File
                     RelPath = "Child.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Circular.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ClassWithCompositeId.cs"
@@ -198,11 +223,36 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Contained.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Container.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Container.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Custom.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CustomPersister.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "D.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Detail.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -319,6 +369,11 @@
                 <File
                     RelPath = "Many.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Master.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Multiplicity.cs"

@@ -14,7 +14,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _time
 		/// </summary> 
-		public DateTime time
+		public DateTime Time
 		{
 			get 
 			{
@@ -33,7 +33,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _abstract
 		/// </summary> 
-		public IList abstracts
+		public IList Abstracts
 		{
 			get 
 			{

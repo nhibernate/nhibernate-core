@@ -13,9 +13,9 @@ namespace NHibernate.DomainModel
 		private int _x;
 
 		/// <summary>
-		/// Gets or sets the _x
+		/// Gets or sets the X
 		/// </summary> 
-		public new int x
+		public int X
 		{
 			get 
 			{
@@ -35,7 +35,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _barString
 		/// </summary> 
-		public string barString
+		public string BarString
 		{
 			get 
 			{
@@ -55,7 +55,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _barComponent
 		/// </summary> 
-		public FooComponent barComponent
+		public FooComponent BarComponent
 		{
 			get 
 			{
@@ -75,7 +75,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _baz
 		/// </summary> 
-		public Baz baz
+		public Baz Baz
 		{
 			get 
 			{
@@ -95,7 +95,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _name
 		/// </summary> 
-		public string name
+		public string Name
 		{
 			get 
 			{
@@ -115,7 +115,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _object
 		/// </summary> 
-		public object @object
+		public object Object
 		{
 			get 
 			{

@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace NHibernate.DomainModel
 {
+	//TODO: this conflicts with a H2.0.3 class for testing...
 	/// <summary>
 	/// Summary description for Child.
 	/// </summary>

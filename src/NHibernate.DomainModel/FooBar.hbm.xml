@@ -106,21 +106,21 @@
     	name="NHibernate.DomainModel.Abstract, NHibernate.DomainModel" 
     	proxy="NHibernate.DomainModel.AbstractProxy, NHibernate.DomainModel" 
     	discriminator-value="null">
-        <set name="abstracts">
+        <set name="Abstracts">
             <key column="abstract_id"/>
             <one-to-many class="NHibernate.DomainModel.Abstract, NHibernate.DomainModel"/>
         </set>
-        <property name="time" column="the_time"/>
+        <property name="Time" column="the_time"/>
         <subclass 
         	name="NHibernate.DomainModel.Bar, NHibernate.DomainModel" 
         	proxy="NHibernate.DomainModel.BarProxy, NHibernate.DomainModel"
         	discriminator-value="B">
-          <many-to-one name="baz"/>
-          <property name="barString">
+          <many-to-one name="Baz"/>
+          <property name="BarString">
             <column name="bar_String" length="24"/>
           </property>
-          <property name="name" column="name_name"/>
-          <component name="barComponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
+          <property name="Name" column="name_name"/>
+          <component name="BarComponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
             <parent name="parent"/>
             <property name="count" column="bar_count"/>
             <property name="name" length="64"/>
@@ -130,7 +130,7 @@
                <element column="date_" type="DateTime"/>
             </array>
           </component>
-          <any name="object" id-type="Int64" cascade="all">
+          <any name="Object" id-type="Int64" cascade="all">
             <column name="clazz" length="100"/>
             <column name="gen_id"/>
           </any>

@@ -5,12 +5,12 @@ namespace NHibernate.DomainModel
 {
 	public interface AbstractProxy : FooProxy 
 	{
-		IList abstracts
+		IList Abstracts
 		{
 			get;
 			set;
 		}
-		DateTime time
+		DateTime Time
 		{
 			get;
 			set;
