@@ -3753,5 +3753,38 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 		}
+
+	
+		/// <summary>
+		/// This test verifies that the AddAll() method works
+		/// correctly for a persistent Set.
+		/// </summary>
+		[Test]
+		public void AddAll()						
+		{
+ 			using (ISession s = sessions.OpenSession())
+			{
+ 				Foo foo1 = new Foo();
+ 				s.Save(foo1);
+ 				Foo foo2 = new Foo();
+ 				s.Save(foo2);
+ 				Foo foo3 = new Foo();
+ 				s.Save(foo3);
+ 				Baz baz = new Baz();
+ 				baz.FooSet = new Iesi.Collections.HashedSet();
+ 				baz.FooSet.Add(foo1);
+ 				s.Save(baz);
+ 				Assert.AreEqual(1, baz.FooSet.Count);
+	
+ 				IList foos = new ArrayList();
+ 				foos.Add(foo2);
+ 				foos.Add(foo3);
+ 				baz.FooSet.AddAll(foos);
+ 				Assert.AreEqual(3, baz.FooSet.Count);
+	
+ 				s.Flush();
+ 			}
+		}
+
 	}
 }

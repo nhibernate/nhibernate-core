@@ -219,6 +219,24 @@ namespace NHibernate.Collection
 			return internalSet.Add( value );
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="coll"></param>
+		/// <returns></returns>
+		public bool AddAll( ICollection coll )
+		{
+			if( coll.Count > 0 )
+			{
+				Write();
+				return internalSet.AddAll( coll );
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		/// <summary></summary>
 		public void Clear()
 		{

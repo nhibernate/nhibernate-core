@@ -166,18 +166,6 @@ namespace NHibernate.Collection
 			throw new AssertionFailure( "Collection does not support delayed initialization." );
 		}
 
-		// TODO: h2.0.3 synhc - I don't see AddAll in the H code...
-		// NB This is needed by Set/SortedSet to fulfil ISet contract
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="coll"></param>
-		/// <returns></returns>
-		public virtual bool AddAll( ICollection coll )
-		{
-			throw new AssertionFailure( "Collection does not support delayed initialization" );
-		}
-
 		/// <summary>
 		/// Gets or Sets an <see cref="ArrayList"/> of objects that have been placed in the Queue 
 		/// to be added.
