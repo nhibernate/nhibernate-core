@@ -9,7 +9,6 @@
         <property name="Address" type="String(200)" column="address" />
         <property name="Count" column="count_" not-null="true" unique="true"/> 
         <property name="Date" column="date_"/>
-        <property name="DecimalProp" column="decimal_prop" />
         <many-to-one name="Other"/>
     </class>
     

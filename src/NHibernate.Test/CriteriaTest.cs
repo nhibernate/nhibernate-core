@@ -26,7 +26,6 @@ namespace NHibernate.Test {
 			Simple simple1 = new Simple();
 			simple1.Address = "Street 12";
 			simple1.Date = DateTime.Now;
-			simple1.DecimalProp = 5.55M;
 			simple1.Key = 15;
 			simple1.Name = "For Criteria Test";
 			simple1.Count = 16;
@@ -34,7 +33,6 @@ namespace NHibernate.Test {
 			Simple notSimple1 = new Simple();
 			notSimple1.Address = "Street 123";
 			notSimple1.Date = DateTime.Now;
-			notSimple1.DecimalProp = 6.55M;
 			notSimple1.Key = 17;
 			notSimple1.Name = "Don't be found";
 			notSimple1.Count = 18;

@@ -1,22 +1,24 @@
 using System;
 
-namespace NHibernate.DomainModel {
-	
-	public class Simple {
+namespace NHibernate.DomainModel 
+{	
+	public class Simple 
+	{
 		private long key;
 		private string name;
 		private string address;
 		private int count;
 		private DateTime date;
 		private Simple other;
-		private decimal decimalProp;
 
-		public Simple(int c) {
+		public Simple(int c) 
+		{
 			count=c;
 		}
 		public Simple() {}
 
-		public void Init() {
+		public void Init() 
+		{
 			name="Someone with along name";
 			address="1234 some street, some city, victoria, 3000, austaya";
 			count=69;
@@ -29,34 +31,34 @@ namespace NHibernate.DomainModel {
 			set {key = value;}
 		}
 
-		public string Name {
+		public string Name 
+		{
 			get { return name; }
 			set { name = value; }
 		}
 
-		public string Address {
+		public string Address 
+		{
 			get { return address; }
 			set { address = value; }
 		}
 
-		public int Count {
+		public int Count 
+		{
 			get { return count; }
 			set { count = value; }
 		}
 
-		public DateTime Date {
+		public DateTime Date 
+		{
 			get { return date; }
 			set { date = value; }
 		}
 
-		public Simple Other {
+		public Simple Other 
+		{
 			get { return other; }
 			set { other = value; }
-		}
-
-		public decimal DecimalProp {
-			get { return decimalProp;}
-			set { decimalProp = value;}
 		}
 
 	}
