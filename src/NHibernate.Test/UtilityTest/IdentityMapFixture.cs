@@ -105,9 +105,8 @@ namespace NHibernate.Test.UtilityTest
 			map.Add(noHashCode2, value2);
 
 			ICollection concurrent = IdentityMap.ConcurrentEntries(map);
-			int i = 0;
 
-			foreach(DictionaryEntry de in concurrent)
+			for( int i = 0; i < concurrent.Count; )
 			{
 				if(i==0) map.Add(noHashCode3, value3);
 				if(i==1) map.Add(noHashCode4, value4);

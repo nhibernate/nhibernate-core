@@ -487,8 +487,10 @@ namespace NHibernate.Test
 				.Enumerable();
 
 			int count = 0;
-			foreach(object obj in enumerable) 
+			IEnumerator e = enumerable.GetEnumerator();
+			while( e.MoveNext() )
 			{
+				e.Current;
 				count++;
 			}
 
@@ -1541,9 +1543,9 @@ namespace NHibernate.Test
 			b = (BarProxy)s.Load( typeof(Foo), b.Key );
 			string tempKey = b.Key;
 			Assert.IsFalse( NHibernate.IsInitialized(b), "b should have been an unitialized Proxy" );
-			string tempBarString = b.BarString;
+			b.BarString;
 			Assert.IsTrue( NHibernate.IsInitialized(b), "b should have been an initialized Proxy" );
-			BarProxy b2 = (BarProxy)s.Load( typeof(Bar), b.Key );
+			BarProxy b2 = (BarProxy)s.Load( typeof(Bar), tempKey );
 			Qux q2 = (Qux)s.Load( typeof(Qux), q.Key );
 			Assert.AreSame( q, q2, "loaded same Qux" );
 			Assert.AreSame( b, b2, "loaded same BarProxy" );
@@ -2245,7 +2247,7 @@ namespace NHibernate.Test
 			IEnumerator enumer = s.Enumerable("from g in class NHibernate.DomainModel.Glarch").GetEnumerator();
 			while( enumer.MoveNext() ) 
 			{
-				object obj = enumer.Current;
+				enumer.Current;
 			}
 
 			IList list = s.Find("from g in class NHibernate.DomainModel.Glarch");
@@ -2291,7 +2293,7 @@ namespace NHibernate.Test
 			enumer = s.Enumerable("from foo in class NHibernate.DomainModel.Foo").GetEnumerator();
 			while( enumer.MoveNext() ) 
 			{
-				object obj = enumer.Current;
+				enumer.Current;
 			}
 
 			list = s.Find("from foo in class NHibernate.DomainModel.Foo");
@@ -2674,7 +2676,7 @@ namespace NHibernate.Test
 			bool ok = false;
 			try 
 			{
-				int i = q.MoreFums.Count;
+				q.MoreFums.Count;
 			}
 			catch (LazyInitializationException lie) 
 			{
@@ -2686,7 +2688,7 @@ namespace NHibernate.Test
 			ok = false;
 			try 
 			{
-				int j = q.Fums.Count;
+				q.Fums.Count;
 			}
 			catch (LazyInitializationException lie) 
 			{
@@ -2904,7 +2906,7 @@ namespace NHibernate.Test
 
 			s = sessions.OpenSession();
 			one = (One)s.Load( typeof(One), one.Key );
-			int count = one.Manies.Count;
+			one.Manies.Count;
 			s.Close();
 
 			s = sessions.OpenSession();
@@ -3289,7 +3291,7 @@ namespace NHibernate.Test
 
 			try 
 			{
-				bool somevalue = ( (FooProxy)s.Load( typeof(Foo), id )).Boolean;
+				( (FooProxy)s.Load( typeof(Foo), id )).Boolean;
 			}
 			// this won't work until Proxies are implemented because now it throws an 
 			// ObjectNotFoundException
@@ -3411,7 +3413,6 @@ namespace NHibernate.Test
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
 			Iesi.Collections.ISet bars = new Iesi.Collections.HashedSet();
-			object emptyObject = new object();
 			baz.CascadingBars = bars;
 			s.Save(baz);
 			t.Commit();

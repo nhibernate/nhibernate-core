@@ -106,7 +106,7 @@ namespace NHibernate.Test.UtilityTest
 		{
 			bool noEntries = true;
 
-			foreach( DictionaryEntry de in _emptyShm ) 
+			for( int i = 0; i < _emptyShm.Count; i++ )
 			{
 				noEntries = false;
 			}
@@ -246,7 +246,7 @@ namespace NHibernate.Test.UtilityTest
 		{
 			bool noValues = true;
 
-			foreach( object obj in _emptyShm.Values ) 
+			for( int i = 0; i < _emptyShm.Values.Count; i++ )
 			{
 				noValues = false;
 			}
