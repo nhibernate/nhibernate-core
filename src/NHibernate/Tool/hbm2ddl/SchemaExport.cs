@@ -64,7 +64,8 @@ namespace NHibernate.Tool.hbm2ddl {
 			Execute(script, export, true, true, null);
 		}
 
-		private void Execute(bool script, bool export, bool justDrop, bool format, string delimiter) {
+		private void Execute(bool script, bool export, bool justDrop, bool format, string delimiter) 
+		{
 			IDbConnection connection  = null;
 			IDbTransaction transaction = null;
 			StreamWriter fileOutput = null;
@@ -72,90 +73,123 @@ namespace NHibernate.Tool.hbm2ddl {
 			IDbCommand statement = null;
 
 			IDictionary props = new Hashtable();
-			foreach(DictionaryEntry de in dialect.DefaultProperties) {
+			foreach(DictionaryEntry de in dialect.DefaultProperties) 
+			{
 				props.Add( de.Key, de.Value );
 			}
-			if (connectionProperties!=null) {
-				foreach(DictionaryEntry de in connectionProperties) {
+			
+			if (connectionProperties!=null) 
+			{
+				foreach(DictionaryEntry de in connectionProperties) 
+				{
 					props.Add( de.Key, de.Value );
 				}
 			}
 	
-			try {
-				if (outputFile!=null) {
+			try 
+			{
+				if (outputFile!=null) 
+				{
 					fileOutput = new StreamWriter(outputFile);
 				}
 
-				if (export) {
+				if (export) 
+				{
 					connectionProvider = ConnectionProviderFactory.NewConnectionProvider(props);
 					connection = connectionProvider.GetConnection();
 					transaction = connection.BeginTransaction();
 					statement = connection.CreateCommand();
 				}
 
-				for (int i=0; i<dropSQL.Length; i++) {
-					try {
+				for (int i=0; i<dropSQL.Length; i++) 
+				{
+					try 
+					{
 						string formatted = dropSQL[i];
 						if (delimiter!=null) formatted += delimiter;
 						if (script) Console.WriteLine(formatted);
 						if (outputFile!=null) fileOutput.WriteLine( formatted );
-						if (export) {
+						if (export) 
+						{
 							statement.CommandText = dropSQL[i];
 							statement.CommandType = CommandType.Text;
 							statement.Transaction = transaction;
 							statement.ExecuteNonQuery();
 						}
-					} catch(Exception e) {
+					} 
+					catch(Exception e) 
+					{
 						if (!script) Console.WriteLine( dropSQL[i] );
 						Console.WriteLine( "Unsuccessful: " + e.Message );
 					}
 				}
 
-				if (!justDrop) {
-					for (int j=0; j<createSQL.Length; j++) {
-						try {
+				if (!justDrop) 
+				{
+					for (int j=0; j<createSQL.Length; j++) 
+					{
+						try 
+						{
 							string formatted = createSQL[j];
 							if (delimiter!=null) formatted += delimiter;
 							if (script) Console.WriteLine(formatted);
 							if (outputFile!=null) fileOutput.WriteLine( formatted );
-							if (export) {
+							if (export) 
+							{
 								statement.CommandText = createSQL[j];
 								statement.CommandType = CommandType.Text;
 								statement.Transaction = transaction;
 								statement.ExecuteNonQuery();
 							}
-						} catch(Exception e) {
+						} 
+						catch(Exception e) 
+						{
 							if (!script) Console.WriteLine( createSQL[j] );
 							Console.WriteLine( "Unsuccessful: " + e.Message );
 						}
 					}
 				}
 
-				transaction.Commit();
-			} catch (Exception e) {
+				// if the parameter export==false then there will be no transaction
+				// to commit.
+				if (transaction!=null) transaction.Commit();
+					
+			} 
+			catch (Exception e) 
+			{
 				if (transaction != null) 
 				{
 					try 
 					{
-					transaction.Rollback();
+						transaction.Rollback();
 					}
 					catch {}
 				}
 				Console.Write(e.StackTrace);
 				throw new HibernateException( e.Message );
-			} finally {
-				try {
+			} 
+			finally 
+			{
+				try 
+				{
 					if (statement!=null) statement.Dispose();
-					if (connection!=null) {
+					if (connection!=null) 
+					{
 						connectionProvider.CloseConnection(connection);
 					}
-				} catch(Exception e) {
+				} 
+				catch(Exception e) 
+				{
 					Console.Error.WriteLine( "Could not close connection: " + e.Message );
 				}
-				if (fileOutput!=null) {
-					try {
+				if (fileOutput!=null) 
+				{
+					try 
+					{
 						fileOutput.Close();
-					} catch (Exception ioe) {
+					} 
+					catch (Exception ioe) 
+					{
 						Console.Error.WriteLine( "Error closing output file " + outputFile + ": " + ioe.Message );
 					}
 				}
