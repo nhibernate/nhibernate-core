@@ -7,41 +7,57 @@ namespace NHibernate
 	[ Serializable ]
 	public class CallbackException : HibernateException
 	{
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CallbackException"/> class.
+		/// </summary>
 		public CallbackException() : this( "An exception occured in a callback" )
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="CallbackException"/> class.
 		/// </summary>
-		/// <param name="root"></param>
-		public CallbackException( Exception root ) : this( "An exception occured in a callback", root )
+		/// <param name="innerException">
+		/// The exception that is the cause of the current exception. If the innerException parameter 
+		/// is not a null reference, the current exception is raised in a catch block that handles 
+		/// the inner exception.
+		/// </param>
+		public CallbackException( Exception innerException ) : base( "An exception occured in a callback", innerException )
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="CallbackException"/> class.
 		/// </summary>
-		/// <param name="message"></param>
+		/// <param name="message">The message that describes the error. </param>
 		public CallbackException( string message ) : base( message )
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="CallbackException"/> class.
 		/// </summary>
-		/// <param name="message"></param>
-		/// <param name="e"></param>
-		public CallbackException( string message, Exception e ) : base( message, e )
+		/// <param name="message">The message that describes the error. </param>
+		/// <param name="innerException">
+		/// The exception that is the cause of the current exception. If the innerException parameter 
+		/// is not a null reference, the current exception is raised in a catch block that handles 
+		/// the inner exception.
+		/// </param>
+		public CallbackException( string message, Exception innerException ) : base( message, innerException )
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="CallbackException"/> class
+		/// with serialized data.
 		/// </summary>
-		/// <param name="info"></param>
-		/// <param name="context"></param>
+		/// <param name="info">
+		/// The <see cref="SerializationInfo"/> that holds the serialized object 
+		/// data about the exception being thrown.
+		/// </param>
+		/// <param name="context">
+		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
+		/// </param>
 		protected CallbackException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
 		}

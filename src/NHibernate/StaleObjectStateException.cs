@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using log4net;
 
 namespace NHibernate
@@ -9,40 +10,114 @@ namespace NHibernate
 	/// versioning).
 	/// </summary>
 	[Serializable]
-	public class StaleObjectStateException : HibernateException
+	public class StaleObjectStateException : HibernateException, ISerializable
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( StaleObjectStateException ) );
 		private System.Type persistentType;
 		private object identifier;
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class.
 		/// </summary>
-		/// <param name="persistentType"></param>
-		/// <param name="identifier"></param>
-		public StaleObjectStateException( System.Type persistentType, object identifier ) : base( "Row was updated or deleted by another transaction" )
+		public StaleObjectStateException() : base( "A version number check failed.  The ISession contained stale data." )
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class.
+		/// </summary>
+		/// <param name="message">The message that describes the error. </param>
+		public StaleObjectStateException( string message ) : base( message )
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class.
+		/// </summary>
+		/// <param name="message">The message that describes the error. </param>
+		/// <param name="innerException">
+		/// The exception that is the cause of the current exception. If the innerException parameter 
+		/// is not a null reference, the current exception is raised in a catch block that handles 
+		/// the inner exception.
+		/// </param>
+		public StaleObjectStateException( string message, Exception innerException ) : base( message, innerException )
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class.
+		/// </summary>
+		/// <param name="persistentType">The <see cref="System.Type"/> that NHibernate was trying to update in the database.</param>
+		/// <param name="identifier">The identifier of the object that is stale.</param>
+		public StaleObjectStateException( System.Type persistentType, object identifier ) 
+			: base( "Row was updated or deleted by another transaction" )
 		{
 			this.persistentType = persistentType;
 			this.identifier = identifier;
 			LogManager.GetLogger( typeof( StaleObjectStateException ) ).Error( "An operation failed due to stale data", this );
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the <see cref="System.Type"/> that NHibernate was trying to update in the database.
+		/// </summary>
 		public System.Type PersistentType
 		{
 			get { return persistentType; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the identifier of the object that is stale.
+		/// </summary>
 		public object Identifier
 		{
 			get { return identifier; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets a message that describes the current <see cref="StaleObjectStateException"/>.
+		/// </summary>
+		/// <value>The error message that explains the reason for this exception.</value>
 		public override string Message
 		{
 			get { return base.Message + " for " + persistentType.FullName + " instance with identifier: " + identifier; }
 		}
+
+		#region ISerializable Members
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class
+		/// with serialized data.
+		/// </summary>
+		/// <param name="info">
+		/// The <see cref="SerializationInfo"/> that holds the serialized object 
+		/// data about the exception being thrown.
+		/// </param>
+		/// <param name="context">
+		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
+		/// </param>
+		protected StaleObjectStateException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		{
+			persistentType = (System.Type)info.GetValue( "persistentType", typeof(System.Type) );
+			identifier = info.GetValue( "identifier", typeof(object) );
+		}
+
+		/// <summary>
+		/// Sets the serialization info for <see cref="StaleObjectStateException"/> after 
+		/// getting the info from the base Exception.
+		/// </summary>
+		/// <param name="info">
+		/// The <see cref="SerializationInfo"/> that holds the serialized object 
+		/// data about the exception being thrown.
+		/// </param>
+		/// <param name="context">
+		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
+		/// </param>
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData( info, context );
+			info.AddValue( "persistentType", persistentType, typeof(System.Type) );
+			info.AddValue( "identifier", identifier, typeof(object) );
+		}
+
+		#endregion
 	}
 }

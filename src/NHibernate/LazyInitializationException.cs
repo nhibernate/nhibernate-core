@@ -12,41 +12,57 @@ namespace NHibernate
 	public class LazyInitializationException : HibernateException
 	{
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
 		/// </summary>
-		/// <param name="root"></param>
-		public LazyInitializationException( Exception root ) : base( "NHibernate lazy initialization problem", root )
+		public LazyInitializationException() : this( "LazyInitalizationException" )
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
 		/// </summary>
-		/// <param name="message"></param>
+		/// <param name="message">The message that describes the error. </param>
 		public LazyInitializationException( string message ) : base( message )
 		{
 			LogManager.GetLogger( typeof( LazyInitializationException ) ).Error( message, this );
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
 		/// </summary>
-		/// <param name="message"></param>
-		/// <param name="root"></param>
-		public LazyInitializationException( string message, Exception root ) : base( message, root )
-		{
-		}
-
-		/// <summary></summary>
-		public LazyInitializationException() : this( "LazyInitalizationException" )
+		/// <param name="innerException">
+		/// The exception that is the cause of the current exception. If the innerException parameter 
+		/// is not a null reference, the current exception is raised in a catch block that handles 
+		/// the inner exception.
+		/// </param>
+		public LazyInitializationException( Exception innerException ) : base( "NHibernate lazy initialization problem", innerException )
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
 		/// </summary>
-		/// <param name="info"></param>
-		/// <param name="context"></param>
+		/// <param name="message">The message that describes the error. </param>
+		/// <param name="innerException">
+		/// The exception that is the cause of the current exception. If the innerException parameter 
+		/// is not a null reference, the current exception is raised in a catch block that handles 
+		/// the inner exception.
+		/// </param>
+		public LazyInitializationException( string message, Exception innerException ) : base( message, innerException )
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class
+		/// with serialized data.
+		/// </summary>
+		/// <param name="info">
+		/// The <see cref="SerializationInfo"/> that holds the serialized object 
+		/// data about the exception being thrown.
+		/// </param>
+		/// <param name="context">
+		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
+		/// </param>
 		protected LazyInitializationException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
 		}

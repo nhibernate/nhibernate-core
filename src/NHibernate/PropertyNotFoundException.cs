@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace NHibernate
 {
@@ -8,29 +9,49 @@ namespace NHibernate
 	[Serializable]
 	public class PropertyNotFoundException : MappingException
 	{
+
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="PropertyNotFoundException"/> class.
 		/// </summary>
-		/// <param name="message"></param>
-		/// <param name="root"></param>
-		public PropertyNotFoundException( string message, Exception root ) : base( message, root )
+		public PropertyNotFoundException() : base( "An expected getter, setter, or field could not be found." )
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="PropertyNotFoundException"/> class.
 		/// </summary>
-		/// <param name="root"></param>
-		public PropertyNotFoundException( Exception root ) : base( root )
-		{
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="message"></param>
+		/// <param name="message">The message that describes the error. </param>
 		public PropertyNotFoundException( string message ) : base( message )
 		{
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PropertyNotFoundException"/> class.
+		/// </summary>
+		/// <param name="message">The message that describes the error. </param>
+		/// <param name="innerException">
+		/// The exception that is the cause of the current exception. If the innerException parameter 
+		/// is not a null reference, the current exception is raised in a catch block that handles 
+		/// the inner exception.
+		/// </param>
+		public PropertyNotFoundException( string message, Exception innerException ) : base( message, innerException )
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PropertyNotFoundException"/> class
+		/// with serialized data.
+		/// </summary>
+		/// <param name="info">
+		/// The <see cref="SerializationInfo"/> that holds the serialized object 
+		/// data about the exception being thrown.
+		/// </param>
+		/// <param name="context">
+		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
+		/// </param>
+		protected PropertyNotFoundException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		{
+		}
+
 	}
 }
