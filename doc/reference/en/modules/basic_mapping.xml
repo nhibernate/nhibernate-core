@@ -489,11 +489,9 @@
 								<entry><literal>property</literal></entry>
 								<entry>
 									<para>
-										NHibernate will access the Field directly.  NHibernate uses the <literal>&lt;name&gt;</literal>
-										as the name of the field.  This can be used when a Property's get and set have extra
-										actions in them that you don't want to occur when NHibernate is populating or reading the object.  
-										If you want the name of the Property and not the Field to be what the consumers of your API 
-										use with HQL, then a Naming Strategy is needed.
+										The default implementation.  NHibernate uses the get/set of your Property.  No
+										Naming Strategy should be used with this Access Strategy because the 
+										<literal>name</literal> attribute is the name of the Property.
 									</para>
 								</entry>	
 							</row>	

@@ -209,6 +209,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NamespaceSummary.xml"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "NHibernate.build"
                     BuildAction = "None"
                 />
