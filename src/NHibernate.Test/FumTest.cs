@@ -192,7 +192,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("ISession.Filter() not implemented.  Everything else passes.")]
+		[Ignore("ISession.Filter() not implemented.  Everything else passes. http://jira.nhibernate.org:8080/browse/NH-80")]
 		public void CompositeIDQuery() 
 		{
 			ISession s = sessions.OpenSession();

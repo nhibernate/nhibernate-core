@@ -603,7 +603,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		//[Ignore("Test not written yet.")]
+		[Ignore("ISession.Filter is not working.  http://jira.nhibernate.org:8080/browse/NH-80")]
 		public void CollectionWhere() 
 		{
 			Foo foo1 = new Foo();
@@ -906,6 +906,7 @@ namespace NHibernate.Test
 				s.Find("select count(*) from Bar as bar where 1 in indices(bar.Baz.FooArray)");
 				s.Find("select count(*) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)");
 				s.Find("select max( elements(bar.Baz.FooArray) ) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)");
+				// TODO: subselects - this is the only thing causing tests to fail...
 //				s.Find("select count(*) from Bar as bar where 1 in (from bar.Component.Glarch.ProxyArray g where g.Name='foo')");
 //				s.Find("select count(*) from Bar as bar where 1 in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')");
 //				s.Find("select count(*) from Bar as bar left outer join bar.Component.Glarch.ProxyArray as pg where 1 in (from g in bar.Component.Glarch.ProxyArray)");
