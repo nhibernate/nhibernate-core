@@ -602,7 +602,7 @@ namespace NHibernate.Tool.hbm2net
 			// collections
 			doCollections(classPackage, classElement, "list", "System.Collections.IList", "System.Collections.ArrayList", MetaAttribs);
 			doCollections(classPackage, classElement, "map", "System.Collections.IDictionary", "System.Collections.Hashtable", MetaAttribs);
-			doCollections(classPackage, classElement, "set", "System.Collections.IDictionary", "System.Collections.Hashtable", MetaAttribs);
+			doCollections(classPackage, classElement, "set", "Iesi.Collections.ISet", "Iesi.Collections.HashedSet", MetaAttribs);
 			doCollections(classPackage, classElement, "bag", "System.Collections.IList", "System.Collections.ArrayList", MetaAttribs);
 			doCollections(classPackage, classElement, "idbag", "System.Collections.IList", "System.Collections.ArrayList", MetaAttribs);
 			doArrays(classElement, "array", MetaAttribs);
@@ -740,8 +740,8 @@ namespace NHibernate.Tool.hbm2net
 					}
 					else if ("set".Equals(xmlName))
 					{
-						interfaceClass = typeof(IDictionary).FullName;
-						implementingClass = typeof(IDictionary).FullName;
+						interfaceClass = typeof(Iesi.Collections.ISet).FullName;
+						implementingClass = typeof(Iesi.Collections.ISet).FullName;
 					}
 				}
 				else

@@ -55,6 +55,7 @@
 				<includes name="*.vm" />
 			</resources>
 			<references basedir="${build.dir}/bin">
+				 <includes name="Iesi.Collections.dll" />
 				 <includes name="NHibernate.dll" />
 				 <includes name="Commons.dll" />
 				 <includes name="NVelocity.dll" />
