@@ -109,6 +109,13 @@ namespace NHibernate
 		System.Type PersistentClass { get; }
 
 		/// <summary>
+		/// Gets the association's fetching strategy.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		FetchMode GetFetchMode(string path);
+
+		/// <summary>
 		/// Specify an association fetching strategy.  Currently, only
 		/// one-to-many and one-to-one associations are supported.
 		/// </summary>
