@@ -70,26 +70,23 @@ namespace NHibernate.Collection
 			for(int i = 0 ;i < bagIdentifiers.Count; i++) 
 			{
 				object element = persister.ElementType.ResolveIdentifier(bagIdentifiers[i], session, owner);
-				bag[i] = element;
+				bag.Add( element );
+			}
+
+			if( Additions!=null ) 
+			{
+				DelayedAddAll( Additions );
+				Additions = null;
 			}
 		}
+
 
 		public override object ReadFrom(IDataReader reader, CollectionPersister persister, object owner)
 		{
 			object elementIdentifier = persister.ReadElementIdentifier(reader, owner, session);
-			int index = bag.Add(null);
-			bagIdentifiers.Insert(index, elementIdentifier);
+			bagIdentifiers.Add( elementIdentifier );
 			
 			return elementIdentifier;
-		}
-
-		[Obsolete("See PersistentCollection.ReadEntries for reason")]
-		public override void ReadEntries(ICollection entries) 
-		{
-			foreach(object obj in entries) 
-			{
-				bag.Add(obj);
-			}
 		}
 
 		public override void WriteTo(IDbCommand st, CollectionPersister persister, object entry, int i, bool writeOrder)

@@ -283,17 +283,26 @@ namespace NHibernate.Impl
 
 			public void PostInitialize(PersistentCollection collection) 
 			{
+				initialized = true;
 				snapshot = collection.GetSnapshot(loadedPersister);
 			}
 
 			// called after a *successful* flush
 			public void PostFlush(PersistentCollection collection) 
 			{
-				if (!processed) 
+				if( !processed ) 
+				{
 					throw new AssertionFailure("Hibernate has a bug processing collections");
+				}
 				loadedKey = currentKey;
 				SetLoadedPersister( currentPersister );
 				dirty = false;
+				
+				// collection needs to know its' representation in memory and with
+				// the db is now in synch - esp important for collections like a bag
+				// that can add without initializing the collection.
+				collection.PostFlush();
+
 				if ( initialized && ( doremove || dorecreate || doupdate ) ) 
 				{
 					snapshot = collection.GetSnapshot(loadedPersister); //re-snapshot
@@ -2916,6 +2925,7 @@ namespace NHibernate.Impl
 							if(id==null) throw new HibernateException("reference created to previously dereferenced uninitialized collection");
 							AddUninitializedCollection(pc, GetCollectionPersister(snapshot.Role), id);
 							pc.ForceLoad();
+							// commented out in h2.0.3 also
 							// ugly & inefficient little hack to force collection to be recreated
 							// after "disconnected" collection replaces the "connected" one
 							//GetCollectionEntry(pc).loadedKey = null;
@@ -3241,6 +3251,7 @@ namespace NHibernate.Impl
 
 
 		// TODO: replace with owner version of this method...
+		[Obsolete("Use the one with CollectionPersister, id, owner) instead")]
 		public PersistentCollection GetLoadingCollection(CollectionPersister persister, object id) 
 		{
 			LoadingCollectionEntry lce = (LoadingCollectionEntry)loadingCollections[id];
@@ -3444,10 +3455,13 @@ namespace NHibernate.Impl
 					throw new ADOException("SQLException initializing collection", sqle);
 				}
 
-				ce.initialized = true;
 				ce.PostInitialize(collection);
 
-				if (!writing) persister.Cache(id, collection, this);
+				//removed this because it is not in h2.1 - I was having problems with Bags and 
+				// lazy additions and trying to cache uninitialized collections at this point.
+				// Collections are still written to the Cache in EndLoadingCollection and that 
+				// is probably the most appropriate place for that code anyway.
+//				if (!writing) persister.Cache(id, collection, this);
 			}
 		}
 

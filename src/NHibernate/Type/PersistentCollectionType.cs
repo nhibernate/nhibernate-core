@@ -6,45 +6,58 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type {
-
+namespace NHibernate.Type 
+{
 	/// <summary>
 	/// PersistentCollectionType.
 	/// </summary>
-	public abstract class PersistentCollectionType : AbstractType, IAssociationType	{
+	public abstract class PersistentCollectionType : AbstractType, IAssociationType	
+	{
 		
 		private readonly string role;
 		private static readonly SqlType[] NoSqlTypes = {};
 
-		public PersistentCollectionType(string role) {
+		public PersistentCollectionType(string role) 
+		{
 			this.role = role;
 		}
 
-		public virtual string Role {
+		public virtual string Role 
+		{
 			get { return role; }
 		}
 
-		public override bool IsPersistentCollectionType {
+		public override bool IsPersistentCollectionType 
+		{
 			get { return true; }
 		}
 
-		public override sealed bool Equals(object x, object y) {
-            // proxies?
+		public override sealed bool Equals(object x, object y) 
+		{
+            // proxies? - comment in h2.0.3 also
 			return x==y;
 		}
 
 		public abstract PersistentCollection Instantiate(ISessionImplementor session, CollectionPersister persister);
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner) {
+		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner) 
+		{
 			throw new AssertionFailure("bug in PersistentCollectionType");
 		}
 	
-		public override object NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner) {
+		public override object NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner) 
+		{
 			return ResolveIdentifier( Hydrate(rs, name, session, owner), session, owner );
 		}
 
-		public virtual object GetCollection(object id, object owner, ISessionImplementor session) {
-			PersistentCollection collection = session.GetLoadingCollection(role, id);
+		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session) 
+		{
+		}
+
+		public virtual object GetCollection(object id, object owner, ISessionImplementor session) 
+		{
+			// added the owner
+			PersistentCollection collection = session.GetLoadingCollection( role, id );
 			if(collection!=null) return collection.GetCachedValue(); //TODO: yuck... call another method - H2.0.3comment
 
 			CollectionPersister persister = session.Factory.GetCollectionPersister(role);
@@ -63,26 +76,28 @@ namespace NHibernate.Type {
 
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session) {
-		}
-
-		public override SqlType[] SqlTypes(IMapping session) {
+		public override SqlType[] SqlTypes(IMapping session) 
+		{
 			return NoSqlTypes;
 		}
 	
-		public override int GetColumnSpan(IMapping session) {
+		public override int GetColumnSpan(IMapping session) 
+		{
 			return 0;
 		}	
 	
-		public override string ToXML(object value, ISessionFactoryImplementor factory) {
+		public override string ToXML(object value, ISessionFactoryImplementor factory) 
+		{
 			return (value==null) ? null : value.ToString();
 		}
 	
-		public override object DeepCopy(object value) {
+		public override object DeepCopy(object value) 
+		{
 			return value;
 		}
 	
-		public override string Name {
+		public override string Name 
+		{
 			get { return ReturnedClass.Name; }
 		}
 
@@ -97,11 +112,13 @@ namespace NHibernate.Type {
 		/// such as Maps and Sets should override this so that the Elements are returned - not a
 		/// DictionaryEntry.
 		/// </remarks>
-		public virtual ICollection GetElementsCollection(object collection) {
+		public virtual ICollection GetElementsCollection(object collection) 
+		{
 			return ( (ICollection)collection );
 		}
 	
-		public override bool IsMutable {
+		public override bool IsMutable 
+		{
 			get { return false; }
 		}
 	
@@ -119,27 +136,33 @@ namespace NHibernate.Type {
 //			}
 		}
 
-		public override object Assemble(object cached, ISessionImplementor session, object owner) {
+		public override object Assemble(object cached, ISessionImplementor session, object owner) 
+		{
 			object id = session.GetEntityIdentifier(owner);
-			if(id==null) throw new AssertionFailure("bug re-assembling collection reference");
+			if(id==null) 
+			{
+				throw new AssertionFailure("bug re-assembling collection reference");
+			}
 			return ResolveIdentifier(id, session, owner);
-			//return ResolveIdentifier(cached, session, owner);
 		}
 	
-		public override bool IsDirty(object old, object current, ISessionImplementor session) {
-		
+		public override bool IsDirty(object old, object current, ISessionImplementor session) 
+		{		
 			System.Type ownerClass = session.Factory.GetCollectionPersister(role).OwnerClass;
 		
-			if ( !session.Factory.GetPersister(ownerClass).IsVersioned ) {
+			if ( !session.Factory.GetPersister(ownerClass).IsVersioned ) 
+			{
 				// collections don't dirty an unversioned parent entity
 				return false;
 			}
-			else {
+			else 
+			{
 				return base.IsDirty(old, current, session);
 			}
 		}
 
-		public override bool HasNiceEquals {
+		public override bool HasNiceEquals 
+		{
 			get { return false; }
 		}
 	
@@ -149,28 +172,37 @@ namespace NHibernate.Type {
 		 * Note: return true because this type is castable to IAssociationType. Not because
 		 * all collections are associations.
 		 */
-		public override bool IsAssociationType {
+		public override bool IsAssociationType 
+		{
 			get { return true; }
 		}
 	
-		public virtual ForeignKeyType ForeignKeyType {
+		public virtual ForeignKeyType ForeignKeyType 
+		{
 			get { return ForeignKeyType.ForeignKeyToParent;	}
 		}
 	
-		public override object Hydrate(IDataReader rs, string[] name, ISessionImplementor session, object owner) {
+		public override object Hydrate(IDataReader rs, string[] name, ISessionImplementor session, object owner) 
+		{
 			return session.GetEntityIdentifier(owner);
 		}
 	
-		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner) {
-			if (value==null) {
+		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner) 
+		{
+			if (value==null) 
+			{
 				return null;
 			}
-			else {
+			else 
+			{
+				// h2.1 changed this to use sesion.GetCollection( role, value, owner ) and 
+				// move the impl of GetCollection from this class to the ISession.
 				return GetCollection( value, owner, session);
 			}
 		}
 	
-		public virtual bool IsArrayType {
+		public virtual bool IsArrayType 
+		{
 			get { return false; }
 		}
 	

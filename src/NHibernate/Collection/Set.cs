@@ -318,15 +318,6 @@ namespace NHibernate.Collection {
 			return map.Keys;
 		}
 
-		/// <summary>
-		/// <see cref="PersistentCollection.ReadEntries"/>
-		/// </summary>
-		[Obsolete("See PersistentCollection for why it is obsolete")]
-		public override void ReadEntries(ICollection entries) {
-			foreach(DictionaryEntry entry in entries) {
-				map[entry.Key] = entry.Value;
-			}
-		}
 
 		/// <summary>
 		/// <see cref="PersistentCollection.Disassemble"/>

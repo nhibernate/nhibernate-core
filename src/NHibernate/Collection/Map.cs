@@ -229,14 +229,6 @@ namespace NHibernate.Collection
 			return entries;
 		}
 
-		[Obsolete("See PersistentCollection.ReadEntries for reason")]
-		public override void ReadEntries(ICollection entries) 
-		{
-			foreach(DictionaryEntry entry in entries) {
-				map[entry.Key] = entry.Value;
-			}
-		}
-
 		public override object Disassemble(CollectionPersister persister) {
 			object[] result = new object[map.Count * 2];
 			int i=0;

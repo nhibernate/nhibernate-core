@@ -122,17 +122,6 @@ namespace NHibernate.Collection
 			return Elements();
 		}
 
-		[Obsolete("See PersistentCollection.ReadEntries for reason")]
-		public override void ReadEntries(ICollection entries) 
-		{
-			ArrayList list = new ArrayList();
-			foreach(object obj in entries) 
-			{
-				list.Add(obj);
-			}
-			array = list.ToArray( elementClass );
-		}
-
 		public override void BeginRead() 
 		{
 			tempList = new ArrayList();

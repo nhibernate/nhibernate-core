@@ -154,10 +154,18 @@ namespace NHibernate.Collection
 			return list.IndexOf(obj);
 		}
 
-		public override void EndRead(CollectionPersister persister, object owner) {
-			for(int i = 0 ;i < listIdentifiers.Count; i++) {
+		public override void EndRead(CollectionPersister persister, object owner) 
+		{
+			for(int i = 0 ;i < listIdentifiers.Count; i++) 
+			{
 				object element = persister.ElementType.ResolveIdentifier(listIdentifiers[i], session, owner);
 				list[i] = element;
+			}
+			
+			if( Additions!=null ) 
+			{
+				DelayedAddAll( Additions );
+				Additions = null;
 			}
 		}
 
@@ -194,14 +202,6 @@ namespace NHibernate.Collection
 
 		public override ICollection Entries() {
 			return list;
-		}
-
-		[Obsolete("See PersistentCollection.ReadEntries for reason")]
-		public override void ReadEntries(ICollection entries) 
-		{
-			foreach(object obj in entries) {
-				list.Add(obj);
-			}
 		}
 
 		public List(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) : base(session) {

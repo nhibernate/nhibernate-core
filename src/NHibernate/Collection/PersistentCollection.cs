@@ -122,6 +122,33 @@ namespace NHibernate.Collection
 			throw new AssertionFailure("Collection does not support delayed initialization");
 		}
 
+		/// <summary>
+		/// Gets or Sets an <see cref="ArrayList"/> of objects that have been placed in the Queue 
+		/// to be added.
+		/// </summary>
+		/// <value>An <see cref="ArrayList"/> of objects or null.</value>
+		protected ArrayList Additions 
+		{
+			get { return additions; }
+			set { additions = value; }
+		}
+
+		/// <summary>
+		/// Clears out any Queued Additions.
+		/// </summary>
+		/// <remarks>
+		/// After a Flush() the database is in synch with the in-memory
+		/// contents of the Collection.  Since everything is in synch remove
+		/// any Queued Additions.
+		/// </remarks>
+		public virtual void PostFlush() 
+		{
+			if( additions!=null ) 
+			{
+				additions.Clear();
+			}
+		}
+
 		protected PersistentCollection(ISessionImplementor session) 
 		{
 			this.session = session;
@@ -249,10 +276,6 @@ namespace NHibernate.Collection
 		}
 
 		public abstract ICollection Entries();
-		
-		//TODO: determine where this is used - not in H2.0.3
-		[Obsolete("Not in H2.0.3 - can't find any usage in NH")]
-		public abstract void ReadEntries(ICollection entries);
 		
 		/// <summary>
 		/// Reads the elements Identifier from the reader.

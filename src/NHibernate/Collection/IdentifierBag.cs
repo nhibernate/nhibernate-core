@@ -224,12 +224,6 @@ namespace NHibernate.Collection
 			}
 		}
 
-		[Obsolete("See PersistentCollection.ReadEntries for reason")]
-		public override void ReadEntries(ICollection entries) 
-		{
-			throw new NotSupportedException("Should not call...");
-		}
-
 		public override ICollection Entries()
 		{
 			return values;
