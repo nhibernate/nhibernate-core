@@ -16,10 +16,8 @@ namespace NHibernate.Loader {
 		
 		private CollectionPersister collectionPersister;
 		private IType idType;
-		private bool allowTwoPhaseLoad;
-
+		
 		public OneToManyLoader(CollectionPersister collPersister, ISessionFactoryImplementor session) : base ( session.Dialect ) {
-			allowTwoPhaseLoad = !collPersister.IsSet;
 			collectionPersister = collPersister;
 			idType = collectionPersister.KeyType;
 
@@ -76,10 +74,6 @@ namespace NHibernate.Loader {
 
 		public void Initialize(object id, PersistentCollection collection, object owner, ISessionImplementor session) {
 			LoadCollection(session, id, idType, owner, collection);
-		}
-
-		protected override bool AllowTwoPhaseLoad {
-			get { return allowTwoPhaseLoad; }
 		}
 	}
 }

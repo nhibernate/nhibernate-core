@@ -230,10 +230,7 @@ namespace NHibernate.Loader {
 		protected string Alias(string tableName, int n) {
 			tableName = StringHelper.Unqualify(tableName);
 
-			return StringHelper.Suffix(
-				tableName.Length <=5 ? tableName : tableName.Substring(0,5),
-				n.ToString() + StringHelper.Underscore
-				);
+			return (new Alias(7, n.ToString() + StringHelper.Underscore)).ToAliasString(tableName);
 		}
 
 		protected override CollectionPersister CollectionPersister {

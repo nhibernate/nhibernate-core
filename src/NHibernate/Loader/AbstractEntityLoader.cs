@@ -18,6 +18,11 @@ namespace NHibernate.Loader {
 		}
 
 		protected void RenderStatement(string condition, ISessionFactoryImplementor factory) {
+			RenderStatement(condition, StringHelper.EmptyString, factory);
+
+		}
+
+		protected void RenderStatement(string condition, string orderBy, ISessionFactoryImplementor factory)	{
 			IList associations = WalkTree(persister, alias, factory);
 
 			int joins=associations.Count;
@@ -40,6 +45,7 @@ namespace NHibernate.Loader {
 					ojf.ToWhereFragmentString +
 					persister.WhereJoinFragment(alias, true, true)
 				)
+				.SetOrderByClause(orderBy)
 				.ToStatementString();
 
 			classPersisters = new ILoadable[joins+1];

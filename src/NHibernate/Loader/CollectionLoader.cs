@@ -16,11 +16,9 @@ namespace NHibernate.Loader {
 	public class CollectionLoader : OuterJoinLoader, ICollectionInitializer {
 		private CollectionPersister collectionPersister;
 		private IType idType;
-		private bool allowTwoPhaseLoad;
-
+		
 		public CollectionLoader(CollectionPersister persister, ISessionFactoryImplementor session) : base(session.Dialect) {
-			allowTwoPhaseLoad = !persister.IsSet;
-
+			
 			idType = persister.KeyType;
 
 			string alias = Alias( persister.QualifiedTableName, 0);
@@ -65,10 +63,6 @@ namespace NHibernate.Loader {
 
 		public void Initialize(object id, PersistentCollection collection, object owner, ISessionImplementor session) {
 			LoadCollection(session, id, idType, owner, collection);
-		}
-
-		protected override bool AllowTwoPhaseLoad {
-			get { return allowTwoPhaseLoad; }
 		}
 	}
 }
