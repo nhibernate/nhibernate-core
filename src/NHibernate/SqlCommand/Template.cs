@@ -199,7 +199,8 @@ namespace NHibernate.SqlCommand
 			}
 			else 
 			{
-				return dialect.QuoteForAliasName(column);
+				return column;
+				//return dialect.QuoteForAliasName(column);
 			}
 		}
 
