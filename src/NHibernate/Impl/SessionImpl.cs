@@ -3472,6 +3472,7 @@ namespace NHibernate.Impl
 					throw new ADOException("SQLException initializing collection", sqle);
 				}
 
+				ce.initialized = true;
 				ce.PostInitialize(collection);
 
 				//removed this because it is not in h2.1 - I was having problems with Bags and 
