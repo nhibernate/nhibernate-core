@@ -7,7 +7,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// </summary>
 	public class JoinedSubclassBase
 	{
-		private int _id;
+		private int _id = 0;
 		private long _testLong;
 		private string _testString;
 		private System.DateTime _testDate;
@@ -16,24 +16,27 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 		}
 
-		public int Id {
-			get {return _id;}
-			set {_id = value;}
+		public int Id 
+		{
+			get { return _id; }
 		}
 
-		public long TestLong {
-			get {return _testLong;}
-			set {_testLong = value;}
+		public long TestLong 
+		{
+			get { return _testLong; }
+			set { _testLong = value; }
 		}
 
-		public string TestString {
-			get {return _testString;}
-			set {_testString = value;}
+		public string TestString 
+		{
+			get { return _testString; }
+			set { _testString = value; }
 		}
 
-		public System.DateTime TestDateTime {
-			get {return _testDate;}
-			set {_testDate = value;}
+		public System.DateTime TestDateTime 
+		{
+			get { return _testDate; }
+			set { _testDate = value; }
 		}
 	}
 }

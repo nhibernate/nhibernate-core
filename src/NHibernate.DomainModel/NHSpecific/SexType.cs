@@ -7,7 +7,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// </summary>
 	public class SexType
 	{
-		private int _id;
+		private int id = 0;
 		private string _typeName;
 		private string _nonpublicString;
 
@@ -17,8 +17,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public int Id 
 		{
-			get {return _id;}
-			set {_id = value;}
+			get {return id;}
 		}
 
 		public string TypeName 

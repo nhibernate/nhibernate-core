@@ -4,7 +4,7 @@
 	<class name="NHibernate.DomainModel.NHSpecific.SimpleComponent, NHibernate.DomainModel" 
 		table="simp_com" 
 	>
-		<id name="Key" type="Int64" column="`i[d]_`"  >
+		<id name="Key" type="Int64" column="`i[d]_`" access="nosetter.pascalcase-m-underscore" >
 			<generator class="assigned" />
 		</id>
 		<property name="Name" />

@@ -7,7 +7,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// </summary>
 	public class SimpleComponent
 	{
-		private int _key;
+		private int m_Key = 0;
 		private string _name;
 		private string _address;
 		private int _count;
@@ -22,8 +22,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public int Key 
 		{
-			get {return _key;}
-			set {_key = value;}
+			get {return m_Key;}
 		}
 
 		public string Name 

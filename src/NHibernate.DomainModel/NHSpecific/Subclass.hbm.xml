@@ -6,8 +6,8 @@
 		discriminator-value="SUPER"
 	>
 		
-		<id name="Id" type="Int32" column="class_id" >
-			<generator class="assigned" />
+		<id name="Id" type="Int32" column="class_id" access="nosetter.camelcase-underscore">
+			<generator class="native" />
 		</id>
 		
 		<discriminator column="disc_column" type="String" />

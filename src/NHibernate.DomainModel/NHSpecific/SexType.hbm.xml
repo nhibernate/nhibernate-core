@@ -5,7 +5,7 @@
 		name="NHibernate.DomainModel.NHSpecific.SexType, NHibernate.DomainModel"
 		table="s_type"	
 	>
-		<id name="Id" column="id">
+		<id name="Id" column="id" access="nosetter.camelcase">
 			<generator class="native" />
 		</id>
 		<property name="TypeName" type="String" column="type_name" />

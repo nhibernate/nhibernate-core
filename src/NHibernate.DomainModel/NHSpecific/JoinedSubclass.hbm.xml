@@ -4,7 +4,13 @@
 		name="NHibernate.DomainModel.NHSpecific.JoinedSubclassBase, NHibernate.DomainModel" 
 		table="j_sc"	
 	>
-		<id name="Id" type="Int32" unsaved-value="0" column="joined_subclass_id" >
+		<id 
+			name="Id" 
+			type="Int32" 
+			unsaved-value="0" 
+			column="joined_subclass_id" 
+			access="nosetter.camelcase-underscore"
+		>
 			<generator class="native" />
 		</id>
 		
