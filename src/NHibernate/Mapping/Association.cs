@@ -1,14 +1,17 @@
 using System;
 using NHibernate.Loader;
 
-namespace NHibernate.Mapping {
+namespace NHibernate.Mapping 
+{
 	
-	public abstract class Association : Value {
+	public abstract class Association : Value 
+	{
 		private OuterJoinLoaderType joinedFetch;
 
 		protected Association(Table table) : base(table) {}
 
-		public override OuterJoinLoaderType OuterJoinFetchSetting {
+		public override OuterJoinLoaderType OuterJoinFetchSetting 
+		{
 			get { return joinedFetch; }
 			set { joinedFetch = value; }
 		}

@@ -1,15 +1,14 @@
 using System;
-using System.Text;
 using System.Collections;
-using NHibernate.Util;
+using System.Text;
+
 using NHibernate.Dialect;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping 
-{
-	
+{	
 	public class UniqueKey : Constraint 
 	{
-		
 		public string SqlConstraintString(Dialect.Dialect d) 
 		{
 			StringBuilder buf = new StringBuilder(" unique (");

@@ -4,14 +4,17 @@ using System.Collections;
 using NHibernate.Dialect;
 using NHibernate.Util;
 
-namespace NHibernate.Mapping {
-
-	public class PrimaryKey : Constraint {
+namespace NHibernate.Mapping 
+{
+	public class PrimaryKey : Constraint 
+	{
 		
-		public string SqlConstraintString(Dialect.Dialect d) {
+		public string SqlConstraintString(Dialect.Dialect d) 
+		{
 			StringBuilder buf = new StringBuilder(" primary key (");
 			int i=0;
-			foreach(Column col in ColumnCollection) {
+			foreach(Column col in ColumnCollection) 
+			{
 				buf.Append(col.GetQuotedName(d));
 				if (i < ColumnCollection.Count-1) buf.Append(StringHelper.CommaSpace);
 				i++;
@@ -19,12 +22,14 @@ namespace NHibernate.Mapping {
 			return buf.Append(StringHelper.ClosedParen).ToString();
 		}
 
-		public override string SqlConstraintString(Dialect.Dialect d, string constraintName) {
+		public override string SqlConstraintString(Dialect.Dialect d, string constraintName) 
+		{
 			StringBuilder buf = new StringBuilder(
 				d.GetAddPrimaryKeyConstraintString(constraintName))
 				.Append('(');
 			int i=0;
-			foreach(Column col in ColumnCollection) {
+			foreach(Column col in ColumnCollection) 
+			{
 				buf.Append( col.GetQuotedName(d) );
 				if (i < ColumnCollection.Count - 1) buf.Append(StringHelper.CommaSpace);
 				i++;

@@ -7,15 +7,14 @@ using NHibernate.Dialect;
 using NHibernate.Id;
 using NHibernate.Engine;
 
-namespace NHibernate.Mapping {
-	
+namespace NHibernate.Mapping 
+{
 	/// <summary>
 	/// Represents a Table in a database that an object gets mapped against.
 	/// </summary>
-	public class Table : IRelationalModel {
-		
+	public class Table : IRelationalModel 
+	{	
 		private string name;
-		private bool quoted;
 		private string schema;
 		private SequencedHashMap columns = new SequencedHashMap();
 		private Value idValue;
@@ -24,9 +23,11 @@ namespace NHibernate.Mapping {
 		private IDictionary foreignKeys = new Hashtable();
 		private IDictionary uniqueKeys = new Hashtable();
 		private int uniqueInteger;
+		private bool quoted;
 		private static int tableCounter = 0;
 
-		public Table() {
+		public Table() 
+		{
 			uniqueInteger = tableCounter++;
 		}
 
@@ -36,13 +37,6 @@ namespace NHibernate.Mapping {
 			return schema==null ? quotedName : schema + StringHelper.Dot + quotedName;
 		}
 
-//		/// <summary>
-//		/// Returns the QualifiedName for the table by combining the Schema and Name property.
-//		/// </summary>
-//		public string QualifiedName {
-//			get { return (schema == null) ? name : schema + StringHelper.Dot + name; }
-//		}
-
 		
 		/// <summary>
 		/// Returns the QualifiedName for the table using the specified Qualifier
@@ -50,12 +44,16 @@ namespace NHibernate.Mapping {
 		/// <param name="defaultQualifier">The Qualifier to use when accessing the table.</param>
 		/// <returns>A String representing the Qualified name.</returns>
 		/// <remarks>If this were used with MSSQL it would return a dbo.table_name.</remarks>
-		public string GetQualifiedName(Dialect.Dialect dialect, string defaultQualifier) {
+		public string GetQualifiedName(Dialect.Dialect dialect, string defaultQualifier) 
+		{
 			string quotedName = GetQuotedName(dialect);
-			return (schema==null) ? ( (defaultQualifier==null) ? quotedName : defaultQualifier + StringHelper.Dot + name ) : GetQualifiedName(dialect);
+			return  schema==null  ? 
+					( (defaultQualifier==null) ? quotedName : defaultQualifier + StringHelper.Dot + quotedName ) : 
+					GetQualifiedName(dialect);
 		}
 
-		public string Name {
+		public string Name 
+		{
 			get { return name; }
 			set 
 			{ 
@@ -77,43 +75,58 @@ namespace NHibernate.Mapping {
 				dialect.OpenQuote + name + dialect.CloseQuote :
 				name;
 		}
-		public Column GetColumn(int n) {
+
+		public Column GetColumn(int n) 
+		{
 			IEnumerator iter = columns.Values.GetEnumerator();
 			for (int i=0; i<n; i++) iter.MoveNext();
 			return (Column) iter.Current;
 		}
 		
-		public void AddColumn(Column column) {
+		public void AddColumn(Column column) 
+		{
 			Column old = (Column) columns[ column.Name ];
-			if (old == null) {
+			if (old == null) 
+			{
 				columns[column.Name] = column;
 				column.uniqueInteger = columns.Count;
-			} else {
+			} 
+			else 
+			{
 				column.uniqueInteger = old.uniqueInteger;
 			}
 		}
-		public int ColumnSpan {
+		public int ColumnSpan 
+		{
 			get { return columns.Count; }
 		}
-		public ICollection ColumnCollection {
+		public ICollection ColumnCollection 
+		{
 			get { return columns.Values; }
 		}
-		public ICollection IndexCollection {
+		public ICollection IndexCollection
+		{
 			get { return indexes.Values; }
 		}
-		public ICollection ForeignKeyCollection {
+		public ICollection ForeignKeyCollection 
+		{
 			get { return foreignKeys.Values; }
 		}
-		public ICollection UniqueKeyCollection {
+		public ICollection UniqueKeyCollection 
+		{
 			get { return uniqueKeys.Values; }
 		}
 
-		public string SqlAlterString(Dialect.Dialect dialect, IMapping p, DataTable tableInfo) {
+		//TODO: NH2.0.3 has an ICollection SqlAlterStrings method instead of this one...
+		public string SqlAlterString(Dialect.Dialect dialect, IMapping p, DataTable tableInfo) 
+		{
 			StringBuilder buf = new StringBuilder(50);
-			foreach(Column col in ColumnCollection) {
+			foreach(Column col in ColumnCollection) 
+			{
 				DataColumn columnInfo = tableInfo.Columns[ col.Name ];
 
-				if (columnInfo == null) {
+				if (columnInfo == null) 
+				{
 					// the column doesnt exist at all
 					if (buf.Length != 0)
 						buf.Append(StringHelper.CommaSpace);
@@ -133,7 +146,8 @@ namespace NHibernate.Mapping {
 
 		}
 
-		public string SqlCreateString(Dialect.Dialect dialect, IMapping p) {
+		public string SqlCreateString(Dialect.Dialect dialect, IMapping p) 
+		{
 			StringBuilder buf = new StringBuilder("create table ")
 				.Append( GetQualifiedName(dialect) )
 				.Append( " (");

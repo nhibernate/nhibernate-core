@@ -5,40 +5,48 @@ using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Util;
 
-namespace NHibernate.Mapping {
-	
-	public abstract class Constraint : IRelationalModel {
+namespace NHibernate.Mapping 
+{
+	public abstract class Constraint : IRelationalModel 
+	{
 		private string name;
 		private ArrayList columns = new ArrayList();
 		private Table table;
 
-		public string Name {
+		public string Name 
+		{
 			get { return name; }
 			set { name = value; }
 		}
 
-		public ICollection ColumnCollection {
+		public ICollection ColumnCollection 
+		{
 			get { return columns; }
 		}
 
-		public void AddColumn(Column column) {
+		public void AddColumn(Column column) 
+		{
 			if ( !columns.Contains(column) ) columns.Add(column);
 		}
 
-		public int ColumnSpan {
+		public int ColumnSpan 
+		{
 			get { return columns.Count; }
 		}
 
-		public Table Table {
+		public Table Table 
+		{
 			get { return table; }
 			set { table = value; }
 		}
 
-		public string SqlDropString(Dialect.Dialect dialect) {
+		public string SqlDropString(Dialect.Dialect dialect) 
+		{
 			return "alter table " + Table.GetQualifiedName(dialect)+ " drop constraint " + Name;
 		}
 
-		public string SqlCreateString(Dialect.Dialect dialect, IMapping p) {
+		public string SqlCreateString(Dialect.Dialect dialect, IMapping p) 
+		{
 			StringBuilder buf = new StringBuilder("alter table ")
 				.Append( Table.GetQualifiedName(dialect) )
 				.Append( SqlConstraintString( dialect, Name ) );

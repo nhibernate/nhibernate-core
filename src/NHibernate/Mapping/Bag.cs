@@ -5,7 +5,7 @@ using NHibernateBag=NHibernate.Collection.Bag;
 namespace NHibernate.Mapping
 {
 	/// <summary>
-	///  bag permits duplicates, so it has no primary key
+	/// A bag permits duplicates, so it has no primary key
 	/// </summary>
 	public class Bag : Collection
 	{

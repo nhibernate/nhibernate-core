@@ -6,90 +6,121 @@ using NHibernate.Loader;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Mapping {
+namespace NHibernate.Mapping 
+{
 	/// <summary>
 	/// A value represents a simple thing that maps down to a table column or columns.
 	/// Higher level things like classes, properties and collection add semantics to instances
 	/// of this class
 	/// </summary>
-	public class Value {
+	public class Value 
+	{
 		private ArrayList columns = new ArrayList();
 		private IType type;
 		private IDictionary identifierGeneratorProperties;
 		private string identifierGeneratorStrategy = "assigned";
 		private string nullValue;
 		private Table table;
+		private Formula formula;
 
-		public Value(Table table) {
+		public Value(Table table) 
+		{
 			this.table = table;
 		}
 
-		public virtual void AddColumn(Column column) {
+		public virtual void AddColumn(Column column) 
+		{
 			if ( !columns.Contains(column) ) columns.Add(column);
 		}
-		public virtual int ColumnSpan {
+		public virtual int ColumnSpan 
+		{
 			get { return columns.Count; }
 		}
-		public virtual ICollection ColumnCollection {
+		public virtual ICollection ColumnCollection 
+		{
 			get { return columns; }
 		}
-		public virtual IList ConstraintColumns {
+
+		public virtual IList ConstraintColumns 
+		{
 			get { return columns; }
 		}
-		public virtual IType Type {
+
+		public virtual IType Type 
+		{
 			get { return type; }
-			set {
+			set 
+			{
 				this.type = value;
 				int count = 0;
 				
-				foreach(Column col in ColumnCollection) {
+				foreach(Column col in ColumnCollection) 
+				{
 					col.Type = type;
 					col.TypeIndex = count++;
 				}
 			}
 		}
 
-		public Table Table {
+		public Table Table 
+		{
 			get { return table; }
 			set { table = value; }
 		}
 
-		public virtual void CreateForeignKey() {
+		public virtual void CreateForeignKey() 
+		{
 		}
 
-		public void CreateForeignKeyOfClass(System.Type persistentClass) {
+		public void CreateForeignKeyOfClass(System.Type persistentClass) 
+		{
 			ForeignKey fk = table.CreateForeignKey( ConstraintColumns );
 			fk.ReferencedClass = persistentClass;
 		}
 
-		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect) {
-			
-			return IdentifierGeneratorFactory.Create(identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect);
+		private IIdentifierGenerator uniqueIdentifierGenerator;
 
+		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect) 
+		{
+			if ( uniqueIdentifierGenerator==null ) 
+			{
+				uniqueIdentifierGenerator = IdentifierGeneratorFactory.Create(identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect);
+			}
+
+			return uniqueIdentifierGenerator;
 		}
 
-		public virtual void SetTypeByReflection(System.Type propertyClass, string propertyName) {
-			try {
-				if (type==null) {
+		public virtual void SetTypeByReflection(System.Type propertyClass, string propertyName) 
+		{
+			try 
+			{
+				if (type==null) 
+				{
 					type = ReflectHelper.ReflectedPropertyType(propertyClass, propertyName);
 					int count = 0;
-					foreach(Column col in ColumnCollection) {
+					foreach(Column col in ColumnCollection) 
+					{
 						col.Type = type;
 						col.TypeIndex = count++;
 					}
 				}
-			} catch (HibernateException he) {
+			} 
+			catch (HibernateException he) 
+			{
 				throw new MappingException("Problem trying to set property type by reflection", he);
 			}
 		}
 
-		public virtual OuterJoinLoaderType OuterJoinFetchSetting {
-			get { 
-				return OuterJoinLoaderType.Lazy; 
-			}
-			set {
-				throw new NotSupportedException();
-			}
+		public virtual OuterJoinLoaderType OuterJoinFetchSetting 
+		{
+			get { return OuterJoinLoaderType.Lazy;  }
+			set { throw new NotSupportedException(); }
+		}
+
+		public IDictionary IdentifierGeneratorProperties 
+		{
+			get { return identifierGeneratorProperties; }
+			set { identifierGeneratorProperties = value; }
 		}
 
 		public string IdentifierGeneratorStrategy {
@@ -97,24 +128,28 @@ namespace NHibernate.Mapping {
 			set { identifierGeneratorStrategy = value; }
 		}
 
-		public IDictionary IdentifierGeneratorProperties {
-			get { return identifierGeneratorProperties; }
-			set { identifierGeneratorProperties = value; }
-		}
+		
 
 		public virtual bool IsComposite {
 			get { return false; }
 		}
 
-		public string NullValue {
+		public string NullValue 
+		{
 			get { return nullValue; }
 			set { nullValue = value; }
 		}
 
-		public virtual bool IsAny {
-			get {
-				return false;
-			}
-		}		
+		public virtual bool IsAny 
+		{
+			get { return false; }
+		}	
+	
+		
+		public Formula Formula 
+		{
+			get { return formula; }
+			set { formula = value; }
+		}
 	}
 }

@@ -7,11 +7,12 @@ using NHibernate.Util;
 using NHibernate.Sql;
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Mapping {
-	
-	public class Column {
+namespace NHibernate.Mapping 
+{
+	public class Column 
+	{
 		
-		private const int DefaultPropertyLength = 255;
+		private static readonly int DefaultPropertyLength = 255;
 
 		private int length = DefaultPropertyLength;
 		private IType type;
@@ -23,17 +24,20 @@ namespace NHibernate.Mapping {
 		private bool quoted = false;
 		internal int uniqueInteger;
 
-		public int Length {
+		public int Length 
+		{
 			get { return length; }
 			set { length = value; }
 		}
 
-		public IType Type {
+		public IType Type 
+		{
 			get { return type; }
 			set { type = value; }
 		}
 
-		public string Name {
+		public string Name 
+		{
 			get { return name; }
 			set 
 			{ 
@@ -55,8 +59,14 @@ namespace NHibernate.Mapping {
 				d.OpenQuote + name + d.CloseQuote :
 				name;
 		}
-		public string Alias {
-			get {
+
+		public string Alias 
+		{
+			get 
+			{	
+				if(quoted) 
+					return "y" + uniqueInteger.ToString() + StringHelper.Underscore;
+				 
 				if ( name.Length < 11 )
 					return name;
 				else
@@ -64,12 +74,14 @@ namespace NHibernate.Mapping {
 			}
 		}
 
-		public bool IsNullable { 
+		public bool IsNullable 
+		{ 
 			get { return nullable; }
 			set { nullable = value; }
 		}
 
-		public Column(IType type, int typeIndex) {
+		public Column(IType type, int typeIndex) 
+		{
 			this.type = type;
 			this.typeIndex = typeIndex;
 		}
@@ -79,58 +91,77 @@ namespace NHibernate.Mapping {
 			set { typeIndex = value; }
 		}
 
-		public SqlType GetAutoSqlType(IMapping mapping) {
-			try {
+		public SqlType GetAutoSqlType(IMapping mapping) 
+		{
+			try 
+			{
 				return Type.SqlTypes(mapping)[TypeIndex];
 			}
-			catch(Exception e) {
+			catch(Exception e) 
+			{
 				throw new MappingException(
-					"GetAutoSqlType - Could not determine type for column " + name + " of type " + type.GetType().FullName + ": " + e.GetType().FullName, e);
+					"GetAutoSqlType - Could not determine type for column " + 
+					name + 
+					" of type " + 
+					type.GetType().FullName + 
+					": " + 
+					e.GetType().FullName, e);
 			}
 		}
 
-		public bool IsUnique {
+		public bool IsUnique 
+		{
 			get { return unique; }
 			set { unique = value; }
 		}
 
-		public string GetSqlType(Dialect.Dialect dialect, IMapping mapping) {
-			string returnString;
-
-			if(sqlType==null) {
+		public string GetSqlType(Dialect.Dialect dialect, IMapping mapping) 
+		{		
+			if(sqlType==null) 
+			{
 				SqlType sqlTypeObject = GetAutoSqlType(mapping);
 //				if(sqlTypeObject!=null) {
-					returnString = dialect.SqlTypeToString(sqlTypeObject);
+					return dialect.SqlTypeToString(sqlTypeObject);
 //				}
 //				else {
 //					returnString = dialect.GetTypeName( GetAutoDbType(mapping), Length );
 //				}
 			}
-			else {
-				returnString = sqlType;
+			else 
+			{
+				return sqlType;
 			}
-
-			return returnString;
 		}
 
-		public override bool Equals(object obj) {
+		public override bool Equals(object obj) 
+		{
 			return obj is Column && Equals( (Column) obj );
 		}
 
-		public bool Equals(Column column) {
+		public bool Equals(Column column) 
+		{
 			if (null == column) return false;
 			if (this == column) return true;
 
-			return name.Equals(column.name);
+			return name.Equals(column.Name);
 		}
 
-		public override int GetHashCode() {
+		public override int GetHashCode() 
+		{
 			return name.GetHashCode();
 		}
 
-		public string SqlType {
+		public string SqlType 
+		{
 			get { return sqlType; }
 			set { sqlType = value; }
 		}
+
+		public bool IsQuoted 
+		{
+			get { return quoted; }
+			set { quoted = value; }
+		}
+
 	}
 }
