@@ -4,7 +4,9 @@ using NHibernate.Type;
 
 namespace NHibernate.Util 
 {
-	
+	/// <summary>
+	/// Helper class for Reflection related code.
+	/// </summary>
 	public sealed class ReflectHelper
 	{
 		//TODO: this dependency is kind of bad - H2.0.3 comment
@@ -12,34 +14,40 @@ namespace NHibernate.Util
 		
 		private static System.Type[] NoClasses = new System.Type[0];
 		private static System.Type[] Object = new System.Type[] { typeof(object) };
-		private static MethodInfo ObjectEquals;
-
-		static ReflectHelper() 
-		{
-			MethodInfo eq;
-			try 
-			{
-				eq = typeof(object).GetMethod("Equals", BindingFlags.Instance | BindingFlags.Public );
-			} 
-			catch (Exception e) 
-			{
-				throw new AssertionFailure("Could not find Object.Equals()", e);
-			}
-			ObjectEquals = eq;
-		}
-
+		
+		/// <summary>
+		/// Determine if the specified <see cref="System.Type"/> overrides the
+		/// implementation of Equals from <see cref="Object"/>
+		/// </summary>
+		/// <param name="clazz">The <see cref="System.Type"/> to reflect.</param>
+		/// <returns><c>true</c> if any type in the heirarchy overrides Equals(object).</returns>
 		public static bool OverridesEquals(System.Type clazz) 
 		{
-			MethodInfo equals;
 			try 
 			{
-				equals = clazz.GetMethod("Equals");
+				MethodInfo equals = clazz.GetMethod("Equals", new System.Type[] { typeof(object) });
+				if( equals==null ) 
+				{
+					return false;
+				}
+				else 
+				{
+					// make sure that the DeclaringType is not System.Object - if that is the
+					// declaring type then there is no override.
+					return !equals.DeclaringType.Equals( typeof(object) );
+				}
 			} 
-			catch (Exception) 
+			catch( AmbiguousMatchException ) 
+			{
+				// an ambigious match means that there is an override and it
+				// can't determine which one to use.
+				return true;
+			}
+			catch (Exception ) 
 			{
 				return false;
 			}
-			return !ObjectEquals.Equals(equals);
+			
 		}
 
 		//TODO: most calls to this will be replaced by the Mapping.Property.GetGetter() but
