@@ -57,6 +57,10 @@
 				<includes name="nunit.framework.dll"/>
 			</references>
 			
+			<resources prefix="NHibernate.Test" dynamicprefix="true">
+				<includes name="hibernate.cfg.xml" />
+			</resources>
+			
 			<sources>
 				<includes name="**/*.cs" />
 			</sources>

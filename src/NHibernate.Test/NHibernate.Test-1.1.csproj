@@ -155,7 +155,7 @@
                 />
                 <File
                     RelPath = "hibernate.cfg.xml"
-                    BuildAction = "Content"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "MasterDetailTest.cs"
