@@ -116,9 +116,10 @@ namespace NHibernate.Test
 					long time = DateTime.Now.Ticks;
 					for(int i = 0; i < loops; i++) 
 					{
-						s = sessions.OpenSession();
-						Hibernate(s, simples, ids, n, "h" + runIndex.ToString());
-						s.Close();
+						using( s = sessions.OpenSession() ) 
+						{
+							Hibernate(s, simples, ids, n, "h" + runIndex.ToString());
+						}
 					}
 					hiber += DateTime.Now.Ticks - time;
 
