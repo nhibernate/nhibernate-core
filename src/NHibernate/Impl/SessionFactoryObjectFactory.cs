@@ -20,12 +20,16 @@ namespace NHibernate.Impl
 	/// TODO: verify that the AppDomain statements are correct.
 	/// </para>
 	/// </remarks>
-	public class SessionFactoryObjectFactory
+	public sealed class SessionFactoryObjectFactory
 	{
 		// to stop this class from being unloaded - this is a comment
 		// from h2.0.3 - is this applicable to .net also???
 		private static readonly SessionFactoryObjectFactory Instance; // not used !?!
 		private static readonly ILog log;
+		
+		// in h2.0.3 these use a class called "FastHashMap"
+		private static readonly Hashtable Instances = new Hashtable();
+		private static readonly Hashtable NamedInstances = new Hashtable();
 
 		/// <summary></summary>
 		static SessionFactoryObjectFactory()
@@ -35,10 +39,10 @@ namespace NHibernate.Impl
 			log.Debug( "initializing class SessionFactoryObjectFactory" );
 		}
 
-		// in h2.0.3 these use a class called "FastHashMap"
-		private static readonly Hashtable Instances = new Hashtable();
-		private static readonly Hashtable NamedInstances = new Hashtable();
-
+		private SessionFactoryObjectFactory()
+		{
+			// should not be created	
+		}
 
 		/// <summary>
 		/// Adds an Instance of the SessionFactory to the local "cache".

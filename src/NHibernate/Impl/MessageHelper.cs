@@ -10,6 +10,12 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal sealed class MessageHelper
 	{
+
+		private MessageHelper()
+		{
+			// should not be created	
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
