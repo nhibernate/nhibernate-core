@@ -189,7 +189,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Holder for version
 		/// </summary>
-		private String _version;
+		private int _version;
 	
 		/// <summary>
 		/// Holder for foo
@@ -603,7 +603,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for version
 		/// </summary>
-		public String version
+		public int version
 		{
 			get
 			{

@@ -30,7 +30,7 @@ namespace NHibernate.Test
 										  //										  "Stuff.hbm.xml",
 										  //										  "Container.hbm.xml",
 										  //										  "XY.hbm.xml"});
-									  }, false);
+									  }, true);
 		}
 
 		[Test]
@@ -44,6 +44,7 @@ namespace NHibernate.Test
 			fooBag.Add( new Foo() );
 			baz.fooBag=fooBag;
 			s.Save(baz);
+			s.Flush();
 			fooBag = baz.fooBag;
 			s.Find("from Baz baz left join fetch baz.fooBag");
 			Assert.IsTrue( NHibernate.IsInitialized(fooBag) );

@@ -1088,6 +1088,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Mapping\Formula.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Mapping\Index.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

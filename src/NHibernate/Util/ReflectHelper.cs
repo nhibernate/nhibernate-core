@@ -24,7 +24,7 @@ namespace NHibernate.Util {
 				try {
 					property.SetValue(target, value, new object[0]);
 				} catch (Exception e) {
-					throw new PropertyAccessException(e, "Exception occurrded", true, clazz, propertyName);
+					throw new PropertyAccessException(e, "Exception occurred", true, clazz, propertyName);
 				}
 			}
 			public PropertyInfo Property {
@@ -47,7 +47,7 @@ namespace NHibernate.Util {
 				try {
 					return property.GetValue(target, new object[0]);
 				} catch (Exception e) {
-					throw new PropertyAccessException(e, "Exception occurrded", false, clazz, propertyName);
+					throw new PropertyAccessException(e, "Exception occurred", false, clazz, propertyName);
 				}
 			}
 			public System.Type ReturnType {
