@@ -15,260 +15,42 @@ namespace NHibernate.DomainModel
  public class Baz : IComparable
  {
 
-	 /// <summary>
-	 /// Holds the _collectionComponent
-	 /// </summary> 
-	 private NestingComponent _collectionComponent;
-
-	 /// <summary>
-	 /// Gets or sets the _collectionComponent
-	 /// </summary> 
-	 public NestingComponent collectionComponent
-	 {
-		 get 
-		 {
-			 return _collectionComponent; 
-		 }
-		 set 
-		 {
-			 _collectionComponent = value;
-		 }
-	 }
-
 	#region Fields
-	/// <summary>
-	/// Holder for code
-	/// </summary>
+	
+	private NestingComponent _collectionComponent; 
 	private String _code;
-
-
-	 /// <summary>
-	 /// Holds the _timeArray
-	 /// </summary> 
-	 private DateTime[] _timeArray;
-
-	 /// <summary>
-	 /// Gets or sets the _timeArray
-	 /// </summary> 
-	 public DateTime[] timeArray
-	 {
-		 get 
-		 {
-			 return _timeArray; 
-		 }
-		 set 
-		 {
-			 _timeArray = value;
-		 }
-	 }
-	 /// <summary>
-	 /// Holds the _components
-	 /// </summary> 
-	 private FooComponent[] _components;
-
-	 /// <summary>
-	 /// Gets or sets the _components
-	 /// </summary> 
-	 public FooComponent[] components
-	 {
-		 get 
-		 {
-			 return _components; 
-		 }
-		 set 
-		 {
-			 _components = value;
-		 }
-	 }
-	 /// <summary>
-	 /// Holds the stringArray
-	 /// </summary> 
-	 private string[] _stringArray;
-
-	 /// <summary>
-	 /// Gets or sets the stringArray
-	 /// </summary> 
-	 public string[] stringArray
-	 {
-		 get 
-		 {
-			 return _stringArray; 
-		 }
-		 set 
-		 {
-			 _stringArray = value;
-		 }
-	 }
-	 
-	 /// <summary>
-	 /// Holds the intArray
-	 /// </summary> 
-	 private int[] _intArray;
-
-	 /// <summary>
-	 /// Gets or sets the intArray
-	 /// </summary> 
-	 public int[] intArray
-	 {
-		 get 
-		 {
-			 return _intArray; 
-		 }
-		 set 
-		 {
-			 _intArray = value;
-		 }
-	 }
-	 /// <summary>
-	 /// Holds the fooArray
-	 /// </summary> 
-	 private FooProxy[] _fooArray;
-
-	 /// <summary>
-	 /// Gets or sets the fooArray
-	 /// </summary> 
-	 public FooProxy[] fooArray
-	 {
-		 get 
-		 {
-			 return _fooArray; 
-		 }
-		 set 
-		 {
-			 _fooArray = value;
-		 }
-	 }
-
-	/// <summary>
-	/// Holder for count
-	/// </summary>
+	private DateTime[] _timeArray;
+	private FooComponent[] _components;
+	private string[] _stringArray;
+	private int[] _intArray;
+	private FooProxy[] _fooArray;
 	private Int32 _count;
-	
-	/// <summary>
-	/// Holder for name
-	/// </summary>
 	private String _name;
-	
-	/// <summary>
-	/// Holder for foo
-	/// </summary>
 	private Foo _foo;
-	
-	/// <summary>
-	/// Holder for stringList
-	/// </summary>
 	private System.Collections.IList _stringList;
-	
-	/// <summary>
-	/// Holder for fees
-	/// </summary>
 	private System.Collections.IList _fees;
-	
-	/// <summary>
-	/// Holder for customs
-	/// </summary>
 	private System.Collections.IList _customs;
-	
-	/// <summary>
-	/// Holder for topComponents
-	/// </summary>
 	private System.Collections.IList _topComponents;
-	
-	/// <summary>
-	/// Holder for fooToGlarch
-	/// </summary>
 	private System.Collections.IDictionary _fooToGlarch;
-	
-	/// <summary>
-	/// Holder for fooComponentToFoo
-	/// </summary>
 	private System.Collections.IDictionary _fooComponentToFoo;
-	
-	/// <summary>
-	/// Holder for glarchToFoo
-	/// </summary>
 	private System.Collections.IDictionary _glarchToFoo;
-	
-	/// <summary>
-	/// Holder for stringDateMap
-	/// </summary>
 	private System.Collections.IDictionary _stringDateMap;
-	
-	/// <summary>
-	/// Holder for topGlarchez
-	/// </summary>
 	private System.Collections.IDictionary _topGlarchez;
-	
-	/// <summary>
-	/// Holder for cachedMap
-	/// </summary>
 	private System.Collections.IDictionary _cachedMap;
-	
-	/// <summary>
-	/// Holder for stringGlarchMap
-	/// </summary>
 	private System.Collections.IDictionary _stringGlarchMap;
-	
-	/// <summary>
-	/// Holder for anyToAny
-	/// </summary>
 	private System.Collections.IDictionary _anyToAny;
-	
-	/// <summary>
-	/// Holder for fooSet
-	/// </summary>
 	private System.Collections.IDictionary _fooSet;
-	
-	/// <summary>
-	/// Holder for stringSet
-	/// </summary>
 	private System.Collections.IDictionary _stringSet;
-	
-	/// <summary>
-	/// Holder for topFoos
-	/// </summary>
 	private System.Collections.IDictionary _topFoos;
-	
-	/// <summary>
-	/// Holder for cascadingBars
-	/// </summary>
 	private System.Collections.IDictionary _cascadingBars;
-	
-	/// <summary>
-	/// Holder for cached
-	/// </summary>
 	private System.Collections.IDictionary _cached;
-	
-	/// <summary>
-	/// Holder for sortablez
-	/// </summary>
 	private System.Collections.IDictionary _sortablez;
-	
-	/// <summary>
-	/// Holder for bag
-	/// </summary>
 	private System.Collections.IList _bag;
-	
-	/// <summary>
-	/// Holder for fooBag
-	/// </summary>
 	private System.Collections.IList _fooBag;
-	
-	/// <summary>
-	/// Holder for bazez
-	/// </summary>
 	private System.Collections.IList _bazez;
-	
-	/// <summary>
-	/// Holder for idFooBag
-	/// </summary>
 	private System.Collections.IList _idFooBag;
-	
-	/// <summary>
-	/// Holder for byteBag
-	/// </summary>
 	private System.Collections.IList _byteBag;
-	
+
 	#endregion
 
 	#region Constructors
@@ -283,10 +65,26 @@ namespace NHibernate.DomainModel
 	#endregion
 	
 	#region Properties
+	
+	 /// <summary>
+	 /// Gets or sets the _collectionComponent
+	 /// </summary> 
+	 public NestingComponent CollectionComponent
+	 {
+		 get 
+		 {
+			 return _collectionComponent; 
+		 }
+		 set 
+		 {
+			 _collectionComponent = value;
+		 }
+	 }
+
 	/// <summary>
-	/// Get/set for code
+	/// Get/set for Code
 	/// </summary>
-	public String code
+	public String Code
 	{
 		get
 		{
@@ -301,7 +99,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for count
 	/// </summary>
-	public Int32 count
+	public Int32 Count
 	{
 		get
 		{
@@ -316,7 +114,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for name
 	/// </summary>
-	public String name
+	public String Name
 	{
 		get
 		{
@@ -329,9 +127,9 @@ namespace NHibernate.DomainModel
 	}
 	
 	/// <summary>
-	/// Get/set for foo
+	/// Get/set for Foo
 	/// </summary>
-	public Foo foo
+	public Foo Foo
 	{
 		get
 		{
@@ -346,7 +144,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for stringList
 	/// </summary>
-	public System.Collections.IList stringList
+	public System.Collections.IList StringList
 	{
 		get
 		{
@@ -361,7 +159,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for fees
 	/// </summary>
-	public System.Collections.IList fees
+	public System.Collections.IList Fees
 	{
 		get
 		{
@@ -376,7 +174,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for customs
 	/// </summary>
-	public System.Collections.IList customs
+	public System.Collections.IList Customs
 	{
 		get
 		{
@@ -391,7 +189,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for topComponents
 	/// </summary>
-	public System.Collections.IList topComponents
+	public System.Collections.IList TopComponents
 	{
 		get
 		{
@@ -406,7 +204,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for fooToGlarch
 	/// </summary>
-	public System.Collections.IDictionary fooToGlarch
+	public System.Collections.IDictionary FooToGlarch
 	{
 		get
 		{
@@ -421,7 +219,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for fooComponentToFoo
 	/// </summary>
-	public System.Collections.IDictionary fooComponentToFoo
+	public System.Collections.IDictionary FooComponentToFoo
 	{
 		get
 		{
@@ -436,7 +234,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for glarchToFoo
 	/// </summary>
-	public System.Collections.IDictionary glarchToFoo
+	public System.Collections.IDictionary GlarchToFoo
 	{
 		get
 		{
@@ -451,7 +249,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for stringDateMap
 	/// </summary>
-	public System.Collections.IDictionary stringDateMap
+	public System.Collections.IDictionary StringDateMap
 	{
 		get
 		{
@@ -466,7 +264,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for topGlarchez
 	/// </summary>
-	public System.Collections.IDictionary topGlarchez
+	public System.Collections.IDictionary TopGlarchez
 	{
 		get
 		{
@@ -481,7 +279,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for cachedMap
 	/// </summary>
-	public System.Collections.IDictionary cachedMap
+	public System.Collections.IDictionary CachedMap
 	{
 		get
 		{
@@ -496,7 +294,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for stringGlarchMap
 	/// </summary>
-	public System.Collections.IDictionary stringGlarchMap
+	public System.Collections.IDictionary StringGlarchMap
 	{
 		get
 		{
@@ -511,7 +309,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for anyToAny
 	/// </summary>
-	public System.Collections.IDictionary anyToAny
+	public System.Collections.IDictionary AnyToAny
 	{
 		get
 		{
@@ -522,11 +320,74 @@ namespace NHibernate.DomainModel
 			this._anyToAny = value;
 		}
 	}
+
+	/// <summary>
+	/// Gets or sets the intArray
+	/// </summary> 
+	public int[] IntArray
+	{
+		get 
+		{
+			return _intArray; 
+		}
+		set 
+		{
+			_intArray = value;
+		}
+	}
+
+	 /// <summary>
+	 /// Gets or sets the _components
+	 /// </summary> 
+	 public FooComponent[] Components
+	 {
+		 get 
+		 {
+			 return _components; 
+		 }
+		 set 
+		 {
+			 _components = value;
+		 }
+	 }
+	 
+	 /// <summary>
+	 /// Gets or sets the stringArray
+	 /// </summary> 
+	 public string[] StringArray
+	 {
+		 get 
+		 {
+			 return _stringArray; 
+		 }
+		 set 
+		 {
+			 _stringArray = value;
+		 }
+	 }
+	 
 	
+	 /// <summary>
+	 /// Gets or sets the fooArray
+	 /// </summary> 
+	 public FooProxy[] FooArray
+	 {
+		 get 
+		 {
+			 return _fooArray; 
+		 }
+		 set 
+		 {
+			 _fooArray = value;
+		 }
+	 }
+
+	
+
 	/// <summary>
 	/// Get/set for fooSet
 	/// </summary>
-	public System.Collections.IDictionary fooSet
+	public System.Collections.IDictionary FooSet
 	{
 		get
 		{
@@ -538,10 +399,25 @@ namespace NHibernate.DomainModel
 		}
 	}
 	
+	 /// <summary>
+	 /// Gets or sets the _timeArray
+	 /// </summary> 
+	 public DateTime[] TimeArray
+	 {
+		 get 
+		 {
+			 return _timeArray; 
+		 }
+		 set 
+		 {
+			 _timeArray = value;
+		 }
+	 }
+
 	/// <summary>
 	/// Get/set for stringSet
 	/// </summary>
-	public System.Collections.IDictionary stringSet
+	public System.Collections.IDictionary StringSet
 	{
 		get
 		{
@@ -556,7 +432,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for topFoos
 	/// </summary>
-	public System.Collections.IDictionary topFoos
+	public System.Collections.IDictionary TopFoos
 	{
 		get
 		{
@@ -571,7 +447,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for cascadingBars
 	/// </summary>
-	public System.Collections.IDictionary cascadingBars
+	public System.Collections.IDictionary CascadingBars
 	{
 		get
 		{
@@ -586,7 +462,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for cached
 	/// </summary>
-	public System.Collections.IDictionary cached
+	public System.Collections.IDictionary Cached
 	{
 		get
 		{
@@ -601,7 +477,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for sortablez
 	/// </summary>
-	public System.Collections.IDictionary sortablez
+	public System.Collections.IDictionary Sortablez
 	{
 		get
 		{
@@ -616,7 +492,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for bag
 	/// </summary>
-	public System.Collections.IList bag
+	public System.Collections.IList Bag
 	{
 		get
 		{
@@ -631,7 +507,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for fooBag
 	/// </summary>
-	public System.Collections.IList fooBag
+	public System.Collections.IList FooBag
 	{
 		get
 		{
@@ -646,7 +522,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for bazez
 	/// </summary>
-	public System.Collections.IList bazez
+	public System.Collections.IList Bazez
 	{
 		get
 		{
@@ -661,7 +537,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for idFooBag
 	/// </summary>
-	public System.Collections.IList idFooBag
+	public System.Collections.IList IdFooBag
 	{
 		get
 		{
@@ -676,7 +552,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for byteBag
 	/// </summary>
-	public System.Collections.IList byteBag
+	public System.Collections.IList ByteBag
 	{
 		get
 		{
@@ -690,48 +566,48 @@ namespace NHibernate.DomainModel
 	
 	#endregion
 
-	 public void setDefaults() 
+	 public void SetDefaults() 
 	 {
-		 stringSet = new Hashtable();
-		 stringSet.Add("foo", new object());
-		 stringSet.Add("bar", new object());
-		 stringSet.Add("baz", new object());
+		 StringSet = new Hashtable();
+		 StringSet.Add("foo", new object());
+		 StringSet.Add("bar", new object());
+		 StringSet.Add("baz", new object());
 
-		 stringDateMap = new SortedList();
-		 stringDateMap.Add( "now", DateTime.Now );
-		 stringDateMap.Add( "never", null );
-		 stringDateMap.Add( "big bang", new DateTime(0) );
+		 StringDateMap = new SortedList();
+		 StringDateMap.Add( "now", DateTime.Now );
+		 StringDateMap.Add( "never", null );
+		 StringDateMap.Add( "big bang", new DateTime(0) );
 		 ArrayList list = new ArrayList();
-		 list.AddRange(stringSet.Keys); 
-		 stringList = list;
-		 intArray = new int[] { 1,3,3,7 };
-		 fooArray =new Foo[0];
-		 stringArray = (String[]) list.ToArray(typeof(string) );
-		 customs = new ArrayList();
-		 customs.Add( new String[] { "foo", "bar" } );
-		 customs.Add( new String[] { "A", "B" } );
-		 customs.Add( new String[] { "1", "2" } );
+		 list.AddRange(StringSet.Keys); 
+		 StringList = list;
+		 IntArray = new int[] { 1,3,3,7 };
+		 FooArray =new Foo[0];
+		 StringArray = (String[]) list.ToArray(typeof(string) );
+		 Customs = new ArrayList();
+		 Customs.Add( new String[] { "foo", "bar" } );
+		 Customs.Add( new String[] { "A", "B" } );
+		 Customs.Add( new String[] { "1", "2" } );
 		
-		 fooSet = new Hashtable();
-		 components = new FooComponent[] {
+		 FooSet = new Hashtable();
+		 Components = new FooComponent[] {
 											 new FooComponent("foo", 42, null, null),
 											 new FooComponent("bar", 88, null, new FooComponent("sub", 69, null, null) )
 										 };
-		 timeArray = new DateTime[] { new DateTime(), new DateTime(), DateTime.MinValue, new DateTime(0) };
+		 TimeArray = new DateTime[] { new DateTime(), new DateTime(), DateTime.MinValue, new DateTime(0) };
 		
-		 count = 667;
-		 name="Bazza";
-		 topComponents = new ArrayList();
-		 topComponents.Add( new FooComponent("foo", 11, new DateTime[] { new DateTime(), new DateTime(2123,1,1) }, null) );
-		 topComponents.Add( new FooComponent("bar", 22, new DateTime[] { new DateTime(2007,2,3), new DateTime(1945,6,1) }, null) );
-		 topComponents.Add( null );
-		 bag = new ArrayList();
-		 bag.Add("duplicate");
-		 bag.Add("duplicate");
-		 bag.Add("duplicate");
-		 bag.Add("unique");
+		 Count = 667;
+		 Name="Bazza";
+		 TopComponents = new ArrayList();
+		 TopComponents.Add( new FooComponent("foo", 11, new DateTime[] { new DateTime(), new DateTime(2123,1,1) }, null) );
+		 TopComponents.Add( new FooComponent("bar", 22, new DateTime[] { new DateTime(2007,2,3), new DateTime(1945,6,1) }, null) );
+		 TopComponents.Add( null );
+		 Bag = new ArrayList();
+		 Bag.Add("duplicate");
+		 Bag.Add("duplicate");
+		 Bag.Add("duplicate");
+		 Bag.Add("unique");
 		 
-		 cached = new SortedList();
+		 Cached = new SortedList();
 
 		 CompositeElement ce = new CompositeElement();
 		 ce.foo = "foo";
@@ -739,16 +615,16 @@ namespace NHibernate.DomainModel
 		 CompositeElement ce2 = new CompositeElement();
 		 ce2.foo = "fooxxx";
 		 ce2.bar = "barxxx";
-		 cached.Add(ce, new object());
-		 cached.Add(ce2, new object());
-		 cachedMap = new SortedList();
-		 cachedMap.Add(this, ce);
+		 Cached.Add(ce, new object());
+		 Cached.Add(ce2, new object());
+		 CachedMap = new SortedList();
+		 CachedMap.Add(this, ce);
 	 }
 	 #region IComparable Members
 
 	 public int CompareTo(object obj)
 	 {
-		 return ( (Baz) obj ).code.CompareTo(code);
+		 return ( (Baz) obj ).Code.CompareTo(Code);
 	 }
 
 	 #endregion

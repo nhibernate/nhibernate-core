@@ -49,23 +49,23 @@ namespace NHibernate.Test
 			IList fooBag = new ArrayList();
 			fooBag.Add( new Foo() );
 			fooBag.Add( new Foo() );
-			baz.fooBag=fooBag;
+			baz.FooBag=fooBag;
 			s.Save(baz);
-			fooBag = baz.fooBag;
+			fooBag = baz.FooBag;
 			s.Find("from Baz baz left join fetch fooBag");
 			Assert.IsTrue( NHibernate.IsInitialized(fooBag) );
-			Assert.IsTrue( fooBag==baz.fooBag );
-			Assert.IsTrue( baz.fooBag.Count==2 );
+			Assert.IsTrue( fooBag==baz.FooBag );
+			Assert.IsTrue( baz.FooBag.Count==2 );
 			s.Close();
 			
 			s = sessions.OpenSession();
-			baz = (Baz) s.Load( typeof(Baz), baz.code );
-			Object bag = baz.fooBag;
+			baz = (Baz) s.Load( typeof(Baz), baz.Code );
+			Object bag = baz.FooBag;
 			Assert.IsFalse( NHibernate.IsInitialized(bag) );
 			s.Find("from Baz baz left join fetch fooBag");
 			Assert.IsFalse( NHibernate.IsInitialized(bag) );
-			Assert.IsTrue( bag==baz.fooBag );
-			Assert.IsTrue( baz.fooBag.Count==2 );
+			Assert.IsTrue( bag==baz.FooBag );
+			Assert.IsTrue( baz.FooBag.Count==2 );
 			s.Delete(baz);
 			s.Flush();
 
@@ -82,7 +82,7 @@ namespace NHibernate.Test
 			ss.Add(new Sortable("foo"), null);
 			ss.Add(new Sortable("bar"), null);
 			ss.Add(new Sortable("baz"), null);
-			b.sortablez = ss;
+			b.Sortablez = ss;
 			s.Save(b);
 			s.Flush();
 			t.Commit();
@@ -91,15 +91,15 @@ namespace NHibernate.Test
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
 			IList result = s.CreateCriteria(typeof(Baz))
-				.AddOrder( Expression.Order.Asc("name") )
+				.AddOrder( Expression.Order.Asc("Name") )
 				.List();
 			b = (Baz) result[0];
-			Assert.IsTrue( b.sortablez.Count==3 );
+			Assert.IsTrue( b.Sortablez.Count==3 );
 			
 			// compare the first item in the "Set" sortablez - can't reference
 			// the first item using b.sortablez[0] because it thinks 0 is the
 			// DictionaryEntry key - not the index.
-			foreach(DictionaryEntry de in b.sortablez) 
+			foreach(DictionaryEntry de in b.Sortablez) 
 			{
 				Assert.AreEqual( ((Sortable)de.Key).name, "bar");
 				break;
@@ -111,11 +111,11 @@ namespace NHibernate.Test
 
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
-			result = s.CreateQuery("from Baz baz left join fetch sortablez order by baz.name asc")
+			result = s.CreateQuery("from Baz baz left join fetch sortablez order by baz.Name asc")
 				.List();
 			b = (Baz) result[0];
-			Assert.IsTrue( b.sortablez.Count==3 );
-			foreach(DictionaryEntry de in b.sortablez) 
+			Assert.IsTrue( b.Sortablez.Count==3 );
+			foreach(DictionaryEntry de in b.Sortablez) 
 			{
 				Assert.AreEqual( ((Sortable)de.Key).name, "bar");
 				break;
@@ -126,11 +126,11 @@ namespace NHibernate.Test
 		
 			s = sessions.OpenSession();
 			t = s.BeginTransaction();
-			result = s.CreateQuery("from Baz baz order by baz.name asc")
+			result = s.CreateQuery("from Baz baz order by baz.Name asc")
 				.List();
 			b = (Baz) result[0];
-			Assert.IsTrue( b.sortablez.Count==3 );
-			foreach(DictionaryEntry de in b.sortablez) 
+			Assert.IsTrue( b.Sortablez.Count==3 );
+			foreach(DictionaryEntry de in b.Sortablez) 
 			{
 				Assert.AreEqual( ((Sortable)de.Key).name, "bar");
 				break;
@@ -159,9 +159,9 @@ namespace NHibernate.Test
 				Fee fee = new Fee();
 				list.Add(fee);
 			}
-			baz.fees = list;
+			baz.Fees = list;
 			list = s.Find("from Foo foo, Baz baz left join fetch fees");
-			Assert.IsTrue( NHibernate.IsInitialized( ( (Baz) ( (object[]) list[0] )[1] ).fees ) );
+			Assert.IsTrue( NHibernate.IsInitialized( ( (Baz) ( (object[]) list[0] )[1] ).Fees ) );
 			s.Delete(foo);
 			s.Delete(foo2);
 			s.Delete(baz);
@@ -175,7 +175,7 @@ namespace NHibernate.Test
 			ISession s = sessions.OpenSession();
 			Baz baz = new Baz();
 			IList list = new ArrayList();
-			baz.bazez =list;
+			baz.Bazez =list;
 			list.Add( new Baz() );
 			s.Save(baz);
 			s.Flush();
@@ -217,7 +217,7 @@ namespace NHibernate.Test
 			s.Close();
 			s = sessions.OpenSession();
 			Baz baz = (Baz) s.Load(typeof(Baz), id);
-			IDictionary foos = baz.fooSet;
+			IDictionary foos = baz.FooSet;
 			Assert.IsTrue( foos.Count==0 );
 			Foo foo = new Foo();
 			foos.Add(foo, null);

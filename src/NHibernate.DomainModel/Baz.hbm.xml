@@ -1,84 +1,189 @@
 <?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-
-	<class name="NHibernate.DomainModel.Baz, NHibernate.DomainModel" table="`baz baz baz`">
-		<id name="code" type="String">
-			<column name="baz_id" length="32"/>
+	<class 
+		name="NHibernate.DomainModel.Baz, NHibernate.DomainModel" 
+		table="`baz baz baz`"
+	>
+		<id 
+			name="Code" 
+			type="String"
+		>
+			<column 
+				name="baz_id" 
+				length="32"
+			/>
 			<generator class="uuid.hex"/>
 		</id>
-		<property name="count" column="count_count" type="Int32"/>
-		<property name="name" column="name_b"/>
-		<many-to-one name="foo" outer-join="true" class="NHibernate.DomainModel.Foo, NHibernate.DomainModel"/>
+		<property 
+			name="Count" 
+			column="count_count" 
+			type="Int32"
+		/>
+		<property 
+			name="Name" 
+			column="name_b"
+		/>
+		<many-to-one 
+			name="Foo" 
+			outer-join="true" 
+			class="NHibernate.DomainModel.Foo, NHibernate.DomainModel"
+		/>
 
-		<list name="stringList" table="string_list">
+		<list 
+			name="StringList" 
+			table="string_list"
+		>
 			<key>
-				<column name="id" length="16"/>
+				<column 
+					name="id" 
+					length="16"
+				/>
 			</key>
 			<index column="`i`"/>
-			<element column="element" type="String"/>
+			<element 
+				column="element" 
+				type="String"
+			/>
 		</list>
-		<primitive-array name="intArray" table="int_array">
+		<primitive-array 
+			name="IntArray" 
+			table="int_array"
+		>
 			<key>
-				<column name="id" length="16"/>
+				<column 
+					name="id" 
+					length="16"
+				/>
 			</key>
 			<index column="i"/>
-			<element column="j" type="Int32"/>
+			<element 
+				column="j" 
+				type="Int32"
+			/>
 		</primitive-array>
-		<set name="fooSet" lazy="true" order-by="string_">
+		<set 
+			name="FooSet" 
+			lazy="true" 
+			order-by="string_"
+		>
 			<key>
-				<column name="baz_id" length="16"/>
+				<column 
+					name="baz_id" 
+					length="16"
+				/>
 			</key>
-			<one-to-many class="NHibernate.DomainModel.Foo, NHibernate.DomainModel"/>
+			<one-to-many 
+				class="NHibernate.DomainModel.Foo, NHibernate.DomainModel"
+			/>
 		</set>
-		<array name="components" table="bazcomponents">
+		<array 
+			name="Components" 
+			table="bazcomponents"
+		>
 			<key>
-				<column name="baz_id" length="16"/>
+				<column 
+					name="baz_id" 
+					length="16"
+				/>
 			</key>
 			<index column="i"/>
-			<composite-element class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
+			<composite-element 
+				class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel"
+			>
 				<parent name="baz"/>
 				<property name="name">
-					<column name="name" length="56"/>
+					<column 
+						name="name" 
+						length="56"
+					/>
 				</property>
-				<property name="count" column="count_" type="Int32"/>
-				<nested-composite-element name="subcomponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
+				<property 
+					name="count" 
+					column="count_" 
+					type="Int32"
+				/>
+				<nested-composite-element 
+					name="subcomponent" 
+					class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel"
+				>
 					<property name="name" column="x_"/>
 					<property name="count" column="y_" type="Int32"/>
 				</nested-composite-element>
 			</composite-element>
 		</array>
-		<array name="timeArray">
+		<array name="TimeArray">
 			<key>
-				<column name="baz_id" length="16"/>
+				<column 
+					name="baz_id" 
+					length="16"
+				/>
 			</key>
 			<index column="j"/>
-			<element column="the_time" type="Time"/>
+			<element 
+				column="the_time" 
+				type="Time"
+			/>
 		</array>
-		<bag name="bag" order-by="`name!`" table="`$%^^b'a'g`">
+		<bag 
+			name="Bag" 
+			order-by="`name!`" 
+			table="`$%^^b'a'g`"
+		>
 			<key>
-				<column name="`baz_id@#$`" length="16"/>
+				<column 
+					name="`baz_id@#$`" 
+					length="16"
+				/>
 			</key>
-			<element column="`name!`" type="String"/>
+			<element 
+				column="`name!`" 
+				type="String"
+			/>
 		</bag>
-		<map name="fooToGlarch">
+		<map name="FooToGlarch">
 			<key>
-				<column name="baz_id" length="16"/>
+				<column 
+					name="baz_id" 
+					length="16"
+				/>
 			</key>
-			<index-many-to-many column="foo_id" class="NHibernate.DomainModel.Foo, NHibernate.DomainModel"/>
-			<many-to-many column="glarch_id" class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel"/>
+			<index-many-to-many 
+				column="foo_id" 
+				class="NHibernate.DomainModel.Foo, NHibernate.DomainModel"
+			/>
+			<many-to-many 
+				column="glarch_id" 
+				class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel"
+			/>
 		</map>
-		<map name="fooComponentToFoo">
+		<map name="FooComponentToFoo">
 			<jcs-cache usage="read-write"/>
 			<key>
-				<column name="baz_id" length="16"/>
+				<column 
+					name="baz_id" 
+					length="16"
+				/>
 			</key>
-			<composite-index class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
-				<key-property name="name" length="32"/>
-				<key-property name="count" column="count_" type="Int32"/>
+			<composite-index 
+				class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel"
+			>
+				<key-property 
+					name="name" 
+					length="32"
+				/>
+				<key-property 
+					name="count" 
+					column="count_" 
+					type="Int32"
+				/>
 			</composite-index>
-			<many-to-many column="foo_id" class="NHibernate.DomainModel.Foo, NHibernate.DomainModel" outer-join="true"/>
+			<many-to-many 
+				column="foo_id" 
+				class="NHibernate.DomainModel.Foo, NHibernate.DomainModel" 
+				outer-join="true"
+			/>
 		</map>
-		<map name="glarchToFoo">
+		<map name="GlarchToFoo">
 			<key>
 				<column name="gtf_baz_id" length="16"/>
 			</key>
@@ -86,19 +191,19 @@
 			<one-to-many class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel"/>
 		</map>
 		
-		<set name="stringSet" lazy="true" sort="NHibernate.DomainModel.StringComparator, NHibernate.DomainModel">
+		<set name="StringSet" lazy="true" sort="NHibernate.DomainModel.StringComparator, NHibernate.DomainModel">
 			<!--<jcs-cache usage="read-write"/>-->
 			<key column="id_"/>
 			<element column="element" type="String" not-null="true" length="32"/>
 		</set>
 	
-		<map name="stringDateMap" lazy="true" sort="NHibernate.DomainModel.ReverseComparator, NHibernate.DomainModel">
+		<map name="StringDateMap" lazy="true" sort="NHibernate.DomainModel.ReverseComparator, NHibernate.DomainModel">
 			<key column="id_"/>
 			<index column="map_key" type="String" length="32"/>
 			<element column="map_value" type="DateTime"/>
 		</map>
 	
-		<array name="fooArray" element-class="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel" where="i&lt;8">
+		<array name="FooArray" element-class="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel" where="i&lt;8">
 			<jcs-cache usage="read-write"/>
 			<key column="id_"/>
 			<index column="i"/>
@@ -107,12 +212,12 @@
 			</many-to-many>
 		</array>
 	
-		<bag name="fooBag" lazy="true" table="baz_foo" cascade="all" inverse="false">
+		<bag name="FooBag" lazy="true" table="baz_foo" cascade="all" inverse="false">
 			<key column="baz"/>
 			<many-to-many class="NHibernate.DomainModel.Foo, NHibernate.DomainModel" column="foo" outer-join="true"/>
 		</bag>
 	
-		<idbag name="idFooBag" lazy="true" table="baz_id_foo" cascade="all">
+		<idbag name="IdFooBag" lazy="true" table="baz_id_foo" cascade="all">
 			<collection-id column="pkid" type="Int64"> 
 				<generator class="hilo"/>
 			</collection-id>
@@ -120,7 +225,7 @@
 			<many-to-many class="NHibernate.DomainModel.Foo, NHibernate.DomainModel" column="foo" outer-join="true"/>
 		</idbag>
 	
-		<idbag name="byteBag" lazy="true" table="baz_byte_bag" cascade="all">
+		<idbag name="ByteBag" lazy="true" table="baz_byte_bag" cascade="all">
 			<collection-id column="pkid" type="Int64"> 
 				<generator class="hilo"/>
 			</collection-id>
@@ -128,19 +233,19 @@
 			<element type="Byte[]" column="bytez" not-null="true"/>
 		</idbag>
 	
-		<array name="stringArray">
+		<array name="StringArray">
 			<key column="id_"/>
 			<index column="i"/>
 			<element column="name" type="String"/>
 		</array>
 		
-		<list name="fees" lazy="true" cascade="all">
+		<list name="Fees" lazy="true" cascade="all">
 			<key column="bazid"/>
 			<index column="bazind"/>
 			<one-to-many class="NHibernate.DomainModel.Fee, NHibernate.DomainModel"/>
 		</list>
 		
-		<list name="customs">
+		<list name="Customs">
 			<key column="id_"/>
 			<index column="indx"/>
 			<element type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
@@ -149,7 +254,7 @@
 			</element>
 		</list>
 	
-		<list name="topComponents" table="topcomponents">
+		<list name="TopComponents" table="topcomponents">
 			<jcs-cache usage="read-write"/>
 			<key column="id_"/>
 			<index column="i"/>
@@ -159,23 +264,23 @@
 			</composite-element>
 		</list>
 		
-		<set name="topFoos">
+		<set name="TopFoos">
 			<key column="idtopbar" />
 			<one-to-many class = "NHibernate.DomainModel.Bar, NHibernate.DomainModel"/>
 		</set>
 	
-		<set name="cascadingBars" cascade="all">
+		<set name="CascadingBars" cascade="all">
 			<key column="idtopbar" />
 			<one-to-many class = "NHibernate.DomainModel.Bar, NHibernate.DomainModel"/>
 		</set>
 	
-		<map name="topGlarchez">
+		<map name="TopGlarchez">
 			<key column="idtopglarch" />
 			<index column="mapkey" type="Char"/>
 			<one-to-many class = "NHibernate.DomainModel.Glarch, NHibernate.DomainModel"/>
 		</map>
 		
-		<set name="cached" sort="natural" table="cached_set">
+		<set name="Cached" sort="natural" table="cached_set">
 			<jcs-cache usage="read-write"/>
 			<key column="baz"/>
 			<composite-element class="NHibernate.DomainModel.CompositeElement, NHibernate.DomainModel">
@@ -184,7 +289,7 @@
 			</composite-element>
 		</set>
 	
-		<map name="cachedMap" sort="natural" table="cached_map">
+		<map name="CachedMap" sort="natural" table="cached_map">
 			<jcs-cache usage="read-write"/>
 			<key column="baz"/>
 			<index-many-to-many column="another_baz" class="NHibernate.DomainModel.Baz, NHibernate.DomainModel"/>
@@ -194,13 +299,13 @@
 			</composite-element>
 		</map>
 		
-		<map name="stringGlarchMap" where="baz_map_index &gt; 'a' and tha_key is not null" cascade="all">
+		<map name="StringGlarchMap" where="baz_map_index &gt; 'a' and tha_key is not null" cascade="all">
 			<key column="baz_map_id"/>
 			<index column="baz_map_index" type="String"/>
 			<one-to-many class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel"/>
 		</map>
 		
-		<map name="anyToAny" lazy="true">
+		<map name="AnyToAny" lazy="true">
 			<key column="baz"/>
 			<index-many-to-any id-type="Int64">
 				<column name="ind_clazz_"/>
@@ -212,17 +317,17 @@
 			</many-to-any>
 		</map>
 		
-		<bag name="bazez" lazy="true" order-by="name_b desc" cascade="all">
+		<bag name="Bazez" lazy="true" order-by="name_b desc" cascade="all">
 			<key column="`baz id`"/>
 			<one-to-many class="NHibernate.DomainModel.Baz, NHibernate.DomainModel"/>
 		</bag>
 		
-		<set name="sortablez" sort="natural" cascade="all">
+		<set name="Sortablez" sort="natural" cascade="all">
 			<key column="baz"/>
 			<one-to-many class="NHibernate.DomainModel.Sortable, NHibernate.DomainModel"/>
 		</set>
 		
-		<component name="collectionComponent">
+		<component name="CollectionComponent">
 			<component name="Nested">
 				<property name="Str"/>
 				<bag name="Foos" cascade="all">
