@@ -28,7 +28,8 @@ namespace NHibernate.Collection
 		{
 			int length = /*(array==null) ? temp.Count :*/ ((System.Array)array).Length;
 			object result = System.Array.CreateInstance(persister.ElementClass, length);
-			for (int i=0; i<length; i++) {
+			for (int i=0; i<length; i++) 
+			{
 				object elt = /*(array==null) ? temp[i] :*/ ((System.Array)array).GetValue(i);
 				try 
 				{
@@ -54,7 +55,8 @@ namespace NHibernate.Collection
 		}
 
 
-		public ArrayHolder(ISessionImplementor session, CollectionPersister persister) : base(session) 
+		public ArrayHolder(ISessionImplementor session, CollectionPersister persister)
+			: base(session) 
 		{
 			elementClass = persister.ElementClass;
 		}
@@ -78,7 +80,7 @@ namespace NHibernate.Collection
 
 		public override ICollection Elements() 
 		{
-			if (array==null) return tempList;
+			//if (array==null) return tempList;
 			int length = ((System.Array)array).Length;
 			IList list = new ArrayList(length);
 			for (int i=0; i<length; i++) 
@@ -161,15 +163,8 @@ namespace NHibernate.Collection
 
 		public override object GetInitialValue(bool lazy) 
 		{
-			tempList = new ArrayList();
 			base.GetInitialValue(false);
-			array = System.Array.CreateInstance( elementClass, tempList.Count );
-			for (int i=0; i<tempList.Count; i++) 
-			{
-				((System.Array)array).SetValue(tempList[i],i);
-			}
 			session.AddArrayHolder(this);
-			tempList=null;
 			return array;
 		}
 
@@ -187,7 +182,8 @@ namespace NHibernate.Collection
 			get	{ return true;}
 		}
 
-		public ArrayHolder(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner) : base(session) 
+		public ArrayHolder(ISessionImplementor session, CollectionPersister persister, object disassembled, object owner)
+			: base(session) 
 		{
 			object[] cached = (object[]) disassembled;
 
@@ -197,15 +193,16 @@ namespace NHibernate.Collection
 			{
 				((System.Array)array).SetValue( persister.ElementType.Assemble(cached[i], session, owner), i);
 			}
+			initialized = true;
 		}
 
 		public override object Disassemble(CollectionPersister persister) 
 		{
-			int length = tempList.Count;
+			int length = ((System.Array)array).Length;
 			object[] result = new object[length];
 			for (int i=0; i<length; i++) 
 			{
-				result[i] = persister.ElementType.Disassemble( tempList[i], session);
+				result[i] = persister.ElementType.Disassemble( ((System.Array)array).GetValue(i) , session);
 			}
 			return result;
 		}
@@ -234,8 +231,10 @@ namespace NHibernate.Collection
 			}
 			for (int i=0; i<end; i++) 
 			{
-				if ( ((System.Array)array).GetValue(i)==null && ((System.Array)sn).GetValue(i)!=null )
+				if ( ((System.Array)array).GetValue(i)==null && ((System.Array)sn).GetValue(i)!=null ) 
+				{
 					deletes.Add( i );
+				}
 			}
 			return deletes;
 		}
