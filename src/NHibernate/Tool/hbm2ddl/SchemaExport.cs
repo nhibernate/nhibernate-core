@@ -114,7 +114,7 @@ namespace NHibernate.Tool.hbm2ddl {
 				if (!justDrop) {
 					for (int j=0; j<createSQL.Length; j++) {
 						try {
-							string formatted = dropSQL[j];
+							string formatted = createSQL[j];
 							if (delimiter!=null) formatted += delimiter;
 							if (script) Console.WriteLine(formatted);
 							if (outputFile!=null) fileOutput.WriteLine( formatted );
@@ -228,7 +228,7 @@ namespace NHibernate.Tool.hbm2ddl {
 						if ( filename.EndsWith( ".dll") || filename.EndsWith( ".exe") ) {
 							cfg.AddAssembly( filename );
 						} else {
-							cfg.AddFile(filename);
+							cfg.AddXmlFile(filename);
 						}
 					}
 				}
