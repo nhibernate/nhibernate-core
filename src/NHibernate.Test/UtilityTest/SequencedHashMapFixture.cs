@@ -391,5 +391,28 @@ namespace NHibernate.Test.UtilityTest
 
 			}
 		}
+
+		[Test]
+		public void Serialize() 
+		{
+			System.IO.MemoryStream stream = new System.IO.MemoryStream();
+			System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			f.Serialize(stream, _shm);
+			stream.Position = 0;
+
+			SequencedHashMap shm = (SequencedHashMap)f.Deserialize(stream);
+			stream.Close();
+
+			Assert.AreEqual( 3, shm.Count );
+			int index = 0;
+			foreach(DictionaryEntry de in shm) 
+			{
+				Assert.AreEqual( _expectedKeys[index], de.Key );
+				Assert.AreEqual( _expectedValues[index], de.Value );
+				index++;
+			}
+
+			Assert.AreEqual( 3, index );
+		}
 	}
 }
