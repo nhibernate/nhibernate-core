@@ -63,7 +63,7 @@ namespace NHibernate.Util
 
 		public static IType ReflectedPropertyType(System.Type theClass, string name) 
 		{
-			return TypeFactory.HueristicType( GetGetter(theClass, name).ReturnType.Name );
+			return TypeFactory.HueristicType( GetGetter(theClass, name).ReturnType.AssemblyQualifiedName ); 
 		}
 
 		/// <summary>

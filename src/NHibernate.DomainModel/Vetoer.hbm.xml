@@ -11,10 +11,6 @@
 			<generator class="uuid.hex" />
 		</id>
 		<property name="Name" />
-		<property name="Strings" type="System.String[]"/>
-		<!-- 
-			TODO: fix that NH is not recognizing this as an serializable object and that I have to add 
-			type="System.String[]" to the property
-		-->
+		<property name="Strings" /> 
 	</class>
 </hibernate-mapping>
