@@ -778,11 +778,13 @@ namespace NHibernate.Tool.hbm2net
 				{
 					// Collect the keys
 					foreignKeys = new SupportClass.HashSetSupport();
-					foreignKeys.Add(collection["key"].Attributes["column"].Value);
+					if (collection["key"].Attributes["column"] != null)
+						foreignKeys.Add(collection["key"].Attributes["column"].Value);
 					
 					for (System.Collections.IEnumerator iter = collection["key"].SelectNodes("urn:column", CodeGenerator.nsmgr).GetEnumerator(); iter.MoveNext(); )
 					{
-						foreignKeys.Add(((Element) iter.Current).Attributes["name"].Value);
+						if (((Element) iter.Current).Attributes["name"] != null)
+							foreignKeys.Add(((Element) iter.Current).Attributes["name"].Value);
 					}
 					
 					addImport(foreignClass);
