@@ -413,7 +413,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <value>False, unless overridden.</value>
 		/// <remarks>Inheritors should return true if the correct order is limit, offset</remarks>
-		public bool BindLimitParametersInReverseOrder 
+		public virtual bool BindLimitParametersInReverseOrder 
 		{
 			get { return false;}
 		}
@@ -423,7 +423,7 @@ namespace NHibernate.Dialect
 		/// <c>SELECT</c> statement rather than at the end?
 		/// </summary>
 		/// <value>false, unless overridden</value>
-		public bool BindLimitParametersFirst 
+		public virtual bool BindLimitParametersFirst 
 		{
 			get { return false;}
 		}
@@ -433,7 +433,7 @@ namespace NHibernate.Dialect
 		/// instead of a total number of returned rows?
 		/// </summary>
 		/// <returns>false, unless overridden</returns>
-		public bool UseMaxForLimit
+		public virtual bool UseMaxForLimit
 		{
 			get { return false;}
 		}
@@ -442,7 +442,7 @@ namespace NHibernate.Dialect
 		/// Should we use a <c>LIMIT</c> clause when there is no first result
 		/// specified?
 		/// </summary>
-		public bool PreferLimit
+		public virtual bool PreferLimit
 		{
 			get { return false; }
 		}
@@ -470,7 +470,7 @@ namespace NHibernate.Dialect
 		/// The results of this method should be integrated with the 
 		/// specialization's data.
 		/// </remarks>
-		public IDictionary AggregateFunctions 
+		public virtual IDictionary AggregateFunctions 
 		{
 			get { return aggregateFunctions;}
 		}

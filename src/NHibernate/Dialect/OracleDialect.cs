@@ -1,22 +1,27 @@
 using System;
 
 using NHibernate.Sql;
+using NHibernate.SqlCommand;
 
-namespace NHibernate.Dialect {
-
+namespace NHibernate.Dialect 
+{
 	/// <summary>
 	/// An SQL dialect for Oracle, compatible with Oracle 8.
 	/// </summary>
-	public class OracleDialect : Oracle9Dialect	{
-
-		public OracleDialect() : base() {
+	public class OracleDialect : Oracle9Dialect	
+	{
+		public OracleDialect() : base() 
+		{
 		}
 		
-		public OuterJoinFragment CreateOuterJoinFragment() {
-			return new OracleOuterJoinFragment();
+		public override JoinFragment CreateOuterJoinFragment() 
+		{
+			return new OracleJoinFragment();
 		}
-		public CaseFragment CreateCaseFragment() {
-			return new DecodeCaseFragment();
+
+		public override CaseFragment CreateCaseFragment() 
+		{
+			return new DecodeCaseFragment(this);
 		}
 	}
 }
