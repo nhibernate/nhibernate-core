@@ -313,12 +313,6 @@ namespace NHibernate.Engine
 			}
 		}
 
-//		[System.Obsolete( "This is being replaced by the Cascade with a deleteOrphans as the last param." )]
-//		private static void Cascade( ISessionImplementor session, object child, IType type, CascadingAction action, CascadePoint cascadeTo )
-//		{
-//			Cascade( session, child, type, action, cascadeTo, false );
-//		}
-
 		/// <summary>
 		/// Cascade an action to the Child.
 		/// </summary>
