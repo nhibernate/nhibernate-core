@@ -178,19 +178,6 @@ namespace NHibernate.Dialect
 			get	{ return true; }
 		}
 
-		[Obsolete("See the Dialect class for reason")]
-		public override bool UseNamedParameters 
-		{
-			get { return true; }
-		}
-
-		[Obsolete("See the Dialect class for reason")]
-		public override string NamedParametersPrefix 
-		{
-			get { return ":"; }
-		}
-
-
 		public class SysdateQueryFunctionInfo : IQueryFunctionInfo	
 		{
 			#region IQueryFunctionInfo Members

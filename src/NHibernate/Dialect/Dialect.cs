@@ -500,36 +500,6 @@ namespace NHibernate.Dialect
 		{
 			get { return aggregateFunctions;}
 		}
-
-		/// <summary>
-		/// Does this dialect use named parameters?
-		/// </summary>
-		/// <remarks>
-		/// Do NOT use this Property. It will be removed once the class ADOHack has been removed.  Instead
-		/// the Driver should be used because that is what determines how the CommandText and Parameters
-		/// have to be built.
-		/// </remarks>
-		[Obsolete("This method will be removed once the class ADOHack is gone.  The Driver should be used instead.")]
-		public virtual bool UseNamedParameters 
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// The prefix to use with named parameter.
-		/// If UseNamedParameters return false this property will not be used.
-		/// </summary>
-		/// <remarks>
-		/// Do NOT use this Property. It will be removed once the class ADOHack has been removed.  Instead
-		/// the Driver should be used because that is what determines how the CommandText and Parameters
-		/// have to be built.
-		/// </remarks>
-		[Obsolete("This method will be removed once ADOHack is gone.  The Driver should be used instead.")]
-		public virtual string NamedParametersPrefix 
-		{
-			get { return String.Empty; }
-		}
-
 		
 		/// <summary>
 		/// The largest value that can be set in IDbDataParameter.Size for a parameter

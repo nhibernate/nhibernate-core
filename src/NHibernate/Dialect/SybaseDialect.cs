@@ -62,14 +62,5 @@ namespace NHibernate.Dialect {
 			get { return "DEFAULT VALUES"; }
 		}
 
-		[Obsolete("See the Dialect class for reason")]
-		public override bool UseNamedParameters {
-			get { return true; }
-		}
-
-		[Obsolete("See the Dialect class for reason")]
-		public override string NamedParametersPrefix {
-			get { return "@"; }
-		}
 	}
 }
