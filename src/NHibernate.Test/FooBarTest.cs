@@ -16,25 +16,25 @@ namespace NHibernate.Test
 		public void SetUp()
 		{
 			ExportSchema(new string[] {   
-										  "FooBar.hbm.xml",
-										  "Baz.hbm.xml",
-										  "Qux.hbm.xml",
-										  "Glarch.hbm.xml",
-										  "Fum.hbm.xml",
-										  "Fumm.hbm.xml",
-										  "Fo.hbm.xml",
-										  "One.hbm.xml",
-										  "Many.hbm.xml",
-										  "Immutable.hbm.xml" ,
-										  "Fee.hbm.xml",
-										  "Vetoer.hbm.xml",
-										  "Holder.hbm.xml",
-										  "Location.hbm.xml",
-										  "Stuff.hbm.xml",
-										  "Container.hbm.xml",
-										  "Simple.hbm.xml",
-										  "XY.hbm.xml"
-									  }, true);
+					"FooBar.hbm.xml",
+					"Baz.hbm.xml",
+					"Qux.hbm.xml",
+					"Glarch.hbm.xml",
+					"Fum.hbm.xml",
+					"Fumm.hbm.xml",
+					"Fo.hbm.xml",
+					"One.hbm.xml",
+					"Many.hbm.xml",
+					"Immutable.hbm.xml" ,
+					"Fee.hbm.xml",
+					"Vetoer.hbm.xml",
+					"Holder.hbm.xml",
+					"Location.hbm.xml",
+					"Stuff.hbm.xml",
+					"Container.hbm.xml",
+					"Simple.hbm.xml",
+					"XY.hbm.xml"
+				}, true);
 		}
 
 		/// <summary>
@@ -815,7 +815,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-			//[Ignore("TimeZone Portions commented out - http://jira.nhibernate.org:8080/browse/NH-88")]
+		//[Ignore("TimeZone Portions commented out - http://jira.nhibernate.org:8080/browse/NH-88")]
 		public void AssociationId() 
 		{
 			ISession s = sessions.OpenSession();
@@ -967,7 +967,7 @@ namespace NHibernate.Test
 		public void CollectionsInSelect() 
 		{
 			ISession s = sessions.OpenSession();
-			//			ITransaction t = s.BeginTransaction();
+//			ITransaction t = s.BeginTransaction();
 			Foo[] foos = new Foo[] { null, new Foo() };
 			s.Save(foos[1]);
 			Baz baz = new Baz();
@@ -1070,7 +1070,7 @@ namespace NHibernate.Test
 			s.Delete(baz);
 			s.Delete(baz2);
 			s.Delete(foos[1]);
-			//			t.Commit();
+//			t.Commit();
 			s.Close();
 
 		}
@@ -1201,8 +1201,8 @@ namespace NHibernate.Test
 			// sapdb doesn't like distinct with binary type
 			//if( !(dialect is Dialect.SAPDBDialect) ) 
 			//{
-			list = s.Find("select distinct foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements");
-			Assert.AreEqual( 2, list.Count, "collection.elements find" );
+				list = s.Find("select distinct foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements");
+				Assert.AreEqual( 2, list.Count, "collection.elements find" );
 			//}
 
 			list = s.Find("select foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooSet.elements");
@@ -1785,10 +1785,10 @@ namespace NHibernate.Test
 			s.Find( "select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo = 'bar'" );
 			s.Find( "select foo.TheFoo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar'" );
 			s.Find( "select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'bar'" );
-			//			if( !( dialect is Dialect.HSQLDialect ) ) 
-			//			{
+//			if( !( dialect is Dialect.HSQLDialect ) ) 
+//			{
 			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo = foo.TheFoo.TheFoo" );
-			//			}
+//			}
 			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar' and foo.TheFoo.TheFoo.TheFoo = 'baz'" );
 			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'a' and foo.TheFoo.String = 'b'" );
 
@@ -3361,8 +3361,8 @@ namespace NHibernate.Test
 			{
 				bool proxyBoolean = ( (FooProxy)s.Load( typeof(Foo), id )).Boolean;
 			}
-				// this won't work until Proxies are implemented because now it throws an 
-				// ObjectNotFoundException
+			// this won't work until Proxies are implemented because now it throws an 
+			// ObjectNotFoundException
 			catch(LazyInitializationException lie) 
 			{
 				Assert.IsNotNull( lie ); //getting ride of 'lie' is never used compile warning
