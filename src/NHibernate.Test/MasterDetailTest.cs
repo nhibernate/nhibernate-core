@@ -16,15 +16,56 @@ namespace NHibernate.Test
 		[SetUp]
 		public void SetUp()
 		{
-
 		 	ExportSchema(new string[] {  
-										  "MasterDetail.hbm.xml",
-										  "Custom.hbm.xml",
-										  "Category.hbm.xml",
-										  "INameable.hbm.xml",
-										  "SingleSeveral.hbm.xml",
-										  "WZ.hbm.xml"
+							"MasterDetail.hbm.xml",
+							"Custom.hbm.xml",
+							"Category.hbm.xml",
+							"INameable.hbm.xml",
+							"SingleSeveral.hbm.xml",
+							"WZ.hbm.xml",
+							"UpDown.hbm.xml",
+							"Eye.hbm.xml",
+							"MN.hbm.xml"
 									  }, true);
+		}
+
+		[Test]
+		[Ignore( "Test not written" )]
+		public void ParentChildren()
+		{
+			ISession s = sessions.OpenSession();
+
+			//M parent = new M
+		}
+
+		[Test]
+		[Ignore( "Test not written" )]
+		public void OuterJoin()
+		{
+		}
+
+		[Test]
+		[Ignore( "Test not written" )]
+		public void Meta()
+		{
+		}
+
+		[Test]
+		[Ignore( "Test not written" )]
+		public void Copy()
+		{
+		}
+
+		[Test]
+		[Ignore( "Test not written" )]
+		public void CopyCascade()
+		{
+		}
+
+		[Test]
+		[Ignore( "Test not written" )]
+		public void NotNullDiscriminator()
+		{
 		}
 
 		[Test]
@@ -49,6 +90,12 @@ namespace NHibernate.Test
 			s.Delete(m);
 			t.Commit();
 			s.Close();
+		}
+
+		[Test]
+		[Ignore( "Test not written" )]
+		public void Example()
+		{
 		}
 
 		[Test]
@@ -567,6 +614,12 @@ namespace NHibernate.Test
 		}
 
 		[Test]
+		[Ignore( "Test not written" )]
+		public void CollectionReplaceOnUpdate()
+		{
+		}
+
+		[Test]
 		public void CollectionReplace2() 
 		{
 			ISession s = sessions.OpenSession();
@@ -721,6 +774,12 @@ namespace NHibernate.Test
 		}
 
 		[Test]
+		[Ignore( "Test not written" )]
+		public void CachedCollectionRefresh()
+		{
+		}
+
+		[Test]
 		public void CustomPersister() 
 		{
 			ISession s = sessions.OpenSession();
@@ -795,6 +854,18 @@ namespace NHibernate.Test
 			s.Update(z);
 			s.Flush();
 			s.Close();
+		}
+
+		[Test]
+		[Ignore( "Test not written" )]
+		public void QueuedBagAdds()
+		{
+		}
+
+		[Test]
+		[Ignore( "Test not written" )]
+		public void PolymorphicCriteria()
+		{
 		}
 	}
 }
