@@ -17,7 +17,6 @@ namespace NHibernate.Util
 		}
 
 		private static System.Type[ ] NoClasses = new System.Type[0];
-//		private static System.Type[ ] Object = new System.Type[ ] {typeof( object )}; // not used !?!
 
 		/// <summary>
 		/// Determine if the specified <see cref="System.Type"/> overrides the
@@ -111,11 +110,13 @@ namespace NHibernate.Util
 
 
 		/// <summary>
-		/// 
+		/// Get the NHibernate <see cref="IType" /> for the named property of the <see cref="System.Type"/>.
 		/// </summary>
-		/// <param name="theClass"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
+		/// <param name="theClass">The <see cref="System.Type"/> to find the Property in.</param>
+		/// <param name="name">The name of the property/field to find in the class.</param>
+		/// <returns>
+		/// The NHibernate <see cref="IType"/> for the named property.
+		/// </returns>
 		public static IType ReflectedPropertyType( System.Type theClass, string name )
 		{
 			return TypeFactory.HueristicType( GetGetter( theClass, name ).ReturnType.AssemblyQualifiedName );
@@ -154,10 +155,16 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the default no arg constructor for the <see cref="System.Type"/>.
 		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
+		/// <param name="type">The <see cref="System.Type"/> to find the constructor for.</param>
+		/// <returns>
+		/// The <see cref="ConstructorInfo"/> for the no argument constructor, or <c>null</c> if a 
+		/// default constructor could not be found.
+		/// </returns>
+		/// <exception cref="InstantiationException">
+		/// Thrown when there is a problem calling the method GetConstructor on <see cref="System.Type"/>.
+		/// </exception>
 		public static ConstructorInfo GetDefaultConstructor( System.Type type )
 		{
 			if( IsAbstractClass( type ) ) return null;
@@ -169,17 +176,17 @@ namespace NHibernate.Util
 			}
 			catch( Exception )
 			{
-				throw new PropertyNotFoundException(
+				throw new InstantiationException(
 					"Object class " + type.FullName + " must declare a default (no-arg) constructor"
 					);
 			}
 		}
 
 		/// <summary>
-		/// 
+		/// Determines if the <see cref="System.Type"/> is a non creatable class.
 		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
+		/// <param name="type">The <see cref="System.Type"/> to check.</param>
+		/// <returns><c>true</c> if the <see cref="System.Type"/> is an Abstract Class or an Interface.</returns>
 		public static bool IsAbstractClass( System.Type type )
 		{
 			return ( type.IsAbstract || type.IsInterface );

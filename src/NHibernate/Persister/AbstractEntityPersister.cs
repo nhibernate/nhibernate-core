@@ -645,7 +645,14 @@ namespace NHibernate.Persister
 
 			constructor = ReflectHelper.GetDefaultConstructor( mappedClass );
 			abstractClass = ReflectHelper.IsAbstractClass( mappedClass );
-
+			
+			// verify that the class has a default constructor if it is not abstract - it is considered
+			// a mapping exception if the default ctor is missing.
+			if( abstractClass==false && constructor==null )
+			{
+				throw new MappingException( "The mapped class " + mappedClass.FullName + " must declare a default (no-arg) constructor." );
+			}
+			
 			// IDENTIFIER
 
 			hasEmbeddedIdentifier = model.HasEmbeddedIdentifier;
