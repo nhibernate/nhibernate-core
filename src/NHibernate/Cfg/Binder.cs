@@ -234,7 +234,7 @@ namespace NHibernate.Cfg
 						SimpleValue id = new SimpleValue(table);
 						model.Identifier = id;
 						
-						if ( propertyName==null) 
+						if ( propertyName == null) 
 						{
 							BindSimpleValue(subnode, id, false, RootClass.DefaultIdentifierColumnName, mappings);
 							if ( id.Type==null ) throw new MappingException("must specify an identifier type: " + model.MappedClass.Name );
@@ -242,10 +242,10 @@ namespace NHibernate.Cfg
 						} 
 						else 
 						{
-							BindSimpleValue(subnode, id, false, propertyName, mappings);
-							id.SetTypeByReflection( model.MappedClass, propertyName);
-							Mapping.Property prop = new Mapping.Property(id);
-							BindProperty(subnode, prop, mappings);
+							BindSimpleValue( subnode, id, false, propertyName, mappings );
+							id.SetTypeByReflection( model.MappedClass, propertyName, PropertyAccess( subnode, mappings ) );
+							Mapping.Property prop = new Mapping.Property( id );
+							BindProperty( subnode, prop, mappings );
 							model.IdentifierProperty = prop;
 						}
 
@@ -303,6 +303,10 @@ namespace NHibernate.Cfg
 						if ( subnode.Attributes["force"] != null && "true".Equals( subnode.Attributes["force"].Value ) ) 
 						{
 							model.IsForceDiscriminator = true;
+						}
+						if ( subnode.Attributes["insert"] != null && "true".Equals( subnode.Attributes["false"].Value ) ) 
+						{
+							model.IsDiscriminatorInsertable = false;
 						}
 						break;
 
@@ -435,6 +439,12 @@ namespace NHibernate.Cfg
 		}
 		*/
 
+		private static string PropertyAccess( XmlNode node, Mappings mappings )
+		{
+			XmlAttribute accessNode = node.Attributes["access"];
+			return accessNode != null ? accessNode.Value : mappings.DefaultAccess;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -447,15 +457,8 @@ namespace NHibernate.Cfg
 			IType type = model.Value.Type;
 			if (type==null) throw new MappingException("could not determine a property type for: " + model.Name );
 			
-			XmlAttribute accessNode = node.Attributes["access"];
-			if( accessNode!=null) 
-			{
-				model.PropertyAccessorName = accessNode.Value;
-			}
-			else 
-			{
-				model.PropertyAccessorName = mappings.DefaultAccess;
-			}
+			model.PropertyAccessorName = PropertyAccess( node, mappings );
+
 			XmlAttribute cascadeNode = node.Attributes["cascade"];
 			model.Cascade = (cascadeNode==null) ? mappings.DefaultCascade : cascadeNode.Value;
 			
@@ -642,18 +645,30 @@ namespace NHibernate.Cfg
 			BindColumns(node, model, isNullable, true, defaultColumnName, mappings);
 			InitOuterJoinFetchSetting(node, model);
 
+			XmlAttribute ukName = node.Attributes["property-ref"];
+			if ( ukName != null )
+			{
+				model.ReferencedPropertyName = ukName.Value;
+			}
+
 			XmlAttribute typeNode = node.Attributes["class"];
 			
 			if ( typeNode!=null ) 
 			{
 				try 
 				{
-					model.Type = TypeFactory.ManyToOne( ReflectHelper.ClassForName( typeNode.Value ) ); 
+					model.Type = TypeFactory.ManyToOne( ReflectHelper.ClassForName( typeNode.Value ), model.ReferencedPropertyName ); 
 				} 
 				catch 
 				{
 					throw new MappingException("could not find class: " + typeNode.Value);
 				}
+			}
+
+			XmlAttribute fkNode = node.Attributes["foreign-key"];
+			if ( fkNode != null )
+			{
+				model.ForeignKeyName = fkNode.Value;
 			}
 		}
 
@@ -667,6 +682,8 @@ namespace NHibernate.Cfg
 				IType metaType = TypeFactory.HueristicType( metaAttribute.Value );
 				if ( metaType==null ) throw new MappingException("could not interpret meta-type");
 				model.MetaType = metaType;
+
+				// TODO: 2.1 Handle meta-value collection
 			}
 
 			BindColumns(node, model, isNullable, false, null, mappings);
@@ -683,12 +700,24 @@ namespace NHibernate.Cfg
 
 			model.ForeignKeyType = (constrained ? ForeignKeyType.ForeignKeyFromParent : ForeignKeyType.ForeignKeyToParent);
 
-			XmlAttribute classNode = node.Attributes["class"];
-			if (classNode!=null) 
+			XmlAttribute fkNode = node.Attributes[ "foreign-key" ];
+			if ( fkNode != null )
+			{
+				model.ForeignKeyName = fkNode.Value;
+			}
+
+			XmlAttribute ukName = node.Attributes[ "property-ref" ];
+			if ( ukName != null )
+			{
+				model.ReferencedPropertyName = ukName.Value;
+			}
+
+			XmlAttribute classNode = node.Attributes[ "class" ];
+			if ( classNode != null ) 
 			{
 				try 
 				{
-					model.Type = TypeFactory.OneToOne( ReflectHelper.ClassForName( classNode.Value ), model.ForeignKeyType);
+					model.Type = TypeFactory.OneToOne( ReflectHelper.ClassForName( classNode.Value ), model.ForeignKeyType, model.ReferencedPropertyName ) ;
 				} 
 				catch (Exception) 
 				{
@@ -720,6 +749,9 @@ namespace NHibernate.Cfg
 
 			XmlAttribute unqNode = node.Attributes["unique"];
 			model.IsUnique = unqNode!=null && StringHelper.BooleanValue( unqNode.Value );
+			
+			XmlAttribute chkNode = node.Attributes["check"];
+			model.CheckConstraint = chkNode != null ? chkNode.Value : string.Empty;
 
 			XmlAttribute typeNode = node.Attributes["sql-type"];
 			model.SqlType = (typeNode==null) ? null : typeNode.Value;
@@ -919,7 +951,7 @@ namespace NHibernate.Cfg
 		{
 			if ( parentClass != null && value.IsSimpleValue )
 			{
-				( (SimpleValue) value).SetTypeByReflection( parentClass, propertyName );
+				( (SimpleValue) value).SetTypeByReflection( parentClass, propertyName, PropertyAccess( subnode, mappings ) );
 			}
 
 			// This is done here 'cos we might only know the type here (ugly!)
@@ -935,7 +967,7 @@ namespace NHibernate.Cfg
 			value.CreateForeignKey( );
 			Mapping.Property prop = new Mapping.Property();
 			prop.Value = value;
-			BindProperty(subnode, prop, mappings);
+			BindProperty( subnode, prop, mappings );
 
 			return prop;
 		}

@@ -26,13 +26,14 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="propertyClass"></param>
 		/// <param name="propertyName"></param>
-		public override void SetTypeByReflection( System.Type propertyClass, string propertyName )
+		/// <param name="propertyAccess"></param>
+		public override void SetTypeByReflection( System.Type propertyClass, string propertyName, string propertyAccess )
 		{
 			try
 			{
 				if( Type == null )
 				{
-					Type = TypeFactory.OneToOne( ReflectHelper.GetGetter( propertyClass, propertyName ).ReturnType, foreignKeyType );
+					Type = TypeFactory.OneToOne( ReflectHelper.GetGetter( propertyClass, propertyName, propertyAccess ).ReturnType, foreignKeyType );
 				}
 			}
 			catch( HibernateException he )
@@ -47,6 +48,7 @@ namespace NHibernate.Mapping
 			//if( constrained && ReferencedPropertyName == null )
 			if( constrained )
 			{
+				// TODO: 2.1+ handle the case of a foreign key to something other than the pk
 				CreateForeignKeyOfClass( ( ( EntityType ) Type ).AssociatedClass );
 			}
 		}

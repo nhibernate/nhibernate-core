@@ -19,11 +19,13 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="p"></param>
+		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create this Index.
 		/// </returns>
-		public string SqlCreateString( Dialect.Dialect dialect, IMapping p )
+		public string SqlCreateString( Dialect.Dialect dialect, IMapping p, string defaultSchema )
 		{
+			// TODO: NH 1.0+ Get these string from the dialect
 			StringBuilder buf = new StringBuilder( "create index " )
 				.Append( dialect.QualifyIndexName ? name : StringHelper.Unqualify( name ) )
 				.Append( " on " )
@@ -50,12 +52,14 @@ namespace NHibernate.Mapping
 		/// Generates the SQL string to drop this Index in the database.
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to drop this Index.
 		/// </returns>
-		public string SqlDropString( Dialect.Dialect dialect )
+		public string SqlDropString( Dialect.Dialect dialect, string defaultSchema )
 		{
-			return "drop index " + table.GetQualifiedName( dialect ) + StringHelper.Dot + name;
+			// TODO: NH 1.0+ Get this string from the dialect
+			return string.Format( "drop index {0}.{1}", table.GetQualifiedName( dialect, defaultSchema ), name );
 		}
 
 		/// <summary>

@@ -19,13 +19,14 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="propertyClass"></param>
 		/// <param name="propertyName"></param>
-		public override void SetTypeByReflection( System.Type propertyClass, string propertyName )
+		/// <param name="propertyAccess"></param>
+		public override void SetTypeByReflection( System.Type propertyClass, string propertyName, string propertyAccess )
 		{
 			try
 			{
 				if( Type == null )
 				{
-					Type = TypeFactory.ManyToOne( ReflectHelper.GetGetter( propertyClass, propertyName ).ReturnType );
+					Type = TypeFactory.ManyToOne( ReflectHelper.GetGetter( propertyClass, propertyName, propertyAccess ).ReturnType );
 				}
 			}
 			catch( HibernateException he )

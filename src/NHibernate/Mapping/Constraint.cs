@@ -76,12 +76,14 @@ namespace NHibernate.Mapping
 		/// Generates the SQL string to drop this Constraint in the database.
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to drop this Constraint.
 		/// </returns>
-		public virtual string SqlDropString( Dialect.Dialect dialect )
+		public virtual string SqlDropString( Dialect.Dialect dialect, string defaultSchema )
 		{
-			return "alter table " + Table.GetQualifiedName( dialect ) + " drop constraint " + Name;
+			// TODO: NH 1.0+ - Get this string from the dialect
+			return string.Format( "alter table {0} drop constraint {1}", Table.GetQualifiedName( dialect, defaultSchema ), Name );
 		}
 
 		/// <summary>
@@ -89,15 +91,14 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="p"></param>
+		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create this Constraint.
 		/// </returns>
-		public string SqlCreateString( Dialect.Dialect dialect, IMapping p )
+		public string SqlCreateString( Dialect.Dialect dialect, IMapping p, string defaultSchema )
 		{
-			StringBuilder buf = new StringBuilder( "alter table " )
-				.Append( Table.GetQualifiedName( dialect ) )
-				.Append( SqlConstraintString( dialect, Name ) );
-			return buf.ToString();
+			// TODO: NH 1.0+ - Get this string from the dialect
+			return string.Format( "alter table {0} {1} ", Table.GetQualifiedName( dialect, defaultSchema ), SqlConstraintString( dialect, Name, defaultSchema ) );
 		}
 
 		#endregion
@@ -108,10 +109,11 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="constraintName">The name to use as the identifier of the constraint in the database.</param>
+		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create the named Constraint.
 		/// </returns>
-		public abstract string SqlConstraintString( Dialect.Dialect d, string constraintName );
+		public abstract string SqlConstraintString( Dialect.Dialect d, string constraintName, string defaultSchema );
 
 	}
 }

@@ -1,7 +1,7 @@
-using System;
 using System.Collections;
 using System.Data;
 using System.Text;
+using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Util;
@@ -257,14 +257,15 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="p"></param>
+		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create this Table, Primary Key Constraints
 		/// , and Unique Key Constraints.
 		/// </returns>
-		public string SqlCreateString( Dialect.Dialect dialect, IMapping p )
+		public string SqlCreateString( Dialect.Dialect dialect, IMapping p, string defaultSchema )
 		{
 			StringBuilder buf = new StringBuilder( "create table " )
-				.Append( GetQualifiedName( dialect ) )
+				.Append( GetQualifiedName( dialect, defaultSchema ) )
 				.Append( " (" );
 
 			bool identityColumn = idValue != null && idValue.CreateIdentifierGenerator( dialect ) is IdentityGenerator;
@@ -329,7 +330,7 @@ namespace NHibernate.Mapping
 				// // skip the primary key definition	
 				// //ugly hack...
 				//} else {
-				buf.Append( ',' ).Append( primaryKey.SqlConstraintString( dialect ) );
+				buf.Append( ',' ).Append( primaryKey.SqlConstraintString( dialect, defaultSchema ) );
 				//}
 			}
 
@@ -347,13 +348,15 @@ namespace NHibernate.Mapping
 		/// Generates the SQL string to drop this Table in the database.
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to drop this Table and to cascade the drop to 
 		/// the constraints if the database supports it.
 		/// </returns>
-		public string SqlDropString( Dialect.Dialect dialect )
+		public string SqlDropString( Dialect.Dialect dialect, string defaultSchema )
 		{
-			return "drop table " + GetQualifiedName( dialect ) + dialect.CascadeConstraintsString;
+			// TODO: NH 1.0+ Get this from the dialect
+			return "drop table " + GetQualifiedName( dialect, defaultSchema ) + dialect.CascadeConstraintsString;
 		}
 
 		/// <summary>
@@ -415,7 +418,9 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Create a <see cref="ForeignKey"/> for the columns in the Table.
 		/// </summary>
+		/// <param name="keyName"></param>
 		/// <param name="columns">An <see cref="IList"/> of <see cref="Column"/> objects.</param>
+		/// <param name="referencedClass"></param>
 		/// <returns>
 		/// A <see cref="ForeignKey"/> for the columns in the Table.  
 		/// </returns>
@@ -424,17 +429,30 @@ namespace NHibernate.Mapping
 		/// one already exists for the columns then it will return an 
 		/// existing <see cref="ForeignKey"/>.
 		/// </remarks>
-		public ForeignKey CreateForeignKey( IList columns )
+		public ForeignKey CreateForeignKey( string keyName, IList columns, System.Type referencedClass )
 		{
-			string name = "FK" + UniqueColumnString( columns );
-			ForeignKey fk = ( ForeignKey ) foreignKeys[ name ];
+			if ( keyName == null )
+			{
+				keyName = "FK" + UniqueColumnString( columns );
+			}
+			ForeignKey fk = ( ForeignKey ) foreignKeys[ keyName ];
 
 			if( fk == null )
 			{
 				fk = new ForeignKey();
-				fk.Name = name;
+				fk.Name = keyName;
 				fk.Table = this;
-				foreignKeys.Add( name, fk );
+				fk.ReferencedClass = referencedClass;
+				foreignKeys.Add( keyName, fk );
+			}
+			else
+			{
+				// "X"= hexadecimal format
+				keyName += referencedClass.Name.GetHashCode().ToString( "X" ).ToUpper();
+				if ( fk.ReferencedClass != referencedClass ) 
+				{
+					fk = CreateForeignKey( keyName, columns, referencedClass );
+				}
 			}
 
 			foreach( Column col in columns )

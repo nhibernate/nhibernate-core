@@ -16,12 +16,13 @@ namespace NHibernate.Mapping
 
 		private int length = DefaultPropertyLength;
 		private IType type;
-		private int typeIndex;
+		private int typeIndex = 0;
 		private string name;
 		private bool nullable = true;
 		private bool unique = false;
 		private string sqlType;
 		private bool quoted = false;
+		private string checkConstraint;
 
 		/// <summary></summary>
 		internal int uniqueInteger;
@@ -110,7 +111,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string Alias( Dialect.Dialect d )
 		{
-			if( quoted )
+			if( quoted || name[0] == StringHelper.SingleQuote || char.IsDigit( name, 0 ) )
 			{
 				return "y" + uniqueInteger.ToString() + StringHelper.Underscore;
 			}
@@ -135,7 +136,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string Alias( Dialect.Dialect d, string suffix )
 		{
-			if( quoted )
+			if( quoted || name[0] == StringHelper.SingleQuote || char.IsDigit( name, 0 ) )
 			{
 				return "y" + uniqueInteger.ToString() + StringHelper.Underscore;
 			}
@@ -321,5 +322,30 @@ namespace NHibernate.Mapping
 			set { quoted = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets whether the column is unique.
+		/// </summary>
+		public bool Unique
+		{
+			get { return unique; }
+			set { unique = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a check constraint on the column
+		/// </summary>
+		public string CheckConstraint
+		{
+			get { return checkConstraint; }
+			set { checkConstraint = value; }
+		}
+
+		/// <summary>
+		/// Do we have a check constraint?
+		/// </summary>
+		public bool HasCheckConstraint
+		{
+			get { return checkConstraint != null && checkConstraint.Length > 0; }
+		}
 	}
 }

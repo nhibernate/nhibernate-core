@@ -22,10 +22,11 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="constraintName">The name to use as the identifier of the constraint in the database.</param>
+		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create the named Foreign Key Constraint.
 		/// </returns>
-		public override string SqlConstraintString( Dialect.Dialect d, string constraintName )
+		public override string SqlConstraintString( Dialect.Dialect d, string constraintName, string defaultSchema )
 		{
 			string[ ] cols = new string[ColumnSpan];
 			string[ ] refcols = new string[ColumnSpan];
@@ -44,7 +45,7 @@ namespace NHibernate.Mapping
 				i++;
 			}
 
-			return d.GetAddForeignKeyConstraintString( constraintName, cols, referencedTable.GetQualifiedName( d ), refcols );
+			return d.GetAddForeignKeyConstraintString( constraintName, cols, referencedTable.GetQualifiedName( d, defaultSchema ), refcols );
 		}
 
 		/// <summary>
@@ -95,12 +96,14 @@ namespace NHibernate.Mapping
  		/// Get the SQL string to drop this Constraint in the database.
  		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
- 		/// <returns>
+		/// <param name="defaultSchema"></param>
+		/// <returns>
  		/// A string that contains the SQL to drop this Constraint.
  		/// </returns>
- 		public override string SqlDropString(NHibernate.Dialect.Dialect dialect)		
+ 		public override string SqlDropString(NHibernate.Dialect.Dialect dialect, string defaultSchema )		
 		{
- 			return "alter table " + Table.GetQualifiedName( dialect ) + dialect.GetDropForeignKeyConstraintString( Name );
+			// TODO: NH 1.0+ Get this from the Dialect
+ 			return string.Format( "alter table {0} {1}", Table.GetQualifiedName( dialect, defaultSchema ),  dialect.GetDropForeignKeyConstraintString( Name ) );
  		}
 
 		#endregion

@@ -8,12 +8,10 @@ namespace NHibernate.Mapping
 	{
 		private ArrayList properties = new ArrayList();
 		private System.Type componentClass;
-		// TODO: H2.0.3 - make sure this is gone from the mapping file...
-		//private BasicDynaClass dynaClass
-		private bool dynamic;
 		private bool embedded;
 		private string parentProperty;
 		private PersistentClass owner;
+		private bool dynamic;
 
 		/// <summary></summary>
 		public int PropertySpan
@@ -96,7 +94,8 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="propertyClass"></param>
 		/// <param name="propertyName"></param>
-		public override void SetTypeByReflection( System.Type propertyClass, string propertyName )
+		/// <param name="propertyAccess"></param>
+		public override void SetTypeByReflection( System.Type propertyClass, string propertyName, string propertyAccess )
 		{
 		}
 
@@ -112,12 +111,6 @@ namespace NHibernate.Mapping
 		{
 			get { return dynamic; }
 			set { dynamic = value; }
-		}
-
-		/// <summary></summary>
-		public override bool IsComposite
-		{
-			get { return true; }
 		}
 
 		/// <summary></summary>
@@ -146,7 +139,5 @@ namespace NHibernate.Mapping
 		{
 			get { return properties; }
 		}
-
-
 	}
 }

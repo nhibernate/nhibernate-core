@@ -10,7 +10,6 @@ namespace NHibernate.Mapping
 		private static int formulaUniqueInteger = 0;
 
 		private string formula;
-
 		private int uniqueInteger;
 
 		/// <summary></summary>

@@ -559,14 +559,14 @@ namespace NHibernate.Cfg
 				{
 					foreach( ForeignKey fk in table.ForeignKeyCollection )
 					{
-						script.Add( fk.SqlDropString( dialect ) );
+						script.Add( fk.SqlDropString( dialect, (string) properties[ Environment.DefaultSchema ] ) );
 					}
 				}
 			}
 
 			foreach( Table table in TableMappings )
 			{
-				script.Add( table.SqlDropString( dialect ) );
+				script.Add( table.SqlDropString( dialect, (string) properties[ Environment.DefaultSchema ] ) );
 			}
 
 			foreach( IPersistentIdentifierGenerator idGen in CollectionGenerators( dialect ) )
@@ -593,20 +593,20 @@ namespace NHibernate.Cfg
 
 			foreach( Table table in TableMappings )
 			{
-				script.Add( table.SqlCreateString( dialect, this ) );
+				script.Add( table.SqlCreateString( dialect, this, (string) properties[ Environment.DefaultSchema ] ) );
 			}
 
 			foreach( Table table in TableMappings )
 			{
 				foreach( Index index in table.IndexCollection )
 				{
-					script.Add( index.SqlCreateString( dialect, this ) );
+					script.Add( index.SqlCreateString( dialect, this, (string) properties[ Environment.DefaultSchema ] ) );
 				}
 				if( dialect.HasAlterTable )
 				{
 					foreach( ForeignKey fk in table.ForeignKeyCollection )
 					{
-						script.Add( fk.SqlCreateString( dialect, this ) );
+						script.Add( fk.SqlCreateString( dialect, this, (string) properties[ Environment.DefaultSchema ] ) );
 					}
 				}
 			}

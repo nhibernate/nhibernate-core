@@ -32,17 +32,9 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public override System.Type WrapperClass
-		{
-			get { return typeof( ArrayHolder ); }
-		}
-
-		/// <summary></summary>
 		public override bool IsArray
 		{
 			get { return true; }
 		}
-
-
 	}
 }

@@ -25,13 +25,12 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public override System.Type WrapperClass
+		public override void CreateAllKeys( )
 		{
-			get
+			base.CreateAllKeys();
+			if ( !IsInverse )
 			{
-				return IsSorted ?
-					typeof( NHibernate.Collection.SortedMap ) :
-					typeof( NHibernate.Collection.Map );
+				Index.CreateForeignKey();
 			}
 		}
 	}

@@ -22,9 +22,7 @@ namespace NHibernate.Mapping
 		private Table collectionTable;
 		private string role;
 		private bool lazy;
-		//private bool isOneToMany;
 		private bool inverse;
-		//private OneToMany oneToMany;
 		private ICacheConcurrencyStrategy cache;
 		private string orderBy;
 		private string where;
@@ -166,9 +164,6 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public abstract System.Type WrapperClass { get; }
-
-		/// <summary></summary>
 		public virtual bool IsPrimitiveArray
 		{
 			get { return false; }
@@ -190,17 +185,7 @@ namespace NHibernate.Mapping
 		public bool IsOneToMany
 		{
 			get { return element is OneToMany; }
-			//set { isOneToMany = value; }
 		}
-
-		/*
-		/// <summary></summary>
-		public OneToMany OneToMany
-		{
-			get { return oneToMany; }
-			set { oneToMany = value; }
-		}
-		*/
 
 		/// <summary></summary>
 		public ICacheConcurrencyStrategy Cache
@@ -281,7 +266,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// 
 		/// </summary>
-		public void CreateAllKeys()
+		public virtual void CreateAllKeys()
 		{
 			CreateForeignKeys();
 			if ( !IsInverse )

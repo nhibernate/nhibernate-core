@@ -38,19 +38,6 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary>
-		/// <see cref="Collection.WrapperClass"/>
-		/// </summary>
-		public override System.Type WrapperClass
-		{
-			get
-			{
-				return IsSorted ?
-					typeof( NHibernate.Collection.SortedSet ) :
-					typeof( NHibernate.Collection.Set );
-			}
-		}
-
 		/// <summary></summary>
 		public override void CreatePrimaryKey()
 		{

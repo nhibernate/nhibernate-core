@@ -21,12 +21,6 @@ namespace NHibernate.Mapping
 			get { return TypeFactory.Bag( Role ); }
 		}
 
-		/// <summary></summary>
-		public override System.Type WrapperClass
-		{
-			get { return typeof( NHibernate.Collection.Bag ); }
-		}
-
 		/// <summary>
 		/// 
 		/// </summary>

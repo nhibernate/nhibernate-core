@@ -42,6 +42,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="propertyClass"></param>
 		/// <param name="propertyName"></param>
-		public abstract override void SetTypeByReflection( System.Type propertyClass, string propertyName );
+		/// <param name="propertyAccess"></param>
+		public abstract override void SetTypeByReflection( System.Type propertyClass, string propertyName, string propertyAccess );
 	}
 }

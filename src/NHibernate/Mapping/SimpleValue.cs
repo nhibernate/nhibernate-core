@@ -112,8 +112,7 @@ namespace NHibernate.Mapping
 		/// <param name="persistentClass"></param>
 		public void CreateForeignKeyOfClass( System.Type persistentClass )
 		{
-			ForeignKey fk = table.CreateForeignKey( ConstraintColumns );
-			fk.ReferencedClass = persistentClass;
+			table.CreateForeignKey( ForeignKeyName, ConstraintColumns, persistentClass );
 		}
 
 		/// <summary>
@@ -136,13 +135,24 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="propertyClass"></param>
 		/// <param name="propertyName"></param>
-		public virtual void SetTypeByReflection( System.Type propertyClass, string propertyName )
+		public void SetTypeByReflection( System.Type propertyClass, string propertyName )
+		{
+			SetTypeByReflection( propertyClass, propertyName, "property" );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyClass"></param>
+		/// <param name="propertyName"></param>
+		/// <param name="propertyAccess"></param>
+		public virtual void SetTypeByReflection( System.Type propertyClass, string propertyName, string propertyAccess )
 		{
 			try
 			{
 				if( type == null )
 				{
-					type = ReflectHelper.ReflectedPropertyType( propertyClass, propertyName );
+					type = ReflectHelper.ReflectedPropertyType( propertyClass, propertyName, propertyAccess );
 					int count = 0;
 					foreach( Column col in ColumnCollection )
 					{

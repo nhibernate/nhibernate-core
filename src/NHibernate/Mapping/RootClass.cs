@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using log4net;
 using NHibernate.Cache;
+using NHibernate.Engine;
 using NHibernate.Persister;
 
 namespace NHibernate.Mapping
@@ -37,7 +38,7 @@ namespace NHibernate.Mapping
 		private System.Type classPersisterClass;
 		private bool forceDiscriminator;
 		private string where;
-		private bool discriminatorInsertable;
+		private bool discriminatorInsertable = true;
 
 		/// <summary>
 		/// Gets or sets the <see cref="Property"/> that is used as the <c>id</c>.
@@ -317,6 +318,19 @@ namespace NHibernate.Mapping
 		{
 			get { return discriminatorInsertable; }
 			set { discriminatorInsertable = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		public override void Validate( IMapping mapping )
+		{
+			base.Validate( mapping );
+			if ( !Identifier.IsValid( mapping ) )
+			{
+				throw new MappingException( string.Format( "identifier mapping has wrong number of columns: {0} type: {1}", MappedClass.Name, Identifier.Type.Name ) );
+			}
 		}
 	}
 }

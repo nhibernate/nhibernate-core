@@ -20,12 +20,5 @@ namespace NHibernate.Mapping
 		{
 			get { return TypeFactory.List( Role ); }
 		}
-
-		/// <summary></summary>
-		public override System.Type WrapperClass
-		{
-			get { return typeof( NHibernate.Collection.List ); }
-		}
-
 	}
 }
