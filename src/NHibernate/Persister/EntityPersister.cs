@@ -928,11 +928,14 @@ namespace NHibernate.Persister {
 		//public abstract string GetSubclassPropertyName(int i);
 
 		public override string PropertySelectFragment(string name, string suffix) {
-			SelectFragment frag = new SelectFragment()
+			SqlCommand.SelectFragment frag = new SqlCommand.SelectFragment()
 				.SetSuffix(suffix);
 			if ( HasSubclasses ) frag.AddColumn( name, DiscriminatorColumnName );
+			
+			// TODO: fix this once the interface is changed from a string to SqlString
+			// this works now because there are no parameters in the select string
 			return frag.AddColumns(name, subclassColumnClosure, subclassColumnAliasClosure)
-				.ToFragmentString();
+				.ToSqlStringFragment().ToString();
 		}
 
 		public override string GetConcreteClassAlias(string alias) {

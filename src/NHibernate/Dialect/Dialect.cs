@@ -5,6 +5,7 @@ using System.Collections;
 
 using NHibernate.Util;
 using NHibernate.Sql;
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Dialect {
@@ -277,8 +278,8 @@ namespace NHibernate.Dialect {
 		/// Create an <c>CaseFragment</c> for this dialect
 		/// </summary>
 		/// <returns></returns>
-		public virtual CaseFragment CreateCaseFragment() {
-			return new ANSICaseFragment();
+		public virtual SqlCommand.CaseFragment CreateCaseFragment() {
+			return new SqlCommand.ANSICaseFragment();
 		}
 
 		/// <summary>

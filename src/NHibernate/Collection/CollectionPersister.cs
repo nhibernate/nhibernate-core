@@ -367,12 +367,15 @@ namespace NHibernate.Collection {
 		}
 
 		public string SelectClauseFragment(string alias) {
-			SelectFragment frag = new SelectFragment()
+			SqlCommand.SelectFragment frag = new SqlCommand.SelectFragment()
 				.SetSuffix(String.Empty)
 				.AddColumns(alias, elementColumnNames);
 			if (hasIndex) frag.AddColumns(alias, indexColumnNames);
-			return frag.ToFragmentString()
-				.Substring(2); //string leading ','
+			// TODO: fix this once the interface is changed from a String to a SqlString
+			// this works for now because there are no parameters in the select string.
+			return frag.ToSqlStringFragment(false)
+				.ToString();
+				//.Substring(2); //strip leading ',' - commented out because a parameter was added ToSqlStringFragment
 		}
 
 		private SqlString GenerateSqlDeleteString() {

@@ -1254,27 +1254,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\ANSICaseFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Sql\ANSIJoinFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\CaseFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\ConditionalFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\DecodeCaseFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1314,7 +1294,22 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\SelectFragment.cs"
+                    RelPath = "SqlCommand\ANSICaseFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\CaseFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\ConditionalFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\DecodeCaseFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1335,6 +1330,11 @@
                 />
                 <File
                     RelPath = "SqlCommand\ParameterPrecisionScale.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\SelectFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

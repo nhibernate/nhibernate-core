@@ -1100,7 +1100,9 @@ namespace NHibernate.Persister {
 				// is not accounting for the suffix: 
 				// return new String[] { getDiscriminatorColumnName() }; 
 
-				return new string[] { DiscriminatorFragment(alias).ToFragmentString() };
+				//TODO: this will need to be changed to return a SqlString but for now the SqlString
+				// is being converted to a string for existing interfaces to work.
+				return new string[] { DiscriminatorFragment(alias).ToSqlStringFragment().ToString() };
 			}
 
 			string[] cols = GetPropertyColumnNames(property);
@@ -1134,7 +1136,7 @@ namespace NHibernate.Persister {
 
 		public override string PropertySelectFragment(string alias, string suffix) {
 			string[] cols = subclassColumnClosure;
-			SelectFragment frag = new SelectFragment()
+			SqlCommand.SelectFragment frag = new SqlCommand.SelectFragment()
 				.SetSuffix(suffix);
 			for (int i=0; i<cols.Length; i++) {
 				frag.AddColumn(
@@ -1146,18 +1148,23 @@ namespace NHibernate.Persister {
 
 			if (HasSubclasses) {
 				return ", " + 
+					//TODO: this will need to be changed to return a SqlString but for now the SqlString
+					// is being converted to a string for existing interfaces to work.
 					DiscriminatorFragment(alias) 
-					.SetReturnColumnName( DiscriminatorColumnName, suffix ) 
-					.ToFragmentString() + 
-					frag.ToFragmentString(); 
+						.SetReturnColumnName( DiscriminatorColumnName, suffix ) 
+						.ToSqlStringFragment().ToString() 
+					+
+					frag.ToSqlStringFragment().ToString();
+					// TODO: fix this once the interface has changed from a string to SqlString
 			} 
 			else { 
-				return frag.ToFragmentString(); 
+				// TODO: fix this once the interface has changed from a string to SqlString
+				return frag.ToSqlStringFragment().ToString(); 
 			} 
 		} 
 
-		private CaseFragment DiscriminatorFragment(string alias) {
-			CaseFragment cases = dialect.CreateCaseFragment();
+		private SqlCommand.CaseFragment DiscriminatorFragment(string alias) {
+			SqlCommand.CaseFragment cases = dialect.CreateCaseFragment();
 			
 			for (int i=0; i<discriminators.Length; i++) {
 				cases.AddWhenColumnNotNull(

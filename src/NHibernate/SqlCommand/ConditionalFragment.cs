@@ -2,9 +2,11 @@ using System;
 using System.Text;
 using NHibernate.Util;
 
-namespace NHibernate.Sql {
-	
-	public class ConditionalFragment {
+namespace NHibernate.SqlCommand 
+{
+
+	public class ConditionalFragment 
+	{
 		private string tableAlias;
 		private string[] lhs;
 		private string[] rhs;
@@ -14,31 +16,37 @@ namespace NHibernate.Sql {
 		/// Sets the op
 		/// </summary>
 		/// <param name="op">The op to set</param>
-		public ConditionalFragment SetOp(string op) {
+		public ConditionalFragment SetOp(string op) 
+		{
 			this.op = op;
 			return this;
 		}
 
-		public ConditionalFragment SetTableAlias(string tableAlias) {
+		public ConditionalFragment SetTableAlias(string tableAlias) 
+		{
 			this.tableAlias = tableAlias;
 			return this;
 		}
 
-		public ConditionalFragment SetCondition(string[] lhs, string[] rhs) {
+		public ConditionalFragment SetCondition(string[] lhs, string[] rhs) 
+		{
 			this.lhs = lhs;
 			this.rhs = rhs;
 			return this;
 		}
 
-		public ConditionalFragment SetCondition(string[] lhs, string rhs) {
+		public ConditionalFragment SetCondition(string[] lhs, string rhs) 
+		{
 			this.lhs = lhs;
 			this.rhs = ArrayHelper.FillArray(rhs, lhs.Length);
 			return this;
 		}
 
-		public string ToFragmentString() {
+		public SqlString ToSqlStringFragment() 
+		{
 			StringBuilder buf = new StringBuilder( lhs.Length * 10 );
-			for ( int i=0; i<lhs.Length; i++ ) {
+			for ( int i=0; i<lhs.Length; i++ ) 
+			{
 				buf.Append(tableAlias)
 					.Append(StringHelper.Dot)
 					.Append( lhs[i] )
@@ -46,7 +54,9 @@ namespace NHibernate.Sql {
 					.Append( rhs[i] );
 				if (i<lhs.Length-1) buf.Append(" and ");
 			}
-			return buf.ToString();
+			return new SqlString(buf.ToString());
 		}
 	}
 }
+
+
