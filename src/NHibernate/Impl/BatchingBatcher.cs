@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal class BatchingBatcher : BatcherImpl
 	{
-		private int batchSize;
+		//private int batchSize;
 		private int[] expectedRowCounts;
 
 		/// <summary>
