@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" ?>
+<?xml version="1.0" ?>
 
 <project 
 	name="Iesi.Collections" 
@@ -26,10 +26,12 @@
 		
 		<asminfo output="AssemblyInfo.cs" language="CSharp">
 			<imports>
+				<import name="System" />
 				<import name="System.Reflection" />
 				<import name="System.Runtime.CompilerServices" />
 			</imports>
 			<attributes>
+				<attribute type="CLSCompliantAttribute" value="true" />
 				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
 				<attribute type="AssemblyDescriptionAttribute" value="Enhanced Collections for .NET.  Code was published at http://www.codeproject.com/csharp/sets.asp" />
 				<attribute type="AssemblyCompanyAttribute" value="nhibernate.sourceforge.net" />
