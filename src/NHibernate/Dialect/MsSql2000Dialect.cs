@@ -18,16 +18,11 @@ namespace NHibernate.Dialect
 			Register( DbType.AnsiStringFixedLength, 8000, "CHAR($1)" );
 			Register( DbType.AnsiString, "VARCHAR(255)" );
 			Register( DbType.AnsiString, 8000, "VARCHAR($1)" );
-			Register( DbType.AnsiString, 2147483647, "TEXT"); // should use the IType.ClobType
-			// TODO: figure out how to support this - VARCHAR > 8000 since
-			// there is no DbType.CLOB - might just make it a mapping
-			// requirement that they specify a sql-type or make NHibernate's
-			// own DbType enum or use SqlType as the key for Register
-			//Register( DbType.AnsiString, "TEXT" );
+			Register( DbType.AnsiString, 2147483647, "TEXT"); 
 			Register( DbType.Binary, "VARBINARY(8000)");
 			Register( DbType.Binary, 8000, "VARBINARY($1)");
-			Register( DbType.Binary, 2147483647, "IMAGE" );// should use the IType.BlobType
-			Register( DbType.Boolean, "BIT" ); //Sybase BIT type does not support null values
+			Register( DbType.Binary, 2147483647, "IMAGE" );
+			Register( DbType.Boolean, "BIT" ); 
 			Register( DbType.Byte, "TINYINT" );
 			Register( DbType.Currency, "MONEY");
 			Register( DbType.Date, "DATETIME");
@@ -51,7 +46,7 @@ namespace NHibernate.Dialect
 			Register( DbType.StringFixedLength, 4000, "NCHAR($1)");
 			Register( DbType.String, "NVARCHAR(255)" );
 			Register( DbType.String, 4000, "NVARCHAR($1)" );
-			Register( DbType.String, 1073741823, "NTEXT" );// should use the IType.ClobType
+			Register( DbType.String, 1073741823, "NTEXT" );
 			Register( DbType.Time, "DATETIME" );
 			
 			DefaultProperties[Cfg.Environment.OuterJoin] = "true";
