@@ -190,9 +190,9 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="userTypeClass">a class that implements UserType</param>
 		/// <returns></returns>
-		//public static IType Custom(System.Type userTypeClass) {
-		//	return new CustomType(userTypeClass);
-		//}
+		public static IType Custom(System.Type userTypeClass) {
+			return new CustomType(userTypeClass);
+		}
 				
 		/* Needs HybernateProxyHelper and PersistentCollection implementation
 		 *

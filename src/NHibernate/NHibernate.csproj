@@ -447,6 +447,93 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Hql\ClauseParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\FilterTranslator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\FromParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\FromPathExpressionParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\GroupByParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\HavingParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\IParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\OrderByParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\ParserHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\PathExpressionParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\PreprocessingParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\QueryTranslator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\SelectParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\SelectPathExpressionParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\WhereParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\CVS\Entries"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Hql\CVS\Repository"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Hql\CVS\Root"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "Id\IConfigurable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -887,6 +974,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\CustomType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\DateType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1111,6 +1203,11 @@
                 />
                 <File
                     RelPath = "Util\StringHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\StringTokenizer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
