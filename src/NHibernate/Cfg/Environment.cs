@@ -58,6 +58,10 @@ namespace NHibernate.Cfg {
 		public const string QuerySubstitutions = "hibernate.query.substitutions";
 		public const string QueryImports = "hibernate.query.imports";
 
+		static Environment() {
+			Environment env = System.Configuration.ConfigurationSettings.GetConfig("nhibernate") as Environment;
+			if (env==null) throw new HibernateException("no nhibernate settings available");
+		}
 		
 
 

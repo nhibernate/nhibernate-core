@@ -401,7 +401,7 @@ namespace NHibernate.Cfg {
 
 
 		public Configuration Configure() {
-			Configure("hibernate.cfg.xml"); //TODO: Figure this out. THis should probably be an app settings reader, and just use that
+			Configure("hibernate.cfg.xml");
 			return this;
 		}
 
