@@ -38,8 +38,8 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		protected override SqlString GenerateDeleteString( )
 		{
-			SqlUpdateBuilder update = new SqlUpdateBuilder( factory );
-			update.SetTableName( QualifiedTableName )
+			SqlUpdateBuilder update = new SqlUpdateBuilder( factory )
+				.SetTableName( QualifiedTableName )
 				.AddColumns( KeyColumnNames, "null" )
 				.SetIdentityColumn( KeyColumnNames, KeyType );
 			if( HasIndex )
@@ -235,7 +235,8 @@ namespace NHibernate.Collection
 			if ( includeCollectionColumns )
 			{
 				// Super impl will ignore suffix for collection columns!
-				return SelectFragment( alias ).Append( StringHelper.CommaSpace );
+				//return SelectFragment( alias ).Append( StringHelper.CommaSpace );
+				return SelectFragment( alias );
 			}
 			else
 			{
@@ -251,10 +252,9 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		protected override ICollectionInitializer CreateCollectionInitializer( ISessionFactoryImplementor factory )
 		{
-			// Don't worry about batching for now
-			// TODO: Uncomment when we implement OneToManyLoader
+			Loader.Loader nonbatchLoader = new OneToManyLoader( this, factory );
+
 			/*
-			Loader nonbatchLoader = new OneToManyLoader( this, factory );
 			if ( batchSize > 1 )
 			{
 				Loader batchLoader = new OneToManyLoader( this, batchSize, factory );
@@ -270,7 +270,8 @@ namespace NHibernate.Collection
 			}
 			*/
 
-			return null;
+			// Don't worry about batching for now
+			return nonbatchLoader as ICollectionInitializer;
 		}
 
 		/// <summary>

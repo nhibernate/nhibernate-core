@@ -33,34 +33,29 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Generate the SQL DELETE that deletes all rows
 		/// </summary>
 		/// <returns></returns>
 		protected override SqlString GenerateDeleteString( )
 		{
-			SqlDeleteBuilder delete = new SqlDeleteBuilder( factory );
-			delete.SetTableName( QualifiedTableName );
-			if( HasIdentifier )
+			SqlDeleteBuilder delete = new SqlDeleteBuilder( factory )
+				.SetTableName( QualifiedTableName )
+				.SetIdentityColumn( KeyColumnNames, KeyType );
+			if( HasWhere )
 			{
-				delete.AddWhereFragment( RowSelectColumnNames, RowSelectType, " = " );
+				delete.AddWhereFragment( Where );
 			}
-			else
-			{
-				delete.AddWhereFragment( KeyColumnNames, KeyType, " = " )
-					.AddWhereFragment( RowSelectColumnNames, RowSelectType, " = " );
-			}
-
 			return delete.ToSqlString();
 		}
 
 		/// <summary>
-		/// 
+		/// Generate the SQL INSERT that creates a new row
 		/// </summary>
 		/// <returns></returns>
 		protected override SqlString GenerateInsertRowString( )
 		{
-			SqlInsertBuilder insert = new SqlInsertBuilder( factory );
-			insert.SetTableName( QualifiedTableName )
+			SqlInsertBuilder insert = new SqlInsertBuilder( factory )
+				.SetTableName( QualifiedTableName )
 				.AddColumn( KeyColumnNames, KeyType );
 			if( HasIndex )
 			{
@@ -76,13 +71,13 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Generate the SQL UPDATE that updates a row
 		/// </summary>
 		/// <returns></returns>
 		protected override SqlString GenerateUpdateRowString( )
 		{
-			SqlUpdateBuilder update = new SqlUpdateBuilder( factory );
-			update.SetTableName( QualifiedTableName )
+			SqlUpdateBuilder update = new SqlUpdateBuilder( factory )
+				.SetTableName( QualifiedTableName )
 				.AddColumns( ElementColumnNames, ElementType );
 			if( HasIdentifier )
 			{
@@ -98,7 +93,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Generate the SQL DELETE that deletes a particular row
 		/// </summary>
 		/// <returns></returns>
 		protected override SqlString GenerateDeleteRowString( )
@@ -203,9 +198,7 @@ namespace NHibernate.Collection
 		protected override ICollectionInitializer CreateCollectionInitializer( ISessionFactoryImplementor factory )
 		{
 			// Don't worry about batching for now
-			// TODO: Uncomment when we implement CollectionLoader
-			//return (ICollectionInitializer) new CollectionLoader( this, factory );
-			return null;
+			return new CollectionLoader( this, factory ) as ICollectionInitializer;
 		}
 
 		/// <summary>
@@ -241,7 +234,8 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override SqlString SelectFragment( string alias, string suffix, bool includeCollectionColumns )
 		{
-			return includeCollectionColumns ? SelectFragment( alias ) : null;
+			// TODO: Changed from Null to SqlString( string.Empty ) as per Java
+			return includeCollectionColumns ? SelectFragment( alias ) : new SqlString( string.Empty ) ;
 		}
 	}
 }

@@ -110,9 +110,9 @@ namespace NHibernate.Collection
 			cache = collection.Cache;
 
 			keyType = collection.Key.Type;
-			int span = collection.Key.ColumnSpan;
-			keyColumnNames = new string[span];
-			string[ ] keyAliases = new string[span];
+			int keySpan = collection.Key.ColumnSpan;
+			keyColumnNames = new string[ keySpan ];
+			string[ ] keyAliases = new string[ keySpan ];
 			int k = 0;
 			foreach( Column col in collection.Key.ColumnCollection )
 			{
@@ -152,8 +152,8 @@ namespace NHibernate.Collection
 			}
 
 			qualifiedTableName = table.GetQualifiedName( dialect, factory.DefaultSchema );
-			string[ ] aliases = new string[span];
-			elementColumnNames = new string[span];
+			string[ ] aliases = new string[ elementSpan ];
+			elementColumnNames = new string[ elementSpan ];
 			int j = 0;
 			foreach( Column col in iter )
 			{
@@ -1239,13 +1239,13 @@ namespace NHibernate.Collection
 		{
 			try
 			{
-				initializer.Initialize( key, null, owner, session );
+				initializer.Initialize( key, session );
 			}
-			catch ( Exception )
+			catch ( Exception e )
 			{
 				// TODO: Improve the exception info, original java shown below
 				// throw convert( sqle, "could not initialize collection: " + MessageHelper.infoString(this, key) );
-				throw new ArgumentException( "could not initialize collection: " );
+				throw new Exception( "could not initialize collection: ", e );
 			}
 		}
 
