@@ -1035,6 +1035,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Odmg\ODMGException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Odmg\QueryException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Odmg\QueryInvalidException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Persister\AbstractEntityPersister.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

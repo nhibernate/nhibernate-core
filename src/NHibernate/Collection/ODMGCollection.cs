@@ -5,6 +5,9 @@ using NHibernate.Odmg;
 
 namespace NHibernate.Collection {
 
+	/// <summary>
+	/// Last modified by edgar.sanchez@objeq.com
+	/// </summary>
 	public abstract class ODMGCollection : PersistentCollection, IDCollection {
 		
 		public ODMGCollection(ISessionImplementor session) : base(session) {}
@@ -17,7 +20,7 @@ namespace NHibernate.Collection {
 			try {
 				return new List( session, (IList) session.Filter(this, queryString) );
 			} catch(HibernateException he) {
-				throw he;
+				throw new QueryInvalidException(he.Message);
 			}
 		}
 
@@ -25,7 +28,7 @@ namespace NHibernate.Collection {
 			try {
 				return ((ICollection)session.Filter(this, queryString)).GetEnumerator();
 			} catch(HibernateException he) {
-				throw he;
+				throw new QueryInvalidException(he.Message);
 			}
 		}
 
