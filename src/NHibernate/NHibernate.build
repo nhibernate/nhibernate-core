@@ -90,6 +90,7 @@
 				<includes name="Iesi.Collections.dll" />
 				<includes name="log4net.dll" />
 				<includes name="HashCodeProvider.dll" />
+				<includes name="Castle.DynamicProxy.dll" />
 			</references>
 	
 		</csc>

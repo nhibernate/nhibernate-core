@@ -94,6 +94,11 @@
                     AssemblyName = "Iesi.Collections"
                     HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
                 />
+                <Reference
+                    Name = "Castle.DynamicProxy"
+                    AssemblyName = "Castle.DynamicProxy"
+                    HintPath = "..\..\lib\net\1.1\Castle.DynamicProxy.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -1380,6 +1385,21 @@
                 />
                 <File
                     RelPath = "Property\PropertyAccessorFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Proxy\CastleCustomProxyGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Proxy\CastleLazyInitializer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Proxy\CastleProxyGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
