@@ -16,12 +16,12 @@ namespace NHibernate {
 		/// <summary>
 		/// NHibernate long type
 		/// </summary>
-		//public static readonly NullableType Long = new LongType();
+		public static readonly NullableType Long = new LongType();
 		
 		/// <summary>
 		/// NHibernate short type
 		/// </summary>
-		//public static readonly NullableType Short = new ShortType();
+		public static readonly NullableType Short = new ShortType();
 		
 		/// <summary>
 		/// NHibernate integer type
@@ -36,12 +36,12 @@ namespace NHibernate {
 		/// <summary>
 		/// NHibernate float type
 		/// </summary>
-		//public static readonly NullableType Float = new FloatType();
+		public static readonly NullableType Float = new FloatType();
 		
 		/// <summary>
 		/// NHibernate double type
 		/// </summary>
-		//public static readonly NullableType Double = new DoubleType();
+		public static readonly NullableType Double = new DoubleType();
 		
 		/// <summary>
 		/// NHibernate character type
@@ -61,7 +61,7 @@ namespace NHibernate {
 		/// <summary>
 		/// NHibernate date type
 		/// </summary>
-		//public static readonly NullableType Date = new DateType();
+		public static readonly NullableType Date = new DateType();
 		
 		/// <summary>
 		/// NHibernate timestamp type
@@ -82,6 +82,11 @@ namespace NHibernate {
 		/// NHibernate yes_no type
 		/// </summary>
 		public static readonly NullableType YesNo = new YesNoType();
+
+		/// <summary>
+		/// NHibernate decimal type
+		/// </summary>
+		public static readonly NullableType Decimal = new DecimalType();
 		
 		/// <summary>
 		/// NHibernate big_decimal type
@@ -114,9 +119,9 @@ namespace NHibernate {
 		//public static readonly NullableType CalendarDate = new CalendarDateType();
 		
 		/// <summary>
-		/// NHibernate locale type
+		/// NHibernate CultureInfo type
 		/// </summary>
-		//public static readonly NullableType Locale = new LocaleType();
+		public static readonly NullableType CultureInfo = new CultureInfoType();
 		
 		/// <summary>
 		/// NHibernate currency type
@@ -131,12 +136,12 @@ namespace NHibernate {
 		/// <summary>
 		/// NHibernate class type
 		/// </summary>
-		//public static readonly NullableType Class = new ClassType();
+		public static readonly NullableType Class = new ClassType();
 		
 		/// <summary>
 		/// NHibernate object type
 		/// </summary>
-		//public static readonly IType Object = new ObjectType();
+		public static readonly IType Object = new ObjectType();
 		
 		
 		/// <summary>
@@ -160,6 +165,7 @@ namespace NHibernate {
 			return new PersistentEnumType(enumClass);
 		}
 		*/
+		
 		/*
 		/// <summary>
 		/// A NHibernate serializable type
@@ -170,7 +176,7 @@ namespace NHibernate {
 			return new SerializableType(serializableClass);
 		}
 		*/
-
+		
 		/// <summary>
 		/// A NHibernate persistent object (entity) type
 		/// </summary>
@@ -193,7 +199,7 @@ namespace NHibernate {
 		*/
 		
 		/* Needs HybernateProxyHelper and PersistentCollection implementation
-		 * 
+		 *
 		/// <summary>
 		/// Force initialization of a proxy or persistent collection.
 		/// </summary>
