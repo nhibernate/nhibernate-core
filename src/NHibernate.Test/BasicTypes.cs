@@ -781,7 +781,7 @@ namespace NHibernate.Test
 			Assertion.AssertEquals("ClassProperty", expected.ClassProperty, actual.ClassProperty);
 			Assertion.AssertEquals("CultureInfoProperty", expected.CultureInfoProperty, actual.CultureInfoProperty);
 			Assertion.AssertEquals("DateTimeProperty", expected.DateTimeProperty, actual.DateTimeProperty);
-			Assertion.AssertEquals("DecimalProperty", expected.DecimalProperty, actual.DecimalProperty);
+			Assertion.Assert("DecimalProperty", expected.DecimalProperty.Equals(actual.DecimalProperty));
 			Assertion.AssertEquals("DoubleProperty", expected.DoubleProperty, actual.DoubleProperty);
 			Assertion.AssertEquals("Int16Property", expected.Int16Property, actual.Int16Property);
 			Assertion.AssertEquals("Int32Property", expected.Int32Property, actual.Int32Property);

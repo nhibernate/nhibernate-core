@@ -16,10 +16,12 @@
 				<includes name="System.dll" />
 				<includes name="System.XML.dll" />
 				<includes name="System.Data.dll" />
+				<includes name="${external.bin}/DotNetMock.dll" />
+				<includes name="${external.bin}/DotNetMock.Framework.dll" />
 				<includes name="${external.bin}/log4net.dll" />
+				<includes name="${external.bin}/nunit.framework.dll"/>
 				<includes name="${NHibernate.DomainModel.bin}/Debug/NHibernate.DomainModel.dll" />
 				<includes name="${NHibernate.bin}/Debug/NHibernate.dll" />
-				<includes name="C:/Program Files/OSS.NET/NUnit V2.1/bin/nunit.framework.dll"/>
 			</references>
 			<sources>
 				<includes name="**/*.cs" />
@@ -34,6 +36,16 @@
 		<copy todir="bin/Debug">
 			<fileset basedir="${external.bin}">
 				<includes name="log4net.*" />
+			</fileset>
+		</copy>
+		<copy todir="bin/Debug">
+			<fileset basedir="${external.bin}">
+				<includes name="DotNetMock.*" />
+			</fileset>
+		</copy>
+		<copy todir="bin/Debug">
+			<fileset basedir="${external.bin}">
+				<includes name="nunit.framework.*" />
 			</fileset>
 		</copy>
 		<copy todir="bin/Debug">
@@ -59,10 +71,12 @@
 				<includes name="System.dll" />
 				<includes name="System.XML.dll" />
 				<includes name="System.Data.dll" />
+				<includes name="${external.bin}/DotNetMock.dll" />
+				<includes name="${external.bin}/DotNetMock.Framework.dll" />
 				<includes name="${external.bin}/log4net.dll" />
+				<includes name="${external.bin}/nunit.framework.dll"/>
 				<includes name="${NHibernate.DomainModel.bin}/Debug/NHibernate.DomainModel.dll" />
 				<includes name="${NHibernate.bin}/Debug/NHibernate.dll" />
-				<includes name="C:/Program Files/OSS.NET/NUnit V2.1/bin/nunit.framework.dll"/>
 			</references>
 			<sources>
 				<includes name="**/*.cs" />
@@ -77,6 +91,17 @@
 		<copy todir="bin/Release">
 			<fileset basedir="${external.bin}">
 				<includes name="log4net.*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="bin/Release">
+			<fileset basedir="${external.bin}">
+				<includes name="DotNetMock.*" />
+			</fileset>
+		</copy>
+		<copy todir="bin/Release">
+			<fileset basedir="${external.bin}">
+				<includes name="nunit.framework.*" />
 			</fileset>
 		</copy>
 		

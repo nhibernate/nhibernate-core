@@ -100,6 +100,16 @@
                     Project = "{E3482030-5828-4112-9906-D4C5153DCE3F}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
+                <Reference
+                    Name = "DotNetMock.Framework"
+                    AssemblyName = "DotNetMock.Framework"
+                    HintPath = "..\..\external-bin\DotNetMock.Framework.dll"
+                />
+                <Reference
+                    Name = "DotNetMock"
+                    AssemblyName = "DotNetMock"
+                    HintPath = "..\..\external-bin\DotNetMock.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -173,6 +183,11 @@
                 />
                 <File
                     RelPath = "UnsavedValueTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\DecimalTypeTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
