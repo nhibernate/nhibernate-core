@@ -413,12 +413,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\HibernateType.cs"
+                    RelPath = "Type\ILiteralType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\ILiteralType.cs"
+                    RelPath = "Type\IType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

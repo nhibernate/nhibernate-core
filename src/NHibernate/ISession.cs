@@ -251,7 +251,7 @@ namespace NHibernate {
 		/// <param name="value">A value to be bound to a "?" placeholder</param>
 		/// <param name="type">The Hibernate type of the value</param>
 		/// <returns>A distinct list of instances</returns>
-		IList Find(string query, object value, HibernateType type);
+		IList Find(string query, object value, IType type);
 
 		/// <summary>
 		/// Execute a query, binding an array of values to a "?" parameters in the query string.
@@ -260,7 +260,7 @@ namespace NHibernate {
 		/// <param name="values">An array of values to be bound to the "?" placeholders</param>
 		/// <param name="types">An array of Hibernate types of the values</param>
 		/// <returns>A distinct list of instances</returns>
-		IList Find(string query, object[] values, HibernateType[] types);
+		IList Find(string query, object[] values, IType[] types);
 
 		/// <summary>
 		/// Execute a query and return the results in an interator.
@@ -299,7 +299,7 @@ namespace NHibernate {
 		/// <param name="value">A value to be written to a "?" placeholder in the query string</param>
 		/// <param name="type">The hibernate type of the value</param>
 		/// <returns>An enumerator</returns>
-		IEnumerator Enumerator(string query, object value, HibernateType type);
+		IEnumerator Enumerator(string query, object value, IType type);
 
 		/// <summary>
 		/// Execute a query and return the results in an interator, 
@@ -320,7 +320,7 @@ namespace NHibernate {
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of hibernate types of the values</param>
 		/// <returns>An enumerator</returns>
-		IEnumerator Enumerator(string query, object[] values, HibernateType[] types);
+		IEnumerator Enumerator(string query, object[] values, IType[] types);
 
 		/// <summary>
 		/// Apply a filter to a persistent collection.
@@ -348,7 +348,7 @@ namespace NHibernate {
 		/// <param name="value">A value to be written to a "?" placeholder in the query</param>
 		/// <param name="type">The hibernate type of value</param>
 		/// <returns>A collection</returns>
-		ICollection Filter(object collection, string filter, object value, HibernateType type);
+		ICollection Filter(object collection, string filter, object value, IType type);
 
 		/// <summary>
 		/// Apply a filter to a persistent collection, binding the given parameters to "?" placeholders.
@@ -363,7 +363,7 @@ namespace NHibernate {
 		/// <param name="values">The values to be written to "?" placeholders in the query</param>
 		/// <param name="types">The hibernate types of the values</param>
 		/// <returns>A collection</returns>
-		ICollection Filter(object collection, string filter, object[] values, HibernateType[] types);
+		ICollection Filter(object collection, string filter, object[] values, IType[] types);
 		
 		/// <summary>
 		/// Delete all objects returned by the query.
@@ -379,7 +379,7 @@ namespace NHibernate {
 		/// <param name="value">A value to be written to a "?" placeholer in the query</param>
 		/// <param name="type">The hibernate type of value.</param>
 		/// <returns>The number of instances deleted</returns>
-		int Delete(string query, object value, HibernateType type);
+		int Delete(string query, object value, IType type);
 
 		/// <summary>
 		/// Delete all objects returned by the query.
@@ -388,7 +388,7 @@ namespace NHibernate {
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of Hibernate types of the values</param>
 		/// <returns>The number of instances deleted</returns>
-		int Delete(string query, object[] values, HibernateType[] types);
+		int Delete(string query, object[] values, IType[] types);
 
 		/// <summary>
 		/// Obtain the specified lock level upon the given object.

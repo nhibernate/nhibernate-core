@@ -89,7 +89,7 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="i">the column, numbered from zero</param>
 		/// <returns>the Hibernate type</returns>
-		HibernateType GetType(int i);
+		IType GetType(int i);
 
 		/// <summary>
 		/// Convenience method to read an <c>int</c>

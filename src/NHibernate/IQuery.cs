@@ -57,7 +57,7 @@ namespace NHibernate {
 		/// <summary>
 		/// The Hibernate types of the query result set.
 		/// </summary>
-		HibernateType[] ReturnTypes {
+		IType[] ReturnTypes {
 			get;
 		}
 
@@ -122,7 +122,7 @@ namespace NHibernate {
 		/// <param name="position">Postion of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The Hibernate type</param>
-		void SetParameter(int position, object val, HibernateType type);
+		void SetParameter(int position, object val, IType type);
 
 		/// <summary>
 		/// Bind a value to a named query parameter
@@ -130,7 +130,7 @@ namespace NHibernate {
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The hibernate type</param>
-		void SetParameter(string name, object val, HibernateType type);
+		void SetParameter(string name, object val, IType type);
 
 		/// <summary>
 		/// Bind a value to a JDBC-style query parameter, guessing the Hibernate type from
@@ -155,7 +155,7 @@ namespace NHibernate {
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
 		/// <param name="type">The Hibernate type of the values</param>
-		void SetParameterList(string name, ICollection vals, HibernateType type);
+		void SetParameterList(string name, ICollection vals, IType type);
 
 		/// <summary>
 		/// Bind multiple values to a named query parameter, guessing the Hibernate
