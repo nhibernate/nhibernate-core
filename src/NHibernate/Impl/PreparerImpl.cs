@@ -80,35 +80,12 @@ namespace NHibernate.Impl {
 
 		public IDbCommand BuildCommand(SqlString sqlString) 
 		{
-			int paramIndex = 0;
 
 			if(builtCommands.ContainsKey(sqlString)) 
 				return (IDbCommand) builtCommands[sqlString];
 			
-			IDbCommand cmd = factory.ConnectionProvider.Driver.CreateCommand();
+			IDbCommand cmd = sqlString.BuildCommand(factory.ConnectionProvider.Driver);
 
-			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Length * 15);
-			for(int i = 0; i < sqlString.SqlParts.Length; i++) 
-			{
-				object part = sqlString.SqlParts[i];
-				Parameter parameter = part as Parameter;
-				
-				if(parameter!=null) 
-				{
-					string paramName = "p" + paramIndex;
-					builder.Append( parameter.GetSqlName(factory.ConnectionProvider, paramName) );
-					IDbDataParameter dbParam = parameter.GetIDbDataParameter(cmd, factory.ConnectionProvider, paramName);
-					cmd.Parameters.Add(dbParam);
-					
-					paramIndex++;
-				}
-				else 
-				{
-					builder.Append((string)part);
-				}
-			}
-
-			cmd.CommandText = builder.ToString();
 
 			builtCommands.Add(sqlString, cmd);
 			return cmd;
