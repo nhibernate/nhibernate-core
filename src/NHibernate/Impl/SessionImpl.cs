@@ -820,6 +820,8 @@ namespace NHibernate.Impl
 
 			if ( persister.HasCollections )
 			{
+				// h2.1 has some extra code here for OnReplicateVisitor - is a new setting
+				// that is only in h2.1 because of the method Replicate(object, ReplicateMode)
 				WrapVisitor visitor = new WrapVisitor(this);
 				// substitutes into values by side-effect
 				visitor.ProcessValues(values, types);
@@ -878,9 +880,17 @@ namespace NHibernate.Impl
 			return id;
 		}
 
+		/// <summary>
+		/// If the parameter <c>value</c> is an unitialized proxy then it will be reassociated
+		/// with the session. 
+		/// </summary>
+		/// <param name="value">A persistable object, proxy, persistent collection or null</param>
+		/// <returns>
+		/// <c>true</c> when an uninitialized proxy was passed into this method, <c>false</c> otherwise.
+		/// </returns>
 		internal bool ReassociateIfUninitializedProxy(object value)
 		{
-			if (!NHibernateUtil.IsInitialized(value))
+			if( !NHibernateUtil.IsInitialized(value) )
 			{
 				ReassociateProxy(value);
 				return true;
@@ -1109,7 +1119,6 @@ namespace NHibernate.Impl
 				}
 
 				new OnUpdateVisitor(this, id).Process( obj, persister );
-				//RemoveCollectionsFor( persister, id, obj );
 
 				AddEntity( new Key( id, persister ), obj );
 				entry = AddEntry(
@@ -1332,9 +1341,8 @@ namespace NHibernate.Impl
 				throw new NullReferenceException( "attempted to update null" );
 			}
 
-			if( !NHibernateUtil.IsInitialized( obj ) )
+			if( ReassociateIfUninitializedProxy( obj ) )
 			{
-				ReassociateProxy( obj );
 				return;
 			}
 
@@ -1375,11 +1383,11 @@ namespace NHibernate.Impl
 				throw new NullReferenceException( "attempted to update null" );
 			}
 
-			if( !NHibernateUtil.IsInitialized( obj ) )
+			if( ReassociateIfUninitializedProxy( obj ) )
 			{
-				ReassociateProxy( obj );
 				return;
 			}
+
 			object theObj = UnproxyAndReassociate( obj );
 
 			EntityEntry e = GetEntry( theObj );
@@ -1471,9 +1479,8 @@ namespace NHibernate.Impl
 				}
 			}
 
-			if( !NHibernateUtil.IsInitialized( obj ) )
+			if( ReassociateIfUninitializedProxy( obj ) )
 			{
-				ReassociateProxy( obj );
 				return;
 			}
 
@@ -2500,23 +2507,27 @@ namespace NHibernate.Impl
 				throw new NullReferenceException( "attempted to refresh null" );
 			}
 
-			if( !NHibernateUtil.IsInitialized( obj ) )
+			if( ReassociateIfUninitializedProxy( obj ) )
 			{
-				ReassociateProxy( obj );
 				return;
 			}
 
 			object theObj = UnproxyAndReassociate( obj );
 			EntityEntry e = RemoveEntry( theObj );
+			IClassPersister persister;
+			object id;
 
-			if( e == null )
+			if( e==null )
 			{
-				IClassPersister persister = GetPersister( theObj );
-				object id = persister.GetIdentifier( theObj );
+				persister = GetPersister( theObj );
+				id = persister.GetIdentifier( theObj );
 				if( log.IsDebugEnabled )
 				{
 					log.Debug( "refreshing transient " + MessageHelper.InfoString( persister, id ) );
 				}
+
+				// TODO: add another check here about refreshing transient instance when persisted
+				// instance already associated with the session.
 
 				DoLoadByObject( theObj, id, true, lockMode );
 			}
@@ -2532,10 +2543,24 @@ namespace NHibernate.Impl
 					throw new HibernateException( "this instance does not yet exist as a row in the database" );
 				}
 
-				Key key = new Key( e.Id, e.Persister );
+				persister = e.Persister;
+				id = e.Id;
+				Key key = new Key( id, persister );
 				RemoveEntity( key );
-				EvictCollections( e.Persister.GetPropertyValues( obj ), e.Persister.PropertyTypes );
+				if( persister.HasCollections )
+				{
+					new EvictVisitor( this ).Process( obj, persister );
+				}
 
+				// this is from h2.1 - the code around here has some more interaction with the factory
+				// and collection cache.
+				if( persister.HasCache )
+				{
+					persister.Cache.Remove( id );
+				}
+				EvictCachedCollections( persister, id );
+
+				// h2.1 has some differences with how it interacts with Load and errors thrown.
 				try
 				{
 					e.Persister.Load( e.Id, theObj, lockMode, this );
@@ -2913,12 +2938,7 @@ namespace NHibernate.Impl
 			}
 
 			// compare to cached state (ignoring nested collections)
-			if( persister.IsMutable &&
-				( cannotDirtyCheck ||
-				( dirtyProperties != null && dirtyProperties.Length != 0 ) ||
-				( status == Status.Loaded && persister.IsVersioned && persister.HasCollections && SearchForDirtyCollections( values, types ) )
-				)
-				)
+			if ( IsUpdateNecessary(persister, cannotDirtyCheck, status, dirtyProperties, values, types) )
 			{
 				// its dirty!
 
@@ -2991,6 +3011,26 @@ namespace NHibernate.Impl
 				// search for collections by reachability, updating their role.
 				// we don't want to touch collections reachable from a deleted object.
 				if( persister.HasCollections ) new FlushVisitor( this, obj ).ProcessValues( values, types );
+			}
+		}
+
+		private bool IsUpdateNecessary( IClassPersister persister, bool cannotDirtyCheck, Status status, int[] dirtyProperties, 
+			object[] values, IType[] types) 
+		{
+			if( persister.IsMutable==false ) return false;
+			if( cannotDirtyCheck ) return true;
+
+			if( dirtyProperties!=null && dirtyProperties.Length!=0 ) return true;
+
+			if( status==Status.Loaded && persister.IsVersioned && persister.HasCollections )
+			{
+				DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor( this );
+				visitor.ProcessValues( values, types );
+				return visitor.WasDirtyCollectionFound;
+			}
+			else
+			{
+				return false;
 			}
 		}
 
@@ -3411,78 +3451,10 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="coll"></param>
 		/// <returns></returns>
-		private bool CollectionIsDirty( PersistentCollection coll )
+		internal bool CollectionIsDirty( PersistentCollection coll )
 		{
 			CollectionEntry entry = GetCollectionEntry( coll );
 			return entry.initialized && entry.Dirty; //( entry.dirty || coll.hasQueuedAdds() ); 
-		}
-
-		/// <summary>
-		/// Given an array of fields, search recursively for dirty collections. 
-		/// </summary>
-		/// <param name="fields"></param>
-		/// <param name="types"></param>
-		/// <returns>return true if we find one</returns>
-		private bool SearchForDirtyCollections( object[ ] fields, IType[ ] types )
-		{
-			for( int i = 0; i < types.Length; i++ )
-			{
-				if( SearchForDirtyCollections( fields[ i ], types[ i ] ) )
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Do we have a dirty collection here?
-		/// 1. if it is a new application-instantiated collection, return true (does not occur anymore!)
-		/// 2. if it is a component, recurse
-		/// 3. if it is a wrappered collection, ask the collection entry
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		private bool SearchForDirtyCollections( object obj, IType type )
-		{
-			if( obj != null )
-			{
-				if( type.IsPersistentCollectionType )
-				{
-					if( obj.GetType().IsArray )
-					{
-						PersistentCollection ah = GetArrayHolder( obj );
-						// if no array holder we found an unwrappered array (this can't occur, 
-						// because we now always call wrap() before getting to here) 
-						//return (ah==null) ? true : SearchForDirtyCollections(ah, type);
-						return CollectionIsDirty( ah );
-					}
-					else
-					{
-						// if not wrappered yet, its dirty (this can't occur, because 
-						// we now always call wrap() before getting to here) 
-						// return ( ! (obj is PersistentCollection) ) ?
-						//	true : SearchForDirtyCollections( (PersistentCollection) obj, type );
-						return CollectionIsDirty( ( PersistentCollection ) obj );
-					}
-				}
-
-				else if( type.IsComponentType )
-				{
-					IAbstractComponentType componentType = ( IAbstractComponentType ) type;
-					object[ ] values = componentType.GetPropertyValues( obj, this );
-					IType[ ] types = componentType.Subtypes;
-					for( int i = 0; i < values.Length; i++ )
-					{
-						if( SearchForDirtyCollections( values[ i ], types[ i ] ) )
-						{
-							return true;
-						}
-					}
-				}
-			}
-			return false;
 		}
 
 		private IDictionary loadingCollections = new Hashtable();
@@ -3501,23 +3473,14 @@ namespace NHibernate.Impl
 				_id = id;
 			}
 
-			internal LoadingCollectionEntry( PersistentCollection collection, object id, object owner )
-			{
-				_collection = collection;
-				_id = id;
-				_owner = owner;
-			}
-
 			public PersistentCollection Collection
 			{
 				get { return _collection; }
-				set { _collection = value; }
 			}
 
 			public object Id
 			{
 				get { return _id; }
-				set { _id = value; }
 			}
 
 
@@ -3541,8 +3504,6 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		// TODO: replace with owner version of this method...
-		[Obsolete( "Use the one with CollectionPersister, id, owner) instead" )]
 		public PersistentCollection GetLoadingCollection( CollectionPersister persister, object id )
 		{
 			LoadingCollectionEntry lce = ( LoadingCollectionEntry ) loadingCollections[ id ];
@@ -3578,7 +3539,11 @@ namespace NHibernate.Impl
 					{
 						lce.Collection.EndRead();
 						AddInitializedCollection( lce.Collection, persister, lce.Id );
-						persister.Cache( lce.Id, lce.Collection, this );
+						// h2.1 synch - added the IsCacheable to nh specifically
+						if( persister.HasCache && lce.Collection.IsCacheable ) 
+						{
+							persister.Cache.Put( lce.Id, lce.Collection.Disassemble( persister ), Timestamp );
+						}
 					}
 				}
 
@@ -3808,11 +3773,8 @@ namespace NHibernate.Impl
 
 				log.Debug( "checking second-level cache" );
 
-				// TODO:
-				//bool foundInCache = InitializeCollectionFromCache(ce.loadedKey, GetCollectionOwner(ce),
-				//	ce.loadedPersister, collection);
-				bool foundInCache = false;
-
+				bool foundInCache = InitializeCollectionFromCache(ce.loadedKey, GetCollectionOwner(ce), ce.loadedPersister, collection);
+				
 				if (foundInCache) 
 				{
 					log.Debug("collection initialized from cache");
@@ -3842,7 +3804,14 @@ namespace NHibernate.Impl
 					// lazy additions and trying to cache uninitialized collections at this point.
 					// Collections are still written to the Cache in EndLoadingCollection and that 
 					// is probably the most appropriate place for that code anyway.
-					//				if (!writing) persister.Cache(id, collection, this);
+					if (!writing)
+					{
+						// h2.1 synch - added the IsCacheable to nh specifically
+						if( persister.HasCache && collection.IsCacheable ) 
+						{
+							persister.Cache.Put( id, collection.Disassemble( persister ), Timestamp );
+						}
+					}
 					log.Debug("collection initialized");
 				}
 			}
@@ -4399,69 +4368,74 @@ namespace NHibernate.Impl
 				log.Debug( "evicting " + MessageHelper.InfoString( persister ) );
 			}
 
-			//remove all collections for the entity 
-			EvictCollections( persister.GetPropertyValues( obj ), persister.PropertyTypes );
+			//remove all collections for the entity from the session-level cache
+			if( persister.HasCollections )
+			{
+				new EvictVisitor(this).Process( obj, persister );
+			}
+			
 			Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionEvict, CascadePoint.CascadeOnEvict, null );
 		}
 
-
-		/// <summary>
-		/// Evict any collections referenced by the object from the session cache. This will NOT 
-		/// pick up any collections that were dereferenced, so they will be deleted (suboptimal 
-		/// but not exactly incorrect). 
-		/// </summary>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		private void EvictCollections( Object[ ] values, IType[ ] types )
+		internal void EvictCollection(object value, PersistentCollectionType type)
 		{
-			for( int i = 0; i < types.Length; i++ )
+			object pc;
+			if( type.IsArrayType )
 			{
-				if( values[ i ] == null )
+				pc = arrayHolders[ value ];
+				arrayHolders.Remove(value);
+			}
+			else
+			{
+				// the hibernate java coding style is a little different - but
+				// doing the same thing
+				pc = value as PersistentCollection;
+				if( value==null )
 				{
-					// do nothing
+					return; //EARLY EXIT!
 				}
-				else if( types[ i ].IsPersistentCollectionType )
+			}
+
+			PersistentCollection collection = (PersistentCollection)pc;
+			if( collection.UnsetSession( this) )
+			{
+				EvictCollection( collection );
+			}
+
+		}
+
+		private void EvictCollection(PersistentCollection collection)
+		{
+			CollectionEntry ce = (CollectionEntry)collectionEntries[collection];
+			collectionEntries.Remove( collection );
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "evicting collection: " + MessageHelper.InfoString( ce.loadedPersister, ce.loadedKey ) );
+			}
+			if( ce.loadedPersister!=null && ce.loadedKey!=null )
+			{
+				collectionsByKey.Remove( new CollectionKey( ce.loadedPersister.Role, ce.loadedKey ) );
+			}
+		}
+
+		
+		private void EvictCachedCollections(IClassPersister persister, object id)
+		{
+			EvictCachedCollections( persister.PropertyTypes, id );
+		}
+
+		private void EvictCachedCollections(IType[] types, object id)
+		{
+			foreach( IType type in types )
+			{
+				if( type.IsPersistentCollectionType )
 				{
-					object pc = null;
-					if( ( ( PersistentCollectionType ) types[ i ] ).IsArrayType )
-					{
-						pc = arrayHolders[ values[ i ] ];
-						arrayHolders.Remove( values[ i ] );
-					}
-					else if( values[ i ] is PersistentCollection )
-					{
-						pc = values[ i ];
-					}
-
-					if( pc != null )
-					{
-						PersistentCollection coll = (PersistentCollection) pc;
-						if( coll.UnsetSession( this ) )
-						{
-							CollectionEntry ce = GetCollectionEntry(coll);
-							collectionEntries.Remove(coll);
-
-							if (log.IsDebugEnabled)
-							{
-								log.Debug( "evicting collection: "
-									+ MessageHelper.InfoString(ce.loadedPersister, ce.loadedKey) );
-							}
-
-							if ( ce.loadedPersister != null && ce.loadedKey != null )
-							{
-								collectionsByKey.Remove(
-									new CollectionKey( ce.loadedPersister.Role, ce.loadedKey ) );
-							}
-						}
-					}
+					factory.EvictCollection( ((PersistentCollectionType)type).Role, id );
 				}
-				else if( types[ i ].IsComponentType )
+				else if ( type.IsComponentType )
 				{
-					IAbstractComponentType actype = ( IAbstractComponentType ) types[ i ];
-					EvictCollections(
-						actype.GetPropertyValues( values[ i ], this ),
-						actype.Subtypes
-						);
+					IAbstractComponentType acType = (IAbstractComponentType)type;
+					EvictCachedCollections( acType.Subtypes, id );
 				}
 			}
 		}
@@ -4494,15 +4468,19 @@ namespace NHibernate.Impl
 
 			if (collection != null)
 			{
-				if ( log.IsDebugEnabled )
+				if ( log.IsDebugEnabled ) 
+				{
 					log.Debug( "returning loading collection:"
 						+ MessageHelper.InfoString(persister, id) );
+				}
 				return collection.GetValue();
 			}
 			else 
 			{
-				if ( log.IsDebugEnabled )
+				if ( log.IsDebugEnabled ) 
+				{
 					log.Debug( "creating collection wrapper:" + MessageHelper.InfoString(persister, id) );
+				}
 				collection = persister.CollectionType.Instantiate(this, persister); //TODO: suck into CollectionPersister.instantiate()
 				AddUninitializedCollection(collection, persister, id);
 				if ( persister.IsArray ) 
@@ -4516,6 +4494,34 @@ namespace NHibernate.Impl
 				}
 				return collection.GetValue();
 			}
+		}
+
+		/// <summary>
+		/// Try to initialize a Collection from the cache.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="owner"></param>
+		/// <param name="persister"></param>
+		/// <param name="collection"></param>
+		/// <returns><c>true</c> if the collection was initialized from the cache, otherwise <c>false</c>.</returns>
+		private bool InitializeCollectionFromCache(object id, object owner, CollectionPersister persister, PersistentCollection collection)
+		{
+			if( persister.HasCache==false )
+			{
+				return false;
+			}
+
+			object cached = persister.Cache.Get( id, Timestamp );
+			if( cached==null )
+			{
+				return false;
+			}
+
+			collection.InitializeFromCache( persister, cached, owner );
+			GetCollectionEntry( collection ).PostInitialize(  collection  );
+			//addInitializedCollection(collection, persister, id); h2.1 - commented out
+			return true;
+
 		}
 	}
 }

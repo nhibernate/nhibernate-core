@@ -77,6 +77,15 @@ namespace NHibernate.Engine
 		/// </summary>
 		void EndLoadingCollections();
 
+		/// <summary>
+		/// Gets the NHibernate collection wrapper from the ISession.
+		/// </summary>
+		/// <param name="role"></param>
+		/// <param name="id"></param>
+		/// <param name="owner"></param>
+		/// <returns>
+		/// A NHibernate wrapped collection.
+		/// </returns>
 		object GetCollection( string role, object id, object owner );
 
 		/// <summary>

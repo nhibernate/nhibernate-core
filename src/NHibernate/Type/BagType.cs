@@ -43,19 +43,5 @@ namespace NHibernate.Type
 			return new Bag( session, ( ICollection ) collection );
 		}
 
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <param name="disassembled"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override PersistentCollection AssembleCachedCollection( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner )
-		{
-			return new Bag( session, persister, disassembled, owner );
-		}
-
 	}
 }

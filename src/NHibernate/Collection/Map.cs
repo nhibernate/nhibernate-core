@@ -77,25 +77,6 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Construct an initialized Map from its disassembled state.
-		/// </summary>
-		/// <param name="session">The ISession the Map should be a part of.</param>
-		/// <param name="persister">The CollectionPersister to use to reassemble the Map.</param>
-		/// <param name="disassembled">The disassembled Map.</param>
-		/// <param name="owner">The owner object.</param>
-		public Map( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner ) : base( session )
-		{
-			BeforeInitialize( persister );
-			object[ ] array = ( object[ ] ) disassembled;
-			for( int i = 0; i < array.Length; i += 2 )
-			{
-				map[ persister.IndexType.Assemble( array[ i ], session, owner ) ] =
-					persister.ElementType.Assemble( array[ i + 1 ], session, owner );
-			}
-			initialized = true;
-		}
-
-		/// <summary>
 		/// Construct an initialized Map based off the values from the existing IDictionary.
 		/// </summary>
 		/// <param name="session">The ISession the Map should be a part of.</param>
@@ -103,7 +84,7 @@ namespace NHibernate.Collection
 		public Map( ISessionImplementor session, IDictionary map ) : base( session )
 		{
 			this.map = map;
-			initialized = true;
+			SetInitialized();
 			directlyAccessible = true;
 		}
 
@@ -328,6 +309,24 @@ namespace NHibernate.Collection
 				entries.Add( entry );
 			}
 			return entries;
+		}
+
+		/// <summary>
+		/// Initializes this Map from the cached values.
+		/// </summary>
+		/// <param name="persister">The CollectionPersister to use to reassemble the Map.</param>
+		/// <param name="disassembled">The disassembled Map.</param>
+		/// <param name="owner">The owner object.</param>
+		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
+		{
+			BeforeInitialize( persister );
+			object[ ] array = ( object[ ] ) disassembled;
+			for( int i = 0; i < array.Length; i += 2 )
+			{
+				map[ persister.IndexType.Assemble( array[ i ], session, owner ) ] =
+					persister.ElementType.Assemble( array[ i + 1 ], session, owner );
+			}
+			SetInitialized();
 		}
 
 		/// <summary>

@@ -70,26 +70,5 @@ namespace NHibernate.Collection
 		{
 			this.comparer = comparer;
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <param name="comparer"></param>
-		/// <param name="disassembled"></param>
-		/// <param name="owner"></param>
-		public SortedSet( ISessionImplementor session, CollectionPersister persister, IComparer comparer, object disassembled, object owner ) : this( session, comparer )
-		{
-			BeforeInitialize( persister );
-			object[ ] array = ( object[ ] ) disassembled;
-			for( int i = 0; i < array.Length; i++ )
-			{
-				object newObject = persister.ElementType.Assemble( array[ i ], session, owner );
-				internalSet.Add( newObject );
-			}
-
-			initialized = true;
-		}
 	}
 }

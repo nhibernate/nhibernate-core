@@ -196,7 +196,12 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Return the user-visible collection (or array) instance
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>
+		/// By default, the NHibernate wrapper is an acceptable collection for
+		/// the end user code to work with because it is interface compatible.
+		/// An NHibernate List is an IList, an NHibernate Map is an IDictionary
+		/// and those are the types user code is expecting.
+		/// </returns>
 		public virtual object GetValue()
 		{
 			return this;
@@ -220,8 +225,20 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Override on some subclasses.
+		/// Called when the reading the Collection from the database is finished.
 		/// </summary>
+		/// <remarks>
+		/// <p>
+		/// This should be overridden by sub collections that use temporary collections
+		/// to store values read from the db.
+		/// </p>
+		/// <p>
+		/// This is also responsible for determining if the collection is cacheable by
+		/// setting the property <see cref="IsCacheable"/>.  When NH is synched with h2.1 
+		/// this method will be changed to return that bool instead of setting the property,
+		/// but this accomplishes the same thing until then.
+		/// </p>
+		/// </remarks>
 		public virtual void EndRead()
 		{
 			// TODO:SYNCH:hib2.1 has this return a bool
@@ -231,12 +248,40 @@ namespace NHibernate.Collection
 			{
 				DelayedAddAll(additions);
 				additions=null;
+				// can't cache the collection because it contains additions that are 
+				// not in the database - those additions can't be put in the cache
+				// because they might throw TransientObjectExceptions when attempting
+				// to get their database identifier.
+				IsCacheable = false;
 				//return false;
 			}
 			else 
 			{
+				// nothing happened that would prevent this collection from being safe
+				// to cache.
+				IsCacheable = true;
 				//return true;
 			}
+		}
+
+		private bool _isCacheable;
+
+		/// <summary>
+		/// Gets or sets a boolean indicating if this collection can be put into the 
+		/// cache.
+		/// </summary>
+		/// <remarks>
+		/// This is a method new to NHibernate and is in here until the Loader design
+		/// can get synched up with h2.1's loader design.  In h2.1 the <c>EndRead()</c>
+		/// method returns a bool that is used by the ISession to determine wether or
+		/// not the Collection can go in cache.  Right now, the only thing that can keep 
+		/// a collection from being cached is if Delayed Adds are supported - ie, adding
+		/// items to the collection without fully initializing it.
+		/// </remarks>
+		internal bool IsCacheable
+		{
+			get { return _isCacheable; }
+			set { _isCacheable = value; }
 		}
 
 		/// <summary>
@@ -350,6 +395,15 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public abstract ICollection Entries();
 
+		/// <summary>
+		/// Read the state of the collection from a disassembled cached value.
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="disassembled"></param>
+		/// <param name="owner"></param>
+		public abstract void InitializeFromCache(CollectionPersister persister, object disassembled, object owner);
+
+		
 		/// <summary>
 		/// Reads the elements Identifier from the reader.
 		/// </summary>
@@ -572,6 +626,9 @@ namespace NHibernate.Collection
 			}
 		}
 
+		/// <summary>
+		/// Mark the collection as initialized.
+		/// </summary>
 		protected void SetInitialized()
 		{
 			initializing = false;

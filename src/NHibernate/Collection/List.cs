@@ -81,7 +81,7 @@ namespace NHibernate.Collection
 		public List( ISessionImplementor session, IList list ) : base( session )
 		{
 			this.list = list;
-			initialized = true;
+			SetInitialized();
 			directlyAccessible = true;
 		}
 
@@ -322,13 +322,12 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes this List from the cached values.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <param name="disassembled"></param>
-		/// <param name="owner"></param>
-		public List( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner ) : base( session )
+		/// <param name="persister">The CollectionPersister to use to reassemble the List.</param>
+		/// <param name="disassembled">The disassembled List.</param>
+		/// <param name="owner">The owner object.</param>
+		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
 		{
 			BeforeInitialize( persister );
 			object[ ] array = ( object[ ] ) disassembled;
@@ -336,7 +335,7 @@ namespace NHibernate.Collection
 			{
 				list.Add( persister.ElementType.Assemble( array[ i ], session, owner ) );
 			}
-			initialized = true;
+			SetInitialized();
 		}
 
 		/// <summary>

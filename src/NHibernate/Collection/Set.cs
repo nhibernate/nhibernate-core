@@ -19,10 +19,20 @@ namespace NHibernate.Collection
 	[Serializable]
 	public class Set : PersistentCollection, ISet
 	{
-		/// <summary></summary>
+		/// <summary>
+		/// The <see cref="ISet"/> that NHibernate is wrapping.
+		/// </summary>
 		protected ISet internalSet;
 
-		/// <summary></summary>
+		/// <summary>
+		/// A temporary list that holds the objects while the Set is being
+		/// populated from the database.  
+		/// </summary>
+		/// <remarks>
+		/// This is necessary to ensure that the object being added to the Set doesn't
+		/// have its' <c>GetHashCode()</c> and <c>Equals()</c> methods called during the load
+		/// process.
+		/// </remarks>
 		[NonSerialized]
 		protected IList tempList;
 
@@ -102,19 +112,17 @@ namespace NHibernate.Collection
 		public Set( ISessionImplementor session, ISet collection ) : base( session )
 		{
 			internalSet = collection;
-			initialized = true;
+			SetInitialized();
 			directlyAccessible = true;
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes this Set from the cached values.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <param name="disassembled"></param>
-		/// <param name="owner"></param>
-		public Set( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner )
-			: base( session )
+		/// <param name="persister">The CollectionPersister to use to reassemble the Set.</param>
+		/// <param name="disassembled">The disassembled Set.</param>
+		/// <param name="owner">The owner object.</param>
+		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
 		{
 			BeforeInitialize( persister );
 			object[ ] array = ( object[ ] ) disassembled;
@@ -122,7 +130,7 @@ namespace NHibernate.Collection
 			{
 				internalSet.Add( persister.ElementType.Assemble( array[ i ], session, owner ) );
 			}
-			initialized = true;
+			SetInitialized();
 		}
 
 		/// <summary>
@@ -390,20 +398,26 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Set up the temporary Identifier List that will be used in the EndRead() 
-		/// to resolve the Identifier to an Entity.
-		/// <see cref="PersistentCollection.BeginRead"/>
+		/// Set up the temporary List that will be used in the EndRead() 
+		/// to fully create the set.
 		/// </summary>
 		public override void BeginRead()
 		{
 			tempList = new ArrayList();
 		}
 
+		/// <summary>
+		/// Takes the contents stored in the temporary list created during <c>BeginRead()</c>
+		/// that was populated during <c>ReadFrom()</c> and write it to the underlying 
+		/// Set.
+		/// </summary>
 		public override void EndRead()
 		{
 			internalSet.AddAll( tempList );
 			tempList = null;
 			SetInitialized();
+			// TODO: h2.1 synch to return bool instead of IsCacheable (NH specific code)
+			IsCacheable = true;
 			// return true;
 		}
 

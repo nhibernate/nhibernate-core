@@ -40,26 +40,8 @@ namespace NHibernate.Collection
 				( ( ArrayList ) bag ).AddRange( coll );
 			}
 
-			initialized = true;
+			SetInitialized();
 			directlyAccessible = true;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <param name="disassembled"></param>
-		/// <param name="owner"></param>
-		public Bag( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner ) : base( session )
-		{
-			BeforeInitialize( persister );
-			object[ ] array = ( object[ ] ) disassembled;
-			for( int i = 0; i < array.Length; i++ )
-			{
-				bag.Add( persister.ElementType.Assemble( array[ i ], session, owner ) );
-			}
-			initialized = true;
 		}
 
 		/// <summary>
@@ -215,6 +197,24 @@ namespace NHibernate.Collection
 
 			return result;
 		}
+
+		/// <summary>
+		/// Initializes this Bag from the cached values.
+		/// </summary>
+		/// <param name="persister">The CollectionPersister to use to reassemble the Bag.</param>
+		/// <param name="disassembled">The disassembled Bag.</param>
+		/// <param name="owner">The owner object.</param>
+		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
+		{
+			BeforeInitialize( persister );
+			object[] array = ( object[] ) disassembled;
+			for( int i = 0; i < array.Length; i++ )
+			{
+				bag.Add( persister.ElementType.Assemble( array[ i ], session, owner ) );
+			}
+			SetInitialized();
+		}
+
 
 		/// <summary>
 		/// Gets a <see cref="Boolean"/> indicating if this Bag needs to be recreated

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 using NHibernate.Collection;
 
@@ -32,8 +31,11 @@ namespace NHibernate.Impl
 		public override int GetHashCode()
 		{
 			int result = 17;
-			result = 37 * result + key.GetHashCode();
-			result = 37 * result + role.GetHashCode();
+			unchecked 
+			{
+				result = 37 * result + key.GetHashCode();
+				result = 37 * result + role.GetHashCode();
+			}
 			return result;
 		}
 	}

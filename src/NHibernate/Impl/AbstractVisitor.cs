@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
-
-using NHibernate.Type;
 using NHibernate.Persister;
+using NHibernate.Type;
 
 namespace NHibernate.Impl
 {
@@ -13,11 +11,11 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal abstract class AbstractVisitor
 	{
-		private readonly SessionImpl session;
+		private readonly SessionImpl _session;
 
 		protected AbstractVisitor(SessionImpl session)
 		{
-			this.session = session;
+			_session = session;
 		}
 
 		/// <summary>
@@ -27,18 +25,18 @@ namespace NHibernate.Impl
 		/// <param name="types"></param>
 		public virtual void ProcessValues(object[] values, IType[] types)
 		{
-			for (int i = 0; i < values.Length; i++)
+			for( int i = 0; i < values.Length; i++ )
 			{
-				ProcessValue(values[i], types[i]);
+				ProcessValue( values[ i ], types[ i ] );
 			}
 		}
 
 		protected virtual object ProcessComponent(object component, IAbstractComponentType componentType)
 		{
-			if (component != null)
+			if( component != null )
 			{
-				ProcessValues(componentType.GetPropertyValues(component, session),
-					componentType.Subtypes);
+				ProcessValues( componentType.GetPropertyValues( component, _session ),
+				               componentType.Subtypes );
 			}
 
 			return null;
@@ -53,20 +51,20 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		protected object ProcessValue(object value, IType type)
 		{
-			if (type.IsPersistentCollectionType)
+			if( type.IsPersistentCollectionType )
 			{
 				// Even process null collections
-				return ProcessCollection(value, (PersistentCollectionType) type);
+				return ProcessCollection( value, (PersistentCollectionType)type );
 			}
-			else if (type.IsEntityType)
+			else if( type.IsEntityType )
 			{
-				return ProcessEntity(value, (EntityType) type);
+				return ProcessEntity( value, (EntityType)type );
 			}
-			else if (type.IsComponentType)
+			else if( type.IsComponentType )
 			{
 				//TODO: what about a null component with a collection!
 				//      we also need to clean up that "null collection"
-				return ProcessComponent(value, (IAbstractComponentType) type);
+				return ProcessComponent( value, (IAbstractComponentType)type );
 			}
 			else
 			{
@@ -82,8 +80,8 @@ namespace NHibernate.Impl
 		public virtual void Process(object obj, IClassPersister persister)
 		{
 			ProcessValues(
-				persister.GetPropertyValues(obj),
-				persister.PropertyTypes);
+				persister.GetPropertyValues( obj ),
+				persister.PropertyTypes );
 		}
 
 		/// <summary>
@@ -111,7 +109,7 @@ namespace NHibernate.Impl
 
 		protected SessionImpl Session
 		{
-			get { return session; }
+			get { return _session; }
 		}
 	}
 }

@@ -53,33 +53,6 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Create an Initialized SortedMap from its disassembled state.
-		/// </summary>
-		/// <param name="session">The ISession the Map should be a part of.</param>
-		/// <param name="persister">The CollectionPersister to use to reassemble the Map.</param>
-		/// <param name="comparer">The IComparer to perform the sorting.</param>
-		/// <param name="disassembled">The disassembled Map.</param>
-		/// <param name="owner">The owner object.</param>
-		public SortedMap( ISessionImplementor session, CollectionPersister persister, IComparer comparer, object disassembled, object owner )
-			: base( session )
-		{
-			this.comparer = comparer;
-			BeforeInitialize( persister );
-			object[ ] array = ( object[ ] ) disassembled;
-
-			for( int i = 0; i < array.Length; i += 2 )
-			{
-				object key = persister.IndexType.Assemble( array[ i ], session, owner );
-				object val = persister.ElementType.Assemble( array[ i + 1 ], session, owner );
-
-				map[ key ] = val;
-			}
-
-			initialized = true;
-
-		}
-
-		/// <summary>
 		/// Constuct an uninitialized SortedMap that uses an IComparer to perform the sorting.
 		/// </summary>
 		/// <param name="session"></param>

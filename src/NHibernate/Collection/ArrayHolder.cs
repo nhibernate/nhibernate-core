@@ -15,11 +15,18 @@ namespace NHibernate.Collection
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( PersistentCollection ) );
 
+		/// <summary>
+		/// The <see cref="Array"/> that NHibernate is wrapping.
+		/// </summary>
 		private Array array;
 
 		[NonSerialized]
 		private System.Type elementClass;
 
+		/// <summary>
+		/// A temporary list that holds the objects while the ArrayHolder is being
+		/// populated from the database.
+		/// </summary>
 		[NonSerialized]
 		private ArrayList tempList;
 
@@ -32,7 +39,7 @@ namespace NHibernate.Collection
 		public ArrayHolder( ISessionImplementor session, object array ) : base( session )
 		{
 			this.array = (Array) array;
-			initialized = true;
+			SetInitialized();
 		}
 
 		/// <summary>
@@ -191,7 +198,8 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Before the <c>ReadFrom()</c> is called the ArrayHolder needs to setup 
+		/// a temporary list to hold the objects.
 		/// </summary>
 		public override void BeginRead()
 		{
@@ -199,6 +207,11 @@ namespace NHibernate.Collection
 			tempList = new ArrayList();
 		}
 
+		/// <summary>
+		/// Takes the contents stored in the temporary list created during <c>BeginRead()</c>
+		/// that was populated during <c>ReadFrom()</c> and write it to the underlying 
+		/// array.
+		/// </summary>
 		public override void EndRead()
 		{
 			SetInitialized();
@@ -210,6 +223,9 @@ namespace NHibernate.Collection
 				index++;
 			}
 			tempList = null;
+			
+			// TODO: h2.1 synch to return bool instead of IsCacheable (NH specific code)
+			IsCacheable = true;
 			//return true;
 		}
 
@@ -238,24 +254,22 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes this array holder from the cached values.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <param name="disassembled"></param>
-		/// <param name="owner"></param>
-		public ArrayHolder( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner )
-			: base( session )
+		/// <param name="persister">The CollectionPersister to use to reassemble the Array.</param>
+		/// <param name="disassembled">The disassembled Array.</param>
+		/// <param name="owner">The owner object.</param>
+		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
 		{
-			object[ ] cached = ( object[ ] ) disassembled;
+			object[] cached = ( object[] ) disassembled;
 
 			array = System.Array.CreateInstance( persister.ElementClass, cached.Length );
 
 			for( int i = 0; i < cached.Length; i++ )
 			{
-				( ( Array ) array ).SetValue( persister.ElementType.Assemble( cached[ i ], session, owner ), i );
+				array.SetValue( persister.ElementType.Assemble( cached[ i ], session, owner ), i );
 			}
-			initialized = true;
+			SetInitialized();
 		}
 
 		/// <summary>
@@ -274,6 +288,12 @@ namespace NHibernate.Collection
 			return result;
 		}
 
+		/// <summary>
+		/// Returns the user-visible portion of the NHibernate ArrayHolder.
+		/// </summary>
+		/// <returns>
+		/// The array that contains the data, not the NHibernate wrapper.
+		/// </returns>
 		public override object GetValue()
 		{
 			return array;

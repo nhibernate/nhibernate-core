@@ -783,7 +783,7 @@ namespace NHibernate.Impl
 			{
 				if( p.HasCache )
 				{
-					p.CacheConcurrencyStrategy.Destroy();
+					p.Cache.Destroy();
 				}
 			}
 
@@ -834,7 +834,7 @@ namespace NHibernate.Impl
 			CollectionPersister p = GetCollectionPersister( roleName );
 			if( p.HasCache )
 			{
-				p.CacheConcurrencyStrategy.Remove( id );
+				p.Cache.Remove( id );
 			}
 		}
 
@@ -847,7 +847,7 @@ namespace NHibernate.Impl
 			CollectionPersister p = GetCollectionPersister( roleName );
 			if( p.HasCache )
 			{
-				p.CacheConcurrencyStrategy.Clear();
+				p.Cache.Clear();
 			}
 		}
 

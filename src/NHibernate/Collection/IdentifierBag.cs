@@ -27,7 +27,8 @@ namespace NHibernate.Collection
 	{
 		private IList values;
 
-		private IDictionary identifiers; //element -> id
+		// TODO: h2.1 changed this to index->id, haven't made that change in nh yet.
+		private IDictionary identifiers; //element -> id 
 
 		/// <summary>
 		/// 
@@ -57,20 +58,20 @@ namespace NHibernate.Collection
 				}
 			}
 
-			initialized = true;
+			SetInitialized();
 			directlyAccessible = true;
 			identifiers = new Hashtable();
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes this Bag from the cached values.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <param name="disassembled"></param>
-		/// <param name="owner"></param>
-		public IdentifierBag( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner ) : base( session )
+		/// <param name="persister">The CollectionPersister to use to reassemble the IdentifierBag.</param>
+		/// <param name="disassembled">The disassembled IdentifierBag.</param>
+		/// <param name="owner">The owner object.</param>
+		public override void InitializeFromCache(CollectionPersister persister, object disassembled, object owner)
 		{
+			
 			BeforeInitialize( persister );
 			object[ ] array = ( object[ ] ) disassembled;
 
@@ -81,8 +82,9 @@ namespace NHibernate.Collection
 				values.Add( obj );
 			}
 
-			initialized = true;
+			SetInitialized();
 		}
+
 
 		#region IList Members
 

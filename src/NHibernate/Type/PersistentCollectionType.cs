@@ -92,40 +92,6 @@ namespace NHibernate.Type
 		{
 		}
 
-		/*
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="owner"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public virtual object GetCollection( object id, object owner, ISessionImplementor session )
-		{
-			// added the owner
-			PersistentCollection collection = session.GetLoadingCollection( role, id );
-			if( collection != null )
-			{
-				return collection.GetCachedValue();
-			} //TODO: yuck... call another method - H2.0.3comment
-
-			CollectionPersister persister = session.Factory.GetCollectionPersister( role );
-			collection = persister.GetCachedCollection( id, owner, session );
-			if( collection != null )
-			{
-				session.AddInitializedCollection( collection, persister, id );
-				return collection.GetCachedValue();
-			}
-			else
-			{
-				collection = Instantiate( session, persister );
-				session.AddUninitializedCollection( collection, persister, id );
-				return collection.GetInitialValue( persister.IsLazy );
-			}
-
-		}
-		*/
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -320,15 +286,5 @@ namespace NHibernate.Type
 		{
 			get { return false; }
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <param name="disassembled"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public abstract PersistentCollection AssembleCachedCollection( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner );
 	}
 }

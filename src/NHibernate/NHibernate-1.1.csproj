@@ -984,12 +984,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\DirtyCollectionSearchVisitor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\EntityEntry.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Impl\EnumerableImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\EvictVisitor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

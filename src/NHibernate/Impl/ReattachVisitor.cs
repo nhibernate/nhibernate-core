@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-
 using NHibernate.Type;
 
 namespace NHibernate.Impl
@@ -10,29 +8,29 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal abstract class ReattachVisitor : ProxyVisitor
 	{
-		private readonly object key;
+		private readonly object _key;
 
 		protected object Key
 		{
-			get { return key; }
+			get { return _key; }
 		}
 
 		public ReattachVisitor(SessionImpl session, object key)
-			: base(session)
+			: base( session )
 		{
-			this.key = key;
+			_key = key;
 		}
 
 		protected override object ProcessComponent(object component, IAbstractComponentType componentType)
 		{
 			IType[] types = componentType.Subtypes;
-			if (component == null)
+			if( component == null )
 			{
-				ProcessValues(new object[types.Length], types);
+				ProcessValues( new object[types.Length], types );
 			}
 			else
 			{
-				base.ProcessComponent(component, componentType);
+				base.ProcessComponent( component, componentType );
 			}
 
 			return null;

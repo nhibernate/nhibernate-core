@@ -92,21 +92,5 @@ namespace NHibernate.Type
 		{
 			get { return true; }
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <param name="disassembled"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override PersistentCollection AssembleCachedCollection( ISessionImplementor session,
-		                                                               CollectionPersister persister,
-		                                                               object disassembled,
-		                                                               object owner )
-		{
-			return new ArrayHolder( session, persister, disassembled, owner );
-		}
 	}
 }

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-
 using NHibernate.Collection;
 using NHibernate.Type;
 
@@ -8,28 +6,28 @@ namespace NHibernate.Impl
 {
 	internal class FlushVisitor : AbstractVisitor
 	{
-		private object owner;
+		private object _owner;
 
-		public FlushVisitor( SessionImpl session, object owner )
+		public FlushVisitor(SessionImpl session, object owner)
 			: base( session )
 		{
-			this.owner = owner;
+			_owner = owner;
 		}
 
 		protected override object ProcessCollection(object collection, PersistentCollectionType type)
 		{
-			if (collection!=null) 
+			if( collection != null )
 			{
 				PersistentCollection coll;
-				if ( type.IsArrayType ) 
+				if( type.IsArrayType )
 				{
-					coll = Session.GetArrayHolder(collection);
+					coll = Session.GetArrayHolder( collection );
 				}
-				else 
+				else
 				{
-					coll = (PersistentCollection) collection;
+					coll = (PersistentCollection)collection;
 				}
-				Session.UpdateReachableCollection(coll, type, owner);
+				Session.UpdateReachableCollection( coll, type, _owner );
 			}
 			return null;
 		}

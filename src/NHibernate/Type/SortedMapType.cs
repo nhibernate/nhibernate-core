@@ -47,18 +47,5 @@ namespace NHibernate.Type
 		{
 			return new SortedMap( session, ( IDictionary ) collection, comparer );
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <param name="disassembled"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override PersistentCollection AssembleCachedCollection( ISessionImplementor session, CollectionPersister persister, object disassembled, object owner )
-		{
-			return new SortedMap( session, persister, comparer, disassembled, owner );
-		}
 	}
 }

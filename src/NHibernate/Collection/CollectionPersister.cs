@@ -281,25 +281,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="coll"></param>
-		/// <param name="s"></param>
-		public void Cache( object id, PersistentCollection coll, ISessionImplementor s )
-		{
-			if( cache != null )
-			{
-				if( log.IsDebugEnabled )
-				{
-					log.Debug( "Caching collection: " + role + "#" + id );
-				}
-				cache.Put( id, coll.Disassemble( this ), s.Timestamp );
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public ICacheConcurrencyStrategy CacheConcurrencyStrategy
+		public ICacheConcurrencyStrategy Cache
 		{
 			get { return cache; }
 		}
@@ -310,37 +292,6 @@ namespace NHibernate.Collection
 		public bool HasCache
 		{
 			get { return cache != null; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="owner"></param>
-		/// <param name="s"></param>
-		/// <returns></returns>
-		public PersistentCollection GetCachedCollection( object id, object owner, ISessionImplementor s )
-		{
-			if( cache == null )
-			{
-				return null;
-			}
-			else
-			{
-				if( log.IsDebugEnabled )
-				{
-					log.Debug( "Searching for collection in cache: " + role + "#" + id );
-				}
-				object cached = cache.Get( id, s.Timestamp );
-				if( cached == null )
-				{
-					return null;
-				}
-				else
-				{
-					return collectionType.AssembleCachedCollection( s, this, cached, owner );
-				}
-			}
 		}
 
 		/// <summary>
