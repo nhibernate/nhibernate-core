@@ -356,7 +356,21 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-                <Folder RelPath = "Id\" />
+                <File
+                    RelPath = "Id\IdentifierGenerationException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Id\IIdentifierGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Id\UUIDStringGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <File
                     RelPath = "Metadata\ClassMetadata.cs"
                     SubType = "Code"
