@@ -62,7 +62,7 @@ namespace NHibernate.Mapping {
 					} else if (cascade.Equals("none")) {
 						return Cascades.CascadeStyle.StyleNone;
 					} else if (cascade.Equals("save/update") || cascade.Equals("save-update")) {
-						return Cascades.CascadeStyle.StyleExceptDelete;
+						return Cascades.CascadeStyle.StyleSaveUpdate;
 					} else if (cascade.Equals("delete")) {
 						return Cascades.CascadeStyle.StyleOnlyDelete;
 					} else {

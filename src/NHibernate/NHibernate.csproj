@@ -123,6 +123,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ICompositeUserType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ICriteria.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -417,6 +422,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\PostgreSQLDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\TypeNames.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -510,6 +520,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\Conjunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\Disjunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\EqExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -531,6 +551,16 @@
                 />
                 <File
                     RelPath = "Expression\InExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\InsensitiveLikeExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\Junction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -751,6 +781,11 @@
                 />
                 <File
                     RelPath = "Impl\FilterImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\MessageHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1090,7 +1125,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Proxy\LazyInitializer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Ps\PreparedStatementCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sql\Alias.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1305,6 +1350,11 @@
                 />
                 <File
                     RelPath = "Type\ComponentType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\CompositeCustomType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

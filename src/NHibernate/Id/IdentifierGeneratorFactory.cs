@@ -20,6 +20,7 @@ namespace NHibernate.Id {
 		}
 
 		private static readonly Hashtable idgenerators = new Hashtable();
+		public static readonly string ShortCircuitIndicator = string.Empty;
 
 		static IdentifierGeneratorFactory() {
 			idgenerators.Add("uuid.string", typeof(UUIDStringGenerator));

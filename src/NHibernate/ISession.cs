@@ -152,6 +152,20 @@ namespace NHibernate {
 		object GetIdentifier(object obj);
 
 		/// <summary>
+		/// Is this instance associated with this Session?
+		/// </summary>
+		/// <param name="obj">an instance of a persistent class</param>
+		/// <returns>true if the given instance is associated with this Session</returns>
+		bool Contains(object obj);
+		
+		/// <summary>
+		/// Remove this instance from the session cache. Changes to the instance will
+		/// not be synchronized with the database.
+		/// </summary>
+		/// <param name="obj">a persistent instance</param>
+		void Evict(Object obj);
+
+		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
 		/// obtaining the specified lock mode.
 		/// </summary>

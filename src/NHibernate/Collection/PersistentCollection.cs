@@ -28,6 +28,12 @@ namespace NHibernate.Collection {
 			Initialize(false);
 		}
 
+		private bool IsConnectedToSession { 
+			get {
+				return session!=null && session.IsOpen;
+			}
+		}
+
 		protected void Write() {
 			Initialize(true);
 			if (session!=null && session.IsOpen) {
@@ -40,10 +46,9 @@ namespace NHibernate.Collection {
 		private bool MayQueueAdd {
 			get {
 				return 
-					!initialized
-					&& session != null
-					&& session.IsOpen
-					&& session.IsCollectionReadOnly(this);
+					!initialized &&
+					IsConnectedToSession &&
+					session.IsInverseCollection(this);
 			}
 		}
 
@@ -107,6 +112,16 @@ namespace NHibernate.Collection {
 				} else {
 					throw new LazyInitializationException("Failed to lazily initialize a collection - no session");
 				}
+			}
+		}
+
+		public bool UnsetSession(ISessionImplementor session) {
+			if (session==this.session) {
+				this.session=null;
+				return true;
+			}
+			else {
+				return false;
 			}
 		}
 

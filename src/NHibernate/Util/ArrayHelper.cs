@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Collections;
 
 namespace NHibernate.Util {
@@ -63,6 +64,13 @@ namespace NHibernate.Util {
 			for(int i=0; i<y.Length; i++)
 				result[i+x.Length] = y[i];
 			return result;
+		}
+
+		public static DbType[] Join(DbType[] x, DbType[] y) {
+			DbType[] result = new DbType[ x.Length + y.Length ];
+			for ( int i=0; i<x.Length; i++ ) result[i] = x[i];
+			for ( int i=0; i<y.Length; i++ ) result[i+x.Length] = y[i];
+			return result;		
 		}
 	}
 }
