@@ -53,7 +53,7 @@ namespace NHibernate.Cfg {
 			
 			//import
 			if (mapping.IsAutoImport) {
-				mapping.AddImport( className, StringHelper.Unqualify(className) );
+				mapping.AddImport( StringHelper.GetFullClassname(className), StringHelper.GetClassname(className) );
 			}
 		}
 
@@ -85,7 +85,7 @@ namespace NHibernate.Cfg {
 			//table
 			XmlAttribute tableNameNode = node.Attributes["table"];
 			string tableName = (tableNameNode==null)
-				? StringHelper.Unqualify( model.PersistentClazz.Name ) 
+				? model.PersistentClazz.Name 
 				: tableNameNode.Value;
 
 			//schema
@@ -116,7 +116,7 @@ namespace NHibernate.Cfg {
 			//TABLENAME
 			XmlAttribute tableNameNode = node.Attributes["table"];
 			string tableName = (tableNameNode==null)
-				? StringHelper.Unqualify( model.PersistentClazz.Name )
+				? model.PersistentClazz.Name
 				: tableNameNode.Value;
 
 			XmlAttribute schemaNode = node.Attributes["schema"];
@@ -862,6 +862,9 @@ namespace NHibernate.Cfg {
 			XmlAttribute dcNode = hmNode.Attributes["default-cascade"];
 			model.DefaultCascade = (dcNode==null) ? "none" : dcNode.Value ;
 
+			XmlAttribute aiNode = hmNode.Attributes["auto-import"];
+			model.IsAutoImport = (aiNode==null) ? true : "true".Equals( aiNode.Value );
+
 			nsmgr = new XmlNamespaceManager(doc.NameTable);
 			// note that the prefix has absolutely nothing to do with what the user
 			// selects as their prefix in the document.  It is the prefix we use to 
@@ -880,6 +883,15 @@ namespace NHibernate.Cfg {
 				string query = n.FirstChild.Value;
 				log.Debug("Named query: " + qname + " -> " + query);
 				model.AddQuery(qname, query);
+			}
+
+			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":import", nsmgr) ) 
+			{
+				string className = n.Attributes["class"].Value;
+				XmlAttribute renameNode = n.Attributes["rename"];
+				string rename = (renameNode==null) ? StringHelper.GetClassname(className) : renameNode.Value;
+				log.Debug("Import: " + rename + " -> " + className);
+				model.AddImport(className, rename);
 			}
 		}
 

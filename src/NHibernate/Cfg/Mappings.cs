@@ -49,7 +49,7 @@ namespace NHibernate.Cfg {
 		}
 
 		public void AddImport(string className, string rename) {
-			if ( (string)imports[rename] != className)
+			if ( imports.Contains(rename) && (string)imports[rename] != className)
 				throw new MappingException("duplicate import: " + rename);
 			imports.Add(rename, className); 
 		}
