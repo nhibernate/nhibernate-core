@@ -27,6 +27,9 @@ namespace NHibernate.Util {
 		}
 
 		public static string Replace(string template, string placeholder, string replacement) {
+			// sometimes a null value will get passed in here -> SqlWhereStrings are a good example
+			if(template==null) return null;
+
 			int loc = template.IndexOf(placeholder);
 			if (loc<0) {
 				return template;
