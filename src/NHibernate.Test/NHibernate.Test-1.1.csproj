@@ -225,6 +225,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "CfgTest\HbmOrderingFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "CompositeId\ClassWithCompositeId.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

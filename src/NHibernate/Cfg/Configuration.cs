@@ -147,7 +147,7 @@ namespace NHibernate.Cfg
 		/// Takes the validated XmlDocument and has the Binder do its work of
 		/// creating Mapping objects from the Mapping Xml.
 		/// </summary>
-		/// <param name="doc">The validated XmlDocument that contains the Mappings.</param>
+		/// <param name="doc">The <b>validated</b> XmlDocument that contains the Mappings.</param>
 		private void Add( XmlDocument doc )
 		{
 			try
@@ -196,9 +196,51 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="assembly">The loaded Assembly.</param>
 		/// <returns>This Configuration object.</returns>
+		/// <remarks>
+		/// This assumes that the <c>hbm.xml</c> files in the Assembly need to be put
+		/// in the correct order by NHibernate.  See <see cref="AddAssembly(Assembly, bool)">
+		/// AddAssembly(Assembly assembly, bool skipOrdering)</see>
+		/// for the impacts and reasons for letting NHibernate order the 
+		/// <c>hbm.xml</c> files.
+		/// </remarks>
 		public Configuration AddAssembly( Assembly assembly )
 		{
-			foreach( string fileName in assembly.GetManifestResourceNames() )
+			// assume ordering is needed because that is the
+			// safest way to handle it.
+			return AddAssembly( assembly, false );
+		}
+
+		/// <summary>
+		/// Adds all of the Assembly's Resource files that end with "hbm.xml" 
+		/// </summary>
+		/// <param name="assembly">The loaded Assembly.</param>
+		/// <param name="skipOrdering">
+		/// A <see cref="Boolean"/> indicating if the ordering of hbm.xml files can be skipped.
+		/// </param>
+		/// <returns>This Configuration object.</returns>
+		/// <remarks>
+		/// <p>
+		/// The order of <c>hbm.xml</c> files only matters if the attribute "extends" is used.
+		/// The ordering should only be done when needed because it takes extra time 
+		/// to read the Xml files to find out the order the files should be passed to the Binder.  
+		/// If you don't use the "extends" attribute then it is reccommended to call this 
+		/// with <c>skipOrdering=true</c>.
+		/// </p>
+		/// </remarks>
+		public Configuration AddAssembly(Assembly assembly, bool skipOrdering)
+		{
+			IList resources = null;
+			if( skipOrdering )
+			{
+				resources = assembly.GetManifestResourceNames();
+			}
+			else 
+			{
+				AssemblyHbmOrderer orderer = new AssemblyHbmOrderer( assembly );
+				resources = orderer.GetHbmFiles();
+			}
+
+			foreach( string fileName in resources )
 			{
 				if( fileName.EndsWith( ".hbm.xml" ) )
 				{

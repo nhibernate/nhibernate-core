@@ -364,6 +364,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cfg\AssemblyHbmOrderer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cfg\Binder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
