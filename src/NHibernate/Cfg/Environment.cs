@@ -30,7 +30,7 @@ namespace NHibernate.Cfg {
 		private static IDictionary properties = new Hashtable();
 		private static IDictionary isolationLevels = new Hashtable();
 
-		private const string Version = "0.1 beta 1";
+		private const string Version = "prealpha3";
 
 		public const string ConnectionProvider = "hibernate.connection.provider";
 		public const string ConnectionDriver = "hibernate.connection.driver_class";
