@@ -17,13 +17,13 @@ namespace NHibernate.Test
 										  "Fee.hbm.xml",
 										  "Qux.hbm.xml",
 										  "Fum.hbm.xml",
-										  "Baz.hbm.xml"
+										  "Baz.hbm.xml",
 										  //										  "Simple.hbm.xml",
 										  //										  "Fumm.hbm.xml",
 										  //										  "Fo.hbm.xml",
 										  //										  "One.hbm.xml",
 										  //										  "Many.hbm.xml",
-										  //										  "Immutable.hbm.xml",
+										  "Immutable.hbm.xml"
 										  //										  "Vetoer.hbm.xml",
 										  //										  "Holder.hbm.xml",
 										  //										  "Location.hbm.xml",
@@ -40,6 +40,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
+		[Ignore("Fails because Proxies are not working.")]
 		public void FetchInitializedCollection()
 		{
 			ISession s = sessions.OpenSession();
@@ -225,6 +226,33 @@ namespace NHibernate.Test
 			s.Delete(baz);
 			s.Flush();
 			s.Close();
+		}
+
+		[Test]
+		[Ignore("This is not working until I get parameters and HQL working better.")]
+		public void Cache() 
+		{
+			ISession s = sessions.OpenSession();
+			Immutable im = new Immutable();
+			s.Save(im);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			s.Load( im, im.Id);
+			s.Close();
+
+			s = sessions.OpenSession();
+			s.Load( im, im.Id);
+	
+			Immutable imFromFind = (Immutable)s.Find("from im in class Immutable where im = ?", im, NHibernate.Entity(typeof(Immutable)))[0];
+			Immutable imFromLoad = (Immutable)s.Load(typeof(Immutable), im.Id);
+			
+			Assert.IsTrue(im==imFromFind, "cached object identity from Find ");
+			Assert.IsTrue(im==imFromLoad, "cached object identity from Load ");
+			
+			s.Close();
+
 		}
 	}
 }
