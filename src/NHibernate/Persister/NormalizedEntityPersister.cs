@@ -851,7 +851,32 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		protected virtual SqlString GenerateConcreteSelectString( )
 		{
-			// TODO: This needs work
+			// TODO: 2.1 This needs work - java version shown below
+			/*
+			String select = "select " + 
+				StringHelper.join( 
+					StringHelper.COMMA_SPACE, 
+					StringHelper.qualify( CONCRETE_ALIAS, getIdentifierColumnNames() ) 
+				) +
+				concretePropertySelectFragment( CONCRETE_ALIAS, getPropertyUpdateability() ) + 
+				" from " +
+				fromTableFragment(CONCRETE_ALIAS) + 
+				fromJoinFragment(CONCRETE_ALIAS, true, false) +
+				" where " +
+				StringHelper.join(
+					"=? and ", 
+					StringHelper.qualify( CONCRETE_ALIAS, getIdentifierColumnNames() ) 
+				) +
+				"=?" +
+				whereJoinFragment(CONCRETE_ALIAS, true, false);
+			if ( isVersioned() ) {
+				select += 
+					" and " + 
+					getVersionColumnName() + 
+					"=?";
+			} 
+			return select;
+			*/
 			const string ConcreteAlias = "x";
 
 			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder( factory );
@@ -861,8 +886,11 @@ namespace NHibernate.Persister
 				.AddColumns( StringHelper.Qualify( ConcreteAlias, IdentifierColumnNames ) );
 
 			ConcretePropertySelectFragment( builder, ConcreteAlias, PropertyUpdateability );
-
+			//FromTableFragment( ConcreteAlias );
+			//FromJoinFragment( ConcreteAlias, true, false );
+			//" where "
 			builder.SetIdentityColumn( StringHelper.Qualify( ConcreteAlias, IdentifierColumnNames ), IdentifierType );
+			//WhereJoinFragment( alias, true, false );
 			if( IsVersioned )
 			{
 				builder.SetVersionColumn( new string[ ] { VersionColumnName }, VersionType );
