@@ -88,8 +88,9 @@ namespace NHibernate.Impl {
 			IDbCommand cmd = factory.ConnectionProvider.Driver.CreateCommand();
 
 			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Length * 15);
-			foreach(object part in sqlString.SqlParts) 
+			for(int i = 0; i < sqlString.SqlParts.Length; i++) 
 			{
+				object part = sqlString.SqlParts[i];
 				Parameter parameter = part as Parameter;
 				
 				if(parameter!=null) 
@@ -121,6 +122,7 @@ namespace NHibernate.Impl {
 		/// <param name="command">The command to setup the Transaction on.</param>
 		/// <returns>A IDbCommand with a valid Transaction property.</returns>
 		private IDbCommand JoinTransaction(IDbCommand command) {
+
 			IDbTransaction sessionAdoTrx = null;
 			
 			// at this point in the code if the Transaction is not null then we know we
