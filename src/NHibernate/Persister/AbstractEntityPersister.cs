@@ -69,8 +69,8 @@ namespace NHibernate.Persister
 
 		[NonSerialized] private string identifierPropertyName;
 		[NonSerialized] private IType identifierType;
-		[NonSerialized] private ReflectHelper.Setter identifierSetter;
-		[NonSerialized] private ReflectHelper.Getter identifierGetter;
+		[NonSerialized] private Property.ISetter identifierSetter;
+		[NonSerialized] private Property.IGetter identifierGetter;
 		[NonSerialized] private PropertyInfo proxyIdentifierProperty;
 
 		[NonSerialized] private string[] propertyNames;
@@ -81,11 +81,11 @@ namespace NHibernate.Persister
 		[NonSerialized] private string versionPropertyName;
 		[NonSerialized] private string versionColumnName;
 		[NonSerialized] private IVersionType versionType;
-		[NonSerialized] private ReflectHelper.Getter versionGetter;
+		[NonSerialized] private Property.IGetter versionGetter;
 		[NonSerialized] private int versionProperty;
 
-		[NonSerialized] private ReflectHelper.Getter[] getters;
-		[NonSerialized] private ReflectHelper.Setter[] setters;
+		[NonSerialized] private Property.IGetter[] getters;
+		[NonSerialized] private Property.ISetter[] setters;
 		[NonSerialized] private readonly Hashtable gettersByPropertyName = new Hashtable();
 		[NonSerialized] private readonly Hashtable settersByPropertyName = new Hashtable();
 		[NonSerialized] protected int hydrateSpan;
@@ -247,12 +247,12 @@ namespace NHibernate.Persister
 			}
 		}
 
-		protected virtual ReflectHelper.Setter[] Setters 
+		protected virtual Property.ISetter[] Setters 
 		{
 			get { return setters; }
 		}
 
-		protected virtual ReflectHelper.Getter[] Getters 
+		protected virtual Property.IGetter[] Getters 
 		{
 			get { return getters; }
 		}
@@ -450,23 +450,15 @@ namespace NHibernate.Persister
 			// IDENTIFIER
 
 			hasEmbeddedIdentifier = model.HasEmbeddedIdentifier;
-			identifierPropertyName = model.HasIdentifierProperty ? model.IdentifierProperty.Name : null;
 			Value idValue = model.Identifier;
 			identifierType = idValue.Type;
 
-			if (identifierPropertyName!=null) 
+			if (model.HasIdentifierProperty) 
 			{
-				identifierSetter = ReflectHelper.GetSetter(mappedClass, identifierPropertyName);
-				identifierGetter = ReflectHelper.GetGetter(mappedClass, identifierPropertyName);
-
-				PropertyInfo proxyGetter = identifierGetter.Property;
-				try 
-				{
-					System.Type proxy = model.ProxyInterface;
-					if(proxy != null) proxyGetter = ReflectHelper.GetGetter( proxy, identifierPropertyName ).Property;
-				} 
-				catch (Exception) {}
-				proxyIdentifierProperty = proxyGetter;
+				Mapping.Property idProperty = model.IdentifierProperty;
+				identifierPropertyName = idProperty.Name;
+				identifierSetter = idProperty.GetSetter(mappedClass);
+				identifierGetter = idProperty.GetGetter(mappedClass);
 			} 
 			else 
 			{
@@ -474,6 +466,35 @@ namespace NHibernate.Persister
 				identifierSetter = null;
 				proxyIdentifierProperty = null;
 			}
+
+			//this code has been modified to be more like h2.1 because of IGetter
+			// and ISetter
+			System.Type prox = model.ProxyInterface;
+			PropertyInfo proxySetIdentifierMethod = null;
+			PropertyInfo proxyGetIdentifierMethod = null; 
+
+			if( model.HasIdentifierProperty && prox!=null) 
+			{
+				Mapping.Property idProperty = model.IdentifierProperty;
+
+				try 
+				{
+					proxyGetIdentifierMethod = idProperty.GetGetter(prox).Property;
+				} 
+				catch (PropertyNotFoundException) 
+				{
+				}
+
+				try 
+				{
+					proxySetIdentifierMethod = idProperty.GetSetter(prox).Property;
+				} 
+				catch (PropertyNotFoundException) 
+				{
+				}
+			}
+
+			proxyIdentifierProperty = proxyGetIdentifierMethod;
 
 			// HYDRATE SPAN
 
@@ -545,7 +566,7 @@ namespace NHibernate.Persister
 			{
 				versionPropertyName = model.Version.Name;
 				versioned = true;
-				versionGetter = ReflectHelper.GetGetter(mappedClass, versionPropertyName);
+				versionGetter = model.Version.GetGetter(mappedClass);
 				// TODO: determine if this block is kept
 				// this if-else block is extra logic in nhibernate - not sure if I like it - would rather throw
 				// an exception if there is a bad mapping
@@ -576,8 +597,8 @@ namespace NHibernate.Persister
 			propertyNames = new string[hydrateSpan];
 			propertyUpdateability = new bool[hydrateSpan];
 			propertyInsertability = new bool[hydrateSpan];
-			getters = new ReflectHelper.Getter[hydrateSpan];
-			setters = new ReflectHelper.Setter[hydrateSpan];
+			getters = new Property.IGetter[hydrateSpan];
+			setters = new Property.ISetter[hydrateSpan];
 			cascadeStyles = new Cascades.CascadeStyle[hydrateSpan];
 			string[] setterNames = new string[hydrateSpan];
 			string[] getterNames = new string[hydrateSpan];
@@ -587,12 +608,12 @@ namespace NHibernate.Persister
 			int tempVersionProperty=-66;
 			bool foundCascade = false;
 
-			foreach(Property prop in model.PropertyClosureCollection) 
+			foreach(Mapping.Property prop in model.PropertyClosureCollection) 
 			{
 				if (prop==model.Version) tempVersionProperty = i;
 				propertyNames[i] = prop.Name;
-				getters[i] = ReflectHelper.GetGetter( mappedClass, propertyNames[i] );
-				setters[i] = ReflectHelper.GetSetter( mappedClass, propertyNames[i] );
+				getters[i] = prop.GetGetter( mappedClass );
+				setters[i] = prop.GetSetter( mappedClass );
 				getterNames[i] = getters[i].Property.Name;
 				setterNames[i] = setters[i].Property.Name;
 				types[i] = getters[i].Property.PropertyType;
@@ -712,14 +733,14 @@ namespace NHibernate.Persister
 
 		public virtual object GetPropertyValue(object obj, string propertyName) 
 		{
-			ReflectHelper.Getter getter = (ReflectHelper.Getter) gettersByPropertyName[propertyName];
+			Property.IGetter getter = (Property.IGetter) gettersByPropertyName[propertyName];
 			if(getter==null) throw new HibernateException("unmapped property: " + propertyName);
 			return getter.Get(obj);
 		}
 
 		public virtual void SetPropertyValue(object obj, string propertyName, object value) 
 		{
-			ReflectHelper.Setter setter = (ReflectHelper.Setter) settersByPropertyName[propertyName];
+			Property.ISetter setter = (Property.ISetter ) settersByPropertyName[propertyName];
 			if(setter==null) throw new HibernateException("unmapped property: " + propertyName);
 			setter.Set(obj, value);
 		}

@@ -211,7 +211,7 @@ namespace NHibernate.Cfg {
 						{
 							BindValue(subnode, id, false, propertyName);
 							id.SetTypeByReflection( model.PersistentClazz, propertyName);
-							Property prop = new Property(id);
+							Mapping.Property prop = new Mapping.Property(id);
 							BindProperty(subnode, prop, mappings);
 							model.IdentifierProperty = prop;
 						}
@@ -235,7 +235,7 @@ namespace NHibernate.Cfg {
 						{
 							System.Type reflectedClass = ReflectHelper.GetGetter( model.PersistentClazz, propertyName ).ReturnType;
 							BindComponent(subnode, compId, reflectedClass, model.Name + StringHelper.Dot + propertyName, false, mappings);
-							Property prop = new Property(compId);
+							Mapping.Property prop = new Mapping.Property(compId);
 							BindProperty(subnode, prop, mappings);
 							model.IdentifierProperty = prop;
 						}
@@ -248,7 +248,7 @@ namespace NHibernate.Cfg {
 						Value val = new Value(table);
 						BindValue(subnode, val, false, propertyName);
 						if ( val.Type==null ) val.Type = ( ("version".Equals(name)) ? NHibernate.Int32 : NHibernate.Timestamp );
-						Property timestampProp = new Property(val);
+						Mapping.Property timestampProp = new Mapping.Property(val);
 						BindProperty(subnode, timestampProp, mappings);
 						model.Version = timestampProp;
 						model.AddProperty(timestampProp);
@@ -367,12 +367,21 @@ namespace NHibernate.Cfg {
 			}
 		}
 
-		public static void BindProperty(XmlNode node, Property model, Mappings mappings) 
+		public static void BindProperty(XmlNode node, Mapping.Property model, Mappings mappings) 
 		{
 			model.Name = GetPropertyName(node);
 			IType type = model.Value.Type;
 			if (type==null) throw new MappingException("could not determine a property type for: " + model.Name );
 			
+			XmlAttribute accessNode = node.Attributes["access"];
+			if( accessNode!=null) 
+			{
+				model.PropertyAccessorName = accessNode.Value;
+			}
+			else 
+			{
+				model.PropertyAccessorName = mappings.DefaultAccess;
+			}
 			XmlAttribute cascadeNode = node.Attributes["cascade"];
 			model.Cascade = (cascadeNode==null) ? mappings.DefaultCascade : cascadeNode.Value;
 			
@@ -783,7 +792,7 @@ namespace NHibernate.Cfg {
 					System.Type componentClass = model.ComponentClass;
 					if (componentClass!=null) value.SetTypeByReflection(componentClass, propertyName);
 					value.CreateForeignKey();
-					Property prop = new Property(value);
+					Mapping.Property prop = new Mapping.Property(value);
 					BindProperty(subnode, prop, mappings);
 					model.AddProperty(prop);
 				}
@@ -794,9 +803,12 @@ namespace NHibernate.Cfg {
 			IType[] types = new IType[span];
 			Cascades.CascadeStyle[] cascade = new Cascades.CascadeStyle[span];
 			OuterJoinLoaderType[] joinedFetch = new OuterJoinLoaderType[span];
+			Property.IGetter[] getters = new Property.IGetter[span];
+			Property.ISetter[] setters = new Property.ISetter[span];
+			bool foundCustomAccessor = false;
 			
 			int i=0;
-			foreach(Property prop in model.PropertyCollection) 
+			foreach(Mapping.Property prop in model.PropertyCollection) 
 			{
 				names[i] = prop.Name;
 				types[i] = prop.Type;
@@ -804,12 +816,17 @@ namespace NHibernate.Cfg {
 				joinedFetch[i] = prop.Value.OuterJoinFetchSetting;
 				//skiping dynaprops
 				//TODO: Dynaprops
+
+				// the setters is new code added for field access
+				setters[i] = prop.GetSetter( model.ComponentClass );
+				getters[i] = prop.GetGetter( model.ComponentClass );
+				if( !prop.IsBasicPropertyAccessor ) foundCustomAccessor = true;
 				i++;
 			}
-			
 
+			//TODO: resume here with adding setters and getters
 			model.Type = 
-				(IType) new ComponentType( model.ComponentClass, names, types, joinedFetch, cascade, model.ParentProperty, model.IsEmbedded );
+				(IType) new ComponentType( model.ComponentClass, names, getters, setters, foundCustomAccessor, types, joinedFetch, cascade, model.ParentProperty, model.IsEmbedded );
 		}
 
 		private static IType GetTypeFromXML(XmlNode node) 
@@ -969,7 +986,7 @@ namespace NHibernate.Cfg {
 				{
 					value.SetTypeByReflection( model.PersistentClazz, propertyName );
 					value.CreateForeignKey();
-					Property prop = new Property(value);
+					Mapping.Property prop = new Mapping.Property(value);
 					BindProperty(subnode, prop, mappings);
 					model.AddProperty(prop);
 				}
@@ -1154,7 +1171,8 @@ namespace NHibernate.Cfg {
 			model.SchemaName = (schemaNode==null) ? null : schemaNode.Value;
 			XmlAttribute dcNode = hmNode.Attributes["default-cascade"];
 			model.DefaultCascade = (dcNode==null) ? "none" : dcNode.Value ;
-
+			XmlAttribute daNode = hmNode.Attributes["default-access"];
+			model.DefaultAccess = (daNode==null) ? "property" : daNode.Value;
 			XmlAttribute aiNode = hmNode.Attributes["auto-import"];
 			model.IsAutoImport = (aiNode==null) ? true : "true".Equals( aiNode.Value );
 

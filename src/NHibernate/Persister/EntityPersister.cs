@@ -143,7 +143,7 @@ namespace NHibernate.Persister
 
 			int i=0;
 			bool foundColumn = false;
-			foreach(Property prop in model.PropertyClosureCollection) 
+			foreach(Mapping.Property prop in model.PropertyClosureCollection) 
 			{
 				thisClassProperties.Add(prop);
 
@@ -192,7 +192,7 @@ namespace NHibernate.Persister
 			ArrayList joinedFetchesList = new ArrayList();
 			ArrayList definedBySubclass = new ArrayList();
 
-			foreach(Property prop in model.SubclassPropertyClosureCollection) 
+			foreach(Mapping.Property prop in model.SubclassPropertyClosureCollection) 
 			{
 				names.Add( prop.Name );
 				definedBySubclass.Add( !thisClassProperties.Contains(prop) );

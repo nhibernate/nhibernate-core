@@ -20,6 +20,7 @@ namespace NHibernate.Cfg
 		private string schemaName;
 		private string defaultCascade;
 		private bool autoImport;
+		private string defaultAccess;
 
 		internal Mappings(IDictionary classes, IDictionary collections, IDictionary tables, IDictionary queries, IDictionary imports, IList secondPasses) 
 		{
@@ -93,28 +94,21 @@ namespace NHibernate.Cfg
 
 		public string SchemaName 
 		{
-			get 
-			{ 
-				return schemaName; 
-			}
-			set 
-			{ 
-				schemaName = value; 
-			}
+			get { return schemaName; }
+			set { schemaName = value; }
 		}
 
 		public string DefaultCascade 
 		{
-			get 
-			{ 
-				return defaultCascade; 
-			}
-			set 
-			{ 
-				defaultCascade = value; 
-			}
+			get {  return defaultCascade;  }
+			set { defaultCascade = value; }
 		}
 
+		public string DefaultAccess 
+		{
+			get { return defaultAccess; }
+			set { defaultAccess = value; }
+		}
 		public void AddQuery(string name, string query) 
 		{
 			object old = queries[name];

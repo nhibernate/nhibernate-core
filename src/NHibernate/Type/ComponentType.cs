@@ -16,14 +16,16 @@ namespace NHibernate.Type {
 		private System.Type componentClass;
 		private ConstructorInfo contructor;
 		private IType[] types;
-		private ReflectHelper.Getter[] getters;
-		private ReflectHelper.Setter[] setters;
+		private Property.IGetter[] getters;
+		private Property.ISetter[] setters;
 		private string[] propertyNames;
 		private int propertySpan;
 		private Cascades.CascadeStyle[] cascade;
 		private OuterJoinLoaderType[] joinedFetch;
 		private string parentProperty;
-		private ReflectHelper.Setter parentSetter;
+		private Property.ISetter parentSetter;
+		//TODO: This is new...
+		private Property.IGetter parentGetter;
 
 		public override SqlType[] SqlTypes(IMapping mapping) {
 			//not called at runtime so doesn't matter if its slow :)
@@ -48,6 +50,9 @@ namespace NHibernate.Type {
 
 		public ComponentType(System.Type componentClass,
 			string[] properties,
+			Property.IGetter[] propertyGetters,
+			Property.ISetter[] propertySetters,
+			bool foundCustomAcessor,
 			IType[] types,
 			OuterJoinLoaderType[] joinedFetch,
 			Cascades.CascadeStyle[] cascade,
@@ -58,19 +63,29 @@ namespace NHibernate.Type {
 			this.componentClass = componentClass;
 			this.types = types;
 			propertySpan = properties.Length;
-			getters = new ReflectHelper.Getter[propertySpan];
-			setters = new ReflectHelper.Setter[propertySpan];
+			getters = propertyGetters;
+			setters = propertySetters;
 			string[] getterNames = new string[propertySpan];
 			string[] setterNames = new string[propertySpan];
 			System.Type[] propTypes = new System.Type[propertySpan];
-			for (int i=0; i<propertySpan; i++) {
-				getters[i] = ReflectHelper.GetGetter( componentClass, properties[i] );
-				setters[i] = ReflectHelper.GetSetter( componentClass, properties[i] );
+			for (int i=0; i<propertySpan; i++) 
+			{
 				getterNames[i] = getters[i].Property.Name;
 				setterNames[i] = setters[i].Property.Name;
 				propTypes[i] = getters[i].Property.PropertyType;
 			}
-			this.parentSetter = (parentProperty==null) ? null : ReflectHelper.GetSetter(componentClass, parentProperty);
+
+			if(parentProperty==null) 
+			{
+				parentSetter = null;
+				parentGetter = null;
+			}
+			else 
+			{
+				Property.IPropertyAccessor pa = Property.PropertyAccessorFactory.GetPropertyAccessor(null);
+				parentSetter = pa.GetSetter( componentClass, parentProperty );
+				parentGetter = pa.GetGetter( componentClass, parentProperty );
+			}
 			this.parentProperty = parentProperty;
 			this.propertyNames = properties;
 			this.cascade = cascade;

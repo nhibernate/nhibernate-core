@@ -283,7 +283,7 @@ namespace NHibernate.Persister
 			object thisClassPropertiesObject = new object();
 
 			int propertyIndex = 0;
-			foreach(Property prop in model.PropertyClosureCollection) 
+			foreach(Mapping.Property prop in model.PropertyClosureCollection) 
 			{
 				thisClassProperties.Add(prop, thisClassPropertiesObject);
 				Table tab = prop.Value.Table;
@@ -314,7 +314,7 @@ namespace NHibernate.Persister
 			// check distinctness of columns for this specific subclass only
 			Hashtable distinctColumns = new Hashtable();
 			CheckColumnDuplication(distinctColumns, model.Key.ColumnCollection);
-			foreach(Property prop in model.PropertyCollection) 
+			foreach(Mapping.Property prop in model.PropertyCollection) 
 			{
 				if(prop.IsUpdateable || prop.IsInsertable) 
 				{
@@ -334,7 +334,7 @@ namespace NHibernate.Persister
 			ArrayList propTables = new ArrayList(); // this.subclassPropertyTableNameClosure
 			ArrayList definedBySubclass = new ArrayList(); // this.propertyDefinedOnSubclass
 
-			foreach(Property prop in model.SubclassPropertyClosureCollection) 
+			foreach(Mapping.Property prop in model.SubclassPropertyClosureCollection) 
 			{
 				names.Add(prop.Name);
 				definedBySubclass.Add( !thisClassProperties.Contains(prop) );

@@ -323,7 +323,7 @@ namespace NHibernate.Impl {
 			System.Type clazz = bean.GetType();
 			foreach(string namedParam in session.Factory.GetNamedParameters(queryString)) {
 				try {
-					ReflectHelper.Getter getter = ReflectHelper.GetGetter(clazz, namedParam);
+					Property.IGetter getter = ReflectHelper.GetGetter(clazz, namedParam);
 					SetParameter( namedParam, getter.Get(bean), GuessType( getter.ReturnType ) );
 				} catch (Exception) {}
 			}
