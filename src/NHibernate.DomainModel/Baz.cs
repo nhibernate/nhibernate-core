@@ -231,8 +231,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Holder for stringSet
 	/// </summary>
-	//private System.Collections.IList _stringSet;
-	 private System.Collections.IDictionary _stringSet;
+	private System.Collections.IDictionary _stringSet;
 	
 	/// <summary>
 	/// Holder for topFoos
@@ -551,7 +550,6 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Get/set for stringSet
 	/// </summary>
-	//public System.Collections.IList stringSet
 	public System.Collections.IDictionary stringSet
 	{
 		get
@@ -703,8 +701,6 @@ namespace NHibernate.DomainModel
 
 	 public void setDefaults() 
 	 {
-//		 stringSet = new ArrayList();
-//		 stringSet.Add("foo"); stringSet.Add("bar"); stringSet.Add("baz");
 		 stringSet = new Hashtable();
 		 stringSet.Add("foo", new object());
 		 stringSet.Add("bar", new object());
@@ -715,7 +711,7 @@ namespace NHibernate.DomainModel
 		 stringDateMap.Add( "never", null );
 		 stringDateMap.Add( "big bang", new DateTime(0) );
 		 ArrayList list = new ArrayList();
-		 list.AddRange(stringSet.Keys); // stringSet);
+		 list.AddRange(stringSet.Keys); 
 		 stringList = list;
 		 intArray = new int[] { 1,3,3,7 };
 		 fooArray =new Foo[0];
@@ -743,7 +739,7 @@ namespace NHibernate.DomainModel
 		 bag.Add("duplicate");
 		 bag.Add("duplicate");
 		 bag.Add("unique");
-		 //cached = new ArrayList();
+		 
 		 cached = new SortedList();
 
 		 CompositeElement ce = new CompositeElement();
