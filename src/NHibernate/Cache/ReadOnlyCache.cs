@@ -9,22 +9,37 @@ namespace NHibernate.Cache
 	public class ReadOnlyCache : ICacheConcurrencyStrategy 
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ReadOnlyCache));
-		private readonly ICache cache;
-
+		
+		private object lockObject = new object();
+		private ICache _cache;
 
 		public ReadOnlyCache(ICache cache) 
 		{
-			this.cache = cache;
+			_cache = cache;
 		}
 
 		#region ICacheConcurrencyStrategy Members
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public object Get(object key, long timestamp) 
 		{
-			object result = cache.Get(key);
-			if ( result!=null && log.IsDebugEnabled) log.Debug("Cache hit: " + key);
-			return result;
+			lock( lockObject ) 
+			{
+				if( log.IsDebugEnabled ) 
+				{
+					log.Debug( "Cache lookup: " + key );
+				}
+
+				object result = _cache.Get( key );
+				if ( result!=null && log.IsDebugEnabled ) 
+				{
+					log.Debug( "Cache hit" );
+				}
+				else if( log.IsDebugEnabled )
+				{
+					log.Debug( "Cache miss" );
+				}
+				return result;
+			}
 		}
 
 		public void Lock(object key)
@@ -33,11 +48,17 @@ namespace NHibernate.Cache
 			throw new InvalidOperationException("Can't write to a readonly object");
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public bool Put(object key, object value, long timestamp) {
-			if (log.IsDebugEnabled) log.Debug("Caching: " + key);
-			cache.Put(key, value); 
-			return true;
+			
+			lock( lockObject ) 
+			{
+				if (log.IsDebugEnabled) 
+				{
+					log.Debug("Caching: " + key);
+				}
+				_cache.Put(key, value); 
+				return true;
+			}
 		}
 
 		public void Release(object key) 
@@ -48,24 +69,30 @@ namespace NHibernate.Cache
 
 		public void Clear() 
 		{
-			cache.Clear();
+			_cache.Clear();
 		}
 
 		public void Remove(object key) 
 		{
-			cache.Remove(key);
+			_cache.Remove(key);
 		}
 
 		public void Destroy() 
 		{
 			try 
 			{
-				cache.Destroy();
+				_cache.Destroy();
 			}
 			catch(Exception e) 
 			{
 				log.Warn("Could not destroy cache", e);
 			}
+		}
+
+		public ICache Cache 
+		{
+			get { return _cache; }
+			set { _cache = value; }
 		}
 		
 		#endregion

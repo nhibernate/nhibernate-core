@@ -53,18 +53,19 @@ namespace NHibernate.Cache {
 			set	{ region = value; }
 		}
 
-		public void Lock( object key )		
-		{	
-		}
-		
-		public void Unlock( object key )		
-		{		
-		}
-		
-		public long NextTimestamp()			
-		{
-			return Timestamper.Next();
-		}
+		// were added in h2.1
+//		public void Lock( object key )		
+//		{	
+//		}
+//		
+//		public void Unlock( object key )		
+//		{		
+//		}
+//		
+//		public long NextTimestamp()			
+//		{
+//			return Timestamper.Next();
+//		}
 	
 		#endregion
 	}

@@ -70,5 +70,11 @@ namespace NHibernate.Cache
 		/// <param name="key"></param>
 		/// <exception cref="CacheException"></exception>
 		void Destroy();
+
+		/// <summary>
+		/// Gets or sets the <see cref="ICache"/> for this strategy to use.
+		/// </summary>
+		/// <value>The <see cref="ICache"/> for this strategy to use.</value>
+		ICache Cache { get; set ;}
 	}
 }

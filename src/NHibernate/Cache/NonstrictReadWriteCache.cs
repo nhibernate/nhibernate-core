@@ -10,22 +10,37 @@ namespace NHibernate.Cache
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(NonstrictReadWriteCache));
 		private static readonly long timeout = 10000;
 
-		private readonly ICache cache;
+		private ICache _cache;
 
 		public NonstrictReadWriteCache(ICache cache) 
 		{
-			this.cache = cache;
+			_cache = cache;
 		}
 
 		#region ICacheConcurrencyStrategy Members
 
 		public object Get(object key, long txTimestamp)
 		{
-			object result = cache.Get(key);
+			if( log.IsDebugEnabled ) 
+			{
+				log.Debug( "Cache lookup: " + key );
+			}
+
+			object result = _cache.Get(key);
 			if( result!=null & !(result is Int64) ) 
 			{
-				if (log.IsDebugEnabled) log.Debug("Cache hit: " + key);
+				if (log.IsDebugEnabled) 
+				{
+					log.Debug( "Cache hit" );
+				}
 				return result;
+			}
+			else 
+			{
+				if( log.IsDebugEnabled ) 
+				{
+					log.Debug( "Cache miss" );
+				}
 			}
 
 			return null;
@@ -33,62 +48,83 @@ namespace NHibernate.Cache
 
 		public bool Put(object key, object value, long txTimestamp)
 		{
-			object result = cache.Get(key);
-			if(result==null) 
+			object result = _cache.Get( key );
+			if( result==null ) 
 			{
-				if (log.IsDebugEnabled) log.Debug("Caching new: " + key);
+				if( log.IsDebugEnabled ) 
+				{
+					log.Debug("Caching new: " + key);
+				}
 			}
-			else if ( (result is Int64) && ( (Int64)result < txTimestamp / Timestamper.OneMs ) )
+			else if( (result is Int64) && ( (Int64)result < txTimestamp / Timestamper.OneMs ) )
 			{
 				// note that this is not guaranteed to be correct in a cluster
 				// because system times could be inconsistent
-				if(log.IsDebugEnabled) log.Debug("Caching invalidated: " + key);
+				if( log.IsDebugEnabled ) 
+				{
+					log.Debug( "Caching invalidated: " + key );
+				}
 			}
 			else 
 			{
 				return false; // note early exit
 			}
 
-			cache.Put(key, value);
+			_cache.Put( key, value );
 			return true;
 		}
 
 		public void Lock(object key)
 		{
 			// in case the server crashes, we need the lock to timeout
-			cache.Put( key, ( timeout + Timestamper.Next() / Timestamper.OneMs ) );
+			_cache.Put( key, ( timeout + Timestamper.Next() / Timestamper.OneMs ) );
 		}
 
 		public void Release(object key)
 		{
-			if(log.IsDebugEnabled) log.Debug("Invalidating: " + key);
+			if( log.IsDebugEnabled ) 
+			{
+				log.Debug( "Invalidating: " + key );
+			}
 
 			//remove the lock (any later transactions can recache)
-			cache.Put(key, Timestamper.Next() / Timestamper.OneMs);
+			_cache.Put( key, Timestamper.Next() / Timestamper.OneMs );
 		}
 
 		public void Remove(object key)
 		{
-			if(log.IsDebugEnabled) log.Debug("Removing: " + key);
-			cache.Remove(key);
+			if( log.IsDebugEnabled )  
+			{
+				log.Debug( "Removing: " + key );
+			}
+			_cache.Remove( key );
 		}
 
 		public void Clear()
 		{
-			if(log.IsDebugEnabled) log.Debug("Clearing");
-			cache.Clear();
+			if( log.IsDebugEnabled ) 
+			{
+				log.Debug( "Clearing" );
+			}
+			_cache.Clear();
 		}
 
 		public void Destroy()
 		{
 			try 
 			{
-				cache.Destroy();
+				_cache.Destroy();
 			}
 			catch(Exception e) 
 			{
-				log.Warn("Could not destroy cache", e);
+				log.Warn( "Could not destroy cache", e );
 			}
+		}
+
+		public ICache Cache 
+		{
+			get { return _cache; }
+			set { _cache = value; }
 		}
 
 		#endregion
