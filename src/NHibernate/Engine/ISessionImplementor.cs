@@ -67,5 +67,23 @@ namespace NHibernate.Engine {
 		/// </summary>
 		/// <returns></returns>
 		ISessionFactoryImplementor GetFactory();
+
+		/// <summary>
+		/// Load an instance without checking if it was deleted. If it does not exist, throw an exception.
+		/// This method may create a new proxy or return an existing proxy.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		object InternalLoad(System.Type persistentClass, object id);
+		
+		/// <summary>
+		/// Load an instance without checking if it was deleted. If it does not exist, return <tt>null</tt>.
+		/// Do not create a proxy (but do return any existing proxy).
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		object InternalLoadOneToOne(System.Type persistentClass, object id);
 	}
 }
