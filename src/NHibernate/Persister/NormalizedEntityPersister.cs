@@ -643,11 +643,13 @@ namespace NHibernate.Persister
 			get { return discriminatorType; }
 		}
 
+		/*
 		/// <summary></summary>
 		public override string DiscriminatorSQLString
 		{
 			get { return discriminatorSQLString; }
 		}
+		*/
 
 		/// <summary></summary>
 		public override object DiscriminatorSQLValue

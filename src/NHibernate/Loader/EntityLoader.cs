@@ -11,7 +11,7 @@ namespace NHibernate.Loader
 	/// Load an entity using outerjoin fetching to fetch associated entities.
 	/// </summary>
 	/// <remarks>
-	/// The <tt>ClassPersister</tt> must implement <tt>Loadable</tt>. For other entities,
+	/// The <tt>ClassPersister</tt> must implement <tt>ILoadable</tt>. For other entities,
 	/// create a customized subclass of <tt>Loader</tt>.
 	/// </remarks>
 	public class EntityLoader : AbstractEntityLoader, IUniqueEntityLoader

@@ -22,7 +22,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public InFragment AddValue( string value )
+		public InFragment AddValue( object value )
 		{
 			values.Add( value );
 			return this;
@@ -54,7 +54,7 @@ namespace NHibernate.SqlCommand
 		/// <summary></summary>
 		public SqlString ToFragmentString()
 		{
-			SqlStringBuilder buf = new SqlStringBuilder( values.Count*5 );
+			SqlStringBuilder buf = new SqlStringBuilder( values.Count * 5 );
 			buf.Add( columnName );
 
 			if( values.Count > 1 )
@@ -70,11 +70,11 @@ namespace NHibernate.SqlCommand
 				buf.Add( " in (" );
 				for( int i = 0; i < values.Count; i++ )
 				{
-					if( "null".Equals( values[ i ] ) || Null.Equals( values[ i ] ) )
+					if( Null.Equals( values[ i ] ) )
 					{
 						allowNull = true;
 					}
-					else if ( "not null".Equals( values[ i ] ) || NotNull.Equals( values[ i ] ) )
+					else if ( NotNull.Equals( values[ i ] ) )
 					{
 						throw new ArgumentOutOfRangeException( "not null makes no sense for in expression" ) ;
 					}
@@ -107,9 +107,13 @@ namespace NHibernate.SqlCommand
 			else
 			{
 				string value = values[ 0 ] as string;
-				if( "null".Equals( value ) )
+				if( Null.Equals( value ) )
 				{
 					buf.Add( " is null" );
+				}
+				else if ( NotNull.Equals( value ) )
+				{
+					buf.Add( " is not null " );
 				}
 				else
 				{

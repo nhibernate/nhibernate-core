@@ -64,7 +64,6 @@ namespace NHibernate.Persister
 		private readonly bool forceDiscriminator;
 		private readonly string discriminatorColumnName;
 		private readonly IDiscriminatorType discriminatorType;
-		private readonly string discriminatorSQLString;
 		private readonly string discriminatorAlias;
 		private readonly object discriminatorSQLValue;
 		private readonly bool discriminatorInsertable;
@@ -94,69 +93,12 @@ namespace NHibernate.Persister
 
 			// detect mapping errors
 			HashedSet distinctColumns = new HashedSet();
-
+			
 			// DISCRIMINATOR
 			object discriminatorValue;
 			if( model.IsPolymorphic )
 			{
 				IValue d = model.Discriminator;
-				if( d == null )
-				{
-					throw new MappingException( "discriminator mapping required for polymorphic persistence" );
-				}
-				forceDiscriminator = model.IsForceDiscriminator;
-
-				// the discriminator will have only one column 
-				foreach( Column discColumn in d.ColumnCollection )
-				{
-					discriminatorColumnName = discColumn.GetQuotedName( Dialect );
-					discriminatorAlias = discColumn.Alias( Dialect );
-				}
-
-				try
-				{
-					discriminatorType = ( IDiscriminatorType ) model.Discriminator.Type;
-					if( "null".Equals( model.DiscriminatorValue ) )
-					{
-						discriminatorValue = null;
-						discriminatorSQLString = "null";
-						discriminatorInsertable = false;
-					}
-					else
-					{
-						discriminatorValue = discriminatorType.StringToObject( model.DiscriminatorValue );
-						discriminatorSQLString = discriminatorType.ObjectToSQLString( discriminatorValue );
-					}
-					discriminatorSQLValue = discriminatorSQLString;
-				} 
-					// TODO: add a ClassCastException here to catch illegal disc types
-				catch( Exception e )
-				{
-					string msg = String.Format( "Could not format discriminator value '{0}' to sql string using the IType {1}", 
-						model.DiscriminatorValue, 
-						model.Discriminator.Type.ToString() );
-
-					throw new MappingException( msg , e );
-				}
-
-				distinctColumns.Add( discriminatorColumnName );
-			}
-			else
-			{
-				forceDiscriminator = false;
-				discriminatorColumnName = null;
-				discriminatorInsertable = false;
-				discriminatorValue = null;
-				discriminatorType = null;
-				discriminatorSQLString = null;
-			}
-			
-			// DISCRIMINATOR
-			/*
-			object discriminatorValue;
-			if( model.IsPolymorphic )
-			{
-				Value d = model.Discriminator;
 				if( d == null )
 				{
 					throw new MappingException( "discriminator mapping required for polymorphic persistence" );
@@ -222,7 +164,6 @@ namespace NHibernate.Persister
 				discriminatorValue = null;
 				discriminatorSQLValue = null;
 			}
-			*/
 
 			// PROPERTIES
 			CheckColumnDuplication( distinctColumns, model.Key.ColumnCollection );
@@ -364,9 +305,13 @@ namespace NHibernate.Persister
 				foreach( Subclass sc in model.SubclassCollection )
 				{
 					subclassClosure[ k++ ] = sc.MappedClass;
-					if( "null".Equals( sc.DiscriminatorValue ) )
+					if( sc.IsDiscriminatorValueNull  )
 					{
-						subclassesByDiscriminatorValue.Add( ObjectUtils.Null, sc.MappedClass );
+						subclassesByDiscriminatorValue.Add( NullDiscriminator, sc.MappedClass );
+					}
+					else if( sc.IsDiscriminatorValueNotNull  )
+					{
+						subclassesByDiscriminatorValue.Add( NotNullDiscriminator, sc.MappedClass );
 					}
 					else
 					{
@@ -375,6 +320,10 @@ namespace NHibernate.Persister
 							subclassesByDiscriminatorValue.Add(
 								discriminatorType.StringToObject( sc.DiscriminatorValue ),
 								sc.MappedClass );
+						}
+						catch( InvalidCastException )
+						{
+							throw new MappingException( string.Format( "Illegal discriminator type: {0}", discriminatorType.Name ) );
 						}
 						catch( Exception e )
 						{
@@ -532,14 +481,6 @@ namespace NHibernate.Persister
 		}
 
 		/// <summary></summary>
-		public override string DiscriminatorSQLString
-		{
-			// HACK: This will /fail when we use null/not null discriminators
-			//get { return (string) DiscriminatorSQLValue; }
-			get { return discriminatorSQLString; }
-		}
-
-		/// <summary></summary>
 		public override object DiscriminatorSQLValue
 		{
 			get { return discriminatorSQLValue; }
@@ -560,11 +501,16 @@ namespace NHibernate.Persister
 		{
 			if( value == null )
 			{
-				return ( System.Type ) subclassesByDiscriminatorValue[ ObjectUtils.Null ];
+				return ( System.Type ) subclassesByDiscriminatorValue[ NullDiscriminator ];
 			}
 			else
 			{
-				return ( System.Type ) subclassesByDiscriminatorValue[ value ];
+				System.Type result = ( System.Type ) subclassesByDiscriminatorValue[ value ];
+				if ( result == null )
+				{
+					result = ( System.Type ) subclassesByDiscriminatorValue[ NotNullDiscriminator ];
+				}
+				return result;
 			}
 		}
 
@@ -652,9 +598,9 @@ namespace NHibernate.Persister
 				}
 			}
 
-			if( IsPolymorphic )
+			if( discriminatorInsertable )
 			{
-				builder.AddColumn( DiscriminatorColumnName, DiscriminatorSQLString );
+				builder.AddColumn( DiscriminatorColumnName, DiscriminatorSQLValue.ToString() );
 			}
 
 			if( identityInsert == false )
@@ -1348,7 +1294,7 @@ namespace NHibernate.Persister
 				for( int i = 0; i < subclasses.Length; i++ )
 				{
 					frag.AddValue(
-						( ( IQueryable ) factory.GetPersister( subclasses[ i ] ) ).DiscriminatorSQLString
+						( ( IQueryable ) factory.GetPersister( subclasses[ i ] ) ).DiscriminatorSQLValue
 						);
 				}
 

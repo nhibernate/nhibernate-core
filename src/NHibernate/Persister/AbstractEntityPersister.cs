@@ -1333,8 +1333,6 @@ namespace NHibernate.Persister
 						System.Type clazz = ( (EntityType) uniqueKeyType).AssociatedClass;
 						uniqueKeyType = factory.GetPersister( clazz ).IdentifierType;
 					}
-					// TODO: 2.1 - Change EntityLoader to handle this
-					//uniqueKeyLoaders.Add( propertyNames[ i ], new EntityLoader( this, columns, uniqueKeyType, factory ) );
 					uniqueKeyLoaders.Add( propertyNames[ i ], new EntityLoader( this, columns, uniqueKeyType, 1, factory ) );
 				}
 			}
@@ -1348,9 +1346,6 @@ namespace NHibernate.Persister
 		/// <param name="includeSublcasses"></param>
 		/// <returns></returns>
 		public abstract SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSublcasses );
-		
-		/// <summary></summary>
-		public abstract string DiscriminatorSQLString { get; }
 		
 		/// <summary></summary>
 		/// <remarks>This is the 2.1 version, DiscriminatorSQLString will be redunant shortly</remarks>

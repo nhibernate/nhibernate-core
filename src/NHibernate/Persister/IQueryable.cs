@@ -23,11 +23,19 @@ namespace NHibernate.Persister
 		/// </summary>
 		System.Type MappedSuperclass { get; }
 
+		/*
 		/// <summary>
 		/// The discriminator value for this particular concrete subclass, as a string that may be
 		/// embedded in a select statement
 		/// </summary>
 		string DiscriminatorSQLString { get; }
+		*/
+
+		/// <summary>
+		/// The discriminator value for this particular concrete subclass, as a string that may be
+		/// embedded in a select statement
+		/// </summary>
+		object DiscriminatorSQLValue { get; }
 
 		/// <summary>
 		/// Get the where clause fragment, give a query alias
