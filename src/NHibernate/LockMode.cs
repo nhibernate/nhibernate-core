@@ -27,12 +27,14 @@ namespace NHibernate {
 		/// Is this lock mode more restrictive than the given lock mode?
 		/// </summary>
 		public bool GreaterThan(LockMode mode) {
+			if (mode == null) { return true; } // TODO: should be removed when LockMode is completed
 			return level > mode.level;
 		}
 		/// <summary>
 		/// Is this lock mode less restrictive than the given lock mode?
 		/// </summary>
 		public bool LessThan(LockMode mode) {
+			if (mode == null) { return false; } // TODO: should be removed when LockMode is completed
 			return level < mode.level;
 		}
 
