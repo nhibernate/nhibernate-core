@@ -60,14 +60,14 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="persistentType"></param>
 		/// <returns></returns>
-		ClassMetadata GetClassMetadata(System.Type persistentType);
+		IClassMetadata GetClassMetadata(System.Type persistentType);
 
 		/// <summary>
 		/// Get the <c>CollectionMetadata</c> associated with the named collection role
 		/// </summary>
 		/// <param name="roleName"></param>
 		/// <returns></returns>
-		CollectionMetadata GetCollectionMetadata(string roleName);
+		ICollectionMetadata GetCollectionMetadata(string roleName);
 
 		/// <summary>
 		/// Get all <c>ClassMetadata</c> as a <c>IDictionary</c> from <c>Type</c>
