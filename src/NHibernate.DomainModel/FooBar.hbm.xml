@@ -7,11 +7,14 @@
 	<class 
   		name="NHibernate.DomainModel.Foo, NHibernate.DomainModel"
   		table="`foos`"
-  		proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel"
   		discriminator-value="F"
   		dynamic-update="true"
   		dynamic-insert="true"
   	>
+  		<!-- 
+			proxy doesn't work yet
+			proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel"
+		-->
   	
   		<jcs-cache usage="nonstrict-read-write"/>
   
@@ -146,14 +149,20 @@
 		
 		<subclass
     		name="NHibernate.DomainModel.Trivial, NHibernate.DomainModel"
-    		proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel" 
     		discriminator-value="T"
     	/>
+    	<!-- 
+			proxy doesn't work yet
+			proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel"
+		-->
 		<subclass 
     		name="NHibernate.DomainModel.Abstract, NHibernate.DomainModel" 
-    		proxy="NHibernate.DomainModel.AbstractProxy, NHibernate.DomainModel" 
     		discriminator-value="null"
     	>
+    		<!-- 
+			proxy doesn't work yet
+			proxy="NHibernate.DomainModel.AbstractProxy, NHibernate.DomainModel"
+		-->
 			<set name="Abstracts">
 				<key column="abstract_id"/>
 				<one-to-many class="NHibernate.DomainModel.Abstract, NHibernate.DomainModel"/>
@@ -161,8 +170,12 @@
 			<property name="Time" column="the_time"/>
 			<subclass 
         		name="NHibernate.DomainModel.Bar, NHibernate.DomainModel" 
-        		proxy="NHibernate.DomainModel.BarProxy, NHibernate.DomainModel"
-        		discriminator-value="B">
+        		discriminator-value="B"
+        	>
+        		<!-- 
+					proxy doesn't work yet
+					proxy="NHibernate.DomainModel.BarProxy, NHibernate.DomainModel"
+				-->
 			<many-to-one name="Baz"/>
 			<property name="BarString">
 				<column name="bar_String" length="24"/>

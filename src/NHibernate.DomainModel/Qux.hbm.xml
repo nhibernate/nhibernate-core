@@ -3,8 +3,11 @@
 	<class 
 		name="NHibernate.DomainModel.Qux, NHibernate.DomainModel" 
 		table="quux" 
-		proxy="NHibernate.DomainModel.Qux, NHibernate.DomainModel"
 	>
+		<!-- 
+			proxy doesn't work yet
+			proxy="NHibernate.DomainModel.Qux, NHibernate.DomainModel"
+		-->
 		<id name="Key" column="qux_key" unsaved-value="0">
 			<generator class="hilo" />
 		</id>

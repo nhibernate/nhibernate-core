@@ -3,9 +3,12 @@
 	<class 
 		name="NHibernate.DomainModel.Glarch, NHibernate.DomainModel" 
 		table="`glarchez`"
-		proxy="NHibernate.DomainModel.GlarchProxy, NHibernate.DomainModel" 
 		dynamic-update="true"
 	>
+		<!-- 
+			proxy doesn't work yet
+			proxy="NHibernate.DomainModel.GlarchProxy, NHibernate.DomainModel"
+		-->
 		
 		<!-- <jcs-cache usage="read-write" /> -->
 		<!-- commented out in h2.0.3 also -->

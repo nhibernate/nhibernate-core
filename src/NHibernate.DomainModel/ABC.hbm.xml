@@ -57,8 +57,11 @@
 	<class 
 		name="NHibernate.DomainModel.D, NHibernate.DomainModel" 
 		discriminator-value="0"
-		proxy="NHibernate.DomainModel.D, NHibernate.DomainModel"
 	>
+		<!-- 
+			proxy does not work yet
+			proxy="NHibernate.DomainModel.D, NHibernate.DomainModel"
+		-->
 		<id 
 			name="Id" 
 			unsaved-value="0"
