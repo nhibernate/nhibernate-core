@@ -427,6 +427,20 @@ namespace NHibernate.Test
 			s.Delete("from X x");
 			s.Flush();
 			s.Close();
+
+			// check to see if Y can exist without a X
+			y = new Y();
+			s = sessions.OpenSession();
+			s.Save( y );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			y = (Y)s.Load( typeof(Y), y.Id );
+			Assert.IsNull( y.X, "y does not need an X" );
+			s.Delete( y );
+			s.Flush();
+			s.Close()
 		}
 
 		[Test]
