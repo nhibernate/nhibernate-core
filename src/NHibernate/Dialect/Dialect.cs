@@ -33,7 +33,7 @@ namespace NHibernate.Dialect
 		static Dialect() 
 		{
 			aggregateFunctions["count"] = new Dialect.CountQueryFunctionInfo();
-			aggregateFunctions["avg"] = new Dialect.CountQueryFunctionInfo();
+			aggregateFunctions["avg"] = new Dialect.AvgQueryFunctionInfo();
 			aggregateFunctions["max"] = new QueryFunctionStandard();
 			aggregateFunctions["min"] = new QueryFunctionStandard();
 			aggregateFunctions["sum"] = new QueryFunctionStandard();
@@ -50,8 +50,8 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// Characters used for quoting sql identifiers
 		/// </summary>
-		public const string Quote = "'\"[";
-		public const string ClosedQuote = "'\"]";
+		public const string Quote = "`'\"[";
+		public const string ClosedQuote = "`'\"]";
 
 		/// <summary>
 		/// Get the name of the database type associated with the given typecode
