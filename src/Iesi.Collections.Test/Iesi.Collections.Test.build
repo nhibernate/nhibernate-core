@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" ?>
+
+<project 
+	name="Iesi.Collections.Test" 
+	default="build" 
+	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+>
+	<!--
+		Required properties:
+			* build.dir				- (path) root level to build to, assemblies will go in ${build.dir}/bin
+			* build.debug			- (true|false) debug build?
+			* current.build.defines - framework-specific build defines
+			* project.version		- full project version
+			* project.version.major	- the major number of the build
+			* project.version.minor - the minor number of the build
+			* project.version.build - the build number
+	-->
+
+	<target name="build">
+		<!-- ensure the AssemblyInfo is writable -->
+		<attrib file="AssemblyInfo.cs" readonly="false" />
+		
+		<asminfo output="AssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import name="System.Reflection" />
+				<import name="System.Runtime.CompilerServices" />
+			</imports>
+			<attributes>
+				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
+				<attribute type="AssemblyDescriptionAttribute" value="The Unit Tests for Iesi.Collections." />
+				<attribute type="AssemblyCompanyAttribute" value="nhibernate.sourceforge.net" />
+				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
+				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
+				<attribute type="AssemblyVersionAttribute" value="1.0.0.1" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="1.0" />
+				<attribute type="AssemblyFileVersionAttribute" value="1.0.0.1" />
+				<attribute type="AssemblyDelaySignAttribute" value="false" />
+			</attributes>
+		</asminfo>
+		
+		<csc 
+			target="library" 
+			define="${current.build.defines}"
+			debug="${build.debug}"
+			output="${build.dir}/bin/${nant.project.name}.dll" 
+		>
+		
+			<references basedir="${build.dir}/bin">
+				<includes name="System.dll" />
+				<includes name="System.XML.dll" />
+				<includes name="System.Data.dll" />
+				<includes name="Iesi.Collections.dll" />
+				<includes name="nunit.framework.dll"/>
+			</references>
+			
+			<sources>
+				<includes name="**/*.cs" />
+			</sources>
+		</csc>
+			
+	</target>
+	
+	<target name="test">
+		<nunit2>
+			<formatter 
+				type="Xml" 
+				usefile="true" 
+				extension=".xml" 
+				outputdir="${build.dir}/bin" 
+			/>
+			<test 
+				assemblyname="${build.dir}/bin/${nant.project.name}.dll" 
+			/>
+		</nunit2>
+		
+	</target>
+</project>

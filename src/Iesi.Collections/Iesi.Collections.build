@@ -16,11 +16,28 @@
 			* project.version.minor - the minor number of the build
 			* project.version.build - the build number
 			* sign					- (true|false)indicates if the Assembly should be signed.
+			* clover.enabled		- (true|false) indicates if Clover.NET should handle the build
+			* clover.src			- location of the clovered source to be stored at from the root of nhibernate
+			* clover.db				- location of the coverage db from the root of nhibernate
 	-->
 
+	<if propertytrue="clover.enabled">	
+		<loadtasks assembly="${clover.home}/CloverNAnt-0.84.dll" />
+	</if>
+	
 	<property name="keyFile" value="..\NHibernate.snk" />
 	
 	<target name="build" description="Build Iesi.Collections">
+		
+		<if propertytrue="clover.enabled">	
+			<clover-setup 
+				initstring="..\..\${clover.db}"
+				builddir="..\..\${clover.src}\${nant.project.name}"
+				enabled="${clover.enabled}"
+				flushinterval="1000"
+			/>
+		</if>
+					
 		<!-- ensure the AssemblyInfo is writable -->
 		<attrib file="AssemblyInfo.cs" readonly="false" />
 		
@@ -64,7 +81,6 @@
 			</references>
 	
 		</csc>
-		
 		
 	</target>
 	

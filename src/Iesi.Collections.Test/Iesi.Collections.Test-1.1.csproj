@@ -3,13 +3,13 @@
         ProjectType = "Local"
         ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
-        ProjectGuid = "{CEF80E5F-E838-4F27-9435-2E3630D5F9E0}"
+        ProjectGuid = "{CD003655-9A41-4D66-A38B-E7A37D89386C}"
     >
         <Build>
             <Settings
                 ApplicationIcon = ""
                 AssemblyKeyContainerName = ""
-                AssemblyName = "Iesi.Collections"
+                AssemblyName = "Iesi.Collections.Test"
                 AssemblyOriginatorKeyFile = ""
                 DefaultClientScript = "JScript"
                 DefaultHTMLPageLayout = "Grid"
@@ -18,7 +18,7 @@
                 OutputType = "Library"
                 PreBuildEvent = ""
                 PostBuildEvent = ""
-                RootNamespace = "Iesi.Collections"
+                RootNamespace = "Iesi.Collections.Test"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >
@@ -26,16 +26,16 @@
                     Name = "Debug"
                     AllowUnsafeBlocks = "false"
                     BaseAddress = "285212672"
-                    CheckForOverflowUnderflow = "true"
+                    CheckForOverflowUnderflow = "false"
                     ConfigurationOverrideFile = ""
                     DefineConstants = "DEBUG;TRACE"
                     DocumentationFile = ""
                     DebugSymbols = "true"
                     FileAlignment = "4096"
-                    IncrementalBuild = "true"
+                    IncrementalBuild = "false"
                     NoStdLib = "false"
                     NoWarn = ""
-                    Optimize = "true"
+                    Optimize = "false"
                     OutputPath = "bin\Debug\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
@@ -67,17 +67,27 @@
                 <Reference
                     Name = "System"
                     AssemblyName = "System"
-                    HintPath = "..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.dll"
+                    HintPath = "..\..\..\..\WINNT\Microsoft.NET\Framework\v1.1.4322\System.dll"
                 />
                 <Reference
                     Name = "System.Data"
                     AssemblyName = "System.Data"
-                    HintPath = "..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Data.dll"
+                    HintPath = "..\..\..\..\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
                 />
                 <Reference
                     Name = "System.XML"
                     AssemblyName = "System.Xml"
-                    HintPath = "..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
+                    HintPath = "..\..\..\..\WINNT\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
+                />
+                <Reference
+                    Name = "Iesi.Collections-1.1"
+                    Project = "{CEF80E5F-E838-4F27-9435-2E3630D5F9E0}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
                 />
             </References>
         </Build>
@@ -89,55 +99,35 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DictionarySet.cs"
+                    RelPath = "HashedSetFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "HashedSet.cs"
+                    RelPath = "HybridSetFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "HybridSet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Iesi.Collections.build"
+                    RelPath = "Iesi.Collections.Test.build"
                     BuildAction = "None"
                 />
                 <File
-                    RelPath = "ImmutableSet.cs"
+                    RelPath = "Iesi.Collections.Test.nunit"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "ListSetFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ISet.cs"
+                    RelPath = "SetFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ListSet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NamespaceSummary.xml"
-                    BuildAction = "Content"
-                />
-                <File
-                    RelPath = "Set.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SortedSet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SynchronizedSet.cs"
+                    RelPath = "SortedSetFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
