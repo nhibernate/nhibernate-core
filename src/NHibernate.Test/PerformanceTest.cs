@@ -26,7 +26,8 @@ namespace NHibernate.Test
 	/// test take about 3 times the amount of time to run with a log level of DEBUG compared to WARN.
 	/// </para>
 	/// <para>
-	/// Currently (2004-05-26) NHibernate adds about 20% overhead versus a straight DataReader when
+	/// Currently (2004-05-26) NHibernate adds about 20% overhead with everything on the same machine/6% overhead
+	/// with Sql Server on a different machine compared to a straight DataReader when
 	/// the exact same sql is issued.  NHibernate's DriverConnectionProvider has not implemented a 
 	/// Connection Cache or Prepared IDbCommand cache yet.  No cache was configured for the class Simple for
 	/// this test.  So there are optimizations that are yet to be made, even then it is performing
@@ -112,7 +113,6 @@ namespace NHibernate.Test
 					{
 						s = sessions.OpenSession();
 						Hibernate(s, simples, ids, n, "h" + runIndex.ToString());
-						s.Connection.Close();
 						s.Close();
 					}
 					hiber += DateTime.Now.Ticks - time;
@@ -131,7 +131,7 @@ namespace NHibernate.Test
 			}
 			System.Console.Out.Write("NHibernate: " + hiber + "ms / Direct ADO.NET: " + adonet + "ms = Ratio: " + (((float)hiber/adonet)).ToString() );
 			
-			//cp.Close();
+			cp.Close();
 			System.GC.Collect();
 		}
 

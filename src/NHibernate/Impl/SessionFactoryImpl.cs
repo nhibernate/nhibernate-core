@@ -653,16 +653,17 @@ namespace NHibernate.Impl {
 				if ( p.HasCache ) p.CacheConcurrencyStrategy.Destroy();
 			}
 
-//			TODO: H2.0.3
-//						  if (statementCache!=null) statementCache.CloseAll();
-//			try 
-//			{
-//				connections.close();
-//			}
-//			finally 
-//			{
-//				SessionFactoryObjectFactory.removeInstance(uuid, name, properties);
-//			} 
+			//TODO: H2.0.3
+			//if (statementCache!=null) statementCache.CloseAll();
+			try 
+			{
+				connectionProvider.Close();
+			}
+			finally 
+			{
+				//TODO: H2.0.3
+				//SessionFactoryObjectFactory.removeInstance(uuid, name, properties);
+			} 
 		}
 
 		public void Evict(System.Type persistentClass, object id) 
