@@ -17,6 +17,8 @@
 			* project.version.build - the build number
 			* sign					- (true|false) indicates if the Assembly should be signed.
 			* clover.enabled		- (true|false) indicates if Clover.NET should handle the build
+			* clover.src			- location of the clovered source to be stored at from the root of nhibernate
+			* clover.db				- location of the coverage db from the root of nhibernate
 	-->
 	
 	<if propertytrue="clover.enabled">	
@@ -28,12 +30,11 @@
 	<target name="build" description="Build NHibernate">
 		
 		<if propertytrue="clover.enabled">	
-			<mkdir dir="..\CloverBuild" />
 			<clover-setup 
-					initstring="..\CloverBuild\clover.cdb"
-					builddir="..\CloverBuild"
-					enabled="${clover.enabled}"
-					flushinterval="1000"
+				initstring="..\..\${clover.db}"
+				builddir="..\..\${clover.src}\${nant.project.name}"
+				enabled="${clover.enabled}"
+				flushinterval="1000"
 			/>
 		</if>
 			
@@ -92,27 +93,6 @@
 			</references>
 	
 		</csc>
-		
-	</target>
-	
-	<target name="coverage-report">
-		
-		<if propertytrue="clover.enabled">
-			
-			<mkdir dir="${build.dir}/clover" />
-			<clover-setup 
-					initstring="..\CloverBuild\clover.cdb"
-					builddir="..\CloverBuild"
-					enabled="${clover.enabled}"
-					flushinterval="1000"
-			/>
-			<clover-report>
-				<current title="NHibernate Clover Report" output="${build.dir}/clover" >
-					<format type="html" orderBy="Alpha" />
-				</current>
-			</clover-report>
-			
-		</if>
 		
 	</target>
 	

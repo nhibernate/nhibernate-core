@@ -14,7 +14,6 @@
 			* project.version.major	- the major number of the build
 			* project.version.minor - the minor number of the build
 			* project.version.build - the build number
-			* nunit2report.installed- (true|false) if nunit2report has been installed to generate html reports
 	-->
 
 	<target name="build">
@@ -96,15 +95,6 @@
 				appconfig="${build.dir}/bin/${nant.project.name}.dll.config" 
 			/>
 		</nunit2>
-		
-		<if propertytrue="nunit2report.installed">
-			<mkdir dir="${build.dir}/testresults" />
-			<nunit2report out="${build.dir}/testresults/index.html" format="Frames" todir="${build.dir}/testresults">
-				<fileset>
-					<includes name="${build.dir}\bin\*results.xml" />
-				</fileset>
-			</nunit2report>
-		</if>
 		
 	</target>
 </project>

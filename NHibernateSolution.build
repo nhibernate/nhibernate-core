@@ -15,6 +15,8 @@
 		Cenqua provided a license of Clover.NET for the NHibernate project to use. 
 	-->
 	<property name="clover.enabled" value="false" />
+	<property name="clover.src" value="src\CloverSrc" />
+	<property name="clover.db" value="${clover.src}\clover.cdb" />
 	<property name="clover.home" value="C:/Program Files/Cenqua/Clover.NET" />
 	
 	<!-- 
@@ -88,8 +90,8 @@
 		description="Builds code that NHibernate depends on but is not a core peice of NHibernate.  The built dll/exes will be distributed in the lib folder so there should be no need for a user to build it."
 	>
 		<nant target="build" buildfile="src/HashCodeProvider/HashCodeProvider.build" />
-		<nant target="build" buildfile="src/Iesi.Collections/Iesi.Collections.build" />
-		
+		<!-- the Iesi.Collections.build takes care of determining if this is a clover build or not -->
+		<nant target="coverage-report" buildfile="src/Iesi.Collections/Iesi.Collections.build" />
 	</target>
 	
 	<target name="build-with-clover" depends="init" description="Builds current config with Clover coverage">
@@ -132,12 +134,18 @@
 		<!-- copy framework-specific libraries -->
 		<copy todir="${build.dir}/bin">
 			<fileset basedir="${lib.dir}">
-				<includes name="Iesi.Collections.*" />
+				<!-- 
+					excludes the Iesi.Collections because it is built during the build
+					of NHibernate.  It is in the lib folder for vs.net convenience
+				-->
+				<excludes name="Iesi.Collections.*" />
 				<includes name="log4net.*" />
 				<includes name="nunit.framework.*" />
 			</fileset>
 		</copy>
 		
+		<nant target="build" buildfile="src/Iesi.Collections/Iesi.Collections.build" />
+		<nant target="build" buildfile="src/Iesi.Collections.Test/Iesi.Collections.Test.build" />
 		<nant target="build" buildfile="src/NHibernate/NHibernate.build" />
 		<nant target="build" buildfile="src/NHibernate.DomainModel/NHibernate.DomainModel.build" />
 		<nant target="build" buildfile="src/NHibernate.Test/NHibernate.Test.build" />
@@ -171,6 +179,7 @@
 		/>
 
 		<nant target="test" buildfile="src/NHibernate.Test/NHibernate.Test.build" />
+		<nant target="test" buildfile="src/Iesi.Collections.Test/Iesi.Collections.Test.build" />
 		
 		<!--
 			Remove the connnection string information that was just entered...
@@ -181,17 +190,43 @@
 			value="conn string here" 
 		/>
 
-		<!-- the NHibernate.build takes care of determining if this is a clover build or not -->
-		<nant target="coverage-report" buildfile="src/NHibernate/NHibernate.build" />
+		<if propertytrue="nunit2report.installed">
+			<mkdir dir="${build.dir}/testresults" />
+			<nunit2report out="${build.dir}/testresults/index.html" format="Frames" todir="${build.dir}/testresults">
+				<fileset>
+					<includes name="${build.dir}\bin\*results.xml" />
+				</fileset>
+			</nunit2report>
+		</if>
+		
+		<!-- if this was a clover enabled build then generate the clover reports for it -->
+		<call target="coverage-report" if="${clover.enabled}" />
+		
+	</target>
+	
+	<target name="coverage-report" description="Builds the Test Coverage reports">
+			
+		<mkdir dir="${build.dir}/clover" />
+		<clover-setup 
+			initstring="${clover.db}"
+			flushinterval="1000"
+		/>
+		<clover-report>
+			<current title="NHibernate Clover Report" output="${build.dir}/clover" >
+				<format type="html" orderBy="Alpha" />
+			</current>
+		</clover-report>
 	</target>
 	
 	<target name="sdkdoc" depends="init" description="Generates MSDN sytle documentation">
 		<ndoc>
 			<assemblies basedir="${build.dir}/bin">
 				<includes name="NHibernate.dll" />
+				<includes name="Iesi.Collections.dll" />
 			</assemblies>
 			<summaries>
 				<includes name="src/NHibernate/NamespaceSummary.xml" />
+				<includes name="src/Iesi.Collections/NamespaceSummary.xml" />
 			</summaries>
 			<documenters>
 				<documenter name="MSDN">
@@ -260,7 +295,7 @@
 					Clover modified source files.
 				-->
 				<excludes name="src/UnitTesting/**" />
-				<excludes name="src/CloverBuild/**" />
+				<excludes name="${clover.src}/**" />
 				
 				<includes name="src/**" />
 				
