@@ -33,7 +33,8 @@ namespace NHibernate.Dialect
 			Register( DbType.DateTime, "DATETIME" );
 			Register( DbType.Decimal, "NUMERIC(19,5)" );
 			Register( DbType.Decimal, 19, "NUMERIC(19, $1)");
-			Register( DbType.Double, "FLOAT" ); 
+			Register( DbType.Double, "FLOAT" );
+			Register( DbType.Guid, "VARCHAR(40)" );
 			Register( DbType.Int16, "SMALLINT" );
 			Register( DbType.Int32, "INTEGER" );
 			Register( DbType.Int64, "BIGINT" );
