@@ -844,7 +844,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test is failing because sub selects are not working. http://jira.nhibernate.org:8080/browse/NH-69")]
+		//[Ignore("Test is failing because sub selects are not working. http://jira.nhibernate.org:8080/browse/NH-69")]
 		public void CollectionsInSelect() 
 		{
 			ISession s = sessions.OpenSession();
@@ -905,10 +905,9 @@ namespace NHibernate.Test
 				s.Find("select count(*) from Bar as bar where 1 in indices(bar.Baz.FooArray)");
 				s.Find("select count(*) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)");
 				s.Find("select max( elements(bar.Baz.FooArray) ) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)");
-				// TODO: subselects - this is the only thing causing tests to fail...
-//				s.Find("select count(*) from Bar as bar where 1 in (from bar.Component.Glarch.ProxyArray g where g.Name='foo')");
-//				s.Find("select count(*) from Bar as bar where 1 in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')");
-//				s.Find("select count(*) from Bar as bar left outer join bar.Component.Glarch.ProxyArray as pg where 1 in (from g in bar.Component.Glarch.ProxyArray)");
+				s.Find("select count(*) from Bar as bar where 1 in (from bar.Component.Glarch.ProxyArray g where g.Name='foo')");
+				s.Find("select count(*) from Bar as bar where 1 in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')");
+				s.Find("select count(*) from Bar as bar left outer join bar.Component.Glarch.ProxyArray as pg where 1 in (from g in bar.Component.Glarch.ProxyArray)");
 			}
             
 			list = s.Find("from Baz baz left join baz.FooToGlarch join fetch baz.FooArray foo left join fetch foo.TheFoo");
