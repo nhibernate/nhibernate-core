@@ -1,19 +1,27 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="NHibernate.DomainModel.Qux, NHibernate.DomainModel" table="quux" proxy="NHibernate.DomainModel.Qux, NHibernate.DomainModel">
+	<class 
+		name="NHibernate.DomainModel.Qux, NHibernate.DomainModel" 
+		table="quux" 
+		proxy="NHibernate.DomainModel.Qux, NHibernate.DomainModel"
+	>
 		<id name="Key" column="qux_key" unsaved-value="0">
 			<generator class="hilo" />
 		</id>
-		<many-to-one name="Foo" class="NHibernate.DomainModel.Foo, NHibernate.DomainModel">
+		<many-to-one 
+			name="Foo" 
+			class="NHibernate.DomainModel.Foo, NHibernate.DomainModel"
+		>
 			<column name="foo" length="36" />
 		</many-to-one>
-		<property name="deleted" />
-		<property name="loaded" />
-		<property name="stored" />
-		<property name="created" />
-		<property name="childKey" type="Int64" />
-		<property name="stuff" />
-		<set name="fums" lazy="true">
+		
+		<property name="Deleted" />
+		<property name="Loaded" />
+		<property name="Stored" />
+		<property name="Created" />
+		<property name="ChildKey" type="Int64" />
+		<property name="Stuff" />
+		<set name="Fums" lazy="true">
 			<key column="qux_id" />
 			<many-to-many class="NHibernate.DomainModel.Fum, NHibernate.DomainModel">
 				<column name="fum_string" length="10" not-null="true" />
@@ -21,10 +29,12 @@
 				<column name="fum_date" not-null="true" />
 			</many-to-many>
 		</set>
-		<list name="moreFums" lazy="true">
+		<list name="MoreFums" lazy="true">
 			<key column="qux_id" />
 			<index column="posn" />
-			<one-to-many class="NHibernate.DomainModel.Fum, NHibernate.DomainModel" />
+			<one-to-many 
+				class="NHibernate.DomainModel.Fum, NHibernate.DomainModel" 
+			/>
 		</list>
 	</class>
 </hibernate-mapping>

@@ -3,24 +3,35 @@ using System.Collections;
 
 namespace NHibernate.DomainModel
 {
-	//TODO: fix up property names 
 	public class Qux : ILifecycle 
 	{
-	
-		private ISession session;
-	
+		private ISession _session;
+		private long _key;
+
+		private FooProxy _foo;
+		private bool _created;
+		private bool _deleted;
+		private bool _loaded;
+		private bool _stored;
+		private string _stuff;
+		// <set>
+		private IDictionary _fums;
+		private IList _moreFums;
+		private Qux _child;
+		private long _childKey;
+
 		public Qux() { }
 	
 		public Qux(String s) 
 		{
-			stuff=s;
+			_stuff=s;
 		}
 	
 		#region ILifecycle members
 
 		public LifecycleVeto OnSave(ISession session) 
 		{
-			created=true;
+			_created=true;
 			try 
 			{
 				Foo = new Foo();
@@ -36,7 +47,7 @@ namespace NHibernate.DomainModel
 	
 		public LifecycleVeto OnDelete(ISession session) 
 		{
-			deleted=true;
+			_deleted = true;
 			try 
 			{
 				session.Delete(Foo);
@@ -51,8 +62,8 @@ namespace NHibernate.DomainModel
 	
 		public void OnLoad(ISession session, object id) 
 		{
-			loaded=true;
-			this.session=session;
+			_loaded = true;
+			_session = session;
 		}
 		
 		public LifecycleVeto OnUpdate(ISession s)
@@ -62,14 +73,9 @@ namespace NHibernate.DomainModel
 
 		#endregion
 
-		public void store() 
+		public void Store() 
 		{
 		}
-
-		/// <summary>
-		/// Holds the _foo
-		/// </summary> 
-		private FooProxy _foo;
 
 		/// <summary>
 		/// Gets or sets the _foo
@@ -81,88 +87,41 @@ namespace NHibernate.DomainModel
 		}
 
 		/// <summary>
-		/// Holds the _created
-		/// </summary> 
-		private bool _created;
-
-		/// <summary>
 		/// Gets or sets the _created
 		/// </summary> 
-		public bool created
+		public bool Created
 		{
-			get 
-			{
-				return _created; 
-			}
-			set 
-			{
-				_created = value;
-			}
+			get { return _created;  }
+			set { _created = value; }
 		}
-		/// <summary>
-		/// Holds the _deleted
-		/// </summary> 
-		private bool _deleted;
-
+		
 		/// <summary>
 		/// Gets or sets the _deleted
 		/// </summary> 
-		public bool deleted
+		public bool Deleted
 		{
-			get 
-			{
-				return _deleted; 
-			}
-			set 
-			{
-				_deleted = value;
-			}
+			get { return _deleted; }
+			set { _deleted = value; }
 		}
-
-		/// <summary>
-		/// Holds the _loaded
-		/// </summary> 
-		private bool _loaded;
 
 		/// <summary>
 		/// Gets or sets the _loaded
 		/// </summary> 
-		public bool loaded
+		public bool Loaded
 		{
-			get 
-			{
-				return _loaded; 
-			}
-			set 
-			{
-				_loaded = value;
-			}
+			get { return _loaded; }
+			set { _loaded = value; }
 		}
 	
 		/// <summary>
-		/// Holds the _stored
-		/// </summary> 
-		private bool _stored;
-
-		/// <summary>
 		/// Gets or sets the _stored
 		/// </summary> 
-		public bool stored
+		public bool Stored
 		{
-			get 
-			{
-				return _stored; 
-			}
-			set 
-			{
-				_stored = value;
-			}
+			get { return _stored; }
+			set { _stored = value; }
 		}
-		/// <summary>
-		/// Holds the _key
-		/// </summary> 
-		private long _key;
-
+		
 		/// <summary>
 		/// Gets or sets the _key
 		/// </summary> 
@@ -172,111 +131,57 @@ namespace NHibernate.DomainModel
 			set { _key = value; }
 		}
 
-	
 		public long TheKey
 		{
-			set
-			{
-				_key = value;
-			}
+			set { _key = value; }
 		}
-
-		/// <summary>
-		/// Holds the _stuff
-		/// </summary> 
-		private string _stuff;
 
 		/// <summary>
 		/// Gets or sets the _stuff
 		/// </summary> 
-		public string stuff
+		public string Stuff
 		{
-			get 
-			{
-				return _stuff; 
-			}
-			set 
-			{
-				_stuff = value;
-			}
+			get { return _stuff; }
+			set { _stuff = value; }
 		}
 
 		/// <summary>
-		/// Holds the _fums
+		/// Gets or sets the _fums (&lt;set&gt;)
 		/// </summary> 
-		private IDictionary _fums;
-
-		/// <summary>
-		/// Gets or sets the _fums
-		/// </summary> 
-		public IDictionary fums
+		public IDictionary Fums
 		{
-			get 
-			{
-				return _fums; 
-			}
-			set 
-			{
-				_fums = value;
-			}
+			get { return _fums; }
+			set { _fums = value; }
 		}
-
-		/// <summary>
-		/// Holds the _moreFums
-		/// </summary> 
-		private IList _moreFums;
-
+		
 		/// <summary>
 		/// Gets or sets the _moreFums
 		/// </summary> 
-		public IList moreFums
+		public IList MoreFums
 		{
-			get 
-			{
-				return _moreFums; 
-			}
-			set 
-			{
-				_moreFums = value;
-			}
+			get { return _moreFums; }
+			set { _moreFums = value; }
 		}
 	
-		private Qux _child;
-		public Qux child
+		public Qux Child
 		{
 			get
 			{
-				stored=true;
-				this.childKey = child==null ? 0 : child.Key;
-				if (childKey!=0 && child==null) child = (Qux) session.Load(typeof(Qux), childKey);
+				_stored=true;
+				_childKey = _child==null ? 0 : _child.Key;
+				if (_childKey!=0 && _child==null) _child = (Qux) _session.Load(typeof(Qux), _childKey);
 				return _child;
 			}
-			set
-			{
-				this._child = value;
-			}
+			set { _child = value; }
 		}	
-
-		/// <summary>
-		/// Holds the _childKey
-		/// </summary> 
-		private long _childKey;
 
 		/// <summary>
 		/// Gets or sets the _childKey
 		/// </summary> 
-		public long childKey
+		public long ChildKey
 		{
-			get 
-			{
-				return _childKey; 
-			}
-			set 
-			{
-				_childKey = value;
-			}
+			get { return _childKey;  }
+			set { _childKey = value; }
 		}
-	
-		
 	}
 }
