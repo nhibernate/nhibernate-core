@@ -60,11 +60,11 @@ namespace NHibernate.Id
 			// build the sql string for the Update since it uses parameters
 			Parameter setParam = new Parameter();
 			setParam.Name = columnName;
-			setParam.DbType = DbType.Int32;
+			setParam.SqlType = new Int32SqlType();
 		
 			Parameter whereParam = new Parameter();
 			whereParam.Name = columnName;
-			whereParam.DbType = DbType.Int32;
+			whereParam.SqlType = new Int32SqlType();
 
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add("update " + tableName + " set ")
@@ -123,8 +123,7 @@ namespace NHibernate.Id
 					{
 					}
 
-
-					IDbCommand ups = updateSql.BuildCommand(session.Factory.ConnectionProvider.Driver);
+					IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand(session.Factory.Dialect, updateSql);
 					ups.Connection = conn;
 					ups.Transaction = trans;
 
@@ -160,7 +159,7 @@ namespace NHibernate.Id
 		public string[] SqlCreateStrings(Dialect.Dialect dialect) 
 		{
 			return new string[] {
-						"create table " + tableName + " ( " + columnName + " " + dialect.SqlTypeToString(SqlTypeFactory.GetInt32()) + " )",
+						"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName( SqlTypeFactory.GetInt32() ) + " )",
 						"insert into " + tableName + " values ( 0 )"
 								};
 		}
