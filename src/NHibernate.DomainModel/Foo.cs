@@ -347,7 +347,7 @@ namespace NHibernate.DomainModel
 			  {
 				  "foo", "bar" 
 			  };
-			_component = new FooComponent("foo", 12, new DateTime[] { _date, _timestamp, DateTime.MinValue, new DateTime() }, new FooComponent("bar", 666, new DateTime[] { new DateTime(1999,12,3), DateTime.MinValue }, null ) );
+			_component = new FooComponent("foo", 12, new DateTime[] { _date, _timestamp, DateTime.MinValue, new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ) }, new FooComponent("bar", 666, new DateTime[] { new DateTime(1999,12,3), DateTime.MinValue }, null ) );
 			_component.Glarch = new Glarch();
 			_dependent = new Fee();
 			_dependent.Fi = "belongs to foo # " + Key;

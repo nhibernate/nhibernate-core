@@ -546,6 +546,8 @@ namespace NHibernate.DomainModel
 
 	 public void SetDefaults() 
 	 {
+		 DateTime today = new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day );
+
 		 StringSet = new Iesi.Collections.HashedSet();
 		 StringSet.Add( "foo" );
 		 StringSet.Add( "bar" );
@@ -574,7 +576,7 @@ namespace NHibernate.DomainModel
 		 Count = 667;
 		 Name="Bazza";
 		 TopComponents = new ArrayList();
-		 TopComponents.Add( new FooComponent("foo", 11, new DateTime[] { new DateTime(), new DateTime(2123,1,1) }, null) );
+		 TopComponents.Add( new FooComponent("foo", 11, new DateTime[] { today, new DateTime(2123,1,1) }, null) );
 		 TopComponents.Add( new FooComponent("bar", 22, new DateTime[] { new DateTime(2007,2,3), new DateTime(1945,6,1) }, null) );
 		 TopComponents.Add( null );
 		 Bag = new ArrayList();

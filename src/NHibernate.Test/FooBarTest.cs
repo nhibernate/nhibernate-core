@@ -841,7 +841,7 @@ namespace NHibernate.Test
 			t = s.BeginTransaction();
 			//The special property (lowercase) id may be used to reference the unique identifier of an object. (You may also use its property name.) 
 			string hqlString = "from s in class Stuff where s.Foo.id = ? and s.id.Id = ? and s.MoreStuff.id.IntId = ? and s.MoreStuff.id.StringId = ?";
-			object[] values = new object[] {bar, (long)1234, (int)12, "id" };
+			object[] values = new object[] {bar, (long)1234, 12, "id" };
 			Type.IType[] types = new Type.IType[]
 				{
 					NHibernate.Entity(typeof(Foo)),
@@ -1818,8 +1818,45 @@ namespace NHibernate.Test
 			s.Find( "from Baz baz left join baz.FooToGlarch join baz.FooSet" );
 			s.Find( "from Baz baz left join baz.FooToGlarch join fetch baz.FooSet foo left join fetch foo.TheFoo" );
 
-			//TODO: resume h2.0.3 - line 1613
+			// foo.Boolean = true
+			list = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' and foo.Boolean = 1 order by foo.String asc, foo.Component.Count desc" );
+			Assert.AreEqual( 0, list.Count, "empty query" );
+			IEnumerable enumer = s.Enumerable( "from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' order by foo.String asc, foo.Component.Count desc" );
+			Assert.IsFalse( enumer.GetEnumerator().MoveNext(), "empty enumerator" );
+
+			list = s.Find( "select foo.TheFoo from foo in class NHibernate.DomainModel.Foo" );
+			Assert.AreEqual( 1, list.Count, "query" );
+			Assert.AreEqual( foo.TheFoo, list[0], "returned object" );
+			foo.TheFoo.TheFoo = foo;
+			foo.String = "fizard";
+
+			// the following test is disabled for databases with no subselects...also for Interbase (not sure why) - h2.0.3
+			// also HSQLDialect, MckoiDialect, SAPDBDialect, PointbaseDialect
+			if( !(dialect is Dialect.MySQLDialect) )
+			{
+				// add an !InterbaseDialect wrapper around list and assert
+				list = s.Find( "from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements", new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ), NHibernate.DateTime );
+				Assert.AreEqual( 2, list.Count, "componenet query" );
+			}
+
+			// WAS: 3 in h2.0.3 - there's a null value at index 2 that is not in the db with hibernate - it is a missing index
+			// in the db
+			list = s.Find( "from foo in class NHibernate.DomainModel.Foo where size(foo.Component.ImportantDates) = 4" ); 
+			Assert.AreEqual( 2, list.Count, "component query" );
+			list = s.Find( "from foo in class Foo where 0 = size(foo.Component.ImportantDates)" );
+			Assert.AreEqual( 0, list.Count, "component query" );
+			list = s.Find( "from foo in class Foo where exists elements(foo.Component.ImportantDates)" );
+			Assert.AreEqual( 2, list.Count, "component query" );
+			s.Find( "from foo in class Foo where not exists (from bar in class Bar where bar.id = foo.id)" );
+
+			s.Find( "select foo.TheFoo from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)" );
+			s.Find( "from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long) and foo.TheFoo.String='baz'" );
+			s.Find( "from foo in class Foo where foo.TheFoo.String='baz' and foo = some(select x from x in class Foo where x.Long>foo.TheFoo.Long)" );
+			s.Find( "from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)" );
+
+			s.Enumerable( "select foo.String, foo.Date, foo.TheFoo.String, foo.id from foo in class Foo, baz in class Baz where foo in elements(baz.FooArray) and foo.String like 'foo'" );
 		}
+		// line 1645
 	
 		[Test]
 		public void DeleteRecursive() 
@@ -2907,7 +2944,6 @@ namespace NHibernate.Test
 			s.Save( g3 );
 			g2.ProxyArray = new GlarchProxy[] { null, g3, g };
 
-			object emptyObject = new object();
 			Iesi.Collections.ISet hashset = new Iesi.Collections.HashedSet();
 			hashset.Add( g1 );
 			hashset.Add( g2 );
@@ -3501,7 +3537,6 @@ namespace NHibernate.Test
 			object bar2id = s.Save( bar2 );
 			baz.FooArray = new Foo[] { bar, bar2 };
 
-			object emptyObject = new object();
 			Iesi.Collections.ISet hashset = new Iesi.Collections.HashedSet();
 			bar = new Bar();
 			s.Save( bar );
