@@ -63,9 +63,34 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
 		public void NotNullDiscriminator()
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Up up = new Up();
+			up.Id1 = "foo";
+			up.Id2 = 1231;
+			Down down = new Down();
+			down.Id1 = "foo";
+			down.Id2 = 3211;
+			down.Value = 123123121;
+			s.Save( up );
+			s.Save( down );
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			IList list = s.Find( "from Up up order by up.Id2 asc" );
+			Assert.IsTrue( list.Count == 2 );
+			Assert.IsFalse( list[0] is Down );
+			Assert.IsTrue( list[1] is Down );
+			list = s.Find( "from Down down" );
+			Assert.IsTrue( list.Count == 1 );
+			Assert.IsTrue( list[0] is Down );
+			s.Delete( "from Up up" );
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]

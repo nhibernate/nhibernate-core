@@ -18,7 +18,7 @@ namespace NHibernate.Persister
 		/// <summary>
 		/// The discriminator type
 		/// </summary>
-		IDiscriminatorType DiscriminatorType { get; }
+		IType DiscriminatorType { get; }
 
 		/// <summary>
 		/// Get the concrete subclass corresponding to the given discriminator value

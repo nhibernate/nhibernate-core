@@ -719,7 +719,7 @@ namespace NHibernate.Loader
 
 				if( result == null )
 				{
-					// woops we got an instance of another class heirarchy branch.
+					// woops we got an instance of another class hierarchy branch.
 					throw new WrongClassException( "Discriminator: " + discriminatorValue, id, topClass );
 				}
 

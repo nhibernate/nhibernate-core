@@ -1348,7 +1348,6 @@ namespace NHibernate.Persister
 		public abstract SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSublcasses );
 		
 		/// <summary></summary>
-		/// <remarks>This is the 2.1 version, DiscriminatorSQLString will be redunant shortly</remarks>
 		public abstract object DiscriminatorSQLValue{ get; }
 
 		/// <summary>
@@ -1599,7 +1598,7 @@ namespace NHibernate.Persister
 		public abstract int CountSubclassProperties();
 		
 		/// <summary></summary>
-		public abstract IDiscriminatorType DiscriminatorType { get; }
+		public abstract IType DiscriminatorType { get; }
 
 		/// <summary>
 		/// 

@@ -3464,6 +3464,10 @@ namespace NHibernate.Impl
 			if( persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier )
 			{
 				object oid = persister.GetIdentifier( obj );
+				if ( id == null )
+				{
+					throw new AssertionFailure( "null id in entry (don't flush the Session after an exception occurs)" );
+				}
 
 				if( !id.Equals( oid ) )
 				{

@@ -106,7 +106,7 @@ namespace NHibernate.SqlCommand
 			}
 			else
 			{
-				string value = values[ 0 ] as string;
+				object value = values[ 0 ];
 				if( Null.Equals( value ) )
 				{
 					buf.Add( " is null" );

@@ -63,7 +63,7 @@ namespace NHibernate.Persister
 		private readonly Hashtable subclassesByDiscriminatorValue = new Hashtable();
 		private readonly bool forceDiscriminator;
 		private readonly string discriminatorColumnName;
-		private readonly IDiscriminatorType discriminatorType;
+		private readonly IType discriminatorType;
 		private readonly string discriminatorAlias;
 		private readonly object discriminatorSQLValue;
 		private readonly bool discriminatorInsertable;
@@ -111,7 +111,7 @@ namespace NHibernate.Persister
 					discriminatorColumnName = discColumn.GetQuotedName( Dialect );
 					discriminatorAlias = discColumn.Alias( Dialect );
 				}
-				discriminatorType = ( IDiscriminatorType ) model.Discriminator.Type;
+				discriminatorType = model.Discriminator.Type;
 
 				if( model.IsDiscriminatorValueNull )
 				{
@@ -130,7 +130,7 @@ namespace NHibernate.Persister
 					discriminatorInsertable = model.IsDiscriminatorInsertable;
 					try
 					{
-						IDiscriminatorType dtype = ( IDiscriminatorType ) model.Discriminator.Type;
+						IDiscriminatorType dtype = ( IDiscriminatorType )discriminatorType;
 						discriminatorValue = dtype.StringToObject( model.DiscriminatorValue );
 						discriminatorSQLValue = dtype.ObjectToSQLString( discriminatorValue );
 					} 
@@ -159,7 +159,6 @@ namespace NHibernate.Persister
 				discriminatorInsertable = false;
 				discriminatorColumnName = null;
 				discriminatorAlias = null;
-				discriminatorValue = null;
 				discriminatorType = null;
 				discriminatorValue = null;
 				discriminatorSQLValue = null;
@@ -288,14 +287,7 @@ namespace NHibernate.Persister
 			subclassClosure[ 0 ] = mappedClass;
 			if( model.IsPolymorphic )
 			{
-				if( discriminatorValue == null )
-				{
-					subclassesByDiscriminatorValue.Add( ObjectUtils.Null, mappedClass );
-				}
-				else
-				{
-					subclassesByDiscriminatorValue.Add( discriminatorValue, mappedClass );
-				}
+				subclassesByDiscriminatorValue.Add( discriminatorValue, mappedClass );
 			}
 
 			// SUBCLASSES
@@ -317,8 +309,9 @@ namespace NHibernate.Persister
 					{
 						try
 						{
+							IDiscriminatorType dtype = discriminatorType as IDiscriminatorType;
 							subclassesByDiscriminatorValue.Add(
-								discriminatorType.StringToObject( sc.DiscriminatorValue ),
+								dtype.StringToObject( sc.DiscriminatorValue ),
 								sc.MappedClass );
 						}
 						catch( InvalidCastException )
@@ -475,7 +468,7 @@ namespace NHibernate.Persister
 		}
 
 		/// <summary></summary>
-		public override IDiscriminatorType DiscriminatorType
+		public override IType DiscriminatorType
 		{
 			get { return discriminatorType; }
 		}

@@ -638,7 +638,7 @@ namespace NHibernate.Persister
 		}
 
 		/// <summary></summary>
-		public override IDiscriminatorType DiscriminatorType
+		public override IType DiscriminatorType
 		{
 			get { return discriminatorType; }
 		}
