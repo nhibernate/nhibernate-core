@@ -3,7 +3,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Id {
 	/// <summary>
-	/// Summary description for UUIDStringGenerator.
+	/// An <c>IIdentifierGenerator</c> for returning UUIDs
 	/// </summary>
 	public class UUIDStringGenerator : IIdentifierGenerator {
 		public object Generate(ISessionImplementor cache, object ob) {

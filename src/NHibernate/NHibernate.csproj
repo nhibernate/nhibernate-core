@@ -292,6 +292,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cfg\Environment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Collection\CollectionPersister.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -327,12 +332,57 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\DB2Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Dialect\GenericDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\HSQLDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\InterbaseDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\MySQLDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Oracle9Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\OracleDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\PostgreSQLDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\SAPDBDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\SybaseDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -463,6 +513,11 @@
                 />
                 <File
                     RelPath = "Util\ArrayHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\PropertiesHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
