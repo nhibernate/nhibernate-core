@@ -33,7 +33,7 @@ namespace NHibernate.Dialect
 			Register( DbType.AnsiString, 2000, "VARCHAR2($1)" );
 			Register( DbType.AnsiString, 2147483647, "CLOB"); // should use the IType.ClobType
 			Register( DbType.Binary, "RAW(2000)");
-			Register( DbType.Binary, 2000, "VARBINARY($1)");
+			Register( DbType.Binary, 2000, "RAW($1)");
 			Register( DbType.Binary, 2147483647, "BLOB" );
 			Register( DbType.Boolean, "NUMBER(1,0)" ); 
 			Register( DbType.Byte, "NUMBER(3,0)" );
