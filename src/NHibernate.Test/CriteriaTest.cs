@@ -66,5 +66,47 @@ namespace NHibernate.Test
 			t2.Commit();
 			s2.Close();
 		}
+
+		[Test]
+		public void SimpleDateCriteria() 
+		{
+			Simple s1 = new Simple();
+			s1.Address = "blah";
+			s1.Count = 1;
+			s1.Date = new DateTime( 2004, 01, 01 );
+			
+			Simple s2 = new Simple();
+			s2.Address = "blah";
+			s2.Count = 2;
+			s2.Date = new DateTime( 2006, 01, 01 );
+
+			ISession s = sessions.OpenSession();
+			s.Save( s1, 1 );
+			s.Save( s2, 2 );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			IList results = s.CreateCriteria( typeof(Simple) )
+				.Add( Expression.Expression.Gt( "Date", new DateTime( 2005, 01, 01 ) ) )
+				.AddOrder( Expression.Order.Asc( "Date" ) )
+				.List();
+
+			Assert.AreEqual( 1, results.Count, "one gt from 2005" );
+			Simple simple = (Simple)results[0];
+			Assert.IsTrue( simple.Date > new DateTime( 2005, 01, 01), "should have returned dates after 2005" );
+		
+			results = s.CreateCriteria( typeof(Simple) )
+				.Add( Expression.Expression.Lt( "Date", new DateTime( 2005, 01, 01 ) ) )
+				.AddOrder( Expression.Order.Asc( "Date" ) )
+				.List();
+			
+			Assert.AreEqual( 1, results.Count, "one lt than 2005" );
+			simple = (Simple)results[0];
+			Assert.IsTrue( simple.Date < new DateTime( 2005, 01, 01 ), "should be less than 2005" );
+
+			s.Delete( "from Simple" );
+			s.Close();
+		}
 	}
 }

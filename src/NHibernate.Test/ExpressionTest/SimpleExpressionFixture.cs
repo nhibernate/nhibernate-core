@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Text;
 
@@ -50,6 +51,32 @@ namespace NHibernate.Test.ExpressionTest
 
 			session.Close();
 		}
+
+		[Test]
+		public void SimpleDateExpression() 
+		{
+			ISession session = factory.OpenSession();
+			
+			NExpression.Expression andExpression = NExpression.Expression.Ge( "Date", DateTime.Now );
+
+			SqlString sqlString = andExpression.ToSqlString( factoryImpl, typeof(Simple), "simple_alias" );
+
+			string expectedSql = "simple_alias.date_ >= :simple_alias.date_";
+			Parameter[] expectedParams = new Parameter[1];
+			
+			Parameter firstAndParam = new Parameter();
+			firstAndParam.SqlType = new SqlTypes.DateTimeSqlType();
+			firstAndParam.TableAlias = "simple_alias";
+			firstAndParam.Name = "date_";
+
+			expectedParams[0] = firstAndParam;
+
+			CompareSqlStrings(sqlString, expectedSql, expectedParams);
+
+			session.Close();
+		}
+
+		
 
 
 	}
