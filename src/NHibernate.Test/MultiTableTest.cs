@@ -39,7 +39,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Filter Not Working http://jira.nhibernate.org:8080/browse/NH-80")]
 		public void SubclassCollection() 
 		{
 			ISession s = sessions.OpenSession();
@@ -71,7 +70,14 @@ namespace NHibernate.Test
 			sm = (SubMulti)s.Load( typeof(SubMulti), id );
 			Assert.AreEqual( 2, sm.Children.Count );
 
-			//TODO: code for a Filter here
+			ICollection filterColl = s.Filter( sm.MoreChildren, "select count(*) where this.Amount>-1 and this.Name is null");
+			foreach(object obj in filterColl) 
+			{
+				Assert.AreEqual( 2, obj );
+				// only want the first one
+				break;
+			}
+
 			
 			IEnumerator enumer = s.Enumerable("select distinct s from s in class SubMulti where s.MoreChildren[1].Amount < 1.0").GetEnumerator();
 			Assert.IsTrue( enumer.MoveNext() );

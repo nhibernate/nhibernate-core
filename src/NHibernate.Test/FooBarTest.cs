@@ -460,9 +460,36 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Custom() 
 		{
+			GlarchProxy g = new Glarch();
+			Multiplicity m = new Multiplicity();
+			m.count = 12;
+			m.glarch = (Glarch)g;
+			g.Multiple = m;
+			
+			ISession s = sessions.OpenSession();
+			object gid = s.Save(g);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			g = (Glarch)s.Find("from Glarch g where g.Multiple.glarch=g and g.Multiple.count=12")[0];
+			Assert.IsNotNull( g.Multiple );
+			Assert.AreEqual( 12, g.Multiple.count );
+			Assert.AreSame( g, g.Multiple.glarch );
+			s.Flush();
+			s.Close();
+			
+			s = sessions.OpenSession();
+			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+			Assert.IsNotNull(g.Multiple);
+			Assert.AreEqual( 12, g.Multiple.count );
+			Assert.AreSame( g, g.Multiple.glarch );
+			s.Delete(g);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
