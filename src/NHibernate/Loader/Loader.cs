@@ -58,9 +58,11 @@ namespace NHibernate.Loader {
 		protected abstract CollectionPersister CollectionPersister { get; }
 
 		/// <summary>
-		/// TODO: figure out what this is used for - I believe it is in the HQL package in H2.0.3
+		/// TODO: figure out what this is used for - I believe it is in the HQL package in H2.0.3.
+		/// It should be overridden in Hql.QueryTranslator and an actual value placed in there.
 		/// </summary>
-		protected virtual int CollectionOwner {
+		protected virtual int CollectionOwner 
+		{
 			get {return -1;}
 		}
 
@@ -93,15 +95,6 @@ namespace NHibernate.Loader {
 			return false;
 		}
 
-		/// <summary>
-		/// Are we allowed to do two-phase loading? 
-		/// of entities ... actually onlt that one special case)
-		/// </summary>
-		/// 
-		//TODO: figure out why this is not in the new version of H2.0.3
-		protected virtual bool AllowTwoPhaseLoad {
-			get { return true; }
-		}
 
 		/// <summary>
 		/// Execute an SQL query and attempt to instantiate instances of the class mapped by the given
@@ -154,11 +147,6 @@ namespace NHibernate.Loader {
 			// this is a Query and we are loading multiple instances of the same collection role
 			bool multipleCollections = collectionPersister!=null && optionalCollection==null && CollectionOwner>=0;
 
-			// why do we have this logic here - it looks like not allowing a two phase load
-			// for collections is messing things up...
-			// TODO: this is not in H2.0.3
-			// bool twoPhaseLoad = AllowTwoPhaseLoad && cols > 0;
-			
 			ArrayList hydratedObjects = returnsEntities ? new ArrayList() : null;
 
 			Key optionalObjectKey;
