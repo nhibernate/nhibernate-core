@@ -670,7 +670,7 @@ namespace NHibernate.Test
 			s.Delete(baz);
 
 			IDbCommand deleteCmd = s.Connection.CreateCommand();
-			deleteCmd.CommandText = "delete from fooArray where id_='" + baz.Code + "' and i>=8";
+			deleteCmd.CommandText = "delete from FooArray where id_='" + baz.Code + "' and i>=8";
 			deleteCmd.CommandType = CommandType.Text;
 			int rows = deleteCmd.ExecuteNonQuery();
 			Assert.AreEqual(1, rows);
