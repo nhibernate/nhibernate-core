@@ -19,6 +19,8 @@ namespace NHibernate.tool.hbm2net
 	/// </author>
 	public class VelocityRenderer:AbstractRenderer
 	{
+        private VelocityEngine ve;
+		private NVelocity.Template template;
 		
 		/*
 		* (non-Javadoc)
@@ -31,15 +33,13 @@ namespace NHibernate.tool.hbm2net
 		{
 			
 			//UPGRADE_TODO: Format of property file may need to be changed. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1089"'
-			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
-			p.SetProperty( "runtime.log.logsystem.log4net.category", "x");
+//			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
+			//p.SetProperty( "runtime.log.logsystem.log4net.category", "x");
 //			//UPGRADE_TODO: Method 'java.util.Properties.setProperty' was converted to 'System.Collections.Specialized.NameValueCollection.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073"'
 //			p["resource.loader"] = "class";
 //			//UPGRADE_TODO: Method 'java.util.Properties.setProperty' was converted to 'System.Collections.Specialized.NameValueCollection.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073"'
 //			p["class.resource.loader.class"] = typeof(ClasspathResourceLoader).getName();
 			
-			VelocityEngine ve = new VelocityEngine();
-			ve.Init(p);
 			
 			VelocityContext context = new VelocityContext();
 			
@@ -55,13 +55,23 @@ namespace NHibernate.tool.hbm2net
 			
 			System.IO.StringWriter sw = new System.IO.StringWriter();
 			
+			context.Put("classimports", "$classimports");
+
 			// First run - writes to in-memory string
-			ve.MergeTemplate((properties["template"] == null)?"pojo.vm":properties["template"], "ISO-8859-1", context, sw);
+			template.Merge(context, sw);
 			
 			context.Put("classimports", new JavaTool().genImports(classMapping));
 			
 			// Second run - writes to file (allows for placing imports correctly and optimized ;)
 			ve.Evaluate(context, writer, "hbm2net", sw.ToString());
+		}
+	
+		public override void configure(System.Collections.Specialized.NameValueCollection props)
+		{
+			base.configure (props);
+			ve = new VelocityEngine();
+			ve.Init();
+			template = ve.GetTemplate((props["template"] == null)?"pojo.vm":props["template"]);
 		}
 	}
 }

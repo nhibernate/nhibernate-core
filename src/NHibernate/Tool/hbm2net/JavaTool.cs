@@ -148,7 +148,7 @@ namespace NHibernate.tool.hbm2net
 		
 		public virtual bool hasExtends(ClassMapping cmap)
 		{
-			return (System.Object) getExtends(cmap) != null;
+			return (System.Object) getExtends(cmap) != string.Empty;
 		}
 		
 		public virtual System.String getExtends(ClassMapping cmap)

@@ -414,7 +414,7 @@ namespace NHibernate.tool.hbm2net
 		protected internal virtual void  initWith(System.String classPackage, ClassName mySuperClass, Element classElement, bool component, MultiMap inheritedMeta)
 		{
 			
-			System.String fullyQualifiedName = classElement.Attributes[component?"class":"name"].Value;
+			System.String fullyQualifiedName = (classElement.Attributes[component?"class":"name"] == null?string.Empty:classElement.Attributes[component?"class":"name"].Value);
 			
 			if (fullyQualifiedName.IndexOf((System.Char) '.') < 0 && (System.Object) classPackage != null && classPackage.Trim().Length > 0)
 			{
@@ -480,8 +480,8 @@ namespace NHibernate.tool.hbm2net
 			if (cmpid != null)
 			{
 				implementEquals();
-				System.String cmpname = cmpid.Attributes["name"].Value;
-				System.String cmpclass = cmpid.Attributes["class"].Value;
+				System.String cmpname = (cmpid.Attributes["name"] == null?null:cmpid.Attributes["name"].Value);
+				System.String cmpclass = (cmpid.Attributes["class"] == null?null:cmpid.Attributes["class"].Value);
 				if ((System.Object) cmpclass == null || cmpclass.Equals(string.Empty))
 				{
 					//Embedded composite id
@@ -560,7 +560,7 @@ namespace NHibernate.tool.hbm2net
 					Element generator = property["generator"];
 					System.String unsavedValue = (property.Attributes["unsaved-value"] == null?null:property.Attributes["unsaved-value"].Value);
 					bool mustBeNullable = ((System.Object) unsavedValue != null && unsavedValue.Equals("null"));
-					bool generated = !(generator.Attributes["class",""] == null?string.Empty:generator.Attributes["class",""].Value).Equals("assigned");
+					bool generated = !(generator.Attributes["class"] == null?string.Empty:generator.Attributes["class"].Value).Equals("assigned");
 					ClassName rtype = getFieldType(type, mustBeNullable, false);
 					addImport(rtype);
 					FieldProperty idField = new FieldProperty(property, this, propertyName, rtype, false, true, generated, metaForProperty);
@@ -594,10 +594,10 @@ namespace NHibernate.tool.hbm2net
 				Element onetoone = (Element) onetoones.Current;
 				
 				MultiMap metaForOneToOne = MetaAttributeHelper.loadAndMergeMetaMap(onetoone, MetaAttribs);
-				System.String propertyName = onetoone.Attributes["name"].Value;
+				System.String propertyName = (onetoone.Attributes["name"] == null?string.Empty:onetoone.Attributes["name"].Value);
 				
 				// ensure that the class is specified
-				System.String clazz = onetoone.Attributes["class"].Value;
+				System.String clazz = (onetoone.Attributes["class"] == null?string.Empty:onetoone.Attributes["class"].Value);
 				if (clazz.Length == 0)
 				{
 					//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
@@ -618,10 +618,10 @@ namespace NHibernate.tool.hbm2net
 				Element manyToOne = (Element) manytoOnes.Current;
 				
 				MultiMap metaForManyToOne = MetaAttributeHelper.loadAndMergeMetaMap(manyToOne, MetaAttribs);
-				System.String propertyName = manyToOne.Attributes["name"].Value;
+				System.String propertyName = (manyToOne.Attributes["name"] == null?string.Empty:manyToOne.Attributes["name"].Value);
 				
 				// ensure that the type is specified
-				System.String type = manyToOne.Attributes["class"].Value;
+				System.String type = (manyToOne.Attributes["class"] == null?string.Empty:manyToOne.Attributes["class"].Value);
 				if (type.Length == 0)
 				{
 					//log.warn("many-to-one \"" + propertyName + "\" in class " + Name + " is missing a class attribute");
@@ -630,7 +630,7 @@ namespace NHibernate.tool.hbm2net
 				ClassName classType = new ClassName(type);
 				
 				// is it nullable?
-				System.String notnull = manyToOne.Attributes["not-null"].Value;
+				System.String notnull = (manyToOne.Attributes["not-null"] == null?null:manyToOne.Attributes["not-null"].Value);
 				bool nullable = ((System.Object) notnull == null || notnull.Equals("false"));
 				bool key = manyToOne.LocalName.StartsWith("key-"); //a composite id property
 				
@@ -645,9 +645,9 @@ namespace NHibernate.tool.hbm2net
 			doCollections(classPackage, classElement, "map", "System.Collections.IDictionary", "System.Collections.Hashtable", MetaAttribs);
 			doCollections(classPackage, classElement, "set", "System.Collections.IDictionary", "System.Collections.Hashtable", MetaAttribs);
 			//UPGRADE_ISSUE: Method 'java.lang.System.getProperty' was not converted. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1000_javalangSystemgetProperty_javalangString_javalangString"'
-			doCollections(classPackage, classElement, "bag", "java.util.List", "java.util.ArrayList", MetaAttribs);
+			doCollections(classPackage, classElement, "bag", "System.Collections.IList", "System.Collections.ArrayList", MetaAttribs);
 			//UPGRADE_ISSUE: Method 'java.lang.System.getProperty' was not converted. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1000_javalangSystemgetProperty_javalangString_javalangString"'
-			doCollections(classPackage, classElement, "idbag", "java.util.List", "java.util.ArrayList", MetaAttribs);
+			doCollections(classPackage, classElement, "idbag", "System.Collections.IList", "System.Collections.ArrayList", MetaAttribs);
 			doArrays(classElement, "array", MetaAttribs);
 			doArrays(classElement, "primitive-array", MetaAttribs);
 			
@@ -662,8 +662,8 @@ namespace NHibernate.tool.hbm2net
 				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 				Element cmpe = (Element) iter.Current;
 				MultiMap metaForComponent = MetaAttributeHelper.loadAndMergeMetaMap(cmpe, MetaAttribs);
-				System.String cmpname = cmpe.Attributes["name"].Value;
-				System.String cmpclass = cmpe.Attributes["class"].Value;
+				System.String cmpname = (cmpe.Attributes["name"] == null?null:cmpe.Attributes["name"].Value);
+				System.String cmpclass = (cmpe.Attributes["class"] == null?null:cmpe.Attributes["class"].Value);
 				if ((System.Object) cmpclass == null || cmpclass.Equals(string.Empty))
 				{
 					//log.warn("component \"" + cmpname + "\" in class " + Name + " does not specify a class");
@@ -779,7 +779,7 @@ namespace NHibernate.tool.hbm2net
 				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
 				Element collection = (Element) collections.Current;
 				MultiMap metaForCollection = MetaAttributeHelper.loadAndMergeMetaMap(collection, inheritedMeta);
-				System.String propertyName = collection.Attributes["name"].Value;
+				System.String propertyName = (collection.Attributes["name"] == null?string.Empty:collection.Attributes["name"].Value);
 				
 				//		Small hack to switch over to sortedSet/sortedMap if sort is specified. (that is sort != unsorted)
 				System.String sortValue = (collection.Attributes["sort"] == null?null:collection.Attributes["sort"].Value);
@@ -898,9 +898,9 @@ namespace NHibernate.tool.hbm2net
 						//log.warn("skipping collection with subcollections");
 						continue;
 					}
-					elementClass = elt.Attributes["type"].Value;
+					elementClass = (elt.Attributes["type"] == null?null:elt.Attributes["type"].Value);
 					if ((System.Object) elementClass == null)
-						elementClass = elt.Attributes["class"].Value;
+						elementClass = (elt.Attributes["class"] == null?string.Empty:elt.Attributes["class"].Value);
 				}
 				ClassName cn = getFieldType(elementClass, false, true);
 				

@@ -17,7 +17,7 @@ namespace NHibernate.tool.hbm2net
 		[STAThread]
 		public static void  Main(System.String[] args)
 		{
-			log4net.Config.DOMConfigurator.Configure();
+			//log4net.Config.DOMConfigurator.Configure();
 			
 			if (args.Length == 0)
 			{
@@ -91,31 +91,42 @@ namespace NHibernate.tool.hbm2net
 				//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
 				for (System.Collections.IEnumerator iter = mappingFiles.GetEnumerator(); iter.MoveNext(); )
 				{
-					// parse the mapping file
-					//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
-					System.Xml.NameTable nt = new System.Xml.NameTable();
-					nt.Add("urn:nhibernate-mapping-2.0");
-					Document document = new System.Xml.XmlDocument(nt);
-					document.Load((System.String) iter.Current);
-					
-					Element rootElement = document["hibernate-mapping"];
-					
-					System.Xml.XmlAttribute a = rootElement.Attributes["package"];
-					System.String pkg = null;
-					if (a != null)
+					try
 					{
-						pkg = a.Value;
+						Console.WriteLine(iter.Current.ToString());
+						// parse the mapping file
+						//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
+						System.Xml.NameTable nt = new System.Xml.NameTable();
+						nt.Add("urn:nhibernate-mapping-2.0");
+						Document document = new System.Xml.XmlDocument(nt);
+						document.Load((System.String) iter.Current);
+					
+						Element rootElement = document["hibernate-mapping"];
+
+						if (rootElement == null)
+							continue;
+					
+						System.Xml.XmlAttribute a = rootElement.Attributes["package"];
+						System.String pkg = null;
+						if (a != null)
+						{
+							pkg = a.Value;
+						}
+						MappingElement me = new MappingElement(rootElement, null);
+						System.Collections.IEnumerator classElements = rootElement.GetElementsByTagName("class").GetEnumerator();
+						MultiMap mm = MetaAttributeHelper.loadAndMergeMetaMap(rootElement, globalMetas);
+						handleClass(pkg, me, classMappings, classElements, mm, false);
+					
+						classElements = rootElement.GetElementsByTagName("subclass").GetEnumerator();
+						handleClass(pkg, me, classMappings, classElements, mm, true);
+					
+						classElements = rootElement.GetElementsByTagName("joined-subclass").GetEnumerator();
+						handleClass(pkg, me, classMappings, classElements, mm, true);
 					}
-					MappingElement me = new MappingElement(rootElement, null);
-					System.Collections.IEnumerator classElements = rootElement.GetElementsByTagName("class").GetEnumerator();
-					MultiMap mm = MetaAttributeHelper.loadAndMergeMetaMap(rootElement, globalMetas);
-					handleClass(pkg, me, classMappings, classElements, mm, false);
-					
-					classElements = rootElement.GetElementsByTagName("subclass").GetEnumerator();
-					handleClass(pkg, me, classMappings, classElements, mm, true);
-					
-					classElements = rootElement.GetElementsByTagName("joined-subclass").GetEnumerator();
-					handleClass(pkg, me, classMappings, classElements, mm, true);
+					catch(Exception exc)
+					{
+						Console.WriteLine(exc);
+					}
 				}
 				
 				// generate source files
@@ -150,10 +161,10 @@ namespace NHibernate.tool.hbm2net
 				}
 				else
 				{
-					System.String ex = clazz["extends"].Value;
+					System.String ex = (clazz.Attributes["extends"] == null?null:clazz.Attributes["extends"].Value);
 					if ((System.Object) ex == null)
 					{
-						throw new MappingException("Missing extends attribute on <" + clazz.LocalName + " name=" + clazz["name"].Value + ">");
+						throw new MappingException("Missing extends attribute on <" + clazz.LocalName + " name=" + clazz.Attributes["name"].Value + ">");
 					}
 					//UPGRADE_TODO: Method 'java.util.HashMap.get' was converted to 'System.Collections.Hashtable.this' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilHashMapget_javalangObject"'
 					ClassMapping superclass = (ClassMapping) classMappings[ex];
