@@ -1134,5 +1134,25 @@ namespace NHibernate.Type
 				return trimmed;
 			}
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="original"></param>
+		/// <param name="target"></param>
+		/// <param name="types"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <param name="copiedAlready"></param>
+		/// <returns></returns>
+		public static object[] Copy( object[] original, object[] target, IType[] types, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		{
+			object[] copied = new object[ original.Length ];
+			for ( int i = 0; i < original.Length; i++ )
+			{
+				copied[ i ] = types[ i ].Copy( original[ i ], target[ i ], session, owner, copiedAlready );
+			}
+			return copied;
+		}
 	}
 }
