@@ -15,7 +15,7 @@ namespace NHibernate.Type {
 				try {
 					return ReflectHelper.ClassForName(str);
 				}
-				catch (TypeLoadException tle) {
+				catch (TypeLoadException) {
 					throw new HibernateException("Class not found: " + str);
 				}
 			}

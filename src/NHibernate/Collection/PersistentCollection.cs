@@ -23,7 +23,7 @@ namespace NHibernate.Collection {
 		public abstract ICollection Elements();
 		public abstract bool Empty { get; }
 
-		public abstract void ReplaceElements(Hashtable replacements);
+		public abstract void ReplaceElements(IDictionary replacements);
 
 		public void Read() {
 			Initialize(false);
@@ -78,7 +78,7 @@ namespace NHibernate.Collection {
 
 		// As far as every client is concerned, the collection is loaded after this call!
 		// (Actually is done lazily
-		public object GetInitialValue(bool lazy) {
+		public virtual object GetInitialValue(bool lazy) {
 			if ( !lazy ) {
 				session.Initialize(this, false);
 				initialized = true;
@@ -86,7 +86,7 @@ namespace NHibernate.Collection {
 			return this;
 		}
 
-		public object GetCachedValue() {
+		public virtual object GetCachedValue() {
 			return this;
 		}
 
@@ -130,7 +130,8 @@ namespace NHibernate.Collection {
 
 		public abstract ICollection Entries();
 		public abstract void ReadEntries(ICollection entries);
-		public abstract object ReadFrom(IDataReader reader, CollectionPersister role, object entry, int i, bool writeOrder);
+		public abstract object ReadFrom(IDataReader reader, CollectionPersister role, object entry);
+		public abstract void WriteTo(IDbCommand st, CollectionPersister role, object entry, int i, bool writeOrder);
 		public abstract object GetIndex(object entry, int i);
 		public abstract void BeforeInitialize(CollectionPersister persister);
 
@@ -152,6 +153,7 @@ namespace NHibernate.Collection {
 			Read();
 		}
 
+		public abstract bool EntryExists(object entry, int i);
 		public abstract bool NeedsInserting(object key, int i, IType elemType);
 		public abstract bool NeedsUpdating(object key, int i, IType elemType);
 		public abstract ICollection GetDeletes(IType elemType);

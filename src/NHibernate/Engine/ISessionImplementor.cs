@@ -19,6 +19,19 @@ namespace NHibernate.Engine {
 		/// Get the snapshot of the pre-flush collection state
 		/// </summary>
 		object GetSnapshot(PersistentCollection collection);
+
+		/// <summary>
+		/// Get the <c>PersistentCollection</c> object for an array
+		/// </summary>
+		/// <param name="array"></param>
+		/// <returns></returns>
+		ArrayHolder GetArrayHolder(object array);
+
+		/// <summary>
+		/// Register a <c>PersistentCollection</c> object for an array
+		/// </summary>
+		/// <param name="holder"></param>
+		void AddArrayHolder(ArrayHolder holder);
 		
 		/// <summary>
 		/// Set the "shallow dirty" status of the collection. Called when the collection detects
