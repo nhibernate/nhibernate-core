@@ -1,8 +1,9 @@
 using System;
 
-namespace NHibernate.Sql {
-
-	public enum JoinType {
+namespace NHibernate.Sql 
+{
+	public enum JoinType 
+	{
 		None = -666,
 		InnerJoin = 0,
 		FullJoin = -1,
@@ -10,7 +11,11 @@ namespace NHibernate.Sql {
 		RightOuterJoin = 2
 	}
 	
-	public abstract class JoinFragment {
+	/// <summary>
+	/// Represents a SQL <c>JOIN</c>
+	/// </summary>
+	public abstract class JoinFragment 
+	{
 		
 		public abstract void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType);
 		public abstract void AddCrossJoin(string tableName, string alias);
@@ -23,7 +28,8 @@ namespace NHibernate.Sql {
 
 		public abstract JoinFragment Copy();
 
-		public void AddFragment(JoinFragment ojf) {
+		public void AddFragment(JoinFragment ojf) 
+		{
 			AddJoins( ojf.ToFromFragmentString, ojf.ToWhereFragmentString );
 		}
 

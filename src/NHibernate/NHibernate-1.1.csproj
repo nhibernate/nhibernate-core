@@ -1308,16 +1308,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Sql\OracleOuterJoinFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\OuterJoinFragment.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Sql\QueryJoinFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

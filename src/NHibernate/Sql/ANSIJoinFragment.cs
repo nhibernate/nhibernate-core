@@ -2,15 +2,21 @@ using System;
 using System.Text;
 using NHibernate.Util;
 
-namespace NHibernate.Sql {
-	
-	public class ANSIJoinFragment : JoinFragment {
+namespace NHibernate.Sql 
+{
+	/// <summary>
+	/// An ANSI-style Join.
+	/// </summary>
+	public class ANSIJoinFragment : JoinFragment 
+	{
 		private StringBuilder buffer = new StringBuilder();
 		private StringBuilder conditions = new StringBuilder();
 
-		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType) {
+		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType) 
+		{
 			string joinString = null;
-			switch (joinType) {
+			switch (joinType) 
+			{
 				case JoinType.InnerJoin:
 					joinString = " inner join ";
 					break;
@@ -23,6 +29,8 @@ namespace NHibernate.Sql {
 				case JoinType.FullJoin:
 					joinString = " full outer join ";
 					break;
+				default:
+					throw new AssertionFailure("undefind join type");
 			}
 
 			buffer.Append(joinString)
@@ -31,7 +39,8 @@ namespace NHibernate.Sql {
 				.Append(alias)
 				.Append(" on ");
 
-			for (int j=0; j<fkColumns.Length; j++) {
+			for (int j=0; j<fkColumns.Length; j++) 
+			{
 				if (fkColumns[j].IndexOf('.')<1) throw new AssertionFailure("missing alias");
 				buffer.Append( fkColumns[j] )
 					.Append('=')
@@ -42,27 +51,33 @@ namespace NHibernate.Sql {
 			}
 		}
 
-		public override string ToFromFragmentString {
+		public override string ToFromFragmentString 
+		{
 			get { return buffer.ToString(); }
 		}
 
-		public override string ToWhereFragmentString {
+		public override string ToWhereFragmentString 
+		{
 			get { return conditions.ToString(); }
 		}
 
-		public override void AddJoins(string fromFragment, string whereFragment) {
+		public override void AddJoins(string fromFragment, string whereFragment) 
+		{
 			buffer.Append(fromFragment);
 			//where fragment must be empty!
 		}
 
-		public override JoinFragment Copy() {
+		public override JoinFragment Copy() 
+		{
 			ANSIJoinFragment copy = new ANSIJoinFragment();
 			copy.buffer = new StringBuilder( buffer.ToString() );
 			return copy;
 		}
 
-		public override void AddCondition(string alias, string[] columns, string condition) {
-			for (int i=0; i<columns.Length; i++) {
+		public override void AddCondition(string alias, string[] columns, string condition) 
+		{
+			for (int i=0; i<columns.Length; i++) 
+			{
 				conditions.Append(" and ")
 					.Append(alias)
 					.Append(StringHelper.Dot)
@@ -71,18 +86,21 @@ namespace NHibernate.Sql {
 			}
 		}
 
-		public override void AddCrossJoin(string tableName, string alias) {
+		public override void AddCrossJoin(string tableName, string alias) 
+		{
 			buffer.Append(StringHelper.CommaSpace)
 				.Append(tableName)
 				.Append(' ')
 				.Append(alias);
 		}
 
-		public override void AddCondition(string alias, string[] fkColumns, string[] pkColumns) {
+		public override void AddCondition(string alias, string[] fkColumns, string[] pkColumns) 
+		{
 			throw new NotSupportedException();
 		}
 
-		public override void AddCondition(string condition) {
+		public override void AddCondition(string condition) 
+		{
 			throw new NotSupportedException();
 		}
 

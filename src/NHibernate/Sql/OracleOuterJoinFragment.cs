@@ -4,6 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Sql {
 	
+	//TODO: not in H2.0.3 - is this used anywhere????
 	public class OracleOuterJoinFragment : OuterJoinFragment {
 		private StringBuilder afterFrom = new StringBuilder();
 		private StringBuilder afterWhere = new StringBuilder();
