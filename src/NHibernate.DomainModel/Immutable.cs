@@ -2,33 +2,31 @@ using System;
 
 namespace NHibernate.DomainModel 
 {
-
 	/// <summary>
 	/// Summary description for Immutable.
 	/// </summary>
 	public class Immutable 
 	{
-
-		private string foo;
-		private string bar;
-		private string id;
+		private string _foo;
+		private string _bar;
+		private string _id;
 
 		public string Foo 
 		{
-			get { return foo; }
-			set { foo = value; }
+			get { return _foo; }
+			set { _foo = value; }
 		}
 		
 		public string Bar 
 		{
-			get { return bar; }
-			set { bar = value; }
+			get { return _bar; }
+			set { _bar = value; }
 		}
 
 		public string Id 
 		{
-			get { return id; }
-			set { id = value; }
+			get { return _id; }
+			set { _id = value; }
 		}
 	}
 }

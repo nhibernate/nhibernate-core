@@ -9,7 +9,7 @@ namespace NHibernate.DomainModel
 		private FumCompositeID _id;
 		private Fum _fo;
 		private Qux[] _quxArray;
-		private IDictionary _friends;
+		private IDictionary _friends; // <set> mapping
 		private DateTime _lastUpdated;
 	
 		public Fum() {}
@@ -106,12 +106,6 @@ namespace NHibernate.DomainModel
 				{
 					s.Delete(de.Key);
 				}
-						
-//				IEnumerator iter = friends.GetEnumerator();
-//				while ( iter.MoveNext() ) 
-//				{
-//					s.Delete( iter.Current );
-//				}
 			}
 			catch (Exception e) 
 			{
@@ -135,12 +129,6 @@ namespace NHibernate.DomainModel
 				{
 					s.Save(de.Key);
 				}
-
-//				IEnumerator iter = friends.GetEnumerator();
-//				while ( iter.MoveNext() ) 
-//				{
-//					s.Save( iter.Current );
-//				}
 			}
 			catch (Exception e) 
 			{

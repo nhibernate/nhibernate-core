@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NHibernate.DomainModel
 {
-
+	//TODO: figure out what to do with this DynaBean
 	public class Glarch : Super, GlarchProxy, ILifecycle
 	{
 	

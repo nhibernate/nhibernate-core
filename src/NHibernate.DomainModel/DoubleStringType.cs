@@ -18,7 +18,10 @@ namespace NHibernate.DomainModel
 		{
 			if (x==y) return true;
 			if (x==null || y==null) return false;
-			return ((String[]) x)[0].Equals( ((String[]) y)[0] ) && ((String[]) x)[1].Equals( ((String[]) y)[1] );
+			string[] lhs = (string[])x;
+			string[] rhs = (string[])y;
+
+			return lhs[0].Equals(rhs[0]) && lhs[1].Equals(rhs[1]);
 		}
 	
 		public Object DeepCopy(Object x) 
@@ -33,10 +36,7 @@ namespace NHibernate.DomainModel
 	
 		public bool IsMutable
 		{
-			get
-			{ 
-				return true; 
-			}
+			get { return true; }
 		}
 	
 		public Object NullSafeGet(IDataReader rs, String[] names, Engine.ISessionImplementor session, Object owner)

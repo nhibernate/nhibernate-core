@@ -3,6 +3,7 @@ using System;
 namespace NHibernate.DomainModel
 {
 
+	//TODO: fix up these property names for .net standards
 	public interface FooProxy 
 	{
 		FooComponent nullComponent

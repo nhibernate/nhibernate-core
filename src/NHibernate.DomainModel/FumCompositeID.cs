@@ -9,11 +9,13 @@ namespace NHibernate.DomainModel
 		String string_;
 		DateTime date_;
 		short short_;
+		
 		public override bool Equals(object obj)
 		{
 			FumCompositeID that = (FumCompositeID) obj;
 			return this.string_.Equals(that.string_) && this.short_==that.short_;
 		}
+
 		public override int GetHashCode()
 		{
 			return string_.GetHashCode();

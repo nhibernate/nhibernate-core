@@ -271,6 +271,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Fo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Fo.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
@@ -336,6 +341,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Holder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Holder.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
@@ -347,6 +357,21 @@
                 <File
                     RelPath = "Immutable.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "INamed.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Inner.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InnerKey.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "JoinedSubclass.hbm.xml"
