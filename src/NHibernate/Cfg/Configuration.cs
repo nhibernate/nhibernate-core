@@ -630,19 +630,8 @@ namespace NHibernate.Cfg
 		/// <returns></returns>
 		public ISessionFactory BuildSessionFactory()
 		{
-			// Version check to determine which version of .NET is running
-			if( ( System.Environment.Version.Major == 1 )
-				&& ( System.Environment.Version.Minor == 0 ) )
-			{
-				throw new HibernateException( "Wrong version of .NET framework is used, NHibernate is not to be used with versions prior to 1.1.4322" );
-			}
-
 			SecondPassCompile();
-			Hashtable copy = new Hashtable();
-			foreach( DictionaryEntry de in properties )
-			{
-				copy.Add( de.Key, de.Value );
-			}
+			Hashtable copy = new Hashtable( properties );
 
 			Settings settings = BuildSettings();
 			ConfigureCaches( settings );
