@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 
 using NHibernate.Cfg;
-using NHibernate.Sql;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {

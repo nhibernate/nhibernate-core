@@ -1,7 +1,6 @@
 using System;
 
 using NHibernate.Type;
-using NHibernate.Sql;
 
 namespace NHibernate.Hql 
 {

@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Text;
+
 using NHibernate;
 using NHibernate.Collection;
 using NHibernate.Persister;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Sql;
-using NHibernate.SqlCommand;
 
 namespace NHibernate.Hql 
 {

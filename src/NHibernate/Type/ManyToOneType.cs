@@ -3,7 +3,6 @@ using System.Data;
 
 using NHibernate.Mapping;
 using NHibernate.Engine;
-using NHibernate.Sql;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type {

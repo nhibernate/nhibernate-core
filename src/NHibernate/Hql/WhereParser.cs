@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Text;
 
 using NHibernate.Persister;
-using NHibernate.Sql;
 using NHibernate.Type;
 using NHibernate.Util;
 

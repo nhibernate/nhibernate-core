@@ -1342,11 +1342,7 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-                <File
-                    RelPath = "Sql\QuerySelect.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
+                <Folder RelPath = "Sql\" />
                 <File
                     RelPath = "SqlCommand\Alias.cs"
                     SubType = "Code"
@@ -1419,6 +1415,11 @@
                 />
                 <File
                     RelPath = "SqlCommand\QueryJoinFragment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\QuerySelect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

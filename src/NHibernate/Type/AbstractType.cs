@@ -2,7 +2,6 @@ using System;
 using System.Data;
 
 using NHibernate.Engine;
-using NHibernate.Sql;
 using NHibernate.SqlTypes;
 
 
