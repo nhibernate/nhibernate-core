@@ -70,17 +70,20 @@ namespace NHibernate.Test
 		public void Sortables()
 		{
 			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
 			Baz b = new Baz();
 			IDictionary ss = new Hashtable();
-			ss.Add(b, new Sortable[] {new Sortable("foo") });
-			//			ss.Add(b, new Sortable("bar") );
-			//			ss.Add(b, new Sortable("baz") );
+			ss.Add(new Sortable("foo"), null);
+			ss.Add(new Sortable("bar"), null);
+			ss.Add(new Sortable("baz"), null);
 			b.sortablez = ss;
 			s.Save(b);
 			s.Flush();
+			t.Commit();
 			s.Close();
 		
 			s = sessions.OpenSession();
+			t = s.BeginTransaction();
 			IList result = s.CreateCriteria(typeof(Baz))
 				.AddOrder( Expression.Order.Asc("name") )
 				.List();
@@ -88,6 +91,7 @@ namespace NHibernate.Test
 			Assert.IsTrue( b.sortablez.Count==3 );
 			Assert.AreEqual( ( (Sortable) b.sortablez[0] ).name, "bar" );
 			s.Flush();
+			t.Commit();
 			s.Close();
 		}
 

@@ -44,7 +44,7 @@ namespace NHibernate.Loader
 			while ( iter.MoveNext() ) 
 			{ 
 				//TODO: H2.0.3 - this is not in H2.0.3 - where did it move to?
-				if(orderByNeeded) orderByBuilder.Append(" ORDER BY ");
+				//if(orderByNeeded) orderByBuilder.Append(" ORDER BY ");
 				orderByNeeded = false;
 
 				Order ord = (Order) iter.Current; 
