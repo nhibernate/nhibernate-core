@@ -16,7 +16,8 @@ namespace NHibernate.Test.ExpressionTest
 	{
 		protected ISessionFactory factory;
 		protected ISessionFactoryImplementor factoryImpl;
-
+		protected Dialect.Dialect dialect;
+		
 		[SetUp]
 		public void SetUp() 
 		{
@@ -25,7 +26,7 @@ namespace NHibernate.Test.ExpressionTest
 
 			factory = cfg.BuildSessionFactory();
 			factoryImpl = (ISessionFactoryImplementor)factory;
-
+			dialect = Dialect.Dialect.GetDialect();
 		}
 
 		/// <summary>
