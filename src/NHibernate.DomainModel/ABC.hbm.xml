@@ -50,6 +50,7 @@
 				<property 
 					name="Address" 
 					column="c2" 
+					type="System.String"
 				/>
 			</subclass>
 		</subclass>
