@@ -111,9 +111,12 @@ namespace NHibernate.Engine
 		/// Load an instance without checking if it was deleted. If it does not exist, throw an exception.
 		/// This method may create a new proxy or return an existing proxy.
 		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
+		/// <param name="persistentClass">The <see cref="System.Type"/> to load.</param>
+		/// <param name="id">The identifier of the object in the database.</param>
+		/// <returns>
+		/// A proxy of the object or an instance of the object if the <c>persistentClass</c> does not have a proxy.
+		/// </returns>
+		/// <exception cref="ObjectNotFoundException">No object could be found with that <c>id</c>.</exception>
 		object InternalLoad(System.Type persistentClass, object id);
 
 		/// <summary>

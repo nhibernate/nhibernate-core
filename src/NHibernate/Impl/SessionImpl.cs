@@ -2252,11 +2252,21 @@ namespace NHibernate.Impl
 		/// lazy initialization, return a proxy instead, leaving the real work for
 		/// later. This should return an existing proxy where appropriate.
 		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="checkDeleted"></param>
-		/// <param name="allowProxyCreation"></param>
-		/// <returns></returns>
+		/// <param name="clazz">The <see cref="System.Type"/> of the object to load.</param>
+		/// <param name="id">The identifier of the object in the database.</param>
+		/// <param name="checkDeleted">
+		/// A boolean indicating if NHiberate should check if the object has or has not been deleted.
+		/// </param>
+		/// <param name="allowProxyCreation">A boolean indicating if it is allowed to return a Proxy instead of an instance of the <see cref="System.Type"/>.</param>
+		/// <returns>
+		/// An loaded instance of the object or a proxy of the object is proxies are allowed.
+		/// </returns>
+		/// <remarks>
+		/// If the parameter <c>checkDeleted</c> is <c>false</c> it is possible to return an object that has 
+		/// been deleted by the user in this <see cref="ISession"/>.  If the parameter <c>checkDeleted</c> is
+		/// <c>true</c> and the object has been deleted then an <see cref="ObjectDeletedException"/> will be
+		/// thrown.
+		/// </remarks>
 		private object DoLoadByClass(System.Type clazz, object id, bool checkDeleted, bool allowProxyCreation) 
 		{
 			if ( log.IsDebugEnabled ) log.Debug( "loading " + MessageHelper.InfoString(clazz, id) );

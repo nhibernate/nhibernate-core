@@ -257,6 +257,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="query">A query expressed in Hibernate's query language</param>
 		/// <returns>A distinct list of instances</returns>
+		/// <remarks>See <see cref="IQuery.List"/> for implications of <c>cache</c> usage.</remarks>
 		IList Find(string query);
 
 		/// <summary>
@@ -266,6 +267,7 @@ namespace NHibernate
 		/// <param name="value">A value to be bound to a "?" placeholder</param>
 		/// <param name="type">The Hibernate type of the value</param>
 		/// <returns>A distinct list of instances</returns>
+		/// <remarks>See <see cref="IQuery.List"/> for implications of <c>cache</c> usage.</remarks>
 		IList Find(string query, object value, IType type);
 
 		/// <summary>
@@ -275,6 +277,7 @@ namespace NHibernate
 		/// <param name="values">An array of values to be bound to the "?" placeholders</param>
 		/// <param name="types">An array of Hibernate types of the values</param>
 		/// <returns>A distinct list of instances</returns>
+		/// <remarks>See <see cref="IQuery.List"/> for implications of <c>cache</c> usage.</remarks>
 		IList Find(string query, object[] values, IType[] types);
 
 		/// <summary>

@@ -104,7 +104,18 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 	
-		public override sealed object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner) {
+		/// <summary>
+		/// Converts the id contained in the <see cref="IDataReader"/> to an object.
+		/// </summary>
+		/// <param name="rs">The <see cref="IDataReader"/> that contains the query results.</param>
+		/// <param name="names">A string array of column names that contain the id.</param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
+		/// <param name="owner">The object that this Entity will be a part of.</param>
+		/// <returns>
+		/// An instance of the object or <c>null</c> if the identifer was null.
+		/// </returns>
+		public override sealed object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner) 
+		{
 			return ResolveIdentifier( Hydrate(rs, names, session, owner), session, owner );
 		}
 	

@@ -60,19 +60,29 @@ namespace NHibernate
 		string[] NamedParameters { get; }
 
 		/// <summary>
-		/// Return the query results as an <c>ICollection</c>. If the query contains multiple results
+		/// Return the query results as an <see cref="IEnumerable"/>. If the query contains multiple results
 		/// per row, the results are returned in an instance of <c>object[]</c>.
 		/// </summary>
 		/// <remarks>
+		/// <p>
 		/// Entities returned as results are initialized on demand. The first SQL query returns
-		/// identifiers only.
+		/// identifiers only.  
+		/// </p>
+		/// <p>
+		/// This is a good strategy to use if you expect a high number of the objects
+		/// returned to be already loaded in the <see cref="ISession"/> or in the 2nd level cache.
+		/// </p>
 		/// </remarks>
 		IEnumerable Enumerable();
 
 		/// <summary>
-		/// Return the query results as a <c>IList</c>. If the query contains multiple results per row,
+		/// Return the query results as an <see cref="IList"/>. If the query contains multiple results per row,
 		/// the results are returned in an instance of <c>object[]</c>.
 		/// </summary>
+		/// <remarks>
+		/// This is a good strategy to use if you expect few of the objects being returned are already loaded
+		/// or if you want to fill the 2nd level cache.
+		/// </remarks>
 		IList List();
 
 		/// <summary>
