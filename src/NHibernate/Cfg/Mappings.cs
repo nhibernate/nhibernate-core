@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+
+using NHibernate.Cache;
 using NHibernate.Mapping;
 
 namespace NHibernate.Cfg 
@@ -7,6 +9,7 @@ namespace NHibernate.Cfg
 	/// <summary>
 	/// A collection of mappings from classes and collections to relational database tables.
 	/// </summary>
+	/// <remarks>Represents a single <c>&lt;hibernate-mapping&gt;</c> element.</remarks>
 	public class Mappings 
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Mappings));
@@ -21,15 +24,33 @@ namespace NHibernate.Cfg
 		private string defaultCascade;
 		private bool autoImport;
 		private string defaultAccess;
+		private IDictionary caches;
 
-		internal Mappings(IDictionary classes, IDictionary collections, IDictionary tables, IDictionary queries, IDictionary imports, IList secondPasses) 
+		internal Mappings(IDictionary classes, IDictionary collections, IDictionary tables, IDictionary queries, IDictionary imports, IDictionary caches, IList secondPasses) 
 		{
 			this.classes = classes;
 			this.collections = collections;
 			this.queries = queries;
 			this.tables = tables;
 			this.imports = imports;
+			this.caches = caches;
 			this.secondPasses = secondPasses;
+		}
+
+		/// <summary>
+		/// Associates the class name with the cache strategy.
+		/// </summary>
+		/// <param name="name">The classname of the class to cache.</param>
+		/// <param name="cache">The <see cref="ICacheConcurrencyStrategy"/> to use for caching.</param>
+		/// <exception cref="MappingException">Thrown when <c>name</c> already has a <c>cache</c> associated with it.</exception>
+		public void AddCache(string name, ICacheConcurrencyStrategy cache) 
+		{
+			object old = caches[ name ];
+			if( old!=null ) 
+			{
+				throw new MappingException( "duplicate cache region" );
+			}
+			caches[ name ] = cache;
 		}
 
 		public void AddClass(PersistentClass persistentClass) 

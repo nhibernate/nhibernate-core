@@ -63,6 +63,7 @@ namespace NHibernate.Impl
 		
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SessionFactoryImpl));
 
+		[NonSerialized] private Settings settings;
 		private string name;
 		private string uuid;
 
@@ -71,137 +72,37 @@ namespace NHibernate.Impl
 		[NonSerialized] private IDictionary collectionPersisters;
 		[NonSerialized] private IDictionary namedQueries;
 		[NonSerialized] private IDictionary imports;
-		[NonSerialized] private IConnectionProvider connectionProvider;
 		[NonSerialized] private IDictionary properties;
-		[NonSerialized] private bool showSql;
-		[NonSerialized] private bool useOuterJoin;
-		[NonSerialized] private IsolationLevel isolation;
 		// TODO: figure out why this is commented out in nh and not h2.0.3
 		//[NonSerialized] private Templates templates;
-		[NonSerialized] private IDictionary querySubstitutions;
-		[NonSerialized] private Dialect.Dialect dialect;
-		[NonSerialized] private ITransactionFactory transactionFactory;
-		[NonSerialized] private int adoBatchSize;
-		[NonSerialized] private bool useScrollableResultSets;
-
-		[NonSerialized] private string defaultSchema;
-		[NonSerialized] private object statementFetchSize;
 		[NonSerialized] private IInterceptor interceptor;
 
 		private static IIdentifierGenerator uuidgen = new UUIDHexGenerator();
 	
-		public SessionFactoryImpl(Configuration cfg, IDictionary properties, IInterceptor interceptor) 
+		public SessionFactoryImpl(Configuration cfg, IDictionary properties, IInterceptor interceptor, Settings settings) 
 		{
-
 			log.Info("building session factory");
 			if ( log.IsDebugEnabled ) 
 			{
 				StringBuilder sb = new StringBuilder("instantiating session factory with properties: ");
-				foreach(DictionaryEntry entry in properties)
+				foreach(DictionaryEntry entry in properties) 
+				{
 					sb.AppendFormat("{0}={1};", entry.Key, ((string)entry.Key).IndexOf("connection_string")>0?"***":entry.Value);
+				}
 				log.Debug(sb.ToString());
 			}
 
 			this.interceptor = interceptor;
-
-			Dialect.Dialect dl = null;
-			
-			try 
-			{
-				dl = HibernateDialect.GetDialect(properties);
-				IDictionary temp = new Hashtable();
-				
-				foreach(DictionaryEntry de in dl.DefaultProperties) 
-				{
-					temp[de.Key] = de.Value;
-				}
-				foreach(DictionaryEntry de in properties) 
-				{
-					temp[de.Key] = de.Value;
-				}
-				properties = temp;
-			} 
-			catch (HibernateException he) 
-			{
-				log.Warn( "No dialect set - using GenericDialect: " + he.Message );
-				dl = new GenericDialect();
-			}
-			dialect = dl;
-			
-			connectionProvider = ConnectionProviderFactory.NewConnectionProvider(properties);
-
-			statementFetchSize = PropertiesHelper.GetInt32( Cfg.Environment.StatementFetchSize, properties, -1);
-			if((int)statementFetchSize==-1) statementFetchSize = null;
-			if (statementFetchSize!=null) log.Info("ado result set fetch size: " + statementFetchSize);
-
-			useOuterJoin = PropertiesHelper.GetBoolean(Cfg.Environment.OuterJoin, properties);
-			log.Info("use outer join fetching: " + useOuterJoin);
-
-			// default the isolationLevel to Unspecified to indicate to our code that no isolation level 
-			// has been set so just use the default of the DataProvider.
-			string isolationString = PropertiesHelper.GetString( Cfg.Environment.Isolation, properties, String.Empty );
-			if( isolationString.Length > 0) 
-			{
-				try 
-				{
-					isolation = (IsolationLevel)Enum.Parse( typeof(IsolationLevel), isolationString );
-					log.Info( "Using Isolation Level: " + isolation.ToString() );
-				}
-				catch( ArgumentException ae ) 
-				{
-					log.Error( "error configuring IsolationLevel " + isolationString, ae );
-					throw new HibernateException( 
-						"The isolation level of " + isolationString + " is not a valid IsolationLevel.  Please " +
-						"use one of the Member Names from the IsolationLevel.", ae );
-				}
-			}
-			else 
-			{
-				isolation = IsolationLevel.Unspecified;
-			}
-
-			
-			bool usrs = PropertiesHelper.GetBoolean(Cfg.Environment.UseScrollableResultSet, properties);
-			int batchSize = PropertiesHelper.GetInt32(Cfg.Environment.StatementBatchSize, properties, 0);
-
-			try 
-			{
-				IDbConnection conn = connectionProvider.GetConnection();
-				try 
-				{
-					//get meta data
-					usrs = false; // no scrollable results sets in .net -> forward only readers...
-					batchSize = 0; // is this
-				} 
-				finally 
-				{
-					connectionProvider.CloseConnection(conn);
-				}
-			} 
-			catch (Exception e) 
-			{
-				log.Warn("could not obtain connection metadata", e);
-			}
-			
-			useScrollableResultSets = usrs;
-			adoBatchSize = batchSize;
-
-			defaultSchema = properties[Cfg.Environment.DefaultSchema] as string;
-			if ( defaultSchema!=null) log.Info ("Default schema set to: " + defaultSchema);
-
-			transactionFactory = BuildTransactionFactory(properties);
-
-			showSql = PropertiesHelper.GetBoolean(Cfg.Environment.ShowSql, properties);
-			if (showSql) log.Info("echoing all SQL to stdout");
-
 			this.properties = properties;
+			this.settings = settings;
 
 			// Persisters:
 
 			classPersisters = new Hashtable();
 			classPersistersByName = new Hashtable();
 
-			foreach(PersistentClass model in cfg.ClassMappings) {
+			foreach(PersistentClass model in cfg.ClassMappings) 
+			{
 				System.Type persisterClass = model.Persister;
 				IClassPersister cp;
 				cp = PersisterFactory.Create(model, this);
@@ -220,18 +121,21 @@ namespace NHibernate.Impl
 			}
 
 			collectionPersisters = new Hashtable();
-			foreach( Mapping.Collection map in cfg.CollectionMappings ) {
+			foreach( Mapping.Collection map in cfg.CollectionMappings ) 
+			{
 				collectionPersisters[map.Role] = new CollectionPersister(map, cfg, this) ;
 			}
 
-			foreach(IClassPersister persister in classPersisters.Values) {
+			foreach(IClassPersister persister in classPersisters.Values) 
+			{
 				persister.PostInstantiate(this);
 			}
 
 			//TODO: Add for databinding
 
-			name = (string) properties[ Cfg.Environment.SessionFactoryName ];
 
+			// serialization info
+			name = settings.SessionFactoryName;
 			try 
 			{
 				uuid = (string) uuidgen.Generate(null, null);
@@ -242,16 +146,6 @@ namespace NHibernate.Impl
 			}
 
 			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
-			// queries:
-
-			querySubstitutions = PropertiesHelper.ToDictionary(Cfg.Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties);
-			if ( log.IsInfoEnabled ) 
-			{
-				StringBuilder sb = new StringBuilder("Query language substitutions: ");
-				foreach(DictionaryEntry entry in querySubstitutions)
-					sb.AppendFormat("{0}={1};", entry.Key, entry.Value);
-				log.Info(sb.ToString());
-			}
 
 			namedQueries = cfg.NamedQueries;
 			imports = new Hashtable( cfg.Imports );
@@ -408,12 +302,12 @@ namespace NHibernate.Impl
 
 		public IConnectionProvider ConnectionProvider 
 		{
-			get {return this.connectionProvider;}
+			get {return settings.ConnectionProvider;}
 		}
 
 		public IsolationLevel Isolation 
 		{
-			get { return isolation; }
+			get { return settings.IsolationLevel; }
 		}
 
 		public QueryTranslator GetQuery(string query) 
@@ -438,11 +332,11 @@ namespace NHibernate.Impl
 			QueryTranslator q = (QueryTranslator) Get(cacheKey);
 			if ( q==null) 
 			{
-				q = new QueryTranslator(dialect);
+				q = new QueryTranslator( Dialect );
 				Put(cacheKey, q);
 			}
 			
-			q.Compile(this, query, querySubstitutions, shallow);
+			q.Compile(this, query, settings.QuerySubstitutions, shallow);
 			
 			return q;
 		}
@@ -454,11 +348,11 @@ namespace NHibernate.Impl
 			FilterTranslator q = (FilterTranslator) Get(cacheKey);
 			if ( q==null ) 
 			{
-				q = new FilterTranslator(dialect);
+				q = new FilterTranslator( Dialect );
 				Put(cacheKey, q);
 			}
 			
-			q.Compile(collectionRole, this, query, querySubstitutions, scalar);
+			q.Compile(collectionRole, this, query, settings.QuerySubstitutions, scalar);
 			
 			return q;
 		}
@@ -494,7 +388,7 @@ namespace NHibernate.Impl
 		{
 			try 
 			{
-				return connectionProvider.GetConnection();
+				return ConnectionProvider.GetConnection();
 			} 
 			catch (Exception sqle) 
 			{
@@ -506,7 +400,7 @@ namespace NHibernate.Impl
 		{
 			try 
 			{
-				connectionProvider.CloseConnection(conn);
+				ConnectionProvider.CloseConnection(conn);
 			} 
 			catch (Exception e) 
 			{
@@ -551,7 +445,7 @@ namespace NHibernate.Impl
 
 		public Dialect.Dialect Dialect 
 		{
-			get { return dialect; }
+			get { return settings.Dialect; }
 		}
 
 		private ITransactionFactory BuildTransactionFactory(IDictionary transactionProps) 
@@ -561,24 +455,26 @@ namespace NHibernate.Impl
 
 		public ITransactionFactory TransactionFactory 
 		{
-			get { return transactionFactory; }
+			get { return settings.TransactionFactory; }
 		}
 
-		public bool UseAdoBatch {
-			get { return adoBatchSize > 0; }
+//		public bool UseAdoBatch 
+//		{
+//			get { return adoBatchSize > 0; }
+//		}
+
+//		public int ADOBatchSize {
+//			get { return adoBatchSize; }
+//		}
+
+		public bool EnableJoinedFetch 
+		{
+			get { return settings.IsOuterJoinFetchEnabled; }
 		}
 
-		public int ADOBatchSize {
-			get { return adoBatchSize; }
-		}
-
-		public bool EnableJoinedFetch {
-			get { return useOuterJoin; }
-		}
-
-		public bool UseScrollableResultSets {
-			get { return useScrollableResultSets; }
-		}
+//		public bool UseScrollableResultSets {
+//			get { return useScrollableResultSets; }
+//		}
 
 		public string GetNamedQuery(string name) 
 		{
@@ -645,16 +541,16 @@ namespace NHibernate.Impl
 
 		public string DefaultSchema 
 		{
-			get { return defaultSchema; }
+			get { return settings.DefaultSchemaName; }
 		}
 
-		public void SetFetchSize(IDbCommand statement) 
-		{
-			if ( statementFetchSize!=null) 
-			{
-				// nothing to do in ADO.NET
-			}
-		}
+//		public void SetFetchSize(IDbCommand statement) 
+//		{
+//			if ( settings.sstatementFetchSize!=null) 
+//			{
+//				// nothing to do in ADO.NET
+//			}
+//		}
 
 		public IClassMetadata GetClassMetadata(System.Type persistentClass) 
 		{
@@ -732,7 +628,7 @@ namespace NHibernate.Impl
 
 			try 
 			{
-				connectionProvider.Close();
+				ConnectionProvider.Close();
 			}
 			finally 
 			{

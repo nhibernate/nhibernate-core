@@ -42,6 +42,7 @@ namespace NHibernate.Cfg
 		private ArrayList secondPasses = new ArrayList();
 		private IInterceptor interceptor = EmptyInterceptor;
 		private IDictionary properties = Environment.Properties;
+		private IDictionary caches = new Hashtable();
 
 		private XmlSchema mappingSchema;
 		private XmlSchema cfgSchema;
@@ -207,7 +208,7 @@ namespace NHibernate.Cfg
 		/// <returns></returns>
 		public Mappings CreateMappings() 
 		{
-			return new Mappings(classes, collections, tables, namedQueries, imports, secondPasses);
+			return new Mappings(classes, collections, tables, namedQueries, imports, caches, secondPasses);
 		}
 
 		/// <summary>
@@ -607,7 +608,20 @@ namespace NHibernate.Cfg
 			{
 				copy.Add(de.Key, de.Value);
 			}
-			return new SessionFactoryImpl(this, copy, interceptor);
+
+			Settings settings = BuildSettings();
+			ConfigureCaches( settings );
+
+			return new SessionFactoryImpl( this, copy, interceptor, settings );
+		}
+
+		/// <summary>
+		/// Builds an object-oriented view of the settings.
+		/// </summary>
+		/// <returns>A <see cref="Settings"/> object initialized from the settings properties.</returns>
+		protected Settings BuildSettings() 
+		{
+			return SettingsFactory.BuildSettings( properties );
 		}
 
 		public IInterceptor Interceptor 
@@ -799,26 +813,34 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
-		public static ICacheConcurrencyStrategy CreateCache(string usage, string name, PersistentClass owner) 
+		//TODO: make properties a Settings class
+		protected void ConfigureCaches(Settings settings) 
 		{
-			log.Info("creating cache region: " + name + ", usage: " + usage);
+			log.Info( "instantiating and configuring caches" );
 
-			ICache cache = new HashtableCache(name);
+			// TODO: add ability to configure cache_region_prefix
 
-			switch (usage) 
+			foreach( DictionaryEntry de in caches ) 
 			{
-				case "read-only":
-					if (owner.IsMutable) log.Warn("read-only cache configured for mutable: " + name);
-					return new ReadOnlyCache(cache);
-	
-				case "read-write":
-					return new ReadWriteCache(cache);
-					
-				case "nonstrict-read-write":
-					return new NonstrictReadWriteCache(cache);
-					
-				default:
-					throw new MappingException("jcs-cache usage attribute should be read-only, read-write, or nonstrict-read-write only");
+				string name = (string)de.Key;
+				ICacheConcurrencyStrategy strategy = (ICacheConcurrencyStrategy)de.Value;
+
+				if( log.IsDebugEnabled ) 
+				{
+					log.Debug( "instantiating cache " + name );
+				}
+
+				ICache cache;
+				try 
+				{
+					cache = settings.CacheProvider.BuildCache( name, properties );
+				}
+				catch( CacheException ce ) 
+				{
+					throw new HibernateException( "Could not instantiate Cache", ce );
+				}
+
+				strategy.Cache = cache;
 
 			}
 		}

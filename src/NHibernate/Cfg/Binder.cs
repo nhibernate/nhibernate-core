@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using System.Xml;
 
+using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Mapping;
@@ -10,9 +11,10 @@ using NHibernate.Persister;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Cfg {
-	
-	internal class Binder {
+namespace NHibernate.Cfg 
+{
+	internal class Binder 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Binder));
 
 		private static XmlNamespaceManager nsmgr;
@@ -274,10 +276,10 @@ namespace NHibernate.Cfg {
 						break;
 
 					case "jcs-cache":
-						model.Cache = Configuration.CreateCache( 
-							subnode.Attributes["usage"].Value,
-							model.PersistentClazz.Name, 
-							model );
+						string className = model.PersistentClazz.FullName;
+						ICacheConcurrencyStrategy cache = CacheFactory.CreateCache( subnode, className, model.IsMutable );
+						mappings.AddCache( className, cache );
+						model.Cache = cache;
 
 						break;
 				}
@@ -1139,10 +1141,13 @@ namespace NHibernate.Cfg {
 				} 
 				else if ( "jcs-cache".Equals(name) )
 				{
-					model.Cache = Configuration.CreateCache( 
-						subnode.Attributes["usage"].Value,
-						model.Role, 
-						model.Owner );
+					ICacheConcurrencyStrategy cache = CacheFactory.CreateCache( subnode, model.Role, model.Owner.IsMutable );
+					mappings.AddCache( model.Role, cache );
+					model.Cache = cache;
+//					model.Cache = Configuration.CreateCache( 
+//						subnode.Attributes["usage"].Value,
+//						model.Role, 
+//						model.Owner );
 				}
 			}
 
