@@ -1,19 +1,17 @@
 using System;
 using System.Collections;
-
 using NHibernate.Cache;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
 	/// <summary>
 	/// Base class for the <see cref="RootClass" /> mapped by &lt;class&gt; and a 
 	/// <see cref="Subclass"/> that is mapped by &lt;subclass&gt; or &lt;joined-subclass&gt;
 	/// </summary>
-	public abstract class PersistentClass 
+	public abstract class PersistentClass
 	{
-		private static readonly Alias PKAlias = new Alias(15, "PK");
+		private static readonly Alias PKAlias = new Alias( 15, "PK" );
 
 		private System.Type persistentClass;
 		private string discriminatorValue;
@@ -25,7 +23,7 @@ namespace NHibernate.Mapping
 		private readonly ArrayList subclassTables = new ArrayList();
 		private bool dynamicInsert;
 		private bool dynamicUpdate;
-		
+
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
 		/// </summary>
@@ -33,10 +31,10 @@ namespace NHibernate.Mapping
 		/// <remarks>
 		/// The value of this is set by the <c>dynamic-insert</c> attribute. 
 		/// </remarks>
-		public virtual bool DynamicInsert 
+		public virtual bool DynamicInsert
 		{
 			get { return dynamicInsert; }
-			set { dynamicInsert = value ; }
+			set { dynamicInsert = value; }
 		}
 
 		/// <summary>
@@ -46,10 +44,10 @@ namespace NHibernate.Mapping
 		/// <remarks>
 		/// The value of this is set by the <c>dynamic-update</c> attribute. 
 		/// </remarks>
-		public virtual bool DynamicUpdate 
+		public virtual bool DynamicUpdate
 		{
 			get { return dynamicUpdate; }
-			set { dynamicUpdate = value ; }
+			set { dynamicUpdate = value; }
 		}
 
 		/// <summary>
@@ -63,28 +61,34 @@ namespace NHibernate.Mapping
 		/// in a heirarchy must define a unique <c>discriminator-value</c>.  The default value 
 		/// is the class name if no value is supplied.
 		/// </remarks>
-		public virtual string DiscriminatorValue 
+		public virtual string DiscriminatorValue
 		{
 			get { return discriminatorValue; }
 			set { discriminatorValue = value; }
 		}
 
-		public virtual void AddSubclass(Subclass subclass)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="subclass"></param>
+		public virtual void AddSubclass( Subclass subclass )
 		{
-			subclasses.Add(subclass);
+			subclasses.Add( subclass );
 		}
 
+		/// <summary></summary>
 		public virtual bool HasSubclasses
 		{
 			get { return subclasses.Count > 0; }
 		}
 
-		public virtual int SubclassSpan 
+		/// <summary></summary>
+		public virtual int SubclassSpan
 		{
-			get 
+			get
 			{
 				int n = subclasses.Count;
-				foreach(Subclass sc in subclasses) 
+				foreach( Subclass sc in subclasses )
 				{
 					n += sc.SubclassSpan;
 				}
@@ -99,35 +103,40 @@ namespace NHibernate.Mapping
 		/// It will recursively go through Subclasses so that if a Subclass has Subclasses
 		/// it will pick those up also.
 		/// </remarks>
-		public virtual ICollection SubclassCollection 
+		public virtual ICollection SubclassCollection
 		{
-			get 
-			{ 
+			get
+			{
 				ArrayList retVal = new ArrayList();
-				
+
 				// check to see if there are any subclass in our subclasses 
 				// and add them into the collection
-				foreach(Subclass sc in subclasses) 
+				foreach( Subclass sc in subclasses )
 				{
-					retVal.AddRange(sc.SubclassCollection);
+					retVal.AddRange( sc.SubclassCollection );
 				}
 
 				// finally add the subclasses from this PersistentClass into
 				// the collection to return
-				retVal.AddRange(subclasses);
+				retVal.AddRange( subclasses );
 
 				return retVal;
 			}
 		}
 
-		public virtual ICollection DirectSubclasses 
+		/// <summary></summary>
+		public virtual ICollection DirectSubclasses
 		{
 			get { return subclasses; }
 		}
 
-		public virtual void AddProperty(Property p) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="p"></param>
+		public virtual void AddProperty( Property p )
 		{
-			properties.Add(p);
+			properties.Add( p );
 		}
 
 		/// <summary>
@@ -137,58 +146,96 @@ namespace NHibernate.Mapping
 		/// <remarks>
 		/// The value of this is set by the <c>table</c> attribute. 
 		/// </remarks>
-		public virtual Table Table 
+		public virtual Table Table
 		{
 			get { return table; }
 			set { table = value; }
 		}
 
-		public virtual ICollection PropertyCollection 
+		/// <summary></summary>
+		public virtual ICollection PropertyCollection
 		{
 			get { return properties; }
 		}
 
-		public virtual System.Type PersistentClazz 
+		/// <summary></summary>
+		public virtual System.Type PersistentClazz
 		{
 			get { return persistentClass; }
 			set { persistentClass = value; }
 		}
 
-		public virtual string Name 
+		/// <summary></summary>
+		public virtual string Name
 		{
 			get { return persistentClass.FullName; }
 		}
 
-		public abstract bool IsMutable { get; set;} 
-		public abstract bool HasIdentifierProperty { get; }
-		public abstract Property IdentifierProperty { get; set; }
-		public abstract Value Identifier { get; set; } 
-		public abstract Property Version { get; set; } 
-		public abstract Value Discriminator { get; set; } 
-		public abstract bool IsInherited { get;  } 
-		// see the comment in RootClass about why the polymorphic setter is commented out
-		public abstract bool IsPolymorphic { get; } 
-		public abstract bool IsVersioned { get;}
-		public abstract ICacheConcurrencyStrategy Cache { get; set;} 
-		public abstract PersistentClass Superclass { get; set; }  
-		public abstract bool IsExplicitPolymorphism { get; set;}
+		/// <summary></summary>
+		public abstract bool IsMutable { get; set; }
 
+		/// <summary></summary>
+		public abstract bool HasIdentifierProperty { get; }
+
+		/// <summary></summary>
+		public abstract Property IdentifierProperty { get; set; }
+
+		/// <summary></summary>
+		public abstract Value Identifier { get; set; }
+
+		/// <summary></summary>
+		public abstract Property Version { get; set; }
+
+		/// <summary></summary>
+		public abstract Value Discriminator { get; set; }
+
+		/// <summary></summary>
+		public abstract bool IsInherited { get; }
+
+		// see the comment in RootClass about why the polymorphic setter is commented out
+		/// <summary></summary>
+		public abstract bool IsPolymorphic { get; }
+
+		/// <summary></summary>
+		public abstract bool IsVersioned { get; }
+
+		/// <summary></summary>
+		public abstract ICacheConcurrencyStrategy Cache { get; set; }
+
+		/// <summary></summary>
+		public abstract PersistentClass Superclass { get; set; }
+
+		/// <summary></summary>
+		public abstract bool IsExplicitPolymorphism { get; set; }
+
+		/// <summary></summary>
 		public abstract ICollection PropertyClosureCollection { get; }
+
+		/// <summary></summary>
 		public abstract ICollection TableClosureCollection { get; }
 
-		public virtual void AddSubclassProperty(Property p) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="p"></param>
+		public virtual void AddSubclassProperty( Property p )
 		{
-			subclassProperties.Add(p);
+			subclassProperties.Add( p );
 		}
 
-		public virtual void AddSubclassTable(Table table) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="table"></param>
+		public virtual void AddSubclassTable( Table table )
 		{
-			subclassTables.Add(table);
+			subclassTables.Add( table );
 		}
 
-		public virtual ICollection SubclassPropertyClosureCollection 
+		/// <summary></summary>
+		public virtual ICollection SubclassPropertyClosureCollection
 		{
-			get 
+			get
 			{
 				ArrayList retVal = new ArrayList();
 				retVal.AddRange( PropertyClosureCollection );
@@ -196,15 +243,15 @@ namespace NHibernate.Mapping
 				return retVal;
 			}
 		}
-		
+
 		/// <summary>
 		/// Returns an ICollection of all of the Tables that the subclass finds its information
 		/// in.  
 		/// </summary>
 		/// <remarks>It adds the TableClosureCollection and the subclassTables into the ICollection.</remarks>
-		public virtual ICollection SubclassTableClosureCollection 
+		public virtual ICollection SubclassTableClosureCollection
 		{
-			get 
+			get
 			{
 				ArrayList retVal = new ArrayList();
 				retVal.AddRange( TableClosureCollection );
@@ -212,37 +259,55 @@ namespace NHibernate.Mapping
 				return retVal;
 			}
 		}
-		public virtual System.Type ProxyInterface 
+
+		/// <summary></summary>
+		public virtual System.Type ProxyInterface
 		{
 			get { return proxyInterface; }
-			set { proxyInterface = value ; }
+			set { proxyInterface = value; }
 		}
 
-		public virtual bool IsForceDiscriminator {
+		/// <summary></summary>
+		public virtual bool IsForceDiscriminator
+		{
 			get { return false; }
-			set { throw new NotImplementedException("subclasses need to override this method");	}
+			set { throw new NotImplementedException( "subclasses need to override this method" ); }
 		}
 
-		public abstract bool HasEmbeddedIdentifier { get; set;} 
-		public abstract System.Type Persister { get; set;} 
-		public abstract Table RootTable { get; }
-		public abstract RootClass RootClazz { get; }
-		public abstract Value Key { get; set; } 
+		/// <summary></summary>
+		public abstract bool HasEmbeddedIdentifier { get; set; }
 
-		public virtual void CreatePrimaryKey(Dialect.Dialect dialect) 
+		/// <summary></summary>
+		public abstract System.Type Persister { get; set; }
+
+		/// <summary></summary>
+		public abstract Table RootTable { get; }
+
+		/// <summary></summary>
+		public abstract RootClass RootClazz { get; }
+
+		/// <summary></summary>
+		public abstract Value Key { get; set; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		public virtual void CreatePrimaryKey( Dialect.Dialect dialect )
 		{
 			PrimaryKey pk = new PrimaryKey();
 			pk.Table = table;
-			pk.Name = PKAlias.ToAliasString(table.Name, dialect); 
+			pk.Name = PKAlias.ToAliasString( table.Name, dialect );
 			table.PrimaryKey = pk;
 
-			foreach(Column col in Key.ColumnCollection) 
+			foreach( Column col in Key.ColumnCollection )
 			{
-				pk.AddColumn(col);
+				pk.AddColumn( col );
 			}
 		}
 
+		/// <summary></summary>
 		public abstract string Where { get; set; }
-				
+
 	}
 }

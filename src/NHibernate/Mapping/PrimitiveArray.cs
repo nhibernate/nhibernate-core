@@ -1,13 +1,18 @@
-using System;
-
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-	public class PrimitiveArray : Array 
+	/// <summary></summary>
+	public class PrimitiveArray : Array
 	{
-		
-		public PrimitiveArray(PersistentClass owner) : base(owner) {}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="owner"></param>
+		public PrimitiveArray( PersistentClass owner ) : base( owner )
+		{
+		}
 
-		public override bool IsPrimitiveArray 
+		/// <summary></summary>
+		public override bool IsPrimitiveArray
 		{
 			get { return true; }
 		}

@@ -1,71 +1,90 @@
-using System;
 using System.Collections;
-
-using NHibernate.Util;
 using NHibernate.Type;
+using NHibernate.Util;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-	public class OneToOne : Association 
+	/// <summary></summary>
+	public class OneToOne : Association
 	{
 		private bool constrained;
 		private ForeignKeyType foreignKeyType;
 		private Value identifier;
 
-		public OneToOne(Table table, Value identifier) : base(table) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="table"></param>
+		/// <param name="identifier"></param>
+		public OneToOne( Table table, Value identifier ) : base( table )
 		{
 			this.identifier = identifier;
 		}
 
-		public override void SetTypeByReflection(System.Type propertyClass, string propertyName) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyClass"></param>
+		/// <param name="propertyName"></param>
+		public override void SetTypeByReflection( System.Type propertyClass, string propertyName )
 		{
-			try 
+			try
 			{
-				if (Type==null)
-					Type = TypeFactory.OneToOne(ReflectHelper.GetGetter(propertyClass, propertyName).ReturnType, foreignKeyType);
-			} 
-			catch (HibernateException he) 
+				if( Type == null )
+				{
+					Type = TypeFactory.OneToOne( ReflectHelper.GetGetter( propertyClass, propertyName ).ReturnType, foreignKeyType );
+				}
+			}
+			catch( HibernateException he )
 			{
-				throw new MappingException("Problem trying to set association type by reflection", he);
+				throw new MappingException( "Problem trying to set association type by reflection", he );
 			}
 		}
 
-		public override void CreateForeignKey() 
+		/// <summary></summary>
+		public override void CreateForeignKey()
 		{
-			if (constrained) CreateForeignKeyOfClass( ((EntityType)Type).PersistentClass );
+			if( constrained )
+			{
+				CreateForeignKeyOfClass( ( ( EntityType ) Type ).PersistentClass );
+			}
 		}
 
-		public override IList ConstraintColumns 
+		/// <summary></summary>
+		public override IList ConstraintColumns
 		{
-			get 
+			get
 			{
 				ArrayList list = new ArrayList();
-				foreach(object obj in identifier.ColumnCollection) 
+				foreach( object obj in identifier.ColumnCollection )
 				{
-					list.Add(obj);
+					list.Add( obj );
 				}
 				return list;
 			}
 		}
 
-		public bool IsConstrained 
+		/// <summary></summary>
+		public bool IsConstrained
 		{
 			get { return constrained; }
 			set { constrained = value; }
 		}
 
-		public ForeignKeyType ForeignKeyType 
+		/// <summary></summary>
+		public ForeignKeyType ForeignKeyType
 		{
 			get { return foreignKeyType; }
 			set { foreignKeyType = value; }
 		}
 
-		public Value Identifier 
+		/// <summary></summary>
+		public Value Identifier
 		{
 			get { return identifier; }
 			set { identifier = value; }
 		}
-				
-		
+
+
 	}
 }

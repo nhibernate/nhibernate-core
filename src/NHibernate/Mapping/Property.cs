@@ -1,13 +1,12 @@
-using System;
 using System.Collections;
-
 using NHibernate.Engine;
-using NHibernate.Type;
 using NHibernate.Property;
+using NHibernate.Type;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-	public class Property 
+	/// <summary></summary>
+	public class Property
 	{
 		private string name;
 		private Value propertyValue;
@@ -16,12 +15,17 @@ namespace NHibernate.Mapping
 		private bool insertable;
 		private string propertyAccessorName;
 
-		public Property(Value propertyValue) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyValue"></param>
+		public Property( Value propertyValue )
 		{
 			this.propertyValue = propertyValue;
 		}
 
-		public IType Type 
+		/// <summary></summary>
+		public IType Type
 		{
 			get { return propertyValue.Type; }
 		}
@@ -29,7 +33,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets the number of columns this property uses in the db.
 		/// </summary>
-		public int ColumnSpan 
+		public int ColumnSpan
 		{
 			get { return propertyValue.ColumnSpan; }
 		}
@@ -37,7 +41,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets an <see cref="ICollection"/> of <see cref="Column"/>s.
 		/// </summary>
-		public ICollection ColumnCollection 
+		public ICollection ColumnCollection
 		{
 			get { return propertyValue.ColumnCollection; }
 		}
@@ -45,119 +49,145 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets or Sets the name of the Property in the class.
 		/// </summary>
-		public string Name 
+		public string Name
 		{
 			get { return name; }
 			set { name = value; }
 		}
 
-		public bool IsUpdateable 
+		/// <summary></summary>
+		public bool IsUpdateable
 		{
-			get { return updateable && !IsFormula ; }
+			get { return updateable && !IsFormula; }
 			set { updateable = value; }
 		}
 
-		public bool IsComposite 
+		/// <summary></summary>
+		public bool IsComposite
 		{
 			get { return propertyValue is Component; }
 		}
 
-		public Value Value 
+		/// <summary></summary>
+		public Value Value
 		{
 			get { return propertyValue; }
 			set { this.propertyValue = value; }
 		}
 
-		public Cascades.CascadeStyle CascadeStyle 
+		/// <summary></summary>
+		public Cascades.CascadeStyle CascadeStyle
 		{
-			get {
+			get
+			{
 				IType type = propertyValue.Type;
-				if (type.IsComponentType && !type.IsObjectType) 
+				if( type.IsComponentType && !type.IsObjectType )
 				{
-					IAbstractComponentType actype = (IAbstractComponentType) propertyValue.Type;
+					IAbstractComponentType actype = ( IAbstractComponentType ) propertyValue.Type;
 					int length = actype.Subtypes.Length;
-					for (int i=0; i<length; i++) 
+					for( int i = 0; i < length; i++ )
 					{
-						if ( actype.Cascade(i)!= Cascades.CascadeStyle.StyleNone ) return Cascades.CascadeStyle.StyleAll;
+						if( actype.Cascade( i ) != Cascades.CascadeStyle.StyleNone )
+						{
+							return Cascades.CascadeStyle.StyleAll;
+						}
 					}
 
 					return Cascades.CascadeStyle.StyleNone;
-				} 
-				else 
+				}
+				else
 				{
-					if (cascade.Equals("all")) 
+					if( cascade.Equals( "all" ) )
 					{
 						return Cascades.CascadeStyle.StyleAll;
-					} 
-					else if (cascade.Equals("all-delete-orphan") )
+					}
+					else if( cascade.Equals( "all-delete-orphan" ) )
 					{
 						return Cascades.CascadeStyle.StyleAllGC;
 					}
-					else if (cascade.Equals("none")) 
+					else if( cascade.Equals( "none" ) )
 					{
 						return Cascades.CascadeStyle.StyleNone;
-					} 
-					else if (cascade.Equals("save-update")) 
+					}
+					else if( cascade.Equals( "save-update" ) )
 					{
 						return Cascades.CascadeStyle.StyleSaveUpdate;
-					} 
-					else if (cascade.Equals("delete")) 
+					}
+					else if( cascade.Equals( "delete" ) )
 					{
 						return Cascades.CascadeStyle.StyleOnlyDelete;
-					} 
-					else 
+					}
+					else
 					{
-						throw new MappingException("Unspported cascade style: " + cascade);
+						throw new MappingException( "Unspported cascade style: " + cascade );
 					}
 				}
 			}
 		}
 
-		public string Cascade 
+		/// <summary></summary>
+		public string Cascade
 		{
 			get { return cascade; }
 			set { cascade = value; }
 		}
 
-		public bool IsInsertable {
+		/// <summary></summary>
+		public bool IsInsertable
+		{
 			get { return insertable && !IsFormula; }
 			set { insertable = value; }
 		}
 
-		public Formula Formula 
+		/// <summary></summary>
+		public Formula Formula
 		{
 			get { return propertyValue.Formula; }
 		}
 
-		public bool IsFormula 
+		/// <summary></summary>
+		public bool IsFormula
 		{
-			get { return Formula!=null; }
+			get { return Formula != null; }
 		}
 
-		public string PropertyAccessorName 
+		/// <summary></summary>
+		public string PropertyAccessorName
 		{
 			get { return propertyAccessorName; }
 			set { propertyAccessorName = value; }
 		}
 
-		public IGetter GetGetter(System.Type clazz) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <returns></returns>
+		public IGetter GetGetter( System.Type clazz )
 		{
-			return PropertyAccessor.GetGetter(clazz, name);
+			return PropertyAccessor.GetGetter( clazz, name );
 		}
 
-		public ISetter GetSetter(System.Type clazz) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <returns></returns>
+		public ISetter GetSetter( System.Type clazz )
 		{
-			return PropertyAccessor.GetSetter(clazz, name);
+			return PropertyAccessor.GetSetter( clazz, name );
 		}
 
-		protected IPropertyAccessor PropertyAccessor 
+		/// <summary></summary>
+		protected IPropertyAccessor PropertyAccessor
 		{
 			get { return PropertyAccessorFactory.GetPropertyAccessor( PropertyAccessorName ); }
 		}
 
-		public bool IsBasicPropertyAccessor 
+		/// <summary></summary>
+		public bool IsBasicPropertyAccessor
 		{
-			get { return propertyAccessorName==null || propertyAccessorName.Equals("property"); }
+			get { return propertyAccessorName == null || propertyAccessorName.Equals( "property" ); }
 		}
 	}
 }

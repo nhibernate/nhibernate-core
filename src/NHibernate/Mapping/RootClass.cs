@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+using log4net;
 using NHibernate.Cache;
+using NHibernate.Persister;
 
-namespace NHibernate.Mapping 
-{	
+namespace NHibernate.Mapping
+{
 	/// <summary>
 	/// Declaration of a System.Type by using the <c>&lt;class&gt;</c> element.
 	/// </summary>
@@ -78,15 +80,17 @@ namespace NHibernate.Mapping
 	///		</item>
 	///		<item>
 	///			<term>persister</term>
-	///			<description>(optional)  Specifies a custom <see cref="Persister.IClassPersister"/>.</description>
+	///			<description>(optional)  Specifies a custom <see cref="IClassPersister"/>.</description>
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class RootClass : PersistentClass 
+	public class RootClass : PersistentClass
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(RootClass));
-		
+		private static readonly ILog log = LogManager.GetLogger( typeof( RootClass ) );
+
+		/// <summary></summary>
 		public const string DefaultIdentifierColumnName = "id";
+		/// <summary></summary>
 		public const string DefaultDiscriminatorColumnName = "class";
 
 		private Property identifierProperty;
@@ -102,42 +106,45 @@ namespace NHibernate.Mapping
 		private bool forceDiscriminator;
 		private string where;
 
+		/// <summary></summary>
 		public bool Polymorphic
 		{
-			set
-			{
-				polymorphic = value;
-			}
+			set { polymorphic = value; }
 		}
 
-		public override Property IdentifierProperty 
+		/// <summary></summary>
+		public override Property IdentifierProperty
 		{
 			get { return identifierProperty; }
 			set { identifierProperty = value; }
 		}
 
-		public override Value Identifier 
+		/// <summary></summary>
+		public override Value Identifier
 		{
 			get { return identifier; }
 			set { identifier = value; }
 		}
 
-		public override bool HasIdentifierProperty 
+		/// <summary></summary>
+		public override bool HasIdentifierProperty
 		{
 			get { return identifierProperty != null; }
 		}
 
-		public override Value Discriminator 
+		/// <summary></summary>
+		public override Value Discriminator
 		{
 			get { return discriminator; }
 			set { discriminator = value; }
 		}
 
-		public override bool IsInherited 
+		/// <summary></summary>
+		public override bool IsInherited
 		{
 			get { return false; }
 		}
-		
+
 		/// <summary>
 		/// Indicates if the object has subclasses
 		/// </summary>
@@ -145,44 +152,51 @@ namespace NHibernate.Mapping
 		/// This value is set to True when a subclass is added and should not be set
 		/// through any other method - so no setter is declared for this property.
 		/// </remarks>
-		public override bool IsPolymorphic 
+		public override bool IsPolymorphic
 		{
 			get { return polymorphic; }
 		}
 
-		public override RootClass RootClazz 
+		/// <summary></summary>
+		public override RootClass RootClazz
 		{
 			get { return this; }
 		}
 
-		public override ICollection PropertyClosureCollection 
+		/// <summary></summary>
+		public override ICollection PropertyClosureCollection
 		{
 			get { return PropertyCollection; }
 		}
-		
+
 		/// <summary>
 		/// Returns all of the Tables the Root class covers.
 		/// </summary>
 		/// <remarks>
 		/// The RootClass should only have one item in the Collection - the Table that it comes from.
 		/// </remarks>
-		public override ICollection TableClosureCollection 
+		public override ICollection TableClosureCollection
 		{
-			get 
-			{ 
+			get
+			{
 				ArrayList retVal = new ArrayList();
 				retVal.Add( Table );
 				return retVal;
 			}
 		}
 
-		public override void AddSubclass(Subclass subclass) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="subclass"></param>
+		public override void AddSubclass( Subclass subclass )
 		{
-			base.AddSubclass(subclass);
+			base.AddSubclass( subclass );
 			polymorphic = true;
 		}
 
-		public override bool IsExplicitPolymorphism 
+		/// <summary></summary>
+		public override bool IsExplicitPolymorphism
 		{
 			get { return explicitPolymorphism; }
 			set { explicitPolymorphism = value; }
@@ -194,7 +208,7 @@ namespace NHibernate.Mapping
 		/// <value>The <see cref="Property"/> to use for Versioning.</value>
 		/// <remarks>
 		/// <para>
-		/// The &;tlversion&gt; element is optional and indicates that the table contains versioned data. 
+		/// The &lt;version&gt; element is optional and indicates that the table contains versioned data. 
 		/// This is particularly useful if you plan to use long transactions (see below). 
 		/// </para>
 		/// <para>
@@ -224,7 +238,7 @@ namespace NHibernate.Mapping
 		///	</list>
 		/// </para>
 		/// </remarks>
-		public override Property Version 
+		public override Property Version
 		{
 			get { return version; }
 			set { version = value; }
@@ -235,61 +249,70 @@ namespace NHibernate.Mapping
 		/// by NHibernate.
 		/// </summary>
 		/// <value><c>true</c> if there is a version property.</value>
-		public override bool IsVersioned 
+		public override bool IsVersioned
 		{
 			get { return version != null; }
 		}
 
-		public override ICacheConcurrencyStrategy Cache 
+		/// <summary></summary>
+		public override ICacheConcurrencyStrategy Cache
 		{
 			get { return cache; }
 			set { cache = value; }
 		}
 
-		public override bool IsMutable 
+		/// <summary></summary>
+		public override bool IsMutable
 		{
 			get { return mutable; }
 			set { mutable = value; }
 		}
 
-		public override bool HasEmbeddedIdentifier 
+		/// <summary></summary>
+		public override bool HasEmbeddedIdentifier
 		{
 			get { return embeddedIdentifier; }
 			set { embeddedIdentifier = value; }
 		}
 
-		public override System.Type Persister 
+		/// <summary></summary>
+		public override System.Type Persister
 		{
 			get { return persister; }
 			set { persister = value; }
 		}
 
-		public override Table RootTable 
+		/// <summary></summary>
+		public override Table RootTable
 		{
 			get { return Table; }
 		}
 
-		public override PersistentClass Superclass 
+		/// <summary></summary>
+		public override PersistentClass Superclass
 		{
 			get { return null; }
-			set { throw new InvalidOperationException("Can not set the Superclass on a RootClass."); }
+			set { throw new InvalidOperationException( "Can not set the Superclass on a RootClass." ); }
 		}
 
-		public override Value Key 
+		/// <summary></summary>
+		public override Value Key
 		{
 			get { return Identifier; }
 			set { throw new InvalidOperationException(); }
 		}
 
-		public override bool IsForceDiscriminator 
+		/// <summary></summary>
+		public override bool IsForceDiscriminator
 		{
 			get { return forceDiscriminator; }
 			set { this.forceDiscriminator = value; }
 		}
 
+		/// <summary></summary>
 		public override string Where
 		{
-			get { return where; } 
+			get { return where; }
 			set { where = value; }
 		}
 

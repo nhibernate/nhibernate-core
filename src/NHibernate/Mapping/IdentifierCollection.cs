@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-
 namespace NHibernate.Mapping
 {
 	/// <summary>
@@ -8,30 +5,38 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public abstract class IdentifierCollection : Collection
 	{
+		/// <summary></summary>
 		public static readonly string DefaultIdentifierColumnName = "id";
 		private Value identifier;
 
-		protected IdentifierCollection(PersistentClass owner) : base(owner)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="owner"></param>
+		protected IdentifierCollection( PersistentClass owner ) : base( owner )
 		{
 		}
 
-		public Value Identifier 
+		/// <summary></summary>
+		public Value Identifier
 		{
 			get { return identifier; }
 			set { identifier = value; }
 		}
 
+		/// <summary></summary>
 		public override bool IsIdentified
 		{
 			get { return true; }
 		}
 
-		public void CreatePrimaryKey() 
+		/// <summary></summary>
+		public void CreatePrimaryKey()
 		{
 			PrimaryKey pk = new PrimaryKey();
-			foreach(Column col in Identifier.ColumnCollection) 
+			foreach( Column col in Identifier.ColumnCollection )
 			{
-				pk.AddColumn(col);
+				pk.AddColumn( col );
 			}
 
 			Table.PrimaryKey = pk;

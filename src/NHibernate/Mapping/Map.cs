@@ -1,32 +1,40 @@
-using System;
-
+using NHibernate.Collection;
 using NHibernate.Type;
+using Collection_Map = NHibernate.Collection.Map;
 using NHCollection = NHibernate.Collection;
 
-
-namespace NHibernate.Mapping 
-{	
-	public class Map : IndexedCollection 
+namespace NHibernate.Mapping
+{
+	/// <summary></summary>
+	public class Map : IndexedCollection
 	{
-		public Map(PersistentClass owner) : base(owner) { }
-
-		public override PersistentCollectionType Type 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="owner"></param>
+		public Map( PersistentClass owner ) : base( owner )
 		{
-			get 
-			{ 
-				return IsSorted ? 
-					TypeFactory.SortedMap( Role, Comparer ) : 
-					TypeFactory.Map( Role ); 
+		}
+
+		/// <summary></summary>
+		public override PersistentCollectionType Type
+		{
+			get
+			{
+				return IsSorted ?
+					TypeFactory.SortedMap( Role, Comparer ) :
+					TypeFactory.Map( Role );
 			}
 		}
 
-		public override System.Type WrapperClass 
+		/// <summary></summary>
+		public override System.Type WrapperClass
 		{
-			get 
-			{ 
-				return IsSorted ? 
-					typeof(NHCollection.SortedMap) : 
-					typeof(NHCollection.Map); 
+			get
+			{
+				return IsSorted ?
+					typeof( SortedMap ) :
+					typeof( Collection_Map );
 			}
 		}
 	}

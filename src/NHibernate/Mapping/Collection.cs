@@ -1,16 +1,16 @@
-using System;
 using System.Collections;
-
 using NHibernate.Cache;
 using NHibernate.Type;
-using NHibernate.Util;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-
-	public abstract class Collection 
+	/// <summary></summary>
+	public abstract class Collection
 	{
+		/// <summary></summary>
 		public const string DefaultElementColumnName = "elt";
+
+		/// <summary></summary>
 		public const string DefaultKeyColumnName = "id";
 
 		private Value key;
@@ -29,127 +29,157 @@ namespace NHibernate.Mapping
 		private IComparer comparer;
 		private bool orphanDelete;
 
-		protected Collection(PersistentClass owner) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="owner"></param>
+		protected Collection( PersistentClass owner )
 		{
 			this.owner = owner;
 		}
 
-		public virtual bool IsSet 
+		/// <summary></summary>
+		public virtual bool IsSet
 		{
 			get { return false; }
 		}
 
-		public Value Key 
+		/// <summary></summary>
+		public Value Key
 		{
 			get { return key; }
 			set { key = value; }
 		}
 
-		public Value Element 
+		/// <summary></summary>
+		public Value Element
 		{
 			get { return element; }
 			set { element = value; }
 		}
 
-		public virtual bool IsIndexed 
+		/// <summary></summary>
+		public virtual bool IsIndexed
 		{
 			get { return false; }
 		}
 
-		public Table Table 
+		/// <summary></summary>
+		public Table Table
 		{
 			get { return table; }
 			set { table = value; }
 		}
 
-		public bool IsSorted 
+		/// <summary></summary>
+		public bool IsSorted
 		{
 			get { return sorted; }
 			set { sorted = value; }
 		}
 
-		public IComparer Comparer 
+		/// <summary></summary>
+		public IComparer Comparer
 		{
 			get { return comparer; }
 			set { comparer = value; }
 		}
 
-		public bool IsLazy 
+		/// <summary></summary>
+		public bool IsLazy
 		{
 			get { return lazy; }
 			set { lazy = value; }
 		}
 
-		public string Role 
+		/// <summary></summary>
+		public string Role
 		{
 			get { return role; }
 			set { role = value; }
 		}
 
+		/// <summary></summary>
 		public abstract PersistentCollectionType Type { get; }
+		
+		/// <summary></summary>
 		public abstract System.Type WrapperClass { get; }
 
-		public virtual bool IsPrimitiveArray 
+		/// <summary></summary>
+		public virtual bool IsPrimitiveArray
 		{
 			get { return false; }
 		}
 
-		public virtual bool IsArray 
+		/// <summary></summary>
+		public virtual bool IsArray
 		{
 			get { return false; }
 		}
 
-		public virtual bool IsIdentified 
+		/// <summary></summary>
+		public virtual bool IsIdentified
 		{
 			get { return false; }
 		}
 
-		public bool IsOneToMany 
+		/// <summary></summary>
+		public bool IsOneToMany
 		{
 			get { return isOneToMany; }
 			set { isOneToMany = value; }
 		}
 
-		public OneToMany OneToMany 
+		/// <summary></summary>
+		public OneToMany OneToMany
 		{
 			get { return oneToMany; }
 			set { oneToMany = value; }
 		}
 
-		public ICacheConcurrencyStrategy Cache {
+		/// <summary></summary>
+		public ICacheConcurrencyStrategy Cache
+		{
 			get { return cache; }
 			set { cache = value; }
 		}
 
-		public bool IsInverse 
+		/// <summary></summary>
+		public bool IsInverse
 		{
 			get { return inverse; }
 			set { inverse = value; }
 		}
 
-		public System.Type OwnerClass {
+		/// <summary></summary>
+		public System.Type OwnerClass
+		{
 			get { return owner.PersistentClazz; }
 		}
 
-		public PersistentClass Owner 
+		/// <summary></summary>
+		public PersistentClass Owner
 		{
 			get { return owner; }
 			set { owner = value; }
 		}
 
-		public string OrderBy 
+		/// <summary></summary>
+		public string OrderBy
 		{
 			get { return orderBy; }
 			set { orderBy = value; }
 		}
 
-		public string Where 
+		/// <summary></summary>
+		public string Where
 		{
 			get { return where; }
 			set { where = value; }
 		}
 
-		public bool OrphanDelete 
+		/// <summary></summary>
+		public bool OrphanDelete
 		{
 			get { return orphanDelete; }
 			set { orphanDelete = value; }

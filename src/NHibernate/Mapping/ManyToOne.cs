@@ -1,30 +1,43 @@
-using System;
-using NHibernate.Util;
 using NHibernate.Type;
+using NHibernate.Util;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-	public class ManyToOne : Association 
+	/// <summary></summary>
+	public class ManyToOne : Association
 	{
-		
-		public ManyToOne(Table table) : base(table) { }
-
-		public override void SetTypeByReflection(System.Type propertyClass, string propertyName) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="table"></param>
+		public ManyToOne( Table table ) : base( table )
 		{
-			try 
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyClass"></param>
+		/// <param name="propertyName"></param>
+		public override void SetTypeByReflection( System.Type propertyClass, string propertyName )
+		{
+			try
 			{
-				if (Type==null)
-					Type = TypeFactory.ManyToOne( ReflectHelper.GetGetter(propertyClass, propertyName).ReturnType);
-			} 
-			catch (HibernateException he) 
+				if( Type == null )
+				{
+					Type = TypeFactory.ManyToOne( ReflectHelper.GetGetter( propertyClass, propertyName ).ReturnType );
+				}
+			}
+			catch( HibernateException he )
 			{
-				throw new MappingException("Problem trying to set association type by reflection", he);
+				throw new MappingException( "Problem trying to set association type by reflection", he );
 			}
 		}
 
-		public override void CreateForeignKey() 
+		/// <summary></summary>
+		public override void CreateForeignKey()
 		{
-			CreateForeignKeyOfClass( ( (EntityType)Type).PersistentClass );
+			CreateForeignKeyOfClass( ( ( EntityType ) Type ).PersistentClass );
 		}
 	}
 }

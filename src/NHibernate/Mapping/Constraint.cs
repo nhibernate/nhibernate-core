@@ -1,59 +1,85 @@
-using System;
-using System.Text;
 using System.Collections;
-using NHibernate.Dialect;
+using System.Text;
 using NHibernate.Engine;
-using NHibernate.Util;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-	public abstract class Constraint : IRelationalModel 
+	/// <summary></summary>
+	public abstract class Constraint : IRelationalModel
 	{
 		private string name;
 		private ArrayList columns = new ArrayList();
 		private Table table;
 
-		public string Name 
+		/// <summary></summary>
+		public string Name
 		{
 			get { return name; }
 			set { name = value; }
 		}
 
-		public ICollection ColumnCollection 
+		/// <summary></summary>
+		public ICollection ColumnCollection
 		{
 			get { return columns; }
 		}
 
-		public void AddColumn(Column column) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="column"></param>
+		public void AddColumn( Column column )
 		{
-			if ( !columns.Contains(column) ) columns.Add(column);
+			if( !columns.Contains( column ) )
+			{
+				columns.Add( column );
+			}
 		}
 
-		public int ColumnSpan 
+		/// <summary></summary>
+		public int ColumnSpan
 		{
 			get { return columns.Count; }
 		}
 
-		public Table Table 
+		/// <summary></summary>
+		public Table Table
 		{
 			get { return table; }
 			set { table = value; }
 		}
 
-		public string SqlDropString(Dialect.Dialect dialect) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		public string SqlDropString( Dialect.Dialect dialect )
 		{
-			return "alter table " + Table.GetQualifiedName(dialect)+ " drop constraint " + Name;
+			return "alter table " + Table.GetQualifiedName( dialect ) + " drop constraint " + Name;
 		}
 
-		public string SqlCreateString(Dialect.Dialect dialect, IMapping p) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <param name="p"></param>
+		/// <returns></returns>
+		public string SqlCreateString( Dialect.Dialect dialect, IMapping p )
 		{
-			StringBuilder buf = new StringBuilder("alter table ")
-				.Append( Table.GetQualifiedName(dialect) )
+			StringBuilder buf = new StringBuilder( "alter table " )
+				.Append( Table.GetQualifiedName( dialect ) )
 				.Append( SqlConstraintString( dialect, Name ) );
 			return buf.ToString();
 		}
 
-		public abstract string SqlConstraintString(Dialect.Dialect d, string constraintName);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="d"></param>
+		/// <param name="constraintName"></param>
+		/// <returns></returns>
+		public abstract string SqlConstraintString( Dialect.Dialect d, string constraintName );
 
 	}
 }

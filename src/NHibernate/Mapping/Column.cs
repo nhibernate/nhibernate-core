@@ -1,17 +1,15 @@
 using System;
-using System.Data;
-using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.Type;
-using NHibernate.Util;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
+using NHibernate.Util;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-	public class Column 
+	/// <summary></summary>
+	public class Column
 	{
-		
 		private static readonly int DefaultPropertyLength = 255;
 
 		private int length = DefaultPropertyLength;
@@ -22,149 +20,219 @@ namespace NHibernate.Mapping
 		private bool unique = false;
 		private string sqlType;
 		private bool quoted = false;
+
+		/// <summary></summary>
 		internal int uniqueInteger;
 
-		public int Length 
+		/// <summary></summary>
+		public int Length
 		{
 			get { return length; }
 			set { length = value; }
 		}
 
-		public IType Type 
+		/// <summary></summary>
+		public IType Type
 		{
 			get { return type; }
 			set { type = value; }
 		}
 
-		public string Name 
+		/// <summary></summary>
+		public string Name
 		{
 			get { return name; }
-			set 
-			{ 
-				if (value[0] == '`') 
+			set
+			{
+				if( value[ 0 ] == '`' )
 				{
 					quoted = true;
-					name = value.Substring(1, value.Length - 2);
+					name = value.Substring( 1, value.Length - 2 );
 				}
-				else 
+				else
 				{
-					name = value; 
+					name = value;
 				}
 			}
 		}
 
-		public string GetQuotedName(Dialect.Dialect d) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="d"></param>
+		/// <returns></returns>
+		public string GetQuotedName( Dialect.Dialect d )
 		{
 			return IsQuoted ?
-				d.QuoteForColumnName(name) :
+				d.QuoteForColumnName( name ) :
 				name;
 		}
 
-		public string Alias(Dialect.Dialect d)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="d"></param>
+		/// <returns></returns>
+		public string Alias( Dialect.Dialect d )
 		{
-				if(quoted) 
-					return "y" + uniqueInteger.ToString() + StringHelper.Underscore;
-				 
-				if ( name.Length < 11 )
-					return name;
-				else
-					return (new Alias(10, uniqueInteger.ToString() + StringHelper.Underscore)).ToAliasString(name, d);
+			if( quoted )
+			{
+				return "y" + uniqueInteger.ToString() + StringHelper.Underscore;
+			}
+
+			if( name.Length < 11 )
+			{
+				return name;
+			}
+			else
+			{
+				return ( new Alias( 10, uniqueInteger.ToString() + StringHelper.Underscore ) ).ToAliasString( name, d );
+			}
 		}
 
-		public string Alias(Dialect.Dialect d, string suffix) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="d"></param>
+		/// <param name="suffix"></param>
+		/// <returns></returns>
+		public string Alias( Dialect.Dialect d, string suffix )
 		{
-			
-			if(quoted)
+			if( quoted )
+			{
 				return "y" + uniqueInteger.ToString() + StringHelper.Underscore;
+			}
 
-			if( (name.Length + suffix.Length) < 11 ) 
+			if( ( name.Length + suffix.Length ) < 11 )
+			{
 				return name + suffix;
+			}
 				//return name.Substring(0, name.Length - suffix.Length);
 			else
-				return (new Alias(10, uniqueInteger.ToString() + StringHelper.Underscore + suffix) ).ToAliasString(name, d);
+			{
+				return ( new Alias( 10, uniqueInteger.ToString() + StringHelper.Underscore + suffix ) ).ToAliasString( name, d );
+			}
 
 		}
 
-		public bool IsNullable 
-		{ 
+		/// <summary></summary>
+		public bool IsNullable
+		{
 			get { return nullable; }
 			set { nullable = value; }
 		}
 
-		public Column(IType type, int typeIndex) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="typeIndex"></param>
+		public Column( IType type, int typeIndex )
 		{
 			this.type = type;
 			this.typeIndex = typeIndex;
 		}
 
-		public int TypeIndex {
+		/// <summary></summary>
+		public int TypeIndex
+		{
 			get { return typeIndex; }
 			set { typeIndex = value; }
 		}
 
-		public SqlType GetAutoSqlType(IMapping mapping) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		public SqlType GetAutoSqlType( IMapping mapping )
 		{
-			try 
+			try
 			{
-				return Type.SqlTypes(mapping)[TypeIndex];
+				return Type.SqlTypes( mapping )[ TypeIndex ];
 			}
-			catch(Exception e) 
+			catch( Exception e )
 			{
 				throw new MappingException(
-					"GetAutoSqlType - Could not determine type for column " + 
-					name + 
-					" of type " + 
-					type.GetType().FullName + 
-					": " + 
-					e.GetType().FullName, e);
+					"GetAutoSqlType - Could not determine type for column " +
+						name +
+						" of type " +
+						type.GetType().FullName +
+						": " +
+						e.GetType().FullName, e );
 			}
 		}
 
-		public bool IsUnique 
+		/// <summary></summary>
+		public bool IsUnique
 		{
 			get { return unique; }
 			set { unique = value; }
 		}
 
-		public string GetSqlType(Dialect.Dialect dialect, IMapping mapping) 
-		{		
-			if(sqlType==null) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		public string GetSqlType( Dialect.Dialect dialect, IMapping mapping )
+		{
+			if( sqlType == null )
 			{
-				SqlType sqlTypeObject = GetAutoSqlType(mapping);
+				SqlType sqlTypeObject = GetAutoSqlType( mapping );
 				return dialect.GetTypeName( sqlTypeObject, Length );
 			}
-			else 
+			else
 			{
 				return sqlType;
 			}
 		}
-		
 
-		public override bool Equals(object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public override bool Equals( object obj )
 		{
-			return obj is Column && Equals( (Column) obj );
+			return obj is Column && Equals( ( Column ) obj );
 		}
 
-		public bool Equals(Column column) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="column"></param>
+		/// <returns></returns>
+		public bool Equals( Column column )
 		{
-			if (null == column) return false;
-			if (this == column) return true;
+			if( null == column )
+			{
+				return false;
+			}
+			if( this == column )
+			{
+				return true;
+			}
 
-			return name.Equals(column.Name);
+			return name.Equals( column.Name );
 		}
 
-		public override int GetHashCode() 
+		/// <summary></summary>
+		public override int GetHashCode()
 		{
 			return name.GetHashCode();
 		}
 
-		public string SqlType 
+		/// <summary></summary>
+		public string SqlType
 		{
 			get { return sqlType; }
 			set { sqlType = value; }
 		}
 
-		public bool IsQuoted 
+		/// <summary></summary>
+		public bool IsQuoted
 		{
 			get { return quoted; }
 			set { quoted = value; }

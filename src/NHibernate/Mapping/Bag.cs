@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Type;
 using NHibernateBag=NHibernate.Collection.Bag;
 
@@ -9,18 +8,24 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class Bag : Collection
 	{
-		public Bag(PersistentClass owner) : base(owner) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="owner"></param>
+		public Bag( PersistentClass owner ) : base( owner )
 		{
 		}
 
-		public override PersistentCollectionType Type 
+		/// <summary></summary>
+		public override PersistentCollectionType Type
 		{
-			get { return TypeFactory.Bag( Role );}
+			get { return TypeFactory.Bag( Role ); }
 		}
-	
-		public override System.Type WrapperClass 
+
+		/// <summary></summary>
+		public override System.Type WrapperClass
 		{
-			get { return typeof(NHibernateBag); }
+			get { return typeof( NHibernateBag ); }
 		}
 
 	}

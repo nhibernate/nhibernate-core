@@ -1,22 +1,35 @@
-using System;
 using NHibernate.Loader;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-	
-	public abstract class Association : Value 
+	/// <summary></summary>
+	public abstract class Association : Value
 	{
 		private OuterJoinLoaderType joinedFetch;
 
-		protected Association(Table table) : base(table) {}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="table"></param>
+		protected Association( Table table ) : base( table )
+		{
+		}
 
-		public override OuterJoinLoaderType OuterJoinFetchSetting 
+		/// <summary></summary>
+		public override OuterJoinLoaderType OuterJoinFetchSetting
 		{
 			get { return joinedFetch; }
 			set { joinedFetch = value; }
 		}
 
-		public abstract override void SetTypeByReflection(System.Type propertyClass, string propertyName);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyClass"></param>
+		/// <param name="propertyName"></param>
+		public abstract override void SetTypeByReflection( System.Type propertyClass, string propertyName );
+
+		/// <summary></summary>
 		public abstract override void CreateForeignKey();
 
 	}

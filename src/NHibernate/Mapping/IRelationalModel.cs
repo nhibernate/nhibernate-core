@@ -1,12 +1,23 @@
-using System;
-
 using NHibernate.Engine;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-	public interface IRelationalModel 
+	/// <summary></summary>
+	public interface IRelationalModel
 	{
-		string SqlCreateString(Dialect.Dialect dialect, IMapping p);
-		string SqlDropString(Dialect.Dialect dialect);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <param name="p"></param>
+		/// <returns></returns>
+		string SqlCreateString( Dialect.Dialect dialect, IMapping p );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		string SqlDropString( Dialect.Dialect dialect );
 	}
 }

@@ -1,10 +1,10 @@
 using System;
-using System.Data;
 using System.Collections;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-	public class Component : Value 
+	/// <summary></summary>
+	public class Component : Value
 	{
 		private ArrayList properties = new ArrayList();
 		private System.Type componentClass;
@@ -14,94 +14,127 @@ namespace NHibernate.Mapping
 		private string parentProperty;
 		private PersistentClass owner;
 
-		public int PropertySpan 
+		/// <summary></summary>
+		public int PropertySpan
 		{
 			get { return properties.Count; }
 		}
 
-		public ICollection PropertyCollection 
+		/// <summary></summary>
+		public ICollection PropertyCollection
 		{
 			get { return properties; }
 		}
 
-		public void AddProperty(Property p) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="p"></param>
+		public void AddProperty( Property p )
 		{
-			properties.Add(p);
+			properties.Add( p );
 		}
 
-		public override void AddColumn(Column column) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="column"></param>
+		public override void AddColumn( Column column )
 		{
-			throw new NotSupportedException("Cant add a column to a component");
+			throw new NotSupportedException( "Cant add a column to a component" );
 		}
 
-		public override int ColumnSpan 
+		/// <summary></summary>
+		public override int ColumnSpan
 		{
-			get 
+			get
 			{
-				int n=0;
-				foreach(Property p in PropertyCollection) 
+				int n = 0;
+				foreach( Property p in PropertyCollection )
 				{
-					n+= p.ColumnSpan;
+					n += p.ColumnSpan;
 				}
 				return n;
 			}
 		}
-		
-		public override ICollection ColumnCollection {
-			get 
+
+		/// <summary></summary>
+		public override ICollection ColumnCollection
+		{
+			get
 			{
 				ArrayList retVal = new ArrayList();
-				foreach(Property prop in PropertyCollection) {
-					retVal.AddRange(prop.ColumnCollection);
+				foreach( Property prop in PropertyCollection )
+				{
+					retVal.AddRange( prop.ColumnCollection );
 				}
 				return retVal;
 			}
 		}
 
-		public Component(PersistentClass owner) : base(owner.Table) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="owner"></param>
+		public Component( PersistentClass owner ) : base( owner.Table )
 		{
 			this.owner = owner;
 		}
 
-		public Component(Table table) : base(table) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="table"></param>
+		public Component( Table table ) : base( table )
 		{
 			this.owner = null;
 		}
 
-		public override void SetTypeByReflection(System.Type propertyClass, string propertyName) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyClass"></param>
+		/// <param name="propertyName"></param>
+		public override void SetTypeByReflection( System.Type propertyClass, string propertyName )
 		{
 		}
 
-		public bool IsEmbedded 
+		/// <summary></summary>
+		public bool IsEmbedded
 		{
 			get { return embedded; }
 			set { embedded = value; }
 		}
 
-		public override bool IsComposite 
+		/// <summary></summary>
+		public override bool IsComposite
 		{
 			get { return true; }
 		}
 
-		public System.Type ComponentClass 
+		/// <summary></summary>
+		public System.Type ComponentClass
 		{
 			get { return componentClass; }
 			set { componentClass = value; }
 		}
 
-		public PersistentClass Owner 
+		/// <summary></summary>
+		public PersistentClass Owner
 		{
 			get { return owner; }
 			set { owner = value; }
 		}
 
-		public string ParentProperty 
+		/// <summary></summary>
+		public string ParentProperty
 		{
 			get { return parentProperty; }
 			set { parentProperty = value; }
 		}
 
-		public ArrayList Properties 
+		/// <summary></summary>
+		public ArrayList Properties
 		{
 			get { return properties; }
 		}

@@ -1,7 +1,6 @@
-using System;
-
-using NHCollection = NHibernate.Collection;
 using NHibernate.Type;
+using Collection_IdentifierBag = NHibernate.Collection.IdentifierBag;
+using NHCollection = NHibernate.Collection;
 
 namespace NHibernate.Mapping
 {
@@ -11,25 +10,25 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class IdentifierBag : IdentifierCollection
 	{
-		public IdentifierBag(PersistentClass owner) : base(owner)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="owner"></param>
+		public IdentifierBag( PersistentClass owner ) : base( owner )
 		{
 		}
 
-		public override PersistentCollectionType Type 
+		/// <summary></summary>
+		public override PersistentCollectionType Type
 		{
-			get 
-			{ 
-				return TypeFactory.IdBag(Role); 
-			}
+			get { return TypeFactory.IdBag( Role ); }
 		}
-		
-		public override System.Type WrapperClass 
+
+		/// <summary></summary>
+		public override System.Type WrapperClass
 		{
-			get 
-			{
-				return typeof(NHCollection.IdentifierBag) ; 
-			}
+			get { return typeof( Collection_IdentifierBag ); }
 		}
-		
+
 	}
 }

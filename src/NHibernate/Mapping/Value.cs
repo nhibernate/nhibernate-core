@@ -1,19 +1,18 @@
 using System;
 using System.Collections;
-using NHibernate.Dialect;
 using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
 	/// <summary>
 	/// A value represents a simple thing that maps down to a table column or columns.
 	/// Higher level things like classes, properties and collection add semantics to instances
 	/// of this class
 	/// </summary>
-	public class Value 
+	public class Value
 	{
 		private ArrayList columns = new ArrayList();
 		private IType type;
@@ -23,38 +22,55 @@ namespace NHibernate.Mapping
 		private Table table;
 		private Formula formula;
 
-		public Value(Table table) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="table"></param>
+		public Value( Table table )
 		{
 			this.table = table;
 		}
 
-		public virtual void AddColumn(Column column) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="column"></param>
+		public virtual void AddColumn( Column column )
 		{
-			if ( !columns.Contains(column) ) columns.Add(column);
+			if( !columns.Contains( column ) )
+			{
+				columns.Add( column );
+			}
 		}
-		public virtual int ColumnSpan 
+
+		/// <summary></summary>
+		public virtual int ColumnSpan
 		{
 			get { return columns.Count; }
 		}
-		public virtual ICollection ColumnCollection 
+
+		/// <summary></summary>
+		public virtual ICollection ColumnCollection
 		{
 			get { return columns; }
 		}
 
-		public virtual IList ConstraintColumns 
+		/// <summary></summary>
+		public virtual IList ConstraintColumns
 		{
 			get { return columns; }
 		}
 
-		public virtual IType Type 
+		/// <summary></summary>
+		public virtual IType Type
 		{
 			get { return type; }
-			set 
+			set
 			{
 				this.type = value;
 				int count = 0;
-				
-				foreach(Column col in ColumnCollection) 
+
+				foreach( Column col in ColumnCollection )
 				{
 					col.Type = type;
 					col.TypeIndex = count++;
@@ -62,17 +78,23 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public Table Table 
+		/// <summary></summary>
+		public Table Table
 		{
 			get { return table; }
 			set { table = value; }
 		}
 
-		public virtual void CreateForeignKey() 
+		/// <summary></summary>
+		public virtual void CreateForeignKey()
 		{
 		}
 
-		public void CreateForeignKeyOfClass(System.Type persistentClass) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		public void CreateForeignKeyOfClass( System.Type persistentClass )
 		{
 			ForeignKey fk = table.CreateForeignKey( ConstraintColumns );
 			fk.ReferencedClass = persistentClass;
@@ -80,73 +102,89 @@ namespace NHibernate.Mapping
 
 		private IIdentifierGenerator uniqueIdentifierGenerator;
 
-		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		public IIdentifierGenerator CreateIdentifierGenerator( Dialect.Dialect dialect )
 		{
-			if ( uniqueIdentifierGenerator==null ) 
+			if( uniqueIdentifierGenerator == null )
 			{
-				uniqueIdentifierGenerator = IdentifierGeneratorFactory.Create(identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect);
+				uniqueIdentifierGenerator = IdentifierGeneratorFactory.Create( identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect );
 			}
 
 			return uniqueIdentifierGenerator;
 		}
 
-		public virtual void SetTypeByReflection(System.Type propertyClass, string propertyName) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyClass"></param>
+		/// <param name="propertyName"></param>
+		public virtual void SetTypeByReflection( System.Type propertyClass, string propertyName )
 		{
-			try 
+			try
 			{
-				if (type==null) 
+				if( type == null )
 				{
-					type = ReflectHelper.ReflectedPropertyType(propertyClass, propertyName);
+					type = ReflectHelper.ReflectedPropertyType( propertyClass, propertyName );
 					int count = 0;
-					foreach(Column col in ColumnCollection) 
+					foreach( Column col in ColumnCollection )
 					{
 						col.Type = type;
 						col.TypeIndex = count++;
 					}
 				}
-			} 
-			catch (HibernateException he) 
+			}
+			catch( HibernateException he )
 			{
-				throw new MappingException("Problem trying to set property type by reflection", he);
+				throw new MappingException( "Problem trying to set property type by reflection", he );
 			}
 		}
 
-		public virtual OuterJoinLoaderType OuterJoinFetchSetting 
+		/// <summary></summary>
+		public virtual OuterJoinLoaderType OuterJoinFetchSetting
 		{
-			get { return OuterJoinLoaderType.Lazy;  }
+			get { return OuterJoinLoaderType.Lazy; }
 			set { throw new NotSupportedException(); }
 		}
 
-		public IDictionary IdentifierGeneratorProperties 
+		/// <summary></summary>
+		public IDictionary IdentifierGeneratorProperties
 		{
 			get { return identifierGeneratorProperties; }
 			set { identifierGeneratorProperties = value; }
 		}
 
-		public string IdentifierGeneratorStrategy {
+		/// <summary></summary>
+		public string IdentifierGeneratorStrategy
+		{
 			get { return identifierGeneratorStrategy; }
 			set { identifierGeneratorStrategy = value; }
 		}
 
-		
-
-		public virtual bool IsComposite {
+		/// <summary></summary>
+		public virtual bool IsComposite
+		{
 			get { return false; }
 		}
 
-		public string NullValue 
+		/// <summary></summary>
+		public string NullValue
 		{
 			get { return nullValue; }
 			set { nullValue = value; }
 		}
 
-		public virtual bool IsAny 
+		/// <summary></summary>
+		public virtual bool IsAny
 		{
 			get { return false; }
-		}	
-	
-		
-		public Formula Formula 
+		}
+
+		/// <summary></summary>
+		public Formula Formula
 		{
 			get { return formula; }
 			set { formula = value; }

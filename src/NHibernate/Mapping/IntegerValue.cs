@@ -1,13 +1,20 @@
-using System;
 using NHibernate.Type;
 
-namespace NHibernate.Mapping 
-{	
+namespace NHibernate.Mapping
+{
+	/// <summary></summary>
 	public class IntegerValue : Value
 	{
-		public IntegerValue(Table table) : base(table) { }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="table"></param>
+		public IntegerValue( Table table ) : base( table )
+		{
+		}
 
-		public override IType Type 
+		/// <summary></summary>
+		public override IType Type
 		{
 			get { return NHibernate.Int32; }
 		}

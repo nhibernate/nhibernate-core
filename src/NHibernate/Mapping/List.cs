@@ -1,28 +1,33 @@
-using System;
-
 using NHibernate.Type;
+using Collection_List = NHibernate.Collection.List;
 using NHCollection = NHibernate.Collection;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
 	/// <summary>
 	/// A list has a primary key consisting of the key columns + index column
 	/// </summary>
-	public class List : IndexedCollection 
+	public class List : IndexedCollection
 	{
-		public List(PersistentClass owner) : base(owner) 
-		{ 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="owner"></param>
+		public List( PersistentClass owner ) : base( owner )
+		{
 		}
 
-		public override PersistentCollectionType Type 
+		/// <summary></summary>
+		public override PersistentCollectionType Type
 		{
 			get { return TypeFactory.List( Role ); }
 		}
 
-		public override System.Type WrapperClass 
+		/// <summary></summary>
+		public override System.Type WrapperClass
 		{
-			get { return typeof(NHCollection.List); }
+			get { return typeof( Collection_List ); }
 		}
-		
+
 	}
 }

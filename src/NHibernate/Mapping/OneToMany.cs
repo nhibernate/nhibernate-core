@@ -1,25 +1,31 @@
-using System;
 using NHibernate.Type;
 
-namespace NHibernate.Mapping 
+namespace NHibernate.Mapping
 {
-	public class OneToMany 
+	/// <summary></summary>
+	public class OneToMany
 	{
 		private EntityType type;
 		private Table referencingTable;
 
-		public EntityType Type 
+		/// <summary></summary>
+		public EntityType Type
 		{
 			get { return type; }
 			set { type = value; }
 		}
 
-		public OneToMany(PersistentClass owner) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="owner"></param>
+		public OneToMany( PersistentClass owner )
 		{
-			this.referencingTable = (owner==null) ? null : owner.Table;
+			this.referencingTable = ( owner == null ) ? null : owner.Table;
 		}
 
-		public Table ReferencingTable 
+		/// <summary></summary>
+		public Table ReferencingTable
 		{
 			get { return referencingTable; }
 		}
