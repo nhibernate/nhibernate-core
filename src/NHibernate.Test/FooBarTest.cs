@@ -146,7 +146,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("unknown problem")]
 		public void BagOneToMany() 
 		{
 			ISession s = sessions.OpenSession();
