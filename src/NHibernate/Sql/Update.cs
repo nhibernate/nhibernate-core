@@ -13,6 +13,7 @@ namespace NHibernate.Sql {
 		private string tableName;
 		private string[] primaryKeyColumnNames;
 		private string versionColumnName;
+		private string where;
 
 		private SortedList columns = new SortedList();
  
@@ -48,6 +49,11 @@ namespace NHibernate.Sql {
 			return this;
 		}
 
+		public Update SetWhere(string where) {
+			this.where = where;
+			return this;
+		}
+
 		public string ToStatementString() {
 			StringBuilder buf = new StringBuilder( columns.Count * 15 + tableName.Length + 10 );
 			buf.Append("update ")
@@ -64,6 +70,10 @@ namespace NHibernate.Sql {
 			buf.Append(" where ")
 				.Append( string.Join("=? and ", primaryKeyColumnNames) )
 				.Append("=?");
+			if (where!=null) {
+				buf.Append(" and ")
+					.Append(where);
+			}
 			if (versionColumnName!=null) {
 				buf.Append(" and ")
 					.Append(versionColumnName)

@@ -62,7 +62,7 @@ namespace NHibernate.Sql {
 				string columnAlias = columnAliases[i] as string;
 				buf.Append(col)
 					.Append(" as ")
-					.Append( StringHelper.Suffix( columnAlias, suffix) );
+					.Append( new Alias(suffix).ToAliasString(columnAlias) );
 			}
 			return buf.ToString();
 		}

@@ -30,12 +30,22 @@ namespace NHibernate.Sql {
 			StringBuilder buf = new StringBuilder(values.Count * 5);
 			buf.Append(columnName);
 			if (values.Count > 1) {
+				bool allowNull = false;
 				buf.Append(" in (");
 				for(int i=0; i<values.Count; i++) {
-					buf.Append( values[i] );
-					if ( i<values.Count-1) buf.Append(StringHelper.CommaSpace);
+					if("null".Equals(values[i]))
+						allowNull = true;
+					else {
+						buf.Append( values[i] );
+						if ( i<values.Count-1) buf.Append(StringHelper.CommaSpace);
+					}
 				}
 				buf.Append(StringHelper.ClosedParen);
+				if(allowNull)
+					buf.Insert(0, " is null or ")
+						.Insert(0, columnName)
+						.Insert(0, StringHelper.OpenParen)
+						.Append(StringHelper.OpenParen);
 			} else {
 				string value = values[0] as string;
 				if ( "null".Equals(value) ) {
@@ -45,7 +55,6 @@ namespace NHibernate.Sql {
 				}
 			}
 			return buf.ToString();
-		}
-				
+		}				
 	}
 }

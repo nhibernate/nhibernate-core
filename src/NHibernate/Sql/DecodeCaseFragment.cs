@@ -9,7 +9,7 @@ namespace NHibernate.Sql {
 	/// </summary>
 	public class DecodeCaseFragment : CaseFragment {
 		private string returnColumnName;
-		private SortedList cases = new SortedList();
+		private IDictionary cases = new SequencedHashMap();
 
 		public override CaseFragment SetReturnColumnName(string returnColumnName) {
 			this.returnColumnName = returnColumnName;
@@ -17,7 +17,7 @@ namespace NHibernate.Sql {
 		}
 
 		public override CaseFragment SetReturnColumnName(string returnColumnName, string suffix) {
-			return SetReturnColumnName( StringHelper.Suffix(returnColumnName, suffix) );
+			return SetReturnColumnName( new Alias(suffix).ToAliasString(returnColumnName) );
 		}
 
 		public override CaseFragment AddWhenColumnNotNull(string alias, string columnName, string value) {
@@ -38,9 +38,14 @@ namespace NHibernate.Sql {
 						.Append( cases[key] );
 				}
 			}
-			return buf.Insert(0, "decode (").Append(",0 ) as ")
-				.Append(returnColumnName)
-				.ToString();
+			buf.Insert(0, "decode (").Append(",0 )");
+
+			if(returnColumnName!=null) {
+				buf.Append(" as ")
+					.Append(returnColumnName);
+			}
+
+			return buf.ToString();
 		}
 	}
 }

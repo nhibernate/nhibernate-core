@@ -17,15 +17,21 @@ namespace NHibernate.Sql {
 		/// <returns>The SQL <c>SELECT</c> statement</returns>
 		public string ToStatementString() {
 			StringBuilder buf = new StringBuilder(
-				selectClause.Length + fromClause.Length + outerJoinsAfterFrom.Length + whereClause.Length + outerJoinsAfterWhere.Length + 20
+				selectClause.Length +
+				fromClause.Length +
+				outerJoinsAfterFrom.Length +
+				whereClause.Length +
+				outerJoinsAfterWhere.Length +
+				20
 				);
 			buf.Append("SELECT ").Append(selectClause)
 				.Append(" FROM ").Append(fromClause)
 				.Append(outerJoinsAfterFrom)
 				.Append(" WHERE ").Append(whereClause)
 				.Append(outerJoinsAfterWhere);
-			if (orderByClause != null)
-				buf.Append(" ORDER BY ").Append(orderByClause);
+			if (orderByClause != null && orderByClause.Trim().Length > 0)
+				buf.Append(" ORDER BY ")
+					.Append(orderByClause);
 			return buf.ToString();
 		}
 

@@ -19,7 +19,7 @@ namespace NHibernate.Sql {
 		}
 
 		public override CaseFragment SetReturnColumnName(string returnColumnName, string suffix) {
-			return SetReturnColumnName( StringHelper.Suffix(returnColumnName, suffix) );
+			return SetReturnColumnName( new Alias(suffix).ToAliasString( returnColumnName ) );
 		}
 
 		public override CaseFragment AddWhenColumnNotNull(string alias, string columnName, string value) {
@@ -39,9 +39,14 @@ namespace NHibernate.Sql {
 					.Append(cases[key]);
 			}
 
-			return buf.Append(" end as ")
-				.Append(returnColumnName)
-				.ToString();
+			buf.Append(" end");
+
+			if( returnColumnName != null ) {
+				buf.Append(" as ")
+					.Append(returnColumnName);
+			}
+
+			return buf.ToString();
 		}
 
 	}

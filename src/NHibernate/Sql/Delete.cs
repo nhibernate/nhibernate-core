@@ -11,6 +11,7 @@ namespace NHibernate.Sql {
 		private string tableName;
 		private string[] primaryKeyColumnNames;
 		private string versionColumnName;
+		private string where;
 
 		public Delete SetTableName(string tableName) {
 			this.tableName = tableName;
@@ -28,8 +29,17 @@ namespace NHibernate.Sql {
 				buf.Append(" and ")
 					.Append(versionColumnName)
 					.Append("=?");
+				if(where!=null) {
+					buf.Append(" and ")
+						.Append(where);
+				}
 			}
 			return buf.ToString();
+		}
+
+		public Delete SetWhere(string where) {
+			this.where = where;
+			return this;
 		}
 
 		public Delete SetPrimaryKeyColumnNames(string[] primaryKeyColumnNames) {
