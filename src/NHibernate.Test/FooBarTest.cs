@@ -44,7 +44,6 @@ namespace NHibernate.Test
 			fooBag.Add( new Foo() );
 			baz.fooBag=fooBag;
 			s.Save(baz);
-			s.Flush();
 			fooBag = baz.fooBag;
 			s.Find("from Baz baz left join fetch baz.fooBag");
 			Assert.IsTrue( NHibernate.IsInitialized(fooBag) );

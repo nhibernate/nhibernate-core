@@ -727,8 +727,8 @@ namespace NHibernate.DomainModel
 		 count = 667;
 		 name="Bazza";
 		 topComponents = new ArrayList();
-		 topComponents.Add( new FooComponent("foo", 11, new DateTime[] { new DateTime(), new DateTime(123) }, null) );
-		 topComponents.Add( new FooComponent("bar", 22, new DateTime[] { new DateTime(7), new DateTime(456) }, null) );
+		 topComponents.Add( new FooComponent("foo", 11, new DateTime[] { new DateTime(), new DateTime(2123,1,1) }, null) );
+		 topComponents.Add( new FooComponent("bar", 22, new DateTime[] { new DateTime(2007,2,3), new DateTime(1945,6,1) }, null) );
 		 topComponents.Add( null );
 		 bag = new ArrayList();
 		 bag.Add("duplicate");
