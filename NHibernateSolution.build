@@ -240,7 +240,7 @@
 				<includes name="src/**" />
 				
 				<includes name="NHibernateSolution.build" />
-				<includes name="lpgl.txt" />
+				<includes name="lgpl.txt" />
 				<includes name="releasenotes.txt" />
 				<includes name="readme.html" />
 				
