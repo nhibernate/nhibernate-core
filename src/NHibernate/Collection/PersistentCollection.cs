@@ -266,6 +266,20 @@ namespace NHibernate.Collection
 			}
 		}
 
+		/// <summary>
+		/// Gets a <see cref="Boolean"/> indicating if the underlying collection is directly
+		/// accessable through code.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if we are not guaranteed that the NHibernate collection wrapper
+		/// is being used.
+		/// </value>
+		/// <remarks>
+		/// This is typically <c>false</c> whenever a transient object that contains a collection is being
+		/// associated with an ISession through <c>Save</c> or <c>SaveOrUpdate</c>.  NHibernate can't guarantee
+		/// that it will know about all operations that would call cause NHibernate's collections to call
+		/// <c>Read()</c> or <c>Write()</c>.
+		/// </remarks>
 		public virtual bool IsDirectlyAccessible 
 		{
 			get { return directlyAccessible; }
@@ -295,6 +309,16 @@ namespace NHibernate.Collection
 
 		public abstract object Disassemble(CollectionPersister persister);
 
+		/// <summary>
+		/// Gets a <see cref="Boolean"/> indicating if the rows for this collection
+		/// need to be recreated in the table.
+		/// </summary>
+		/// <param name="persister">The <see cref="CollectionPersister"/> for this Collection.</param>
+		/// <returns>
+		/// <c>false</c> by default since most collections can determine which rows need to be
+		/// individually updated/inserted/deleted.  Currently only <see cref="Bag"/>'s for <c>many-to-many</c>
+		/// need to be recreated.
+		/// </returns>
 		public virtual bool NeedsRecreate(CollectionPersister persister) 
 		{
 			return false;
@@ -346,7 +370,18 @@ namespace NHibernate.Collection
 		}
 
 		// looks like it is used by IdentifierBag
+		/// <summary>
+		/// By default, no operation is performed.  This provides a hook to get an identifer of the
+		/// collection row for <see cref="IdentifierBag"/>.
+		/// </summary>
+		/// <param name="persister">The <see cref="CollectionPersister"/> for this Collection.</param>
+		/// <param name="entry">
+		/// The entry to preInsert.  If this is a Map this will be a DictionaryEntry.  If this is
+		/// a List then it will be the object at that index.
+		/// </param>
+		/// <param name="i">The index of the Entry while enumerating through the Collection.</param>
 		public virtual void PreInsert(CollectionPersister persister, object entry, int i) {}
+		
 		public abstract ICollection GetOrphans(object snapshot);
 		public static void IdentityRemoveAll(IList list, ICollection collection, ISessionImplementor session) 
 		{

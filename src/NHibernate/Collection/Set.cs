@@ -423,7 +423,6 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override bool EntryExists(object entry, int i) 
 		{
-			//TODO: find out where this is used...
 			return true;
 		}
 

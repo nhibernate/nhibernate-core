@@ -5,7 +5,9 @@ using NHibernate.Persister;
 
 namespace NHibernate.Impl 
 {
-	
+	/// <summary>
+	/// A scheduled insertion of an object.
+	/// </summary>
 	internal class ScheduledInsertion : ScheduledEntityAction 
 	{
 		

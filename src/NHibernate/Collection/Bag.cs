@@ -156,6 +156,17 @@ namespace NHibernate.Collection
 			return result;
 		}
 
+		/// <summary>
+		/// Gets a <see cref="Boolean"/> indicating if this Bag needs to be recreated
+		/// in the database.
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <returns>
+		/// <c>false</c> if this is a <c>one-to-many</c> Bag, <c>true</c> if this is not
+		/// a <c>one-to-many</c> Bag.  Since a Bag is an unordered, unindexed collection 
+		/// that permits duplicates it is not possible to determine what has changed in a
+		/// <c>many-to-many</c> so it is just recreated.
+		/// </returns>
 		public override bool NeedsRecreate(CollectionPersister persister)
 		{
 			return !persister.IsOneToMany;

@@ -133,6 +133,16 @@ namespace NHibernate.Impl
 			[NonSerialized] private IClassPersister _persister;
 			private string _className;
 			
+			/// <summary>
+			/// Initializes a new instance of EntityEntry.
+			/// </summary>
+			/// <param name="status">The current <see cref="Status"/> of the Entity.</param>
+			/// <param name="loadedState">The snapshot of the Entity's state when it was loaded.</param>
+			/// <param name="id">The identifier of the Entity in the database.</param>
+			/// <param name="version">The version of the Entity.</param>
+			/// <param name="lockMode">The <see cref="LockMode"/> for the Entity.</param>
+			/// <param name="existsInDatabase">A boolean indicating if the Entity exists in the database.</param>
+			/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for this Entity.</param>
 			public EntityEntry(Status status, object[] loadedState, object id, object version, LockMode lockMode, bool existsInDatabase, IClassPersister persister) 
 			{
 				_status = status;
@@ -145,59 +155,104 @@ namespace NHibernate.Impl
 				if (_persister!=null) _className = _persister.ClassName;
 			}
 
-			
+			/// <summary>
+			/// Gets or sets the current <see cref="LockMode"/> of the Entity.
+			/// </summary>
+			/// <value>The <see cref="LockMode"/> of the Entity.</value>
 			public LockMode LockMode
 			{
 				get { return _lockMode; }
 				set { _lockMode = value; }
 			}
 
+			/// <summary>
+			/// Gets or sets the <see cref="Status"/> of this Entity with respect to its 
+			/// persistence in the database.
+			/// </summary>
+			/// <value>The <see cref="Status"/> of this Entity.</value>
 			public Status Status
 			{
 				get { return _status; }
 				set { _status = value; }
 			}
 
+			/// <summary>
+			/// Gets or sets the identifier of the Entity in the database.
+			/// </summary>
+			/// <value>The identifier of the Entity in the database if one has been assigned.</value>
+			/// <remarks>This might be <c>null</c> when the <see cref="EntityEntry.Status"/> is 
+			/// <see cref="Status.Saving"/> and the database generates the id.</remarks>
 			public object Id
 			{
 				get { return _id; }
 				set { _id = value; }
 			}
 
+			/// <summary>
+			/// Gets or sets the snapshot of the Entity when it was loaded from the database.
+			/// </summary>
+			/// <value>The snapshot of the Entity.</value>
+			/// <remarks>
+			/// There will only be a value when the Entity was loaded in the current Session.
+			/// </remarks>
 			public object[] LoadedState
 			{
 				get { return _loadedState; }
 				set { _loadedState = value; }
 			}
 
+			/// <summary>
+			/// Gets or sets the snapshot of the Entity when it was marked as being ready for deletion.
+			/// </summary>
+			/// <value>The snapshot of the Entity.</value>
+			/// <remarks>This will be <c>null</c> if the Entity is not being deleted.</remarks>
 			public object[] DeletedState
 			{
 				get { return _deletedState; }
 				set { _deletedState = value; }
 			}
 
+			/// <summary>
+			/// Gets or sets a <see cref="Boolean"/> indicating if this Entity exists in the database.
+			/// </summary>
+			/// <value><c>true</c> if it is already in the database.</value>
+			/// <remarks>
+			/// It can also be <c>true</c> if it does not exists in the database yet and the 
+			/// <see cref="IClassPersister.IsIdentifierAssignedByInsert"/> is <c>true</c>.
+			/// </remarks>
 			public bool ExistsInDatabase
 			{
 				get { return _existsInDatabase; }
 				set { _existsInDatabase = value; }
 			}
 
+			/// <summary>
+			/// Gets or sets the version of the Entity.
+			/// </summary>
+			/// <value>The version of the Entity.</value>
 			public object Version
 			{
 				get { return _version; }
 				set { _version = value; }
 			}
 
+			/// <summary>
+			/// Gets or sets the <see cref="IClassPersister"/> that is responsible for this Entity.
+			/// </summary>
+			/// <value>The <see cref="IClassPersister"/> that is reponsible for this Entity.</value>
 			public IClassPersister Persister
 			{
 				get { return _persister; }
 				set { _persister = value; }
 			}
 
+			/// <summary>
+			/// Gets the Fully Qualified Name of the class this Entity is an instance of.
+			/// </summary>
+			/// <value>The Fully Qualified Name of the class this Entity is an instance of.</value>
 			public string ClassName
 			{
 				get { return _className; }
-				set { _className = value; }
 			}
 
 		}
@@ -217,19 +272,49 @@ namespace NHibernate.Impl
 			[NonSerialized] internal bool doremove;
 			[NonSerialized] internal bool dorecreate;
 			internal bool initialized;
+			
+			/// <summary>
+			/// The <see cref="CollectionPersister"/> that is currently responsible
+			/// for the Collection.
+			/// </summary>
+			/// <remarks>
+			/// This is set when NHibernate is updating a reachable or an
+			/// unreachable collection.
+			/// </remarks>
 			[NonSerialized] internal CollectionPersister currentPersister;
+			
+			/// <summary>
+			/// The <see cref="CollectionPersister"/> when the Collection was loaded.
+			/// </summary>
+			/// <remarks>
+			/// This can be <c>null</c> if the Collection was not loaded by NHibernate and 
+			/// was passed in along with a transient object.
+			/// </remarks>
 			[NonSerialized] internal CollectionPersister loadedPersister;
 			[NonSerialized] internal object currentKey;
 			internal object loadedKey;
 			internal object snapshot; //session-start/post-flush persistent state
 			internal  string role;
 			
+			/// <summary>
+			/// Initializes a new instance of <see cref="CollectionEntry"/>.
+			/// </summary>
+			/// <remarks> 
+			/// The CollectionEntry is for a Collection that is not dirty and 
+			/// has already been initialized.
+			/// </remarks>
 			public CollectionEntry() 
 			{
 				this.dirty = false;
 				this.initialized = true;
 			}
 
+			/// <summary>
+			/// Initializes a new instance of <see cref="CollectionEntry"/>. 
+			/// </summary>
+			/// <param name="loadedPersister">The <see cref="CollectionPersister"/> that persists this Collection type.</param>
+			/// <param name="loadedID">The identifier of the Entity that is the owner of this Collection.</param>
+			/// <param name="initialized">A boolean indicating if the collection has been initialized.</param>
 			public CollectionEntry(CollectionPersister loadedPersister, object loadedID, bool initialized) 
 			{
 				this.dirty = false;
@@ -238,6 +323,16 @@ namespace NHibernate.Impl
 				SetLoadedPersister(loadedPersister);
 			}
 
+			/// <summary>
+			/// Initializes a new instance of <see cref="CollectionEntry"/>. 
+			/// </summary>
+			/// <param name="cs">The <see cref="ICollectionSnapshot"/> from another <see cref="ISession"/>.</param>
+			/// <param name="factory">The <see cref="ISessionFactoryImplementor"/> that created this <see cref="ISession"/>.</param>
+			/// <remarks>
+			/// This takes an <see cref="ICollectionSnapshot"/> from another <see cref="ISession"/> and 
+			/// creates an entry for it in this <see cref="ISession"/> by copying the values from the 
+			/// <c>cs</c> parameter.
+			/// </remarks>
 			public CollectionEntry(ICollectionSnapshot cs, ISessionFactoryImplementor factory) 
 			{
 				this.dirty = cs.Dirty;
@@ -247,9 +342,21 @@ namespace NHibernate.Impl
 				this.initialized = true;
 			}
 
-			//default behavior; will be overridden in deep lazy collections
+			/// <summary>
+			/// Checks to see if the <see cref="PersistentCollection"/> has had any changes to the 
+			/// collections contents or if any of the elements in the collection have been modified.
+			/// </summary>
+			/// <param name="coll"></param>
+			/// <returns><c>true</c> if the <see cref="PersistentCollection"/> is dirty.</returns>
+			/// <remarks>
+			/// default behavior; will be overridden in deep lazy collections
+			/// </remarks>
 			public virtual bool IsDirty(PersistentCollection coll) 
 			{
+				// if this has already been marked as dirty or the collection can not 
+				// be directly accessed (ie- we can guarantee that the NHibernate collection
+				// wrappers are used) and the elements in the collection are not mutable 
+				// then return the dirty flag.
 				if ( dirty || (
 					!coll.IsDirectlyAccessible && !loadedPersister.ElementType.IsMutable
 					) ) 
@@ -258,10 +365,16 @@ namespace NHibernate.Impl
 				} 
 				else 
 				{
+					// need to have the coll determine if it is the same as the snapshot
+					// that was last taken.
 					return !coll.EqualsSnapshot( loadedPersister.ElementType );
 				}
 			}
 
+			/// <summary>
+			/// Prepares this CollectionEntry for the Flush process.
+			/// </summary>
+			/// <param name="collection">The <see cref="PersistentCollection"/> that this CollectionEntry will be responsible for flushing.</param>
 			public void PreFlush(PersistentCollection collection) 
 			{
 				// if the collection is initialized and it was previously persistent
@@ -274,6 +387,8 @@ namespace NHibernate.Impl
 					log.Debug("Collection dirty: " + MessageHelper.InfoString(loadedPersister, loadedKey) );
 				}
 
+				// reset all of these values so any previous flush status 
+				// information is cleared from this CollectionEntry
 				doupdate = false;
 				doremove = false;
 				dorecreate = false;
@@ -281,19 +396,32 @@ namespace NHibernate.Impl
 				processed = false;
 			}
 
+			/// <summary>
+			/// Updates the CollectionEntry to reflect that the <see cref="PersistentCollection"/>
+			/// has been initialized.
+			/// </summary>
+			/// <param name="collection">The initialized <see cref="PersistentCollection"/> that this Entry is for.</param>
 			public void PostInitialize(PersistentCollection collection) 
 			{
 				initialized = true;
 				snapshot = collection.GetSnapshot(loadedPersister);
 			}
 
-			// called after a *successful* flush
+			/// <summary>
+			/// Updates the CollectionEntry to reflect that it is has been successfully flushed to the database.
+			/// </summary>
+			/// <param name="collection">The <see cref="PersistentCollection"/> that was flushed.</param>
 			public void PostFlush(PersistentCollection collection) 
 			{
+				// the CollectionEntry should be processed if we are in the PostFlush()
 				if( !processed ) 
 				{
 					throw new AssertionFailure("Hibernate has a bug processing collections");
 				}
+
+				// now that the flush has gone through move everything that is the current
+				// over to the loaded fields and set dirty to false since the db & collection
+				// are in synch.
 				loadedKey = currentKey;
 				SetLoadedPersister( currentPersister );
 				dirty = false;
@@ -303,39 +431,76 @@ namespace NHibernate.Impl
 				// that can add without initializing the collection.
 				collection.PostFlush();
 
+				// if it was initialized or any of the scheduled actions were performed then
+				// need to resnpashot the contents of the collection.
 				if ( initialized && ( doremove || dorecreate || doupdate ) ) 
 				{
 					snapshot = collection.GetSnapshot(loadedPersister); //re-snapshot
 				}
 			}
 
-			public bool Dirty 
-			{
-				get { return dirty; }
-			}
+			#region Engine.ICollectionSnapshot Members
+
 			public object Key 
 			{
 				get { return loadedKey; }
 			}
+			
 			public string Role 
 			{
 				get { return role; }
 			}
+			
 			public object Snapshot 
 			{
 				get { return snapshot; }
 			}
 
+			public bool Dirty 
+			{
+				get { return dirty; }
+			}
+			
+			public void SetDirty() 
+			{
+				dirty = true;
+			}
+			public bool IsInitialized 
+			{
+				get { return initialized;}
+			}
+
+			
+			#endregion
+
+			/// <summary>
+			/// Sets the information in this CollectionEntry that is specific to the
+			/// <see cref="CollectionPersister"/>.
+			/// </summary>
+			/// <param name="persister">
+			/// The <see cref="CollectionPersister"/> that is 
+			/// responsible for the Collection.
+			/// </param>
+			private void SetLoadedPersister(CollectionPersister persister) 
+			{
+				loadedPersister = persister;
+				if (persister!=null) 
+				{
+					role=persister.Role;
+				}
+			}
+
 			public bool SnapshotIsEmpty 
 			{
-				get {
+				get 
+				{
 					//TODO: implementation here is non-extensible ... 
 					//should use polymorphism 
-//					return initialized && snapshot!=null && ( 
-//						( snapshot is IList && ( (IList) snapshot ).Count==0 ) || // if snapshot is a collection 
-//						( snapshot is Map && ( (Map) snapshot ).Count==0 ) || // if snapshot is a map 
-//						(snapshot.GetType().IsArray && ( (Array) snapshot).Length==0 )// if snapshot is an array 
-//						); 
+					//	return initialized && snapshot!=null && ( 
+					//		( snapshot is IList && ( (IList) snapshot ).Count==0 ) || // if snapshot is a collection 
+					//		( snapshot is Map && ( (Map) snapshot ).Count==0 ) || // if snapshot is a map 
+					//		(snapshot.GetType().IsArray && ( (Array) snapshot).Length==0 )// if snapshot is an array 
+					//		); 
 					
 					// TODO: in .NET an IList, IDictionary, and Array are all collections so we might be able
 					// to just cast it to a ICollection instead of all the diff collections.
@@ -346,26 +511,9 @@ namespace NHibernate.Impl
 						); 
 				}
 			} 
-
-			public void SetDirty() 
-			{
-				dirty = true;
-			}
-			
-			private void SetLoadedPersister(CollectionPersister persister) 
-			{
-				loadedPersister = persister;
-				if (persister!=null) role=persister.Role;
-			}
-
-			public bool IsInitialized 
-			{
-				get { return initialized;}
-			}
-
 			public bool IsNew 
 			{
-				// TODO: is this correct implementation
+				// TODO: is this correct implementation - h2.0.3
 				get { return initialized && (snapshot==null); }
 			}
 		}
