@@ -1,7 +1,7 @@
-using System;
 using System.Data;
-
+using System.Data.SqlClient;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
 {
@@ -10,43 +10,51 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class SqlClientDriver : DriverBase
 	{
+		/// <summary></summary>
 		public SqlClientDriver()
 		{
 		}
-		
+
+		/// <summary></summary>
 		public override System.Type CommandType
 		{
-			get	{ return typeof(System.Data.SqlClient.SqlCommand); }
+			get { return typeof( System.Data.SqlClient.SqlCommand ); }
 		}
 
+		/// <summary></summary>
 		public override System.Type ConnectionType
 		{
-			get	{ return typeof(System.Data.SqlClient.SqlConnection); }
+			get { return typeof( SqlConnection ); }
 		}
 
+		/// <summary></summary>
 		public override IDbConnection CreateConnection()
 		{
-			return new System.Data.SqlClient.SqlConnection();
+			return new SqlConnection();
 		}
 
-		public override IDbCommand CreateCommand() 
+		/// <summary></summary>
+		public override IDbCommand CreateCommand()
 		{
 			return new System.Data.SqlClient.SqlCommand();
 		}
 
-		public override bool UseNamedPrefixInSql 
+		/// <summary></summary>
+		public override bool UseNamedPrefixInSql
 		{
-			get {return true;}
+			get { return true; }
 		}
 
-		public override bool UseNamedPrefixInParameter 
+		/// <summary></summary>
+		public override bool UseNamedPrefixInParameter
 		{
-			get {return true;}
+			get { return true; }
 		}
 
-		public override string NamedPrefix 	
+		/// <summary></summary>
+		public override string NamedPrefix
 		{
-			get {return "@";}
+			get { return "@"; }
 		}
 
 		/// <summary>
@@ -61,7 +69,7 @@ namespace NHibernate.Driver
 		/// </remarks>
 		public override bool SupportsMultipleOpenReaders
 		{
-			get { return false;	}
+			get { return false; }
 		}
 
 		/// <summary>
@@ -76,9 +84,9 @@ namespace NHibernate.Driver
 		/// In order to prepare an IDbCommand against an MsSql database all variable length values need
 		/// to be set.
 		/// </remarks>
-		protected override IDbDataParameter GenerateParameter(IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect)
+		protected override IDbDataParameter GenerateParameter( IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect )
 		{
-			IDbDataParameter dbParam = base.GenerateParameter(command, name, parameter, dialect);
+			IDbDataParameter dbParam = base.GenerateParameter( command, name, parameter, dialect );
 
 			// take a look at the SqlType and determine if this is one that MsSql needs to set Size or
 			// Precision/Scale for
@@ -88,9 +96,8 @@ namespace NHibernate.Driver
 			ParameterLength pl = null;
 			ParameterPrecisionScale pps = null;
 
-			switch( parameter.SqlType.DbType ) 
+			switch( parameter.SqlType.DbType )
 			{
-				
 				case DbType.AnsiString:
 				case DbType.AnsiStringFixedLength:
 					pl = parameter as ParameterLength;
@@ -99,11 +106,11 @@ namespace NHibernate.Driver
 
 				case DbType.Binary:
 					pl = parameter as ParameterLength;
-					if( parameter.SqlType is SqlTypes.BinaryBlobSqlType) 
+					if( parameter.SqlType is BinaryBlobSqlType )
 					{
 						dbParam.Size = dialect.MaxBinaryBlobSize;
 					}
-					else 
+					else
 					{
 						dbParam.Size = dialect.MaxBinarySize;
 					}
@@ -112,15 +119,15 @@ namespace NHibernate.Driver
 				case DbType.String:
 				case DbType.StringFixedLength:
 					pl = parameter as ParameterLength;
-					if( parameter.SqlType is SqlTypes.StringClobSqlType) 
+					if( parameter.SqlType is StringClobSqlType )
 					{
 						dbParam.Size = dialect.MaxStringClobSize;
 					}
-					else 
+					else
 					{
 						dbParam.Size = dialect.MaxStringSize;
 					}
-					break; 
+					break;
 				case DbType.Decimal:
 					pps = parameter as ParameterPrecisionScale;
 					//TODO: remove this hardcoding...
@@ -131,20 +138,20 @@ namespace NHibernate.Driver
 
 			// if one of these is not null then override the default values
 			// set in the earlier switch statement.
-			if( pl!=null ) 
+			if( pl != null )
 			{
-				dbParam.Size = pl.Length; 
+				dbParam.Size = pl.Length;
 			}
-			else if( pps!=null ) 
+			else if( pps != null )
 			{
 				dbParam.Precision = pps.Precision;
 				dbParam.Scale = pps.Scale;
 			}
 
 			return dbParam;
-			
+
 		}
 
-		
+
 	}
 }

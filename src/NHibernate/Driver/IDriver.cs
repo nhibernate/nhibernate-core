@@ -1,6 +1,4 @@
-using System;
 using System.Data;
-
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Driver
@@ -37,7 +35,6 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public interface IDriver
 	{
-
 		/// <summary>
 		/// The Type used to create an IDbConnection
 		/// </summary>
@@ -72,7 +69,7 @@ namespace NHibernate.Driver
 		/// If this is false, like with the OleDb provider, then it is assumed that  
 		/// the <c>?</c> can be a placeholder for the parameter in the SQL statement.
 		/// </remarks>
-		bool UseNamedPrefixInSql {get;}
+		bool UseNamedPrefixInSql { get; }
 
 		/// <summary>
 		/// Does this Driver require the use of the Named Prefix when trying
@@ -85,7 +82,7 @@ namespace NHibernate.Driver
 		/// if this is false the code will be 
 		/// <code>IDbParameter param = cmd.Parameters["paramName"]</code>.
 		/// </remarks>
-		bool UseNamedPrefixInParameter {get;}
+		bool UseNamedPrefixInParameter { get; }
 
 		/// <summary>
 		/// The Named Prefix for parameters.  
@@ -93,7 +90,7 @@ namespace NHibernate.Driver
 		/// <remarks>
 		/// Sql Server uses <c>"@"</c> and Oracle uses <c>":"</c>.
 		/// </remarks>
-		string NamedPrefix  {get;}
+		string NamedPrefix { get; }
 
 		/// <summary>
 		/// Change the parameterName into the correct format IDbCommand.CommandText
@@ -101,7 +98,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="parameterName">The unformatted name of the parameter</param>
 		/// <returns>A parameter formatted for an IDbCommand.CommandText</returns>
-		string FormatNameForSql(string parameterName);
+		string FormatNameForSql( string parameterName );
 
 		/// <summary>
 		/// Change the parameterName into the correct format IDbCommand.CommandText
@@ -110,7 +107,7 @@ namespace NHibernate.Driver
 		/// <param name="tableAlias">The Alias for the Table.</param>
 		/// <param name="parameterName">The unformatted name of the parameter</param>
 		/// <returns>A parameter formatted for an IDbCommand.CommandText</returns>
-		string FormatNameForSql(string tableAlias, string parameterName);
+		string FormatNameForSql( string tableAlias, string parameterName );
 
 
 		/// <summary>
@@ -122,7 +119,7 @@ namespace NHibernate.Driver
 		/// </remarks>
 		/// <param name="parameterName">The unformatted name of the parameter</param>
 		/// <returns>A parameter formatted for an IDbParameter.</returns>
-		string FormatNameForParameter(string parameterName);
+		string FormatNameForParameter( string parameterName );
 
 		/// <summary>
 		/// Changes the parameterName into the correct format for an IDbParameter
@@ -134,8 +131,8 @@ namespace NHibernate.Driver
 		/// <param name="tableAlias">The Alias for the Table.</param>
 		/// <param name="parameterName">The unformatted name of the parameter</param>
 		/// <returns>A parameter formatted for an IDbParameter.</returns>
-		string FormatNameForParameter(string tableAlias, string parameterName);
-		
+		string FormatNameForParameter( string tableAlias, string parameterName );
+
 		/// <summary>
 		/// Does this Driver support having more than 1 open IDataReader with
 		/// the same IDbConnection.
@@ -179,7 +176,7 @@ namespace NHibernate.Driver
 		/// <param name="dialect">The Dialect to help build the IDbCommand</param>
 		/// <param name="sqlString">The SqlString that contains the sql and parameters.</param>
 		/// <returns>An IDbCommand with the CommandText and Parameters fully set.</returns>
-		IDbCommand GenerateCommand(Dialect.Dialect dialect, SqlString sqlString);
+		IDbCommand GenerateCommand( Dialect.Dialect dialect, SqlString sqlString );
 
 		/// <summary>
 		/// Generates an IDbCommand from the string containing sql according to the requirements 
@@ -189,9 +186,7 @@ namespace NHibernate.Driver
 		/// <param name="sqlString">The string that contains the sql that has NO parameters.</param>
 		/// <returns>An IDbCommand with the CommandText fully set.</returns>
 		/// <remarks>This can not be used to build an IDbCommand that needs to contain Parameters.</remarks>
-		IDbCommand GenerateCommand(Dialect.Dialect dialect, string sqlString);
-		
-
+		IDbCommand GenerateCommand( Dialect.Dialect dialect, string sqlString );
 
 
 	}

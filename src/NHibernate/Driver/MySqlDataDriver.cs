@@ -1,8 +1,5 @@
-using System;
-
-namespace NHibernate.Driver 
+namespace NHibernate.Driver
 {
-
 	/// <summary>
 	/// The MySqlDataDriver Driver provides a database driver for MySql.
 	/// </summary>
@@ -23,56 +20,57 @@ namespace NHibernate.Driver
 		private System.Type connectionType;
 		private System.Type commandType;
 
+		/// <summary></summary>
 		public MySqlDataDriver()
 		{
-			connectionType = System.Type.GetType("MySql.Data.MySqlClient.MySqlConnection, MySql.Data");
-			commandType = System.Type.GetType("MySql.Data.MySqlClient.MySqlCommand, MySql.Data");
+			connectionType = System.Type.GetType( "MySql.Data.MySqlClient.MySqlConnection, MySql.Data" );
+			commandType = System.Type.GetType( "MySql.Data.MySqlClient.MySqlCommand, MySql.Data" );
 
-			if( connectionType==null || commandType==null )
+			if( connectionType == null || commandType == null )
 			{
-				throw new HibernateException( 
-					"The IDbCommand and IDbConnection implementation in the Assembly MySql.Data could not be found.  " +					
-					"Please ensure that the Assemblies MySql.Data.dll and ICSharpCode.SharpZipLib.dll " +
-					"are in the Global Assembly Cache or in a location that NHibernate " +
-					"can use System.Type.GetType(string) to load the types from."
+				throw new HibernateException(
+					"The IDbCommand and IDbConnection implementation in the Assembly MySql.Data could not be found.  " +
+						"Please ensure that the Assemblies MySql.Data.dll and ICSharpCode.SharpZipLib.dll " +
+						"are in the Global Assembly Cache or in a location that NHibernate " +
+						"can use System.Type.GetType(string) to load the types from."
 					);
 			}
 		}
 
+		/// <summary></summary>
 		public override System.Type CommandType
 		{
-			get	{ return commandType; }
+			get { return commandType; }
 		}
 
+		/// <summary></summary>
 		public override System.Type ConnectionType
 		{
-			get	{ return connectionType; }
+			get { return connectionType; }
 		}
 
 		/// <summary>
 		/// MySql.Data uses named parameters in the sql.
 		/// </summary>
 		/// <value><c>true</c> - MySql uses <c>?</c> in the sql.</value>
-		public override bool UseNamedPrefixInSql 
+		public override bool UseNamedPrefixInSql
 		{
-			get {return true;}
+			get { return true; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public override bool UseNamedPrefixInParameter 
+		/// <summary></summary>
+		public override bool UseNamedPrefixInParameter
 		{
-			get {return true;}
+			get { return true; }
 		}
 
 		/// <summary>
 		/// MySql.Data use the <c>?</c> to locate parameters in sql.
 		/// </summary>
 		/// <value><c>?</c> is used to locate parameters in sql.</value>
-		public override string NamedPrefix 	
+		public override string NamedPrefix
 		{
-			get {return "?";}
+			get { return "?"; }
 		}
 
 		/// <summary>
@@ -82,7 +80,7 @@ namespace NHibernate.Driver
 		/// <value><c>false</c> - it is not supported.</value>
 		public override bool SupportsMultipleOpenReaders
 		{
-			get { return false;	}
+			get { return false; }
 		}
 
 		/// <summary>

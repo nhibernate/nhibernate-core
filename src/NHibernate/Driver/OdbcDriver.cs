@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Odbc;
 
 namespace NHibernate.Driver
 {
@@ -11,43 +12,51 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OdbcDriver : DriverBase
 	{
+		/// <summary></summary>
 		public OdbcDriver()
 		{
 		}
-		
+
+		/// <summary></summary>
 		public override System.Type CommandType
 		{
-			get	{ return typeof(System.Data.Odbc.OdbcCommand); }
+			get { return typeof( OdbcCommand ); }
 		}
 
+		/// <summary></summary>
 		public override System.Type ConnectionType
 		{
-			get	{ return typeof(System.Data.Odbc.OdbcConnection); }
+			get { return typeof( OdbcConnection ); }
 		}
 
+		/// <summary></summary>
 		public override IDbConnection CreateConnection()
 		{
-			return new System.Data.Odbc.OdbcConnection();
+			return new OdbcConnection();
 		}
 
-		public override IDbCommand CreateCommand() 
+		/// <summary></summary>
+		public override IDbCommand CreateCommand()
 		{
-			return new System.Data.Odbc.OdbcCommand();
+			return new OdbcCommand();
 		}
 
-		public override bool UseNamedPrefixInSql 
+		/// <summary></summary>
+		public override bool UseNamedPrefixInSql
 		{
-			get {return false;}
+			get { return false; }
 		}
 
-		public override bool UseNamedPrefixInParameter 
+		/// <summary></summary>
+		public override bool UseNamedPrefixInParameter
 		{
-			get {return false;}
+			get { return false; }
 		}
 
-		public override string NamedPrefix 	
+		/// <summary></summary>
+		public override string NamedPrefix
 		{
-			get {return String.Empty;}
+			get { return String.Empty; }
 		}
 	}
 }

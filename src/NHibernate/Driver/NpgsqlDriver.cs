@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Driver
 {
 	/// <summary>
@@ -28,52 +26,60 @@ namespace NHibernate.Driver
 		private System.Type connectionType;
 		private System.Type commandType;
 
+		/// <summary></summary>
 		public NpgsqlDriver()
 		{
-			connectionType = System.Type.GetType("Npgsql.NpgsqlConnection, Npgsql");
-			commandType = System.Type.GetType("Npgsql.NpgsqlCommand, Npgsql");
+			connectionType = System.Type.GetType( "Npgsql.NpgsqlConnection, Npgsql" );
+			commandType = System.Type.GetType( "Npgsql.NpgsqlCommand, Npgsql" );
 
-			if( connectionType==null || commandType==null )
+			if( connectionType == null || commandType == null )
 			{
-				throw new HibernateException( 
-					"The IDbCommand and IDbConnection implementation in the Assembly Npgsql.dll could not be found.  " +					
-					"Please ensure that the Assemblies needed to communicate with PostgreSQL " +
-					"are in the Global Assembly Cache or in a location that NHibernate " +
-					"can use System.Type.GetType(string) to load the types from."
+				throw new HibernateException(
+					"The IDbCommand and IDbConnection implementation in the Assembly Npgsql.dll could not be found.  " +
+						"Please ensure that the Assemblies needed to communicate with PostgreSQL " +
+						"are in the Global Assembly Cache or in a location that NHibernate " +
+						"can use System.Type.GetType(string) to load the types from."
 					);
 			}
 		}
 
+		/// <summary></summary>
 		public override System.Type CommandType
 		{
 			get { return commandType; }
 		}
 
+		/// <summary></summary>
 		public override System.Type ConnectionType
 		{
 			get { return connectionType; }
 		}
 
-		public override bool UseNamedPrefixInSql 
+		/// <summary></summary>
+		public override bool UseNamedPrefixInSql
 		{
 			get { return true; }
 		}
 
-		public override bool UseNamedPrefixInParameter 
+		/// <summary></summary>
+		public override bool UseNamedPrefixInParameter
 		{
 			get { return true; }
 		}
 
-		public override string NamedPrefix 	
+		/// <summary></summary>
+		public override string NamedPrefix
 		{
 			get { return ":"; }
 		}
 
+		/// <summary></summary>
 		public override bool SupportsMultipleOpenReaders
 		{
-			get { return true;	}
+			get { return true; }
 		}
 
+		/// <summary></summary>
 		public override bool SupportsPreparingCommands
 		{
 			// NOTE: Npgsql actually supports this feature but there a bug that results in 
@@ -84,4 +90,3 @@ namespace NHibernate.Driver
 		}
 	}
 }
-

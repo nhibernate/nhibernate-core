@@ -1,7 +1,6 @@
 using System;
 using System.Data;
 using System.Text;
-
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
@@ -12,103 +11,145 @@ namespace NHibernate.Driver
 	/// </summary>
 	public abstract class DriverBase : IDriver
 	{
-
 		#region IDriver Members
 
-		public abstract System.Type CommandType {get; }
-		public abstract System.Type ConnectionType {get; }
+		/// <summary></summary>
+		public abstract System.Type CommandType { get; }
+		/// <summary></summary>
+		public abstract System.Type ConnectionType { get; }
 
-		public virtual IDbConnection CreateConnection() 
+		/// <summary></summary>
+		public virtual IDbConnection CreateConnection()
 		{
-			return (IDbConnection) Activator.CreateInstance(ConnectionType);
+			return ( IDbConnection ) Activator.CreateInstance( ConnectionType );
 		}
 
+		/// <summary></summary>
 		public virtual IDbCommand CreateCommand()
 		{
-			return (IDbCommand) Activator.CreateInstance(CommandType);
+			return ( IDbCommand ) Activator.CreateInstance( CommandType );
 		}
 
-		public abstract bool UseNamedPrefixInSql {get;}
+		/// <summary></summary>
+		public abstract bool UseNamedPrefixInSql { get; }
 
-		public abstract bool UseNamedPrefixInParameter {get;}
+		/// <summary></summary>
+		public abstract bool UseNamedPrefixInParameter { get; }
 
-		public abstract string NamedPrefix {get;}
+		/// <summary></summary>
+		public abstract string NamedPrefix { get; }
 
-		public string FormatNameForSql(string parameterName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="parameterName"></param>
+		/// <returns></returns>
+		public string FormatNameForSql( string parameterName )
 		{
-			return UseNamedPrefixInSql ? (NamedPrefix + parameterName): StringHelper.SqlParameter;
+			return UseNamedPrefixInSql ? ( NamedPrefix + parameterName ) : StringHelper.SqlParameter;
 		}
 
-		public string FormatNameForSql(string tableAlias, string parameterName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tableAlias"></param>
+		/// <param name="parameterName"></param>
+		/// <returns></returns>
+		public string FormatNameForSql( string tableAlias, string parameterName )
 		{
-			if(!UseNamedPrefixInSql) return StringHelper.SqlParameter;
+			if( !UseNamedPrefixInSql )
+			{
+				return StringHelper.SqlParameter;
+			}
 
-			
-			if(tableAlias!=null && tableAlias.Length > 0) 
+
+			if( tableAlias != null && tableAlias.Length > 0 )
 			{
 				return NamedPrefix + tableAlias + parameterName;
 			}
-			else 
+			else
 			{
 				return NamedPrefix + parameterName;
 			}
 		}
 
-		public string FormatNameForParameter(string parameterName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="parameterName"></param>
+		/// <returns></returns>
+		public string FormatNameForParameter( string parameterName )
 		{
-			return UseNamedPrefixInParameter ? (NamedPrefix + parameterName) : parameterName;
+			return UseNamedPrefixInParameter ? ( NamedPrefix + parameterName ) : parameterName;
 		}
 
-		public string FormatNameForParameter(string tableAlias, string parameterName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tableAlias"></param>
+		/// <param name="parameterName"></param>
+		/// <returns></returns>
+		public string FormatNameForParameter( string tableAlias, string parameterName )
 		{
-			if(!UseNamedPrefixInParameter) return parameterName;
+			if( !UseNamedPrefixInParameter )
+			{
+				return parameterName;
+			}
 
-			
-			if(tableAlias!=null && tableAlias.Length > 0) 
+
+			if( tableAlias != null && tableAlias.Length > 0 )
 			{
 				return NamedPrefix + tableAlias + parameterName;
 			}
-			else 
+			else
 			{
 				return NamedPrefix + parameterName;
 			}
 		}
 
-		public virtual bool SupportsMultipleOpenReaders 
+		/// <summary></summary>
+		public virtual bool SupportsMultipleOpenReaders
 		{
-			get { return true;}
-		}
-
-		public virtual bool SupportsPreparingCommands 
-		{ 
 			get { return true; }
 		}
 
-		public virtual IDbCommand GenerateCommand(Dialect.Dialect dialect, SqlString sqlString) 
+		/// <summary></summary>
+		public virtual bool SupportsPreparingCommands
+		{
+			get { return true; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <param name="sqlString"></param>
+		/// <returns></returns>
+		public virtual IDbCommand GenerateCommand( Dialect.Dialect dialect, SqlString sqlString )
 		{
 			int paramIndex = 0;
 			IDbCommand cmd = this.CreateCommand();
 
-			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Length * 15);
-			for(int i = 0; i < sqlString.SqlParts.Length; i++) 
+			StringBuilder builder = new StringBuilder( sqlString.SqlParts.Length*15 );
+			for( int i = 0; i < sqlString.SqlParts.Length; i++ )
 			{
-				object part = sqlString.SqlParts[i];
+				object part = sqlString.SqlParts[ i ];
 				Parameter parameter = part as Parameter;
-				
-				if(parameter!=null) 
+
+				if( parameter != null )
 				{
 					string paramName = "p" + paramIndex;
-					builder.Append ( this.FormatNameForSql(paramName) );
-					
-					IDbDataParameter dbParam = GenerateParameter(cmd, paramName, parameter, dialect);
+					builder.Append( this.FormatNameForSql( paramName ) );
 
-					cmd.Parameters.Add(dbParam);
-					
+					IDbDataParameter dbParam = GenerateParameter( cmd, paramName, parameter, dialect );
+
+					cmd.Parameters.Add( dbParam );
+
 					paramIndex++;
 				}
-				else 
+				else
 				{
-					builder.Append((string)part);
+					builder.Append( ( string ) part );
 				}
 			}
 
@@ -117,7 +158,13 @@ namespace NHibernate.Driver
 			return cmd;
 		}
 
-		public virtual IDbCommand GenerateCommand(Dialect.Dialect dialect, string sqlString) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dialect"></param>
+		/// <param name="sqlString"></param>
+		/// <returns></returns>
+		public virtual IDbCommand GenerateCommand( Dialect.Dialect dialect, string sqlString )
 		{
 			IDbCommand cmd = this.CreateCommand();
 			cmd.CommandText = sqlString;
@@ -139,12 +186,12 @@ namespace NHibernate.Driver
 		/// override this method and use the info contained in the Parameter to set those value.  By default
 		/// those values are not set, only the DbType and ParameterName are set.
 		/// </remarks>
-		protected virtual IDbDataParameter GenerateParameter(IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect) 
+		protected virtual IDbDataParameter GenerateParameter( IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect )
 		{
 			IDbDataParameter dbParam = command.CreateParameter();
 			dbParam.DbType = parameter.SqlType.DbType;
-			
-			dbParam.ParameterName = this.FormatNameForParameter(name);
+
+			dbParam.ParameterName = this.FormatNameForParameter( name );
 
 			return dbParam;
 		}
