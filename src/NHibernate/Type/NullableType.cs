@@ -202,6 +202,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public virtual object NullSafeGet(IDataReader rs, string name) 
 		{
+			
 			int index = rs.GetOrdinal(name);
 
 			if(rs.IsDBNull(index)) {
@@ -213,7 +214,17 @@ namespace NHibernate.Type
 			}
 			else {
 				
-				object val = Get(rs, index);
+				object val = null;
+				try 
+				{
+					val = Get(rs, index);
+				}
+				catch(System.InvalidCastException ice) 
+				{
+					throw new ADOException(
+						"Could not cast the value in field " + name + " to the Type " + this.GetType().Name + 
+						".  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.", ice);
+				}
 				
 				if ( log.IsDebugEnabled )
 					log.Debug("returning '" + ToXML(val) + "' as column: " + name);
