@@ -473,7 +473,7 @@ namespace NHibernate.Hql
 				ArrayList list = new ArrayList(4);
 				list.Add(o);
 				list.Add(loc);
-				namedParameters.Add(name, list);
+				namedParameters[name] = list;
 			} 
 			else 
 			{
@@ -1285,7 +1285,7 @@ namespace NHibernate.Hql
 			IType[] paramTypes = null;
 			object[] paramValues = null;
 
-			if(namedParams==null) 
+			if(namedParams==null || namedParams.Count==0) 
 			{
 				paramTypes = types;
 				paramValues = values;
@@ -1299,21 +1299,21 @@ namespace NHibernate.Hql
 				// assumes that types are all of span 1
 				foreach (DictionaryEntry e in namedParams) 
 				{
-					int lastInsertedIndex = paramTypeList.Count;
-
 					string name = (string) e.Key;
 					TypedValue typedval = (TypedValue) e.Value;
 					int[] locs = GetNamedParameterLocs(name);
 
 					for (int i = 0; i < locs.Length; i++) 
 					{
+						int lastInsertedIndex = paramTypeList.Count;
+
 						int insertAt = locs[i];
 						
 						// need to make sure that the ArrayList is populated with null objects
 						// up to the index we are about to add the values into.  An Index Out 
 						// of Range exception will be thrown if we add an element at an index
 						// that is greater than the Count.
-						if(insertAt >= lastInsertedIndex) 
+						if(insertAt >= lastInsertedIndex)
 						{
 							for(int j = lastInsertedIndex; j <= insertAt; j++) 
 							{
