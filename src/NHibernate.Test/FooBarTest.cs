@@ -2810,33 +2810,207 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Any() 
 		{
+			ISession s = sessions.OpenSession();
+			One one = new One();
+			BarProxy foo = new Bar();
+			foo.Object = one;
+			object fid = s.Save(foo);
+			object oid = one.Key;
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			IList list = s.Find(
+				"from Bar bar where bar.Object.id = ? and bar.Object.class = ?",
+				new object[] { oid, typeof(One) },
+				new Type.IType[] { NHibernate.Int64, NHibernate.Class } );
+			Assert.AreEqual(1, list.Count);
+
+			// this is a little different from h2.0.3 because the full type is stored, not
+			// just the class name.
+			list = s.Find("select one from One one, Bar bar where bar.Object.id = one.id and bar.Object.class LIKE 'NHibernate.DomainModel.One%'");
+			Assert.AreEqual(1, list.Count);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			foo = (BarProxy)s.Load( typeof(Foo), fid );
+			Assert.IsNotNull(foo);
+			Assert.IsTrue( foo.Object is One );
+			Assert.AreEqual( oid, s.GetIdentifier( foo.Object ) );
+			s.Delete(foo);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void EmbeddedCompositeID() 
 		{
+			ISession s = sessions.OpenSession();
+			Location l = new Location();
+			l.CountryCode = "AU";
+			l.Description = "foo bar";
+			l.Locale = System.Globalization.CultureInfo.CreateSpecificCulture("en-AU");
+			l.StreetName = "Brunswick Rd";
+			l.StreetNumber = 300;
+			l.City = "Melbourne";
+			s.Save(l);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			s.FlushMode = FlushMode.Never;
+			l = (Location)s.Find("from l in class Location where l.CountryCode = 'AU' and l.Description='foo bar'")[0];
+			Assert.AreEqual( "AU", l.CountryCode );
+			Assert.AreEqual( "Melbourne", l.City );
+			Assert.AreEqual( System.Globalization.CultureInfo.CreateSpecificCulture("en-AU"), l.Locale );
+			s.Close();
+
+			s = sessions.OpenSession();
+			l.Description = "sick're";
+			s.Update(l);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			l = new Location();
+			l.CountryCode = "AU";
+			l.Description = "foo bar";
+			l.Locale = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+			l.StreetName = "Brunswick Rd";
+			l.StreetNumber = 300;
+			l.City = "Melbourne";
+			Assert.AreSame( l, s.Load( typeof(Location), l ) );
+			Assert.AreEqual( System.Globalization.CultureInfo.CreateSpecificCulture("en-AU"), l.Locale );
+			s.Delete(l);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void AutosaveChildren() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Baz baz = new Baz();
+			IDictionary bars = new Hashtable();
+			object emptyObject = new object();
+			baz.CascadingBars = bars;
+			s.Save(baz);
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			baz = (Baz) s.Load( typeof(Baz), baz.Code );
+			baz.CascadingBars.Add( new Bar(), emptyObject );
+			baz.CascadingBars.Add( new Bar(), emptyObject );
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			baz = (Baz)s.Load( typeof(Baz), baz.Code );
+			Assert.AreEqual( 2, baz.CascadingBars.Count );
+			IEnumerator enumer = baz.CascadingBars.GetEnumerator();
+			Assert.IsTrue( enumer.MoveNext() );
+			Assert.IsNotNull( enumer.Current );
+			baz.CascadingBars.Clear(); // test all-delete-orphan
+			s.Flush();
+
+			Assert.AreEqual( 0, s.Find("from Bar bar").Count );
+			s.Delete(baz);
+			t.Commit();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void OrphanDelete() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Baz baz = new Baz();
+			IDictionary bars = new Hashtable();
+			bars.Add( new Bar(), new object() );
+			bars.Add( new Bar(), new object() );
+			bars.Add( new Bar(), new object() );
+			s.Save(baz);
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			baz = (Baz) s.Load( typeof(Baz), baz.Code );
+			IEnumerator enumer = bars.GetEnumerator();
+			enumer.MoveNext();
+			bars.Remove( enumer.Current );
+			s.Delete(baz);
+			enumer.MoveNext();
+			bars.Remove( enumer.Current );
+			s.Flush();
+
+			Assert.AreEqual( 0, s.Find("from Bar bar").Count );
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void TransientOrphanDelete() 
 		{
+			ISession s = sessions.OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Baz baz = new Baz();
+			IDictionary bars = new Hashtable();
+			baz.CascadingBars = bars;
+			bars.Add( new Bar(), new object() );
+			bars.Add( new Bar(), new object() );
+			bars.Add( new Bar(), new object() );
+			IList foos = new ArrayList();
+			foos.Add( new Foo() );
+			foos.Add( new Foo() );
+			baz.FooBag = foos;
+			s.Save(baz);
+
+			IEnumerator enumer = new Util.JoinedEnumerable( new IEnumerable[] { foos , bars.Keys } ).GetEnumerator();
+			while( enumer.MoveNext() ) 
+			{
+				FooComponent cmp = ((Foo)enumer.Current).Component;
+				s.Delete( cmp.Glarch );
+				cmp.Glarch = null;
+			}
+
+			t.Commit();
+			s.Close();
+
+			enumer = bars.Keys.GetEnumerator();
+			enumer.MoveNext();
+			bars.Remove( enumer.Current );
+			foos.RemoveAt(1);
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			s.Update(baz);
+			Assert.AreEqual( 2, s.Find("from Bar bar").Count );
+			Assert.AreEqual( 3, s.Find("from Foo foo").Count );
+			t.Commit();
+			s.Close();
+
+			foos.RemoveAt(0);
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+			s.Update(baz);
+			enumer = bars.Keys.GetEnumerator();
+			enumer.MoveNext();
+			bars.Remove( enumer.Current );
+			s.Delete(baz);
+			s.Flush();
+			Assert.AreEqual( 0, s.Find("from Foo foo").Count );
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
