@@ -252,15 +252,6 @@ namespace NHibernate.Collection
 			return i;
 		}
 
-		public override bool Equals(object other) {
-			Read();
-			return list.Equals(other);
-		}
-
-		public override int GetHashCode() {
-			Read();
-			return list.GetHashCode();
-		}
 
 		public override bool EntryExists(object entry, int i) {
 			return entry!=null;

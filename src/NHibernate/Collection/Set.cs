@@ -395,19 +395,6 @@ namespace NHibernate.Collection {
 			throw new NotImplementedException("Sets don't have indexes");
 		}
 
-		//TODO: find out if this is behaiving as Hibernate expects it to.  If I 
-		// read the Java docs correctly these methods are actually implemented.  In
-		// .NET Collections I believe they just delegate to the Object.Equals() & .GetHashCode()
-		// which would not be a consitent interface for Hibernate.
-		public override bool Equals(object other) {
-			Read();
-			return map.Equals(other);
-		}
-		public override int GetHashCode() {
-			Read();
-			return map.GetHashCode();
-		}
-
 		/// <summary>
 		/// <see cref="PersistentCollection.EntryExists"/>
 		/// </summary>

@@ -270,14 +270,6 @@ namespace NHibernate.Collection
 		public override object GetIndex(object entry, int i) {
 			return ((DictionaryEntry)entry).Key;
 		}
-		public override bool Equals(object other) {
-			Read();
-			return map.Equals(other);
-		}
-		public override int GetHashCode() {
-			Read();
-			return map.GetHashCode();
-		}
 
 		public override bool EntryExists(object entry, int i) {
 			return ( (DictionaryEntry)entry).Value!=null;
