@@ -66,7 +66,7 @@ namespace NHibernate.Property
 		/// <param name="propertyName">The name of the Property.</param>
 		/// <returns>The name of the Field.</returns>
 		/// <remarks>
-		/// This uses the convention that a Property named <c>Id</c> will have a field </c>id</c>
+		/// This uses the convention that a Property named <c>Id</c> will have a field <c>id</c>
 		/// </remarks>
 		private string GetFieldName(string propertyName) 
 		{

@@ -22,7 +22,7 @@ namespace NHibernate.Engine
 		/// Prepares the IDbCommand for the IDbConnection
 		/// 
 		/// DESIGNTHOUGHT: This is a bit of a false statement now - in order for ADO.NET to Prepare a command the
-		/// Size & Precision of the Parameter HAVE to be set.  The current NHibernate codebase does
+		/// Size &amp; Precision of the Parameter HAVE to be set.  The current NHibernate codebase does
 		/// not do this.  I think to IType we can add a method int[] Size() and int[] Precision and
 		/// update each Type accordingly.  The only bad part about that is that for var length Parameters
 		/// we will probably be setting the length to the max size and precision - I don't know if that would 

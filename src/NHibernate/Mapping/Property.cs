@@ -26,16 +26,25 @@ namespace NHibernate.Mapping
 			get { return propertyValue.Type; }
 		}
 
+		/// <summary>
+		/// Gets the number of columns this property uses in the db.
+		/// </summary>
 		public int ColumnSpan 
 		{
 			get { return propertyValue.ColumnSpan; }
 		}
 
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="Column"/>s.
+		/// </summary>
 		public ICollection ColumnCollection 
 		{
 			get { return propertyValue.ColumnCollection; }
 		}
 
+		/// <summary>
+		/// Gets or Sets the name of the Property in the class.
+		/// </summary>
 		public string Name 
 		{
 			get { return name; }

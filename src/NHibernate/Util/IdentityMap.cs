@@ -7,23 +7,24 @@ namespace NHibernate.Util
 {
 
 	/// <summary>
-	/// An <c>IDictionary</c> where keys are compared by object identity, rather than <c>equals</c>.
+	/// An <see cref="IDictionary" /> where keys are compared by object identity, rather than <c>equals</c>.
 	/// 
 	/// All external users of this class need to have no knowledge of the IdentityKey - it is all
 	/// hidden by this class.
 	/// </summary>
 	/// <remarks>
+	/// <para>
 	/// Do NOT use a System.Value type as the key for this Hashtable - only classes.  See
-	/// the google thread 
-	/// http://groups.google.com/groups?hl=en&lr=&ie=UTF-8&oe=UTF-8&threadm=bds2rm%24ruc%241%40charly.heeg.de&rnum=1&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8%26oe%3DUTF-8%26q%3DSystem.Runtime.CompilerServices.RuntimeHelpers.GetHashCode%26sa%3DN%26tab%3Dwg
+	/// the <a href="http://groups.google.com/groups?hl=en&lr=&ie=UTF-8&oe=UTF-8&threadm=bds2rm%24ruc%241%40charly.heeg.de&rnum=1&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8%26oe%3DUTF-8%26q%3DSystem.Runtime.CompilerServices.RuntimeHelpers.GetHashCode%26sa%3DN%26tab%3Dwg">google thread</a>
 	/// about why using System.Value is a bad thing.
-	/// <p>
+	/// </para>
+	/// <para>
 	/// If I understand it correctly, the first call to get an object defined by a DateTime("2003-01-01")
 	/// would box the DateTime and return the identity key for the box.  If you were to get that Key and
 	/// unbox it into a DateTime struct, then the next time you passed it in as the Key the IdentityMap
 	/// would box it again (into a different box) and it would have a different IdentityKey - so you would
 	/// not get the same value for the same DateTime value. 
-	/// </p>
+	/// </para>
 	/// </remarks>
 	[Serializable]
 	public sealed class IdentityMap : IDictionary	 

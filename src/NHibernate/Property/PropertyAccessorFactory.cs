@@ -30,12 +30,12 @@ namespace NHibernate.Property
 		/// <param name="type"></param>
 		/// <returns></returns>
 		/// <remarks>
-		/// <p>
+		/// <para>
 		/// The built in ways of accessing the values of Properties in your domain class are:
-		/// </p>
+		/// </para>
 		/// <list type="table">
 		///		<listheader>
-		///			<term>access method</term>
+		///			<term>Access Method</term>
 		///			<description>How NHibernate accesses the Mapped Class.</description>
 		///		</listheader>
 		///		<item>
@@ -51,7 +51,7 @@ namespace NHibernate.Property
 		///				The <c>name</c> attribute is the name of the field.  If you have any Properties
 		///				in the Mapped Class those will be bypassed and NHibernate will go straight to the
 		///				field.  This is a good option if your setters have business rules attached to them
-		///				or if you don't want to expose a field through a Getter & Setter.
+		///				or if you don't want to expose a field through a Getter &amp; Setter.
 		///			</description>
 		///		</item>
 		///		<item>
@@ -72,11 +72,15 @@ namespace NHibernate.Property
 		///			</description>
 		///		</item>
 		///	</list>
-		///	<p>
+		///	<para>
 		///	In order for the <c>nosetter</c> to know the name of the field to access NHibernate needs to know
 		///	what the naming strategy is.  The following naming strategies are built into NHibernate:
-		///	</p>
+		///	</para>
 		///	<list type="table">
+		///		<listheader>
+		///			<term>Naming Strategy</term>
+		///			<description>How NHibernate converts the value of the <c>name</c> attribute to a field name.</description>
+		///		</listheader>
 		///		<item>
 		///			<term>camelcase</term>
 		///			<description>

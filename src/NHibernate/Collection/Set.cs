@@ -31,7 +31,7 @@ namespace NHibernate.Collection {
 		[NonSerialized] protected IList tempIdentifierList;
 
 		/// <summary>
-		/// Returns a Hashtable where the Key & the Value are both a Copy of the
+		/// Returns a Hashtable where the Key &amp; the Value are both a Copy of the
 		/// same object.
 		/// <see cref="PersistentCollection.Snapshot"/>
 		/// </summary>

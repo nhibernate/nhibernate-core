@@ -7,7 +7,7 @@ namespace NHibernate.Type
 {
 	
 	/// <summary>
-	/// Maps a System.DateTime Property to a column that stores date & time down to 
+	/// Maps a System.DateTime Property to a column that stores date &amp; time down to 
 	/// the accuracy of a second.
 	/// </summary>
 	/// <remarks>
@@ -90,6 +90,7 @@ namespace NHibernate.Type
 			// return a different box.  
 			return (DateTime)value;
 		}
+
 
 		public override bool HasNiceEquals 
 		{
