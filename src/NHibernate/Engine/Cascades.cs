@@ -227,7 +227,9 @@ namespace NHibernate.Engine
 			{
 				public override bool DoCascade( CascadingAction action )
 				{
-					return action == CascadingAction.ActionSaveUpdate;
+					return action == CascadingAction.ActionSaveUpdate
+						|| action == CascadingAction.ActionLock;
+					// TODO: H2.1 also includes Copy and Replicate actions here
 				}
 			}
 
