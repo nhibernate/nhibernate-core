@@ -6,7 +6,7 @@ namespace NHibernate.Engine {
 	/// Defines operations common to "compiled" mappings (ie. <c>SessionFactory</c>) and
 	/// "uncompiled" mappings (ie <c>Configuration</c> that are used by implementors of <c>IType</c>
 	/// </summary>
-	public interface Mapping {
+	public interface IMapping {
 		IType GetIdentifierType(System.Type persistentType);
 	}
 }
