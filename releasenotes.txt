@@ -1,3 +1,13 @@
+Build 0.7.0.0
+======================== 
+- Renamed class NHibernate.NHibernate to NHibernate.NHibernateUtil.  This will break alot of code if you were using ISession.Find with parameters - migrate to IQuery instead.
+- Fixed bug with DateTime type where any value less than 1/1/1753 was written to the database as null.  If you were relying on this then the Nullables library in NHibernateContrib is the way to code null values for DateTime properties.
+- Added IDisposable to EnumerableImpl.
+- Added default value of hibernate.connection.driver_class to Dialects.
+- Fixed messages in exceptions from GetGetter and GetSetter in BasicPropertyAccessor and NoSetterAccessor.
+- Improved messages in Exceptions thrown by ISetter.
+- Improved messages in Exceptions for Persisters with problems parsing discriminator values.
+
 Build 0.6.0.0
 ======================== 
 - Added support for proxy="" on classes.  proxy="" must either specify an Interface or the properties that need to be proxied have to be virtual.
