@@ -610,11 +610,11 @@ namespace NHibernate.DomainModel
 		 Cached = new SortedList();
 
 		 CompositeElement ce = new CompositeElement();
-		 ce.foo = "foo";
-		 ce.bar = "bar";
+		 ce.Foo = "foo";
+		 ce.Bar = "bar";
 		 CompositeElement ce2 = new CompositeElement();
-		 ce2.foo = "fooxxx";
-		 ce2.bar = "barxxx";
+		 ce2.Foo = "fooxxx";
+		 ce2.Bar = "barxxx";
 		 Cached.Add(ce, new object());
 		 Cached.Add(ce2, new object());
 		 CachedMap = new SortedList();

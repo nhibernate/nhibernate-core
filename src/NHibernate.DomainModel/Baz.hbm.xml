@@ -284,8 +284,8 @@
 			<jcs-cache usage="read-write"/>
 			<key column="baz"/>
 			<composite-element class="NHibernate.DomainModel.CompositeElement, NHibernate.DomainModel">
-				<property name="foo"/>
-				<property name="bar"/>
+				<property name="Foo"/>
+				<property name="Bar"/>
 			</composite-element>
 		</set>
 	
@@ -294,8 +294,8 @@
 			<key column="baz"/>
 			<index-many-to-many column="another_baz" class="NHibernate.DomainModel.Baz, NHibernate.DomainModel"/>
 			<composite-element class="NHibernate.DomainModel.CompositeElement, NHibernate.DomainModel">
-				<property name="foo"/>
-				<property name="bar"/>
+				<property name="Foo"/>
+				<property name="Bar"/>
 			</composite-element>
 		</map>
 		

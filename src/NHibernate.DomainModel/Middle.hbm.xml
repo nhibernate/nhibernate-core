@@ -7,13 +7,13 @@
 	>
         <composite-id name="Id">
             <key-property 
-				name="akey" 
+				name="AKey" 
 				type="String(10)" 
 				length="10" 
 				column="AKEY"
 			/>
             <key-property 
-				name="bkey" 
+				name="BKey" 
 				type="String(10)" 
 				length="10" 
 				column="BKEY"
@@ -35,7 +35,7 @@
 		table="CID_MID"
 	>
         <composite-id name="Id">
-            <key-many-to-one name="sup">
+            <key-many-to-one name="Sup">
                 <column 
 					length="10" 
 					name="AKEY"
@@ -72,14 +72,14 @@
 		table="CID_OUT"
 	>
         <composite-id name="Id">
-            <key-many-to-one name="master">
+            <key-many-to-one name="Master">
                 <column name="AKEY"/>
                 <column name="BKEY"/>
                 <column name="ONE"/>
                 <column name="TWO"/>
             </key-many-to-one>
             <key-property 
-				name="detailId" 
+				name="DetailId" 
 				type="String(10)" 
 				column="ID" 
 				length="10"
