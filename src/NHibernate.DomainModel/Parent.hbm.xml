@@ -6,12 +6,7 @@
 			<generator class="assigned" />
 		</id>
 		<property name="AdultName" type="String" column="adult_name" />
-		<!--<map name="Children" inverse="true" lazy="false" table="child_parent">
-			<key column="parent_id"/>
-			<index column="which_parent" type="string" />
-			<many-to-many column="id" class="NHibernate.DomainModel.Child, NHibernate.DomainModel" />
-		</map>-->
-
+		
 		<set name="AdultFriends" table="parent_friends" sort="NHibernate.DomainModel.ParentComparer, NHibernate.DomainModel">
 			<key column="parent_id" />
 			<many-to-many column="parent_friend_id" class="NHibernate.DomainModel.Parent, NHibernate.DomainModel" />
