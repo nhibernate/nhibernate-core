@@ -45,16 +45,17 @@ namespace NHibernate.Id
 
 		static IdentifierGeneratorFactory() 
 		{
-			idgenerators.Add("uuid.hex", typeof(UUIDHexGenerator));
-			idgenerators.Add("uuid.string", typeof(UUIDStringGenerator));
-			idgenerators.Add("hilo", typeof(TableHiLoGenerator));
-			idgenerators.Add("assigned", typeof(Assigned));
-			idgenerators.Add("identity", typeof(IdentityGenerator));
-			idgenerators.Add("sequence", typeof(SequenceGenerator));
-			idgenerators.Add("seqhilo", typeof(SequenceHiLoGenerator));
-			idgenerators.Add("vm", typeof(CounterGenerator));
-			idgenerators.Add("foreign", typeof(ForeignGenerator));
-			idgenerators.Add("guid", typeof(GuidGenerator));
+			idgenerators.Add( "uuid.hex", typeof(UUIDHexGenerator) );
+			idgenerators.Add( "uuid.string", typeof(UUIDStringGenerator) );
+			idgenerators.Add( "hilo", typeof(TableHiLoGenerator) );
+			idgenerators.Add( "assigned", typeof(Assigned) );
+			idgenerators.Add( "identity", typeof(IdentityGenerator) );
+			idgenerators.Add( "sequence", typeof(SequenceGenerator) );
+			idgenerators.Add( "seqhilo", typeof(SequenceHiLoGenerator) );
+			idgenerators.Add( "vm", typeof(CounterGenerator) );
+			idgenerators.Add( "foreign", typeof(ForeignGenerator) );
+			idgenerators.Add( "guid", typeof(GuidGenerator) );
+			idgenerators.Add( "guid.comb", typeof(GuidCombGenerator) );
 		}
 
 		private IdentifierGeneratorFactory() {} //cannot be instantiated

@@ -868,6 +868,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Id\GuidCombGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Id\GuidGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
