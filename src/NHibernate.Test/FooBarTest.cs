@@ -547,7 +547,7 @@ namespace NHibernate.Test
 				.Add( Expression.Expression.Like( "String", f.String) )
 				.Add( Expression.Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean} ) )
 				.SetFetchMode("TheFoo", FetchMode.Eager)
-				.SetFetchMode("baz", FetchMode.Lazy)
+				.SetFetchMode("Baz", FetchMode.Lazy)
 				.List();
 
 			Assert.IsTrue( list.Count==1 && list[0]==f );
