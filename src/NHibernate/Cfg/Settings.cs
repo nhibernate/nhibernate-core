@@ -50,9 +50,6 @@ namespace NHibernate.Cfg
 			set { _dialect = value; }
 		}
 
-
-		// some other ones in here I don't think will be added
-		
 		public string DefaultSchemaName
 		{
 			get { return _defaultSchemaName; }
@@ -77,7 +74,6 @@ namespace NHibernate.Cfg
 			set { _transactionFactory = value; }
 		}
 
-
 		public string SessionFactoryName
 		{
 			get { return _sessionFactoryName; }
@@ -90,6 +86,5 @@ namespace NHibernate.Cfg
 			set { _cacheProvider = value; }
 		}
 
-		
 	}
 }

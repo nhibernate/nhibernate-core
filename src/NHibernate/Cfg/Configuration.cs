@@ -813,7 +813,6 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
-		//TODO: make properties a Settings class
 		protected void ConfigureCaches(Settings settings) 
 		{
 			log.Info( "instantiating and configuring caches" );

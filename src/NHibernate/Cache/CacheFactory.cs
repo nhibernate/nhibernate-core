@@ -18,7 +18,6 @@ namespace NHibernate.Cache
 		public const string ReadOnly = "read-only";
 		public const string ReadWrite = "read-write";
 		public const string NonstrictReadWrite = "nonstrict-read-write";
-		public const string Transactional = "transactional";
 
 		public static ICacheConcurrencyStrategy CreateCache(XmlNode node, string name, bool mutable) 
 		{
@@ -48,10 +47,6 @@ namespace NHibernate.Cache
 					break;
 				case CacheFactory.NonstrictReadWrite :
 					ccs = new NonstrictReadWriteCache();
-					break;
-				case CacheFactory.Transactional : 
-					// TODO: build this
-					//ccs = new TransactionalCache();
 					break;
 				default :
 					throw new MappingException( "cache usage attribute should be read-write, read-only, nonstrict-read-write, or transactional" );
