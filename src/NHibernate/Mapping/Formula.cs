@@ -15,13 +15,16 @@ namespace NHibernate.Mapping
 		{
 			uniqueInteger = formulaUniqueInteger++;
 		}
-		public String getTemplate(Dialect.Dialect dialect) 
+		public String GetTemplate(Dialect.Dialect dialect) 
 		{
 			return Template.RenderWhereStringTemplate(formula, dialect);
 		}
-		public String getAlias() 
+		public String Alias
 		{
-			return "f" + uniqueInteger.ToString() + StringHelper.Underscore;
+			get 
+			{
+				return "f" + uniqueInteger.ToString() + StringHelper.Underscore;
+			}
 		}
 		public string FormulaString
 		{
