@@ -58,17 +58,8 @@ namespace NHibernate.Type
 		public override void Set( IDbCommand st, object value, int index )
 		{
 			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
-			parm.DbType = DbType.DateTime;
-			//TODO: figure out if this is a good solution for NULL DATES
-			if( ( DateTime ) value < new DateTime( 1753, 1, 1 ) )
-			{
-				parm.Value = DBNull.Value;
-			}
-			else
-			{
-				DateTime dateValue = ( DateTime ) value;
-				parm.Value = new DateTime( dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute, dateValue.Second );
-			}
+			DateTime dateValue = ( DateTime ) value;
+			parm.Value = new DateTime( dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute, dateValue.Second );
 		}
 
 		/// <summary>
@@ -79,18 +70,19 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override bool Equals( object x, object y )
 		{
-			if( x == y )
+			if( x==y )
 			{
 				return true;
 			}
-			// DateTime can't be null because it is a struct - so comparing 
-			// them this way is useless - instead use the magic number...
-			//if (x==null || y==null) return false;
+			
+			if( x==null || y==null )
+			{
+				return false;
+			}
 
-			DateTime date1 = ( x == null ) ? DateTime.MinValue : ( DateTime ) x;
-			DateTime date2 = ( y == null ) ? DateTime.MinValue : ( DateTime ) y;
+			DateTime date1 = ( DateTime ) x;
+			DateTime date2 = ( DateTime ) y;
 
-			//return date1.Equals(date2);
 			return ( date1.Year == date2.Year &&
 				date1.Month == date2.Month &&
 				date1.Day == date2.Day &&
