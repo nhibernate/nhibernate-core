@@ -133,7 +133,10 @@ namespace NHibernate.Tool.hbm2ddl {
 
 				transaction.Commit();
 			} catch (Exception e) {
-				transaction.Rollback();
+				if (transaction != null) 
+				{
+					transaction.Rollback();
+				}
 				Console.Write(e.StackTrace);
 				throw new HibernateException( e.Message );
 			} finally {
