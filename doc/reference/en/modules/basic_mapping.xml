@@ -1068,7 +1068,7 @@
         cascade="all|none|save-update|delete"<co id="manytoone4-co" />
         outer-join="true|false|auto"<co id="manytoone5-co" />
         update="true|false"<co id="manytoone6-co" />
-        insert="true|false"<co id="manytoone6-co" />
+        insert="true|false"<co id="manytoone7-co" />
         access="field|property|ClassName"<co id="manytoone7-co" />
 /&gt;</programlisting>
 			<calloutlist>
@@ -1169,7 +1169,44 @@
 			turn, declare their own properties, components or collections. See
 			"Components" below.
 		</para>
-		<para>TODO: mapping sample</para>
+		<programlisting>&lt;component
+	name="propertyName"<co id="component1-co" />
+	class="ClassName"<co id="component2-co" />
+	insert="true|false"<co id="component3-co" />
+	update="true|false"<co id="component4-co" />
+	access="field|property|ClassName"<co id="component5-co" />
+/&gt;</programlisting>
+<calloutlist>
+	<callout arearefs="component1-co" id="component1">
+		<para>
+			<literal>name</literal>: The name of the property.
+		</para>     
+	</callout>
+	<callout arearefs="component2-co" id="component2">
+		<para>
+			<literal>class</literal> (optional - defaults to the property type
+			determined by reflection): The name of the component (child) class.
+		</para>  
+	</callout>
+	<callout arearefs="component3-co" id="component3">
+		<para>
+			<literal>insert</literal>: Do the mapped columns appear in SQL 
+			<literal>INSERT</literal>s?
+		</para>
+	</callout>
+	<callout arearefs="component4-co" id="component4">
+		<para>
+			<literal>update</literal>: Do the mapped columns appear in SQL 
+			<literal>UPDATE</literal>s?
+		</para>
+	</callout>
+	<callout arearefs="component5-co" id="component5">
+		<para>
+			<literal>access</literal> (optional - defaults to <literal>property</literal>): The
+			strategy Hibernate should use for accessing the property value.
+		</para>
+	</callout>
+</calloutlist>
 	</sect2>
 	<sect2 id="mapping-declaration-subclass">
 		<title>subclass</title>

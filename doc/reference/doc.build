@@ -4,22 +4,34 @@
 	default="build" 
 	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
 >
-
+	<!-- 
+		I have not figured out a way to modify the Path through NAnt so you
+		need to make sure that xsltproc is in the path
+	-->
+	
 	<property name="lang" value="en" />
 	<property name="build.dir" value="build/${lang}" />
-	<property name="build.html.dir" value="${build.dir}/html" />
+	
 	<target name="build" description="Generates html from docbook files.">
 	
-		<!-- 
-			I have not figured out a way to modify the Path through NAnt so you
-			need to make sure that xsltproc is in the path
-		-->
+		<call target="build-html" />
+		<call target="build-chm" />
+		
+	</target>
+	
+	<target name="build-html" description="Generates html from docbook files.">
+		 
+		<property name="build.html.dir" value="${build.dir}/html" />
+	
 		<mkdir dir="${build.html.dir}" failonerror="false" />
 		<mkdir dir="${build.html.dir}/single" failonerror="false" />
+		<mkdir dir="${build.html.dir}/chunk" failonerror="false" />
 		<mkdir dir="${build.html.dir}/styles" failonerror="false" />
 		<mkdir dir="${build.html.dir}/images" failonerror="false" />
 		
+		<!-- make the html version of the helpfile -->
 		<exec program="xsltproc" commandline="--output build\${lang}\html\single\reference.html ${lang}\styles\html.xsl ${lang}\master.xml" />
+		<exec program="xsltproc" commandline="--output build\${lang}\html\chunk\ ${lang}\styles\html_chunk.xsl ${lang}\master.xml" />
 		
 		<copy todir="${build.html.dir}">
 			<fileset basedir="${lang}">
@@ -30,4 +42,32 @@
 		
 	</target>
 	
+	<target name="build-chm" description="Generates chm file from docbook files.">
+		
+		<property name="hhc.exe" value="C:\Program Files\HTML Help Workshop\hhc" />
+		<property name="build.htmlhelp.dir" value="${build.dir}/htmlhelp" />
+		
+		<mkdir dir="${build.htmlhelp.dir}" failonerror="false" />
+		
+		<!-- make the htmlhelp version of the helpfile -->
+		<exec program="xsltproc" commandline="--output build\${lang}\htmlhelp\ ${lang}\styles\htmlhelp.xsl ${lang}\master.xml" />
+		
+		<copy todir="${build.htmlhelp.dir}" flatten="true">
+			<fileset basedir="${lang}">
+				<includes name="styles/*.css" />
+				<includes name="images/**.*" />
+			</fileset>
+		</copy>
+		
+		<exec program="${hhc.exe}" commandline="build\${lang}\htmlhelp\htmlhelp.hhp" />
+		
+		<delete>
+			<fileset basedir="${build.htmlhelp.dir}">
+				<includes name="*" />
+				<excludes name="*.chm" />
+			</fileset>
+		</delete>
+	</target>
+	
 </project>
+

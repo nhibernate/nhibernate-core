@@ -12,7 +12,7 @@
     <bookinfo>
         <title>NHibernate - Relational Persistence for Idiomatic .NET</title>
         <subtitle>NHibernate Reference Documentation</subtitle>
-        <releaseinfo>Alpha</releaseinfo>
+        <releaseinfo>Beta</releaseinfo>
     </bookinfo>
 
     <toc/>

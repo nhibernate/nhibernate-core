@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 
 <!--
+	This is a modification of Hibernate's html.xsl file to generate
+	a MS CHM file.
 
-	This is the XSL HTML configuration file for the Hibernate
+	This is the XSL HTMLHelp configuration file for the NHibernate
 	Reference Documentation.
 
 	It took me days to figure out this stuff and fix most of
@@ -23,7 +25,7 @@
 				xmlns="http://www.w3.org/TR/xhtml1/transitional"
 				exclude-result-prefixes="#default">
 	
-<xsl:import href="&db_xsl_path;/html/docbook.xsl"/>
+<xsl:import href="&db_xsl_path;/htmlhelp/htmlhelp.xsl"/>
 
 <!-- HTML Settings -->   
 
@@ -31,30 +33,22 @@
 		modified this so the stylesheet would be lang specific since it is stored
 		under the lang subdirectory anyway
 	-->
-	<xsl:param name="html.stylesheet">../styles/html.css</xsl:param>
-	
-	<!--
-		setting the images path so the xml can just refer to image
-		by file name and then let the chm and html help files prepend
-		the src however it is needed.
-	-->
-	<xsl:param name="img.src.path">../images/</xsl:param>
-	
+	<xsl:param name="html.stylesheet" select="'html.css'" />
+	<xsl:param name="htmlhelp.chm" select="'reference.chm'"></xsl:param>
+
+
+	<xsl:param name="suppress.navigation" select="0"/>
+	<xsl:param name="htmlhelp.hhc.binary" select="0"/>
+	<xsl:param name="htmlhelp.hhc.folders.instead.books" select="0"/>
+	<xsl:param name="img.src.path"></xsl:param>
+	<xsl:param name="generate.index" select="1" />
 	<!-- These extensions are required for table printing and other stuff -->
-
-	<!-- this requires jars to be available so I'm setting it to 0 instead of 1 -->
-	<xsl:param name="use.extensions">0</xsl:param>
-	<xsl:param name="tablecolumns.extension">0</xsl:param>
-	<xsl:param name="callout.extensions">0</xsl:param>
-	<xsl:param name="graphicsize.extension">0</xsl:param>
-
-<!-- Table Of Contents -->   
 
 	<!-- Generate the TOCs for named components only -->
 	<xsl:param name="generate.toc">
 		book   toc
 	</xsl:param>
-
+		
 	<!-- Show only Sections up to level 3 in the TOCs -->
 	<xsl:param name="toc.section.depth">3</xsl:param>
 	

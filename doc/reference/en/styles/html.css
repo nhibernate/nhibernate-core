@@ -1,64 +1,77 @@
-BODY {
-	font: verdana;
+BODY
+{
+	font-family: Verdana;
 }
-A {
+A 
+{
     color: #003399;
 }
 
-A:active {
+A:active 
+{
     color: #003399;
 }
 
-A:visited {
+A:visited 
+{
     color: #888888;
 }
 
-P, OL, UL, LI, DL, DT, DD, BLOCKQUOTE {
+P, OL, UL, LI, DL, DT, DD, BLOCKQUOTE 
+{
     color: #000000;
 }
 
-TD, TH, SPAN {
+TD, TH, SPAN 
+{
     color: #000000;
 }
 
-BLOCKQUOTE {
+BLOCKQUOTE 
+{
     margin-right: 0px;
 }
 
 
-H1, H2, H3, H4, H5, H6    {
+H1, H2, H3, H4, H5, H6    
+{
     color: #000000;
     font-weight:500;
     margin-top:10px;
     padding-top:15px;
 }
 
-TABLE  {
+TABLE  
+{
     border-collapse: collapse;
     border-spacing:0;
     border: 1px thin black;
     empty-cells: hide;
 }
 
-TD  {
+TD  
+{
     padding: 4pt;
 }
 
-H1 { font-size: 150%; }
-H2 { font-size: 140%; }
+H1 { font-size: 130%; font-weight: bold; }
+H2 { font-size: 120%; font-weight: bold; }
 H3 { font-size: 110%; font-weight: bold; }
-H4 { font-size: 110%; font-weight: bold;}
+H4 { font-size: 110%; font-weight: bold; }
 H5 { font-size: 100%; font-style: italic; }
 H6 { font-size: 100%; font-style: italic; }
 
-TT {
-font-size: 90%;
+TT 
+{
+	font-size: 90%;
     font-family: "Courier New", Courier, monospace;
     color: #000000;
 }
 
-PRE {
-font-size: 100%;
+PRE 
+{
+	font-size: 90%;
+	font-family: "Courier New";
     padding: 5px;
     border-style: solid;
     border-width: 1px;
@@ -66,11 +79,13 @@ font-size: 100%;
     background-color: #F4F4F4;
 }
 
-UL, OL, LI {
+UL, OL, LI 
+{
     list-style: disc;
 }
 
-HR  {
+HR  
+{
     width: 100%;
     height: 1px;
     background-color: #CCCCCC;
@@ -79,18 +94,21 @@ HR  {
     color: #CCCCCC;
 }
 
-.variablelist { 
+.variablelist 
+{ 
     padding-top: 10; 
     padding-bottom:10; 
     margin:0;
 }
 
-.itemizedlist, UL { 
+.itemizedlist, UL 
+{ 
     padding-top: 0; 
     padding-bottom:0; 
     margin:0; 
 }
 
-.term { 
+.term 
+{ 
     font-weight:bold;
 }

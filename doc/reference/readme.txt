@@ -27,3 +27,7 @@ Can be viewed at http://www.oasis-open.org/docbook/documentation/reference/html/
 Docbook Xsl Guide
 =======================================
 Can be viewed at http://www.sagehill.net/docbookxsl/index.html
+
+URL for htmlhelp parameters
+=======================================
+http://docbook.sourceforge.net/release/xsl/snapshot/doc/html/
