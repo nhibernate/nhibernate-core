@@ -29,20 +29,19 @@ namespace NHibernate.Dialect {
 			Types.NUMERIC, "NUMERIC" );
 			*/
 
-			Register( DbType.Bit, "BOOL" );
-			Register( DbType.BigInt, "INT8" );
-			Register( DbType.SmallInt, "INT2" );
-			Register( DbType.TinyInt, "INT2" );
-			Register( DbType.Int, "INT4" );
-			Register( DbType.Char, "CHAR(1)" );
-			Register( DbType.VarChar, "VARCHAR($l)" );
-			Register( DbType.Float, "FLOAT4" );
-			Register( DbType.Real, "FLOAT8" );
+			Register( DbType.Boolean, "BOOL" );
+			Register( DbType.Int64, "INT8" );
+			Register( DbType.Int16, "INT2" );
+			Register( DbType.Int32, "INT4" );
+			Register( DbType.AnsiStringFixedLength, "CHAR(1)" );
+			Register( DbType.AnsiString, "VARCHAR($l)" );
+			Register( DbType.Single, "FLOAT4" );
+			Register( DbType.Double, "FLOAT8" );
 			Register( DbType.DateTime, "DATE" );
-			Register( DbType.Timestamp, "TIMESTAMP" );
-			Register( DbType.VarBinary, "BYTEA" );
-			Register( DbType.Text, "TEXT" );
-			Register( DbType.Image, "BYTEA" );
+			Register( DbType.Time, "TIMESTAMP" );
+			Register( DbType.Binary, "BYTEA" );
+			Register( DbType.AnsiString, "TEXT" );
+			//Register( DbType.Image, "BYTEA" );
 			Register( DbType.Decimal, "NUMERIC" );
 		
 			/*
@@ -67,7 +66,7 @@ namespace NHibernate.Dialect {
 			return "drop sequence " + sequenceName;
 		}
 	
-		public string CascadeConstraintsString {
+		public override string CascadeConstraintsString {
 			get { return " cascade"; }
 		}
 	

@@ -32,7 +32,8 @@ namespace NHibernate.Dialect {
 		/// <summary>
 		/// Characters used for quoting sql identifiers
 		/// </summary>
-		public const string Quote = "'\"";
+		public const string Quote = "'\"[";
+		public const string ClosedQuote = "'\"]";
 
 		/// <summary>
 		/// Get the name of the database type associated with the given typecode
@@ -277,6 +278,15 @@ namespace NHibernate.Dialect {
 		/// <returns></returns>
 		public CaseFragment CreateCaseFragment() {
 			return new ANSICaseFragment();
+		}
+
+		/// <summary>
+		/// The name of the SQL function that transforms a string to lowercase
+		/// </summary>
+		public string LowercaseFunction {
+			get {
+				return "lower";
+			}
 		}
 	}
 }
