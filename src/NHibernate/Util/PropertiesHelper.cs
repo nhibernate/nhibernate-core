@@ -20,6 +20,33 @@ namespace NHibernate.Util {
 			return (propValue==null) ? defaultValue : propValue;
 		}
 		
+		public static IDictionary ToDictionary(string property, string delim, IDictionary properties) {
+			IDictionary map = new Hashtable();
+			string propValue = (string) properties[ property ];
+			if (propValue!=null) {
+				StringTokenizer tokens = new StringTokenizer(propValue, delim);
+				IEnumerator en = tokens.GetEnumerator();
+				while ( en.MoveNext() ) {
+					string key = (string) en.Current;
+					
+					string value = en.MoveNext() ? (string) en.Current : StringHelper.EmptyString;
+					map.Add( key, value );
+				}
+			}
+			return map;
+		}
+
+		public static string[] ToStringArray(string property, string delim, IDictionary properties) {
+			return ToStringArray( (string) properties[ property ], delim );
+		}
+
+		public static string[] ToStringArray(string propValue, string delim) {
+			if (propValue!=null) {
+				return StringHelper.Split(delim, propValue);
+			} else {
+				return new string[0];
+			}
+		}
 
 
 		public const string TagParam = "param";

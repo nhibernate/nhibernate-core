@@ -19,6 +19,7 @@ namespace NHibernate.Expression {
 			for ( int i=0; i<typedValues.Length; i++ ) {
 				typedValues[i] = new TypedValue( types[i], values[i] );
 			}
+			this.sql = sql;
 		}
 
 		public override string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {

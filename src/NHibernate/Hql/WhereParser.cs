@@ -121,9 +121,9 @@ namespace NHibernate.Hql {
 		// foo.Bar.Baz + a.B.C          (maps to: bar.Baz + b.C and foo.Bar = bar.id and a.B = b.id)
 		// ( foo.Bar.Baz + 1.0 ) < 2.0  (maps to: ( bar.Baz + 1.0 ) < 2.0 and foo.Bar = bar.id)
 		
-		private bool quoted = false; //Inside a quoted string
+		//private bool quoted = false; //Inside a quoted string
 		private bool betweenSpecialCase = false; //Inside a BETWEEN ... AND ... expression
-		private int bracketsSinceFunction = 0; //How deep inside in IN are we?
+		//private int bracketsSinceFunction = 0; //How deep inside in IN are we?
 		private bool negated = false;
 		
 		private bool inSubselect = false;

@@ -53,7 +53,7 @@ namespace NHibernate.Impl {
 		private int adoBatchSize;
 
 		private string defaultSchema;
-		private object statementFetchSize;
+		//private object statementFetchSize;
 		private IInterceptor interceptor;
 
 		private static IIdentifierGenerator uuidgen = new UUIDStringGenerator();
@@ -131,6 +131,52 @@ namespace NHibernate.Impl {
 
 			classPersisters = new Hashtable();
 			classPersistersByName = new Hashtable();
+
+			foreach(PersistentClass model in cfg.ClassMappings) {
+				System.Type persisterClass = model.Persister;
+				IClassPersister cp;
+				if (persisterClass==null || persisterClass==typeof(EntityPersister)) {
+					cp = new EntityPersister(model, this);
+				} else if (persisterClass==typeof(NormalizedEntityPersister)) {
+					cp = new NormalizedEntityPersister(model, this);
+				} else {
+					cp = InstantiatePersister(persisterClass, model);
+				}
+				classPersisters.Add( model.PersistentClazz, cp);
+				classPersistersByName.Add( model.Name, cp );
+			}
+
+			collectionPersisters = new Hashtable();
+			foreach( Mapping.Collection map in cfg.CollectionMappings ) {
+				collectionPersisters.Add( map.Role, new CollectionPersister(map, cfg, this) );
+			}
+
+			foreach(IClassPersister persister in classPersisters.Values) {
+				persister.PostInstantiate(this);
+			}
+
+			//TODO: Add for databinding
+
+			name = (string) properties[ Cfg.Environment.SessionFactoryName ];
+
+			try {
+				uuid = (string) uuidgen.Generate(null, null);
+			} catch (Exception) {
+				throw new AssertionFailure("could not generate UUID");
+			}
+
+			// queries:
+
+			querySubstitutions = PropertiesHelper.ToDictionary(Cfg.Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties);
+			log.Info("Query language substitutions: " + querySubstitutions);
+
+			queryImports = PropertiesHelper.ToStringArray(Cfg.Environment.QueryImports, " ,=;:\n\t\r\f", properties);
+			if ( queryImports.Length!=0 ) log.Info( "Query language imports: " + StringHelper.ToString(queryImports) );
+
+			namedQueries = cfg.NamedQueries;
+
+			log.Debug("Instantiated session factory");
+
 		}
 
 		// Emulates constant time LRU/MRU algorithms for cache

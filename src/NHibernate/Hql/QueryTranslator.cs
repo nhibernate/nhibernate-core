@@ -367,7 +367,7 @@ namespace NHibernate.Hql {
 				.ToString();
 		}
 
-		private IList associations;
+		
 
 		private void RenderSql() {
 			if (returnTypes.Count == 0 && scalarTypes.Count == 0) {
