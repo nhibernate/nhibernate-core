@@ -1100,9 +1100,6 @@ namespace NHibernate.Cfg {
 
 				model.Key.CreateForeignKeyOfClass( model.Owner.PersistentClazz );
 			}
-
-			//TODO: Check, H2.0.3 doesn't have this line any more
-			if ( !model.IsIndexed ) model.CreateIndex();
 		}
 
 		public static void BindRoot(XmlDocument doc, Mappings model) 

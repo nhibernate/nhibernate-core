@@ -116,16 +116,6 @@ namespace NHibernate.Mapping
 			set { oneToMany = value; }
 		}
 
-		//TODO: H2.0.3 - not in this class - where did it move to???
-		public Index CreateIndex() {
-			string name = "IX" + table.UniqueColumnString( Key.ColumnCollection );
-			Index index = table.GetIndex(name);
-			foreach(Column col in Key.ColumnCollection ) {
-				index.AddColumn(col);
-			}
-			return index;
-		}
-
 		public ICacheConcurrencyStrategy Cache {
 			get { return cache; }
 			set { cache = value; }
