@@ -14,16 +14,9 @@ namespace NHibernate.Util {
 		public const string OpenParen = "(";
 		public const string ClosedParen = ")";
 
-		public static string Join(string seperator, string[] strings) {
-			int length = strings.Length;
-			if (length == 0)
-				return EmptyString;
-			StringBuilder buf = new StringBuilder( length * strings[0].Length )
-				.Append(strings[0]);
-			for (int i=1; i<length; i++) {
-				buf.Append(seperator).Append(strings[i]);
-			}
-			return buf.ToString();
+		[Obsolete("Use String.Join() instead of this method. It does the same thing")]
+		public static string Join(string separator, string[] strings) {
+			return String.Join(separator, strings);
 		}
 
 		public static string Repeat(string str, int times) {
