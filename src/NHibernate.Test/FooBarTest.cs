@@ -1472,15 +1472,79 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void PersistentLifecycle() 
 		{
+			ISession s = sessions.OpenSession();
+			Qux q = new Qux();
+			s.Save(q);
+			q.Stuff = "foo bar baz qux";
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			q = (Qux)s.Load( typeof(Qux), q.Key );
+			Assert.IsTrue( q.Created, "lifecycle create" );
+			Assert.IsTrue( q.Loaded, "lifecycle load" );
+			Assert.IsNotNull( q.Foo, "lifecycle subobject" );
+			s.Delete(q);
+			Assert.IsTrue( q.Deleted, "lifecyle delete" );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			Assert.AreEqual(0, s.Find("from foo in class NHibernate.DomainModel.Foo").Count, "subdeletion");
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		//[Ignore("Test not written yet.")]
 		public void Iterators() 
 		{
+			ISession s = sessions.OpenSession();
+			for( int i=0; i<10; i++ ) 
+			{
+				Qux q = new Qux();
+				object qid = s.Save(q);
+				Assert.IsNotNull(q, "q is not null");
+				Assert.IsNotNull(qid, "qid is not null");
+			}
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			IEnumerator enumer = s.Enumerable("from q in class NHibernate.DomainModel.Qux where q.Stuff is null").GetEnumerator();
+			int count = 0;
+			while( enumer.MoveNext() ) 
+			{
+				Qux q = (Qux)enumer.Current;
+				q.Stuff = "foo";
+				// can't remove item from IEnumerator in .net 
+				//if (count==0 || count==5) enumer.Remove();
+				count++;
+			}
+
+			Assert.AreEqual(10, count, "found 10 items");
+			s.Flush();
+			s.Close();
+			
+			s = sessions.OpenSession();
+
+			Assert.AreEqual(10, 
+				s.Delete("from q in class NHibernate.DomainModel.Qux where q.Stuff=?", "foo", NHibernate.String),
+				"delete by query");
+			
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			enumer = s.Enumerable("from q in class NHibernate.DomainModel.Qux").GetEnumerator();
+			Assert.IsFalse( enumer.MoveNext() , "no items in enumerator" );
+			s.Flush();
+			s.Close();
+
+
 		}
 
 		[Test]
