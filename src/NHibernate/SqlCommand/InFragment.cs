@@ -34,30 +34,46 @@ namespace NHibernate.SqlCommand
 
 		public SqlString ToFragmentString() 
 		{
-			SqlStringBuilder buf = new SqlStringBuilder(values.Count + 5);
-			buf.Add(columnName);
-			if (values.Count > 1) 
+			SqlStringBuilder buf = new SqlStringBuilder( values.Count * 5 );
+			buf.Add( columnName );
+			
+			if( values.Count > 1 ) 
 			{
+				// is a comma needed before the value that's about to be added - it
+				// defaults to false because we don't need a comma right away.
+				bool commaNeeded = false;
+
+				// if a "null" is in the list of values then we need to manipulate
+				// the SqlString a little bit more at the end.
 				bool allowNull = false;
-				buf.Add(" in (");
-				for(int i=0; i<values.Count; i++) 
+
+				buf.Add( " in (" );
+				for( int i=0; i<values.Count; i++ ) 
 				{
 					if("null".Equals(values[i])) 
 					{
 						allowNull = true;
 					}
-					
 					else 
 					{
+						if( commaNeeded )
+						{
+							buf.Add( StringHelper.CommaSpace );
+						}
 						buf.Add( (string)values[i] );
-						if ( i<values.Count-1) buf.Add(StringHelper.CommaSpace);
+						
+						// a value has been added into the IN clause so the next
+						// one needs a comma before it
+						commaNeeded = true;
 					}
 				}
 
 				buf.Add(StringHelper.ClosedParen);
-				if(allowNull) 
+				
+				// if "null" is in the list of values then add to the beginning of the
+				// SqlString "is null or [column] (" + [rest of sqlstring here] + ")"
+				if( allowNull ) 
 				{
-					
 					buf.Insert(0, " is null or ")
 						.Insert(0, columnName)
 						.Insert(0, StringHelper.OpenParen)
