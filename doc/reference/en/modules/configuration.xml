@@ -83,8 +83,8 @@
 ...
 Configuration cfg = new Configuration()
     .AddClass( typeof(NHibernate.Auction.Item) )
-    .AddClass( typeof(NHibernate.Auction.Bid) )
-    .Properties = props;]]></programlisting>
+    .AddClass( typeof(NHibernate.Auction.Bid) );
+cfg.Properties = props;]]></programlisting>
 
         <para>
             A <literal>Configuration</literal> is intended as a configuration-time object, to be
