@@ -1138,6 +1138,41 @@ namespace NHibernate.Type
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="row"></param>
+		/// <param name="types"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public static object[] Assemble( object[] row, IType[] types, ISessionImplementor session, object owner )
+		{
+			object[] assembled = new object[ row.Length ];
+			for ( int i = 0; i < row.Length; i++ )
+			{
+				assembled[ i ] = types[ i ].Assemble( row[ i ], session, owner );
+			}
+			return assembled;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="row"></param>
+		/// <param name="types"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public static object[] Disassemble( object[] row, IType[] types, ISessionImplementor session)
+		{
+			object[] disassembled = new object[ row.Length ];
+			for ( int i = 0; i < row.Length; i++ )
+			{
+				disassembled[ i ] = types[ i ].Disassemble( row[ i ], session );
+			}
+			return disassembled;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="original"></param>
 		/// <param name="target"></param>
 		/// <param name="types"></param>

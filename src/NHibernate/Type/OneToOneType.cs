@@ -133,5 +133,28 @@ namespace NHibernate.Type
 			get { return foreignKeyType == ForeignKeyType.ForeignKeyToParent; }
 		}
 
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cached"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object Assemble( object cached, ISessionImplementor session, object owner )
+		{
+			return ResolveIdentifier( session.GetEntityIdentifier( owner ), session, owner );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override object Disassemble( object value, ISessionImplementor session )
+		{
+			return null;
+		}
 	}
 }

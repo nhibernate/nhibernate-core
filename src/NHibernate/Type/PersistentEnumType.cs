@@ -223,7 +223,6 @@ namespace NHibernate.Type
 			else
 			{
 				return GetInstance( cached );
-				;
 			}
 		}
 

@@ -116,6 +116,16 @@ namespace NHibernate.Type
 			get { return new TimeSpan( DateTime.Now.Ticks ); }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public object StringToObject( string xml )
+		{
+			return TimeSpan.Parse( xml );
+		}
+
 		#endregion
 
 		/// <summary>

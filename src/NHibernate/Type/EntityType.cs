@@ -143,29 +143,6 @@ namespace NHibernate.Type
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public override object Disassemble( object value, ISessionImplementor session )
-		{
-			if( value == null )
-			{
-				return null;
-			}
-			else
-			{
-				object id = session.GetIdentifier( value );
-				if( id == null )
-				{
-					throw new AssertionFailure( "cannot cache a reference to an object with a null id" );
-				}
-				return GetIdentifierType( session ).Disassemble( id, session );
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <param name="session"></param>
 		/// <returns></returns>
 		protected IType GetIdentifierType( ISessionImplementor session )

@@ -1,12 +1,13 @@
 using System.Collections;
 using NHibernate;
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Loader;
+using NHibernate.SqlTypes;
 using NHibernate.Util;
 
 namespace NHibernate.Type
 {
-	/*
 	/// <summary>
 	/// Handles "dynamic" components, represented as <tt>Map</tt>s
 	/// </summary>
@@ -15,232 +16,382 @@ namespace NHibernate.Type
 		private string[] propertyNames;
 		private IType[] propertyTypes;
 		private int propertySpan;
-		private Cascades.CascadeStyle[] cascade;
-		private OuterJoinFetchStrategy[] joinedFetch;
+		private readonly Cascades.CascadeStyle[] cascade;
+		private readonly OuterJoinFetchStrategy[] joinedFetch;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyNames"></param>
+		/// <param name="propertyTypes"></param>
+		/// <param name="joinedFetch"></param>
+		/// <param name="cascade"></param>
 		public DynamicComponentType(
 			string[] propertyNames,
 			IType[] propertyTypes,
-			int propertySpan,
-			Cascades.CascadeStyle[] cascade,
-			OuterJoinFetchStrategy[] joinedFetch
+			OuterJoinFetchStrategy[] joinedFetch,
+			Cascades.CascadeStyle[] cascade
 			)
 		{
 			this.propertyNames = propertyNames;
 			this.propertyTypes = propertyTypes;
-			this.propertySpan = propertySpan;
 			this.cascade = cascade;
 			this.joinedFetch = joinedFetch;
+			propertySpan = propertyTypes.Length;
 		}
 
 		#region IAbstractComponentType Members
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public Cascades.CascadeStyle Cascade( int i )
+		{
+			return cascade[ i ];
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public OuterJoinFetchStrategy EnableJoinedFetch( int i )
+		{
+			return joinedFetch[ i ];
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string[] PropertyNames
+		{
+			get
+			{
+				return propertyNames;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="i"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object GetPropertyValue( object component, int i, ISessionImplementor session )
+		{
+			return GetPropertyValue( component, i );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object[] GetPropertyValues( object component, ISessionImplementor session )
+		{
+			return GetPropertyValues( component );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public object GetPropertyValue( object component, int i )
+		{
+			return ( (Map) component)[ propertyNames[ i ] ];
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <returns></returns>
+		public object[] GetPropertyValues( object component )
+		{
+			Map bean = (Map) component;
+			object[] result = new object[ propertySpan ];
+			for ( int i = 0; i < propertySpan; i++ )
+			{
+				result[ i ] = bean[ propertyNames[ i ] ];
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		public IType[] Subtypes
 		{
 			get	{ return propertyTypes;	} 
 		}
 
-		public string[] PropertyNames
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public object Instantiate()
 		{
-			get
+			return new Map();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <param name="values"></param>
+		public void SetPropertyValues( object component, object[] values )
+		{
+			Map map = component as Map;
+			for ( int i = 0; i < propertySpan; i++ )
 			{
-				// TODO:  Add DynamicComponentType.PropertyNames getter implementation
-				return null;
+				map[ propertyNames[ i ] ] = values[ i ];
 			}
 		}
 
-		public object[] GetPropertyValues(object component, ISessionImplementor session)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="component"></param>
+		/// <returns></returns>
+		public override object DeepCopy( object component )
 		{
-			// TODO:  Add DynamicComponentType.GetPropertyValues implementation
-			return null;
-		}
+			if ( component == null )
+			{
+				return null;
+			}
 
-		public void SetPropertyValues(object component, object[] values)
-		{
-			// TODO:  Add DynamicComponentType.SetPropertyValues implementation
-		}
+			object[] values = GetPropertyValues( component );
+			for ( int i = 0; i < propertySpan; i++ )
+			{
+				values[ i ] = propertyTypes[ i ].DeepCopy( values[ i ] );
+			}
+			object result = Instantiate();
+			SetPropertyValues( result, values );
 
-		public object GetPropertyValue(object component, int i, ISessionImplementor session)
-		{
-			// TODO:  Add DynamicComponentType.GetPropertyValue implementation
-			return null;
-		}
-
-		public NHibernate.Engine.Cascades.CascadeStyle Cascade(int i)
-		{
-			// TODO:  Add DynamicComponentType.Cascade implementation
-			return null;
-		}
-
-		public NHibernate.Loader.OuterJoinFetchStrategy EnableJoinedFetch(int i)
-		{
-			// TODO:  Add DynamicComponentType.EnableJoinedFetch implementation
-			return null;
+			return result;
 		}
 
 		#endregion
 
 		#region IType Members
 
-		public bool IsAssociationType
+		/// <summary></summary>
+		public override bool IsAssociationType
 		{
-			get
+			// TODO:  Add DynamicComponentType.IsAssociationType getter implementation
+			get	{ return false;	}
+		}
+
+		/// <summary></summary>
+		public override bool IsPersistentCollectionType
+		{
+			// TODO:  Add DynamicComponentType.IsPersistentCollectionType getter implementation
+			get	{ return false;	}
+		}
+
+		/// <summary></summary>
+		public override bool IsComponentType
+		{
+			// TODO:  Add DynamicComponentType.IsComponentType getter implementation
+			get	{ return false;	}
+		}
+
+		/// <summary></summary>
+		public override bool IsEntityType
+		{
+			// TODO:  Add DynamicComponentType.IsEntityType getter implementation
+			get	{ return false;	}
+		}
+
+		/// <summary></summary>
+		public override bool IsObjectType
+		{
+			// TODO:  Add DynamicComponentType.IsObjectType getter implementation
+			get	{ return false;	}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		public override SqlType[] SqlTypes(IMapping mapping)
+		{
+			// Not called at runtime so it doesn't matter if it's slow :-)
+			SqlType[] sqlTypes = new SqlType[ GetColumnSpan( mapping ) ];
+			int n = 0;
+			for ( int i = 0; i < propertySpan; i++ )
 			{
-				// TODO:  Add DynamicComponentType.IsAssociationType getter implementation
-				return false;
+				SqlType[] subtypes = propertyTypes[ i ].SqlTypes( mapping );
+				for ( int j = 0; j < subtypes.Length; j++ )
+				{
+					sqlTypes[ n++ ] = subtypes[ j ];
+				}
 			}
+			return sqlTypes;
 		}
 
-		public bool IsPersistentCollectionType
-		{
-			get
-			{
-				// TODO:  Add DynamicComponentType.IsPersistentCollectionType getter implementation
-				return false;
-			}
-		}
-
-		public bool IsComponentType
-		{
-			get
-			{
-				// TODO:  Add DynamicComponentType.IsComponentType getter implementation
-				return false;
-			}
-		}
-
-		public bool IsEntityType
-		{
-			get
-			{
-				// TODO:  Add DynamicComponentType.IsEntityType getter implementation
-				return false;
-			}
-		}
-
-		public bool IsObjectType
-		{
-			get
-			{
-				// TODO:  Add DynamicComponentType.IsObjectType getter implementation
-				return false;
-			}
-		}
-
-		public NHibernate.SqlTypes.SqlType[] SqlTypes(IMapping mapping)
-		{
-			// TODO:  Add DynamicComponentType.SqlTypes implementation
-			return null;
-		}
-
-		public int GetColumnSpan(IMapping mapping)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mapping"></param>
+		/// <returns></returns>
+		public override int GetColumnSpan(IMapping mapping)
 		{
 			// TODO:  Add DynamicComponentType.GetColumnSpan implementation
 			return 0;
 		}
 
-		public System.Type ReturnedClass
+		/// <summary>
+		/// 
+		/// </summary>
+		public override System.Type ReturnedClass
 		{
-			get
+			// TODO:  Add DynamicComponentType.ReturnedClass getter implementation
+			get	{ return null; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public override bool Equals( object x, object y )
+		{
+			if ( x == y ) 
 			{
-				// TODO:  Add DynamicComponentType.ReturnedClass getter implementation
-				return null;
+				return true;
 			}
+			if ( x == null || y == null )
+			{
+				return false;
+			}
+			Map xbean = x as Map;
+			Map ybean = y as Map;
+			for ( int i = 0; i < propertySpan; i++ )
+			{
+				if ( !propertyTypes[ i ].Equals( xbean[ propertyNames[ i ] ], ybean[ propertyNames[ i ] ] ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
-		public bool Equals(object x, object y)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override bool IsDirty( object old, object current, ISessionImplementor session )
 		{
-			// TODO:  Add DynamicComponentType.Equals implementation
+			if ( old == current ) 
+			{
+				return false;
+			}
+			if ( old == null || current == null )
+			{
+				return true;
+			}
+			Map xbean = old as Map;
+			Map ybean = current as Map;
+			for ( int i = 0; i < propertySpan; i++ )
+			{
+				if ( propertyTypes[ i ].IsDirty( xbean[ propertyNames[ i ] ], ybean[ propertyNames[ i ] ], session ) )
+				{
+					return true;
+				}
+			}
 			return false;
 		}
 
-		public bool IsDirty(object old, object current, ISessionImplementor session)
-		{
-			// TODO:  Add DynamicComponentType.IsDirty implementation
-			return false;
-		}
-
-		public object NullSafeGet(System.Data.IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="names"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object NullSafeGet(System.Data.IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			// TODO:  Add DynamicComponentType.NullSafeGet implementation
 			return null;
 		}
 
-		object NHibernate.Type.IType.NullSafeGet(System.Data.IDataReader rs, string name, ISessionImplementor session, System.Object owner)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="name"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object NullSafeGet(System.Data.IDataReader rs, string name, ISessionImplementor session, System.Object owner)
 		{
 			// TODO:  Add DynamicComponentType.NHibernate.Type.IType.NullSafeGet implementation
 			return null;
 		}
 
-		public void NullSafeSet(System.Data.IDbCommand st, object value, int index, ISessionImplementor session)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="session"></param>
+		public override void NullSafeSet(System.Data.IDbCommand st, object value, int index, ISessionImplementor session)
 		{
 			// TODO:  Add DynamicComponentType.NullSafeSet implementation
 		}
 
-		public string ToXML(object value, ISessionFactoryImplementor factory)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public override string ToXML(object value, ISessionFactoryImplementor factory)
 		{
 			// TODO:  Add DynamicComponentType.ToXML implementation
 			return null;
 		}
 
-		public string Name
+		/// <summary>
+		/// 
+		/// </summary>
+		public override string Name
 		{
-			get
-			{
-				// TODO:  Add DynamicComponentType.Name getter implementation
-				return null;
-			}
+			// TODO: 
+			get	{ return typeof(Map).Name; }
 		}
 
-		public object DeepCopy(object val)
+		/// <summary>
+		/// 
+		/// </summary>
+		public override bool IsMutable
 		{
-			// TODO:  Add DynamicComponentType.DeepCopy implementation
-			return null;
+			get { return true; }
 		}
 
-		public bool IsMutable
+		/// <summary>
+		/// 
+		/// </summary>
+		public override bool HasNiceEquals
 		{
-			get
-			{
-				// TODO:  Add DynamicComponentType.IsMutable getter implementation
-				return false;
-			}
-		}
-
-		public object Disassemble(object value, ISessionImplementor session)
-		{
-			// TODO:  Add DynamicComponentType.Disassemble implementation
-			return null;
-		}
-
-		public object Assemble(object cached, ISessionImplementor session, object owner)
-		{
-			// TODO:  Add DynamicComponentType.Assemble implementation
-			return null;
-		}
-
-		public bool HasNiceEquals
-		{
-			get
-			{
-				// TODO:  Add DynamicComponentType.HasNiceEquals getter implementation
-				return false;
-			}
-		}
-
-		public object Hydrate(System.Data.IDataReader rs, string[] names, ISessionImplementor session, object owner)
-		{
-			// TODO:  Add DynamicComponentType.Hydrate implementation
-			return null;
-		}
-
-		public object ResolveIdentifier(object value, ISessionImplementor session, object owner)
-		{
-			// TODO:  Add DynamicComponentType.ResolveIdentifier implementation
-			return null;
+			get	{ return false; }
 		}
 
 		#endregion
 	}
-	*/
 }

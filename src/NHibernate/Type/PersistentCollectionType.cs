@@ -187,7 +187,7 @@ namespace NHibernate.Type
 			object id = session.GetEntityIdentifier( owner );
 			if( id == null )
 			{
-				throw new AssertionFailure( "bug re-assembling collection reference" );
+				throw new AssertionFailure( "owner id unknown when re-assembling collection reference" );
 			}
 			return ResolveIdentifier( id, session, owner );
 		}

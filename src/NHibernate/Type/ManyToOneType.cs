@@ -115,5 +115,51 @@ namespace NHibernate.Type
 		{
 			return session.InternalLoad( AssociatedClass, id );
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="oid"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object Assemble( object oid, ISessionImplementor session, object owner )
+		{
+			object id = GetIdentifierType( session ).Assemble( oid, session, owner );
+			if ( id == null )
+			{
+				return null;
+			}
+			else
+			{
+				return ResolveIdentifier( id, session );
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override object Disassemble( object value, ISessionImplementor session )
+		{
+			if ( value == null )
+			{
+				return null;
+			}
+			else
+			{
+				// cache the actual id of the object, not the value of the
+				// property-ref, which might not be initialized
+				object id = session.GetEntityIdentifierIfNotUnsaved( value );
+				if ( id == null )
+				{
+					throw new AssertionFailure( "cannot cache a reference to an object with a null id: " + AssociatedClass.Name );
+				}
+				return GetIdentifierType( session ).Disassemble( id, session );
+			}
+		}
+
 	}
 }

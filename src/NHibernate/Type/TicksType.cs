@@ -127,6 +127,16 @@ namespace NHibernate.Type
 			get { return DateTime.Now; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public object StringToObject( string xml )
+		{
+			return long.Parse( xml );
+		}
+
 		#endregion
 
 		/// <summary>
