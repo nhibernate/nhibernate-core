@@ -1,9 +1,10 @@
-//$Id$
 using System;
+using System.Data;
 using System.Collections;
 using System.Collections.Specialized;
 using NHibernate;
 using NHibernate.Util;
+using NHibernate.Type;
 
 namespace NHibernate.Hql {
 	
@@ -30,6 +31,7 @@ namespace NHibernate.Hql {
 		private bool ready;
 		private bool aggregate;
 		private bool count;
+		private bool avg;
 		private bool first;
 		private bool afterNew;
 		private System.Type holderClass;
@@ -65,7 +67,8 @@ namespace NHibernate.Hql {
 				afterNew=true;
 				ready=false;
 			} else if (StringHelper.OpenParen.Equals(token)) {
-				if (holderClass!=null && !ready) {
+				if (!aggregate && holderClass!=null && !ready) {
+					//opening paren in new Foo ( ... )
 					ready=true;
 				} else if (aggregate) {
 					q.AppendScalarSelectToken(token);
@@ -90,8 +93,11 @@ namespace NHibernate.Hql {
 			} else if (aggregateFunctions.Contains(lctoken)) {
 				if (!ready) throw new QueryException(", expected before aggregate function in SELECT: " + token);
 				if (lctoken.Equals("count")) {
-					q.AddSelectScalar(NHibernate.Integer);
+					q.AddSelectScalar(NHibernate.Integer);//must be handled differently 'cos of count(*)
 					count = true;
+				}
+				else if( lctoken.Equals("avg") ) {
+					avg = true;
 				}
 				aggregate = true;
 				ready = false;
@@ -106,7 +112,7 @@ namespace NHibernate.Hql {
 						aggregatePathExpressionParser.CollectionRole);
 				}
 				q.AppendScalarSelectToken(aggregatePathExpressionParser.WhereColumn);
-				if (!count) q.AddSelectScalar(aggregatePathExpressionParser.WhereColumnType);
+				if (!count) q.AddSelectScalar( AggregateType(aggregatePathExpressionParser.WhereColumnType, q) );
 				aggregatePathExpressionParser.AddAssociation(q);
 			} else {
 				if (!ready) throw new QueryException(", expected in SELECT");
@@ -126,12 +132,40 @@ namespace NHibernate.Hql {
 				ready = false;
 			}
 		}
-		
+
+		public IType AggregateType(IType type, QueryTranslator q) { 
+			if (count) { 
+				throw new AssertionFailure("count(*) must be handled differently"); 
+			} 
+			else if (avg) { 
+				DbType[] sqlTypes; 
+				try { 
+					sqlTypes = type.SqlTypes(q.factory); 
+				} 
+				catch (MappingException me) { 
+					throw new QueryException(me); 
+				} 
+				if (sqlTypes.Length!=1) throw new QueryException("multi-column type in avg()"); 
+				DbType sqlType = sqlTypes[0]; 
+				if ( sqlType==DbType.Int32 || sqlType==DbType.Int64 || sqlType==DbType.Int16 ) { 
+					return NHibernate.Float; 
+				} 
+				else { 
+					return type; 
+				} 
+			    
+			} 
+			else { 
+				return type; 
+			} 
+		} 
+
 		public void Start(QueryTranslator q) {
 			ready = true;
 			first = true;
 			aggregate = false;
 			count = false;
+			avg = false;
 			afterNew = false;
 			holderClass = null;
 		}

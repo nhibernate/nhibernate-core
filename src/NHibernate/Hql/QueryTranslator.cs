@@ -45,7 +45,14 @@ namespace NHibernate.Hql {
 		private IQueryable[] persisters;
 		private IType[] types;
 		private string[][] scalarColumnNames;
-		protected ISessionFactoryImplementor factory;
+		
+		//--- PORT NOTE ---
+		//original modifier was protected
+		//I change in internal because Hql.SelectParser.AggregateType use factory.
+
+		internal ISessionFactoryImplementor factory;
+
+		//--- END NOTE ---
 		private IDictionary replacements;
 		private int count = 0;
 		private int parameterCount = 0;
