@@ -16,9 +16,8 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SByteSqlType"/> class.
 		/// </summary>
-		public SByteSqlType() : base(DbType.SByte)
+		public SByteSqlType() : base( DbType.SByte )
 		{
 		}
 	}
 }
-

@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 
-namespace NHibernate.SqlTypes 
+namespace NHibernate.SqlTypes
 {
 	/// <summary>
 	/// Describes the details of a <see cref="DbType.DateTime"/> with the 
@@ -11,12 +11,12 @@ namespace NHibernate.SqlTypes
 	/// There is not any extra information needed for a <see cref="DbType.DateTime"/>.
 	/// </remarks>
 	[Serializable]
-	public class DateTimeSqlType : SqlType 	
+	public class DateTimeSqlType : SqlType
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DateTimeSqlType"/> class.
 		/// </summary>
-		public DateTimeSqlType() : base(DbType.DateTime) 
+		public DateTimeSqlType() : base( DbType.DateTime )
 		{
 		}
 	}

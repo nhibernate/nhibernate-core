@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 
-namespace NHibernate.SqlTypes 
+namespace NHibernate.SqlTypes
 {
 	/// <summary>
 	/// Describes the details of a <see cref="DbType.Currency"/> with the 
@@ -16,7 +16,7 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CurrencySqlType"/> class.
 		/// </summary>
-		public CurrencySqlType() : base(DbType.Currency) 
+		public CurrencySqlType() : base( DbType.Currency )
 		{
 		}
 	}

@@ -16,7 +16,7 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DateSqlType"/> class.
 		/// </summary>
-		public DateSqlType() : base(DbType.Date)
+		public DateSqlType() : base( DbType.Date )
 		{
 		}
 	}

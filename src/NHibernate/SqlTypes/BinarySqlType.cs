@@ -13,21 +13,20 @@ namespace NHibernate.SqlTypes
 	/// setting the properties on the <see cref="IDbDataParameter"/> correctly.
 	/// </remarks>
 	[Serializable]
-	public class BinarySqlType : SqlType 
+	public class BinarySqlType : SqlType
 	{
-		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BinarySqlType"/> class.
 		/// </summary>
-		public BinarySqlType() : base (DbType.Binary) 
+		public BinarySqlType() : base( DbType.Binary )
 		{
 		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BinarySqlType"/> class.
 		/// </summary>
 		/// <param name="length">The length of the binary data the <see cref="IDbDataParameter"/> should hold</param>
-		public BinarySqlType(int length) : base (DbType.Binary, length) 
+		public BinarySqlType( int length ) : base( DbType.Binary, length )
 		{
 		}
 	}

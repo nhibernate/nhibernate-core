@@ -21,13 +21,12 @@ namespace NHibernate.SqlTypes
 	/// </p>
 	/// </remarks>
 	[Serializable]
-	public class StringClobSqlType : StringSqlType 
+	public class StringClobSqlType : StringSqlType
 	{
-		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StringClobSqlType"/> class.
 		/// </summary>
-		public StringClobSqlType() : base() 
+		public StringClobSqlType() : base()
 		{
 		}
 
@@ -35,7 +34,7 @@ namespace NHibernate.SqlTypes
 		/// Initializes a new instance of the <see cref="StringClobSqlType"/> class.
 		/// </summary>
 		/// <param name="length">The length of the string the <see cref="IDbDataParameter"/> should hold.</param>
-		public StringClobSqlType(int length) : base(length) 
+		public StringClobSqlType( int length ) : base( length )
 		{
 		}
 	}

@@ -16,7 +16,7 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GuidSqlType"/> class.
 		/// </summary>
-		public GuidSqlType() : base(DbType.Guid)
+		public GuidSqlType() : base( DbType.Guid )
 		{
 		}
 	}

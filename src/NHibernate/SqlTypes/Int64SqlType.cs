@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 
-namespace NHibernate.SqlTypes 
+namespace NHibernate.SqlTypes
 {
 	/// <summary>
 	/// Describes the details of a <see cref="DbType.Int64"/> with the 
@@ -16,7 +16,7 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Int64SqlType"/> class.
 		/// </summary>
-		public Int64SqlType(): base(DbType.Int64) 
+		public Int64SqlType() : base( DbType.Int64 )
 		{
 		}
 	}

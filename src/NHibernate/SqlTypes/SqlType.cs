@@ -1,8 +1,8 @@
 using System;
 using System.Data;
 
-namespace NHibernate.SqlTypes 
-{	
+namespace NHibernate.SqlTypes
+{
 	/// <summary>
 	/// This is the base class that adds information to the <see cref="DbType" /> 
 	/// for the <see cref="Driver.IDriver"/> and <see cref="Dialect.Dialect"/>
@@ -28,20 +28,35 @@ namespace NHibernate.SqlTypes
 
 		private bool _lengthDefined = false;
 		private bool _precisionDefined = false;
-		
-		protected SqlType(DbType dbType)
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dbType"></param>
+		protected SqlType( DbType dbType )
 		{
 			_dbType = dbType;
 		}
 
-		protected SqlType(DbType dbType, int length)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dbType"></param>
+		/// <param name="length"></param>
+		protected SqlType( DbType dbType, int length )
 		{
 			_dbType = dbType;
 			_length = length;
 			_lengthDefined = true;
 		}
 
-		protected SqlType(DbType dbType, byte precision, byte scale) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dbType"></param>
+		/// <param name="precision"></param>
+		/// <param name="scale"></param>
+		protected SqlType( DbType dbType, byte precision, byte scale )
 		{
 			_dbType = dbType;
 			_precision = precision;
@@ -49,51 +64,58 @@ namespace NHibernate.SqlTypes
 			_precisionDefined = true;
 		}
 
-		public DbType DbType 
+		/// <summary></summary>
+		public DbType DbType
 		{
-			get { return _dbType;}
+			get { return _dbType; }
 		}
 
-		public int Length 
+		/// <summary></summary>
+		public int Length
 		{
-			get { return _length;}
+			get { return _length; }
 		}
 
-		public byte Precision 
+		/// <summary></summary>
+		public byte Precision
 		{
-			get { return _precision;}
+			get { return _precision; }
 		}
 
-		public byte Scale 
+		/// <summary></summary>
+		public byte Scale
 		{
-			get { return _scale;}
+			get { return _scale; }
 		}
 
-		public bool LengthDefined 
+		/// <summary></summary>
+		public bool LengthDefined
 		{
-			get { return _lengthDefined;}
+			get { return _lengthDefined; }
 		}
 
-		public bool PrecisionDefined 
+		/// <summary></summary>
+		public bool PrecisionDefined
 		{
-			get { return _precisionDefined;}
+			get { return _precisionDefined; }
 		}
 
 		#region System.Object Members
 
-		public override int GetHashCode() 
+		/// <summary></summary>
+		public override int GetHashCode()
 		{
 			int hashCode = 0;
 
-			if( LengthDefined ) 
+			if( LengthDefined )
 			{
 				hashCode = ( DbType.GetHashCode()/2 ) + ( Length.GetHashCode()/2 );
 			}
-			else if( PrecisionDefined) 
+			else if( PrecisionDefined )
 			{
 				hashCode = ( DbType.GetHashCode()/3 ) + ( Precision.GetHashCode()/3 ) + ( Scale.GetHashCode()/3 );
 			}
-			else 
+			else
 			{
 				hashCode = DbType.GetHashCode();
 			}
@@ -101,32 +123,43 @@ namespace NHibernate.SqlTypes
 			return hashCode;
 		}
 
-		public override bool Equals(object obj) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public override bool Equals( object obj )
 		{
 			bool equals = false;
 			SqlType rhsSqlType;
-			
+
 			// Step1: Perform an equals test
-			if( obj==this ) return true;
+			if( obj == this )
+			{
+				return true;
+			}
 
 			// Step	2: Instance of check
 			rhsSqlType = obj as SqlType;
-			if( rhsSqlType==null ) return false;
+			if( rhsSqlType == null )
+			{
+				return false;
+			}
 
 			//Step 3: Check each important field
 
 			if( LengthDefined )
 			{
-				equals = ( DbType.Equals( rhsSqlType.DbType ) ) 
-					&& ( Length==rhsSqlType.Length );
+				equals = ( DbType.Equals( rhsSqlType.DbType ) )
+					&& ( Length == rhsSqlType.Length );
 			}
-			else if( PrecisionDefined ) 
+			else if( PrecisionDefined )
 			{
 				equals = ( DbType.Equals( rhsSqlType.DbType ) )
-					&& ( Precision==rhsSqlType.Precision )
-					&& ( Scale==rhsSqlType.Scale );
+					&& ( Precision == rhsSqlType.Precision )
+					&& ( Scale == rhsSqlType.Scale );
 			}
-			else 
+			else
 			{
 				equals = ( DbType.Equals( rhsSqlType.DbType ) );
 			}
@@ -136,6 +169,5 @@ namespace NHibernate.SqlTypes
 		}
 
 		#endregion
-
 	}
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 
-namespace NHibernate.SqlTypes 
+namespace NHibernate.SqlTypes
 {
 	/// <summary>
 	/// Describes the details of a <see cref="DbType.Byte"/> with the 
@@ -16,7 +16,7 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ByteSqlType"/> class.
 		/// </summary>
-		public ByteSqlType() : base(DbType.Byte)
+		public ByteSqlType() : base( DbType.Byte )
 		{
 		}
 	}

@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 
-namespace NHibernate.SqlTypes 
+namespace NHibernate.SqlTypes
 {
 	/// <summary>
 	/// Describes the details of a <see cref="DbType.Boolean"/> with the 
@@ -11,12 +11,12 @@ namespace NHibernate.SqlTypes
 	/// There is not any extra information needed for a <see cref="DbType.Boolean"/>.
 	/// </remarks>
 	[Serializable]
-	public class BooleanSqlType : SqlType 
+	public class BooleanSqlType : SqlType
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BooleanSqlType"/> class.
 		/// </summary>
-		public BooleanSqlType() : base(DbType.Boolean)
+		public BooleanSqlType() : base( DbType.Boolean )
 		{
 		}
 	}

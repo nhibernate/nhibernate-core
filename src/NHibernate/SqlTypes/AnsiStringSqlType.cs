@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 
-namespace NHibernate.SqlTypes 
+namespace NHibernate.SqlTypes
 {
 	/// <summary>
 	/// Describes the details of a <see cref="DbType.AnsiString"/> with the 
@@ -13,12 +13,12 @@ namespace NHibernate.SqlTypes
 	/// setting the properties on the <see cref="IDbDataParameter"/> correctly.
 	/// </remarks>
 	[Serializable]
-	public class AnsiStringSqlType : SqlType 
+	public class AnsiStringSqlType : SqlType
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AnsiStringSqlType"/> class.
 		/// </summary>
-		public AnsiStringSqlType() : base(DbType.AnsiString) 
+		public AnsiStringSqlType() : base( DbType.AnsiString )
 		{
 		}
 
@@ -26,8 +26,8 @@ namespace NHibernate.SqlTypes
 		/// Initializes a new instance of the <see cref="AnsiStringSqlType"/> class.
 		/// </summary>
 		/// <param name="length">The length of the string the <see cref="IDbDataParameter"/> should hold.</param>
-		public AnsiStringSqlType(int length) : base(DbType.AnsiString, length) 
-		{	
+		public AnsiStringSqlType( int length ) : base( DbType.AnsiString, length )
+		{
 		}
 	}
 }

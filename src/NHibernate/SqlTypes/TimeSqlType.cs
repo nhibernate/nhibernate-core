@@ -16,7 +16,7 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TimeSqlType"/> class.
 		/// </summary>
-		public TimeSqlType() : base(DbType.Time)
+		public TimeSqlType() : base( DbType.Time )
 		{
 		}
 	}
