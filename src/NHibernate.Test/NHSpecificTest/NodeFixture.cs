@@ -88,7 +88,52 @@ namespace NHibernate.Test.NHSpecificTest
 			t2.Commit();
 			s2.Close();
 
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+
+			levelThreeNode = (Node)s.Load( typeof(Node), "3" );
+			endNode = (Node)s.Load( typeof(Node), "end" );
+
+			Node levelFourOneNode = new Node("4-1");
+			Node levelFourTwoNode = new Node("4-2");
+
+			levelThreeNode.RemoveDestinationNode(endNode);
+			levelThreeNode.AddDestinationNode(levelFourOneNode);
+			levelThreeNode.AddDestinationNode(levelFourTwoNode);
+
+			levelFourOneNode.AddDestinationNode(endNode);
+			levelFourTwoNode.AddDestinationNode(endNode);
+
+			s.Save(levelFourOneNode);
+			s.Save(levelFourTwoNode);
+			
+			t.Commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			t = s.BeginTransaction();
+
+			levelThreeNode = (Node)s.Load( typeof(Node), "3" );
+			endNode = (Node)s.Load( typeof(Node), "end" );
+
+			Assert.AreEqual( 2, levelThreeNode.DestinationNodes.Keys.Count, "should be attached to the 2 level 4 nodes" );
+			foreach( Node node in levelThreeNode.DestinationNodes.Keys ) 
+			{
+				Assert.IsFalse( node.Equals(endNode), "one of the Dest Nodes in levelThreeNode should not be the end node");
+			}
+
+			Assert.AreEqual( 2, endNode.PreviousNodes.Keys.Count, "end node should have two nodes leading into it" );
+
+			foreach( Node node in endNode.PreviousNodes.Keys ) 
+			{
+				Assert.IsFalse( node.Equals(levelThreeNode) , "one of the Prev Nodes in should not be the level 3 node, only level 4 nodes" );
+			}
+
+			t.Commit();
+			s.Close();
+
 		}
+
 
 	}
 }
