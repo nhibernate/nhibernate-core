@@ -63,7 +63,7 @@ namespace NHibernate.Cfg {
 			if (props==null) throw new HibernateException("no nhibernate settings available");
 			
 			foreach(string key in props.Keys) {
-				properties.Add(key, props[key]);
+				properties[key] = props[key];
 			}
 
 			isolationLevels.Add( System.Data.IsolationLevel.Chaos, "NONE" );
