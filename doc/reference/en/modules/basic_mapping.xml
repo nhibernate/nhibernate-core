@@ -137,9 +137,155 @@
 			</para>
 	
 		</sect2>
+		<sect2 id="mapping-declaration-class">
+			<title>class</title>
+
+			<para>
+				You may declare a persistent class using the <literal>class</literal> element:
+			</para>
+	        
+			<programlistingco>
+				
+                <programlisting>&lt;class
+        name="ClassName" <co id="class1-co" linkends="class1" />
+        table="tableName"<co id="class2-co" linkends="class2" />
+        discriminator-value="discriminator_value"<co id="class3-co" linkends="class3" />
+        mutable="true|false"<co id="class4-co" linkends="class4" />
+        schema="owner"<co id="class5-co" linkends="class5" />
+        proxy="ProxyInterface"<co id="class6-co" linkends="class6" />
+        dynamic-update="true|false"<co id="class7-co" linkends="class7" />
+        dynamic-insert="true|false"<co id="class8-co" linkends="class8" />
+        polymorphism="implicit|explicit"<co id="class9-co" linkends="class9" />
+        where="arbitrary sql where condition"<co id="class10-co" linkends="class10" />
+        persister="PersisterClass"<co id="class11-co" linkends="class11" />
+/&gt;</programlisting>
+				<calloutlist>
+					<callout arearefs="class1-co" id="class1">
+						<para>
+							<literal>name</literal>: The fully qualified .NET Type name of the persistent class 
+							(or interface).
+						</para>
+					</callout>
+					<callout arearefs="class2-co" id="class2">
+						<para>
+							<literal>table</literal>: The name of its database table.
+						</para>
+					</callout>
+					<callout arearefs="class3-co" id="class3">
+						<para>
+							<literal>discriminator-value</literal> (optional - defaults to the class name): A value
+							that distiguishes individual subclasses, used for polymorphic behaviour.
+						</para>
+					</callout>
+					<callout arearefs="class4-co" id="class4">
+						<para>
+							<literal>mutable</literal> (optional, defaults to <literal>true</literal>): Specifies 
+							that instances of the class are (not) mutable.
+						</para>
+					</callout>    
+					<callout arearefs="class5-co" id="class5">
+						<para>
+							<literal>schema</literal> (optional): Override the schema name specified by
+							the root <literal>&lt;hibernate-mapping&gt;</literal> element.
+						</para>
+					</callout>                
+					<callout arearefs="class6-co" id="class6">
+						<para>
+							<literal>proxy</literal> (optional): Specifies an interface to use for lazy
+							initializing proxies. You may specify the name of the class itself as long as 
+							all Properties are virtual.
+						</para>
+					</callout>    
+					<callout arearefs="class7-co" id="class7">
+						<para>
+							<literal>dynamic-update</literal> (optional, defaults to <literal>false</literal>): 
+							Specifies that <literal>UPDATE</literal> SQL should be generated at runtime and 
+							contain only those columns whose values have changed.
+						</para>
+					</callout>    
+					<callout arearefs="class8-co" id="class8">
+						<para>
+							<literal>dynamic-insert</literal> (optional, defaults to <literal>false</literal>): 
+							Specifies that <literal>INSERT</literal> SQL should be generated at runtime and 
+							contain only the columns whose values are not null.
+						</para>
+					</callout>    
+					<callout arearefs="class9-co" id="class9">
+						
+						<para>
+							<literal>polymorphism</literal> (optional, defaults to <literal>implicit</literal>): 
+							Determines whether implicit or explicit query polymorphism is used.
+						</para>
+					</callout>    
+					<callout arearefs="class10-co" id="class10">
+						<para>
+							<literal>where</literal> (optional) specify an arbitrary SQL <literal>WHERE</literal> 
+							condition to be used when retrieving objects of this class
+						</para>
+					</callout>                 
+					<callout arearefs="class11-co" id="class11">
+						<para>
+							<literal>persister</literal> (optional): Specifies a custom <literal>IClassPersister</literal>.
+						</para>
+					</callout>                 
+				</calloutlist>
+			</programlistingco>
 	
+			<para>
+				It is perfectly acceptable for the named persistent class to be an interface. You would then
+				declare implementing classes of that interface using the <literal>&lt;subclass&gt;</literal>
+				element. You may persist any inner class. You should specify the
+				class name using the standard form ie. <literal>Eg.Foo+Bar</literal>.
+			</para>
+
+			<para>
+				Immutable classes, <literal>mutable="false"</literal>, may not be updated or deleted by the 
+				application. This allows NHibernate to make some minor performance optimizations.
+			</para>
+	        
+			<para>
+				The optional <literal>proxy</literal> attribute enables lazy initialization of persistent
+				instances of the class. NHibernate will initially return Aspect# proxies which implement 
+				the named interface. The actual persistent object will be loaded when a method of the 
+				proxy is invoked. See "Proxies for Lazy Initialization" below.
+			</para>
+	        
+			<para><emphasis>Implicit</emphasis> polymorphism means that instances of the class will be returned
+				by a query that names any superclass or implemented interface or the class and that instances
+				of any subclass of the class will be returned by a query that names the class itself. 
+				<emphasis>Explicit</emphasis> polymorphism means that class instances will be returned only
+				be queries that explicitly name that class and that queries that name the class will return
+				only instances of subclasses mapped inside this <literal>&lt;class&gt;</literal> declaration
+				as a <literal>&lt;subclass&gt;</literal> or <literal>&lt;joined-subclass&gt;</literal>. For
+				most purposes the default, <literal>polymorphism="implicit"</literal>, is appropriate.
+				Explicit polymorphism is useful when two different classes are mapped to the same table
+				(this allows a "lightweight" class that contains a subset of the table columns).
+			</para>
+	        
+			<para>
+				The <literal>persister</literal> attribute lets you customize the persistence strategy used for
+				the class. You may, for example, specify your own subclass of 
+				<literal>NHibernate.Persister.EntityPersister</literal> or you might even provide a
+				completely new implementation of the interface 
+				<literal>NHibernate.Persister.IClassPersister</literal> that implements persistence via,
+				for example, stored procedure calls, serialization to flat files or LDAP. See
+				<literal>NHibernate.DomainModel.CustomPersister</literal> for a simple example (of "persistence"
+				to a <literal>Hashtable</literal>).
+			</para>
+	        
+			<para>
+				Note that the <literal>dynamic-update</literal> and <literal>dynamic-insert</literal>
+				settings are not inherited by subclasses and so may also be specified on the
+				<literal>&lt;subclass&gt;</literal> or <literal>&lt;joined-subclass&gt;</literal> elements. 
+				These settings may increase performance in some cases, but might actually decrease 
+				performance in others. Use judiciously.
+			</para>
+	        
+		</sect2>
+
 	</sect1>
 
+	
 	<sect1 id="mapping-quotedidentifiers">
 			<title>SQL quoted identifiers</title>
 			<para>
@@ -156,8 +302,7 @@
     </id>
     <property name="itemNumber" column="`Item #`"/>
     ...
-</class>]]>
-			</programlisting>
+</class>]]></programlisting>
 
     </sect1>
 
