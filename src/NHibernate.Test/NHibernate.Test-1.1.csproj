@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = ""
+                PreBuildEvent = "copy /y $(ProjectDir)App.config $(TargetFileName).config"
                 PostBuildEvent = ""
                 RootNamespace = "NHibernate.Test"
                 RunPostBuildEvent = "OnBuildSuccess"
