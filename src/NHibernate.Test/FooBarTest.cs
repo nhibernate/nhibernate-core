@@ -1880,6 +1880,12 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
+			// grab a version of g that is old and hold onto it until later
+			// for a StaleObjectException check.
+			ISession sOld = sessions.OpenSession();
+			GlarchProxy gOld = (GlarchProxy)sOld.Load( typeof(Glarch), gid );
+			sOld.Close();
+
 			s = sessions.OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			s.Lock(g, LockMode.Upgrade);
@@ -1892,6 +1898,33 @@ namespace NHibernate.Test
 			g.Name = "bar";
 			s.Flush();
 			s.Close();
+
+			// now that g has been changed verify that we can't go back and update 
+			// it with an old version of g
+			bool isStale = false;
+			sOld = sessions.OpenSession();
+			gOld.Name = "should not update";
+			try 
+			{
+				sOld.Update( gOld, gid );
+				sOld.Flush();
+				sOld.Close();
+			}
+			catch(Exception e) 
+			{
+				Exception exc = e;
+				while( e!=null ) 
+				{
+					if( exc is StaleObjectStateException ) 
+					{
+						isStale = true;
+						break;
+					}
+					exc = exc.InnerException;
+				}
+			}
+
+			Assert.IsTrue( isStale, "Did not catch a stale object exception when updating an old GlarchProxy." );
 
 			s = sessions.OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
