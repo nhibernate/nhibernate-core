@@ -317,7 +317,7 @@ namespace NHibernate.Hql
 			}
 		}
 		
-		private IType GetPropertyType(QueryTranslator q)
+		protected IType GetPropertyType(QueryTranslator q)
 		{
 			return q.GetPersisterForName(currentName).GetPropertyType(PropertyPath);
 		}
