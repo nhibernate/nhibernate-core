@@ -69,7 +69,6 @@
 					<xs:element ref='many-to-one' />
 					<xs:element ref='one-to-one' />
 					<xs:element ref='component' />
-					<xs:element ref='dynabean' />
 					<xs:element ref='any' />
 					<xs:element ref='map' />
 					<xs:element ref='set' />
@@ -273,7 +272,6 @@
 					<xs:element ref='many-to-one' />
 					<xs:element ref='one-to-one' />
 					<xs:element ref='component' />
-					<xs:element ref='dynabean' />
 					<xs:element ref='any' />
 					<xs:element ref='map' />
 					<xs:element ref='set' />
@@ -329,7 +327,6 @@
 					<xs:element ref='many-to-one' />
 					<xs:element ref='one-to-one' />
 					<xs:element ref='component' />
-					<xs:element ref='dynabean' />
 					<xs:element ref='any' />
 					<xs:element ref='map' />
 					<xs:element ref='set' />
@@ -585,7 +582,6 @@
 					<xs:element ref='many-to-one' />
 					<xs:element ref='one-to-one' />
 					<xs:element ref='component' />
-					<xs:element ref='dynabean' />
 					<xs:element ref='any' />
 					<xs:element ref='map' />
 					<xs:element ref='set' />
@@ -637,44 +633,6 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='class' use='required' />
-		</xs:complexType>
-	</xs:element>
-	<xs:element name='dynabean'>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice minOccurs='0' maxOccurs='unbounded'>
-					<xs:element ref='property' />
-					<xs:element ref='many-to-one' />
-					<xs:element ref='one-to-one' />
-					<xs:element ref='component' />
-					<xs:element ref='dynabean' />
-					<xs:element ref='any' />
-					<xs:element ref='map' />
-					<xs:element ref='set' />
-					<xs:element ref='list' />
-					<xs:element ref='bag' />
-					<xs:element ref='array' />
-					<xs:element ref='primitive-array' />
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name='dynaclass' use='required' />
-			<xs:attribute name='name' use='required' />
-			<xs:attribute name='update' default='true'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name='insert' default='true'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='true' />
-						<xs:enumeration value='false' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name='element'>

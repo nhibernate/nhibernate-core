@@ -753,7 +753,7 @@ namespace NHibernate.Cfg {
 					if ( value.Formula!=null ) throw new MappingException("properties of components do not support formula: " + propertyName);
 					BindValue(subnode, value, isNullable, propertyName);
 				} 
-				else if ( "component".Equals(name) || "dynabean".Equals(name) || "nested-composite-element".Equals(name) ) 
+				else if ( "component".Equals(name) || "nested-composite-element".Equals(name) ) 
 				{
 					System.Type subreflectedClass = (model.ComponentClass==null) ?
 						null :
