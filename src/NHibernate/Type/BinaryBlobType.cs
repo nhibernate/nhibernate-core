@@ -1,0 +1,32 @@
+using System;
+using System.Data;
+
+using NHibernate.SqlTypes;
+
+namespace NHibernate.Type
+{
+	/// <summary>
+	///	Maps a System.Byte[] Property to an column that can store a BLOB.
+	/// </summary>
+	/// <remarks>
+	/// This is only needed by DataProviders (SqlClient) that need to specify a Size for the
+	/// IDbDataParameter.  Most DataProvider(Oralce) don't need to set the Size so a BinaryType
+	/// would work just fine.
+	/// </remarks>
+	public class BinaryBlobType : BinaryType
+	{
+		internal BinaryBlobType() : base( new BinaryBlobSqlType() ) 
+		{
+		}
+
+		internal BinaryBlobType(BinarySqlType sqlType) : base(sqlType) 
+		{
+		}
+
+		public override string Name
+		{
+			get	{return "BinaryBlob"; }
+		}
+
+	}
+}

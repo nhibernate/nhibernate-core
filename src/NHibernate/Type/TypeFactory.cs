@@ -76,6 +76,8 @@ namespace NHibernate.Type
 			// .NET all you can do is get the local Timezone - there is no "factory" method to
 			// get a Timezone by name...
 			//basicTypes.Add(NHibernate.Timezone.Name, NHibernate.Timezone);
+			
+			// set up the mappings of .NET Classes/Structs to their NHibernate types.
 			typeByTypeOfName[ typeof(System.Byte[]).Name ] = NHibernate.Binary ;
 			typeByTypeOfName[ typeof(System.Byte[]).AssemblyQualifiedName ] = NHibernate.Binary ;
 			typeByTypeOfName[ typeof(System.Boolean).FullName ] = NHibernate.Boolean;
@@ -107,11 +109,14 @@ namespace NHibernate.Type
 			typeByTypeOfName[ typeof(System.TimeSpan).FullName ] = NHibernate.TimeSpan;
 			typeByTypeOfName[ typeof(System.TimeSpan).AssemblyQualifiedName ] = NHibernate.TimeSpan;
 			
+			// add the mappings of the NHibernate specific names that are used in type=""
 			typeByTypeOfName[ NHibernate.AnsiString.Name ] = NHibernate.AnsiString ;
 			typeByTypeOfName[ NHibernate.Binary.Name ] = NHibernate.Binary ;
+			typeByTypeOfName[ NHibernate.BinaryBlob.Name ] = NHibernate.BinaryBlob;
 			typeByTypeOfName[ NHibernate.Boolean.Name ] = NHibernate.Boolean;
 			typeByTypeOfName[ NHibernate.Byte.Name ] = NHibernate.Byte;
 			typeByTypeOfName[ NHibernate.Character.Name ] = NHibernate.Character;
+			typeByTypeOfName[ NHibernate.StringClob.Name ] = NHibernate.StringClob;
 			typeByTypeOfName[ NHibernate.CultureInfo.Name ] = NHibernate.CultureInfo;
 			typeByTypeOfName[ NHibernate.DateTime.Name ] = NHibernate.DateTime;
 			typeByTypeOfName[ NHibernate.Date.Name ] = NHibernate.Date;
@@ -140,13 +145,14 @@ namespace NHibernate.Type
 			typeByTypeOfName[ "Serializable" ] = NHibernate.Serializable;
 			typeByTypeOfName[ NHibernate.Serializable.Name ] = NHibernate.Serializable;
 			
+			// object needs to have both class and serializable setup before it can
+			// be created.
 			typeByTypeOfName[ typeof(System.Object).FullName ] = NHibernate.Object;
 			typeByTypeOfName[ typeof(System.Object).AssemblyQualifiedName ] = NHibernate.Object;
 			typeByTypeOfName[ NHibernate.Object.Name ] = NHibernate.Object;
 			
 			// These are in here for Hibernate mapping compatibility
 			typeByTypeOfName[ "binary" ] = NHibernate.Binary ;
-			// TODO: add clob and blob when implemented
 			typeByTypeOfName[ "boolean" ] = NHibernate.Boolean;
 			typeByTypeOfName[ "byte" ] = NHibernate.Byte;
 			typeByTypeOfName[ "character" ] = NHibernate.Character;
