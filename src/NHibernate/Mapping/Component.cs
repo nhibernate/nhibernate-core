@@ -47,6 +47,10 @@ namespace NHibernate.Mapping {
 			this.owner = owner;
 		}
 
+		public Component(Table table) : base(table) {
+			this.owner = null;
+		}
+
 		public override void SetTypeByReflection(System.Type propertyClass, string propertyName) {
 		}
 

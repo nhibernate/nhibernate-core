@@ -30,17 +30,17 @@ namespace NHibernate.Cfg {
 			if (old!=null) log.Warn ( "duplicate class mapping: " + persistentClass.PersistentClazz.Name );
 			classes[persistentClass.PersistentClazz] = persistentClass;
 		}
-		//public void AddCollection(Collection collection) {
-		//	object old = collections[collection.Role];
-		//	if (old!=null) log.Warn ( "duplicate collection role: " + collection.Role );
-		//	collections[collection.Role] = collection;
-		//}
+		public void AddCollection(Mapping.Collection collection) {
+			object old = collections[collection.Role];
+			if (old!=null) log.Warn ( "duplicate collection role: " + collection.Role );
+			collections[collection.Role] = collection;
+		}
 		public PersistentClass GetClass(System.Type type) {
 			return (PersistentClass) classes[type];
 		}
-		//public Collection GetCollection(string role) {
-		//	return (Collection) collections[role];
-		//}
+		public Mapping.Collection GetCollection(string role) {
+			return (Mapping.Collection) collections[role];
+		}
 		public Table AddTable(string schema, string name) {
 			string key = schema != null ? schema + "." + name : name;
 			Table table = (Table) tables[key];
@@ -75,8 +75,8 @@ namespace NHibernate.Cfg {
 		public string GetQuery(string name) {
 			return (string) queries[name];
 		}
-		//internal void AddSecondPass(Binder.SecondPass sp) {
-		//	secondPasses.Add(sp);
-		//}
+		internal void AddSecondPass(Binder.SecondPass sp) {
+			secondPasses.Add(sp);
+		}
 	}
 }

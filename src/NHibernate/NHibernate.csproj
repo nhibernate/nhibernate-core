@@ -307,6 +307,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cfg\Binder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cfg\Configuration.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

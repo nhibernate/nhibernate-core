@@ -105,7 +105,7 @@ namespace NHibernate.Expression {
 		/// <param name="propertyName"></param>
 		/// <param name="values"></param>
 		/// <returns></returns>
-		public static Expression In(String propertyName, ICollection values) { 
+		public static Expression In(string propertyName, ICollection values) { 
 			ArrayList ary = new ArrayList(values); //HACK
 			return new InExpression( propertyName, ary.ToArray() );
 		} 
@@ -184,7 +184,7 @@ namespace NHibernate.Expression {
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		public static Expression Sql(String sql) {
+		public static Expression Sql(string sql) {
 			return new SQLExpression(sql, NoObjects, NoTypes);
 		}
 

@@ -129,7 +129,8 @@ namespace NHibernate.Impl {
 
 			// Persisters:
 
-			//TODO: finish int
+			classPersisters = new Hashtable();
+			classPersistersByName = new Hashtable();
 		}
 
 		// Emulates constant time LRU/MRU algorithms for cache

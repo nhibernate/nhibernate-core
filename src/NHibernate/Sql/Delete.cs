@@ -22,7 +22,7 @@ namespace NHibernate.Sql {
 			buf.Append("delete from ")
 				.Append(tableName)
 				.Append(" where ")
-				.Append( StringHelper.Join("=? and ", primaryKeyColumnNames) )
+				.Append( string.Join("=? and ", primaryKeyColumnNames) )
 				.Append("=?");
 			if (versionColumnName != null) {
 				buf.Append(" and ")

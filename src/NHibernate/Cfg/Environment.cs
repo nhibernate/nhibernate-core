@@ -26,7 +26,7 @@ namespace NHibernate.Cfg {
 	public class Environment : IConfigurationSectionHandler {
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Environment));
 
-		private IDictionary properties;
+		private static IDictionary properties;
 		private IDictionary isolationLevels = new Hashtable();
 
 		private const string Version = "0.1 beta 1";
@@ -73,7 +73,7 @@ namespace NHibernate.Cfg {
 			return null;
 		}
 
-		public IDictionary Properties {
+		public static IDictionary Properties {
 			get { return properties; }
 		}
 

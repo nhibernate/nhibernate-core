@@ -40,7 +40,7 @@ namespace NHibernate.Expression {
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public static Order Asc(String propertyName) {
+		public static Order Asc(string propertyName) {
 			return new Order(propertyName, true);
 		}
 	
@@ -49,7 +49,7 @@ namespace NHibernate.Expression {
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public static Order Desc(String propertyName) {
+		public static Order Desc(string propertyName) {
 			return new Order(propertyName, false);
 		}
 	}

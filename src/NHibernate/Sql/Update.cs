@@ -62,7 +62,7 @@ namespace NHibernate.Sql {
 				if (i<columns.Count-1) buf.Append(StringHelper.CommaSpace);
 			}
 			buf.Append(" where ")
-				.Append( StringHelper.Join("=? and ", primaryKeyColumnNames) )
+				.Append( string.Join("=? and ", primaryKeyColumnNames) )
 				.Append("=?");
 			if (versionColumnName!=null) {
 				buf.Append(" and ")

@@ -325,7 +325,7 @@ namespace NHibernate.Hql {
 		public string GetCollectionSubquery() {
 
 			return new StringBuilder("SELECT ")
-				.Append(StringHelper.Join(", ", collectionElementColumns))
+				.Append(String.Join(", ", collectionElementColumns))
 				.Append(" FROM ")
 				.Append(collectionTable)
 				.Append(' ')

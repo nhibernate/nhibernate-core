@@ -19,7 +19,7 @@ namespace NHibernate.Expression {
 		}
 
 		public override string ToSqlString(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias) {
-			return StringHelper.Join(
+			return string.Join(
 				" and ", 
 				StringHelper.Suffix( GetColumns(sessionFactory, persistentClass, propertyName, alias), " is not null" )
 				);

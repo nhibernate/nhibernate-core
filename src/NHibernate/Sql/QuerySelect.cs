@@ -95,15 +95,15 @@ namespace NHibernate.Sql {
 			set { AppendTokens(having, value); }
 		}
 
-		public String ToQueryString() {
+		public string ToQueryString() {
 			StringBuilder buf = new StringBuilder(50)
 				.Append("select ");
 			if (distinct) buf.Append("distinct ");
 			buf.Append(select)
 				.Append(" from")
 				.Append( joins.ToFromFragmentString.Substring(1) );
-			String part1 = joins.ToWhereFragmentString.Trim();
-			String part2 = where.ToString().Trim();
+			string part1 = joins.ToWhereFragmentString.Trim();
+			string part2 = where.ToString().Trim();
 			bool hasPart1 = part1.Length > 0;
 			bool hasPart2 = part2.Length > 0;
 			if (hasPart1 || hasPart2) buf.Append(" where ");

@@ -16,7 +16,7 @@ namespace NHibernate.Util {
 
 		[Obsolete("Use String.Join() instead of this method. It does the same thing")]
 		public static string Join(string separator, string[] strings) {
-			return String.Join(separator, strings);
+			return string.Join(separator, strings);
 		}
 
 		public static string Repeat(string str, int times) {

@@ -133,7 +133,7 @@ namespace NHibernate.Dialect {
 				.Append(" add constraint ")
 				.Append(constraintName)
 				.Append(" foreign key (")
-				.Append( StringHelper.Join(StringHelper.CommaSpace, foreignKey) )
+				.Append( string.Join(StringHelper.CommaSpace, foreignKey) )
 				.Append(") references ")
 				.Append(referencedTable)
 				.ToString();
