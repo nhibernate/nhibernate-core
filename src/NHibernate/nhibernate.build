@@ -33,6 +33,7 @@
 				<excludes name="Dialect/OracleDialect.cs" />
 				<excludes name="Dialect/SAPDBDialect.cs" />
 				<excludes name="Sql/ANSIOuterJoinFragment.cs" />
+				<excludes name="Tool/**/*.cs" />
 			</sources>
 		</csc>
 		<copy todir="bin/Debug">
