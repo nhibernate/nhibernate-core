@@ -17,7 +17,7 @@ namespace NHibernate.Dialect
 		/// <remarks>
 		/// There is a well known problem with @@identity and triggers that insert into
 		/// rows into other tables that also use an identity column.  The only way I know
-		/// of to get around this problem is to upgrade your databse server to Ms Sql 2000.
+		/// of to get around this problem is to upgrade your database server to Ms Sql 2000.
 		/// </remarks>
 		public override string IdentitySelectString
 		{

@@ -244,13 +244,13 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		protected override char CloseQuote
+		public override char CloseQuote
 		{
 			get { return ']'; }
 		}
 
 		/// <summary></summary>
-		protected override char OpenQuote
+		public override char OpenQuote
 		{
 			get { return '['; }
 		}

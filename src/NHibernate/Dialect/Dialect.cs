@@ -550,7 +550,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// The opening quote for a quoted identifier.
 		/// </summary>
-		protected virtual char OpenQuote
+		public virtual char OpenQuote
 		{
 			get { return '"'; }
 		}
@@ -558,7 +558,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// The closing quote for a quoted identifier.
 		/// </summary>
-		protected virtual char CloseQuote
+		public virtual char CloseQuote
 		{
 			get { return '"'; }
 		}
