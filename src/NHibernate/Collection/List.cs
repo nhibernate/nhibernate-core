@@ -69,7 +69,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="session"></param>
-		public List( ISessionImplementor session ) : base( session )
+		internal List( ISessionImplementor session ) : base( session )
 		{
 		}
 
@@ -78,7 +78,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="list"></param>
-		public List( ISessionImplementor session, IList list ) : base( session )
+		internal List( ISessionImplementor session, IList list ) : base( session )
 		{
 			this.list = list;
 			SetInitialized();

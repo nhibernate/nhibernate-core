@@ -34,7 +34,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="session"></param>
-		public IdentifierBag( ISessionImplementor session ) : base( session )
+		internal IdentifierBag( ISessionImplementor session ) : base( session )
 		{
 		}
 
@@ -43,11 +43,13 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="coll"></param>
-		public IdentifierBag( ISessionImplementor session, ICollection coll ) : base( session )
+		internal IdentifierBag( ISessionImplementor session, ICollection coll ) : base( session )
 		{
-			if( coll is IList )
+			IList list = coll as IList;
+
+			if( list!=null )
 			{
-				values = ( IList ) coll;
+				values = list;
 			}
 			else
 			{

@@ -97,7 +97,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="session"></param>
-		public Set( ISessionImplementor session ) : base( session )
+		internal Set( ISessionImplementor session ) : base( session )
 		{
 		}
 
@@ -109,7 +109,7 @@ namespace NHibernate.Collection
 		/// <remarks>
 		/// Only call this constructor if you consider the map initialized.
 		/// </remarks>
-		public Set( ISessionImplementor session, ISet collection ) : base( session )
+		internal Set( ISessionImplementor session, ISet collection ) : base( session )
 		{
 			internalSet = collection;
 			SetInitialized();

@@ -335,7 +335,7 @@ namespace NHibernate.Collection
 		{
 			if( sqlWhereStringTemplate != null )
 			{
-				return StringHelper.Replace( sqlWhereStringTemplate, Template.PlaceHolder, alias );
+				return StringHelper.Replace( sqlWhereStringTemplate, Template.Placeholder, alias );
 			}
 			else
 			{
@@ -353,7 +353,7 @@ namespace NHibernate.Collection
 		{
 			if( sqlOrderByStringTemplate != null )
 			{
-				return StringHelper.Replace( sqlOrderByStringTemplate, Template.PlaceHolder, alias );
+				return StringHelper.Replace( sqlOrderByStringTemplate, Template.Placeholder, alias );
 			}
 			else
 			{

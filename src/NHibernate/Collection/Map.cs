@@ -72,7 +72,7 @@ namespace NHibernate.Collection
 		/// Construct an uninitialized Map.
 		/// </summary>
 		/// <param name="session">The ISession the Map should be a part of.</param>
-		public Map( ISessionImplementor session ) : base( session )
+		internal Map( ISessionImplementor session ) : base( session )
 		{
 		}
 
@@ -81,7 +81,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session">The ISession the Map should be a part of.</param>
 		/// <param name="map">The IDictionary that contains the initial values.</param>
-		public Map( ISessionImplementor session, IDictionary map ) : base( session )
+		internal Map( ISessionImplementor session, IDictionary map ) : base( session )
 		{
 			this.map = map;
 			SetInitialized();

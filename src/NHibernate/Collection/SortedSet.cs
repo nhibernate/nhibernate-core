@@ -54,7 +54,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="comparer">The IComparer to user for Sorting.</param>
-		public SortedSet( ISessionImplementor session, IComparer comparer ) : base( session )
+		internal SortedSet( ISessionImplementor session, IComparer comparer ) : base( session )
 		{
 			this.comparer = comparer;
 		}
@@ -65,7 +65,7 @@ namespace NHibernate.Collection
 		/// <param name="session">The Session to be bound to.</param>
 		/// <param name="map">The initial values.</param>
 		/// <param name="comparer">The IComparer to use for Sorting.</param>
-		public SortedSet( ISessionImplementor session, ISet map, IComparer comparer )
+		internal SortedSet( ISessionImplementor session, ISet map, IComparer comparer )
 			: base( session, new Iesi.Collections.SortedSet( map, comparer ) )
 		{
 			this.comparer = comparer;

@@ -21,7 +21,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="session"></param>
-		public Bag( ISessionImplementor session ) : base( session )
+		internal Bag( ISessionImplementor session ) : base( session )
 		{
 		}
 
@@ -30,7 +30,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="coll"></param>
-		public Bag( ISessionImplementor session, ICollection coll ) : base( session )
+		internal Bag( ISessionImplementor session, ICollection coll ) : base( session )
 		{
 			bag = coll as IList;
 

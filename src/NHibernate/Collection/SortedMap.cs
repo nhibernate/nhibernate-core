@@ -47,7 +47,7 @@ namespace NHibernate.Collection
 		/// Create an Uninitialized SortedMap.
 		/// </summary>
 		/// <param name="session">The ISession the Map should be a part of.</param>
-		public SortedMap( ISessionImplementor session )
+		internal SortedMap( ISessionImplementor session )
 			: base( session )
 		{
 		}
@@ -57,7 +57,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="comparer">The IComparer to user for Sorting.</param>
-		public SortedMap( ISessionImplementor session, IComparer comparer )
+		internal SortedMap( ISessionImplementor session, IComparer comparer )
 			: base( session )
 		{
 			this.comparer = comparer;
@@ -69,7 +69,7 @@ namespace NHibernate.Collection
 		/// <param name="session">The ISession the SortedMap should be a part of.</param>
 		/// <param name="map">The IDictionary that contains the initial values.</param>
 		/// <param name="comparer">The IComparer to use for Sorting.</param>
-		public SortedMap( ISessionImplementor session, IDictionary map, IComparer comparer )
+		internal SortedMap( ISessionImplementor session, IDictionary map, IComparer comparer )
 			: base( session, new SortedList( map, comparer ) )
 		{
 			this.comparer = comparer;
