@@ -65,21 +65,6 @@ namespace NHibernate.SqlCommand
 		{
 			// this preserves the way this existing method works now.
 			return ToSqlStringFragment(true);
-
-//			StringBuilder buf = new StringBuilder(columns.Count * 10);
-//
-//			for (int i=0; i<columns.Count; i++) 
-//			{
-//				string col = columns[i] as string;
-//				buf.Append(StringHelper.CommaSpace);
-//				string alias = aliases[i] as string;
-//				if (alias!=null) buf.Append(alias).Append(StringHelper.Dot);
-//				string columnAlias = columnAliases[i] as string;
-//				buf.Append(col)
-//					.Append(" as ")
-//					.Append( new Alias(suffix).ToAliasString(columnAlias) );
-//			}
-//			return new SqlString(buf.ToString());
 		}
 
 		public SqlString ToSqlStringFragment(bool includeLeadingComma) 
@@ -89,9 +74,11 @@ namespace NHibernate.SqlCommand
 			for (int i=0; i<columns.Count; i++) 
 			{
 				string col = columns[i] as string;
-				if(includeLeadingComma) buf.Append(StringHelper.CommaSpace);
+				if(i > 0 || includeLeadingComma) buf.Append(StringHelper.CommaSpace);
+				
 				string alias = aliases[i] as string;
 				if (alias!=null) buf.Append(alias).Append(StringHelper.Dot);
+				
 				string columnAlias = columnAliases[i] as string;
 				buf.Append(col)
 					.Append(" as ")
