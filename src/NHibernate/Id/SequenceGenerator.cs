@@ -107,11 +107,16 @@ namespace NHibernate.Id
 
 		#endregion
 
+		#region IPersistentIdentifierGenerator Members
+		
 		/// <summary>
-		/// 
+		/// The SQL required to create the database objects for a SequenceGenerator.
 		/// </summary>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with creating the sql.</param>
+		/// <returns>
+		/// An array of <see cref="String"/> objects that contain the Dialect specific sql to 
+		/// create the necessary database objects for the SequenceGenerator.
+		/// </returns>
 		public string[ ] SqlCreateStrings( Dialect.Dialect dialect )
 		{
 			return new string[ ]
@@ -121,19 +126,29 @@ namespace NHibernate.Id
 		}
 
 		/// <summary>
-		/// 
+		/// The SQL required to remove the underlying database objects for a SequenceGenerator.
 		/// </summary>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with creating the sql.</param>
+		/// <returns>
+		/// A <see cref="String"/> that will drop the database objects for the SequenceGenerator.
+		/// </returns>
 		public string SqlDropString( Dialect.Dialect dialect )
 		{
 			return dialect.GetDropSequenceString( sequenceName );
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Return a key unique to the underlying database objects for a SequenceGenerator.
+		/// </summary>
+		/// <returns>
+		/// The configured sequence name.
+		/// </returns>
 		public object GeneratorKey()
 		{
 			return sequenceName;
 		}
+
+		#endregion
+
 	}
 }

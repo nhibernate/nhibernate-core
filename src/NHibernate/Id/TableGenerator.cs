@@ -197,11 +197,17 @@ namespace NHibernate.Id
 
 		#endregion
 
+		#region IPersistentIdentifierGenerator Members
+		
 		/// <summary>
-		/// 
+		/// The SQL required to create the database objects for a TableGenerator.
 		/// </summary>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with creating the sql.</param>
+		/// <returns>
+		/// An array of <see cref="String"/> objects that contain the Dialect specific sql to 
+		/// create the necessary database objects and to create the first value as <c>1</c> 
+		/// for the TableGenerator.
+		/// </returns>
 		public string[ ] SqlCreateStrings( Dialect.Dialect dialect )
 		{
 			// changed the first value to be "1" by default since an uninitialized Int32 is 0 - leaving
@@ -215,20 +221,29 @@ namespace NHibernate.Id
 		}
 
 		/// <summary>
-		/// 
+		/// The SQL required to remove the underlying database objects for a TableGenerator.
 		/// </summary>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with creating the sql.</param>
+		/// <returns>
+		/// A <see cref="String"/> that will drop the database objects for the TableGenerator.
+		/// </returns>
 		public string SqlDropString( Dialect.Dialect dialect )
 		{
 			return "drop table " + tableName + dialect.CascadeConstraintsString;
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Return a key unique to the underlying database objects for a TableGenerator.
+		/// </summary>
+		/// <returns>
+		/// The configured table name.
+		/// </returns>
 		public object GeneratorKey()
 		{
 			return tableName;
 		}
+		
+		#endregion
 
 	}
 }
