@@ -68,6 +68,196 @@ namespace NHibernate.SqlCommand
 			return new SqlString(temp);
 		}
 
+		/// <summary>
+		/// Compacts the SqlString into the fewest parts possible.
+		/// </summary>
+		/// <returns>A new SqlString.</returns>
+		/// <remarks>
+		/// Combines all SqlParts that are strings and next to each other into
+		/// one SqlPart.
+		/// </remarks>
+		public SqlString Compact() 
+		{
+			StringBuilder builder = new StringBuilder();
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
+			string builderString = String.Empty;
+
+			foreach(object part in SqlParts) 
+			{
+				string stringPart = part as string;
+
+				if(stringPart!=null) 
+				{
+					builder.Append(stringPart);
+				}
+				else 
+				{
+					builderString = builder.ToString();
+					
+					// don't add an empty string into the new compacted SqlString
+					if(builderString!=String.Empty) 
+					{
+						sqlBuilder.Add(builderString);
+					}
+
+					builder = new StringBuilder();
+					
+					sqlBuilder.Add((Parameter)part);
+				}
+
+			}
+
+			// make sure the contents of the builder have been added to the sqlBuilder
+			builderString = builder.ToString();
+
+			if(builderString!=String.Empty) 
+			{
+				sqlBuilder.Add(builderString);
+			}
+
+			return sqlBuilder.ToSqlString();
+		}
+
+		/// <summary>
+		/// Determines whether the end of this instance matches the specified String.
+		/// </summary>
+		/// <param name="value">A string to seek at the end.</param>
+		/// <returns><c>true</c> if the end of this instance matches value; otherwise, <c>false</c></returns>
+		public bool EndsWith(string value) 
+		{
+			SqlString tempSql = Compact();
+
+			int endIndex = tempSql.SqlParts.Length - 1;
+
+			if( tempSql.SqlParts.Length==0 ) 
+			{
+				return false;
+			}
+
+
+			string lastPart = tempSql.SqlParts[endIndex] as string;
+			if(lastPart!=null) 
+			{
+				return lastPart.EndsWith(value);
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Determines whether the beginning of this SqlString matches the specified System.String
+		/// </summary>
+		/// <param name="value">The System.String to seek</param>
+		/// <returns>true if the SqlString starts with the value.</returns>
+		public bool StartsWith(string value) 
+		{
+
+			SqlString tempSql = this.Compact();
+
+			foreach(object sqlPart in tempSql.SqlParts) 
+			{
+				string partText = sqlPart as string;
+				
+				// if this part is not a string then we know we did not start with the string 
+				// value
+				if(partText==null) 
+				{
+					return false;
+				}
+
+				// if for some reason we had an empty string in here then just 
+				// move on to the next SqlPart, otherwise lets make sure that 
+				// it does in fact start with the value
+				if(partText!=String.Empty) 
+				{
+					return partText.StartsWith(value);
+				}
+			}
+
+			// if we get down to here that means there were no sql parts in the SqlString
+			// so obviously it doesn't start with the value
+			return false;
+		}
+
+		/// <summary>
+		/// Retrieves a substring from this instance. The substring starts at a specified character position. 
+		/// </summary>
+		/// <param name="startIndex">The starting character position of a substring in this instance.</param>
+		/// <returns>
+		/// A new SqlString to the substring that begins at startIndex in this instance. 
+		/// </returns>
+		/// <remarks>
+		/// If the first SqlPart is a Parameter then no action is taken and a copy of the SqlString is
+		/// returned.
+		/// 
+		/// If the startIndex is greater than the length of the strings before the first SqlPart that
+		/// is a Parameter then all of the strings will be removed and the first SqlPart returned
+		/// will be the Parameter. 
+		/// </remarks>
+		public SqlString Substring(int startIndex) 
+		{
+			SqlStringBuilder builder = new SqlStringBuilder( Compact() );
+
+			string part = builder[0] as string;
+
+			// if the first part is null then it is not a string so just
+			// return them the compacted version
+			if( part!=null ) 
+			{
+				if(part.Length < startIndex) 
+				{
+					builder.RemoveAt(0);
+				}
+				else 
+				{
+					builder[0] = part.Substring(startIndex);
+				}
+			}
+
+			return builder.ToSqlString();
+		}
+
+		/// <summary>
+		/// Removes all occurrences of white space characters from the beginning and end of this instance.
+		/// </summary>
+		/// <returns>
+		/// A new SqlString equivalent to this instance after white space characters 
+		/// are removed from the beginning and end.
+		/// </returns>
+		public SqlString Trim() 
+		{
+			SqlStringBuilder builder = new SqlStringBuilder( Compact() );
+
+			// there is nothing in the builder to Trim 
+			if( builder.Count==0 ) 
+			{
+				return builder.ToSqlString();
+			}
+
+			string begin = builder[0] as string;
+			int endIndex = builder.Count - 1;
+			string end = builder[endIndex] as string;
+
+			if( endIndex==0 && begin!=null ) 
+			{
+				builder[0] = begin.Trim();
+			}
+			else 
+			{
+				if(begin!=null) 
+				{
+					builder[0] = begin.TrimStart();
+				}
+
+				if(end!=null) 
+				{
+					builder[builder.Count - 1] = end.TrimEnd();
+				}
+			}
+
+			return builder.ToSqlString();
+		}
+
 		#region System.Object Members
 		
 		

@@ -127,6 +127,8 @@ namespace NHibernate.SqlCommand
 		}
 
 
+
+
 		/// <summary>
 		/// Adds an existing SqlString to this SqlStringBuilder
 		/// </summary>
@@ -135,10 +137,13 @@ namespace NHibernate.SqlCommand
 		/// <param name="op">How these Statements should be junctioned "AND" or "OR"</param>
 		/// <param name="postfix">String to put at the end of the combined SqlString.</param>
 		/// <returns>This SqlStringBuilder</returns>
-		/// <remarks>This calls the overloaded Add method with an array of SqlStrings</remarks>
+		/// <remarks>
+		/// This calls the overloaded Add method with an array of SqlStrings and wrapStatment=false
+		/// so it will not be wrapped with a "(" and ")"
+		/// </remarks>
 		public SqlStringBuilder Add(SqlString sqlString, string prefix, string op, string postfix) 
 		{
-			return Add(new SqlString[] {sqlString}, prefix, op, postfix);
+			return Add(new SqlString[] {sqlString}, prefix, op, postfix, false);
 		}
 
 		/// <summary>
@@ -209,6 +214,34 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Gets the number of SqlParts in this SqlStringBuilder.
+		/// </summary>
+		/// <returns>
+		/// The number of SqlParts in this SqlStringBuilder.
+		/// </returns>
+		public int Count
+		{
+			get { return sqlParts.Count; }
+		}
+
+		/// <summary>
+		/// Gets or Sets the element at the index
+		/// </summary>
+		/// <value>Returns a string or Parameter.</value>
+		/// <remarks></remarks>
+		public object this[int index] 
+		{
+			get 
+			{
+				return sqlParts[index];
+			}
+			set 
+			{
+				sqlParts[index] = value;
+			}
+		}
+
+		/// <summary>
 		/// Insert a string containing sql into the SqlStringBuilder at the specified index.
 		/// </summary>
 		/// <param name="index">The zero-based index at which the sql should be inserted.</param>
@@ -232,6 +265,16 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		/// <summary>
+		/// Removes the string or Parameter at the specified index.
+		/// </summary>
+		/// <param name="index">The zero-based index of the item to remove.</param>
+		/// <returns>This SqlStringBuilder</returns>
+		public SqlStringBuilder RemoveAt(int index) 
+		{
+			sqlParts.RemoveAt(index);
+			return this;
+		}
 
 		/// <summary>
 		/// Converts the mutable SqlStringBuilder into the immutable SqlString.
