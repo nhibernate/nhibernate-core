@@ -141,7 +141,6 @@ namespace NHibernate.Util {
 		/// <param name="name">The name of the class.  Can be a name with the assembly included or just the name of the class.</param>
 		/// <returns>The Type for the Class.</returns>
 		public static System.Type ClassForName(string name) {
-			if (name == " ") return null;
 			return System.Type.GetType(name, true);
 		}
 

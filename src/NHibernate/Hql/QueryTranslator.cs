@@ -988,7 +988,7 @@ namespace NHibernate.Hql
 				if ( !ParserHelper.IsWhitespace( tokens[i-1] ) ) last = tokens[i-1].ToLower();
 
 				string token = tokens[i];
-				if ( ParserHelper.IsWhitespace(token) || last==null ) 
+				if ( !ParserHelper.IsWhitespace(token) || last==null ) 
 				{
 					// scan for the next non-whitespace token
 					if (nextIndex<=i) 
