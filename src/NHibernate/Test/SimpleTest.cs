@@ -17,6 +17,7 @@ namespace NHibernate.Test {
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
+			simple.Date = DateTime.Now;
 			s.Save(simple, 10);
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 			q.SetProperties(simple);
