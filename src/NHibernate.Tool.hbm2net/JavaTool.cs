@@ -139,7 +139,7 @@ namespace NHibernate.Tool.hbm2net
 		
 		public virtual bool hasExtends(ClassMapping cmap)
 		{
-			return (Object) getExtends(cmap) != string.Empty;
+			return getExtends(cmap).Length != 0;
 		}
 		
 		public virtual String getExtends(ClassMapping cmap)
@@ -182,7 +182,7 @@ namespace NHibernate.Tool.hbm2net
 		
 		public virtual bool hasImplements(ClassMapping cmap)
 		{
-			return (Object) getImplements(cmap) != string.Empty;
+			return getImplements(cmap).Length != 0;
 		}
 		
 		public virtual String getImplements(ClassMapping cmap)
