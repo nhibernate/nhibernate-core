@@ -516,6 +516,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "UtilityTest\ReflectHelperFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UtilityTest\SequencedHashMapFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
