@@ -192,6 +192,7 @@ namespace NHibernate.Tool.hbm2ddl
 					if (connection!=null) 
 					{
 						connectionProvider.CloseConnection(connection);
+						connectionProvider.Close();
 					}
 				} 
 				catch(Exception e) 
