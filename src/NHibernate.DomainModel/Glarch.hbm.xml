@@ -7,7 +7,8 @@
 		dynamic-update="true"
 	>
 		
-		<!--<jcs-cache usage="read-write"/>-->
+		<!-- <jcs-cache usage="read-write" /> -->
+		<!-- commented out in h2.0.3 also -->
 		<id 
 			type="String" 
 			column="tha_key" 

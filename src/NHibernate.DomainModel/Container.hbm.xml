@@ -121,7 +121,7 @@
 			table="LCCBAG" 
 			cascade="save-update"
 		>
-			<!--jcs-cache usage="read-write"-->
+			<jcs-cache usage="read-write" />
 			<key column="container_id" />
 			<many-to-many 
 				column="contained_id" 

@@ -193,6 +193,7 @@
 		
 		<set name="StringSet" lazy="true" sort="NHibernate.DomainModel.StringComparator, NHibernate.DomainModel">
 			<!--<jcs-cache usage="read-write"/>-->
+			<!-- commented out in h2.0.3 also -->
 			<key column="id_"/>
 			<element column="element" type="String" not-null="true" length="32"/>
 		</set>
