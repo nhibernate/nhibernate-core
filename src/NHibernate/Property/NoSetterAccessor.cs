@@ -8,7 +8,7 @@ namespace NHibernate.Property
 	/// </summary>
 	/// <remarks>
 	/// This is most useful because Classes can provider a get for the Property
-	/// that is the &lt;id&gt; but tell NHibernate there is no setter for the Property
+	/// that is the <c>&lt;id&gt;</c> but tell NHibernate there is no setter for the Property
 	/// so the value should be written directly to the field.
 	/// </remarks>
 	public class NoSetterAccessor : IPropertyAccessor
@@ -30,7 +30,7 @@ namespace NHibernate.Property
 		/// Creates an <see cref="BasicGetter"/> to <c>get</c> the value from the Property.
 		/// </summary>
 		/// <param name="theClass">The <see cref="System.Type"/> to find the Property in.</param>
-		/// <param name="propertyName">The name of the Property to get.</param>
+		/// <param name="propertyName">The name of the mapped Property to get.</param>
 		/// <returns>
 		/// The <see cref="BasicGetter"/> to use to get the value of the Property from an
 		/// instance of the <see cref="System.Type"/>.</returns>
@@ -49,17 +49,17 @@ namespace NHibernate.Property
 		}
 
 		/// <summary>
-		/// Create a <see cref="FieldSetter"/> to <c>set</c> the value of the Property
-		/// through a <c>field</c>.
+		/// Create a <see cref="FieldSetter"/> to <c>set</c> the value of the mapped Property
+		/// through a <c>Field</c>.
 		/// </summary>
-		/// <param name="theClass">The <see cref="System.Type"/> to find the Property in.</param>
-		/// <param name="propertyName">The name of the Property to set.</param>
+		/// <param name="theClass">The <see cref="System.Type"/> to find the mapped Property in.</param>
+		/// <param name="propertyName">The name of the mapped Property to set.</param>
 		/// <returns>
 		/// The <see cref="FieldSetter"/> to use to set the value of the Property on an
 		/// instance of the <see cref="System.Type"/>.
 		/// </returns>
 		/// <exception cref="PropertyNotFoundException" >
-		/// Thrown when a field for the Property specified by the <c>propertyName</c> using the
+		/// Thrown when a Field for the Property specified by the <c>propertyName</c> using the
 		/// <see cref="IFieldNamingStrategy"/> could not be found in the <see cref="System.Type"/>.
 		/// </exception>
 		public ISetter GetSetter( System.Type theClass, string propertyName )

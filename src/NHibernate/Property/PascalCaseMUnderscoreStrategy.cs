@@ -1,18 +1,20 @@
 namespace NHibernate.Property
 {
 	/// <summary>
-	/// Implementation of FieldNamingStrategy for fields that are prefixed with
-	/// an "m_" and the first character in PropertyName capitalized.
+	/// Implementation of <see cref="IFieldNamingStrategy"/> for fields that are prefixed with
+	/// an <c>m_</c> and the first character in PropertyName capitalized.
 	/// </summary>
 	public class PascalCaseMUnderscoreStrategy : IFieldNamingStrategy
 	{
 		#region IFieldNamingStrategy Members
 
 		/// <summary>
-		/// 
+		/// Converts the Property's name into a Field name by making the first character 
+		/// of the <c>propertyName</c> uppercase and prefixing it with the letter 'm' 
+		/// and an underscore.
 		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
+		/// <param name="propertyName">The name of the mapped property.</param>
+		/// <returns>The name of the Field in CamelCase format prefixed with an 'm' and an underscore.</returns>
 		public string GetFieldName( string propertyName )
 		{
 			return "m_" + propertyName.Substring( 0, 1 ).ToUpper() + propertyName.Substring( 1 );

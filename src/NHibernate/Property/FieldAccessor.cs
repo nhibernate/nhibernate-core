@@ -3,27 +3,28 @@ using System.Reflection;
 namespace NHibernate.Property
 {
 	/// <summary>
-	/// Access fields directly.
+	/// Access the mapped property by using a Field to <c>get</c> and <c>set</c> the value.
 	/// </summary>
 	/// <remarks>
-	/// This accesses fields with the following naming convention unless a 
-	/// <see cref="IFieldNamingStrategy"/> is supplied.
-	/// Property Name = "Id"
-	/// Field Name = "Id"
+	/// The <see cref="FieldAccessor"/> is useful when you expose <c>getter</c> and <c>setters</c>
+	/// for a Property, but they have extra code in them that shouldn't be executed when NHibernate
+	/// is setting or getting the values for loads or saves.
 	/// </remarks>
 	public class FieldAccessor : IPropertyAccessor
 	{
 		private IFieldNamingStrategy namingStrategy;
 
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes a new instance of <see cref="FieldAccessor"/>.
+		/// </summary>
 		public FieldAccessor()
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of <see cref="FieldAccessor"/>.
 		/// </summary>
-		/// <param name="namingStrategy"></param>
+		/// <param name="namingStrategy">The <see cref="IFieldNamingStrategy"/> to use.</param>
 		public FieldAccessor( IFieldNamingStrategy namingStrategy )
 		{
 			this.namingStrategy = namingStrategy;
@@ -31,7 +32,7 @@ namespace NHibernate.Property
 
 		/// <summary>
 		/// Gets the <see cref="IFieldNamingStrategy"/> used to convert the name of the
-		/// Property in the hbm.xml file to the name of the field in the class.
+		/// mapped Property in the hbm.xml file to the name of the field in the class.
 		/// </summary>
 		/// <value>The <see cref="IFieldNamingStrategy"/> or <c>null</c>.</value>
 		public IFieldNamingStrategy NamingStrategy
@@ -42,11 +43,18 @@ namespace NHibernate.Property
 		#region IPropertyAccessor Members
 
 		/// <summary>
-		/// 
+		/// Create a <see cref="FieldGetter"/> to <c>get</c> the value of the mapped Property
+		/// through a <c>Field</c>.
 		/// </summary>
-		/// <param name="theClass"></param>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
+		/// <param name="theClass">The <see cref="System.Type"/> to find the Property in.</param>
+		/// <param name="propertyName">The name of the mapped Property to get.</param>
+		/// <returns>
+		/// The <see cref="FieldGetter"/> to use to get the value of the Property from an
+		/// instance of the <see cref="System.Type"/>.</returns>
+		/// <exception cref="PropertyNotFoundException" >
+		/// Thrown when a Field specified by the <c>propertyName</c> could not
+		/// be found in the <see cref="System.Type"/>.
+		/// </exception>
 		public IGetter GetGetter( System.Type theClass, string propertyName )
 		{
 			string fieldName = GetFieldName( propertyName );
@@ -54,11 +62,19 @@ namespace NHibernate.Property
 		}
 
 		/// <summary>
-		/// 
+		/// Create a <see cref="FieldSetter"/> to <c>set</c> the value of the mapped Property
+		/// through a <c>Field</c>.
 		/// </summary>
-		/// <param name="theClass"></param>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
+		/// <param name="theClass">The <see cref="System.Type"/> to find the mapped Property in.</param>
+		/// <param name="propertyName">The name of the mapped Property to set.</param>
+		/// <returns>
+		/// The <see cref="FieldSetter"/> to use to set the value of the Property on an
+		/// instance of the <see cref="System.Type"/>.
+		/// </returns>
+		/// <exception cref="PropertyNotFoundException" >
+		/// Thrown when a Field for the Property specified by the <c>propertyName</c> using the
+		/// <see cref="IFieldNamingStrategy"/> could not be found in the <see cref="System.Type"/>.
+		/// </exception>
 		public ISetter GetSetter( System.Type theClass, string propertyName )
 		{
 			string fieldName = GetFieldName( propertyName );
@@ -68,21 +84,29 @@ namespace NHibernate.Property
 		#endregion
 
 		/// <summary>
-		/// 
+		/// Helper method to find the Field.
 		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="fieldName"></param>
-		/// <returns></returns>
+		/// <param name="clazz">The <see cref="System.Type"/> to find the Field in.</param>
+		/// <param name="fieldName">The name of the Field to find.</param>
+		/// <returns>
+		/// The <see cref="FieldInfo"/> for the field.
+		/// </returns>
+		/// <exception cref="PropertyNotFoundException">
+		/// Thrown when a field could not be found.
+		/// </exception>
 		internal static FieldInfo GetField( System.Type clazz, string fieldName )
 		{
 			if( clazz == null || clazz == typeof( object ) )
 			{
+				// the full inheritance chain has been walked and we could
+				// not find the Field
 				throw new PropertyNotFoundException( "field not found: " + fieldName );
 			}
 
 			FieldInfo field = clazz.GetField( fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
 			if( field == null )
 			{
+				// recursively call this method for the base Type
 				field = GetField( clazz.BaseType, fieldName );
 			}
 
@@ -93,13 +117,11 @@ namespace NHibernate.Property
 		}
 
 		/// <summary>
-		/// Converts the Property's name into a Field using camel style casing.
+		/// Converts the mapped property's name into a Field using 
+		/// the <see cref="IFieldNamingStrategy"/> if one exists.
 		/// </summary>
 		/// <param name="propertyName">The name of the Property.</param>
 		/// <returns>The name of the Field.</returns>
-		/// <remarks>
-		/// This uses the convention that a Property named <c>Id</c> will have a field <c>id</c>
-		/// </remarks>
 		private string GetFieldName( string propertyName )
 		{
 			if( namingStrategy == null )

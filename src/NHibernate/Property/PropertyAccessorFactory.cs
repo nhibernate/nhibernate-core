@@ -11,7 +11,9 @@ namespace NHibernate.Property
 	{
 		private static IDictionary accessors;
 
-		/// <summary></summary>
+		/// <summary>
+		/// Initializes the static members in <see cref="PropertyAccessorFactory"/>.
+		/// </summary>
 		static PropertyAccessorFactory()
 		{
 			accessors = new Hashtable( 13 );

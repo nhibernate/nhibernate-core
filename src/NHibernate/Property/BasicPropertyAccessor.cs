@@ -17,7 +17,7 @@ namespace NHibernate.Property
 		/// Create a <see cref="BasicGetter"/> for the mapped property.
 		/// </summary>
 		/// <param name="theClass">The <see cref="System.Type"/> to find the Property in.</param>
-		/// <param name="propertyName">The name of the Property to get.</param>
+		/// <param name="propertyName">The name of the mapped Property to get.</param>
 		/// <returns>
 		/// The <see cref="BasicGetter"/> to use to get the value of the Property from an
 		/// instance of the <see cref="System.Type"/>.</returns>
@@ -39,7 +39,7 @@ namespace NHibernate.Property
 		/// Create a <see cref="BasicSetter"/> for the mapped property.
 		/// </summary>
 		/// <param name="type">The <see cref="System.Type"/> to find the Property in.</param>
-		/// <param name="propertyName">The name of the Property to get.</param>
+		/// <param name="propertyName">The name of the mapped Property to get.</param>
 		/// <returns>
 		/// The <see cref="BasicSetter"/> to use to set the value of the Property on an
 		/// instance of the <see cref="System.Type"/>.
@@ -64,7 +64,7 @@ namespace NHibernate.Property
 		/// Helper method to find the Property <c>get</c>.
 		/// </summary>
 		/// <param name="type">The <see cref="System.Type"/> to find the Property in.</param>
-		/// <param name="propertyName">The name of the Property to get.</param>
+		/// <param name="propertyName">The name of the mapped Property to get.</param>
 		/// <returns>
 		/// The <see cref="BasicGetter"/> for the Property <c>get</c> or <c>null</c>
 		/// if the Property could not be found.
@@ -109,7 +109,7 @@ namespace NHibernate.Property
 		/// Helper method to find the Property <c>set</c>.
 		/// </summary>
 		/// <param name="type">The <see cref="System.Type"/> to find the Property in.</param>
-		/// <param name="propertyName">The name of the Property to set.</param>
+		/// <param name="propertyName">The name of the mapped Property to set.</param>
 		/// <returns>
 		/// The <see cref="BasicSetter"/> for the Property <c>set</c> or <c>null</c>
 		/// if the Property could not be found.

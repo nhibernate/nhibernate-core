@@ -17,7 +17,7 @@ namespace NHibernate.Property
 		/// </summary>
 		/// <param name="clazz">The <see cref="System.Type"/> that contains the Property <c>set</c>.</param>
 		/// <param name="property">The <see cref="PropertyInfo"/> for reflection.</param>
-		/// <param name="propertyName">The name of the Property.</param>
+		/// <param name="propertyName">The name of the mapped Property.</param>
 		public BasicSetter( System.Type clazz, PropertyInfo property, string propertyName )
 		{
 			this.clazz = clazz;
@@ -48,18 +48,18 @@ namespace NHibernate.Property
 		}
 
 		/// <summary>
-		/// Gets the name of the Property.
+		/// Gets the name of the mapped Property.
 		/// </summary>
-		/// <value>The name of the Property or <c>null</c>.</value>
+		/// <value>The name of the mapped Property or <c>null</c>.</value>
 		public string PropertyName
 		{
 			get { return property.Name; }
 		}
 
 		/// <summary>
-		/// Gets the <see cref="PropertyInfo"/> for the Property.
+		/// Gets the <see cref="PropertyInfo"/> for the mapped Property.
 		/// </summary>
-		/// <value>The <see cref="PropertyInfo"/> for the Property.</value>
+		/// <value>The <see cref="PropertyInfo"/> for the mapped Property.</value>
 		public PropertyInfo Property
 		{
 			get { return property; }
