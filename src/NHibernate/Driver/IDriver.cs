@@ -171,5 +171,26 @@ namespace NHibernate.Driver
 		bool SupportsPreparingCommands { get; }
 
 
+		/// <summary>
+		/// Generates an IDbCommand from the SqlString according to the requirements of the DataProvider.
+		/// </summary>
+		/// <param name="dialect">The Dialect to help build the IDbCommand</param>
+		/// <param name="sqlString">The SqlString that contains the sql and parameters.</param>
+		/// <returns>An IDbCommand with the CommandText and Parameters fully set.</returns>
+		IDbCommand GenerateCommand(Dialect.Dialect dialect, SqlCommand.SqlString sqlString);
+
+		/// <summary>
+		/// Generates an IDbCommand from the string containing sql according to the requirements 
+		/// of the DataProvider.
+		/// </summary>
+		/// <param name="dialect">The Dialect to help build the IDbCommand</param>
+		/// <param name="sqlString">The string that contains the sql that has NO parameters.</param>
+		/// <returns>An IDbCommand with the CommandText fully set.</returns>
+		/// <remarks>This can not be used to build an IDbCommand that needs to contain Parameters.</remarks>
+		IDbCommand GenerateCommand(Dialect.Dialect dialect, string sqlString);
+		
+
+
+
 	}
 }

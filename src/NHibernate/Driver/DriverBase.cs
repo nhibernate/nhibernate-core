@@ -85,6 +85,71 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
+		public virtual IDbCommand GenerateCommand(Dialect.Dialect dialect, SqlCommand.SqlString sqlString) 
+		{
+			int paramIndex = 0;
+			IDbCommand cmd = this.CreateCommand();
+
+			System.Text.StringBuilder builder = new System.Text.StringBuilder(sqlString.SqlParts.Length * 15);
+			for(int i = 0; i < sqlString.SqlParts.Length; i++) 
+			{
+				object part = sqlString.SqlParts[i];
+				SqlCommand.Parameter parameter = part as SqlCommand.Parameter;
+				
+				if(parameter!=null) 
+				{
+					string paramName = "p" + paramIndex;
+					builder.Append ( this.FormatNameForSql(paramName) );
+					
+					IDbDataParameter dbParam = GenerateParameter(cmd, paramName, parameter, dialect);
+
+					cmd.Parameters.Add(dbParam);
+					
+					paramIndex++;
+				}
+				else 
+				{
+					builder.Append((string)part);
+				}
+			}
+
+			cmd.CommandText = builder.ToString();
+
+			return cmd;
+		}
+
+		public virtual IDbCommand GenerateCommand(Dialect.Dialect dialect, string sqlString) 
+		{
+			IDbCommand cmd = this.CreateCommand();
+			cmd.CommandText = sqlString;
+
+			return cmd;
+		}
+
+		/// <summary>
+		/// Generates an IDbDataParameter for the IDbCommand.  It does not add the IDbDataParameter to the IDbCommand's
+		/// Parameter collection.
+		/// </summary>
+		/// <param name="command">The IDbCommand to use to create the IDbDataParameter.</param>
+		/// <param name="name">The name to set for IDbDataParameter.Name</param>
+		/// <param name="parameter">The Parameter to convert to an IDbDataParameter.</param>
+		/// <param name="dialect">The Dialect to use for Default lengths if needed.</param>
+		/// <returns>An IDbDataParameter ready to be added to an IDbCommand.</returns>
+		/// <remarks>
+		/// Drivers that require Size or Precision/Scale to be set before the IDbCommand is prepared should 
+		/// override this method and use the info contained in the Parameter to set those value.  By default
+		/// those values are not set, only the DbType and ParameterName are set.
+		/// </remarks>
+		protected virtual IDbDataParameter GenerateParameter(IDbCommand command, string name, SqlCommand.Parameter parameter, Dialect.Dialect dialect) 
+		{
+			IDbDataParameter dbParam = command.CreateParameter();
+			dbParam.DbType = parameter.SqlType.DbType;
+			
+			dbParam.ParameterName = this.FormatNameForParameter(name);
+
+			return dbParam;
+		}
+
 		#endregion
 	}
 }
