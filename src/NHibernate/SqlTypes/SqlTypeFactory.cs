@@ -3,13 +3,11 @@ using System.Collections;
 
 namespace NHibernate.SqlTypes 
 {
-
 	/// <summary>
 	/// SqlTypeFactory provides Singleton access to the SqlTypes.
 	/// </summary>
 	public class SqlTypeFactory 
 	{
-
 		// key = typeof(sqlType).Name : ie - BinarySqlType(l), BooleanSqlType, DecimalSqlType(p,s)
 		// value = SqlType
 		private static Hashtable sqlTypes = Hashtable.Synchronized(new Hashtable(41));
@@ -143,14 +141,14 @@ namespace NHibernate.SqlTypes
 
 		}
 
-		public static DoubleSqlType GetDouble(int length) 
+		public static DoubleSqlType GetDouble() 
 		{
-			string key = GetKeyForLengthBased(typeof(DoubleSqlType).Name, length);
+			string key = typeof(DoubleSqlType).Name;
 			
 			DoubleSqlType returnSqlType = (DoubleSqlType)sqlTypes[key];
 			if(returnSqlType==null) 
 			{
-				returnSqlType = new DoubleSqlType(length);
+				returnSqlType = new DoubleSqlType();
 				sqlTypes.Add(key, returnSqlType);
 			}
 			
@@ -213,14 +211,14 @@ namespace NHibernate.SqlTypes
 			return returnSqlType;
 		}
 
-		public static SingleSqlType GetSingle(int length) 
+		public static SingleSqlType GetSingle() 
 		{
-			string key = GetKeyForLengthBased(typeof(SingleSqlType).Name, length);
+			string key = typeof(SingleSqlType).Name;
 			
 			SingleSqlType returnSqlType = (SingleSqlType)sqlTypes[key];
 			if(returnSqlType==null) 
 			{
-				returnSqlType = new SingleSqlType(length);
+				returnSqlType = new SingleSqlType();
 				sqlTypes.Add(key, returnSqlType);
 			}
 			

@@ -1,14 +1,19 @@
 using System;
 using System.Data;
 
-namespace NHibernate.SqlTypes {
-	
+namespace NHibernate.SqlTypes 
+{
 	/// <summary>
 	/// Summary description for StringFixedLengthSqlType.
 	/// </summary>
-	public class StringFixedLengthSqlType : SqlType {
+	public class StringFixedLengthSqlType : SqlType 
+	{
+		public StringFixedLengthSqlType() : base(DbType.StringFixedLength)
+		{	
+		}
 		
-		public StringFixedLengthSqlType(int length) : base(DbType.StringFixedLength, length) {	
+		public StringFixedLengthSqlType(int length) : base(DbType.StringFixedLength, length) 
+		{	
 		}
 
 	}

@@ -1,13 +1,16 @@
 using System;
 using System.Data;
 
-namespace NHibernate.SqlTypes {
+namespace NHibernate.SqlTypes 
+{
 	/// <summary>
 	/// Summary description for BooleanSqlType.
 	/// </summary>
-	public class BooleanSqlType : SqlType {
+	public class BooleanSqlType : SqlType 
+	{
 		
-		public BooleanSqlType() : base(DbType.Boolean){
+		public BooleanSqlType() : base(DbType.Boolean)
+		{
 		}
 	}
 }

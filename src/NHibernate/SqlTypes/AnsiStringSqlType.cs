@@ -9,8 +9,13 @@ namespace NHibernate.SqlTypes
 	/// </summary>
 	public class AnsiStringSqlType : SqlType 
 	{
+		public AnsiStringSqlType() : base(DbType.AnsiString) 
+		{
+		}
 		public AnsiStringSqlType(int length) : base(DbType.AnsiString, length) 
 		{	
 		}
+
+
 	}
 }
