@@ -463,9 +463,22 @@ namespace NHibernate.Hql
 				else 
 				{
 					object constant;
+					string fieldName = null;
+					string typeName = null;
+					string importedName = null;
 
-					if ( token.IndexOf((System.Char) StringHelper.Dot) > - 1 &&
-						(constant = ReflectHelper.GetConstantValue(token)) != null)	
+					int indexOfDot = token.IndexOf( (System.Char)StringHelper.Dot );
+					// don't even bother to do the lookups if the indexOfDot is not 
+					// greater than -1.  This will save all the string modifications.
+					if( indexOfDot > -1 ) 
+					{
+						fieldName = StringHelper.Unqualify( token ); 
+						typeName = StringHelper.Qualifier( token );
+						importedName = q.factory.GetImportedClassName( typeName );
+					}
+					
+					if ( indexOfDot > - 1 &&
+						(constant = ReflectHelper.GetConstantValue( importedName, fieldName )) != null)	
 					{
 						IType type;
 						try 

@@ -329,7 +329,7 @@ namespace NHibernate.Hql
 		{
 			try 
 			{
-				return (IQueryable) factory.GetPersister( factory.GetImportedClassName( className) );
+				return (IQueryable) factory.GetPersister( factory.GetImportedClassName( className ), false );
 			}
 			catch(Exception) 
 			{
@@ -1016,21 +1016,28 @@ namespace NHibernate.Hql
 			notAfterClassTokens.Add(")");
 		}
 
+		/// <summary>
+		/// Gets the Type for the name that might be an Imported Class.
+		/// </summary>
+		/// <param name="name">The name that might be an ImportedClass.</param>
+		/// <returns>A <see cref="System.Type"/> if <c>name</c> is an Imported Class, <c>null</c> otherwise.</returns>
 		internal System.Type GetImportedClass(string name) 
 		{
 			return GetImportedClass(name, factory);
 		}
 
+		/// <summary>
+		/// Gets the Type for the name that might be an Imported Class.
+		/// </summary>
+		/// <param name="name">The name that might be an ImportedClass.</param>
+		/// <param name="factory">The <see cref="ISessionFactoryImplementor"/> that contains the Imported Classes.</param>
+		/// <returns>A <see cref="System.Type"/> if <c>name</c> is an Imported Class, <c>null</c> otherwise.</returns>
 		private static System.Type GetImportedClass(string name, ISessionFactoryImplementor factory) 
 		{
-			try 
-			{
-				return ReflectHelper.ClassForName( factory.GetImportedClassName(name) );
-			} 
-			catch(Exception) 
-			{
-				return null;
-			}
+			string importedName = factory.GetImportedClassName( name );
+
+			// don't care about the exception, just give us a null value.
+			return System.Type.GetType( importedName, false );
 		}
 
 		private static string[][] GenerateColumnNames(IType[] types, ISessionFactoryImplementor f) 

@@ -651,7 +651,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("HQL can't reference static property for const.  http://jira.nhibernate.org:8080/browse/NH-78")]
 		public void Categories() 
 		{
 			ISession s = sessions.OpenSession();
@@ -679,8 +678,6 @@ namespace NHibernate.Test
 			IEnumerator enumer = s.Enumerable("from c in class Category where c.Name = NHibernate.DomainModel.Category.RootCategory").GetEnumerator();
 			Assert.IsTrue( enumer.MoveNext() );
 			s.Close();
-
-
 		}
 
 		[Test]

@@ -76,21 +76,21 @@ namespace NHibernate.Util
 			return System.Type.GetType(name, true);
 		}
 
-		public static object GetConstantValue(string name) 
+		/// <summary>
+		/// Returns the value contained in the static field.
+		/// </summary>
+		/// <param name="typeName">The name of the <see cref="System.Type"/>.</param>
+		/// <param name="fieldName">The name of the Field in the <see cref="System.Type"/>.</param>
+		/// <returns>The value contained in that field or <c>null</c> if the Type or Field does not exist.</returns>
+		public static object GetConstantValue(string typeName, string fieldName) 
 		{
-			System.Type clazz;
+			System.Type clazz = System.Type.GetType( typeName, false ); 
+			
+			if( clazz==null ) return null;
+
 			try 
 			{
-				clazz = ClassForName( StringHelper.Qualifier(name) );
-			} 
-			catch(Exception) 
-			{
-				return null;
-			}
-			try 
-			{
-				return clazz.GetProperty( StringHelper.Unqualify(name) ).GetValue(null, new object[0]);
-				//??
+				return clazz.GetField( fieldName ).GetValue( null );
 			} 
 			catch (Exception) 
 			{
