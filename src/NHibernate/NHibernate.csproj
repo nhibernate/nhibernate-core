@@ -705,6 +705,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Id\ForeignGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Id\IConfigurable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

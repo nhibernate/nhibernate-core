@@ -33,6 +33,19 @@ namespace NHibernate.Metadata {
 		IType[] PropertyTypes { get; }
 
 		/// <summary>
+		/// Get the value of a particular (named) property 
+		/// </summary>
+		/// <param name="?"></param>
+		/// <returns></returns>
+		object GetPropertyValue(object obj, string propertyName); 
+    
+		/// <summary>
+		/// Set the value of a particular (named) property 
+		/// </summary>
+		/// <param name="?"></param>
+		void SetPropertyValue(object obj, string propertyName, object value); 
+    
+		/// <summary>
 		/// Return the values of the mapped properties of the object
 		/// </summary>
 		object[] GetPropertyValues(object entity);

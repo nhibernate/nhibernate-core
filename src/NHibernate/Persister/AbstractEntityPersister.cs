@@ -82,6 +82,8 @@ namespace NHibernate.Persister {
 
 		private ReflectHelper.Getter[] getters;
 		private ReflectHelper.Setter[] setters;
+		private readonly Hashtable gettersByPropertyName = new Hashtable();
+		private readonly Hashtable settersByPropertyName = new Hashtable();
 		protected int hydrateSpan;
 
 		private string className;
@@ -598,6 +600,20 @@ namespace NHibernate.Persister {
 
 		public bool[] PropertyInsertability {
 			get { return propertyInsertability; }
+		}
+
+		public object GetPropertyValue(object obj, string propertyName) {
+			return ( (ReflectHelper.Getter) gettersByPropertyName[propertyName] ).Get(obj);
+		}
+
+		public void SetPropertyValue(object obj, string propertyName, object value) {
+			( (ReflectHelper.Setter) settersByPropertyName[propertyName] ).Set(obj, value);
+		}
+	
+		protected bool HasEmbeddedIdentifier {
+			get {
+				return hasEmbeddedIdentifier;
+			}
 		}
 
 
