@@ -84,7 +84,7 @@ namespace NHibernate.Impl {
 		}
 
 		public IQuery SetParameter(string name, object val, IType type) {
-			namedParameters.Add(name, new TypedValue(type, val));
+			namedParameters[name] = new TypedValue(type, val);
 			return this;
 		}
 
@@ -301,8 +301,10 @@ namespace NHibernate.Impl {
 		}
 
 		public IQuery SetParameterList(string name, ICollection vals) {
-			foreach(object obj in vals) {
-				SetParameterList(name, vals, GuessType( obj.GetType() ) );
+			foreach(object obj in vals) 
+			{
+//				SetParameterList(name, vals, GuessType( obj.GetType() ) );
+				SetParameterList(name, vals, GuessType(obj) );
 				break; // fairly hackish...need the type of the first object
 			}
 			return this;
