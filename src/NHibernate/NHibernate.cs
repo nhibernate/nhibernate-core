@@ -91,6 +91,11 @@ namespace NHibernate {
 		public static readonly NullableType Int64 = new Int64Type(); 
 
 		/// <summary>
+		/// NHibernate System.SByte type
+		/// </summary>
+		public static readonly NullableType SByte = new SByteType(); 
+
+		/// <summary>
 		/// NHIbernate System.Single (float in C#) Type
 		/// </summary>
 		public static readonly NullableType Single = new SingleType(); 

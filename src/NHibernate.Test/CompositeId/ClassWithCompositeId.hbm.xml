@@ -3,10 +3,10 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
 	<class 
-		name="NHibernate.DomainModel.NHSpecific.ClassWithCompositeId, NHibernate.DomainModel" 
+		name="NHibernate.Test.CompositeId.ClassWithCompositeId, NHibernate.Test" 
 		table="class_w_com_id"
 	>
-		<composite-id name="Id" class="NHibernate.DomainModel.NHSpecific.CompositeId, NHibernate.DomainModel" access="nosetter.camelcase-underscore">
+		<composite-id name="Id" class="NHibernate.Test.CompositeId.Id, NHibernate.Test" access="nosetter.camelcase-underscore">
 			<key-property name="KeyString" column="string_" type="String(20)" length="20" />
 			<key-property name="KeyShort" column="short_" access="field.camelcase-underscore"/>
 			<key-property name="KeyDateTime" column="date_" type="DateTime" access="nosetter.camelcase-underscore"/>

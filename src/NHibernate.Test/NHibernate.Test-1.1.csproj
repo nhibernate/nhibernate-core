@@ -235,6 +235,25 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "CompositeId\ClassWithCompositeId.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CompositeId\ClassWithCompositeId.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CompositeId\ClassWithCompositeIdFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CompositeId\Id.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "DialectTest\DialectFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -392,11 +411,6 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\BlobberInMemoryFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NHSpecificTest\ClassWithCompositeIdFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -619,6 +633,11 @@
                 />
                 <File
                     RelPath = "TypesTest\PersistentEnumTypeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\SByteTypeFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

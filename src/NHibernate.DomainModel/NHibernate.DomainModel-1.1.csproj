@@ -689,15 +689,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "NHSpecific\ClassWithCompositeId.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NHSpecific\ClassWithCompositeId.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "NHSpecific\ClassWithNullColumns.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -705,11 +696,6 @@
                 <File
                     RelPath = "NHSpecific\ClassWithNullColumns.hbm.xml"
                     BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "NHSpecific\CompositeId.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "NHSpecific\Node.cs"

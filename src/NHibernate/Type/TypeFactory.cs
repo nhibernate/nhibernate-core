@@ -101,6 +101,8 @@ namespace NHibernate.Type
 			typeByTypeOfName[ typeof(System.Int32).AssemblyQualifiedName ] = NHibernate.Int32;
 			typeByTypeOfName[ typeof(System.Int64).FullName ] = NHibernate.Int64;
 			typeByTypeOfName[ typeof(System.Int64).AssemblyQualifiedName ] = NHibernate.Int64;
+			typeByTypeOfName[ typeof(System.SByte).FullName ] = NHibernate.SByte;
+			typeByTypeOfName[ typeof(System.SByte).AssemblyQualifiedName ] = NHibernate.SByte;
 			typeByTypeOfName[ typeof(System.Single).FullName ] = NHibernate.Single;
 			typeByTypeOfName[ typeof(System.Single).AssemblyQualifiedName ] = NHibernate.Single;
 			typeByTypeOfName[ typeof(System.String).FullName ] = NHibernate.String;
@@ -125,6 +127,7 @@ namespace NHibernate.Type
 			typeByTypeOfName[ NHibernate.Int16.Name ] = NHibernate.Int16;
 			typeByTypeOfName[ NHibernate.Int32.Name ] = NHibernate.Int32;
 			typeByTypeOfName[ NHibernate.Int64.Name ] = NHibernate.Int64;
+			typeByTypeOfName[ NHibernate.SByte.Name ] = NHibernate.SByte;
 			typeByTypeOfName[ NHibernate.String.Name ] = NHibernate.String;
 			typeByTypeOfName[ NHibernate.Single.Name ] = NHibernate.Single;
 			typeByTypeOfName[ NHibernate.Timestamp.Name ] = NHibernate.Timestamp;

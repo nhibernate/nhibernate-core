@@ -1,21 +1,21 @@
 using System;
 
-namespace NHibernate.DomainModel.NHSpecific
+namespace NHibernate.Test.CompositeId
 {
 	/// <summary>
-	/// Summary description for CompositeId.
+	/// Summary description for Id.
 	/// </summary>
-	public class CompositeId 
+	public class Id 
 	{
 		private string _keyString;
 		private short _keyShort;
 		private System.DateTime _keyDateTime;
 
-		public CompositeId() 
+		public Id() 
 		{
 		}
 
-		public CompositeId(string keyString, short keyShort, System.DateTime keyDateTime) {
+		public Id(string keyString, short keyShort, System.DateTime keyDateTime) {
 			_keyString = keyString;
 			_keyShort = keyShort;
 			_keyDateTime = keyDateTime;
@@ -41,7 +41,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		}
 
 		public override bool Equals(object obj) {
-			CompositeId otherObj = obj as CompositeId;
+			Id otherObj = obj as Id;
 
 			if(otherObj==null) return false;
 
