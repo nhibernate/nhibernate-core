@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<project name="NHibernate.DomainModel" default="buildDebug" basedir="." xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd">
+	
+	<property name="nant.settings.currentframework" value="net-1.1" />
+	<property name="externalBin" value="../../external-bin" />
+	
+	
+	<target name="buildDebug">
+		
+		<delete dir="bin/Debug" failonerror="false" />
+		<mkdir dir="bin/Debug" />
+		
+		<csc target="library" output="bin/Debug/NHibernate.DomainModel.dll" debug="true">
+			<references>
+				<includes name="System.dll" />
+				<includes name="System.XML.dll" />
+				<includes name="System.Data.dll" />
+			</references>
+			<resources prefix="NHibernate.DomainModel" dynamicprefix="true">
+				<includes name="**/*.xml" />
+				<excludes name="bin/**/*.xml" />
+			</resources>
+			<sources>
+				<includes name="**/*.cs" />
+			</sources>
+		</csc>
+			
+	</target>
+	
+	<target name="buildRelease">
+		
+		<delete dir="bin/Release" failonerror="false" />
+		<mkdir dir="bin/Release" />
+		
+		<csc target="library" output="bin/Release/NHibernate.DomainModel.dll" debug="false">
+			<references>
+				<includes name="System.dll" />
+				<includes name="System.XML.dll" />
+				<includes name="System.Data.dll" />
+			</references>
+			<resources prefix="NHibernate.DomainModel" dynamicprefix="true">
+				<includes name="**/*.xml" />
+			</resources>
+			<sources>
+				<includes name="**/*.cs" />
+			</sources>
+		</csc>
+			
+	</target>
+	
+</project>

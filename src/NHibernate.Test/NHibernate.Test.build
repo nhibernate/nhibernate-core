@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<project name="NHibernate" default="buildDebug" basedir="." xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd">
+	
+	<property name="nant.settings.currentframework" value="net-1.1" />
+	<property name="external.bin" value="../../external-bin" />
+	<property name="NHibernate.DomainModel.bin" value="../NHibernate.DomainModel/bin" />
+	<property name="NHibernate.bin" value="../NHibernate/bin" />
+	
+	<target name="buildDebug">
+	
+		<delete dir="bin/Debug" failonerror="false" />
+		<mkdir dir="bin/Debug" />
+		
+		<csc target="library" output="bin/Debug/NHibernate.Test.dll" debug="true">
+			<references>
+				<includes name="System.dll" />
+				<includes name="System.XML.dll" />
+				<includes name="System.Data.dll" />
+				<includes name="${external.bin}/log4net.dll" />
+				<includes name="${NHibernate.DomainModel.bin}/Debug/NHibernate.DomainModel.dll" />
+				<includes name="${NHibernate.bin}/Debug/NHibernate.dll" />
+				<includes name="C:/Program Files/OSS.NET/NUnit V2.1/bin/nunit.framework.dll"/>
+			</references>
+			<sources>
+				<includes name="**/*.cs" />
+			</sources>
+		</csc>
+		
+		<copy 
+			file="App.config"
+			tofile="bin/Debug/NHibernate.Test.dll.config" 
+		/>
+		
+		<copy todir="bin/Debug">
+			<fileset basedir="${external.bin}">
+				<includes name="log4net.*" />
+			</fileset>
+		</copy>
+		<copy todir="bin/Debug">
+			<fileset basedir="${NHibernate.DomainModel.bin}/Debug">
+				<includes name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="bin/Debug">
+			<fileset basedir="${NHibernate.bin}/Debug">
+				<includes name="*.*" />
+			</fileset>
+		</copy>
+			
+	</target>
+	
+	<target name="buildRelease">
+	
+		<delete dir="bin/Release" failonerror="false" />
+		<mkdir dir="bin/Release" />
+		
+		<csc target="library" output="bin/Release/NHibernate.Test.dll" debug="false">
+			<references>
+				<includes name="System.dll" />
+				<includes name="System.XML.dll" />
+				<includes name="System.Data.dll" />
+				<includes name="${external.bin}/log4net.dll" />
+				<includes name="${NHibernate.DomainModel.bin}/Debug/NHibernate.DomainModel.dll" />
+				<includes name="${NHibernate.bin}/Debug/NHibernate.dll" />
+				<includes name="C:/Program Files/OSS.NET/NUnit V2.1/bin/nunit.framework.dll"/>
+			</references>
+			<sources>
+				<includes name="**/*.cs" />
+			</sources>
+		</csc>
+		
+		<copy 
+			file="App.config"
+			tofile="bin/Debug/NHibernate.Test.dll.config" 
+		/>
+		
+		<copy todir="bin/Release">
+			<fileset basedir="${external.bin}">
+				<includes name="log4net.*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="bin/Release">
+			<fileset basedir="${NHibernate.DomainModel.bin}/Release">
+				<includes name="*.*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="bin/Release">
+			<fileset basedir="${NHibernate.bin}/Release">
+				<includes name="*.*" />
+			</fileset>
+		</copy>
+			
+	</target>
+	
+	<target name="test">
+		<nunit2>
+			<formatter type="Xml" usefile="true" extension=".xml" />
+			<test assemblyname="bin/Debug/NHibernate.Test.dll" appconfig="bin/Debug/NHibernate.Test.dll.config" />
+		</nunit2>
+	</target>
+</project>
