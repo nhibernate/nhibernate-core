@@ -924,46 +924,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "InternalTest\InternalTestCase.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "InternalTest\Expression\SimpleExpressionTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "InternalTest\SqlCommand\SqlDeleteBuilderTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "InternalTest\SqlCommand\SqlInsertBuilderTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "InternalTest\SqlCommand\SqlSelectBuilderTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "InternalTest\SqlCommand\SqlSimpleSelectBuilderTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "InternalTest\SqlCommand\SqlStringParameterTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "InternalTest\SqlCommand\SqlUpdateBuilderTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "JCollections\HashSet.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
