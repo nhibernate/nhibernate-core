@@ -6,14 +6,14 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
 
-using NHibernate.Id;
-using NHibernate.Impl;
-using NHibernate.Util;
-using NHibernate.Type;
-using NHibernate.Mapping;
 using NHibernate.Cache;
 using NHibernate.Dialect;
 using NHibernate.Engine;
+using NHibernate.Id;
+using NHibernate.Impl;
+using NHibernate.Mapping;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg 
 {
@@ -30,7 +30,8 @@ namespace NHibernate.Cfg
 	/// are immutable and do not retain any assoication back to the <c>Configuration</c>
 	/// </para>
 	/// </remarks>
-	public class Configuration : IMapping {
+	public class Configuration : IMapping 
+	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Configuration));
 
 		private Hashtable classes = new Hashtable();
@@ -292,7 +293,9 @@ namespace NHibernate.Cfg
 		/// <returns>This Configuration object.</returns>
 		/// <remarks>
 		/// The Assembly must be in the local bin, probing path, or GAC so that the
-		/// Assembly can be loaded by name.
+		/// Assembly can be loaded by name.  If these conditions are not satisfied
+		/// then your code should load the Assembly and call the override <see cref="AddAssembly(Assembly)"/>
+		/// instead.
 		/// </remarks>
 		public Configuration AddAssembly(string assemblyName) 
 		{
@@ -308,6 +311,17 @@ namespace NHibernate.Cfg
 				log.Error("Could not configure datastore from assembly", e);
 				throw new MappingException(e);
 			}
+			
+			return this.AddAssembly(assembly);
+		}
+
+		/// <summary>
+		/// Adds all of the Assembly's Resource files that end with "hbm.xml" 
+		/// </summary>
+		/// <param name="assembly">The loaded Assembly.</param>
+		/// <returns>This Configuration object.</returns>
+		public Configuration AddAssembly(Assembly assembly) 
+		{
 			foreach(string fileName in assembly.GetManifestResourceNames() ) 
 			{
 				if ( fileName.EndsWith(".hbm.xml") ) 
@@ -328,8 +342,10 @@ namespace NHibernate.Cfg
 					}
 				}
 			}
+
 			return this;
 		}
+
 
 		private ICollection CollectionGenerators(Dialect.Dialect dialect) 
 		{
@@ -718,24 +734,24 @@ namespace NHibernate.Cfg
 					XmlAttribute assembly = mapElement.Attributes["assembly"];
 					if (rsrc!=null) 
 					{
-						log.Debug(name + "<-" + rsrc);
-						AddResource( rsrc.Value, Assembly.GetExecutingAssembly() );
+						log.Debug( name.Value + "<-" + rsrc.Value + " in " + assembly.Value );
+						AddResource( rsrc.Value, Assembly.Load( assembly.Value ) );
 					} 
 					else if ( assembly!=null) 
 					{
-						log.Debug(name + "<-" + assembly);
+						log.Debug( name.Value + "<-" + assembly.Value );
 						AddAssembly(assembly.Value);
 					} 
 					else 
 					{
 						if (file==null) throw new MappingException("<mapping> element in configuration specifies no attributes");
-						log.Debug(name + "<-" + file);
+						log.Debug( name.Value + "<-" + file.Value );
 						AddXmlFile( file.Value );
 					}
 				}
 			}
 
-			log.Info("Configured SessionFactory: " + name);
+			log.Info("Configured SessionFactory: " + name.Value);
 			log.Debug("properties: " + properties);
 
 			validatingReader.Close();
