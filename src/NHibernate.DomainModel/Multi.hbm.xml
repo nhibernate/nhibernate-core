@@ -73,11 +73,11 @@
 				class="NHibernate.DomainModel.Simple, NHibernate.DomainModel"
 	        />
 	        <many-to-one 
-				name="Yetanother" 
+				name="YetAnother" 
 				column="other3" 
 				class="NHibernate.DomainModel.LessSimple, NHibernate.DomainModel"
 	        />
-	        <property name="foo"/>
+	        <property name="Foo"/>
 	        <set 
 				name="Set" 
 				lazy="false"
@@ -93,10 +93,10 @@
 	        	<key column="simple1"/>
 	        	<many-to-many 
 	        		column="simple2" 
-	        		class="NHibernate.DomainModel.Simple"
+	        		class="NHibernate.DomainModel.Simple, NHibernate.DomainModel"
 	        	/>
 	        </bag>
-	        <one-to-one name="Mypo"/>
+	        <one-to-one name="MyPo"/>
 	    </joined-subclass>
 	    
 	    <joined-subclass 
@@ -104,7 +104,7 @@
 			table="nonleafsubclass"
 		>
 	    	<key column="sid"/>
-	        <property name="extraProp"/>
+	        <property name="ExtraProp"/>
 	        <many-to-one 
 				name="Other" 
 				column="other2" 
@@ -113,7 +113,7 @@
 	        <many-to-one name="Po"/>
 	        
 	        <component	
-				name="comp" 
+				name="Comp" 
 				class="NHibernate.DomainModel.Multi+Component, NHibernate.DomainModel"
 			>
 	        	<property name="Cal"/>
@@ -125,7 +125,7 @@
 				table="leafsubsubclass"
 			>
 	        	<key column="sid"/>
-	        	<property name="amount"/>
+	        	<property name="Amount"/>
 	        	<bag 
 	        		name="Children" 
 	        		lazy="true" 
@@ -134,8 +134,8 @@
 	        		<key column="parent"/>
 	        		<one-to-many class="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel"/>
 	        	</bag>
-	        	<many-to-one name="parent"/>
-				<list name="moreChildren" lazy="true">
+	        	<many-to-one name="Parent"/>
+				<list name="MoreChildren" lazy="true">
 	        		<key column="another_parent"/>
 	        		<index column="list_ind"/>
 	        		<one-to-many class="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel"/>
@@ -161,7 +161,7 @@
     		column="value_"
     	/>
     	<list 
-    		name="list" 
+    		name="List" 
     		cascade="all"
     	>
     		<key column="list_po"/>

@@ -13,6 +13,7 @@ namespace NHibernate.DomainModel
 		private string _value;
 		//<set> mapping
 		private IDictionary _set;
+		private IList _list;
 
 		public long Id
 		{
@@ -32,6 +33,11 @@ namespace NHibernate.DomainModel
 			set {_set = value;}
 		}
 
+		public IList List
+		{
+			get { return _list; }
+			set { _list = value; }
+		}
 
 
 	}

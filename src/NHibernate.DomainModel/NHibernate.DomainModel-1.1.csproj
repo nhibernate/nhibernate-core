@@ -122,11 +122,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "AuditComponent.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "B.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -140,15 +135,6 @@
                     RelPath = "BarProxy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "BasicClass.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "BasicClass.hbm.xml"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "BasicNameable.cs"
@@ -194,10 +180,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Child.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Circular.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -207,26 +189,12 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "ClassWithCompositeId.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ClassWithCompositeId.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "ComponentCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "CompositeElement.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "CompositeId.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -391,20 +359,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "JoinedSubclass.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "JoinedSubclassBase.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "JoinedSubclassOne.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "LessSimple.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -489,15 +443,6 @@
                     BuildAction = "None"
                 />
                 <File
-                    RelPath = "Node.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Node.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "One.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -522,13 +467,8 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Parent.hbm.xml"
+                    RelPath = "ParentChild.hbm.xml"
                     BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "ParentComparer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Po.cs"
@@ -560,30 +500,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SexType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SexType.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Simple.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Simple.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "SimpleComponent.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SimpleComponent.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -615,10 +537,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Subclass.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "SubDetail.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -634,15 +552,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Team.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Team.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Trivial.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -651,15 +560,6 @@
                     RelPath = "TrivialClass.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "UnsavedType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "UnsavedType.hbm.xml"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Vetoer.cs"
@@ -697,6 +597,120 @@
                     RelPath = "Z.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\AuditComponent.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\BasicClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\BasicClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\Child.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\Child.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\ClassWithCompositeId.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\ClassWithCompositeId.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\CompositeId.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\JoinedSubclass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\JoinedSubclassBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\JoinedSubclassOne.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\Node.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\Node.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\Parent.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\Parent.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\ParentComparer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\SexType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\SexType.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\SimpleComponent.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\SimpleComponent.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\Subclass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\Team.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\Team.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\UnsavedType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\UnsavedType.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
             </Include>
         </Files>

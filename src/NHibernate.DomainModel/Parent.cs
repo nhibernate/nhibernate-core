@@ -1,47 +1,48 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.DomainModel
 {
-	//TODO: replace this with H2.0.3 version
 	/// <summary>
 	/// Summary description for Parent.
 	/// </summary>
 	public class Parent
 	{
-		private int id;
-		private string adultName;
-		private IDictionary children;
-		private IDictionary adultFriends;
-
-
-		public Parent()
+		private long _id;
+		private int _count;
+		private Child _child;
+		private object _any;
+		private int _x;
+		
+		public long Id
 		{
-			adultFriends = new SortedList(new ParentComparer());
+			get { return _id; }
+			set { _id = value; }
 		}
 
-		public int Id {
-			get {return id;}
-			set {id = value;}
+		public int Count
+		{
+			get { return _count; }
+			set { _count = value; }
 		}
 
-		public string AdultName {
-			get {return adultName;}
-			set {adultName = value;}
+		public Child Child
+		{
+			get { return _child; }
+			set { _child = value; }
 		}
 
-		public IDictionary Children {
-			get {return children;}
-			set {children = value;}
+		
+		public object Any
+		{
+			get { return _any; }
+			set { _any = value; }
 		}
 
-		public IDictionary AdultFriends {
-			get {return adultFriends;}
-			set {adultFriends = value;}
-		}
-
-		public void AddFriend(Parent friend) {
-			adultFriends.Add(friend, friend);
+		
+		public int X
+		{
+			get { return _x; }
+			set { _x = value; }
 		}
 
 	}
