@@ -1,11 +1,11 @@
 using System;
-using System.Text;
 using System.Collections;
+using System.Text;
 
 using NHibernate.Engine;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Proxy;
 
 namespace NHibernate.Impl {
 	
