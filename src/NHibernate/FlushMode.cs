@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernate 
+namespace NHibernate
 {
 	/// <summary>
 	/// Represents a flushing strategy.
@@ -10,7 +10,7 @@ namespace NHibernate
 	/// changes and executing SQL statements
 	/// </remarks>
 	[Serializable]
-	public enum FlushMode 
+	public enum FlushMode
 	{
 		/// <summary>
 		/// The <c>ISession</c> is never flushed unless <c>Flush()</c> is explicitly

@@ -34,7 +34,7 @@ namespace NHibernate
 		/// object. Note that when this method is called, <c>entity</c> will be an empty
 		/// uninitialized instance of the class.</remarks>
 		/// <returns><c>true</c> if the user modified the <c>state</c> in any way</returns>
-		bool OnLoad( object entity, object id, object[ ] state, string[ ] propertyNames, IType[ ] types );
+		bool OnLoad( object entity, object id, object[] state, string[] propertyNames, IType[] types );
 
 		/// <summary>
 		/// Called when an object is detected to be dirty, during a flush.
@@ -53,7 +53,7 @@ namespace NHibernate
 		/// that the interceptor <b>not</b> modify the <c>previousState</c>.
 		/// </remarks>
 		/// <returns><c>true</c> if the user modified the <c>currentState</c> in any way</returns>
-		bool OnFlushDirty( object entity, object id, object[ ] currentState, object[ ] previousState, string[ ] propertyNames, IType[ ] types );
+		bool OnFlushDirty( object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types );
 
 		/// <summary>
 		/// Called before an object is saved
@@ -68,7 +68,7 @@ namespace NHibernate
 		/// and propagated to the persistent object
 		/// </remarks>
 		/// <returns><c>true</c> if the user modified the <c>state</c> in any way</returns>
-		bool OnSave( object entity, object id, object[ ] state, string[ ] propertyNames, IType[ ] types );
+		bool OnSave( object entity, object id, object[] state, string[] propertyNames, IType[] types );
 
 		/// <summary>
 		/// Called before an object is deleted
@@ -81,7 +81,7 @@ namespace NHibernate
 		/// <remarks>
 		/// It is not recommended that the interceptor modify the <c>state</c>.
 		/// </remarks>
-		void OnDelete( object entity, object id, object[ ] state, string[ ] propertyNames, IType[ ] types );
+		void OnDelete( object entity, object id, object[] state, string[] propertyNames, IType[] types );
 
 		/// <summary>
 		/// Called before a flush
@@ -128,7 +128,7 @@ namespace NHibernate
 		/// <param name="propertyNames"></param>
 		/// <param name="types"></param>
 		/// <returns>An array of dirty property indicies or <c>null</c> to choose default behavior</returns>
-		int[ ] FindDirty( object entity, object id, object[ ] currentState, object[ ] previousState, string[ ] propertyNames, IType[ ] types );
+		int[] FindDirty( object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types );
 
 		/// <summary>
 		/// Instantiate the entity class. Return <c>null</c> to indicate that Hibernate should use the default

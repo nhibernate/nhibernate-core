@@ -2098,13 +2098,9 @@ namespace NHibernate.Impl
 			return DoLoadByClass( clazz, id, false, false );
 		}
 
-		/**
-		* Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
-		* return a new proxy or return an existing proxy if possible. Do not check if the object was deleted.
-		*/
-
 		/// <summary>
-		/// 
+		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
+		/// return a new proxy or return an existing proxy if possible. Do not check if the object was deleted.
 		/// </summary>
 		/// <param name="clazz"></param>
 		/// <param name="id"></param>

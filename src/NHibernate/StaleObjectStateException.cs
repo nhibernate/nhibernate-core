@@ -1,6 +1,7 @@
 using System;
+using log4net;
 
-namespace NHibernate 
+namespace NHibernate
 {
 	/// <summary>
 	/// Thrown when a version number check failed, indicating that the 
@@ -8,30 +9,38 @@ namespace NHibernate
 	/// versioning).
 	/// </summary>
 	[Serializable]
-	public class StaleObjectStateException : HibernateException 
+	public class StaleObjectStateException : HibernateException
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(StaleObjectStateException));
+		private static readonly ILog log = LogManager.GetLogger( typeof( StaleObjectStateException ) );
 		private System.Type persistentType;
 		private object identifier;
 
-		public StaleObjectStateException(System.Type persistentType, object identifier) : base("Row was updated or deleted by another transaction") 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="persistentType"></param>
+		/// <param name="identifier"></param>
+		public StaleObjectStateException( System.Type persistentType, object identifier ) : base( "Row was updated or deleted by another transaction" )
 		{
 			this.persistentType = persistentType;
 			this.identifier = identifier;
-			log4net.LogManager.GetLogger( typeof(StaleObjectStateException) ).Error("An operation failed due to stale data", this);
+			LogManager.GetLogger( typeof( StaleObjectStateException ) ).Error( "An operation failed due to stale data", this );
 		}
 
-		public System.Type PersistentType 
-		{ 
+		/// <summary></summary>
+		public System.Type PersistentType
+		{
 			get { return persistentType; }
 		}
 
-		public object Identifier 
+		/// <summary></summary>
+		public object Identifier
 		{
 			get { return identifier; }
 		}
 
-		public override string Message 
+		/// <summary></summary>
+		public override string Message
 		{
 			get { return base.Message + " for " + persistentType.FullName + " instance with identifier: " + identifier; }
 		}

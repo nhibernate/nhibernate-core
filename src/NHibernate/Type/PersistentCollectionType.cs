@@ -267,11 +267,8 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public abstract PersistentCollection Wrap( ISessionImplementor session, object collection );
 
-		/**
-		 * Note: return true because this type is castable to IAssociationType. Not because
-		 * all collections are associations.
-		 */
-
+		// Note: return true because this type is castable to IAssociationType. Not because
+		// all collections are associations.
 		/// <summary></summary>
 		public override bool IsAssociationType
 		{

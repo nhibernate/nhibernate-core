@@ -1,27 +1,55 @@
 using System;
 using System.Runtime.Serialization;
+using log4net;
 
-namespace NHibernate 
+namespace NHibernate
 {
 	/// <summary>
 	/// A problem occurred trying to lazily initialize a collection or proxy (for example the session
 	/// was closed) or iterate query results.
 	/// </summary>
 	[Serializable]
-	public class LazyInitializationException : Exception 
+	public class LazyInitializationException : Exception
 	{
-		public LazyInitializationException(Exception root) : this(root.Message) {}
-
-		public LazyInitializationException(string message) : base(message) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="root"></param>
+		public LazyInitializationException( Exception root ) : this( root.Message )
 		{
-			log4net.LogManager.GetLogger( typeof(LazyInitializationException) ).Error(message, this);
 		}
 
-		public LazyInitializationException(string message, Exception root) : this(message + " " + root.Message) {}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		public LazyInitializationException( string message ) : base( message )
+		{
+			LogManager.GetLogger( typeof( LazyInitializationException ) ).Error( message, this );
+		}
 
-		public LazyInitializationException() : this("LazyInitalizationException") {}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="root"></param>
+		public LazyInitializationException( string message, Exception root ) : this( message + " " + root.Message )
+		{
+		}
 
-		protected LazyInitializationException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		/// <summary></summary>
+		public LazyInitializationException() : this( "LazyInitalizationException" )
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		protected LazyInitializationException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		{
+		}
 
 	}
 }

@@ -1,9 +1,8 @@
-using System;
 using System.Data;
-
 using NHibernate.SqlTypes;
 
-namespace NHibernate {
+namespace NHibernate
+{
 	/// <summary>
 	/// The inteface to be implemented by user-defined types.
 	/// </summary>
@@ -21,18 +20,18 @@ namespace NHibernate {
 	/// be cacheble by a persistent cache, it must be serializable.
 	/// </para>
 	/// <para>
-	/// Alternatively, custom types could implement <see cref="Types.IType"/> directly or extend one of the
+	/// Alternatively, custom types could implement <see cref="Type.IType"/> directly or extend one of the
 	/// abstract classes in <c>NHibernate.Type</c>. This approach risks future incompatible changes
 	/// to classes or intefaces in the package.
 	/// </para>
 	/// </remarks>
-	public interface IUserType 
+	public interface IUserType
 	{
 		/// <summary>
 		/// The SQL types for the columns mapped by this type. 
 		/// </summary>
-		SqlType[] SqlTypes {get;}
-		
+		SqlType[] SqlTypes { get; }
+
 		/// <summary>
 		/// The type returned by <c>NullSafeGet()</c>
 		/// </summary>
@@ -45,8 +44,8 @@ namespace NHibernate {
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		bool Equals(object x, object y);
-		
+		bool Equals( object x, object y );
+
 		/// <summary>
 		/// Retrieve an instance of the mapped class from a JDBC resultset.
 		/// Implementors should handle possibility of null values.
@@ -56,9 +55,9 @@ namespace NHibernate {
 		/// <param name="owner">the containing entity</param>
 		/// <returns></returns>
 		/// <exception cref="HibernateException">HibernateException</exception>
-		/// <exception cref="SQLException">SQLException</exception>
-		object NullSafeGet(IDataReader rs, string[] names, object owner);
-	
+//		/// <exception cref="SQLException">SQLException</exception>
+		object NullSafeGet( IDataReader rs, string[] names, object owner );
+
 		/// <summary>
 		/// Write an instance of the mapped class to a prepared statement.
 		/// Implementors should handle possibility of null values.
@@ -68,16 +67,16 @@ namespace NHibernate {
 		/// <param name="value">the object to write</param>
 		/// <param name="index">command parameter index</param>
 		/// <exception cref="HibernateException">HibernateException</exception>
-		/// <exception cref="SQLException">SQLException</exception>
-		void NullSafeSet(IDbCommand cmd, object value, int index);
-	
+//		/// <exception cref="SQLException">SQLException</exception>
+		void NullSafeSet( IDbCommand cmd, object value, int index );
+
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.
 		/// </summary>
 		/// <param name="value">generally a collection element or entity field</param>
 		/// <returns>a copy</returns>
-		object DeepCopy(object value);
-	
+		object DeepCopy( object value );
+
 		/// <summary>
 		/// Are objects of this type mutable?
 		/// </summary>

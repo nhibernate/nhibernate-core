@@ -51,13 +51,13 @@ namespace NHibernate
 		/// <summary>
 		/// The Hibernate types of the query result set.
 		/// </summary>
-		IType[ ] ReturnTypes { get; }
+		IType[] ReturnTypes { get; }
 
 		/// <summary>
 		/// The names of all named parameters of the query
 		/// </summary>
 		/// <value>The parameter names, in no particular order</value>
-		string[ ] NamedParameters { get; }
+		string[] NamedParameters { get; }
 
 		/// <summary>
 		/// Return the query results as an <see cref="IEnumerable"/>. If the query contains multiple results
@@ -175,7 +175,7 @@ namespace NHibernate
 		/// <param name="position"></param>
 		/// <param name="val"></param>
 		/// <returns></returns>
-		IQuery SetBinary( int position, byte[ ] val );
+		IQuery SetBinary( int position, byte[] val );
 
 		/// <summary>
 		/// 
@@ -295,7 +295,7 @@ namespace NHibernate
 		/// <param name="name"></param>
 		/// <param name="val"></param>
 		/// <returns></returns>
-		IQuery SetBinary( string name, byte[ ] val );
+		IQuery SetBinary( string name, byte[] val );
 
 		/// <summary>
 		/// 

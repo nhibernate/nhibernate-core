@@ -7,32 +7,65 @@ namespace NHibernate
 	/// Thrown if Hibernate can't instantiate an entity or component class at runtime.
 	/// </summary>
 	[Serializable]
-	public class InstantiationException : HibernateException 
+	public class InstantiationException : HibernateException
 	{
 		private System.Type type;
 
-		public InstantiationException(string message, System.Type type, Exception root) 
-			: base(message, root) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="type"></param>
+		/// <param name="root"></param>
+		public InstantiationException( string message, System.Type type, Exception root )
+			: base( message, root )
 		{
 			this.type = type;
 		}
 
-		public System.Type PersistentType 
+		/// <summary></summary>
+		public System.Type PersistentType
 		{
 			get { return type; }
 		}
 
-		public override string Message 
+		/// <summary></summary>
+		public override string Message
 		{
 			get { return base.Message + type.FullName; }
 		}
 
-		public InstantiationException(string message, Exception root) : this(message, typeof(InstantiationException), root) {}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="root"></param>
+		public InstantiationException( string message, Exception root ) : this( message, typeof( InstantiationException ), root )
+		{
+		}
 
-		public InstantiationException(string message) : this(message, typeof(InstantiationException), new InvalidOperationException("Invalid Operation")) {}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		public InstantiationException( string message ) : this( message, typeof( InstantiationException ), new InvalidOperationException( "Invalid Operation" ) )
+		{
+		}
 
-		public InstantiationException() : this("Exception occured", typeof(InstantiationException), new InvalidOperationException("Invalid Operation")) {}
+		/// <summary>
+		/// 
+		/// </summary>
+		public InstantiationException() : this( "Exception occured", typeof( InstantiationException ), new InvalidOperationException( "Invalid Operation" ) )
+		{
+		}
 
-		protected InstantiationException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		protected InstantiationException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		{
+		}
 	}
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -41,7 +40,7 @@ namespace NHibernate
 		/// <param name="component">an instance of class mapped by this "type"</param>
 		/// <param name="property"></param>
 		/// <returns>the property value</returns>
-		object GetPropertyValue(object component, int property);
+		object GetPropertyValue( object component, int property );
 
 		/// <summary>
 		/// Set the value of a property
@@ -49,11 +48,11 @@ namespace NHibernate
 		/// <param name="component">an instance of class mapped by this "type"</param>
 		/// <param name="property"></param>
 		/// <param name="value">the value to set</param>
-		void SetPropertyValue(object component, int property, object value);
+		void SetPropertyValue( object component, int property, object value );
 
 		/// <summary>
-        /// The class returned by NullSafeGet().
-        /// </summary>
+		/// The class returned by NullSafeGet().
+		/// </summary>
 		System.Type ReturnedClass { get; }
 
 		/// <summary>
@@ -63,7 +62,7 @@ namespace NHibernate
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		bool Equals(Object x, Object y);
+		bool Equals( Object x, Object y );
 
 		/// <summary>
 		/// Retrieve an instance of the mapped class from a IDataReader. Implementors
@@ -74,7 +73,7 @@ namespace NHibernate
 		/// <param name="session"></param>
 		/// <param name="owner">the containing entity</param>
 		/// <returns></returns>
-		object NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner);
+		object NullSafeGet( IDataReader dr, string[] names, ISessionImplementor session, object owner );
 
 		/// <summary>
 		/// Write an instance of the mapped class to a prepared statement.
@@ -85,14 +84,14 @@ namespace NHibernate
 		/// <param name="value"></param>
 		/// <param name="index"></param>
 		/// <param name="session"></param>
-		void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session);
+		void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session );
 
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.
 		/// </summary>
 		/// <param name="value">generally a collection element or entity field</param>
 		/// <returns></returns>
-		object DeepCopy(object value);
+		object DeepCopy( object value );
 
 		/// <summary>
 		/// Are objects of this type mutable?
@@ -107,7 +106,7 @@ namespace NHibernate
 		/// <param name="value">the object to be cached</param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object Disassemble(object value, ISessionImplementor session);
+		object Disassemble( object value, ISessionImplementor session );
 
 		/// <summary>
 		/// Reconstruct an object from the cacheable representation.
@@ -117,6 +116,6 @@ namespace NHibernate
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		object Assemble(object cached, ISessionImplementor session, object owner);
+		object Assemble( object cached, ISessionImplementor session, object owner );
 	}
 }

@@ -59,11 +59,8 @@ namespace NHibernate.Type
 			return NullSafeGet( rs, new string[ ] {name}, session, owner );
 		}
 
-		/**
-		* This returns the wrong class for an entity with a proxy. Theoretically
-		* it should return the proxy class, but it doesn't.
-		*/
-
+		// This returns the wrong class for an entity with a proxy. Theoretically
+		// it should return the proxy class, but it doesn't.
 		/// <summary></summary>
 		public override sealed System.Type ReturnedClass
 		{

@@ -1,9 +1,8 @@
-using System;
 using System.Collections;
 using System.Xml;
 
-
-namespace NHibernate {
+namespace NHibernate
+{
 	/// <summary>
 	/// Provides XML marshalling for classes registered with a <c>SessionFactory</c>
 	/// </summary>
@@ -24,21 +23,21 @@ namespace NHibernate {
 	/// It is not intended that implementors be threadsafe
 	/// </para>
 	/// </remarks>
-	public interface IDatabinder {
-		
+	public interface IDatabinder
+	{
 		/// <summary>
 		/// Add an object to the output document.
 		/// </summary>
 		/// <param name="obj">A transient or persistent instance</param>
 		/// <returns>Databinder</returns>
-		IDatabinder Bind(object obj);
+		IDatabinder Bind( object obj );
 
 		/// <summary>
 		/// Add a collection of objects to the output document
 		/// </summary>
 		/// <param name="objs">A collection of transient or persistent instance</param>
 		/// <returns>Databinder</returns>
-		IDatabinder BindAll(ICollection objs);
+		IDatabinder BindAll( ICollection objs );
 
 		/// <summary>
 		/// Output the generic XML representation of the bound objects

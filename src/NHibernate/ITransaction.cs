@@ -1,7 +1,7 @@
-using System;
 using System.Data;
 
-namespace NHibernate {
+namespace NHibernate
+{
 	/// <summary>
 	/// Allows the application to define units of work, while maintaining abstraction from the
 	/// underlying transaction implementation
@@ -14,8 +14,8 @@ namespace NHibernate {
 	/// at most one uncommitted <c>ITransaction</c> associated with a particular <c>ISession</c>
 	/// at a time. Implementors are not intended to be threadsafe.
 	/// </remarks>
-	public interface ITransaction {
-
+	public interface ITransaction
+	{
 		/// <summary>
 		/// Flush the associated <c>ISession</c> and end the unit of work.
 		/// </summary>
@@ -42,7 +42,7 @@ namespace NHibernate {
 		/// This method could return <c>false</c> even after successful invocation of <c>Commit()</c>
 		/// </remarks>
 		bool WasCommitted { get; }
-		
+
 		/// <summary>
 		/// Enlist the <see cref="IDbCommand"/> in the current Transaction.
 		/// </summary>
@@ -50,6 +50,6 @@ namespace NHibernate {
 		/// <remarks>
 		/// It is okay for this to be a no op implementation.
 		/// </remarks>
-		void Enlist(IDbCommand command);
+		void Enlist( IDbCommand command );
 	}
 }

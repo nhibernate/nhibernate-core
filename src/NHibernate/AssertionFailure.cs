@@ -1,29 +1,47 @@
 using System;
 using System.Runtime.Serialization;
+using log4net;
 
-namespace NHibernate 
+namespace NHibernate
 {
 	/// <summary>
 	/// Indicates failure of an assertion: a possible bug in NHibernate
 	/// </summary>
-	[Serializable]
-	public class AssertionFailure : ApplicationException 
+	[ Serializable ]
+	public class AssertionFailure : ApplicationException
 	{
-		public AssertionFailure() : base(String.Empty)
+		/// <summary></summary>
+		public AssertionFailure() : base( String.Empty )
 		{
-			log4net.LogManager.GetLogger( typeof(AssertionFailure) ).Error("An AssertionFailure occured - this may indicate a bug in NHibernate");
+			LogManager.GetLogger( typeof( AssertionFailure ) ).Error( "An AssertionFailure occured - this may indicate a bug in NHibernate" );
 		}
 
-		public AssertionFailure(string message) : base(message) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		public AssertionFailure( string message ) : base( message )
 		{
-			log4net.LogManager.GetLogger( typeof(AssertionFailure) ).Error("An AssertionFailure occured - this may indicate a bug in NHibernate", this);
+			LogManager.GetLogger( typeof( AssertionFailure ) ).Error( "An AssertionFailure occured - this may indicate a bug in NHibernate", this );
 		}
 
-		public AssertionFailure(string message, Exception e) : base(message, e) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="e"></param>
+		public AssertionFailure( string message, Exception e ) : base( message, e )
 		{
-			log4net.LogManager.GetLogger( typeof(AssertionFailure) ).Error("An AssertionFailure occured - this may indicate a bug in NHibernate", e);
+			LogManager.GetLogger( typeof( AssertionFailure ) ).Error( "An AssertionFailure occured - this may indicate a bug in NHibernate", e );
 		}
 
-		protected AssertionFailure(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		protected AssertionFailure( SerializationInfo info, StreamingContext context ) : base( info, context )
+		{
+		}
 	}
 }

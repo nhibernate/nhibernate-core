@@ -83,7 +83,7 @@ namespace NHibernate.Type
 		/// <param name="value">The <see cref="System.Type"/> that contains the value.</param>
 		/// <param name="index">The index of the <see cref="IDbDataParameter"/> to start writing the value to.</param>
 		/// <remarks>
-		/// This uses the <see cref="NHibernate.String.Set(IDbCommand, Object,Int32)"/> method of the 
+		/// This uses the <see cref="NullableType.Set(IDbCommand, Object,Int32)"/> method of the 
 		/// <see cref="NHibernate.String"/> object to do the work.
 		/// </remarks>
 		public override void Set( IDbCommand cmd, object value, int index )

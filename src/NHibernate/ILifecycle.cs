@@ -1,7 +1,5 @@
-using System;
-
-namespace NHibernate {
-	
+namespace NHibernate
+{
 	/// <summary>
 	/// Provides callbacks from the <c>ISession</c> to the persistent object. Persistent classes may
 	/// implement this interface but they are not required to.
@@ -31,14 +29,14 @@ namespace NHibernate {
 	/// native key generation is used.
 	/// </para>
 	/// </remarks>
-	public interface ILifecycle {
-
+	public interface ILifecycle
+	{
 		/// <summary>
 		/// Called when an entity is saved
 		/// </summary>
 		/// <param name="s">The session</param>
 		/// <returns>If we should veto the save</returns>
-		LifecycleVeto OnSave(ISession s);
+		LifecycleVeto OnSave( ISession s );
 
 		/// <summary>
 		/// Called when an entity is passed to <c>ISession.Update()</c>.
@@ -49,14 +47,14 @@ namespace NHibernate {
 		/// </remarks>
 		/// <param name="s">The session</param>
 		/// <returns>If we should veto the update</returns>
-		LifecycleVeto OnUpdate(ISession s);
+		LifecycleVeto OnUpdate( ISession s );
 
 		/// <summary>
 		/// Called when an entity is deleted
 		/// </summary>
 		/// <param name="s">The session</param>
 		/// <returns>If we should veto the delete</returns>
-		LifecycleVeto OnDelete(ISession s);
+		LifecycleVeto OnDelete( ISession s );
 
 		/// <summary>
 		/// Called after an entity is loaded. 
@@ -67,10 +65,12 @@ namespace NHibernate {
 		/// </remarks>
 		/// <param name="s">The session</param>
 		/// <param name="id">The identifier</param>
-		void OnLoad(ISession s, object id);
+		void OnLoad( ISession s, object id );
 	}
 
-	public enum LifecycleVeto {
+	/// <summary></summary>
+	public enum LifecycleVeto
+	{
 		/// <summary>
 		/// Veto the action
 		/// </summary>

@@ -1,30 +1,27 @@
 using System;
-using System.IO;
-
 using NHibernate.Collection;
 using NHibernate.Proxy;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 
-namespace NHibernate {
-
+namespace NHibernate
+{
 	/// <summary>
 	/// Provides access to the full range of NHibernate built-in types.
 	/// IType instances may be used to bind values to query parameters.
 	/// Also a factory for new Blobs and Clobs.
 	/// </summary>
-	public class NHibernate	{
-
+	public class NHibernate
+	{
 		/// <summary>
 		/// NHibernate Ansi String type
 		/// </summary>
-		public static readonly NullableType AnsiString = new AnsiStringType(); 
-		
+		public static readonly NullableType AnsiString = new AnsiStringType();
+
 		/// <summary>
 		/// NHibernate binary type
 		/// </summary>
-		public static readonly NullableType Binary = new BinaryType(); 
-		
+		public static readonly NullableType Binary = new BinaryType();
+
 		/// <summary>
 		/// NHibernate binary blob type
 		/// </summary>
@@ -33,233 +30,237 @@ namespace NHibernate {
 		/// <summary>
 		/// NHibernate boolean type
 		/// </summary>
-		public static readonly NullableType Boolean = new BooleanType(); 
-		
+		public static readonly NullableType Boolean = new BooleanType();
+
 		/// <summary>
 		/// NHibernate byte type
 		/// </summary>
-		public static readonly NullableType Byte = new ByteType(); 
-		
+		public static readonly NullableType Byte = new ByteType();
+
 		/// <summary>
 		/// NHibernate character type
 		/// </summary>
-		public static readonly NullableType Character = new CharType(); 
-		
+		public static readonly NullableType Character = new CharType();
+
 		/// <summary>
 		/// NHibernate Culture Info type
 		/// </summary>
-		public static readonly NullableType CultureInfo = new CultureInfoType(); 
-		
+		public static readonly NullableType CultureInfo = new CultureInfoType();
+
 		/// <summary>
 		/// NHibernate date type
 		/// </summary>
-		public static readonly NullableType DateTime = new DateTimeType(); 
-		
+		public static readonly NullableType DateTime = new DateTimeType();
+
 		/// <summary>
 		/// NHibernate date type
 		/// </summary>
-		public static readonly NullableType Date = new DateType(); 
+		public static readonly NullableType Date = new DateType();
 
 		/// <summary>
 		/// NHibernate decimal type
 		/// </summary>
-		public static readonly NullableType Decimal = new DecimalType(); 
-		
+		public static readonly NullableType Decimal = new DecimalType();
+
 		/// <summary>
 		/// NHibernate double type
 		/// </summary>
-		public static readonly NullableType Double = new DoubleType(); 
-		
+		public static readonly NullableType Double = new DoubleType();
+
 		/// <summary>
 		/// NHibernate Guid type.
 		/// </summary>
-		public static readonly NullableType Guid = new GuidType(); 
-		
+		public static readonly NullableType Guid = new GuidType();
+
 		/// <summary>
 		/// NHibernate System.Int16 (short in C#) type
 		/// </summary>
-		public static readonly NullableType Int16 = new Int16Type(); 
-		
+		public static readonly NullableType Int16 = new Int16Type();
+
 		/// <summary>
 		/// NHibernate System.Int32 (int in C#) type
 		/// </summary>
-		public static readonly NullableType Int32 = new Int32Type(); 
-		
+		public static readonly NullableType Int32 = new Int32Type();
+
 		/// <summary>
 		/// NHibernate System.Int64 (long in C#) type
 		/// </summary>
-		public static readonly NullableType Int64 = new Int64Type(); 
+		public static readonly NullableType Int64 = new Int64Type();
 
 		/// <summary>
 		/// NHibernate System.SByte type
 		/// </summary>
-		public static readonly NullableType SByte = new SByteType(); 
+		public static readonly NullableType SByte = new SByteType();
 
 		/// <summary>
 		/// NHIbernate System.Single (float in C#) Type
 		/// </summary>
-		public static readonly NullableType Single = new SingleType(); 
+		public static readonly NullableType Single = new SingleType();
 
 		/// <summary>
 		/// NHibernate String type
 		/// </summary>
-		public static readonly NullableType String = new StringType(); 
-		
+		public static readonly NullableType String = new StringType();
+
 		/// <summary>
 		/// NHibernate string clob type
 		/// </summary>
-		public static readonly NullableType StringClob = new StringClobType(); 
-		
+		public static readonly NullableType StringClob = new StringClobType();
+
 		/// <summary>
 		/// NHibernate Time type
 		/// </summary>
-		public static readonly NullableType Time = new TimeType(); 
-		
+		public static readonly NullableType Time = new TimeType();
+
 		/// <summary>
 		/// NHibernate Ticks type
 		/// </summary>
-		public static readonly NullableType Ticks = new TicksType(); 
-		
+		public static readonly NullableType Ticks = new TicksType();
+
 		/// <summary>
 		/// NHibernate Ticks type
 		/// </summary>
-		public static readonly NullableType TimeSpan = new TimeSpanType(); 
+		public static readonly NullableType TimeSpan = new TimeSpanType();
 
 		/// <summary>
 		/// NHibernate Timestamp type
 		/// </summary>
-		public static readonly NullableType Timestamp = new TimestampType(); 
-		
+		public static readonly NullableType Timestamp = new TimestampType();
+
 		/// <summary>
 		/// NHibernate TrueFalse type
 		/// </summary>
-		public static readonly NullableType TrueFalse = new TrueFalseType(); 
-		
+		public static readonly NullableType TrueFalse = new TrueFalseType();
+
 		/// <summary>
 		/// NHibernate YesNo type
 		/// </summary>
-		public static readonly NullableType YesNo = new YesNoType(); 
+		public static readonly NullableType YesNo = new YesNoType();
 
 		/// <summary>
 		/// NHibernate class type
 		/// </summary>
-		public static readonly NullableType Class =  new TypeType(); 
-		
+		public static readonly NullableType Class = new TypeType();
+
 		/// <summary>
 		/// NHibernate serializable type
 		/// </summary>
-		public static readonly NullableType Serializable =  new SerializableType(); 
+		public static readonly NullableType Serializable = new SerializableType();
 
 		/// <summary>
 		/// NHibernate System.Object type
 		/// </summary>
-		public static readonly IType Object = new ObjectType(); 
+		public static readonly IType Object = new ObjectType();
 
-		
-		/// <summary>
-		/// NHibernate blob type
-		/// </summary>
-		//public static readonly NullableType Blob = new BlobType();
-		
-		/// <summary>
-		/// NHibernate clob type
-		/// </summary>
-		//public static readonly NullableType Clob = new ClobType();
-		
+
+//		/// <summary>
+//		/// NHibernate blob type
+//		/// </summary>
+//		public static readonly NullableType Blob = new BlobType();
+//		/// <summary>
+//		/// NHibernate clob type
+//		/// </summary>
+//		public static readonly NullableType Clob = new ClobType();
 		/// <summary>
 		/// Cannot be instantiated.
 		/// </summary>
-		private NHibernate() 
-		{																	  
-			throw new NotSupportedException();											
+		private NHibernate()
+		{
+			throw new NotSupportedException();
 		}
-		
-		
+
+
 		/// <summary>
 		/// A NHibernate persistent enum type
 		/// </summary>
 		/// <param name="enumClass"></param>
 		/// <returns></returns>
-		public static IType Enum(System.Type enumClass) {
-			return new PersistentEnumType(enumClass);
+		public static IType Enum( System.Type enumClass )
+		{
+			return new PersistentEnumType( enumClass );
 		}
-		
-		
+
+
 		/// <summary>
 		/// A NHibernate serializable type
 		/// </summary>
 		/// <param name="serializableClass"></param>
 		/// <returns></returns>
-		public static IType GetSerializable(System.Type serializableClass) {
-			return new SerializableType(serializableClass);
+		public static IType GetSerializable( System.Type serializableClass )
+		{
+			return new SerializableType( serializableClass );
 		}
 
 		/// <summary>
 		/// A NHibernate serializable type
 		/// </summary>
-		/// <param name="metaType">a type mapping <see cref="NHibernate.Type.IType"/> to a single column</param>
+		/// <param name="metaType">a type mapping <see cref="Type.IType"/> to a single column</param>
 		/// <param name="identifierType">the entity identifier type</param>
 		/// <returns></returns>
-		public static IType Any(IType metaType, IType identifierType) {
-			return new ObjectType(metaType, identifierType);
+		public static IType Any( IType metaType, IType identifierType )
+		{
+			return new ObjectType( metaType, identifierType );
 		}
-		
+
 		/// <summary>
 		/// A NHibernate persistent object (entity) type
 		/// </summary>
 		/// <param name="persistentClass">a mapped entity class</param>
 		/// <returns></returns>
-		[Obsolete("use NHibernate.Entity instead")]
-		public static IType Association(System.Type persistentClass) {
-			// not really a many-to-one association *necessarily*
-			return new ManyToOneType(persistentClass);
-		}
-		
-		/// <summary>
-		/// A NHibernate persistent object (entity) type
-		/// </summary>
-		/// <param name="persistentClass">a mapped entity class</param>
-		/// <returns></returns>
-		public static IType Entity(System.Type persistentClass) 
+		[Obsolete( "use NHibernate.Entity instead" )]
+		public static IType Association( System.Type persistentClass )
 		{
 			// not really a many-to-one association *necessarily*
-			return new ManyToOneType(persistentClass);
+			return new ManyToOneType( persistentClass );
 		}
-		
+
+		/// <summary>
+		/// A NHibernate persistent object (entity) type
+		/// </summary>
+		/// <param name="persistentClass">a mapped entity class</param>
+		/// <returns></returns>
+		public static IType Entity( System.Type persistentClass )
+		{
+			// not really a many-to-one association *necessarily*
+			return new ManyToOneType( persistentClass );
+		}
+
 		/// <summary>
 		/// A NHibernate custom type
 		/// </summary>
 		/// <param name="userTypeClass">a class that implements UserType</param>
 		/// <returns></returns>
-		public static IType Custom(System.Type userTypeClass) {
-			if( typeof(ICompositeUserType).IsAssignableFrom( userTypeClass ))
+		public static IType Custom( System.Type userTypeClass )
+		{
+			if( typeof( ICompositeUserType ).IsAssignableFrom( userTypeClass ) )
 			{
 				return new CompositeCustomType( userTypeClass );
 			}
 			else
 			{
-				return new CustomType(userTypeClass);
+				return new CustomType( userTypeClass );
 			}
 		}
-				
-		
+
+
 		/// <summary>
 		/// Force initialization of a proxy or persistent collection.
 		/// </summary>
 		/// <param name="proxy">a persistable object, proxy, persistent collection or null</param>
 		/// <exception cref="HibernateException">if we can't initialize the proxy at this time, eg. the Session was closed</exception>
-		public static void Initialize(object proxy) {
-			if( proxy==null )
+		public static void Initialize( object proxy )
+		{
+			if( proxy == null )
 			{
 				return;
 			}
 			else if( proxy is INHibernateProxy )
 			{
-				NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) proxy ).Initialize();
+				NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) proxy ).Initialize();
 			}
 			else if( proxy is PersistentCollection )
 			{
-				( (PersistentCollection) proxy ).ForceLoad();
+				( ( PersistentCollection ) proxy ).ForceLoad();
 			}
 		}
 
@@ -268,17 +269,17 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="proxy">a persistable object, proxy, persistent collection or null</param>
 		/// <returns>true if the argument is already initialized, or is not a proxy or collection</returns>
-		public static bool IsInitialized(object proxy)
+		public static bool IsInitialized( object proxy )
 		{
-			if ( proxy is INHibernateProxy ) 
+			if( proxy is INHibernateProxy )
 			{
-				return !NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) proxy ).IsUninitialized;
-			} 
-			else if ( proxy is PersistentCollection ) 
+				return !NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) proxy ).IsUninitialized;
+			}
+			else if( proxy is PersistentCollection )
 			{
-				return ( (PersistentCollection) proxy).WasInitialized;
-			} 
-			else 
+				return ( ( PersistentCollection ) proxy ).WasInitialized;
+			}
+			else
 			{
 				return true;
 			}
@@ -290,18 +291,18 @@ namespace NHibernate {
 		/// </summary>
 		/// <param name="proxy">a persistable object or proxy</param>
 		/// <returns>the true class of the instance</returns>
-		public System.Type GetClass(object proxy) 
+		public System.Type GetClass( object proxy )
 		{
-			if(proxy is INHibernateProxy) 
+			if( proxy is INHibernateProxy )
 			{
-				return NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy) proxy ).GetImplementation().GetType();
+				return NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) proxy ).GetImplementation().GetType();
 			}
-			else 
+			else
 			{
 				return proxy.GetType();
 			}
 		}
-	
+
 		/*
 		/// <summary>
 		/// Create a new Blob. The returned object will be initially immutable.

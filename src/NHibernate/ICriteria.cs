@@ -1,10 +1,8 @@
-using System;
 using System.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Expression;
 
-namespace NHibernate 
+namespace NHibernate
 {
 	///<summary>
 	///Criteria is a simplified API for retrieving entities
@@ -30,25 +28,26 @@ namespace NHibernate
 	///
 	///This is an experimental API
 	///</summary>
-
-	public interface ICriteria 
+	public interface ICriteria
 	{
 		/// <summary>
 		/// Set a limit upon the number of objects to be retrieved
 		/// </summary>
-		ICriteria SetMaxResults(int maxResults);
+		/// <param name="maxResults"></param>
+		ICriteria SetMaxResults( int maxResults );
 
 		/// <summary>
 		/// Set the first result to be retrieved
 		/// </summary>
-		ICriteria SetFirstResult(int firstResult);
+		/// <param name="firstResult"></param>
+		ICriteria SetFirstResult( int firstResult );
 
 		/// <summary>
 		/// Set a timeout for the underlying ADO.NET query
 		/// </summary>
 		/// <param name="timeout"></param>
 		/// <returns></returns>
-		ICriteria SetTimeout(int timeout);
+		ICriteria SetTimeout( int timeout );
 
 		/// <summary>
 		/// Gets the <see cref="RowSelection"/> for the ICriteria
@@ -60,12 +59,13 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="expression"></param>
 		/// <returns></returns>
-		ICriteria Add(Expression.Expression expression);
+		ICriteria Add( Expression.Expression expression );
 
 		/// <summary>
 		/// An an Order to the result set 
 		/// </summary>
-		ICriteria AddOrder(Order order); 
+		/// <param name="order"></param>
+		ICriteria AddOrder( Order order );
 
 
 		/// <summary>
@@ -78,7 +78,7 @@ namespace NHibernate
 		/// Contains all of the Expressions that were added as one 
 		/// resulting expression.
 		/// </summary>
-		Expression.Expression Expression {get;}
+		Expression.Expression Expression { get; }
 
 		/// <summary>
 		/// Provides an Enumerator to Iterate through the Expressions 
@@ -86,14 +86,14 @@ namespace NHibernate
 		/// </summary>
 		/// <returns></returns>
 		IEnumerator IterateExpressions();
-	
+
 		/// <summary>
 		/// Provides an Enumerator to Iterate through the Order clauses
 		/// that have been added.
 		/// </summary>
 		/// <returns></returns>
 		IEnumerator IterateOrderings();
-    
+
 		/// <summary>
 		/// The PersistentClass that is the entry point for the Criteria.
 		/// </summary>
@@ -104,7 +104,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		FetchMode GetFetchMode(string path);
+		FetchMode GetFetchMode( string path );
 
 		/// <summary>
 		/// Specify an association fetching strategy.  Currently, only
@@ -113,6 +113,6 @@ namespace NHibernate
 		/// <param name="associationPath">A dot seperated property path.</param>
 		/// <param name="mode">The Fetch mode.</param>
 		/// <returns></returns>
-		ICriteria SetFetchMode(string associationPath, FetchMode mode);
+		ICriteria SetFetchMode( string associationPath, FetchMode mode );
 	}
 }

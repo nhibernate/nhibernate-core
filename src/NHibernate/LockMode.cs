@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
 
-namespace NHibernate 
+namespace NHibernate
 {
 	/// <summary>
 	/// Instances represent a lock mode for a row of a relational database table.
@@ -12,18 +11,24 @@ namespace NHibernate
 	/// wish to explicitly specify lock levels.
 	/// </remarks>
 	[Serializable]
-	public sealed class LockMode 
+	public sealed class LockMode
 	{
 		private int level;
 		private string name;
 
-		private LockMode(int level, string name) 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="level"></param>
+		/// <param name="name"></param>
+		private LockMode( int level, string name )
 		{
 			this.level = level;
 			this.name = name;
 		}
 
-		public override string ToString() 
+		/// <summary></summary>
+		public override string ToString()
 		{
 			return name;
 		}
@@ -31,14 +36,17 @@ namespace NHibernate
 		/// <summary>
 		/// Is this lock mode more restrictive than the given lock mode?
 		/// </summary>
-		public bool GreaterThan(LockMode mode) 
+		/// <param name="mode"></param>
+		public bool GreaterThan( LockMode mode )
 		{
 			return level > mode.level;
 		}
+
 		/// <summary>
 		/// Is this lock mode less restrictive than the given lock mode?
 		/// </summary>
-		public bool LessThan(LockMode mode) 
+		/// <param name="mode"></param>
+		public bool LessThan( LockMode mode )
 		{
 			return level < mode.level;
 		}
@@ -50,7 +58,7 @@ namespace NHibernate
 		/// If an object is requested with this lock mode, a <c>Read</c> lock
 		/// might be obtained if necessary.
 		/// </remarks>
-		public static LockMode None = new LockMode(0, "None");
+		public static LockMode None = new LockMode( 0, "None" );
 
 		/// <summary>
 		/// A shared lock. 
@@ -58,7 +66,7 @@ namespace NHibernate
 		/// <remarks>
 		/// Objects are loaded in <c>Read</c> mode by default
 		/// </remarks>
-		public static LockMode Read = new LockMode(5, "Read");
+		public static LockMode Read = new LockMode( 5, "Read" );
 
 		/// <summary>
 		/// An upgrade lock. 
@@ -67,7 +75,7 @@ namespace NHibernate
 		/// Objects loaded in this lock mode are materialized using an
 		/// SQL <c>SELECT ... FOR UPDATE</c>
 		/// </remarks>
-		public static LockMode Upgrade = new LockMode(10, "Upgrade");
+		public static LockMode Upgrade = new LockMode( 10, "Upgrade" );
 
 		/// <summary>
 		/// Attempty to obtain an upgrade lock, using an Oracle-style
@@ -76,7 +84,7 @@ namespace NHibernate
 		/// <remarks>
 		/// The semantics of this lock mode, once obtained, are the same as <c>Upgrade</c>
 		/// </remarks>
-		public static LockMode UpgradeNoWait = new LockMode(10, "UpgradeNoWait");
+		public static LockMode UpgradeNoWait = new LockMode( 10, "UpgradeNoWait" );
 
 		/// <summary>
 		/// A <c>Write</c> lock is obtained when an object is updated or inserted.
@@ -84,10 +92,10 @@ namespace NHibernate
 		/// <remarks>
 		/// This is not a valid mode for <c>Load()</c> or <c>Lock()</c>.
 		/// </remarks>
-		public static LockMode Write = new LockMode(10, "Write");
+		public static LockMode Write = new LockMode( 10, "Write" );
 
 		//TODO: need to implement .NET equivalent of readResolve - believe it is
 		// the IObjectReference interface...
-		
+
 	}
 }
