@@ -19,7 +19,8 @@ namespace NHibernate.Test.PropertyTest
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("nosetter.camelcase");
 			_getter = _accessor.GetGetter( typeof(FieldClass), "CamelBaz" );
 			_setter = _accessor.GetSetter( typeof(FieldClass), "CamelBaz" );
-			_instance = new FieldClass( 6, -1, 2, 0 );
+			_instance = new FieldClass();
+			_instance.InitCamelBaz( 0 );
 		}
 	
 	}

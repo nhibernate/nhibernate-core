@@ -7,10 +7,10 @@ using NUnit.Framework;
 namespace NHibernate.Test.PropertyTest
 {
 	/// <summary>
-	/// Summary description for CamelCaseUnderscoreFixture.
+	/// Summary description for FieldCamelCaseUnderscoreFixture.
 	/// </summary>
 	[TestFixture]
-	public class CamelCaseUnderscoreFixture : FieldAccessorFixture
+	public class FieldCamelCaseUnderscoreFixture : FieldAccessorFixture
 	{
 		[SetUp]
 		public override void SetUp() 
@@ -18,7 +18,8 @@ namespace NHibernate.Test.PropertyTest
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("field.camelcase-underscore");
 			_getter = _accessor.GetGetter( typeof(FieldClass), "CamelUnderscoreFoo" );
 			_setter = _accessor.GetSetter( typeof(FieldClass), "CamelUnderscoreFoo" );
-			_instance = new FieldClass(2, 0 , -4, 3 );
+			_instance = new FieldClass();
+			_instance.InitCamelUnderscoreFoo( 0 );
 		}
 	}
 }

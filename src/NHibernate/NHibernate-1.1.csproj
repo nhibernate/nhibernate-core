@@ -1310,6 +1310,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Property\LowerCaseUnderscoreStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Property\NoSetterAccessor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -31,7 +31,8 @@ namespace NHibernate.Test.PropertyTest
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("field");
 			_getter = _accessor.GetGetter( typeof(FieldClass), "Id" );
 			_setter = _accessor.GetSetter( typeof(FieldClass), "Id" );
-			_instance = new FieldClass( 0, 6, -1, 2 );
+			_instance = new FieldClass();
+			_instance.InitId( 0 );
 		}
 
 		[Test]
@@ -45,6 +46,7 @@ namespace NHibernate.Test.PropertyTest
 			Assert.IsFalse( _instance.BlahGetterCalled );
 			Assert.IsFalse( _instance.CamelBazGetterCalled );
 			Assert.IsFalse( _instance.CamelUnderscoreFooGetterCalled );
+			Assert.IsFalse( _instance.LowerUnderscoreFooGetterCalled );
 		}
 
 		[Test]

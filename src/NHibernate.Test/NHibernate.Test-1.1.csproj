@@ -375,17 +375,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "PropertyTest\CamelCaseFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PropertyTest\CamelCaseUnderscoreFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "PropertyTest\FieldAccessorFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\FieldCamelCaseFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\FieldCamelCaseUnderscoreFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -396,6 +396,16 @@
                 />
                 <File
                     RelPath = "PropertyTest\FieldGetterFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\FieldLowerCaseUnderscoreFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\FieldPascalCaseMUnderscoreFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -415,12 +425,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "PropertyTest\NoSetterPascalCaseMUnderscoreFixture.cs"
+                    RelPath = "PropertyTest\NoSetterLowerCaseUnderscoreFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "PropertyTest\PascalCaseMUnderscoreFixture.cs"
+                    RelPath = "PropertyTest\NoSetterPascalCaseMUnderscoreFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -7,21 +7,44 @@ namespace NHibernate.Test.PropertyTest
 	/// </summary>
 	public class FieldClass 
 	{
-		private int Id;
-		private int _camelUnderscoreFoo;
-		private int m_Blah;
-		private int camelBaz;
+		private int Id = 1;
+		private int _camelUnderscoreFoo = 2;
+		private int m_Blah = 3;
+		private int camelBaz = 4;
+		private int _lowerunderscorefoo = 5;
 
 		public bool CamelUnderscoreFooGetterCalled = false;
 		public bool BlahGetterCalled = false;
 		public bool CamelBazGetterCalled = false;
+		public bool LowerUnderscoreFooGetterCalled = false;
 
-		public FieldClass(int Id, int _camelUnderscoreFoo, int m_Blah, int camelBaz ) 
+		public FieldClass( ) 
+		{	
+		}
+
+		public void InitId(int value) 
 		{
-			this.Id = Id;
-			this._camelUnderscoreFoo = _camelUnderscoreFoo;
-			this.m_Blah = m_Blah;
-			this.camelBaz = camelBaz;
+			Id = value;
+		}
+
+		public void InitCamelUnderscoreFoo(int value) 
+		{
+			_camelUnderscoreFoo = value;
+		}
+
+		public void InitBlah(int value) 
+		{
+			m_Blah = value;
+		}
+
+		public void InitCamelBaz(int value) 
+		{
+			camelBaz = value;
+		}
+
+		public void InitLowerUnderscoreFoo(int value) 
+		{
+			_lowerunderscorefoo = value;
 		}
 
 		public void Increment() 
@@ -30,6 +53,7 @@ namespace NHibernate.Test.PropertyTest
 			_camelUnderscoreFoo++;
 			m_Blah++;
 			camelBaz++;
+			_lowerunderscorefoo++;
 		}
 
 		public int CamelUnderscoreFoo
@@ -41,6 +65,7 @@ namespace NHibernate.Test.PropertyTest
 			}
 		}
 
+		
 		public int Blah 
 		{
 			get 
@@ -56,6 +81,15 @@ namespace NHibernate.Test.PropertyTest
 			{ 
 				CamelBazGetterCalled = true;
 				return camelBaz; 
+			}
+		}
+
+		public int LowerUnderscoreFoo 
+		{
+			get 
+			{
+				LowerUnderscoreFooGetterCalled = true;
+				return _lowerunderscorefoo;
 			}
 		}
 	}

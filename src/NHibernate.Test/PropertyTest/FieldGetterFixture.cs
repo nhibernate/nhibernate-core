@@ -57,6 +57,19 @@ namespace NHibernate.Test.PropertyTest
 		}
 
 		[Test]
+		public void LowerCaseUnderscoreNamingStrategy() 
+		{
+			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "PropertyFour" );
+
+			Assert.IsNotNull( fieldGetter, "should have found getter" );
+			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );
+			Assert.AreEqual( typeof(Int64), fieldGetter.ReturnType, "returns Int64." );
+			Assert.IsNull( fieldGetter.Property, "no PropertyInfo for fields." );
+			Assert.IsNull( fieldGetter.PropertyName, "no Property Names for fields." );
+			Assert.AreEqual( Int64.MaxValue, fieldGetter.Get( obj ), "Get() for Int64" );
+		}
+
+		[Test]
 		public void PascalCaseMUnderscoreNamingStrategy() 
 		{
 			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "PropertyThree" );
@@ -75,6 +88,7 @@ namespace NHibernate.Test.PropertyTest
 			private DateTime propertyOne = DateTime.Parse( "2000-01-01" );
 			private bool _propertyTwo = true;
 			private TimeSpan m_PropertyThree = new TimeSpan( DateTime.Parse("2001-01-01" ).Ticks );
+			private long _propertyfour = Int64.MaxValue;
 		}
 	}
 

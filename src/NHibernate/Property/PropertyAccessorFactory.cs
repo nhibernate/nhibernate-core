@@ -21,9 +21,11 @@ namespace NHibernate.Property
 			accessors["field.camelcase"] = new FieldAccessor( new CamelCaseStrategy() );
 			accessors["field.camelcase-underscore"] = new FieldAccessor( new CamelCaseUnderscoreStrategy() );
 			accessors["field.pascalcase-m-underscore"] = new FieldAccessor( new PascalCaseMUnderscoreStrategy() ) ;
+			accessors["field.lowercase-underscore"] = new FieldAccessor( new LowerCaseUnderscoreStrategy() );
 			accessors["nosetter.camelcase"] = new NoSetterAccessor( new CamelCaseStrategy() );
 			accessors["nosetter.camelcase-underscore"] = new NoSetterAccessor( new CamelCaseUnderscoreStrategy() );
 			accessors["nosetter.pascalcase-m-underscore"] = new NoSetterAccessor( new PascalCaseMUnderscoreStrategy() );
+			accessors["nosetter.lowercase-underscore"] = new NoSetterAccessor( new LowerCaseUnderscoreStrategy() );
 		}
 
 		private PropertyAccessorFactory()
@@ -115,8 +117,17 @@ namespace NHibernate.Property
 		///		<item>
 		///			<term>pascalcase-m-underscore</term>
 		///			<description>
-		///				The <c>name</c> attribute should be changed to CamelCase to find the field.
+		///				The <c>name</c> attribute should be prefixed with an 'm' and underscore
+		///				to find the field.
 		///				<c>&lt;property name="Foo" ... &gt;</c> finds a field <c>m_Foo</c>.
+		///			</description>
+		///		</item>
+		///		<item>
+		///			<term>lowercase-underscore</term>
+		///			<description>
+		///				The <c>name</c> attribute should be changed to lowercase and prefixed with
+		///				and underscore to find the field.
+		///				<c>&lt;property name="FooBar" ... &gt;</c> finds a field <c>_foobar</c>.
 		///			</description>
 		///		</item>
 		///	</list>

@@ -20,6 +20,7 @@ namespace NHibernate.Test.PropertyTest
 		protected bool _expectedBlahGetterCalled = false;
 		protected bool _expectedCamelBazGetterCalled = false;
 		protected bool _expectedCamelUnderscoreFooGetterCalled = false;
+		protected bool _expectedLowerUnderscoreFooGetterCalled = false;
 
 		/// <summary>
 		/// SetUp the local fields for the test cases.
@@ -39,9 +40,11 @@ namespace NHibernate.Test.PropertyTest
 			Assert.AreEqual( 0, _getter.Get(_instance) );
 			_instance.Increment();
 			Assert.AreEqual( 1, _getter.Get(_instance) );
+			
 			Assert.AreEqual( _expectedBlahGetterCalled, _instance.BlahGetterCalled );
 			Assert.AreEqual( _expectedCamelBazGetterCalled, _instance.CamelBazGetterCalled );
 			Assert.AreEqual( _expectedCamelUnderscoreFooGetterCalled, _instance.CamelUnderscoreFooGetterCalled );
+			Assert.AreEqual( _expectedLowerUnderscoreFooGetterCalled, _instance.LowerUnderscoreFooGetterCalled );
 		}
 
 		[Test]
