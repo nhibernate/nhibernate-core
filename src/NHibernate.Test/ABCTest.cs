@@ -18,12 +18,6 @@ namespace NHibernate.Test
 			ExportSchema(new string[] { "ABC.hbm.xml"});
 		}
 
-		[TearDown]
-		public void TearDown() 
-		{
-			DropSchema();
-		}
-
 		[Test]
 		public void Subclassing() 
 		{

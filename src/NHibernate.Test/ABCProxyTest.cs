@@ -15,12 +15,6 @@ namespace NHibernate.Test
 			ExportSchema(new string[] { "ABCProxy.hbm.xml"});
 		}
 
-		[TearDown]
-		public void TearDown() 
-		{
-			DropSchema();
-		}
-
 		[Test]
 		[Ignore("Test will fail because of proxy initalization problems")]
 		public void Subclassing()

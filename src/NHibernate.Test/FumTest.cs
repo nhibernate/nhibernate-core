@@ -41,13 +41,6 @@ namespace NHibernate.Test
 				}, true);
 		}
 
-
-		[TearDown]
-		public void TearDown() 
-		{
-			DropSchema();
-		}
-
 		static FumCompositeID FumKey(String str) 
 		{
 		

@@ -8,6 +8,8 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Tool.hbm2ddl;
 
+using NUnit.Framework;
+
 namespace NHibernate.Test 
 {
 	
@@ -16,6 +18,21 @@ namespace NHibernate.Test
 		protected Configuration cfg;
 		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
+
+		/// <summary>
+		/// Removes the tables used in this TestCase.
+		/// </summary>
+		/// <remarks>
+		/// If the tables are not cleaned up sometimes SchemaExport runs into
+		/// Sql errors because it can't drop tables because of the FKs.  This 
+		/// will occur if the TestCase does not have the same hbm.xml files
+		/// included as a previous one.
+		/// </remarks>
+		[TearDown]
+		public virtual void TearDown() 
+		{
+			DropSchema();
+		}
 
 		public void ExportSchema(string[] files) 
 		{

@@ -29,15 +29,9 @@ namespace NHibernate.Test
 				"Holder.hbm.xml",
 				"Location.hbm.xml",
 				"Stuff.hbm.xml",
-				//"Container.hbm.xml",
+				"Container.hbm.xml",
 				"XY.hbm.xml"
 				}, true);
-		}
-
-		[TearDown]
-		public void TearDown() 
-		{
-			DropSchema();
 		}
 
 		[Test]
