@@ -527,7 +527,7 @@ namespace NHibernate.Persister
 				GenerateInsertStrings(true, PropertyInsertability):
 				null;
 
-			sqlUpdateStrings = GenerateUpdateStrings(PropertyInsertability);
+			sqlUpdateStrings = GenerateUpdateStrings(PropertyUpdateability);
 
 			SqlString lockString = GenerateLockString(null, null);
 			SqlString lockExclusiveString = dialect.SupportsForUpdate ? 
