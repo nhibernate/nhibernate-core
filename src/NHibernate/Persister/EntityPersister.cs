@@ -666,42 +666,63 @@ namespace NHibernate.Persister {
 				if ( IsVersioned ) log.Debug( "Version: " + Versioning.GetVersion(fields, this) );
 			}
 
-			IDbCommand statement = session.Preparer.PrepareCommand(SqlIdentityInsertString);
+			IDbCommand statement = null;
+			IDbCommand idSelect = null;
 
-
-			try {
-				Dehydrate(null, fields, PropertyInsertability, statement, session);
-				statement.ExecuteNonQuery();
-			} 
-			catch (Exception e) {
-				throw e;
-			} 
-			finally {
-				//session.Batcher.CloseStatement(statement);
+			if(dialect.SupportsIdentitySelectInInsert) 
+			{
+				statement = session.Preparer.PrepareCommand( dialect.AddIdentitySelectToInsert(SqlIdentityInsertString) );
+				idSelect = statement;
+			}
+			else 
+			{
+				statement = session.Preparer.PrepareCommand(SqlIdentityInsertString);
+				idSelect = session.Preparer.PrepareCommand(SqlIdentitySelect);
 			}
 
-			// fetch the generated id:
-			IDbCommand idSelect = session.Preparer.PrepareCommand(SqlIdentitySelect);
 
-			try {
+			try 
+			{
+				Dehydrate(null, fields, PropertyInsertability, statement, session);
+			} 
+			catch (Exception e) 
+			{
+				throw new HibernateException("EntityPersister had a problem Dehydrating for an Insert", e);
+			} 
+
+			try 
+			{
+				// if it doesn't support identity select in insert then we have to issue the Insert
+				// as a seperate command here
+				if(dialect.SupportsIdentitySelectInInsert==false) 
+				{
+					statement.ExecuteNonQuery();
+				}
+
 				IDataReader rs = idSelect.ExecuteReader();
 				object id;
-				try {
+				try 
+				{
 					if ( !rs.Read() ) throw new HibernateException("The database returned no natively generated identity value");
 					id = IdentifierGeneratorFactory.Get( rs, IdentifierType.ReturnedClass );
 				} 
-				finally {
+				finally 
+				{
 					rs.Close();
 				}
+
 				log.Debug("Natively generated identity: " + id);
 
 				return id;
 			} 
-			catch (Exception e) {
+			catch (Exception e) 
+			{
 				throw e;
 			} 
-			finally {
-				//session.Batcher.CloseStatement(idselect);
+			finally 
+			{
+				// session.Batcher.CloseStatement(statement);
+				// session.Batcher.CloseStatement(idselect);
 			}
 		}
 

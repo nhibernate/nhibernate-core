@@ -609,8 +609,15 @@ namespace NHibernate.Persister {
 
 				//if (IsPolymorphic) builder.AddColumn(DiscriminatorColumnName, DiscriminatorSQLString);
 
-				if(identityInsert && j==0) {
-					builder.AddColumn(tableKeyColumns[j][0], dialect.IdentityInsertString);
+				if(identityInsert && j==0) 
+				{					
+					// make sure the Dialect has an identity insert string because we don't want
+					// to add the column when there is no value to supply the SqlBuilder
+					if(dialect.IdentityInsertString!=null) 
+					{
+						// only 1 column if there is IdentityInsert enabled.
+						builder.AddColumn(tableKeyColumns[j][0], dialect.IdentityInsertString);
+					}
 					
 				}
 				else {
@@ -849,47 +856,72 @@ namespace NHibernate.Persister {
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public override object Insert(object[] fields, object obj, ISessionImplementor session) {
-			if (log.IsDebugEnabled) {
+		public override object Insert(object[] fields, object obj, ISessionImplementor session) 
+		{
+			if (log.IsDebugEnabled) 
+			{
 				log.Debug("Inserting entity: " + ClassName + " (native id)");
 				if ( IsVersioned ) log.Debug( "Version: " + Versioning.GetVersion(fields, this) );
 			}
 
 			SqlString[] sqlStrings = SqlIdentityInsertStrings;
 
-			IDbCommand statement = session.Preparer.PrepareCommand(sqlStrings[0]);
-
-			try {
-				Dehydrate(null, fields, allProperties, 0, statement, session);
-				statement.ExecuteNonQuery();
-			} 
-			catch (Exception e) {
-				throw e;
-			} 
-			finally {
-				//session.Batcher.CloseStatement(statement);
-			}
-
-			// fetch the generated id:
-			IDbCommand idSelect = session.Preparer.PrepareCommand(SqlIdentitySelect);
+			IDbCommand statement = null;
+			IDbCommand idSelect = null;
 
 			object id;
-			try {
+		
+			if(dialect.SupportsIdentitySelectInInsert) 
+			{
+				statement = session.Preparer.PrepareCommand( dialect.AddIdentitySelectToInsert(SqlIdentityInsertStrings[0]) );
+				idSelect = statement;
+			}
+			else 
+			{
+				statement = session.Preparer.PrepareCommand(SqlIdentityInsertStrings[0]);
+				idSelect = session.Preparer.PrepareCommand(SqlIdentitySelect);
+			}
+
+			try 
+			{
+				Dehydrate(null, fields, allProperties, 0, statement, session);
+			} 
+			catch (Exception e) 
+			{
+				throw new HibernateException("NormalizedEntityPersister had a problem Dehydrating for an Insert", e);
+			} 
+
+			try 
+			{
+				// if it doesn't support identity select in insert then we have to issue the Insert
+				// as a seperate command here
+				if(dialect.SupportsIdentitySelectInInsert==false) 
+				{
+					statement.ExecuteNonQuery();
+				}
+
 				IDataReader rs = idSelect.ExecuteReader();
-				try {
+				try 
+				{
 					if ( !rs.Read() ) throw new HibernateException("The database returned no natively generated identity value");
-					id = IdentifierGeneratorFactory.Get(rs, IdentifierType.ReturnedClass );
+					id = IdentifierGeneratorFactory.Get( rs, IdentifierType.ReturnedClass );
 				} 
-				finally {
+				finally 
+				{
 					rs.Close();
 				}
+
 				log.Debug("Natively generated identity: " + id);
+
 			} 
-			catch (Exception e) {
+			catch (Exception e) 
+			{
 				throw e;
 			} 
-			finally {
-				//session.Batcher.CloseStatement(idselect);
+			finally 
+			{
+				// session.Batcher.CloseStatement(statement);
+				// session.Batcher.CloseStatement(idselect);
 			}
 
 			for (int i=1; i<tableNames.Length; i++ ) {
