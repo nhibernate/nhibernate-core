@@ -4,39 +4,26 @@ using System.Collections;
 
 using NHibernate.Type;
 
-
 namespace NHibernate.Id 
 {
 	/// <summary>
 	/// Factory methods for <c>IdentifierGenerator</c> framework.
 	/// </summary>
-	public sealed class IdentifierGeneratorFactory {
-		public static object Get(IDataReader rs, System.Type clazz) {
-			
-			// here is an interesting one - MsSql's @@identity returns a
-			// numeric - which translates to a C# decimal type.  I don't know
-			// if this is specific to the SqlServer provider or other providers
-			
-			decimal identityValue = rs.GetDecimal(0);
-
-			if (clazz==typeof(long)) 
+	public sealed class IdentifierGeneratorFactory 
+	{
+		public static object Get(IDataReader rs, System.Type clazz) 
+		{
+			// here is an interesting one: 
+			// - MsSql's @@identity returns a numeric - which translates to a C# decimal type.  
+			// - MySql LAST_IDENITY() returns an Int64 			
+			try 
 			{
-				return (long)identityValue;
-				//return (long)rs[0];
-			} 
-			else if (clazz==typeof(int)) 
+				object identityValue = rs[0]; 
+				return Convert.ChangeType( identityValue, clazz );
+			}
+			catch( Exception e ) 
 			{
-				return (int)identityValue;
-				//return (int)rs.[0];
-			} 
-			else if (clazz==typeof(short)) 
-			{
-				return (short)identityValue;
-				//return (short)rs[0];
-			} 
-			else 
-			{
-				throw new IdentifierGenerationException("this id generator generates Int64, Int32, Int16");
+				throw new IdentifierGenerationException("this id generator generates Int64, Int32, Int16", e);
 			}
 		}
 
