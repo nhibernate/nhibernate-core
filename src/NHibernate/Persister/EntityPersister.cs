@@ -581,7 +581,8 @@ namespace NHibernate.Persister
 			// set the table name and add the columns to select
 			builder.SetTableName(TableName)
 				.AddColumns(IdentifierColumnNames)
-				.AddColumns(subclassColumnClosure, subclassColumnAliasClosure);
+				.AddColumns(subclassColumnClosure, subclassColumnAliasClosure)
+				.AddColumns(subclassFormulaClosure, subclassFormulaAliasClosure);
 
 			if (HasSubclasses) builder.AddColumn(DiscriminatorColumnName);
 
