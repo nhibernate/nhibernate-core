@@ -197,21 +197,153 @@ namespace NHibernate.Test
 
 		
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Test is failing and need to debug.")]
 		public void QueryLockMode() 
 		{
+			ISession s = sessions.OpenSession();
+			Bar bar = new Bar();
+			s.Save(bar);
+			s.Flush();
+
+			bar.@string = "changed";
+			Baz baz = new Baz();
+			baz.Foo = bar;
+			s.Save(baz);
+
+			IQuery q = s.CreateQuery("from Foo foo, Bar bar");
+			q.SetLockMode("bar", LockMode.Upgrade);
+			object[] result = (object[])q.List()[0];
+
+			object b = result[0];
+
+			Assert.IsTrue( s.GetCurrentLockMode(b)==LockMode.Write && s.GetCurrentLockMode(result[1])==LockMode.Write);
+			s.Flush();
+			s.Disconnect();
+
+			s.Reconnect();
+
+			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode(b) );
+			s.Find("from Foo foo");
+			//TODO: test is failing here because CurrentLock Mode is LockMode.Write
+			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode(b) );
+			q = s.CreateQuery("from Foo foo");
+			q.SetLockMode("foo", LockMode.Read);
+			q.List();
+
+			Assert.AreEqual( LockMode.Read, s.GetCurrentLockMode(b) );
+			s.Evict(baz);
+
+			s.Disconnect();
+			s.Reconnect();
+
+			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode(b) );
+			s.Delete( s.Load( typeof(Baz), baz.Code ) );
+			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode(b) );
+
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			q = s.CreateQuery("from Foo foo, Bar bar, Bar bar2");
+			q.SetLockMode("bar", LockMode.Upgrade);
+			q.SetLockMode("bar2", LockMode.Read);
+			result = (object[])q.List()[0];
+
+			Assert.IsTrue( s.GetCurrentLockMode(result[0])==LockMode.Upgrade && s.GetCurrentLockMode(result[1])==LockMode.Upgrade );
+			s.Delete(result[0]);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void ManyToManyBag() 
 		{
+			ISession s = sessions.OpenSession();
+			Baz baz = new Baz();
+			object id = s.Save(baz);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz)s.Load( typeof(Baz), id );
+			baz.FooBag.Add( new Foo() );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz)s.Load( typeof(Baz), id );
+			Assert.IsFalse( NHibernate.IsInitialized( baz.FooBag ) );
+			Assert.AreEqual( 1, baz.FooBag.Count );
+
+			Assert.IsTrue( NHibernate.IsInitialized( baz.FooBag[0] ) );
+			s.Delete(baz);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void IdBag() 
 		{
+			ISession s = sessions.OpenSession();
+			Baz baz = new Baz();
+			s.Save(baz);
+
+			IList l = new ArrayList();
+			IList l2 = new ArrayList();
+
+			baz.IdFooBag = l;
+			baz.ByteBag = l2;
+
+			l.Add( new Foo() );
+			l.Add( new Bar() );
+
+			System.Text.Encoding encoding = new System.Text.UnicodeEncoding();
+
+			// TODO: not sure about this here...
+			byte[] bytes = encoding.GetBytes("ffo");
+			l2.Add(bytes);
+			l2.Add( encoding.GetBytes("foo") );
+			s.Flush();
+
+			l.Add( new Foo() );
+			l.Add( new Bar() );
+			l2.Add( encoding.GetBytes("bar") );
+			s.Flush();
+			
+			object removedObject = l[3];
+			l.RemoveAt(3);
+			s.Delete(removedObject);
+			
+			bytes[1] = Convert.ToByte('o'); 
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz) s.Load( typeof(Baz), baz.Code );
+			Assert.AreEqual( 3, baz.IdFooBag.Count );
+			Assert.AreEqual( 3, baz.ByteBag.Count );
+			bytes = encoding.GetBytes("foobar");
+
+			foreach(object obj in baz.IdFooBag) 
+			{
+				s.Delete(obj);
+			}
+			baz.IdFooBag = null;
+			baz.ByteBag.Add(bytes);
+			baz.ByteBag.Add(bytes);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz)s.Load( typeof(Baz), baz.Code );
+			Assert.AreEqual( 0, baz.IdFooBag.Count );
+			Assert.AreEqual( 5, baz.ByteBag.Count );
+			s.Delete(baz);
+			s.Flush();
+			s.Close();
+
 		}
 
 		[Test]
