@@ -73,7 +73,7 @@ namespace NHibernate.Util
 	/// This class is not thread safe.
 	/// </remarks>
 	[Serializable]
-	public class SequencedHashMap : IDictionary, ISerializable, IDeserializationCallback
+	public class SequencedHashMap : IDictionary
 	{
 		
 		[Serializable]
@@ -673,36 +673,5 @@ namespace NHibernate.Util
 
 			#endregion			
 		}
-
-		
-		#region ISerializable Members
-
-		SerializationInfo _info;
-
-		protected SequencedHashMap(SerializationInfo info, StreamingContext context) 
-		{
-			_info = info;
-		}
-
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			info.AddValue( "_sentinel", _sentinel, typeof(SequencedHashMap.Entry) );
-			info.AddValue( "_modCount", _modCount );
-			info.AddValue( "_entries", _entries );
-		}
-
-		#endregion
-
-		#region IDeserializationCallback Members
-
-		public void OnDeserialization(object sender)
-		{
-			_sentinel = (SequencedHashMap.Entry)_info.GetValue( "_sentinel", typeof(SequencedHashMap.Entry) );
-			_modCount = _info.GetInt64("_modCount");
-			_entries = (Hashtable)_info.GetValue( "_entries", typeof(Hashtable) );
-			_info = null;
-		}
-
-		#endregion
 	}
 }

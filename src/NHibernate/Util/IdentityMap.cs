@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Util 
 {
@@ -25,14 +26,13 @@ namespace NHibernate.Util
 	/// </p>
 	/// </remarks>
 	[Serializable]
-	public sealed class IdentityMap : IDictionary 
+	public sealed class IdentityMap : IDictionary	 
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(IdentityMap));
 		
 		// key = IdentityKey of the passed in Key
 		// value = object passed in
 		IDictionary map;
-
 	
 		/// <summary>
 		/// Create a new instance of the IdentityMap that has no 
@@ -267,6 +267,7 @@ namespace NHibernate.Util
 		/// <remarks>
 		/// Only for use in IdentityMap.
 		/// </remarks>
+		[Serializable]
 		private class IdentityComparer : IComparer
 		{
 			#region IComparer Members
@@ -312,5 +313,6 @@ namespace NHibernate.Util
 
 			#endregion
 		}
+
 	}
 }
