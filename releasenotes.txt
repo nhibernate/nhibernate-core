@@ -1,3 +1,19 @@
+Alpha Build 0.4.0.0
+======================== 
+- Started work on documentation.
+- Improved Cache to use pluggable CacheProviders like Hibernate 2.1. (Kevin Williams)
+- Removed properties UseScrollableResults, BatchSize, and FetchSize - not applicable to ADO.NET.
+- Fixed problem with object not getting removed from Cache when Evicted from Session.
+- Added to MySqlDialect a mapping from DbType.Guid to varchar(40) for schema-export. (Thomas Kock)
+- Added lowercase-underscore naming strategy. (Corey Behrends)
+- Fixed bug with access="field" and no type="" attribute causing Exception in ReflectHelper.
+- Removed IVersionType implementation from TimeType and DateType.
+- Moved Eg namespace from NHibernate core to NHibernate.Eg project.
+- Added guid.comb id generator. (Donald Mull)
+- Added ability to configure with a cfg.xml embedded as a resource in an assembly (Thomas Kock)
+- Fixed PostgreSQLDialect binding of Limit Parameters. (Martijn Boland)
+- Began restructure of lib folder to support net-1.0, net-1.1, net-2.0, and mono-1.0 in build.  Still only 'officially' supports net-1.1.
+
 Alpha Build 0.3.0.0
 ======================== 
 - Removed property AdoTransaction from Transaction.
