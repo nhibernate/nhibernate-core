@@ -26,14 +26,14 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _keyString = value;}
 		}
 
-		public short KeyShort {
-			get { return _keyShort;}
-			set {_keyShort = value;}
-		}
+//		public short KeyShort {
+//			get { return _keyShort;}
+//			set {_keyShort = value;}
+//		}
 
 		public System.DateTime KeyDateTime {
 			get { return _keyDateTime;}
-			set {_keyDateTime = value;}
+//			set {_keyDateTime = value;}
 		}
 
 		public override int GetHashCode() {

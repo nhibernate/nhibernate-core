@@ -6,10 +6,10 @@
 		name="NHibernate.DomainModel.NHSpecific.ClassWithCompositeId, NHibernate.DomainModel" 
 		table="class_w_com_id"
 	>
-		<composite-id name="Id" class="NHibernate.DomainModel.NHSpecific.CompositeId, NHibernate.DomainModel">
-			<key-property name="KeyString" column="string_" type="String(20)" length="20"/>
-			<key-property name="KeyShort" column="short_"/>
-			<key-property name="KeyDateTime" column="date_" type="DateTime"/>
+		<composite-id name="Id" class="NHibernate.DomainModel.NHSpecific.CompositeId, NHibernate.DomainModel" access="nosetter.camelcase-underscore">
+			<key-property name="KeyString" column="string_" type="String(20)" length="20" />
+			<key-property name="KeyShort" column="short_" access="field.camelcase-underscore"/>
+			<key-property name="KeyDateTime" column="date_" type="DateTime" access="nosetter.camelcase-underscore"/>
 		</composite-id>
 		
 		<property name="OneProperty" column="one_property"/>

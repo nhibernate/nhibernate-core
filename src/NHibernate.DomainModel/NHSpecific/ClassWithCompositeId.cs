@@ -11,10 +11,15 @@ namespace NHibernate.DomainModel.NHSpecific
 		private int _oneProperty;
 
 		public ClassWithCompositeId(){}
+	
+		public ClassWithCompositeId(CompositeId id ) 
+		{
+			_id = id;
+		}
 
 		public CompositeId Id {
 			get {return _id;}
-			set {_id = value;}
+			//set {_id = value;}
 		}
 
 		public int OneProperty {

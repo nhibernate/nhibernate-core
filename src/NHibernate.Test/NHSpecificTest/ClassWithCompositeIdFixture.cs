@@ -61,12 +61,12 @@ namespace NHibernate.Test.NHSpecificTest
 			ISession s = sessions.OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			ClassWithCompositeId theClass = new ClassWithCompositeId();
-			theClass.Id = id;
+			ClassWithCompositeId theClass = new ClassWithCompositeId(id);
+			//theClass.Id = id;
 			theClass.OneProperty = 5;
 
-			ClassWithCompositeId theSecondClass = new ClassWithCompositeId();
-			theSecondClass.Id = secondId;
+			ClassWithCompositeId theSecondClass = new ClassWithCompositeId(secondId);
+			//theSecondClass.Id = secondId;
 			theSecondClass.OneProperty = 10;
 
 			s.Save(theClass);
@@ -154,8 +154,8 @@ namespace NHibernate.Test.NHSpecificTest
 		public void Criteria() 
 		{
 			CompositeId id = new CompositeId("stringKey", 3, firstDateTime);
-			ClassWithCompositeId cId = new ClassWithCompositeId();
-			cId.Id = id;
+			ClassWithCompositeId cId = new ClassWithCompositeId(id);
+			//cId.Id = id;
 			cId.OneProperty = 5;
 
 			// add the new instance to the session so I have something to get results 
@@ -184,12 +184,12 @@ namespace NHibernate.Test.NHSpecificTest
 			ISession s = sessions.OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			ClassWithCompositeId theClass = new ClassWithCompositeId();
-			theClass.Id = id;
+			ClassWithCompositeId theClass = new ClassWithCompositeId(id);
+			//theClass.Id = id;
 			theClass.OneProperty = 5;
 
-			ClassWithCompositeId theSecondClass = new ClassWithCompositeId();
-			theSecondClass.Id = secondId;
+			ClassWithCompositeId theSecondClass = new ClassWithCompositeId(secondId);
+			//theSecondClass.Id = secondId;
 			theSecondClass.OneProperty = 10;
 
 			s.Save(theClass);
