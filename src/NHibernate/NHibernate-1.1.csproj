@@ -949,7 +949,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\CollectionEntry.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\CriteriaImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\EntityEntry.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -960,6 +970,11 @@
                 />
                 <File
                     RelPath = "Impl\FilterImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\IExecutable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1030,6 +1045,11 @@
                 />
                 <File
                     RelPath = "Impl\SessionImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\Status.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	/// The base class for a scheduled action to perform on an entity during a
 	/// flush.
 	/// </summary>
-	internal abstract class ScheduledEntityAction : SessionImpl.IExecutable 
+	internal abstract class ScheduledEntityAction : IExecutable 
 	{
 		
 		private readonly ISessionImplementor _session;

@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	/// The base class for a scheduled action to perform on a Collection during a
 	/// flush.
 	/// </summary>
-	internal abstract class ScheduledCollectionAction : SessionImpl.IExecutable 
+	internal abstract class ScheduledCollectionAction : IExecutable 
 	{
 		private CollectionPersister _persister;
 		private object _id;
