@@ -2,10 +2,11 @@ using System;
 using System.Data;
 using System.Collections;
 
+using NHibernate.Dialect;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Dialect;
 
 
 namespace NHibernate.Id 
@@ -40,7 +41,7 @@ namespace NHibernate.Id
 
 		public virtual object Generate(ISessionImplementor session, object obj) 
 		{
-			IDbCommand st = session.Batcher.PrepareStatement(sql);
+			IDbCommand st = session.Batcher.PrepareCommand( new SqlString(sql) );
 			try 
 			{
 				IDataReader rs = st.ExecuteReader();
@@ -64,7 +65,7 @@ namespace NHibernate.Id
 			} 
 			finally 
 			{
-				session.Batcher.CloseStatement(st);
+				session.Batcher.CloseCommand(st);
 			}
 		}
 
