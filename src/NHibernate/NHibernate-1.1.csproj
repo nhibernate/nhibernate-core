@@ -94,11 +94,6 @@
                     AssemblyName = "System.Drawing"
                     HintPath = "..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
                 />
-                <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "..\..\external-bin\nunit.framework.dll"
-                />
             </References>
         </Build>
         <Files>
