@@ -33,23 +33,6 @@ namespace NHibernate.Dialect {
 			Types.CLOB, "LONG VARCHAR" );
 			Types.BLOB, "LONG BYTE" );
 			*/
-
-			Register( SqlDbType.Bit, "BOOLEAN" );
-			Register( SqlDbType.BigInt, "FIXED(19,0)" );
-			Register( SqlDbType.SmallInt, "SMALLINT" );
-			Register( SqlDbType.TinyInt, "FIXED(3,0)" );
-			Register( SqlDbType.Int, "INT" );
-			Register( SqlDbType.Char, "CHAR(1)" );
-			Register( SqlDbType.VarChar, "VARCHAR($l)" );
-			Register( SqlDbType.Float, "FLOAT" );
-			Register( SqlDbType.Real, "DOUBLE PRECISION" );
-			//Register( SqlDbType.DATE, "DATE" );  ???
-			//Register( SqlDbType.TIME, "TIME" );  ???
-			Register( SqlDbType.Timestamp, "TIMESTAMP" );
-			Register( SqlDbType.VarBinary, "LONG BYTE" );
-			Register( SqlDbType.Decimal, "FIXED(19,$l)" );
-			Register( SqlDbType.Text, "LONG VARCHAR" );
-			Register( SqlDbType.Image, "LONG BYTE" );
 			
 			/*
 			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");

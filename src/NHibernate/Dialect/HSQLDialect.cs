@@ -31,25 +31,6 @@ namespace NHibernate.Dialect {
 			Types.VARBINARY, "VARBINARY($l)" );
 			Types.NUMERIC, "NUMERIC" );
 			*/
-	
-			Register( DbType.BigInt, "BIGINT" );
-			Register( DbType.Binary, "BINARY" );
-			Register( DbType.Bit, "BIT" );
-			Register( DbType.Char, "CHAR(1)" );
-			Register( DbType.DateTime, "DATE" ); //???
-			Register( DbType.Decimal, "DECIMAL" );
-			Register( DbType.Real, "DOUBLE" );
-			Register( DbType.Float, "FLOAT" );
-			Register( DbType.Int, "INTEGER" );
-			// Register( DbType.LONGVARBINARY, "LONGVARBINARY" );  ???
-			Register( DbType.NVarChar, "LONGVARCHAR" );
-			Register( DbType.SmallInt, "SMALLINT" );
-			Register( DbType.TinyInt, "TINYINT" );
-			// Register( DbType.TIME, "TIME" ); ???
-			Register( DbType.Timestamp, "TIMESTAMP" );
-			Register( DbType.VarChar, "VARCHAR($l)" );
-			Register( DbType.VarBinary, "VARBINARY($l)" );
-			Register( DbType.Decimal, "NUMERIC" );
 		
 			/*
 			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "false");

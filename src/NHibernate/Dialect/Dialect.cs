@@ -45,7 +45,6 @@ namespace NHibernate.Dialect
 			log.Info( "Using dialect: " + this );
 		}
 
-		private TypeNames typeNames = new TypeNames("$1");
 		private IDictionary properties = new Hashtable();
 		
 		/// <summary>
@@ -53,53 +52,6 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public const string PossibleQuoteChars = "`'\"[";
 		public const string PossibleClosedQuoteChars = "`'\"]";
-
-		/// <summary>
-		/// Get the name of the database type associated with the given typecode
-		/// </summary>
-		/// <param name="code">The typecode</param>
-		/// <returns>The database type name</returns>
-		public string GetTypeName(DbType code) {
-			string result = typeNames.Get(code);
-			if (result == null)
-				throw new HibernateException("No default type mapping for " + code);
-			return result;
-		}
-
-		/// <summary>
-		/// Get the name of the database type associated with the given typecode
-		/// </summary>
-		/// <param name="code">The typecode</param>
-		/// <param name="length">the length of the column</param>
-		/// <returns>the database type name</returns>
-		public string GetTypeName(DbType code, int length) {
-			string result = typeNames.Get(code, length);
-			if (result == null)
-				throw new HibernateException("No type mapping for " + code + " of length " + length);
-			return result;
-		}
-
-		/// <summary>
-		/// Subclasses register a typename for the given type code and maximum
-		/// column length. <c>$1</c> in the type name will be replaced by the column
-		/// length (if appropriate
-		/// </summary>
-		/// <param name="code">The typecode</param>
-		/// <param name="capacity">Maximum length of database type</param>
-		/// <param name="name">The database type name</param>
-		protected void Register(DbType code, int capacity, string name) {
-			typeNames.Put(code, capacity, name);
-		}
-
-		/// <summary>
-		/// Suclasses register a typename for the given type code. <c>$1</c> in the 
-		/// typename will be replaced by the column length (if appropriate).
-		/// </summary>
-		/// <param name="code">The typecode</param>
-		/// <param name="name">The database type name</param>
-		protected void Register(DbType code, string name) {
-			typeNames.Put(code, name);
-		}
 
 		/// <summary>
 		/// Does this dialect support the <c>ALTER TABLE</c> syntax?

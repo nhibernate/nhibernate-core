@@ -29,21 +29,6 @@ namespace NHibernate.Dialect {
 			Types.NUMERIC, "NUMERIC" );
 			*/
 
-			Register( DbType.Boolean, "BOOL" );
-			Register( DbType.Int64, "INT8" );
-			Register( DbType.Int16, "INT2" );
-			Register( DbType.Int32, "INT4" );
-			Register( DbType.AnsiStringFixedLength, "CHAR(1)" );
-			Register( DbType.AnsiString, "VARCHAR($l)" );
-			Register( DbType.Single, "FLOAT4" );
-			Register( DbType.Double, "FLOAT8" );
-			Register( DbType.DateTime, "DATE" );
-			Register( DbType.Time, "TIMESTAMP" );
-			Register( DbType.Binary, "BYTEA" );
-			Register( DbType.AnsiString, "TEXT" );
-			//Register( DbType.Image, "BYTEA" );
-			Register( DbType.Decimal, "NUMERIC" );
-		
 			/*
 			getDefaultProperties().setProperty(Environment.OUTER_JOIN, "true");
 			getDefaultProperties().setProperty(Environment.STATEMENT_BATCH_SIZE, DEFAULT_BATCH_SIZE);
