@@ -26,7 +26,7 @@ namespace NHibernate.Cfg
 		private string _sessionFactoryName;
 		private bool autoCreateSchema;
 		private bool autoDropSchema;
-		private bool autoUpdateSchema;
+		//private bool autoUpdateSchema;
 		private ICacheProvider _cacheProvider;
 		private string _defaultSchemaName;
 		private bool _prepareSql;
