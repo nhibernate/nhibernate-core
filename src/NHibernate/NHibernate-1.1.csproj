@@ -1548,6 +1548,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\AnsiStringType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\ArrayType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

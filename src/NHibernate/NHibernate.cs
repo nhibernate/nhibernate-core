@@ -16,6 +16,11 @@ namespace NHibernate {
 	public class NHibernate	{
 
 		/// <summary>
+		/// NHibernate Ansi String type
+		/// </summary>
+		public static readonly NullableType AnsiString = TypeFactory.GetAnsiStringType(); 
+		
+		/// <summary>
 		/// NHibernate binary type
 		/// </summary>
 		public static readonly NullableType Binary = TypeFactory.GetBinaryType(); 
@@ -96,12 +101,12 @@ namespace NHibernate {
 		public static readonly NullableType Single = TypeFactory.GetSingleType(); 
 
 		/// <summary>
-		/// NHibernate string type
+		/// NHibernate String type
 		/// </summary>
 		public static readonly NullableType String = TypeFactory.GetStringType(); 
 		
 		/// <summary>
-		/// NHibernate time type
+		/// NHibernate Time type
 		/// </summary>
 		public static readonly NullableType Time = TypeFactory.GetTimeType();
 		
@@ -116,17 +121,17 @@ namespace NHibernate {
 		public static readonly NullableType TimeSpan = TypeFactory.GetTimeSpanType();
 
 		/// <summary>
-		/// NHibernate timestamp type
+		/// NHibernate Timestamp type
 		/// </summary>
 		public static readonly NullableType Timestamp = TypeFactory.GetTimestampType(); //new TimestampType();
 		
 		/// <summary>
-		/// NHibernate true_false type
+		/// NHibernate TrueFalse type
 		/// </summary>
 		public static readonly NullableType TrueFalse = TypeFactory.GetTrueFalseType(); 
 		
 		/// <summary>
-		/// NHibernate yes_no type
+		/// NHibernate YesNo type
 		/// </summary>
 		public static readonly NullableType YesNo = TypeFactory.GetYesNoType(); 
 

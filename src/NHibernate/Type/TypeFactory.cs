@@ -22,7 +22,6 @@ namespace NHibernate.Type
 	/// correct IType.  Instead use TypeFactory.GetString(300) and keep a local variable that holds
 	/// a reference to the IType.
 	/// </remarks>
-
 	public class TypeFactory 
 	{
 
@@ -84,6 +83,7 @@ namespace NHibernate.Type
 			// get a Timezone by name...
 			//basicTypes.Add(NHibernate.Timezone.Name, NHibernate.Timezone);
 			
+			TypeFactory.GetAnsiStringType();
 			TypeFactory.GetBinaryType(); 
 			TypeFactory.GetBooleanType();
 			TypeFactory.GetByteType();
@@ -108,6 +108,7 @@ namespace NHibernate.Type
 			TypeFactory.GetTicksType();
 			TypeFactory.GetTimeSpanType();
 
+			getTypeDelegatesWithLength.Add(TypeFactory.GetAnsiStringType().Name, new GetNullableTypeWithLength(GetAnsiStringType));
 			getTypeDelegatesWithLength.Add(TypeFactory.GetBinaryType().Name, new GetNullableTypeWithLength(GetBinaryType));
 			getTypeDelegatesWithLength.Add(TypeFactory.GetDoubleType().Name, new GetNullableTypeWithLength(GetDoubleType));
 			getTypeDelegatesWithLength.Add(TypeFactory.GetSerializableType().Name, new GetNullableTypeWithLength(GetSerializableType));
@@ -379,6 +380,34 @@ namespace NHibernate.Type
 			}
 			return type;
 		}
+
+		public static NullableType GetAnsiStringType() 
+		{
+			string key = typeof(AnsiStringType).FullName;
+			
+			NullableType returnType = (NullableType)typeByTypeOfName[key];
+			if(returnType==null) 
+			{
+				returnType = GetAnsiStringType(255);
+				AddToTypeOfName(key, returnType);
+			}
+
+			return returnType;
+		}
+
+		public static NullableType GetAnsiStringType(int length) 
+		{
+			string key = GetKeyForLengthBased(typeof(AnsiStringType).FullName, length);
+			
+			NullableType returnType = (NullableType)typeByTypeOfName[key];
+			if(returnType==null) 
+			{
+				returnType = new AnsiStringType(SqlTypeFactory.GetAnsiString(length));
+				AddToTypeOfNameWithLength(key, returnType);
+			}
+			return returnType;		
+		}
+
 
 		/// <summary>
 		/// Gets the BinaryType with the default size.
