@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+
+	<class name="net.sf.hibernate.test.Baz" table="`baz baz baz`">
+		<id name="code" type="string">
+			<column name="baz_id" length="32"/>
+			<generator class="uuid.hex"/>
+		</id>
+		<property name="count" column="count_count"/>
+		<property name="name" column="name_b"/>
+		<many-to-one name="foo" outer-join="true" class="net.sf.hibernate.test.Foo"/>
+
+		<list name="stringList" table="string_list">
+			<key>
+				<column name="id" length="16"/>
+			</key>
+			<index column="`i`"/>
+			<element column="element" type="string"/>
+		</list>
+		<primitive-array name="intArray" table="int_array">
+			<key>
+				<column name="id" length="16"/>
+			</key>
+			<index column="i"/>
+			<element column="j" type="int"/>
+		</primitive-array>
+		<set name="fooSet" lazy="true" order-by="string_">
+			<key>
+				<column name="baz_id" length="16"/>
+			</key>
+			<one-to-many class="net.sf.hibernate.test.Foo"/>
+		</set>
+		<array name="components" table="bazcomponents">
+			<key>
+				<column name="baz_id" length="16"/>
+			</key>
+			<index column="i"/>
+			<composite-element class="net.sf.hibernate.test.FooComponent">
+				<parent name="baz"/>
+				<property name="name">
+					<column name="name" length="56"/>
+				</property>
+				<property name="count" column="count_"/>
+				<nested-composite-element name="subcomponent" class="net.sf.hibernate.test.FooComponent">
+					<property name="name" column="x_"/>
+					<property name="count" column="y_"/>
+				</nested-composite-element>
+			</composite-element>
+		</array>
+		<array name="timeArray">
+			<key>
+				<column name="baz_id" length="16"/>
+			</key>
+			<index column="j"/>
+			<element column="the_time" type="time"/>
+		</array>
+		<bag name="bag" order-by="`name!`" table="`$%^^b'a'g`">
+			<key>
+				<column name="`baz_id@#$`" length="16"/>
+			</key>
+			<element column="`name!`" type="string"/>
+		</bag>
+		<map name="fooToGlarch">
+			<key>
+				<column name="baz_id" length="16"/>
+			</key>
+			<index-many-to-many column="foo_id" class="net.sf.hibernate.test.Foo"/>
+			<many-to-many column="glarch_id" class="net.sf.hibernate.test.Glarch"/>
+		</map>
+		<map name="fooComponentToFoo">
+			<jcs-cache usage="read-write"/>
+			<key>
+				<column name="baz_id" length="16"/>
+			</key>
+			<composite-index class="net.sf.hibernate.test.FooComponent">
+				<key-property name="name" length="32"/>
+				<key-property name="count" column="count_"/>
+			</composite-index>
+			<many-to-many column="foo_id" class="net.sf.hibernate.test.Foo" outer-join="true"/>
+		</map>
+		<map name="glarchToFoo">
+			<key>
+				<column name="gtf_baz_id" length="16"/>
+			</key>
+			<index-many-to-many column="gtf_foo_id" class="net.sf.hibernate.test.Foo"/>
+			<one-to-many class="net.sf.hibernate.test.Glarch"/>
+		</map>
+		
+		<set name="stringSet" lazy="true" sort="net.sf.hibernate.test.StringComparator">
+			<!--<jcs-cache usage="read-write"/>-->
+			<key column="id_"/>
+			<element column="element" type="string" not-null="true" length="32"/>
+		</set>
+	
+		<map name="stringDateMap" lazy="true" sort="net.sf.hibernate.test.ReverseComparator">
+			<key column="id_"/>
+			<index column="map_key" type="string" length="32"/>
+			<element column="map_value" type="date"/>
+		</map>
+	
+		<array name="fooArray" element-class="net.sf.hibernate.test.FooProxy" where="i&lt;8">
+			<jcs-cache usage="read-write"/>
+			<key column="id_"/>
+			<index column="i"/>
+			<many-to-many class="net.sf.hibernate.test.Foo">
+				<column name="foo" length="36"/>
+			</many-to-many>
+		</array>
+	
+		<bag name="fooBag" lazy="true" table="baz_foo" cascade="all-delete-orphan" inverse="false">
+			<key column="baz"/>
+			<many-to-many class="net.sf.hibernate.test.Foo" column="foo" outer-join="true"/>
+		</bag>
+	
+		<idbag name="idFooBag" lazy="true" table="baz_id_foo" cascade="all">
+			<collection-id column="pkid" type="long"> 
+				<generator class="hilo"/>
+			</collection-id>
+			<key column="baz"/>
+			<many-to-many class="net.sf.hibernate.test.Foo" column="foo" outer-join="true"/>
+		</idbag>
+	
+		<idbag name="byteBag" lazy="true" table="baz_byte_bag" cascade="all">
+			<collection-id column="pkid" type="long"> 
+				<generator class="hilo"/>
+			</collection-id>
+			<key column="baz"/>
+			<element type="binary" column="bytez" not-null="true"/>
+		</idbag>
+	
+		<array name="stringArray">
+			<key column="id_"/>
+			<index column="i"/>
+			<element column="name" type="string"/>
+		</array>
+		
+		<list name="fees" lazy="true" cascade="all">
+			<key column="bazid"/>
+			<index column="bazind"/>
+			<one-to-many class="net.sf.hibernate.test.Fee"/>
+		</list>
+		
+		<list name="customs">
+			<key column="id_"/>
+			<index column="indx"/>
+			<element type="net.sf.hibernate.test.DoubleStringType">
+				<column name="first_"/>
+				<column name="second_"/>
+			</element>
+		</list>
+	
+		<list name="topComponents" table="topcomponents">
+			<jcs-cache usage="read-write"/>
+			<key column="id_"/>
+			<index column="i"/>
+			<composite-element class="net.sf.hibernate.test.FooComponent">
+				<property name="name"/>
+				<property name="count" column="count_"/>
+			</composite-element>
+		</list>
+		
+		<set name="topFoos">
+			<key column="idtopbar" />
+			<one-to-many class = "net.sf.hibernate.test.Bar"/>
+		</set>
+	
+		<set name="cascadingBars" cascade="all-delete-orphan">
+			<key column="idtopbar" />
+			<one-to-many class = "net.sf.hibernate.test.Bar"/>
+		</set>
+	
+		<map name="topGlarchez">
+			<key column="idtopglarch" />
+			<index column="mapkey" type="character"/>
+			<one-to-many class = "net.sf.hibernate.test.Glarch"/>
+		</map>
+		
+		<set name="cached" sort="natural" table="cached_set">
+			<jcs-cache usage="read-write"/>
+			<key column="baz"/>
+			<composite-element class="net.sf.hibernate.test.CompositeElement">
+				<property name="foo"/>
+				<property name="bar"/>
+			</composite-element>
+		</set>
+	
+		<map name="cachedMap" sort="natural" table="cached_map">
+			<jcs-cache usage="read-write"/>
+			<key column="baz"/>
+			<index-many-to-many column="another_baz" class="net.sf.hibernate.test.Baz"/>
+			<composite-element class="net.sf.hibernate.test.CompositeElement">
+				<property name="foo"/>
+				<property name="bar"/>
+			</composite-element>
+		</map>
+		
+		<map name="stringGlarchMap" where="baz_map_index &gt; 'a' and tha_key is not null" cascade="all">
+			<key column="baz_map_id"/>
+			<index column="baz_map_index" type="string"/>
+			<one-to-many class="net.sf.hibernate.test.Glarch"/>
+		</map>
+		
+		<map name="anyToAny" lazy="true">
+			<key column="baz"/>
+			<index-many-to-any id-type="long">
+				<column name="ind_clazz_"/>
+				<column name="ind_id_"/>
+			</index-many-to-any>
+			<many-to-any id-type="long">
+				<column name="el_clazz_"/>
+				<column name="el_id_"/>
+			</many-to-any>
+		</map>
+		
+		<bag name="bazez" lazy="true" order-by="name_b desc" cascade="all">
+			<key column="`baz id`"/>
+			<one-to-many class="net.sf.hibernate.test.Baz"/>
+		</bag>
+		
+		<set name="sortablez" sort="natural" cascade="all">
+			<key column="baz"/>
+			<one-to-many class="net.sf.hibernate.test.Sortable"/>
+		</set>
+		
+		<component name="collectionComponent">
+			<component name="nested">
+				<property name="str"/>
+				<bag name="foos" cascade="all">
+					<key column="baz_compon_id"/>
+					<one-to-many class="net.sf.hibernate.test.Foo"/>
+				</bag>
+				<bag name="floats" table="baz_floats_bag">
+					<key column="baz_compon_id"/>
+					<element type="float" column="float_value"/>
+				</bag>
+			</component>
+		</component>
+		
+	</class>
+	
+	<class name="net.sf.hibernate.test.Sortable">
+		<id name="id" unsaved-value="0">
+			<generator class="native"/>
+		</id>
+		<property name="name"/>
+	</class>
+	
+</hibernate-mapping>

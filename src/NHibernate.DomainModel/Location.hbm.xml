@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+<hibernate-mapping>
+
+	<class name="net.sf.hibernate.test.Location">
+		<composite-id>
+			<key-property name="streetNumber"/>
+			<key-property name="streetName" length="20"/>
+			<key-property name="city" length="20"/>
+			<key-property name="countryCode" length="2"/>
+		</composite-id>
+		<property name="locale"/>
+		<property name="description"/>
+	</class>
+	
+</hibernate-mapping>

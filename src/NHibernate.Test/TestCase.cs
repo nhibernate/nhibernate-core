@@ -1,5 +1,7 @@
 using System;
 using System.Reflection;
+using System.Data;
+using System.Data.SqlClient;
 
 using NHibernate.DomainModel;
 using NHibernate.Cfg;
@@ -35,7 +37,9 @@ namespace NHibernate.Test
 			sessions = cfg.BuildSessionFactory( );
 		}
 
-		
-
+		public void ExecuteStatement(string sql)
+		{
+			SqlConnection conn = new SqlConnection("");
+		}
 	}
 }

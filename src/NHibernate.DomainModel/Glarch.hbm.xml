@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+<hibernate-mapping>
+
+    <class name="net.sf.hibernate.test.Glarch" 
+    	table="`glarchez`" 
+    	proxy="net.sf.hibernate.test.GlarchProxy"
+    	dynamic-update="true">
+        <!--<jcs-cache usage="read-write"/>-->
+        <id type="string" column="tha_key" length="32">
+            <generator class="uuid.hex"/>
+        </id>
+        <version name="version"/>
+        <property name="name" column="namecvbnmasdf"/>
+        <!-- <property name="currency"/> -->
+        <many-to-one name="next" column="next_" class="net.sf.hibernate.test.Glarch"/>
+        <property name="order" column="order_"/>
+        <dynabean name="dynaBean" dynaclass="foo">
+        	<property name="foo" type="string"/>
+        	<property name="bar" type="integer"/>
+        </dynabean>
+        <property name="x"/>
+        <list name="strings">
+            <key column="glarch_key"/>
+            <index column="`!@#   i`"/>
+            <element type="string" column="`tha_stryng`"/>
+        </list>
+        <list name="fooComponents" lazy="true" cascade="all">
+            <key column="glarch_key"/>
+            <index column="tha_indecks"/>
+            <composite-element class="net.sf.hibernate.test.FooComponent">
+                <property name="name" column="name_"/>
+                <property name="count" column="count_"/>
+                <nested-composite-element name="subcomponent" class="net.sf.hibernate.test.FooComponent">
+                    <property name="name" column="x_"/>
+                    <property name="count" column="y_"/>
+                </nested-composite-element>
+                <many-to-one name="fee" cascade="all" outer-join="true"/>
+            </composite-element>
+        </list>
+        <array name="proxyArray" element-class="net.sf.hibernate.test.GlarchProxy">
+        	<key column="array_key"/>
+        	<index column="array_indecks"/>
+        	<one-to-many class="net.sf.hibernate.test.Glarch"/>
+        </array>
+        <set name="proxySet">
+        	<key column="set_key"/>
+        	<one-to-many class="net.sf.hibernate.test.Glarch"/>
+        </set>
+        <property name="immutable" update="false"/>
+        <property name="derivedVersion" insert="false" update="false" column="version"/>
+        <property name="any" type="object">
+        	<column name="`any_id of object`"/>
+        	<column name="`any_class of object`"/>
+        </property>
+        <property name="multiple" type="net.sf.hibernate.test.MultiplicityType">
+        	<column name="count_"/>
+        	<column name="glarch_"/>
+        </property>
+    </class>
+
+</hibernate-mapping>

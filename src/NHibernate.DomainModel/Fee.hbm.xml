@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+<hibernate-mapping>
+
+    <class name="net.sf.hibernate.test.Fee" table="`the fees`">
+        <id type="string" name="key" column="id_" length="64" unsaved-value="null">
+            <generator class="uuid.hex"/>
+        </id>
+        <property name="fi"/>
+        <many-to-one name="fee"/>
+        <many-to-one name="anotherFee"/>
+        <many-to-one name="qux" cascade="all"/>
+        <property name="count" column="count_"/>
+        <set name="fees">
+        	<key column="fee_id"/>
+        	<element column="str_" type="string"/>
+        </set>
+        <component name="compon" update="false">
+        	<property name="name"/>
+        	<property name="null" column="null_prop"/>
+        </component>
+    </class>
+
+</hibernate-mapping>

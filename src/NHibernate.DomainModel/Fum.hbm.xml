@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+<hibernate-mapping>
+
+	<class name="net.sf.hibernate.test.Fum">
+		<composite-id name="id" unsaved-value="any">
+			<key-property name="string">
+				<column name="string_" length="10"/>
+			</key-property>
+			<key-property name="short" column="short_"/>
+			<key-property name="date" column="date_" type="date"/>
+		</composite-id>
+		<version name="lastUpdated" type="calendar"/>
+		<property name="fum" not-null="true"/>
+		<many-to-one name="fo">
+			<column name="fo_string" length="10"/>
+			<column name="fo_short"/>
+			<column name="fo_date"/>
+		</many-to-one>
+		<set name="friends">
+			<key>
+				<column name="fr_string" length="10"/>
+				<column name="fr_short"/>
+				<column name="fr_date"/>
+			</key>
+			<one-to-many class="net.sf.hibernate.test.Fum"/>
+		</set>
+		<array name="quxArray">
+			<key>
+				<column name="fum_str_" length="10"/>
+				<column name="fum_sho_"/>
+				<column name="fum_dat_"/>
+			</key>
+			<index column="i"/>
+			<one-to-many class="net.sf.hibernate.test.Qux"/>
+		</array>
+	</class>
+	
+</hibernate-mapping>

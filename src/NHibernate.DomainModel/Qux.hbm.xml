@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping SYSTEM "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+<hibernate-mapping>
+	
+	<class name="net.sf.hibernate.test.Qux" table="quux" proxy="net.sf.hibernate.test.Qux"> <!---->
+		<id name="key" column="qux_key" unsaved-value="0">
+			<generator class="hilo"/>
+		</id>
+		<many-to-one name="foo" class="net.sf.hibernate.test.Foo">
+			<column name="foo" length="36"/>
+		</many-to-one>
+		<property name="deleted"/>
+		<property name="loaded"/>
+		<property name="stored"/>
+		<property name="created"/>
+		<property name="childKey" type="long"/>
+		<property name="stuff"/>
+		<set name="fums" lazy="true">
+			<key column="qux_id"/>
+			<many-to-many class="net.sf.hibernate.test.Fum">
+				<column name="fum_string" length="10" not-null="true"/>
+				<column name="fum_short" not-null="true"/>
+				<column name="fum_date" not-null="true"/>
+			</many-to-many>
+		</set>
+		<list name="moreFums" lazy="true">
+			<key column="qux_id"/>
+			<index column="posn"/>
+			<one-to-many class="net.sf.hibernate.test.Fum"/>
+		</list>
+	</class>
+	
+</hibernate-mapping>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping 
+	PUBLIC "-//Hibernate/Hibernate Mapping DTD 2.0//EN" 
+	"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
+<hibernate-mapping>
+	<class name="net.sf.hibernate.test.X">
+		<id name="id" unsaved-value="0">
+			<generator class="foreign">
+				<param name="property">y</param>
+			</generator>
+		</id>
+		<one-to-one name="y" constrained="true" cascade="all"/>
+	</class>
+	<class name="net.sf.hibernate.test.Y">
+		<id name="id">
+			<generator class="hilo"/>
+		</id>
+		<property name="x"/>
+		<one-to-one name="theX" cascade="save-update"/>
+	</class>
+</hibernate-mapping>
+	

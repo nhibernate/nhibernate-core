@@ -120,6 +120,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ABCTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "App.config"
                     BuildAction = "None"
                 />
@@ -140,6 +145,11 @@
                 />
                 <File
                     RelPath = "CriteriaTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FooBarTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -121,6 +121,10 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Baz.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "C1.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -154,9 +158,45 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Container.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "D.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Fee.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Fo.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "FooBar.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Fum.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Fumm.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Glarch.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Holder.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Immutable.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "JoinedSubclass.hbm.xml"
@@ -173,6 +213,14 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Location.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Many.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "NHibernate.DomainModel.build"
                     BuildAction = "None"
                 />
@@ -183,6 +231,10 @@
                 />
                 <File
                     RelPath = "Node.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "One.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -198,6 +250,10 @@
                     RelPath = "ParentComparer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Qux.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "SexType.cs"
@@ -227,6 +283,10 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Stuff.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Subclass.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
@@ -246,6 +306,14 @@
                 />
                 <File
                     RelPath = "UnsavedType.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Vetoer.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "XY.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
             </Include>

@@ -90,13 +90,10 @@ namespace NHibernate.Id
 			try 
 			{
 				rs = cmd.ExecuteReader();
-				if(rs.Read()) 
-				{
-					if (rs.IsDBNull(0))
-						next = 1;
-					else
-						next = rs.GetInt64(0) + 1;
-				}
+				if(rs.Read() && !rs.IsDBNull(0))
+					next = rs.GetInt64(0) + 1;
+				else
+					next = 1;
 				sql = null;
 				log.Debug("first free id: " + next);
 			}
