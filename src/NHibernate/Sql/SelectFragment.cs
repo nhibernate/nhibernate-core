@@ -10,7 +10,7 @@ namespace NHibernate.Sql {
 	/// </summary>
 	public class SelectFragment {
 		private string suffix;
-		private IList columns = new ArrayList(); //TODO: use specialized string collection?
+		private IList columns = new ArrayList();
 		private IList aliases = new ArrayList();
 		private IList columnAliases = new ArrayList();
 

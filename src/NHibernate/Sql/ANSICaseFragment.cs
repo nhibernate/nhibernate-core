@@ -8,6 +8,7 @@ namespace NHibernate.Sql {
 	/// <summary>
 	/// Represents an SQL <c>case when ... then ... end as ...</c>
 	/// </summary>
+	/// <remarks>This class looks StringHelper.SqlParameter safe...</remarks>
 	public class ANSICaseFragment : CaseFragment {
 		private string returnColumnName;
 
