@@ -229,14 +229,10 @@ namespace NHibernate.Dialect {
 		}
 
 		public static Dialect GetDialect() {
-			string dialectName = null;
-			
-			// TODO: Get the class name from the environment
-			dialectName = "NHibernate.Dialect.GenericDialect";
-
-			if (dialectName==null) throw new HibernateException("The dialect was not set.");
+			string dialectName = Cfg.Environment.Properties[Cfg.Environment.Dialect] as string;
+            if (dialectName==null) throw new HibernateException("The dialect was not set. Set the property hibernate.dialect.");
 			try {
-				return (Dialect) Activator.CreateInstance(System.Type.GetType(dialectName));
+				return (Dialect) Activator.CreateInstance(ReflectHelper.ClassForName(dialectName));
 			} catch (Exception e) {
 				throw new HibernateException("Could not instanciate dialect class", e);
 			}

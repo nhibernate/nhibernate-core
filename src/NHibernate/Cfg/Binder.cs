@@ -192,8 +192,7 @@ namespace NHibernate.Cfg {
 							}
 						}
 						if ( subnode.Attributes["force"] != null && "true".Equals( subnode.Attributes["force"].Value ) ) {
-							//model.ForceDiscriminator = true;
-							//TODO: Add force discriminator to the model
+							model.IsForceDiscriminator = true;
 						}
 						break;
 				}

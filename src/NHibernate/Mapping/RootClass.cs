@@ -19,6 +19,7 @@ namespace NHibernate.Mapping {
 		private bool embeddedIdentifier = false;
 		private bool explicitPolymorphism;
 		private System.Type persister;
+		private bool forceDiscriminator;
 
 		public override Property IdentifierProperty {
 			get { return identifierProperty; }
@@ -107,6 +108,11 @@ namespace NHibernate.Mapping {
 		public override Value Key {
 			get { return Identifier; }
 			set { throw new InvalidOperationException(); }
+		}
+
+		public bool IsForceDiscriminator {
+			get { return forceDiscriminator; }
+			set { forceDiscriminator = value; }
 		}
 	}
 }
