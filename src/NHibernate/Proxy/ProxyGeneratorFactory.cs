@@ -14,7 +14,7 @@ namespace NHibernate.Proxy
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(ProxyGeneratorFactory) );
 
-		private static AvalonProxyGenerator _generator = new AvalonProxyGenerator();
+		private static IProxyGenerator _generator = new AvalonProxyGenerator();
 		
 		public static IProxyGenerator GetProxyGenerator() 
 		{

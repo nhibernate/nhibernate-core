@@ -1,27 +1,60 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using System.Reflection.Emit;
 
 using Apache.Avalon.DynamicProxy;
+using Apache.Avalon.DynamicProxy.Builder;
+using Apache.Avalon.DynamicProxy.Builder.CodeGenerators;
 
 using NHibernate.Engine;
 
 namespace NHibernate.Proxy
 {
 	/// <summary>
-	/// An <see cref="IProxyGenerator"/> for the Apache.Avalon.DynamicProxy library.
+	/// An <see cref="IProxyGenerator"/> that uses the Apache.Avalon.DynamicProxy library.
 	/// </summary>
 	public class AvalonProxyGenerator : IProxyGenerator
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof(AvalonProxyGenerator) );
 
-		private ProxyGenerator _generator = new ProxyGenerator();
+		private ProxyGenerator _generator;
+		private DefaultProxyBuilder _defaultBuilder;
+		private GeneratorContext _context;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AvalonProxyGenerator"/> class.
 		/// </summary>
 		internal AvalonProxyGenerator()
-		{			
+		{
+			_defaultBuilder = new DefaultProxyBuilder( );
+
+			// the EnhanceTypeDelegate will add custom code gen that DynamicProxy does not provide
+			// by default.
+			_context = new GeneratorContext( new EnhanceTypeDelegate( EnhanceInterfaceType ), null );
+
+			// only create the genator once so I should be okay with the DefaultProxyBuilder
+			// maintaining the ModuleScope
+			_generator = new ProxyGenerator();
+
+		}
+
+		/// <summary>
+		/// Marks the Proxy with the <see cref="SerializableAttribute"/>.
+		/// </summary>
+		/// <param name="mainType"></param>
+		/// <param name="handlerFieldBuilder"></param>
+		/// <param name="constructorBuilder"></param>
+		/// <remarks>
+		/// The proxy itself is not really serializable, it is replaced with a different object during
+		/// serialization.  This object knows how to recreate the proxy during the deserialization
+		/// process.
+		/// </remarks>
+		private void EnhanceInterfaceType(TypeBuilder mainType, FieldBuilder handlerFieldBuilder, ConstructorBuilder constructorBuilder)
+		{
+			ConstructorInfo serAttConstructor = typeof(SerializableAttribute).GetConstructor( new System.Type[0] );
+			CustomAttributeBuilder serializableAttBuilder = new CustomAttributeBuilder( serAttConstructor, new object[0] );
+			mainType.SetCustomAttribute( serializableAttBuilder );
 		}
 
 		#region IProxyGenerator Methods
@@ -53,7 +86,8 @@ namespace NHibernate.Proxy
 					interfaces = temp;
 				}
 
-				object generatedProxy = _generator.CreateProxy( interfaces, initializer );
+				System.Type proxyType = _defaultBuilder.CreateCustomInterfaceProxy( interfaces, _context ); 
+				object generatedProxy = Activator.CreateInstance( proxyType, new object[] { initializer } );
 				return (INHibernateProxy)generatedProxy;
 
 			}
@@ -65,6 +99,5 @@ namespace NHibernate.Proxy
 		}
 
 		#endregion
-
 	}
 }

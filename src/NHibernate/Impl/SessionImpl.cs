@@ -46,6 +46,14 @@ namespace NHibernate.Impl
 		private IDictionary entitiesByKey; //key=Key, value=Object
 		private IDictionary proxiesByKey; //key=Key, value=HibernateProxy
 		
+		// these are used to serialize the proxiesByKey Dictionary - I was not able to
+		// have a Hashtable serialize fully by the time that SessionImpl OnDeserialization
+		// was getting called - I think I'm not completely understanding the sequence of 
+		// deserialization events.  When SessionImpl was getting the OnDeserialization called
+		// the proxies were not fully deserialized. 
+		private ArrayList tmpProxiesKey;
+		private ArrayList tmpProxiesProxy;
+
 		//IdentityMaps are serializable in NH 
 		private IdentityMap entries;//key=Object, value=Entry
 		private IdentityMap arrayHolders; //key=array, value=ArrayHolder
@@ -385,6 +393,8 @@ namespace NHibernate.Impl
 		/// </remarks>
 		protected SessionImpl(SerializationInfo info, StreamingContext context)
 		{
+			log.Info( "recreating session from special ctor used during deserialization" );
+
 			this.factory = (SessionFactoryImpl)info.GetValue( "factory", typeof(SessionFactoryImpl) );
 			this.autoClose = info.GetBoolean("autoClose");
 			this.timestamp = info.GetInt64("timestamp");
@@ -392,7 +402,13 @@ namespace NHibernate.Impl
 			this.flushMode = (FlushMode)info.GetValue( "flushMode", typeof(FlushMode) );
 			this.callAfterTransactionCompletionFromDisconnect = info.GetBoolean("callAfterTransactionCompletionFromDisconnect");
 			this.entitiesByKey = (IDictionary)info.GetValue( "entitiesByKey", typeof(IDictionary) );
-			this.proxiesByKey = (IDictionary)info.GetValue( "proxiesByKey", typeof(IDictionary) );
+			
+			// we did not actually serializing the IDictionary but instead the proxies in an arraylist
+			// because of deserailization issues I couldn't figure out.
+			//this.proxiesByKey = (IDictionary)info.GetValue( "proxiesByKey", typeof(IDictionary) );
+			tmpProxiesKey = (ArrayList)info.GetValue( "tmpProxiesKey", typeof(ArrayList) );
+			tmpProxiesProxy = (ArrayList)info.GetValue( "tmpProxiesProxy", typeof(ArrayList) );
+			
 			this.nullifiables = (IDictionary)info.GetValue( "nullifiables", typeof(IDictionary) );
 			this.interceptor = (IInterceptor)info.GetValue( "interceptor", typeof(IInterceptor) );
 
@@ -414,12 +430,18 @@ namespace NHibernate.Impl
 		/// </remarks>
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			if ( IsConnected ) throw new InvalidOperationException("Cannot serialize a Session while connected");
-			if ( insertions.Count!=0 || deletions.Count!=0 )
-				throw new InvalidOperationException("Cannot serialize a Session which has work waiting to be flushed");
-					
-			log.Info("serializing session");
+			log.Info( "writting session to serializer" );
 
+			if ( IsConnected ) 
+			{
+				throw new InvalidOperationException("Cannot serialize a Session while connected");
+			}
+
+			if ( insertions.Count!=0 || deletions.Count!=0 ) 
+			{
+				throw new InvalidOperationException("Cannot serialize a Session which has work waiting to be flushed");
+			}
+					
 			info.AddValue( "factory", factory, typeof(SessionFactoryImpl) );
 			info.AddValue( "autoClose", autoClose );
 			info.AddValue( "timestamp", timestamp );
@@ -427,7 +449,23 @@ namespace NHibernate.Impl
 			info.AddValue( "flushMode", flushMode );
 			info.AddValue( "callAfterTransactionCompletionFromDisconnect", callAfterTransactionCompletionFromDisconnect );
 			info.AddValue( "entitiesByKey", entitiesByKey, typeof(IDictionary) );
-			info.AddValue( "proxiesByKey", proxiesByKey, typeof(IDictionary) );
+
+			// the IDictionary should not be serialized because the objects inside of it are not
+			// fully deserialized until after the session is deserialized. Instead use two ArrayList 
+			// to hold the values because they don't have the deserialization complexities that
+			// hashtables do.
+			//info.AddValue( "proxiesByKey", proxiesByKey, typeof(IDictionary) );
+			tmpProxiesKey = new ArrayList( proxiesByKey.Count );
+			tmpProxiesProxy = new ArrayList( proxiesByKey.Count );
+			foreach(DictionaryEntry de in proxiesByKey) 
+			{
+				tmpProxiesKey.Add( de.Key );
+				tmpProxiesProxy.Add( de.Value );
+			}
+			
+			info.AddValue( "tmpProxiesKey", tmpProxiesKey );
+			info.AddValue( "tmpProxiesProxy", tmpProxiesProxy );
+
 			info.AddValue( "nullifiables", nullifiables, typeof(IDictionary) );
 			info.AddValue( "interceptor", interceptor, typeof(IInterceptor) );
 
@@ -447,7 +485,7 @@ namespace NHibernate.Impl
 		/// <param name="sender"></param>
 		void IDeserializationCallback.OnDeserialization(Object sender)
 		{
-			log.Info("deserializing session");
+			log.Info("OnDeserialization of the session.");
 			
 			// don't need any section for IdentityMaps because .net does not have a problem
 			// serializing them like java does.
@@ -468,20 +506,40 @@ namespace NHibernate.Impl
 				}
 			}
 			
-//			TODO: figure out why proxies are having problems.  The enumerator appears to be throwing
-//			a null reference exception when the proxiesByKey.Count==0
-			foreach(object proxy in proxiesByKey.Values)
+
+			// recreate the proxiesByKey hashtable from the two arraylists.
+			proxiesByKey = new Hashtable( tmpProxiesKey.Count );
+			for(int i=0; i<tmpProxiesKey.Count; i++) 
 			{
+				proxiesByKey.Add( tmpProxiesKey[i], tmpProxiesProxy[i] );
+			}
+
+			// we can't remove an entry from an IDictionary while enumerating so store the ones
+			// to remove in this list
+			ArrayList keysToRemove = new ArrayList();
+
+			foreach( DictionaryEntry de in proxiesByKey )
+			{
+				object key = de.Key;
+				object proxy = de.Value;
+
 				if (proxy is INHibernateProxy) 
 				{
 					NHibernateProxyHelper.GetLazyInitializer( (INHibernateProxy)proxy ).Session = this;
 				}
 				else 
 				{
-					// the proxy was pruned during the serialization process
-					proxiesByKey.Remove(proxy); 
+					// the proxy was pruned during the serialization process because
+					// the target had been instantiated.
+					keysToRemove.Add( key );
 				}
 			}
+
+			for( int i=0; i<keysToRemove.Count; i++ ) 
+			{
+				proxiesByKey.Remove( keysToRemove[i] );
+			}
+			
 
 			foreach(EntityEntry e in entries.Values)
 			{

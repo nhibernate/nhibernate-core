@@ -21,7 +21,5 @@ namespace NHibernate.Proxy
 		/// <param name="session">The Session the proxy is in.</param>
 		/// <returns>A fully built <c>INHibernateProxy</c>.</returns>
 		INHibernateProxy GetProxy(System.Type persistentClass, System.Type[] interfaces, PropertyInfo identifierPropertyInfo, object id, ISessionImplementor session);
-		
-
 	}
 }

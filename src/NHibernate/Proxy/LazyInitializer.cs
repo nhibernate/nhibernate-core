@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -30,8 +31,7 @@ namespace NHibernate.Proxy
 		protected System.Type _persistentClass;
 		protected PropertyInfo _identifierPropertyInfo;
 		protected bool _overridesEquals;
-		private SerializableProxy _serializableProxy;
-
+		
 		/// <summary>
 		/// Create a LazyInitializer to handle all of the Methods/Properties that are called
 		/// on the Proxy.
@@ -98,11 +98,12 @@ namespace NHibernate.Proxy
 		}
 
 		/// <summary>
-		/// Converts this Proxy into a Serializable Class that knows how to create a 
-		/// Proxy during the Deserialization process.
+		/// Adds all of the information into the SerializationInfo that is needed to
+		/// reconstruct the proxy during deserialization or to replace the proxy
+		/// with the instantiated target.
 		/// </summary>
-		/// <returns>SerializableProxy that can Deserialize this LazyInitializer.</returns>
-		protected abstract SerializableProxy SerializableProxy() ;
+		/// <param name="info">The <see cref="SerializationInfo"/> to write the object to.</param>
+		protected abstract void AddSerailizationInfo(SerializationInfo info);
 
 		public object Identifier 
 		{
@@ -171,29 +172,26 @@ namespace NHibernate.Proxy
 		/// underlying proxied object is needed then it returns the result <see cref="InvokeImplementation"/>
 		/// which indicates that the Proxy will need to forward to the real implementation.
 		/// </returns>
-		public virtual object Invoke(MethodInfo method, params object[] args)
+		public virtual object Invoke(MethodBase method, params object[] args)
 		{
 			// all Proxies must implement INHibernateProxy which extends ISerializable
 			if( method.Name.Equals("GetObjectData") ) 
 			{
+				SerializationInfo info = (SerializationInfo)args[0];
+				StreamingContext context = (StreamingContext)args[1];
+				
 				if( _target==null & _session!=null ) 
 				{
 					Key key = new Key(_id, _session.Factory.GetPersister( _persistentClass ) );
 					_target = _session.GetEntity( key );
 				}
 
-				if( _target==null ) 
-				{
-					if( _serializableProxy==null ) 
-					{
-						_serializableProxy = SerializableProxy();
-					}
-					return _serializableProxy;
-				}
-				else 
-				{
-					return _target;
-				}
+				// let the specific LazyInitializer write its requirements for deserialization 
+				// into the stream.
+				AddSerailizationInfo( info );
+
+				// don't need a return value for proxy.
+				return null;
 			}
 			else if( !_overridesEquals && _identifierPropertyInfo!=null && method.Name.Equals("GetHashCode") ) 
 			{
@@ -203,7 +201,6 @@ namespace NHibernate.Proxy
 				return _id.GetHashCode();
 			}
 			else if( _identifierPropertyInfo!=null && method.Equals( _identifierPropertyInfo.GetGetMethod(true) ) ) 
-//			.Name.Equals( "get_" + _identifierPropertyInfo.Name ) ) -> this was removed because of null _identifierPropertyInfo problems
 			{
 				return _id;
 			}
@@ -224,74 +221,5 @@ namespace NHibernate.Proxy
 			}
 
 		}
-
-		#region Helper Class for all of the Parameters to InvokeMember
-
-		protected class InvokeMemberParams 
-		{
-			private string _methodName;
-			private BindingFlags _invokeAttr;
-			private static IDictionary _knownPrefixes;
-
-			static InvokeMemberParams ()
-			{
-				BindingFlags defaultFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-				_knownPrefixes = new Hashtable(6);
-				_knownPrefixes.Add("", defaultFlags | BindingFlags.InvokeMethod);
-				_knownPrefixes.Add("get", defaultFlags | BindingFlags.GetProperty);
-				_knownPrefixes.Add("set", defaultFlags | BindingFlags.SetProperty);
-			}
-
-			private InvokeMemberParams(string methodName, BindingFlags invokeAttr) 
-			{
-				_methodName = methodName;
-				_invokeAttr = invokeAttr;
-			}
-
-			public BindingFlags InvokeAttr 
-			{
-				get { return _invokeAttr; }
-			}
-
-			public string MethodName 
-			{
-				get { return _methodName; }
-			}
-
-			public static InvokeMemberParams GetInvokeMemberParams(string methodName) 
-			{
-				int indexOfFirstUnderscore = methodName.IndexOf("_");
-				string prefix = String.Empty;
-
-				string method;
-				BindingFlags flags;
-
-				// there was no underscore found in the name - has to be a method that 
-				// is being called.
-				if(indexOfFirstUnderscore==-1) 
-				{
-					return new InvokeMemberParams(methodName, (BindingFlags)_knownPrefixes[""] );
-				}
-
-				prefix = methodName.Substring(0, indexOfFirstUnderscore);
-
-				// there was an underscore found - is this a property get_/set_ or just a bad naming
-				// convention that someone is following
-				if(_knownPrefixes.Contains(prefix)) 
-				{
-					method = methodName.Substring(indexOfFirstUnderscore + 1, methodName.Length - (indexOfFirstUnderscore + 1) );
-					flags = (BindingFlags)_knownPrefixes[prefix];
-
-					return new InvokeMemberParams(method, flags);
-				}
-				else 
-				{
-					// bad naming convention was used - an "_" in a method name???
-					return new InvokeMemberParams(methodName, (BindingFlags)_knownPrefixes[""] );
-				}
-			}
-		}
-		#endregion
-
 	}
 }

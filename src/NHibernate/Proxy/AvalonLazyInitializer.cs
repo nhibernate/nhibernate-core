@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 using Apache.Avalon.DynamicProxy;
 
@@ -9,7 +10,7 @@ using NHibernate.Engine;
 namespace NHibernate.Proxy
 {
 	/// <summary>
-	/// A <see cref="NLazyInitiliazer"/> built using Avalon's Dynamic Class Generator.
+	/// A <see cref="LazyInitiliazer"/> for use with Avalon's Dynamic Class Generator.
 	/// </summary>
 	public class AvalonLazyInitializer : LazyInitializer, IInvocationHandler
 	{
@@ -32,9 +33,17 @@ namespace NHibernate.Proxy
 		}
 
 
-		protected override SerializableProxy SerializableProxy()
+		protected override void AddSerailizationInfo(SerializationInfo info)
 		{
-			return new SerializableProxy( _persistentClass, _interfaces, _id, _identifierPropertyInfo ); 
+			// the AvalonProxyDeserializer will be the Type that is actually serialized for this
+			// proxy.  
+			info.SetType( typeof(AvalonProxyDeserializer) );
+					
+			info.AddValue( "_target", _target );
+			info.AddValue( "_persistentClass", _persistentClass ); 
+			info.AddValue( "_interfaces", _interfaces );
+			info.AddValue( "_identifierPropertyInfo", _identifierPropertyInfo );
+			info.AddValue( "_id", _id );
 		}
 
 		#region Apache.Avalon.DynamicProxy.IInvocationHandler Members
@@ -50,11 +59,10 @@ namespace NHibernate.Proxy
 		{
 			object result = base.Invoke( method, arguments );
 
-			// the base NLazyInitializer could not handle it so we need to Invoke
+			// the base LazyInitializer could not handle it so we need to Invoke
 			// the method/property against the real class.
 			if(result==InvokeImplementation) 
 			{
-				InvokeMemberParams invokeParams = InvokeMemberParams.GetInvokeMemberParams( method.Name );
 				return method.Invoke( GetImplementation(), arguments );
 			}
 			else 

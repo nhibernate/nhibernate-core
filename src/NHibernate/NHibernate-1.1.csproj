@@ -1373,6 +1373,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Proxy\AvalonProxyDeserializer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Proxy\AvalonProxyGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1399,11 +1404,6 @@
                 />
                 <File
                     RelPath = "Proxy\ProxyGeneratorFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Proxy\SerializableProxy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
