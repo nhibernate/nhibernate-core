@@ -1,8 +1,11 @@
 using System;
-using NUnit.Framework;
+using System.Collections;
+using System.Data;
+
 using NHibernate;
 using NHibernate.DomainModel;
-using System.Collections;
+
+using NUnit.Framework;
 
 namespace NHibernate.Test
 {
@@ -205,7 +208,7 @@ namespace NHibernate.Test
 			s.Save(bar);
 			s.Flush();
 
-			bar.@string = "changed";
+			bar.String = "changed";
 			Baz baz = new Baz();
 			baz.Foo = bar;
 			s.Save(baz);
@@ -499,11 +502,11 @@ namespace NHibernate.Test
 
 			//TODO: need to add PropertyExpressions to Expression namespace.
 			IList list = s.CreateCriteria(typeof(Foo))
-				.Add( Expression.Expression.Eq( "integer", f.integer ) )
+				.Add( Expression.Expression.Eq( "Integer", f.Integer ) )
 				//.Add( Expression.Expression.EqProperty("integer", "integer") )
-				.Add( Expression.Expression.Like( "string", f.@string) )
-				.Add( Expression.Expression.In("boolean", new bool[] {f.boolean, f.boolean} ) )
-				.SetFetchMode("foo", FetchMode.Eager)
+				.Add( Expression.Expression.Like( "String", f.String) )
+				.Add( Expression.Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean} ) )
+				.SetFetchMode("TheFoo", FetchMode.Eager)
 				.SetFetchMode("baz", FetchMode.Lazy)
 				.List();
 
@@ -511,11 +514,11 @@ namespace NHibernate.Test
 
 			list = s.CreateCriteria( typeof(Foo) ).Add(
 				Expression.Expression.Disjunction()
-				.Add( Expression.Expression.Eq( "integer", f.integer ) )
-				.Add( Expression.Expression.Like( "string", f.@string ) )
-				.Add( Expression.Expression.Eq( "boolean", f.boolean ) )
+				.Add( Expression.Expression.Eq( "Integer", f.Integer ) )
+				.Add( Expression.Expression.Like( "String", f.String ) )
+				.Add( Expression.Expression.Eq( "Boolean", f.Boolean ) )
 				)
-				.Add( Expression.Expression.IsNotNull("boolean") )
+				.Add( Expression.Expression.IsNotNull("Boolean") )
 				.List();
 
 			Assert.IsTrue( list.Count==1 && list[0]==f );
@@ -523,8 +526,8 @@ namespace NHibernate.Test
 			Expression.Expression andExpression;
 			Expression.Expression orExpression;
 
-			andExpression = Expression.Expression.And( Expression.Expression.Eq( "integer", f.integer ), Expression.Expression.Like( "string", f.@string ) );
-			orExpression = Expression.Expression.Or( andExpression, Expression.Expression.Eq( "boolean", f.boolean ) );
+			andExpression = Expression.Expression.And( Expression.Expression.Eq( "Integer", f.Integer ), Expression.Expression.Like( "String", f.String ) );
+			orExpression = Expression.Expression.Or( andExpression, Expression.Expression.Eq( "Boolean", f.Boolean ) );
 
 			list = s.CreateCriteria(typeof(Foo))
 				.Add( orExpression )
@@ -535,7 +538,7 @@ namespace NHibernate.Test
 			
 			list = s.CreateCriteria(typeof(Foo))
 				.SetMaxResults(5)
-				.AddOrder(Expression.Order.Asc("date"))
+				.AddOrder(Expression.Order.Asc("Date"))
 				.List();
 
 			Assert.IsTrue(list.Count==1 && list[0]==f);
@@ -546,40 +549,98 @@ namespace NHibernate.Test
 			
 			list = s.CreateCriteria(typeof(Foo))
 				.SetFirstResult(1)
-				.AddOrder( Expression.Order.Asc("date") )
-				.AddOrder( Expression.Order.Desc("string") )
+				.AddOrder( Expression.Order.Asc("Date") )
+				.AddOrder( Expression.Order.Desc("String") )
 				.List();
 
 			Assert.AreEqual(0, list.Count);
 
-			f.foo = new Foo();
-			s.Save(f.foo);
+			f.TheFoo = new Foo();
+			s.Save(f.TheFoo);
 			s.Flush();
 			s.Close();
 
 			//TODO: some HSQLDialect specific code here
-//			s = sessions.OpenSession();
-//			list = s.CreateCriteria(Foo)
-//				.Add( Expression.Expression.Eq( "integer", f.integer ) )
-//				.Add( Expression.Expression.Like( "string", f.@string ) )
-//				.Add( Expression.Expression.In( "boolean", new bool[] { f.boolean, f.boolean } ) )
-//				.Add( Expression.Expression.IsNotNull("foo") );
-				
 
+			s = sessions.OpenSession();
+			list = s.CreateCriteria(typeof(Foo))
+				.Add( Expression.Expression.Eq( "Integer", f.Integer ) )
+				.Add( Expression.Expression.Like( "String", f.String ) )
+				.Add( Expression.Expression.In( "Boolean", new bool[] { f.Boolean, f.Boolean } ) )
+				.Add( Expression.Expression.IsNotNull("TheFoo") )
+				.SetFetchMode("TheFoo", FetchMode.Eager)
+				.SetFetchMode("Baz", FetchMode.Lazy)
+				.SetFetchMode("Component.Glarch", FetchMode.Lazy)
+				.SetFetchMode("TheFoo.Baz", FetchMode.Lazy)
+				.SetFetchMode("TheFoo.Component.Glarch", FetchMode.Lazy)
+				.List();
+			
+			f = (Foo) list[0];
+			Assert.IsTrue(NHibernate.IsInitialized(f.TheFoo));
+			
+			//TODO: this is initialized because Proxies are not implemented yet.
+			//Assert.IsFalse( NHibernate.IsInitialized(f.component.Glarch) );
 
-
+			s.Delete(f.TheFoo);
+			s.Delete(f);
+			s.Flush();
+			s.Close();
+		
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void AfterDelete() 
 		{
+			ISession s = sessions.OpenSession();
+			Foo foo = new Foo();
+			s.Save(foo);
+			s.Flush();
+			s.Delete(foo);
+			s.Save(foo);
+			s.Delete(foo);
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		//[Ignore("Test not written yet.")]
 		public void CollectionWhere() 
 		{
+			Foo foo1 = new Foo();
+			Foo foo2 = new Foo();
+			Baz baz = new Baz();
+			Foo[] arr = new Foo[10];
+			arr[0] = foo1;
+			arr[9] = foo2;
+
+			ISession s = sessions.OpenSession();
+			s.Save(foo1);
+			s.Save(foo2);
+			baz.FooArray = arr;
+			s.Save(baz);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz)s.Load(typeof(Baz), baz.Code);
+			Assert.AreEqual( 1, baz.FooArray.Length );
+			Assert.AreEqual( 1, s.Find("from Baz baz, baz.FooArray foo").Count );
+			Assert.AreEqual( 2, s.Find("from Foo foo").Count );
+			// TODO: filter is not working because QueryKeyCacheFactor is null
+			//Assert.AreEqual( 1, s.Filter(baz.FooArray, "").Count );
+
+			s.Delete("from Foo foo");
+			s.Delete(baz);
+
+			IDbCommand deleteCmd = s.Connection.CreateCommand();
+			deleteCmd.CommandText = "delete from fooArray where id_='" + baz.Code + "' and i>=8";
+			deleteCmd.CommandType = CommandType.Text;
+			int rows = deleteCmd.ExecuteNonQuery();
+			Assert.AreEqual(1, rows);
+
+			s.Flush();
+			s.Close();
+
 		}
 		
 		[Test]
@@ -839,7 +900,7 @@ namespace NHibernate.Test
 			s.Close();
 		
 			s = sessions.OpenSession();
-			s.Delete( s.Load( typeof(Foo), f.key ) );
+			s.Delete( s.Load( typeof(Foo), f.Key ) );
 			s.Flush();
 			s.Close();
 		}
