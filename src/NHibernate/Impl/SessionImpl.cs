@@ -12,6 +12,7 @@ using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Persister;
 using NHibernate.Proxy;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -5247,6 +5248,22 @@ namespace NHibernate.Impl
 				log.Info( "SQL Query: " + sqlQuery );
 			}
 
+			SqlType[] positionalTypes = new SqlType[ queryParameters.PositionalParameterTypes.Length ];
+			for ( int i = 0; i < queryParameters.PositionalParameterTypes.Length; i++ )
+			{
+				IType type = queryParameters.PositionalParameterTypes[ i ] ;
+				positionalTypes[ i ] = type.SqlTypes( factory )[ 0 ];
+			}
+
+			IDictionary namedTypes = new Hashtable( queryParameters.NamedParameters.Count );
+			foreach( DictionaryEntry de in queryParameters.NamedParameters )
+			{
+				string name = (string) de.Key;
+				TypedValue typedval = (TypedValue) de.Value;
+				IType type = typedval.Type;
+				namedTypes[ name ] = type.SqlTypes( factory )[ 0 ];
+			}
+
 			ISqlLoadable[] persisters = new ISqlLoadable[ classes.Length ] ;
 			for ( int i = 0; i < classes.Length; i++ )
 			{
@@ -5254,7 +5271,8 @@ namespace NHibernate.Impl
 			}
 
 			// TODO: 2.1+ We could cache these
-			SqlLoader loader = new SqlLoader( aliases, persisters, factory, sqlQuery, querySpaces );
+			// NB In NHibernate we need the queryParameters to obtain the types of positional parameters
+			SqlLoader loader = new SqlLoader( aliases, persisters, factory, sqlQuery, querySpaces, positionalTypes, namedTypes );
 			
 			AutoFlushIfRequired( loader.QuerySpaces );
 

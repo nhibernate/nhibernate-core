@@ -54,17 +54,15 @@ namespace NHibernate.Test
 		[Test]
 		public void TestTS()
 		{
-			/*
-			if ( Dialect is NHibernate.Dialect.Oracle9Dialect )
+			if ( dialect is NHibernate.Dialect.Oracle9Dialect )
 			{
 				return;
 			}
-			*/
 
 			ISession session = sessions.OpenSession();
 
 			Simple sim = new Simple();
-			sim.Date = DateTime.Now;
+			sim.Date = DateTime.Today;	// NB We don't use Now() due to the millisecond alignment problem with SQL Server
 			session.Save( sim, 1 );
 			IQuery q = session.CreateSQLQuery( "select {sim.*} from Simple {sim} where {sim}.date_ = ?", "sim", typeof( Simple ) );
 			q.SetTimestamp( 0, sim.Date );
@@ -75,27 +73,155 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written")]
+		public void TestTSNamed()
+		{
+			if ( dialect is NHibernate.Dialect.Oracle9Dialect )
+			{
+				return;
+			}
+
+			ISession session = sessions.OpenSession();
+
+			Simple sim = new Simple();
+			sim.Date = DateTime.Today;	// NB We don't use Now() due to the millisecond alignment problem with SQL Server
+			session.Save( sim, 1 );
+			IQuery q = session.CreateSQLQuery( "select {sim.*} from Simple {sim} where {sim}.date_ = :fred", "sim", typeof( Simple ) );
+			q.SetTimestamp( "fred", sim.Date );
+			Assert.AreEqual( 1, q.List().Count, "q.List.Count");
+			session.Delete( sim );
+			session.Flush();
+			session.Close();
+		}
+
+		[Test]
 		public void TestFindBySQLStar()
 		{
+			ISession session = sessions.OpenSession();
+
+			Category s = new Category();
+			s.Name = nextLong.ToString();
+			nextLong++;
+			session.Save( s );
+
+			Simple simple = new Simple();
+			simple.Init();
+			session.Save( simple, nextLong++ );
+
+			A a = new A();
+			session.Save( a );
+
+			//B b = new B();
+			//session.Save( b );
+
+			session.CreateSQLQuery( "select {category.*} from Category {category}", "category", typeof( Category ) ).List();
+			session.CreateSQLQuery( "select {simple.*} from Simple {simple}", "simple", typeof( Simple ) ).List();
+			session.CreateSQLQuery( "select {a.*} from A {a}", "a", typeof( A ) ).List();
+
+			session.Delete( s );
+			session.Delete( simple );
+			session.Delete( a );
+			//session.Delete( b );
+			session.Flush();
+			session.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void TestFindBySQLProperties()
 		{
+			ISession session = sessions.OpenSession();
+
+			Category s = new Category();
+			s.Name = nextLong.ToString();
+			nextLong++;
+			session.Save( s );
+
+			s = new Category();
+			s.Name = "WannaBeFound";
+			session.Flush();
+
+			IQuery query = session.CreateSQLQuery( "select {category.*} from Category {category} where {category}.name = :name", "category", typeof( Category ) );
+			query.SetProperties( s );
+
+			query.List();
+
+			session.Delete( "from Category" );
+			session.Flush();
+			session.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void TestFindBySQLAssociatedObject()
 		{
+			ISession s = sessions.OpenSession();
+
+			Category c = new Category();
+			c.Name = "NAME";
+			Assignable assn = new Assignable();
+			assn.Id = "i.d.";
+			IList l = new ArrayList();
+			l.Add( c );
+			assn.Categories = l;
+			c.Assignable = assn;
+			s.Save( assn );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			IList list = s.CreateSQLQuery( "select {category.*} from Category {category}", "category", typeof( Category ) ).List();
+			Assert.AreEqual( 1, list.Count, "Count differs" );
+
+			s.Delete( "from Assignable" );
+			s.Delete( "from Category" );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void TestFindBySQLMultipleObject()
 		{
+			ISession s = sessions.OpenSession();
+
+			Category c = new Category();
+			c.Name = "NAME";
+			Assignable assn = new Assignable();
+			assn.Id = "i.d.";
+			IList l = new ArrayList();
+			l.Add( c );
+			assn.Categories = l;
+			c.Assignable = assn;
+			s.Save( assn );
+			s.Flush();
+
+			c = new Category();
+			c.Name = "NAME2";
+			assn = new Assignable();
+			assn.Id = "i.d.2";
+			l = new ArrayList();
+			l.Add( c );
+			assn.Categories = l;
+			c.Assignable = assn;
+			s.Save( assn );
+			s.Flush();
+
+			assn = new Assignable();
+			assn.Id = "i.d.3";
+			s.Save( assn );
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+
+			if ( !(dialect is Dialect.MySQLDialect) )
+			{
+				IList list = s.CreateSQLQuery( "select {category.*}, {assignable.*} from Category {category}, \"assign able\" {assignable}", new string[] { "category", "assignable" }, new System.Type[] { typeof( Category ), typeof( Assignable ) } ).List();
+				Assert.AreEqual( 6, list.Count, "Count differs" ); // cross-product of 2 categories x 3 assignables;
+				Assert.IsTrue( list[0] is object[] );
+			}
+
+			s.Delete( "from Assignable" );
+			s.Delete( "from Category" );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]

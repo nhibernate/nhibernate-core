@@ -9,6 +9,7 @@ using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.SqlCommand;
 using NHibernate.Hql;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -20,12 +21,12 @@ namespace NHibernate.Loader
 	public class SqlLoader : OuterJoinLoader
 	{
 		private int parameterCount = 0;
-		private IDictionary namedParameters = new Hashtable(4);
-		private string sqlQuery;
-		private IDictionary alias2Persister;
-		private string[] aliases;
+		private readonly IDictionary namedParameters = new Hashtable(4);
+		private readonly string sqlQuery;
+		private readonly IDictionary alias2Persister;
+		private readonly string[] aliases;
 		private ISet querySpaces = new HashedSet();
-		//private IType[] resultTypes;
+		private readonly IType[] resultTypes;
 
 		#region Constructors
 		/// <summary>
@@ -36,12 +37,14 @@ namespace NHibernate.Loader
 		/// <param name="factory"></param>
 		/// <param name="sqlQuery"></param>
 		/// <param name="additionalQuerySpaces"></param>
-		public SqlLoader( string[] aliases, ISqlLoadable[] persisters, ISessionFactoryImplementor factory, string sqlQuery, ICollection additionalQuerySpaces) : base( factory.Dialect )
+		/// <param name="positionalTypes"></param>
+		/// <param name="namedTypes"></param>
+		public SqlLoader( string[] aliases, ISqlLoadable[] persisters, ISessionFactoryImplementor factory, string sqlQuery, ICollection additionalQuerySpaces, SqlType[] positionalTypes, IDictionary namedTypes ) : base( factory.Dialect )
 		{
 			this.sqlQuery = sqlQuery;
 			this.aliases = aliases;
 			alias2Persister = new Hashtable();
-			IList resultTypeList = new ArrayList();
+			ArrayList resultTypeList = new ArrayList();
 
 			for (int i = 0; i < persisters.Length; i++ )
 			{
@@ -54,9 +57,9 @@ namespace NHibernate.Loader
 
 			if ( additionalQuerySpaces != null )
 				querySpaces.AddAll( additionalQuerySpaces );
-			//resultTypes = (IType[]) resultTypeList.ToArray() ;
+			resultTypes = ( IType[ ] ) resultTypeList.ToArray( typeof( IType ) );
 
-			RenderStatement( persisters ) ;
+			RenderStatement( persisters, positionalTypes, namedTypes ) ;
 
 			PostInstantiate();
 		}
@@ -73,7 +76,7 @@ namespace NHibernate.Loader
 		#endregion
 
 		#region Private methods
-		private void RenderStatement( ILoadable[] persisters )
+		private void RenderStatement( ILoadable[] persisters, SqlType[] positionalTypes, IDictionary namedTypes )
 		{
 			int loadables = persisters.Length;
 
@@ -81,54 +84,38 @@ namespace NHibernate.Loader
 			Suffixes = GenerateSuffixes( loadables ) ;
 			LockModeArray = CreateLockModeArray( loadables, LockMode.None );
 
-			sqlQuery = SubstituteParams( SubstituteBrackets( sqlQuery ) );
+			SqlString = SubstituteParams( SubstituteBrackets( sqlQuery ), positionalTypes, namedTypes );
 		}
 
-		private string SubstituteParams(string sqlQuery)
+		private SqlString SubstituteParams( string sql, SqlType[] positionalTypes, IDictionary namedTypes )
 		{
-			string sqlString = sqlQuery;
-			StringBuilder result = new StringBuilder();
-			int left, right;
+			ArrayList tokens = new ArrayList(); // contains a List of strings containing Sql or SqlStrings
 
-			for ( int curr = 0; curr < sqlString.Length; curr = right + 1 )
+			StringTokenizer st = new StringTokenizer( sql, ParserHelper.HqlSeparators );
+
+			IEnumerator enumer = st.GetEnumerator();
+			int index = 0;
+			while( enumer.MoveNext() ) 
 			{
-				if ( ( left = sqlString.IndexOf( ParserHelper.HqlVariablePrefix, curr ) ) < 0 )
+				string str = (string) enumer.Current;
+				if ( str.StartsWith( ParserHelper.HqlVariablePrefix ) )
 				{
-					result.Append( sqlString.Substring( curr ) );
-					break;
+					string name = str.Substring( 1 );
+					tokens.Add( new Parameter( name, (SqlType) namedTypes[ name ] ) );
+					AddNamedParameter( name );
 				}
-
-				result.Append( sqlString.Substring( curr, left ) );
-
-				// Find the first place of a HqlSeparator character
-				right = sqlString.IndexOfAny( ParserHelper.HqlSeparators.ToCharArray(), left + 1 );
-
-				// Did we find one?
-				bool foundSeparator = right > 0;
-				int chopLocation = -1;
-				if ( right < 0 )
+				else if ( "?".Equals( str ) )
 				{
-					chopLocation = sqlString.Length;
+					string name = "p" + index.ToString();
+					tokens.Add( new Parameter( name, positionalTypes[ index++ ] ) );
 				}
 				else
 				{
-					chopLocation = right;
-				}
-
-				string param = sqlString.Substring( left + 1, chopLocation );
-				AddNamedParameter( param );
-				result.Append( "?" );
-				if ( foundSeparator ) 
-				{
-					result.Append( sqlString.Substring( right, 1 ) );
-				}
-				else
-				{
-					break;
+					tokens.Add( str );
 				}
 			}
 
-			return result.ToString();
+			return new SqlString( ( object[] ) tokens.ToArray( typeof( object ) ) );
 		}
 
 		private int PersisterIndex( string aliasName )
@@ -235,9 +222,7 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		public IList List( ISessionImplementor session, QueryParameters queryParameters )
 		{
-			// TODO: 2.1 Uncomment once SQL Loading implemented
-			//return List( session, queryParameters, querySpaces, resultTypes ) ;
-			return null ;
+			return List( session, queryParameters, querySpaces, resultTypes ) ;
 		}
 
 		// Inspired by the parsing done in TJDO
@@ -262,17 +247,17 @@ namespace NHibernate.Loader
 					break;
 				}
 
-				result.Append( sqlString.Substring( curr, left ) );
+				result.Append( sqlString.Substring( curr, left - curr ) );
 
 				if ( ( right = sqlString.IndexOf( '}', left + 1 ) ) < 0 )
 				{
 					throw new QueryException( "Unmatched braces for alias path" );
 				}
 
-				string aliasPath = sqlString.Substring( left + 1, right );
+				string aliasPath = sqlString.Substring( left + 1, right - left - 1 );
 				int firstDot = aliasPath.IndexOf( '.' );
 
-				string aliasName = firstDot == 1 ? aliasPath : aliasPath.Substring( 0, firstDot ) ;
+				string aliasName = firstDot == -1 ? aliasPath : aliasPath.Substring( 0, firstDot ) ;
 				ISqlLoadable currentPersister = GetPersisterByResultAlias( aliasName ) ;
 				if ( currentPersister == null )
 				{
@@ -286,6 +271,7 @@ namespace NHibernate.Loader
 
 				if ( firstDot == -1 )
 				{
+					// TODO: should this one also be aliased/quoted instead of just directly inserted ?
 					result.Append( aliasPath ) ;
 				}
 				else
@@ -335,7 +321,6 @@ namespace NHibernate.Loader
 			}
 
 			// Possibly handle :something parameters for the query?
-
 			return result.ToString();
 		}
 
@@ -344,6 +329,7 @@ namespace NHibernate.Loader
 		{
 			// want the param index to start at 0 instead of 1
 			//int loc = ++parameterCount;
+			// TODO: 2.1 - Not sure about the loc idea - surely we need to account for positional parameters as well?
 			int loc = parameterCount++;
 			object o = namedParameters[ name ];
 			if( o == null )
