@@ -108,6 +108,7 @@ namespace NHibernate.Type {
 	
 		public override object Disassemble(object value, ISessionImplementor session) {
 			return null;
+			// commented out in h2.0.3 also
 //			if (value==null) {
 //				return null;
 //			}
