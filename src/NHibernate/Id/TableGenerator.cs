@@ -91,11 +91,11 @@ namespace NHibernate.Id {
 							IDbDataParameter parm1 = ups.CreateParameter();
 							parm1.DbType = DbType.Int32;
 							parm1.Value = result + 1;
-							ups.Parameters[0] = parm1;
+							ups.Parameters.Add(parm1);
 							IDbDataParameter parm2 = ups.CreateParameter();
 							parm2.DbType = DbType.Int32;
 							parm2.Value = result;
-							ups.Parameters[1] = parm2;
+							ups.Parameters.Add(parm2);
 							rows = ups.ExecuteNonQuery();
 						} catch (Exception e) {
 							log.Error("could not update hi value in: " + tableName, e);
