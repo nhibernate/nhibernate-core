@@ -30,9 +30,9 @@ namespace NHibernate.Expression
 
 			ArrayList typedValues = new ArrayList();
 
-			foreach ( IEnumerator iter in typedValues ) 
+			foreach ( Expression expression in expressions ) 
 			{
-				TypedValue[] subvalues = ( (Expression) iter ).GetTypedValues(sessionFactory, persistentClass);
+				TypedValue[] subvalues = expression.GetTypedValues(sessionFactory, persistentClass);
 				for ( int i=0; i<subvalues.Length; i++ ) 
 				{
 					typedValues.Add( subvalues[i] );
