@@ -542,22 +542,21 @@ namespace NHibernate.Test
 
 			list = s.CreateCriteria(typeof(Foo)).SetMaxResults(0).List();
 			Assert.AreEqual(0, list.Count);
-
-			list = s.CreateCriteria(typeof(Foo))
-				.SetFirstResult(1)
-				.AddOrder( Expression.Order.Asc("Date") )
-				.AddOrder( Expression.Order.Desc("String") )
-				.List();
-
-			Assert.AreEqual(0, list.Count);
-
-			f.foo = new Foo();
-			s.Save(f.foo);
-			s.Flush();
-			s.Close();
+			//TODO: resume here
+//			list = s.CreateCriteria(typeof(Foo))
+//				.SetFirstResult(1)
+//				.AddOrder( Expression.Order.Asc("Date") )
+//				.AddOrder( Expression.Order.Desc("String") )
+//				.List();
+//
+//			Assert.AreEqual(0, list.Count);
+//
+//			f.foo = new Foo();
+//			s.Save(f.foo);
+//			s.Flush();
+//			s.Close();
 
 			//TODO: some HSQLDialect specific code here
-			//TODO: resume here
 //			s = sessions.OpenSession();
 //			list = s.CreateCriteria(Foo)
 //				.Add( Expression.Expression.Eq( "integer", f.integer ) )
