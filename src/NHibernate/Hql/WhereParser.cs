@@ -489,7 +489,14 @@ namespace NHibernate.Hql
 						{
 							throw new QueryException(me);
 						}
-						if (type == null) throw new QueryException("Could not determine type of: " + token);
+						if (type == null) 
+						{
+							type = TypeFactory.HueristicType(constant.GetType().AssemblyQualifiedName);
+							if (type == null) 
+							{
+								throw new QueryException("Could not determine type of: " + token);
+							}
+						}
 						try 
 						{
 							AppendToken(q, ((ILiteralType) type).ObjectToSQLString(constant));
