@@ -130,11 +130,11 @@ namespace NHibernate.Impl
 					command.Prepare();
 				}
 			}
-			catch( Exception e )
+			catch( InvalidOperationException ioe )
 			{
-				throw new ApplicationException(
+				throw new ADOException(
 					"While preparing " + command.CommandText + " an error occurred"
-					, e );
+					, ioe );
 			}
 		}
 
