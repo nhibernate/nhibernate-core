@@ -1473,7 +1473,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
+		//[Ignore("Proxies Required - http://jira.nhibernate.org:8080/browse/NH-41")]
 		public void Load() 
 		{
 			ISession s = sessions.OpenSession();
@@ -1881,6 +1881,8 @@ namespace NHibernate.Test
 			// for a StaleObjectException check.
 			ISession sOld = sessions.OpenSession();
 			GlarchProxy gOld = (GlarchProxy)sOld.Load( typeof(Glarch), gid );
+			// unproxy gOld
+			gOld = (GlarchProxy)Proxy.NHibernateProxyHelper.GetLazyInitializer( (Proxy.INHibernateProxy)gOld ).GetImplementation();
 			sOld.Close();
 
 			s = sessions.OpenSession();
@@ -1900,6 +1902,7 @@ namespace NHibernate.Test
 			// it with an old version of g
 			bool isStale = false;
 			sOld = sessions.OpenSession();
+			
 			gOld.Name = "should not update";
 			try 
 			{

@@ -649,25 +649,39 @@ namespace NHibernate.Persister
 
 			// PROXIES
 			System.Type pi = model.ProxyInterface;
-			hasProxy = pi!=null;  
+			hasProxy = ( pi!=null );  
 			ArrayList pis = new ArrayList();
-			pis.Add(typeof(HibernateProxy));
-			//pis.Add( typeof(INHibernateProxy) );
-			// != null because we use arraylist instead of hashset
-			// mono does not like a null value passed into Equals()
-			if ( pi!=null && !mappedClass.Equals(pi) ) 
+			pis.Add( typeof(INHibernateProxy) );
+			
+			// mono does not like a null value passed into Equals() so check 
+			// that first
+			if( pi!=null && !mappedClass.Equals(pi) ) 
 			{
-				pis.Add(pi); 
+				// if the <class> name="type" is not the same type as the proxy="type"
+				// then add the proxy's type to the list.  They will
+				// be different types when the <class> is a class and the proxy is 
+				// an interface, or when a <class> is an interface and the proxy interface
+				// is diff (why would you do that??).  They will be the same type
+				// when the <class> is an interface and the proxy interface is the same
+				// interface.
+				pis.Add( pi ); 
 			}
+
 			concreteProxyClass = pi;
 
-			if (hasProxy) 
+			if( hasProxy ) 
 			{
-				foreach(Subclass sc in model.SubclassCollection) 
+				foreach( Subclass sc in model.SubclassCollection ) 
 				{
 					pi = sc.ProxyInterface;
-					if (pi==null) throw new MappingException( "All subclasses must also have proxies: " + mappedClass.Name);
-					if ( !sc.PersistentClazz.Equals(pi) ) pis.Add(pi);
+					if( pi==null ) 
+					{
+						throw new MappingException( "All subclasses must also have proxies: " + mappedClass.Name);
+					}
+					if( !sc.PersistentClazz.Equals(pi) ) 
+					{
+						pis.Add(pi);
+					}
 				}
 			}
 
