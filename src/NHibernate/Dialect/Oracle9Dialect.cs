@@ -4,13 +4,13 @@ using System.Data;
 
 using NHibernate.Util;
 
-namespace NHibernate.Dialect
-{
+namespace NHibernate.Dialect {
+
 	/// <summary>
 	/// An SQL dialect for Oracle 9 (uses ANSI-style syntax where possible).
 	/// </summary>
-	public class Oracle9Dialect : Dialect
-	{
+	public class Oracle9Dialect : Dialect {
+
 		public Oracle9Dialect() : base() {
 			/* Type mapping in Java was:
 			  
@@ -61,7 +61,7 @@ namespace NHibernate.Dialect
 		}
 	
 		public string GetSequenceNextValString(string sequenceName) {
-			return  "select " + sequenceName + ".nextval from dual";
+			return  string.Concat( "select ", sequenceName, ".nextval from dual" );
 		}
 		public string GetCreateSequenceString(string sequenceName) {
 			return "create sequence " + sequenceName;

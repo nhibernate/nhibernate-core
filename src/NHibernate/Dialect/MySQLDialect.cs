@@ -4,13 +4,13 @@ using System.Data;
 
 using NHibernate.Util;
 
-namespace NHibernate.Dialect
-{
+namespace NHibernate.Dialect {
+
 	/// <summary>
 	/// An SQL dialect for MySQL
 	/// </summary>
-	public class MySQLDialect : Dialect
-	{
+	public class MySQLDialect : Dialect	{
+
 		public MySQLDialect() : base() {
 			/*  Type mapping in Java was:
 			 
@@ -41,7 +41,6 @@ namespace NHibernate.Dialect
 				Types.CLOB, 16777215, "MEDIUMTEXT"
 				Types.CLOB, 65535, "TEXT"
 			*/
-
 
 			Register( SqlDbType.Bit, "BIT" );
 			Register( SqlDbType.BigInt,	"BIGINT" );

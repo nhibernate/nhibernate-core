@@ -1,13 +1,13 @@
 using System;
 using System.Data;
 
-namespace NHibernate.Dialect
-{
+namespace NHibernate.Dialect {
+
 	/// <summary>
 	/// An SQL dialect for DB2.
 	/// </summary>
-	public class DB2Dialect : Dialect
-	{
+	public class DB2Dialect : Dialect {
+
 		public DB2Dialect() : base() {
 			/* Type mapping in Java was:
 			
@@ -78,7 +78,7 @@ namespace NHibernate.Dialect
 			return "create sequence " + sequenceName;
 		}
 		public string GetDropSequenceString(string sequenceName) {
-			return "drop sequence " + sequenceName + " restrict";
+			return string.Concat( "drop sequence ", sequenceName, " restrict" );
 		}
 		
 		public bool SupportsSequences() {

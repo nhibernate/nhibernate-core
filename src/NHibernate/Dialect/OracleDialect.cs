@@ -2,13 +2,13 @@ using System;
 
 using NHibernate.Sql;
 
-namespace NHibernate.Dialect
-{
+namespace NHibernate.Dialect {
+
 	/// <summary>
 	/// An SQL dialect for Oracle, compatible with Oracle 8.
 	/// </summary>
-	public class OracleDialect : Oracle9Dialect
-	{
+	public class OracleDialect : Oracle9Dialect	{
+
 		public OracleDialect() : base() {
 		}
 		
