@@ -870,7 +870,7 @@ namespace NHibernate.Collection
 						collection.WriteTo(insst, this, entry, i, false);
 						//TODO: this is hackish for expected row count
 						int expectedRowCount = 1;
-						int rowCount = rmvst.ExecuteNonQuery();
+						int rowCount = insst.ExecuteNonQuery();
 
 						//negative expected row count means we don't know how many rows to expect
 						if ( expectedRowCount>0 && expectedRowCount!=rowCount )
