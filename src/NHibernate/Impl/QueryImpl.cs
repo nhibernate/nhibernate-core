@@ -255,7 +255,7 @@ namespace NHibernate.Impl {
 		protected string BindParameterLists(IDictionary namedParams) {
 			string query = queryString;
 			foreach( DictionaryEntry de in namedParametersLists ) {
-				query = BindParameterList( queryString, (string) de.Key, (TypedValue) de.Value, namedParams );
+				query = BindParameterList( query, (string) de.Key, (TypedValue) de.Value, namedParams );
 			}
 			return query;
 		}
