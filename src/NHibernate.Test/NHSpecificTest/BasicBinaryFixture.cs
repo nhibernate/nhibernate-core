@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	/// <summary>
-	/// Summary description for BasicBinaryFixture.
+	/// Tests for mapping a byte[] Property to a BinaryType.
 	/// </summary>
 	[TestFixture]
 	public class BasicBinaryFixture : TestCase 
@@ -40,8 +40,8 @@ namespace NHibernate.Test.NHSpecificTest
 			BasicBinary bcBinaryLoaded = (BasicBinary)s.Load(typeof(BasicBinary), 1);
 
 			Assert.IsNotNull(bcBinaryLoaded);
-			Assert.AreEqual(null, bcBinary.DefaultSize);
-			Assert.AreEqual(null, bcBinary.WithSize);
+			Assert.AreEqual(null, bcBinary.DefaultSize, "A property mapped as type=\"Byte[]\" with a null byte[] value was not saved & loaded as null");
+			Assert.AreEqual(null, bcBinary.WithSize, "A property mapped as type=\"Byte[](length)\" with null byte[] value was not saved & loaded as null");
 
 			s.Delete(bcBinaryLoaded);
 			s.Flush();
@@ -66,8 +66,8 @@ namespace NHibernate.Test.NHSpecificTest
 			BasicBinary bcBinaryLoaded = (BasicBinary)s.Load(typeof(BasicBinary), 1);
 
 			Assert.IsNotNull(bcBinaryLoaded);
-			Assert.AreEqual(0, bcBinary.DefaultSize.Length);
-			Assert.AreEqual(0, bcBinary.WithSize.Length);
+			Assert.AreEqual(0, bcBinary.DefaultSize.Length, "A property mapped as type=\"Byte[]\" with a byte[0] value was not saved & loaded as byte[0]");
+			Assert.AreEqual(0, bcBinary.WithSize.Length, "A property mapped as type=\"Byte[](length)\" with a byte[0] value was not saved & loaded as byte[0]");
 
 			s.Delete(bcBinaryLoaded);
 			s.Flush();
@@ -77,11 +77,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void Insert() 
 		{
-			BasicBinary bcBinary = new BasicBinary();
-			bcBinary.Id = 1;
-
-			bcBinary.DefaultSize = GetByteArray(5);
-			bcBinary.WithSize = GetByteArray(10);
+			BasicBinary bcBinary = Create(1);
 
 			ISession s = sessions.OpenSession();
 			s.Save(bcBinary);
@@ -101,6 +97,61 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Delete(bcBinaryLoaded);
 			s.Flush();
 			s.Close();
+		}
+
+		[Test]
+		public void Update() 
+		{
+			BasicBinary bcBinary = Create(1);
+			
+			ISession s = sessions.OpenSession();
+			s.Save(bcBinary);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			bcBinary = (BasicBinary)s.Load(typeof(BasicBinary), 1);
+
+			bcBinary.DefaultSize = GetByteArray(15);
+
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			// make sure the update went through
+			bcBinary = (BasicBinary)s.Load(typeof(BasicBinary), 1);
+
+			// was DefaultSize updated
+			ObjectAssertion.AssertEquals( bcBinary.DefaultSize, GetByteArray(15) );
+			// WithSize should not have been updated
+			ObjectAssertion.AssertEquals( bcBinary.WithSize, GetByteArray(10) );
+			
+			// lets modify WithSize
+			bcBinary.WithSize = GetByteArray(20);
+			s.Flush();
+			s.Close();
+
+			s = sessions.OpenSession();
+			bcBinary = (BasicBinary)s.Load(typeof(BasicBinary), 1);
+
+			// was DefaultSize not updated
+			ObjectAssertion.AssertEquals( bcBinary.DefaultSize, GetByteArray(15) );
+			ObjectAssertion.AssertEquals( bcBinary.WithSize, GetByteArray(20) );
+
+			s.Delete(bcBinary);
+			s.Flush();
+			s.Close();
+		}
+
+		private BasicBinary Create(int id) 
+		{
+			BasicBinary bcBinary = new BasicBinary();
+			bcBinary.Id = id;
+
+			bcBinary.DefaultSize = GetByteArray(5);
+			bcBinary.WithSize = GetByteArray(10);
+
+			return bcBinary;
 		}
 
 		private byte[] GetByteArray(int value) 
