@@ -12,7 +12,6 @@ namespace NHibernate.DomainModel
 		private Fo() {}
 
 		private byte[] _buf;
-		private object _serial;
 		private long _version;
 		private int _x;
 
@@ -22,13 +21,6 @@ namespace NHibernate.DomainModel
 			set { _buf = value; }
 		}
 
-		public object Serial
-		{
-			get { return _serial; }
-			set { _serial = value; }
-		}
-
-		
 		public long Version
 		{
 			get { return _version; }

@@ -23,20 +23,10 @@
 				type="DateTime" 
 			/>
 		</composite-id>
+		
 		<version 
 			name="Version" 
 			type="Int64" 
-		/>
-		<!-- 
-			todo: what property matches to a java version of Serializable?? 
-			This is kind of a hack because NHibernate doesn't match System.Object to
-			ObjectType.
-		-->
-		<property 
-			name="Serial" 
-			column="serial_" 
-			type="Serializable"
-			length="4000"
 		/>
 		
 		<property name="Buf" length="500"/>

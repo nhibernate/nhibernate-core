@@ -22,23 +22,23 @@ namespace NHibernate.DomainModel
 	[Serializable]
 	public class Foo : FooProxy, ILifecycle
 	{
-		[Serializable]
-		public class Struct
-		{
-			public string name;
-			public int count;
-
-			public override bool Equals(object obj)
-			{
-				Struct s = (Struct) obj;
-				return ( s.name==name || s.name.Equals(name) ) && s.count==count;
-			}
-	 
-			public override int GetHashCode()
-			{
-				return count;
-			}
-		}
+//		[Serializable]
+//		public class Struct
+//		{
+//			public string name;
+//			public int count;
+//
+//			public override bool Equals(object obj)
+//			{
+//				Struct s = (Struct) obj;
+//				return ( s.name==name || s.name.Equals(name) ) && s.count==count;
+//			}
+//	 
+//			public override int GetHashCode()
+//			{
+//				return count;
+//			}
+//		}
 
 		#region Fields
 		
@@ -62,8 +62,6 @@ namespace NHibernate.DomainModel
 		private String _string;
 		private byte _byte;
 		private bool _yesno;
-		private Foo.Struct _blob;
-		private object _nullBlob;
 		private FooStatus _status;
 		private byte[] _binary;
 		private byte[] _bytes;
@@ -250,24 +248,6 @@ namespace NHibernate.DomainModel
 		}
 	
 		/// <summary>
-		/// Get/set for blob
-		/// </summary>
-		public Foo.Struct Blob
-		{
-			get { return _blob; }
-			set { _blob = value; }
-		}
-	
-		/// <summary>
-		/// Get/set for nullBlob
-		/// </summary>
-		public object NullBlob
-		{
-			get { return _nullBlob; }
-			set { _nullBlob = value; }
-		}
-	
-		/// <summary>
 		/// Get/set for status
 		/// </summary>
 		public FooStatus Status
@@ -389,10 +369,6 @@ namespace NHibernate.DomainModel
 			_int = 2;
 			_char = '@';
 			_bytes = System.Text.Encoding.ASCII.GetBytes(_string);
-			Struct ss = new Struct();
-			ss.name="name";
-			ss.count = 69;
-			_blob = ss;
 			_status=FooStatus.ON;
 			_binary = System.Text.Encoding.ASCII.GetBytes( _string + "yada yada yada" );
 			custom = new string[]
@@ -458,7 +434,7 @@ namespace NHibernate.DomainModel
 				//&& ( ( this._timestamp==other._timestamp) || ( this._timestamp.getDate() == other._timestamp.getDate() && this._timestamp.getYear() == other._timestamp.getYear() && this._timestamp.getMonth() == other._timestamp.getMonth() ) )
 				&& ( _zero == other.Zero )
 				&& ( ( _foo == other.TheFoo ) || ( _foo.Key.Equals( other.TheFoo.Key ) ) )
-				&& ( ( _blob == other.Blob ) || ( _blob.Equals(other.Blob) ) )
+//				&& ( ( _blob == other.Blob ) || ( _blob.Equals(other.Blob) ) )
 				&& ( _yesno == other.YesNo )
 				&& ( _status == other.Status )
 				// moved binary to its own loop - .net's Collections don't implement Equals() like java's collections.

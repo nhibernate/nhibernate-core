@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class 
+		name="NHibernate.DomainModel.NHSpecific.BasicSerializable, NHibernate.DomainModel" 
+		table="bc_ser">
+		
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		
+		<property 
+			name="SerializableProperty" 
+			type="NHibernate.DomainModel.NHSpecific.SerializableClass, NHibernate.DomainModel(1000)"  
+			column="ser_p"
+		/>
+		
+		<property 
+			name="Serial" 
+			column="serial_" 
+			type="Serializable"
+			length="4000"
+		/>
+		
+	</class>
+</hibernate-mapping>

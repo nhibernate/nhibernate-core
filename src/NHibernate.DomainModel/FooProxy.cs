@@ -34,18 +34,6 @@ namespace NHibernate.DomainModel
 			set;
 		}
 
-		object NullBlob
-		{
-			get;
-			set;
-		}
-
-		Foo.Struct Blob
-		{
-			get;
-			set;
-		}
-
 		bool YesNo
 		{
 			get;

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class 
+		name="NHibernate.DomainModel.NHSpecific.BasicObject, NHibernate.DomainModel"
+		table="bc_obj"
+	>
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		
+		<property name="Name" />
+		<property name="Any" type="Object" >
+			<column name="the_type" />
+			<column name="id_ser" />
+		</property>
+	</class>
+	
+	<class 
+		name="NHibernate.DomainModel.NHSpecific.BasicObjectRef, NHibernate.DomainModel"
+		table="bc_ref"
+	>
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		
+		<property name="Name" />
+		
+	</class>
+	
+</hibernate-mapping>

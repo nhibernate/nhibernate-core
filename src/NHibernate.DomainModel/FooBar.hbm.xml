@@ -68,8 +68,7 @@
 		</property>
 		<property name="Byte" column="byte_"/>
 		<property name="YesNo" type="yes_no"/>
-		<property name="Blob" type="NHibernate.DomainModel.Foo+Struct, NHibernate.DomainModel" column="blobb_"/>
-		<property name="NullBlob" type="Serializable"/>
+		
 		<property name="Status" column="`status_@###`" type="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel"/>
 		<property name="Binary" column="bin_"/>
 		<property name="Locale" column="`localeayzabc123!@#$`" access="field.camelcase-underscore" type="locale"/>

@@ -4,34 +4,7 @@ using System.Collections;
 namespace NHibernate.DomainModel.NHSpecific
 {
 
-	[Serializable]
-	public class SerializableClass 
-	{
-		public int _classId;
-		public string _classString;
-
-		public override int GetHashCode()
-		{
-			// not a good method, but all that is needed for this Class
-			// to be used by tests.
-			return base.GetHashCode();
-		}
-
-		public override bool Equals(object obj)
-		{
-			SerializableClass lhs = obj as SerializableClass;
-			if(lhs==null) return false;
-
-			if(this==lhs) return true;
-
-			if(this._classId.Equals(lhs._classId) 
-				&& this._classString.Equals(this._classString)) return true;
-
-			return false;
-		}
-
-	}
-
+	
 	/// <summary>
 	/// Summary description for BasicClass.
 	/// </summary>
@@ -52,7 +25,6 @@ namespace NHibernate.DomainModel.NHSpecific
 		private short _int16Property;
 		private int _int32Property;
 		private long _int64Property;
-		private SerializableClass _serializableProperty;
 		private float _singleProperty;
 		private string _stringProperty;
 		private DateTime _ticksProperty;
@@ -69,9 +41,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public BasicClass()
 		{
-			_serializableProperty = new SerializableClass();
-			_serializableProperty._classId = 5;
-			_serializableProperty._classString = "serialize me";
+			
 		}
 
 		public int Id 
@@ -144,12 +114,6 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			get {return _int64Property;}
 			set {_int64Property = value;}
-		}
-
-		public SerializableClass SerializableProperty 
-		{
-			get {return _serializableProperty;}
-			set {_serializableProperty = value;}
 		}
 
 		public float SingleProperty 
