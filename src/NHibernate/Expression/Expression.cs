@@ -39,6 +39,16 @@ namespace NHibernate.Expression {
 		}
 
 		/// <summary>
+		/// A case-insensitive "like", similar to Postgres "ilike" operator
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static Expression InsensitiveLike(string propertyName, object value) {
+			return new InsensitiveLikeExpression(propertyName, value);
+		}
+
+		/// <summary>
 		/// Apply a "greater than" constraint to the named property
 		/// </summary>
 		/// <param name="propertyName"></param>
@@ -187,6 +197,44 @@ namespace NHibernate.Expression {
 		public static Expression Sql(string sql) {
 			return new SQLExpression(sql, NoObjects, NoTypes);
 		}
+
+	
+		/// <summary>
+		/// Group expressions together in a single conjunction (A and B and C...)
+		/// </summary>
+		public static Conjunction Conjunction {
+			get {
+				return new Conjunction();
+			}
+		}
+
+	
+		/// <summary>
+		/// Group expressions together in a single disjunction (A or B or C...)
+		/// </summary>
+		public static Disjunction Disjunction {
+			get {
+				return new Disjunction();
+			}
+		}
+
+
+		/// <summary>
+		/// Apply an "equals" constraint to each property in the key set of a IDictionary
+		/// </summary>
+		/// <param name="propertyNameValues">a dictionary from property names to values</param>
+		/// <returns></returns>
+		public static Expression AllEq(IDictionary propertyNameValues) {
+
+			Conjunction conj = Conjunction;
+
+			foreach ( IDictionaryEnumerator item in propertyNameValues ) {
+				conj.Add( Eq( item.Key.ToString(), item.Value ) );
+			}
+
+			return conj;
+		}
+
 
 		/// <summary>
 		/// Render and SQL fragment
