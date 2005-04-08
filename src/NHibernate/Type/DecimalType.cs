@@ -76,7 +76,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public object StringToObject( string xml )
 		{
-			return long.Parse( xml );
+			return Decimal.Parse( xml );
 		}
 
 		/// <summary>

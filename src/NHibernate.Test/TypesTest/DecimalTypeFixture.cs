@@ -84,5 +84,15 @@ namespace NHibernate.Test.TypesTest
 			s.Flush();
 			s.Close();
 		}
+
+		[Test]
+		public void UnsavedValue()
+		{
+			
+			DecimalType type = (DecimalType)NHibernateUtil.Decimal;
+			object mappedValue = type.StringToObject( "0" );
+			Assert.AreEqual( 0m, mappedValue);
+			Assert.IsTrue( type.Equals( mappedValue, 0m ), "'0' in the mapping file should have been converted to a 0m"  );
+		}
 	}
 }
