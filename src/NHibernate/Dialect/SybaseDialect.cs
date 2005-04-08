@@ -5,6 +5,31 @@ namespace NHibernate.Dialect
 	/// <summary>
 	/// An SQL dialect compatible with Sybase.
 	/// </summary>
+	/// <remarks>
+	/// <p>
+	/// This dialect probably will not work with schema-export.  If anyone out there
+	/// can fill in the ctor with DbTypes to Strings that would be helpful.
+	/// </p>
+	/// The SybaseDialect defaults the following configuration properties:
+	/// <list type="table">
+	///		<listheader>
+	///			<term>Property</term>
+	///			<description>Default Value</description>
+	///		</listheader>
+	///		<item>
+	///			<term>hibernate.use_outer_join</term>
+	///			<description><c>true</c></description>
+	///		</item>
+	///		<item>
+	///			<term>hibernate.connection.driver_class</term>
+	///			<description><see cref="NHibernate.Driver.SybaseClientDriver" /></description>
+	///		</item>
+	///		<item>
+	///			<term>hibernate.prepare_sql</term>
+	///			<description><c>false</c></description>
+	///		</item>
+	/// </list>
+	/// </remarks>
 	public class SybaseDialect : Dialect
 	{
 		/// <summary></summary>
@@ -31,6 +56,8 @@ namespace NHibernate.Dialect
 			*/
 
 			DefaultProperties[ Environment.UseOuterJoin ] = "true";
+			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.SybaseClientDriver";
+			DefaultProperties[ Environment.PrepareSql ] = "false";
 		}
 
 		/// <summary></summary>

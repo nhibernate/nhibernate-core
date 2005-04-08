@@ -699,6 +699,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Driver\SybaseClientDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Engine\Cascades.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

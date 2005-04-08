@@ -1,5 +1,5 @@
 using System;
-using System.Reflection;
+using System.Data;
 
 namespace NHibernate.Driver
 {
@@ -54,7 +54,7 @@ namespace NHibernate.Driver
 		/// Gets the <see cref="System.Type"/> from the MySql.Data assembly
 		/// that implements <see cref="IDbCommand"/>
 		/// </summary>
-		/// <value>The <see cref="MySql.Data.MySqlClient.MySqlCommand"/> type.</value>
+		/// <value>The <c>MySql.Data.MySqlClient.MySqlCommand</c> type.</value>
 		public override System.Type CommandType
 		{
 			get { return commandType; }
@@ -64,7 +64,7 @@ namespace NHibernate.Driver
 		/// Gets the <see cref="System.Type"/> from the MySql.Data assembly
 		/// that implements <see cref="IDbCommand"/>
 		/// </summary>
-		/// <value>The <see cref="MySql.Data.MySqlClient.MySqlConnection"/> type.</value>
+		/// <value>The <c>MySql.Data.MySqlClient.MySqlConnection</c> type.</value>
 		public override System.Type ConnectionType
 		{
 			get { return connectionType; }
