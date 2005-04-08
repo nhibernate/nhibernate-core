@@ -1,10 +1,25 @@
 <?xml version="1.0"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
   "../support/docbook-dtd/docbookx.dtd" [
+  <!ENTITY quickstart SYSTEM "modules/quickstart.xml">  
   <!ENTITY architecture SYSTEM "modules/architecture.xml">
   <!ENTITY configuration SYSTEM "modules/configuration.xml">
+  <!ENTITY persistent-classes SYSTEM "modules/persistent_classes.xml">
   <!ENTITY basic-mapping SYSTEM "modules/basic_mapping.xml">
-
+  <!ENTITY collection-mapping SYSTEM "modules/collection_mapping.xml">
+  <!ENTITY component-mapping SYSTEM "modules/component_mapping.xml">
+  <!ENTITY inheritence-mapping SYSTEM "modules/inheritence_mapping.xml">
+  <!ENTITY manipulating-data SYSTEM "modules/mainpulating_data.xml">
+  <!ENTITY transactions SYSTEM "modules/transactions.xml">
+  <!ENTITY query-hql SYSTEM "modules/query_hql.xml">
+  <!ENTITY query-criteria SYSTEM "modules/query_criteria.xml">
+  <!ENTITY query-sql SYSTEM "modules/query_sql.xml">
+  <!ENTITY performance SYSTEM "modules/performance.xml">
+  <!ENTITY toolset-guide SYSTEM "modules/toolset_guide.xml">
+  <!ENTITY example-parentchild SYSTEM "modules/example-parentchild.xml">
+  <!ENTITY example-weblog SYSTEM "modules/example_weblog.xml">
+  <!ENTITY example-mappings SYSTEM "modules/example_mappings.xml">
+  <!ENTITY best-practices SYSTEM "modules/best_practices.xml">
 ]>
 
 <book lang="en">
