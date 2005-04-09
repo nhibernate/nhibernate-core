@@ -167,7 +167,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
 			ArrayList clonedList = new ArrayList( bag.Count );
 			foreach( object obj in bag )

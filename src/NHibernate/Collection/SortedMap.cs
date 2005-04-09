@@ -25,7 +25,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
 			SortedList clonedMap = new SortedList( comparer );
 			foreach( DictionaryEntry de in map )

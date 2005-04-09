@@ -9,7 +9,8 @@ namespace NHibernate.Collection
 {
 	/// <summary>
 	/// .NET has no design equivalent for Java's Set so we are going to use the
-	/// Iesi.Collections library.
+	/// Iesi.Collections library. This class is internal to NHibernate and shouldn't
+	/// be used by user code.
 	/// </summary>
 	/// <remarks>
 	/// The code for the Iesi.Collections library was taken from the article
@@ -42,7 +43,7 @@ namespace NHibernate.Collection
 		/// <see cref="PersistentCollection.Snapshot"/>
 		/// </summary>
 		/// <param name="persister"></param>
-		protected override object Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
 			Hashtable clonedMap = new Hashtable( internalSet.Count );
 			foreach( object obj in internalSet )
@@ -108,22 +109,23 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// This constructor is NOT meant to be called from user code.
 		/// </summary>
 		/// <param name="session"></param>
-		internal Set( ISessionImplementor session ) : base( session )
+		public Set( ISessionImplementor session ) : base( session )
 		{
 		}
 
 		/// <summary>
 		/// Creates a new Set initialized to the values in the Map.
+		/// This constructor is NOT meant to be called from user code.
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="collection"></param>
 		/// <remarks>
 		/// Only call this constructor if you consider the map initialized.
 		/// </remarks>
-		internal Set( ISessionImplementor session, ISet collection ) : base( session )
+		public Set( ISessionImplementor session, ISet collection ) : base( session )
 		{
 			internalSet = collection;
 			SetInitialized();
@@ -140,7 +142,7 @@ namespace NHibernate.Collection
 		{
 			BeforeInitialize( persister );
 			object[ ] array = ( object[ ] ) disassembled;
-			for( int i = 0; i < array.Length; i += 2 )
+			for( int i = 0; i < array.Length; i++ )
 			{
 				internalSet.Add( persister.ElementType.Assemble( array[ i ], Session, owner ) );
 			}

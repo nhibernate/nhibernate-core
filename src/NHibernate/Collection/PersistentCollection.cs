@@ -436,7 +436,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected abstract object Snapshot( ICollectionPersister persister );
+		protected abstract ICollection Snapshot( ICollectionPersister persister );
 
 		/// <summary>
 		/// 
@@ -465,7 +465,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public object GetSnapshot( ICollectionPersister persister )
+		public ICollection GetSnapshot( ICollectionPersister persister )
 		{
 			return ( persister == null ) ? null : Snapshot( persister );
 		}

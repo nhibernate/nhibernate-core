@@ -47,7 +47,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
 			int length = /*(array==null) ? temp.Count :*/ array.Length;
 			Array result = System.Array.CreateInstance( persister.ElementClass, length );

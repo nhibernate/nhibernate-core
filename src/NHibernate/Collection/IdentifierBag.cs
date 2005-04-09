@@ -429,7 +429,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
 			IDictionary map = new Hashtable( values.Count );
 

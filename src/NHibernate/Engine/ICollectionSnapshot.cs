@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace NHibernate.Engine
 {
 	/// <summary>
@@ -22,7 +24,7 @@ namespace NHibernate.Engine
 		/// In most cases this is the same collection type as the one being snapshotted. 
 		/// ie - the snapshot of an IList will return an IList.
 		/// </remarks>
-		object Snapshot { get; }
+		ICollection Snapshot { get; }
 
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if some action has been performed on the

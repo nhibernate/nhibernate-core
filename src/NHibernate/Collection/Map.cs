@@ -22,7 +22,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override object Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
 			Hashtable clonedMap = new Hashtable( map.Count );
 			foreach( DictionaryEntry e in map )

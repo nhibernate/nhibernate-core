@@ -113,7 +113,7 @@ namespace NHibernate.Impl
 		internal object loadedKey;
 
 		/// <summary>session-start/post-flush persistent state</summary>
-		internal object snapshot;
+		internal ICollection snapshot;
 
 		/// <summary>allow the snapshot to be serialized</summary>
 		internal string role;
@@ -305,7 +305,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public object Snapshot
+		public ICollection Snapshot
 		{
 			get { return snapshot; }
 		}
@@ -353,21 +353,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				//TODO: implementation here is non-extensible ... 
-				//should use polymorphism 
-				//	return initialized && snapshot!=null && ( 
-				//		( snapshot is IList && ( (IList) snapshot ).Count==0 ) || // if snapshot is a collection 
-				//		( snapshot is Map && ( (Map) snapshot ).Count==0 ) || // if snapshot is a map 
-				//		(snapshot.GetType().IsArray && ( (Array) snapshot).Length==0 )// if snapshot is an array 
-				//		); 
-
-				// TODO: in .NET an IList, IDictionary, and Array are all collections so we might be able
-				// to just cast it to a ICollection instead of all the diff collections.
-				return initialized && snapshot != null && (
-					( snapshot is IList && ( ( IList ) snapshot ).Count == 0 ) || // if snapshot is a collection 
-						( snapshot is IDictionary && ( ( IDictionary ) snapshot ).Count == 0 ) || // if snapshot is a map 
-						( snapshot.GetType().IsArray && ( ( Array ) snapshot ).Length == 0 ) // if snapshot is an array 
-					);
+				return initialized && snapshot != null && snapshot.Count == 0;
 			}
 		}
 
