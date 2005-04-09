@@ -497,6 +497,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NHSpecificTest\SetFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHSpecificTest\SimpleComponentFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
