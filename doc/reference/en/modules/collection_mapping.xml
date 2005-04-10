@@ -7,7 +7,7 @@
   "../../support/docbook-dtd/docbookx.dtd">
 -->
 <chapter id="collections">
-	<title>Basic O/R Mapping</title>
+	<title>Collection Mapping</title>
 	<sect1 id="collections-persistent">
 		<title>Persistent Collections</title>
 		<para>
