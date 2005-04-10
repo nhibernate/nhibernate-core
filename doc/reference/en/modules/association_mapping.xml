@@ -1,0 +1,84 @@
+<!-- 
+	before committing make sure to comment out the DOCTYPE
+	It is in here to get intellisense with XMLSpy.  The
+	HomeEdition is a free download.
+
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "../../support/docbook-dtd/docbookx.dtd">
+-->
+<chapter id="associations">
+	<title>Association Mappings</title>
+	
+	<sect1 id="assoc-intro">
+		<title>Introduction</title>
+		<para>
+		</para>
+	</sect1>
+	<sect1 id="assoc-unidirectional">
+		<title>Unidirectional associations</title>
+		<para>
+		</para>
+		<sect2 id="assoc-unidirectional-m21">
+			<title>many to one</title>
+			<para></para>
+		</sect2>
+		<sect2 id="assoc-unidirectional-121">
+			<title>one to one</title>
+			<para></para>
+		</sect2>
+		<sect2 id="assoc-unidirectional-12m">
+			<title>one to many</title>
+			<para></para>
+		</sect2>
+	</sect1>
+	
+	<sect1 id="assoc-unidirectional-join">
+		<title>Unidirectional associations with join tables</title>
+		<para></para>
+		<sect2 id="assoc-unidirectional-join-12m">
+			<title>one to many</title>
+			<para></para>
+		</sect2>
+		<sect2 id="assoc-unidirectional-join-m21">
+			<title>many to one</title>
+			<para></para>
+		</sect2>
+		<sect2 id="assoc-unidirectional-join-121">
+			<title>one to one</title>
+			<para></para>
+		</sect2>
+		<sect2 id="assoc-unidirectional-join-m2m">
+			<title>many to many</title>
+			<para></para>
+		</sect2>
+	</sect1>
+	<sect1 id="assoc-bidirectional">
+		<title>Bidirectional associations</title>
+		<para></para>
+		<sect2 id="assoc-bidirectional-m21">
+			<title>one to many / many to one</title>
+			<para></para>
+		</sect2>
+		<sect2 id="assoc-bidirectional-121">
+			<title>one to one</title>
+			<para></para>
+		</sect2>
+	</sect1>
+	<sect1 id="assoc-bidirectional-join">
+		<title>Bidirectional associations with join tables</title>
+		<para></para>
+		<sect2 id="assoc-bidirectional-join-12m">
+			<title>one to many / many to one</title>
+			<para></para>
+		</sect2>
+		<sect2 id="assoc-bidirectional-join-121">
+			<title>one to one</title>
+			<para></para>
+		</sect2>
+		<sect2 id="assoc-bidirectional-join-m2m">
+			<title>many to many</title>
+			<para></para>
+		</sect2>
+	</sect1>
+
+</chapter>

@@ -7,6 +7,7 @@
   <!ENTITY persistent-classes SYSTEM "modules/persistent_classes.xml">
   <!ENTITY basic-mapping SYSTEM "modules/basic_mapping.xml">
   <!ENTITY collection-mapping SYSTEM "modules/collection_mapping.xml">
+  <!ENTITY association-mapping SYSTEM "modules/association_mapping.xml">
   <!ENTITY component-mapping SYSTEM "modules/component_mapping.xml">
   <!ENTITY inheritence-mapping SYSTEM "modules/inheritence_mapping.xml">
   <!ENTITY manipulating-data SYSTEM "modules/mainpulating_data.xml">
@@ -109,5 +110,7 @@
   &architecture;
   &configuration;
   &basic-mapping;
+  &collection-mapping;
+  &association-mapping;
   <index id="index"/>
 </book>
