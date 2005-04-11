@@ -12,9 +12,9 @@
 		<title>Persistent Collections</title>
 		<para>
 			This section does not contain much example .NET code.  We assume you already know
-			how to use .NET's collections framework.  If so, there's not really anything more
-			to know - with a single caveat, you may use .NET collections the same way you
-			always have.
+			how to use .NET's collections framework and the concepts behind a Set collection.  
+			If so, there's not really anything more	to know - with a single caveat, you may 
+			use collections the same way you always have.
 		</para>
 		<para>
 			NHibernate can persist instances of 
@@ -29,12 +29,12 @@
 			Now the caveat: persistent collections do not retain any extra semantics added by the class
 			implementing the collection interface (eg. iteration order of a <literal>Iesi.Collections.ListSet</literal>.
 			The persistent collections actually behave like
-			<literal>System.Collections.Dictionary</literal>,
+			<literal>System.Collections.Hashtable</literal>,
 			<literal>System.Collections.ArrayList</literal>,
-			<literal>Iesi.Collections.Set</literal> 
+			<literal>Iesi.Collections.HashedSet</literal> 
 			respectively.  Furthermore, the .NET type of a property holding a collection must be
 			the interface type (ie. <literal>IDictionary</literal>, <literal>IList</literal>, or
-			<literal>IList</literal>).  This restriction exists because NHibernate replaces your 
+			<literal>ISet</literal>).  This restriction exists because NHibernate replaces your 
 			instances of <literal>IDictionary</literal>, <literal>IList</literal>, and 
 			<literal>ISet</literal> with instances of its own persistent implemetations of those 
 			collection interfaces.  (So also be careful when using <literal>==</literal> on your

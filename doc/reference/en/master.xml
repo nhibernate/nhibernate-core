@@ -17,7 +17,7 @@
   <!ENTITY query-sql SYSTEM "modules/query_sql.xml">
   <!ENTITY performance SYSTEM "modules/performance.xml">
   <!ENTITY toolset-guide SYSTEM "modules/toolset_guide.xml">
-  <!ENTITY example-parentchild SYSTEM "modules/example-parentchild.xml">
+  <!ENTITY example-parentchild SYSTEM "modules/example_parentchild.xml">
   <!ENTITY example-weblog SYSTEM "modules/example_weblog.xml">
   <!ENTITY example-mappings SYSTEM "modules/example_mappings.xml">
   <!ENTITY best-practices SYSTEM "modules/best_practices.xml">
@@ -112,5 +112,6 @@
   &basic-mapping;
   &collection-mapping;
   &association-mapping;
+  &example-parentchild;
   <index id="index"/>
 </book>

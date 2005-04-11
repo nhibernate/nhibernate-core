@@ -12,6 +12,22 @@
 	<sect1 id="assoc-intro">
 		<title>Introduction</title>
 		<para>
+			Association mappings are often the most difficult thing to get right.  In
+			this section we'll go through the canonical cases one by one, starting 
+			with unidirectional mappings, and then considering the bidirectional cases.
+			We'll use <literal>Person</literal> and <literal>Address</literal> in all
+			the examples.  The namespace and assembly are not included in the example
+			mappings to keep the mappings focused on the important aspects.			
+		</para>
+		<para>
+			We'll classify associations by wheter or not they map to an intervening
+			join table, and by multiplicity.
+		</para>
+		<para>
+			Nullable foreign keys are not considered good practive in traditional data
+			modeling, so all our examples use not null foreign keys.  This is not a 
+			requirement of NHibernate, and the mappings will all work if you drop the
+			nullability constraints.
 		</para>
 	</sect1>
 	<sect1 id="assoc-unidirectional">
@@ -57,7 +73,44 @@
 		<para></para>
 		<sect2 id="assoc-bidirectional-m21">
 			<title>one to many / many to one</title>
-			<para></para>
+			<para>
+				A <emphasis>bidirectional one-to-many association</emphasis> is the
+				most common kind of association.  (This is the standard parent/child
+				relationship.)
+			</para>
+			<programlisting><![CDATA[<class name="Person">
+	<id name="Id" column="personId">
+		<generator class="native" />
+	</id>
+	<many-to-one name="Address"
+		column="addressId"
+		not-null="true"
+	/>
+</class>
+
+<class name="Address">
+	<id name="Id" column="addressId">
+		<generator class="native" />
+	</id>
+	<set name="People" inverse="true">
+		<key column="addressId" />
+		<one-to-many class="Person" />
+	</set>
+</class>]]></programlisting>
+
+<programlisting><![CDATA[
+create table Person 
+(
+	personId bigint not null primary key,
+	addressId bigint not null
+)
+
+create table Address
+(
+	addressId bigint not null primary key
+)
+	
+]]></programlisting>
 		</sect2>
 		<sect2 id="assoc-bidirectional-121">
 			<title>one to one</title>
@@ -69,7 +122,8 @@
 		<para></para>
 		<sect2 id="assoc-bidirectional-join-12m">
 			<title>one to many / many to one</title>
-			<para></para>
+			<para>
+			</para>
 		</sect2>
 		<sect2 id="assoc-bidirectional-join-121">
 			<title>one to one</title>
