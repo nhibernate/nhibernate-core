@@ -29,24 +29,24 @@ namespace NHibernate.Cfg
 	/// are immutable and do not retain any association back to the <c>Configuration</c>
 	/// </para>
 	/// </remarks>
-	public class Configuration : IMapping
+	public sealed class Configuration : IMapping
 	{
-		private Hashtable classes = new Hashtable();
-		private Hashtable imports = new Hashtable();
-		private Hashtable collections = new Hashtable();
-		private Hashtable tables = new Hashtable();
-		private Hashtable namedQueries = new Hashtable();
-		private Hashtable namedSqlQueries = new Hashtable();
-		private ArrayList secondPasses = new ArrayList();
-		private ArrayList propertyReferences = new ArrayList();
-		private IInterceptor interceptor = emptyInterceptor;
-		private IDictionary properties = Environment.Properties;
-		private IDictionary caches = new Hashtable();
+		private Hashtable classes;
+		private Hashtable imports; 
+		private Hashtable collections;
+		private Hashtable tables;
+		private Hashtable namedQueries;
+		private Hashtable namedSqlQueries;
+		private ArrayList secondPasses;
+		private ArrayList propertyReferences;
+		private IInterceptor interceptor;
+		private IDictionary properties;
+		private IDictionary caches;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
 
-		private XmlSchema mappingSchema;
-		private XmlSchema cfgSchema;
+		private XmlSchemaCollection mappingSchemaCollection;
+		private XmlSchemaCollection cfgSchemaCollection;
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( Configuration ) );
 		private static readonly IInterceptor emptyInterceptor = new EmptyInterceptor();
@@ -99,21 +99,24 @@ namespace NHibernate.Cfg
 		public static readonly string CfgSchemaXMLNS = "urn:nhibernate-configuration-2.0";
 		private const string CfgSchemaResource = "NHibernate.nhibernate-configuration-2.0.xsd";
 		private const string CfgNamespacePrefix = "cfg";
-		private static XmlNamespaceManager CfgNamespaceMgr;
 
 		/// <summary>
 		/// Clear the internal state of the <see cref="Configuration"/> object.
 		/// </summary>
-		protected void Reset()
+		//protected void Reset()
+		private void Reset()
 		{
 			classes = new Hashtable();
+			imports = new Hashtable();
 			collections = new Hashtable();
 			tables = new Hashtable();
 			namedQueries = new Hashtable();
 			namedSqlQueries = new Hashtable();
 			secondPasses = new ArrayList();
+			propertyReferences = new ArrayList();
 			interceptor = emptyInterceptor;
 			properties = Environment.Properties;
+			caches = new Hashtable();
 			mapping = new Mapping( classes );
 		}
 
@@ -123,8 +126,38 @@ namespace NHibernate.Cfg
 		public Configuration()
 		{
 			Reset();
-			mappingSchema = XmlSchema.Read( Assembly.GetExecutingAssembly().GetManifestResourceStream( MappingSchemaResource ), null );
-			cfgSchema = XmlSchema.Read( Assembly.GetExecutingAssembly().GetManifestResourceStream( CfgSchemaResource ), null );
+		}
+
+		/// <summary></summary>
+		/// <remarks>Allocate on first use as we are expensive in time/space</remarks>
+		private XmlSchemaCollection MappingSchemaCollection
+		{
+			get 
+			{
+				if ( mappingSchemaCollection == null )
+				{
+					mappingSchemaCollection = new XmlSchemaCollection();
+					mappingSchemaCollection.Add( XmlSchema.Read( Assembly.GetExecutingAssembly().GetManifestResourceStream( MappingSchemaResource ), null ) );
+				}
+				return mappingSchemaCollection;
+			}
+			set { mappingSchemaCollection = value; }
+		}
+
+		/// <summary></summary>
+		/// <remarks>Allocate on first use as we are expensive in time/space</remarks>
+		private XmlSchemaCollection CfgSchemaCollection
+		{
+			get 
+			{
+				if ( cfgSchemaCollection == null )
+				{
+					cfgSchemaCollection = new XmlSchemaCollection();
+					cfgSchemaCollection.Add( XmlSchema.Read( Assembly.GetExecutingAssembly().GetManifestResourceStream( CfgSchemaResource ), null ) );
+				}
+				return cfgSchemaCollection;
+			}
+			set { cfgSchemaCollection = value; }
 		}
 
 		/// <summary>
@@ -270,7 +303,7 @@ namespace NHibernate.Cfg
 		/// with <c>skipOrdering=true</c>.
 		/// </p>
 		/// </remarks>
-		public Configuration AddAssembly(Assembly assembly, bool skipOrdering)
+		public Configuration AddAssembly( Assembly assembly, bool skipOrdering )
 		{
 			IList resources = null;
 			if( skipOrdering )
@@ -473,22 +506,22 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds the Mappings in the XmlReader after validating it against the
+		/// Adds the Mappings in the XmlReader after validating optionally it against the
 		/// nhibernate-mapping-2.0 schema.
 		/// </summary>
 		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
 		/// <returns>This Configuration object.</returns>
 		public Configuration AddXmlReader( XmlReader hbmReader )
 		{
-
 			XmlValidatingReader validatingReader = null;
 			try 
 			{
-				validatingReader = new XmlValidatingReader( hbmReader );
-				validatingReader.ValidationType = ValidationType.Schema;
-				validatingReader.Schemas.Add( mappingSchema );
-
 				XmlDocument hbmDocument = new XmlDocument();
+				validatingReader = new XmlValidatingReader( hbmReader );
+				validatingReader.ValidationEventHandler += new ValidationEventHandler( ValidationHandler );
+				validatingReader.ValidationType = ValidationType.Schema;
+				validatingReader.Schemas.Add( MappingSchemaCollection );
+
 				hbmDocument.Load( validatingReader );
 				Add( hbmDocument );
 
@@ -501,6 +534,11 @@ namespace NHibernate.Cfg
 					validatingReader.Close();
 				}
 			}
+		}
+
+		private static void ValidationHandler( object o, ValidationEventArgs args )
+		{
+			throw args.Exception;
 		}
 
 		/// <summary>
@@ -818,6 +856,10 @@ namespace NHibernate.Cfg
 			Settings settings = BuildSettings();
 			ConfigureCaches( settings );
 
+			// Ok, don't need schemas anymore, so free them
+			MappingSchemaCollection = null;
+			CfgSchemaCollection = null;
+
 			return new SessionFactoryImpl( this, settings );
 		}
 
@@ -838,7 +880,8 @@ namespace NHibernate.Cfg
 		/// Builds an object-oriented view of the settings.
 		/// </summary>
 		/// <returns>A <see cref="Settings"/> object initialized from the settings properties.</returns>
-		protected Settings BuildSettings()
+		//protected Settings BuildSettings()
+		private Settings BuildSettings()
 		{
 			return SettingsFactory.BuildSettings( properties );
 		}
@@ -900,6 +943,17 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
+		/// Set a custom naming strategy
+		/// </summary>
+		/// <param name="namingStrategy">the NamingStrategy to set</param>
+		/// <returns></returns>
+		public Configuration SetNamingStrategy( INamingStrategy namingStrategy )
+		{
+			this.namingStrategy = namingStrategy;
+			return this;
+		}
+
+		/// <summary>
 		/// Gets the value of the configuration property.
 		/// </summary>
 		/// <param name="name">The name of the property.</param>
@@ -909,7 +963,7 @@ namespace NHibernate.Cfg
 			return properties[ name ] as string;
 		}
 
-		private void AddProperties( XmlNode parent )
+		private void AddProperties( XmlNode parent, XmlNamespaceManager CfgNamespaceMgr )
 		{
 			foreach( XmlNode node in parent.SelectNodes( CfgNamespacePrefix + ":property", CfgNamespaceMgr ) )
 			{
@@ -959,17 +1013,6 @@ namespace NHibernate.Cfg
 					reader.Close();
 				}
 			}
-		}
-
-		/// <summary>
-		/// Set a custom naming strategy
-		/// </summary>
-		/// <param name="namingStrategy">the NamingStrategy to set</param>
-		/// <returns></returns>
-		public Configuration SetNamingStrategy( INamingStrategy namingStrategy )
-		{
-			this.namingStrategy = namingStrategy;
-			return this;
 		}
 
 		/// <summary>
@@ -1026,20 +1069,21 @@ namespace NHibernate.Cfg
 
 			XmlDocument doc = new XmlDocument();
 			XmlValidatingReader validatingReader = null;
+			XmlNamespaceManager cfgNamespaceMgr;
 
 			try
 			{
 				validatingReader = new XmlValidatingReader( reader );
 				validatingReader.ValidationType = ValidationType.Schema;
-				validatingReader.Schemas.Add( cfgSchema );
+				validatingReader.Schemas.Add( CfgSchemaCollection );
 
 				doc.Load( validatingReader );
-				CfgNamespaceMgr = new XmlNamespaceManager( doc.NameTable );
+				cfgNamespaceMgr = new XmlNamespaceManager( doc.NameTable );
 				// note that the prefix has absolutely nothing to do with what the user
 				// selects as their prefix in the document.  It is the prefix we use to 
 				// build the XPath and the nsmgr takes care of translating our prefix into
 				// the user defined prefix...
-				CfgNamespaceMgr.AddNamespace( CfgNamespacePrefix, Configuration.CfgSchemaXMLNS );
+				cfgNamespaceMgr.AddNamespace( CfgNamespacePrefix, Configuration.CfgSchemaXMLNS );
 			}
 			catch( Exception e )
 			{
@@ -1054,13 +1098,13 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			XmlNode sfNode = doc.DocumentElement.SelectSingleNode( "//" + CfgNamespacePrefix + ":session-factory", CfgNamespaceMgr );
+			XmlNode sfNode = doc.DocumentElement.SelectSingleNode( "//" + CfgNamespacePrefix + ":session-factory", cfgNamespaceMgr );
 			XmlAttribute name = sfNode.Attributes[ "name" ];
 			if( name != null )
 			{
 				properties[ Environment.SessionFactoryName ] = name.Value;
 			}
-			AddProperties( sfNode );
+			AddProperties( sfNode, cfgNamespaceMgr );
 
 			foreach( XmlNode mapElement in sfNode.ChildNodes )
 			{
@@ -1105,8 +1149,9 @@ namespace NHibernate.Cfg
 		/// 
 		/// </summary>
 		/// <param name="settings"></param>
-		protected void ConfigureCaches( Settings settings )
-		{
+		//protected void ConfigureCaches( Settings settings )
+		private void ConfigureCaches( Settings settings )
+			{
 			log.Info( "instantiating and configuring caches" );
 
 			// TODO: add ability to configure cache_region_prefix

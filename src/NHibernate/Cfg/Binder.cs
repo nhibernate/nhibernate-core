@@ -18,7 +18,25 @@ namespace NHibernate.Cfg
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Binder));
 
 		private static XmlNamespaceManager nsmgr;
+
+		// Make consts of all of these to avoid interning the strings at run-time
 		private const string nsPrefix = "hbm";
+		private const string nsKey = nsPrefix + ":key";
+		private const string nsColumn = nsPrefix + ":column";
+		private const string nsOneToMany = nsPrefix + ":one-to-many";
+		private const string nsParam = nsPrefix + ":param";
+		private const string nsIndex = nsPrefix + ":index";
+		private const string nsGenerator = nsPrefix + ":generator";
+		private const string nsCollectionId = nsPrefix + ":collection-id";
+		private const string nsClass = nsPrefix + ":class";
+		private const string nsSubclass = nsPrefix + ":subclass";
+		private const string nsJoinedSubclass = nsPrefix + ":joined-subclass";
+		private const string nsQuery = nsPrefix + ":query";
+		private const string nsSqlQuery = nsPrefix + ":sql-query";
+		private const string nsReturn = nsPrefix + ":return";
+		private const string nsSynchronize = nsPrefix + ":synchronize";
+		private const string nsImport = nsPrefix + ":import";
+
 		internal static Dialect.Dialect dialect;
 
 		/// <summary>
@@ -33,39 +51,37 @@ namespace NHibernate.Cfg
 			{
 				return null;
 			}
+			int commaPosn = className.IndexOf( ',' );
+			int dotPosn = className.IndexOf( '.' );
 
-			// TODO: Make this stronger, assumes stuff about presence of culture, public key etc
-			// Split off the assembly reference if it's present
-			string[] parts = className.Split( ',' );
-			string name = parts[ 0 ];
-			if ( name.IndexOf( '.' ) == -1 && mapping.DefaultNamespace != null )
-			{
-				// No namespace - use the default
-				name = mapping.DefaultNamespace + "." + name;
-			}
+			// Check for namespace; ok to have a dot after the comma as it's part of the assembly name
+			bool needNamespace = ( dotPosn == -1 || ( commaPosn > -1 && dotPosn > commaPosn ) ) && mapping.DefaultNamespace != null ;
+			// Add if we don't have any commas and a default exists
+			bool needAssembly = commaPosn == -1 && mapping.DefaultAssembly != null;
 
-			string assm;
-			if ( parts.Length == 1 )
+			if ( needNamespace == false && needAssembly == false )
 			{
-				if ( mapping.DefaultAssembly == null )
-				{
-					// No default, let it try and find it automatically
-					assm = "";
-				}
-				else
-				{
-					// No assembly - use the default
-					assm = ", " + mapping.DefaultAssembly;
-				}
+				return className;
 			}
 			else
 			{
-				// Use the assembly reference provided
-				assm = ", " + parts[ 1 ];
-			}
+				StringBuilder sb = new StringBuilder();
 
-			// Rebuild the name
-			return name + assm;
+				if ( needNamespace )
+				{
+					sb.Append( mapping.DefaultNamespace );
+					sb.Append( "." );
+				}
+
+				sb.Append( className );
+
+				if ( needAssembly )
+				{
+					sb.Append( ", ");
+					sb.Append( mapping.DefaultAssembly );
+				}
+				return sb.ToString();
+			}
 		}
 
 		public static void BindClass(XmlNode node, PersistentClass model, Mappings mapping) 
@@ -225,7 +241,7 @@ namespace NHibernate.Cfg
 
 			log.Info("Mapping joined-subclass: " + model.Name + " -> " + model.Table.Name );
 
-			XmlNode keyNode = node.SelectSingleNode(nsPrefix + ":key", nsmgr);
+			XmlNode keyNode = node.SelectSingleNode( nsKey, nsmgr );
 			SimpleValue key = new SimpleValue(mytable);
 			model.Key = key;
 			BindSimpleValue( keyNode, key, false, model.Name, mappings );
@@ -386,7 +402,7 @@ namespace NHibernate.Cfg
 			if ( columnNode==null ) 
 			{
 				int count=0;
-				foreach(XmlNode subnode in node.SelectNodes(nsPrefix + ":column", nsmgr)) 
+				foreach(XmlNode subnode in node.SelectNodes( nsColumn, nsmgr )) 
 				{
 					Table table = model.Table;
 					Column col = new Column( model.Type, count++ );
@@ -595,7 +611,7 @@ namespace NHibernate.Cfg
 
 			InitOuterJoinFetchSetting( node, model );
 
-			XmlNode oneToManyNode = node.SelectSingleNode(nsPrefix + ":one-to-many", nsmgr);
+			XmlNode oneToManyNode = node.SelectSingleNode( nsOneToMany, nsmgr );
 			if ( oneToManyNode!=null ) 
 			{
 				OneToMany oneToMany = new OneToMany( model.Owner );
@@ -1069,11 +1085,11 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static void MakeIdentifier(XmlNode node, SimpleValue model, Mappings mappings) 
+		private static void MakeIdentifier( XmlNode node, SimpleValue model, Mappings mappings ) 
 		{
 			//GENERATOR
 
-			XmlNode subnode = node.SelectSingleNode(nsPrefix + ":generator", nsmgr);
+			XmlNode subnode = node.SelectSingleNode( nsGenerator, nsmgr );
 			if ( subnode!=null ) 
 			{
 				if (subnode.Attributes["class"] == null)
@@ -1096,8 +1112,7 @@ namespace NHibernate.Cfg
 					break;
 				}
 
-				//foreach(XmlNode childNode in subnode.SelectNodes("param")) {
-				foreach(XmlNode childNode in subnode.SelectNodes(nsPrefix + ":param", nsmgr)) 
+				foreach( XmlNode childNode in subnode.SelectNodes( nsParam, nsmgr )) 
 				{
 					parms.Add(
 						childNode.Attributes["name"].Value,
@@ -1203,7 +1218,7 @@ namespace NHibernate.Cfg
 		{
 			BindCollectionSecondPass(node, model, classes, mappings);
 
-			XmlNode subnode = node.SelectSingleNode(nsPrefix + ":index", nsmgr);
+			XmlNode subnode = node.SelectSingleNode( nsIndex, nsmgr);
 			IntegerValue iv = new IntegerValue( model.CollectionTable );
 			BindIntegerValue( subnode, iv, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany, mappings );
 			model.Index = iv;
@@ -1213,7 +1228,7 @@ namespace NHibernate.Cfg
 		{
 			BindCollectionSecondPass(node, model, persitentClasses, mappings);
 
-			XmlNode subnode = node.SelectSingleNode( nsPrefix + ":collection-id", nsmgr );
+			XmlNode subnode = node.SelectSingleNode( nsCollectionId, nsmgr );
 			SimpleValue id = new SimpleValue( model.CollectionTable );
 			BindSimpleValue( subnode, id, false, IdentifierCollection.DefaultIdentifierColumnName, mappings);
 			model.Identifier = id;
@@ -1390,26 +1405,26 @@ namespace NHibernate.Cfg
 			// the user defined prefix...
 			nsmgr.AddNamespace( nsPrefix, Configuration.MappingSchemaXMLNS );
 			
-			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":class", nsmgr ) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsClass, nsmgr ) ) 
 			{
 				RootClass rootclass = new RootClass();
 				Binder.BindRootClass( n, rootclass, model );
 				model.AddClass( rootclass );
 			}
 
-			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":subclass", nsmgr ) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsSubclass, nsmgr ) ) 
 			{
 				PersistentClass superModel = GetSuperclass( model, n );
 				HandleSubclass(superModel, model, n);
 			}
 
-			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":joined-subclass", nsmgr ) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsJoinedSubclass, nsmgr ) ) 
 			{
 				PersistentClass superModel = GetSuperclass(model, n);
 				HandleJoinedSubclass(superModel, model, n);
 			}
 
-			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":query", nsmgr ) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsQuery, nsmgr ) ) 
 			{
 				string qname = n.Attributes["name"].Value;
 				string query = n.InnerText;
@@ -1417,12 +1432,12 @@ namespace NHibernate.Cfg
 				model.AddQuery( qname, query );
 			}
 
-			foreach(XmlNode n in hmNode.SelectNodes( nsPrefix + ":sql-query", nsmgr ) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsSqlQuery, nsmgr ) ) 
 			{
 				string qname = n.Attributes["name"].Value;
 				NamedSQLQuery namedQuery = new NamedSQLQuery( n.InnerText );
 
-				foreach(XmlNode returns in n.SelectNodes( nsPrefix + ":return", nsmgr ) )
+				foreach(XmlNode returns in n.SelectNodes( nsReturn, nsmgr ) )
 				{
 					string alias = returns.Attributes["alias"].Value;
 					System.Type clazz;
@@ -1438,7 +1453,7 @@ namespace NHibernate.Cfg
 					namedQuery.AddAliasedClass( alias, clazz );
 				}
 
-				foreach( XmlNode table in n.SelectNodes( nsPrefix + ":synchronise", nsmgr ) )
+				foreach( XmlNode table in n.SelectNodes( nsSynchronize, nsmgr ) )
 				{
 					namedQuery.AddSynchronizedTable( table.Attributes["table"].Value );
 				}
@@ -1447,7 +1462,7 @@ namespace NHibernate.Cfg
 				model.AddSQLQuery( qname, namedQuery );
 			}
 
-			foreach(XmlNode n in hmNode.SelectNodes(nsPrefix + ":import", nsmgr) ) 
+			foreach(XmlNode n in hmNode.SelectNodes( nsImport, nsmgr) ) 
 			{
 				string className = FullClassName( n.Attributes["class"].Value, model );
 				XmlAttribute renameNode = n.Attributes[ "rename" ];
