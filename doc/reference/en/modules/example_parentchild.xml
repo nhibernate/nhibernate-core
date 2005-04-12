@@ -269,6 +269,53 @@ session.Flush();]]></programlisting>
 	</sect1>
 	<sect1 id="example-parentchild-update">
 		<title>Using cascading <literal>update()</literal></title>
-		<para></para>
+		<para>
+			Suppose we loaded up a <literal>Parent</literal> in one <literal>ISession</literal>, mode some changes in a UI
+			action and wish to persist these changes in a new ISession (by calling <literal>Update()</literal>).  The
+			<literal>Parent</literal> will contain a collection of children and, since cascading update is enabled, NHibernate
+			needs to know which children are newly instantiated and which represent existing rows in the database.  Lets assume
+			that both <literal>Parent</literal> and <literal>Child</literal> have (synthetic) identifier properties of type
+			<literal>System.Int32</literal>.  NHibernate will use the identifier property value to determine which of the
+			children are new.
+			<!-- TODO: add comments about version/timestamp when the build is released -->
+		</para>
+		<para>
+			The <literal>unsaved-value</literal> attribute is used to specify the identifier value of a newly instantiated
+			instance.  <literal>unsaved-value</literal> defaults to "null", which is not a sensible default in the .net with
+			ValueTypes, so you need to specify the unsaved-value
+		</para>
+		<programlisting><![CDATA[<id name="Id" type="Int64" unsaved-value="0" ]]></programlisting>
+		<para>
+			for the <literal>Child</literal> mapping.  <!--
+			TODO: not implemented in production build yet
+			(There is also an <literal>unsaved-value</literal> attribute
+			for version and timestamp property mappings.)-->
+		</para>
+		<para>
+			The following code will update <literal>parent</literal> and <literal>child</literal> and insert
+			<literal>newChild</literal>.
+		</para>
+		
+		<programlisting><![CDATA[//parent and child were both loaded in a previous session
+parent.AddChild( child );
+Child newChild = new Child();
+parent.AddChild( newChild );
+session.Update( parent );
+session.Flush();]]></programlisting>
+
+		<para>
+			<!-- TODO: discuss use of unsaved-value with version and timestamp -->
+		</para>
+	</sect1>
+	
+	<sect1 id="example-parentchild-conclusion">
+		<title>Conclusion</title>
+		<para>
+			There is quite a bit to digest here and it might look confusing first time around.  However, in practice, it
+			all works out quite nicely.  Most NHibernate applications use the parent/child pattern in many places.
+		</para>
+		<para>
+			<!-- TODO: describe composite-element -->
+		</para>
 	</sect1>
 </chapter>

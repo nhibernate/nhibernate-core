@@ -1,0 +1,55 @@
+<!-- 
+	before committing make sure to comment out the DOCTYPE
+	It is in here to get intellisense with XMLSpy.  The
+	HomeEdition is a free download.
+
+-->
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "../../support/docbook-dtd/docbookx.dtd">
+  
+<chapter id="persistent-classes">
+
+	<title>Persistent Classes</title>
+	<para></para>
+	
+	<sect1 id="persistent-classes-poco">
+		<title>A simple POCO example</title>
+		<para></para>
+		<sect2 id="persistent-classes-poco-accessors">
+			<title>Declare getters and setters for persistent fields (optional)</title>
+			<para></para>
+		</sect2>
+		<sect2 id="persistent-classes-poco-constructor">
+			<title>Implement a default constructor</title>
+			<para></para>
+		</sect2>
+		<sect2 id="persistent-classes-poco-identifier">
+			<title>Provide an identifier property (optional)</title>
+			<para></para>
+		</sect2>
+		<sect2 id="persistent-classes-poco-sealed">
+			<title>Prefer non-sealed classes (optional)</title>
+			<para></para>
+		</sect2>
+	</sect1>
+	<sect1 id="persistent-classes-inheritance">
+		<title>Implementing inheritence</title>
+		<para></para>
+	</sect1>
+	<sect1 id="persistent-classes-equalshashcode">
+		<title>Implementing <literal>Equals()</literal> and <literal>GetHashCode()</literal></title>
+		<para></para>
+	</sect1>
+	<sect1 id="persistent-classes-lifecycle">
+		<title>Lifecycle Callbacks</title>
+		<para></para>
+	</sect1>
+	<sect1 id="persistent-classes-validatable">
+		<title>Validatable callback</title>
+		<para></para>
+	</sect1>
+	<sect1 id="persistent-classes-attribute">
+		<title>Using Attributes instead of XML</title>
+		<para></para>
+	</sect1>
+</chapter>
