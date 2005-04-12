@@ -1465,6 +1465,17 @@ namespace NHibernate.Impl
 			deletions.Remove( delete );
 		}
 
+		/// <summary>
+		/// Checks to see if there are any Properties that should not be null 
+		/// are references to null or to a transient object.
+		/// </summary>
+		/// <param name="values">An object array of values that should be validated.</param>
+		/// <param name="persister">The <see cref="IClassPersister"/> that describes which values can be null.</param>
+		/// <param name="isUpdate">A <see cref="Boolean"/> indicating if this is an Update operation.</param>
+		/// <exception cref="HibernateException">
+		/// Thrown when a non-nullable property contains a value that would
+		/// persist the value of null to the database.
+		/// </exception>
 		private static void CheckNullability( object[] values, IClassPersister persister, bool isUpdate )
 		{
 			bool[] nullability = persister.PropertyNullability;
