@@ -28,12 +28,12 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 			
-			NExpression.Expression orExpression = NExpression.Expression.Or(NExpression.Expression.IsNull("Address"),NExpression.Expression.Between("Count", 5, 10) );
+			NExpression.ICriterion orExpression = NExpression.Expression.Or(NExpression.Expression.IsNull("Address"),NExpression.Expression.Between("Count", 5, 10) );
 
 			
-			SqlString sqlString = orExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			SqlString sqlString = orExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
-			string expectedSql = "((simple_alias.address IS NULL) or (simple_alias.count_ between :simple_alias.count__lo and :simple_alias.count__hi))";
+			string expectedSql = "(simple_alias.address IS NULL or simple_alias.count_ between :simple_alias.count__lo and :simple_alias.count__hi)";
 			
 			CompareSqlStrings(sqlString, expectedSql, 2);
 

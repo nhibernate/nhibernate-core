@@ -67,7 +67,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="componentClass"></param>
-		/// <param name="properties"></param>
+		/// <param name="propertyNames"></param>
 		/// <param name="propertyGetters"></param>
 		/// <param name="propertySetters"></param>
 		/// <param name="foundCustomAcessor"></param>
@@ -75,21 +75,19 @@ namespace NHibernate.Type
 		/// <param name="joinedFetch"></param>
 		/// <param name="cascade"></param>
 		/// <param name="parentProperty"></param>
-		/// <param name="embedded"></param>
 		public ComponentType( System.Type componentClass,
-		                      string[ ] properties,
+		                      string[ ] propertyNames,
 		                      IGetter[ ] propertyGetters,
 		                      ISetter[ ] propertySetters,
 		                      bool foundCustomAcessor, // not used !?!
 		                      IType[ ] propertyTypes,
 		                      OuterJoinFetchStrategy[ ] joinedFetch,
 		                      Cascades.CascadeStyle[ ] cascade,
-		                      string parentProperty,
-		                      bool embedded ) // not used !?!
+		                      string parentProperty)
 		{
 			this.componentClass = componentClass;
 			this.propertyTypes = propertyTypes;
-			propertySpan = properties.Length;
+			propertySpan = propertyNames.Length;
 			getters = propertyGetters;
 			setters = propertySetters;
 			string[ ] getterNames = new string[propertySpan];
@@ -113,7 +111,7 @@ namespace NHibernate.Type
 				parentSetter = pa.GetSetter( componentClass, parentProperty );
 				parentGetter = pa.GetGetter( componentClass, parentProperty );
 			}
-			this.propertyNames = properties;
+			this.propertyNames = propertyNames;
 			this.cascade = cascade;
 			this.joinedFetch = joinedFetch;
 			contructor = ReflectHelper.GetDefaultConstructor( componentClass );

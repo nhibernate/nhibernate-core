@@ -1,34 +1,27 @@
 using System;
 using System.Collections;
-using NHibernate.Engine;
-using NHibernate.Persister;
+
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// An object-oriented representation of expressions that may be used as constraints
-	/// in a Criteria. 
+	/// The <c>Expression</c> namespace may be used by applications as a framework for building 
+	/// new kinds of <see cref="ICriterion" />. However, it is intended that most applications will 
+	/// simply use the built-in criterion types via the static factory methods of this class.
 	/// </summary>
-	/// <remarks>
-	/// The expression package may be used by applications
-	/// as a framework for building new kinds of <c>Expressions</c>. However, it is
-	/// intended that most applications will simply use the built-in expression types via
-	/// the static accessors on this class.
-	/// </remarks>
-	public abstract class Expression
+	public sealed class Expression
 	{
-		private static readonly object[ ] NoObjects = new object[0];
-		private static readonly IType[ ] NoTypes = new IType[0];
-
+		
 		/// <summary>
 		/// Apply an "equal" constraint to the named property
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
 		/// <returns>An <see cref="EqExpression" />.</returns>
-		public static Expression Eq( string propertyName, object value )
+		public static SimpleExpression Eq(string propertyName, object value)
 		{
 			return new EqExpression( propertyName, value );
 		}
@@ -39,7 +32,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
 		/// <returns>A <see cref="LikeExpression" />.</returns>
-		public static Expression Like( string propertyName, object value )
+		public static SimpleExpression Like(string propertyName, object value)
 		{
 			return new LikeExpression( propertyName, value );
 		}
@@ -50,7 +43,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
 		/// <returns>An <see cref="InsensitiveLikeExpression" />.</returns>
-		public static Expression InsensitiveLike( string propertyName, object value )
+		public static ICriterion InsensitiveLike( string propertyName, object value )
 		{
 			return new InsensitiveLikeExpression( propertyName, value );
 		}
@@ -61,7 +54,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
 		/// <returns>A <see cref="GtExpression" />.</returns>
-		public static Expression Gt( string propertyName, object value )
+		public static SimpleExpression Gt(string propertyName, object value)
 		{
 			return new GtExpression( propertyName, value );
 		}
@@ -72,7 +65,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
 		/// <returns>A <see cref="LtExpression" />.</returns>
-		public static Expression Lt( string propertyName, object value )
+		public static SimpleExpression Lt(string propertyName, object value)
 		{
 			return new LtExpression( propertyName, value );
 		}
@@ -83,7 +76,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
 		/// <returns>A <see cref="LeExpression" />.</returns>
-		public static Expression Le( string propertyName, object value )
+		public static SimpleExpression Le(string propertyName, object value)
 		{
 			return new LeExpression( propertyName, value );
 		}
@@ -94,7 +87,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
 		/// <returns>A <see cref="GtExpression" />.</returns>
-		public static Expression Ge( string propertyName, object value )
+		public static SimpleExpression Ge(string propertyName, object value)
 		{
 			return new GeExpression( propertyName, value );
 		}
@@ -106,7 +99,7 @@ namespace NHibernate.Expression
 		/// <param name="lo">The low value for the Property.</param>
 		/// <param name="hi">The high value for the Property.</param>
 		/// <returns>A <see cref="BetweenExpression" />.</returns>
-		public static Expression Between( string propertyName, object lo, object hi )
+		public static ICriterion Between(string propertyName, object lo, object hi)
 		{
 			return new BetweenExpression( propertyName, lo, hi );
 		}
@@ -117,7 +110,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="values">An array of values.</param>
 		/// <returns>An <see cref="InExpression" />.</returns>
-		public static Expression In( string propertyName, object[ ] values )
+		public static ICriterion In(string propertyName, object[] values)
 		{
 			return new InExpression( propertyName, values );
 		}
@@ -128,7 +121,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="values">An ICollection of values.</param>
 		/// <returns>An <see cref="InExpression" />.</returns>
-		public static Expression In( string propertyName, ICollection values )
+		public static ICriterion In(string propertyName, ICollection values)
 		{
 			ArrayList ary = new ArrayList( values ); //HACK
 			return new InExpression( propertyName, ary.ToArray() );
@@ -139,7 +132,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <returns>A <see cref="NullExpression" />.</returns>
-		public static Expression IsNull( string propertyName )
+		public static ICriterion IsNull(string propertyName)
 		{
 			return new NullExpression( propertyName );
 		}
@@ -149,7 +142,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <returns>A <see cref="NotNullExpression" />.</returns>
-		public static Expression IsNotNull( string propertyName )
+		public static ICriterion IsNotNull(string propertyName)
 		{
 			return new NotNullExpression( propertyName );
 		}
@@ -161,7 +154,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The lhs Property Name</param>
 		/// <param name="otherPropertyName">The rhs Property Name</param>
 		/// <returns>A <see cref="EqPropertyExpression"/> .</returns>
-		public static Expression EqProperty( String propertyName, String otherPropertyName )
+		public static ICriterion EqProperty(string propertyName, string otherPropertyName)
 		{
 			return new EqPropertyExpression( propertyName, otherPropertyName );
 		}
@@ -172,7 +165,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The lhs Property Name</param>
 		/// <param name="otherPropertyName">The rhs Property Name</param>
 		/// <returns>A <see cref="LtPropertyExpression"/> .</returns>
-		public static Expression LtProperty( String propertyName, String otherPropertyName )
+		public static ICriterion LtProperty(string propertyName, string otherPropertyName)
 		{
 			return new LtPropertyExpression( propertyName, otherPropertyName );
 		}
@@ -183,7 +176,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The lhs Property Name</param>
 		/// <param name="otherPropertyName">The rhs Property Name</param>
 		/// <returns>A <see cref="LePropertyExpression"/> .</returns>
-		public static Expression LeProperty( String propertyName, String otherPropertyName )
+		public static ICriterion LeProperty(string propertyName, string otherPropertyName)
 		{
 			return new LePropertyExpression( propertyName, otherPropertyName );
 		}
@@ -194,7 +187,7 @@ namespace NHibernate.Expression
 		/// <param name="lhs">The Expression to use as the Left Hand Side.</param>
 		/// <param name="rhs">The Expression to use as the Right Hand Side.</param>
 		/// <returns>An <see cref="AndExpression" />.</returns>
-		public static Expression And( Expression lhs, Expression rhs )
+		public static ICriterion And(ICriterion lhs, ICriterion rhs)
 		{
 			return new AndExpression( lhs, rhs );
 		}
@@ -205,7 +198,7 @@ namespace NHibernate.Expression
 		/// <param name="lhs">The Expression to use as the Left Hand Side.</param>
 		/// <param name="rhs">The Expression to use as the Right Hand Side.</param>
 		/// <returns>An <see cref="OrExpression" />.</returns>
-		public static Expression Or( Expression lhs, Expression rhs )
+		public static ICriterion Or(ICriterion lhs, ICriterion rhs)
 		{
 			return new OrExpression( lhs, rhs );
 		}
@@ -215,7 +208,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="expression">The Expression to negate.</param>
 		/// <returns>A <see cref="NotExpression" />.</returns>
-		public static Expression Not( Expression expression )
+		public static ICriterion Not(ICriterion expression)
 		{
 			return new NotExpression( expression );
 		}
@@ -227,7 +220,7 @@ namespace NHibernate.Expression
 		/// <param name="values"></param>
 		/// <param name="types"></param>
 		/// <returns></returns>
-		public static Expression Sql( SqlString sql, object[ ] values, IType[ ] types )
+		public static ICriterion Sql(SqlString sql, object[] values, IType[] types)
 		{
 			return new SQLExpression( sql, values, types );
 		}
@@ -239,7 +232,7 @@ namespace NHibernate.Expression
 		/// <param name="value"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public static Expression Sql( SqlString sql, object value, IType type )
+		public static ICriterion Sql(SqlString sql, object value, IType type)
 		{
 			return new SQLExpression( sql, new object[ ] {value}, new IType[ ] {type} );
 		}
@@ -249,9 +242,9 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		public static Expression Sql( SqlString sql )
+		public static ICriterion Sql(SqlString sql)
 		{
-			return new SQLExpression( sql, NoObjects, NoTypes );
+			return new SQLExpression( sql, ArrayHelper.EmptyObjectArray, ArrayHelper.EmptyTypeArray );
 		}
 
 		/// <summary>
@@ -259,11 +252,10 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		public static Expression Sql( string sql )
+		public static ICriterion Sql(string sql)
 		{
-			return new SQLExpression( new SqlString( sql ), NoObjects, NoTypes );
+			return new SQLExpression( new SqlString( sql ), ArrayHelper.EmptyObjectArray, ArrayHelper.EmptyTypeArray );
 		}
-
 
 		/// <summary>
 		/// Group expressions together in a single conjunction (A and B and C...)
@@ -273,7 +265,6 @@ namespace NHibernate.Expression
 			return new Conjunction();
 		}
 
-
 		/// <summary>
 		/// Group expressions together in a single disjunction (A or B or C...)
 		/// </summary>
@@ -282,13 +273,12 @@ namespace NHibernate.Expression
 			return new Disjunction();
 		}
 
-
 		/// <summary>
 		/// Apply an "equals" constraint to each property in the key set of a IDictionary
 		/// </summary>
 		/// <param name="propertyNameValues">a dictionary from property names to values</param>
 		/// <returns></returns>
-		public static Expression AllEq( IDictionary propertyNameValues )
+		public static ICriterion AllEq(IDictionary propertyNameValues)
 		{
 			Conjunction conj = Conjunction();
 
@@ -299,65 +289,5 @@ namespace NHibernate.Expression
 
 			return conj;
 		}
-
-		/// <summary>
-		/// Render a SqlString for the expression.
-		/// </summary>
-		/// <param name="factory">The ISessionFactory that contains the mapping for the Type.</param>
-		/// <param name="persistentClass">The Class the Expression is being built for.</param>
-		/// <param name="alias">The alias to use for the table.</param>
-		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
-		public abstract SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias );
-
-		/// <summary>
-		/// Return typed values for all parameters in the rendered SQL fragment
-		/// </summary>
-		/// <param name="sessionFactory">The ISessionFactory that contains the mapping for the Type.</param>
-		/// <param name="persistentClass">The Class the Expression is being built for.</param>
-		/// <returns>An array of TypedValues for the Expression.</returns>
-		public abstract TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass );
-
-		/// <summary>
-		/// Gets a string representation of the Expression.  
-		/// </summary>
-		/// <returns>
-		/// A String that shows the contents of the Expression.
-		/// </returns>
-		/// <remarks>
-		/// This is not a well formed Sql fragment.  It is useful for logging what the Expressions
-		/// looks like.
-		/// </remarks>
-		public abstract override string ToString();
-
-		// --- PORT NOTE ---
-		// Access modifier was protected.
-		// I modified it to internal because Order use it.
-		// ---
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		/// <param name="persistentClass"></param>
-		/// <param name="property"></param>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		internal static string[ ] GetColumns( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string property, string alias )
-		{
-			return ( ( IQueryable ) sessionFactory.GetPersister( persistentClass ) ).ToColumns( alias, property );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		/// <param name="persistentClass"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		protected static TypedValue GetTypedValue( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string propertyName, object value )
-		{
-			return new TypedValue( ( ( IQueryable ) sessionFactory.GetPersister( persistentClass ) ).GetPropertyType( propertyName ), value );
-		}
-
 	}
 }

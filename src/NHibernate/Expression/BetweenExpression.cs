@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.SqlCommand;
@@ -6,16 +8,16 @@ using NHibernate.Type;
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// An Expression that represents a "between" constraint.
+	/// An <see cref="ICriterion"/> that represents a "between" constraint.
 	/// </summary>
-	public class BetweenExpression : Expression
+	public class BetweenExpression : AbstractCriterion
 	{
-		private readonly string propertyName;
-		private readonly object lo;
-		private readonly object hi;
+		private readonly string _propertyName;
+		private readonly object _lo;
+		private readonly object _hi;
 
 		/// <summary>
-		/// Initialize a new instance of the BetweenExpression class for
+		/// Initialize a new instance of the <see cref="BetweenExpression" /> class for
 		/// the named Property.
 		/// </summary>
 		/// <param name="propertyName">The name of the Property of the Class.</param>
@@ -23,9 +25,9 @@ namespace NHibernate.Expression
 		/// <param name="hi">The high value for the BetweenExpression.</param>
 		internal BetweenExpression( string propertyName, object lo, object hi )
 		{
-			this.propertyName = propertyName;
-			this.lo = lo;
-			this.hi = hi;
+			_propertyName = propertyName;
+			_lo = lo;
+			_hi = hi;
 		}
 
 		/// <summary>
@@ -35,14 +37,15 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
 			//TODO: add a default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			IType propertyType = ( ( IQueryable ) factory.GetPersister( persistentClass ) ).GetPropertyType( propertyName );
-			string[ ] columnNames = GetColumns( factory, persistentClass, propertyName, alias );
-			string[ ] paramColumnNames = GetColumns( factory, persistentClass, propertyName, null );
+			IType propertyType = ( ( IQueryable ) factory.GetPersister( persistentClass ) ).GetPropertyType( _propertyName );
+			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
+			// don't need to worry about aliasing or aliasClassing for parameter column names
+			string[ ] paramColumnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName );
 			string[ ] loParamColumnNames = new string[paramColumnNames.Length];
 			string[ ] hiParamColumnNames = new string[paramColumnNames.Length];
 
@@ -54,11 +57,8 @@ namespace NHibernate.Expression
 				hiParamColumnNames[ i ] = paramColumnNames[ i ] + "_hi";
 			}
 
-			Parameter[ ] parameters = new Parameter[paramColumnNames.Length*2];
 			Parameter[ ] loParameters = Parameter.GenerateParameters( factory, alias, loParamColumnNames, propertyType );
 			Parameter[ ] hiParameters = Parameter.GenerateParameters( factory, alias, hiParamColumnNames, propertyType );
-
-
 			bool andNeeded = false;
 
 			for( int i = 0; i < columnNames.Length; i++ )
@@ -85,19 +85,19 @@ namespace NHibernate.Expression
 		/// <param name="sessionFactory"></param>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
 			return new TypedValue[ ]
 				{
-					GetTypedValue( sessionFactory, persistentClass, propertyName, lo ),
-					GetTypedValue( sessionFactory, persistentClass, propertyName, hi )
+					AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _lo, aliasClasses ),
+					AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _hi, aliasClasses )
 				};
 		}
 
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return propertyName + " between " + lo + " and " + hi;
+			return _propertyName + " between " + _lo + " and " + _hi;
 		}
 	}
 }

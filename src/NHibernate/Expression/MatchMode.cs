@@ -3,14 +3,15 @@ using System.Collections;
 
 namespace NHibernate.Expression
 {
+	// TODO: find where this is used and test/fix it up
 	/// <summary>
 	/// Represents an strategy for matching strings using "like".
 	/// </summary>
 	public abstract class MatchMode
 	{
-		private int intCode;
-		private string name;
-		private static Hashtable INSTANCES = new Hashtable();
+		private int _intCode;
+		private string _name;
+		private static Hashtable Instances = new Hashtable();
 
 		/// <summary>
 		/// 
@@ -19,8 +20,8 @@ namespace NHibernate.Expression
 		/// <param name="name"></param>
 		protected MatchMode(int intCode, string name)
 		{
-			this.intCode = intCode;
-			this.name = name;
+			this._intCode = intCode;
+			this._name = name;
 		}
 
 		/// <summary>
@@ -29,7 +30,7 @@ namespace NHibernate.Expression
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return name;
+			return _name;
 		}
 
 		/// <summary>
@@ -37,41 +38,45 @@ namespace NHibernate.Expression
 		/// </summary>
 		public abstract string ToMatchString(string pattern);
 
-		private Object ReadResolve()
-		{
-			return INSTANCES[intCode];
-		}
+		// TODO: need to fix up so serialization/deserialization 
+		// preserves the singleton
+		//		private Object ReadResolve()
+		//		{
+		//			return INSTANCES[intCode];
+		//		}
 
 		static MatchMode()
 		{
-			INSTANCES.Add(EXACT.intCode, EXACT);
-			INSTANCES.Add(START.intCode, START);
-			INSTANCES.Add(END.intCode, END);
-			INSTANCES.Add(ANYWHERE.intCode, ANYWHERE);
+			Instances.Add( Exact._intCode, Exact );
+			Instances.Add( Start._intCode, Start );
+			Instances.Add( End._intCode, End );
+			Instances.Add( Anywhere._intCode, Anywhere );
 		}
 
 		/// <summary>
 		/// Match the entire string to the pattern
 		/// </summary>
-		public static readonly MatchMode EXACT = new ExactMatchMode();
+		public static readonly MatchMode Exact = new ExactMatchMode();
+
 		/// <summary>
 		/// Match the start of the string to the pattern
 		/// </summary>
-		public static readonly MatchMode START = new StartMatchMode();
+		public static readonly MatchMode Start = new StartMatchMode();
+
 		/// <summary>
 		/// Match the end of the string to the pattern
 		/// </summary>
-		public static readonly MatchMode END = new EndMatchMode();
+		public static readonly MatchMode End = new EndMatchMode();
+
 		/// <summary>
 		/// Match the pattern anywhere in the string
 		/// </summary>
-		public static readonly MatchMode ANYWHERE = new AnywhereMatchMode();
+		public static readonly MatchMode Anywhere = new AnywhereMatchMode();
 
 		private class ExactMatchMode : MatchMode
 		{
-			public ExactMatchMode():base(0, "EXACT")
+			public ExactMatchMode() : base( 0, "EXACT" )
 			{
-				
 			}
 
 			public override string ToMatchString(string pattern)
@@ -82,10 +87,9 @@ namespace NHibernate.Expression
 
 		private class StartMatchMode : MatchMode
 		{
-			public StartMatchMode() : base(1, "START")
+			public StartMatchMode() : base( 1, "START" )
 			{
-				
-			}		
+			}
 
 			public override string ToMatchString(string pattern)
 			{
@@ -95,7 +99,7 @@ namespace NHibernate.Expression
 
 		private class EndMatchMode : MatchMode
 		{
-			public EndMatchMode() : base(2, "END")
+			public EndMatchMode() : base( 2, "END" )
 			{
 			}
 
@@ -108,8 +112,8 @@ namespace NHibernate.Expression
 
 		private class AnywhereMatchMode : MatchMode
 		{
-			public AnywhereMatchMode() : base(3, "ANYWHERE")
-			{		
+			public AnywhereMatchMode() : base( 3, "ANYWHERE" )
+			{
 			}
 
 			public override string ToMatchString(string pattern)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Reflection;
 
 using NHibernate.Cfg;
@@ -19,6 +20,8 @@ namespace NHibernate.Test.ExpressionTest
 		protected ISessionFactoryImplementor factoryImpl;
 		protected Dialect.Dialect dialect;
 		
+		protected static readonly IDictionary EmptyAliasClasses = new Hashtable();
+
 		[SetUp]
 		public virtual void SetUp() 
 		{

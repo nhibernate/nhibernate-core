@@ -20,9 +20,9 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 			
-			NExpression.Expression sqlExpression = NExpression.Expression.Sql("$alias.address is not null");
+			NExpression.ICriterion sqlExpression = NExpression.Expression.Sql("$alias.address is not null");
 
-			SqlString sqlString = sqlExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			SqlString sqlString = sqlExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
 			string expectedSql = "simple_alias.address is not null";
 			
@@ -36,9 +36,9 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 			
-			NExpression.Expression sqlExpression = NExpression.Expression.Sql( new SqlString( "$alias.address is not null") );
+			NExpression.ICriterion sqlExpression = NExpression.Expression.Sql( new SqlString( "$alias.address is not null") );
 
-			SqlString sqlString = sqlExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			SqlString sqlString = sqlExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
 			string expectedSql = "simple_alias.address is not null";
 			
@@ -62,9 +62,9 @@ namespace NHibernate.Test.ExpressionTest
 			builder.Add( "$alias.address = " );
 			builder.Add( firstAndParam );
 
-			NExpression.Expression sqlExpression = NExpression.Expression.Sql(builder.ToSqlString(), "some address", NHibernateUtil.String );
+			NExpression.ICriterion sqlExpression = NExpression.Expression.Sql(builder.ToSqlString(), "some address", NHibernateUtil.String );
 
-			SqlString sqlString = sqlExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			SqlString sqlString = sqlExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
 			CompareSqlStrings(sqlString, expectedSql, expectedParams);
 

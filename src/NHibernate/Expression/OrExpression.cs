@@ -1,17 +1,18 @@
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// An Expression that combines two <see cref="Expression"/>s with an 
+	/// An <see cref="ICriterion" /> that combines two <see cref="ICriterion"/>s with an 
 	/// <c>"or"</c> between them.
 	/// </summary>
 	public class OrExpression : LogicalExpression
 	{
 		/// <summary>
-		/// 
+		/// Initialize a new instance of the <see cref="OrExpression" /> class for 
+		/// two <see cref="ICriterion"/>s.
 		/// </summary>
-		/// <param name="lhs"></param>
-		/// <param name="rhs"></param>
-		internal OrExpression( Expression lhs, Expression rhs ) : base( lhs, rhs )
+		/// <param name="lhs">The <see cref="ICriterion"/> to use as the left hand side.</param>
+		/// <param name="rhs">The <see cref="ICriterion"/> to use as the right hand side.</param>
+		internal OrExpression( ICriterion lhs, ICriterion rhs ) : base( lhs, rhs )
 		{
 		}
 

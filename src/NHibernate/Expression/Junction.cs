@@ -6,25 +6,30 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// A sequence of logical expressions combined by some associative
+	/// A sequence of logical <see cref="ICriterion"/>s combined by some associative
 	/// logical operator.
 	/// </summary>
-	public abstract class Junction : Expression
+	public abstract class Junction : AbstractCriterion
 	{
-		private IList expressions = new ArrayList();
+		private IList _criteria = new ArrayList();
 
 		/// <summary>
-		/// 
+		/// Adds an <see cref="ICriterion"/> to the list of <see cref="ICriterion"/>s
+		/// to junction together.
 		/// </summary>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public Junction Add( Expression expression )
+		/// <param name="criterion">The <see cref="ICriterion"/> to add.</param>
+		/// <returns>
+		/// This <see cref="Junction"/> instance.
+		/// </returns>
+		public Junction Add( ICriterion criterion )
 		{
-			expressions.Add( expression );
+			_criteria.Add( criterion );
 			return this;
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Get the Sql operator to put between multiple <see cref="ICriterion"/>s.
+		/// </summary>
 		protected abstract String Op { get; }
 
 		/// <summary>
@@ -33,13 +38,13 @@ namespace NHibernate.Expression
 		/// <param name="sessionFactory"></param>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
 			ArrayList typedValues = new ArrayList();
 
-			foreach( Expression expression in expressions )
+			foreach( ICriterion criterion in _criteria )
 			{
-				TypedValue[ ] subvalues = expression.GetTypedValues( sessionFactory, persistentClass );
+				TypedValue[ ] subvalues = criterion.GetTypedValues( sessionFactory, persistentClass, aliasClasses );
 				for( int i = 0; i < subvalues.Length; i++ )
 				{
 					typedValues.Add( subvalues[ i ] );
@@ -57,12 +62,12 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			if( expressions.Count == 0 )
+			if( _criteria.Count == 0 )
 			{
 				return new SqlString( new object[ ] {"1=1"} );
 			}
@@ -70,15 +75,15 @@ namespace NHibernate.Expression
 
 			sqlBuilder.Add( "(" );
 
-			for( int i = 0; i < expressions.Count - 1; i++ )
+			for( int i = 0; i < _criteria.Count - 1; i++ )
 			{
 				sqlBuilder.Add(
-					( ( Expression ) expressions[ i ] ).ToSqlString( factory, persistentClass, alias ) );
+					( ( ICriterion ) _criteria[ i ] ).ToSqlString( factory, persistentClass, alias, aliasClasses ) );
 				sqlBuilder.Add( Op );
 			}
 
 			sqlBuilder.Add(
-				( ( Expression ) expressions[ expressions.Count - 1 ] ).ToSqlString( factory, persistentClass, alias ) );
+				( ( ICriterion ) _criteria[ _criteria.Count - 1 ] ).ToSqlString( factory, persistentClass, alias, aliasClasses ) );
 
 
 			sqlBuilder.Add( ")" );
@@ -89,7 +94,7 @@ namespace NHibernate.Expression
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return '(' + String.Join( Op, ( string[ ] ) expressions ) + ')';
+			return '(' + String.Join( Op, ( string[ ] ) _criteria ) + ')';
 		}
 	}
 }

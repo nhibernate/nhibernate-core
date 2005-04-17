@@ -25,9 +25,9 @@ namespace NHibernate.Test.ExpressionTest
 			
 			ISession session = factory.OpenSession();
 			
-			NExpression.Expression inExpression = NExpression.Expression.In("Count", new int[]{3,4,5});
+			NExpression.ICriterion inExpression = NExpression.Expression.In("Count", new int[]{3,4,5});
 
-			SqlString sqlString = inExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			SqlString sqlString = inExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
 			string expectedSql = "simple_alias.count_ in (:simple_alias.count__0, :simple_alias.count__1, :simple_alias.count__2)";
 			Parameter[] expectedParams = new Parameter[3];

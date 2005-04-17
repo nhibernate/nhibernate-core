@@ -24,9 +24,9 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 			
-			NExpression.Expression expression = NExpression.Expression.IsNull("Address");
+			NExpression.ICriterion expression = NExpression.Expression.IsNull("Address");
 
-			SqlString sqlString = expression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			SqlString sqlString = expression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
 			string expectedSql = "simple_alias.address IS NULL";
 			CompareSqlStrings(sqlString, expectedSql, 0);

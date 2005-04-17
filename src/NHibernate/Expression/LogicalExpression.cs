@@ -1,43 +1,45 @@
 using System;
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// Base Class of binary logical expressions.
+	/// An <see cref="ICriterion"/> that combines two <see cref="ICriterion"/>s 
+	/// with a operator (either "<c>and</c>" or "<c>or</c>") between them.
 	/// </summary>
-	public abstract class LogicalExpression : Expression
+	public abstract class LogicalExpression : AbstractCriterion
 	{
-		private Expression lhs;
-		private Expression rhs;
+		private ICriterion _lhs;
+		private ICriterion _rhs;
 
 		/// <summary>
-		/// Initialize a new instance of the LogicalExpression class that
-		/// combines two other Expressions.
+		/// Initialize a new instance of the <see cref="LogicalExpression" /> class that
+		/// combines two other <see cref="ICriterion"/>s.
 		/// </summary>
-		/// <param name="lhs">The Expression to use in the Left Hand Side.</param>
-		/// <param name="rhs">The Expression to use in the Right Hand Side.</param>
-		internal LogicalExpression( Expression lhs, Expression rhs )
+		/// <param name="lhs">The <see cref="ICriterion"/> to use in the Left Hand Side.</param>
+		/// <param name="rhs">The <see cref="ICriterion"/> to use in the Right Hand Side.</param>
+		internal LogicalExpression( ICriterion lhs, ICriterion rhs )
 		{
-			this.lhs = lhs;
-			this.rhs = rhs;
+			_lhs = lhs;
+			_rhs = rhs;
 		}
 
 		/// <summary>
-		/// The Expression that will be on the Left Hand Side of the Op.
+		/// Gets the <see cref="ICriterion"/> that will be on the Left Hand Side of the Op.
 		/// </summary>
-		protected Expression LeftHandSide
+		protected ICriterion LeftHandSide
 		{
-			get { return lhs; }
+			get { return _lhs; }
 		}
 
 		/// <summary>
-		/// The Expression that will be on the Right Hand Side of the Op.
+		/// Gets the <see cref="ICriterion" /> that will be on the Right Hand Side of the Op.
 		/// </summary>
-		protected Expression RightHandSide
+		protected ICriterion RightHandSide
 		{
-			get { return rhs; }
+			get { return _rhs; }
 		}
 
 		/// <summary>
@@ -47,10 +49,10 @@ namespace NHibernate.Expression
 		/// <param name="sessionFactory">The ISessionFactory to get the Persistence information from.</param>
 		/// <param name="persistentClass">The Type we are constructing the Expression for.</param>
 		/// <returns>An arry of <see cref="TypedValue"/>s.</returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
-			TypedValue[ ] lhstv = lhs.GetTypedValues( sessionFactory, persistentClass );
-			TypedValue[ ] rhstv = rhs.GetTypedValues( sessionFactory, persistentClass );
+			TypedValue[ ] lhstv = _lhs.GetTypedValues( sessionFactory, persistentClass, aliasClasses );
+			TypedValue[ ] rhstv = _rhs.GetTypedValues( sessionFactory, persistentClass, aliasClasses );
 			TypedValue[ ] result = new TypedValue[lhstv.Length + rhstv.Length];
 			Array.Copy( lhstv, 0, result, 0, lhstv.Length );
 			Array.Copy( rhstv, 0, result, lhstv.Length, rhstv.Length );
@@ -65,18 +67,20 @@ namespace NHibernate.Expression
 		/// <param name="alias">The alias to use when referencing the table.</param>
 		/// <returns>A well formed SqlString for the Where clause.</returns>
 		/// <remarks>The SqlString will be enclosed by <c>(</c> and <c>)</c>.</remarks>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			SqlString lhSqlString = lhs.ToSqlString( factory, persistentClass, alias );
-			SqlString rhSqlString = rhs.ToSqlString( factory, persistentClass, alias );
+			SqlString lhSqlString = _lhs.ToSqlString( factory, persistentClass, alias, aliasClasses );
+			SqlString rhSqlString = _rhs.ToSqlString( factory, persistentClass, alias, aliasClasses );
 
 			sqlBuilder.Add( new SqlString[ ] {lhSqlString, rhSqlString},
 			                "(",
 			                Op,
-			                ")" );
+			                ")",
+							false // not wrapping because the prefix and postfix params already take care of that	
+						);
 
 
 			return sqlBuilder.ToSqlString();
@@ -100,7 +104,7 @@ namespace NHibernate.Expression
 		/// </remarks>
 		public override string ToString()
 		{
-			return lhs.ToString() + ' ' + Op + ' ' + rhs.ToString();
+			return _lhs.ToString() + ' ' + Op + ' ' + _rhs.ToString();
 		}
 	}
 }

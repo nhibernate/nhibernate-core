@@ -23,7 +23,14 @@ namespace NHibernate.Type
 		object[ ] GetPropertyValues( object component, ISessionImplementor session );
 
 		/// <summary>
-		/// 
+		/// Optional Operation
+		/// </summary>
+		/// <param name="component"></param>
+		/// <returns></returns>
+		object[] GetPropertyValues(object component);
+
+		/// <summary>
+		/// Optional operation
 		/// </summary>
 		/// <param name="component"></param>
 		/// <param name="values"></param>

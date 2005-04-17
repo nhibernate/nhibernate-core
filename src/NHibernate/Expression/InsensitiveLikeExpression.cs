@@ -1,3 +1,4 @@
+using System.Collections;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Persister;
@@ -7,24 +8,25 @@ using NHibernate.Type;
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// Summary description for InsensitiveLikeExpression.
-	/// 
+	/// An <see cref="ICriterion"/> that represents an "like" constraint
+	/// that is <b>not</b> case sensitive.
 	/// </summary>
 	//TODO:H2.0.3 renamed this to ILikeExpression
-	public class InsensitiveLikeExpression : Expression
+	public class InsensitiveLikeExpression : AbstractCriterion
 	{
-		private readonly string propertyName;
-		private readonly object expressionValue;
+		private readonly string _propertyName;
+		private readonly object _value;
 
 		/// <summary>
-		/// 
+		/// Initialize a new instance of the <see cref="InsensitiveLikeExpression" /> 
+		/// class for a named Property and its value.
 		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <param name="expressionValue"></param>
-		internal InsensitiveLikeExpression( string propertyName, object expressionValue )
+		/// <param name="propertyName">The name of the Property in the class.</param>
+		/// <param name="value">The value for the Property.</param>
+		internal InsensitiveLikeExpression( string propertyName, object value )
 		{
-			this.propertyName = propertyName;
-			this.expressionValue = expressionValue;
+			_propertyName = propertyName;
+			_value = value;
 		}
 
 		/// <summary>
@@ -34,14 +36,15 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			IType propertyType = ( ( IQueryable ) factory.GetPersister( persistentClass ) ).GetPropertyType( propertyName );
-			string[ ] columnNames = GetColumns( factory, persistentClass, propertyName, alias );
-			string[ ] paramColumnNames = GetColumns( factory, persistentClass, propertyName, null );
+			IType propertyType = ( ( IQueryable ) factory.GetPersister( persistentClass ) ).GetPropertyType( _propertyName );
+			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
+			// don't need to worry about aliasing or aliasClassing for parameter column names
+			string[ ] paramColumnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName );
 			Parameter[ ] parameters = Parameter.GenerateParameters( factory, alias, paramColumnNames, propertyType );
 
 
@@ -70,15 +73,15 @@ namespace NHibernate.Expression
 		/// <param name="sessionFactory"></param>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
-			return new TypedValue[ ] {Expression.GetTypedValue( sessionFactory, persistentClass, propertyName, expressionValue.ToString().ToLower() )};
+			return new TypedValue[ ] { AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _value.ToString().ToLower(), aliasClasses )};
 		}
 
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return propertyName + " ilike " + expressionValue;
+			return _propertyName + " ilike " + _value;
 		}
 	}
 }

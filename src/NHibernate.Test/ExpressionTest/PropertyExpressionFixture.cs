@@ -25,9 +25,9 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 			
-			NExpression.Expression andExpression = NExpression.Expression.EqProperty("Address", "Name");
+			NExpression.ICriterion andExpression = NExpression.Expression.EqProperty("Address", "Name");
 
-			SqlString sqlString = andExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			SqlString sqlString = andExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
 			string expectedSql = "simple_alias.address = simple_alias.Name";
 

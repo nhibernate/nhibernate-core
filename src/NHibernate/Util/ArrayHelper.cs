@@ -1,13 +1,22 @@
 using System;
 using System.Collections;
 using System.Data;
+
 using NHibernate.SqlTypes;
+using NHibernate.Type;
 
 namespace NHibernate.Util
 {
-	/// <summary></summary>
+	/// <summary>
+	/// Helper class that contains common array functions and 
+	/// data structures used through out NHibernate.
+	/// </summary>
 	public sealed class ArrayHelper
 	{
+
+		public static readonly object[ ] EmptyObjectArray = new object[0];
+		public static readonly IType[ ] EmptyTypeArray = new IType[0];
+
 		private ArrayHelper()
 		{
 		}

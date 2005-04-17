@@ -1,14 +1,16 @@
+using System.Collections;
 using NHibernate.Engine;
 
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// Represents an order imposed upon a ICriteria result set
+	/// Represents an order imposed upon a <see cref="ICriteria"/>
+	/// result set.
 	/// </summary>
 	public class Order
 	{
-		private bool ascending;
-		private string propertyName;
+		private bool _ascending;
+		private string _propertyName;
 
 		/// <summary>
 		/// Constructor for Order.
@@ -17,8 +19,8 @@ namespace NHibernate.Expression
 		/// <param name="ascending"></param>
 		protected Order( string propertyName, bool ascending )
 		{
-			this.propertyName = propertyName;
-			this.ascending = ascending;
+			_propertyName = propertyName;
+			_ascending = ascending;
 		}
 
 
@@ -31,12 +33,12 @@ namespace NHibernate.Expression
 		/// <returns></returns>
 		public string ToStringForSql( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias )
 		{
-			string[ ] columns = Expression.GetColumns( sessionFactory, persistentClass, propertyName, alias );
+			string[ ] columns = AbstractCriterion.GetColumns( sessionFactory, persistentClass, _propertyName, alias, emptyMap );
 			if( columns.Length != 1 )
 			{
-				throw new HibernateException( "Cannot order by multi-column property: " + propertyName );
+				throw new HibernateException( "Cannot order by multi-column property: " + _propertyName );
 			}
-			return columns[ 0 ] + ( ascending ? " asc" : " desc" );
+			return columns[ 0 ] + ( _ascending ? " asc" : " desc" );
 		}
 
 		/// <summary>
@@ -58,5 +60,7 @@ namespace NHibernate.Expression
 		{
 			return new Order( propertyName, false );
 		}
+
+		private static readonly IDictionary emptyMap = new Hashtable( 0 );
 	}
 }

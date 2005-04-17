@@ -30,9 +30,9 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 			
-			NExpression.Expression andExpression = NExpression.Expression.Eq("Address", "12 Adress");
+			NExpression.ICriterion andExpression = NExpression.Expression.Eq("Address", "12 Adress");
 
-			SqlString sqlString = andExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			SqlString sqlString = andExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
 			string expectedSql = "simple_alias.address = :simple_alias.address";
 			Parameter[] expectedParams = new Parameter[1];
@@ -55,9 +55,9 @@ namespace NHibernate.Test.ExpressionTest
 			ISession session = factory.OpenSession();
 			DateTime now = DateTime.Now;
 
-			NExpression.Expression andExpression = NExpression.Expression.Eq( "Date", now );
+			NExpression.ICriterion andExpression = NExpression.Expression.Eq( "Date", now );
 
-			SqlString sqlString = andExpression.ToSqlString( factoryImpl, typeof(SimpleComponent), "simp_comp" );
+			SqlString sqlString = andExpression.ToSqlString( factoryImpl, typeof(SimpleComponent), "simp_comp", BaseExpressionFixture.EmptyAliasClasses  );
 			string quotedColumn = dialect.QuoteForColumnName( "d[at]e_" );
 			string expectedSql = "simp_comp." + quotedColumn + " = :simp_comp." + quotedColumn;
 			
@@ -71,9 +71,9 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 			
-			NExpression.Expression andExpression = NExpression.Expression.Ge( "Date", DateTime.Now );
+			NExpression.ICriterion andExpression = NExpression.Expression.Ge( "Date", DateTime.Now );
 
-			SqlString sqlString = andExpression.ToSqlString( factoryImpl, typeof(Simple), "simple_alias" );
+			SqlString sqlString = andExpression.ToSqlString( factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses  );
 
 			string expectedSql = "simple_alias.date_ >= :simple_alias.date_";
 			Parameter[] expectedParams = new Parameter[1];

@@ -1,22 +1,24 @@
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// Negates another expression.
+	/// An <see cref="ICriterion"/> that negates another <see cref="ICriterion"/>.
 	/// </summary>
-	public class NotExpression : Expression
+	public class NotExpression : AbstractCriterion
 	{
-		private Expression expression;
+		private ICriterion _criterion;
 
 		/// <summary>
-		/// 
+		/// Initialize a new instance of the <see cref="NotExpression" /> class for an
+		/// <see cref="ICriterion"/>
 		/// </summary>
-		/// <param name="expression"></param>
-		internal NotExpression( Expression expression )
+		/// <param name="criterion">The <see cref="ICriterion"/> to negate.</param>
+		internal NotExpression( ICriterion criterion )
 		{
-			this.expression = expression;
+			_criterion = criterion;
 		}
 
 		/// <summary>
@@ -26,12 +28,13 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
 			//TODO: set default capacity
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add( "not " );
-			builder.Add( expression.ToSqlString( factory, persistentClass, alias ) );
+			// TODO: h2.1 SYNCH: add a MySqlDialect check
+			builder.Add( _criterion.ToSqlString( factory, persistentClass, alias, aliasClasses ) );
 
 			return builder.ToSqlString();
 		}
@@ -42,15 +45,15 @@ namespace NHibernate.Expression
 		/// <param name="sessionFactory"></param>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
-			return expression.GetTypedValues( sessionFactory, persistentClass );
+			return _criterion.GetTypedValues( sessionFactory, persistentClass, aliasClasses );
 		}
 
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return "not " + expression.ToString();
+			return "not " + _criterion.ToString();
 		}
 	}
 }

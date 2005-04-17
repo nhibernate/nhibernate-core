@@ -1,24 +1,25 @@
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// An Expression that combines two <see cref="Expression"/>s with an 
-	/// <c>and</c> between them.
+	/// An <see cref="LogicalExpression"/> that combines two <see cref="ICriterion"/>s 
+	/// with an <c>and</c> between them.
 	/// </summary>
 	public class AndExpression : LogicalExpression
 	{
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="AndExpression"/> class
+		/// that combines two <see cref="ICriterion"/>.
 		/// </summary>
-		/// <param name="lhs"></param>
-		/// <param name="rhs"></param>
-		internal AndExpression( Expression lhs, Expression rhs ) : base( lhs, rhs )
+		/// <param name="lhs">The <see cref="ICriterion"/> to use as the left hand side.</param>
+		/// <param name="rhs">The <see cref="ICriterion"/> to use as the right hand side.</param>
+		internal AndExpression( ICriterion lhs, ICriterion rhs ) : base( lhs, rhs )
 		{
 		}
 
 		/// <summary>
-		/// Get the Sql operator to put between the two <see cref="Expression"/>s.
+		/// Get the Sql operator to put between the two <see cref="ICriterion"/>s.
 		/// </summary>
-		/// <value>Returns "<c>and</c>"</value>
+		/// <value>The string "<c>and</c>"</value>
 		protected override string Op
 		{
 			get { return "and"; }

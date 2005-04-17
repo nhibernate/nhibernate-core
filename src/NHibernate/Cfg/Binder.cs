@@ -1015,7 +1015,7 @@ namespace NHibernate.Cfg
 					i++;
 				}
 
-				componentType = new ComponentType( model.ComponentClass, names, getters, setters, foundCustomAccessor, types, joinedFetch, cascade, model.ParentProperty, model.IsEmbedded );
+				componentType = new ComponentType( model.ComponentClass, names, getters, setters, foundCustomAccessor, types, joinedFetch, cascade, model.ParentProperty );
 			}
 			model.Type = componentType;	
 		}

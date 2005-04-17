@@ -23,8 +23,8 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 			
-			NExpression.Expression betweenExpression = NExpression.Expression.Between("Count", 5, 10);
-			SqlString sqlString = betweenExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			NExpression.ICriterion betweenExpression = NExpression.Expression.Between("Count", 5, 10);
+			SqlString sqlString = betweenExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
 
 			string expectedSql = "simple_alias.count_ between :simple_alias.count__lo and :simple_alias.count__hi";

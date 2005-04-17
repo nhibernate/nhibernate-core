@@ -129,7 +129,7 @@ namespace NHibernate.Impl
 
 		//ADDED this
 		/// <summary></summary>
-		public NExpression.Expression Expression
+		public NExpression.ICriterion Expression
 		{
 			get { return conjunction; }
 		}
@@ -230,7 +230,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="expression"></param>
 		/// <returns></returns>
-		public ICriteria Add( NExpression.Expression expression )
+		public ICriteria Add( NExpression.ICriterion expression )
 		{
 			criteria.Add( expression );
 			conjunction.Add( expression );

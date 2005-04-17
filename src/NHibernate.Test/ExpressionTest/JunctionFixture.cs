@@ -36,7 +36,7 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void SqlString()
 		{
-			SqlString sqlString = _conjunction.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			SqlString sqlString = _conjunction.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 			
 			string expectedSql = "(simple_alias.address IS NULL and simple_alias.count_ between :simple_alias.count__lo and :simple_alias.count__hi)";
 			
@@ -47,7 +47,7 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void GetTypedValues() 
 		{
-			TypedValue[] typedValues = _conjunction.GetTypedValues( factoryImpl, typeof(Simple) );
+			TypedValue[] typedValues = _conjunction.GetTypedValues( factoryImpl, typeof(Simple), BaseExpressionFixture.EmptyAliasClasses );
 
 			TypedValue[] expectedTV = new TypedValue[2];
 			expectedTV[0] = new TypedValue(NHibernateUtil.Int32, 5);

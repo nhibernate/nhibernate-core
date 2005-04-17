@@ -69,7 +69,26 @@
 			debug="${build.debug}" 
 			output="${build.dir}/bin/${nant.project.name}.dll" 
 			doc="${build.dir}/bin/${nant.project.name}.xml"
+			nowarn="1573,1591"
 		>
+			<!--
+				Documentation related warnings.  Basically it's not going to output a warning when there
+				is no attempt at documentation.  If the code has documentation but there is a problem with
+				it then lets warn the developer during the build.
+				
+				CS1571: XML comment on 'construct' has a duplicate param tag for 'parameter'
+				CS1572: XML comment on 'construct' has a param tag for 'parameter', but there is no parameter by that name
+				CS1573: Parameter 'parameter' has no matching param tag in XML comment (but other parameters do)
+				CS1574: XML comment on 'construct' has cref attribute 'item' that could not be found
+				CS1580: Invalid type for parameter 'parameter number' in XML comment cref attribute
+				CS1581: Invalid return type in XML comment cref attribute
+				CS1584: XML comment on 'member' has syntactically incorrect cref attribute 'invalid_syntax'
+				CS1587: XML comment is not placed on a valid language element
+				CS1589: Unable to include XML fragment 'fragment' of file 'file' -- reason
+				CS1590: Invalid XML include element -- Missing file attribute
+				CS1591: Missing XML comment for publicly visible type or member 'Type_or_Member'
+				CS1592: Badly formed XML in included comments file -- 'reason'
+			-->
 			
 			<sources failonempty="true">
 				<includes name="**/*.cs" />

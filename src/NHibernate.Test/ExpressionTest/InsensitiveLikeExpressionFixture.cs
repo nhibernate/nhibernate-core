@@ -24,9 +24,9 @@ namespace NHibernate.Test.ExpressionTest
 			
 			ISession session = factory.OpenSession();
 			
-			NExpression.Expression expression = NExpression.Expression.InsensitiveLike("Address", "12 Adress");
+			NExpression.ICriterion expression = NExpression.Expression.InsensitiveLike("Address", "12 Adress");
 
-			SqlString sqlString = expression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias");
+			SqlString sqlString = expression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 			
 			string expectedSql = "lower(simple_alias.address) like :simple_alias.address";
 			if ((factory as ISessionFactoryImplementor).Dialect is Dialect.PostgreSQLDialect)

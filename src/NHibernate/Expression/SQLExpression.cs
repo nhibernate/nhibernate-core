@@ -1,3 +1,4 @@
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -5,16 +6,16 @@ using NHibernate.Type;
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// Creates a SQLExpression
+	/// An <see cref="ICriterion"/> that creates a SQLExpression
 	/// </summary>
 	/// <remarks>
 	/// This allows for database specific Expressions at the cost of needing to 
 	/// write a correct <see cref="SqlString"/>.
 	/// </remarks>
-	public class SQLExpression : Expression
+	public class SQLExpression : AbstractCriterion
 	{
-		private readonly SqlString sql;
-		private readonly TypedValue[ ] typedValues;
+		private readonly SqlString _sql;
+		private readonly TypedValue[ ] _typedValues;
 
 		/// <summary>
 		/// 
@@ -24,11 +25,11 @@ namespace NHibernate.Expression
 		/// <param name="types"></param>
 		internal SQLExpression( SqlString sql, object[ ] values, IType[ ] types )
 		{
-			this.sql = sql;
-			typedValues = new TypedValue[values.Length];
-			for( int i = 0; i < typedValues.Length; i++ )
+			_sql = sql;
+			_typedValues = new TypedValue[values.Length];
+			for( int i = 0; i < _typedValues.Length; i++ )
 			{
-				typedValues[ i ] = new TypedValue( types[ i ], values[ i ] );
+				_typedValues[ i ] = new TypedValue( types[ i ], values[ i ] );
 			}
 		}
 
@@ -39,9 +40,10 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
-			return sql.Replace( "$alias", alias );
+			// TODO: h2.1 SYNCH - need to add an overload to Replace that takes 3 params
+			return _sql.Replace( "$alias", alias );
 		}
 
 		/// <summary>
@@ -50,15 +52,15 @@ namespace NHibernate.Expression
 		/// <param name="sessionFactory"></param>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
-			return typedValues;
+			return _typedValues;
 		}
 
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return sql.ToString();
+			return _sql.ToString();
 		}
 	}
 }

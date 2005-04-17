@@ -59,7 +59,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="expression"></param>
 		/// <returns></returns>
-		ICriteria Add( Expression.Expression expression );
+		ICriteria Add( Expression.ICriterion expression );
 
 		/// <summary>
 		/// An an Order to the result set 
@@ -78,7 +78,7 @@ namespace NHibernate
 		/// Contains all of the Expressions that were added as one 
 		/// resulting expression.
 		/// </summary>
-		Expression.Expression Expression { get; }
+		Expression.ICriterion Expression { get; }
 
 		/// <summary>
 		/// Provides an Enumerator to Iterate through the Expressions 

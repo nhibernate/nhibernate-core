@@ -1,26 +1,27 @@
+using System;
+using System.Collections;
 using NHibernate.Engine;
-using NHibernate.Persister;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// Constrains a property to be non-null
+	/// An <see cref="ICriterion"/> that represents "not null" constraint.
 	/// </summary>
-	public class NotNullExpression : Expression
+	public class NotNullExpression : AbstractCriterion
 	{
-		private readonly string propertyName;
+		private readonly string _propertyName;
 
 		private static readonly TypedValue[ ] NoValues = new TypedValue[0];
 
 		/// <summary>
-		/// 
+		/// Initialize a new instance of the <see cref="NotNullExpression" /> class for a named
+		/// Property that should not be null.
 		/// </summary>
-		/// <param name="propertyName"></param>
+		/// <param name="propertyName">The name of the Property in the class.</param>
 		internal NotNullExpression( string propertyName )
 		{
-			this.propertyName = propertyName;
+			_propertyName = propertyName;
 		}
 
 		/// <summary>
@@ -30,13 +31,12 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			IType propertyType = ( ( IQueryable ) factory.GetPersister( persistentClass ) ).GetPropertyType( propertyName );
-			string[ ] columnNames = GetColumns( factory, persistentClass, propertyName, alias );
+			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
 
 
 			bool andNeeded = false;
@@ -45,6 +45,7 @@ namespace NHibernate.Expression
 			{
 				if( andNeeded )
 				{
+					// TODO: h2.1 SYNCH - why did hibernate change this to " or "
 					sqlBuilder.Add( " AND " );
 				}
 				andNeeded = true;
@@ -63,7 +64,7 @@ namespace NHibernate.Expression
 		/// <param name="sessionFactory"></param>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
 			return NoValues;
 		}
@@ -71,7 +72,7 @@ namespace NHibernate.Expression
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return propertyName + " is not null";
+			return _propertyName + " is not null";
 		}
 	}
 }

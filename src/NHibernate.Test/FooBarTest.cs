@@ -958,8 +958,8 @@ namespace NHibernate.Test
 
 			Assert.IsTrue( list.Count==1 && list[0]==f );
 
-			Expression.Expression andExpression;
-			Expression.Expression orExpression;
+			Expression.ICriterion andExpression;
+			Expression.ICriterion orExpression;
 
 			andExpression = Expression.Expression.And( Expression.Expression.Eq( "Integer", f.Integer ), Expression.Expression.Like( "String", f.String ) );
 			orExpression = Expression.Expression.Or( andExpression, Expression.Expression.Eq( "Boolean", f.Boolean ) );

@@ -342,6 +342,11 @@ namespace NHibernate.Type
 			throw new NotSupportedException();
 		}
 
+		public object[] GetPropertyValues( object component )
+		{
+			throw new NotSupportedException();
+		}
+
 		/// <summary></summary>
 		public override bool IsComponentType
 		{

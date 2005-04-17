@@ -1,27 +1,30 @@
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// Superclass for comparisons between two properties (with SQL binary operators)
+	/// Superclass for an <see cref="ICriterion"/> that represents a
+	/// constraint between two properties (with SQL binary operators).
 	/// </summary>
-	public abstract class PropertyExpression : Expression
+	public abstract class PropertyExpression : AbstractCriterion
 	{
-		private string propertyName;
-		private string otherPropertyName;
+		private string _lhsPropertyName;
+		private string _rhsPropertyName;
 
 		private static TypedValue[ ] NoTypedValues = new TypedValue[0];
 
 		/// <summary>
-		/// 
+		/// Initialize a new instance of the <see cref="PropertyExpression" /> class 
+		/// that compares two mapped properties.
 		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <param name="otherPropertyName"></param>
-		protected PropertyExpression( string propertyName, string otherPropertyName )
+		/// <param name="lhsPropertyName">The name of the Property to use as the left hand side.</param>
+		/// <param name="rhsPropertyName">The name of the Property to use as the right hand side.</param>
+		protected PropertyExpression(string lhsPropertyName, string rhsPropertyName)
 		{
-			this.propertyName = propertyName;
-			this.otherPropertyName = otherPropertyName;
+			_lhsPropertyName = lhsPropertyName;
+			_rhsPropertyName = rhsPropertyName;
 		}
 
 		/// <summary>
@@ -31,12 +34,12 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			string[ ] columnNames = GetColumns( factory, persistentClass, propertyName, alias );
-			string[ ] otherColumnNames = GetColumns( factory, persistentClass, otherPropertyName, alias );
+			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _lhsPropertyName, alias, aliasClasses );
+			string[ ] otherColumnNames = AbstractCriterion.GetColumns( factory, persistentClass, _rhsPropertyName, alias, aliasClasses );
 
 			bool andNeeded = false;
 
@@ -62,7 +65,7 @@ namespace NHibernate.Expression
 		/// <param name="sessionFactory"></param>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
 			return NoTypedValues;
 		}
@@ -70,10 +73,12 @@ namespace NHibernate.Expression
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return propertyName + Op + otherPropertyName;
+			return _lhsPropertyName + Op + _rhsPropertyName;
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Get the Sql operator to use for the property expression.
+		/// </summary>
 		protected abstract string Op { get; }
 	}
 }

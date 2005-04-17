@@ -61,7 +61,8 @@ namespace NHibernate.Loader
 
 			IList associations = WalkTree( persister, Alias, factory );
 			InitClassPersisters( associations );
-			InitStatementString( associations, criteria.Expression.ToSqlString( factory, criteria.PersistentClass, Alias ), orderByBuilder.ToString(), factory );
+			// TODO: H2.1 SYNCH - new Hashtable() is a HACK until it is all up to H2.1 code
+			InitStatementString( associations, criteria.Expression.ToSqlString( factory, criteria.PersistentClass, Alias, new Hashtable() ), orderByBuilder.ToString(), factory );
 
 			PostInstantiate();
 		}
@@ -79,8 +80,9 @@ namespace NHibernate.Loader
 			IEnumerator iter = criteria.IterateExpressions();
 			while( iter.MoveNext() )
 			{
-				Expression.Expression expr = ( Expression.Expression ) iter.Current;
-				TypedValue[ ] tv = expr.GetTypedValues( session.Factory, criteria.PersistentClass );
+				Expression.ICriterion expr = ( Expression.ICriterion ) iter.Current;
+				// TODO: h2.1 SYNCH - the new Hashtable() is a HACK
+				TypedValue[ ] tv = expr.GetTypedValues(  session.Factory, criteria.PersistentClass,  new Hashtable() );
 				for( int i = 0; i < tv.Length; i++ )
 				{
 					values.Add( tv[ i ].Value );

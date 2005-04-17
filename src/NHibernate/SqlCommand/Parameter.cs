@@ -1,5 +1,3 @@
-//using System.Data;
-//using NHibernate.Driver;
 using System;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -54,6 +52,10 @@ namespace NHibernate.SqlCommand
 		/// Gets the name of the Parameter.
 		/// </summary>
 		/// <value>The name of the Parameter.</value>
+		/// <remarks>
+		/// The Parameter name is not used by anything except to compare equality
+		/// and to generate a debug string.
+		/// </remarks>
 		public string Name
 		{
 			get { return _name; }

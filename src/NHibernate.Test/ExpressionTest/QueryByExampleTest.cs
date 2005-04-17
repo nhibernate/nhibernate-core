@@ -13,18 +13,11 @@ namespace NHibernate.Test.ExpressionTest
 	[TestFixture]
 	public class QueryByExampleTest : TestCase
 	{
-		public QueryByExampleTest()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
-		}
-
 		[SetUp]
 		public void SetUp() 
 		{
 			ExportSchema( new string[] { "Componentizable.hbm.xml"});
-			initData();
+			InitData();
 		}
 		
 		
@@ -36,7 +29,7 @@ namespace NHibernate.Test.ExpressionTest
 			{
 				Componentizable master = GetMaster("hibernate", null, "ope%");
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
-				Example ex = Example.create(master).EnableLike();
+				Example ex = Example.Create(master).EnableLike();
 				crit.Add(ex);
 				IList result = crit.List();
 				Assert.IsNotNull(result);
@@ -46,7 +39,7 @@ namespace NHibernate.Test.ExpressionTest
 		}
 
 		[Test]
-		[Ignore("Test Fails with Exception - do to with Criteria expression/parameter handling")]
+		//[Ignore("Test Fails with Exception - do to with Criteria expression/parameter handling")]
 		public void TestJunctionNotExpressionQBE()
 		{
 			using( ISession s = sessions.OpenSession() )
@@ -54,7 +47,7 @@ namespace NHibernate.Test.ExpressionTest
 			{
 				Componentizable master = GetMaster("hibernate", null, "ope%");
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
-				Example ex = Example.create(master).EnableLike();
+				Example ex = Example.Create(master).EnableLike();
 
 			
 				crit.Add(Expression.Expression.Or(Expression.Expression.Not(ex), ex));
@@ -76,7 +69,7 @@ namespace NHibernate.Test.ExpressionTest
 			{
 				Componentizable master = GetMaster("hibernate", null, "ope%");
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
-				Example ex = Example.create(master).EnableLike()
+				Example ex = Example.Create(master).EnableLike()
 					.ExcludeProperty("Component.SubComponent");
 				crit.Add(ex);
 				IList result = crit.List();
@@ -85,7 +78,7 @@ namespace NHibernate.Test.ExpressionTest
 
 				master = GetMaster("hibernate", "ORM tool", "fake stuff");
 				crit = s.CreateCriteria(typeof(Componentizable));
-				ex = Example.create(master).EnableLike()
+				ex = Example.Create(master).EnableLike()
 					.ExcludeProperty("Component.SubComponent.SubName1");
 				crit.Add(ex);
 				result = crit.List();
@@ -95,7 +88,7 @@ namespace NHibernate.Test.ExpressionTest
 			}
 		}
 
-		private void initData()
+		private void InitData()
 		{
 			using( ISession s = sessions.OpenSession() )
 			{
@@ -119,7 +112,7 @@ namespace NHibernate.Test.ExpressionTest
 			}
 		}
 
-		private void deleteData()
+		private void DeleteData()
 		{
 			using( ISession s = sessions.OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )

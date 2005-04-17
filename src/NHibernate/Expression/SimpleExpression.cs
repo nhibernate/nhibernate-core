@@ -1,3 +1,4 @@
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.SqlCommand;
@@ -6,25 +7,25 @@ using NHibernate.Type;
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// The base class for an Expression that compares a single Property
+	/// The base class for an <see cref="ICriterion"/> that compares a single Property
 	/// to a value.
 	/// </summary>
-	public abstract class SimpleExpression : Expression
+	public abstract class SimpleExpression : AbstractCriterion
 	{
-		private readonly string propertyName;
+		private readonly string _propertyName;
 
-		private readonly object expressionValue;
+		private readonly object _value;
 
 		/// <summary>
-		/// Initialize a new instance of the SimpleExpression class for a named
+		/// Initialize a new instance of the <see cref="SimpleExpression" /> class for a named
 		/// Property and its value.
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
-		/// <param name="expressionValue">The value for the Property.</param>
-		internal SimpleExpression( string propertyName, object expressionValue )
+		/// <param name="value">The value for the Property.</param>
+		internal SimpleExpression( string propertyName, object value )
 		{
-			this.propertyName = propertyName;
-			this.expressionValue = expressionValue;
+			_propertyName = propertyName;
+			_value = value;
 		}
 
 		/// <summary>
@@ -33,7 +34,7 @@ namespace NHibernate.Expression
 		/// <value>A string that is the name of the Property.</value>
 		public string PropertyName
 		{
-			get { return propertyName; }
+			get { return _propertyName; }
 		}
 
 		/// <summary>
@@ -42,7 +43,7 @@ namespace NHibernate.Expression
 		/// <value>An object that is the value for the Expression.</value>
 		public object Value
 		{
-			get { return expressionValue; }
+			get { return _value; }
 		}
 
 		/// <summary>
@@ -52,14 +53,15 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass">The Class the Expression is being built for.</param>
 		/// <param name="alias">The alias to use for the table.</param>
 		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias )
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			IType propertyType = ( ( IQueryable ) factory.GetPersister( persistentClass ) ).GetPropertyType( propertyName );
-			string[ ] columnNames = GetColumns( factory, persistentClass, propertyName, alias );
-			string[ ] paramColumnNames = GetColumns( factory, persistentClass, propertyName, null );
+			IType propertyType = ( ( IQueryable ) factory.GetPersister( persistentClass ) ).GetPropertyType( _propertyName );
+			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
+			// don't need to worry about aliasing or aliasClassing for parameter column names
+			string[ ] paramColumnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName );
 			Parameter[ ] parameters = Parameter.GenerateParameters( factory, alias, paramColumnNames, propertyType );
 
 
@@ -85,18 +87,21 @@ namespace NHibernate.Expression
 		/// <param name="sessionFactory"></param>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass )
+		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
-			return new TypedValue[ ] {GetTypedValue( sessionFactory, persistentClass, propertyName, expressionValue )};
+			return new TypedValue[ ] {AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _value, aliasClasses )};
 		}
 
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return propertyName + Op + expressionValue;
+			return _propertyName + Op + _value;
 		}
 
-		/// <summary></summary>
-		protected abstract string Op { get; } //protected ???
+		/// <summary>
+		/// Get the Sql operator to use for the specific 
+		/// subclass of <see cref="SimpleExpression"/>.
+		/// </summary>
+		protected abstract string Op { get; } 
 	}
 }

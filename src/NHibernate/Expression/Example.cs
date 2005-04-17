@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
-using System.Text;
+
 using Iesi.Collections;
-using NHibernate;
-using NHibernate.Collection;
+
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.SqlCommand;
@@ -15,19 +14,18 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// Summary description for Example.
 	/// </summary>
-	public class Example : Expression
+	public class Example : AbstractCriterion
 	{
-		private object entity;
-		private ISet excludedProperties = new HashedSet();
-		private PropertySelector selector;
-		private bool isLikeEnabled;
-		private MatchMode matchMode;
-		private Conjunction expressions = new Conjunction();
+		private object _entity;
+		private ISet _excludedProperties = new HashedSet();
+		private IPropertySelector _selector;
+		private bool _isLikeEnabled;
+		private MatchMode _matchMode;
 		
 		/// <summary>
 		/// A strategy for choosing property values for inclusion in the query criteria
 		/// </summary>
-		public interface PropertySelector 
+		public interface IPropertySelector 
 		{
 			/// <summary>
 			/// 
@@ -39,11 +37,11 @@ namespace NHibernate.Expression
 			bool Include(object propertyValue, String propertyName, IType type);
 		}
 	
-		private static readonly PropertySelector NOT_NULL_OR_EMPTY_STRING = new NotNullOrEmptyStringPropertySelector();
-		private static readonly PropertySelector ALL = new AllPropertySelector();
-		private static readonly PropertySelector NOT_NULL_OR_ZERO = new NotNullOrZeroPropertySelector();
+		private static readonly IPropertySelector NotNullOrEmptyString = new NotNullOrEmptyStringPropertySelector();
+		private static readonly IPropertySelector All = new AllPropertySelector();
+		private static readonly IPropertySelector NotNullOrZero = new NotNullOrZeroPropertySelector();
 		
-		private class AllPropertySelector : PropertySelector
+		private class AllPropertySelector : IPropertySelector
 		{
 			public bool Include(object propertyValue, String propertyName, IType type)
 			{
@@ -51,7 +49,7 @@ namespace NHibernate.Expression
 			}
 		}
 		
-		internal class NotNullOrEmptyStringPropertySelector : PropertySelector
+		internal class NotNullOrEmptyStringPropertySelector : IPropertySelector
 		{
 			
 			public bool Include(object propertyValue, String propertyName, IType type)
@@ -75,7 +73,7 @@ namespace NHibernate.Expression
 		/// This Can't work right now.  Have to figure out some way to use Magic values
 		/// to avoid the non-nullable types in .NET.
 		/// </summary>
-		internal class NotNullOrZeroPropertySelector : PropertySelector 
+		internal class NotNullOrZeroPropertySelector : IPropertySelector 
 		{
 			public bool Include(object propertyValue, String propertyName, IType type) 
 			{ 
@@ -86,9 +84,9 @@ namespace NHibernate.Expression
 		/// <summary>
 		/// Set the property selector
 		/// </summary>
-		public Example SetPropertySelector(PropertySelector selector) 
+		public Example SetPropertySelector(IPropertySelector selector) 
 		{
-			this.selector = selector;
+			this._selector = selector;
 			return this;
 		}
 	
@@ -98,7 +96,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		public Example ExcludeNulls() 
 		{
-			SetPropertySelector(NOT_NULL_OR_EMPTY_STRING);
+			SetPropertySelector(NotNullOrEmptyString);
 			return this;
 		}
 	
@@ -107,7 +105,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		public Example ExcludeNone() 
 		{
-			SetPropertySelector(ALL);
+			SetPropertySelector(All);
 			return this;
 		}
 	
@@ -116,8 +114,8 @@ namespace NHibernate.Expression
 		/// </summary>
 		public Example EnableLike(MatchMode matchMode) 
 		{
-			isLikeEnabled = true;
-			this.matchMode = matchMode;
+			_isLikeEnabled = true;
+			this._matchMode = matchMode;
 			return this;
 		}
 		
@@ -126,7 +124,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		public Example EnableLike() 
 		{
-			return EnableLike(MatchMode.EXACT);
+			return EnableLike(MatchMode.Exact);
 		}
 
 		/// <summary>
@@ -134,7 +132,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		public Example ExcludeProperty(String name) 
 		{
-			excludedProperties.Add(name);
+			_excludedProperties.Add(name);
 			return this;
 		}
 
@@ -144,11 +142,10 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="entity"></param>
 		/// <returns>a new instance of <code>Example</code></returns>
-	
-		public static Example create(object entity) 
+		public static Example Create(object entity) 
 		{
 			if (entity==null) throw new ArgumentException("null example");
-			return new Example(entity, NOT_NULL_OR_EMPTY_STRING);
+			return new Example(entity, NotNullOrEmptyString);
 		}
 
 		/// <summary>
@@ -156,10 +153,10 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="entity"></param>
 		/// <param name="selector"></param>
-		protected Example(object entity, PropertySelector selector) 
+		protected Example(object entity, IPropertySelector selector) 
 		{
-			this.entity = entity;
-			this.selector = selector;
+			_entity = entity;
+			_selector = selector;
 		}
 
 		/// <summary>
@@ -168,14 +165,14 @@ namespace NHibernate.Expression
 		/// <returns></returns>
 		public override String ToString() 
 		{
-			return entity.ToString();
+			return _entity.ToString();
 		}
 	
 		private bool IsPropertyIncluded(object value, String name, IType type) 
 		{
-			return !excludedProperties.Contains(name) &&
+			return !_excludedProperties.Contains(name) &&
 				!type.IsAssociationType &&
-				selector.Include(value, name, type);
+				_selector.Include(value, name, type);
 		}
 
 		/// <summary>
@@ -184,10 +181,36 @@ namespace NHibernate.Expression
 		/// <param name="sessionFactory"></param>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass)
+		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses)
 		{
-			
-			return expressions.GetTypedValues(sessionFactory, persistentClass);
+			IClassMetadata meta = sessionFactory.GetClassMetadata( persistentClass );
+			string[] propertyNames = meta.PropertyNames;
+			IType[] propertyTypes = meta.PropertyTypes;
+			object[] values = meta.GetPropertyValues( _entity );
+
+			ArrayList list = new ArrayList();
+			for( int i=0; i<propertyNames.Length; i++)
+			{
+				object value = values[ i ];
+				IType type = propertyTypes[ i ];
+				string name = propertyNames[ i ];
+
+				bool isPropertyIncluded = ( i!=meta.VersionProperty && IsPropertyIncluded( value, name, type ) );
+
+				if( isPropertyIncluded )
+				{
+					if( propertyTypes[ i ].IsComponentType )
+					{
+						AddComponentTypedValues( name, value, (IAbstractComponentType)type, list ); 
+					}
+					else
+					{
+						AddPropertyTypedValue( value, type, list );
+					}
+				}
+			}
+
+			return ( TypedValue[ ] ) list.ToArray( typeof( TypedValue ) );
 		}
 
 		/// <summary>
@@ -197,12 +220,15 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias)
+		public override SqlString ToSqlString(ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses)
 		{
+			SqlStringBuilder builder = new SqlStringBuilder();
+			builder.Add( StringHelper.OpenParen );
+
 			IClassMetadata meta = factory.GetClassMetadata(persistentClass);
 			String[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
-			object[] propertyValues = meta.GetPropertyValues(entity);
+			object[] propertyValues = meta.GetPropertyValues(_entity);
 			for (int i=0; i<propertyNames.Length; i++) 
 			{
 				object propertyValue = propertyValues[i];
@@ -221,7 +247,9 @@ namespace NHibernate.Expression
 							(IAbstractComponentType) propertyTypes[i], 
 							persistentClass,
 							alias,
-							factory
+							aliasClasses,
+							factory,
+							builder
 							);
 					}
 					else 
@@ -231,14 +259,78 @@ namespace NHibernate.Expression
 							propertyValue, 
 							persistentClass,
 							alias,
-							factory
+							aliasClasses,
+							factory,
+							builder
 							);
 					}
 				}
 			}
-			return expressions.ToSqlString(factory, persistentClass, alias);
+			if( builder.Count==1 )
+			{
+				builder.Add( "1=1" ); // yuck!
+			}
+
+			builder.Add( StringHelper.ClosedParen );
+			return builder.ToSqlString();
 		}
 	
+		/// <summary>
+		/// Adds a <see cref="TypedValue"/> based on the <c>value</c> 
+		/// and <c>type</c> parameters to the <see cref="IList"/> in the
+		/// <c>list</c> parameter.
+		/// </summary>
+		/// <param name="value">The value of the Property.</param>
+		/// <param name="type">The <see cref="IType"/> of the Property.</param>
+		/// <param name="list">The <see cref="IList"/> to add the <see cref="TypedValue"/> to.</param>
+		protected void AddPropertyTypedValue(object value, IType type, IList list)
+		{
+			// TODO: I don't like this at all - why don't we have it return a TypedValue[]
+			// or an ICollection that can be added to the list instead of modifying the
+			// parameter passed in.
+			if( value!=null )
+			{
+				// TODO: h2.1 SYNCH: some code in here to check for 
+				// IsIgnoreCaseEnabled and IsLikeEnabled
+//				string stringValue = value as string;
+//				if( stringValue!=null )
+//				{
+//					// 
+//					// 
+//				}
+
+				list.Add( new TypedValue( type, value ) );
+			}
+		}
+
+		protected void AddComponentTypedValues(string path, object component, IAbstractComponentType type, IList list)
+		{
+			//TODO: h2.1 SYNCH: resume here once IAbstractComponentType is fixed up.
+			if( component!=null )
+			{
+				string[] propertyNames = type.PropertyNames;
+				IType[] subtypes = type.Subtypes;
+				object[] values = type.GetPropertyValues( component );
+				for( int i=0; i<propertyNames.Length; i++ )
+				{
+					object value = values[i];
+					IType subtype = subtypes[i];
+					string subpath = StringHelper.Qualify( path, propertyNames[i] );
+					if( IsPropertyIncluded( value, subpath, subtype ) )
+					{
+						if( subtype.IsComponentType )
+						{
+							AddComponentTypedValues( subpath, value, (IAbstractComponentType)subtype, list );
+						}
+						else
+						{
+							AddPropertyTypedValue( value, subtype, list );
+						}
+					}
+
+				}
+			}
+		}
 		/// <summary>
 		/// 
 		/// </summary>
@@ -252,22 +344,29 @@ namespace NHibernate.Expression
 			object propertyValue, 
 			System.Type persistentClass,
 			String alias,
-			ISessionFactoryImplementor sessionFactory) 
+			IDictionary aliasClasses,
+			ISessionFactoryImplementor sessionFactory,
+			SqlStringBuilder builder) 
 		{
-			Expression crit;
+			if( builder.Count>1 )
+			{
+				builder.Add( " and " );
+			}
+
+			ICriterion crit;
 			if ( propertyValue!=null ) 
 			{
 				bool isString = propertyValue is String;
-				crit = ( isLikeEnabled && isString ) ?
-					(Expression) new LikeExpression( propertyName, propertyValue) :
-					(Expression) new EqExpression( propertyName, propertyValue );
+				crit = ( _isLikeEnabled && isString ) ?
+					(ICriterion) new LikeExpression( propertyName, propertyValue) :
+					(ICriterion) new EqExpression( propertyName, propertyValue );
 					
 			}
 			else 
 			{
 				crit = new NullExpression(propertyName);
 			}
-			expressions.Add(crit);
+			builder.Add( crit.ToSqlString( sessionFactory, persistentClass, alias, aliasClasses ) );
 		}
 	
 		/// <summary>
@@ -285,7 +384,9 @@ namespace NHibernate.Expression
 			IAbstractComponentType type, 
 			System.Type persistentClass,
 			String alias,
-			ISessionFactoryImplementor sessionFactory) 
+			IDictionary aliasClasses,
+			ISessionFactoryImplementor sessionFactory,
+			SqlStringBuilder builder) 
 		{
 		
 			if (component!=null) 
@@ -308,8 +409,9 @@ namespace NHibernate.Expression
 								(IAbstractComponentType) subtype,
 								persistentClass,
 								alias,
-								sessionFactory
-								);
+								aliasClasses,
+								sessionFactory,
+								builder );
 						} 
 						else 
 						{
@@ -318,7 +420,9 @@ namespace NHibernate.Expression
 								value, 
 								persistentClass,
 								alias,
-								sessionFactory
+                                aliasClasses,
+								sessionFactory,
+								builder
 								);
 						}
 					}

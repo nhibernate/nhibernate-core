@@ -70,15 +70,19 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public virtual object[ ] GetPropertyValues( object component, ISessionImplementor session )
 		{
+			return GetPropertyValues(  component );
+		}
+
+		public object[] GetPropertyValues(object component)
+		{
 			int len = Subtypes.Length;
 			object[ ] result = new object[len];
 			for( int i = 0; i < len; i++ )
 			{
-				result[ i ] = GetPropertyValue( component, i, session );
+				result[ i ] = GetPropertyValue( component, i );
 			}
 			return result;
 		}
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -100,6 +104,11 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <returns></returns>
 		public virtual object GetPropertyValue( object component, int i, ISessionImplementor session )
+		{
+			return GetPropertyValue( component, i );
+		}
+
+		public object GetPropertyValue( object component, int i )
 		{
 			return userType.GetPropertyValue( component, i );
 		}
