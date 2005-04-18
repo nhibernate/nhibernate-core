@@ -1,3 +1,5 @@
+using System;
+
 namespace NHibernate.Expression
 {
 	/// <summary>

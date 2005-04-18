@@ -7,12 +7,10 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest
 {
-	/// <summary>
-	/// Summary description for QueryByExampleTest.
-	/// </summary>
 	[TestFixture]
 	public class QueryByExampleTest : TestCase
 	{
+		#region NUnit.Framework.TestFixture Members
 		[SetUp]
 		public void SetUp() 
 		{
@@ -20,7 +18,15 @@ namespace NHibernate.Test.ExpressionTest
 			InitData();
 		}
 		
+		[TearDown]
+		public override void TearDown()
+		{
+			DeleteData();
+			base.TearDown();
+		}
 		
+		#endregion
+
 		[Test]
 		public void TestSimpleQBE()
 		{
@@ -39,7 +45,6 @@ namespace NHibernate.Test.ExpressionTest
 		}
 
 		[Test]
-		//[Ignore("Test Fails with Exception - do to with Criteria expression/parameter handling")]
 		public void TestJunctionNotExpressionQBE()
 		{
 			using( ISession s = sessions.OpenSession() )
@@ -54,9 +59,9 @@ namespace NHibernate.Test.ExpressionTest
 
 				IList result = crit.List();
 				Assert.IsNotNull(result);
-//				if (!(GetDialect()
-//					instanceof HSQLDialect) )
-//					assertEquals(2, result.size());
+				//if ( !(dialect is HSQLDialect - h2.1 test
+				
+				Assert.AreEqual( 2, result.Count, "expected 2 objects" );
 				t.Commit();
 			}
 		}

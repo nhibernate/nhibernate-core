@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Dialect;
 using NHibernate.Engine;
