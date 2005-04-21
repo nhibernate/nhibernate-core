@@ -84,10 +84,10 @@
 				CS1581: Invalid return type in XML comment cref attribute
 				CS1584: XML comment on 'member' has syntactically incorrect cref attribute 'invalid_syntax'
 				CS1587: XML comment is not placed on a valid language element
-				CS1589: Unable to include XML fragment 'fragment' of file 'file' -- reason
-				CS1590: Invalid XML include element -- Missing file attribute
+				CS1589: Unable to include XML fragment 'fragment' of file 'file' - reason
+				CS1590: Invalid XML include element - Missing file attribute
 				CS1591: Missing XML comment for publicly visible type or member 'Type_or_Member'
-				CS1592: Badly formed XML in included comments file -- 'reason'
+				CS1592: Badly formed XML in included comments file - 'reason'
 			-->
 			
 			<sources failonempty="true">
