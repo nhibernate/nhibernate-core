@@ -5,7 +5,7 @@
 		discriminator-value="0"
 	>
 		<id 
-			name="Id" 
+			name="Id" column="identifier_column"
 			unsaved-value="0"
 		>
 			<generator class="assigned" />
@@ -13,13 +13,12 @@
 		</id>
 		
 		<discriminator 
-			column="clazz" 
+			column="clazz_discriminata" 
 			type="Int32" 
 			not-null="false" 
 		/>
 		
 		<property name="Name" />
-		
 		<subclass 
 			name="NHibernate.DomainModel.B, NHibernate.DomainModel" 
 			discriminator-value="-1"
@@ -30,6 +29,13 @@
 				type="Int32" 
 			/>
 			
+			<map name="Map"
+				where="(select a.clazz_discriminata from A a where a.identifier_column = bid) &lt; 0">
+				<key column="BID"/>
+				<index column="MAPKEY" type="string"/>
+				<element column="MAPVAL" type="string"/>
+			</map>
+
 			<subclass 
 				name="NHibernate.DomainModel.C1, NHibernate.DomainModel" 
 				discriminator-value="null"

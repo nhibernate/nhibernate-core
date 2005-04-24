@@ -46,15 +46,46 @@ namespace NHibernate.Test
 		
 
 		[Test]
-		[Ignore("Test not written")]
+		[Ignore("Requires TestCase refactoring to H2.1")]
 		public void HigherLevelIndexDefinition()
 		{
+			/*
+			string[] commands = Cfg.GenerateSchemaCreationScript( Dialect );
+			int max = commands.Length;
+			bool found = false;
+			
+			foreach( string command in commands )
+			{
+				System.Console.WriteLine("Checking command : " + command);
+				found = command.IndexOf("create index indx_a_name") >= 0;
+				if (found)
+					break;
+			}
+			Assert.IsTrue( found, "Unable to locate indx_a_name index creation" );
+			*/
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void Subselect()
 		{
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				B b = new B();
+				IDictionary map = new Hashtable();
+				map["a"] = "a";
+				map["b"] = "b";
+				b.Map = map;
+				s.Save(b);
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				B b = (B) s.CreateQuery("from B").UniqueResult();
+				t.Commit();
+			}
 		}
 
 		[Test]
@@ -121,12 +152,6 @@ namespace NHibernate.Test
 			s.Find("from b in class B");
 			t.Commit();
 			s.Close();
-		}
-
-		[Test]
-		[Ignore("Test not written")]
-		public void GetSave()
-		{
 		}
 	}
 }
