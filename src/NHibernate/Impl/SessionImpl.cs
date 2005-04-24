@@ -765,6 +765,7 @@ namespace NHibernate.Impl
 			ReassociateProxy( obj, id );
 		}
 
+		/*
 		private object DoSave( object obj, object id )
 		{
 			IClassPersister persister = GetPersister( obj );
@@ -915,6 +916,7 @@ namespace NHibernate.Impl
 
 			return id;
 		}
+		*/
 
 		private object DoSave( object obj, object id, IClassPersister persister, bool useIdentityColumn, Cascades.CascadingAction cascadeAction, object anything )
 		{
