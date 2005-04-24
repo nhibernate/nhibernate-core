@@ -16,6 +16,7 @@ namespace NHibernate.Test
 	
 	public abstract class TestCase 
 	{
+		private const bool OUTPUT_DDL = true;
 		protected Configuration cfg;
 		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
@@ -54,7 +55,7 @@ namespace NHibernate.Test
 				cfg.AddResource( assemblyName + "." + files[i].ToString(), Assembly.Load( assemblyName ) );
 			}
 
-			if(exportSchema) new SchemaExport(cfg).Create(true, true);
+			if(exportSchema) new SchemaExport(cfg).Create(OUTPUT_DDL, true);
 			
 			sessions = cfg.BuildSessionFactory( );
 			dialect = Dialect.Dialect.GetDialect();
@@ -65,7 +66,7 @@ namespace NHibernate.Test
 		/// </summary>
 		public void DropSchema() 
 		{
-			new SchemaExport(cfg).Drop(true, true);
+			new SchemaExport(cfg).Drop(OUTPUT_DDL, true);
 		}
 
 		public void ExecuteStatement(string sql)
@@ -91,12 +92,12 @@ namespace NHibernate.Test
 				comm.ExecuteNonQuery();
 				tran.Commit();
 			}
-			catch(Exception exc)
+			catch(Exception)
 			{
 				if (tran != null)
 					tran.Rollback();
 				if (error)
-					throw exc;
+					throw;
 			}
 			finally
 			{
