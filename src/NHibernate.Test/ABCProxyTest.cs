@@ -42,21 +42,93 @@ namespace NHibernate.Test
 		#endregion
 
 		[Test]
-		[Ignore("Test not written")]
-		public void DiscriminatorFiltering()
-		{
-		}
-
-		[Test]
-		[Ignore("Test not written")]
 		public void OptionalOneToOneInCollection()
 		{
+			C2 c2;
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				C1 c1 = new C1();
+				c2 = new C2();
+				c1.C2 = c2;
+				c2.C1 = c1;
+				c2.C1s = new ArrayList();
+				c2.C1s.Add(c1);
+				c1.C2 = c2;
+				s.Save(c2);
+				s.Save(c1); 
+				t.Commit();
+			}
+		
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				c2 = (C2)s.Get( typeof( C2 ), c2.Id );
+				Assert.IsTrue( c2.C1s.Count == 1 );
+				s.Delete( c2.C1s[0] );
+				s.Delete( c2 );
+				t.Commit();
+			}
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void SharedColumn()
 		{
+			C1 c1;
+			C2 c2;
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				c1 = new C1();
+				c2 = new C2();
+				c1.C2 = c2;
+				c2.C1 = c1;
+				s.Save(c1);
+				s.Save(c2);
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				IList list = s.Find("from B");
+				Assert.AreEqual( 2, list.Count );
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				c1 = (C1) s.CreateQuery("from C1").UniqueResult();
+				c2 = (C2) s.CreateQuery("from C2").UniqueResult();
+				Assert.AreSame( c2, c1.C2 );
+				Assert.AreSame( c1, c2.C1 );
+				Assert.IsTrue( c1.C2s.Contains( c2 ) );
+				Assert.IsTrue( c2.C1s.Contains( c1 ) );
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				c1 = (C1) s.Get( typeof(A), c1.Id );
+				c2 = (C2) s.Get( typeof(A), c2.Id );
+				Assert.AreSame( c2, c1.C2 );
+				Assert.AreSame( c1, c2.C1 );
+				Assert.IsTrue( c1.C2s.Contains( c2 ) );
+				Assert.IsTrue( c2.C1s.Contains( c1 ) );
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				s.Delete(c1);
+				s.Delete(c2);
+				t.Commit();
+			}
 		}
 
 		[Test]

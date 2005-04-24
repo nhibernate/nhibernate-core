@@ -1,65 +1,58 @@
 <?xml version="1.0" ?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class 
-		name="NHibernate.DomainModel.A, NHibernate.DomainModel" 
-		proxy="NHibernate.DomainModel.A, NHibernate.DomainModel"
-		discriminator-value="0"
-	>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.DomainModel"
+	namespace="NHibernate.DomainModel" >
+
+	<class name="A" lazy="true" discriminator-value="0">
 		<id name="Id" unsaved-value="0" type="Int64">
 			<generator class="native" />
 		</id>
-		<discriminator column="clazz" type="Int32" force="true" not-null="false" />
+		<discriminator column="clazz_discriminata" type="Int32" force="true" not-null="false" />
 		<property name="Name" />
-		<many-to-one name="Forward" class="NHibernate.DomainModel.E, NHibernate.DomainModel" cascade="save-update" />
-		<subclass 
-			name="NHibernate.DomainModel.B, NHibernate.DomainModel" 
-			proxy="NHibernate.DomainModel.B, NHibernate.DomainModel"
-			discriminator-value="null"
-		>
+		<many-to-one name="Forward" class="E" cascade="save-update" />
+		
+		<subclass name="B" lazy="true" discriminator-value="null">
 			<property name="Count" column="count_" type="Int32" />
 			<map name="Map">
 				<key column="BID" />
 				<index column="MAPKEY" type="String" />
 				<element column="MAPVAL" type="Int32" />
 			</map>
-			<subclass 
-				name="NHibernate.DomainModel.C1, NHibernate.DomainModel" 
-				discriminator-value="1"
-				proxy="NHibernate.DomainModel.C1, NHibernate.DomainModel"
-			>
+			
+			<subclass name="C1" discriminator-value="1" lazy="true">
 				<property name="Address" column="c1" />
-				<one-to-one name="D" class="NHibernate.DomainModel.D, NHibernate.DomainModel" />
+				<one-to-one name="D" class="D" />
+				<many-to-one name="C2" column="c" class="C2" />
+				<bag name="C2s" inverse="true" where="clazz_discriminata=2">
+					<key column="c"/>
+					<one-to-many class="C2" />
+				</bag>
 			</subclass>
-			<subclass 
-				name="NHibernate.DomainModel.C2, NHibernate.DomainModel"
-				proxy="NHibernate.DomainModel.C2, NHibernate.DomainModel" 
-				discriminator-value="2"
-			>
+			
+			<subclass name="C2" lazy="true" discriminator-value="2">
 				<property name="Address" column="c2" />
+				<many-to-one name="C1" column="c" class="C1" />
+				<bag name="C1s" inverse="true" where="clazz_discriminata=1" lazy="true">
+					<key column="c"/>
+					<one-to-many class="C1" />
+				</bag>
 			</subclass>
 		</subclass>
 	</class>
-	<class 
-		name="NHibernate.DomainModel.D, NHibernate.DomainModel" 
-		proxy="NHibernate.DomainModel.D, NHibernate.DomainModel"
-		discriminator-value="0" 
-	>
+
+	<class name="D" discriminator-value="0" lazy="true">
 		<id name="Id" unsaved-value="0" type="Int64">
 			<generator class="assigned" />
 		</id>
 		<property name="Amount" type="Double" />
 	</class>
 
-	<class 
-		name="NHibernate.DomainModel.E, NHibernate.DomainModel" 
-		proxy="NHibernate.DomainModel.E, NHibernate.DomainModel"
-		discriminator-value="0" 
-	>
+	<class name="E" discriminator-value="0" lazy="true">
 		<id name="Id" unsaved-value="0" type="Int64">
 			<generator class="native" /> <!-- Hibernate 2.1 has class="increment" here -->
 		</id>
 		<property name="Amount" type="Double" />
-		<one-to-one name="Reverse" class="NHibernate.DomainModel.A, NHibernate.DomainModel" property-ref="Forward" cascade="save-update" />
+		<one-to-one name="Reverse" class="A" property-ref="Forward" cascade="save-update" />
 	</class>
 
 </hibernate-mapping>
