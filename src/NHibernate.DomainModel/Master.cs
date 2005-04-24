@@ -7,7 +7,7 @@ namespace NHibernate.DomainModel
 	/// Summary description for Master.
 	/// </summary>
 	[Serializable]
-	public class Master
+	public class Master : INamed
 	{
 		private static object _emptyObject = new object();
 

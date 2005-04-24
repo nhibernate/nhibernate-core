@@ -4,7 +4,7 @@ using System.Collections;
 namespace NHibernate.DomainModel
 {
 	[Serializable]
-	public class Glarch : Super, GlarchProxy, ILifecycle
+	public class Glarch : Super, GlarchProxy, ILifecycle, INamed
 	{
 	
 		private int _version;

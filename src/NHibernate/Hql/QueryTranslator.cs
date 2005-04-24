@@ -37,7 +37,7 @@ namespace NHibernate.Hql
 		private IList scalarSelectTokens = new ArrayList(); // contains a List of strings
 		private IList whereTokens = new ArrayList(); // contains a List of strings containing Sql or SqlStrings
 		private IList havingTokens = new ArrayList();
-		private IDictionary joins = new Hashtable();
+		private IDictionary joins = new SequencedHashMap();
 		private IList orderByTokens = new ArrayList();
 		private IList groupByTokens = new ArrayList();
 		private ISet querySpaces = new HashedSet();
@@ -859,20 +859,11 @@ namespace NHibernate.Hql
 
 			sqlString = sql.ToQuerySqlString();
 
-			System.Type[ ] classes = new System.Type[returnTypes.Length];
-			for( int i = 0; i < returnTypes.Length; i++ )
-			{
-				if( returnTypes[ i ] != null )
-				{
-					classes[ i ] = returnTypes[ i ].ReturnedClass;
-				}
-			}
-
 			try
 			{
 				if( holderClass != null )
 				{
-					holderConstructor = holderClass.GetConstructor( classes );
+					holderConstructor = ReflectHelper.GetConstructor( holderClass, returnTypes );
 				}
 			}
 			catch( Exception nsme )
@@ -1023,38 +1014,36 @@ namespace NHibernate.Hql
 			return buf.ToString();
 		}
 
-		private JoinFragment MergeJoins( JoinFragment ojf )
+		private void MergeJoins( JoinFragment ojf )
 		{
-			//classes
-			foreach( string name in typeMap.Keys )
+			foreach( DictionaryEntry de in joins )
 			{
-				JoinFragment join = ( JoinFragment ) joins[ name ];
-				IQueryable p = GetPersisterForName( name );
-				bool includeSubclasses = returnedTypes.Contains( name ) && !IsShallowQuery;
+				string name = (string)de.Key;
+				JoinFragment join = (JoinFragment) de.Value;
 
-				if( join != null )
+				if ( typeMap.Contains( name ) ) 
 				{
+					IQueryable p = GetPersisterForName( name );
+					bool includeSubclasses = returnedTypes.Contains( name )
+						&& !IsShallowQuery;
+
 					bool isCrossJoin = crossJoins.Contains( name );
 					ojf.AddFragment( join );
-
 					ojf.AddJoins(
-						( (IJoinable) p).FromJoinFragment( name, isCrossJoin, includeSubclasses ),
+						p.FromJoinFragment( name, isCrossJoin, includeSubclasses ),
 						p.QueryWhereFragment( name, isCrossJoin, includeSubclasses )
 						);
-				}
-			}
 
-			foreach( string name in collections.Keys )
-			{
-				JoinFragment collJoin = ( JoinFragment ) joins[ name ];
-				if( collJoin != null )
+				}
+				else if ( collections.Contains( name ) ) 
 				{
-					ojf.AddFragment( collJoin );
+					ojf.AddFragment(join);
+				}
+				else 
+				{
+					//name from a super query (a bit inelegant that it shows up here)
 				}
 			}
-
-			return ojf;
-			
 		}
 
 		/// <summary></summary>
@@ -1294,7 +1283,8 @@ namespace NHibernate.Hql
 
 			// TODO: 2.1 - Check that something tidies up this cmd/reader
 			IDataReader rs = GetResultSet( st, parameters.RowSelection, session );
-			return new EnumerableImpl( rs, st, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection );
+			return new EnumerableImpl( rs, st, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection,
+				holderClass );
 
 		}
 

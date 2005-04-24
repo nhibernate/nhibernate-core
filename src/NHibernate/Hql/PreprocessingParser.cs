@@ -39,6 +39,8 @@ namespace NHibernate.Hql
 			collectionProps.Add( "minindex", "minIndex" );
 			collectionProps.Add( "maxelement", "maxElement" );
 			collectionProps.Add( "minelement", "minElement" );
+
+			collectionProps.Add( "index", "index" );
 		}
 
 		private IDictionary replacements;

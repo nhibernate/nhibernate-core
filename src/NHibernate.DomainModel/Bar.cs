@@ -4,7 +4,7 @@ using System.Collections;
 namespace NHibernate.DomainModel
 {
 	[Serializable]
-	public class Bar : Abstract, BarProxy
+	public class Bar : Abstract, BarProxy, INamed
 	{
 		private int _x;
 		private string _barString;

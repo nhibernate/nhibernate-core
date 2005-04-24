@@ -21,7 +21,7 @@ namespace NHibernate.Impl
 		private ISessionImplementor _sess;
 		private IType[ ] _types;
 		private bool _single;
-		private object[ ] _currentResults;
+		private object _currentResult;
 		private bool _hasNext;
 		private string[ ][ ] _names;
 		private IDbCommand _cmd;
@@ -30,6 +30,7 @@ namespace NHibernate.Impl
 		// before the first record we need
 		private int _currentRow = -1;
 
+		private System.Reflection.ConstructorInfo _holderConstructor;
 		private RowSelection _selection;
 
 		/// <summary>
@@ -41,10 +42,12 @@ namespace NHibernate.Impl
 		/// <param name="types">The <see cref="IType"/>s contained in the <see cref="IDataReader"/>.</param>
 		/// <param name="columnNames">The names of the columns in the <see cref="IDataReader"/>.</param>
 		/// <param name="selection">The <see cref="RowSelection"/> that should be applied to the <see cref="IDataReader"/>.</param>
+		/// <param name="holderType">Optional type of the result holder (used for "select new SomeClass(...)" queries).</param>
 		/// <remarks>
 		/// The <see cref="IDataReader"/> should already be positioned on the first record in <see cref="RowSelection"/>.
 		/// </remarks>
-		public EnumerableImpl( IDataReader reader, IDbCommand cmd, ISessionImplementor sess, IType[ ] types, string[ ][ ] columnNames, RowSelection selection )
+		public EnumerableImpl( IDataReader reader, IDbCommand cmd, ISessionImplementor sess, IType[ ] types, string[ ][ ] columnNames, RowSelection selection,
+			System.Type holderType )
 		{
 			_reader = reader;
 			_cmd = cmd;
@@ -52,6 +55,12 @@ namespace NHibernate.Impl
 			_types = types;
 			_names = columnNames;
 			_selection = selection;
+
+			if( holderType != null )
+			{
+				_holderConstructor = NHibernate.Util.ReflectHelper.GetConstructor(
+					holderType, types );
+			}
 
 			_single = _types.Length == 1;
 		}
@@ -68,23 +77,54 @@ namespace NHibernate.Impl
 			if( !_hasNext )
 			{
 				log.Debug( "exhausted results" );
-				_currentResults = null;
+				_currentResult = null;
 				_sess.Batcher.CloseQueryCommand( _cmd, _reader );
 			}
 			else
 			{
 				log.Debug( "retreiving next results" );
-				_currentResults = new object[_types.Length];
 
-				// move through each of the ITypes contained in the IDataReader and convert them
-				// to their objects.  
-				for( int i = 0; i < _types.Length; i++ )
+				if( _single )
 				{
-					// The IType knows how to extract its value out of the IDataReader.  If the IType
-					// is a value type then the value will simply be pulled out of the IDataReader.  If
-					// the IType is an Entity type then the IType will extract the id from the IDataReader
-					// and use the ISession to load an instance of the object.
-					_currentResults[ i ] = _types[ i ].NullSafeGet( _reader, _names[ i ], _sess, null );
+					_currentResult = _types[ 0 ].NullSafeGet( _reader, _names[ 0 ], _sess, null );
+				}
+				else
+				{
+					object[ ] currentResults = new object[_types.Length];
+
+					// move through each of the ITypes contained in the IDataReader and convert them
+					// to their objects.  
+					for( int i = 0; i < _types.Length; i++ )
+					{
+						// The IType knows how to extract its value out of the IDataReader.  If the IType
+						// is a value type then the value will simply be pulled out of the IDataReader.  If
+						// the IType is an Entity type then the IType will extract the id from the IDataReader
+						// and use the ISession to load an instance of the object.
+						currentResults[ i ] = _types[ i ].NullSafeGet( _reader, _names[ i ], _sess, null );
+					}
+
+					_currentResult = currentResults;
+				}
+
+				if( _holderConstructor != null )
+				{
+					try 
+					{
+						if( _currentResult == null || !_currentResult.GetType().IsArray )
+						{
+							_currentResult = _holderConstructor.Invoke( new object[] { _currentResult } );
+						}
+						else 
+						{
+							_currentResult = _holderConstructor.Invoke( ( object[ ] )_currentResult );
+						}
+					}
+					catch( Exception e )
+					{
+						throw new QueryException( "Could not instantiate: "
+							+ _holderConstructor.DeclaringType.FullName,
+							e );
+					}
 				}
 			}
 		}
@@ -117,14 +157,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				if( _single )
-				{
-					return _currentResults[ 0 ];
-				}
-				else
-				{
-					return _currentResults;
-				}
+				return _currentResult;
 			}
 		}
 
@@ -200,7 +233,7 @@ namespace NHibernate.Impl
 				// PostMoveNext method.
 				if( _hasNext ) 
 				{
-					_currentResults = null;
+					_currentResult = null;
 					_sess.Batcher.CloseQueryCommand( _cmd, _reader );
 				}
 			}

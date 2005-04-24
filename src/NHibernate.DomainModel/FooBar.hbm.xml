@@ -2,7 +2,7 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<import class="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel" />
 	<import class="NHibernate.DomainModel.Result, NHibernate.DomainModel" />
-	<import class="NHibernate.DomainModel.Named, NHibernate.DomainModel" />
+	<import class="NHibernate.DomainModel.INamed, NHibernate.DomainModel" />
 
 	<class 
   		name="NHibernate.DomainModel.Foo, NHibernate.DomainModel"

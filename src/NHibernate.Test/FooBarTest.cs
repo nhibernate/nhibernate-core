@@ -80,8 +80,29 @@ namespace NHibernate.Test
 		{
 		}
 
+		private static bool IsEmpty( IEnumerable enumerable )
+		{
+			return !enumerable.GetEnumerator().MoveNext();
+		}
+
+		private static bool ContainsSingleObject( IEnumerable enumerable, object obj )
+		{
+			IEnumerator enumerator = enumerable.GetEnumerator();
+			
+			// Fail if no items
+			if( !enumerator.MoveNext() ) return false;
+			
+			// Fail if item not equal
+			if( !object.Equals( obj, enumerator.Current ) ) return false;
+
+			// Fail if more items
+			if( enumerator.MoveNext() ) return false;
+
+			// Succeed
+			return true;
+		}
+
 		[Test]
-		[Ignore("Test not complete yet.")]
 		public void Query() 
 		{
 			ISession s = sessions.OpenSession();
@@ -108,10 +129,10 @@ namespace NHibernate.Test
 			s.Find( "select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo = 'bar'" );
 			s.Find( "select foo.TheFoo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar'" );
 			s.Find( "select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'bar'" );
-			//			if( !( dialect is Dialect.HSQLDialect ) ) 
-			//			{
+//			if( !( dialect is Dialect.HSQLDialect ) ) 
+//			{
 			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo = foo.TheFoo.TheFoo" );
-			//			}
+//			}
 			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar' and foo.TheFoo.TheFoo.TheFoo = 'baz'" );
 			s.Find( "select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'a' and foo.TheFoo.String = 'b'" );
 
@@ -146,11 +167,10 @@ namespace NHibernate.Test
 			s.Find( "from Baz baz left join baz.FooToGlarch join baz.FooSet" );
 			s.Find( "from Baz baz left join baz.FooToGlarch join fetch baz.FooSet foo left join fetch foo.TheFoo" );
 
-			// foo.Boolean = true
-			list = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' and foo.Boolean = 1 order by foo.String asc, foo.Component.Count desc" );
+			list = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' and foo.Boolean = true order by foo.String asc, foo.Component.Count desc" );
 			Assert.AreEqual( 0, list.Count, "empty query" );
-			IEnumerable enumer = s.Enumerable( "from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' order by foo.String asc, foo.Component.Count desc" );
-			Assert.IsFalse( enumer.GetEnumerator().MoveNext(), "empty enumerator" );
+			IEnumerable enumerable = s.Enumerable( "from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' order by foo.String asc, foo.Component.Count desc" );
+			Assert.IsTrue( IsEmpty( enumerable ), "empty enumerator" );
 
 			list = s.Find( "select foo.TheFoo from foo in class NHibernate.DomainModel.Foo" );
 			Assert.AreEqual( 1, list.Count, "query" );
@@ -165,26 +185,320 @@ namespace NHibernate.Test
 				// add an !InterbaseDialect wrapper around list and assert
 				list = s.Find( "from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements", new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ), NHibernateUtil.DateTime );
 				Assert.AreEqual( 2, list.Count, "componenet query" );
+
+				list = s.Find( "from foo in class NHibernate.DomainModel.Foo where size(foo.Component.ImportantDates) = 3" ); 
+				Assert.AreEqual( 2, list.Count, "component query" );
+				list = s.Find( "from foo in class Foo where 0 = size(foo.Component.ImportantDates)" );
+				Assert.AreEqual( 0, list.Count, "component query" );
+				list = s.Find( "from foo in class Foo where exists elements(foo.Component.ImportantDates)" );
+				Assert.AreEqual( 2, list.Count, "component query" );
+				s.Find( "from foo in class Foo where not exists (from bar in class Bar where bar.id = foo.id)" );
+
+				s.Find( "select foo.TheFoo from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)" );
+				s.Find( "from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long) and foo.TheFoo.String='baz'" );
+				s.Find( "from foo in class Foo where foo.TheFoo.String='baz' and foo = some(select x from x in class Foo where x.Long>foo.TheFoo.Long)" );
+				s.Find( "from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)" );
+
+				s.Enumerable( "select foo.String, foo.Date, foo.TheFoo.String, foo.id from foo in class Foo, baz in class Baz where foo in elements(baz.FooArray) and foo.String like 'foo'" );
 			}
 
-			// WAS: 3 in h2.0.3 - there's a null value at index 2 that is not in the db with hibernate - it is a missing index
-			// in the db
-			list = s.Find( "from foo in class NHibernate.DomainModel.Foo where size(foo.Component.ImportantDates) = 4" ); 
-			Assert.AreEqual( 2, list.Count, "component query" );
-			list = s.Find( "from foo in class Foo where 0 = size(foo.Component.ImportantDates)" );
+			list = s.Find( "from foo in class Foo where foo.Component.Count is null order by foo.Component.Count" );
 			Assert.AreEqual( 0, list.Count, "component query" );
-			list = s.Find( "from foo in class Foo where exists elements(foo.Component.ImportantDates)" );
+			
+			list = s.Find( "from foo in class Foo where foo.Component.Name='foo'" );
 			Assert.AreEqual( 2, list.Count, "component query" );
-			s.Find( "from foo in class Foo where not exists (from bar in class Bar where bar.id = foo.id)" );
+			
+			list = s.Find( "select distinct foo.Component.Name, foo.Component.Name from foo in class Foo where foo.Component.Name='foo'" );
+			Assert.AreEqual( 1, list.Count, "component query" );
 
-			s.Find( "select foo.TheFoo from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)" );
-			s.Find( "from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long) and foo.TheFoo.String='baz'" );
-			s.Find( "from foo in class Foo where foo.TheFoo.String='baz' and foo = some(select x from x in class Foo where x.Long>foo.TheFoo.Long)" );
-			s.Find( "from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)" );
+			list = s.Find( "select distinct foo.Component.Name, foo.id from foo in class Foo where foo.Component.Name='foo'" );
+			Assert.AreEqual( 2, list.Count, "component query" );
 
-			s.Enumerable( "select foo.String, foo.Date, foo.TheFoo.String, foo.id from foo in class Foo, baz in class Baz where foo in elements(baz.FooArray) and foo.String like 'foo'" );
+			list = s.Find( "select foo.TheFoo from foo in class Foo" );
+			Assert.AreEqual( 2, list.Count, "query" );
+
+			list = s.Find( "from foo in class Foo where foo.id=?", foo.Key, NHibernateUtil.String );
+			Assert.AreEqual( 1, list.Count, "id query" );
+
+			list = s.Find("from foo in class Foo where foo.Key=?", foo.Key, NHibernateUtil.String );
+			Assert.AreEqual( 1, list.Count, "named id query" );
+			Assert.AreSame( foo, list[0], "id query" );
+
+			list = s.Find("select foo.TheFoo from foo in class Foo where foo.String='fizard'");
+			Assert.AreEqual( 1, list.Count, "query" );
+			Assert.AreSame( foo.TheFoo, list[0], "returned object" );
+			
+			list = s.Find("from foo in class Foo where foo.Component.Subcomponent.Name='bar'");
+			Assert.AreEqual( 2, list.Count, "components of components" );
+			
+			list = s.Find("select foo.TheFoo from foo in class Foo where foo.TheFoo.id=?",
+				foo.TheFoo.Key, NHibernateUtil.String);
+			Assert.AreEqual( 1, list.Count, "by id query" );
+			Assert.AreSame( foo.TheFoo, list[0], "by id returned object" );
+
+			s.Find( "from foo in class Foo where foo.TheFoo = ?", foo.TheFoo, NHibernateUtil.Entity( typeof( Foo ) ) );
+
+			Assert.IsTrue( IsEmpty( s.Enumerable("from bar in class Bar where bar.String='a string' or bar.String='a string'")
+				) );
+
+			enumerable = s.Enumerable(
+				"select foo.Component.Name, foo.Component.ImportantDates.elements from foo in class Foo where foo.TheFoo.id=?",
+				foo.TheFoo.Key, NHibernateUtil.String
+			);
+			int i=0;
+			foreach( object[] row in enumerable )
+			{
+				i++;
+				Assert.IsTrue( row[0] is String );
+				Assert.IsTrue( row[1] == null || row[1] is DateTime );
+			}
+			Assert.AreEqual( 3, i ); //WAS: 4
+
+			enumerable = s.Enumerable(
+				"select max(foo.Component.ImportantDates.elements) from foo in class Foo group by foo.id"
+			);
+			IEnumerator enumerator = enumerable.GetEnumerator();
+			
+			Assert.IsTrue( enumerator.MoveNext() );
+			Assert.IsTrue( enumerator.Current is DateTime );
+
+			list = s.Find(
+				"select foo.TheFoo.TheFoo.TheFoo from foo in class Foo, foo2 in class Foo where"
+				+ " foo = foo2.TheFoo and not not ( not foo.String='fizard' )"
+				+ " and foo2.String between 'a' and (foo.TheFoo.String)"
+				+ //( dialect is HSQLDialect || dialect is InterbaseDialect )?
+				  //" and ( foo2.String in ( 'fiz', 'blah') or 1=1 )"
+				  //:
+					" and ( foo2.String in ( 'fiz', 'blah', foo.TheFoo.String, foo.String, foo2.String ) )"
+				);
+			Assert.AreEqual( 1, list.Count, "complex query" );
+			Assert.AreSame( foo, list[0], "returned object" );
+
+			foo.String = "from BoogieDown  -tinsel town  =!@#$^&*())";
+
+			list = s.Find("from foo in class Foo where foo.String='from BoogieDown  -tinsel town  =!@#$^&*())'");
+			Assert.AreEqual( 1, list.Count, "single quotes" );
+
+			list = s.Find("from foo in class Foo where not foo.String='foo''bar'");
+			Assert.AreEqual( 2, list.Count, "single quotes" );
+
+			list = s.Find("from foo in class Foo where foo.Component.Glarch.Next is null");
+			Assert.AreEqual( 2, list.Count, "query association in component" );
+
+			Bar bar = new Bar();
+			Baz baz = new Baz();
+			baz.SetDefaults();
+			bar.Baz = baz;
+			baz.ManyToAny = new ArrayList();
+			baz.ManyToAny.Add( bar );
+			baz.ManyToAny.Add( foo );
+			s.Save(bar);
+			s.Save(baz);
+			list = s.Find(" from bar in class Bar where bar.Baz.Count=667 and bar.Baz.Count!=123 and not bar.Baz.Name='1-E-1'");
+			Assert.AreEqual( 1, list.Count, "query many-to-one" );
+			list = s.Find(" from i in class Bar where i.Baz.Name='Bazza'");
+			Assert.AreEqual( 1, list.Count, "query many-to-one" );
+
+			enumerable = s.Enumerable("select count(distinct foo.TheFoo) from foo in class Foo");
+			Assert.IsTrue( ContainsSingleObject( enumerable, 2 ), "count" );
+
+			enumerable = s.Enumerable("select count(foo.TheFoo.Boolean) from foo in class Foo");
+			Assert.IsTrue( ContainsSingleObject( enumerable, 2 ), "count" );
+			
+			enumerable = s.Enumerable("select count(*), foo.Int from foo in class Foo group by foo.Int");
+			enumerator = enumerable.GetEnumerator();
+			Assert.IsTrue( enumerator.MoveNext() );
+			Assert.AreEqual( 3, (int) ((object[]) enumerator.Current)[0] );
+			Assert.IsFalse( enumerator.MoveNext() );
+			
+			enumerable = s.Enumerable("select sum(foo.TheFoo.Int) from foo in class Foo");
+			Assert.IsTrue( ContainsSingleObject( enumerable, 4 ), "sum" );
+
+			enumerable = s.Enumerable("select count(foo) from foo in class Foo where foo.id=?",
+				foo.Key, NHibernateUtil.String);
+			Assert.IsTrue( ContainsSingleObject( enumerable, 1 ), "id query count" );
+
+			list = s.Find( "from foo in class Foo where foo.Boolean = ?",
+				true, NHibernateUtil.Boolean );
+
+			list = s.Find("select new Foo(fo.X) from Fo fo");
+			list = s.Find("select new Foo(fo.Integer) from Foo fo");
+
+			list = s.CreateQuery("select new Foo(fo.X) from Foo fo")
+				// TODO: .SetCacheable(true)
+				.List();
+			Assert.IsTrue(list.Count==3);
+			list = s.CreateQuery("select new Foo(fo.X) from Foo fo")
+				// TODO: .SetCacheable(true)
+				.List();
+			Assert.IsTrue(list.Count==3);
+
+			enumerable = s.Enumerable("select new Foo(fo.X) from Foo fo");
+			enumerator = enumerable.GetEnumerator();
+			Assert.IsTrue( enumerator.MoveNext(), "projection iterate (results)" );
+			Assert.IsTrue( typeof(Foo).IsAssignableFrom( enumerator.Current.GetType() ),
+				"projection iterate (return check)" );
+
+			// TODO: ScrollableResults not implemented
+			//ScrollableResults sr = s.CreateQuery("select new Foo(fo.x) from Foo fo").Scroll();
+			//Assert.IsTrue( "projection scroll (results)", sr.next() );
+			//Assert.IsTrue( "projection scroll (return check)", typeof(Foo).isAssignableFrom( sr.get(0).getClass() ) );
+
+			list = s.Find("select foo.Long, foo.Component.Name, foo, foo.TheFoo from foo in class Foo");
+			Assert.IsTrue( list.Count > 0 );
+			foreach( object[] row in list )
+			{
+				Assert.IsTrue( row[0] is long );
+				Assert.IsTrue( row[1] is string );
+				Assert.IsTrue( row[2] is Foo );
+				Assert.IsTrue( row[3] is Foo );
+			}
+
+			list = s.Find("select avg(foo.Float), max(foo.Component.Name), count(distinct foo.id) from foo in class Foo");
+			Assert.IsTrue( list.Count > 0 );
+			foreach( object[] row in list )
+			{
+				Assert.IsTrue( row[0] is float );
+				Assert.IsTrue( row[1] is string );
+				Assert.IsTrue( row[2] is int );
+			}
+
+			list = s.Find("select foo.Long, foo.Component, foo, foo.TheFoo from foo in class Foo");
+			Assert.IsTrue( list.Count > 0 );
+			foreach( object[] row in list )
+			{
+				Assert.IsTrue( row[0] is long );
+				Assert.IsTrue( row[1] is FooComponent );
+				Assert.IsTrue( row[2] is Foo );
+				Assert.IsTrue( row[3] is Foo );
+			}
+
+			s.Save( new Holder("ice T") );
+			s.Save( new Holder("ice cube") );
+
+			Assert.IsTrue( s.Find("from o in class System.Object").Count==15 );
+			System.Console.WriteLine( s.Find("from n in class INamed") );
+			Assert.AreEqual( 7, s.Find("from n in class INamed").Count );
+			Assert.IsTrue( s.Find("from n in class INamed where n.Name is not null").Count==4 );
+
+			foreach( INamed named in s.Enumerable("from n in class INamed") )
+			{
+				Assert.IsNotNull( named );
+			}
+
+			s.Save( new Holder("bar") );
+			enumerable = s.Enumerable("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name");
+			int cnt = 0;
+			foreach( object[] row in enumerable )
+			{
+				if ( row[0] != row[1] ) cnt++;
+			}
+
+			//if ( !(dialect is Dialect.HSQLDialect) )
+			//{
+				Assert.IsTrue(cnt==2);
+				Assert.IsTrue( s.Find("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").Count==7 );
+			//}
+
+			IQuery qu = s.CreateQuery("from n in class INamed where n.Name = :name");
+			object temp = qu.ReturnTypes;
+			temp = qu.NamedParameters;
+
+			int c = 0;
+
+			foreach( object obj in s.Enumerable("from o in class System.Object") )
+			{
+				c++;
+			}
+			Assert.IsTrue(c==16);
+
+			s.Enumerable("select baz.Code, min(baz.Count) from baz in class Baz group by baz.Code");
+
+			Assert.IsTrue( IsEmpty( s.Enumerable( "selecT baz from baz in class Baz where baz.StringDateMap['foo'] is not null or baz.StringDateMap['bar'] = ?",
+				new DateTime(), NHibernateUtil.Date ) ) );
+
+			list = s.Find("select baz from baz in class Baz where baz.StringDateMap['now'] is not null");
+			Assert.AreEqual( 1, list.Count );
+			
+			list = s.Find("select baz from baz in class Baz where baz.StringDateMap['now'] is not null and baz.StringDateMap['big bang'] < baz.StringDateMap['now']");
+			Assert.AreEqual( 1, list.Count );
+			
+			list = s.Find("select index(date) from Baz baz join baz.StringDateMap date");
+			System.Console.WriteLine(list);
+			Assert.AreEqual( 2, list.Count );
+
+			s.Find("from foo in class Foo where foo.Integer not between 1 and 5 and foo.String not in ('cde', 'abc') and foo.String is not null and foo.Integer<=3");
+
+			s.Find("from Baz baz inner join baz.CollectionComponent.Nested.Foos foo where foo.String is null");
+			if ( !(dialect is Dialect.MySQLDialect)
+				//&& !(dialect is MckoiDialect)
+				//&& !(dialect is SAPDBDialect)
+				//&& !(dialect is PointbaseDialect)
+				//&& !(dialect is Oracle9Dialect)
+				)  {
+				s.Find("from Baz baz inner join baz.FooSet where '1' in (from baz.FooSet foo where foo.String is not null)");
+				s.Find("from Baz baz where 'a' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)");
+				s.Find("from Baz baz where 'b' in baz.CollectionComponent.Nested.Foos.elements and 1.0 in baz.CollectionComponent.Nested.Floats.elements");
+			}
+
+			s.Find("from Foo foo join foo.TheFoo where foo.TheFoo in ('1','2','3')");
+
+			//if ( !(dialect is Dialect.HSQLDialect) )
+			s.Find("from Foo foo left join foo.TheFoo where foo.TheFoo in ('1','2','3')");
+			s.Find("select foo.TheFoo from Foo foo where foo.TheFoo in ('1','2','3')");
+			s.Find("select foo.TheFoo.String from Foo foo where foo.TheFoo in ('1','2','3')");
+			s.Find("select foo.TheFoo.String from Foo foo where foo.TheFoo.String in ('1','2','3')");
+			s.Find("select foo.TheFoo.Long from Foo foo where foo.TheFoo.String in ('1','2','3')");
+			s.Find("select count(*) from Foo foo where foo.TheFoo.String in ('1','2','3') or foo.TheFoo.Long in (1,2,3)");
+			s.Find("select count(*) from Foo foo where foo.TheFoo.String in ('1','2','3') group by foo.TheFoo.Long");
+
+			s.Find("from Foo foo1 left join foo1.TheFoo foo2 left join foo2.TheFoo where foo1.String is not null");
+			s.Find("from Foo foo1 left join foo1.TheFoo.TheFoo where foo1.String is not null");
+			s.Find("from Foo foo1 left join foo1.TheFoo foo2 left join foo1.TheFoo.TheFoo foo3 where foo1.String is not null");
+
+			s.Find("select foo.Formula from Foo foo where foo.Formula > 0");
+
+			int len = s.Find("from Foo as foo join foo.TheFoo as foo2 where foo2.id >'a' or foo2.id <'a'").Count;
+			Assert.IsTrue(len==2);
+
+			s.Delete("from Holder");
+			s.Flush();
+			//s.connection().commit();
+			s.Close();
+
+			s = sessions.OpenSession();
+			baz = (Baz) s.CreateQuery("from Baz baz left outer join fetch baz.ManyToAny").UniqueResult();
+			Assert.IsTrue( NHibernateUtil.IsInitialized( baz.ManyToAny ) );
+			Assert.IsTrue( baz.ManyToAny.Count == 2 );
+			BarProxy barp = (BarProxy) baz.ManyToAny[0];
+			s.Find("from Baz baz join baz.ManyToAny");
+			Assert.IsTrue( s.Find("select baz from Baz baz join baz.ManyToAny a where index(a) = 0").Count==1 );
+
+			FooProxy foop = (FooProxy) s.Get( typeof(Foo), foo.Key );
+			Assert.IsTrue( foop == baz.ManyToAny[1] );
+
+			barp.Baz = baz;
+			Assert.IsTrue( s.Find("select bar from Bar bar where bar.Baz.StringDateMap['now'] is not null").Count==1 );
+			Assert.IsTrue( s.Find("select bar from Bar bar join bar.Baz b where b.StringDateMap['big bang'] < b.StringDateMap['now'] and b.StringDateMap['now'] is not null").Count==1 );
+			Assert.IsTrue( s.Find("select bar from Bar bar where bar.Baz.StringDateMap['big bang'] < bar.Baz.StringDateMap['now'] and bar.Baz.StringDateMap['now'] is not null").Count==1 );
+
+			list = s.Find("select foo.String, foo.Component, foo.id from Bar foo");
+			Assert.IsTrue ( ( (FooComponent) ( (object[]) list[0] )[1] ).Name == "foo" );
+			list = s.Find("select elements(baz.Components) from Baz baz");
+			Assert.IsTrue( list.Count==2 );
+			list = s.Find("select bc.Name from Baz baz join baz.Components bc");
+			Assert.IsTrue( list.Count==2 );
+			//list = s.Find("select bc from Baz baz join baz.components bc");
+
+			s.CreateQuery("from Foo foo where foo.Integer < 10 order by foo.String").SetMaxResults(12).List();
+
+			s.Delete( barp );
+			s.Delete( baz );
+			s.Delete( foop.TheFoo );
+			s.Delete( foop );
+			s.Flush();
+			s.Close();
 		}
-		// line 1645
 
 		[Test]
 		[Ignore("Test not written")]
@@ -279,12 +593,62 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 		}
-
 	
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void QueryCollectionOfValues()
 		{
+			object gid;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Baz baz = new Baz();
+				baz.SetDefaults();
+				s.Save(baz);
+				Glarch g = new Glarch();
+				gid = s.Save(g);
+
+				if (     !(dialect is Dialect.MySQLDialect)
+					//&& !(dialect is Dialect.HSQLDialect)
+					//&& !(dialect is Dialect.MckoiDialect)
+					//&& !(dialect is Dialect.SAPDBDialect)
+					//&& !(dialect is Dialect.PointbaseDialect)
+					)
+				{
+					s.Filter( baz.FooArray, "where size(this.Bytes) > 0");
+					s.Filter( baz.FooArray, "where 0 in elements(this.Bytes)");
+				}
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				//s.Find("from Baz baz where baz.FooSet.String = 'foo'");
+				//s.Find("from Baz baz where baz.FooArray.String = 'foo'");
+				//s.Find("from Baz baz where baz.FooSet.foo.String = 'foo'");
+				//s.Find("from Baz baz join baz.FooSet.Foo foo where foo.String = 'foo'");
+				s.Find("from Baz baz join baz.FooSet foo join foo.TheFoo.TheFoo foo2 where foo2.String = 'foo'");
+				s.Find("from Baz baz join baz.FooArray foo join foo.TheFoo.TheFoo foo2 where foo2.String = 'foo'");
+				s.Find("from Baz baz join baz.StringDateMap date where index(date) = 'foo'");
+				s.Find("from Baz baz join baz.TopGlarchez g where index(g) = 'A'");
+				s.Find("select index(g) from Baz baz join baz.TopGlarchez g");
+
+				Assert.AreEqual( 3, s.Find("from Baz baz left join baz.StringSet").Count );
+				Baz baz = (Baz) s.Find("from Baz baz join baz.StringSet str where str='foo'")[0];
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz.StringSet ) );
+				baz = (Baz) s.Find("from Baz baz left join fetch baz.StringSet")[0];
+				Assert.IsTrue( NHibernateUtil.IsInitialized( baz.StringSet ) );
+				Assert.AreEqual( 1, s.Find("from Baz baz join baz.StringSet string where string='foo'").Count );
+				Assert.AreEqual( 1, s.Find("from Baz baz inner join baz.Components comp where comp.Name='foo'").Count );
+				//IList bss = s.Find("select baz, ss from Baz baz inner join baz.StringSet ss");
+				s.Find("from Glarch g inner join g.FooComponents comp where comp.Fee is not null");
+				s.Find("from Glarch g inner join g.FooComponents comp join comp.Fee fee where fee.Count > 0");
+				s.Find("from Glarch g inner join g.FooComponents comp where comp.Fee.Count is not null");
+
+				s.Delete(baz);
+				//s.delete("from Glarch g");
+				s.Delete( s.Get(typeof( Glarch ), gid) );
+				s.Flush();
+			}
 		}
 
 		[Test]

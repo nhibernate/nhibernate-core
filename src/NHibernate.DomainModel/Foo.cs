@@ -64,6 +64,11 @@ namespace NHibernate.DomainModel
 		public Foo()
 		{
 		}
+
+		public Foo( int x )
+		{
+			_x = x;
+		}
 	
 		#endregion
 	

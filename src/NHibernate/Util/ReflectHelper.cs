@@ -280,6 +280,40 @@ namespace NHibernate.Util
 			}
 		}
 
+		public static ConstructorInfo GetConstructor(System.Type type, IType[] types)
+		{
+			ConstructorInfo[] candidates = type.GetConstructors( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
+
+			foreach( ConstructorInfo constructor in candidates )
+			{
+				ParameterInfo[] parameters = constructor.GetParameters();
+
+				if( parameters.Length == types.Length )
+				{
+					bool found = true;
+
+					for( int j = 0; j < parameters.Length; j++ )
+					{
+						bool ok = parameters[j].ParameterType.IsAssignableFrom(
+							types[j].ReturnedClass );
+
+						if( !ok )
+						{
+							found = false;
+							break;
+						}
+					}
+
+					if (found) 
+					{
+						return constructor;
+					}
+				}
+			}
+			throw new InstantiationException( "no appropriate constructor in class: "
+				+ type.FullName );
+		}
+
 		/// <summary>
 		/// Determines if the <see cref="System.Type"/> is a non creatable class.
 		/// </summary>

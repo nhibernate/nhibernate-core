@@ -15,6 +15,14 @@ namespace NHibernate.DomainModel
 		private string _name;
 		private Holder _otherHolder;
 
+		public Holder()
+		{
+		}
+
+		public Holder( string name )
+		{
+			_name = name;
+		}
 		
 		public string Id
 		{
