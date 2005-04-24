@@ -36,7 +36,7 @@ namespace NHibernate.Test.CfgTest
 		/// Recieved sample code that Configuration could not be configured manually.  It can be configured
 		/// manually just need to set all of the properties before adding classes
 		/// </summary>
-		[Test]
+		[Test, Explicit]
 		public void ManualConfiguration() 
 		{
 			//log4net.Config.DOMConfigurator.ConfigureAndWatch( new FileInfo("log4net.cfg.xml") ); //use xml file instead of config

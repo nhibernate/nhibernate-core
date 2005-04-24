@@ -51,8 +51,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return tspan; 
 		} 
 
-		[Test]
-		[Ignore("Only run this by itself")]
+		[Test, Explicit]
 		public void TestNH47() 
 		{ 
 			
