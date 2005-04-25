@@ -3,7 +3,7 @@
 <project 
 	name="Iesi.Collections" 
 	default="build" 
-	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 
 	<!--
@@ -19,17 +19,18 @@
 			* clover.enabled		- (true|false) indicates if Clover.NET should handle the build
 			* clover.src			- location of the clovered source to be stored at from the root of nhibernate
 			* clover.db				- location of the coverage db from the root of nhibernate
+			* clover.assembly		- assembly that contains clover tasks for this version of NAnt
 	-->
 
-	<if propertytrue="clover.enabled">	
-		<loadtasks assembly="${clover.home}/CloverNAnt-0.84.dll" />
+	<if test="${clover.enabled}">	
+		<loadtasks assembly="${clover.home}/${clover.assembly}" />
 	</if>
 	
 	<property name="keyFile" value="..\NHibernate.snk" />
 	
 	<target name="build" description="Build Iesi.Collections">
 		
-		<if propertytrue="clover.enabled">	
+		<if test="${clover.enabled}">	
 			<clover-setup 
 				initstring="..\..\${clover.db}"
 				builddir="..\..\${clover.src}\${nant.project.name}"
@@ -43,9 +44,9 @@
 		
 		<asminfo output="AssemblyInfo.cs" language="CSharp">
 			<imports>
-				<import name="System" />
-				<import name="System.Reflection" />
-				<import name="System.Runtime.CompilerServices" />
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+				<import namespace="System.Runtime.CompilerServices" />
 			</imports>
 			<attributes>
 				<attribute type="CLSCompliantAttribute" value="true" />
@@ -70,14 +71,14 @@
 		>
 			
 			<sources failonempty="true">
-				<includes name="**/*.cs" />
+				<include name="**/*.cs" />
 			</sources>
 			
 			
 			<references basedir="${build.dir}/bin">
-				<includes name="${nant.settings.currentframework.frameworkassemblydirectory}/System.dll" />
-				<includes name="${nant.settings.currentframework.frameworkassemblydirectory}/System.XML.dll" />
-				<includes name="${nant.settings.currentframework.frameworkassemblydirectory}/System.Data.dll" />
+				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.dll" />
+				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.XML.dll" />
+				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.Data.dll" />
 			</references>
 	
 		</csc>

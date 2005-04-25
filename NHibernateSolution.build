@@ -3,7 +3,7 @@
 <project 
 	name="NHibernateSolution" 
 	default="build"
-	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 	<!-- 
 		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
@@ -17,8 +17,8 @@
 	<property name="clover.enabled" value="false" />
 	<property name="clover.src" value="src\CloverSrc" />
 	<property name="clover.db" value="${clover.src}\clover.cdb" />
-	<property name="clover.home" value="C:/Program Files/Cenqua/Clover.NET" />
-	
+	<property name="clover.home" value="C:/Program Files/Cenqua/Clover.NET for Visual Studio" />
+	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
 	<!-- 
 		Use this to determine if the key file NHibernate.key should be used to 
 		sign the Assemblies.  This defaults to false since users doing their own
@@ -125,7 +125,7 @@
 		<!-- copy framework-nuetral libraries -->
 		<copy todir="${build.dir}/bin">
 			<fileset basedir="lib">
-				<includes name="HashCodeProvider.*" />
+				<include name="HashCodeProvider.*" />
 			</fileset>
 		</copy>
 		
@@ -137,13 +137,13 @@
 					of NHibernate.  It is in the lib folder for vs.net convenience.  However, we
 					do want to copy the license file.
 				-->
-				<excludes name="Iesi.Collections.dll" />
-				<excludes name="Iesi.Collections.xml" />
-				<includes name="Iesi.Collections.license.txt" />
+				<exclude name="Iesi.Collections.dll" />
+				<exclude name="Iesi.Collections.xml" />
+				<include name="Iesi.Collections.license.txt" />
 				
-				<includes name="Castle.DynamicProxy.*" />
-				<includes name="log4net.*" />
-				<includes name="nunit.framework.*" />
+				<include name="Castle.DynamicProxy.*" />
+				<include name="log4net.*" />
+				<include name="nunit.framework.*" />
 			</fileset>
 		</copy>
 		
@@ -191,11 +191,11 @@
 			value="conn string here" 
 		/>
 
-		<if propertytrue="nunit2report.installed">
+		<if test="${nunit2report.installed}">
 			<mkdir dir="${build.dir}/testresults" />
 			<nunit2report out="${build.dir}/testresults/index.html" format="Frames" todir="${build.dir}/testresults">
 				<fileset>
-					<includes name="${build.dir}\bin\*results.xml" />
+					<include name="${build.dir}\bin\*results.xml" />
 				</fileset>
 			</nunit2report>
 		</if>
@@ -212,32 +212,32 @@
 			<fileset basedir="${build.dir}/bin">>
 				
 				<!-- Any hbm.xml and cfg.xml files in the bin are for testing purposes -->
-				<includes name="*.hbm.xml" />
-				<includes name="*.cfg.xml" />
+				<include name="*.hbm.xml" />
+				<include name="*.cfg.xml" />
 				
 				<!-- The MyTest Assembly was used in the AssemblyOrderer fixtures -->
-				<includes name="MyTest*.dll" />
-				<includes name="MyTest*.pdb" />
+				<include name="MyTest*.dll" />
+				<include name="MyTest*.pdb" />
 				
 				<!-- Go ahead and delete the log file that contains all the sql output-->
-				<includes name="log.txt" />
+				<include name="log.txt" />
 				
 				<!-- 
 					Remove test related assemblies and files so the bin directory is 
 					clean and ready for the downloader to use.	
 				-->
-				<includes name="Iesi.Collections.Test.*" />
-				<includes name="NHibernate.DomainModel.*" />
-				<includes name="NHibernate.Examples.*" />
-				<includes name="NHibernate.Test.*" />
-				<includes name="nunit.framework.*" />
+				<include name="Iesi.Collections.Test.*" />
+				<include name="NHibernate.DomainModel.*" />
+				<include name="NHibernate.Examples.*" />
+				<include name="NHibernate.Test.*" />
+				<include name="nunit.framework.*" />
 				
 			</fileset>
 		</delete>
 	</target>
 	
 	<target name="coverage-report" description="Builds the Test Coverage reports">
-			
+		
 		<mkdir dir="${build.dir}/clover" />
 		<clover-setup 
 			initstring="${clover.db}"
@@ -245,7 +245,7 @@
 		/>
 		<clover-report>
 			<current title="NHibernate Clover Report" output="${build.dir}/clover" >
-				<format type="html" orderBy="Alpha" />
+				<format type="html" orderby="Alpha" />
 			</current>
 		</clover-report>
 	</target>

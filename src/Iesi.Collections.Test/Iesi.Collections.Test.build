@@ -3,7 +3,7 @@
 <project 
 	name="Iesi.Collections.Test" 
 	default="build" 
-	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 	<!--
 		Required properties:
@@ -22,8 +22,8 @@
 		
 		<asminfo output="AssemblyInfo.cs" language="CSharp">
 			<imports>
-				<import name="System.Reflection" />
-				<import name="System.Runtime.CompilerServices" />
+				<import namespace="System.Reflection" />
+				<import namespace="System.Runtime.CompilerServices" />
 			</imports>
 			<attributes>
 				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
@@ -46,15 +46,15 @@
 		>
 		
 			<references basedir="${build.dir}/bin">
-				<includes name="System.dll" />
-				<includes name="System.XML.dll" />
-				<includes name="System.Data.dll" />
-				<includes name="Iesi.Collections.dll" />
-				<includes name="nunit.framework.dll"/>
+				<include name="System.dll" />
+				<include name="System.XML.dll" />
+				<include name="System.Data.dll" />
+				<include name="Iesi.Collections.dll" />
+				<include name="nunit.framework.dll"/>
 			</references>
 			
 			<sources>
-				<includes name="**/*.cs" />
+				<include name="**/*.cs" />
 			</sources>
 		</csc>
 			
