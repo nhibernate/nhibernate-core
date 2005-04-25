@@ -129,5 +129,15 @@ namespace NHibernate
 		/// <param name="lockMode">the lock mode</param>
 		/// <returns></returns>
 		ICriteria SetLockMode( string alias, LockMode lockMode );
+
+		/// <summary>
+		/// Convenience method to return a single instance that matches
+		/// the query, or null if the query returns no results.
+		/// </summary>
+		/// <returns>the single result or <c>null</c></returns>
+		/// <exception cref="HibernateException">
+		/// If there is more than one matching result
+		/// </exception>
+		object UniqueResult();
 	}
 }

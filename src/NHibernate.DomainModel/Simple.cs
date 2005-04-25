@@ -1,7 +1,8 @@
 using System;
 
 namespace NHibernate.DomainModel 
-{	
+{
+	[Serializable]
 	public class Simple 
 	{
 		private string name;
@@ -11,6 +12,7 @@ namespace NHibernate.DomainModel
 		// accurracy issues
 		private DateTime date = new DateTime( 2004, 01, 01, 12, 00, 00, 00 );
 		private Simple other;
+		private float pay;
 
 		public Simple(int c) 
 		{
@@ -56,5 +58,10 @@ namespace NHibernate.DomainModel
 			set { other = value; }
 		}
 
+		public float Pay
+		{
+			get { return pay; }
+			set { pay = value; }
+		}
 	}
 }

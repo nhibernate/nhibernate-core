@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 using NHibernate.DomainModel;
 
@@ -65,15 +67,140 @@ namespace NHibernate.Test
 		#endregion
 
 		[Test]
-		[Ignore("Test not written")]
 		public void CriteriaCollection()
 		{
+			//if( dialect is Dialect.HSQLDialect ) return;
+			if( dialect is Dialect.MsSql2000Dialect ) return;
+			
+			using( ISession s = sessions.OpenSession() )
+			{
+				Fum fum = new Fum( FumTest.FumKey("fum") );
+				fum.FumString = "a value";
+				fum.MapComponent.Fummap["self"] = fum;
+				fum.MapComponent.Stringmap["string"] = "a staring";
+				fum.MapComponent.Stringmap["string2"] = "a notha staring";
+				fum.MapComponent.Count = 1;
+				s.Save(fum);
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Fum b = (Fum) s.CreateCriteria( typeof( Fum ) )
+					.Add( Expression.Expression.In(
+						"FumString", new string[] { "a value", "no value" } ) )
+					.UniqueResult();
+				//assertTrue( Hibernate.isInitialized( b.getMapComponent().getFummap() ) );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( b.MapComponent.Stringmap ) );
+				Assert.IsTrue( b.MapComponent.Fummap.Count == 1 );
+				Assert.IsTrue( b.MapComponent.Stringmap.Count == 2 );
+		
+				/*int none = s.CreateCriteria(typeof(Fum)).add( 
+					Expression.Expression.In( "FumString", new String[0] )
+				).List().Count;
+				assertTrue(none==0);*/
+				s.Delete( b );
+				s.Flush();
+			}
 		}
 
 		[Test]
-		[Ignore("Test not written")]
+		[Ignore("Requires ICriteria.CreateCriteria")]
 		public void Criteria()
 		{
+			if( dialect is Dialect.MsSql2000Dialect ) return;
+
+			/*
+			using( ISession s = sessions.OpenSession() )
+			{
+				Fum fum = new Fum( FumKey("fum") );
+				fum.Fo = new Fum( FumKey("fo") );
+				fum.FumString = "fo fee fi";
+				fum.Fo.FumString = "stuff";
+				Fum fr = new Fum( FumKey( "fr" ) );
+				fr.FumString = "goo";
+				Fum fr2 = new Fum( FumKey( "fr2" ) );
+				fr2.FumString = "soo";
+				fum.Friends = new Iesi.Collections.HashedSet();
+				fum.Friends.Add( fr );
+				fum.Friends.Add( fr2 );
+
+				s.Save( fr );
+				s.Save( fr2 );
+				s.Save( fum.Fo );
+				s.Save( fum );
+
+				ICriteria baseCriteria = s.createCriteria(typeof(Fum))
+                    .Add( Expression.Expression.Like( "FumString", "f", MatchMode.START) );
+				baseCriteria.CreateCriteria("Fo")
+					.Add( Expression.Expression.IsNotNull("FumString") );
+				baseCriteria.createCriteria("Friends")
+					.Add( Expression.Expression.Like( "FumString", "g%" ) );
+				IList list = baseCriteria.List();
+
+				Assert.AreEqual( 1, list.Count );
+				Assert.AreSame( fum, list[0] );
+
+				baseCriteria = s.CreateCriteria(typeof(Fum))
+					.Add( Expression.Expression.Like( "FumString", "f%" ) )
+					.SetResultTransformer( Criteria.ALIAS_TO_ENTITY_MAP );
+				baseCriteria.CreateCriteria( "Fo", "fo" )
+					.Add( Expression.Expression.IsNotNull( "FumString" ) );
+				baseCriteria.createCriteria( "Friends", "fum" )
+					.Add( Expression.Expression.Like("FumString", "g", MatchMode.START) );
+				IDictionary map = (IDictionary) baseCriteria.UniqueResult();
+		
+				Assert.AreSame( fum, map["this"] );
+				Assert.AreSame( fum.Fo, map["fo"] );
+				Assert.IsTrue( fum.Friends.Contains( map["fum"] ) );
+				Assert.AreEqual( 3, map.Count );
+
+				baseCriteria = s.CreateCriteria(typeof(Fum))
+					.Add( Expression.like("fum", "f%") )
+					.SetResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
+					.SetFetchMode("friends", FetchMode.EAGER);
+				baseCriteria.CreateCriteria("fo", "fo")
+					.Add( Expression.eq( "FumString", fum.Fo.FumString ) );
+				map = (IDictionary) baseCriteria.List()[0];
+		
+				Assert.AreSame( fum, map["this"] );
+				Assert.AreSame( fum.Fo, map["fo"] );
+				Assert.AreEqual( 2, map.Count );
+
+				list = s.CreateCriteria(typeof(Fum))
+					.CreateAlias("Friends", "fr")
+					.CreateAlias("Fo", "fo")
+					.Add( Expression.Expression.Like("FumString", "f%") )
+					.Add( Expression.Expression.IsNotNull("fo") )
+					.Add( Expression.Expression.IsNotNull("fo.FumString") )
+					.Add( Expression.Expression.Like("fr.FumString", "g%") )
+					.Add( Expression.Expression.EqProperty("fr.id.Short", "id.Short") )
+					.List();
+				Assert.AreEqual( 1, list.Count );
+				Assert.AreSame( fum, list[0] );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				ICriteria baseCriteria = s.CreateCriteria( typeof(Fum) )
+					.Add( Expression.Expression.Like( "fum", "f%" ) );
+				baseCriteria.CreateCriteria( "Fo" )
+					.Add( Expression.Expression.IsNotNull( "FumString" ) );
+				baseCriteria.CreateCriteria( "Friends" )
+					.Add( Expression.Like( "fum", "g%" ) );
+				Fum fum = (Fum) baseCriteria.List()[0];
+				Assert.AreEqual( 2, fum.Friends.Count );
+				s.Delete(fum);
+				s.Delete( fum.Fo );
+
+				foreach( object friend in fum.Friends )
+				{
+					s.Delete( friend );
+				}
+				s.Flush();
+			}
+			*/
 		}
 
 		[Test]
@@ -430,7 +557,6 @@ namespace NHibernate.Test
 
 		
 		[Test]
-		[Ignore("HQL can't parse a class named 'Order' - http://jira.nhibernate.org:8080/browse/NH-81, this test passes when changed to NHibernate.DomainModel")]
 		public void KeyManyToOne() 
 		{
 			ISession s = sessions.OpenSession();
@@ -483,22 +609,128 @@ namespace NHibernate.Test
 
 
 		[Test]
-		[Ignore("Test not written")]
 		public void CompositeKeyPathExpressions()
 		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.Find("select fum1.Fo from fum1 in class Fum where fum1.Fo.FumString is not null");
+				s.Find("from fum1 in class Fum where fum1.Fo.FumString is not null order by fum1.Fo.FumString");
+				if (   !(dialect is Dialect.MySQLDialect)
+					//&& !(dialect is HSQLDialect)
+					//&& !(dialect is MckoiDialect)
+					//&& !(dialect is PointbaseDialect)
+					) 
+				{
+					s.Find("from fum1 in class Fum where exists elements(fum1.Friends)");
+					s.Find("from fum1 in class Fum where size(fum1.Friends) = 0");
+				}
+				s.Find("select fum1.Friends.elements from fum1 in class Fum");
+				s.Find("from fum1 in class Fum, fr in elements( fum1.Friends )");
+			}
 		}
 
-		[Test]
-		[Ignore("Test not written")]
+		[Test, Ignore("TODO: Requires serializable ScheduledActions")]
 		public void UnflushedSessionSerialization()
 		{
+			///////////////////////////////////////////////////////////////////////////
+			// Test insertions across serializations
+
+			ISession s2;
+
+			// NOTE: H2.1 has getSessions().openSession() here (and below),
+			// instead of just the usual openSession()
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.FlushMode = FlushMode.Never;
+
+				Simple simple = new Simple();
+				simple.Address = "123 Main St. Anytown USA";
+				simple.Count = 1;
+				simple.Date = new DateTime();
+				simple.Name = "My UnflushedSessionSerialization Simple";
+				simple.Pay = 5000.0f;
+
+				s.Save( simple, 10L );
+
+				// Now, try to serialize session without flushing...
+				s.Disconnect();
+
+				s2 = SpoofSerialization(s);
+			}
+
+			Simple check, other;
+
+			using( ISession s = s2 )
+			{
+				s.Reconnect();
+
+				Simple simple = (Simple) s.Load( typeof( Simple ), 10L );
+				other = new Simple();
+				other.Init();
+				s.Save( other, 11L );
+
+				simple.Other = other;
+				s.Flush();
+
+				check = simple;
+			}
+
+			///////////////////////////////////////////////////////////////////////////
+			// Test updates across serializations
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.FlushMode = FlushMode.Never;
+				Simple simple = (Simple) s.Get( typeof( Simple ), 10L );
+				Assert.AreEqual( check.Name, simple.Name, "Not same parent instances" );
+				Assert.AreEqual( check.Other.Name, other.Name, "Not same child instances" );
+
+				simple.Name = "My updated name";
+
+				s.Disconnect();
+				s2 = SpoofSerialization(s);
+
+				check = simple;
+			}
+
+			using( ISession s = s2 )
+			{
+				s.Reconnect();
+				s.Flush();
+			}
+
+			///////////////////////////////////////////////////////////////////////////
+			// Test deletions across serializations
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.FlushMode = FlushMode.Never;
+				Simple simple = (Simple) s.Get( typeof( Simple ), 10L );
+				Assert.AreEqual( check.Name, simple.Name, "Not same parent instances" );
+				Assert.AreEqual( check.Other.Name, other.Name, "Not same child instances" );
+
+				// Now, lets delete across serialization...
+				s.Delete(simple);
+
+				s.Disconnect();
+				s2 = SpoofSerialization(s);
+			}
+
+			using( ISession s = s2 )
+			{
+				s.Reconnect();
+				s.Flush();
+			}
 		}
 
 		private ISession SpoofSerialization( ISession session)
 		{
-			// TODO: Not test method - implement details
+			BinaryFormatter formatter = new BinaryFormatter();
+			MemoryStream stream = new MemoryStream();
+			formatter.Serialize( stream, session );
 
-			return null;
+			stream.Position = 0;
+
+			return ( ISession )formatter.Deserialize( stream );
 		}
 	}
 }

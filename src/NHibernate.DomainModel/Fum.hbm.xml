@@ -32,5 +32,26 @@
 			<index column="i"/>
 			<one-to-many class="NHibernate.DomainModel.Qux, NHibernate.DomainModel"/>
 		</array>
+		<component name="MapComponent">
+			<property name="Count" column="count_"/>
+			<map name="Fummap" lazy="true">
+				<key>
+					<column name="fum_str_" length="10"/>
+					<column name="fum_sho_"/>
+					<column name="fum_dat_"/>
+				</key>
+				<index column="fummapindex" type="string"/>
+				<one-to-many class="NHibernate.DomainModel.Fum, NHibernate.DomainModel"/>
+			</map>
+			<map name="Stringmap" outer-join="true">
+				<key>
+					<column name="fum_str_" length="10"/>
+					<column name="fum_sho_"/>
+					<column name="fum_dat_"/>
+				</key>
+				<index column="mapindex" type="string"/>
+				<element column="mapelement" type="string"/>
+			</map>
+		</component>
 	</class>
 </hibernate-mapping>

@@ -405,5 +405,10 @@ namespace NHibernate.Impl
 
 			return ( (IAssociationType) type).GetAssociatedClass( factory );
 		}
+
+		public object UniqueResult()
+		{
+			return AbstractQueryImpl.UniqueElement( List() );
+		}
 	}
 }

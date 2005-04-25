@@ -3,6 +3,32 @@ using System.Collections;
 
 namespace NHibernate.DomainModel
 {
+	[Serializable]
+	public class MapComponent
+	{
+		private IDictionary _fummap = new Hashtable();
+		private IDictionary _stringmap = new Hashtable();
+		private int _count;
+
+		public IDictionary Fummap
+		{
+			get { return _fummap; }
+			set { _fummap = value; }
+		}
+
+		public int Count
+		{
+			get { return _count; }
+			set { _count = value; }
+		}
+
+		public IDictionary Stringmap
+		{
+			get { return _stringmap; }
+			set { _stringmap = value; }
+		}
+	}
+
 	public class Fum : ILifecycle 
 	{
 		private String _fum;
@@ -11,7 +37,8 @@ namespace NHibernate.DomainModel
 		private Qux[] _quxArray;
 		private Iesi.Collections.ISet _friends; // <set> mapping
 		private DateTime m_LastUpdated;
-	
+		private MapComponent _mapComponent = new MapComponent();
+
 		public Fum() 
 		{
 		}
@@ -123,5 +150,10 @@ namespace NHibernate.DomainModel
 			set { m_LastUpdated = value; }
 		}
 
+		public MapComponent MapComponent
+		{
+			get { return _mapComponent; }
+			set { _mapComponent = value; }
+		}
 	}
 }

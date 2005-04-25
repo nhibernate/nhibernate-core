@@ -9,6 +9,7 @@
         <property name="Address" type="String" length="200" column="address" />
         <property name="Count" column="count_" not-null="true" unique="true"/> 
         <property name="Date" column="date_"/>
+        <property name="Pay" />
         <many-to-one name="Other" access="field.camelcase"/>
     </class>
     

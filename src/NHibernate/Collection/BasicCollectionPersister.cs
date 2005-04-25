@@ -210,7 +210,7 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
 		{
-			return null;
+			return new SqlString(string.Empty);
 		}
 
 		/// <summary>

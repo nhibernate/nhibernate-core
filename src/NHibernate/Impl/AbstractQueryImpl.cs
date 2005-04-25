@@ -95,7 +95,7 @@ namespace NHibernate.Impl
 			return UniqueElement( List() );
 		}
 
-		static object UniqueElement( IList list )
+		internal static object UniqueElement( IList list )
 		{
 			int size = list.Count;
 			if ( size == 0 )
