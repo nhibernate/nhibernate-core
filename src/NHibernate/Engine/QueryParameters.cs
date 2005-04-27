@@ -114,6 +114,12 @@ namespace NHibernate.Engine
 			set { _rowSelection = value; }
 		}
 
+        private int SafeLength( System.Array array )
+        {
+            if( array == null ) return 0;
+            return array.Length;
+        }            
+
 		/// <summary>
 		/// Ensure the Types and Values are the same length.
 		/// </summary>
@@ -123,8 +129,8 @@ namespace NHibernate.Engine
 		/// </exception>
 		public void ValidateParameters()
 		{
-			int typesLength = PositionalParameterTypes != null ? 0 : PositionalParameterTypes.Length;
-			int valuesLength = PositionalParameterValues != null ? 0 : PositionalParameterValues.Length;
+			int typesLength = SafeLength( PositionalParameterTypes );
+			int valuesLength = SafeLength( PositionalParameterValues );
 
 			if( typesLength != valuesLength )
 			{
