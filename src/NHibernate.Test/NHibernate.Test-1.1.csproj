@@ -678,6 +678,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QueryTest\QueryParametersFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlCommandTest\InFragmentFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
