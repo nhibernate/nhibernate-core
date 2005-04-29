@@ -12,6 +12,12 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class FooBarTest : TestCase
 	{
+		// Equivalent of Java String.getBytes()
+		private static byte[] GetBytes( string str )
+		{
+			return System.Text.Encoding.Unicode.GetBytes( str );
+		}
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -40,42 +46,288 @@ namespace NHibernate.Test
 
 
 		[Test]
-		[Ignore("Test not written")]
 		public void CollectionVersioning()
 		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				One one = new One();
+				one.Manies = new Iesi.Collections.HashedSet();
+				s.Save(one);
+				s.Flush();
+
+				Many many = new Many();
+				many.One = one;
+				one.Manies.Add( many );
+				s.Save( many );
+				s.Flush();
+				
+				Assert.AreEqual( 0, many.V );
+				Assert.AreEqual( 1, one.V );
+
+				s.Delete( many );
+				s.Delete( one );
+				s.Flush();
+			}
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void ForCertain()
 		{
+			Glarch g = new Glarch();
+			Glarch g2 = new Glarch();
+			IList strings = new ArrayList();
+			strings.Add( "foo" );
+			g2.Strings = strings;
+
+			object gid, g2id;
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				gid = s.Save( g );
+				g2id = s.Save( g2 );
+				t.Commit();
+
+				Assert.AreEqual( 0, g.Version );
+				Assert.AreEqual( 0, g2.Version );
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				g = (Glarch) s.Get( typeof( Glarch ), gid );
+				g2 = (Glarch) s.Get( typeof( Glarch ), g2id );
+				Assert.AreEqual( 1, g2.Strings.Count );
+			
+				s.Delete( g );
+				s.Delete( g2 );
+				t.Commit();
+			}
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void BagMultipleElements()
 		{
+			string bazCode;
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				Baz baz = new Baz();
+				baz.Bag = new ArrayList();
+				baz.ByteBag = new ArrayList();
+				s.Save( baz );
+				baz.Bag.Add( "foo" );
+				baz.Bag.Add( "bar" );
+				baz.ByteBag.Add( GetBytes( "foo" ) );
+				baz.ByteBag.Add( GetBytes( "bar" ) );
+				t.Commit();
+
+				bazCode = baz.Code;
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				//put in cache
+				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
+				Assert.AreEqual( 2, baz.Bag.Count );
+				Assert.AreEqual( 2, baz.ByteBag.Count );
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
+				Assert.AreEqual( 2, baz.Bag.Count );
+				Assert.AreEqual( 2, baz.ByteBag.Count );
+
+				baz.Bag.Remove( "bar" );
+				baz.Bag.Add( "foo" );
+				baz.ByteBag.Add( GetBytes( "bar" ) );
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
+				Assert.AreEqual( 2, baz.Bag.Count );
+				Assert.AreEqual( 3, baz.ByteBag.Count );
+				s.Delete(baz);
+				t.Commit();
+			}
 		}
+
 		[Test]
-		[Ignore("Test not written")]
 		public void WierdSession()
 		{
+			object id;
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				id =  s.Save( new Foo() );
+				t.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.FlushMode = FlushMode.Never;
+				using( ITransaction t = s.BeginTransaction() )
+				{
+					Foo foo = (Foo) s.Get(typeof( Foo ), id);
+					t.Commit();
+				}
+
+				s.Disconnect();
+				s.Reconnect();
+
+				using( ITransaction t = s.BeginTransaction() )
+				{
+					s.Flush();
+					t.Commit();
+				}
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				Foo foo = (Foo) s.Get( typeof( Foo ), id );
+				s.Delete( foo );
+				t.Commit();
+			}
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void DereferenceLazyCollection()
 		{
+			string fooKey;
+			string bazCode;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Baz baz = new Baz();
+				baz.FooSet = new Iesi.Collections.HashedSet();
+				Foo foo = new Foo();
+				baz.FooSet.Add( foo );
+				s.Save( foo );
+				s.Save( baz );
+				foo.Bytes = GetBytes( "foobar" );
+				s.Flush();
+
+				fooKey = foo.Key;
+				bazCode = baz.Code;
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Foo foo = (Foo) s.Get( typeof( Foo ), fooKey );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( foo.Bytes ) );
+				
+				// H2.1 has 6 here, but we are using Unicode
+				Assert.AreEqual( 12, foo.Bytes.Length );
+			
+				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
+				Assert.AreEqual( 1, baz.FooSet.Count );
+				s.Flush();
+			}
+
+			sessions.EvictCollection("NHibernate.DomainModel.Baz.FooSet");
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooSet ) );
+				baz.FooSet = null;
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Foo foo = (Foo) s.Get( typeof( Foo ), fooKey );
+				Assert.AreEqual( 12, foo.Bytes.Length );
+				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
+			
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooSet ) );
+				Assert.AreEqual( 0, baz.FooSet.Count );
+				s.Delete( baz );
+				s.Delete( foo );
+				s.Flush();
+			}
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void MoveLazyCollection()
 		{
+			string fooKey, bazCode, baz2Code;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Baz baz = new Baz();
+				Baz baz2 = new Baz();
+				baz.FooSet = new Iesi.Collections.HashedSet();
+				Foo foo = new Foo();
+				baz.FooSet.Add( foo );
+				s.Save( foo );
+				s.Save( baz );
+				s.Save( baz2 );
+				foo.Bytes = GetBytes( "foobar" );
+				s.Flush();
+
+				fooKey = foo.Key;
+				bazCode = baz.Code;
+				baz2Code = baz2.Code;
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Foo foo = (Foo) s.Get( typeof( Foo ), fooKey );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( foo.Bytes ) );
+				Assert.AreEqual( 12, foo.Bytes.Length );
+				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
+				Assert.AreEqual( 1, baz.FooSet.Count );
+				s.Flush();
+			}
+
+			sessions.EvictCollection("NHibernate.DomainModel.Baz.FooSet");
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooSet ) );
+				Baz baz2 = (Baz) s.Get( typeof( Baz ), baz2Code );
+				baz2.FooSet = baz.FooSet;
+				baz.FooSet = null;
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz2.FooSet ) );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Foo foo = (Foo) s.Get( typeof( Foo ), fooKey );
+				Assert.AreEqual( 12, foo.Bytes.Length );
+				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
+				Baz baz2 = (Baz) s.Get( typeof( Baz ), baz2Code );
+
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooSet ) );
+				Assert.AreEqual( 0, baz.FooSet.Count );
+				
+				// TODO: batching doesn't work in NH yet
+				//Assert.IsTrue( NHibernateUtil.IsInitialized( baz2.FooSet ) ); //fooSet has batching enabled
+				
+				Assert.AreEqual( 1, baz2.FooSet.Count );
+				
+				s.Delete( baz );
+				s.Delete( baz2 );
+				s.Delete( foo );
+				s.Flush();
+			}
 		}
 
 		[Test]
-		[Ignore("Test not written")]
+		[Ignore("Requires ICriteria.CreateCriteria")]
 		public void CriteriaCollection()
 		{
 		}
@@ -960,16 +1212,14 @@ namespace NHibernate.Test
 			l.Add( new Foo() );
 			l.Add( new Bar() );
 
-			System.Text.Encoding encoding = new System.Text.UnicodeEncoding();
-
-			byte[] bytes = encoding.GetBytes("ffo");
+			byte[] bytes = GetBytes( "ffo" );
 			l2.Add(bytes);
-			l2.Add( encoding.GetBytes("foo") );
+			l2.Add( GetBytes( "foo" ) );
 			s.Flush();
 
 			l.Add( new Foo() );
 			l.Add( new Bar() );
-			l2.Add( encoding.GetBytes("bar") );
+			l2.Add( GetBytes( "bar" ) );
 			s.Flush();
 			
 			object removedObject = l[3];
@@ -984,7 +1234,7 @@ namespace NHibernate.Test
 			baz = (Baz) s.Load( typeof(Baz), baz.Code );
 			Assert.AreEqual( 3, baz.IdFooBag.Count );
 			Assert.AreEqual( 3, baz.ByteBag.Count );
-			bytes = encoding.GetBytes("foobar");
+			bytes = GetBytes( "foobar" );
 
 			foreach(object obj in baz.IdFooBag) 
 			{
@@ -2385,11 +2635,11 @@ namespace NHibernate.Test
 
 			IList list2 = s.Find( "from foo in class NHibernate.DomainModel.Foo order by foo.String, foo.Date" );
 			Assert.AreEqual( 4, list2.Count, "find size" );
-			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.class='B'" );
+			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where typeof( Foo )='B'" );
 			Assert.AreEqual( 2, list1.Count, "class special property" );
-			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.class=NHibernate.DomainModel.Bar" );
+			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where typeof( Foo )=NHibernate.DomainModel.Bar" );
 			Assert.AreEqual( 2, list1.Count, "class special property" );
-			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.class=Bar" );
+			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where typeof( Foo )=Bar" );
 			list2 = s.Find( "select bar from bar in class NHibernate.DomainModel.Bar, foo in class NHibernate.DomainModel.Foo where bar.String = foo.String and not bar=foo" );
 			
 			Assert.AreEqual( 2, list1.Count, "class special property" );
@@ -3741,7 +3991,7 @@ namespace NHibernate.Test
 				// && !(dialect is Dialect.PointbaseDialect)
 				)
 			{
-				foo.Bytes = System.Text.UnicodeEncoding.Unicode.GetBytes("osama");
+				foo.Bytes = GetBytes( "osama" );
 				Assert.AreEqual( 1, s.Find("from foo in class NHibernate.DomainModel.Foo where 111 in foo.Bytes.elements").Count, "autoflush collection update" );
 				foo.Bytes[0] = 69;
 				Assert.AreEqual( 1, s.Find("from foo in class NHibernate.DomainModel.Foo where 69 in foo.Bytes.elements").Count, "autoflush collection update" );

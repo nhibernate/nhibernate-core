@@ -13,6 +13,7 @@ namespace NHibernate.DomainModel
 		// <set> mapping
 		private Iesi.Collections.ISet _manies;
 		private int _x;
+		private int _v;
 		
 		public long Key
 		{
@@ -38,5 +39,10 @@ namespace NHibernate.DomainModel
 			set { _x = value; }
 		}
 
+		public int V
+		{
+			get { return _v; }
+			set { _v = value; }
+		}
 	}
 }

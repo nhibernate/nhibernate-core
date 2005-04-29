@@ -11,6 +11,7 @@
 		>
 			<generator class="native" />
 		</id>
+		<version name="V" />
 		<property name="X" />
 		<property 
 			column="one_value" 

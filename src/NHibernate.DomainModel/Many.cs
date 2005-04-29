@@ -10,6 +10,7 @@ namespace NHibernate.DomainModel
 		private long _key;
 		private One _one;
 		private int _x;
+		private int _v;
 		
 		public long Key
 		{
@@ -29,5 +30,10 @@ namespace NHibernate.DomainModel
 			set { _x = value; }
 		}
 
+		public int V
+		{
+			get { return _v; }
+			set { _v = value; }
+		}
 	}
 }
