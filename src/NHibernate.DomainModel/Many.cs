@@ -10,7 +10,7 @@ namespace NHibernate.DomainModel
 		private long _key;
 		private One _one;
 		private int _x;
-		private int _v;
+		private int _v = -1;
 		
 		public long Key
 		{

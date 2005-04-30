@@ -13,7 +13,7 @@ namespace NHibernate.DomainModel
 		// <set> mapping
 		private Iesi.Collections.ISet _manies;
 		private int _x;
-		private int _v;
+		private int _v = -1;
 		
 		public long Key
 		{

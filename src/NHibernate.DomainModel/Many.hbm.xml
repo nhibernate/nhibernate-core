@@ -11,7 +11,7 @@
 		>
 			<generator class="native" />
 		</id>
-		<version name="V" />
+		<version name="V" unsaved-value="-1" />
 		<property name="X" />
 		<many-to-one 
 			name="One" 

@@ -753,22 +753,148 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void CascadeDeleteDetached()
 		{
+			Baz baz;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = new Baz();
+				IList list = new ArrayList();
+				list.Add( new Fee() );
+				baz.Fees = list;
+				s.Save( baz );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = (Baz) s.Get( typeof( Baz ), baz.Code );
+			}
+
+			Assert.IsFalse( NHibernateUtil.IsInitialized( baz.Fees ) );
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.Delete( baz );
+				s.Flush();
+
+				Assert.IsFalse( s.Enumerable( "from Fee" ).GetEnumerator().MoveNext() );
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = new Baz();
+				IList list = new ArrayList();
+				list.Add( new Fee() );
+				list.Add( new Fee() );
+				baz.Fees = list;
+				s.Save( baz );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = (Baz) s.Get( typeof( Baz ), baz.Code );
+				NHibernateUtil.Initialize( baz.Fees );
+			}
+
+			Assert.AreEqual( 2, baz.Fees.Count );
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.Delete( baz );
+				s.Flush();
+				Assert.IsFalse( s.Enumerable( "from Fee" ).GetEnumerator().MoveNext() );
+			}
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void ForeignKeys()
 		{
+			Baz baz;
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = new Baz();
+				Foo foo = new Foo();
+				IList bag = new ArrayList();
+				bag.Add( foo );
+				baz.IdFooBag = bag;
+				baz.Foo = foo;
+				s.Save( baz );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = (Baz) s.Load( typeof( Baz ), baz.Code );
+				s.Delete( baz );
+				s.Flush();
+			}
 		}
 
 		
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("IDatabinder not implemented yet")]
 		public void Databinder() 
 		{
+			BarProxy bar;
+			FooProxy foo, foo2;
+			Baz baz;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				bar = new Bar();
+				s.Save( bar );
+				
+				foo = new Foo();
+				s.Save( foo );
+				
+				foo2 = new Foo();
+				s.Save( foo2 );
+				foo2.TheFoo = foo;
+				
+				baz = new Baz();
+				s.Save( baz );
+				baz.SetDefaults();
+				baz.FooArray = new FooProxy[] { foo, foo2, bar, null };
+				bar.TheFoo = foo;
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				bar = (BarProxy) s.Load( typeof( Foo ), bar.Key );
+				foo = (FooProxy) s.Load( typeof( Foo ), foo.Key );
+				foo2 = (FooProxy) s.Load( typeof( Foo ), foo2.Key );
+				baz = (Baz) s.Load( typeof( Baz ), baz.Code );
+
+				IDatabinder binder = sessions.OpenDatabinder();
+				binder.InitializeLazy = true;
+				binder
+					.Bind( foo2 )
+					.Bind( baz )
+					.Bind( foo )
+					.Bind( bar );
+
+				Console.WriteLine( binder.ToGenericXml() );
+				
+				binder
+					.Bind( foo2 )
+					.Bind( baz );
+				
+				Console.WriteLine( binder.ToXML() );
+
+				//assertTrue( "dom", binder.toDOM()!=null );
+				//assertTrue( "generic dom", binder.toGenericDOM()!=null );
+
+				s.Delete( foo );
+				s.Delete( baz );
+				s.Delete( bar );
+				s.Delete( foo2 );
+
+				s.Flush();
+			}
 		}
 
 
@@ -804,9 +930,42 @@ namespace NHibernate.Test
 
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void ReuseDeletedCollection()
 		{
+			Baz baz, baz2;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = new Baz();
+				baz.SetDefaults();
+				s.Save( baz );
+				s.Flush();
+				s.Delete(baz);
+				
+				baz2 = new Baz();
+				baz2.StringArray = new string[] { "x-y-z" };
+				s.Save( baz2 );
+				s.Flush();
+			}
+
+			baz2.StringSet   = baz.StringSet;
+			baz2.StringArray = baz.StringArray;
+			baz2.FooArray    = baz.FooArray;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.Update( baz2 );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz2 = (Baz) s.Load( typeof( Baz ), baz2.Code );
+				Assert.AreEqual( 3, baz2.StringArray.Length );
+				Assert.AreEqual( 3, baz2.StringSet.Count );
+				s.Delete( baz2 );
+				s.Flush();
+			}
 		}
 
 		[Test]
@@ -904,9 +1063,95 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Batch loading not implemented")]
 		public void BatchLoad()
 		{
+			Baz baz, baz2, baz3;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = new Baz();
+				Iesi.Collections.SortedSet stringSet = new Iesi.Collections.SortedSet();
+				stringSet.Add("foo");
+				stringSet.Add("bar");
+				Iesi.Collections.ISet fooSet = new Iesi.Collections.HashedSet();
+
+				for( int i = 0; i < 3; i++ )
+				{
+					Foo foo = new Foo();
+					s.Save( foo );
+					fooSet.Add( foo );
+				}
+
+				baz.FooSet = fooSet;
+				baz.StringSet = stringSet;
+				s.Save( baz );
+
+				baz2 = new Baz();
+				fooSet = new Iesi.Collections.HashedSet();
+				for( int i = 0; i < 2; i++ )
+				{
+					Foo foo = new Foo();
+					s.Save( foo );
+					fooSet.Add( foo );
+				}
+				baz2.FooSet = fooSet;
+				s.Save( baz2 );
+
+				baz3 = new Baz();
+				stringSet = new Iesi.Collections.SortedSet();
+				stringSet.Add( "foo" );
+				stringSet.Add( "baz" );
+				baz3.StringSet = stringSet;
+				s.Save( baz3 );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = (Baz) s.Load( typeof( Baz ), baz.Code );
+				baz2 = (Baz) s.Load( typeof( Baz ), baz2.Code );
+				baz3 = (Baz) s.Load( typeof( Baz ), baz3.Code );
+
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooSet ) );
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz2.FooSet ) );
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz3.FooSet ) );
+
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz.StringSet ) );
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz2.StringSet ) );
+				Assert.IsFalse( NHibernateUtil.IsInitialized( baz3.StringSet ) );
+
+				Assert.AreEqual( 3, baz.FooSet.Count );
+
+				Assert.IsTrue( NHibernateUtil.IsInitialized( baz.FooSet ) );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( baz2.FooSet ) );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( baz3.FooSet ) );
+
+				Assert.AreEqual( 2, baz2.FooSet.Count );
+
+				Assert.IsTrue( baz3.StringSet.Contains( "baz" ) );
+
+				Assert.IsTrue( NHibernateUtil.IsInitialized( baz.StringSet ) );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( baz2.StringSet ) );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( baz3.StringSet ) );
+
+				Assert.AreEqual( 2, baz.StringSet.Count );
+				Assert.AreEqual( 0, baz2.StringSet.Count );
+
+				s.Delete( baz );
+				s.Delete( baz2 );
+				s.Delete( baz3 );
+
+				IEnumerable en = new Util.JoinedEnumerable(
+					new IEnumerable[] { baz.FooSet, baz2.FooSet } );
+
+				foreach( object obj in en )
+				{
+					s.Delete( obj );
+				}
+
+				s.Flush();
+			}
 		}
 
 		[Test]
@@ -942,9 +1187,37 @@ namespace NHibernate.Test
 
 		
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void LateCollectionAdd()
 		{
+			object id;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Baz baz = new Baz();
+				IList l = new ArrayList();
+				baz.StringList = l;
+
+				l.Add( "foo" );
+				id = s.Save( baz );
+
+				l.Add( "bar" );
+				s.Flush();
+
+				l.Add("baz");
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Baz baz = (Baz) s.Load( typeof( Baz ), id );
+				Assert.AreEqual( 3, baz.StringList.Count );
+				Assert.IsTrue( baz.StringList.Contains( "foo" ) );
+				Assert.IsTrue( baz.StringList.Contains( "bar" ) );
+				Assert.IsTrue( baz.StringList.Contains( "baz" ) );
+
+				s.Delete( baz );
+				s.Flush();
+			}
 		}
 
 		[Test]
@@ -977,15 +1250,79 @@ namespace NHibernate.Test
 
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void ListRemove()
 		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				Baz b = new Baz();
+				IList stringList = new ArrayList();
+				IList feeList = new ArrayList();
+				b.Fees = feeList;
+				b.StringList = stringList;
+				feeList.Add( new Fee() );
+				feeList.Add( new Fee() );
+				feeList.Add( new Fee() );
+				feeList.Add( new Fee() );
+				stringList.Add( "foo" );
+				stringList.Add( "bar" );
+				stringList.Add( "baz" );
+				stringList.Add( "glarch" );
+				s.Save( b );
+				s.Flush();
+				
+				stringList.RemoveAt( 1 );
+				feeList.RemoveAt( 1 );
+				s.Flush();
+				
+				s.Evict( b );
+				s.Refresh( b );
+				Assert.AreEqual( 3, b.Fees.Count );
+				stringList = b.StringList;
+				Assert.AreEqual( 3, stringList.Count );
+				Assert.AreEqual( "baz", stringList[1] );
+				Assert.AreEqual( "foo", stringList[0] );
+				
+				s.Delete( b );
+				s.Delete( "from Fee" );
+				s.Flush();
+			}
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void FetchInitializedCollectionDupe()
 		{
+			string bazCode;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Baz baz = new Baz();
+				IList fooBag = new ArrayList();
+				fooBag.Add( new Foo() );
+				fooBag.Add( new Foo() );
+				baz.FooBag = fooBag;
+				s.Save( baz );
+				s.Flush();
+				fooBag = baz.FooBag;
+				s.Find("from Baz baz left join fetch baz.FooBag");
+				Assert.IsTrue( NHibernateUtil.IsInitialized( fooBag ) );
+				Assert.AreSame( fooBag, baz.FooBag );
+				Assert.AreEqual( 2, baz.FooBag.Count );
+
+				bazCode = baz.Code;
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				Baz baz = (Baz) s.Load( typeof( Baz ), bazCode );
+				object bag = baz.FooBag;
+				Assert.IsFalse( NHibernateUtil.IsInitialized( bag ) );
+				s.Find("from Baz baz left join fetch baz.FooBag");
+				Assert.IsTrue( NHibernateUtil.IsInitialized( bag ) );
+				Assert.AreSame( bag, baz.FooBag );
+				Assert.AreEqual( 2, baz.FooBag.Count );
+				s.Delete( baz );
+				s.Flush();
+			}
 		}
 
 		[Test]
@@ -1529,11 +1866,57 @@ namespace NHibernate.Test
 
 		}
 
+		[Test, ExpectedException( typeof( QueryException ) )]
+		public void VerifyParameterNamedMissing()
+		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.X > :myX");
+				q.List();
+			}
+		}
+
+		[Test, ExpectedException( typeof( QueryException ) )]
+		public void VerifyParameterPositionalMissing()
+		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.X > ?");
+				q.List();
+			}
+		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
-		public void VerifyParameter()
+		public void VerifyParameterPositionalInQuotes()
 		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.X > ? or bar.Short = 1 or bar.String = 'ff ? bb'");
+				q.SetInt32(0, 1);
+				q.List();
+			}
+		}
+
+		[Test]
+		public void VerifyParameterPositionalInQuotes2()
+		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.String = ' ? ' or bar.String = '?'");
+				q.List();
+			}
+		}
+
+		[Test, ExpectedException( typeof( QueryException ) )]
+		public void VerifyParameterPositionalMissing2()
+		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.String = ? or bar.String = ? or bar.String = ?");
+				q.SetParameter( 0, "bull" );
+				q.SetParameter( 2, "shit" );
+				q.List();
+			}
 		}
 
 		[Test]
@@ -2635,11 +3018,11 @@ namespace NHibernate.Test
 
 			IList list2 = s.Find( "from foo in class NHibernate.DomainModel.Foo order by foo.String, foo.Date" );
 			Assert.AreEqual( 4, list2.Count, "find size" );
-			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where typeof( Foo )='B'" );
+			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.class='B'" );
 			Assert.AreEqual( 2, list1.Count, "class special property" );
-			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where typeof( Foo )=NHibernate.DomainModel.Bar" );
+			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.class=NHibernate.DomainModel.Bar" );
 			Assert.AreEqual( 2, list1.Count, "class special property" );
-			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where typeof( Foo )=Bar" );
+			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.class=Bar" );
 			list2 = s.Find( "select bar from bar in class NHibernate.DomainModel.Bar, foo in class NHibernate.DomainModel.Foo where bar.String = foo.String and not bar=foo" );
 			
 			Assert.AreEqual( 2, list1.Count, "class special property" );
@@ -4515,15 +4898,49 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Not applicable to NHibernate?")]
 		public void Service() 
 		{
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void PSCache() 
 		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				for( int i = 0; i < 10; i++ ) s.Save( new Foo() );
+
+				IQuery q = s.CreateQuery( "from f in class Foo" );
+				q.SetMaxResults( 2 );
+				q.SetFirstResult( 5 );
+				
+				Assert.AreEqual( 2, q.List().Count );
+
+				q = s.CreateQuery( "from f in class Foo" );
+
+				Assert.AreEqual( 10, q.List().Count );
+				Assert.AreEqual( 10, q.List().Count );
+
+				q.SetMaxResults( 3 );
+				q.SetFirstResult( 3 );
+
+				Assert.AreEqual( 3, q.List().Count );
+
+				q = s.CreateQuery( "from f in class Foo" );
+				Assert.AreEqual( 10, q.List().Count );
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				IQuery q = s.CreateQuery( "from f in class Foo" );
+				Assert.AreEqual( 10, q.List().Count );
+
+				q.SetMaxResults(5);
+				Assert.AreEqual( 5, q.List().Count );
+
+				s.Delete( "from f in class Foo" );
+				s.Flush();
+			}
 		}
 
 
