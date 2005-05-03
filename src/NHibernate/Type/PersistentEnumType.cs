@@ -139,7 +139,7 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return enumClass.GetType(); }
+			get { return enumClass; }
 		}
 
 		/// <summary>

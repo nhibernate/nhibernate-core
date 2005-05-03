@@ -65,7 +65,7 @@
 		<property name="Byte" column="byte_"/>
 		<property name="YesNo" type="yes_no"/>
 		
-		<property name="Status" column="`status_@###`" type="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel"/>
+		<property name="Status" column="`status_@###`" /><!--type="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel" -->
 		<property name="Locale" column="`localeayzabc123!@#$`" access="field.camelcase-underscore" type="locale"/>
 	    
 	    <!-- 

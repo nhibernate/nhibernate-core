@@ -3886,6 +3886,13 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
+			// verify an enum can be in the ctor
+			s = sessions.OpenSession();
+			IList list = s.Find("select new Result(foo.String, foo.Long, foo.Integer, foo.Status) from foo in class Foo" );
+			Assert.AreEqual( 1, list.Count, "Should have found foo" );
+			Assert.AreEqual( FooStatus.ON, ((Result)list[0]).Status, "verifying enum set in ctor - should have been ON" );
+			s.Close();
+
 			s = sessions.OpenSession();
 			foo = (FooProxy)s.Load( typeof(Foo), id );
 			Assert.AreEqual( FooStatus.ON, foo.Status );

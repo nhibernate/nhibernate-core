@@ -10,12 +10,21 @@ namespace NHibernate.DomainModel
 		private string _name;
 		private long _amount;
 		private int _count;
-		
+
+		private FooStatus _status;
+
 		public Result(string name, long amount, int count) 
 		{
 			_name = name;
 			_amount = amount;
 			_count = count;
+		}
+
+		// added this ctor to test Enums in ctor for query results
+		public Result(string name, long amount, int count, FooStatus status)
+			: this(name, amount, count)
+		{
+			_status = status;
 		}
 		
 		public string Name
@@ -35,6 +44,14 @@ namespace NHibernate.DomainModel
 			get { return _count; }
 			set { _count = value; }
 		}
+
+		public FooStatus Status
+		{
+			get { return _status; }
+			set { _status = value; }
+		}
+
+		
 
 	}
 }
