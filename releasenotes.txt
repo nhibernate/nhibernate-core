@@ -5,17 +5,18 @@ Build 0.8.0.0
 - Added insert attribute to discriminator element.
 - Added ability to set INamingStrategy on Configuration class.
 - Added property-ref attribute on many-to-one and one-to-one elements.
-- Added foreign-key attribute on many-to-one and one-to-one elements.
+- Added "foreign-key" attribute to many-to-one, one-to-one, many-to-many, key allowing a different column to be the foreign key target
 - Added check attribute to column element.
 - Added sql-query element.
-- Fixed one-to-one so that two queries are no longer issued when one side is null.
-- Fixed bug with ISet.AddAll(ICollection) not being implemented. (Bill Hawes)
-- Modified discriminator element to use "null" or "not null" as the value.
-- Modified Dialect to use Hibernate 2.1 methods.
 - Added "unsaved-value" to version/timestamp as DateTime can't support null, use 1/1/0001 to align with .NET default value for DateTime
 - Added SaveOrUpdateCopy which allows synchronisation for detached objects
-- Added "foreign-key" attribute to many-to-one, one-to-one, many-to-many, key allowing a different column to be the foreign key target
-- Improved memory consumption of Configuration, smaller footprint and releases objects faster.
+- Fixed one-to-one so that two queries are no longer issued when one side is null.
+- Fixed bug with ISet.AddAll(ICollection) not being implemented. (Bill Hawes)
+- Fixed bug with select new ClassName where one parameter was an Enum. (Luca Altea)
+- Fixed bug in mapping that required type="full name of enum" to be required instead of NH correctly inferring type. (Luca Altea) 
+- Improved memory consumption of Configuration, smaller footprint and releases objects faster. 
+- Modified discriminator element to use "null" or "not null" as the value.
+- Modified Dialect to use Hibernate 2.1 methods.
 
 Build 0.7.0.0
 ======================== 
