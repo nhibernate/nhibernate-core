@@ -2,7 +2,7 @@
 <project 
 	name="doc" 
 	default="build" 
-	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 	<!--
 		Required properties:
@@ -12,6 +12,9 @@
 	<!-- 
 		I have not figured out a way to modify the Path through NAnt so you
 		need to make sure that xsltproc is in the path.  
+		
+		2005-05-03: probably is doable with nant-0.85 but I'm not going to mess with
+		it since the easy solution is put xsltproc in the path.
 	-->
 	
 	<property name="lang" value="en" />
@@ -29,36 +32,35 @@
 	<target name="build-html" description="Generates html from docbook files.">
 		 
 		<property name="build.html.dir" value="${output.dir}/html" />
-	
-		<mkdir dir="${build.html.dir}" failonerror="false" />
-		<mkdir dir="${build.html.dir}/single" failonerror="false" />
-		<mkdir dir="${build.html.dir}/chunk" failonerror="false" />
-		<mkdir dir="${build.html.dir}/styles" failonerror="false" />
-		<mkdir dir="${build.html.dir}/images" failonerror="false" />
+		<property name="build.single.dir" value="${build.html.dir}/single" />
+		<property name="build.chunk.dir" value="${build.html.dir}/chunk" />
+		<property name="build.styles.dir" value="${build.html.dir}/styles" />
+		<property name="build.images.dir" value="${build.html.dir}/images" />
 		
-		<!-- 
-			When using property elements that contain paths to files they
-			unfortunately can't just be passed to the command line.  I haven't 
-			figured out how to get the nant path seperator of "/" to be translated 
-			windows path seperator of "\".  So we just have to use the long form. 
-		-->
-		<exec program="xsltproc">
+		<mkdir dir="${build.html.dir}" failonerror="false" />
+		<mkdir dir="${build.single.dir}" failonerror="false" />
+		<mkdir dir="${build.chunk.dir}" failonerror="false" />
+		<mkdir dir="${build.styles.dir}" failonerror="false" />
+		<mkdir dir="${build.images.dir}" failonerror="false" />
+
+		<exec program="xsltproc" >
 			<arg value="--output" />
-			<arg value="build\${lang}\html\single\reference.html" /> <!-- file to output transform results to -->
-			<arg value="${lang}\styles\html.xsl" /> <!-- xsl to do the transforming -->
-			<arg value="${lang}\master.xml" /> <!-- xml file to transform -->
+			<arg file="${build.single.dir}/reference.html" /><!-- file to output transform results to -->
+			<arg file="${lang}/styles/html.xsl" /><!-- xsl to do the transforming -->
+			<arg file="${lang}/master.xml" /><!-- xml file to transform -->
 		</exec>
-		<exec program="xsltproc">
+	
+		<exec program="xsltproc" >
 			<arg value="--output" />
-			<arg value="build\${lang}\html\chunk\" /> <!-- dir to output transform results to -->
-			<arg value="${lang}\styles\html_chunk.xsl" /> <!-- xsl to do the transforming -->
-			<arg value="${lang}\master.xml" /> <!-- xml file to transform -->
+			<arg path="${build.chunk.dir}/" /><!-- dir to output transform results to (add the trailing '/' for xsltproc) -->
+			<arg file="${lang}/styles/html_chunk.xsl" /><!-- xsl to do the transforming -->
+			<arg file="${lang}/master.xml" /><!-- xml file to transform -->
 		</exec>
 		
 		<copy todir="${build.html.dir}">
 			<fileset basedir="${lang}">
-				<includes name="styles/html.css" />
-				<includes name="images/**.*" />
+				<include name="styles/html.css" />
+				<include name="images/**.*" />
 			</fileset>
 		</copy>
 		
@@ -75,9 +77,9 @@
 		<!-- make the htmlhelp version of the helpfile -->
 		<exec program="xsltproc">
 			<arg value="--output" />
-			<arg value="build\${lang}\chm\" /> <!-- dir to output transform results to -->
-			<arg value="${lang}\styles\htmlhelp.xsl" /> <!-- xsl to do the transforming -->
-			<arg value="${lang}\master.xml" /> <!-- xml file to transform -->
+			<arg path="${build.chm.dir}/" /><!-- dir to output transform results to (add the trailing '/' for xsltproc) -->
+			<arg file="${lang}/styles/htmlhelp.xsl" /> <!-- xsl to do the transforming -->
+			<arg file="${lang}/master.xml" /> <!-- xml file to transform -->
 		</exec>
 		
 		<!-- 
@@ -86,19 +88,19 @@
 		-->
 		<copy todir="${build.chm.dir}" flatten="true">
 			<fileset basedir="${lang}">
-				<includes name="styles/*.css" />
-				<includes name="images/**.*" />
+				<include name="styles/*.css" />
+				<include name="images/**.*" />
 			</fileset>
 		</copy>
 		
 		<exec program="${hhc.exe}">
-			<arg value="build\${lang}\chm\htmlhelp.hhp" />
+			<arg file="${build.chm.dir}/htmlhelp.hhp" />
 		</exec> 
 		
 		<delete>
 			<fileset basedir="${build.chm.dir}">
-				<includes name="*" />
-				<excludes name="*.chm" />
+				<include name="*" />
+				<exclude name="*.chm" />
 			</fileset>
 		</delete>
 		
@@ -107,7 +109,7 @@
 	<target name="package" depends="build" description="Copies the files built into the local build dir into the NH build dir.">
 		<move todir="${build.dir}/doc/help">
 			<fileset basedir="${output.dir}">
-				<includes name="**/*" />
+				<include name="**/*" />
 			</fileset>
 		</move>
 	</target>
