@@ -719,6 +719,7 @@
 	column="discriminator_column"<co id="discriminator1-co" linkends="discriminator1" />
 	type="discriminator_type"<co id="discriminator2-co" linkends="discriminator2" />
 	force="true|false"<co id="discriminator3-co" linkends="discriminator3" />
+	insert="true|false" <co id="discriminator4-co" linkends="discriminator4" />
 /&gt;</programlisting>
 			<calloutlist>
 				<callout arearefs="discriminator1-co" id="discriminator1">
@@ -738,6 +739,13 @@
 						<literal>force</literal> (optional - defaults to <literal>false</literal>) 
 						"force" NHibernate to specify allowed discriminator values even when retrieving 
 						all instances of the root class.
+					</para>
+				</callout>             
+				<callout arearefs="discriminator4-co" id="discriminator4">
+					<para>
+						<literal>insert</literal> (optional - defaults to <literal>true</literal>) 
+						set this to <literal>false</literal> if your discriminator column is also part
+						of a mapped composite identifier.
 					</para>
 				</callout>          
 			</calloutlist>
@@ -769,6 +777,7 @@
 	name="propertyName"<co id="version2-co" linkends="version2" />
 	type="typename"<co id="version3-co" linkends="version3" />
 	access="field|property|nosetter|ClassName"<co id="version4-co" linkends="version4" />
+	unsaved-value="null|negative|undefined|value"<co id="version5-co" linkends="version5" />
 /&gt;</programlisting>
 			<calloutlist>
 				<callout arearefs="version1-co" id="version1">
@@ -792,6 +801,15 @@
 					<para>
 						<literal>access</literal> (optional - defaults to <literal>property</literal>): The
 						strategy NHibernate should use for accessing the property value.
+					</para>
+				</callout>
+				<callout arearefs="version5-co" id="version5">
+					<para>
+						<literal>unsaved-value</literal> (optional - defaults to <literal>undefined</literal>):
+						A version property value that indicates that an instance is newly instantiated
+						(unsaved), distinguishing it from transient instances that were saved or loaded
+						in a previous session.  (<literal>undefined</literal> specifies that the identifier
+						property value should be used.)
 					</para>
 				</callout>
 			</calloutlist>
@@ -818,6 +836,7 @@
 	column="timestamp_column"<co id="timestamp1-co" linkends="timestamp1" />
 	name="propertyName"<co id="timestamp2-co" linkends="timestamp2" />
 	access="field|property|nosetter|ClassName"<co id="timestamp3-co" linkends="timestamp3" />
+	unsaved-value="null|negative|undefined|value"<co id="timestamp4-co" linkends="timestamp4" />
 /&gt;</programlisting>
 			<calloutlist>
 				<callout arearefs="timestamp1-co" id="timestamp1">
@@ -835,6 +854,15 @@
 					<para>
 						<literal>access</literal> (optional - defaults to <literal>property</literal>): The
 						strategy NHibernate should use for accessing the property value.
+					</para>
+				</callout>
+				<callout arearefs="timestamp4-co" id="timestamp4">
+					<para>
+						<literal>unsaved-value</literal> (optional - defaults to <literal>undefined</literal>):
+						A timestamp property value that indicates that an instance is newly instantiated
+						(unsaved), distinguishing it from transient instances that were saved or loaded
+						in a previous session.  (<literal>undefined</literal> specifies that the identifier
+						property value should be used.)
 					</para>
 				</callout>
 			</calloutlist>
@@ -1090,7 +1118,9 @@
         outer-join="true|false|auto"<co id="manytoone5-co" />
         update="true|false"<co id="manytoone6-co" />
         insert="true|false"<co id="manytoone7-co" />
-        access="field|property|ClassName"<co id="manytoone8-co" />
+        property-ref="propertyNameFromAssociatedClass" <co id="manytoone8-co" />
+        access="field|property|ClassName"<co id="manytoone9-co" />
+        unique="true|false" <co id="manytoone10-co" />
 /&gt;</programlisting>
 			<calloutlist>
 				<callout arearefs="manytoone1-co" id="manytoone1">
@@ -1133,9 +1163,22 @@
 				</callout>
 				<callout arearefs="manytoone8-co" id="manytoone8">
 					<para>
+						<literal>property-ref</literal>: (optional) The name of a property of the associated
+						class that is joined to this foreign key.  If not specified, the primary key of the
+						associated class is used.
+					</para>
+				</callout>
+				<callout arearefs="manytoone9-co" id="manytoone9">
+					<para>
 						<literal>access</literal> (optional - defaults to
 						<literal>property</literal>): The strategy NHibernate should use for
 						accessing the property value.
+					</para>
+				</callout>
+				<callout arearefs="manytoone10-co" id="manytoone10">
+					<para>
+						<literal>unique</literal> (optional): Enable the DDL generation of a unique
+						constraint for the foreign-key column.
 					</para>
 				</callout>
 		</calloutlist>
@@ -1171,6 +1214,33 @@
 				</para>
 			</listitem>
 		</itemizedlist>
+		
+		<para>
+			A typical <literal>many-to-one</literal> declaration looks as simple as
+		</para>
+		
+		<programlisting><![CDATA[<many-to-one name="Product" class="Product" column="PRODUCT_ID" />]]></programlisting>
+		
+		<para>
+			The <literal>property-ref</literal> attribute should only be used for mapping legacy
+			data where a foreign key refers to a unique key of the associated table other than 
+			the primary key.  This is an ugly relational model.  For example, suppose the 
+			<literal>Product</literal> class had a unique serial number, that is not the primary
+			key.  (The <literal>unique</literal> attribute controls NHibernate's DDL generation with
+			the SchemaExport tool.)
+		</para>
+		
+		<programlisting><![CDATA[<property name="SerialNumber" unique="true" type="String" column="SERIAL_NUMBER" ]]></programlisting>
+		
+		<para>
+			Then the mapping for <literal>OrderItem</literal> might use:
+		</para>
+		
+		<programlisting><![CDATA[<many-to-one name="Product property-ref="SerialNumber" column="PRODUCT_SERIAL_NUMBER" />]]></programlisting>
+		
+		<para>
+			This is certainly not encouraged, however.
+		</para>
 	</sect2>
 	<sect2 id="mapping-declaration-onetoone">
 		<title>one-to-one</title>
@@ -1185,7 +1255,8 @@
 	cascade="all|none|save-update|delete"<co id="onetoone3-co" />
 	constrained="true|false"<co id="onetoone4-co" />
 	outer-join="true|false|auto"<co id="onetoone5-co" />
-	access="field|property|ClassName"<co id="onetoone6-co" />
+	property-ref="propertyNameFromAssociatedClass" <co id="onetoone6-co" />
+	access="field|property|ClassName"<co id="onetoone7-co" />
 /&gt;</programlisting>
 		<calloutlist>
 			<callout arearefs="onetoone1-co" id="onetoone1">
@@ -1222,15 +1293,86 @@
 			</callout>
 			<callout arearefs="onetoone6-co" id="onetoone6">
 				<para>
+					<literal>property-ref</literal>: (optional): The name of a property of the associated class
+					that is joined to the primary key of this class.  If not specified, the primary key of
+					the associated class is used.
+				</para>
+			</callout>
+			<callout arearefs="onetoone7-co" id="onetoone7">
+				<para>
 					<literal>access</literal> (optional - defaults to <literal>property</literal>): The
 					strategy NHibernate should use for accessing the property value.
 				</para>
 			</callout>
 		</calloutlist>
-		<!-- TODO: add details about the new property-ref attribute that Paul added -->
+		<para>
+			There are two varieties of one-to-one associations:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>primary key associations</para>
+			</listitem>
+			<listitem>
+				<para>unique foreign key associations</para>
+			</listitem>
+		</itemizedlist>
+		
+		<para>
+			Primary key associations don't need an extra table column; if two rows are related by
+			the association then the two table rows share the same primary key value.  So if you want
+			two objects to be related by a primary key association, you must make sure that they
+			are assigned the same identifier value!
+		</para>
+		
+		<para>
+			For a primary key association, add the following mappings to <literal>Employee</literal> and
+			<literal>Person</literal>, respectively.
+		</para>
+		
+		<programlisting><![CDATA[<one-to-one name="Person" class="Person" />]]></programlisting>
+		<programlisting><![CDATA[<one-to-one name="Employee" class="Employee" constrained="true" />]]></programlisting>
+		
+		<para>
+			Now we must ensure that the primary keys of related rows in the PERSON and 
+			EMPLOYEE table are equal.  We use a special identifier generation strategy
+			call <literal>foreign</literal>:
+		</para>
+		
+		<programlisting><![CDATA[<class name="Person" table="PERSON">
+	<id name="Id" column="PERSON_ID">
+		<generator class="foreign">
+			<param name="property">Employee</param>
+		</generator>
+	</id>
+	...
+	<one-to-one name="Employee"
+		class="Employee"
+		constrained="true" />
+</class>]]></programlisting>
+	
+		<para>
+			A newly saved instance of <literal>Person</literal> is then assigned the same primary
+			key value as the <literal>Employee</literal> instance refered with the <literal>Employee</literal>
+			property of that <literal>Person</literal>.
+		</para>
+		
+		<para>
+			Alternatively, a foreign key with a unique constraint, from <literal>Employee</literal> to
+			<literal>Person</literal>, may be expressed as:
+		</para>
+		
+		<programlisting><![CDATA[<many-to-one name="Person" class="Person" column="PERSON_ID" unique="true" />]]></programlisting>
+		
+		<para>
+			And this association may be made bidirectional by adding the following to the
+			<literal>Person</literal> mapping:
+		</para>
+		
+		<programlisting><![CDATA[<one-to-one name="Employee" class="Employee" property-ref="Person" />]]></programlisting>
+		
 	</sect2>
 	<sect2 id="mapping-declaration-component">
-		<title>component, dynamic-component</title>
+		<title>component<!--, dynamic-component--></title>
 		
 		<para>
 			The <literal>&lt;component&gt;</literal> element maps properties of a
@@ -1244,7 +1386,12 @@
 	insert="true|false"<co id="component3-co" />
 	update="true|false"<co id="component4-co" />
 	access="field|property|ClassName"<co id="component5-co" />
-/&gt;</programlisting>
+&gt;
+	&lt;parent ... /&gt;
+	&lt;property ... /&gt;
+	&lt;many-to-one ... /&gt;
+	...
+&lt;component/&gt;</programlisting>
 		<calloutlist>
 			<callout arearefs="component1-co" id="component1">
 				<para>
@@ -1276,6 +1423,17 @@
 				</para>
 			</callout>
 		</calloutlist>
+		
+		<para>
+			The child <literal>&lt;property&gt;</literal> tags map properties of the 
+			child class to table columns.
+		</para>
+		
+		<para>
+			The <literal>&lt;component&gt;</literal> element allows a <literal>&lt;parent&gt;</literal>
+			subelement that maps a property of the component class as a reference back to the 
+			containig entity.
+		</para>
 	</sect2>
 	<sect2 id="mapping-declaration-subclass">
 		<title>subclass</title>

@@ -276,8 +276,8 @@ session.Flush();]]></programlisting>
 			needs to know which children are newly instantiated and which represent existing rows in the database.  Lets assume
 			that both <literal>Parent</literal> and <literal>Child</literal> have (synthetic) identifier properties of type
 			<literal>System.Int32</literal>.  NHibernate will use the identifier property value to determine which of the
-			children are new.
-			<!-- TODO: add comments about version/timestamp when the build is released -->
+			children are new.  (You may also use the version or timestamp property
+			<!-- TODO: add linkend to manipulatingdata-updating-detached) -->
 		</para>
 		<para>
 			The <literal>unsaved-value</literal> attribute is used to specify the identifier value of a newly instantiated
@@ -286,10 +286,8 @@ session.Flush();]]></programlisting>
 		</para>
 		<programlisting><![CDATA[<id name="Id" type="Int64" unsaved-value="0" ]]></programlisting>
 		<para>
-			for the <literal>Child</literal> mapping.  <!--
-			TODO: not implemented in production build yet
-			(There is also an <literal>unsaved-value</literal> attribute
-			for version and timestamp property mappings.)-->
+			for the <literal>Child</literal> mapping.  (There is also an <literal>unsaved-value</literal> attribute
+			for version and timestamp property mappings.)
 		</para>
 		<para>
 			The following code will update <literal>parent</literal> and <literal>child</literal> and insert
@@ -304,7 +302,37 @@ session.Update( parent );
 session.Flush();]]></programlisting>
 
 		<para>
-			<!-- TODO: discuss use of unsaved-value with version and timestamp -->
+			Well, thats all very well for the case of generated identifier, but what about assigned identifiers
+			and composite identifiers?  This is more difficult, since <literal>unsaved-values</literal> can't 
+			distinguish between a newly instantiated object (with an identifier assigned by the user) and an object
+			loaded in a previous session.  In these cases, you will probably need to give NHibernate a hint; either
+		</para>
+		
+		<itemizedlist>
+			<listitem>
+				<para>
+					define <literal>unsaved-value="null"</literal> or <literal>unsaved-value="negative"</literal> or
+					<literal>unsaved-value="parsablestring"</literal>on a <literal>&lt;version&gt;</literal> 
+					or <literal>&lt;timestamp&gt;</literal> property mapping for the class.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					set <literal>unsaved-value="none"</literal> and explicitly <literal>Save()</literal>
+					newly instantiated children before calling <literal>Update( parent )</literal>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					set <literal>unsaved-value="any"</literal> and explicitly <literal>Update()</literal>
+					previously persistent children before calling <literal>Update( parent )</literal>
+				</para>
+			</listitem>
+		</itemizedlist>
+		
+		<para>
+			<literal>none</literal> is the default <literal>unsaved-value</literal> for assigned and composite
+			identifiers.
 		</para>
 	</sect1>
 	
@@ -315,7 +343,11 @@ session.Flush();]]></programlisting>
 			all works out quite nicely.  Most NHibernate applications use the parent/child pattern in many places.
 		</para>
 		<para>
-			<!-- TODO: describe composite-element -->
+			We mentioned an alternative in the first paragraph.  None of the above issues exist in the case of
+			<literal>&lt;composite-element&gt;</literal> mappings, which have exactly the semantics of a parent / child
+			relationship.  Unfortunately, there are two big limitations to composite element classes:  composite elements may
+			not own collections, and they should not be the child of any entity other than the unique parent.  (However,
+			they <emphasis>may</emphasis> have a surrogate primary key, using an <literal>&lt;idbag&gt;</literal> mapping.)
 		</para>
 	</sect1>
 </chapter>
