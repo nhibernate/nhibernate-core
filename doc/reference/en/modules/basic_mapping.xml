@@ -31,9 +31,10 @@
 
 		<programlisting><![CDATA[
 <?xml version="1.0" ?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	namespace="Eg" assembly="Eg">
 
-	<class name="Eg.Cat, Eg" table="CATS" discriminator-value="C">
+	<class name="Cat" table="CATS" discriminator-value="C">
 		<id name="Id" column="uid" type="Int64">
 			<generator class="hilo"/>
 		</id>
@@ -45,14 +46,14 @@
 		<many-to-one name="Mate" column="mate_id"/>
 		<set name="Kittens">
 			<key column="mother_id"/>
-			<one-to-many class="Eg.Cat, Eg"/>
+			<one-to-many class="Cat"/>
 		</set>
-		<subclass name="Eg.DomesticCat, Eg" discriminator-value="D">
+		<subclass name="DomesticCat" discriminator-value="D">
 			<property name="Name" type="String"/>
 		</subclass>
 	</class>
 
-	<class name="Eg.Dog, Eg">
+	<class name="Dog">
 		<!-- mapping for Dog could go here -->
 	</class>
 
@@ -103,6 +104,8 @@
 	default-cascade="none|save-update" <co id="hm2-co" linkends="hm2" />
 	auto-import="true|false" <co id="hm3-co" linkends="hm3" />
 	default-access="property|field|nosetter|ClassName" <co id="hm4-co" linkends="hm4" />
+	assembly="assembly.name" <co id="hm5-co" linkends="hm5" />
+	namespace="namespace.name" <co id="hm6-co" linkends="hm6" />
 &gt; </programlisting>
 			<calloutlist>
 					<callout arearefs="hm1-co" id="hm1">
@@ -110,14 +113,12 @@
 							<literal>schema</literal> (optional): The name of a database schema.
 						</para>
 					</callout>
-	
 					<callout arearefs="hm2-co" id="hm2">
 						<para>
 							<literal>default-cascade</literal> (optional - defaults to <literal>none</literal>): 
 							A default cascade style.
 						</para>
 					</callout>
-	
 					<callout arearefs="hm3-co" id="hm3">
 						<para>
 							<literal>auto-import</literal> (optional - defaults to <literal>true</literal>):
@@ -131,7 +132,19 @@
 							The strategy NHibernate should use for accessing the property value.
 						</para>
 					</callout>
-					
+					<callout arearefs="hm5-co" id="hm5">
+						<para>
+							<literal>assembly</literal> (optional):
+							Specifies an Assembly to assume for any class names that don't have the
+							Assembly specified.
+						</para>
+					</callout>
+					<callout arearefs="hm6-co" id="hm6">
+						<para>
+							<literal>namespace</literal> (optional):  Specifies a namespace prefix 
+							to assume for unqualified class names in the mapping document.
+						</para>
+					</callout>
 				</calloutlist>
 			
 			<para>
@@ -162,6 +175,7 @@
 	polymorphism="implicit|explicit"<co id="class9-co" linkends="class9" />
 	where="arbitrary sql where condition"<co id="class10-co" linkends="class10" />
 	persister="PersisterClass"<co id="class11-co" linkends="class11" />
+	lazy="true|false"<co id="class12-co" linkends="class12" />
 /&gt;</programlisting>
 			<calloutlist>
 				<callout arearefs="class1-co" id="class1">
@@ -230,7 +244,14 @@
 					<para>
 						<literal>persister</literal> (optional): Specifies a custom <literal>IClassPersister</literal>.
 					</para>
-				</callout>                 
+				</callout>                   
+				<callout arearefs="class12-co" id="class12">
+					<para>
+						<literal>lazy</literal>(optional): Setting <literal>lazy="true"</literal> is a shortcut 
+						equalivalent to specifying the name of the class itself as the <literal>proxy</literal>
+						interface.
+					</para>
+				</callout>                
 			</calloutlist>
 	
 			<para>
