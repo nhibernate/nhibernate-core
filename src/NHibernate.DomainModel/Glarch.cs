@@ -17,7 +17,7 @@ namespace NHibernate.DomainModel
 		private Iesi.Collections.ISet _proxySet;
 		private string _immutable;
 		private int _derivedVersion;
-//		private object _any;
+		private object _any;
 		private int _x;
 		private Multiplicity _multiple;
 
@@ -146,6 +146,15 @@ namespace NHibernate.DomainModel
 		{
 			get { return _derivedVersion;  }
 			set { _derivedVersion = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the _any
+		/// </summary>
+		public object Any
+		{
+			get { return _any; }
+			set { _any = value; }
 		}
 
 		/// <summary>

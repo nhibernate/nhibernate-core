@@ -20,6 +20,7 @@ namespace NHibernate.DomainModel
 	private NestingComponent _collectionComponent; 
 	private String _code;
 	private FooComponent[] _components;
+	private DateTime[] _timeArray;
 	private string[] _stringArray;
 	private int[] _intArray;
 	private FooProxy[] _fooArray;
@@ -361,6 +362,21 @@ namespace NHibernate.DomainModel
 	 }
 	 
 	 /// <summary>
+	 /// Gets or sets the timeArray
+	 /// </summary> 
+	 public DateTime[] TimeArray
+	 {
+		 get 
+		 {
+			 return _timeArray; 
+		 }
+		 set 
+		 {
+			 _timeArray = value;
+		 }
+	 }
+
+	 /// <summary>
 	 /// Gets or sets the stringArray
 	 /// </summary> 
 	 public string[] StringArray
@@ -590,6 +606,13 @@ namespace NHibernate.DomainModel
 											 new FooComponent("foo", 42, null, null),
 											 new FooComponent("bar", 88, null, new FooComponent("sub", 69, null, null) )
 										 };
+		 TimeArray = new DateTime[] {
+										new DateTime(),
+										new DateTime(),
+										new DateTime(), // H2.1 has null here, but it's illegal on .NET
+										new DateTime(0)
+									};
+
 		 Count = 667;
 		 Name="Bazza";
 		 TopComponents = new ArrayList();

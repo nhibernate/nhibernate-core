@@ -111,7 +111,13 @@
 				</nested-composite-element>
 			</composite-element>
 		</array>
-		
+		<array name="TimeArray">
+			<key>
+				<column name="baz_id" length="16"/>
+			</key>
+			<index column="j"/>
+			<element column="the_time" type="time"/>
+		</array>
 		<bag 
 			name="Bag" 
 			order-by="`name!`" 

@@ -106,7 +106,12 @@
 			update="false" 
 			column="version" 
 		/>
-	
+
+        <property name="Any" type="object">
+        	<column name="`any_id of object`"/>
+        	<column name="`any_class of object`"/>
+        </property>
+
 		<property 
 			name="Multiple" 
 			type="NHibernate.DomainModel.MultiplicityType, NHibernate.DomainModel"

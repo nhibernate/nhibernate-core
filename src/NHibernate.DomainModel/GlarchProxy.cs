@@ -63,6 +63,11 @@ namespace NHibernate.DomainModel
 		{
 			get;
 			set;
-		}		
+		}
+		object Any
+		{
+			get;
+			set;
+		}
 	}
 }

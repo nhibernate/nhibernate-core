@@ -1819,7 +1819,6 @@ namespace NHibernate.Test
 			s.Save(baz);
 			s.Save(bar2);
 
-			// TODO: at this point it fails because of SessionImpl.ProxyFor
 			IList list = s.Find("from Bar bar left join bar.Baz baz left join baz.CascadingBars b where bar.Name like 'Bar %'");
 			object row = list[0];
 			Assert.IsTrue( row is object[] && ( (object[])row).Length==3 );
@@ -1920,7 +1919,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Dynamic components not implemented yet")]
 		public void Dyna()
 		{
 		}
@@ -2009,8 +2008,7 @@ namespace NHibernate.Test
 			f = (Foo) list[0];
 			Assert.IsTrue(NHibernateUtil.IsInitialized(f.TheFoo));
 			
-			//TODO: this is initialized because Proxies are not implemented yet.
-			//Assert.IsFalse( NHibernate.IsInitialized(f.component.Glarch) );
+			Assert.IsFalse( NHibernateUtil.IsInitialized(f.Component.Glarch) );
 
 			s.Delete(f.TheFoo);
 			s.Delete(f);
@@ -2252,7 +2250,6 @@ namespace NHibernate.Test
 		}
 
 
-		/*
 		[Test]
 		public void CompositeKeyPathExpressions() 
 		{
@@ -2281,7 +2278,6 @@ namespace NHibernate.Test
 
 			s.Close();
 		}
-		*/
 
 		[Test]
 		public void CollectionsInSelect() 
@@ -2505,9 +2501,9 @@ namespace NHibernate.Test
 			baz.StringArray = null;
 			baz.StringList[0] = "new value";
 			baz.StringSet = new Iesi.Collections.HashedSet();
-			
-			// HACK: 2.1 - The java (and old NH) version has the result of this as 1, I can't see why it should be since we explicitly put 2 items into StringGlarchMap?
-			//Assert.AreEqual( 2, baz.StringGlarchMap.Count, "baz.StringGlarchMap.Count" );
+
+			// NOTE: We put two items in the map, but expect only one to come back, because
+			// of where="..." specified in the mapping for StringGlarchMap
 			Assert.AreEqual( 1, baz.StringGlarchMap.Count, "baz.StringGlarchMap.Count" );
 			IList list;
 
@@ -3700,20 +3696,88 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
-
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void DeleteUpdatedTransient()
 		{
-		}
+			Fee fee = new Fee();
+			Fee fee2 = new Fee();
+			fee2.AnotherFee = fee;
+			
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction tx = s.BeginTransaction() )
+			{
+				s.Save( fee );
+				s.Save( fee2 );
+				s.Flush();
+				fee.Count = 123;
+				tx.Commit();
+			}
 
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction tx = s.BeginTransaction() )
+			{
+				s.Update( fee );
+				//fee2.AnotherFee = null;
+				s.Update( fee2 );
+				s.Delete( fee );
+				s.Delete( fee2 );
+				tx.Commit();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction tx = s.BeginTransaction() )
+			{
+				Assert.AreEqual( 0, s.Find("from fee in class Fee").Count );
+				tx.Commit();
+			}
+		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void UpdateOrder()
 		{
-		}
+			Fee fee1, fee2, fee3;
 
+			using( ISession s = sessions.OpenSession() )
+			{
+				fee1 = new Fee();
+				s.Save( fee1 );
+				
+				fee2 = new Fee();
+				fee1.TheFee = fee2;
+				fee2.TheFee = fee1;
+				fee2.Fees = new Iesi.Collections.HashedSet();
+
+				fee3 = new Fee();
+				fee3.TheFee = fee1;
+				fee3.AnotherFee = fee2;
+				fee2.AnotherFee = fee3;
+				s.Save( fee3 );
+				s.Save( fee2 );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				fee1.Count = 10;
+				fee2.Count = 20;
+				fee3.Count = 30;
+				s.Update( fee1 );
+				s.Update( fee2 );
+				s.Update( fee3 );
+				s.Flush( );
+				s.Delete( fee1 );
+				s.Delete( fee2 );
+				s.Delete( fee3 );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			using( ITransaction tx = s.BeginTransaction() )
+			{
+				Assert.AreEqual( 0, s.Find("from fee in class Fee").Count );
+				tx.Commit();
+			}
+		}
 
 		[Test]
 		public void UpdateFromTransient() 
@@ -3741,9 +3805,6 @@ namespace NHibernate.Test
 			s.Close();
 
 			Qux q = new Qux("quxxy");
-			//TODO: not sure the test will work with this because unsaved-value="0"
-			// and in h2.0.3 it is unsaved-value="null"
-			q.TheKey = 0;
 			fee1.Qux = q;
 			s = sessions.OpenSession();
 			s.SaveOrUpdate(fee1);
@@ -3825,11 +3886,33 @@ namespace NHibernate.Test
 
 
 		[Test]
-		[Ignore("Test not written yet.")]
-		public void ArrayOfTimes()
+		public void ArraysOfTimes()
 		{
-		}
+			Baz baz;
 
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = new Baz();
+				s.Save(baz);
+				baz.SetDefaults();
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz.TimeArray[2] = new DateTime( 123 );  // H2.1: new Date(123)
+				baz.TimeArray[3] = new DateTime( 1234 ); // H2.1: new java.sql.Time(1234)
+				s.Update( baz );	// missing in H2.1
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				baz = (Baz) s.Load( typeof( Baz ), baz.Code );
+				s.Delete( baz );
+				s.Flush();
+			}
+		}
 
 		[Test]
 		public void Components() 
@@ -4633,9 +4716,29 @@ namespace NHibernate.Test
 
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void ObjectType()
 		{
+			object gid;
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				GlarchProxy g = new Glarch();
+				Foo foo = new Foo();
+				g.Any = foo;
+				gid = s.Save( g );
+				s.Save( foo );
+				s.Flush();
+			}
+
+			using( ISession s = sessions.OpenSession() )
+			{
+				GlarchProxy g = (GlarchProxy) s.Load( typeof( Glarch ), gid );
+				Assert.IsNotNull( g.Any );
+				Assert.IsTrue( g.Any is FooProxy );
+				s.Delete( g.Any );
+				s.Delete( g );
+				s.Flush();
+			}
 		}
 
 
