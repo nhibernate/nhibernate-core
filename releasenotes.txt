@@ -13,19 +13,25 @@ Build 0.8.0.0
 - Added Expression.Example for Query By Example.
 - Added IDriver and Dialect for Sybase (Steve Corbin).
 - Added UniqueResult() to ICriteria and IQuery.
+- Added default value of hibernate.connection.driver_class to Dialect so most of the time this configuration is not needed.
+- Added SByteType to built in ITypes.
 - Fixed <one-to-one> so that two queries are no longer issued when one side is null.
 - Fixed bug with ISet.AddAll(ICollection) not being implemented. (Bill Hawes)
 - Fixed bug with <set> being initialized from Cache.
-- Fixed bug with select new ClassName where one parameter was an Enum. (Luca Altea)
-- Fixed bug in mapping that required type="full name of enum" to be required instead of NH correctly inferring type. (Luca Altea) 
+- Fixed bug with hql "select new ClassName(...) from ..." where one parameter was an Enum. (Luca Altea)
+- Fixed bug in mapping that required type="full.name.of.enum" to be required instead of NH correctly inferring type. (Luca Altea) 
 - Fixed bug with a decimal <id> and unsaved-value.
-- Fixed problem with loading ADO.NET Data Providers from GAC
+- Fixed problem with loading ADO.NET Data Providers from GAC.
+- Fixed issue with TableGenerator not disposing of IDbCommand.
 - Improved memory consumption of Configuration, smaller footprint and releases objects faster. 
 - Improved nhibernate-mapping schema to more schema constructs instead of direct dtd port.
+- Improved message from NullableType when DataProvider can't cast the database value to .net class.
 - Modified <discriminator> to use "null" or "not null" as the value.
 - Modified Dialect to use Hibernate 2.1 methods.
-- Modified Expression to return ICriterion instead of Expression class.
-- Upgraded to nant-0.85-rc3 and nunit-2.2.0
+- Modified Expression to return ICriterion instead of Expression class.  This will break existing code.
+- Modified nhibernate-configuration-2.0.xsd to not require <mappings>.
+- Split QueryFunctionStandard into ISQLFunction interface and StandardSQLFunction.
+- Upgraded to nant-0.85-rc3 and nunit-2.2.0.
 
 Build 0.7.0.0
 ======================== 
