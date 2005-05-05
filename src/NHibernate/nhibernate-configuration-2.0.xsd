@@ -68,7 +68,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref='property' minOccurs='0' maxOccurs='unbounded' />
-				<xs:element ref='mapping' maxOccurs='unbounded' />
+				<xs:element ref='mapping' minOccurs='0' maxOccurs='unbounded' />
 				<xs:choice minOccurs='0' maxOccurs='unbounded'>
 					<xs:element ref='jcs-class-cache' />
 					<xs:element ref='jcs-collection-cache' />
