@@ -150,5 +150,11 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		public override bool PreferLimit
+		{
+			get { return true; }
+		}
+
 	}
 }
