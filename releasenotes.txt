@@ -1,22 +1,31 @@
 Build 0.8.0.0
 ======================== 
-- Added "namespace" and "assembly" attributes to hibernate-mapping element.
+- Added "namespace" and "assembly" attributes to <hibernate-mapping>.
 - Added lazy="true" as short hand for proxy="full type name"
-- Added insert attribute to discriminator element.
+- Added insert attribute to <discriminator>.
 - Added ability to set INamingStrategy on Configuration class.
-- Added property-ref attribute on many-to-one and one-to-one elements.
-- Added "foreign-key" attribute to many-to-one, one-to-one, many-to-many, key allowing a different column to be the foreign key target
+- Added property-ref attribute on <many-to-one> and <one-to-one>.
+- Added "foreign-key" attribute to <many-to-one>, <one-to-one>, <many-to-many>, key allowing a different column to be the foreign key target
 - Added check attribute to column element.
-- Added sql-query element.
-- Added "unsaved-value" to version/timestamp as DateTime can't support null, use 1/1/0001 to align with .NET default value for DateTime
-- Added SaveOrUpdateCopy which allows synchronisation for detached objects
-- Fixed one-to-one so that two queries are no longer issued when one side is null.
+- Added <sql-query> element.
+- Added "unsaved-value" to <version>/<timestamp> as DateTime can't support null, use 1/1/0001 to align with .NET default value for DateTime
+- Added SaveOrUpdateCopy() which allows synchronisation for detached objects
+- Added Expression.Example for Query By Example.
+- Added IDriver and Dialect for Sybase (Steve Corbin).
+- Added UniqueResult() to ICriteria and IQuery.
+- Fixed <one-to-one> so that two queries are no longer issued when one side is null.
 - Fixed bug with ISet.AddAll(ICollection) not being implemented. (Bill Hawes)
+- Fixed bug with <set> being initialized from Cache.
 - Fixed bug with select new ClassName where one parameter was an Enum. (Luca Altea)
 - Fixed bug in mapping that required type="full name of enum" to be required instead of NH correctly inferring type. (Luca Altea) 
+- Fixed bug with a decimal <id> and unsaved-value.
+- Fixed problem with loading ADO.NET Data Providers from GAC
 - Improved memory consumption of Configuration, smaller footprint and releases objects faster. 
-- Modified discriminator element to use "null" or "not null" as the value.
+- Improved nhibernate-mapping schema to more schema constructs instead of direct dtd port.
+- Modified <discriminator> to use "null" or "not null" as the value.
 - Modified Dialect to use Hibernate 2.1 methods.
+- Modified Expression to return ICriterion instead of Expression class.
+- Upgraded to nant-0.85-rc3 and nunit-2.2.0
 
 Build 0.7.0.0
 ======================== 
