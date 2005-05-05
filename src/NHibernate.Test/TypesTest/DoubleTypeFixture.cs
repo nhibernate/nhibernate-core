@@ -72,12 +72,12 @@ namespace NHibernate.Test.TypesTest
 			basic.Id = 1;
 			basic.DoubleValue = _values[0];
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(basic);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			basic = (DoubleClass)s.Load( typeof(DoubleClass), 1 );
 
 			Assert.AreEqual( _values[0], basic.DoubleValue );

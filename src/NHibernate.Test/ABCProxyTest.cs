@@ -46,7 +46,7 @@ namespace NHibernate.Test
 		{
 			C2 c2;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				C1 c1 = new C1();
@@ -61,7 +61,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 		
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				c2 = (C2)s.Get( typeof( C2 ), c2.Id );
@@ -78,7 +78,7 @@ namespace NHibernate.Test
 			C1 c1;
 			C2 c2;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				c1 = new C1();
@@ -90,7 +90,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				IList list = s.Find("from B");
@@ -98,7 +98,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				c1 = (C1) s.CreateQuery("from C1").UniqueResult();
@@ -110,7 +110,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				c1 = (C1) s.Get( typeof(A), c1.Id );
@@ -122,7 +122,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				s.Delete(c1);
@@ -134,7 +134,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Subclassing()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			C1 c1 = new C1();
 			D d = new D();
@@ -149,7 +149,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			// Test won't run after this line because of proxy initalization problems
 			A c1a = (A) s.Load(typeof(A), c1.Id );
@@ -158,7 +158,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			B c1b = (B) s.Load( typeof(B), c1.Id );
 			Assert.IsTrue(
@@ -168,7 +168,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c1 = (C1) s.Load( typeof(C1), c1.Id );
 			Assert.IsTrue(
@@ -180,7 +180,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c1a = (A) s.Load( typeof(A), c1.Id );
 			Assert.IsTrue( c1a.Name.Equals("c1") );
@@ -200,7 +200,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c1a = (A) s.Load( typeof(A), c1.Id );
 			Assert.IsTrue( c1a.Name.Equals("c1") );
@@ -220,7 +220,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c1a = (A) s.Load( typeof(A), c1.Id );
 			c1 = (C1) s.Load( typeof(C1), c1.Id );
@@ -240,7 +240,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Save( new B() );
 			s.Save( new A() );
@@ -256,7 +256,7 @@ namespace NHibernate.Test
 		public void SubclassMap()
 		{
 			//Test is converted, but the original didn't check anything
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			B b = new B();
 			s.Save(b);
@@ -267,7 +267,7 @@ namespace NHibernate.Test
 			s.Delete(b);
 			t.Commit();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			map = new Hashtable();
 			map.Add("3", 1); 
@@ -294,7 +294,7 @@ namespace NHibernate.Test
 			object aid;
 			object d2id;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				aid = s.Save(a);
@@ -302,7 +302,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				IList l = s.Find( "from E e, A a where e.Reverse = a.Forward and a = ?", a, NHibernateUtil.Entity (typeof(A)) );
@@ -312,7 +312,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				IList l = s.Find( "from E e" );
@@ -324,7 +324,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				a = (A) s.Load( typeof(A), aid );
@@ -338,7 +338,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				IList l = s.Find( "from E e" );

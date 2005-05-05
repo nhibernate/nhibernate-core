@@ -13,13 +13,13 @@ using NUnit.Framework;
 
 namespace NHibernate.Test 
 {
-	
-	public abstract class TestCase 
+	public abstract class TestCase
 	{
-		private const bool OUTPUT_DDL = true;
+		private const bool OUTPUT_DDL = false;
 		protected Configuration cfg;
 		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
+		private ISession lastOpenedSession;
 
 		/// <summary>
 		/// Removes the tables used in this TestCase.
@@ -33,7 +33,18 @@ namespace NHibernate.Test
 		[TearDown]
 		public virtual void TearDown() 
 		{
+			bool wasUnclosedSession = false;
+			if( lastOpenedSession != null && lastOpenedSession.IsOpen )
+			{
+				wasUnclosedSession = true;
+				lastOpenedSession.Close();
+			}
 			DropSchema();
+
+			if( wasUnclosedSession )
+			{
+				Assert.Fail("Unclosed session");
+			}
 		}
 
 		public void ExportSchema(IList files) 
@@ -106,5 +117,10 @@ namespace NHibernate.Test
 			}
 		}
 
+		protected ISession OpenSession()
+		{
+			lastOpenedSession = sessions.OpenSession();
+			return lastOpenedSession;
+		}
 	}
 }

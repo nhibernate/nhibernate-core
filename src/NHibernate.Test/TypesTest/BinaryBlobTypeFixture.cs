@@ -45,14 +45,14 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void ReadWrite() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			BinaryBlobClass b = new BinaryBlobClass();
 			b.BinaryBlob = System.Text.UnicodeEncoding.UTF8.GetBytes("foo/bar/baz");
 			s.Save(b);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			b = (BinaryBlobClass)s.Load( typeof(BinaryBlobClass), b.Id );
 			ObjectAssert.AreEqual( System.Text.UnicodeEncoding.UTF8.GetBytes("foo/bar/baz") , b.BinaryBlob );
 			s.Delete( b );

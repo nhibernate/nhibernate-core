@@ -20,7 +20,7 @@ namespace NHibernate.Test.ProxyInterface
 		[Test]
 		public void Proxy() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			CastleProxy ap = new CastleProxyImpl();
 			ap.Id = 1;
 			ap.Name = "first proxy";
@@ -28,7 +28,7 @@ namespace NHibernate.Test.ProxyInterface
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			ap = (CastleProxy)s.Load( typeof(CastleProxyImpl), ap.Id ); 
 			Assert.IsFalse( NHibernateUtil.IsInitialized( ap ) );
 			int id = ap.Id;
@@ -43,7 +43,7 @@ namespace NHibernate.Test.ProxyInterface
 		[Test]
 		public void ProxySerialize() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			CastleProxy ap = new CastleProxyImpl();
 			ap.Id = 1;
 			ap.Name = "first proxy";
@@ -51,7 +51,7 @@ namespace NHibernate.Test.ProxyInterface
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			ap = (CastleProxy)s.Load( typeof(CastleProxyImpl), ap.Id ); 
 			Assert.AreEqual( 1, ap.Id );
 			s.Disconnect();
@@ -82,7 +82,7 @@ namespace NHibernate.Test.ProxyInterface
 		[Test]
 		public void SerializeNotFoundProxy() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			// this does not actually exists in db
 			CastleProxy notThere = (CastleProxy)s.Load( typeof(CastleProxyImpl), 5 ); 
 			Assert.AreEqual( 5, notThere.Id );

@@ -31,7 +31,7 @@ namespace NHibernate.Test.DriverTest
 			ISession s = null;
 			try
 			{
-				s = sessions.OpenSession();
+				s = OpenSession();
 				Console.WriteLine( "about to run query" );
 				IQuery q = s.CreateQuery( "from Simple s where s.Name = :missing" );
 				Assert.IsNotNull( q );
@@ -62,7 +62,7 @@ namespace NHibernate.Test.DriverTest
 			ISession s = null;
 			try
 			{
-				s = sessions.OpenSession();
+				s = OpenSession();
 				Console.WriteLine( "about to run query" );
 				IQuery q = s.CreateQuery( "from Simple s where s.Name = :missing" );
 				Assert.IsNotNull( q );

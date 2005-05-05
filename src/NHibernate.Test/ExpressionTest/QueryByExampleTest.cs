@@ -30,7 +30,7 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void TestSimpleQBE()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				Componentizable master = GetMaster("hibernate", null, "ope%");
@@ -47,7 +47,7 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void TestJunctionNotExpressionQBE()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				Componentizable master = GetMaster("hibernate", null, "ope%");
@@ -69,7 +69,7 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void TestExcludingQBE()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				Componentizable master = GetMaster("hibernate", null, "ope%");
@@ -95,21 +95,21 @@ namespace NHibernate.Test.ExpressionTest
 
 		private void InitData()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Componentizable master = GetMaster("hibernate", "ORM tool", "ORM tool1");
 				s.Save(master);
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Componentizable master = GetMaster("hibernate", "open source", "open source1");
 				s.Save(master);
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Componentizable master = GetMaster("hibernate", null, null);
 				s.Save(master);
@@ -119,7 +119,7 @@ namespace NHibernate.Test.ExpressionTest
 
 		private void DeleteData()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				s.Delete("from Componentizable");

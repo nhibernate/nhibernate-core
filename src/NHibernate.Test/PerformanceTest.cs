@@ -90,7 +90,7 @@ namespace NHibernate.Test
 
 				// allow cache to settle
 
-				ISession s = sessions.OpenSession();
+				ISession s = OpenSession();
 				Hibernate(s, simples, ids, n, "h0");
 				s.Close();
 
@@ -98,7 +98,7 @@ namespace NHibernate.Test
 				DirectAdoNet(c, simples, ids, n, "j0");
 				cp.CloseConnection(c);
 
-				s = sessions.OpenSession();
+				s = OpenSession();
 				Hibernate(s, simples, ids, n, "h0");
 				s.Close();
 
@@ -116,7 +116,7 @@ namespace NHibernate.Test
 					long time = DateTime.Now.Ticks;
 					for(int i = 0; i < loops; i++) 
 					{
-						using( s = sessions.OpenSession() ) 
+						using( s = OpenSession() ) 
 						{
 							Hibernate(s, simples, ids, n, "h" + runIndex.ToString());
 						}

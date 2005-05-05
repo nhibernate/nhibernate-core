@@ -26,7 +26,7 @@ namespace NHibernate.Test.JoinedSubclass
 		[Test]
 		public void TestJoinedSubclass() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			
 			Employee mark = new Employee();
 			mark.Name = "Mark";
@@ -63,7 +63,7 @@ namespace NHibernate.Test.JoinedSubclass
 
 			// in later versions of hibernate a Clear method was added to session
 			s.Close();
-			s = sessions.OpenSession();
+			s = OpenSession();
 			
 			IList customers = s.CreateQuery( "from Customer c left join fetch c.Salesperson" ).List();
 			foreach( Customer c in customers ) 
@@ -74,7 +74,7 @@ namespace NHibernate.Test.JoinedSubclass
 			}
 			Assert.AreEqual( 1, customers.Count );
 			s.Close();
-			s = sessions.OpenSession();
+			s = OpenSession();
 
 			customers = s.CreateQuery( "from Customer" ).List();
 			foreach( Customer c in customers ) 
@@ -86,7 +86,7 @@ namespace NHibernate.Test.JoinedSubclass
 			Assert.AreEqual( 1, customers.Count );
 
 			s.Close();
-			s = sessions.OpenSession();
+			s = OpenSession();
 
 			mark = (Employee)s.Load( typeof(Employee), mark.Id );
 			joe = (Customer)s.Load( typeof(Customer), joe.Id );
@@ -107,7 +107,7 @@ namespace NHibernate.Test.JoinedSubclass
 		public void TestHql()
 		{
 			// test the Save
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			Employee wally = new Employee();
@@ -131,12 +131,12 @@ namespace NHibernate.Test.JoinedSubclass
 			s.Close();
 
 			// get a proxied - initialized version of manager
-			s = sessions.OpenSession();
+			s = OpenSession();
 			pointyhair = (Employee) s.Load( typeof(Employee), pointyhair.Id );
 			NHibernateUtil.Initialize( pointyhair );
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IQuery q = s.CreateQuery( "from Employee as e where e.Manager = :theMgr" );
 			q.SetParameter( "theMgr", pointyhair );
 			IList results = q.List();
@@ -159,7 +159,7 @@ namespace NHibernate.Test.JoinedSubclass
 		public void TestCRUD() {
 			
 			// test the Save
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			Employee emp = new Employee();
@@ -180,7 +180,7 @@ namespace NHibernate.Test.JoinedSubclass
 			int personId = person.Id;
 
 			// lets verify the correct classes were saved
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			
 			// perform a load based on the base class
@@ -212,7 +212,7 @@ namespace NHibernate.Test.JoinedSubclass
 			s.Close();
 
 			// lets test the Criteria interface for subclassing
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 
 			IList results = s.CreateCriteria( typeof(Person) )

@@ -94,7 +94,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionQuery() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			Simple s1 = new Simple();
@@ -128,7 +128,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where c.ManyToMany[0].Name = 's'").Count );
 			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where 's' = c.OneToMany[2 - 2].Name").Count );
 			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where 's' = c.ManyToMany[(3+1)/4-1].Name").Count );
-			if( !(dialect is Dialect.MySQLDialect) ) 
+			if( dialect.SupportsSubSelects ) 
 			{
 				Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where c.ManyToMany[ c.ManyToMany.maxIndex ].Count = 2").Count );
 				Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where c.ManyToMany[ maxindex(c.ManyToMany) ].Count = 2").Count );
@@ -149,7 +149,7 @@ namespace NHibernate.Test
 		[Test]
 		public void ParentChild() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Parent p = new Parent();
 			Child c = new Child();
@@ -160,7 +160,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Flush();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Child)s.Load( typeof(Child), c.Id );
 			p = c.Parent;
@@ -170,7 +170,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Child)s.Load( typeof(Child), c.Id );
 			p = c.Parent;
@@ -192,14 +192,14 @@ namespace NHibernate.Test
 		[Test]
 		public void ParentNullChild() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Parent p = new Parent();
 			s.Save(p);
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			p = (Parent)s.Load( typeof(Parent), p.Id );
 			Assert.IsNull( p.Child );
@@ -207,7 +207,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			p = (Parent)s.Load( typeof(Parent), p.Id );
 			Assert.AreEqual( 66, p.Count, "null 1-1 update" );
@@ -223,7 +223,7 @@ namespace NHibernate.Test
 		{
 			// if( dialect is Dialect.HSQLDialect) return;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Container c = new Container();
 			c.ManyToMany = new ArrayList();
@@ -244,7 +244,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Container) s.Load( typeof(Container), cid );
 			Assert.AreEqual( 1, c.Bag.Count );
@@ -261,7 +261,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Container) s.Load( typeof(Container), cid );
 			Assert.AreEqual( 0, c.Bag.Count );
@@ -278,7 +278,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Container() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Container c = new Container();
 			Simple x = new Simple();
@@ -326,7 +326,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Container)s.Load( typeof(Container), c.Id );
 			
@@ -354,7 +354,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Container)s.Load( typeof(Container), c.Id );
 			Assert.AreEqual( 1, c.Components.Count ); //WAS: 2 - h2.0.3 comment
@@ -371,7 +371,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Container)s.Load( typeof(Container), c.Id );
 			Assert.AreEqual( 1, c.Components.Count ); //WAS: 2 -> h2.0.3 comment
@@ -398,7 +398,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Container)s.Load( typeof(Container), c.Id );
 			Assert.AreEqual( 0, c.Components.Count );
@@ -423,12 +423,12 @@ namespace NHibernate.Test
 			cic.Many = new Many();
 			cic.One = new One();
 			list.Add(cic);
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(c);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foreach(Container obj in s.Enumerable("from c in class ContainerX")) 
 			{
 				c = obj;
@@ -447,7 +447,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			c = new Container();
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Save(c);
 			list = new ArrayList();
 			c.Cascades = list;
@@ -458,7 +458,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foreach( Container obj in s.Enumerable("from c in class ContainerX") ) 
 			{
 				c = obj;
@@ -481,7 +481,7 @@ namespace NHibernate.Test
 		{
 			//if( dialect is Dialect.HSQLDialect ) return;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Container c = new Container();
 			Contained c1 = new Contained();
@@ -499,14 +499,14 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Container)s.Find("from c in class ContainerX")[0];
 			Assert.AreEqual( 1, c.LazyBag.Count );
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Container)s.Find("from c in class ContainerX")[0];
 			Contained c3 = new Contained();
@@ -518,7 +518,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Container)s.Find("from c in class ContainerX")[0];
 			Contained c4 = new Contained();
@@ -534,7 +534,7 @@ namespace NHibernate.Test
 			// occurs - this used to cause the element in Add(element) to be in there
 			// twice and throw off the count by 1 (or by however many additions were 
 			// made before the flush
-			s = sessions.OpenSession();
+			s = OpenSession();
 			c = (Container)s.Find("from c in class ContainerX")[0];
 			Contained c5 = new Contained();
 			c.LazyBag.Add( c5 );
@@ -546,7 +546,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 4, c.LazyBag.Count, "correct additions clearing after flush" );
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Container)s.Find("from c in class ContainerX")[0];
 			int j = 0;
@@ -583,7 +583,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CircularCascade() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Circular c = new Circular();
 			c.Clazz = typeof(Circular);
@@ -595,7 +595,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Circular)s.Load( typeof(Circular), id );
 			c.Other.Other.Clazz = typeof(Foo);
@@ -603,20 +603,20 @@ namespace NHibernate.Test
 			s.Close();
 
 			c.Other.Clazz = typeof(Qux);
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.SaveOrUpdate(c);
 			t.Commit();
 			s.Close();
 
 			c.Other.Other.Clazz = typeof(Bar);
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.SaveOrUpdate(c);
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Circular)s.Load( typeof(Circular), id );
 			Assert.AreEqual( typeof(Bar), c.Other.Other.Clazz );
@@ -632,7 +632,7 @@ namespace NHibernate.Test
 		[Test]
 		public void DeleteEmpty() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Assert.AreEqual( 0, s.Delete("from s in class Simple") );
 			Assert.AreEqual( 0, s.Delete("from o in class Universe") );
 			s.Close();
@@ -641,7 +641,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Locking() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
 			Simple s1 = new Simple();
 			s1.Count = 1;
@@ -660,7 +660,7 @@ namespace NHibernate.Test
 			tx.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			tx = s.BeginTransaction();
 			s1 = (Simple)s.Load( typeof(Simple), (long)1, LockMode.None );
 			Assert.AreEqual( LockMode.Read, s.GetCurrentLockMode(s1) );
@@ -729,7 +729,7 @@ namespace NHibernate.Test
 		[Test]
 		public void ObjectType() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Parent g = new Parent();
 			Foo foo = new Foo();
 			g.Any = foo;
@@ -738,7 +738,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (Parent)s.Load( typeof(Parent), g.Id );
 			Assert.IsNotNull( g.Any );
 			Assert.IsTrue( g.Any is FooProxy );

@@ -30,7 +30,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Joins() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Find("from SubMulti sm join sm.Children smc where smc.Name > 'a'");
 			s.Find("select s, ya from LessSimple s join s.YetAnother ya");
 			s.Find("from LessSimple s1 join s1.Bag s2");
@@ -51,10 +51,11 @@ namespace NHibernate.Test
 		public void JoinOpenBug()
 		{
 		}
+
 		[Test]
 		public void SubclassCollection() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			SubMulti sm = new SubMulti();
 			SubMulti sm1 = new SubMulti();
 			SubMulti sm2 = new SubMulti();
@@ -74,7 +75,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			// TODO: I don't understand why h2.0.3 issues a select statement here
 			
 			Assert.AreEqual( 2, s.Find("select s from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").Count );
@@ -111,14 +112,14 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionOnly() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Mono m = new Mono();
 			long id = (long)s.Save(m);
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Update(m, id);
 			s.Flush();
@@ -132,7 +133,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Queries() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			long id = 1L;
 
 			if( (dialect is Dialect.SybaseDialect) || (dialect is Dialect.MsSql2000Dialect) ) 
@@ -147,7 +148,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			TrivialClass tc = (TrivialClass)s.Load( typeof(TrivialClass), id );
 			s.Find("from s in class TrivialClass where s.id = 2");
 			s.Find("select s.Count from s in class Simple");
@@ -168,7 +169,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Constraints() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			SubMulti sm = new SubMulti();
 			sm.Amount = 66.5f;
@@ -183,7 +184,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Delete( "from sm in class SubMulti" );
 			t = s.BeginTransaction();
 			t.Commit();
@@ -193,7 +194,7 @@ namespace NHibernate.Test
 		[Test]
 		public void MultiTable() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
@@ -230,7 +231,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			multi.ExtraProp =  multi.ExtraProp + "2";
 			multi.Name = "new name";
@@ -242,7 +243,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			multi = (Multi)s.Load( typeof(Multi), mid );
 			Assert.AreEqual( "extra2", multi.ExtraProp );
@@ -255,7 +256,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			multi = (Multi)s.Load( typeof(Simple), mid );
 			simp = (Simple)s.Load( typeof(Simple), sid );
@@ -267,7 +268,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			IEnumerator enumer = s.Enumerable("select\n\ns from s in class Simple where s.Count>0").GetEnumerator();
 			bool foundSimp = false;
@@ -309,7 +310,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			multi = (Multi)s.Load( typeof(Simple), mid, LockMode.Upgrade );
 			simp = (Simple)s.Load( typeof(Simple), sid );
@@ -317,7 +318,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Update( multi, mid );
 			s.Delete(multi);
@@ -331,7 +332,7 @@ namespace NHibernate.Test
 		[Test]
 		public void MutliTableGeneratedId() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
@@ -347,7 +348,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			multi.ExtraProp += "2";
 			multi.Name = "new name";
@@ -359,7 +360,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			multi = (Multi)s.Load( typeof(Multi), multiId );
 			Assert.AreEqual( "extra2", multi.ExtraProp );
@@ -372,7 +373,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			multi = (Multi)s.Load( typeof(Simple), multiId );
 			simp = (Simple)s.Load( typeof(Simple), simpId );
@@ -384,7 +385,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			IEnumerable enumer = s.Enumerable("select\n\ns from s in class Simple where s.Count>0");
 			bool foundSimp = false;
@@ -418,7 +419,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 			
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			multi = (Multi)s.Load( typeof(Simple), multiId, LockMode.Upgrade );
 			simp = (Simple)s.Load( typeof(Simple), simpId );
@@ -426,7 +427,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Update( multi, multiId );
 			s.Delete(multi);
@@ -440,7 +441,7 @@ namespace NHibernate.Test
 		{
 			//if( dialect is Dialect.HSQLDialect) return;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Assert.AreEqual( 0, s.Find("from s in class Simple").Count );
 			Multi multi = new Multi();
@@ -488,7 +489,7 @@ namespace NHibernate.Test
 			Assert.AreSame( ls, ls.Another );
 			Assert.AreSame( ls, ls.YetAnother );
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			ls = (LessSimple)s.Load( typeof(LessSimple), id );
 			Assert.AreSame( ls, ls.Other );
@@ -518,7 +519,7 @@ namespace NHibernate.Test
 		{
 			//if( dialect is Dialect.HSQLDialect) return;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Assert.AreEqual( 0, s.Find("from s in class Simple").Count );
 			Multi multi = new Multi();
@@ -560,7 +561,7 @@ namespace NHibernate.Test
 			Assert.AreSame(multi, ls.Another);
 			Assert.AreSame(ls, ls.YetAnother);
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			ls = (LessSimple)s.Load( typeof(LessSimple), id );
 			Assert.AreSame(ls, ls.Other);
@@ -577,7 +578,7 @@ namespace NHibernate.Test
 		[Test]
 		public void MultiTableNativeId() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
@@ -591,7 +592,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Collection() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Multi multi1 = new Multi();
 			multi1.ExtraProp = "extra1";
@@ -610,7 +611,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			po = (Po)s.Load( typeof(Po), id );
 			Assert.AreEqual( 2, po.Set.Count );
@@ -625,17 +626,17 @@ namespace NHibernate.Test
 		[Test]
 		public void OneToOne() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			LessSimple ls = new LessSimple();
 			object id = s.Save(ls);
 			s.Flush();
 			s.Close();
 			
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Load( typeof(LessSimple), id );
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Delete( s.Load( typeof(LessSimple), id ) );
 			s.Flush();
 			s.Close();
@@ -644,7 +645,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionPointer() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			LessSimple ls = new LessSimple();
 			IList list = new ArrayList();
 			ls.Bag = list;
@@ -656,7 +657,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			ls = (LessSimple)s.Load( typeof(LessSimple), id );
 			Assert.AreEqual( 1, ls.Bag.Count );
 			s.Delete("from o in class System.Object");
@@ -667,7 +668,7 @@ namespace NHibernate.Test
 		[Test]
 		public void DynamicUpdate() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Simple simple = new Simple();
 
 			simple.Name = "saved";
@@ -678,7 +679,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			simple = (Simple)s.Load( typeof(Simple), id );
 			Assert.AreEqual( "updated", simple.Name, "name should have been updated" );
 			s.Close();

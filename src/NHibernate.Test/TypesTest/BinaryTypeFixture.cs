@@ -78,12 +78,12 @@ namespace NHibernate.Test.TypesTest
 			bcBinary.DefaultSize = null;
 			bcBinary.WithSize = null;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(bcBinary);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			BinaryClass bcBinaryLoaded = (BinaryClass)s.Load( typeof(BinaryClass), 1 );
 
 			Assert.IsNotNull(bcBinaryLoaded);
@@ -108,12 +108,12 @@ namespace NHibernate.Test.TypesTest
 			bcBinary.DefaultSize = new byte[0];
 			bcBinary.WithSize = new byte[0];
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(bcBinary);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			BinaryClass bcBinaryLoaded = (BinaryClass)s.Load( typeof(BinaryClass), 1 );
 
 			Assert.IsNotNull(bcBinaryLoaded);
@@ -135,12 +135,12 @@ namespace NHibernate.Test.TypesTest
 			BinaryClass bcBinary = Create( 1 );
 			BinaryClass expected = Create( 1 );
 			
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save( bcBinary );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			bcBinary = (BinaryClass)s.Load( typeof(BinaryClass), 1 );
 
 			// make sure what was saved was expected

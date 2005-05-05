@@ -72,7 +72,7 @@ namespace NHibernate.Test
 			//if( dialect is Dialect.HSQLDialect ) return;
 			if( dialect is Dialect.MsSql2000Dialect ) return;
 			
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Fum fum = new Fum( FumTest.FumKey("fum") );
 				fum.FumString = "a value";
@@ -84,7 +84,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Fum b = (Fum) s.CreateCriteria( typeof( Fum ) )
 					.Add( Expression.Expression.In(
@@ -111,7 +111,7 @@ namespace NHibernate.Test
 			if( dialect is Dialect.MsSql2000Dialect ) return;
 
 			/*
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Fum fum = new Fum( FumKey("fum") );
 				fum.Fo = new Fum( FumKey("fo") );
@@ -181,7 +181,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				ICriteria baseCriteria = s.CreateCriteria( typeof(Fum) )
 					.Add( Expression.Expression.Like( "fum", "f%" ) );
@@ -206,7 +206,7 @@ namespace NHibernate.Test
 		[Test]
 		public void ListIdentifiers() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Fum fum = new Fum( FumTest.FumKey("fum") );
 			fum.FumString = "fo fee fi";
 			s.Save(fum);
@@ -277,7 +277,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CompositeID() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Fum fum = new Fum( FumTest.FumKey("fum") );
 			fum.FumString = "fee fi fo";
@@ -288,7 +288,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			fum = (Fum) s.Load( typeof(Fum), FumTest.FumKey("fum"), LockMode.Upgrade );
 			Assert.IsNotNull(fum, "Load by composite key");
@@ -309,7 +309,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			IEnumerator enumerator = s.Enumerable("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").GetEnumerator();
 			int i = 0;
@@ -330,7 +330,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CompositeIDOneToOne()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Fum fum = new Fum( FumKey("fum") );
 			fum.FumString = "fee fi fo";
 			//s.Save(fum); commented out in h2.0.3
@@ -340,7 +340,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			fumm = (Fumm) s.Load( typeof(Fumm), FumKey("fum") );
 			//s.delete(fumm.Fum); commented out in h2.0.3
 			s.Delete(fumm);
@@ -352,7 +352,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CompositeIDQuery() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Fum fee = new Fum( FumTest.FumKey("fee", true) );
 			fee.FumString = "fee";
 			s.Save(fee);
@@ -369,7 +369,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			// Try to find the Fum object "fo" that we inserted searching by the string in the id
 			IList vList = s.Find("from fum in class NHibernate.DomainModel.Fum where fum.Id.String='fo'");
 			Assert.AreEqual( 1, vList.Count, "find by composite key query (find fo object)" );
@@ -388,7 +388,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Assert.IsTrue( s.Enumerable("select fum.Id.Short, fum.Id.Date, fum.Id.String from fum in class NHibernate.DomainModel.Fum").GetEnumerator().MoveNext() );
 			Assert.IsTrue( s.Enumerable("select fum.Id from fum in class NHibernate.DomainModel.Fum").GetEnumerator().MoveNext() );
 
@@ -438,7 +438,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CompositeIDCollections() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Fum fum1 = new Fum( FumTest.FumKey("fum1") );
 			Fum fum2 = new Fum( FumTest.FumKey("fum2") );
 			fum1.FumString = "fee fo fi";
@@ -458,7 +458,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			q = (Qux)s.Load( typeof(Qux), q.Key );
 			Assert.AreEqual( 2, q.Fums.Count, "collection of fums" );
 			Assert.AreEqual( 1, q.MoreFums.Count, "collection of fums" );
@@ -476,7 +476,7 @@ namespace NHibernate.Test
 		[Test]
 		public void DeleteOwner() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Qux q = new Qux();
 			s.Save(q);
 			Fum f1 = new Fum( FumTest.FumKey("f1") );
@@ -496,7 +496,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			q = (Qux)s.Load( typeof(Qux), q.Key, LockMode.Upgrade );
 			s.Lock( q, LockMode.Upgrade );
@@ -504,7 +504,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			list = s.Find("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'");
 			Assert.AreEqual( 2, list.Count, "deleted owner" );
@@ -523,19 +523,19 @@ namespace NHibernate.Test
 		[Test]
 		public void CompositeIDs() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Fo fo = Fo.NewFo();
 			s.Save( fo, FumTest.FumKey("an instance of fo") );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			fo = (Fo)s.Load( typeof(Fo), FumTest.FumKey("an instance of fo") );
 			fo.X = 5;
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			fo = (Fo)s.Load( typeof(Fo), FumTest.FumKey("an instance of fo") );
 			Assert.AreEqual( 5, fo.X );
 			IEnumerator enumer = s.Enumerable("from fo in class NHibernate.DomainModel.Fo where fo.id.String like 'an instance of fo'").GetEnumerator();
@@ -559,7 +559,7 @@ namespace NHibernate.Test
 		[Test]
 		public void KeyManyToOne() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Inner sup = new Inner();
 			InnerKey sid = new InnerKey();
 			sup.Dudu = "dudu";
@@ -585,7 +585,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			d = (Outer)s.Load( typeof(Outer), did );
 			Assert.AreEqual( "dudu", d.Id.Master.Id.Sup.Dudu );
 			s.Delete(d);
@@ -595,7 +595,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 			
-			s = sessions.OpenSession();
+			s = OpenSession();
 			d = (Outer)s.Find("from Outer o where o.id.DetailId=?", d.Id.DetailId, NHibernateUtil.String)[0];
 			s.Find("from Outer o where o.Id.Master.Id.Sup.Dudu is not null");
 			s.Find("from Outer o where o.Id.Master.Bla = ''");
@@ -611,15 +611,11 @@ namespace NHibernate.Test
 		[Test]
 		public void CompositeKeyPathExpressions()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				s.Find("select fum1.Fo from fum1 in class Fum where fum1.Fo.FumString is not null");
 				s.Find("from fum1 in class Fum where fum1.Fo.FumString is not null order by fum1.Fo.FumString");
-				if (   !(dialect is Dialect.MySQLDialect)
-					//&& !(dialect is HSQLDialect)
-					//&& !(dialect is MckoiDialect)
-					//&& !(dialect is PointbaseDialect)
-					) 
+				if( dialect.SupportsSubSelects )
 				{
 					s.Find("from fum1 in class Fum where exists elements(fum1.Friends)");
 					s.Find("from fum1 in class Fum where size(fum1.Friends) = 0");

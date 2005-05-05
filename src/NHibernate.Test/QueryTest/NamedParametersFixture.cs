@@ -49,7 +49,7 @@ namespace NHibernate.Test.QueryTest
 		[Test, ExpectedException(typeof(NHibernate.QueryException))]
 		public void TestMissingHQLParameters()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");

@@ -9,7 +9,7 @@ namespace NHibernate.Test.JoinedSubclass
 	{
 		private int _id = 0;
 		private string _name;
-		private char _sex;
+		private char _sex = 'M';
 		private Address _address = new Address();
 
 		public Person()

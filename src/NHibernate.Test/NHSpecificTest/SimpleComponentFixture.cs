@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		[Test]
 		public void TestLoad() {
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			TestInsert();
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void TestInsert() {
 			
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			
 			// create a new

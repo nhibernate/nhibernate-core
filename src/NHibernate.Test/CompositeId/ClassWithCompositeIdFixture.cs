@@ -58,7 +58,7 @@ namespace NHibernate.Test.CompositeId
 		{
 			
 			// insert the new objects
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			ClassWithCompositeId theClass = new ClassWithCompositeId(id);
@@ -75,7 +75,7 @@ namespace NHibernate.Test.CompositeId
 
 			// verify they were inserted and test the SELECT
 
-			ISession s2 = sessions.OpenSession();
+			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 
 			ClassWithCompositeId theClass2 = (ClassWithCompositeId)s2.Load(typeof(ClassWithCompositeId), id);
@@ -110,7 +110,7 @@ namespace NHibernate.Test.CompositeId
 			s2.Close();
 
 			// lets verify the update went through
-			ISession s3 = sessions.OpenSession();
+			ISession s3 = OpenSession();
 			ITransaction t3 = s3.BeginTransaction();
 
 			ClassWithCompositeId theClass3 = (ClassWithCompositeId)s3.Load(typeof(ClassWithCompositeId), id);
@@ -128,7 +128,7 @@ namespace NHibernate.Test.CompositeId
 			s3.Close();
 
 			// lets verify the delete went through
-			ISession s4 = sessions.OpenSession();
+			ISession s4 = OpenSession();
 
 			try 
 			{
@@ -146,6 +146,7 @@ namespace NHibernate.Test.CompositeId
 
 			Assert.AreEqual(0, results.Count);
 
+			s4.Close();
 		}
 
 		[Test]
@@ -157,12 +158,12 @@ namespace NHibernate.Test.CompositeId
 
 			// add the new instance to the session so I have something to get results 
 			// back for
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(cId);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			ICriteria c = s.CreateCriteria(typeof(ClassWithCompositeId));
 			c.Add( Expression.Expression.Eq("Id", id) );
 
@@ -178,7 +179,7 @@ namespace NHibernate.Test.CompositeId
 		public void Hql() 
 		{
 			// insert the new objects
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			ClassWithCompositeId theClass = new ClassWithCompositeId(id);
@@ -193,7 +194,7 @@ namespace NHibernate.Test.CompositeId
 			t.Commit();
 			s.Close();
 
-			ISession s2 = sessions.OpenSession();
+			ISession s2 = OpenSession();
 			
 			IQuery hql = s2.CreateQuery("from ClassWithCompositeId as cwid where cwid.Id.KeyString = :keyString");
  
@@ -203,6 +204,7 @@ namespace NHibernate.Test.CompositeId
 
 			Assert.AreEqual(1, results.Count);
 
+			s2.Close();
 		}
 
 

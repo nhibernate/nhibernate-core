@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 		public void TestCorrectUse()
 		{
 
-			ISession session = sessions.OpenSession();
+			ISession session = OpenSession();
 
 			Person fred = new Person();
 			Person wilma = new Person();
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 		[ExpectedException( typeof(ADOException) )]
 		public void TestErrorUsage()
 		{
-			using( ISession session = sessions.OpenSession() ) 
+			using( ISession session = OpenSession() ) 
 			{
 				Person fred = new Person();
 				Person wilma = new Person();

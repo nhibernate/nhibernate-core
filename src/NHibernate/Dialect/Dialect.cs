@@ -192,6 +192,14 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Does this dialect support subselects?
+		/// </summary>
+		public virtual bool SupportsSubSelects
+		{
+			get { return true; }
+		}
+
+		/// <summary>
 		/// Does this dialect support the <c>UNIQUE</c> column syntax?
 		/// </summary>
 		public virtual bool SupportsUnique

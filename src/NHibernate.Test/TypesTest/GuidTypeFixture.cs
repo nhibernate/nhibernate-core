@@ -68,12 +68,12 @@ namespace NHibernate.Test.TypesTest
 			basic.Id = 1;
 			basic.GuidValue = val;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(basic);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			basic = (GuidClass)s.Load( typeof(GuidClass), 1 );
 
 			Assert.AreEqual( val, basic.GuidValue );

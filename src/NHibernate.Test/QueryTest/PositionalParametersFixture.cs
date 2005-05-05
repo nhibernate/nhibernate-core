@@ -49,7 +49,7 @@ namespace NHibernate.Test.QueryTest
 		[Test, ExpectedException(typeof(NHibernate.QueryException))]
 		public void TestMissingHQLParameters()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
@@ -63,7 +63,7 @@ namespace NHibernate.Test.QueryTest
 		[Test, ExpectedException(typeof(NHibernate.QueryException))]
 		public void TestMissingHQLParameters2()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
@@ -77,7 +77,7 @@ namespace NHibernate.Test.QueryTest
 		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void TestPositionOutOfBounds()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
@@ -91,7 +91,7 @@ namespace NHibernate.Test.QueryTest
 		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void TestNoPositionalParameters()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");

@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void TestPrivateFieldAccess() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 
 			BasicClass bc = new BasicClass();
 			bc.Id = 1;
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			bc = (BasicClass)s.Load( typeof(BasicClass), (int)1 );
 			Assert.AreEqual( 5, bc.ValueOfPrivateField, "private field accessor" );
 			s.Close();
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// make sure the previous insert went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 			
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -98,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest
 			
 
 			// update a property to make sure it picks up that it is dirty
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -113,7 +113,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -129,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 			
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -144,7 +144,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -159,7 +159,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -174,7 +174,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -189,7 +189,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -204,7 +204,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -219,7 +219,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -234,7 +234,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -249,7 +249,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// make sure the previous updates went through
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -264,7 +264,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -299,7 +299,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// modify the array so it is updated - should not be recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -314,7 +314,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// change the array to a new array so it is recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -330,7 +330,7 @@ namespace NHibernate.Test.NHSpecificTest
 			
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -365,7 +365,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// modify the array so it is updated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -385,7 +385,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 
 			// modify the array to a new array so it is recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -401,7 +401,7 @@ namespace NHibernate.Test.NHSpecificTest
 			
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -435,7 +435,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// modify the array so it is updated - should not be recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -453,7 +453,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// change the List to a new List so it is recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -471,7 +471,7 @@ namespace NHibernate.Test.NHSpecificTest
 			
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -505,7 +505,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// modify the array so it is updated - should not be recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -522,7 +522,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// change the List to a new List so it is recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -540,7 +540,7 @@ namespace NHibernate.Test.NHSpecificTest
 			
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -574,7 +574,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// modify the bag so it is updated - should not be recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -591,7 +591,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// add an item to the list
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -607,7 +607,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// change the List to a new List so it is recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -625,7 +625,7 @@ namespace NHibernate.Test.NHSpecificTest
 			
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -652,8 +652,8 @@ namespace NHibernate.Test.NHSpecificTest
 			BasicClass basicClass = InsertBasicClass(id);
 			originalCount = basicClass.StringBag.Count;
 
-			ISession s = sessions.OpenSession();
-			ISession s2 = sessions.OpenSession();
+			ISession s = OpenSession();
+			ISession s2 = OpenSession();
 
 			BasicClass bc = (BasicClass)s.Load( typeof(BasicClass), id );
 			BasicClass bc2 = (BasicClass)s2.Load( typeof(BasicClass), id );
@@ -683,7 +683,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// modify the array so it is updated - should not be recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -700,7 +700,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// add an item to the list
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -716,7 +716,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 			// change the List to a new List so it is recreated
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -734,7 +734,7 @@ namespace NHibernate.Test.NHSpecificTest
 			
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
-			s[index] = sessions.OpenSession();
+			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
 			bc[index] = (BasicClass)s[index].Load(typeof(BasicClass), id);
@@ -756,7 +756,7 @@ namespace NHibernate.Test.NHSpecificTest
 		public void TestWrapArrayInListProperty() 
 		{
 			
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			BasicClass bc = new BasicClass();
 
 			int id = 1;
@@ -767,7 +767,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			bc = (BasicClass)s.Load( typeof(BasicClass), id );
 
 			Assert.AreEqual( 2, bc.StringList.Count, "should have saved to StringList from an array" );
@@ -781,7 +781,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		internal void AssertDelete(int id) 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 
 			try 
 			{
@@ -804,7 +804,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		internal BasicClass InsertBasicClass(int id) 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			BasicClass bc = new BasicClass();

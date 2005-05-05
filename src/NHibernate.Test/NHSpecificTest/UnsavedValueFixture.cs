@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest
 			unsavedToSave.TypeName = "Simple UnsavedValue";
 
 			// open the first session to SaveOrUpdate it - should be Save
-			ISession s1 = sessions.OpenSession();
+			ISession s1 = OpenSession();
 			ITransaction t1 = s1.BeginTransaction();
 			s1.SaveOrUpdate(unsavedToSave);
 			t1.Commit();
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			// use the ICriteria interface to get another instance in a different
 			// session
-			ISession s2 = sessions.OpenSession();
+			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 
 			IList results2 = s2.CreateCriteria(typeof(UnsavedType))
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest
 			unsavedToUpdate.TypeName = "ui changed it";
 
 			// create a new session for the Update
-			ISession s3 = sessions.OpenSession();
+			ISession s3 = OpenSession();
 			ITransaction t3 = s3.BeginTransaction();
 
 			s3.SaveOrUpdate(unsavedToUpdate);
@@ -74,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			// lets get a list of all the rows in the table to make sure 
 			// that there has not been any extra inserts
-			ISession s4 = sessions.OpenSession();
+			ISession s4 = OpenSession();
 			ITransaction t4 = s4.BeginTransaction();
 
 			IList results4 = s4.CreateCriteria(typeof(UnsavedType)).List();
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			// lets make sure the object was deleted
 
-			ISession s5 = sessions.OpenSession();
+			ISession s5 = OpenSession();
 			try 
 			{
 				UnsavedType unsavedNull = (UnsavedType)s5.Load(typeof(UnsavedType), unsavedToDelete.Id);

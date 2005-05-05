@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest
 			levelTwoSecondNode.AddDestinationNode(levelThreeNode);
 			levelThreeNode.AddDestinationNode(endNode);
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			s.Save(startNode);
@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Close();
 
 			// verify these nodes were actually saved and can be queried correctly.
-			ISession s2 = sessions.OpenSession();
+			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 			
 			Node startNode2 = (Node)s2.CreateCriteria(typeof(Node))
@@ -88,7 +88,7 @@ namespace NHibernate.Test.NHSpecificTest
 			t2.Commit();
 			s2.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 
 			levelThreeNode = (Node)s.Load( typeof(Node), "3" );
@@ -110,7 +110,7 @@ namespace NHibernate.Test.NHSpecificTest
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 
 			levelThreeNode = (Node)s.Load( typeof(Node), "3" );

@@ -88,5 +88,11 @@ namespace NHibernate.Driver
 		{
 			get { return "@"; }
 		}
+
+		public override bool SupportsMultipleOpenReaders
+		{
+			get { return false; }
+		}
+
 	}
 }

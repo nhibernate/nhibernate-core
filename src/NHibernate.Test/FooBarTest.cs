@@ -48,7 +48,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionVersioning()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				One one = new One();
 				one.Manies = new Iesi.Collections.HashedSet();
@@ -81,7 +81,7 @@ namespace NHibernate.Test
 
 			object gid, g2id;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				gid = s.Save( g );
@@ -92,7 +92,7 @@ namespace NHibernate.Test
 				Assert.AreEqual( 0, g2.Version );
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				g = (Glarch) s.Get( typeof( Glarch ), gid );
@@ -110,7 +110,7 @@ namespace NHibernate.Test
 		{
 			string bazCode;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				Baz baz = new Baz();
@@ -126,7 +126,7 @@ namespace NHibernate.Test
 				bazCode = baz.Code;
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				//put in cache
@@ -136,7 +136,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
@@ -149,7 +149,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
@@ -165,14 +165,14 @@ namespace NHibernate.Test
 		{
 			object id;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				id =  s.Save( new Foo() );
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				s.FlushMode = FlushMode.Never;
 				using( ITransaction t = s.BeginTransaction() )
@@ -191,7 +191,7 @@ namespace NHibernate.Test
 				}
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				Foo foo = (Foo) s.Get( typeof( Foo ), id );
@@ -206,7 +206,7 @@ namespace NHibernate.Test
 			string fooKey;
 			string bazCode;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Baz baz = new Baz();
 				baz.FooSet = new Iesi.Collections.HashedSet();
@@ -221,7 +221,7 @@ namespace NHibernate.Test
 				bazCode = baz.Code;
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Foo foo = (Foo) s.Get( typeof( Foo ), fooKey );
 				Assert.IsTrue( NHibernateUtil.IsInitialized( foo.Bytes ) );
@@ -236,7 +236,7 @@ namespace NHibernate.Test
 
 			sessions.EvictCollection("NHibernate.DomainModel.Baz.FooSet");
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
 				Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooSet ) );
@@ -244,7 +244,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Foo foo = (Foo) s.Get( typeof( Foo ), fooKey );
 				Assert.AreEqual( 12, foo.Bytes.Length );
@@ -263,7 +263,7 @@ namespace NHibernate.Test
 		{
 			string fooKey, bazCode, baz2Code;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Baz baz = new Baz();
 				Baz baz2 = new Baz();
@@ -281,7 +281,7 @@ namespace NHibernate.Test
 				baz2Code = baz2.Code;
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Foo foo = (Foo) s.Get( typeof( Foo ), fooKey );
 				Assert.IsTrue( NHibernateUtil.IsInitialized( foo.Bytes ) );
@@ -293,7 +293,7 @@ namespace NHibernate.Test
 
 			sessions.EvictCollection("NHibernate.DomainModel.Baz.FooSet");
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Baz baz = (Baz) s.Get( typeof( Baz ), bazCode );
 				Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooSet ) );
@@ -304,7 +304,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Foo foo = (Foo) s.Get( typeof( Foo ), fooKey );
 				Assert.AreEqual( 12, foo.Bytes.Length );
@@ -357,7 +357,8 @@ namespace NHibernate.Test
 		[Test]
 		public void Query() 
 		{
-			ISession s = sessions.OpenSession();
+			bool supportsCountDistinct = !( dialect is Dialect.SQLiteDialect );
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			s.Save( foo );
 			Foo foo2 = new Foo();
@@ -430,9 +431,7 @@ namespace NHibernate.Test
 			foo.TheFoo.TheFoo = foo;
 			foo.String = "fizard";
 
-			// the following test is disabled for databases with no subselects...also for Interbase (not sure why) - h2.0.3
-			// also HSQLDialect, MckoiDialect, SAPDBDialect, PointbaseDialect
-			if( !(dialect is Dialect.MySQLDialect) )
+			if( dialect.SupportsSubSelects )
 			{
 				// add an !InterbaseDialect wrapper around list and assert
 				list = s.Find( "from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements", new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ), NHibernateUtil.DateTime );
@@ -518,10 +517,9 @@ namespace NHibernate.Test
 				"select foo.TheFoo.TheFoo.TheFoo from foo in class Foo, foo2 in class Foo where"
 				+ " foo = foo2.TheFoo and not not ( not foo.String='fizard' )"
 				+ " and foo2.String between 'a' and (foo.TheFoo.String)"
-				+ //( dialect is HSQLDialect || dialect is InterbaseDialect )?
-				  //" and ( foo2.String in ( 'fiz', 'blah') or 1=1 )"
-				  //:
-					" and ( foo2.String in ( 'fiz', 'blah', foo.TheFoo.String, foo.String, foo2.String ) )"
+				+ ( dialect is Dialect.SQLiteDialect
+					? " and ( foo2.String in ( 'fiz', 'blah') or 1=1 )"
+					: " and ( foo2.String in ( 'fiz', 'blah', foo.TheFoo.String, foo.String, foo2.String ) )" )
 				);
 			Assert.AreEqual( 1, list.Count, "complex query" );
 			Assert.AreSame( foo, list[0], "returned object" );
@@ -551,8 +549,11 @@ namespace NHibernate.Test
 			list = s.Find(" from i in class Bar where i.Baz.Name='Bazza'");
 			Assert.AreEqual( 1, list.Count, "query many-to-one" );
 
-			enumerable = s.Enumerable("select count(distinct foo.TheFoo) from foo in class Foo");
-			Assert.IsTrue( ContainsSingleObject( enumerable, 2 ), "count" );
+			if( supportsCountDistinct )
+			{
+				enumerable = s.Enumerable("select count(distinct foo.TheFoo) from foo in class Foo");
+				Assert.IsTrue( ContainsSingleObject( enumerable, 2 ), "count" );
+			}
 
 			enumerable = s.Enumerable("select count(foo.TheFoo.Boolean) from foo in class Foo");
 			Assert.IsTrue( ContainsSingleObject( enumerable, 2 ), "count" );
@@ -606,13 +607,16 @@ namespace NHibernate.Test
 				Assert.IsTrue( row[3] is Foo );
 			}
 
-			list = s.Find("select avg(foo.Float), max(foo.Component.Name), count(distinct foo.id) from foo in class Foo");
-			Assert.IsTrue( list.Count > 0 );
-			foreach( object[] row in list )
+			if( supportsCountDistinct )
 			{
-				Assert.IsTrue( row[0] is float );
-				Assert.IsTrue( row[1] is string );
-				Assert.IsTrue( row[2] is int );
+				list = s.Find("select avg(foo.Float), max(foo.Component.Name), count(distinct foo.id) from foo in class Foo");
+				Assert.IsTrue( list.Count > 0 );
+				foreach( object[] row in list )
+				{
+					Assert.IsTrue( row[0] is float );
+					Assert.IsTrue( row[1] is string );
+					Assert.IsTrue( row[2] is int );
+				}
 			}
 
 			list = s.Find("select foo.Long, foo.Component, foo, foo.TheFoo from foo in class Foo");
@@ -682,12 +686,8 @@ namespace NHibernate.Test
 			s.Find("from foo in class Foo where foo.Integer not between 1 and 5 and foo.String not in ('cde', 'abc') and foo.String is not null and foo.Integer<=3");
 
 			s.Find("from Baz baz inner join baz.CollectionComponent.Nested.Foos foo where foo.String is null");
-			if ( !(dialect is Dialect.MySQLDialect)
-				//&& !(dialect is MckoiDialect)
-				//&& !(dialect is SAPDBDialect)
-				//&& !(dialect is PointbaseDialect)
-				//&& !(dialect is Oracle9Dialect)
-				)  {
+			if( dialect.SupportsSubSelects )
+			{
 				s.Find("from Baz baz inner join baz.FooSet where '1' in (from baz.FooSet foo where foo.String is not null)");
 				s.Find("from Baz baz where 'a' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)");
 				s.Find("from Baz baz where 'b' in baz.CollectionComponent.Nested.Foos.elements and 1.0 in baz.CollectionComponent.Nested.Floats.elements");
@@ -718,7 +718,7 @@ namespace NHibernate.Test
 			//s.connection().commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz) s.CreateQuery("from Baz baz left outer join fetch baz.ManyToAny").UniqueResult();
 			Assert.IsTrue( NHibernateUtil.IsInitialized( baz.ManyToAny ) );
 			Assert.IsTrue( baz.ManyToAny.Count == 2 );
@@ -757,7 +757,7 @@ namespace NHibernate.Test
 		{
 			Baz baz;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = new Baz();
 				IList list = new ArrayList();
@@ -767,14 +767,14 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = (Baz) s.Get( typeof( Baz ), baz.Code );
 			}
 
 			Assert.IsFalse( NHibernateUtil.IsInitialized( baz.Fees ) );
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				s.Delete( baz );
 				s.Flush();
@@ -782,7 +782,7 @@ namespace NHibernate.Test
 				Assert.IsFalse( s.Enumerable( "from Fee" ).GetEnumerator().MoveNext() );
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = new Baz();
 				IList list = new ArrayList();
@@ -793,7 +793,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = (Baz) s.Get( typeof( Baz ), baz.Code );
 				NHibernateUtil.Initialize( baz.Fees );
@@ -801,7 +801,7 @@ namespace NHibernate.Test
 
 			Assert.AreEqual( 2, baz.Fees.Count );
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				s.Delete( baz );
 				s.Flush();
@@ -813,7 +813,7 @@ namespace NHibernate.Test
 		public void ForeignKeys()
 		{
 			Baz baz;
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = new Baz();
 				Foo foo = new Foo();
@@ -825,7 +825,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = (Baz) s.Load( typeof( Baz ), baz.Code );
 				s.Delete( baz );
@@ -842,7 +842,7 @@ namespace NHibernate.Test
 			FooProxy foo, foo2;
 			Baz baz;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				bar = new Bar();
 				s.Save( bar );
@@ -862,7 +862,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				bar = (BarProxy) s.Load( typeof( Foo ), bar.Key );
 				foo = (FooProxy) s.Load( typeof( Foo ), foo.Key );
@@ -903,7 +903,7 @@ namespace NHibernate.Test
 		{
 			object glarchId;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Glarch glarch1 = new Glarch();
 				glarch1.ProxySet = new Iesi.Collections.ListSet();
@@ -917,7 +917,7 @@ namespace NHibernate.Test
 			}
 
 			Glarch loadedGlarch;
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				loadedGlarch = (Glarch)s.Get( typeof( Glarch ), glarchId );
 				Assert.IsTrue( NHibernateUtil.IsInitialized( loadedGlarch.ProxySet ) );
@@ -934,7 +934,7 @@ namespace NHibernate.Test
 		{
 			Baz baz, baz2;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = new Baz();
 				baz.SetDefaults();
@@ -952,13 +952,13 @@ namespace NHibernate.Test
 			baz2.StringArray = baz.StringArray;
 			baz2.FooArray    = baz.FooArray;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				s.Update( baz2 );
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz2 = (Baz) s.Load( typeof( Baz ), baz2.Code );
 				Assert.AreEqual( 3, baz2.StringArray.Length );
@@ -974,7 +974,7 @@ namespace NHibernate.Test
 			object qid;
 			object hid;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Holder h = new Holder();
 				h.Name = "foo";
@@ -989,7 +989,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Holder h = (Holder) s.Load( typeof(Holder), hid );
 				Assert.AreEqual( h.Name, "foo" );
@@ -1010,7 +1010,7 @@ namespace NHibernate.Test
 		{
 			object gid;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Baz baz = new Baz();
 				baz.SetDefaults();
@@ -1018,12 +1018,7 @@ namespace NHibernate.Test
 				Glarch g = new Glarch();
 				gid = s.Save(g);
 
-				if (     !(dialect is Dialect.MySQLDialect)
-					//&& !(dialect is Dialect.HSQLDialect)
-					//&& !(dialect is Dialect.MckoiDialect)
-					//&& !(dialect is Dialect.SAPDBDialect)
-					//&& !(dialect is Dialect.PointbaseDialect)
-					)
+				if ( dialect.SupportsSubSelects )
 				{
 					s.Filter( baz.FooArray, "where size(this.Bytes) > 0");
 					s.Filter( baz.FooArray, "where 0 in elements(this.Bytes)");
@@ -1031,7 +1026,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				//s.Find("from Baz baz where baz.FooSet.String = 'foo'");
 				//s.Find("from Baz baz where baz.FooArray.String = 'foo'");
@@ -1068,7 +1063,7 @@ namespace NHibernate.Test
 		{
 			Baz baz, baz2, baz3;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = new Baz();
 				Iesi.Collections.SortedSet stringSet = new Iesi.Collections.SortedSet();
@@ -1107,7 +1102,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = (Baz) s.Load( typeof( Baz ), baz.Code );
 				baz2 = (Baz) s.Load( typeof( Baz ), baz2.Code );
@@ -1157,7 +1152,7 @@ namespace NHibernate.Test
 		[Test]
 		public void FetchInitializedCollection()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			IList fooBag = new ArrayList();
 			fooBag.Add( new Foo() );
@@ -1171,7 +1166,7 @@ namespace NHibernate.Test
 			Assert.IsTrue( baz.FooBag.Count==2 );
 			s.Close();
 			
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz) s.Load( typeof(Baz), baz.Code );
 			Object bag = baz.FooBag;
 			Assert.IsFalse( NHibernateUtil.IsInitialized(bag) );
@@ -1191,7 +1186,7 @@ namespace NHibernate.Test
 		{
 			object id;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Baz baz = new Baz();
 				IList l = new ArrayList();
@@ -1207,7 +1202,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Baz baz = (Baz) s.Load( typeof( Baz ), id );
 				Assert.AreEqual( 3, baz.StringList.Count );
@@ -1223,13 +1218,13 @@ namespace NHibernate.Test
 		[Test]
 		public void Update() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			s.Save(foo);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			FooProxy foo2 = (FooProxy)s.Load( typeof(Foo), foo.Key );
 			foo2.String = "dirty";
 			foo2.Boolean = false;
@@ -1239,7 +1234,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Foo foo3 = new Foo();
 			s.Load( foo3, foo.Key );
 			Assert.IsTrue( foo2.EqualsFoo(foo3), "update" );
@@ -1252,7 +1247,7 @@ namespace NHibernate.Test
 		[Test]
 		public void ListRemove()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Baz b = new Baz();
 				IList stringList = new ArrayList();
@@ -1293,7 +1288,7 @@ namespace NHibernate.Test
 		{
 			string bazCode;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Baz baz = new Baz();
 				IList fooBag = new ArrayList();
@@ -1311,7 +1306,7 @@ namespace NHibernate.Test
 				bazCode = baz.Code;
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				Baz baz = (Baz) s.Load( typeof( Baz ), bazCode );
 				object bag = baz.FooBag;
@@ -1328,7 +1323,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Sortables()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz b = new Baz();
 			Iesi.Collections.ISet ss = new Iesi.Collections.HashedSet();
@@ -1341,7 +1336,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			IList result = s.CreateCriteria(typeof(Baz))
 				.AddOrder( Expression.Order.Asc("Name") )
@@ -1362,7 +1357,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			result = s.CreateQuery("from Baz baz left join fetch baz.Sortablez order by baz.Name asc")
 				.List();
@@ -1377,7 +1372,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			result = s.CreateQuery("from Baz baz order by baz.Name asc")
 				.List();
@@ -1399,7 +1394,7 @@ namespace NHibernate.Test
 		[Test]
 		public void FetchList() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			s.Save(baz);
 			Foo foo = new Foo();
@@ -1427,7 +1422,7 @@ namespace NHibernate.Test
 		[Test]
 		public void BagOneToMany() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			IList list = new ArrayList();
 			baz.Bazez =list;
@@ -1451,7 +1446,7 @@ namespace NHibernate.Test
 		[Test]
 		public void QueryLockMode() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Bar bar = new Bar();
 			s.Save(bar);
 			s.Flush();
@@ -1493,7 +1488,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			q = s.CreateQuery("from Foo foo, Bar bar, Bar bar2");
 			q.SetLockMode("bar", LockMode.Upgrade);
 			q.SetLockMode("bar2", LockMode.Read);
@@ -1509,19 +1504,19 @@ namespace NHibernate.Test
 		[Test]
 		public void ManyToManyBag() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			object id = s.Save(baz);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Load( typeof(Baz), id );
 			baz.FooBag.Add( new Foo() );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Load( typeof(Baz), id );
 			Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooBag ) );
 			Assert.AreEqual( 1, baz.FooBag.Count );
@@ -1536,7 +1531,7 @@ namespace NHibernate.Test
 		[Test]
 		public void IdBag() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			s.Save(baz);
 
@@ -1567,7 +1562,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz) s.Load( typeof(Baz), baz.Code );
 			Assert.AreEqual( 3, baz.IdFooBag.Count );
 			Assert.AreEqual( 3, baz.ByteBag.Count );
@@ -1583,7 +1578,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Load( typeof(Baz), baz.Code );
 			Assert.AreEqual( 0, baz.IdFooBag.Count );
 			Assert.AreEqual( 5, baz.ByteBag.Count );
@@ -1603,7 +1598,7 @@ namespace NHibernate.Test
 				return;
 			}
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Glarch g = new Glarch();
 			FooComponent fc = new FooComponent();
 			fc.Glarch = g;
@@ -1617,7 +1612,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			f = (FooProxy)s.Load( typeof(Foo), id );
 			Assert.IsFalse( NHibernateUtil.IsInitialized( f ) );
 			Assert.IsTrue( NHibernateUtil.IsInitialized( f.Component.Glarch ) ); //outer-join="true"
@@ -1634,11 +1629,11 @@ namespace NHibernate.Test
 		[Test]
 		public void EmptyCollection()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			object id = s.Save( new Baz() );
 			s.Flush();
 			s.Close();
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Baz baz = (Baz) s.Load(typeof(Baz), id);
 			Iesi.Collections.ISet foos = baz.FooSet;
 			Assert.IsTrue( foos.Count==0 );
@@ -1656,7 +1651,7 @@ namespace NHibernate.Test
 		[Test]
 		public void OneToOneGenerator() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			X x = new X();
 			Y y = new Y();
 			x.Y = y;
@@ -1674,7 +1669,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( x.Id, y.Id);
 
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			x = new X();
 			y = new Y();
 
@@ -1690,7 +1685,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( x.Id, y.Id);
 
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			x = new X();
 			y = new Y();
 			x.Y = y;
@@ -1708,12 +1703,12 @@ namespace NHibernate.Test
 
 			// check to see if Y can exist without a X
 			y = new Y();
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Save( y );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			y = (Y)s.Load( typeof(Y), y.Id );
 			Assert.IsNull( y.X, "y does not need an X" );
 			s.Delete( y );
@@ -1725,7 +1720,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Limit() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			for( int i=0; i<10; i++) 
 			{
 				s.Save( new Foo() );
@@ -1760,12 +1755,12 @@ namespace NHibernate.Test
 			m.glarch = (Glarch)g;
 			g.Multiple = m;
 			
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			object gid = s.Save(g);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (Glarch)s.Find("from Glarch g where g.Multiple.glarch=g and g.Multiple.count=12")[0];
 			Assert.IsNotNull( g.Multiple );
 			Assert.AreEqual( 12, g.Multiple.count );
@@ -1773,7 +1768,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 			
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			Assert.IsNotNull(g.Multiple);
 			Assert.AreEqual( 12, g.Multiple.count );
@@ -1788,7 +1783,7 @@ namespace NHibernate.Test
 		[Test]
 		public void SaveAddDelete() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			Iesi.Collections.ISet bars = new Iesi.Collections.HashedSet();
 			baz.CascadingBars = bars;
@@ -1815,7 +1810,7 @@ namespace NHibernate.Test
 			baz.CascadingBars.Add( bar );
 			bar.Baz = baz;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(baz);
 			s.Save(bar2);
 
@@ -1868,7 +1863,7 @@ namespace NHibernate.Test
 		[Test, ExpectedException( typeof( QueryException ) )]
 		public void VerifyParameterNamedMissing()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.X > :myX");
 				q.List();
@@ -1878,7 +1873,7 @@ namespace NHibernate.Test
 		[Test, ExpectedException( typeof( QueryException ) )]
 		public void VerifyParameterPositionalMissing()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.X > ?");
 				q.List();
@@ -1888,7 +1883,7 @@ namespace NHibernate.Test
 		[Test]
 		public void VerifyParameterPositionalInQuotes()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.X > ? or bar.Short = 1 or bar.String = 'ff ? bb'");
 				q.SetInt32(0, 1);
@@ -1899,7 +1894,7 @@ namespace NHibernate.Test
 		[Test]
 		public void VerifyParameterPositionalInQuotes2()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.String = ' ? ' or bar.String = '?'");
 				q.List();
@@ -1909,7 +1904,7 @@ namespace NHibernate.Test
 		[Test, ExpectedException( typeof( QueryException ) )]
 		public void VerifyParameterPositionalMissing2()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.String = ? or bar.String = ? or bar.String = ?");
 				q.SetParameter( 0, "bull" );
@@ -1927,7 +1922,7 @@ namespace NHibernate.Test
 		[Test]
 		public void FindByCriteria() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo f = new Foo();
 			s.Save(f);
 			s.Flush();
@@ -1992,7 +1987,7 @@ namespace NHibernate.Test
 
 			//TODO: some HSQLDialect specific code here
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			list = s.CreateCriteria(typeof(Foo))
 				.Add( Expression.Expression.Eq( "Integer", f.Integer ) )
 				.Add( Expression.Expression.Like( "String", f.String ) )
@@ -2021,7 +2016,7 @@ namespace NHibernate.Test
 		[Test]
 		public void AfterDelete() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			s.Save(foo);
 			s.Flush();
@@ -2043,7 +2038,7 @@ namespace NHibernate.Test
 			arr[0] = foo1;
 			arr[9] = foo2;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(foo1);
 			s.Save(foo2);
 			baz.FooArray = arr;
@@ -2051,7 +2046,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Load(typeof(Baz), baz.Code);
 			Assert.AreEqual( 1, baz.FooArray.Length );
 			Assert.AreEqual( 1, s.Find("from Baz baz, baz.FooArray foo").Count );
@@ -2076,7 +2071,7 @@ namespace NHibernate.Test
 		[Test]
 		public void ComponentParent()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			BarProxy bar = new Bar();
@@ -2088,7 +2083,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			
 			bar = (BarProxy)s.Load(typeof(Bar), bar.Key);
@@ -2109,19 +2104,19 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionCache() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			baz.SetDefaults();
 			s.Save(baz);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Load( typeof(Baz), baz.Code );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz) s.Load( typeof(Baz), baz.Code );
 			s.Delete(baz);
 			s.Flush();
@@ -2133,33 +2128,39 @@ namespace NHibernate.Test
 		//[Ignore("TimeZone Portions commented out - http://jira.nhibernate.org:8080/browse/NH-88")]
 		public void AssociationId() 
 		{
-			ISession s = sessions.OpenSession();
-			ITransaction t = s.BeginTransaction();
-			Bar bar = new Bar();
-			string id = (string)s.Save(bar);
-			MoreStuff more = new MoreStuff();
-			more.Name = "More Stuff";
-			more.IntId = 12;
-			more.StringId = "id";
-			Stuff stuf = new Stuff();
-			stuf.MoreStuff = more;
-			more.Stuffs = new ArrayList();
-			more.Stuffs.Add(stuf);
-			stuf.Foo = bar;
-			stuf.Id = 1234;
-			
-			//TODO: http://jira.nhibernate.org:8080/browse/NH-88
-			//stuf.setProperty(TimeZone.getDefault() );
-			s.Save(more);
-			t.Commit();
-			s.Close();
+			string id;
+			Bar bar;
+			MoreStuff more;
 
-			s = sessions.OpenSession();
-			t = s.BeginTransaction();
-			//The special property (lowercase) id may be used to reference the unique identifier of an object. (You may also use its property name.) 
-			string hqlString = "from s in class Stuff where s.Foo.id = ? and s.id.Id = ? and s.MoreStuff.id.IntId = ? and s.MoreStuff.id.StringId = ?";
-			object[] values = new object[] {bar, (long)1234, 12, "id" };
-			Type.IType[] types = new Type.IType[]
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				bar = new Bar();
+				id = (string)s.Save( bar );
+				more = new MoreStuff();
+				more.Name = "More Stuff";
+				more.IntId = 12;
+				more.StringId = "id";
+				Stuff stuf = new Stuff();
+				stuf.MoreStuff = more;
+				more.Stuffs = new ArrayList();
+				more.Stuffs.Add(stuf);
+				stuf.Foo = bar;
+				stuf.Id = 1234;
+			
+				//TODO: http://jira.nhibernate.org:8080/browse/NH-88
+				//stuf.setProperty(TimeZone.getDefault() );
+				s.Save(more);
+				t.Commit();
+			}
+
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				//The special property (lowercase) id may be used to reference the unique identifier of an object. (You may also use its property name.) 
+				string hqlString = "from s in class Stuff where s.Foo.id = ? and s.id.Id = ? and s.MoreStuff.id.IntId = ? and s.MoreStuff.id.StringId = ?";
+				object[] values = new object[] {bar, (long)1234, 12, "id" };
+				Type.IType[] types = new Type.IType[]
 				{
 					NHibernateUtil.Entity(typeof(Foo)),
 					NHibernateUtil.Int64,
@@ -2168,56 +2169,60 @@ namespace NHibernate.Test
 				};
 		
 
-			IList results = s.Find(hqlString, values, types);
-			Assert.AreEqual(1, results.Count);
+				IList results = s.Find(hqlString, values, types);
+				Assert.AreEqual(1, results.Count);
 
-			hqlString = "from s in class Stuff where s.Foo.id = ? and s.id.Id = ? and s.MoreStuff.Name = ?";
-			values = new object[] {bar, (long)1234, "More Stuff"};
-			types = new Type.IType[] 
+				hqlString = "from s in class Stuff where s.Foo.id = ? and s.id.Id = ? and s.MoreStuff.Name = ?";
+				values = new object[] {bar, (long)1234, "More Stuff"};
+				types = new Type.IType[] 
 				{
 					NHibernateUtil.Entity(typeof(Foo)),
 					NHibernateUtil.Int64,
 					NHibernateUtil.String
 				};
 			
-			results = s.Find(hqlString, values, types);
-			Assert.AreEqual(1, results.Count);
+				results = s.Find(hqlString, values, types);
+				Assert.AreEqual(1, results.Count);
 
 
-			hqlString = "from s in class Stuff where s.Foo.String is not null";
-			s.Find(hqlString);
+				hqlString = "from s in class Stuff where s.Foo.String is not null";
+				s.Find(hqlString);
 
-			hqlString = "from s in class Stuff where s.Foo > '0' order by s.Foo";
-			results = s.Find(hqlString);
-			Assert.AreEqual(1, results.Count);
+				hqlString = "from s in class Stuff where s.Foo > '0' order by s.Foo";
+				results = s.Find(hqlString);
+				Assert.AreEqual(1, results.Count);
 
-			t.Commit();
-			s.Close();
+				t.Commit();
+			}
 
-			s = sessions.OpenSession();
-			t = s.BeginTransaction();
-			FooProxy foo = (FooProxy)s.Load(typeof(Foo), id);
-			s.Load(more, more);
-			t.Commit();
-			s.Close();
+			FooProxy foo;
 
-			s = sessions.OpenSession();
-			t = s.BeginTransaction();
-			Stuff stuff = new Stuff();
-			stuff.Foo = foo;
-			stuff.Id = 1234;
-			stuff.MoreStuff = more;
-			s.Load(stuff, stuff);
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				foo = (FooProxy)s.Load(typeof(Foo), id);
+				s.Load(more, more);
+				t.Commit();
+			}
 
-			// TODO: figure out what to do with TimeZone
-			// http://jira.nhibernate.org:8080/browse/NH-88
-			//Assert.IsTrue( stuff.getProperty().equals( TimeZone.getDefault() ) );
-			Assert.AreEqual("More Stuff", stuff.MoreStuff.Name);
-			s.Delete("from ms in class MoreStuff");
-			s.Delete("from foo in class Foo");
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				Stuff stuff = new Stuff();
+				stuff.Foo = foo;
+				stuff.Id = 1234;
+				stuff.MoreStuff = more;
+				s.Load(stuff, stuff);
+
+				// TODO: figure out what to do with TimeZone
+				// http://jira.nhibernate.org:8080/browse/NH-88
+				//Assert.IsTrue( stuff.getProperty().equals( TimeZone.getDefault() ) );
+				Assert.AreEqual("More Stuff", stuff.MoreStuff.Name);
+				s.Delete("from ms in class MoreStuff");
+				s.Delete("from foo in class Foo");
 			
-			t.Commit();
-			s.Close();
+				t.Commit();
+			}
 
 		}
 
@@ -2225,7 +2230,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CascadeSave() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
 			IList list = new ArrayList();
@@ -2236,7 +2241,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 
 			baz = (Baz)s.Load( typeof(Baz), baz.Code );
@@ -2253,20 +2258,20 @@ namespace NHibernate.Test
 		[Test]
 		public void CompositeKeyPathExpressions() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 
 			string hql = "select fum1.Fo from fum1 in class Fum where fum1.Fo.FumString is not null";
 			s.Find(hql);
 			
 			hql = "from fum1 in class Fum where fum1.Fo.FumString is not null order by fum1.Fo.FumString";
 			s.Find(hql);
-			// TODO: in h2.0.3 there is also HQSLDialect, MckoiDialect, and PointbaseDialect
-			if(!(dialect is Dialect.MySQLDialect)) 
+
+			if( dialect.SupportsSubSelects )
 			{
-				hql = "from fum1 in class Fum where exists elements(fum1.Friends)";
+				hql = "from fum1 in class Fum where size(fum1.Friends) = 0";
 				s.Find(hql);
 
-				hql = "from fum1 in class Fum where size(fum1.Friends) = 0";
+				hql = "from fum1 in class Fum where exists elements (fum1.Friends)";
 				s.Find(hql);
 			}
 
@@ -2282,7 +2287,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionsInSelect() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 //			ITransaction t = s.BeginTransaction();
 			Foo[] foos = new Foo[] { null, new Foo() };
 			s.Save(foos[1]);
@@ -2328,12 +2333,7 @@ namespace NHibernate.Test
 
 			s.Find("select max( elements(bar.Baz.FooArray) ) from Bar as bar");
 			// the following test is disable for databases with no subselects... also for Interbase (not sure why) - comment from h2.0.3
-			if( !(dialect is Dialect.MySQLDialect) 
-				//&& !(dialect is Dialect.HSQLDialect) - don't have in nh yet
-				//&& !(dialect is Dialect.MckoiDialect) - commented out in h2.0.3 also
-				//&& !(dialect is Dialect.SAPDBDialect) - don't have in nh yet
-				//&& !(dialect is Dialect.PointbaseDialect) - don't have in nh yet
-				) 
+			if( dialect.SupportsSubSelects )
 			{
 				s.Find("select count(*) from Baz as baz where 1 in indices(baz.FooArray)");
 				s.Find("select count(*) from Bar as bar where 'abc' in elements(bar.Baz.FooArray)");
@@ -2395,7 +2395,7 @@ namespace NHibernate.Test
 		[Test]
 		public void NewFlushing() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			baz.SetDefaults();
 			s.Save(baz);
@@ -2468,7 +2468,7 @@ namespace NHibernate.Test
 		[Test]
 		public void PersistCollections() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 
 			IEnumerator enumer = s.Enumerable("select count(*) from b in class Bar").GetEnumerator();
 			enumer.MoveNext();
@@ -2488,7 +2488,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz) ( (object[])s.Find("select baz, baz from baz in class NHibernate.DomainModel.Baz")[0] )[1];
 			Assert.AreEqual( 1, baz.CascadingBars.Count, "baz.CascadingBars.Count" );
 			Foo foo = new Foo();
@@ -2508,9 +2508,7 @@ namespace NHibernate.Test
 			IList list;
 
 			// disable this for dbs with no subselects
-			if( !(dialect is Dialect.MySQLDialect) 
-				// &&  !(dialect is Dialect.HSQLDialect) && !(dialect is Dialect.PointbaseDialect)
-				) 
+			if( dialect.SupportsSubSelects )
 			{
 				list = s.Find("select foo from foo in class NHibernate.DomainModel.Foo, baz in class NHibernate.DomainModel.Baz where foo in baz.FooArray.elements and 3 = some baz.IntArray.elements and 4 > all baz.IntArray.indices");
 				Assert.AreEqual( 2, list.Count, "collection.elements find" );
@@ -2529,7 +2527,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
 			Assert.AreEqual(4, baz.Customs.Count, "collection of custom types - added element");
 			Assert.IsNotNull(baz.Customs[0], "collection of custom types - added element");
@@ -2549,7 +2547,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
 			Assert.AreEqual( 2, baz.StringSet.Count );
 			int index = 0;
@@ -2567,7 +2565,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Load( typeof(Baz), baz.Code );
 			Bar bar = new Bar();
 			Bar bar2 = new Bar();
@@ -2594,9 +2592,9 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 			
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
-			ISession s2 = sessions.OpenSession();
+			ISession s2 = OpenSession();
 			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
 			object o = baz.FooComponentToFoo[new FooComponent("name", 123, null, null)];
 			Assert.IsNotNull( o );
@@ -2636,7 +2634,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Find("select baz from baz in class NHibernate.DomainModel.Baz order by baz")[0];
 			Assert.AreEqual( 2, baz.TopGlarchez.Count );
 			s.Disconnect();
@@ -2701,14 +2699,14 @@ namespace NHibernate.Test
 		[Test]
 		public void SaveFlush() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Fee fee = new Fee();
 			s.Save( fee, "key" );
 			fee.Fi = "blah";
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			fee = (Fee)s.Load( typeof(Fee), fee.Key );
 			Assert.AreEqual( "blah", fee.Fi );
 			Assert.AreEqual( "key", fee.Key );
@@ -2721,14 +2719,14 @@ namespace NHibernate.Test
 		[Test]
 		public void CreateUpdate() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			s.Save(foo);
 			foo.String = "dirty";
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Foo foo2 = new Foo();
 			s.Load( foo2, foo.Key );
 			Assert.IsTrue( foo.EqualsFoo(foo2), "create-update" );
@@ -2736,14 +2734,14 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foo = new Foo();
 			s.Save(foo, "assignedid");
 			foo.String = "dirty";
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Load(foo2, "assignedid");
 			Assert.IsTrue( foo.EqualsFoo(foo2), "create-update" );
 			s.Delete(foo2);
@@ -2757,7 +2755,7 @@ namespace NHibernate.Test
 		[Test]
 		public void UpdateCollections() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Holder baz = new Holder();
 			baz.Name = "123";
 			Foo f1 = new Foo();
@@ -2785,12 +2783,12 @@ namespace NHibernate.Test
 			foos[0] = f3;
 			foos[1] = f1;
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.SaveOrUpdate(baz);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Holder h = (Holder)s.Load( typeof(Holder), baz.Id );
 			Assert.IsNull( h.Ones[0] );
 			Assert.IsNotNull( h.Ones[1] );
@@ -2812,7 +2810,7 @@ namespace NHibernate.Test
 			baz.FooArray[1] = null;
 			baz.FooArray[2] = null;
 			
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.SaveOrUpdate(baz);
 			s.Delete("from f in class NHibernate.DomainModel.Foo");
 			baz.Ones.Remove(o);
@@ -2826,7 +2824,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Load() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Qux q = new Qux();
 			s.Save(q);
 			BarProxy b = new Bar();
@@ -2834,7 +2832,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			q = (Qux)s.Load( typeof(Qux), q.Key );
 			b = (BarProxy)s.Load( typeof(Foo), b.Key );
 			string tempKey = b.Key;
@@ -2856,13 +2854,13 @@ namespace NHibernate.Test
 		[Test]
 		public void Create() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			s.Save(foo);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Foo foo2 = new Foo();
 			s.Load( foo2, foo.Key );
 
@@ -2877,7 +2875,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Callback() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Qux q = new Qux("0");
 			s.Save(q);
 			q.Child = ( new Qux("1") );
@@ -2898,7 +2896,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IList l = s.Find("from q in class NHibernate.DomainModel.Qux");
 			Assert.AreEqual(5, l.Count);
 			
@@ -2915,14 +2913,14 @@ namespace NHibernate.Test
 		[Test]
 		public void Polymorphism() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Bar bar = new Bar();
 			s.Save(bar);
 			bar.BarString = "bar bar";
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			FooProxy foo = (FooProxy)s.Load( typeof(Foo), bar.Key );
 			Assert.IsTrue( foo is BarProxy, "polymorphic" );
 			Assert.IsTrue( ((BarProxy)foo).BarString.Equals( bar.BarString ), "subclass property" );
@@ -2936,7 +2934,7 @@ namespace NHibernate.Test
 		[Test]
 		public void RemoveContains() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			baz.SetDefaults();
 			s.Save(baz);
@@ -2959,7 +2957,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionOfSelf() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Bar bar = new Bar();
 			s.Save(bar);
 			// h2.0.3 was a set
@@ -2973,7 +2971,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			bar.Abstracts = null;
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Load( bar, bar.Key );
 
 			Assert.AreEqual( 2, bar.Abstracts.Count);
@@ -2994,7 +2992,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Find() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 
 			// some code commented out in h2.0.3
 
@@ -3029,7 +3027,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			list1 = s.Find( "from foo in class NHibernate.DomainModel.Foo where foo.String='foo bar'" );
 			Assert.AreEqual( 1, list1.Count, "find count" );
 			// There is an interbase bug that causes null integers to return as 0, also numeric precision is <=15 -h2.0.3 comment
@@ -3060,7 +3058,7 @@ namespace NHibernate.Test
 		[Test]
 		public void DeleteRecursive() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo x = new Foo();
 			Foo y = new Foo();
 			x.TheFoo = y;
@@ -3079,7 +3077,7 @@ namespace NHibernate.Test
 		public void Reachability() 
 		{
 			// first for unkeyed collections
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz1 = new Baz();
 			s.Save(baz1);
 			Baz baz2 = new Baz();
@@ -3092,7 +3090,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz2 = (Baz) s.Load( typeof(Baz), baz2.Code );
 			baz1 = (Baz) s.Load( typeof(Baz), baz1.Code );
 			baz2.FooSet = baz1.FooSet;
@@ -3102,7 +3100,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
 			baz1 = (Baz)s.Load( typeof(Baz), baz1.Code );
 			Assert.AreEqual(4, baz2.IntArray.Length, "unkeyed reachability - baz2.IntArray");
@@ -3121,7 +3119,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			// now for collections of collections
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz1 = new Baz();
 			s.Save(baz1);
 			baz2 = new Baz();
@@ -3129,18 +3127,18 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
 			baz1 = (Baz)s.Load( typeof(Baz), baz1.Code );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
 			baz1 = (Baz)s.Load( typeof(Baz), baz1.Code );
 			s.Delete(baz1);
@@ -3149,7 +3147,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			// now for keyed collections
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz1 = new Baz();
 			s.Save(baz1);
 			baz2 = new Baz();
@@ -3166,7 +3164,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
 			baz1 = (Baz)s.Load( typeof(Baz), baz1.Code );
 			baz2.FooArray = baz1.FooArray;
@@ -3176,7 +3174,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz2 = (Baz)s.Load( typeof(Baz), baz2.Code );
 			baz1 = (Baz)s.Load( typeof(Baz), baz1.Code );
 			Assert.AreEqual( 2, baz2.StringDateMap.Count, "baz2.StringDateMap count - reachability");
@@ -3201,14 +3199,14 @@ namespace NHibernate.Test
 		[Test]
 		public void PersistentLifecycle() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Qux q = new Qux();
 			s.Save(q);
 			q.Stuff = "foo bar baz qux";
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			q = (Qux)s.Load( typeof(Qux), q.Key );
 			Assert.IsTrue( q.Created, "lifecycle create" );
 			Assert.IsTrue( q.Loaded, "lifecycle load" );
@@ -3218,7 +3216,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Assert.AreEqual(0, s.Find("from foo in class NHibernate.DomainModel.Foo").Count, "subdeletion");
 			s.Flush();
 			s.Close();
@@ -3231,7 +3229,7 @@ namespace NHibernate.Test
 		{
 			// this test used to be called Iterators()
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			for( int i=0; i<10; i++ ) 
 			{
 				Qux q = new Qux();
@@ -3242,7 +3240,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IEnumerator enumer = s.Enumerable("from q in class NHibernate.DomainModel.Qux where q.Stuff is null").GetEnumerator();
 			int count = 0;
 			while( enumer.MoveNext() ) 
@@ -3258,7 +3256,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 			
-			s = sessions.OpenSession();
+			s = OpenSession();
 
 			Assert.AreEqual(8, 
 				s.Delete("from q in class NHibernate.DomainModel.Qux where q.Stuff=?", "foo", NHibernateUtil.String),
@@ -3267,7 +3265,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			enumer = s.Enumerable("from q in class NHibernate.DomainModel.Qux").GetEnumerator();
 			Assert.IsFalse( enumer.MoveNext() , "no items in enumerator" );
 			s.Flush();
@@ -3286,7 +3284,7 @@ namespace NHibernate.Test
 		{
 			// this test used to be called Iterators()
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			for( int i=0; i<10; i++ ) 
 			{
 				Simple simple = new Simple();
@@ -3297,7 +3295,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Simple simp = (Simple)s.Load( typeof(Simple), 8 );
 			
@@ -3320,7 +3318,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Assert.AreEqual( 10, 
 				s.Delete( "from Simple" ),
 				"delete by query" );
@@ -3328,7 +3326,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			enumer = s.Enumerable("from Simple");
 			Assert.IsFalse( enumer.GetEnumerator().MoveNext() , "no items in enumerator" );
 			s.Flush();
@@ -3340,7 +3338,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Versioning() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			GlarchProxy g = new Glarch();
 			s.Save(g);
 			GlarchProxy g2 = new Glarch();
@@ -3354,7 +3352,7 @@ namespace NHibernate.Test
 
 			// grab a version of g that is old and hold onto it until later
 			// for a StaleObjectException check.
-			ISession sOld = sessions.OpenSession();
+			ISession sOld = OpenSession();
 			GlarchProxy gOld = (GlarchProxy)sOld.Load( typeof(Glarch), gid );
 			// want gOld to be initialized so later I can change a property
 			NHibernateUtil.Initialize( gOld );
@@ -3362,7 +3360,7 @@ namespace NHibernate.Test
 			//sOld.Close();
 			sOld.Dispose();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			s.Lock(g, LockMode.Upgrade);
 			g2 = (GlarchProxy)s.Load( typeof(Glarch), g2id );
@@ -3379,7 +3377,7 @@ namespace NHibernate.Test
 			// now that g has been changed verify that we can't go back and update 
 			// it with an old version of g
 			bool isStale = false;
-			sOld = sessions.OpenSession();
+			sOld = OpenSession();
 			gOld.Name = "should not update";
 			try 
 			{
@@ -3404,7 +3402,7 @@ namespace NHibernate.Test
 
 			Assert.IsTrue( isStale, "Did not catch a stale object exception when updating an old GlarchProxy." );
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			g2 = (GlarchProxy)s.Load( typeof(Glarch), g2id );
 
@@ -3425,7 +3423,7 @@ namespace NHibernate.Test
 		[Test]
 		public void VersionedCollections() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			GlarchProxy g = new Glarch();
 			s.Save(g);
 			g.ProxyArray = new GlarchProxy[] {g};
@@ -3440,7 +3438,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			Assert.AreEqual( 1, g.Strings.Count );
 			Assert.AreEqual( 1, g.ProxyArray.Length );
@@ -3449,7 +3447,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			Assert.AreEqual( "foo", g.Strings[0] );
 			Assert.AreSame( g, g.ProxyArray[0] );
@@ -3460,14 +3458,14 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			Assert.AreEqual( 1, g.Version, "versioned collection before");
 			g.Strings.Add("bar");
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			Assert.AreEqual( 2, g.Version, "versioned collection after" );
 			Assert.AreEqual( 2, g.Strings.Count, "versioned collection after" );
@@ -3475,7 +3473,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			Assert.AreEqual( 3, g.Version, "versioned collection after" );
 			Assert.AreEqual( 0, g.ProxyArray.Length, "version collection after" );
@@ -3484,7 +3482,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
 			Assert.AreEqual( 4, g.Version, "versioned collection after");
 			s.Delete(g);
@@ -3499,7 +3497,7 @@ namespace NHibernate.Test
 		{
 			// Non polymorphisc class (there is an implementation optimization
 			// being tested here) - from h2.0.3 - what does that mean?
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			GlarchProxy last = new Glarch();
 			s.Save(last);
 			last.Order = 0;
@@ -3523,7 +3521,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			list = s.Find("from g in class NHibernate.DomainModel.Glarch");
 			Assert.AreEqual( 6, list.Count, "recursive iter" );
 			list = s.Find("from g in class NHibernate.DomainModel.Glarch where g.Next is not null");
@@ -3531,7 +3529,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			enumer = s.Enumerable("from g in class NHibernate.DomainModel.Glarch order by g.Order asc").GetEnumerator();
 			while ( enumer.MoveNext() ) 
 			{
@@ -3546,7 +3544,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			// same thing bug using polymorphic class (no optimization possible)
-			s = sessions.OpenSession();
+			s = OpenSession();
 			FooProxy flast = new Bar();
 			s.Save(flast);
 			for( int i=0; i<5; i++ ) 
@@ -3569,7 +3567,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			list = s.Find("from foo in class NHibernate.DomainModel.Foo");
 			Assert.AreEqual( 6, list.Count, "recursive iter" );
 			enumer = list.GetEnumerator();
@@ -3580,7 +3578,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			enumer = s.Enumerable("from foo in class NHibernate.DomainModel.Foo order by foo.String asc").GetEnumerator();
 			string currentString = String.Empty;
 
@@ -3615,7 +3613,7 @@ namespace NHibernate.Test
 		[Test]
 		public void MultiColumnQueries() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			s.Save(foo);
 			Foo foo1 = new Foo();
@@ -3655,7 +3653,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IEnumerator enumer = s.Enumerable("select parent, child from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child and parent.String='a string'").GetEnumerator();
 			int deletions = 0;
 			while( enumer.MoveNext() ) 
@@ -3675,7 +3673,7 @@ namespace NHibernate.Test
 		public void DeleteTransient() 
 		{
 			Fee fee = new Fee();
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
 			s.Save(fee);
 			s.Flush();
@@ -3683,13 +3681,13 @@ namespace NHibernate.Test
 			tx.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			tx = s.BeginTransaction();
 			s.Delete(fee);
 			tx.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			tx = s.BeginTransaction();
 			Assert.AreEqual( 0, s.Find("from fee in class Fee").Count );
 			tx.Commit();
@@ -3703,7 +3701,7 @@ namespace NHibernate.Test
 			Fee fee2 = new Fee();
 			fee2.AnotherFee = fee;
 			
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction tx = s.BeginTransaction() )
 			{
 				s.Save( fee );
@@ -3713,7 +3711,7 @@ namespace NHibernate.Test
 				tx.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction tx = s.BeginTransaction() )
 			{
 				s.Update( fee );
@@ -3724,7 +3722,7 @@ namespace NHibernate.Test
 				tx.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction tx = s.BeginTransaction() )
 			{
 				Assert.AreEqual( 0, s.Find("from fee in class Fee").Count );
@@ -3737,7 +3735,7 @@ namespace NHibernate.Test
 		{
 			Fee fee1, fee2, fee3;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				fee1 = new Fee();
 				s.Save( fee1 );
@@ -3756,7 +3754,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				fee1.Count = 10;
 				fee2.Count = 20;
@@ -3771,7 +3769,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction tx = s.BeginTransaction() )
 			{
 				Assert.AreEqual( 0, s.Find("from fee in class Fee").Count );
@@ -3782,7 +3780,7 @@ namespace NHibernate.Test
 		[Test]
 		public void UpdateFromTransient() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Fee fee1 = new Fee();
 			s.Save(fee1);
 			Fee fee2 = new Fee();
@@ -3799,19 +3797,19 @@ namespace NHibernate.Test
 			s.Close();
 
 			fee1.Fi = "changed";
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.SaveOrUpdate(fee1);
 			s.Flush();
 			s.Close();
 
 			Qux q = new Qux("quxxy");
 			fee1.Qux = q;
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.SaveOrUpdate(fee1);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			fee1 = (Fee)s.Load( typeof(Fee), fee1.Key );
 			Assert.AreEqual( "changed", fee1.Fi, "updated from transient" );
 			Assert.IsNotNull( fee1.Qux, "unsaved-value" );
@@ -3823,13 +3821,13 @@ namespace NHibernate.Test
 			fee2.Fi = "CHANGED";
 			fee2.Fees.Add( "an element" );
 			fee1.Fi = "changed again";
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.SaveOrUpdate(fee2);
 			s.Update( fee1, fee1.Key );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Fee fee = new Fee();
 			s.Load( fee, fee2.Key );
 			fee1 = (Fee)s.Load( typeof(Fee), fee1.Key );
@@ -3842,13 +3840,13 @@ namespace NHibernate.Test
 			fee.Fees.Clear();
 			fee.Fees.Add( "new element" );
 			fee1.TheFee = null;
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.SaveOrUpdate(fee);
 			s.SaveOrUpdate(fee1);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Load( fee, fee.Key );
 			Assert.IsNotNull( fee.AnotherFee, "update" );
 			Assert.IsNotNull( fee.TheFee, "update" );
@@ -3859,18 +3857,18 @@ namespace NHibernate.Test
 			s.Close();
 
 			fee.Qux = new Qux("quxy");
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.SaveOrUpdate(fee);
 			s.Flush();
 			s.Close();
 
 			fee.Qux.Stuff = "xxx";
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.SaveOrUpdate(fee);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Load( fee, fee.Key );
 			Assert.IsNotNull( fee.Qux, "cascade update" );
 			Assert.AreEqual( "xxx", fee.Qux.Stuff, "cascade update" );
@@ -3890,7 +3888,7 @@ namespace NHibernate.Test
 		{
 			Baz baz;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = new Baz();
 				s.Save(baz);
@@ -3898,7 +3896,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz.TimeArray[2] = new DateTime( 123 );  // H2.1: new Date(123)
 				baz.TimeArray[3] = new DateTime( 1234 ); // H2.1: new java.sql.Time(1234)
@@ -3906,7 +3904,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				baz = (Baz) s.Load( typeof( Baz ), baz.Code );
 				s.Delete( baz );
@@ -3917,7 +3915,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Components() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			foo.Component = new FooComponent( "foo", 69, null, new FooComponent("bar", 96, null, null) );
 			s.Save(foo);
@@ -3926,7 +3924,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			foo.Component = null;
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Load( foo, foo.Key );
 
 			Assert.AreEqual( "IFA", foo.Component.Name, "save components" );
@@ -3937,7 +3935,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			foo.Component = null;
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Load( foo, foo.Key );
 			Assert.AreEqual( "IFA", foo.Component.Name, "update components" );
 			Assert.AreEqual( "baz", foo.Component.Subcomponent.Name, "update subcomponent" );
@@ -3945,7 +3943,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foo = new Foo();
 			s.Save(foo);
 			foo.Custom = new string[] {"one", "two"};
@@ -3962,7 +3960,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Enum() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			FooProxy foo = new Foo();
 			object id = s.Save(foo);
 			foo.Status = FooStatus.ON;
@@ -3970,26 +3968,26 @@ namespace NHibernate.Test
 			s.Close();
 
 			// verify an enum can be in the ctor
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IList list = s.Find("select new Result(foo.String, foo.Long, foo.Integer, foo.Status) from foo in class Foo" );
 			Assert.AreEqual( 1, list.Count, "Should have found foo" );
 			Assert.AreEqual( FooStatus.ON, ((Result)list[0]).Status, "verifying enum set in ctor - should have been ON" );
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foo = (FooProxy)s.Load( typeof(Foo), id );
 			Assert.AreEqual( FooStatus.ON, foo.Status );
 			foo.Status = FooStatus.OFF;
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foo = (FooProxy)s.Load( typeof(Foo), id);
 			Assert.AreEqual( FooStatus.OFF, foo.Status );
 			s.Close();
 
 			// verify that SetEnum with named params works correctly
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IQuery q = s.CreateQuery( "from Foo as f where f.Status = :status" );
 			q.SetEnum( "status", FooStatus.OFF );
 			IList results = q.List();
@@ -4029,7 +4027,7 @@ namespace NHibernate.Test
 		[Test]
 		public void NoForeignKeyViolations() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Glarch g1 = new Glarch();
 			Glarch g2 = new Glarch();
 			g1.Next = g2;
@@ -4039,7 +4037,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IList l = s.Find("from g in class NHibernate.DomainModel.Glarch where g.Next is not null");
 			s.Delete( l[0] );
 			s.Delete( l[1] );
@@ -4051,13 +4049,13 @@ namespace NHibernate.Test
 		[Test]
 		public void LazyCollections() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Qux q = new Qux();
 			s.Save(q);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			q = (Qux)s.Load( typeof(Qux), q.Key );
 			s.Flush();
 			s.Close();
@@ -4088,7 +4086,7 @@ namespace NHibernate.Test
 
 			Assert.IsTrue( ok, "lazy collection with many-to-many" );
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			q = (Qux)s.Load( typeof(Qux), q.Key );
 			s.Delete(q);
 			s.Flush();
@@ -4098,7 +4096,7 @@ namespace NHibernate.Test
 		[Test]
 		public void NewSessionLifecycle() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			object fid = null;
 			try 
@@ -4119,7 +4117,7 @@ namespace NHibernate.Test
 				s.Close();
 			}
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			try 
 			{
@@ -4138,7 +4136,7 @@ namespace NHibernate.Test
 				s.Close();
 			}
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			try 
 			{
@@ -4162,7 +4160,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Disconnect() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			Foo foo2 = new Foo();
 			s.Save(foo);
@@ -4188,7 +4186,7 @@ namespace NHibernate.Test
 		[Test]
 		public void OrderBy() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Foo foo = new Foo();
 			s.Save(foo);
@@ -4206,7 +4204,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Many manyB = new Many();
 			s.Save(manyB);
 			One oneB = new One();
@@ -4222,7 +4220,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IEnumerable enumerable = s.Enumerable("SELECT one FROM one IN CLASS " + typeof(One).Name + " ORDER BY one.Value ASC");
 			int count = 0;
 			foreach(One one in enumerable) 
@@ -4245,7 +4243,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			enumerable = s.Enumerable("SELECT many.One FROM many IN CLASS " + typeof(Many).Name + " ORDER BY many.One.Value ASC, many.One.id");
 			count = 0;
 			foreach(One one in enumerable) 
@@ -4267,7 +4265,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			oneA = (One)s.Load( typeof(One), oneA.Key );
 			manyA = (Many)s.Load( typeof(Many), manyA.Key );
 			oneB = (One)s.Load( typeof(One), oneB.Key );
@@ -4284,7 +4282,7 @@ namespace NHibernate.Test
 		[Test]
 		public void ManyToOne() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			One one = new One();
 			s.Save(one);
 			one.Value = "yada";
@@ -4294,12 +4292,12 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			one = (One)s.Load( typeof(One), one.Key );
 			int countManies = one.Manies.Count;
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			many = (Many)s.Load( typeof(Many), many.Key );
 			Assert.IsNotNull( many.One, "many-to-one assoc" );
 			s.Delete( many.One );
@@ -4312,13 +4310,13 @@ namespace NHibernate.Test
 		[Test]
 		public void SaveDelete()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo f = new Foo();
 			s.Save(f);
 			s.Flush();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Delete( s.Load( typeof(Foo), f.Key ) );
 			s.Flush();
 			s.Close();
@@ -4327,7 +4325,7 @@ namespace NHibernate.Test
 		[Test]
 		public void ProxyArray() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			GlarchProxy g = new Glarch();
 			Glarch g1 = new Glarch();
 			Glarch g2 = new Glarch();
@@ -4347,7 +4345,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			g = (GlarchProxy)s.Load( typeof(Glarch), id );
 			Assert.AreEqual( 2, g.ProxyArray.Length, "array of proxies" );
 			Assert.IsNotNull( g.ProxyArray[0], "array of proxies" );
@@ -4364,10 +4362,15 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Disconnect();
 
-			// serialize and then deserialize the session.
+			// serialize the session.
 			System.IO.Stream stream = new System.IO.MemoryStream();
 			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 			formatter.Serialize(stream, s);
+
+			// close the original session
+			s.Close();
+
+			// deserialize the session
 			stream.Position = 0;
 			s = (ISession)formatter.Deserialize(stream);
 			stream.Close();
@@ -4378,17 +4381,17 @@ namespace NHibernate.Test
 		[Test]
 		public void Cache() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Immutable im = new Immutable();
 			s.Save(im);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Load( im, im.Id);
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Load( im, im.Id);
 	
 			Immutable imFromFind = (Immutable)s.Find("from im in class Immutable where im = ?", im, NHibernateUtil.Entity(typeof(Immutable)))[0];
@@ -4404,20 +4407,20 @@ namespace NHibernate.Test
 		[Test]
 		public void FindLoad() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			FooProxy foo = new Foo();
 			s.Save(foo);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foo = (FooProxy)s.Find("from foo in class NHibernate.DomainModel.Foo")[0];
 			FooProxy foo2 = (FooProxy)s.Load( typeof(Foo), foo.Key );
 			Assert.AreSame( foo, foo2, "find returns same object as load" );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foo2 = (FooProxy)s.Load( typeof(Foo), foo.Key );
 			foo = (FooProxy)s.Find("from foo in class NHibernate.DomainModel.Foo")[0];
 			Assert.AreSame( foo2, foo, "find returns same object as load" );
@@ -4429,7 +4432,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Refresh() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			s.Save(foo);
 			s.Flush();
@@ -4448,7 +4451,7 @@ namespace NHibernate.Test
 		[Test]
 		public void AutoFlush() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			FooProxy foo = new Foo();
 			s.Save(foo);
 			Assert.AreEqual( 1, s.Find("from foo in class NHibernate.DomainModel.Foo").Count, "autoflush inserted row" );
@@ -4456,13 +4459,10 @@ namespace NHibernate.Test
 			Assert.AreEqual( 1, s.Find("from foo in class NHibernate.DomainModel.Foo where foo.Char='X'").Count, "autflush updated row" );
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foo = (FooProxy)s.Load( typeof(Foo), foo.Key );
 			
-			if( !(dialect is Dialect.MySQLDialect) 
-				// && !(dialect is Dialect.HSQLDialect)
-				// && !(dialect is Dialect.PointbaseDialect)
-				)
+			if( dialect.SupportsSubSelects )
 			{
 				foo.Bytes = GetBytes( "osama" );
 				Assert.AreEqual( 1, s.Find("from foo in class NHibernate.DomainModel.Foo where 111 in foo.Bytes.elements").Count, "autoflush collection update" );
@@ -4479,14 +4479,14 @@ namespace NHibernate.Test
 		[Test]
 		public void Veto() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Vetoer v = new Vetoer();
 			s.Save(v);
 			object id = s.Save(v);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Update(v, id);
 			s.Update(v, id);
 			s.Delete(v);
@@ -4497,7 +4497,7 @@ namespace NHibernate.Test
 		[Test]
 		public void SerializableType() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Vetoer v = new Vetoer();
 			v.Strings = new string[] {"foo", "bar", "baz"};
 			s.Save(v);
@@ -4506,7 +4506,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			v = (Vetoer)s.Load( typeof(Vetoer), id );
 			Assert.AreEqual( "osama", v.Strings[1], "serializable type" );
 			s.Delete(v);
@@ -4518,7 +4518,7 @@ namespace NHibernate.Test
 		[Test]
 		public void AutoFlushCollections() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
 			Baz baz = new Baz();
 			baz.SetDefaults();
@@ -4526,7 +4526,7 @@ namespace NHibernate.Test
 			tx.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			tx = s.BeginTransaction();
 			baz = (Baz)s.Load( typeof(Baz), baz.Code );
 			baz.StringArray[0] = "bark";
@@ -4570,9 +4570,7 @@ namespace NHibernate.Test
 			e = s.Enumerable("select baz.FooArray.elements from baz in class NHibernate.DomainModel.Baz").GetEnumerator();
 			Assert.IsTrue( e.MoveNext() );
 
-			if( !(dialect is Dialect.MySQLDialect) 
-				// HSQLDialect, InterbaseDialect, PointbaseDialect, SAPDBDialect
-				) 
+			if( dialect.SupportsSubSelects ) 
 			{
 				baz.FooArray[0] = null;
 				e = s.Enumerable("from baz in class NHibernate.DomainModel.Baz where ? in baz.FooArray.elements", 
@@ -4615,20 +4613,20 @@ namespace NHibernate.Test
 		[Test]
 		public void CachedCollection() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			baz.SetDefaults();
 			s.Save(baz);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Load( typeof(Baz), baz.Code );
 			( (FooComponent)baz.TopComponents[0]).Count = 99;
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			baz = (Baz)s.Load( typeof(Baz), baz.Code );
 			Assert.AreEqual( 99,  ( (FooComponent)baz.TopComponents[0]).Count );
 			s.Delete(baz);
@@ -4640,7 +4638,7 @@ namespace NHibernate.Test
 		[Test]
 		public void ComplicatedQuery() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			object id = s.Save(foo);
 			Assert.IsNotNull(id);
@@ -4659,7 +4657,7 @@ namespace NHibernate.Test
 		[Test]
 		public void LoadAfterDelete() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Foo foo = new Foo();
 			object id = s.Save(foo);
 			s.Flush();
@@ -4720,7 +4718,7 @@ namespace NHibernate.Test
 		{
 			object gid;
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				GlarchProxy g = new Glarch();
 				Foo foo = new Foo();
@@ -4730,7 +4728,7 @@ namespace NHibernate.Test
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				GlarchProxy g = (GlarchProxy) s.Load( typeof( Glarch ), gid );
 				Assert.IsNotNull( g.Any );
@@ -4745,7 +4743,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Any() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			One one = new One();
 			BarProxy foo = new Bar();
 			foo.Object = one;
@@ -4754,7 +4752,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IList list = s.Find(
 				"from Bar bar where bar.Object.id = ? and bar.Object.class = ?",
 				new object[] { oid, typeof(One) },
@@ -4768,7 +4766,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foo = (BarProxy)s.Load( typeof(Foo), fid );
 			Assert.IsNotNull(foo);
 			Assert.IsTrue( foo.Object is One );
@@ -4782,7 +4780,7 @@ namespace NHibernate.Test
 		[Test]
 		public void EmbeddedCompositeID() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Location l = new Location();
 			l.CountryCode = "AU";
 			l.Description = "foo bar";
@@ -4794,7 +4792,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.FlushMode = FlushMode.Never;
 			l = (Location)s.Find("from l in class Location where l.CountryCode = 'AU' and l.Description='foo bar'")[0];
 			Assert.AreEqual( "AU", l.CountryCode );
@@ -4802,13 +4800,13 @@ namespace NHibernate.Test
 			Assert.AreEqual( System.Globalization.CultureInfo.CreateSpecificCulture("en-AU"), l.Locale );
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			l.Description = "sick're";
 			s.Update(l);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			l = new Location();
 			l.CountryCode = "AU";
 			l.Description = "foo bar";
@@ -4827,7 +4825,7 @@ namespace NHibernate.Test
 		[Test]
 		public void AutosaveChildren() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
 			Iesi.Collections.ISet bars = new Iesi.Collections.HashedSet();
@@ -4836,7 +4834,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			baz = (Baz) s.Load( typeof(Baz), baz.Code );
 			baz.CascadingBars.Add( new Bar() );
@@ -4844,7 +4842,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			baz = (Baz)s.Load( typeof(Baz), baz.Code );
 			Assert.AreEqual( 2, baz.CascadingBars.Count );
@@ -4864,7 +4862,7 @@ namespace NHibernate.Test
 		[Test]
 		public void OrphanDelete() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
 			IDictionary bars = new Hashtable();
@@ -4875,7 +4873,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			baz = (Baz) s.Load( typeof(Baz), baz.Code );
 			IEnumerator enumer = bars.GetEnumerator();
@@ -4894,7 +4892,7 @@ namespace NHibernate.Test
 		[Test]
 		public void TransientOrphanDelete() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
 			Iesi.Collections.ISet bars = new Iesi.Collections.HashedSet();
@@ -4923,7 +4921,7 @@ namespace NHibernate.Test
 			enumer.MoveNext();
 			bars.Remove( enumer.Current );
 			foos.RemoveAt(1);
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Update(baz);
 			Assert.AreEqual( 2, s.Find("from Bar bar").Count );
@@ -4932,7 +4930,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			foos.RemoveAt(0);
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Update(baz);
 			enumer = bars.GetEnumerator();
@@ -4948,7 +4946,7 @@ namespace NHibernate.Test
 		[Test]
 		public void ProxiesInCollections() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Baz baz = new Baz();
 			Bar bar = new Bar();
 			Bar bar2 = new Bar();
@@ -4975,7 +4973,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			BarProxy barprox = (BarProxy)s.Load( typeof(Bar), bid );
 			BarProxy bar2prox = (BarProxy)s.Load( typeof(Bar), bar2id );
 			Assert.IsTrue( bar2prox is Proxy.INHibernateProxy );
@@ -5016,7 +5014,7 @@ namespace NHibernate.Test
 		[Test]
 		public void PSCache() 
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				for( int i = 0; i < 10; i++ ) s.Save( new Foo() );
 
@@ -5040,7 +5038,7 @@ namespace NHibernate.Test
 				Assert.AreEqual( 10, q.List().Count );
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				IQuery q = s.CreateQuery( "from f in class Foo" );
 				Assert.AreEqual( 10, q.List().Count );
@@ -5059,12 +5057,12 @@ namespace NHibernate.Test
 		public void Formula()
 		{
 			Foo foo = new Foo();
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			object id = s.Save( foo );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			foo = (Foo)s.Find( "from Foo as f where f.id = ?", id, NHibernateUtil.String)[0];
 			Assert.AreEqual( 4, foo.Formula, "should be 2x 'Int' property that is defaulted to 2" );
 
@@ -5080,7 +5078,7 @@ namespace NHibernate.Test
 		[Test]
 		public void AddAll()						
 		{
- 			using (ISession s = sessions.OpenSession())
+ 			using (ISession s = OpenSession())
 			{
  				Foo foo1 = new Foo();
  				s.Save(foo1);

@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void TestCRUD() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			
 			BasicObjectRef any = new BasicObjectRef();
 			any.Name = "the any";
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			bo = (BasicObject)s.Load( typeof(BasicObject), bo.Id );
 
 			

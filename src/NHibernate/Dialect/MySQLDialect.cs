@@ -201,5 +201,12 @@ namespace NHibernate.Dialect
 		{
  			return " drop index " + constraintName;
  		}
+
+		public override bool SupportsSubSelects
+		{
+			// TODO: newer MySQLs actually support subselects
+			get { return false; }
+		}
+
 	}
 }

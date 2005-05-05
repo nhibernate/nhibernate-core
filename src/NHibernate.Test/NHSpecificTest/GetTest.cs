@@ -20,12 +20,12 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			A a = new A( "name" );
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				s.Save( a );
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				A loadedA = ( A )s.Load( typeof( A ), a.Id );
 				Assert.IsFalse( NHibernateUtil.IsInitialized( loadedA ),
@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest
 					"Loading non-existent object should not return null" );
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				A gotA = (A)s.Get( typeof( A ), a.Id );
 				Assert.IsTrue(NHibernateUtil.IsInitialized( gotA ),
@@ -50,20 +50,20 @@ namespace NHibernate.Test.NHSpecificTest
 		public void GetAndModify() 
 		{
 			A a = new A( "name" );
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				s.Save( a );
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				a = s.Get( typeof(A), a.Id ) as A;
 				a.Name = "modified";
 				s.Flush();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				a = s.Get( typeof(A), a.Id ) as A;
 				Assert.AreEqual( "modified", a.Name, "the name was modified" );

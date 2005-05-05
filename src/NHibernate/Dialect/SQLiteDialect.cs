@@ -33,6 +33,12 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Single, "NUMERIC");
 			RegisterColumnType(DbType.VarNumeric, "NUMERIC");
 			RegisterColumnType(DbType.String, "TEXT");
+			RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
+			RegisterColumnType(DbType.StringFixedLength, "TEXT");
+
+			RegisterColumnType(DbType.DateTime, "TEXT");
+			RegisterColumnType(DbType.Time, "TEXT");
+			RegisterColumnType(DbType.Boolean, "INTEGER");
 		}
 
 		/// <summary>
@@ -41,6 +47,28 @@ namespace NHibernate.Dialect
 		public override string IdentitySelectString
 		{
 			get { return "select last_insert_rowid()"; }
+		}
+
+		public override bool HasAlterTable
+		{
+			get { return false; }
+		}
+
+		public override bool DropConstraints
+		{
+			get { return false; }
+		}
+
+		public override bool SupportsForUpdate
+		{
+			get { return false; }
+		}
+
+		// TODO: SQLite actually does support subselects, but gives syntax errors
+		// in tests. Need to investigate this.
+		public override bool SupportsSubSelects
+		{
+			get { return false; }
 		}
 	}
 }

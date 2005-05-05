@@ -59,7 +59,7 @@ namespace NHibernate.Test
 				return;
 			}
 
-			ISession session = sessions.OpenSession();
+			ISession session = OpenSession();
 
 			Simple sim = new Simple();
 			sim.Date = DateTime.Today;	// NB We don't use Now() due to the millisecond alignment problem with SQL Server
@@ -80,7 +80,7 @@ namespace NHibernate.Test
 				return;
 			}
 
-			ISession session = sessions.OpenSession();
+			ISession session = OpenSession();
 
 			Simple sim = new Simple();
 			sim.Date = DateTime.Today;	// NB We don't use Now() due to the millisecond alignment problem with SQL Server
@@ -96,7 +96,7 @@ namespace NHibernate.Test
 		[Test]
 		public void FindBySQLStar()
 		{
-			ISession session = sessions.OpenSession();
+			ISession session = OpenSession();
 
 			Category s = new Category();
 			s.Name = nextLong.ToString();
@@ -128,7 +128,7 @@ namespace NHibernate.Test
 		[Test]
 		public void FindBySQLProperties()
 		{
-			ISession session = sessions.OpenSession();
+			ISession session = OpenSession();
 
 			Category s = new Category();
 			s.Name = nextLong.ToString();
@@ -152,7 +152,7 @@ namespace NHibernate.Test
 		[Test]
 		public void FindBySQLAssociatedObject()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 
 			Category c = new Category();
 			c.Name = "NAME";
@@ -166,7 +166,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IList list = s.CreateSQLQuery( "select {category.*} from Category {category}", "category", typeof( Category ) ).List();
 			Assert.AreEqual( 1, list.Count, "Count differs" );
 
@@ -179,7 +179,7 @@ namespace NHibernate.Test
 		[Test]
 		public void FindBySQLMultipleObject()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 
 			Category c = new Category();
 			c.Name = "NAME";
@@ -209,7 +209,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 
 			if ( !(dialect is Dialect.MySQLDialect) )
 			{

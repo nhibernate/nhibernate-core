@@ -33,7 +33,7 @@ namespace NHibernate.Test
 		[Ignore( "Test not written" )]
 		public void ParentChildren()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 
 			//M parent = new M
 		}
@@ -64,7 +64,7 @@ namespace NHibernate.Test
 			cat.Subcategories.Add( subCatBar );
 			cat.Subcategories.Add( subCatBaz );
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save( catWA );
 			s.Save( cat );
 			s.Flush();
@@ -80,12 +80,12 @@ namespace NHibernate.Test
 			newSubCat.Name = "new sub";
 			newCat.Subcategories.Add( newSubCat );
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.SaveOrUpdateCopy( cat );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			cat = (Category) s.CreateQuery( "from Category cat where cat.Name='new foo'").UniqueResult();
 			newSubCat = (Category) s.CreateQuery( "from Category cat where cat.Name='new sub'").UniqueResult();
 			newSubCat.Subcategories.Add( cat );
@@ -103,14 +103,14 @@ namespace NHibernate.Test
 		[Test]
 		public void CopyCascade()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Category child = new Category();
 			child.Name = "child";
 			s.Save( child );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			Category parent = new Category();
 			parent.Name = "parent";
 			parent.Subcategories.Add( child );
@@ -123,7 +123,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Delete( parent );
 			s.Flush();
 			s.Close();
@@ -132,7 +132,7 @@ namespace NHibernate.Test
 		[Test]
 		public void NotNullDiscriminator()
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Up up = new Up();
 			up.Id1 = "foo";
@@ -146,7 +146,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			IList list = s.Find( "from Up up order by up.Id2 asc" );
 			Assert.IsTrue( list.Count == 2 );
@@ -165,7 +165,7 @@ namespace NHibernate.Test
 		{
 			// add a check to not run if HSQLDialect
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Master m = new Master();
 			m.OtherMaster = m;
@@ -173,7 +173,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			IEnumerator enumer = s.Enumerable("from m in class Master").GetEnumerator();
 			enumer.MoveNext();
@@ -193,7 +193,7 @@ namespace NHibernate.Test
 		[Test]
 		public void NonLazyBidrectional() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			DomainModel.Single sin = new DomainModel.Single();
 			sin.Id = "asfdfds";
@@ -207,25 +207,25 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			sin = (DomainModel.Single)s.Load( typeof(DomainModel.Single), sin );
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			sev = (Several)s.Load( typeof(Several), sev );
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Find("from s in class Several");
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Find("from s in class Single");
 			t.Commit();
@@ -235,11 +235,10 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionQuery() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			// add checks for SAPDBDialect & MckoiDialect
-			if( !(dialect is Dialect.MySQLDialect) ) 
+			if( dialect.SupportsSubSelects ) 
 			{
 				s.Enumerable("FROM m IN CLASS Master WHERE NOT EXISTS ( FROM d in m.Details.elements WHERE NOT d.I=5 )");
 				s.Enumerable("FROM m IN CLASS Master WHERE NOT 5 IN ( SELECT d.I FROM d IN m.Details.elements )");
@@ -257,7 +256,7 @@ namespace NHibernate.Test
 		{
 			//if( dialect is Dialect.HSQLDialect ) return;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Master master = new Master();
 			Assert.IsNotNull( s.Save(master), "save returned native id" );
@@ -272,8 +271,7 @@ namespace NHibernate.Test
 			master.AddDetail(d1);
 			master.AddDetail(d2);
 
-			// add checks for SAPDBDialect and MckoiDialect
-			if( !(dialect is Dialect.MySQLDialect) ) 
+			if( dialect.SupportsSubSelects ) 
 			{
 				string hql = "from d in class NHibernate.DomainModel.Detail, m in class NHibernate.DomainModel.Master " + 
 					"where m = d.Master and m.Outgoing.size = 0 and m.Incoming.size = 0";
@@ -284,7 +282,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			master = (Master)s.Load( typeof(Master), mid );
 			IEnumerator enumer = master.Details.GetEnumerator();
@@ -299,13 +297,13 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			Assert.AreEqual( 2, s.Find("select elements(master.Details) from Master master").Count );
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			IList list = s.Find("from Master m left join fetch m.Details");
 			Master m = (Master)list[0];
@@ -318,7 +316,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			list = s.Find("select m from Master m1, Master m left join fetch m.Details where m.Name=m1.Name");
 			Assert.IsTrue( NHibernateUtil.IsInitialized( ((Master)list[0]).Details ) );
@@ -327,7 +325,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			list = s.Find("select m, m1.Name from Master m1, Master m left join fetch m.Details where m.Name=m1.Name");
 			Master masterFromHql = (Master)((object[])list[0])[0];
@@ -338,7 +336,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			Detail dd = (Detail)s.Load( typeof(Detail), did );
 			master = dd.Master;
@@ -431,7 +429,7 @@ namespace NHibernate.Test
 		{
 			//if HSQLDialect skip test
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Master master1 = new Master();
 			Master master2 = new Master();
 			Master master3 = new Master();
@@ -448,7 +446,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			master1 = (Master)s.Load( typeof(Master), m1id );
 			int i = 0;
 			foreach( Master m in master1.Incoming  ) 
@@ -470,7 +468,7 @@ namespace NHibernate.Test
 		{
 			//HSQLDialect return;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Detail d1 = new Detail();
 			Detail d2 = new Detail();
 			d2.I = 22;
@@ -487,7 +485,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			m = (Master)s.Load( typeof(Master), mid );
 			Assert.AreEqual( 2, m.MoreDetails.Count, "cascade save" );
 			IEnumerator enumer = m.MoreDetails.GetEnumerator();
@@ -504,7 +502,7 @@ namespace NHibernate.Test
 		[Test]
 		public void NamedQuery() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			IQuery q = s.GetNamedQuery("all_details");
 			q.List();
 			s.Close();
@@ -513,7 +511,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Serialization() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Master m = new Master();
 			Detail d1 = new Detail();
 			Detail d2 = new Detail();
@@ -561,7 +559,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			mid = s.Save( new Master() );
 			object mid2 = s.Save( new Master() );
 			s.Flush();
@@ -579,7 +577,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			string db = s.Connection.Database; //force session to grab a connection
 			try 
 			{
@@ -603,7 +601,7 @@ namespace NHibernate.Test
 		public void UpdateLazyCollections() 
 		{
 			// if (dialect is HSQLDialect) return;
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Master m = new Master();
 			Detail d1 = new Detail();
 			Detail d2 = new Detail();
@@ -627,11 +625,11 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			m = (Master)s.Load( typeof(Master), mid );
 			s.Close();
 			m.Name = "New Name";
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Update(m, mid);
 			IEnumerator enumer = m.Details.GetEnumerator();
 			int i = 0;
@@ -657,7 +655,7 @@ namespace NHibernate.Test
 		{
 			//if( dialect is Dialect.HSQLDialect ) return;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Detail detail = new Detail();
 			SubDetail subdetail = new SubDetail();
 			Master m = new Master();
@@ -672,7 +670,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			m = (Master)s.Load( typeof(Master), mid);
 			IEnumerator enumer = m.MoreDetails.GetEnumerator();
 			enumer.MoveNext();
@@ -686,7 +684,7 @@ namespace NHibernate.Test
 		public void MixNativeAssigned() 
 		{
 			// if HSQLDialect then skip test
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Category c = new Category();
 			c.Name = "NAME";
 			Assignable assn = new Assignable();
@@ -699,7 +697,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Delete(assn);
 			s.Flush();
 			s.Close();
@@ -714,7 +712,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionReplace2() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
 			IList list = new ArrayList();
@@ -726,21 +724,21 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category)s.Load( typeof(Category), c.Id, LockMode.Upgrade );
 			IList list2 = c.Subcategories;
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c2 = (Category)s.Load( typeof(Category), c2.Id, LockMode.Upgrade );
 			c2.Subcategories = list2;
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c2 = (Category)s.Load( typeof(Category), c2.Id, LockMode.Upgrade );
 			Assert.AreEqual( 1, c2.Subcategories.Count );
@@ -753,7 +751,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionReplace() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
 			IList list = new ArrayList();
@@ -763,14 +761,14 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category)s.Load( typeof(Category), c.Id, LockMode.Upgrade );
 			c.Subcategories = list;
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category)s.Load( typeof(Category), c.Id, LockMode.Upgrade );
 			IList list2 = c.Subcategories;
@@ -779,14 +777,14 @@ namespace NHibernate.Test
 
 			Assert.IsFalse( NHibernateUtil.IsInitialized( c.Subcategories ) );
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category)s.Load( typeof(Category), c.Id, LockMode.Upgrade );
 			c.Subcategories = list2;
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category)s.Load( typeof(Category), c.Id, LockMode.Upgrade );
 			Assert.AreEqual( 1, c.Subcategories.Count );
@@ -798,7 +796,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Categories() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Category c = new Category();
 			c.Name = Category.RootCategory;
 			Category c1 = new Category();
@@ -812,7 +810,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			c = (Category)s.Load( typeof(Category), c.Id );
 			Assert.IsNotNull( c.Subcategories[0] );
 			Assert.IsNotNull( c.Subcategories[1] );
@@ -828,7 +826,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CollectionRefresh() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Category c = new Category();
 			IList list = new ArrayList();
 			c.Subcategories = list;
@@ -837,19 +835,19 @@ namespace NHibernate.Test
 			object id = s.Save(c);
 			s.Flush();
 			
-			s = sessions.OpenSession();
+			s = OpenSession();
 			c = (Category)s.Load( typeof(Category), id );
 			s.Refresh(c);
 			s.Flush();
 
 			Assert.AreEqual( 1, c.Subcategories.Count );
 			s.Flush();
-			s = sessions.OpenSession();
+			s = OpenSession();
 			c = (Category) s.Load( typeof(Category), id );
 			Assert.AreEqual( 1, c.Subcategories.Count );
 			
 			// modify the collection in another session
-			ISession s2 = sessions.OpenSession();
+			ISession s2 = OpenSession();
 			Category c2 = (Category)s2.Load( typeof(Category), id );
 			c2.Subcategories.Add( new Category() );
 			s2.Flush();
@@ -874,7 +872,7 @@ namespace NHibernate.Test
 		[Test]
 		public void CustomPersister() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			Custom c = new Custom();
 			c.Name = "foo";
 			c.Id = 100;
@@ -883,21 +881,21 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			c = (Custom)s.Load( typeof(Custom), id );
 			Assert.AreEqual( "foo", c.Name );
 			c.Name = "bar";
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			c = (Custom)s.Load( typeof(Custom), id );
 			Assert.AreEqual( "bar", c.Name );
 			s.Delete(c);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			bool none = false;
 			try 
 			{
@@ -916,12 +914,12 @@ namespace NHibernate.Test
 		[Test]
 		public void Interface() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			object id = s.Save( new BasicNameable() );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			INameable n = (INameable)s.Load( typeof(INameable), id );
 			s.Delete(n);
 			s.Flush();
@@ -931,7 +929,7 @@ namespace NHibernate.Test
 		[Test]
 		public void NoUpdatedManyToOne() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			W w1 = new W();
 			W w2 = new W();
 			Z z = new Z();
@@ -942,7 +940,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			s.Update(z);
 			s.Flush();
 			s.Close();

@@ -62,12 +62,12 @@ namespace NHibernate.Test.TypesTest
 			basic.Id = 1;
 			basic.ByteValue = (byte)43;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(basic);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			basic = (ByteClass)s.Load( typeof(ByteClass), 1 );
 
 			Assert.AreEqual( (byte)43, basic.ByteValue );

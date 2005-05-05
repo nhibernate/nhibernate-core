@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		[Test]
 		public void TestSelect() {
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			TestInsert();
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Ignore("Code is incomplete")]
 		public void TestInverse() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			TestInsert();
@@ -77,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		[Test]
 		public void TestSort() {
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			TestInsert();
@@ -101,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		[Test]
 		public void TestInsert() {
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			SexType male = new SexType();

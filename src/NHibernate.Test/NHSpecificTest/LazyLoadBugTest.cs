@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			int parentId = 0;
 
-			using( ISession s1 = sessions.OpenSession() )
+			using( ISession s1 = OpenSession() )
 			using( ITransaction t1 = s1.BeginTransaction() )
 			{
 				// create a new
@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 
 			// try to Load the object to get the exception
-			using( ISession s2 = sessions.OpenSession() )
+			using( ISession s2 = OpenSession() )
 			using( ITransaction t2 = s2.BeginTransaction() )
 			{
 				LLParent parent2 = (LLParent)s2.Load( typeof(LLParent), parentId );
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			int parentId = 0;
 
-			using( ISession s1 = sessions.OpenSession() )
+			using( ISession s1 = OpenSession() )
 			using( ITransaction t1 = s1.BeginTransaction() )
 			{
 				// create a new
@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 
 			// try to Load the object to make sure the save worked
-			using( ISession s2 = sessions.OpenSession() )
+			using( ISession s2 = OpenSession() )
 			using( ITransaction t2 = s2.BeginTransaction() )
 			{
 				LLParent parent2 = (LLParent)s2.Load( typeof( LLParent ), parentId );

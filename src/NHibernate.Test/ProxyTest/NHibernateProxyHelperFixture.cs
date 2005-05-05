@@ -48,7 +48,7 @@ namespace NHibernate.Test.ProxyTest
 			AProxy a = new AProxy();
 			try 
 			{
-				s = sessions.OpenSession();
+				s = OpenSession();
 				a.Name = "a proxy";
 				s.Save( a );
 				s.Flush();
@@ -63,7 +63,7 @@ namespace NHibernate.Test.ProxyTest
 
 			try
 			{
-				s = sessions.OpenSession();
+				s = OpenSession();
 				System.Type type = NHibernateProxyHelper.GetClass( a );
 				Assert.AreEqual( typeof(AProxy), type, "Should have returned 'A' for a non-proxy" );
 				

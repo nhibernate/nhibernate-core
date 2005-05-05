@@ -68,7 +68,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Subselect()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				B b = new B();
@@ -80,7 +80,7 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				B b = (B) s.CreateQuery("from B").UniqueResult();
@@ -91,7 +91,7 @@ namespace NHibernate.Test
 		[Test]
 		public void Subclassing() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			C1 c1 = new C1();
 			D d = new D();
@@ -111,7 +111,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c1 = (C1) s.Load( typeof(A), c1.Id );
 			Assert.IsTrue(
@@ -123,7 +123,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c1 = (C1) s.Load( typeof(B), c1.Id );
 			Assert.IsTrue(
@@ -135,7 +135,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 		
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			c1 = (C1) s.Load( typeof(C1), c1.Id );
 			Assert.IsTrue(
@@ -147,7 +147,7 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Find("from b in class B");
 			t.Commit();

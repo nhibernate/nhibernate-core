@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			if (objs != null && objs.Length > 0) 
 			{ 
-				ISession s = sessions.OpenSession(); 
+				ISession s = OpenSession(); 
 				ITransaction t = s.BeginTransaction(); 
 
 				int count = objs.Length; 

@@ -69,12 +69,12 @@ namespace NHibernate.Test.TypesTest
 			basic.Id = 1;
 			basic.DecimalValue = expected;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(basic);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			basic = (DecimalClass)s.Load( typeof(DecimalClass), 1 );
 
 			Assert.AreEqual( expected, basic.DecimalValue );

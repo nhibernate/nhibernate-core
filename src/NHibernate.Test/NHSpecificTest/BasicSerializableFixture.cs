@@ -30,14 +30,14 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void TestCRUD() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			BasicSerializable ser = new BasicSerializable();
 			SerializableClass serClass = ser.SerializableProperty;
 			s.Save(ser);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			ser = (BasicSerializable)s.Load( typeof(BasicSerializable), ser.Id );
 			Assert.IsNull( ser.Serial , "should have saved as null" );
 
@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			ser = (BasicSerializable)s.Load( typeof(BasicSerializable), ser.Id );
 			Assert.IsTrue( ser.Serial is SerializableClass, "should have been a SerializableClass" );
 			Assert.AreEqual( ser.SerializableProperty, ser.Serial, "SerializablePorperty and Serial should both be 5 and 'serialize me'" );
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			ser = (BasicSerializable)s.Load( typeof(BasicSerializable), ser.Id );
 
 			props = (IDictionary)ser.Serial;
@@ -72,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			ser = (BasicSerializable)s.Load( typeof(BasicSerializable), ser.Id );
 			Assert.AreEqual( "modify me", ser.SerializableProperty._classString );
 			Assert.AreEqual( "bar", props["foo"] );

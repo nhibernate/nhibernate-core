@@ -24,12 +24,12 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			BasicTime basic = Create(1);
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(basic);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 
 			BasicTime basicLoaded = (BasicTime)s.Load( typeof(BasicTime), 1 );
 
@@ -50,12 +50,12 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			BasicTime basic = Create(1);
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(basic);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 
 			BasicTime basicLoaded = (BasicTime)s.Load( typeof(BasicTime), 1 );
 
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			basic = (BasicTime)s.Load( typeof(BasicTime), 1 );
 			// make sure the 0 index saved with values in Time
 			Assert.AreEqual( 12, basic.TimeArray[0].Hour );
@@ -88,12 +88,12 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			BasicTime basic = Create(1);
 			
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save( basic );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			basic = (BasicTime)s.Load( typeof(BasicTime), 1 );
 
 			basic.TimeValue = new DateTime( 2000, 12, 1, 13, 1, 2 );
@@ -101,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			// make sure the update went through
 			BasicTime basicLoaded = (BasicTime)s.Load( typeof(BasicTime), 1 );
 

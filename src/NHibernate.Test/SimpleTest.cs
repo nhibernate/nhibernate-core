@@ -47,33 +47,33 @@ namespace NHibernate.Test
 			long key = 10;
 			long otherKey = 9;
 
-			ISession s1 = sessions.OpenSession();
-			ITransaction t1 = s1.BeginTransaction();
-			
-			// create a new
-			Simple simple1 = new Simple();
-			Simple otherSimple1 = new Simple();
+			using( ISession s1 = OpenSession() )
+			using( ITransaction t1 = s1.BeginTransaction() )
+			{
+				// create a new
+				Simple simple1 = new Simple();
+				Simple otherSimple1 = new Simple();
 
-			simple1.Name = "Simple 1";
-			simple1.Address = "Street 12";
-			simple1.Date = testDateTime;
-			simple1.Count = 99;
+				simple1.Name = "Simple 1";
+				simple1.Address = "Street 12";
+				simple1.Date = testDateTime;
+				simple1.Count = 99;
 
-			otherSimple1.Name = "Other Simple 1";
-			otherSimple1.Address = "Other Street 12";
-			otherSimple1.Date = testDateTime;
-			otherSimple1.Count = 98;
+				otherSimple1.Name = "Other Simple 1";
+				otherSimple1.Address = "Other Street 12";
+				otherSimple1.Date = testDateTime;
+				otherSimple1.Count = 98;
 
-			simple1.Other = otherSimple1;
+				simple1.Other = otherSimple1;
 			
-			s1.Save(otherSimple1, otherKey);
-			s1.Save(simple1, key);
+				s1.Save(otherSimple1, otherKey);
+				s1.Save(simple1, key);
 			
-			t1.Commit();
-			s1.Close();
+				t1.Commit();
+			}
 
 			// try to Load the object to make sure the save worked
-			ISession s2 = sessions.OpenSession();
+			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 			
 			Simple simple2 = (Simple)s2.Load(typeof(Simple), key);
@@ -96,7 +96,7 @@ namespace NHibernate.Test
 			s2.Close();
 
 			// lets verify that the update worked 
-			ISession s3 = sessions.OpenSession();
+			ISession s3 = OpenSession();
 			ITransaction t3 = s3.BeginTransaction();
 
 //			Simple simple3 = (Simple)s3.Load(typeof(Simple), key);
@@ -120,7 +120,7 @@ namespace NHibernate.Test
 			s3.Close();
 
 			// verify there is no other Simple objects in the db
-			ISession s4 = sessions.OpenSession();
+			ISession s4 = OpenSession();
 			Assert.AreEqual(0, s4.CreateCriteria(typeof(Simple)).List().Count);
 			s4.Close();
 
@@ -132,7 +132,7 @@ namespace NHibernate.Test
 		{
 			DateTime now = DateTime.Now;
 			
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			
 			// create a new

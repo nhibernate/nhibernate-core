@@ -112,15 +112,33 @@ namespace NHibernate.Id
 		[MethodImpl( MethodImplOptions.Synchronized )]
 		public virtual object Generate( ISessionImplementor session, object obj )
 		{
-			//this has to be done using a different connection to the containing
-			//transaction becase the new hi value must remain valid even if the
-			//contataining transaction rolls back
-			IDbConnection conn = session.Factory.OpenConnection();
+			// This has to be done using a different connection to the containing
+			// transaction becase the new hi value must remain valid even if the
+			// containing transaction rolls back.
+			//
+			// We make an exception for SQLite and use the session's connection,
+			// since SQLite only allows one connection to the database.
+
+			bool isSQLite = session.Factory.Dialect is Dialect.SQLiteDialect;
+			IDbConnection conn;
+			if( isSQLite )
+			{
+				conn = session.Connection;
+			}
+			else
+			{
+				conn = session.Factory.OpenConnection();
+			}
+
 			int result;
 			int rows;
 			try
 			{
-				IDbTransaction trans = conn.BeginTransaction();
+				IDbTransaction trans = null;
+				if( !isSQLite )
+				{
+					trans = conn.BeginTransaction();
+				}
 
 				do
 				{
@@ -181,14 +199,20 @@ namespace NHibernate.Id
 				}
 				while( rows == 0 );
 
-				trans.Commit();
+				if( !isSQLite )
+				{
+					trans.Commit();
+				}
 
 				return result;
 			}
 				// TODO: Shouldn't we have a Catch with a rollback here?
 			finally
 			{
-				session.Factory.CloseConnection( conn );
+				if( !isSQLite )
+				{
+					session.Factory.CloseConnection( conn );
+				}
 			}
 		}
 

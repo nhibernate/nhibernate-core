@@ -45,7 +45,7 @@ namespace NHibernate.Test
 		public void SimpleSelectTest() 
 		{			
 			// create the objects to search on
-			ISession s1 = sessions.OpenSession();
+			ISession s1 = OpenSession();
 			ITransaction t1 = s1.BeginTransaction();
 			
 			long simple1Key = 15;
@@ -68,7 +68,7 @@ namespace NHibernate.Test
 			t1.Commit();
 			s1.Close();
 
-			ISession s2 = sessions.OpenSession();
+			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 
 			IList results2 = s2.CreateCriteria(typeof(Simple))
@@ -104,13 +104,13 @@ namespace NHibernate.Test
 			s2.Count = 2;
 			s2.Date = new DateTime( 2006, 01, 01 );
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save( s1, 1 );
 			s.Save( s2, 2 );
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IList results = s.CreateCriteria( typeof(Simple) )
 				.Add( Expression.Expression.Gt( "Date", new DateTime( 2005, 01, 01 ) ) )
 				.AddOrder( Expression.Order.Asc( "Date" ) )

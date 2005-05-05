@@ -61,12 +61,12 @@ namespace NHibernate.Test.TypesTest
 			basic.Id = 1;
 			basic.BooleanValue = true;
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(basic);
 			s.Flush();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			basic = (BooleanClass)s.Load( typeof(BooleanClass), 1 );
 
 			Assert.AreEqual( true, basic.BooleanValue );

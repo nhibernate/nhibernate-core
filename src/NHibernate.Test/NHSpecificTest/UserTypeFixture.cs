@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void InsertNull() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 
 			ClassWithNullColumns userTypeClass = new ClassWithNullColumns();
 			userTypeClass.Id = 5;

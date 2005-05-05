@@ -52,7 +52,7 @@ namespace NHibernate.Test
 		[Test]
 		public void SetProperties() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
@@ -75,7 +75,7 @@ namespace NHibernate.Test
 		[Test]
 		public void NothingToUpdate() 
 		{
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
@@ -83,13 +83,13 @@ namespace NHibernate.Test
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Update( simple, (long)10 );
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Update( simple, (long)10 );
 			s.Delete(simple);
@@ -125,7 +125,7 @@ namespace NHibernate.Test
 		[Test]
 		public void SQLFunctions() 
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = OpenSession() )
 			{
 				ITransaction t = s.BeginTransaction();
 				Simple simple = new Simple();
@@ -185,9 +185,7 @@ namespace NHibernate.Test
 
 				s.Save( min, (long)30 );
 
-				// && !(dialect is Dialect.HSQLDialect)
-				// MySql has no subqueries
-				if( !(dialect is Dialect.MySQLDialect) ) 
+				if( dialect.SupportsSubSelects )
 				{
 					Assert.AreEqual( 2, s.Find("from s in class Simple where s.Count > ( select min(sim.Count) from sim in class NHibernate.DomainModel.Simple )").Count );
 					t.Commit();
@@ -201,7 +199,7 @@ namespace NHibernate.Test
 				Assert.AreEqual(12, (Int32)enumer.Current );
 				Assert.IsFalse( enumer.MoveNext() );
 
-				if( !(dialect is Dialect.MySQLDialect) ) 
+				if( dialect.SupportsSubSelects ) 
 				{
 					enumer = s.Enumerable("select s.Count from s in class Simple group by s.Count having s.Count = 12").GetEnumerator();
 					Assert.IsTrue( enumer.MoveNext() );

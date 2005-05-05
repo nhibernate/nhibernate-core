@@ -25,7 +25,7 @@ namespace NHibernate.Test.Subclass
 		public void TestCRUD() 
 		{
 			// test the Save
-			ISession s1 = sessions.OpenSession();
+			ISession s1 = OpenSession();
 			ITransaction t1 = s1.BeginTransaction();
 			int oneId;
 			int baseId;
@@ -50,7 +50,7 @@ namespace NHibernate.Test.Subclass
 			s1.Close();
 
 			// lets verify the correct classes were saved
-			ISession s2 = sessions.OpenSession();
+			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 			
 			// perform a load based on the base class
@@ -81,7 +81,7 @@ namespace NHibernate.Test.Subclass
 			s2.Close();
 
 			// lets test the Criteria interface for subclassing
-			ISession s3 = sessions.OpenSession();
+			ISession s3 = OpenSession();
 			ITransaction t3 = s3.BeginTransaction();
 
 			IList results3 = s3.CreateCriteria(typeof(SubclassBase))
@@ -117,7 +117,7 @@ namespace NHibernate.Test.Subclass
 		public void HqlClassKeyword() 
 		{
 			// test the Save
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			int oneId;
 			int baseId;
@@ -141,7 +141,7 @@ namespace NHibernate.Test.Subclass
 			t.Commit();
 			s.Close();
 
-			s = sessions.OpenSession();
+			s = OpenSession();
 			IList list = s.Find( "from SubclassBase as sb where sb.class=SubclassBase" );
 			Assert.AreEqual( 1, list.Count );
 			Assert.AreEqual( typeof(SubclassBase), list[0].GetType(), "should be base" );

@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 		[Test]
 		public void Update()
 		{
-			ISession session1 = sessions.OpenSession();
+			ISession session1 = OpenSession();
 
 			Parent parent1 =  new Parent();
 			Child child1 = new Child();
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 			session1.Flush();
 			session1.Close();
 
-			ISession session2 = sessions.OpenSession();
+			ISession session2 = OpenSession();
 			Parent parent = session2.Load( typeof( Parent ), pId ) as Parent;
 			Child child = session2.Load( typeof( Child ), cId ) as Child;
 			session2.Close();
@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 			Child newChild = new Child();
 			parent.AddChild( newChild );
 
-			ISession session = sessions.OpenSession();
+			ISession session = OpenSession();
 			session.Update( parent );
 			session.Flush();
 			session.Close();
