@@ -2643,6 +2643,9 @@ namespace NHibernate.Test
 			System.IO.Stream stream = new System.IO.MemoryStream();
 			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 			formatter.Serialize(stream, s);
+
+			s.Close();
+
 			stream.Position = 0;
 			s = (ISession)formatter.Deserialize(stream);
 			stream.Close();

@@ -40,6 +40,23 @@ namespace NHibernate.Test.ProxyInterface
 			s.Close();
 		}
 
+		private void SerializeAndDeserialize(ref ISession s)
+		{
+			// Serialize the session
+			using( Stream stream = new MemoryStream() )
+			{
+				IFormatter formatter = new BinaryFormatter( );
+				formatter.Serialize(stream, s);
+
+				// Close the original session
+				s.Close();
+
+				// Deserialize the session
+				stream.Position = 0;
+				s = (ISession)formatter.Deserialize(stream);
+			}
+		}
+
 		[Test]
 		public void ProxySerialize() 
 		{
@@ -55,26 +72,15 @@ namespace NHibernate.Test.ProxyInterface
 			ap = (CastleProxy)s.Load( typeof(CastleProxyImpl), ap.Id ); 
 			Assert.AreEqual( 1, ap.Id );
 			s.Disconnect();
-				
-			// serialize and then deserialize the session.
-			Stream stream = new MemoryStream();
-			IFormatter formatter = new BinaryFormatter( );
-			formatter.Serialize(stream, s);
-			stream.Position = 0;
-			s = (ISession)formatter.Deserialize(stream);
-			stream.Close();
+
+			SerializeAndDeserialize(ref s);
 
 			s.Reconnect();
 			s.Disconnect();
-				
+
 			// serialize and then deserialize the session again - make sure Castle.DynamicProxy
 			// has no problem with serializing two times - earlier versions of it did.
-			stream = new MemoryStream();
-			formatter = new BinaryFormatter( );
-			formatter.Serialize(stream, s);
-			stream.Position = 0;
-			s = (ISession)formatter.Deserialize(stream);
-			stream.Close();
+			SerializeAndDeserialize(ref s);
 
 			s.Close();
 		}
@@ -87,14 +93,9 @@ namespace NHibernate.Test.ProxyInterface
 			CastleProxy notThere = (CastleProxy)s.Load( typeof(CastleProxyImpl), 5 ); 
 			Assert.AreEqual( 5, notThere.Id );
 			s.Disconnect();
-				
+
 			// serialize and then deserialize the session.
-			Stream stream = new MemoryStream();
-			IFormatter formatter = new BinaryFormatter( );
-			formatter.Serialize(stream, s);
-			stream.Position = 0;
-			s = (ISession)formatter.Deserialize(stream);
-			stream.Close();
+			SerializeAndDeserialize(ref s);
 
 			Assert.IsNotNull( s.Load( typeof(CastleProxyImpl), 5 ), "should be proxy - even though it doesn't exists in db" );			
 			s.Close();
