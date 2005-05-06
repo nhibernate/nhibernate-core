@@ -8,10 +8,16 @@
 		<property name="show_sql">false</property>
 		<property name="dialect">NHibernate.Dialect.MsSql2000Dialect</property>
 		<property name="use_outer_join">true</property>
-		<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
+		<!-- 
+			these are different than the values in app.config so I can verify these 
+			are being picked up
+		-->
+		<property name="query.substitutions">true 1, false 0, yes 1, no 0</property>
 		<!-- mapping files -->
-		<mapping file="ABC.hbm.xml" />
-		<mapping resource="NHibernate.DomainModel.Simple.hbm.xml" assembly="NHibernate.DomainModel" />
+		<!-- are now optional
+			<mapping file="ABC.hbm.xml" />
+			<mapping resource="NHibernate.DomainModel.Simple.hbm.xml" assembly="NHibernate.DomainModel" />
+		-->
 	</session-factory>
 	
 </hibernate-configuration>

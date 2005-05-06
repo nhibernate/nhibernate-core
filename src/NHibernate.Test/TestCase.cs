@@ -3,10 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Reflection;
 
-using NHibernate.DomainModel;
-
 using NHibernate.Cfg;
-using NHibernate.Dialect;
 using NHibernate.Tool.hbm2ddl;
 
 using NUnit.Framework;

@@ -277,6 +277,7 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Delete(b);
 			t.Commit();
+			s.Close();
 		}
 
 		[Test]

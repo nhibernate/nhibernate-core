@@ -1,12 +1,5 @@
 using System;
 using System.Collections;
-using System.Data;
-
-using NHibernate.Cfg;
-using NHibernate.Engine;
-using NHibernate.SqlCommand;
-using NHibernate.Type;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.QueryTest
@@ -51,13 +44,21 @@ namespace NHibernate.Test.QueryTest
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			
-			IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
-			// Set the first property, but not the second
-			q.SetParameter(0, "Fred");
 
-			// Try to execute it
-			IList list = q.List();
+			try
+			{
+				IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
+				// Set the first property, but not the second
+				q.SetParameter(0, "Fred");
+
+				// Try to execute it
+				IList list = q.List();
+			}
+			finally
+			{
+				t.Rollback();
+				s.Close();
+			}
 		}
 
 		[Test, ExpectedException(typeof(NHibernate.QueryException))]
@@ -65,13 +66,21 @@ namespace NHibernate.Test.QueryTest
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			
-			IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
-			// Set the second property, but not the first - should give a nice not found at position xxx error
-			q.SetParameter(1, "Fred");
 
-			// Try to execute it
-			IList list = q.List();
+			try
+			{
+				IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
+				// Set the second property, but not the first - should give a nice not found at position xxx error
+				q.SetParameter(1, "Fred");
+
+				// Try to execute it
+				IList list = q.List();
+			}
+			finally
+			{
+				t.Rollback();
+				s.Close();
+			}
 		}
 
 		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
@@ -79,13 +88,20 @@ namespace NHibernate.Test.QueryTest
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			
-			IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
-			// Try to set the third positional parameter
-			q.SetParameter(3, "Fred");
+			try
+			{
+				IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
+				// Try to set the third positional parameter
+				q.SetParameter(3, "Fred");
 
-			// Try to execute it
-			IList list = q.List();
+				// Try to execute it
+				IList list = q.List();
+			}
+			finally
+			{
+				t.Rollback();
+				s.Close();
+			}
 		}
 
 		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
@@ -93,13 +109,20 @@ namespace NHibernate.Test.QueryTest
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			
-			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
-			// Try to set the first property
-			q.SetParameter(0, "Fred");
+			try
+			{
+				IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
+				// Try to set the first property
+				q.SetParameter(0, "Fred");
 
-			// Try to execute it
-			IList list = q.List();
+				// Try to execute it
+				IList list = q.List();
+			}
+			finally
+			{
+				t.Rollback();
+				s.Close();
+			}
 		}
 	}
 }

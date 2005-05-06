@@ -1,11 +1,5 @@
 using System;
 using System.Collections;
-using System.Data;
-
-using NHibernate.Cfg;
-using NHibernate.Engine;
-using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 using NUnit.Framework;
 
@@ -52,12 +46,21 @@ namespace NHibernate.Test.QueryTest
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			
-			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
-			// Just set the Name property not the count
-			q.SetAnsiString("Name", "Fred");
+			try
+			{
+				
+				IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
+				// Just set the Name property not the count
+				q.SetAnsiString("Name", "Fred");
 
-			// Try to execute it
-			IList list = q.List();
+				// Try to execute it
+				IList list = q.List();
+			}
+			finally
+			{
+				t.Rollback();
+				s.Close();
+			}
 		}
 	}
 }

@@ -28,7 +28,7 @@ namespace NHibernate.Test.CfgTest
 			Configuration cfg = new Configuration();
 			cfg.Configure();
 			
-			Assert.AreEqual( "true 1, false 0, yes 'Y', no 'N'", cfg.Properties[Cfg.Environment.QuerySubstitutions]);
+			Assert.AreEqual( "true 1, false 0, yes 1, no 0", cfg.Properties[Cfg.Environment.QuerySubstitutions]);
 			Assert.AreEqual( "Server=localhost;initial catalog=nhibernate;User Id=;Password=", cfg.Properties[Cfg.Environment.ConnectionString]);
 		}
 
@@ -71,7 +71,7 @@ namespace NHibernate.Test.CfgTest
 			Configuration cfg = new Configuration();
 			cfg.Configure( this.GetType().Assembly, "NHibernate.Test.hibernate.cfg.xml" );
 			
-			Assert.AreEqual( "true 1, false 0, yes 'Y', no 'N'", cfg.Properties[Cfg.Environment.QuerySubstitutions]);
+			Assert.AreEqual( "true 1, false 0, yes 1, no 0", cfg.Properties[Cfg.Environment.QuerySubstitutions]);
 			Assert.AreEqual( "Server=localhost;initial catalog=nhibernate;User Id=;Password=", cfg.Properties[Cfg.Environment.ConnectionString]);
 		}
 
