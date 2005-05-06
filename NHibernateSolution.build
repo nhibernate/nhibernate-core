@@ -10,6 +10,13 @@
 		then change this to true.  It generates a nice looking html report for the test files
 	-->
 	<property name="nunit2report.installed" value="false" />
+
+	<!--
+		if Visual Studio Help Integration Kit has been installed
+		then change this to true or include -D:vshik.installed=true in the command line.
+		It generates Visual Studio.NET 2003 documentation.
+	-->
+	<property name="vshik.installed" value="false" overwrite="false" />
 	
 	<!--
 		Cenqua provided a license of Clover.NET for the NHibernate project to use. 
@@ -253,17 +260,32 @@
 	<target name="doc" depends="init" description="Builds the API documentation and the Help Documentation" >
 		<call target="sdkdoc" />
 		<nant target="clean package" buildfile="doc/reference/doc.build" />
+		<if test="${vshik.installed}">
+			<property name="help2.dir" value="${build.dir}/doc/Help2" />
+			<mkdir dir="${help2.dir}" failonerror="false" />
+			<copy if="${vshik.installed}" todir="${help2.dir}" overwrite="true" >
+				<fileset basedir="doc/help2">
+					<include name="*" />
+				</fileset>
+			</copy>
+			<mkdir dir="${help2.dir}/Titles" failonerror="false" />
+			<move flatten="true" todir="${help2.dir}/Titles">
+				<fileset basedir="${build.dir}/doc">
+					<include name="**/*.HxS" />
+				</fileset>
+			</move>
+		</if>
 	</target>
 	
 	<target name="sdkdoc" depends="init" description="Generates MSDN sytle documentation">
 		<ndoc>
 			<assemblies basedir="${build.dir}/bin">
-				<includes name="NHibernate.dll" />
-				<includes name="Iesi.Collections.dll" />
+				<include name="NHibernate.dll" />
+				<include name="Iesi.Collections.dll" />
 			</assemblies>
 			<summaries>
-				<includes name="src/NHibernate/NamespaceSummary.xml" />
-				<includes name="src/Iesi.Collections/NamespaceSummary.xml" />
+				<include name="src/NHibernate/NamespaceSummary.xml" />
+				<include name="src/Iesi.Collections/NamespaceSummary.xml" />
 			</summaries>
 			<documenters>
 				<documenter name="MSDN">
@@ -310,11 +332,56 @@
 			</documenters> 
 		</ndoc>
 		
+		<if test="${vshik.installed}">
+			<ndoc>
+				<assemblies basedir="${build.dir}/bin">
+					<include name="NHibernate.dll" />
+					<include name="Iesi.Collections.dll" />
+				</assemblies>
+				<summaries>
+					<include name="src/NHibernate/NamespaceSummary.xml" />
+					<include name="src/Iesi.Collections/NamespaceSummary.xml" />
+				</summaries>
+				<documenters>
+					<documenter name="VS.NET 2003">
+						<property name="OutputDirectory" value="${build.dir}/doc/sdk" />
+						<property name="HtmlHelpName" value="NHibernate-SDK" />
+						<property name="Title" value="NHibernate Class Library - v.${project.version}" />
+						<property name="HeaderHtml" value="" />
+						<property name="FooterHtml" value="" />
+						<property name="LinkToSdkDocVersion" value="SDK_v1_1" />
+						<property name="ShowMissingSummaries" value="${build.debug}" />
+						<property name="ShowMissingRemarks" value="${build.debug}" />
+						<property name="ShowMissingParams" value="${build.debug}" />
+						<property name="ShowMissingReturns" value="${build.debug}" />
+						<property name="ShowMissingValues" value="${build.debug}" />
+						<property name="DocumentInternals" value="False" />
+						<property name="DocumentProtected" value="True" />
+						<property name="DocumentPrivates" value="False" />
+						<property name="DocumentProtectedInternalAsProtected" value="False" />
+						<property name="DocumentEmptyNamespaces" value="False" />
+						<property name="CopyrightText" value="" />
+						<property name="CopyrightHref" value="" />
+						<property name="ReferencesPath" value="" />
+						<property name="SkipNamespacesWithoutSummaries" value="False" />
+						<property name="UseNamespaceDocSummaries" value="False" />
+						<property name="AutoPropertyBackerSummaries" value="False" />
+						<property name="AutoDocumentConstructors" value="True" />
+						<property name="DocumentAttributes" value="True" />
+						<property name="ShowTypeIdInAttributes" value="False" />
+						<property name="DocumentedAttributes" value="True" />
+						<property name="EditorBrowsableFilter" value="Off" />
+						<property name="UseNDocXmlFile" value="" />
+					</documenter>
+				</documenters> 
+			</ndoc>
+		</if>
 		<delete>
-			<!-- remove all of the html, gif, etc... files and leave only the chm -->
+			<!-- remove all of the html, gif, etc... files and leave only the chm and HxS -->
 			<fileset basedir="${build.dir}/doc/sdk">
-				<includes name="*" />
-				<excludes name="*SDK.chm" />
+				<include name="**" />
+				<exclude name="*SDK.chm" />
+				<exclude name="*SDK.HxS" />
 			</fileset>
 		</delete>
 		
@@ -324,35 +391,35 @@
 		<copy todir="${build.dir}">
 			<fileset>
 				<!-- copy framework nuetral dlls -->
-				<includes name="lib/*" />
-				<includes name="${lib.dir}/**" />
+				<include name="lib/*" />
+				<include name="${lib.dir}/**" />
 				
 				<!-- 
 					exclude the UnitTesting project that is no longer used and the
 					Clover modified source files.
 				-->
-				<excludes name="src/UnitTesting/**" />
-				<excludes name="${clover.src}/**" />
+				<exclude name="src/UnitTesting/**" />
+				<exclude name="${clover.src}/**" />
 				
 				<!-- exclude ReSharper stuff -->
-				<excludes name="**/_ReSharper*/**" />
-				<excludes name="**/*.resharperoptions" />
+				<exclude name="**/_ReSharper*/**" />
+				<exclude name="**/*.resharperoptions" />
 				
-				<includes name="src/**" />
+				<include name="src/**" />
 				
-				<includes name="NHibernateSolution.build" />
-				<includes name="lgpl.txt" />
-				<includes name="releasenotes.txt" />
-				<includes name="readme.html" />
+				<include name="NHibernateSolution.build" />
+				<include name="lgpl.txt" />
+				<include name="releasenotes.txt" />
+				<include name="readme.html" />
 				
 				<!-- exclude VS.NET stuff -->
-				<excludes name="**/*.suo" />
-				<excludes name="**/*j.user" />
-				<excludes name="**/bin/**" />
-				<excludes name="**/obj/**" />
+				<exclude name="**/*.suo" />
+				<exclude name="**/*j.user" />
+				<exclude name="**/bin/**" />
+				<exclude name="**/obj/**" />
 				
 				<!-- exclude any keys that exist on the build machine -->
-				<excludes name="**/*.snk" />
+				<exclude name="**/*.snk" />
 			
 			</fileset>
 		</copy>
@@ -360,8 +427,8 @@
 		
 		<zip zipfile="${project.zip-path}">
 			<fileset basedir="${build.dir}">
-				<includes name="**/*" />
-				<excludes name="bin/log.txt" />
+				<include name="**/*" />
+				<exclude name="bin/log.txt" />
 			</fileset>
 		</zip>
 		

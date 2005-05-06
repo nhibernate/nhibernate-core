@@ -17,16 +17,31 @@
 		it since the easy solution is put xsltproc in the path.
 	-->
 	
+	<!--
+		if Visual Studio Help Integration Kit has been installed
+		then change this to true or include -D:vshik.installed=true in the command line.
+		It generates Visual Studio.NET 2003 documentation.
+	-->
+	<property name="vshik.installed" value="false" overwrite="false" />
+	
+	<!--
+		The path to the VSHIK executable files. If VSHIK is installed in a different path, then
+		specify the path in the command line using -D:vshik.path=<path>
+	-->
+	<property name="vshik.path" value="C:\Program Files\Microsoft Help 2.0 SDK" overwrite="false" />
+	
 	<property name="lang" value="en" />
 	<property name="output.dir" value="build/${lang}" />
 	
 	<target name="clean" description="Cleans any previous builds">
 		<delete dir="${output.dir}" failonerror="false" />
+		<delete dir="${build.dir}/doc/help" failonerror="false" />
 	</target>
 	
 	<target name="build" description="Generates the documentation in multiple formats from the docbook files.">
 		<call target="build-html" />
 		<call target="build-chm" />
+		<call target="build-help2" />
 	</target>
 	
 	<target name="build-html" description="Generates html from docbook files.">
@@ -104,6 +119,26 @@
 			</fileset>
 		</delete>
 		
+	</target>
+	
+	<target name="build-help2" if="${vshik.installed}" depends="build-chm" description="Generates help2 file from chm file.">
+		<property name="build.help2.dir" value="${output.dir}/help2" />
+		
+		<exec program="HxConv.exe" basedir="${vshik.path}">
+			<arg path="${output.dir}/chm/reference.chm" />
+			<arg value="-o" />
+			<arg path="${build.help2.dir}/reference" />
+			<arg value="-y" />
+		</exec>
+		
+		<exec program="HxComp.exe" basedir="${vshik.path}">
+			<arg value="-p" />
+			<arg path="${build.help2.dir}/reference/reference.HxC" />
+			<arg value="-o" />
+			<arg path="${build.help2.dir}/reference.HxS" />
+		</exec>
+		
+		<delete dir="${build.help2.dir}/reference" />
 	</target>
 	
 	<target name="package" depends="build" description="Copies the files built into the local build dir into the NH build dir.">
