@@ -152,6 +152,28 @@ namespace NHibernate.Test
 			s.Find("from b in class B");
 			t.Commit();
 			s.Close();
+
+			// need to clean up the objects created by this test or Subselect() will fail
+			// because there are rows in the table.  There must be some difference in the order
+			// that NUnit and JUnit run their tests.
+			s = OpenSession();
+			t = s.BeginTransaction();
+
+			IList aList = s.Find( "from A" );
+			IList dList = s.Find( "from D" );
+
+			foreach( A aToDelete in aList )
+			{
+				s.Delete( aToDelete );
+			}
+
+			foreach( D dToDelete in dList )
+			{
+				s.Delete( dToDelete );
+			}
+
+			t.Commit();
+			s.Close();
 		}
 	}
 }
