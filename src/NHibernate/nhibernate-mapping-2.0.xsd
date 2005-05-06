@@ -1,21 +1,4 @@
 <xs:schema targetNamespace="urn:nhibernate-mapping-2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:nhibernate-mapping-2.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:simpleType name="propertyAccess">
-		<xs:annotation>
-			<xs:documentation>Property access strategies</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="property"/>
-			<xs:enumeration value="field"/>
-			<xs:enumeration value="field.camelcase"/>
-			<xs:enumeration value="field.camelcase-underscore"/>
-			<xs:enumeration value="field.pascalcase-m-underscore"/>
-			<xs:enumeration value="field.lowercase-underscore"/>
-			<xs:enumeration value="nosetter.camelcase"/>
-			<xs:enumeration value="nosetter.camelcase-underscore"/>
-			<xs:enumeration value="nosetter.pascalcase-m-underscore"/>
-			<xs:enumeration value="nosetter.lowercase-underscore"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="polymorphismType">
 		<xs:annotation>
 			<xs:documentation>Types of polymorphism</xs:documentation>
@@ -58,7 +41,7 @@
 	</xs:attributeGroup>
 	<xs:attributeGroup name="baseAssociationAttributes">
 		<xs:attribute name="name" type="xs:string" use="required"/>
-		<xs:attribute name="access" type="propertyAccess" use="optional"/>
+		<xs:attribute name="access" type="xs:string" use="optional"/>
 		<xs:attribute name="table" type="xs:string" use="optional"/>
 		<xs:attribute name="schema" type="xs:string" use="optional"/>
 		<xs:attribute name="lazy" type="xs:boolean" use="optional" default="false"/>
@@ -98,7 +81,7 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="default-cascade" type="cascadeStyle" use="optional" default="none"/>
-			<xs:attribute name="default-access" type="propertyAccess" use="optional" default="property">
+			<xs:attribute name="default-access" type="xs:string" use="optional" default="property">
 				<xs:annotation>
 					<xs:documentation>
 					Can specify how the default access to Get/Set the values for the property
@@ -192,7 +175,7 @@
 				<xs:element ref="generator"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="type" type="xs:string"/>
 			<xs:attribute name="length" type="xs:positiveInteger"/>
@@ -216,7 +199,7 @@
 			</xs:sequence>
 			<xs:attribute name="class" type="xs:string"/>
 			<xs:attribute name="name" type="xs:string"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="unsaved-value" type="unsavedValueType" default="none"/>
 		</xs:complexType>
 	</xs:element>
@@ -245,7 +228,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="type" type="xs:string" default="Int32"/>
 			<xs:attribute name="unsaved-value" type="xs:string" default="null">
@@ -261,7 +244,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="unsaved-value" type="xs:string" default="null">
 				<xs:annotation>
@@ -346,7 +329,7 @@
 				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="type" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="length" type="xs:positiveInteger"/>
@@ -381,7 +364,7 @@
 				<xs:element ref="column" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="cascade" type="cascadeStyle" default="none"/>
 			<xs:attribute name="meta-type" type="xs:string"/>
 			<xs:attribute name="id-type" type="xs:string" use="required"/>
@@ -403,7 +386,7 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="table" type="xs:string"/>
 			<xs:attribute name="schema" type="xs:string"/>
 			<xs:attribute name="element-class" type="xs:string"/>
@@ -453,7 +436,7 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="class" type="xs:string"/>
 			<xs:attribute name="update" type="xs:boolean" default="true"/>
 			<xs:attribute name="insert" type="xs:boolean" default="true"/>
@@ -518,7 +501,7 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="table" type="xs:string"/>
 			<xs:attribute name="schema" type="xs:string"/>
 			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
@@ -584,7 +567,7 @@
 				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="class" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
@@ -596,7 +579,7 @@
 				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="type" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="length" type="xs:positiveInteger"/>
@@ -630,7 +613,7 @@
 				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="class" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="not-null" type="xs:boolean" default="false"/>
@@ -661,7 +644,7 @@
 			</xs:sequence>
 			<xs:attribute name="class" type="xs:string" use="required"/>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess" use="optional"/>
+			<xs:attribute name="access" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="one-to-many">
@@ -675,7 +658,7 @@
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="class" type="xs:string"/>
 			<xs:attribute name="cascade" type="cascadeStyle"/>
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
@@ -704,7 +687,7 @@
 				<xs:element ref="element"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="propertyAccess"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="table" type="xs:string"/>
 			<xs:attribute name="schema" type="xs:string"/>
 			<xs:attribute name="where" type="xs:string"/>
