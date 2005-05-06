@@ -10,22 +10,22 @@ namespace NHibernate.Test.ExpressionTest
 	[TestFixture]
 	public class QueryByExampleTest : TestCase
 	{
-		#region NUnit.Framework.TestFixture Members
-		[SetUp]
-		public void SetUp() 
+		protected override IList Mappings
 		{
-			ExportSchema( new string[] { "Componentizable.hbm.xml"});
+			get
+			{
+				return new string[] { "Componentizable.hbm.xml"};
+			}
+		}
+		protected override void OnSetUp() 
+		{
 			InitData();
 		}
 		
-		[TearDown]
-		public override void TearDown()
+		protected override void OnTearDown()
 		{
 			DeleteData();
-			base.TearDown();
 		}
-		
-		#endregion
 
 		[Test]
 		public void TestSimpleQBE()

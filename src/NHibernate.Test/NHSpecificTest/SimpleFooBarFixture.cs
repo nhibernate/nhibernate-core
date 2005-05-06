@@ -10,11 +10,12 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class SimpleFooBarFixture : TestCase 
 	{
-
-		[SetUp]
-		public void SetUp() 
+		protected override System.Collections.IList Mappings
 		{
-			ExportSchema( new string[] { "FooBar.hbm.xml"} );
+			get
+			{
+				return new string[] { "FooBar.hbm.xml"};
+			}
 		}
 
 	}

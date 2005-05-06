@@ -9,36 +9,12 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Tests for the GuidType.
 	/// </summary>
 	[TestFixture]
-	public class GuidTypeFixture : TestCase
+	public class GuidTypeFixture : TypeFixtureBase
 	{
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override string TypeName
 		{
-			ExportSchema( new string[] { "TypesTest.GuidClass.hbm.xml"}, true, "NHibernate.Test" );
+			get { return "Guid"; }
 		}
-
-		[SetUp]
-		public void SetUp() 
-		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
-		}
-
-		[TearDown]
-		public override void TearDown() 
-		{
-			// do nothing except not let the base TearDown get called
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			base.TearDown();
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Verify Equals will correctly determine when the property
@@ -56,7 +32,6 @@ namespace NHibernate.Test.TypesTest
 			rhs = new Guid("{11234567-abcd-abcd-abcd-0123456789ab}");
 
 			Assert.IsFalse( type.Equals( lhs, rhs ) );
-			
 		}
 
 		[Test]

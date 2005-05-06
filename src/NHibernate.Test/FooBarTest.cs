@@ -18,32 +18,33 @@ namespace NHibernate.Test
 			return System.Text.Encoding.Unicode.GetBytes( str );
 		}
 
-		[SetUp]
-		public void SetUp()
+		protected override IList Mappings
 		{
-			ExportSchema(new string[] {   
-					"FooBar.hbm.xml",
-					"Baz.hbm.xml",
-					"Qux.hbm.xml",
-					"Glarch.hbm.xml",
-					"Fum.hbm.xml",
-					"Fumm.hbm.xml",
-					"Fo.hbm.xml",
-					"One.hbm.xml",
-					"Many.hbm.xml",
-					"Immutable.hbm.xml" ,
-					"Fee.hbm.xml",
-					"Vetoer.hbm.xml",
-					"Holder.hbm.xml",
-					"Location.hbm.xml",
-					"Stuff.hbm.xml",
-					"Container.hbm.xml",
-					"Simple.hbm.xml",
-					"XY.hbm.xml"
-				}, true);
+			get
+			{
+				return new string[]
+					{
+						"FooBar.hbm.xml",
+						"Baz.hbm.xml",
+						"Qux.hbm.xml",
+						"Glarch.hbm.xml",
+						"Fum.hbm.xml",
+						"Fumm.hbm.xml",
+						"Fo.hbm.xml",
+						"One.hbm.xml",
+						"Many.hbm.xml",
+						"Immutable.hbm.xml" ,
+						"Fee.hbm.xml",
+						"Vetoer.hbm.xml",
+						"Holder.hbm.xml",
+						"Location.hbm.xml",
+						"Stuff.hbm.xml",
+						"Container.hbm.xml",
+						"Simple.hbm.xml",
+						"XY.hbm.xml"
+					};
+			}
 		}
-
-
 
 		[Test]
 		public void CollectionVersioning()
@@ -632,7 +633,7 @@ namespace NHibernate.Test
 			s.Save( new Holder("ice T") );
 			s.Save( new Holder("ice cube") );
 
-			Assert.IsTrue( s.Find("from o in class System.Object").Count==15 );
+			Assert.AreEqual( 15, s.Find("from o in class System.Object").Count );
 			System.Console.WriteLine( s.Find("from n in class INamed") );
 			Assert.AreEqual( 7, s.Find("from n in class INamed").Count );
 			Assert.IsTrue( s.Find("from n in class INamed where n.Name is not null").Count==4 );
@@ -805,7 +806,7 @@ namespace NHibernate.Test
 			{
 				s.Delete( baz );
 				s.Flush();
-				Assert.IsFalse( s.Enumerable( "from Fee" ).GetEnumerator().MoveNext() );
+				Assert.IsTrue( IsEmpty( s.Enumerable( "from Fee" ) ) );
 			}
 		}
 
@@ -926,6 +927,12 @@ namespace NHibernate.Test
 			// ProxySet is a non-lazy collection, so this should work outside
 			// a session.
 			Assert.AreEqual( 1, loadedGlarch.ProxySet.Count );
+
+			using( ISession s = OpenSession() )
+			{
+				s.Delete( "from Glarch" );
+				s.Flush();
+			}
 		}
 
 
@@ -1620,6 +1627,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( gid, s.GetIdentifier( f.Component.Glarch ) );
 			s.Delete( f );
 			s.Delete( f.TheFoo );
+			s.Delete( f.Component.Glarch );
 			s.Flush();
 			s.Close();
 			
@@ -2248,8 +2256,7 @@ namespace NHibernate.Test
 			Assert.AreEqual(2, baz.Fees.Count);
 			s.Delete(baz);
 
-			IEnumerable enumerable = s.Enumerable("from fee in class Fee");
-			Assert.IsFalse( enumerable.GetEnumerator().MoveNext() );
+			Assert.IsTrue( IsEmpty( s.Enumerable( "from fee in class Fee" ) ) );
 			t.Commit();
 			s.Close();
 		}
@@ -2283,6 +2290,7 @@ namespace NHibernate.Test
 
 			s.Close();
 		}
+
 
 		[Test]
 		public void CollectionsInSelect() 
@@ -2386,9 +2394,10 @@ namespace NHibernate.Test
 			s.Delete(baz);
 			s.Delete(baz2);
 			s.Delete(foos[1]);
+
+			s.Flush();
 //			t.Commit();
 			s.Close();
-
 		}
 
 
@@ -2688,6 +2697,9 @@ namespace NHibernate.Test
 			// serialize and then deserialize the session.
 			stream = new System.IO.MemoryStream();
 			formatter.Serialize( stream, s );
+
+			s.Close();
+
 			stream.Position = 0;
 			s = (ISession)formatter.Deserialize(stream);
 			stream.Close();
@@ -3625,12 +3637,20 @@ namespace NHibernate.Test
 			IList l = s.Find("select parent, child from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child");
 			Assert.AreEqual( 1, l.Count, "multi-column find" );
 
-			IEnumerator rs = s.Enumerable("select count(distinct child.id), count(distinct parent.id) from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child").GetEnumerator();
-			Assert.IsTrue( rs.MoveNext() );
-			object[] row = (object[]) rs.Current;
-			Assert.AreEqual( 1, row[0], "multi-column count" );
-			Assert.AreEqual( 1, row[1], "multi-column count" );
-			Assert.IsFalse( rs.MoveNext() );
+			bool supportsCountDistinct = !( dialect is Dialect.SQLiteDialect );
+
+			IEnumerator rs;
+			object[] row;
+
+			if( supportsCountDistinct )
+			{
+				rs = s.Enumerable("select count(distinct child.id), count(distinct parent.id) from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child").GetEnumerator();
+				Assert.IsTrue( rs.MoveNext() );
+				row = (object[]) rs.Current;
+				Assert.AreEqual( 1, row[0], "multi-column count" );
+				Assert.AreEqual( 1, row[1], "multi-column count" );
+				Assert.IsFalse( rs.MoveNext() );
+			}
 
 			rs = s.Enumerable("select child.id, parent.id, child.Long from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child").GetEnumerator();
 			Assert.IsTrue( rs.MoveNext() );
@@ -4384,27 +4404,41 @@ namespace NHibernate.Test
 		[Test]
 		public void Cache() 
 		{
-			ISession s = OpenSession();
 			Immutable im = new Immutable();
-			s.Save(im);
-			s.Flush();
-			s.Close();
 
-			s = OpenSession();
-			s.Load( im, im.Id);
-			s.Close();
+			using( ISession s = OpenSession() )
+			{
+				s.Save(im);
+				s.Flush();
+			}
 
-			s = OpenSession();
-			s.Load( im, im.Id);
+			using( ISession s = OpenSession() )
+			{
+				s.Load( im, im.Id);
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				s.Load( im, im.Id);
 	
-			Immutable imFromFind = (Immutable)s.Find("from im in class Immutable where im = ?", im, NHibernateUtil.Entity(typeof(Immutable)))[0];
-			Immutable imFromLoad = (Immutable)s.Load(typeof(Immutable), im.Id);
+				Immutable imFromFind = (Immutable)s.Find("from im in class Immutable where im = ?", im, NHibernateUtil.Entity(typeof(Immutable)))[0];
+				Immutable imFromLoad = (Immutable)s.Load(typeof(Immutable), im.Id);
 			
-			Assert.IsTrue(im==imFromFind, "cached object identity from Find ");
-			Assert.IsTrue(im==imFromLoad, "cached object identity from Load ");
-			
-			s.Close();
+				Assert.IsTrue(im==imFromFind, "cached object identity from Find ");
+				Assert.IsTrue(im==imFromLoad, "cached object identity from Load ");
+			}
 
+			// Clean up the immutable. Need to do this using direct SQL, since ISession
+			// refuses to delete immutable objects.
+			using( ISession s = OpenSession() )
+			{
+				IDbConnection connection = s.Connection;
+				using( IDbCommand command = connection.CreateCommand() )
+				{
+					command.CommandText = "delete from immut";
+					command.ExecuteNonQuery();
+				}
+			}
 		}
 
 		[Test]
@@ -4494,6 +4528,7 @@ namespace NHibernate.Test
 			s.Update(v, id);
 			s.Delete(v);
 			s.Delete(v);
+			s.Flush();
 			s.Close();
 		}
 
@@ -4711,6 +4746,7 @@ namespace NHibernate.Test
 			}
 
 			Assert.IsTrue(err);
+			s.Flush();
 			s.Close();
 
 		}
@@ -4774,7 +4810,8 @@ namespace NHibernate.Test
 			Assert.IsNotNull(foo);
 			Assert.IsTrue( foo.Object is One );
 			Assert.AreEqual( oid, s.GetIdentifier( foo.Object ) );
-			s.Delete(foo);
+			s.Delete( foo );
+			s.Delete( foo.Object );
 			s.Flush();
 			s.Close();
 
@@ -5102,6 +5139,15 @@ namespace NHibernate.Test
  				Assert.AreEqual(3, baz.FooSet.Count);
 	
  				s.Flush();
+
+				// Clean up
+				foreach( Foo foo in baz.FooSet )
+				{
+					s.Delete( foo );
+				}
+
+				s.Delete( baz );
+				s.Flush();
  			}
 		}
 		#endregion

@@ -19,11 +19,12 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class BasicObjectFixture : TestCase  
 	{
-
-		[SetUp]
-		public void SetUp() 
+		protected override System.Collections.IList Mappings
 		{
-			ExportSchema( new string[] { "NHSpecific.BasicObject.hbm.xml"}, true );
+			get
+			{
+				return new string[] { "NHSpecific.BasicObject.hbm.xml"};
+			}
 		}
 
 		/// <summary>

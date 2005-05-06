@@ -13,11 +13,12 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class BasicClassFixture : TestCase 
 	{
-
-		[SetUp]
-		public void SetUp() 
+		protected override IList Mappings
 		{
-			ExportSchema( new string[] { "NHSpecific.BasicClass.hbm.xml"}, true );
+			get
+			{
+				return new string[] { "NHSpecific.BasicClass.hbm.xml"};
+			}
 		}
 
 		/// <summary>
@@ -42,6 +43,8 @@ namespace NHibernate.Test.NHSpecificTest
 			s = OpenSession();
 			bc = (BasicClass)s.Load( typeof(BasicClass), (int)1 );
 			Assert.AreEqual( 5, bc.ValueOfPrivateField, "private field accessor" );
+			s.Delete( bc );
+			s.Flush();
 			s.Close();
 		}
 
@@ -664,6 +667,9 @@ namespace NHibernate.Test.NHSpecificTest
 
 			s.Refresh( bc );
 			Assert.AreEqual( originalCount + 1, bc.StringBag.Count, "was refreshed correctly" );
+			
+			s.Delete( bc );
+			s.Flush();
 			s.Close();
 		}
 

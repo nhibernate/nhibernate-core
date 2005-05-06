@@ -12,13 +12,13 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class NodeFixture : TestCase 
 	{
-
-		[SetUp]
-		public void SetUp() 
+		protected override IList Mappings
 		{
-			ExportSchema( new string[] { "NHSpecific.Node.hbm.xml"}, true );
+			get
+			{
+				return new string[] { "NHSpecific.Node.hbm.xml"};
+			}
 		}
-
 
 		[Test]
 		public void InsertNodes() 
@@ -132,6 +132,11 @@ namespace NHibernate.Test.NHSpecificTest
 			t.Commit();
 			s.Close();
 
+			using( ISession s3 = OpenSession() )
+			{
+				s3.Delete( "from Node" );
+				s3.Flush();
+			}
 		}
 
 

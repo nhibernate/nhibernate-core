@@ -12,10 +12,12 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class NewerPerformanceTest : TestCase
 	{
-		[SetUp]
-		public void SetUp() 
+		protected override System.Collections.IList Mappings
 		{
-			ExportSchema( new string[] { "Simple.hbm.xml"} );
+			get
+			{
+				return new string[] { "Simple.hbm.xml"};
+			}
 		}
 
 		[Test]

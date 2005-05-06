@@ -13,11 +13,12 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class MultiTableTest : TestCase
 	{
-		[SetUp]
-		public void SetUp()
+		protected override IList Mappings
 		{
-
-			ExportSchema(new string[] { "Multi.hbm.xml"}, true);
+			get
+			{
+				return new string[] { "Multi.hbm.xml"};
+			}
 		}
 
 		[Test]
@@ -668,21 +669,31 @@ namespace NHibernate.Test
 		[Test]
 		public void DynamicUpdate() 
 		{
-			ISession s = OpenSession();
+			object id;
 			Simple simple = new Simple();
 
 			simple.Name = "saved";
-			object id = s.Save( simple );
-			s.Flush();
 
-			simple.Name = "updated";
-			s.Flush();
-			s.Close();
+			using( ISession s = OpenSession() )
+			{
+				id = s.Save( simple );
+				s.Flush();
 
-			s = OpenSession();
-			simple = (Simple)s.Load( typeof(Simple), id );
-			Assert.AreEqual( "updated", simple.Name, "name should have been updated" );
-			s.Close();
+				simple.Name = "updated";
+				s.Flush();
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				simple = (Simple)s.Load( typeof(Simple), id );
+				Assert.AreEqual( "updated", simple.Name, "name should have been updated" );
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				s.Delete( "from Simple" );
+				s.Flush();
+			}
 		}
 
 	}

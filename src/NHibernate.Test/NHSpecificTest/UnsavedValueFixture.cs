@@ -14,10 +14,12 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		public static int newId = 0;
 
-		[SetUp]
-		public void SetUp() 
+		protected override IList Mappings
 		{
-			ExportSchema( new string[] { "NHSpecific.UnsavedType.hbm.xml"});
+			get
+			{
+				return new string[] { "NHSpecific.UnsavedType.hbm.xml"};
+			}
 		}
 
 		[Test]

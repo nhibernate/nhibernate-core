@@ -14,10 +14,12 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class NH47Fxiture : TestCase
 	{ 
-		[SetUp]
-		public void SetUp() 
+		protected override IList Mappings
 		{
-			ExportSchema( new string[] { "NHSpecific.UnsavedType.hbm.xml"});
+			get
+			{
+				return new string[] { "NHSpecific.UnsavedType.hbm.xml"};
+			}
 		}
 
 		public TimeSpan BatchInsert(object[] objs) 

@@ -13,40 +13,21 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class SQLLoaderTest : TestCase
 	{
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override IList Mappings
 		{
-			ExportSchema( new string[] { "ABC.hbm.xml",
-										   "Category.hbm.xml",
-										   "Simple.hbm.xml",
-										   "Fo.hbm.xml",
-										   "SingleSeveral.hbm.xml",
-										   "Componentizable.hbm.xml"
-									   } );
+			get
+			{
+				return new string[]
+					{
+						"ABC.hbm.xml",
+						"Category.hbm.xml",
+						"Simple.hbm.xml",
+						"Fo.hbm.xml",
+						"SingleSeveral.hbm.xml",
+						"Componentizable.hbm.xml"
+					};
+			}
 		}
-
-		[SetUp]
-		public void SetUp() 
-		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
-		}
-
-		[TearDown]
-		public override void TearDown() 
-		{
-			// do nothing except not let the base TearDown get called
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			base.TearDown();
-		}
-
-		#endregion
 
 		static int nextInt = 1;
 		static long nextLong = 1;

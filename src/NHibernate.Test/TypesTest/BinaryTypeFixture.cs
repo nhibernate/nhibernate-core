@@ -15,38 +15,12 @@ namespace NHibernate.Test.TypesTest
 	/// Tests for mapping a byte[] Property to a BinaryType.
 	/// </summary>
 	[TestFixture]
-	public class BinaryTypeFixture : TestCase 
+	public class BinaryTypeFixture : TypeFixtureBase
 	{
-
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override string TypeName
 		{
-			ExportSchema( new string[] { "TypesTest.BinaryClass.hbm.xml"}, true, "NHibernate.Test" );
+			get { return "Binary"; }
 		}
-
-		[SetUp]
-		public void SetUp() 
-		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
-		}
-
-		[TearDown]
-		public override void TearDown()
-		{
-			//base.TearDown ();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			// only do this at the end of the test fixture
-			base.TearDown();
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Verify Equals will correctly determine when the property

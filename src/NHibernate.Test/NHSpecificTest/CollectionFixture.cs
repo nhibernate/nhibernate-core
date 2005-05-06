@@ -12,10 +12,21 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class CollectionFixture : TestCase 
 	{
-		[SetUp]
-		public void SetUp() 
+		protected override System.Collections.IList Mappings
 		{
-			ExportSchema( new string[] { "NHSpecific.LazyLoadBug.hbm.xml"} );
+			get
+			{
+				return new string[] { "NHSpecific.LazyLoadBug.hbm.xml"};
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			using( ISession session = sessions.OpenSession() )
+			{
+				session.Delete( "from LLParent" );
+				session.Flush();
+			}
 		}
 
 		[Test]

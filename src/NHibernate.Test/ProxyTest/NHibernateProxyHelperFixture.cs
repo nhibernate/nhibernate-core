@@ -12,34 +12,18 @@ namespace NHibernate.Test.ProxyTest
 	[TestFixture]
 	public class NHibernateProxyHelperFixture : TestCase
 	{
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override string MappingsAssembly
 		{
-			ExportSchema( new string[] { "ProxyTest.AProxy.hbm.xml"}, true, "NHibernate.Test" );
+			get { return "NHibernate.Test"; }
 		}
 
-		[SetUp]
-		public void SetUp() 
+		protected override System.Collections.IList Mappings
 		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
+			get
+			{
+				return new string[] { "ProxyTest.AProxy.hbm.xml" };
+			}
 		}
-
-		[TearDown]
-		public override void TearDown() 
-		{
-			// do nothing except not let the base TearDown get called
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			base.TearDown();
-		}
-
-		#endregion
 
 		[Test]
 		public void GetClassOfProxy()

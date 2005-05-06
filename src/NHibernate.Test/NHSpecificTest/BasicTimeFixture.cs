@@ -13,10 +13,12 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class BasicTimeFixture : TestCase
 	{
-		[SetUp]
-		public void SetUp() 
+		protected override System.Collections.IList Mappings
 		{
-			ExportSchema( new string[] { "NHSpecific.BasicTime.hbm.xml"}, true );
+			get
+			{
+				return new string[] { "NHSpecific.BasicTime.hbm.xml"};
+			}
 		}
 
 		[Test]

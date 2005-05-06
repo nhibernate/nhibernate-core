@@ -9,38 +9,13 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Tests for the DecimalType
 	/// </summary>
 	[TestFixture]
-	public class DecimalTypeFixture  : TestCase 
+	public class DecimalTypeFixture  : TypeFixtureBase
 	{
-
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override string TypeName
 		{
-			ExportSchema( new string[] { "TypesTest.DecimalClass.hbm.xml"}, true, "NHibernate.Test" );
+			get { return "Decimal"; }
 		}
 
-		[SetUp]
-		public void SetUp() 
-		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
-		}
-
-		[TearDown]
-		public override void TearDown() 
-		{
-			// do nothing except not let the base TearDown get called
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			base.TearDown();
-		}
-
-		#endregion
-		
 		/// <summary>
 		/// Test that two decimal fields that are exactly equal are returned
 		/// as Equal by the DecimalType.

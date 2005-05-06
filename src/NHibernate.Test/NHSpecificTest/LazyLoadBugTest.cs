@@ -8,10 +8,12 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class LazyLoadBugTest : TestCase 
 	{
-		[SetUp]
-		public void SetUp() 
+		protected override System.Collections.IList Mappings
 		{
-			ExportSchema( new string[] { "NHSpecific.LazyLoadBug.hbm.xml"} );
+			get
+			{
+				return new string[] { "NHSpecific.LazyLoadBug.hbm.xml" };
+			}
 		}
 
 		[Test]
@@ -34,17 +36,27 @@ namespace NHibernate.Test.NHSpecificTest
 				t1.Commit();
 			}
 
-			// try to Load the object to get the exception
-			using( ISession s2 = OpenSession() )
-			using( ITransaction t2 = s2.BeginTransaction() )
+			try
 			{
-				LLParent parent2 = (LLParent)s2.Load( typeof(LLParent), parentId );
+				// try to Load the object to get the exception
+				using( ISession s2 = OpenSession() )
+				using( ITransaction t2 = s2.BeginTransaction() )
+				{
+					LLParent parent2 = (LLParent)s2.Load( typeof(LLParent), parentId );
 
-				// this should throw the exception - the property setter access is not mapped correctly.
-				// Because it maintains logic to maintain the collection during the property set it should
-				// tell NHibernate to skip the setter and access the field.  If it doesn't, then throw
-				// a LazyInitializationException.
-				int count = parent2.Children.Count;
+					// this should throw the exception - the property setter access is not mapped correctly.
+					// Because it maintains logic to maintain the collection during the property set it should
+					// tell NHibernate to skip the setter and access the field.  If it doesn't, then throw
+					// a LazyInitializationException.
+					int count = parent2.Children.Count;
+				}
+			}
+			finally
+			{
+				// Need to delete the objects using direct SQL in this case,
+				// because of loading problems.
+				ExecuteStatement( "delete from LLChild" );
+				ExecuteStatement( "delete from LLParent" );
 			}
 		}
 
@@ -74,6 +86,12 @@ namespace NHibernate.Test.NHSpecificTest
 			{
 				LLParent parent2 = (LLParent)s2.Load( typeof( LLParent ), parentId );
 				Assert.AreEqual( 1, parent2.ChildrenNoAdd.Count );
+			}
+
+			using( ISession session = sessions.OpenSession() )
+			{
+				session.Delete( "from LLParent" );
+				session.Flush();
 			}
 		}
 	}

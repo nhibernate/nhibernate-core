@@ -11,21 +11,18 @@ namespace NHibernate.Test.TypesTest
 	/// Tests for mapping a Double Property to a database field.
 	/// </summary>
 	[TestFixture]
-	public class DoubleTypeFixture : TestCase 
+	public class DoubleTypeFixture : TypeFixtureBase
 	{
 		double[] _values = new double[2];
 
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override string TypeName
 		{
-			ExportSchema( new string[] { "TypesTest.DoubleClass.hbm.xml"}, true, "NHibernate.Test" );
+			get { return "Double"; }
 		}
 
-		[SetUp]
-		public void SetUp() 
+		protected override void OnSetUp()
 		{
+			base.OnSetUp ();
 			if( dialect is Dialect.OracleDialect ) 
 			{
 				_values[0] = 1.5e20;
@@ -37,20 +34,6 @@ namespace NHibernate.Test.TypesTest
 				_values[1] = 1.2e-35;
 			}
 		}
-
-		[TearDown]
-		public override void TearDown() 
-		{
-			// do nothing except not let the base TearDown get called
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			base.TearDown();
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Verify Equals will correctly determine when the property

@@ -11,7 +11,7 @@ namespace NHibernate.Test
 	/// Summary description for BlobClobTest.
 	/// </summary>
 	[TestFixture]
-	public class BlobClobTest : TestCase
+	public abstract class BlobClobTest : TestCase
 	{
 		[Test]
 		[Ignore("BLOB/CLOB not implmented like h2.0.3 - http://jira.nhibernate.org:8080/browse/NH-19")]

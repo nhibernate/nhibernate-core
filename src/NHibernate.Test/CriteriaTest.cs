@@ -10,36 +10,13 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class CriteriaTest : TestCase 
 	{
-		
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override IList Mappings
 		{
-			ExportSchema( new string[] { "Simple.hbm.xml"});
+			get
+			{
+				return new string[] { "Simple.hbm.xml"};
+			}
 		}
-
-		[SetUp]
-		public void SetUp() 
-		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
-		}
-
-		[TearDown]
-		public override void TearDown() 
-		{
-			// do nothing except not let the base TearDown get called
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			base.TearDown();
-		}
-
-		#endregion
-		
 
 		[Test]
 		public void SimpleSelectTest() 
@@ -130,6 +107,7 @@ namespace NHibernate.Test
 			Assert.IsTrue( simple.Date < new DateTime( 2005, 01, 01 ), "should be less than 2005" );
 
 			s.Delete( "from Simple" );
+			s.Flush();
 			s.Close();
 		}
 	}

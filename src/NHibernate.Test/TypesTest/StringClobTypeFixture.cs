@@ -8,37 +8,12 @@ namespace NHibernate.Test.TypesTest
 	/// Summary description for StringClobTypeFixture.
 	/// </summary>
 	[TestFixture]
-	public class StringClobTypeFixture : TestCase
+	public class StringClobTypeFixture : TypeFixtureBase
 	{
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override string TypeName
 		{
-			ExportSchema( new string[] { "TypesTest.StringClobClass.hbm.xml"}, true, "NHibernate.Test" );
+			get { return "StringClob"; }
 		}
-
-		[SetUp]
-		public void SetUp() 
-		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
-		}
-
-		[TearDown]
-		public override void TearDown()
-		{
-			//base.TearDown ();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			// only do this at the end of the test fixture
-			base.TearDown();
-		}
-
-		#endregion
 
 		[Test]
 		public void ReadWrite() 

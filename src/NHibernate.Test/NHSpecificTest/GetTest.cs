@@ -8,11 +8,21 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class GetTest : TestCase
 	{
-		[SetUp]
-		public void SetUp()
+		protected override System.Collections.IList Mappings
 		{
-			// A class with a proxy is needed to actually test Get vs Load.
-			ExportSchema( new string[] { "ABCProxy.hbm.xml" }, true );
+			get
+			{
+				return new string[] { "ABCProxy.hbm.xml" };
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.Delete( "from A" );
+				s.Flush();
+			}
 		}
 
 		[Test]

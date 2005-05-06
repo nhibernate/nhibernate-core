@@ -932,6 +932,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TypesTest\TypeFixtureBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UtilityTest\IdentityMapFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

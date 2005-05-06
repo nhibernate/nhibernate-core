@@ -19,6 +19,28 @@ namespace NHibernate.Test
 		private ISession lastOpenedSession;
 
 		/// <summary>
+		/// Mapping files used in the TestCase
+		/// </summary>
+		protected abstract IList Mappings { get; }
+
+		/// <summary>
+		/// Assembly to load mapping files from (default is NHibernate.DomainModel).
+		/// </summary>
+		protected virtual string MappingsAssembly
+		{
+			get { return "NHibernate.DomainModel"; }
+		}
+
+		/// <summary>
+		/// Creates the tables used in this TestCase
+		/// </summary>
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			ExportSchema(Mappings);
+		}
+
+		/// <summary>
 		/// Removes the tables used in this TestCase.
 		/// </summary>
 		/// <remarks>
@@ -27,20 +49,54 @@ namespace NHibernate.Test
 		/// will occur if the TestCase does not have the same hbm.xml files
 		/// included as a previous one.
 		/// </remarks>
-		[TearDown]
-		public virtual void TearDown() 
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown()
 		{
-			bool wasUnclosedSession = false;
+			DropSchema();
+		}
+
+		protected virtual void OnSetUp()
+		{
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			OnSetUp();
+		}
+
+		protected virtual void OnTearDown()
+		{
+		}
+
+		/// <summary>
+		/// Checks that the test case cleans up after itself. This method
+		/// is not overridable, but it calls <see cref="OnTearDown" /> which is.
+		/// </summary>
+		[TearDown]
+		public void TearDown() 
+		{
+			OnTearDown();
+			CheckSessionIsClosed();
+			CheckDatabaseIsClean();
+		}
+
+		private void CheckSessionIsClosed()
+		{
 			if( lastOpenedSession != null && lastOpenedSession.IsOpen )
 			{
-				wasUnclosedSession = true;
 				lastOpenedSession.Close();
-			}
-			DropSchema();
-
-			if( wasUnclosedSession )
-			{
 				Assert.Fail("Unclosed session");
+			}
+		}
+
+		private void CheckDatabaseIsClean()
+		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				int count = s.Delete( "from System.Object o" );
+				s.Flush();
+				Assert.AreEqual( 0, count, "Test didn't clean up the database after itself" );
 			}
 		}
 
@@ -51,7 +107,7 @@ namespace NHibernate.Test
 
 		public void ExportSchema(IList files, bool exportSchema) 
 		{
-			ExportSchema( files, exportSchema, "NHibernate.DomainModel" );
+			ExportSchema( files, exportSchema, MappingsAssembly );
 		}
 
 		public void ExportSchema(IList files, bool exportSchema, string assemblyName) 

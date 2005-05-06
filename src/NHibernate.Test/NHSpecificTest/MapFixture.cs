@@ -11,20 +11,37 @@ namespace NHibernate.Test.NHSpecificTest
 	/// Summary description for MapTest.
 	/// </summary>
 	[TestFixture]
-	public class MapFixture : TestCase {
-
+	public class MapFixture : TestCase
+	{
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);
 
-
-		[SetUp]
-		public void SetUp() {
-			ExportSchema( new string[] { 
-				"NHSpecific.Parent.hbm.xml", 
-				"NHSpecific.Child.hbm.xml", 
-				"NHSpecific.SexType.hbm.xml", 
-				"NHSpecific.Team.hbm.xml" }, true);
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]
+					{ 
+						"NHSpecific.Parent.hbm.xml", 
+						"NHSpecific.Child.hbm.xml", 
+						"NHSpecific.SexType.hbm.xml", 
+						"NHSpecific.Team.hbm.xml"
+					};
+			}
 		}
+
+		protected override void OnTearDown()
+		{
+			using( ISession session = sessions.OpenSession() )
+			{
+				session.Delete( "from Team" );
+				session.Delete( "from Child" );
+				session.Delete( "from Parent" );
+				session.Delete( "from SexType" );
+				session.Flush();
+			}
+		}
+
 
 		[Test]
 		[Ignore("Have not written the Test yet.")]
@@ -51,7 +68,6 @@ namespace NHibernate.Test.NHSpecificTest
 
 			Child childOneRef = amyJones.FirstSibling;
 
-			
 			t.Commit();
 			s.Close();
 		}

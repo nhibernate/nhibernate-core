@@ -13,11 +13,12 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class UserTypeFixture : TestCase
 	{
-		
-		[SetUp]
-		public void SetUp() 
+		protected override System.Collections.IList Mappings
 		{
-			ExportSchema( new string[] { "NHSpecific.ClassWithNullColumns.hbm.xml"}, true );
+			get
+			{
+				return new string[] { "NHSpecific.ClassWithNullColumns.hbm.xml"};
+			}
 		}
 
 		/// <summary>
@@ -27,16 +28,16 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void InsertNull() 
 		{
-			ISession s = OpenSession();
+			using( ISession s = OpenSession() )
+			{
+				ClassWithNullColumns userTypeClass = new ClassWithNullColumns();
+				userTypeClass.Id = 5;
+				userTypeClass.FirstInt32 = 4;
+				userTypeClass.SecondInt32 = 0; // with the user type should set value to null
 
-			ClassWithNullColumns userTypeClass = new ClassWithNullColumns();
-			userTypeClass.Id = 5;
-			userTypeClass.FirstInt32 = 4;
-			userTypeClass.SecondInt32 = 0; // with the user type should set value to null
-
-			s.Save(userTypeClass);
-			s.Flush();
-			s.Close();
+				s.Save(userTypeClass);
+				s.Flush();
+			}
 
 			// manually read from the db
 			Connection.IConnectionProvider provider = Connection.ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
@@ -56,6 +57,12 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 
 			conn.Close();
+
+			using( ISession s = OpenSession() )
+			{
+				s.Delete( "from ClassWithNullColumns" );
+				s.Flush();
+			}
 		}
 	}
 }

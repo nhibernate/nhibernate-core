@@ -18,14 +18,35 @@ namespace NHibernate.Test.CompositeId
 		private DateTime secondDateTime = new DateTime(2003, 8, 17);
 		private Id id;
 		private Id secondId;
-					
-		[SetUp]
-		public void SetUp() 
+
+		protected override string MappingsAssembly
 		{
-			ExportSchema( new string[] { "CompositeId.ClassWithCompositeId.hbm.xml" }, true, "NHibernate.Test" );
+			get { return "NHibernate.Test"; }
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[] { "CompositeId.ClassWithCompositeId.hbm.xml" };
+			}
+		}
+
+		protected override void OnSetUp() 
+		{
 			id = new Id("stringKey", 3, firstDateTime);
 			secondId = new Id("stringKey2", 5, secondDateTime);
 		}
+
+		protected override void OnTearDown()
+		{
+			using( ISession s = sessions.OpenSession() )
+			{
+				s.Delete( "from ClassWithCompositeId" );
+				s.Flush();
+			}
+		}
+
 
 		/// <summary>
 		/// Test the basic CRUD operations for a class with a Composite Identifier
@@ -206,7 +227,5 @@ namespace NHibernate.Test.CompositeId
 
 			s2.Close();
 		}
-
-
 	}
 }

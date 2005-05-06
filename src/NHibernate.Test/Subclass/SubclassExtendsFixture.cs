@@ -16,17 +16,18 @@ namespace NHibernate.Test.Subclass
 	[TestFixture]
 	public class SubclassExtendsFixture : SubclassFixture
 	{
-		[SetUp]
-		public override void SetUp()
+		protected override IList Mappings
 		{
-			// order is important!  The base classes must be configured before
-			// the subclasses.
-			ArrayList files = new ArrayList();
-			files.Add( "Subclass.Subclass.Base.hbm.xml" );
-			files.Add( "Subclass.Subclass.One.hbm.xml" );
-
-			ExportSchema( files, true, "NHibernate.Test" );
+			get
+			{
+				// order is important!  The base classes must be configured before
+				// the subclasses.
+				return new string[]
+					{
+						"Subclass.Subclass.Base.hbm.xml",
+						"Subclass.Subclass.One.hbm.xml"
+					};
+			}
 		}
-
 	}
 }

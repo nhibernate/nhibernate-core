@@ -15,12 +15,14 @@ namespace NHibernate.Test.NHSpecificTest
 	/// </summary>
 	[TestFixture]
 	public class BasicSerializableFixture : TestCase  
-		  {
+	{
 
-		[SetUp]
-		public void SetUp() 
+		protected override IList Mappings
 		{
-			ExportSchema( new string[] { "NHSpecific.BasicSerializable.hbm.xml"}, true );
+			get
+			{
+				return new string[] { "NHSpecific.BasicSerializable.hbm.xml"};
+			}
 		}
 
 		/// <summary>

@@ -11,10 +11,17 @@ namespace NHibernate.Test.ProxyInterface
 	[TestFixture]
 	public class CastleProxyFixture : TestCase 
 	{
-		[SetUp]
-		public void SetUp() 
+		protected override string MappingsAssembly
 		{
-			ExportSchema( new string[] { "ProxyInterface.CastleProxyImpl.hbm.xml"}, true, "NHibernate.Test" );
+			get { return "NHibernate.Test"; }
+		}
+
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				return new string[] { "ProxyInterface.CastleProxyImpl.hbm.xml" };
+			}
 		}
 
 		[Test]
@@ -82,6 +89,11 @@ namespace NHibernate.Test.ProxyInterface
 			// has no problem with serializing two times - earlier versions of it did.
 			SerializeAndDeserialize(ref s);
 
+			s.Close();
+
+			s = OpenSession();
+			s.Delete( ap );
+			s.Flush();
 			s.Close();
 		}
 

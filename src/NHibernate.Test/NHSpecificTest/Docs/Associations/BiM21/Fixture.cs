@@ -9,36 +9,18 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override string MappingsAssembly
 		{
-			ExportSchema( new string[] { "NHSpecificTest.Docs.Associations.BiM21.Mappings.hbm.xml"}, true, "NHibernate.Test" );
+			get { return "NHibernate.Test"; }
 		}
 
-		[SetUp]
-		public void SetUp() 
+		protected override System.Collections.IList Mappings
 		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
+			get
+			{
+				return new string[] { "NHSpecificTest.Docs.Associations.BiM21.Mappings.hbm.xml"};
+			}
 		}
-
-		[TearDown]
-		public override void TearDown()
-		{
-			//base.TearDown ();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			// only do this at the end of the test fixture
-			base.TearDown();
-		}
-
-		#endregion
-		
 
 		[Test]
 		public void TestCorrectUse()

@@ -13,15 +13,22 @@ namespace NHibernate.Test.JoinedSubclass
 	[TestFixture]
 	public class JoinedSubclassFixture : TestCase 
 	{
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[] { "JoinedSubclass.JoinedSubclass.hbm.xml" };
+			}
+		}
+
 
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);
-
-		[SetUp]
-		public virtual void SetUp() 
-		{
-			ExportSchema( new string[] { "JoinedSubclass.JoinedSubclass.hbm.xml" }, true, "NHibernate.Test" );
-		}
 
 		[Test]
 		public void TestJoinedSubclass() 

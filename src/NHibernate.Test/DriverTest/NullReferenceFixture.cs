@@ -10,10 +10,12 @@ namespace NHibernate.Test.DriverTest
 	[TestFixture]
 	public class NullReferenceFixture : TestCase
 	{
-		[SetUp]
-		public void Setup()
+		protected override IList Mappings
 		{
-			ExportSchema( new string[] { "Simple.hbm.xml"} );
+			get
+			{
+				return new string[] { "Simple.hbm.xml"};
+			}
 		}
 
 		/// <summary>

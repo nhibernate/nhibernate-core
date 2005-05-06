@@ -14,11 +14,18 @@ namespace NHibernate.Test.Subclass
 	
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);
-			
-		[SetUp]
-		public virtual void SetUp() 
+
+		protected override string MappingsAssembly
 		{
-			ExportSchema( new string[] { "Subclass.Subclass.hbm.xml" }, true, "NHibernate.Test" );
+			get { return "NHibernate.Test"; }
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[] { "Subclass.Subclass.hbm.xml" };
+			}
 		}
 
 		[Test]
@@ -149,6 +156,12 @@ namespace NHibernate.Test.Subclass
 			list = s.Find( "from SubclassBase as sb where sb.class=SubclassOne" );
 			Assert.AreEqual( 1, list.Count );
 			Assert.AreEqual( typeof(SubclassOne), list[0].GetType(), "should be one" );
+			s.Close();
+
+			s = OpenSession();
+			s.Delete( one1 );
+			s.Delete( base1 );
+			s.Flush();
 			s.Close();
 		}
 

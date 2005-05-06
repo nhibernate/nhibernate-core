@@ -16,18 +16,19 @@ namespace NHibernate.Test.JoinedSubclass
 	[TestFixture]
 	public class JoinedSubclassExtendsFixture : JoinedSubclassFixture
 	{
-		[SetUp]
-		public override void SetUp()
+		protected override IList Mappings
 		{
-			// order is important!  The base classes must be configured before
-			// the subclasses.
-			ArrayList files = new ArrayList();
-			files.Add( "JoinedSubclass.JoinedSubclass.Person.hbm.xml" );
-			files.Add( "JoinedSubclass.JoinedSubclass.Employee.hbm.xml" );
-			files.Add( "JoinedSubclass.JoinedSubclass.Customer.hbm.xml" );
-
-			ExportSchema( files, true, "NHibernate.Test" );
+			get
+			{
+				// order is important!  The base classes must be configured before
+				// the subclasses.
+				return new string[]
+					{
+						"JoinedSubclass.JoinedSubclass.Person.hbm.xml",
+						"JoinedSubclass.JoinedSubclass.Employee.hbm.xml",
+						"JoinedSubclass.JoinedSubclass.Customer.hbm.xml"
+					};
+			}
 		}
-
 	}
 }

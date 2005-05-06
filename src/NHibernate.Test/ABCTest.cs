@@ -14,36 +14,13 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class ABCTest : TestCase
 	{
-		
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override IList Mappings
 		{
-			ExportSchema(new string[] { "ABC.hbm.xml"});
+			get
+			{
+				return new string[] { "ABC.hbm.xml"};
+			}
 		}
-
-		[SetUp]
-		public void SetUp() 
-		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
-		}
-
-		[TearDown]
-		public override void TearDown() 
-		{
-			// do nothing except not let the base TearDown get called
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			base.TearDown();
-		}
-
-		#endregion
-		
 
 		[Test]
 		[Ignore("Requires TestCase refactoring to H2.1")]
@@ -83,7 +60,14 @@ namespace NHibernate.Test
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				B b = (B) s.CreateQuery("from B").UniqueResult();
+				B b = (B) s.CreateQuery( "from B" ).UniqueResult();
+				t.Commit();
+			}
+
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				s.Delete( "from B" );
 				t.Commit();
 			}
 		}

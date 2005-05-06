@@ -9,36 +9,12 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Tests for the BooleanType.
 	/// </summary>
 	[TestFixture]
-	public class BooleanTypeFixture : TestCase 
+	public class BooleanTypeFixture : TypeFixtureBase
 	{
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override string TypeName
 		{
-			ExportSchema( new string[] { "TypesTest.BooleanClass.hbm.xml"}, true, "NHibernate.Test" );
+			get { return "Boolean"; }
 		}
-
-		[SetUp]
-		public void SetUp() 
-		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
-		}
-
-		[TearDown]
-		public override void TearDown() 
-		{
-			// do nothing except not let the base TearDown get called
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			base.TearDown();
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Verify Equals will correctly determine when the property

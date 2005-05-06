@@ -10,34 +10,13 @@ namespace NHibernate.Test.QueryTest
 	[TestFixture]
 	public class PositionalParametersFixture : TestCase
 	{
-		#region NUnit.Framework.TestFixture Members
-
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp() 
+		protected override IList Mappings
 		{
-			ExportSchema( new string[] { "Simple.hbm.xml"} );
+			get
+			{
+				return new string[] { "Simple.hbm.xml" };
+			}
 		}
-
-		[SetUp]
-		public void SetUp() 
-		{
-			// there are test in here where we don't need to resetup the 
-			// tables - so only set the tables up once
-		}
-
-		[TearDown]
-		public override void TearDown() 
-		{
-			// do nothing except not let the base TearDown get called
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			base.TearDown();
-		}
-
-		#endregion
 
 		[Test, ExpectedException(typeof(NHibernate.QueryException))]
 		public void TestMissingHQLParameters()

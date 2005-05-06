@@ -13,20 +13,23 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class MasterDetailTest : TestCase
 	{
-		[SetUp]
-		public void SetUp()
+		protected override IList Mappings
 		{
-		 	ExportSchema(new string[] {  
-							"MasterDetail.hbm.xml",
-							"Custom.hbm.xml",
-							"Category.hbm.xml",
-							"INameable.hbm.xml",
-							"SingleSeveral.hbm.xml",
-							"WZ.hbm.xml",
-							"UpDown.hbm.xml",
-							"Eye.hbm.xml",
-							"MN.hbm.xml"
-									  }, true);
+			get
+			{
+				return new string[]
+					{
+						"MasterDetail.hbm.xml",
+						"Custom.hbm.xml",
+						"Category.hbm.xml",
+						"INameable.hbm.xml",
+						"SingleSeveral.hbm.xml",
+						"WZ.hbm.xml",
+						"UpDown.hbm.xml",
+						"Eye.hbm.xml",
+						"MN.hbm.xml"
+					};
+			}
 		}
 
 		[Test]
@@ -191,10 +194,8 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		public void NonLazyBidrectional() 
+		public void NonLazyBidirectional() 
 		{
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
 			DomainModel.Single sin = new DomainModel.Single();
 			sin.Id = "asfdfds";
 			sin.String = "adsa asdfasd";
@@ -203,33 +204,48 @@ namespace NHibernate.Test
 			sev.String = "asd ddd";
 			sin.Several.Add(sev);
 			sev.Single = sin;
-			s.Save(sin);
-			t.Commit();
-			s.Close();
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			sin = (DomainModel.Single)s.Load( typeof(DomainModel.Single), sin );
-			t.Commit();
-			s.Close();
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				s.Save(sin);
+				t.Commit();
+			}
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			sev = (Several)s.Load( typeof(Several), sev );
-			t.Commit();
-			s.Close();
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				sin = (DomainModel.Single)s.Load( typeof(DomainModel.Single), sin );
+				t.Commit();
+			}
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			s.Find("from s in class Several");
-			t.Commit();
-			s.Close();
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				sev = (Several)s.Load( typeof(Several), sev );
+				t.Commit();
+			}
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			s.Find("from s in class Single");
-			t.Commit();
-			s.Close();
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				s.Find("from s in class Several");
+				t.Commit();
+			}
+
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				s.Find("from s in class Single");
+				t.Commit();
+			}
+
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				s.Delete( "from Single" );
+				t.Commit();
+			}
 		}
 
 		[Test]
@@ -655,29 +671,35 @@ namespace NHibernate.Test
 		{
 			//if( dialect is Dialect.HSQLDialect ) return;
 
-			ISession s = OpenSession();
-			Detail detail = new Detail();
-			SubDetail subdetail = new SubDetail();
-			Master m = new Master();
-			Master m0 = new Master();
-			object m0id = s.Save(m0);
-			m0.AddDetail(detail);
-			detail.Master = m0;
-			m.MoreDetails.Add( detail );
-			detail.SubDetails = new Iesi.Collections.HashedSet();
-			detail.SubDetails.Add( subdetail );
-			object mid = s.Save(m);
-			s.Flush();
-			s.Close();
+			object mid;
+			object m0id;
 
-			s = OpenSession();
-			m = (Master)s.Load( typeof(Master), mid);
-			IEnumerator enumer = m.MoreDetails.GetEnumerator();
-			enumer.MoveNext();
-			Assert.IsTrue( ((Detail)enumer.Current).SubDetails.Count!=0 );
-			s.Delete(m);
-			s.Flush();
-			s.Close();
+			using( ISession s = OpenSession() )
+			{
+				Detail detail = new Detail();
+				SubDetail subdetail = new SubDetail();
+				Master m = new Master();
+				Master m0 = new Master();
+				m0id = s.Save(m0);
+				m0.AddDetail(detail);
+				detail.Master = m0;
+				m.MoreDetails.Add( detail );
+				detail.SubDetails = new Iesi.Collections.HashedSet();
+				detail.SubDetails.Add( subdetail );
+				mid = s.Save(m);
+				s.Flush();
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				Master m = (Master)s.Load( typeof(Master), mid);
+				IEnumerator enumer = m.MoreDetails.GetEnumerator();
+				enumer.MoveNext();
+				Assert.IsTrue( ((Detail)enumer.Current).SubDetails.Count!=0 );
+				s.Delete(m);
+				s.Delete( s.Load( typeof(Master), m0id ) );
+				s.Flush();
+			}
 		}
 
 		[Test]
@@ -796,7 +818,6 @@ namespace NHibernate.Test
 		[Test]
 		public void Categories() 
 		{
-			ISession s = OpenSession();
 			Category c = new Category();
 			c.Name = Category.RootCategory;
 			Category c1 = new Category();
@@ -806,21 +827,31 @@ namespace NHibernate.Test
 			c.Subcategories.Add(c2);
 			c2.Subcategories.Add(null);
 			c2.Subcategories.Add(c3);
-			s.Save(c);
-			s.Flush();
-			s.Close();
 
-			s = OpenSession();
-			c = (Category)s.Load( typeof(Category), c.Id );
-			Assert.IsNotNull( c.Subcategories[0] );
-			Assert.IsNotNull( c.Subcategories[1] );
-			IList list = ((Category)c.Subcategories[1]).Subcategories;
-			Assert.IsNull(list[0]);
-			Assert.IsNotNull(list[1]);
+			using( ISession s = OpenSession() )
+			{
+				s.Save( c );
+				s.Flush();
+			}
 
-			IEnumerator enumer = s.Enumerable("from c in class Category where c.Name = NHibernate.DomainModel.Category.RootCategory").GetEnumerator();
-			Assert.IsTrue( enumer.MoveNext() );
-			s.Close();
+			using( ISession s = OpenSession() )
+			{
+				c = (Category)s.Load( typeof(Category), c.Id );
+				Assert.IsNotNull( c.Subcategories[0] );
+				Assert.IsNotNull( c.Subcategories[1] );
+				IList list = ((Category)c.Subcategories[1]).Subcategories;
+				Assert.IsNull(list[0]);
+				Assert.IsNotNull(list[1]);
+
+				IEnumerator enumer = s.Enumerable("from c in class Category where c.Name = NHibernate.DomainModel.Category.RootCategory").GetEnumerator();
+				Assert.IsTrue( enumer.MoveNext() );
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				s.Delete( "from Category" );
+				s.Flush();
+			}
 		}
 
 		[Test]
@@ -929,21 +960,32 @@ namespace NHibernate.Test
 		[Test]
 		public void NoUpdatedManyToOne() 
 		{
-			ISession s = OpenSession();
 			W w1 = new W();
 			W w2 = new W();
 			Z z = new Z();
 			z.W = w1;
-			s.Save(z);
-			s.Flush();
-			z.W = w2;
-			s.Flush();
-			s.Close();
 
-			s = OpenSession();
-			s.Update(z);
-			s.Flush();
-			s.Close();
+			using( ISession s = OpenSession() )
+			{
+				s.Save(z);
+				s.Flush();
+				z.W = w2;
+				s.Flush();
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				s.Update(z);
+				s.Flush();
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				s.Delete( z );
+				s.Delete( w1 );
+				s.Delete( w2 );
+				s.Flush();
+			}
 		}
 
 		[Test]

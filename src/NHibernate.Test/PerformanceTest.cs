@@ -45,11 +45,16 @@ namespace NHibernate.Test
 		IDriver driver = null;
 		bool prepareSql;
 
-		[SetUp]
-		public void SetUp() 
+		protected override System.Collections.IList Mappings
 		{
-			ExportSchema( new string[] { "Simple.hbm.xml"} );
+			get
+			{
+				return new string[] { "Simple.hbm.xml"};
+			}
+		}
 
+		protected override void OnSetUp()
+		{
 			driverClass = (string)cfg.Properties["hibernate.connection.driver_class"];
 			if(driverClass.IndexOf(",") < 0) 
 			{
@@ -63,7 +68,6 @@ namespace NHibernate.Test
 			{
 				prepareSql = true;
 			}
-
 		}
 
 		[Test]
