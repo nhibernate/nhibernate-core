@@ -42,6 +42,14 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 
 			session.Close();
 
+			// clean up
+			session = OpenSession();
+
+			session.Delete( "from Person" );
+			session.Delete( "from Address" );
+			session.Flush();
+			session.Close();
+
 		}
 
 		[Test]

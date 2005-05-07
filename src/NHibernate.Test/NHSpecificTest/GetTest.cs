@@ -12,6 +12,8 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			get
 			{
+				// have to use classes with proxies to test difference
+				// between Get() and Load()
 				return new string[] { "ABCProxy.hbm.xml" };
 			}
 		}
@@ -41,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest
 				Assert.IsFalse( NHibernateUtil.IsInitialized( loadedA ),
 					"Load should not initialize the object" );
 
-				Assert.IsNotNull( s.Load( typeof( A ), 2 ),
+				Assert.IsNotNull( s.Load( typeof( A ), ( a.Id + 1 ) ),
 					"Loading non-existent object should not return null" );
 			}
 
@@ -51,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest
 				Assert.IsTrue(NHibernateUtil.IsInitialized( gotA ),
 					"Get should initialize the object" );
 
-				Assert.IsNull( s.Get( typeof( A ), 2 ),
+				Assert.IsNull( s.Get( typeof( A ), ( a.Id + 1 ) ),
 					"Getting non-existent object should return null" );
 			}
 		}
