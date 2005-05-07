@@ -259,21 +259,24 @@
 	
 	<target name="doc" depends="init" description="Builds the API documentation and the Help Documentation" >
 		<call target="sdkdoc" />
-		<nant target="clean package" buildfile="doc/reference/doc.build" />
+		<property name="lang" value="en" />
+		<nant target="clean build" buildfile="doc/reference/doc.build">
+			<properties>
+				<property name="lang" value="${lang}" />
+			</properties>
+		</nant>
 		<if test="${vshik.installed}">
-			<property name="help2.dir" value="${build.dir}/doc/Help2" />
-			<mkdir dir="${help2.dir}" failonerror="false" />
-			<copy if="${vshik.installed}" todir="${help2.dir}" overwrite="true" >
-				<fileset basedir="doc/help2">
-					<include name="*" />
-				</fileset>
-			</copy>
-			<mkdir dir="${help2.dir}/Titles" failonerror="false" />
-			<move flatten="true" todir="${help2.dir}/Titles">
-				<fileset basedir="${build.dir}/doc">
+			
+			<!-- 
+				move the generated Help2 (HxS) files from the sdk that
+				were built by ndoc into the help2 folder for this build.
+			-->
+			<move flatten="true" todir="${build.dir}/doc/${lang}/help2/Titles">
+				<fileset basedir="${build.dir}/doc/sdk">
 					<include name="**/*.HxS" />
 				</fileset>
 			</move>
+			
 		</if>
 	</target>
 	
