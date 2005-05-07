@@ -30,6 +30,7 @@ Build 0.8.0.0
 - Modified Dialect to use Hibernate 2.1 methods.
 - Modified Expression to return ICriterion instead of Expression class.  This will break existing code.
 - Modified nhibernate-configuration-2.0.xsd to not require <mappings>.
+- Modified TestFixtures in NHibernate.Test to only execute create/drop ddl in the TestFixtureSetUp/TestFixtureTearDown.
 - Split QueryFunctionStandard into ISQLFunction interface and StandardSQLFunction.
 - Upgraded to nant-0.85-rc3 and nunit-2.2.0.
 
