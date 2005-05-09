@@ -13,7 +13,7 @@ namespace NHibernate.Test.CfgTest
 	[TestFixture]
 	public class BinderFixture
 	{
-		private XmlDocument LoadAndValidate(string xml)
+		private XmlDocument LoadAndValidate( string xml )
 		{
 			using( StringReader stringReader = new StringReader( xml ) )
 			{
@@ -23,52 +23,38 @@ namespace NHibernate.Test.CfgTest
 			}
 		}
 
-		[Test]
-		public void DefaultVersionUnsavedValueIsUndefined()
+		private string GetXmlForTesting( string versionTag )
 		{
-			string XML = @"<?xml version='1.0' ?>
+			string XML_TEMPLATE = @"<?xml version='1.0' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
 	<class name='class'>
 		<id column='id'>
 			<generator class='generator' />
 		</id>
-		<version name='version' />
+		<{0} name='{0}' />
 	</class>
 </hibernate-mapping>";
 
-			XmlDocument document = LoadAndValidate( XML );
- 			XmlNamespaceManager nsmgr = new XmlNamespaceManager( document.NameTable );
-			nsmgr.AddNamespace( "hbm", "urn:nhibernate-mapping-2.0" );
+			return String.Format( XML_TEMPLATE, versionTag );
+		}
 
-			XmlNodeList list = document.SelectNodes( "//hbm:version", nsmgr );
-			XmlNode node = list[0];
+		private void CheckDefaultUnsavedValue( string versionTag )
+		{
+			string XML = GetXmlForTesting( versionTag );
+			XmlDocument document = LoadAndValidate( XML );
+			XmlNode node = document.GetElementsByTagName( versionTag )[0];
 			SimpleValue model = new SimpleValue();
-			Binder.MakeVersion(node, model);
-			Assert.AreEqual("undefined", model.NullValue);
+			Binder.MakeVersion( node, model );
+			Assert.AreEqual( "undefined", model.NullValue,
+				"default unsaved-value for tag {0} should be 'undefined', but is '{1}'",
+				versionTag, model.NullValue );
 		}
 
 		[Test]
-		public void DefaultTimestampUnsavedValueIsUndefined()
+		public void DefaultUnsavedValueIsUndefined()
 		{
-			string XML = @"<?xml version='1.0' ?>
-<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
-	<class name='class'>
-		<id column='id'>
-			<generator class='generator' />
-		</id>
-		<timestamp name='timestamp' />
-	</class>
-</hibernate-mapping>";
-
-			XmlDocument document = LoadAndValidate( XML );
-			XmlNamespaceManager nsmgr = new XmlNamespaceManager( document.NameTable );
-			nsmgr.AddNamespace( "hbm", "urn:nhibernate-mapping-2.0" );
-
-			XmlNodeList list = document.SelectNodes( "//hbm:timestamp", nsmgr );
-			XmlNode node = list[0];
-			SimpleValue model = new SimpleValue();
-			Binder.MakeVersion(node, model);
-			Assert.AreEqual("undefined", model.NullValue);
+			CheckDefaultUnsavedValue( "version" );
+			CheckDefaultUnsavedValue( "timestamp" );
 		}
 	}
 }
