@@ -1,3 +1,7 @@
+Build 0.8.0.1
+======================== 
+- Fixed bug with <version> defaulting to "null" instead of "undefined".
+
 Build 0.8.0.0
 ======================== 
 - Added "namespace" and "assembly" attributes to <hibernate-mapping>.
