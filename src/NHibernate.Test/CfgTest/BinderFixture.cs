@@ -24,7 +24,7 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
-		public void DefaultVersionUnsavedValueIsUndefined2()
+		public void DefaultVersionUnsavedValueIsUndefined()
 		{
 			string XML = @"<?xml version='1.0' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
@@ -41,6 +41,30 @@ namespace NHibernate.Test.CfgTest
 			nsmgr.AddNamespace( "hbm", "urn:nhibernate-mapping-2.0" );
 
 			XmlNodeList list = document.SelectNodes( "//hbm:version", nsmgr );
+			XmlNode node = list[0];
+			SimpleValue model = new SimpleValue();
+			Binder.MakeVersion(node, model);
+			Assert.AreEqual("undefined", model.NullValue);
+		}
+
+		[Test]
+		public void DefaultTimestampUnsavedValueIsUndefined()
+		{
+			string XML = @"<?xml version='1.0' ?>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+	<class name='class'>
+		<id column='id'>
+			<generator class='generator' />
+		</id>
+		<timestamp name='timestamp' />
+	</class>
+</hibernate-mapping>";
+
+			XmlDocument document = LoadAndValidate( XML );
+			XmlNamespaceManager nsmgr = new XmlNamespaceManager( document.NameTable );
+			nsmgr.AddNamespace( "hbm", "urn:nhibernate-mapping-2.0" );
+
+			XmlNodeList list = document.SelectNodes( "//hbm:timestamp", nsmgr );
 			XmlNode node = list[0];
 			SimpleValue model = new SimpleValue();
 			Binder.MakeVersion(node, model);

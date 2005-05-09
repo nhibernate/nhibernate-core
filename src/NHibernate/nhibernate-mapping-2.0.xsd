@@ -246,9 +246,9 @@
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
-			<xs:attribute name="unsaved-value" type="xs:string" default="null">
+			<xs:attribute name="unsaved-value" type="xs:string" default="undefined">
 				<xs:annotation>
-					<xs:documentation>any|none|null|0|-1|... </xs:documentation>
+					<xs:documentation>undefined|any|none|null|0|-1|... </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>
