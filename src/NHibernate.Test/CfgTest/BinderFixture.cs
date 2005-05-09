@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Xml;
+using System.IO;
 
 using NUnit.Framework;
 
@@ -12,14 +13,37 @@ namespace NHibernate.Test.CfgTest
 	[TestFixture]
 	public class BinderFixture
 	{
-		[Test]
-		public void DefaultVersionUnsavedValueIsUndefined()
+		private XmlDocument LoadAndValidate(string xml)
 		{
-			XmlDocument node = new XmlDocument();
-			node.LoadXml ("<version />");
+			using( StringReader stringReader = new StringReader( xml ) )
+			{
+				XmlTextReader xmlReader = new XmlTextReader( stringReader );
+				Configuration cfg = new Configuration();
+				return cfg.LoadMappingDocument( xmlReader );
+			}
+		}
 
+		[Test]
+		public void DefaultVersionUnsavedValueIsUndefined2()
+		{
+			string XML = @"<?xml version='1.0' ?>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+	<class name='class'>
+		<id column='id'>
+			<generator class='generator' />
+		</id>
+		<version name='version' />
+	</class>
+</hibernate-mapping>";
+
+			XmlDocument document = LoadAndValidate( XML );
+ 			XmlNamespaceManager nsmgr = new XmlNamespaceManager( document.NameTable );
+			nsmgr.AddNamespace( "hbm", "urn:nhibernate-mapping-2.0" );
+
+			XmlNodeList list = document.SelectNodes( "//hbm:version", nsmgr );
+			XmlNode node = list[0];
 			SimpleValue model = new SimpleValue();
-			Binder.MakeVersion(node.DocumentElement, model);
+			Binder.MakeVersion(node, model);
 			Assert.AreEqual("undefined", model.NullValue);
 		}
 	}
