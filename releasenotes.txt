@@ -1,4 +1,10 @@
-Build 0.8.0.1
+Build 0.8.2.0
+======================== 
+- Fixed default value of "unsaved-value" for <version> in xsd.
+- Fixed default value of "unsaved-value" for <timestamp> in xsd.
+- Modified "proxy" to use "namespace" and "assembly" from <hibernate-mapping>
+
+Build 0.8.1.0
 ======================== 
 - Fixed bug with <version> defaulting to "null" instead of "undefined".
 
