@@ -505,6 +505,27 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
+		public XmlDocument LoadMappingDocument( XmlReader hbmReader )
+		{
+			XmlValidatingReader validatingReader = new XmlValidatingReader( hbmReader );
+
+			try
+			{
+				XmlDocument hbmDocument = new XmlDocument();
+
+				validatingReader.ValidationEventHandler += new ValidationEventHandler( ValidationHandler );
+				validatingReader.ValidationType = ValidationType.Schema;
+				validatingReader.Schemas.Add( MappingSchemaCollection );
+
+				hbmDocument.Load( validatingReader );
+				return hbmDocument;
+			}
+			finally
+			{
+				validatingReader.Close();
+			}
+		}
+
 		/// <summary>
 		/// Adds the Mappings in the XmlReader after validating optionally it against the
 		/// nhibernate-mapping-2.0 schema.
