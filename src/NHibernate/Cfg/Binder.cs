@@ -13,7 +13,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg 
 {
-	internal class Binder 
+	public class Binder 
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Binder));
 
@@ -1133,14 +1133,14 @@ namespace NHibernate.Cfg
 				model.NullValue = "null";
 		}
 
-		private static void MakeVersion( XmlNode node, SimpleValue model )
+		public static void MakeVersion( XmlNode node, SimpleValue model )
 		{
 			// VERSION UNSAVED-VALUE
 			XmlAttribute nullValueNode = node.Attributes["unsaved-value"];
 			if (nullValueNode!=null) 
 				model.NullValue = nullValueNode.Value;
 			else
-				model.NullValue = "null";
+				model.NullValue = "undefined";
 		}
 
 		protected static void PropertiesFromXML(XmlNode node, PersistentClass model, Mappings mappings) 
