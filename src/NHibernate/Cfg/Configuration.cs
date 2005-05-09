@@ -505,6 +505,16 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
+		/// <summary>
+		/// Load and validate the mappings in the XmlReader against
+		/// the nhibernate-mapping-2.0 schema, without adding them to the configuration.
+		/// </summary>
+		/// <remarks>
+		/// This method is made public to be usable from the unit tests. It is not intended
+		/// to be called by end users.
+		/// </remarks>
+		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
+		/// <returns>Validated XmlDocument built from the XmlReader.</returns>
 		public XmlDocument LoadMappingDocument( XmlReader hbmReader )
 		{
 			XmlValidatingReader validatingReader = new XmlValidatingReader( hbmReader );
@@ -527,34 +537,15 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds the Mappings in the XmlReader after validating optionally it against the
+		/// Adds the Mappings in the XmlReader after validating it against the
 		/// nhibernate-mapping-2.0 schema.
 		/// </summary>
 		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
 		/// <returns>This Configuration object.</returns>
 		public Configuration AddXmlReader( XmlReader hbmReader )
 		{
-			XmlValidatingReader validatingReader = null;
-			try 
-			{
-				XmlDocument hbmDocument = new XmlDocument();
-				validatingReader = new XmlValidatingReader( hbmReader );
-				validatingReader.ValidationEventHandler += new ValidationEventHandler( ValidationHandler );
-				validatingReader.ValidationType = ValidationType.Schema;
-				validatingReader.Schemas.Add( MappingSchemaCollection );
-
-				hbmDocument.Load( validatingReader );
-				Add( hbmDocument );
-
-				return this;
-			}
-			finally
-			{
-				if( validatingReader!=null )
-				{
-					validatingReader.Close();
-				}
-			}
+			Add( LoadMappingDocument( hbmReader ) );
+			return this;
 		}
 
 		private static void ValidationHandler( object o, ValidationEventArgs args )
