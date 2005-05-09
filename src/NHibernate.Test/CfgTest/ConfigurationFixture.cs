@@ -144,7 +144,42 @@ namespace NHibernate.Test.CfgTest
 				// the file to delete.
 				System.IO.File.Delete( filename );
 			}
+		}
 
+		[Test]
+		public void ProxyWithDefaultNamespaceAndAssembly()
+		{
+			string hbm = @"<?xml version='1.0' encoding='utf-8' ?> 
+							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'
+								namespace='NHibernate.DomainModel'
+								assembly='NHibernate.DomainModel'>
+								<class name='A' proxy='A'>
+									<id name='Id'>
+										<generator class='native' />
+									</id>
+								</class>
+							</hibernate-mapping>";
+
+			Configuration cfg = new Configuration();
+			cfg.AddXmlString( hbm );
+		}
+
+		[Test]
+		public void PersisterWithDefaultNamespaceAndAssembly()
+		{
+			string hbm = @"<?xml version='1.0' encoding='utf-8' ?> 
+							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'
+								namespace='NHibernate.DomainModel'
+								assembly='NHibernate.DomainModel'>
+								<class name='A' persister='A'>
+									<id name='Id'>
+										<generator class='native' />
+									</id>
+								</class>
+							</hibernate-mapping>";
+
+			Configuration cfg = new Configuration();
+			cfg.AddXmlString( hbm );
 		}
 	}
 }

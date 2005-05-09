@@ -106,7 +106,8 @@ namespace NHibernate.Cfg
 			{
 				try 
 				{
-					model.ProxyInterface = ReflectHelper.ClassForName( proxyNode.Value );
+					model.ProxyInterface = ReflectHelper.ClassForName(
+						FullClassName( proxyNode.Value, mapping ) );
 				} 
 				catch (Exception cnfe) 
 				{
@@ -184,7 +185,8 @@ namespace NHibernate.Cfg
 			{
 				try
 				{
-					model.ClassPersisterClass = ReflectHelper.ClassForName( persisterNode.Value );
+					string persisterName = FullClassName( persisterNode.Value, mapping );
+					model.ClassPersisterClass = ReflectHelper.ClassForName( persisterName );
 				}
 				catch (Exception)
 				{
