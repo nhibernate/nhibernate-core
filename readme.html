@@ -26,13 +26,16 @@
 				Download and install H2Reg from <a href="http://helpware.net/mshelp2/h2reg.htm">http://helpware.net/mshelp2/h2reg.htm</a>
 			</li>
 			<li>
-				Register the help collection from the command line using a command similar to 
-				the following, changing the paths as needed:
+				Copy H2Reg.exe and H2Reg.ini from the H2Reg installation folder (typically C:\Program Files\HelpWare\H2Reg) to
+				the NHibernate Help2 folder (e.g. C:\NHibernate\doc\en\Help2).
+			</li>
+			<li>
+				Register the help collection from the command line using the following command from the NHibernate Help2 folder.
 			</li>
 		</ul>
 		<blockquote>
 			<code>
-				"C:\Program Files\HelpWare\H2Reg\H2Reg" -r CmdFile="C:\NHibernate\doc\Help2\NHibernateCollection.ini"
+				H2Reg -r CmdFile=NHibernateCollection.ini
 			</code>
 		</blockquote>
 		<ul dir="ltr">
@@ -42,7 +45,7 @@
 		</ul>
 		<blockquote>
 			<code>
-				"C:\Program Files\HelpWare\H2Reg\H2Reg" -u CmdFile="C:\NHibernate\doc\Help2\NHibernateCollection.ini"
+				H2Reg -u CmdFile=NHibernateCollection.ini
 			</code>
 		</blockquote>
 		<p>
