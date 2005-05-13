@@ -68,15 +68,15 @@ namespace NHibernate.Type
 				{
 					while( true )
 					{
-						long amountRead = rs.GetBytes( index, fieldOffset, buffer, 0, 2048 );
-
-						if( amountRead == 0 )
-						{
-							break;
-						}
+						long amountRead = rs.GetBytes( index, fieldOffset, buffer, 0, buffer.Length );
 
 						fieldOffset += amountRead;
 						outputStream.Write( buffer, 0, ( int ) amountRead );
+
+						if( amountRead < buffer.Length )
+						{
+							break;
+						}
 					}
 					outputStream.Close();
 				}
