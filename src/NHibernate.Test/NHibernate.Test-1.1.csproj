@@ -104,6 +104,11 @@
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
                 />
+                <Reference
+                    Name = "nmock"
+                    AssemblyName = "nmock"
+                    HintPath = "..\..\lib\net\1.1\nmock.dll"
+                />
             </References>
         </Build>
         <Files>
