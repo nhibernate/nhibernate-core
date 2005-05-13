@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<joined-subclass name="org.hibernate.test.Mono" extends="org.hibernate.test.Top" table="mono" dynamic-insert="true" dynamic-update="true">
+	<joined-subclass name="NHibernate.DomainModel.Mono, NHibernate.DomainModel" extends="NHibernate.DomainModel.Top, NHibernate.DomainModel" table="mono" dynamic-insert="true" dynamic-update="true">
 		<key column="superid"/>
-		<set name="strings" table="monostrings">
+		<set name="Strings" table="monostrings">
 			<key column="monoid_"/>
 			<element type="string" column="str_"/>
 		</set>

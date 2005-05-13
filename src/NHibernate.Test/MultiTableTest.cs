@@ -17,14 +17,17 @@ namespace NHibernate.Test
 		{
 			get
 			{
-				return new string[] { "Multi.hbm.xml"};
+				return new string[] { "Multi.hbm.xml", "MultiExtends.hbm.xml"};
 			}
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void FetchManyToOne()
 		{
+			ISession s = OpenSession();
+			s.CreateCriteria( typeof(Po) ).SetFetchMode( "Set", FetchMode.Eager ).List();
+			s.CreateCriteria( typeof(Po) ).SetFetchMode( "List", FetchMode.Eager ).List();
+			s.Close();
 		}
 
 
@@ -32,17 +35,20 @@ namespace NHibernate.Test
 		public void Joins() 
 		{
 			ISession s = OpenSession();
+			s.Find( "from Lower l join l.YetAnother l2 where lower(l2.Name) > 'a'" );
 			s.Find("from SubMulti sm join sm.Children smc where smc.Name > 'a'");
-			s.Find("select s, ya from LessSimple s join s.YetAnother ya");
-			s.Find("from LessSimple s1 join s1.Bag s2");
-			s.Find("from LessSimple s1 left join s1.Bag s2");
-			s.Find("select s, a from LessSimple s join s.Another a");
-			s.Find("select s, a from LessSimple s left join s.Another a");
-			s.Find("from Simple s, LessSimple ls");
-			s.Find("from LessSimple ls join ls.Set s where s.Name > 'a'");
+			s.Find("select s, ya from Lower s join s.YetAnother ya");
+			s.Find("from Lower s1 join s1.Bag s2");
+			s.Find("from Lower s1 left join s1.Bag s2");
+			s.Find("select s, a from Lower s join s.Another a");
+			s.Find("select s, a from Lower s left join s.Another a");
+			s.Find("from Top s, Lower ls");
+			s.Find("from Lower ls join ls.Set s where s.Name > 'a'");
 			s.Find("from Po po join po.List sm where sm.Name > 'a'");
-			s.Find("from LessSimple ls inner join ls.Another s where s.Name is not null");
-			s.Find("from LessSimple ls where ls.Other.Another.Name is not null");
+			s.Find("from Lower ls inner join ls.Another s where s.Name is not null");
+			s.Find("from Lower ls where ls.Other.Another.Name is not null");
+			s.Find( "from Multi m where m.Derived like 'F%'" );
+			s.Find( "from SubMulti m where m.Derived like 'F%'" );
 			s.Close();
 		}
 
@@ -64,6 +70,7 @@ namespace NHibernate.Test
 			IList anotherList = new ArrayList();
 			sm.Children = list;
 			sm.MoreChildren = anotherList;
+			sm.ExtraProp = "foo";
 			list.Add(sm1);
 			list.Add(sm2);
 			anotherList.Add(sm1);
@@ -76,8 +83,10 @@ namespace NHibernate.Test
 			s.Flush();
 			s.Close();
 
+			sessions.Evict( typeof(SubMulti) );
+
 			s = OpenSession();
-			// TODO: I don't understand why h2.0.3 issues a select statement here
+			// TODO: I don't understand why h2.0.3/h2.1 issues a select statement here
 			
 			Assert.AreEqual( 2, s.Find("select s from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").Count );
 			Assert.AreEqual( 2, s.Find("select elements(sm.Children) from SubMulti as sm").Count );
@@ -92,7 +101,7 @@ namespace NHibernate.Test
 				// only want the first one
 				break;
 			}
-
+			Assert.AreEqual( "FOO", sm.Derived , "should have uppercased the column in a formula" );
 			
 			IEnumerator enumer = s.Enumerable("select distinct s from s in class SubMulti where s.MoreChildren[1].Amount < 1.0").GetEnumerator();
 			Assert.IsTrue( enumer.MoveNext() );
@@ -106,8 +115,6 @@ namespace NHibernate.Test
 			}
 			s.Flush();
 			s.Close();
-
-
 		}
 
 		[Test]
@@ -152,15 +159,15 @@ namespace NHibernate.Test
 			s = OpenSession();
 			TrivialClass tc = (TrivialClass)s.Load( typeof(TrivialClass), id );
 			s.Find("from s in class TrivialClass where s.id = 2");
-			s.Find("select s.Count from s in class Simple");
-			s.Find("from s in class LessSimple where s.Another.Name='name'");
-			s.Find("from s in class LessSimple where s.YetAnother.Name='name'");
-			s.Find("from s in class LessSimple where s.YetAnother.Name='name' and s.YetAnother.Foo is null");
-			s.Find("from s in class Simple where s.Count=1");
-			s.Find("select s.Count from s in class Simple, ls in class LessSimple where ls.Another=s");
-			s.Find("select ls.Bag.elements, ls.Set.elements from ls in class LessSimple");
-			s.Enumerable("from s in class LessSimple");
-			s.Enumerable("from s in class Simple");
+			s.Find("select s.Count from s in class Top");
+			s.Find("from s in class Lower where s.Another.Name='name'");
+			s.Find("from s in class Lower where s.YetAnother.Name='name'");
+			s.Find("from s in class Lower where s.YetAnother.Name='name' and s.YetAnother.Foo is null");
+			s.Find("from s in class Top where s.Count=1");
+			s.Find("select s.Count from s in class Top, ls in class Lower where ls.Another=s");
+			s.Find("select ls.Bag.elements, ls.Set.elements from ls in class Lower");
+			s.Enumerable("from s in class Lower");
+			s.Enumerable("from s in class Top");
 			s.Delete(tc);
 			s.Flush();
 			s.Close();
@@ -200,7 +207,7 @@ namespace NHibernate.Test
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
 			multi.Name = "name";
-			Simple simp = new Simple();
+			Top simp = new Top();
 			simp.Date = DateTime.Now;
 			simp.Name = "simp";
 			object mid;
@@ -259,11 +266,9 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			multi = (Multi)s.Load( typeof(Simple), mid );
-			simp = (Simple)s.Load( typeof(Simple), sid );
+			multi = (Multi)s.Load( typeof(Top), mid );
+			simp = (Top)s.Load( typeof(Top), sid );
 			Assert.IsFalse( simp is Multi );
-			// Can't see the point of this test since the variable is declared as Multi!
-			//Assert.IsTrue( multi is Multi );
 			Assert.AreEqual( "extra23", multi.ExtraProp );
 			Assert.AreEqual( "newer name", multi.Name );
 			t.Commit();
@@ -271,14 +276,14 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerator enumer = s.Enumerable("select\n\ns from s in class Simple where s.Count>0").GetEnumerator();
+			IEnumerator enumer = s.Enumerable("select\n\ns from s in class Top where s.Count>0").GetEnumerator();
 			bool foundSimp = false;
 			bool foundMulti = false;
 			bool foundSubMulti = false;
 			while( enumer.MoveNext() ) 
 			{
 				object o = enumer.Current;
-				if( (o is Simple) && !(o is Multi) ) foundSimp = true;
+				if( (o is Top) && !(o is Multi) ) foundSimp = true;
 				if( (o is Multi) && !(o is SubMulti) ) foundMulti = true;
 				if( o is SubMulti ) foundSubMulti = true;
 			}
@@ -287,8 +292,8 @@ namespace NHibernate.Test
 			Assert.IsTrue( foundSubMulti );
 			
 			s.Find("from m in class Multi where m.Count>0 and m.ExtraProp is not null");
-			s.Find("from m in class Simple where m.Count>0 and m.Name is not null");
-			s.Find("from m in class LessSimple where m.Other is not null");
+			s.Find("from m in class Top where m.Count>0 and m.Name is not null");
+			s.Find("from m in class Lower where m.Other is not null");
 			s.Find("from m in class Multi where m.Other.id = 1");
 			s.Find("from m in class SubMulti where m.Amount > 0.0");
 			
@@ -297,15 +302,15 @@ namespace NHibernate.Test
 			//if( !(dialect is Dialect.HSQLDialect) ) 
 			//{
 			Assert.AreEqual( 1, s.Find("from m in class Multi where m.class = SubMulti").Count );
-			Assert.AreEqual( 1, s.Find("from m in class Simple where m.class = Multi").Count );
+			Assert.AreEqual( 1, s.Find("from m in class Top where m.class = Multi").Count );
 			//}
 
-			Assert.AreEqual( 3, s.Find("from s in class Simple").Count );
-			Assert.AreEqual( 0, s.Find("from ls in class LessSimple").Count );
+			Assert.AreEqual( 3, s.Find("from s in class Top").Count );
+			Assert.AreEqual( 0, s.Find("from ls in class Lower").Count );
 			Assert.AreEqual( 1, s.Find("from sm in class SubMulti").Count );
 
-			s.Find("from ls in class LessSimple, s in ls.Bag.elements where s.id is not null");
-			s.Find("from ls in class LessSimple, s in ls.Set.elements where s.id is not null");
+			s.Find("from ls in class Lower, s in ls.Bag.elements where s.id is not null");
+			s.Find("from ls in class Lower, s in ls.Set.elements where s.id is not null");
 			s.Find("from sm in class SubMulti where exists sm.Children.elements");
 			
 			t.Commit();
@@ -313,8 +318,8 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			multi = (Multi)s.Load( typeof(Simple), mid, LockMode.Upgrade );
-			simp = (Simple)s.Load( typeof(Simple), sid );
+			multi = (Multi)s.Load( typeof(Top), mid, LockMode.Upgrade );
+			simp = (Top)s.Load( typeof(Top), sid );
 			s.Lock( simp, LockMode.UpgradeNoWait );
 			t.Commit();
 			s.Close();
@@ -323,7 +328,7 @@ namespace NHibernate.Test
 			t = s.BeginTransaction();
 			s.Update( multi, mid );
 			s.Delete(multi);
-			Assert.AreEqual( 2, s.Delete("from s in class Simple") );
+			Assert.AreEqual( 2, s.Delete("from s in class Top") );
 			t.Commit();
 			s.Close();
 
@@ -338,7 +343,7 @@ namespace NHibernate.Test
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
 			multi.Name = "name";
-			Simple simp = new Simple();
+			Top simp = new Top();
 			simp.Date = DateTime.Now;
 			simp.Name = "simp";
 			object multiId = s.Save(multi);
@@ -376,8 +381,8 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			multi = (Multi)s.Load( typeof(Simple), multiId );
-			simp = (Simple)s.Load( typeof(Simple), simpId );
+			multi = (Multi)s.Load( typeof(Top), multiId );
+			simp = (Top)s.Load( typeof(Top), simpId );
 			Assert.IsFalse( simp is Multi );
 			// Can't see the point of this test since the variable is declared as Multi!
 			//Assert.IsTrue( multi is Multi );
@@ -388,14 +393,14 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerable enumer = s.Enumerable("select\n\ns from s in class Simple where s.Count>0");
+			IEnumerable enumer = s.Enumerable("select\n\ns from s in class Top where s.Count>0");
 			bool foundSimp = false;
 			bool foundMulti = false;
 			bool foundSubMulti = false;
 
 			foreach(object obj in enumer) 
 			{
-				if( (obj is Simple) && !(obj is Multi) ) foundSimp = true;
+				if( (obj is Top) && !(obj is Multi) ) foundSimp = true;
 				if( (obj is Multi) && !(obj is SubMulti) ) foundMulti = true;
 				if( obj is SubMulti ) foundSubMulti = true;
 			}
@@ -404,17 +409,17 @@ namespace NHibernate.Test
 			Assert.IsTrue(foundSubMulti);
 
 			s.Find("from m in class Multi where m.Count>0 and m.ExtraProp is not null");
-			s.Find("from m in class Simple where m.Count>0 and m.Name is not null");
-			s.Find("from m in class LessSimple where m.Other is not null");
+			s.Find("from m in class Top where m.Count>0 and m.Name is not null");
+			s.Find("from m in class Lower where m.Other is not null");
 			s.Find("from m in class Multi where m.Other.id = 1");
 			s.Find("from m in class SubMulti where m.Amount > 0.0");
 			
 			Assert.AreEqual( 2, s.Find("from m in class Multi").Count );
-			Assert.AreEqual( 3, s.Find("from s in class Simple").Count );
-			Assert.AreEqual( 0, s.Find("from s in class LessSimple").Count );
+			Assert.AreEqual( 3, s.Find("from s in class Top").Count );
+			Assert.AreEqual( 0, s.Find("from s in class Lower").Count );
 			Assert.AreEqual( 1, s.Find("from sm in class SubMulti").Count );
 
-			s.Find("from ls in class LessSimple, s in ls.Bag.elements where s.id is not null");
+			s.Find("from ls in class Lower, s in ls.Bag.elements where s.id is not null");
 			s.Find("from sm in class SubMulti where exists sm.Children.elements");
 			
 			t.Commit();
@@ -422,8 +427,8 @@ namespace NHibernate.Test
 			
 			s = OpenSession();
 			t = s.BeginTransaction();
-			multi = (Multi)s.Load( typeof(Simple), multiId, LockMode.Upgrade );
-			simp = (Simple)s.Load( typeof(Simple), simpId );
+			multi = (Multi)s.Load( typeof(Top), multiId, LockMode.Upgrade );
+			simp = (Top)s.Load( typeof(Top), simpId );
 			s.Lock( simp, LockMode.UpgradeNoWait );
 			t.Commit();
 			s.Close();
@@ -432,7 +437,7 @@ namespace NHibernate.Test
 			t = s.BeginTransaction();
 			s.Update( multi, multiId );
 			s.Delete(multi);
-			Assert.AreEqual( 2, s.Delete("from s in class Simple") );
+			Assert.AreEqual( 2, s.Delete("from s in class Top") );
 			t.Commit();
 			s.Close();
 		}
@@ -444,11 +449,11 @@ namespace NHibernate.Test
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Assert.AreEqual( 0, s.Find("from s in class Simple").Count );
+			Assert.AreEqual( 0, s.Find("from s in class Top").Count );
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
 			multi.Name = "name";
-			Simple simp = new Simple();
+			Top simp = new Top();
 			simp.Date = DateTime.Now;
 			simp.Name = "simp";
 			object mid;
@@ -465,7 +470,7 @@ namespace NHibernate.Test
 				s.Save(multi, mid);
 				s.Save(simp, sid);
 			}
-			LessSimple ls = new LessSimple();
+			Lower ls = new Lower();
 			ls.Other = ls;
 			ls.Another = ls;
 			ls.YetAnother = ls;
@@ -492,7 +497,7 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			ls = (LessSimple)s.Load( typeof(LessSimple), id );
+			ls = (Lower)s.Load( typeof(Lower), id );
 			Assert.AreSame( ls, ls.Other );
 			Assert.AreSame( ls, ls.Another );
 			Assert.AreSame( ls, ls.YetAnother );
@@ -503,12 +508,12 @@ namespace NHibernate.Test
 
 			foreach(object obj in ls.Set) 
 			{
-				if( obj is Simple ) foundSimple++;
+				if( obj is Top ) foundSimple++;
 				if( obj is Multi ) foundMulti++;
 			}
 			Assert.AreEqual( 2, foundSimple );
 			Assert.AreEqual( 1, foundMulti );
-			Assert.AreEqual( 3, s.Delete("from s in class Simple") );
+			Assert.AreEqual( 3, s.Delete("from s in class Top") );
 			t.Commit();
 			s.Close();
 
@@ -522,11 +527,11 @@ namespace NHibernate.Test
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Assert.AreEqual( 0, s.Find("from s in class Simple").Count );
+			Assert.AreEqual( 0, s.Find("from s in class Top").Count );
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
 			multi.Name = "name";
-			Simple simp = new Simple();
+			Top simp = new Top();
 			simp.Date = DateTime.Now;
 			simp.Name = "simp";
 			object mid;
@@ -540,7 +545,7 @@ namespace NHibernate.Test
 				mid = 123L;
 				s.Save(multi, mid);
 			}
-			LessSimple ls = new LessSimple();
+			Lower ls = new Lower();
 			ls.Other = ls;
 			ls.Another = multi;
 			ls.YetAnother = ls;
@@ -564,7 +569,7 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			ls = (LessSimple)s.Load( typeof(LessSimple), id );
+			ls = (Lower)s.Load( typeof(Lower), id );
 			Assert.AreSame(ls, ls.Other);
 			Assert.AreSame(ls, ls.YetAnother);
 			Assert.AreEqual("name", ls.Another.Name);
@@ -618,7 +623,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 2, po.Set.Count );
 			Assert.AreEqual( 1, po.List.Count );
 			s.Delete(po);
-			Assert.AreEqual( 0, s.Find("from s in class Simple").Count );
+			Assert.AreEqual( 0, s.Find("from s in class Top").Count );
 			t.Commit();
 			s.Close();
 
@@ -628,17 +633,17 @@ namespace NHibernate.Test
 		public void OneToOne() 
 		{
 			ISession s = OpenSession();
-			LessSimple ls = new LessSimple();
+			Lower ls = new Lower();
 			object id = s.Save(ls);
 			s.Flush();
 			s.Close();
 			
 			s = OpenSession();
-			s.Load( typeof(LessSimple), id );
+			s.Load( typeof(Lower), id );
 			s.Close();
 
 			s = OpenSession();
-			s.Delete( s.Load( typeof(LessSimple), id ) );
+			s.Delete( s.Load( typeof(Lower), id ) );
 			s.Flush();
 			s.Close();
 		}
@@ -647,10 +652,10 @@ namespace NHibernate.Test
 		public void CollectionPointer() 
 		{
 			ISession s = OpenSession();
-			LessSimple ls = new LessSimple();
+			Lower ls = new Lower();
 			IList list = new ArrayList();
 			ls.Bag = list;
-			Simple simple = new Simple();
+			Top simple = new Top();
 			object id = s.Save(ls);
 			s.Save(simple);
 			s.Flush();
@@ -659,7 +664,7 @@ namespace NHibernate.Test
 			s.Close();
 
 			s = OpenSession();
-			ls = (LessSimple)s.Load( typeof(LessSimple), id );
+			ls = (Lower)s.Load( typeof(Lower), id );
 			Assert.AreEqual( 1, ls.Bag.Count );
 			s.Delete("from o in class System.Object");
 			s.Flush();
@@ -670,7 +675,7 @@ namespace NHibernate.Test
 		public void DynamicUpdate() 
 		{
 			object id;
-			Simple simple = new Simple();
+			Top simple = new Top();
 
 			simple.Name = "saved";
 
@@ -685,13 +690,13 @@ namespace NHibernate.Test
 
 			using( ISession s = OpenSession() )
 			{
-				simple = (Simple)s.Load( typeof(Simple), id );
+				simple = (Top)s.Load( typeof(Top), id );
 				Assert.AreEqual( "updated", simple.Name, "name should have been updated" );
 			}
 
 			using( ISession s = OpenSession() )
 			{
-				s.Delete( "from Simple" );
+				s.Delete( "from Top" );
 				s.Flush();
 			}
 		}

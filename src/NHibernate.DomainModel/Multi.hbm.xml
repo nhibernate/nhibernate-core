@@ -3,135 +3,64 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
     <class 
-    	name="NHibernate.DomainModel.Simple, NHibernate.DomainModel" 
+    	name="NHibernate.DomainModel.Top, NHibernate.DomainModel" 
     	table="rootclass" 
     	dynamic-insert="true" 
     	dynamic-update="true"
+    	where="id1_ is not null"
     >
-        <jcs-cache usage="read-write"/>
-        <id 
-			type="Int64" 
-			column="id_" 
-			unsaved-value="0"
-		>
+        <!--<jcs-cache usage="read-write"/> -->
+        <!-- commented out in h2.1 test also -->
+        <id name="Id" type="Int64" column="id1_" unsaved-value="0">
             <generator class="native"/>
         </id>
         
-        <version 
-			name="Count" 
-			column="count_"
-		/>
-        <property name="Name"/>
-        <property name="Address"/>
-        <property 
-			name="Date" 
-			column="date_"
-		/>
-        
-        <joined-subclass 
-        	name="NHibernate.DomainModel.Mono, NHibernate.DomainModel" 
-        	table="mono"
-        	dynamic-insert="true" 
-    		dynamic-update="true"
-    	>
-        	<key column="superid"/>
-        	<set 
-        		name="Strings" 
-        		table="monostrings"
-        	>
-        		<key column="monoid_"/>
-        		<element 
-        			type="String" 
-        			column="str_"
-        		/>
-        	</set>
-        </joined-subclass>
-        
-        <joined-subclass 
-			name="NHibernate.DomainModel.TrivialClass, NHibernate.DomainModel"
-		>
+        <version name="Count" column="count_" />
+        <property name="Name" />
+        <property name="Address" />
+        <property name="Date" column="date_" />
+        <many-to-one name="top" access="field" column="_top"/> <!-- changed column name because of MSSQL conflicts -->
+        <joined-subclass name="NHibernate.DomainModel.TrivialClass, NHibernate.DomainModel">
         	<key column="tcid"/>
         </joined-subclass>
         
-	    <joined-subclass 
-	    	name="NHibernate.DomainModel.LessSimple, NHibernate.DomainModel" 
-	    	table="leafsubclass"
-	    	dynamic-insert="true" 
-    		dynamic-update="true"
+	    <joined-subclass name="NHibernate.DomainModel.Lower, NHibernate.DomainModel" 
+	    	table="leafsubclass" dynamic-insert="true" dynamic-update="true"
     	>
 	        <key column="id__"/>
-	        <property 
-				name="Intprop" 
-				not-null="true"
-			/>
-	        <one-to-one 
-				name="Other" 
-				class="NHibernate.DomainModel.LessSimple, NHibernate.DomainModel"
-			/>
-	        <many-to-one 
-				name="Another" 
-				column="other1" 
-				class="NHibernate.DomainModel.Simple, NHibernate.DomainModel"
-	        />
-	        <many-to-one 
-				name="YetAnother" 
-				column="other3" 
-				class="NHibernate.DomainModel.LessSimple, NHibernate.DomainModel"
-	        />
+	        <property  name="Intprop" not-null="true" />
+	        <one-to-one name="Other" class="NHibernate.DomainModel.Lower, NHibernate.DomainModel" />
+	        <many-to-one name="Another" column="other1" class="NHibernate.DomainModel.Top, NHibernate.DomainModel" />
+	        <many-to-one name="YetAnother" column="other3" class="NHibernate.DomainModel.Lower, NHibernate.DomainModel" />
 	        <property name="Foo"/>
-	        <set 
-				name="Set" 
-				lazy="false"
-	        >
+	        <set name="Set" lazy="false">
 	        	<key column="parent"/>
-	        	<one-to-many class="NHibernate.DomainModel.Simple, NHibernate.DomainModel"/>
+	        	<one-to-many class="NHibernate.DomainModel.Top, NHibernate.DomainModel"/>
 	        </set>
-	        <bag 
-				name="Bag" 
-				lazy="true" 
-				table="simple_simple"
-			>
+	        <bag name="Bag" lazy="true" table="simple_simple">
 	        	<key column="simple1"/>
-	        	<many-to-many 
-	        		column="simple2" 
-	        		class="NHibernate.DomainModel.Simple, NHibernate.DomainModel"
+	        	<many-to-many column="simple2" class="NHibernate.DomainModel.Top, NHibernate.DomainModel"
 	        	/>
 	        </bag>
 	        <one-to-one name="MyPo"/>
 	    </joined-subclass>
 	    
-	    <joined-subclass 
-			name="NHibernate.DomainModel.Multi, NHibernate.DomainModel" 
-			table="nonleafsubclass"
-		>
+	    <joined-subclass name="NHibernate.DomainModel.Multi, NHibernate.DomainModel" table="nonleafsubclass">
 	    	<key column="sid"/>
-	        <property name="ExtraProp"/>
-	        <many-to-one 
-				name="Other" 
-				column="other2" 
-				class="NHibernate.DomainModel.Multi, NHibernate.DomainModel" 
-			/>
+	        <property name="ExtraProp" column="dupe"/>
+	        <many-to-one name="Other" column="other2" class="NHibernate.DomainModel.Multi, NHibernate.DomainModel" />
 	        <many-to-one name="Po" column="po"/>
-	        
-	        <component	
-				name="Comp" 
-				class="NHibernate.DomainModel.Multi+Component, NHibernate.DomainModel"
-			>
+	        <many-to-one name="OtherPo" /> 
+	        <property name="Derived" formula="upper(dupe)" />
+	        <component name="Comp"  class="NHibernate.DomainModel.Multi+Component, NHibernate.DomainModel">
 	        	<property name="Cal"/>
 	        	<property name="Floaty"/>
 	        </component>
 	        
-	        <joined-subclass 
-				name="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel" 
-				table="leafsubsubclass"
-			>
+	        <joined-subclass name="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel" table="leafsubsubclass">
 	        	<key column="sid"/>
-	        	<property name="Amount"/>
-	        	<bag 
-	        		name="Children" 
-	        		lazy="true" 
-	        		inverse="true"
-	        	>
+	        	<property name="Amount" column="dupe"/>
+	        	<bag name="Children" lazy="true" inverse="true" >
 	        		<key column="parent"/>
 	        		<one-to-many class="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel"/>
 	        	</bag>
@@ -147,37 +76,26 @@
 
     </class>
     
-    <class 
-    	name="NHibernate.DomainModel.Po, NHibernate.DomainModel"
-    	dynamic-insert="true"
-    >
-    	<id 
-    		type="Int64" 
-    		column="id_"
-    		unsaved-value="0"
-    	>
+    <class name="NHibernate.DomainModel.Po, NHibernate.DomainModel" dynamic-insert="true">
+    	<id type="Int64" column="id_" unsaved-value="0">
     		<generator class="native"/>
     	</id>
-    	<property 
-    		name="Value" 
-    		column="value_"
-    	/>
-    	<list 
-    		name="List" 
-    		cascade="all"
-    	>
+    	<property name="Value" column="value_" />
+    	<list name="List" cascade="all" >
     		<key column="list_po"/>
     		<index column="i"/>
     		<one-to-many class="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel" />
     	</list>
-    	<set 
-    		name="Set" 
-    		inverse="true" 
-    		cascade="all"
-    	>
+    	<set name="Set" inverse="true" cascade="all" lazy="true">
     		<key column="po" />
     		<one-to-many class="NHibernate.DomainModel.Multi, NHibernate.DomainModel" />
     	</set>
+    	<set name="EagerSet" inverse="true" cascade="all" outer-join="true">
+    		<key column="OtherPo" />
+    		<one-to-many class="NHibernate.DomainModel.Multi, NHibernate.DomainModel" />
+    	</set>
+    	<many-to-one name="Top" column="t1" insert="false" update="false" />
+    	<many-to-one name="Lower" column="t1" />
     </class>
 
 </hibernate-mapping>

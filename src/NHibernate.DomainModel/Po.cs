@@ -1,19 +1,20 @@
 using System;
 using System.Collections;
 
+using Iesi.Collections;
+
 namespace NHibernate.DomainModel 
 {
-	/// <summary>
-	/// Summary description for Po.
-	/// </summary>
 	public class Po 
 	{
-
 		private long _id;
 		private string _value;
-		//<set> mapping
 		private Iesi.Collections.ISet _set;
+		private Iesi.Collections.ISet _eagerSet;
 		private IList _list;
+		private Top _top;
+		private Lower _lower;
+
 
 		public long Id
 		{
@@ -39,6 +40,23 @@ namespace NHibernate.DomainModel
 			set { _list = value; }
 		}
 
+		public ISet EagerSet
+		{
+			get { return _eagerSet; }
+			set { _eagerSet = value; }
+		}
+
+		public Top Top
+		{
+			get { return _top; }
+			set { _top = value; }
+		}
+
+		public Lower Lower
+		{
+			get { return _lower; }
+			set { _lower = value; }
+		}
 
 	}
 }

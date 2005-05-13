@@ -3,9 +3,6 @@ using System.Collections;
 
 namespace NHibernate.DomainModel 
 {
-	/// <summary>
-	/// Summary description for SubMulti.
-	/// </summary>
 	public class SubMulti : Multi
 	{
 		private float _amount;

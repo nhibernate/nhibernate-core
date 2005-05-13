@@ -271,7 +271,7 @@ namespace NHibernate.Persister
 
 				if ( prop.IsFormula )
 				{
-					this.propertyColumnNames[ i ] = new string[] { prop.Formula.Alias };
+					this.propertyColumnNameAliases[ i ] = new string[] { prop.Formula.Alias };
 					this.propertyColumnSpans[ i ] = 1;
 					this.propertyFormulaTemplates[ i ] = prop.Formula.GetTemplate( Dialect );
 					foundFormula = true;
@@ -1581,7 +1581,7 @@ namespace NHibernate.Persister
 			for( int i = 0; i < subclassFormulaTemplateClosure.Length; i++ )
 			{
 				string subalias = Alias( alias, subclassFormulaTableNumberClosure[ i ] );
-				frag.AddColumn( subalias, subclassFormulaTemplateClosure[ i ], subclassFormulaAliasClosure[ i ]	);
+				frag.AddFormula( subalias, subclassFormulaTemplateClosure[ i ], subclassFormulaAliasClosure[ i ]	);
 			}
 
 			if( HasSubclasses )

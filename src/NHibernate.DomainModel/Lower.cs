@@ -3,18 +3,15 @@ using System.Collections;
 
 namespace NHibernate.DomainModel 
 {
-	/// <summary>
-	/// Summary description for LessSimple.
-	/// </summary>
-	public class LessSimple : Simple
+	public class Lower : Top
 	{
 		private int _intprop;
 		private string _foo;
-		//<set> mapping
 		private Iesi.Collections.ISet _set; 
 		private IList _bag;
-		private Simple _another;
-		private LessSimple _yetAnother;
+		private Lower _other;
+		private Top _another;
+		private Lower _yetAnother;
 		private Po _myPo;
 
 		public int Intprop
@@ -41,13 +38,19 @@ namespace NHibernate.DomainModel
 			set { _bag = value; }
 		}
 
-		public Simple Another
+		public Lower Other
+		{
+			get { return _other; }
+			set { _other = value; }
+		}
+
+		public Top Another
 		{
 			get { return _another; }
 			set { _another = value; }
 		}
 
-		public LessSimple YetAnother
+		public Lower YetAnother
 		{
 			get { return _yetAnother; }
 			set { _yetAnother = value; }

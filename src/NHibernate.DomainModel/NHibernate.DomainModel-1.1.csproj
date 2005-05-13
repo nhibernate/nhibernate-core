@@ -422,11 +422,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "LessSimple.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Location.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -434,6 +429,11 @@
                 <File
                     RelPath = "Location.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Lower.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "M.cs"
@@ -634,6 +634,11 @@
                 />
                 <File
                     RelPath = "Super.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Top.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -2,14 +2,13 @@ using System;
 
 namespace NHibernate.DomainModel 
 {
-	/// <summary>
-	/// Summary description for Multi.
-	/// </summary>
-	public class Multi  : Simple
+	public class Multi : Top
 	{
 		private string _extraProp;
+		private string _derived;
 		private Multi.Component _comp;
 		private Po _po;
+		private Po _otherPo;
 
 		public Multi() : base() {} 
 
@@ -19,18 +18,30 @@ namespace NHibernate.DomainModel
 			set { _extraProp = value; }
 		}
 
-		public Multi.Component Comp
+		public string Derived
 		{
-			get { return _comp; }
-			set { _comp = value; }
+			get { return _derived; }
+			set { _derived = value; }
 		}
-	
+
 		public Po Po
 		{
 			get { return _po; }
 			set { _po = value; }
 		}
 
+		public Po OtherPo
+		{
+			get { return _otherPo; }
+			set { _otherPo = value; }
+		}
+
+		public Multi.Component Comp
+		{
+			get { return _comp; }
+			set { _comp = value; }
+		}
+	
 		public sealed class Component 
 		{
 			//TODO: is java Calendar -> .net DateTime an appropriate conversion

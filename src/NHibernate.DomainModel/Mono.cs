@@ -1,12 +1,8 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.DomainModel 
 {
-	/// <summary>
-	/// Summary description for Mono.
-	/// </summary>
-	public class Mono  : Simple
+	public class Mono : Top
 	{
 		private Iesi.Collections.ISet _strings;
 
