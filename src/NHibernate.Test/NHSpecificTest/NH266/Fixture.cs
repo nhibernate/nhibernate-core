@@ -1,0 +1,124 @@
+using System;
+using System.Collections;
+
+using NUnit.Framework;
+
+namespace NHibernate.Test.NHSpecificTest.NH266
+{
+	[TestFixture]
+	public class Fixture : TestCase
+	{
+		static int aId = 1;
+		static int bId = 2;
+		static int cId = 3;
+
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
+
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				return new string[] { "NHSpecificTest.NH266.Mappings.hbm.xml"};
+			}
+		}
+
+		protected override void OnSetUp()
+		{
+			ISession s = OpenSession();
+			A a = new A();
+			a.Id = aId;
+			a.Name = "the a";
+
+			B b = new B();
+			b.Id = bId;
+			b.Name = "the b";
+			b.Number = 4L;
+
+			C c = new C();
+			c.Id = cId;
+			c.Name = "the c";
+			c.Code = 'c';
+
+			s.Save( a );
+			s.Save( b );
+			s.Save( c );
+
+			s.Flush();
+			s.Close();
+		}
+
+		protected override void OnTearDown()
+		{
+			ISession s = OpenSession();
+			s.Delete( "from A" );
+			s.Flush();
+			s.Close();
+		}
+
+
+		[Test]
+		public void BaseClassLoad()
+		{
+			
+			// just do a straight load
+			ISession s = OpenSession();
+			A a = s.Load( typeof(A), aId ) as A;
+			Assert.AreEqual( "the a", a.Name );
+			s.Close();
+
+
+			// load instance through hql
+			s = OpenSession();
+			IQuery q = s.CreateQuery( "from A as a where a.id = :id ");
+			q.SetParameter( "id", aId );
+			a = q.UniqueResult() as A;
+			Assert.AreEqual( "the a", a.Name );
+			
+			s.Close();
+
+			// load instance through Criteria
+			s = OpenSession();
+			ICriteria c = s.CreateCriteria( typeof(A) );
+			c.Add( Expression.Expression.Eq( "Id", aId ) );
+			a = c.UniqueResult() as A;
+
+			Assert.AreEqual( "the a", a.Name );
+			s.Close();
+
+		}
+
+		[Test]
+		[Ignore( "Just don't want to check in failing test-cases.  Duplicating bug posted in NH-266 right now." )]
+		public void SpecificSubclass()
+		{
+			ISession s = OpenSession();
+			B b = s.Load( typeof(B), bId ) as B;
+			Assert.AreEqual( "the b", b.Name );
+			s.Close();
+
+			// load a instance of B through hql
+			s = OpenSession();
+			IQuery q = s.CreateQuery( "from B as b where b.id = :id" );
+			q.SetParameter( "id", bId );
+			b = q.UniqueResult() as B;
+			Assert.AreEqual( "the b", b.Name );
+			s.Close();
+
+			// load a instance of B through Criteria
+			s = OpenSession();
+			ICriteria c = s.CreateCriteria( typeof(B) );
+			c.Add( Expression.Expression.Eq( "Id", bId ) );
+			b = c.UniqueResult() as B;
+
+			Assert.AreEqual( "the b", b.Name );
+			s.Close();
+
+
+
+		}
+
+	}
+}

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class name="NHibernate.Test.NHSpecificTest.NH266.A, NHibernate.Test" table="nh_266">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		<discriminator column="type" type="string" />
+		<property name="Name" />
+		<subclass name="NHibernate.Test.NHSpecificTest.NH266.B, NHibernate.Test" discriminator-value="nh_266_b">
+			<property name="Number"/>
+		</subclass>
+		<subclass name="NHibernate.Test.NHSpecificTest.NH266.C, NHibernate.Test" discriminator-value="nh_266_c">
+			<property name="Code" />
+		</subclass>
+	</class>
+</hibernate-mapping>
