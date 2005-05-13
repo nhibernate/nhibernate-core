@@ -200,7 +200,9 @@
 					such as assembly, key, culture
 					-->
 					<column name="clazz" length="200"/>
-					<column name="gen_id"/>
+					
+					<!-- Quote gen_id because of Firebird -->
+					<column name="`gen_id`"/>
 				</any>
 			</subclass>
 		</subclass>
