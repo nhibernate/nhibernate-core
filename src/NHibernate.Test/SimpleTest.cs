@@ -143,7 +143,5 @@ namespace NHibernate.Test
 			s.Close();
 			
 		}
-
-		
 	}
 }

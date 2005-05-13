@@ -64,11 +64,20 @@ namespace NHibernate.Test
 				t.Commit();
 			}
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			if( dialect is Dialect.FirebirdDialect )
 			{
-				s.Delete( "from B" );
-				t.Commit();
+				// Firebird has problems deleting the map contents
+				ExecuteStatement( "delete from Map" );
+				ExecuteStatement( "delete from A" );
+			}
+			else
+			{
+				using( ISession s = OpenSession() )
+				using( ITransaction t = s.BeginTransaction() )
+				{
+					s.Delete( "from B" );
+					t.Commit();
+				}
 			}
 		}
 

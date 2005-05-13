@@ -22,9 +22,6 @@ namespace NHibernate.Test
 		public void SimpleSelectTest() 
 		{			
 			// create the objects to search on
-			ISession s1 = OpenSession();
-			ITransaction t1 = s1.BeginTransaction();
-			
 			long simple1Key = 15;
 			Simple simple1 = new Simple();
 			simple1.Address = "Street 12";
@@ -39,33 +36,35 @@ namespace NHibernate.Test
 			notSimple1.Name = "Don't be found";
 			notSimple1.Count = 18;
 
-			s1.Save(notSimple1, notSimple1Key);
-			s1.Save(simple1, simple1Key);
+			using( ISession s1 = OpenSession() )
+			using( ITransaction t1 = s1.BeginTransaction() )
+			{
+				s1.Save(notSimple1, notSimple1Key);
+				s1.Save(simple1, simple1Key);
+				t1.Commit();
+			}
 
-			t1.Commit();
-			s1.Close();
-
-			ISession s2 = OpenSession();
-			ITransaction t2 = s2.BeginTransaction();
-
-			IList results2 = s2.CreateCriteria(typeof(Simple))
-				.Add(Expression.Expression.Eq("Address","Street 12"))
-				.List();
+			using( ISession s2 = OpenSession() )
+			using( ITransaction t2 = s2.BeginTransaction() )
+			{
+				IList results2 = s2.CreateCriteria(typeof(Simple))
+					.Add(Expression.Expression.Eq("Address","Street 12"))
+					.List();
 			
-			Assert.AreEqual(1, results2.Count);
+				Assert.AreEqual(1, results2.Count);
 
-			Simple simple2 = (Simple)results2[0];
+				Simple simple2 = (Simple)results2[0];
 
-			Assert.IsNotNull(simple2, "Unable to load object");
-			Assert.AreEqual(simple1.Count, simple2.Count, "Load failed");
-			Assert.AreEqual(simple1.Name, simple2.Name, "Load failed");
-			Assert.AreEqual(simple1.Address, simple2.Address, "Load failed");
-			Assert.AreEqual(simple1.Date.ToString(), simple2.Date.ToString(), "Load failed");
+				Assert.IsNotNull(simple2, "Unable to load object");
+				Assert.AreEqual(simple1.Count, simple2.Count, "Load failed");
+				Assert.AreEqual(simple1.Name, simple2.Name, "Load failed");
+				Assert.AreEqual(simple1.Address, simple2.Address, "Load failed");
+				Assert.AreEqual(simple1.Date.ToString(), simple2.Date.ToString(), "Load failed");
 
-			s2.Delete("from Simple");
+				s2.Delete("from Simple");
 
-			t2.Commit();
-			s2.Close();
+				t2.Commit();
+			}
 		}
 
 		[Test]
@@ -81,34 +80,36 @@ namespace NHibernate.Test
 			s2.Count = 2;
 			s2.Date = new DateTime( 2006, 01, 01 );
 
-			ISession s = OpenSession();
-			s.Save( s1, 1 );
-			s.Save( s2, 2 );
-			s.Flush();
-			s.Close();
+			using( ISession s = OpenSession() )
+			{
+				s.Save( s1, 1 );
+				s.Save( s2, 2 );
+				s.Flush();
+			}
 
-			s = OpenSession();
-			IList results = s.CreateCriteria( typeof(Simple) )
-				.Add( Expression.Expression.Gt( "Date", new DateTime( 2005, 01, 01 ) ) )
-				.AddOrder( Expression.Order.Asc( "Date" ) )
-				.List();
+			using( ISession s = OpenSession() )
+			{
+				IList results = s.CreateCriteria( typeof(Simple) )
+					.Add( Expression.Expression.Gt( "Date", new DateTime( 2005, 01, 01 ) ) )
+					.AddOrder( Expression.Order.Asc( "Date" ) )
+					.List();
 
-			Assert.AreEqual( 1, results.Count, "one gt from 2005" );
-			Simple simple = (Simple)results[0];
-			Assert.IsTrue( simple.Date > new DateTime( 2005, 01, 01), "should have returned dates after 2005" );
+				Assert.AreEqual( 1, results.Count, "one gt from 2005" );
+				Simple simple = (Simple)results[0];
+				Assert.IsTrue( simple.Date > new DateTime( 2005, 01, 01), "should have returned dates after 2005" );
 		
-			results = s.CreateCriteria( typeof(Simple) )
-				.Add( Expression.Expression.Lt( "Date", new DateTime( 2005, 01, 01 ) ) )
-				.AddOrder( Expression.Order.Asc( "Date" ) )
-				.List();
+				results = s.CreateCriteria( typeof(Simple) )
+					.Add( Expression.Expression.Lt( "Date", new DateTime( 2005, 01, 01 ) ) )
+					.AddOrder( Expression.Order.Asc( "Date" ) )
+					.List();
 			
-			Assert.AreEqual( 1, results.Count, "one lt than 2005" );
-			simple = (Simple)results[0];
-			Assert.IsTrue( simple.Date < new DateTime( 2005, 01, 01 ), "should be less than 2005" );
+				Assert.AreEqual( 1, results.Count, "one lt than 2005" );
+				simple = (Simple)results[0];
+				Assert.IsTrue( simple.Date < new DateTime( 2005, 01, 01 ), "should be less than 2005" );
 
-			s.Delete( "from Simple" );
-			s.Flush();
-			s.Close();
+				s.Delete( "from Simple" );
+				s.Flush();
+			}
 		}
 	}
 }

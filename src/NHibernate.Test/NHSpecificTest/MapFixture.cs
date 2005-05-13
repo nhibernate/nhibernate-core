@@ -50,11 +50,12 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		[Test]
-		public void TestSelect() {
+		public void TestSelect()
+		{
+			TestInsert();
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-
-			TestInsert();
 
 			ICriteria chiefsCriteria = s.CreateCriteria(typeof(Team));
 			chiefsCriteria.Add(Expression.Expression.Eq("Name", "Chiefs"));
@@ -93,10 +94,11 @@ namespace NHibernate.Test.NHSpecificTest
 
 		[Test]
 		public void TestSort() {
+			TestInsert();
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			TestInsert();
 
 			Parent bobJones = (Parent)s.Load(typeof(Parent), 1);
 			Iesi.Collections.ISet friends = bobJones.AdultFriends;

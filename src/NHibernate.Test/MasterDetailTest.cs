@@ -67,11 +67,12 @@ namespace NHibernate.Test
 			cat.Subcategories.Add( subCatBar );
 			cat.Subcategories.Add( subCatBaz );
 
-			ISession s = OpenSession();
-			s.Save( catWA );
-			s.Save( cat );
-			s.Flush();
-			s.Close();
+			using( ISession s = OpenSession() )
+			{
+				s.Save( catWA );
+				s.Save( cat );
+				s.Flush();
+			}
 
 			cat.Name = "new foo";
 			subCatBar.Name = "new bar";
@@ -83,24 +84,26 @@ namespace NHibernate.Test
 			newSubCat.Name = "new sub";
 			newCat.Subcategories.Add( newSubCat );
 
-			s = OpenSession();
-			s.SaveOrUpdateCopy( cat );
-			s.Flush();
-			s.Close();
+			using( ISession s = OpenSession() )
+			{
+				s.SaveOrUpdateCopy( cat );
+				s.Flush();
+			}
 
-			s = OpenSession();
-			cat = (Category) s.CreateQuery( "from Category cat where cat.Name='new foo'").UniqueResult();
-			newSubCat = (Category) s.CreateQuery( "from Category cat where cat.Name='new sub'").UniqueResult();
-			newSubCat.Subcategories.Add( cat );
-			subCatBaz = (Category) s.SaveOrUpdateCopy( newSubCat, subCatBaz.Id );
-			Assert.IsTrue( subCatBaz.Name.Equals( "new sub" ) );
-			Assert.IsTrue( subCatBaz.Subcategories.Count == 1 && subCatBaz.Subcategories[0] == cat );
-			newSubCat.Subcategories.Remove( cat );
-			s.Delete( cat );
-			s.Delete( subCatBaz );
-			s.Delete( catWA );
-			s.Flush();
-			s.Close();
+			using( ISession s = OpenSession() )
+			{
+				cat = (Category) s.CreateQuery( "from Category cat where cat.Name='new foo'").UniqueResult();
+				newSubCat = (Category) s.CreateQuery( "from Category cat where cat.Name='new sub'").UniqueResult();
+				newSubCat.Subcategories.Add( cat );
+				subCatBaz = (Category) s.SaveOrUpdateCopy( newSubCat, subCatBaz.Id );
+				Assert.IsTrue( subCatBaz.Name.Equals( "new sub" ) );
+				Assert.IsTrue( subCatBaz.Subcategories.Count == 1 && subCatBaz.Subcategories[0] == cat );
+				newSubCat.Subcategories.Remove( cat );
+				s.Delete( cat );
+				s.Delete( subCatBaz );
+				s.Delete( catWA );
+				s.Flush();
+			}
 		}
 
 		[Test]

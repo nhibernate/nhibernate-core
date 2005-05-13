@@ -358,7 +358,6 @@ namespace NHibernate.Test
 		[Test]
 		public void Query() 
 		{
-			bool supportsCountDistinct = !( dialect is Dialect.SQLiteDialect );
 			ISession s = OpenSession();
 			Foo foo = new Foo();
 			s.Save( foo );
@@ -434,9 +433,12 @@ namespace NHibernate.Test
 
 			if( dialect.SupportsSubSelects )
 			{
-				// add an !InterbaseDialect wrapper around list and assert
-				list = s.Find( "from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements", new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day ), NHibernateUtil.DateTime );
-				Assert.AreEqual( 2, list.Count, "componenet query" );
+				if( !( dialect is Dialect.FirebirdDialect ) )
+				{
+					list = s.Find( "from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements",
+						DateTime.Today, NHibernateUtil.DateTime );
+					Assert.AreEqual( 2, list.Count, "component query" );
+				}
 
 				list = s.Find( "from foo in class NHibernate.DomainModel.Foo where size(foo.Component.ImportantDates) = 3" ); 
 				Assert.AreEqual( 2, list.Count, "component query" );
@@ -550,7 +552,7 @@ namespace NHibernate.Test
 			list = s.Find(" from i in class Bar where i.Baz.Name='Bazza'");
 			Assert.AreEqual( 1, list.Count, "query many-to-one" );
 
-			if( supportsCountDistinct )
+			if( DialectSupportsCountDistinct )
 			{
 				enumerable = s.Enumerable("select count(distinct foo.TheFoo) from foo in class Foo");
 				Assert.IsTrue( ContainsSingleObject( enumerable, 2 ), "count" );
@@ -608,7 +610,7 @@ namespace NHibernate.Test
 				Assert.IsTrue( row[3] is Foo );
 			}
 
-			if( supportsCountDistinct )
+			if( DialectSupportsCountDistinct )
 			{
 				list = s.Find("select avg(foo.Float), max(foo.Component.Name), count(distinct foo.id) from foo in class Foo");
 				Assert.IsTrue( list.Count > 0 );
@@ -3353,87 +3355,97 @@ namespace NHibernate.Test
 		[Test]
 		public void Versioning() 
 		{
-			ISession s = OpenSession();
-			GlarchProxy g = new Glarch();
-			s.Save(g);
-			GlarchProxy g2 = new Glarch();
-			s.Save(g2);
-			object gid = s.GetIdentifier(g);
-			object g2id = s.GetIdentifier(g2);
-			g.Name = "glarch";
-			s.Flush();
-			//s.Close();
-			s.Dispose();
+			object gid, g2id;
+
+			using( ISession s = OpenSession() )
+			{
+				GlarchProxy g = new Glarch();
+				s.Save(g);
+
+				GlarchProxy g2 = new Glarch();
+				s.Save(g2);
+
+				gid = s.GetIdentifier(g);
+				g2id = s.GetIdentifier(g2);
+				g.Name = "glarch";
+				s.Flush();
+			}
+
+			GlarchProxy gOld;
 
 			// grab a version of g that is old and hold onto it until later
 			// for a StaleObjectException check.
-			ISession sOld = OpenSession();
-			GlarchProxy gOld = (GlarchProxy)sOld.Load( typeof(Glarch), gid );
-			// want gOld to be initialized so later I can change a property
-			NHibernateUtil.Initialize( gOld );
-			Assert.IsTrue( NHibernateUtil.IsInitialized( gOld ), "should be initialized" );
-			//sOld.Close();
-			sOld.Dispose();
+			using( ISession sOld = OpenSession() )
+			{
+				gOld = (GlarchProxy)sOld.Load( typeof(Glarch), gid );
 
-			s = OpenSession();
-			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
-			s.Lock(g, LockMode.Upgrade);
-			g2 = (GlarchProxy)s.Load( typeof(Glarch), g2id );
-			Assert.AreEqual(1, g.Version, "g's version");
-			Assert.AreEqual(1, g.DerivedVersion, "g's derived version");
-			Assert.AreEqual(0, g2.Version, "g2's version");
-			g.Name = "foo";
-			Assert.AreEqual(1, s.Find("from g in class NHibernate.DomainModel.Glarch where g.Version=2").Count, "find by version");
-			g.Name = "bar";
-			s.Flush();
-			//s.Close();
-			s.Dispose();
+				// want gOld to be initialized so later I can change a property
+				NHibernateUtil.Initialize( gOld );
+				Assert.IsTrue( NHibernateUtil.IsInitialized( gOld ), "should be initialized" );
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				GlarchProxy g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+				s.Lock(g, LockMode.Upgrade);
+				GlarchProxy g2 = (GlarchProxy)s.Load( typeof(Glarch), g2id );
+				Assert.AreEqual(1, g.Version, "g's version");
+				Assert.AreEqual(1, g.DerivedVersion, "g's derived version");
+				Assert.AreEqual(0, g2.Version, "g2's version");
+				g.Name = "foo";
+				Assert.AreEqual(1, s.Find("from g in class NHibernate.DomainModel.Glarch where g.Version=2").Count, "find by version");
+				g.Name = "bar";
+				s.Flush();
+			}
 
 			// now that g has been changed verify that we can't go back and update 
 			// it with an old version of g
 			bool isStale = false;
-			sOld = OpenSession();
-			gOld.Name = "should not update";
-			try 
+
+			using( ISession sOld = OpenSession() )
 			{
-				sOld.Update( gOld, gid );
-				sOld.Flush();
-				//sOld.Close();
-				sOld.Dispose();
-			}
-			catch(Exception e) 
-			{
-				Exception exc = e;
-				while( exc!=null ) 
+				gOld.Name = "should not update";
+				try 
 				{
-					if( exc is StaleObjectStateException ) 
+					sOld.Update( gOld, gid );
+					sOld.Flush();
+					//sOld.Close();
+					sOld.Dispose();
+				}
+				catch(Exception e) 
+				{
+					Exception exc = e;
+					while( exc!=null ) 
 					{
-						isStale = true;
-						break;
+						if( exc is StaleObjectStateException ) 
+						{
+							isStale = true;
+							break;
+						}
+						exc = exc.InnerException;
 					}
-					exc = exc.InnerException;
 				}
 			}
 
 			Assert.IsTrue( isStale, "Did not catch a stale object exception when updating an old GlarchProxy." );
 
-			s = OpenSession();
-			g = (GlarchProxy)s.Load( typeof(Glarch), gid );
-			g2 = (GlarchProxy)s.Load( typeof(Glarch), g2id );
+			using( ISession s = OpenSession() )
+			{
+				GlarchProxy g = (GlarchProxy)s.Load( typeof(Glarch), gid );
+				GlarchProxy g2 = (GlarchProxy)s.Load( typeof(Glarch), g2id );
 
-			Assert.AreEqual(3, g.Version, "g's version");
-			Assert.AreEqual(3, g.DerivedVersion, "g's derived version");
-			Assert.AreEqual(0, g2.Version, "g2's version");
+				Assert.AreEqual(3, g.Version, "g's version");
+				Assert.AreEqual(3, g.DerivedVersion, "g's derived version");
+				Assert.AreEqual(0, g2.Version, "g2's version");
 
-			g.Next = null;
-			g2.Next = g;
-			s.Delete(g2);
-			s.Delete(g);
-			s.Flush();
-			//s.Close();
-			s.Dispose();
+				g.Next = null;
+				g2.Next = g;
+				s.Delete(g2);
+				s.Delete(g);
+				s.Flush();
+				//s.Close();
+			}
 		}
-
 
 		[Test]
 		public void VersionedCollections() 
@@ -3624,6 +3636,10 @@ namespace NHibernate.Test
 		{
 		}
 
+		private bool DialectSupportsCountDistinct
+		{
+			get { return !( dialect is Dialect.SQLiteDialect ); }
+		}
 
 		[Test]
 		public void MultiColumnQueries() 
@@ -3637,12 +3653,10 @@ namespace NHibernate.Test
 			IList l = s.Find("select parent, child from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child");
 			Assert.AreEqual( 1, l.Count, "multi-column find" );
 
-			bool supportsCountDistinct = !( dialect is Dialect.SQLiteDialect );
-
 			IEnumerator rs;
 			object[] row;
 
-			if( supportsCountDistinct )
+			if( DialectSupportsCountDistinct )
 			{
 				rs = s.Enumerable("select count(distinct child.id), count(distinct parent.id) from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child").GetEnumerator();
 				Assert.IsTrue( rs.MoveNext() );
@@ -4608,7 +4622,7 @@ namespace NHibernate.Test
 			e = s.Enumerable("select baz.FooArray.elements from baz in class NHibernate.DomainModel.Baz").GetEnumerator();
 			Assert.IsTrue( e.MoveNext() );
 
-			if( dialect.SupportsSubSelects ) 
+			if( dialect.SupportsSubSelects && !( dialect is Dialect.FirebirdDialect ) ) 
 			{
 				baz.FooArray[0] = null;
 				e = s.Enumerable("from baz in class NHibernate.DomainModel.Baz where ? in baz.FooArray.elements", 

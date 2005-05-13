@@ -139,6 +139,7 @@ namespace NHibernate.Test
 			s.Save(c);
 			t.Commit();
 			s.Flush();
+			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
