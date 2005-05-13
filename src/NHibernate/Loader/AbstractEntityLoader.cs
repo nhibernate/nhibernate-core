@@ -136,23 +136,24 @@ namespace NHibernate.Loader
 
 			JoinFragment ojf = MergeOuterJoins( associations );
 
-			SqlString = new SqlSelectBuilder( factory )
-				.SetSelectClause( 
+			SqlSelectBuilder builder = new SqlSelectBuilder( factory );
+			builder.SetSelectClause( 
 					persister.SelectFragment( alias, Suffixes[ joins ] ) +
 					SelectString( associations, factory )
-				)
-				.SetFromClause( 
+				);
+			builder.SetFromClause( 
 					persister.FromTableFragment( alias ).Append( 
 					persister.FromJoinFragment( alias, true, true ) )
-				)
-				.AddWhereClause( condition )
-				.SetOuterJoins( 
+				);
+			builder.AddWhereClause( condition );
+			builder.SetOuterJoins( 
 					ojf.ToFromFragmentString,
 					ojf.ToWhereFragmentString
-				)
-				.AddWhereClause( GetWhereFragment() )
-				.SetOrderByClause( orderBy )
-				.ToSqlString();
+				);
+			builder.AddWhereClause( GetWhereFragment() );
+			builder.SetOrderByClause( orderBy );
+				
+			this.SqlString = builder.ToSqlString();
 		}
 
 		/// <summary>
