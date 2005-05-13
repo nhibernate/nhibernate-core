@@ -138,6 +138,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DebugConnectionProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "DemoTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

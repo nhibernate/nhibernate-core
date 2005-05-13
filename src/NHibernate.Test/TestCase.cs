@@ -16,7 +16,12 @@ namespace NHibernate.Test
 		protected Configuration cfg;
 		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
+
+		private static readonly log4net.ILog log =
+			log4net.LogManager.GetLogger( typeof( TestCase ) );
+
 		private ISession lastOpenedSession;
+		private DebugConnectionProvider connectionProvider;
 
 		/// <summary>
 		/// Mapping files used in the TestCase
@@ -37,7 +42,7 @@ namespace NHibernate.Test
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			ExportSchema(Mappings);
+			ExportSchema();
 		}
 
 		/// <summary>
@@ -59,6 +64,10 @@ namespace NHibernate.Test
 		{
 		}
 
+		/// <summary>
+		/// Set up the test. This method is not overridable, but it calls
+		/// <see cref="OnSetUp" /> which is.
+		/// </summary>
 		[SetUp]
 		public void SetUp()
 		{
@@ -77,40 +86,65 @@ namespace NHibernate.Test
 		public void TearDown() 
 		{
 			OnTearDown();
-			CheckSessionIsClosed();
-			CheckDatabaseIsClean();
+
+			bool wasClosed  = CheckSessionWasClosed();
+			bool wasCleaned = CheckDatabaseWasCleaned();
+			bool wereConnectionsClosed = CheckConnectionsWereClosed();
+			bool fail = !wasClosed || !wasCleaned || !wereConnectionsClosed;
+
+			if( fail )
+			{
+				Assert.Fail("Test didn't clean up after itself");
+			}
 		}
 
-		private void CheckSessionIsClosed()
+		private bool CheckSessionWasClosed()
 		{
 			if( lastOpenedSession != null && lastOpenedSession.IsOpen )
 			{
+				log.Error( "Test case didn't close a session, closing" );
 				lastOpenedSession.Close();
-				Assert.Fail("Unclosed session");
+				return false;
 			}
+
+			return true;
 		}
 
-		private void CheckDatabaseIsClean()
+		private bool CheckDatabaseWasCleaned()
 		{
+			int objectCount;
 			using( ISession s = sessions.OpenSession() )
 			{
-				int count = s.Delete( "from System.Object o" );
-				s.Flush();
-				Assert.AreEqual( 0, count, "Test didn't clean up the database after itself" );
+				objectCount = s.CreateQuery( "from System.Object o" ).List().Count;
 			}
+
+			if( objectCount > 0 )
+			{
+				log.Error( "Test case didn't clean up the database after itself, re-creating the schema" );
+				DropSchema();
+				ExportSchema();
+				return false;
+			}
+
+			return true;
 		}
 
-		public void ExportSchema(IList files) 
+		private bool CheckConnectionsWereClosed()
 		{
-			ExportSchema(files, true);
+			if( connectionProvider == null || !connectionProvider.HasOpenConnections )
+				return true;
+
+			log.Error( "Test case didn't close all open connections, closing" );
+			connectionProvider.CloseAllConnections();
+			return false;
 		}
 
-		public void ExportSchema(IList files, bool exportSchema) 
+		private void ExportSchema()
 		{
-			ExportSchema( files, exportSchema, MappingsAssembly );
+			ExportSchema( Mappings, MappingsAssembly );
 		}
 
-		public void ExportSchema(IList files, bool exportSchema, string assemblyName) 
+		private void ExportSchema( IList files, string assemblyName )
 		{
 			cfg = new Configuration();
 
@@ -119,10 +153,11 @@ namespace NHibernate.Test
 				cfg.AddResource( assemblyName + "." + files[i].ToString(), Assembly.Load( assemblyName ) );
 			}
 
-			if(exportSchema) new SchemaExport(cfg).Create(OUTPUT_DDL, true);
+			new SchemaExport( cfg ).Create( OUTPUT_DDL, true );
 			
-			sessions = cfg.BuildSessionFactory( );
+			sessions = cfg.BuildSessionFactory();
 			dialect = Dialect.Dialect.GetDialect();
+			connectionProvider = sessions.ConnectionProvider as DebugConnectionProvider;
 		}
 
 		/// <summary>
