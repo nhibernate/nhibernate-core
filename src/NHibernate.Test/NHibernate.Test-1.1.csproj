@@ -809,6 +809,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TransactionTest\TransactionFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TypesTest\BinaryBlobClass.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
