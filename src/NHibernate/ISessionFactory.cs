@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Data;
+using NHibernate.Connection;
 using NHibernate.Metadata;
 
 namespace NHibernate
@@ -134,5 +135,10 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="cacheRegion"></param>
 		void EvictQueries( string cacheRegion );
+
+		/// <summary>
+		/// Get the <see cref="IConnectionProvider" /> used.
+		/// </summary>
+		IConnectionProvider ConnectionProvider { get; }
 	}
 }
