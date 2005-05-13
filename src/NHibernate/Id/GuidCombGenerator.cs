@@ -49,7 +49,7 @@ namespace NHibernate.Id
 
 			// Get the days and milliseconds which will be used to build the byte string 
 			TimeSpan days = new TimeSpan( now.Ticks - baseDate.Ticks );
-			TimeSpan msecs = new TimeSpan( now.Ticks - ( new DateTime( now.Year, now.Month, now.Day ).Ticks ) );
+			TimeSpan msecs = now.TimeOfDay;
 
 			// Convert to a byte array 
 			// Note that SQL Server is accurate to 1/300th of a millisecond so we divide by 3.333333 
