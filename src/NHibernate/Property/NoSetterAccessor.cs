@@ -29,7 +29,7 @@ namespace NHibernate.Property
 		/// <summary>
 		/// Creates an <see cref="BasicGetter"/> to <c>get</c> the value from the Property.
 		/// </summary>
-		/// <param name="theClass">The <see cref="System.Type"/> to find the Property in.</param>
+		/// <param name="type">The <see cref="System.Type"/> to find the Property in.</param>
 		/// <param name="propertyName">The name of the mapped Property to get.</param>
 		/// <returns>
 		/// The <see cref="BasicGetter"/> to use to get the value of the Property from an
@@ -38,12 +38,12 @@ namespace NHibernate.Property
 		/// Thrown when a Property specified by the <c>propertyName</c> could not
 		/// be found in the <see cref="System.Type"/>.
 		/// </exception>
-		public IGetter GetGetter( System.Type theClass, string propertyName )
+		public IGetter GetGetter( System.Type type, string propertyName )
 		{
-			BasicGetter result = BasicPropertyAccessor.GetGetterOrNull( theClass, propertyName );
+			BasicGetter result = BasicPropertyAccessor.GetGetterOrNull( type, propertyName );
 			if( result == null )
 			{
-				throw new PropertyNotFoundException( "Could not find a getter for property " + propertyName + " in class " + theClass.FullName );
+				throw new PropertyNotFoundException( type, propertyName, "getter" );
 			}
 			return result;
 		}
@@ -52,7 +52,7 @@ namespace NHibernate.Property
 		/// Create a <see cref="FieldSetter"/> to <c>set</c> the value of the mapped Property
 		/// through a <c>Field</c>.
 		/// </summary>
-		/// <param name="theClass">The <see cref="System.Type"/> to find the mapped Property in.</param>
+		/// <param name="type">The <see cref="System.Type"/> to find the mapped Property in.</param>
 		/// <param name="propertyName">The name of the mapped Property to set.</param>
 		/// <returns>
 		/// The <see cref="FieldSetter"/> to use to set the value of the Property on an
@@ -62,10 +62,10 @@ namespace NHibernate.Property
 		/// Thrown when a Field for the Property specified by the <c>propertyName</c> using the
 		/// <see cref="IFieldNamingStrategy"/> could not be found in the <see cref="System.Type"/>.
 		/// </exception>
-		public ISetter GetSetter( System.Type theClass, string propertyName )
+		public ISetter GetSetter( System.Type type, string propertyName )
 		{
 			string fieldName = namingStrategy.GetFieldName( propertyName );
-			return new FieldSetter( FieldAccessor.GetField( theClass, fieldName ), theClass, fieldName );
+			return new FieldSetter( FieldAccessor.GetField( type, fieldName ), type, fieldName );
 		}
 
 		#endregion

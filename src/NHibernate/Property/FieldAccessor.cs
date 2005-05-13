@@ -86,7 +86,7 @@ namespace NHibernate.Property
 		/// <summary>
 		/// Helper method to find the Field.
 		/// </summary>
-		/// <param name="clazz">The <see cref="System.Type"/> to find the Field in.</param>
+		/// <param name="type">The <see cref="System.Type"/> to find the Field in.</param>
 		/// <param name="fieldName">The name of the Field to find.</param>
 		/// <returns>
 		/// The <see cref="FieldInfo"/> for the field.
@@ -94,20 +94,20 @@ namespace NHibernate.Property
 		/// <exception cref="PropertyNotFoundException">
 		/// Thrown when a field could not be found.
 		/// </exception>
-		internal static FieldInfo GetField( System.Type clazz, string fieldName )
+		internal static FieldInfo GetField( System.Type type, string fieldName )
 		{
-			if( clazz == null || clazz == typeof( object ) )
+			if( type == null || type == typeof( object ) )
 			{
 				// the full inheritance chain has been walked and we could
 				// not find the Field
-				throw new PropertyNotFoundException( "field not found: " + fieldName );
+				throw new PropertyNotFoundException( type, fieldName );
 			}
 
-			FieldInfo field = clazz.GetField( fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
+			FieldInfo field = type.GetField( fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
 			if( field == null )
 			{
 				// recursively call this method for the base Type
-				field = GetField( clazz.BaseType, fieldName );
+				field = GetField( type.BaseType, fieldName );
 			}
 
 			// h2.0.3 has a check to see if the field is public - is there a worry about

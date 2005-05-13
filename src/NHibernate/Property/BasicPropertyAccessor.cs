@@ -16,7 +16,7 @@ namespace NHibernate.Property
 		/// <summary>
 		/// Create a <see cref="BasicGetter"/> for the mapped property.
 		/// </summary>
-		/// <param name="theClass">The <see cref="System.Type"/> to find the Property in.</param>
+		/// <param name="type">The <see cref="System.Type"/> to find the Property in.</param>
 		/// <param name="propertyName">The name of the mapped Property to get.</param>
 		/// <returns>
 		/// The <see cref="BasicGetter"/> to use to get the value of the Property from an
@@ -25,12 +25,12 @@ namespace NHibernate.Property
 		/// Thrown when a Property specified by the <c>propertyName</c> could not
 		/// be found in the <see cref="System.Type"/>.
 		/// </exception>
-		public IGetter GetGetter( System.Type theClass, string propertyName )
+		public IGetter GetGetter( System.Type type, string propertyName )
 		{
-			BasicGetter result = GetGetterOrNull( theClass, propertyName );
+			BasicGetter result = GetGetterOrNull( type, propertyName );
 			if( result == null )
 			{
-				throw new PropertyNotFoundException( "Could not find a getter for property " + propertyName + " in class " + theClass.FullName );
+				throw new PropertyNotFoundException( type, propertyName, "getter" );
 			}
 			return result;
 		}
@@ -53,7 +53,7 @@ namespace NHibernate.Property
 			BasicSetter result = GetSetterOrNull( type, propertyName );
 			if( result == null )
 			{
-				throw new PropertyNotFoundException( "Could not find a setter for property " + propertyName + " in class " + type.FullName );
+				throw new PropertyNotFoundException( type, propertyName, "setter" );
 			}
 			return result;
 		}

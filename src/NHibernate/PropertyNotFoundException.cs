@@ -9,32 +9,31 @@ namespace NHibernate
 	[Serializable]
 	public class PropertyNotFoundException : MappingException
 	{
-
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PropertyNotFoundException"/> class.
+		/// Initializes a new instance of the <see cref="PropertyNotFoundException" /> class,
+		/// used when a property get/set accessor is missing.
 		/// </summary>
-		public PropertyNotFoundException() : base( "An expected getter, setter, or field could not be found." )
+		/// <param name="type">The <see cref="System.Type" /> that is missing the property</param>
+		/// <param name="propertyName">The name of the missing property</param>
+		/// <param name="accessorType">The type of the missing accessor
+		/// ("getter" or "setter")</param>
+		public PropertyNotFoundException( System.Type type, string propertyName,
+			string accessorType )
+			: base( String.Format( "Could not find a {0} for property '{1}' in class '{2}'",
+				accessorType, propertyName, type.FullName
+				) )
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PropertyNotFoundException"/> class.
+		/// Initializes a new instance of the <see cref="PropertyNotFoundException" /> class,
+		/// used when a field is missing.
 		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		public PropertyNotFoundException( string message ) : base( message )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PropertyNotFoundException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		/// <param name="innerException">
-		/// The exception that is the cause of the current exception. If the innerException parameter 
-		/// is not a null reference, the current exception is raised in a catch block that handles 
-		/// the inner exception.
-		/// </param>
-		public PropertyNotFoundException( string message, Exception innerException ) : base( message, innerException )
+		/// <param name="type">The <see cref="System.Type" /> that is missing the field</param>
+		/// <param name="fieldName">The name of the missing property</param>
+		public PropertyNotFoundException( System.Type type, string fieldName )
+			: base( String.Format( "Could not find field '{0}' in class '{1}'",
+				fieldName, type.FullName ) )
 		{
 		}
 
@@ -52,6 +51,5 @@ namespace NHibernate
 		protected PropertyNotFoundException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
 		}
-
 	}
 }
