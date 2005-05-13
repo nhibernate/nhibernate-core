@@ -1,3 +1,7 @@
+Build 0.8.3.0
+========================
+- Fixed bug with <joined-subclass> that has a <property formula="..." />.
+
 Build 0.8.2.0
 ======================== 
 - Fixed default value of "unsaved-value" for <version> in xsd.
