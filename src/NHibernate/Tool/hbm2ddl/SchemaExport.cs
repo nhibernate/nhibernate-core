@@ -226,10 +226,18 @@ namespace NHibernate.Tool.hbm2ddl
 								Console.WriteLine( createSQL[ j ] );
 							}
 							Console.WriteLine( "Unsuccessful: " + e.Message );
+
+							// Fail on create script errors
+							throw;
 						}
 					}
 				}
 
+			}
+			catch( HibernateException )
+			{
+				// So that we don't wrap HibernateExceptions in HibernateExceptions
+				throw;
 			}
 			catch( Exception e )
 			{

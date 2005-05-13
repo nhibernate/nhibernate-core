@@ -42,7 +42,15 @@ namespace NHibernate.Test
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			ExportSchema();
+			try
+			{
+				ExportSchema();
+			}
+			catch( HibernateException e )
+			{
+				log.Error( "Error while setting up the database schema, ignoring the fixture", e );
+				Assert.Ignore( "Error while setting up the database schema: " + e.Message );
+			}
 		}
 
 		/// <summary>
