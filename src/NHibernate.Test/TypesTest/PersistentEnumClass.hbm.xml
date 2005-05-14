@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	namespace="NHibernate.Test.TypesTest"
+	assembly="NHibernate.Test">
+
+	<class name="PersistentEnumClass">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="A" />
+		<property name="B" />
+	</class>
+</hibernate-mapping>
