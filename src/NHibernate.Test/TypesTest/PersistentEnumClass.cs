@@ -3,6 +3,13 @@ using System.Collections;
 
 namespace NHibernate.Test.TypesTest
 {
+	public class PersistentEnumHolder
+	{
+		public PersistentEnumHolder( A a, B b )
+		{
+		}
+	}
+
 	public class PersistentEnumClass
 	{
 		int _id;
@@ -31,10 +38,11 @@ namespace NHibernate.Test.TypesTest
 		{
 		}
 
-		public PersistentEnumClass( A a, B b )
+		public PersistentEnumClass( int id, A a, B b )
 		{
-			_a = a;
-			_b = b;
+			_id = id;
+			_a  = a;
+			_b  = b;
 		}
 	}
 }

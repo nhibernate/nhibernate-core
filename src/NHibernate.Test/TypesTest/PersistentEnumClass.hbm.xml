@@ -3,6 +3,8 @@
 	namespace="NHibernate.Test.TypesTest"
 	assembly="NHibernate.Test">
 
+	<import class="PersistentEnumHolder" />
+
 	<class name="PersistentEnumClass">
 		<id name="Id">
 			<generator class="assigned" />

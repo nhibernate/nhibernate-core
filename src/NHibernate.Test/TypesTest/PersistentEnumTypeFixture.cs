@@ -37,10 +37,7 @@ namespace NHibernate.Test.TypesTest
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			p = new PersistentEnumClass();
-			p.Id = 1;
-			p.A = A.One;
-			p.B = B.Two;
+			p = new PersistentEnumClass( 1, A.One, B.Two );
 		}
 
 
@@ -92,7 +89,7 @@ namespace NHibernate.Test.TypesTest
 
 			using (ISession s = sessions.OpenSession())
 			{
-				s.Find( "select new PersistentEnumClass(p.A, p.B) from PersistentEnumClass p");
+				s.Find( "select new PersistentEnumHolder(p.A, p.B) from PersistentEnumClass p");
 				s.Delete( "from PersistentEnumClass" );
 				s.Flush();
 			}
@@ -110,7 +107,7 @@ namespace NHibernate.Test.TypesTest
 			ISession s2 = sessions.OpenSession();
 			try
 			{
-				s2.Find( "select new PersistentEnumClass(p.A) from PersistentEnumClass p");
+				s2.Find( "select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p");
 			}
 			finally
 			{
