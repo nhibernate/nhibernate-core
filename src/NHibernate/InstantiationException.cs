@@ -72,7 +72,7 @@ namespace NHibernate
 		/// </value>
 		public override string Message
 		{
-			get { return base.Message + type.FullName; }
+			get { return base.Message + ( type == null ? "" : type.FullName ); }
 		}
 
 		
