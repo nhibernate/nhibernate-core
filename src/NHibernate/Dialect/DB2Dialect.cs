@@ -215,8 +215,8 @@ namespace NHibernate.Dialect
 		/// <returns></returns>
 		public override SqlString GetLimitString( SqlString querySqlString )
 		{
-			Parameter p1 = new Parameter( "p1", new Int16SqlType() );
-			Parameter p2 = new Parameter( "p2", new Int16SqlType() );
+			Parameter p1 = new Parameter( "p1", new Int32SqlType() );
+			Parameter p2 = new Parameter( "p2", new Int32SqlType() );
 			
 			/*
 			 * "select * from (select row_number() over(orderby_clause) as rownum, "
