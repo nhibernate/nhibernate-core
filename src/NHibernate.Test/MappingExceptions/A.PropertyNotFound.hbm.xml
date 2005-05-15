@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<!--
+	This mapping is to test for a class that is missing
+	a mapped property, either through misspelling or user
+	error, etc...
+-->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class name="NHibernate.Test.MappingExceptions.A, NHibernate.Test">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<!-- note the misspelling on N'aa'me, should be Name -->
+		<property name="Naame" />
+	</class>
+
+</hibernate-mapping>

@@ -424,6 +424,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MappingExceptions\A.PropertyNotFound.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "MappingExceptions\A.Valid.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
@@ -453,6 +457,11 @@
                 />
                 <File
                     RelPath = "MappingExceptions\MissingDefCtorFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MappingExceptions\PropertyNotFoundExceptionFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
