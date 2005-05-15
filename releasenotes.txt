@@ -1,6 +1,11 @@
 Build 0.8.3.0
 ========================
+- Added name of Property to the PropertyNotFoundException message.
 - Fixed bug with <joined-subclass> that has a <property formula="..." />.
+- Fixed bug with extra "AND" being added to sql.
+- Fixed NullReferenceException that could occur in InstantiationException.
+- Improved efficiency of GuidCombGenerator (Marc C. Brooks).
+- Modified BinaryType to work with MySql's buggy version of GetBytes().
 
 Build 0.8.2.0
 ======================== 
