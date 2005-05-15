@@ -145,12 +145,11 @@ namespace NHibernate.Loader
 					persister.FromTableFragment( alias ).Append( 
 					persister.FromJoinFragment( alias, true, true ) )
 				);
-			builder.AddWhereClause( condition );
+			builder.SetWhereClause( condition );
 			builder.SetOuterJoins( 
 					ojf.ToFromFragmentString,
-					ojf.ToWhereFragmentString
+					ojf.ToWhereFragmentString.Append( GetWhereFragment( ) )
 				);
-			builder.AddWhereClause( GetWhereFragment() );
 			builder.SetOrderByClause( orderBy );
 				
 			this.SqlString = builder.ToSqlString();

@@ -19,7 +19,7 @@ namespace NHibernate.SqlCommand
 		private SqlString outerJoinsAfterWhere;
 		private string orderByClause;
 
-		private IList whereSqlStrings = new ArrayList();
+		private SqlString whereClause;
 
 		/// <summary>
 		/// 
@@ -155,25 +155,17 @@ namespace NHibernate.SqlCommand
 		public SqlSelectBuilder SetWhereClause( string tableAlias, string[ ] columnNames, IType whereType )
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, tableAlias, columnNames, whereType );
-
-			whereSqlStrings.Add( ToWhereString( tableAlias, columnNames, parameters ) );
-
-			return this;
-
+			return this.SetWhereClause( ToWhereString( tableAlias, columnNames, parameters ) );
 		}
 
 		/// <summary>
-		/// Adds a prebuilt SqlString to the Where clause
+		/// Sets the prebuilt SqlString to the Where clause
 		/// </summary>
 		/// <param name="whereSqlString">The SqlString that contains the sql and parameters to add to the WHERE</param>
 		/// <returns>This SqlSelectBuilder</returns>
-		public SqlSelectBuilder AddWhereClause( SqlString whereSqlString )
+		public SqlSelectBuilder SetWhereClause( SqlString whereSqlString )
 		{
-			// Don't add empty condition's - we get extra ANDs
-			if ( whereSqlString.ToString() != string.Empty )
-			{
-				whereSqlStrings.Add( whereSqlString );
-			}
+			whereClause = whereSqlString;
 			return this;
 		}
 
@@ -186,14 +178,9 @@ namespace NHibernate.SqlCommand
 			// plus the number of parts in outerJoinsAfterFrom SqlString.
 			// 1 = the "WHERE" 
 			// plus the number of parts in outerJoinsAfterWhere SqlString.
+			// 1 = the whereClause
 			// 2 = the "ORDER BY" and orderByClause
-			int initialCapacity = 4 + outerJoinsAfterFrom.Count + 1 + outerJoinsAfterWhere.Count + 2;
-
-			// move through each whereSqlString to find the capacity
-			for( int i = 0; i < whereSqlStrings.Count; i++ )
-			{
-				initialCapacity += ( ( SqlString ) whereSqlStrings[ i ] ).Count;
-			}
+			int initialCapacity = 4 + outerJoinsAfterFrom.Count + 1 + outerJoinsAfterWhere.Count + 1 + 2;
 
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder( initialCapacity + 2 );
 
@@ -204,17 +191,7 @@ namespace NHibernate.SqlCommand
 				.Add( outerJoinsAfterFrom );
 
 			sqlBuilder.Add( " WHERE " );
-
-			if( whereSqlStrings.Count > 1 )
-			{
-				sqlBuilder.Add(
-					( SqlString[ ] ) ( ( ArrayList ) whereSqlStrings ).ToArray( typeof( SqlString ) ),
-					null, "AND", null, false );
-			}
-			else
-			{
-				sqlBuilder.Add( ( SqlString ) whereSqlStrings[ 0 ], null, null, null, false );
-			}
+			sqlBuilder.Add( whereClause );
 
 			sqlBuilder.Add( outerJoinsAfterWhere );
 

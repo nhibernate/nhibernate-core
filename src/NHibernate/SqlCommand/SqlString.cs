@@ -217,6 +217,44 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Determines if this <see cref="SqlString"/> contains no parts
+		/// or only has parts containing an empty string.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if there are no parts containing a valid string or if one
+		/// of the parts has a parameter in it, <c>false</c> otherwise.
+		/// </value>
+		public bool IsEmpty
+		{
+			get
+			{
+				foreach( object part in sqlParts )
+				{
+					string text = part as string;
+					if( text!=null )
+					{
+						if( text.Length > 0 )
+						{
+							// there is some actual text in the part so
+							// it should not be considered empty
+							return false;
+						}
+					}
+					else
+					{
+						// it is not a string so this SqlString contains
+						// a parameter
+						return false;
+					}
+				}
+
+				// we've inspected all the parts and found nothing
+				// in them, so consider this empty.
+				return true;
+			}
+		}
+
+		/// <summary>
 		/// Gets the indexes of the Parameters in the SqlParts array.
 		/// </summary>
 		/// <value>

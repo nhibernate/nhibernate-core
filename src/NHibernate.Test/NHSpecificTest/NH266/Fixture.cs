@@ -90,8 +90,11 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 
 		}
 
+		/// <summary>
+		/// This is testing problems that existed in 0.8.0-2 with extra "AND"
+		/// being added to the sql when there was a discriminator-value.
+		/// </summary>
 		[Test]
-		[Ignore( "Just don't want to check in failing test-cases.  Duplicating bug posted in NH-266 right now." )]
 		public void SpecificSubclass()
 		{
 			ISession s = OpenSession();
@@ -115,10 +118,8 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 
 			Assert.AreEqual( "the b", b.Name );
 			s.Close();
-
-
-
 		}
 
+		
 	}
 }

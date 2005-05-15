@@ -129,18 +129,18 @@ namespace NHibernate.Loader
 
 			JoinFragment ojf = MergeOuterJoins( associations );
 
-			SqlSelectBuilder selectBuilder = new SqlSelectBuilder( factory )
-				.SetSelectClause(
+			SqlSelectBuilder selectBuilder = new SqlSelectBuilder( factory );
+			selectBuilder.SetSelectClause(
 					collectionPersister.SelectFragment( alias, Suffixes[ joins ], true ).ToString() +
 					SelectString( associations, factory )
-				)
-				.SetFromClause(
+				);
+			selectBuilder.SetFromClause(
 					persister.FromTableFragment( alias ).Append(
 					persister.FromJoinFragment( alias, true, true )
 					)
-				)
-				.AddWhereClause( whereSqlString )
-				.SetOuterJoins(
+				);
+			selectBuilder.SetWhereClause( whereSqlString );
+			selectBuilder.SetOuterJoins(
 					ojf.ToFromFragmentString,
 					ojf.ToWhereFragmentString.Append(
 					persister.WhereJoinFragment( alias, true, true )

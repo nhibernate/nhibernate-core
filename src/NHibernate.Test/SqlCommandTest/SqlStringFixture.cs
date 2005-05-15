@@ -152,6 +152,27 @@ namespace NHibernate.Test.SqlCommandTest
 		}
 
 		[Test]
+		public void IsEmptyWithEmptyStrings()
+		{
+			SqlString sql = new SqlString( new object[] { "", "" } );
+			Assert.IsTrue( sql.IsEmpty, "only empty string put in.");
+		}
+
+		[Test]
+		public void IsEmptyWithString()
+		{
+			SqlString sql = new SqlString( "not empty" );
+			Assert.IsFalse( sql.IsEmpty, "valid string in there" );
+		}
+
+		[Test]
+		public void IsEmptyWithParam()
+		{
+			SqlString sql = new SqlString( new object[] { "", new Parameter( "p1" ) } );
+			Assert.IsFalse( sql.IsEmpty, "had a parameter - should not be empty" );
+		}
+
+		[Test]
 		public void ParameterIndexesNoParams() 
 		{
 			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where 'a'='a'" } );
