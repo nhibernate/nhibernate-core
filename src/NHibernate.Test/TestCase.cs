@@ -97,7 +97,7 @@ namespace NHibernate.Test
 
 			bool wasClosed  = CheckSessionWasClosed();
 			bool wasCleaned = CheckDatabaseWasCleaned();
-			bool wereConnectionsClosed = true; //CheckConnectionsWereClosed();
+			bool wereConnectionsClosed = CheckConnectionsWereClosed();
 			bool fail = !wasClosed || !wasCleaned || !wereConnectionsClosed;
 
 			if( fail )

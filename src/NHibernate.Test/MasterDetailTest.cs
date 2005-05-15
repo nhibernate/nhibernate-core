@@ -868,6 +868,7 @@ namespace NHibernate.Test
 			c.Name = "root";
 			object id = s.Save(c);
 			s.Flush();
+			s.Close();
 			
 			s = OpenSession();
 			c = (Category)s.Load( typeof(Category), id );
@@ -876,6 +877,8 @@ namespace NHibernate.Test
 
 			Assert.AreEqual( 1, c.Subcategories.Count );
 			s.Flush();
+			s.Close();
+
 			s = OpenSession();
 			c = (Category) s.Load( typeof(Category), id );
 			Assert.AreEqual( 1, c.Subcategories.Count );
