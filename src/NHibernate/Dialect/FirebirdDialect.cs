@@ -1,5 +1,8 @@
 using System.Data;
+using System.Text;
+
 using NHibernate.Cfg;
+using NHibernate.Util;
 
 namespace NHibernate.Dialect
 {
@@ -7,7 +10,7 @@ namespace NHibernate.Dialect
 	/// Summary description for FirebirdDialect.
 	/// </summary>
 	/// <remarks>
-	/// The DB2Dialect defaults the following configuration properties:
+	/// The FirebirdDialect defaults the following configuration properties:
 	/// <list type="table">
 	///		<listheader>
 	///			<term>Property</term>
@@ -35,7 +38,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType( DbType.Currency, "DECIMAL(16,4)" );
 			RegisterColumnType( DbType.Date, "DATE" );
 			RegisterColumnType( DbType.DateTime, "TIMESTAMP" );
-			RegisterColumnType( DbType.Decimal, "DECIMAL(18,0)" ); // NUMERIC(18,0) is equivalent to DECIMAL(18,0)
+			RegisterColumnType( DbType.Decimal, "DECIMAL(18,5)" ); // NUMERIC(18,5) is equivalent to DECIMAL(18,5)
 			RegisterColumnType( DbType.Decimal, 18, "DECIMAL(18, $1)" );
 			RegisterColumnType( DbType.Double, "DOUBLE PRECISION" );
 			RegisterColumnType( DbType.Int16, "SMALLINT" );
