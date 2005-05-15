@@ -14,7 +14,11 @@ namespace NHibernate.Expression
 	/// </summary>
 	public sealed class Expression
 	{
-		
+		private Expression()
+		{
+			// can not be instantiated
+		}
+
 		/// <summary>
 		/// Apply an "equal" constraint to the named property
 		/// </summary>
