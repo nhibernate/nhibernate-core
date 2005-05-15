@@ -4525,7 +4525,7 @@ namespace NHibernate.Impl
 						// the connection is disposed of.
 						if( autoClose )
 						{
-							connection.Dispose();
+							factory.CloseConnection( connection );
 						}
 					}
 				}
