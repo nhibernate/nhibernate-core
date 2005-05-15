@@ -75,11 +75,6 @@ namespace NHibernate.Engine
 		IType[ ] GetReturnTypes( string queryString );
 
 		/// <summary>
-		/// TODO: determine if this is more appropriate for ISessionFactory
-		/// </summary>
-		IConnectionProvider ConnectionProvider { get; }
-
-		/// <summary>
 		/// Get the names of all persistent classes that implement/extend the given interface/class
 		/// </summary>
 		/// <param name="clazz"></param>
