@@ -761,7 +761,7 @@ namespace NHibernate.Impl
 
 		private void InitParameterBookKeeping()
 		{
-			StringTokenizer st = new StringTokenizer( queryString, ParserHelper.HqlSeparators );
+			StringTokenizer st = new StringTokenizer( queryString, ParserHelper.HqlSeparators, true );
 			ISet result = new HashedSet();
 
 			IEnumerator enumer = st.GetEnumerator();
