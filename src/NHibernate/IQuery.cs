@@ -97,19 +97,21 @@ namespace NHibernate
 		/// the query, or null if the query returns no results.
 		/// </summary>
 		/// <returns>the single result or <tt>null</tt></returns>
-		/// <remarks>throws HibernateException if there is more than one matching result</remarks>
+		/// <exception cref="HibernateException">
+		/// Thrown when there is more than one matching result.
+		/// </exception>
 		object UniqueResult();
 
 		/// <summary>
-		/// The maximum number of rows to retrieve
+		/// Set the maximum number of rows to retrieve.
 		/// </summary>
-		/// <param name="maxResults"></param>
+		/// <param name="maxResults">The maximum number of rows to retreive.</param>
 		IQuery SetMaxResults( int maxResults );
 
 		/// <summary>
-		/// The first row to retrieve.
+		/// Sets the first row to retrieve.
 		/// </summary>
-		/// <param name="firstResult"></param>
+		/// <param name="firstResult">The first row to retreive.</param>
 		IQuery SetFirstResult( int firstResult );
 
 		/// <summary>
@@ -119,7 +121,15 @@ namespace NHibernate
 		IQuery SetTimeout( int timeout );
 
 		/// <summary>
-		/// Bind a value to a JDBC-style query parameter
+		/// Set the lockmode for the objects idententified by the
+		/// given alias that appears in the <tt>FROM</tt> clause.
+		/// </summary>
+		/// <param name="alias">alias a query alias, or <tt>this</tt> for a collection filter</param>
+		/// <param name="lockMode"></param>
+		void SetLockMode( string alias, LockMode lockMode );
+
+		/// <summary>
+		/// Bind a value to an indexed parameter.
 		/// </summary>
 		/// <param name="position">Postion of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The possibly null parameter value</param>
@@ -131,11 +141,11 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The possibly null parameter value</param>
-		/// <param name="type">The hibernate type</param>
+		/// <param name="type">The NHibernate <see cref="IType"/>.</param>
 		IQuery SetParameter( string name, object val, IType type );
 
 		/// <summary>
-		/// Bind a value to a JDBC-style query parameter, guessing the Hibernate type from
+		/// Bind a value to an indexed parameter, guessing the Hibernate type from
 		/// the class of the given object.
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query, numbered from <c>0</c></param>
@@ -143,8 +153,8 @@ namespace NHibernate
 		IQuery SetParameter( int position, object val );
 
 		/// <summary>
-		/// Bind a value to a named query parameter, guessing the Hibernate type from the class of
-		/// the given object.
+		/// Bind a value to a named query parameter, guessing the NHibernate <see cref="IType"/>
+		/// from the class of the given object.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The non-null parameter value</param>
@@ -177,279 +187,273 @@ namespace NHibernate
 		IQuery SetProperties( object obj );
 
 		/// <summary>
-		/// 
+		/// Bind an instance of a <see cref="String" /> to an indexed parameter
+		/// using an NHibernate <see cref="AnsiStringType"/>.
 		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
 		IQuery SetAnsiString( int position, string val );
 
 		/// <summary>
-		/// 
+		/// Bind an instance of a <see cref="String" /> to a named parameter
+		/// using an NHibernate <see cref="AnsiStringType"/>.
 		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetBinary( int position, byte[] val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetBoolean( int position, bool val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetByte( int position, byte val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetCharacter( int position, char val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetDateTime( int position, DateTime val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetDecimal( int position, decimal val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetDouble( int position, double val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetInt16( int position, short val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetInt32( int position, int val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetInt64( int position, long val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetSingle( int position, float val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetString( int position, string val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetTime( int position, DateTime val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetTimestamp( int position, DateTime val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
 		IQuery SetAnsiString( string name, string val );
 
 		/// <summary>
-		/// 
+		/// Bind an instance of a <see cref="Byte" /> array to an indexed parameter
+		/// using an NHibernate <see cref="BinaryType"/>.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="Byte"/> array.</param>
+		IQuery SetBinary( int position, byte[] val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Byte" /> array to a named parameter
+		/// using an NHibernate <see cref="BinaryType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="Byte"/> array.</param>
 		IQuery SetBinary( string name, byte[] val );
 
 		/// <summary>
-		/// 
+		/// Bind an instance of a <see cref="Boolean" /> to an indexed parameter
+		/// using an NHibernate <see cref="BooleanType"/>.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="Boolean"/>.</param>
+		IQuery SetBoolean( int position, bool val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Boolean" /> to a named parameter
+		/// using an NHibernate <see cref="BooleanType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="Boolean"/>.</param>
 		IQuery SetBoolean( string name, bool val );
 
 		/// <summary>
-		/// 
+		/// Bind an instance of a <see cref="Byte" /> to an indexed parameter
+		/// using an NHibernate <see cref="ByteType"/>.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="Byte"/>.</param>
+		IQuery SetByte( int position, byte val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Byte" /> to a named parameter
+		/// using an NHibernate <see cref="ByteType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="Byte"/>.</param>
 		IQuery SetByte( string name, byte val );
 
 		/// <summary>
-		/// 
+		/// Bind an instance of a <see cref="Char" /> to an indexed parameter
+		/// using an NHibernate <see cref="CharType"/>.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="Char"/>.</param>
+		IQuery SetCharacter( int position, char val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Char" /> to a named parameter
+		/// using an NHibernate <see cref="CharType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="Char"/>.</param>
 		IQuery SetCharacter( string name, char val );
 
 		/// <summary>
-		/// 
+		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
+		/// using an NHibernate <see cref="DateTimeType"/>.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		IQuery SetDateTime( int position, DateTime val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
+		/// using an NHibernate <see cref="DateTimeType"/>.
+		/// </summary>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		/// <param name="name">The name of the parameter</param>
 		IQuery SetDateTime( string name, DateTime val );
 
 		/// <summary>
-		/// 
+		/// Bind an instance of a <see cref="Decimal" /> to an indexed parameter
+		/// using an NHibernate <see cref="DecimalType"/>.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="Decimal"/>.</param>
+		IQuery SetDecimal( int position, decimal val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Decimal" /> to a named parameter
+		/// using an NHibernate <see cref="DecimalType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="Decimal"/>.</param>
 		IQuery SetDecimal( string name, decimal val );
 
 		/// <summary>
-		/// 
+		/// Bind an instance of a <see cref="Double" /> to an indexed parameter
+		/// using an NHibernate <see cref="DoubleType"/>.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="Double"/>.</param>
+		IQuery SetDouble( int position, double val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Double" /> to a named parameter
+		/// using an NHibernate <see cref="DoubleType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="Double"/>.</param>
 		IQuery SetDouble( string name, double val );
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetInt16( string name, short val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetInt32( string name, int val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetInt64( string name, long val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetSingle( string name, float val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetString( string name, string val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetTime( string name, DateTime val );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		/// <returns></returns>
-		IQuery SetTimestamp( string name, DateTime val );
-
-		/// <summary>
-		/// Bind an instance of a mapped persistent class to a JDBC-style query parameter.
+		/// Bind an instance of a mapped persistent class to an indexed parameter.
 		/// </summary>
 		/// <param name="position">Position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a persistent class</param>
 		IQuery SetEntity( int position, object val );
 
 		/// <summary>
-		/// Bind an instance of a persistent enumeration class to a JDBC-style query parameter.
-		/// </summary>
-		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
-		/// <param name="val">A non-null instance of a persistent enumeration</param>
-		IQuery SetEnum( int position, Enum val );
-
-		/// <summary>
-		/// Bind an instance of a mapped persistent class to a named query parameter.
+		/// Bind an instance of a mapped persistent class to a named parameter.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a persistent class</param>
 		IQuery SetEntity( string name, object val );
 
 		/// <summary>
-		/// Bind an instance of a persistent enumeration class to a named query parameter.
+		/// Bind an instance of a persistent enumeration class to an indexed parameter
+		/// using an NHibernate <see cref="PersistentEnumType"/>.
+		/// </summary>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a persistent enumeration</param>
+		IQuery SetEnum( int position, Enum val );
+
+		/// <summary>
+		/// Bind an instance of a persistent enumeration class to a named parameter
+		/// using an NHibernate <see cref="PersistentEnumType"/>.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a persistent enumeration</param>
 		IQuery SetEnum( string name, Enum val );
 
 		/// <summary>
-		/// Set the lockmode for the objects idententified by the
-		/// given alias that appears in the <tt>FROM</tt> clause.
+		/// Bind an instance of a <see cref="Int16" /> to an indexed parameter
+		/// using an NHibernate <see cref="Int16Type"/>.
 		/// </summary>
-		/// <param name="alias">alias a query alias, or <tt>this</tt> for a collection filter</param>
-		/// <param name="lockMode"></param>
-		void SetLockMode( string alias, LockMode lockMode );
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="Int16"/>.</param>
+		IQuery SetInt16( int position, short val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Int16" /> to a named parameter
+		/// using an NHibernate <see cref="Int16Type"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="Int16"/>.</param>
+		IQuery SetInt16( string name, short val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Int32" /> to an indexed parameter
+		/// using an NHibernate <see cref="Int32Type"/>.
+		/// </summary>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="Int32"/>.</param>
+		IQuery SetInt32( int position, int val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Int32" /> to a named parameter
+		/// using an NHibernate <see cref="Int32Type"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="Int32"/>.</param>
+		IQuery SetInt32( string name, int val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Int64" /> to an indexed parameter
+		/// using an NHibernate <see cref="Int64Type"/>.
+		/// </summary>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="Int64"/>.</param>
+		IQuery SetInt64( int position, long val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Int64" /> to a named parameter
+		/// using an NHibernate <see cref="Int64Type"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="Int64"/>.</param>
+		IQuery SetInt64( string name, long val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Single" /> to an indexed parameter
+		/// using an NHibernate <see cref="SingleType"/>.
+		/// </summary>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="Single"/>.</param>
+		IQuery SetSingle( int position, float val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Single" /> to a named parameter
+		/// using an NHibernate <see cref="SingleType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="Single"/>.</param>
+		IQuery SetSingle( string name, float val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="String" /> to an indexed parameter
+		/// using an NHibernate <see cref="StringType"/>.
+		/// </summary>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
+		IQuery SetString( int position, string val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="String" /> to a named parameter
+		/// using an NHibernate <see cref="StringType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
+		IQuery SetString( string name, string val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
+		/// using an NHibernate <see cref="DateTimeType"/>.
+		/// </summary>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		IQuery SetTime( int position, DateTime val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
+		/// using an NHibernate <see cref="DateTimeType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		IQuery SetTime( string name, DateTime val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
+		/// using an NHibernate <see cref="TimestampType"/>.
+		/// </summary>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		IQuery SetTimestamp( int position, DateTime val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
+		/// using an NHibernate <see cref="TimestampType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		IQuery SetTimestamp( string name, DateTime val );
 	}
 }
