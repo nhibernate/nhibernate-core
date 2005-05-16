@@ -926,6 +926,20 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TypesTest\EnumStringClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\EnumStringClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "TypesTest\EnumStringTypeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TypesTest\GuidClass.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

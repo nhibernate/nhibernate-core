@@ -1,7 +1,6 @@
 using System;
 
 using NHibernate.Type;
-using NHibernate.Test.TypesTest;
 
 using NUnit.Framework;
 
