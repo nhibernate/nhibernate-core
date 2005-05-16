@@ -2084,7 +2084,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\EnumType.cs"
+                    RelPath = "Type\EnumStringType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

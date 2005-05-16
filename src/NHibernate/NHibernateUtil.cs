@@ -180,7 +180,6 @@ namespace NHibernate
 			return new PersistentEnumType( enumClass );
 		}
 
-
 		/// <summary>
 		/// A NHibernate serializable type
 		/// </summary>
