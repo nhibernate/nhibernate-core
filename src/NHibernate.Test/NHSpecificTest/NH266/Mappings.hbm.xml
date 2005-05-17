@@ -4,7 +4,7 @@
 		<id name="Id">
 			<generator class="assigned" />
 		</id>
-		<discriminator column="type" type="string" />
+		<discriminator column="`type`" type="string" />
 		<property name="Name" />
 		<subclass name="NHibernate.Test.NHSpecificTest.NH266.B, NHibernate.Test" discriminator-value="nh_266_b">
 			<property name="Number"/>
