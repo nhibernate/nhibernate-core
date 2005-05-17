@@ -166,7 +166,7 @@ namespace NHibernate.Type {
 			}
 			else 
 			{
-				par.Value = value;
+				par.Value = Enum.Format(this.enumClass, value, "G");
 			}
 		}
 
