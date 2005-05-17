@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	namespace="NHibernate.Test.NHSpecificTest.NH276"
+	assembly="NHibernate.Test"
+>
+	<class name="Building" table="b_276">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		<property name="Number" />
+	</class>
+	
+	<class name="Office" table="o_276">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		<property name="Worker" />
+		<many-to-one name="Location" column="build_id" />
+	</class>
+</hibernate-mapping>
