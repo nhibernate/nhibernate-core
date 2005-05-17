@@ -2,7 +2,7 @@ using System.Collections;
 using System.Data;
 using System.Text;
 using Iesi.Collections;
-using NHibernate.Dialect;
+
 using NHibernate.Engine;
 using NHibernate.Expression;
 using NHibernate.Impl;

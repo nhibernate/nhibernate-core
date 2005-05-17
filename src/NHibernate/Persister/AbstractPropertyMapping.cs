@@ -1,17 +1,8 @@
 using System;
 using System.Collections;
-using System.Reflection;
-using Iesi.Collections;
-using log4net;
-//using NHibernate.Cache;
+
 using NHibernate.Engine;
 using NHibernate.Hql;
-using NHibernate.Id;
-using NHibernate.Loader;
-using NHibernate.Mapping;
-using NHibernate.Metadata;
-using NHibernate.Property;
-using NHibernate.Proxy;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -48,8 +39,8 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public IType ToType(string propertyName)
 		{
-			IType type = (IType) typesByPropertyPath[ propertyName ];
-			if ( type == null )
+			IType type = typesByPropertyPath[ propertyName ] as IType;
+			if ( type==null )
 			{
 				throw new QueryException( string.Format( "could not resolve property:{0} of :{1}", propertyName, ClassName ) );
 			}
@@ -64,11 +55,11 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public virtual string[] ToColumns( string alias, string propertyName )
 		{
-			string[] columns = (string[]) columnsByPropertyPath[ propertyName ];
-			if ( columns == null )
+			string[] columns = columnsByPropertyPath[ propertyName ] as string[];
+			if ( columns==null )
 			{
-				string template = (string) formulaTemplatesByPropertyPath[ propertyName ];
-				if ( template == null )
+				string template = formulaTemplatesByPropertyPath[ propertyName ] as string;
+				if ( template==null )
 				{
 					throw new QueryException( string.Format( "could not resolve property:{0} of :{1}", propertyName, ClassName ) );
 				}
@@ -94,15 +85,6 @@ namespace NHibernate.Persister
 		/// <param name="columns"></param>
 		protected void AddPropertyPath( string path, IType type, string[] columns )
 		{
-			// HACK: Test for use so we don't attempt to duplicate - differs from the java code
-			/*
-			if ( !typesByPropertyPath.ContainsKey( path ) )
-			{
-				typesByPropertyPath.Add( path, type );
-				columnsByPropertyPath.Add( path, columns );
-				HandlePath( path, type );
-			}
-			*/
 			typesByPropertyPath[ path ] = type;
 			columnsByPropertyPath[ path ] = columns;
 			HandlePath( path, type );
@@ -116,15 +98,6 @@ namespace NHibernate.Persister
 		/// <param name="template"></param>
 		protected void AddFormulaPropertyPath( string path, IType type, string template )
 		{
-			// HACK: Test for use so we don't attempt to duplicate - differs from the java code
-			/*
-			if ( !typesByPropertyPath.ContainsKey( path ) )
-			{
-				typesByPropertyPath.Add( path, type );
-				formulaTemplatesByPropertyPath.Add( path, template );
-				HandlePath( path, type );
-			}
-			*/
 			typesByPropertyPath[ path ] = type ;
 			formulaTemplatesByPropertyPath[ path ] = template ;
 			HandlePath( path, type );
@@ -159,26 +132,26 @@ namespace NHibernate.Persister
 		/// <param name="factory"></param>
 		protected void InitPropertyPaths( string path, IType type, string[] columns, ISessionFactoryImplementor factory )
 		{
-			if ( columns.Length != type.GetColumnSpan( factory ) )
+			if(columns.Length!=type.GetColumnSpan( factory ) )
 			{
 				throw new MappingException( string.Format( "broken column mapping for: {0} of: {1}", path, ClassName ) );
 			}
 
-			if ( type.IsAssociationType && ((IAssociationType) type).UsePrimaryKeyAsForeignKey )
+			if( type.IsAssociationType && ((IAssociationType) type).UsePrimaryKeyAsForeignKey )
 			{
 				columns = IdentifierColumnNames;
 			}
 
-			if ( path != null )
+			if( path!=null )
 			{
 				AddPropertyPath( path, type, columns );
 			}
 
-			if ( type.IsComponentType )
+			if( type.IsComponentType )
 			{
 				InitComponentPropertyPaths( path, (IAbstractComponentType) type, columns, factory );
 			}
-			else if ( type.IsEntityType )
+			else if( type.IsEntityType )
 			{
 				InitIdentifierPropertyPaths( path, (EntityType) type, columns, factory );
 			}
@@ -203,7 +176,7 @@ namespace NHibernate.Persister
 			}
 
 			string idPropName = etype.GetIdentifierOrUniqueKeyPropertyName( factory );
-			if ( idPropName != null )
+			if ( idPropName!=null )
 			{
 				string idpath2 = ExtendPath( path, idPropName );
 				AddPropertyPath( idpath2, idtype, columns );
@@ -223,7 +196,7 @@ namespace NHibernate.Persister
 			IType[] types = type.Subtypes;
 			string[] properties = type.PropertyNames;
 			int begin = 0;
-			for ( int i = 0; i < properties.Length; i++ )
+			for ( int i=0; i<properties.Length; i++ )
 			{
 				string subpath = ExtendPath( path, properties[ i ] );
 				try
@@ -242,7 +215,7 @@ namespace NHibernate.Persister
 
 		private static string ExtendPath( string path, string property )
 		{
-			if ( path == null )
+			if ( path==null )
 			{
 				return property;
 			}

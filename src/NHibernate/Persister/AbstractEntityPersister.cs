@@ -238,13 +238,7 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public virtual IType GetPropertyType( string path )
 		{
-			IType propertyType =(  IType ) typesByPropertyName[ path ];
-			if ( propertyType == null )
-			{
-				// HACK: Using the fully qualified version 
-				// H2.1 doesn't do this, but we don't seem to have the Id properties in the direct collection ATM.
-				propertyType = ToType( path );
-			}
+			IType propertyType = typesByPropertyName[ path ] as IType;
 			if ( propertyType == null )
 			{
 				throw new MappingException( string.Format( "property does not exist: {0}", path ) );

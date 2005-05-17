@@ -43,7 +43,7 @@ namespace NHibernate.Expression
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			IType propertyType = ( ( IQueryable ) factory.GetPersister( persistentClass ) ).GetPropertyType( _propertyName );
+			IType propertyType = AbstractCriterion.GetType( factory, persistentClass,_propertyName, aliasClasses );
 			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
 			// don't need to worry about aliasing or aliasClassing for parameter column names
 			string[ ] paramColumnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName );
