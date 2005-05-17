@@ -33,12 +33,6 @@ namespace NHibernate.Impl
 		private ISet readersToClose = new HashedSet();
 
 		/// <summary>
-		/// An IDictionary with a key of a SqlString and 
-		/// a value of an IDbCommand.
-		/// </summary>
-		private IDictionary commands;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="BatcherImpl"/> class.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this Batcher is executing in.</param>
@@ -46,7 +40,6 @@ namespace NHibernate.Impl
 		{
 			this.session = session;
 			this.factory = session.Factory;
-			commands = new Hashtable();
 		}
 
 		/// <summary>
@@ -66,28 +59,14 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IDbCommand Generate( SqlString sqlString )
 		{
-			IDbCommand cmd = commands[ sqlString ] as IDbCommand;
-
-			if( cmd != null )
-			{
-				if( log.IsDebugEnabled )
-				{
-					log.Debug( "Using prebuilt IDbCommand object for the SqlString: " + sqlString.ToString() );
-				}
-
-				return cmd;
-			}
-
 			// need to build the IDbCommand from the sqlString bec
-			cmd = factory.ConnectionProvider.Driver.GenerateCommand( factory.Dialect, sqlString );
+			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand( factory.Dialect, sqlString );
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Building an IDbCommand object for the SqlString: " + sqlString.ToString() );
 			}
 
-			commands[ sqlString ] = cmd;
 			return cmd;
-
 		}
 
 		/// <summary>
