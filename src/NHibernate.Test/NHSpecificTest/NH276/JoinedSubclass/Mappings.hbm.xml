@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	namespace="NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass"
+	assembly="NHibernate.Test"
+>
+	<class name="AbstractRequest" table="nb_276">
+		<id name="RequestId" column="id_req">
+			<generator class="assigned" />
+		</id>
+		<many-to-one name="Status" column="fk_status" />
+		<many-to-one name="Office" column="fk_office" />
+		
+		<joined-subclass name="Request" table="nbj_276">
+			<key column="id_req" />
+			<property name="Extra" />
+		</joined-subclass>
+	</class>
+	
+	<class name="Organization" table="no_276">
+		<id name="OrganizationId">
+			<generator class="assigned" />
+		</id>
+		<property name="Name" />
+	</class>
+	
+	<class name="Status" table="ns_276">
+		<id name="StatusId">
+			<generator class="assigned" />
+		</id>
+		<property name="Name" />
+	</class>
+</hibernate-mapping>
