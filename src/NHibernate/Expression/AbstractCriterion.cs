@@ -27,11 +27,6 @@ namespace NHibernate.Expression
 			return (IQueryable) sessionFactory.GetPersister( persistentClass );
 		}
 
-		protected internal static string[] GetColumns(ISessionFactoryImplementor factory, System.Type persistentClass, string property)
-		{
-			return AbstractCriterion.GetColumns( factory, persistentClass, property, null, AbstractCriterion.EmptyDictionary );
-		}
-
 		/// <summary>
 		/// 
 		/// </summary>

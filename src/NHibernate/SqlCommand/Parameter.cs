@@ -2,6 +2,7 @@ using System;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
 {
@@ -12,7 +13,6 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public class Parameter : ICloneable
 	{
-		private string _tableAlias;
 		private string _name;
 		private SqlType _sqlType;
 
@@ -43,8 +43,14 @@ namespace NHibernate.SqlCommand
 		/// <param name="sqlType">The <see cref="SqlType"/> to create the parameter for.</param>
 		public Parameter(string name, string tableAlias, SqlType sqlType)
 		{
-			_name = name;
-			_tableAlias = tableAlias;
+			if( tableAlias!=null && tableAlias.Length>0 )
+			{
+				_name = tableAlias + StringHelper.Dot + name;
+			}
+			else
+			{
+				_name = name;
+			}
 			_sqlType = sqlType;
 		}
 
@@ -59,21 +65,6 @@ namespace NHibernate.SqlCommand
 		public string Name
 		{
 			get { return _name; }
-		}
-
-		/// <summary>
-		/// Gets the alias for the table in the Sql statement.
-		/// </summary>
-		/// <value>
-		/// The alias for the table in the Sql statement.
-		/// </value>
-		/// <remarks>
-		/// TODO: Determine if this is even needed - it is not used anywhere
-		/// and is just extra junk.
-		/// </remarks>
-		public string TableAlias
-		{
-			get { return _tableAlias; }
 		}
 
 		/// <summary>
@@ -198,27 +189,14 @@ namespace NHibernate.SqlCommand
 					return false;
 				}
 			}
-				 
-			
+
 			// these 2 fields will not be null so compare them...
 			if( this.SqlType.Equals( rhs.SqlType ) == false || this.Name.Equals( rhs.Name ) == false )
 			{
 				return false;
 			}
 
-			// becareful with TableAlias being null
-			if( this.TableAlias == null && rhs.TableAlias == null )
-			{
-				return true;
-			}
-			else if( this.TableAlias == null && rhs.TableAlias != null )
-			{
-				return false;
-			}
-			else
-			{
-				return this.TableAlias.Equals( rhs.TableAlias );
-			}
+			return true;
 		}
 
 		/// <summary>
@@ -241,10 +219,6 @@ namespace NHibernate.SqlCommand
 				{
 					hashCode += _name.GetHashCode();
 				}
-				if( _tableAlias != null )
-				{
-					hashCode += _tableAlias.GetHashCode();
-				}
 
 				return hashCode;
 			}
@@ -253,7 +227,7 @@ namespace NHibernate.SqlCommand
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return ( _tableAlias == null || _tableAlias.Length == 0 ) ? ":" + _name : ":" + _tableAlias + "." + _name;
+			return ":" + _name;
 		}
 
 		#endregion

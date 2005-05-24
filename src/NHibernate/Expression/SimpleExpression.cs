@@ -60,9 +60,7 @@ namespace NHibernate.Expression
 
 			IType propertyType = AbstractCriterion.GetType( factory, persistentClass, _propertyName, aliasClasses );
 			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
-			// don't need to worry about aliasing or aliasClassing for parameter column names
-			string[ ] paramColumnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName );
-			Parameter[ ] parameters = Parameter.GenerateParameters( factory, alias, paramColumnNames, propertyType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( factory, columnNames, propertyType );
 
 
 			for( int i = 0; i < columnNames.Length; i++ )

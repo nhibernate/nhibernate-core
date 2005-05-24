@@ -45,9 +45,7 @@ namespace NHibernate.Expression
 
 			IType propertyType = AbstractCriterion.GetType( factory, persistentClass,_propertyName, aliasClasses );
 			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
-			// don't need to worry about aliasing or aliasClassing for parameter column names
-			string[ ] paramColumnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName );
-
+			
 			if( columnNames.Length != 1 )
 			{
 				throw new HibernateException( "InExpression may only be used with single-column properties" );
@@ -59,8 +57,8 @@ namespace NHibernate.Expression
 			for( int i = 0; i < _values.Length; i++ )
 			{
 				// we can hardcode 0 because this will only be for a single column
-				string paramInColumnNames = paramColumnNames[ 0 ] + StringHelper.Underscore + i;
-				parameters[ i ] = Parameter.GenerateParameters( factory, alias, new string[ ] {paramInColumnNames}, propertyType )[ 0 ];
+				string paramInColumnNames = columnNames[ 0 ] + StringHelper.Underscore + i;
+				parameters[ i ] = Parameter.GenerateParameters( factory, new string[ ] {paramInColumnNames}, propertyType )[ 0 ];
 			}
 
 			sqlBuilder.Add( columnNames[ 0 ] )

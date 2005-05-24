@@ -46,20 +46,19 @@ namespace NHibernate.Expression
 			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
 			
 			// don't need to worry about aliasing or aliasClassing for parameter column names
-			string[ ] paramColumnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName );
-			string[ ] loParamColumnNames = new string[paramColumnNames.Length];
-			string[ ] hiParamColumnNames = new string[paramColumnNames.Length];
+			string[ ] loParamColumnNames = new string[ columnNames.Length ];
+			string[ ] hiParamColumnNames = new string[ columnNames.Length ];
 
 			// we need to create a _lo and _hi parameter for each column.  The 	columnNames
 			// doesn't return a seperate column for the _lo and _hi so we need to...
-			for( int i = 0; i < paramColumnNames.Length; i++ )
+			for( int i = 0; i < columnNames.Length; i++ )
 			{
-				loParamColumnNames[ i ] = paramColumnNames[ i ] + "_lo";
-				hiParamColumnNames[ i ] = paramColumnNames[ i ] + "_hi";
+				loParamColumnNames[ i ] = columnNames[ i ] + "_lo";
+				hiParamColumnNames[ i ] = columnNames[ i ] + "_hi";
 			}
 
-			Parameter[ ] loParameters = Parameter.GenerateParameters( factory, alias, loParamColumnNames, propertyType );
-			Parameter[ ] hiParameters = Parameter.GenerateParameters( factory, alias, hiParamColumnNames, propertyType );
+			Parameter[ ] loParameters = Parameter.GenerateParameters( factory, loParamColumnNames, propertyType );
+			Parameter[ ] hiParameters = Parameter.GenerateParameters( factory, hiParamColumnNames, propertyType );
 			bool andNeeded = false;
 
 			for( int i = 0; i < columnNames.Length; i++ )
