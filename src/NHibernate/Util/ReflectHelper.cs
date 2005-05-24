@@ -148,8 +148,12 @@ namespace NHibernate.Util
 		/// <summary>
 		/// Returns a reference to the Type.
 		/// </summary>
-		/// <param name="name">The name of the class.  Can be a name with the assembly included or just the name of the class.</param>
+		/// <param name="name">The name of the class or a fully qualified name.</param>
 		/// <returns>The Type for the Class.</returns>
+		/// <remarks>
+		/// See <see cref="System.Type.GetType(System.String, System.Boolean)"/> for a full
+		/// description of how this works.
+		/// </remarks>
 		public static System.Type ClassForName( string name )
 		{
 			return System.Type.GetType( name, true );
