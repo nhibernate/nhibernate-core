@@ -66,11 +66,7 @@ namespace NHibernate.Test.SqlCommandTest
 
 			Parameter firstParam = new Parameter( "identity_column", "select_test_alias", new SqlTypes.Int64SqlType() );
 			Assert.AreEqual(firstParam.SqlType.DbType, expectedParam.SqlType.DbType, "First Parameter Type");
-			Assert.AreEqual(firstParam.TableAlias, expectedParam.TableAlias, "First Parameter TableAlias");
-			Assert.AreEqual(firstParam.Name, expectedParam.Name, "First Parameter Name");
-			
-				
+			Assert.AreEqual(firstParam.Name, expectedParam.Name, "First Parameter Name");	
 		}
-
 	}
 }
