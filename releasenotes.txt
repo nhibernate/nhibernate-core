@@ -1,3 +1,11 @@
+Build 0.8.4.0
+========================
+- Added limited support for storing an enum type using its string representation. See the documentation of EnumStringType and TypesTest\EnumStringTypeFixture.cs for an example.
+- Fixed bug with BatcherImpl cached commands being disposed. The caching functionality was removed.
+- Fixed bug when property paths were used in criteria queries and caused an exception.
+- Modified DB2Dialect, Oracle9Dialect and PostgreSQLDialect to use Int32 for limit and offset parameters.
+- Various code clean-ups and commenting.
+
 Build 0.8.3.0
 ========================
 - Added name of Property to the PropertyNotFoundException message.
