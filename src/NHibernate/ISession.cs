@@ -563,5 +563,12 @@ namespace NHibernate
 		/// <param name="returnClasses">the returned persistent classes</param>
 		/// <returns></returns>
 		IQuery CreateSQLQuery( string sql, string[] returnAliases, System.Type[] returnClasses );
+
+		/// <summary>
+		/// Completely clear the session. Evict all loaded instances and cancel all pending
+		/// saves, updates and deletions. Do not close open enumerables or instances of
+		/// <tt>ScrollableResults</tt>.
+		/// </summary>
+		void Clear();
 	}
 }

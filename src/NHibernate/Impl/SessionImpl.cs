@@ -5267,6 +5267,26 @@ namespace NHibernate.Impl
 			return (ISqlLoadable) cp;
 		}
 
+		/// <summary></summary>
+		public void Clear()
+		{
+			arrayHolders.Clear();
+			batchLoadableEntityKeys.Clear();
+			collectionCreations.Clear();
+			collectionEntries.Clear();
+			collectionRemovals.Clear();
+			collectionUpdates.Clear();
+			collectionsByKey.Clear();
+			deletions.Clear();
+			entitiesByKey.Clear();
+			entityEntries.Clear();
+			insertions.Clear();
+			nonExists.Clear();
+			nullifiables.Clear();
+			updates.Clear();
+			proxiesByKey.Clear();
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

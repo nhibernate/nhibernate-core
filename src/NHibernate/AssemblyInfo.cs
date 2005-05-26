@@ -23,5 +23,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersionAttribute("0.8.4.0")]
 [assembly: AssemblyInformationalVersionAttribute("0.8")]
 [assembly: AssemblyFileVersionAttribute("0.8.4.0")]
-//[assembly: AssemblyKeyFileAttribute("..\\NHibernate.snk")]
 
