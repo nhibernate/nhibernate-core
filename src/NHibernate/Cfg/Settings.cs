@@ -30,6 +30,7 @@ namespace NHibernate.Cfg
 		private ICacheProvider _cacheProvider;
 		private string _defaultSchemaName;
 		private bool _prepareSql;
+		private int _commandTimeout;
 
 		/// <summary></summary>
 		public bool IsShowSqlEnabled
@@ -162,6 +163,13 @@ namespace NHibernate.Cfg
 		{
 			get { return _prepareSql; }
 			set { _prepareSql = value; }
+		}
+
+		/// <summary></summary>
+		public int commandTimeout
+		{
+			get { return _commandTimeout; }
+			set { _commandTimeout = value; }
 		}
 	}
 }

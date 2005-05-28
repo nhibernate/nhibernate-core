@@ -118,6 +118,8 @@ namespace NHibernate.Cfg
 
 			bool prepareSql = PropertiesHelper.GetBoolean( Environment.PrepareSql, properties, true );
 
+			int cmdTimeout = PropertiesHelper.GetInt32( Environment.CommandTimeout, properties, 0 );
+
 			string sessionFactoryName = ( string ) properties[ Environment.SessionFactoryName ];
 
 			settings.DefaultSchemaName = defaultSchema;
@@ -131,6 +133,7 @@ namespace NHibernate.Cfg
 			settings.SessionFactoryName = sessionFactoryName;
 			settings.IsOuterJoinFetchEnabled = useOuterJoin;
 			settings.PrepareSql = prepareSql;
+			settings.commandTimeout = cmdTimeout;
 
 			return settings;
 

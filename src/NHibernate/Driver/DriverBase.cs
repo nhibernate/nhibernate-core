@@ -3,6 +3,7 @@ using System.Data;
 using System.Text;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
 {
@@ -12,6 +13,7 @@ namespace NHibernate.Driver
 	public abstract class DriverBase : IDriver
 	{
 		#region IDriver Members
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(DriverBase));
 
 		/// <summary></summary>
 		public abstract System.Type CommandType { get; }
@@ -129,6 +131,30 @@ namespace NHibernate.Driver
 		{
 			int paramIndex = 0;
 			IDbCommand cmd = this.CreateCommand();
+
+			object envTimeout = Environment.Properties[ Environment.CommandTimeout ];
+			if( envTimeout != null )
+			{
+				int timeout = Convert.ToInt32( envTimeout );
+				if( timeout > 0 )
+				{
+					if( log.IsDebugEnabled )
+					{
+						log.Debug( string.Format( "setting ADO Command timeout to '{0}' seconds", timeout) );
+					}
+					try
+					{
+						cmd.CommandTimeout = timeout;
+					}
+					catch( Exception e )
+					{
+						if( log.IsWarnEnabled )
+						{
+							log.Warn( e.ToString() );
+						}
+					}
+				}
+			}
 
 			StringBuilder builder = new StringBuilder( sqlString.SqlParts.Length*15 );
 			for( int i = 0; i < sqlString.SqlParts.Length; i++ )

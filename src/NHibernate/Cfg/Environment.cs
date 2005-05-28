@@ -70,6 +70,8 @@ namespace NHibernate.Cfg
 		public const string CacheProvider = "hibernate.cache.provider_class";
 		/// <summary></summary>
 		public const string PrepareSql = "hibernate.prepare_sql";
+		/// <summary></summary>
+		public const string CommandTimeout = "hibernate.command_timeout";
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
 

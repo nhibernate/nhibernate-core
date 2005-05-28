@@ -12,6 +12,7 @@
 			these are different than the values in app.config so I can verify these 
 			are being picked up
 		-->
+		<property name="command_timeout">444</property>
 		<property name="query.substitutions">true 1, false 0, yes 1, no 0</property>
 		<!-- mapping files -->
 		<!-- are now optional
