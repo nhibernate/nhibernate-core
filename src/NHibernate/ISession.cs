@@ -539,11 +539,14 @@ namespace NHibernate
 		IQuery CreateFilter( object collection, string queryString );
 
 		/// <summary>
-		/// Obtain an instance of <c>IQuery</c> for a named query string defined in the
+		/// Obtain an instance of <see cref="IQuery" /> for a named query string defined in the
 		/// mapping file.
 		/// </summary>
-		/// <param name="queryName">The name of a query defined externally</param>
-		/// <returns>A queru</returns>
+		/// <param name="queryName">The name of a query defined externally.</param>
+		/// <returns>An <see cref="IQuery"/> fro a named query string.</returns>
+		/// <remarks>
+		/// The query can be either in <c>hql</c> or <c>sql</c> format.
+		/// </remarks>
 		IQuery GetNamedQuery( string queryName );
 
 		/// <summary>

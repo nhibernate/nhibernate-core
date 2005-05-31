@@ -660,17 +660,16 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the <c>hql</c> query identified by the <c>name</c>.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
+		/// <param name="name">The name of that identifies the query.</param>
+		/// <returns>
+		/// A <c>hql</c> query or <c>null</c> if the named
+		/// query does not exist.
+		/// </returns>
 		public string GetNamedQuery( string name )
 		{
 			string queryString = namedQueries[ name ] as string;
-			if( queryString == null )
-			{
-				throw new MappingException( "Named query not known: " + name );
-			}
 			return queryString;
 		}
 

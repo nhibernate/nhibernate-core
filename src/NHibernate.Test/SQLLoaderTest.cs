@@ -270,9 +270,44 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void NamedSQLQuery()
 		{
+			if( this.dialect is Dialect.MySQLDialect )
+			{
+				return;
+			}
+
+			ISession s = OpenSession();
+			
+			Category c = new Category();
+			c.Name = "NAME";
+			Assignable assn = new Assignable();
+			assn.Id = "i.d.";
+			IList l = new ArrayList();
+			l.Add( c );
+			assn.Categories = l;
+			c.Assignable = assn;
+			s.Save( assn );
+			s.Flush();
+			s.Close();
+
+			s = OpenSession();
+			IQuery q = s.GetNamedQuery( "namedsql" );
+			Assert.IsNotNull( q, "should have found 'namedsql'" );
+			IList list = q.List();
+			Assert.IsNotNull( list, "executing query returns list" );
+
+			object[] values = list[0] as object[];
+			Assert.IsNotNull( values[0], "index 0 should not be null" );
+			Assert.IsNotNull( values[1], "index 1 should not be null" );
+
+			Assert.AreEqual( typeof(Category), values[0].GetType(), "should be a Category" );
+			Assert.AreEqual( typeof(Assignable), values[1].GetType(), "should be Assignable" );
+			s.Delete( "from Category" );
+			s.Delete( "from Assignable" );
+			s.Flush();
+			s.Close();
+
 		}
 	}
 }

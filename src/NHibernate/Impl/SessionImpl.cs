@@ -2192,13 +2192,29 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// 
+		/// Obtain an instance of <see cref="IQuery" /> for a named query string defined in the
+		/// mapping file.
 		/// </summary>
-		/// <param name="queryName"></param>
-		/// <returns></returns>
+		/// <param name="queryName">The name of a query defined externally.</param>
+		/// <returns>An <see cref="IQuery"/> fro a named query string.</returns>
+		/// <remarks>
+		/// The query can be either in <c>hql</c> or <c>sql</c> format.
+		/// </remarks>
 		public IQuery GetNamedQuery( string queryName )
 		{
-			return CreateQuery( factory.GetNamedQuery( queryName ) );
+			string queryString = factory.GetNamedQuery( queryName );
+			if( queryString!=null )
+			{
+				return CreateQuery( queryString );
+			}
+
+			SessionFactoryImpl.InternalNamedSQLQuery nq = factory.GetNamedSQLQuery( queryName );
+			if( nq==null )
+			{
+				throw new MappingException( "Named query not known: " + queryName );
+			}
+
+			return CreateSQLQuery( nq.QueryString, nq.ReturnAliases, nq.ReturnClasses, nq.QuerySpaces );
 		}
 
 		/// <summary>
