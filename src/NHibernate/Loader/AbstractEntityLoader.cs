@@ -161,7 +161,9 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		protected virtual SqlString GetWhereFragment( )
 		{
-			return persister.WhereJoinFragment( alias, true, true );
+			// Changed from H2.1 code to fix NH-295.
+			//return persister.WhereJoinFragment( alias, true, true );
+			return ( (IQueryable) Persister).QueryWhereFragment( Alias, true, true );
 		}
 
 		/// <summary>

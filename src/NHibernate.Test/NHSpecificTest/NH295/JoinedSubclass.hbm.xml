@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH295">
+
+    <class name="Party" discriminator-value="~party">
+
+        <id name="Id" unsaved-value="-1">
+            <generator class="identity" />
+        </id>
+
+        <property name="Name" />
+
+        <joined-subclass name="UserGroup">
+			<key column="id" />
+            <set name="Users" table="users_in_groups" lazy="true">
+                <key column="group_id" />
+                <many-to-many class="User" column="user_id" />
+            </set>
+        </joined-subclass>
+
+        <joined-subclass name="User" table="`User`">
+			<key column="id" />
+            <set name="Groups" table="users_in_groups" inverse="true" lazy="true">
+                <key column="user_id" />
+                <many-to-many class="UserGroup" column="group_id" />
+            </set>
+        </joined-subclass>
+
+    </class>
+</hibernate-mapping>
