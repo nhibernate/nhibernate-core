@@ -7,14 +7,17 @@ namespace NHibernate.Impl
 {
 	/// <summary>
 	/// Implements SQL query passthrough
-	/// <pre>
-	/// <sql-query-name name="mySqlQuery">
-	/// <return alias="person" class="eg.Person" />
+	/// </summary>
+	/// <example>
+	/// An example mapping is:
+	/// <code>
+	/// &lt;sql-query-name name="mySqlQuery"&gt;
+	/// &lt;return alias="person" class="eg.Person" /&gt;
 	///		SELECT {person}.NAME AS {person.name}, {person}.AGE AS {person.age}, {person}.SEX AS {person.sex}
 	///		FROM PERSON {person} WHERE {person}.NAME LIKE 'Hiber%'
-	/// </sql-query-name>
-	/// </pre>
-	/// </summary>
+	/// &lt;/sql-query-name&gt;
+	/// </code>
+	/// </example>
 	internal class SqlQueryImpl : AbstractQueryImpl
 	{
 		private readonly System.Type[] returnClasses;
