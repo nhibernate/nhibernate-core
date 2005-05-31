@@ -518,7 +518,7 @@ namespace NHibernate.Engine
 					log.Debug( "version unsaved-value strategy NEGATIVE" );
 					if ( version is short || version is int || version is long )
 					{
-						return (long) version < 1;
+						return (long) version < 0L;
 					}
 					else
 					{
