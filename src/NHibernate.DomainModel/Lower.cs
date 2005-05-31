@@ -38,7 +38,7 @@ namespace NHibernate.DomainModel
 			set { _bag = value; }
 		}
 
-		public Lower Other
+		public new Lower Other
 		{
 			get { return _other; }
 			set { _other = value; }
