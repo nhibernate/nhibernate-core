@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Data;
 using NHibernate.Engine;
 
 namespace NHibernate.Transaction
@@ -15,8 +16,19 @@ namespace NHibernate.Transaction
 		/// <returns></returns>
 		public ITransaction BeginTransaction( ISessionImplementor session )
 		{
+			return BeginTransaction( session, IsolationLevel.Unspecified );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="isolationLevel"></param>
+		/// <returns></returns>
+		public ITransaction BeginTransaction( ISessionImplementor session, IsolationLevel isolationLevel )
+		{
 			AdoTransaction tx = new AdoTransaction( session );
-			tx.Begin();
+			tx.Begin( isolationLevel );
 			return tx;
 		}
 

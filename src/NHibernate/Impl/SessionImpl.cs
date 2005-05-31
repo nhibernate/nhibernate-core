@@ -2959,6 +2959,14 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
+		public ITransaction BeginTransaction( IsolationLevel isolationLevel )
+		{
+			transaction = factory.TransactionFactory.BeginTransaction( this, isolationLevel );
+			isCurrentTransaction = true;
+			return transaction;
+		}
+
+		/// <summary></summary>
 		public ITransaction BeginTransaction()
 		{
 			transaction = factory.TransactionFactory.BeginTransaction( this );

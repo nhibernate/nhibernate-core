@@ -508,6 +508,13 @@ namespace NHibernate
 		ITransaction BeginTransaction();
 
 		/// <summary>
+		/// Begin a transaction with the specified <c>isolationLevel</c>
+		/// </summary>
+		/// <param name="isolationLevel">Isolation level for the new transaction</param>
+		/// <returns>A transaction instance having the specified isolation level</returns>
+		ITransaction BeginTransaction( IsolationLevel isolationLevel );
+
+		/// <summary>
 		/// Get the current Unit of Work and return the associated <c>ITransaction</c> object.
 		/// </summary>
 		/// <exception cref="HibernateException">There was no Active IDbTransaction for this Session</exception>

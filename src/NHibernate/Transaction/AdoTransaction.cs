@@ -76,20 +76,24 @@ namespace NHibernate.Transaction
 		/// Thrown if there is any problems encountered while trying to create
 		/// the <see cref="IDbTransaction"/>.
 		/// </exception>
-		public void Begin()
+		public void Begin( IsolationLevel isolationLevel )
 		{
 			log.Debug( "begin" );
 
 			try
 			{
-				IsolationLevel isolation = session.Factory.Isolation;
-				if( isolation == IsolationLevel.Unspecified )
+				if( isolationLevel == IsolationLevel.Unspecified )
+				{
+					isolationLevel = session.Factory.Isolation;
+				}
+
+				if( isolationLevel == IsolationLevel.Unspecified )
 				{
 					trans = session.Connection.BeginTransaction();
 				}
 				else
 				{
-					trans = session.Connection.BeginTransaction( isolation );
+					trans = session.Connection.BeginTransaction( isolationLevel );
 				}
 			}
 			catch( Exception e )
@@ -128,6 +132,7 @@ namespace NHibernate.Transaction
 				{
 					trans.Commit();
 					committed = true;
+					Dispose();
 				}
 				catch( Exception e )
 				{
@@ -161,6 +166,7 @@ namespace NHibernate.Transaction
 			{
 				trans.Rollback();
 				rolledBack = true;
+				Dispose();
 			}
 			catch( Exception e )
 			{
@@ -195,6 +201,11 @@ namespace NHibernate.Transaction
 		public bool WasCommitted
 		{
 			get { return committed; }
+		}
+
+		public IsolationLevel IsolationLevel
+		{
+			get { return trans.IsolationLevel; }
 		}
 
 		#region System.IDisposable Members
