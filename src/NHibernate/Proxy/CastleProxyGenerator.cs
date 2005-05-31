@@ -17,9 +17,7 @@ namespace NHibernate.Proxy
 
 		// key = mapped type
 		// value = proxy type
-		private IDictionary cachedProxyTypes;
-
-		private GeneratorContext _context;
+		private IDictionary _cachedProxyTypes;
 		private ModuleScope _scope;
 
 		/// <summary>
@@ -27,13 +25,8 @@ namespace NHibernate.Proxy
 		/// </summary>
 		internal CastleProxyGenerator()
 		{
-			cachedProxyTypes = new Hashtable();
-
+			_cachedProxyTypes = new Hashtable();
 			_scope = new ModuleScope();
-
-			// the EnhanceTypeDelegate will add custom code gen that DynamicProxy does not provide
-			// by default.
-			_context = new GeneratorContext(); // new EnhanceTypeDelegate( EnhanceInterfaceType ), null );
 		}
 
 		#region IProxyGenerator Methods
@@ -60,9 +53,9 @@ namespace NHibernate.Proxy
 				// in one ModuleBuilder.  The ModuleBuilder throws an exception (not suprisingly) when you try
 				// to define the same type twice in it.  So nh needs to keep a cache of the proxy types that have
 				// already been generated.
-				lock( cachedProxyTypes.SyncRoot )
+				lock( _cachedProxyTypes.SyncRoot )
 				{
-					proxyType = cachedProxyTypes[ concreteProxy ] as System.Type;
+					proxyType = _cachedProxyTypes[ concreteProxy ] as System.Type;
 
 					// if the pc is an interface then we need to add the interface to the 
 					// interfaces array that was passed in because it only includes the extra
@@ -71,33 +64,31 @@ namespace NHibernate.Proxy
 					{
 						if( proxyType == null )
 						{
-							//TODO: figure out if this is necessary because the concreteProxy is
-							// already included in the interfaces array...
-							System.Type[ ] temp = new System.Type[interfaces.Length + 1];
-							interfaces.CopyTo( temp, 0 );
-							temp[ interfaces.Length ] = concreteProxy; //persistentClass;
-							interfaces = temp;
+							// hammett: from the test cases I can tell this is wrong
+							// as it adds the interface which is already in the array
+//							System.Type[ ] temp = new System.Type[interfaces.Length + 1];
+//							interfaces.CopyTo( temp, 0 );
+//							temp[ interfaces.Length ] = concreteProxy; //persistentClass;
+//							interfaces = temp;
 
-							InterfaceProxyGenerator _interfaceGenerator = new InterfaceProxyGenerator( _scope, _context );
-							proxyType = _interfaceGenerator.GenerateCode( interfaces );
+							InterfaceProxyGenerator _interfaceGenerator = new InterfaceProxyGenerator( _scope, new GeneratorContext() );
+							// hammett: should be:
+							// proxyType = _interfaceGenerator.GenerateCode( interfaces, persistentClass );
+							// ...but then the LazyInitializer go bezerk
 
-							cachedProxyTypes[ concreteProxy ] = proxyType;
+							proxyType = _interfaceGenerator.GenerateCode( interfaces, typeof(Object) );
+
 						}
-						// don't understand why a Interface proxy requires 2 arg constructor and a Class Interface
-						// proxy only requires 1 - TODO: email Hammett about this.
-						// hack with new object() because an interface proxy is expecting an actual target instance - we
-						// don't have that yet and don't want to create it until it is actually needed.
-						generatedProxy = Activator.CreateInstance( proxyType, new object[ ] {initializer, new object()} );
 
+						generatedProxy = Activator.CreateInstance( proxyType, new object[ ] {initializer, new object()} );
 					}
 					else
 					{
 						if( proxyType == null )
 						{
-							CastleCustomProxyGenerator _classGenerator = new CastleCustomProxyGenerator( _scope, _context );
-							proxyType = _classGenerator.GenerateCode( concreteProxy );
-
-							cachedProxyTypes[ concreteProxy ] = proxyType;
+							ClassProxyGenerator _classGenerator = new ClassProxyGenerator( _scope, new GeneratorContext() );
+							proxyType = _classGenerator.GenerateCode( concreteProxy, interfaces );
+							_cachedProxyTypes[ concreteProxy ] = proxyType;
 						}
 
 						generatedProxy = Activator.CreateInstance( proxyType, new object[ ] {initializer} );

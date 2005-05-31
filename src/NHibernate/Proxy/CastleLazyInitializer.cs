@@ -15,9 +15,6 @@ namespace NHibernate.Proxy
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( CastleLazyInitializer ) );
 
-		private System.Type _concreteProxy; // not used !?!
-		private System.Type[ ] _interfaces; // not used !?!
-
 		/// <summary>
 		/// Initializes a new <see cref="CastleLazyInitializer"/> object.
 		/// </summary>
@@ -30,8 +27,6 @@ namespace NHibernate.Proxy
 		internal CastleLazyInitializer( System.Type persistentClass, System.Type concreteProxy, System.Type[ ] interfaces, object id, PropertyInfo identifierPropertyInfo, ISessionImplementor session )
 			: base( persistentClass, id, identifierPropertyInfo, session )
 		{
-			_concreteProxy = concreteProxy;
-			_interfaces = interfaces;
 		}
 
 		#region Castle.DynamicProxy.IInterceptor Members
