@@ -13,12 +13,12 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 	[TestFixture]
 	public class JoinedSubclassFixture : SubclassFixture
 	{
-        protected override IList Mappings
-        {
-            get
-            {
-                return new string[] { "NHSpecificTest.NH295.JoinedSubclass.hbm.xml" };
-            }
-        }
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[] { "NHSpecificTest.NH295.JoinedSubclass.hbm.xml" };
+			}
+		}
 	}
 }
