@@ -665,15 +665,7 @@ namespace NHibernate.Loader
 		protected internal override SqlString SqlString
 		{
 			get { return sqlString; }
-
-			set 
-			{
-				sqlString = value; 
-				if ( value != null )
-				{
-					System.Diagnostics.Debug.WriteLine( value.ToString() );
-				}
-			}
+			set { sqlString = value; }
 		}
 
 		/// <summary></summary>
