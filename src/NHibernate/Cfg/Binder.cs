@@ -1347,7 +1347,7 @@ namespace NHibernate.Cfg
 				{
 					ManyToOne element = new ManyToOne( model.CollectionTable );
 					model.Element = element;
-					BindManyToOne(subnode, element, Mapping.Collection.DefaultElementColumnName, true, mappings);
+					BindManyToOne(subnode, element, Mapping.Collection.DefaultElementColumnName, false, mappings);
 				} 
 				else if ( "composite-element".Equals(name) ) 
 				{
