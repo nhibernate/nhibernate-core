@@ -196,11 +196,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Child.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Circular.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -382,6 +377,11 @@
                 <File
                     RelPath = "Holder.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Child.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Immutable.cs"
@@ -740,21 +740,21 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "NHSpecific\Child.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NHSpecific\Child.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "NHSpecific\ClassWithNullColumns.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "NHSpecific\ClassWithNullColumns.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\Child.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\Child.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -774,6 +774,26 @@
                 <File
                     RelPath = "NHSpecific\Node.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecific\NullableInt32.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\NullableInt32Converter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\NullableInt32Type.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\NullableTypesType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "NHSpecific\NullInt32UserType.cs"
