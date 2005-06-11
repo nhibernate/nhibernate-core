@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql
 {
-	/// <summary></summary>
+	/// <summary>HQL lexical analyzer (not really a parser)</summary>
 	public class PreprocessingParser : IParser
 	{
 		private static ISet operators;
