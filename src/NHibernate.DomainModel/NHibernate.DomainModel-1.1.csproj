@@ -173,6 +173,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Broken.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Broken.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
@@ -298,6 +303,11 @@
                 <File
                     RelPath = "Fee.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Fixed.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Fo.cs"
@@ -577,6 +587,11 @@
                 />
                 <File
                     RelPath = "ReverseComparator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "S.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

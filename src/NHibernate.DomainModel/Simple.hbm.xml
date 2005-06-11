@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
+	<import class="NHibernate.DomainModel.S, NHibernate.DomainModel" />
+
     <class name="NHibernate.DomainModel.Simple, NHibernate.DomainModel">
         <id type="Int64" column="id_" unsaved-value="0">
             <generator class="assigned"/>

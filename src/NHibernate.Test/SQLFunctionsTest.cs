@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 
+using NHibernate.Dialect;
 using NHibernate.DomainModel;
 
 using NUnit.Framework;
@@ -13,19 +14,94 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class SQLFunctionsTest : TestCase
 	{
+		private static readonly log4net.ILog log =
+			log4net.LogManager.GetLogger( typeof( SQLFunctionsTest ) );
 		protected override IList Mappings
 		{
 			get
 			{
-				return new string[] { "Simple.hbm.xml", "Blobber.hbm.xml" };
+				return new string[] { "Simple.hbm.xml", "Blobber.hbm.xml", "Broken.hbm.xml" };
 			}
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void DialectSQLFunctions()
 		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			IEnumerator iter = s.Enumerable( "select max(s.Count) from s in class Simple" )
+				.GetEnumerator();
+
+			if( dialect is MySQLDialect
+				// Added two dialects below for NH
+				|| dialect is MsSql2000Dialect
+				|| dialect is PostgreSQLDialect )
+			{
+				Assert.IsTrue( iter.MoveNext() );
+				Assert.IsNull( iter.Current );
+			}
+
+			Simple simple = new Simple();
+			simple.Name = "Simple Dialect Function Test";
+			simple.Address = "Simple Address";
+			simple.Pay = 45.8f;
+			simple.Count = 2;
+			s.Save( simple, 10L );
+
+			// Test to make sure allocating an specified object operates correctly.
+			Assert.AreEqual( 1,
+				s.Find("select new S(s.Count, s.Address) from s in class Simple")
+					.Count );
+
+			// Quick check the base dialect functions operate correctly
+			Assert.AreEqual( 1, 
+				s.Find( "select max(s.Count) from s in class Simple" ).Count );
+			Assert.AreEqual( 1,
+				s.Find( "select count(*) from s in class Simple" ).Count );
+
+			if ( dialect is OracleDialect) 
+			{
+				// Check Oracle Dialect mix of dialect functions - no args (no parenthesis and single arg functions
+				IList rset = s.Find( "select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple" );
+				object[] row = (object[]) rset[0];
+				Assert.IsNotNull( row[0], "Name string should have been returned" );
+				Assert.IsNotNull( row[1], "Todays Date should have been returned" );
+				Assert.AreEqual( 45f, row[2], "trunc(45.8) result was incorrect" );
+				Assert.AreEqual( 46f, row[3], "round(45.8) result was incorrect" );
+
+				simple.Pay = -45.8f;
+				s.Update(simple);
+
+				// Test type conversions while using nested functions (Float to Int).
+				rset = s.Find( "select abs(round(s.Pay)) from s in class Simple" );
+				Assert.AreEqual( 46f, rset[0], "abs(round(-45.8)) result was incorrect" );
+
+				// Test a larger depth 3 function example - Not a useful combo other than for testing
+				Assert.AreEqual( 1,
+					s.Find( "select trunc(round(sysdate)) from s in class Simple" ).Count );
+
+				// Test the oracle standard NVL funtion as a test of multi-param functions...
+				// NOTE: commented out for NH, since Pay is a value type and will never be null
+				//simple.Pay = null;
+				//s.Update( simple );
+				//Assert.AreEqual( 0,
+				//	s.Find("select MOD( NVL(s.Pay, 5000), 2 ) from Simple as s where s.id = 10")[0] );
+			}
+
+			// NOTE: Commented out for NHibernate, no HSQL dialect.
+			//if ( (getDialect() is HSQLDialect) ) 
+			//{
+			//	// Test the hsql standard MOD funtion as a test of multi-param functions...
+			//	Integer value = (Integer) s.find("select MOD(s.count, 2) from Simple as s where s.id = 10" ).get(0);
+			//	assertTrue( 0 == value.intValue() );
+			//}
+
+			s.Delete(simple);
+			t.Commit();
+			s.Close();
 		}
+
 		[Test]
 		public void SetProperties() 
 		{
@@ -44,9 +120,39 @@ namespace NHibernate.Test
 
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void Broken()
 		{
+			if( dialect is Oracle9Dialect ) return;
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			
+			Broken b = new Fixed();
+			b.Id = 123;
+			b.OtherId = "foobar";
+			s.Save( b );
+			s.Flush();
+			b.Timestamp = DateTime.Now;
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			s.Update( b );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			b = (Broken) s.Load( typeof( Broken ), b );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			s.Delete( b );
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
@@ -77,14 +183,116 @@ namespace NHibernate.Test
 
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Requires IQuery.SetCacheable")]
 		public void CachedQuery()
 		{
+			/*
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Simple simple = new Simple();
+			simple.Name = "Simple 1";
+			s.Save( simple, 10L );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			IQuery q = s.CreateQuery( "from Simple s where s.name=?" );
+			q.SetCacheable( true );
+			q.SetString( 0, "Simple 1" );
+
+			Assert.AreEqual( 1, q.List().Count );
+			Assert.AreEqual( 1, q.List().Count );
+			Assert.AreEqual( 1, q.List().Count );
+
+			q = s.CreateQuery( "from Simple s where s.name=:name" );
+			q.SetCacheable( true );
+			q.SetString( "name", "Simple 1" );
+			Assert.AreEqual( 1, q.List().Count );
+
+			simple = (Simple) q.List()[0];
+
+			q.SetString( "name", "Simple 2" );
+			Assert.AreEqual( 0, q.List().Count );
+			Assert.AreEqual( 0, q.List().Count );
+			simple.Name = "Simple 2";
+			Assert.AreEqual( 1, q.List().Count );
+			Assert.AreEqual( 1, q.List().Count );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			q = s.CreateQuery("from Simple s where s.name=:name");
+			q.SetString( "name", "Simple 2" );
+			q.SetCacheable( true );
+			Assert.AreEqual( 1, q.List().Count );
+			Assert.AreEqual( 1, q.List().Count );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			s.Update( simple, 10L );
+			s.Delete( simple );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			q = s.CreateQuery("from Simple s where s.name=?");
+			q.SetCacheable( true );
+			q.SetString( 0, "Simple 1" );
+			Assert.AreEqual( 0, q.List().Count );
+			Assert.AreEqual( 0, q.List().Count );
+			t.Commit();
+			s.Close();
+			*/
 		}
+
+		private string LocateAppropriateDialectFunctionNameForAliasTest()
+		{
+			foreach( DictionaryEntry de in dialect.Functions )
+			{
+				ISQLFunction function = (ISQLFunction) de.Value;
+				if( !function.HasArguments && !function.HasParenthesesIfNoArguments )
+				{
+					return (string) de.Key;
+				}
+			}
+
+			return null;
+		}
+
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void SQLFunctionAsAlias()
 		{
+			string functionName = LocateAppropriateDialectFunctionNameForAliasTest();
+			if( functionName == null )
+			{
+				log.Info( "Dialect does not list any no-arg functions" );
+				return;
+			}
+
+			log.Info( "Using function named [" + functionName + "] for 'function as alias' test" );
+			string query = "select " + functionName + " from Simple as " + functionName + " where " + functionName + ".id = 10";
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Simple simple = new Simple();
+			simple.Name = "Simple 1";
+			s.Save( simple, 10L );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			IList result = s.Find(query);
+			Assert.IsTrue( result[0] is Simple,
+				"Unexpected result type [" + result[0].GetType().Name + "]" );
+			s.Delete( result[0] );
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
@@ -109,15 +317,12 @@ namespace NHibernate.Test
 				simple.Name = "Simple 1";
 				s.Save( simple, (long)10 );
 
-				/*
-				 * TODO: once DB2Dialect is implemented uncomment this 
 				if( dialect is Dialect.DB2Dialect ) 
 				{
 					s.Find("from s in class Simple where repeat('foo', 3) = 'foofoofoo'");
 					s.Find("from s in class Simple where repeat(s.Name, 3) = 'foofoofoo'");
 					s.Find("from s in class Simple where repeat( lower(s.Name), 3 + (1-1) / 2) = 'foofoofoo'");
 				}
-				*/
 
 				Assert.AreEqual( 1, s.Find("from s in class Simple where upper(s.Name) = 'SIMPLE 1'").Count );
 				Assert.AreEqual( 1, s.Find("from s in class Simple where not( upper(s.Name)='yada' or 1=2 or 'foo'='bar' or not('foo'='foo') or 'foo' like 'bar')").Count );

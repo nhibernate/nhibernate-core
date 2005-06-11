@@ -1,27 +1,32 @@
 <?xml version="1.0"?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="org.hibernate.test.Broken" table="BROKE">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	namespace="NHibernate.DomainModel"
+	assembly="NHibernate.DomainModel">
+	
+	<class name="Broken" table="BROKE">
 		<!--id name="id" type="long" column="id_">
             <generator class="hilo"/>
         </id-->
 		<composite-id>
-			<key-property name="id"/>
-			<key-property name="otherId"/>
+			<key-property name="Id"/>
+			<key-property name="OtherId"/>
 		</composite-id>
-		<timestamp name="timestamp" column="`timestamp`"/>
-		<joined-subclass name="org.hibernate.test.Fixed" table="FIX">
+		
+		<timestamp name="Timestamp" column="`timestamp`"/>
+		
+		<joined-subclass name="Fixed" table="FIX">
 			<key>
 				<column name="BROKE_ID"/>
 				<column name="OTHER_BROKE_ID"/>
 			</key>
-			<set name="set" lazy="true" inverse="true">
+			<set name="Set" lazy="true" inverse="true">
 				<key>
 					<column name="FIX_ID"/>
 					<column name="OTHER_FIX_ID"/>
 				</key>
-				<one-to-many class="org.hibernate.test.Broken"/>
+				<one-to-many class="Broken"/>
 			</set>
-			<property name="list" type="serializable"/>
+			<property name="List" type="serializable"/>
 		</joined-subclass>
 	</class>
 </hibernate-mapping>
