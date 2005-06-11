@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 
+using NHibernate.Expression;
 using NHibernate.DomainModel;
 
 using NUnit.Framework;
@@ -42,33 +43,294 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Need to implement AbstractEntityPersister.GenerateSelectVersionString")]
 		public void Replicate()
 		{
+			ISession s = OpenSession();
+			Container baz = new Container();
+			Contained f = new Contained();
+			IList list = new ArrayList();
+			list.Add(baz);
+			f.Bag = list;
+			IList list2 = new ArrayList();
+			list2.Add(f);
+			baz.Bag = list2;
+			s.Save( f );
+			s.Save( baz );
+			s.Flush();
+			s.Close();
+			
+			s = OpenSession();
+			s.Replicate( baz, ReplicationMode.Overwrite );
+			s.Flush();
+			s.Close();
+			s = OpenSession();
+			s.Replicate( baz, ReplicationMode.Ignore );
+			s.Flush();
+			s.Close();
+			
+			s = OpenSession();
+			s.Delete( baz );
+			s.Delete( f );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void QueryOneToOne()
 		{
+			ISession s = OpenSession();
+			object id = s.Save( new Parent() );
+			Assert.AreEqual( 1, s.Find( "from Parent p left join fetch p.Child" ).Count );
+			s.Flush();
+			s.Close();
+
+			s = OpenSession();
+			Parent p = (Parent) s.CreateQuery( "from Parent p left join fetch p.Child").UniqueResult();
+			Assert.IsNull( p.Child );
+			s.Find("from Parent p join p.Child c where c.X > 0");
+			s.Find("from Child c join c.Parent p where p.X > 0");
+			s.Flush();
+			s.Close();
+		
+			s = OpenSession();
+			s.Delete( s.Get( typeof( Parent ), id ) );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Need to implement AbstractEntityPersister.GenerateSelectVersionString")]
 		public void ProxyReuse()
 		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			FooProxy foo = new Foo();
+			FooProxy foo2 = new Foo();
+			object id = s.Save( foo );
+			object id2 = s.Save( foo2 );
+			foo2.Int = 1234567;
+			foo.Int = 1234;
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			foo = (FooProxy) s.Load( typeof( Foo ), id );
+			foo2 = (FooProxy) s.Load( typeof( Foo ), id2 );
+			Assert.IsFalse( NHibernateUtil.IsInitialized( foo ) );
+			NHibernateUtil.Initialize( foo2 );
+			NHibernateUtil.Initialize( foo );
+			Assert.AreEqual( 3, foo.Component.ImportantDates.Length );
+			Assert.AreEqual( 3, foo2.Component.ImportantDates.Length );
+			t.Commit();
+			s.Close();
+		
+			s = OpenSession();
+			t = s.BeginTransaction();
+			foo.Float = 1.2f;
+			foo2.Float = 1.3f;
+			foo2.Dependent.Key = null;
+			foo2.Component.Subcomponent.Fee.Key = null;
+			Assert.IsFalse( foo2.Key.Equals( id ) );
+			s.Save( foo, "xyzid" );
+			s.Update( foo2, id ); //intentionally id, not id2!
+			Assert.AreEqual( id, foo2.Key );
+			Assert.AreEqual( 1234567, foo2.Int );
+			Assert.AreEqual( "xyzid", foo.Key );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			foo = (FooProxy) s.Load( typeof( Foo ), id );
+			Assert.AreEqual( 1234567, foo.Int );
+			Assert.AreEqual( 3, foo.Component.ImportantDates.Length );
+			s.Delete( foo );
+			s.Delete( s.Get( typeof( Foo ), id2 ) );
+			s.Delete( s.Get( typeof( Foo ), "xyzid" ) );
+			Assert.AreEqual( 3, s.Delete( "from System.Object" ) );
+			t.Commit();
+			s.Close();
+
+			string feekey = foo.Dependent.Key;
+			s = OpenSession();
+			t = s.BeginTransaction();
+			foo.Component.Glarch = null; //no id property!
+			s.Replicate( foo, ReplicationMode.Overwrite );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			Foo refoo = (Foo) s.Get( typeof( Foo ), id);
+			Assert.AreEqual( feekey, refoo.Dependent.Key );
+			s.Delete( refoo );
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Requires ICriteria.CreateCriteria")]
 		public void ComplexCriteria()
 		{
+			/*
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Baz baz = new Baz();
+			s.Save(baz);
+			baz.SetDefaults();
+			IDictionary topGlarchez = new Hashtable();
+			baz.TopGlarchez = topGlarchez;
+			Glarch g1 = new Glarch();
+			g1.Name = "g1";
+			s.Save( g1 );
+			Glarch g2 = new Glarch();
+			g2.Name = "g2";
+			s.Save( g2 );
+
+			g1.ProxyArray = new GlarchProxy[] { g2 };
+			topGlarchez['1'] = g1;
+			topGlarchez['2'] = g2;
+			Foo foo1 = new Foo();
+			Foo foo2 = new Foo();
+			s.Save(foo1);
+			s.Save(foo2);
+			baz.FooSet.Add(foo1);
+			baz.FooSet.Add(foo2);
+			baz.FooArray = new FooProxy[] { foo1 };
+		
+			LockMode lockMode = (dialect is Dialect.DB2Dialect) ? LockMode.Read : LockMode.Upgrade;
+
+			ICriteria crit = s.CreateCriteria(typeof( Baz ));
+			crit.CreateCriteria("TopGlarchez")
+				.Add( Expression.Expression.IsNotNull("name") )
+				.CreateCriteria("ProxyArray")
+				.Add( Expression.Expression.EqProperty("name", "name") )
+				.Add( Expression.Expression.Eq("name", "g2") )
+				.Add( Expression.Expression.Gt("x", -666 ) );
+			crit.CreateCriteria("FooSet")
+				.Add( Expression.Expression.IsNull("null") )
+				.Add( Expression.Expression.Eq("String", "a string") )
+				.Add( Expression.Expression.Lt("Integer", -665 ) );
+			crit.CreateCriteria("FooArray")
+				.Add( Expression.Expression.Eq( "string", "a string" ) )
+				.SetLockMode( lockMode );
+
+			IList list = crit.List();
+			Assert.AreEqual( 2, list.Count );
+
+			s.CreateCriteria( typeof( Glarch ) ).SetLockMode(LockMode.Upgrade).List();
+			s.CreateCriteria( typeof( Glarch ) ).SetLockMode(ICriteria.ROOT_ALIAS, LockMode.Upgrade).List();
+
+			g2.Name = null;
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+
+			crit = s.CreateCriteria( typeof( Baz ) )
+				.SetLockMode( lockMode );
+			crit.CreateCriteria( "TopGlarchez" )
+				.Add( Expression.Expression.Gt( "x", -666 ) );
+			crit.CreateCriteria( "FooSet" )
+				.Add( Expression.Expression.IsNull( "null" ) );
+			list = crit.List();
+
+			Assert.AreEqual( 4, list.Count );
+			baz = (Baz) crit.UniqueResult();
+			Assert.IsTrue( NHibernateUtil.IsInitialized( baz.TopGlarchez ) ); //cos it is nonlazy
+			Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooSet ) );
+
+			//list = s.CreateCriteria(typeof( Baz ))
+			//	.createCriteria("fooSet.foo.component.glarch")
+			//		.Add( Expression.eq("name", "xxx") )
+			//	.Add( Expression.eq("fooSet.foo.component.glarch.name", "xxx") )
+			//	.list();
+			//assertTrue( list.size()==0 );
+			list = s.CreateCriteria(typeof( Baz ))
+				.CreateCriteria("fooSet")
+				.CreateCriteria("foo")
+				.CreateCriteria("component.glarch")
+				.Add( Expression.Expression.Eq("name", "xxx") )
+				.List();
+			Assert.AreEqual( 0, list.Count );
+
+			list = s.CreateCriteria( typeof( Baz ) )
+				.CreateAlias( "FooSet", "foo" )
+				.CreateAlias( "TheFoo.TheFoo", "foo2" )
+				.SetLockMode( "foo2", lockMode )
+				.Add( Expression.Expression.IsNull( "foo2.Component.Glarch" ) )
+				.CreateCriteria( "foo2.Component.Glarch" )
+				.Add( Expression.Expression.Eq( "name", "xxx" ) )
+				.List();
+			Assert.AreEqual( 0, list.Count );
+
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+
+			crit = s.CreateCriteria(typeof( Baz ));
+			crit.CreateCriteria("TopGlarchez")
+				.Add( Expression.Expression.IsNotNull("name") );
+			crit.CreateCriteria("FooSet")
+				.Add( Expression.Expression.IsNull("null") );
+
+			list = crit.List();
+			Assert.AreEqual( 2, list.Count );
+			baz = (Baz) crit.UniqueResult();
+			Assert.IsTrue( NHibernateUtil.IsInitialized( baz.TopGlarchez ) ); //cos it is nonlazy
+			Assert.IsFalse( NHibernateUtil.IsInitialized( baz.FooSet ) );
+			s.Delete("from Glarch g" );
+			s.Delete( s.Get( typeof( Foo ), foo1.Key ) );
+			s.Delete( s.Get( typeof( Foo ), foo2.Key ) );
+			s.Delete( baz );
+			t.Commit();
+			s.Close();
+			*/
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
 		public void ClassWhere()
 		{
+			if (dialect is Dialect.PostgreSQLDialect) return;
+			
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Baz baz = new Baz();
+			baz.Parts = new ArrayList();
+			Part p1 = new Part();
+			p1.Description = "xyz";
+			Part p2 = new Part();
+			p2.Description = "abc";
+			baz.Parts.Add( p1 );
+			baz.Parts.Add( p2 );
+			s.Save( baz );
+			t.Commit();
+			s.Close();
+		
+			s = OpenSession();
+			t = s.BeginTransaction();
+			Assert.AreEqual( 1, s.CreateCriteria( typeof( Part ) ).List().Count );
+			//there is a where condition on Part mapping
+			Assert.AreEqual( 1,
+				s.CreateCriteria( typeof( Part ) )
+					.Add( Expression.Expression.Eq( "Id", p1.Id ) )
+					.List().Count );
+			Assert.AreEqual( 1, s.CreateQuery( "from Part" ).List().Count );
+			Assert.AreEqual( 1, s.CreateQuery( "from Baz baz join baz.Parts" ).List().Count );
+			
+			baz = (Baz) s.CreateCriteria( typeof( Baz ) ).UniqueResult();
+			Assert.AreEqual( 1, s.CreateFilter( baz.Parts, "" ).List().Count );
+			//assertTrue( baz.getParts().size()==1 );
+			s.Delete( s.Get( typeof( Part ), p1.Id ) );
+			s.Delete( s.Get( typeof( Part ), p2.Id ) );
+			s.Delete( baz );
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]

@@ -1412,9 +1412,9 @@ namespace NHibernate.Persister
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <param name="innerJoin"></param>
-		/// <param name="includeSublcasses"></param>
+		/// <param name="includeSubclasses"></param>
 		/// <returns></returns>
-		public abstract SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSublcasses );
+		public abstract SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSubclasses );
 		
 		/// <summary></summary>
 		public abstract object DiscriminatorSQLValue{ get; }

@@ -54,7 +54,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "test like h2.1.x test, but not all h2.1.x features exist yet.")]
 		public void LoadAfterNotExists()
 		{
 			ISession fixture = OpenSession();
@@ -106,6 +105,8 @@ namespace NHibernate.Test
 			{
 				Simple dummy = fixture.Load( typeof( Simple ), -1 ) as Simple;
 				Assert.IsNotNull( dummy, failedMessage );
+				fixture.Delete( dummy );
+				fixture.Flush();
 			}
 			catch( ObjectNotFoundException )
 			{
@@ -123,8 +124,6 @@ namespace NHibernate.Test
 			{
 				try
 				{
-					session.Delete( "from System.Object o" );
-					session.Flush();
 					session.Close();
 				}
 				catch

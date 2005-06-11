@@ -760,7 +760,7 @@ namespace NHibernate.Impl
 				}
 			}
 
-			DoSave( theObj, id, GetPersister( obj ), false, Cascades.CascadingAction.ActionSaveUpdate, null );
+			DoSave( theObj, id, GetPersister( theObj ), false, Cascades.CascadingAction.ActionSaveUpdate, null );
 
 			ReassociateProxy( obj, id );
 		}
@@ -5295,20 +5295,23 @@ namespace NHibernate.Impl
 		public void Clear()
 		{
 			arrayHolders.Clear();
-			batchLoadableEntityKeys.Clear();
-			collectionCreations.Clear();
-			collectionEntries.Clear();
-			collectionRemovals.Clear();
-			collectionUpdates.Clear();
-			collectionsByKey.Clear();
-			deletions.Clear();
 			entitiesByKey.Clear();
 			entityEntries.Clear();
-			insertions.Clear();
-			nonExists.Clear();
-			nullifiables.Clear();
-			updates.Clear();
+			collectionsByKey.Clear();
+			collectionEntries.Clear();
 			proxiesByKey.Clear();
+			batchLoadableEntityKeys.Clear();
+			nonExists.Clear();
+
+			updates.Clear();
+			insertions.Clear();
+			deletions.Clear();
+			collectionCreations.Clear();
+			collectionRemovals.Clear();
+			collectionUpdates.Clear();
+			
+			// TODO: Find out why this is missing from H2.1
+			nullifiables.Clear();
 		}
 
 		/// <summary>

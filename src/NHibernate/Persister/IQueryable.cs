@@ -32,11 +32,11 @@ namespace NHibernate.Persister
 		/// <summary>
 		/// Get the where clause fragment, give a query alias
 		/// </summary>
-		/// <param name="alias"></param>
+		/// <param name="alias">SQL alias to use for column names in the returned query</param>
 		/// <param name="innerJoin"></param>
-		/// <param name="includeSublcasses"></param>
+		/// <param name="includeSubclasses"></param>
 		/// <returns></returns>
-		SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSublcasses );
+		SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSubclasses );
 
 		/// <summary>
 		/// Given a query alias and an identifying suffix, render the intentifier select fragment.

@@ -338,7 +338,12 @@
 			<key column="baz"/>
 			<one-to-many class="NHibernate.DomainModel.Sortable, NHibernate.DomainModel"/>
 		</set>
-		
+
+		<bag name="Parts" lazy="true" cascade="save-update">
+			<key column="baz"/>
+			<one-to-many class="NHibernate.DomainModel.Part, NHibernate.DomainModel"/>
+		</bag>
+
 		<component name="CollectionComponent">
 			<component name="Nested">
 				<property name="Str"/>
@@ -363,4 +368,14 @@
 		<property name="name"/>
 	</class>
 	
+	<class name="NHibernate.DomainModel.Part, NHibernate.DomainModel"
+		where="Description like 'x%'">
+		<id name="Id" unsaved-value="0">
+			<generator class="native"/>
+		</id>
+		<discriminator column="clazz"/>
+		<property name="Description"/>
+		<subclass name="NHibernate.DomainModel.Part+SpecialPart, NHibernate.DomainModel" />
+	</class>
+
 </hibernate-mapping>

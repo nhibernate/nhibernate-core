@@ -156,14 +156,12 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Don't bother with the discriminator, unless overridded by subclass
+		/// Include discriminator, don't include the class where string.
 		/// </summary>
 		/// <returns></returns>
 		protected virtual SqlString GetWhereFragment( )
 		{
-			// Changed from H2.1 code to fix NH-295.
-			//return persister.WhereJoinFragment( alias, true, true );
-			return ( (IQueryable) Persister).QueryWhereFragment( Alias, true, true );
+			return persister.WhereJoinFragment( Alias, true, true );
 		}
 
 		/// <summary>

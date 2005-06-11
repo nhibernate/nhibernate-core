@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" namespace="NHibernate.DomainModel" assembly="NHibernate.DomainModel" default-access="property">
 	<class name="M" table="M">
-		<id name="UniqueSequence" column="uniqueSequence" type="long" unsaved-value="null">
+		<id name="UniqueSequence" column="uniqueSequence" type="long" unsaved-value="0">
 			<generator class="native">             </generator>
 		</id>
 		<set name="Children" lazy="false" inverse="true" cascade="all-delete-orphan">
@@ -10,7 +10,7 @@
 		</set>
 	</class>
 	<class name="N" table="N">
-		<id name="UniqueSequence" column="uniqueSequence" type="long" unsaved-value="null">
+		<id name="UniqueSequence" column="uniqueSequence" type="long" unsaved-value="0">
 			<generator class="native">             </generator>
 		</id>
 		<property name="String" type="string" column="String"/>

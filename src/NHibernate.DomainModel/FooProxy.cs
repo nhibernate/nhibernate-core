@@ -139,6 +139,12 @@ namespace NHibernate.DomainModel
 			set;
 		}
 
+		Fee Dependent
+		{
+			get;
+			set;
+		}
+
 		String Key
 		{
 			get;

@@ -1270,6 +1270,26 @@ namespace NHibernate.Persister
 			return new SqlString( TableName + ' ' + alias );
 		}
 
+		private SqlString DiscriminatorWhereCondition( string alias )
+		{
+			InFragment frag = new InFragment()
+				.SetColumn( alias, DiscriminatorColumnName );
+			System.Type[ ] subclasses = SubclassClosure;
+			for( int i = 0; i < subclasses.Length; i++ )
+			{
+				frag.AddValue(
+					( ( IQueryable ) factory.GetPersister( subclasses[ i ] ) ).DiscriminatorSQLValue
+					);
+			}
+
+			return frag.ToFragmentString();
+		}
+
+		private bool UseDiscriminator
+		{
+			get { return forceDiscriminator || IsInherited; }
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -1279,20 +1299,10 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public override SqlString QueryWhereFragment( string name, bool innerJoin, bool includeSubclasses )
 		{
-			if( innerJoin && ( forceDiscriminator || IsInherited ) )
+			if( innerJoin && UseDiscriminator )
 			{
-				InFragment frag = new InFragment()
-					.SetColumn( name, DiscriminatorColumnName );
-				System.Type[ ] subclasses = SubclassClosure;
-				for( int i = 0; i < subclasses.Length; i++ )
-				{
-					frag.AddValue(
-						( ( IQueryable ) factory.GetPersister( subclasses[ i ] ) ).DiscriminatorSQLValue
-						);
-				}
-
 				SqlStringBuilder builder = new SqlStringBuilder();
-				builder.Add( " and " + frag.ToFragmentString() );
+				builder.Add( " and " + DiscriminatorWhereCondition( name ) );
 
 				if( HasWhere )
 				{
@@ -1388,7 +1398,15 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		public override SqlString WhereJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
 		{
-			return new SqlString( String.Empty );
+			// Changed from H2.1 code to fix NH-295.
+			if( innerJoin && UseDiscriminator )
+			{
+				return new SqlString( " and " + DiscriminatorWhereCondition( alias ) );
+			}
+			else
+			{
+				return new SqlString( String.Empty );
+			}
 		}
 
 		/// <summary></summary>

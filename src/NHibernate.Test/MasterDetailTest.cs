@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 
 using NHibernate.DomainModel;
+using NHibernate.Expression;
+using NHibernate.Mapping;
 
 using NUnit.Framework;
 
@@ -33,24 +35,64 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
 		public void ParentChildren()
 		{
-			ISession s = OpenSession();
+			ISession session = OpenSession();
 
-			//M parent = new M
+			M parent = new M();
+			N n = new N();
+			n.String = "0";
+			parent.AddChildren( n );
+			session.SaveOrUpdate( parent );
+			parent.RemoveChildren( n );
+	      
+			session.Flush();
+			session.Close();
+	      
+			session = OpenSession();
+			Assert.AreEqual( 0, session.Find("from N").Count );
+			session.Delete("from M");
+			session.Flush();
+			session.Close();
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
 		public void OuterJoin()
 		{
+			ISession s = OpenSession();
+			Eye e = new Eye();
+			e.Name = "Eye Eye";
+			Jay jay = new Jay( e );
+			e.Jay = jay;
+			s.SaveOrUpdate( e );
+			s.Flush();
+			s.Close();
+		
+			s = OpenSession();
+			e = (Eye) s.CreateCriteria( typeof( Eye) ).UniqueResult();
+			Assert.IsTrue( NHibernateUtil.IsInitialized( e.Jay ) );
+			Assert.IsTrue( NHibernateUtil.IsInitialized( e.Jays ) );
+			s.Close();
+		
+			s = OpenSession();
+			jay = (Jay) s.CreateQuery("select new Jay(eye) from Eye eye").UniqueResult();
+			Assert.AreEqual( "Eye Eye", jay.Eye.Name );
+			s.Delete( jay.Eye );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
+		[Ignore("Meta-attributes not implemented")]
 		public void Meta()
 		{
+			/*
+			PersistentClass clazz = cfg.GetClassMapping( typeof( Master ) );
+			MetaAttribute meta = clazz.GetMetaAttribute( "foo" );
+			Assert.AreEqual( "foo", meta.Value );
+			meta = clazz.GetProperty( "name" ).GetMetaAttribute( "bar" );
+			Assert.IsTrue( meta.IsMultiValued );
+			*/
 		}
 
 		[Test]
@@ -191,9 +233,55 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
-		public void Example()
+		[Ignore("Requires ICriteria.CreateCriteria, Example.IgnoreCase, Example.ExcludeZeroes")]
+		public void ExampleTest()
 		{
+			/*
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Master m = new Master();
+			m.Name = "name";
+			m.X = 5;
+			m.OtherMaster = m;
+			s.Save( m );
+			t.Commit();
+			s.Close();
+		
+			s = OpenSession();
+			t = s.BeginTransaction();
+			
+			Master m1 = (Master) s.CreateCriteria( typeof( Master ) )
+				.Add( Example.Create( m ).EnableLike().IgnoreCase() )
+				.UniqueResult();
+			Assert.AreSame( m1.OtherMaster, m1 );
+
+			m1 = (Master) s.CreateCriteria( typeof( Master ) )
+				.Add( Expression.Eq( "name", "foobar" ) )
+				.UniqueResult();
+			Assert.IsNull( m1 );
+			
+			m1 = (Master) s.CreateCriteria( typeof( Master ) )
+				.Add( Example.Create( m ) )
+				.CreateCriteria( "otherMaster" )
+				.Add( Example.Create( m ).ExcludeZeroes() )
+				.UniqueResult();
+			Assert.AreSame( m1.OtherMaster, m1 );
+			Master m2 = (Master) s.CreateCriteria( typeof( Master ) )
+				.Add( Example.Create( m ).ExcludeNone() )
+				.UniqueResult();
+			Assert.AreSame( m1, m2 );
+
+			m.Name = null;
+			m2 = (Master) s.CreateCriteria( typeof( Master ) )
+				.Add( Example.Create( m ).ExcludeNone() )
+				.UniqueResult();
+			Assert.IsNull( m2 );
+
+			// H2.1: if (getDialect() instanceof HSQLDialect) { m1.setOtherMaster(null); s.flush(); }
+			s.Delete(m1);
+			t.Commit();
+			s.Close();
+			*/
 		}
 
 		[Test]
@@ -729,9 +817,48 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
 		public void CollectionReplaceOnUpdate()
 		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Category c = new Category();
+			IList list = new ArrayList();
+			c.Subcategories = list;
+			list.Add( new Category() );
+			s.Save( c );
+			t.Commit();
+			s.Close();
+			c.Subcategories = list;
+		
+			s = OpenSession();
+			t = s.BeginTransaction();
+			s.Update( c );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			c = (Category) s.Load( typeof( Category ), c.Id, LockMode.Upgrade );
+			IList list2 = c.Subcategories;
+			t.Commit();
+			s.Close();		
+
+			Assert.IsFalse( NHibernateUtil.IsInitialized( c.Subcategories ) );
+
+			c.Subcategories = list2;
+			s = OpenSession();
+			t = s.BeginTransaction();
+			s.Update( c );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			c = (Category) s.Load( typeof( Category ), c.Id, LockMode.Upgrade );
+			Assert.AreEqual( 1, c.Subcategories.Count );
+			s.Delete( c );
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
@@ -901,9 +1028,51 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
 		public void CachedCollectionRefresh()
 		{
+			ISession s = OpenSession();
+			Category c = new Category();
+			IList list = new ArrayList();
+			c.Subcategories = list;
+			list.Add( new Category() );
+			c.Name = "root";
+			object id = s.Save(c);
+			s.Flush();
+			s.Close();
+		
+			s = OpenSession();
+			c = (Category) s.Load( typeof( Category ), id );
+			NHibernateUtil.Initialize( c.Subcategories );
+
+			ISession ss = OpenSession();
+			Category c2 = (Category) ss.Load(typeof( Category ), id);
+			ss.Delete( c2.Subcategories[0] );
+			c2.Subcategories.Clear();
+			ss.Flush();
+			ss.Close();
+		
+			s.Refresh( c );
+			Assert.AreEqual( 0, c.Subcategories.Count );
+
+			ss = OpenSession();
+			c2 = (Category) ss.Load( typeof( Category ), id );
+			c2.Subcategories.Add( new Category() );
+			c2.Subcategories.Add( new Category() );
+			ss.Flush();
+			ss.Close();
+		
+			s.Refresh( c );
+			Assert.AreEqual( 2, c.Subcategories.Count );
+
+			s.Flush();
+			s.Close();
+		
+			s = OpenSession();
+			c = (Category) s.Load( typeof( Category ), id );
+			Assert.AreEqual( 2, c.Subcategories.Count );
+			s.Delete( c );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
@@ -995,15 +1164,73 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
 		public void QueuedBagAdds()
 		{
+			ISession s = OpenSession();
+			Assignable a = new Assignable();
+			a.Id = "foo";
+			a.Categories = new ArrayList();
+			Category c = new Category();
+			c.Assignable = a;
+			a.Categories.Add( c );
+			s.Save( a );
+			s.Flush();
+			s.Close();
+		
+			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+
+			s = OpenSession();
+			a = (Assignable) s.Get( typeof( Assignable ), "foo" );
+			c = new Category();
+			c.Assignable = a;
+			a.Categories.Add(c);
+			Assert.IsFalse( NHibernateUtil.IsInitialized( a.Categories ) );
+			Assert.AreEqual( 2, a.Categories.Count );
+			s.Flush();
+			s.Close();
+		
+			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+		
+			s = OpenSession();
+			a = (Assignable) s.Get( typeof( Assignable ), "foo" );
+			c = new Category();
+			c.Assignable = a;
+			a.Categories.Add(c);
+			Assert.IsFalse( NHibernateUtil.IsInitialized( a.Categories ) );
+			s.Flush();
+			Assert.IsFalse( NHibernateUtil.IsInitialized( a.Categories ) );
+			Assert.AreEqual( 3, a.Categories.Count );
+			s.Close();
+
+			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+
+			s = OpenSession();
+			a = (Assignable) s.Get( typeof( Assignable ), "foo" );
+			Assert.AreEqual( 3, a.Categories.Count );
+			s.Delete( a );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore( "Test not written" )]
+		[Ignore( "Polymorphic criteria queries don't work" )]
 		public void PolymorphicCriteria()
 		{
+			ISession s = OpenSession();
+			Category f = new Category();
+			DomainModel.Single b = new DomainModel.Single();
+			b.Id = "asdfa";
+			b.String = "asdfasdf";
+			s.Save( f );
+			s.Save( b );
+			IList list = s.CreateCriteria( typeof( object )).List();
+			Assert.AreEqual( 2, list.Count );
+			Assert.IsTrue( list.Contains( f ) );
+			Assert.IsTrue( list.Contains( b ) );
+			s.Delete( f );
+			s.Delete( b );
+			s.Flush();
+			s.Close();
 		}
 	}
 }
