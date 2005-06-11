@@ -807,7 +807,7 @@ namespace NHibernate.Hql
 				returnTypes[ i ] = ( IType ) scalarTypes[ i ];
 			}
 
-			QuerySelect sql = new QuerySelect( factory.Dialect );
+			QuerySelect sql = new QuerySelect( Dialect );
 			sql.Distinct = distinct;
 
 			if( !shallowQuery )
@@ -1523,7 +1523,7 @@ namespace NHibernate.Hql
 		/// <returns></returns>
 		internal QueryJoinFragment CreateJoinFragment( bool useThetaStyleInnerJoins )
 		{
-			return new QueryJoinFragment( factory.Dialect, useThetaStyleInnerJoins );
+			return new QueryJoinFragment( Dialect, useThetaStyleInnerJoins );
 		}
 
 		/// <summary></summary>
@@ -1647,7 +1647,7 @@ namespace NHibernate.Hql
 		/// <summary></summary>
 		public IDictionary Functions
 		{
-			get { return factory.Dialect.Functions; }
+			get { return Dialect.Functions; }
 		}
 
 		private object prepareCommandLock = new object();
