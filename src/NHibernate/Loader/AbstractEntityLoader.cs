@@ -176,7 +176,7 @@ namespace NHibernate.Loader
 		protected string Alias
 		{
 			get { return alias; }
-			set { Alias = value; }
+			set { alias = value; }
 		}
 
 		/// <summary></summary>
