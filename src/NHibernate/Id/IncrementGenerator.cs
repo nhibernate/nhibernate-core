@@ -12,7 +12,7 @@ using NHibernate.Util;
 namespace NHibernate.Id
 {
 	/// <summary>
-	/// An <c>IIdentifierGenerator</c> that returns a <<c>Int64</c>, constructed by
+	/// An <c>IIdentifierGenerator</c> that returns a <c>Int64</c>, constructed by
 	/// counting from the maximum primary key value at startup. Not safe for use in a
 	/// cluster!
 	/// </summary>
