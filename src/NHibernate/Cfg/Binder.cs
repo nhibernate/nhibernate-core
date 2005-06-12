@@ -376,7 +376,7 @@ namespace NHibernate.Cfg
 						{
 							model.IsForceDiscriminator = true;
 						}
-						if ( subnode.Attributes["insert"] != null && "true".Equals( subnode.Attributes["false"].Value ) ) 
+						if ( subnode.Attributes["insert"] != null && "false".Equals( subnode.Attributes["insert"].Value ) ) 
 						{
 							model.IsDiscriminatorInsertable = false;
 						}
