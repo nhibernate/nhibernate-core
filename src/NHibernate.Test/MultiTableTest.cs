@@ -127,7 +127,7 @@ namespace NHibernate.Test
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Mono m = new Mono();
+			NotMono m = new NotMono();
 			long id = (long)s.Save(m);
 			t.Commit();
 			s.Close();
