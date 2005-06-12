@@ -296,15 +296,121 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Requires IQuery.SetCacheable")]
 		public void CachedQueryOnInsert()
 		{
+			/*
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Simple simple = new Simple();
+			simple.Name = "Simple 1";
+			s.Save( simple, 10L );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			IQuery q = s.CreateQuery( "from Simple s" );
+			IList list = q.SetCacheable( true ).List();
+			Assert.AreEqual( 1, list.Count );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			q = s.CreateQuery( "from Simple s" );
+			list = q.SetCacheable( true ).List();
+			Assert.AreEqual( 1, list.Count );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			Simple simple2 = new Simple();
+			simple2.Count = 133;
+			s.Save( simple2, 12L );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			q = s.CreateQuery( "from Simple s" );
+			list = q.SetCacheable( true ).List();
+			Assert.AreEqual( 2, list.Count );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			q = s.CreateQuery( "from Simple s" );
+			list = q.SetCacheable( true ).List();
+			Assert.AreEqual( 2, list.Count );
+			foreach( object obj in list )
+			{
+				s.Delete( obj );
+			}
+			t.Commit();
+			s.Close();
+			*/
 		}
 
 		[Test]
-		[Ignore("Test not written yet.")]
+		[Ignore("Requires IQuery.SetCacheable and IQuery.SetCacheRegion")]
 		public void CachedQueryRegion()
 		{
+			/*
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Simple simple = new Simple();
+			simple.Name = "Simple 1";
+			s.Save( simple, 10L );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			IQuery q = s.CreateQuery( "from Simple s where s.Name=?" );
+			q.SetCacheRegion( "foo" );
+			q.SetCacheable( true );
+			q.SetString( 0, "Simple 1" );
+			Assert.AreEqual( 1, q.List().Count );
+			Assert.AreEqual( 1, q.List().Count );
+			Assert.AreEqual( 1, q.List().Count );
+			
+			q = s.CreateQuery( "from Simple s where s.Name=:name" );
+			q.SetCacheRegion( "foo" );
+			q.SetCacheable( true );
+			q.SetString( "name", "Simple 1" );
+			Assert.AreEqual( 1, q.List().Count );
+			simple = (Simple) q.List()[0];
+
+			q.SetString( "name", "Simple 2" );
+			Assert.AreEqual( 0, q.List().Count );
+			Assert.AreEqual( 0, q.List().Count );
+			simple.Name = "Simple 2";
+			Assert.AreEqual( 1, q.List().Count );
+			Assert.AreEqual( 1, q.List().Count );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			s.Update( simple, 10L );
+			s.Delete( simple );
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			q = s.CreateQuery( "from Simple s where s.Name=?" );
+			q.SetCacheRegion( "foo" );
+			q.SetCacheable( true );
+			q.SetString( 0, "Simple 1" );
+			Assert.AreEqual( 0, q.List().Count );
+			Assert.AreEqual( 0, q.List().Count );
+			t.Commit();
+			s.Close();
+			*/
 		}
 
 		[Test]

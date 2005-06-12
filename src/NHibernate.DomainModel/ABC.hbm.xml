@@ -8,7 +8,7 @@
 			name="Id" column="identifier_column"
 			unsaved-value="0"
 		>
-			<generator class="assigned" />
+			<generator class="increment" />
 			<!-- unsaved-value used to be null and generator was increment in h2.0.3 -->
 		</id>
 		

@@ -29,8 +29,7 @@ namespace NHibernate.Test
 			}
 		}
 
-		static int nextInt = 1;
-		static long nextLong = 1;
+		private static long nextLong = 1;
 
 		[Test]
 		public void TS()
@@ -120,7 +119,7 @@ namespace NHibernate.Test
 			s.Name = "WannaBeFound";
 			session.Flush();
 
-			IQuery query = session.CreateSQLQuery( "select {category.*} from Category {category} where {category}.name = :name", "category", typeof( Category ) );
+			IQuery query = session.CreateSQLQuery( "select {category.*} from Category {category} where {category}.Name = :name", "category", typeof( Category ) );
 			query.SetProperties( s );
 
 			query.List();
@@ -206,73 +205,374 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void FindBySQLParameters()
 		{
+			ISession s = OpenSession();
+			Category c = new Category();
+			c.Name = "Good";
+			Assignable assn = new Assignable();
+			assn.Id = "i.d.";
+			IList l = new ArrayList();
+			l.Add(c);
+			assn.Categories = l;
+			c.Assignable = assn;
+			s.Save(assn);
+			s.Flush();
+			c = new Category();
+			c.Name = "Best";
+			assn = new Assignable();
+			assn.Id = "i.d.2";
+			l = new ArrayList();
+			l.Add(c);
+			assn.Categories = l;
+			c.Assignable = assn;
+			s.Save(assn);
+			s.Flush();
+			c = new Category();
+			c.Name = "Better";
+			assn = new Assignable();
+			assn.Id = "i.d.7";
+			l = new ArrayList();
+			l.Add(c);
+			assn.Categories = l;
+			c.Assignable = assn;
+			s.Save(assn);
+			s.Flush();
+
+			assn = new Assignable();
+			assn.Id = "i.d.3";
+			s.Save(assn);
+			s.Flush();
+			s.Close();
+
+			s = OpenSession();
+			IQuery basicParam = s.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = 'Best'", "category", typeof( Category ));
+			IList list = basicParam.List();
+			Assert.AreEqual(1, list.Count);
+
+			IQuery unnamedParam = s.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = ? or {category}.Name = ?", "category", typeof( Category ));
+			unnamedParam.SetString(0, "Good");
+			unnamedParam.SetString(1, "Best");
+			list = unnamedParam.List();
+			Assert.AreEqual(2, list.Count);
+		
+			IQuery namedParam = s.CreateSQLQuery("select {category.*} from Category {category} where ({category}.Name=:firstCat or {category}.Name=:secondCat)", "category", typeof( Category ));
+			namedParam.SetString("firstCat", "Better");
+			namedParam.SetString("secondCat", "Best");
+			list = namedParam.List();
+			Assert.AreEqual(2, list.Count);
+		
+			s.Delete("from Assignable");
+			s.Delete("from Category");
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written")]
+		[Ignore("Escaping not implemented. Need to test with ODBC/OLEDB when implemented.")]
 		public void EscapedODBC()
 		{
+			if ( dialect is Dialect.MySQLDialect || dialect is Dialect.PostgreSQLDialect ) return;
+		
+			ISession session = OpenSession();
+
+			A savedA = new A();
+			savedA.Name = "Max";
+			session.Save(savedA);
+
+			B savedB = new B();
+			session.Save(savedB);
+			session.Flush();
+		
+			session.Close();
+
+			session = OpenSession();
+		
+			IQuery query;
+
+			query = session.CreateSQLQuery("select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name} from A where {fn ucase(Name)} like {fn ucase('max')}", "a", typeof( A ));
+
+			// NH: Replaced the whole if by the line above
+			/*
+			if( dialect is Dialect.TimesTenDialect) 
+			{
+				// TimesTen does not permit general expressions (like UPPER) in the second part of a LIKE expression,
+				// so we execute a similar test 
+				query = session.CreateSQLQuery("select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name} from A where {fn ucase(name)} like 'MAX'", "a", typeof( A ));
+			}
+			else 
+			{
+				query = session.CreateSQLQuery("select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name} from A where {fn ucase(name)} like {fn ucase('max')}", "a", typeof( A ));
+			}
+			*/
+
+			IList list = query.List();
+
+			Assert.IsNotNull(list);
+			Assert.AreEqual(1, list.Count);
+		
+			session.Delete("from A");
+			session.Flush();
+			session.Close();				
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void DoubleAliasing()
 		{
+			if ( dialect is Dialect.MySQLDialect ) return;
+		
+			ISession session = OpenSession();
+
+			A savedA = new A();
+			savedA.Name = "Max";
+			session.Save(savedA);
+
+			B savedB = new B();
+			session.Save(savedB);
+			session.Flush();
+
+			int count = session.CreateQuery("from A").List().Count;
+			session.Close();
+
+			session = OpenSession();
+
+			IQuery query = session.CreateSQLQuery("select a.identifier_column as {a1.id}, a.clazz_discriminata as {a1.class}, a.count_ as {a1.Count}, a.name as {a1.Name} " +
+				", b.identifier_column as {a2.id}, b.clazz_discriminata as {a2.class}, b.count_ as {a2.Count}, b.name as {a2.Name} " +
+				" from A a, A b" +
+				" where a.identifier_column = b.identifier_column", new String[] {"a1", "a2" }, new System.Type[] {typeof( A ), typeof( A )});
+			IList list = query.List();
+
+			Assert.IsNotNull(list);
+			Assert.AreEqual(2, list.Count);
+		
+			session.Delete("from A");
+			session.Flush();
+			session.Close();						
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void EmbeddedCompositeProperties()
 		{
+			ISession session = OpenSession();
+	   
+			DomainModel.Single s = new DomainModel.Single();
+			s.Id = "my id";
+			s.String = "string 1";
+			session.Save(s);
+			session.Flush();
+			session.Clear();
+	   
+			IQuery query = session.CreateSQLQuery("select {sing.*} from Single {sing}", "sing", typeof( DomainModel.Single ));
+	   
+			IList list = query.List();
+	   
+			Assert.IsTrue(list.Count==1);
+	   
+			session.Clear();
+	   
+			query = session.CreateSQLQuery("select {sing.*} from Single {sing} where sing.Id = ?", "sing", typeof( DomainModel.Single ));
+			query.SetString(0, "my id");
+			list = query.List();
+	   
+			Assert.IsTrue(list.Count==1);
+	   
+			session.Clear();
+	  
+			query = session.CreateSQLQuery("select s.id as {sing.Id}, s.string_ as {sing.String}, s.prop as {sing.Prop} from Single s where s.Id = ?", "sing", typeof( DomainModel.Single ));
+			query.SetString(0, "my id");
+			list = query.List();
+	   
+			Assert.IsTrue(list.Count==1);
+	   
+	   
+			session.Clear();
+	   
+			query = session.CreateSQLQuery("select s.id as {sing.Id}, s.string_ as {sing.String}, s.prop as {sing.Prop} from Single s where s.Id = ?", "sing", typeof( DomainModel.Single ));
+			query.SetString(0, "my id");
+			list = query.List();
+	   
+			Assert.IsTrue(list.Count==1);
+	   
+			session.Delete( list[0] );
+			session.Flush();
+			session.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void ComponentStar()
 		{
+			ComponentTest("select {comp.*} from Componentizable comp");
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void ComponentNoStar()
 		{
+			ComponentTest("select comp.Id as {comp.id}, comp.nickName as {comp.NickName}, comp.Name as {comp.Component.Name}, comp.SubName as {comp.Component.SubComponent.SubName}, comp.SubName1 as {comp.Component.SubComponent.SubName1} from Componentizable comp");
 		}
 
-		private void ComponentTest()
+		private void ComponentTest( string sql )
 		{
+			ISession session = OpenSession();
+	    
+			Componentizable c = new Componentizable();
+			c.NickName = "Flacky";
+			Component component = new Component();
+			component.Name = "flakky comp";
+			SubComponent subComponent = new SubComponent();
+			subComponent.SubName = "subway";
+			component.SubComponent = subComponent;
+	    
+			c.Component = component;
+        
+			session.Save(c);
+        
+			session.Flush();
+
+			session.Clear();
+        
+			IQuery q = session.CreateSQLQuery(sql, "comp", typeof( Componentizable ));
+			IList list = q.List();
+	    
+			Assert.AreEqual(list.Count,1);
+	    
+			Componentizable co = (Componentizable) list[0];
+	    
+			Assert.AreEqual(c.NickName, co.NickName);
+			Assert.AreEqual(c.Component.Name, co.Component.Name);
+			Assert.AreEqual(c.Component.SubComponent.SubName, co.Component.SubComponent.SubName);
+	    
+			session.Delete(co);
+			session.Flush();
+			session.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void FindSimpleBySQL()
 		{
+			if ( dialect is Dialect.MySQLDialect ) return;
+			ISession session = OpenSession();
+			Category s = new Category();
+
+			nextLong++;
+			s.Name = nextLong.ToString();
+			session.Save(s);
+			session.Flush();
+
+			IQuery query = session.CreateSQLQuery("select s.category_key_col as {category.id}, s.Name as {category.Name}, s.\"assign able id\" as {category.Assignable} from {category} s", "category", typeof( Category ));
+			IList list = query.List();
+
+			Assert.IsNotNull(list);
+			Assert.IsTrue(list.Count > 0);
+			Assert.IsTrue(list[0] is Category);
+			session.Delete( list[0] );
+			session.Flush();
+			session.Close();
+			// How do we handle objects with composite id's ? (such as Single)
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void FindBySQLSimpleByDiffSessions()
 		{
+			ISession session = OpenSession();
+			Category s = new Category();
+			nextLong++;
+			s.Name = nextLong.ToString();
+			session.Save(s);
+			session.Flush();
+			session.Close();
+		
+			if ( dialect is Dialect.MySQLDialect ) return;
+
+			session = OpenSession();
+
+			IQuery query = session.CreateSQLQuery("select s.category_key_col as {category.id}, s.Name as {category.Name}, s.\"assign able id\" as {category.Assignable} from {category} s", "category", typeof( Category ));
+			IList list = query.List();
+
+			Assert.IsNotNull(list);
+			Assert.IsTrue(list.Count > 0);
+			Assert.IsTrue(list[0] is Category);
+
+			// How do we handle objects that does not have id property (such as Simple ?)
+			// How do we handle objects with composite id's ? (such as Single)
+			session.Delete( list[0] );
+			session.Flush();
+			session.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void FindBySQLDiscriminatorSameSession()
 		{
+			if ( dialect is Dialect.MySQLDialect ) return;
+		
+			ISession session = OpenSession();
+			A savedA = new A();
+			session.Save(savedA);
+
+			B savedB = new B();
+			session.Save(savedB);
+			session.Flush();
+
+			IQuery query = session.CreateSQLQuery("select identifier_column as {a.id}, clazz_discriminata as {a.class}, name as {a.Name}, count_ as {a.Count} from {a} s", "a", typeof( A ));
+			IList list = query.List();
+
+			Assert.IsNotNull(list);
+			Assert.AreEqual(2, list.Count);
+
+			A a1 = (A) list[0];
+			A a2 = (A) list[1];
+
+			Assert.IsTrue((a2 is B) || (a1 is B));
+			Assert.IsFalse(a1 is B && a2 is B);
+
+			if (a1 is B) 
+			{
+				Assert.AreSame(a1, savedB);
+				Assert.AreSame(a2, savedA);
+			} 
+			else 
+			{
+				Assert.AreSame(a2, savedB);
+				Assert.AreSame(a1, savedA);
+			}
+		
+			session.Delete("from A");
+			session.Flush();
+			session.Close();
 		}
 
 		[Test]
-		[Ignore("Test not written")]
 		public void FindBySQLDiscriminatedDiffSessions()
 		{
+			if ( dialect is Dialect.MySQLDialect ) return;
+		
+			ISession session = OpenSession();
+			A savedA = new A();
+			session.Save(savedA);
+
+			B savedB = new B();
+			session.Save(savedB);
+			session.Flush();
+
+			int count = session.CreateQuery("from A").List().Count;
+			session.Close();
+
+			session = OpenSession();
+
+			IQuery query = session.CreateSQLQuery("select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name} from A", "a", typeof( A ));
+			IList list = query.List();
+
+			Assert.IsNotNull(list);
+			Assert.AreEqual(count, list.Count);
+		
+			session.Delete("from A");
+			session.Flush();
+			session.Close();
 		}
 
 		[Test]
 		public void NamedSQLQuery()
 		{
-			if( this.dialect is Dialect.MySQLDialect )
+			if( dialect is Dialect.MySQLDialect )
 			{
 				return;
 			}

@@ -1854,7 +1854,14 @@ namespace NHibernate.Persister
 		{
 			string[] rawAliases = (string[]) subclassPropertyAliases[ propertyName ];
 
-			return null;
+			if( rawAliases == null ) return null;
+		
+			string[] result = new string[rawAliases.Length];
+			for( int i = 0; i < rawAliases.Length; i++ )
+			{
+				result[i] = new Alias( suffix ).ToUnquotedAliasString( rawAliases[i], Dialect );
+			}
+			return result;
 		}
 		#endregion
 

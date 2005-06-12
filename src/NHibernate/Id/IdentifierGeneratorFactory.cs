@@ -127,6 +127,7 @@ namespace NHibernate.Id
 			idgenerators.Add( "hilo", typeof( TableHiLoGenerator ) );
 			idgenerators.Add( "assigned", typeof( Assigned ) );
 			idgenerators.Add( "identity", typeof( IdentityGenerator ) );
+			idgenerators.Add( "increment", typeof( IncrementGenerator ) );
 			idgenerators.Add( "sequence", typeof( SequenceGenerator ) );
 			idgenerators.Add( "seqhilo", typeof( SequenceHiLoGenerator ) );
 			idgenerators.Add( "vm", typeof( CounterGenerator ) );
@@ -211,7 +212,7 @@ namespace NHibernate.Id
 		/// The <c>type</c> parameter must be an <see cref="Int16"/>, <see cref="Int32"/>,
 		/// or <see cref="Int64"/>.
 		/// </exception>
-		internal static object CreateNumber( long value, System.Type type )
+		public static object CreateNumber( long value, System.Type type )
 		{
 			if( type == typeof( long ) )
 			{
