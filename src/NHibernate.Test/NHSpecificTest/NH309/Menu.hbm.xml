@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class name="NHibernate.Test.NHSpecificTest.NH309.Menu, NHibernate.Test" table="nh309_menu">
+		<id name="Id" column="menuid" type="Int32" unsaved-value="-1">
+			<generator class="assigned" />
+		</id>
+
+		<property name="Name" column="name" type="String" length="50" />
+		
+		<list name="Nodes" table="nh309_menunode" cascade="none" lazy="true">
+			<key column="menuid" />
+			<index column="position" type="Int32" />
+			<many-to-many class="NHibernate.Test.NHSpecificTest.NH309.Node, NHibernate.Test" column="nodeid" outer-join="true" />
+		</list>
+	</class>
+</hibernate-mapping>

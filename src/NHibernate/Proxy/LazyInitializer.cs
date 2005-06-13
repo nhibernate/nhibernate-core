@@ -228,7 +228,12 @@ namespace NHibernate.Proxy
 			else if( args.Length == 1 && !_overridesEquals && _identifierPropertyInfo != null && method.Name.Equals( "Equals" ) )
 			{
 				// less dodgy because NHibernate forces == to be the same as Identifier Equals
-				return _id.Equals( _identifierPropertyInfo.GetValue( _target, null ) );
+				object rhs = args[0];
+				
+				if( rhs == null ) return false;
+				if( !_persistentClass.IsAssignableFrom( rhs.GetType() ) ) return false;
+
+				return _id.Equals( _identifierPropertyInfo.GetValue( rhs, null ) );
 			}
 
 			else
