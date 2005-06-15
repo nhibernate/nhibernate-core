@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.PropertyTest
 {
 	/// <summary>
-	/// Summary description for FieldPascalCaseMUnderscoreFixture.
+	/// Test the <c>field.pascalcase-m-underscore</c> access strategy.
 	/// </summary>
 	[TestFixture]
 	public class FieldPascalCaseMUnderscoreFixture : FieldAccessorFixture

@@ -21,12 +21,16 @@ namespace NHibernate.Property
 			accessors[ "field" ] = new FieldAccessor();
 			accessors[ "field.camelcase" ] = new FieldAccessor( new CamelCaseStrategy() );
 			accessors[ "field.camelcase-underscore" ] = new FieldAccessor( new CamelCaseUnderscoreStrategy() );
-			accessors[ "field.pascalcase-m-underscore" ] = new FieldAccessor( new PascalCaseMUnderscoreStrategy() );
+			accessors[ "field.lowercase" ] = new FieldAccessor( new LowerCaseStrategy() );
 			accessors[ "field.lowercase-underscore" ] = new FieldAccessor( new LowerCaseUnderscoreStrategy() );
+			accessors[ "field.pascalcase-underscore" ] = new FieldAccessor( new PascalCaseUnderscoreStrategy() );
+			accessors[ "field.pascalcase-m-underscore" ] = new FieldAccessor( new PascalCaseMUnderscoreStrategy() );
 			accessors[ "nosetter.camelcase" ] = new NoSetterAccessor( new CamelCaseStrategy() );
 			accessors[ "nosetter.camelcase-underscore" ] = new NoSetterAccessor( new CamelCaseUnderscoreStrategy() );
-			accessors[ "nosetter.pascalcase-m-underscore" ] = new NoSetterAccessor( new PascalCaseMUnderscoreStrategy() );
+			accessors[ "nosetter.lowercase" ] = new NoSetterAccessor( new LowerCaseStrategy() );
 			accessors[ "nosetter.lowercase-underscore" ] = new NoSetterAccessor( new LowerCaseUnderscoreStrategy() );
+			accessors[ "nosetter.pascalcase-underscore" ] = new NoSetterAccessor( new PascalCaseUnderscoreStrategy() );
+			accessors[ "nosetter.pascalcase-m-underscore" ] = new NoSetterAccessor( new PascalCaseMUnderscoreStrategy() );
 		}
 
 		private PropertyAccessorFactory()
@@ -116,11 +120,26 @@ namespace NHibernate.Property
 		///			</description>
 		///		</item>
 		///		<item>
+		///			<term>pascalcase-underscore</term>
+		///			<description>
+		///				The <c>name</c> attribute should be prefixed with an underscore
+		///				to find the field.
+		///				<c>&lt;property name="Foo" ... &gt;</c> finds a field <c>_Foo</c>.
+		///			</description>
+		///		</item>
+		///		<item>
 		///			<term>pascalcase-m-underscore</term>
 		///			<description>
 		///				The <c>name</c> attribute should be prefixed with an 'm' and underscore
 		///				to find the field.
 		///				<c>&lt;property name="Foo" ... &gt;</c> finds a field <c>m_Foo</c>.
+		///			</description>
+		///		</item>
+		///		<item>
+		///			<term>lowercase</term>
+		///			<description>
+		///				The <c>name</c> attribute should be changed to lowercase to find the field.
+		///				<c>&lt;property name="FooBar" ... &gt;</c> finds a field <c>foobar</c>.
 		///			</description>
 		///		</item>
 		///		<item>

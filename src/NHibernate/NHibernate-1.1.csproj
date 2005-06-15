@@ -1189,21 +1189,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Impl\SessionFactoryImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Impl\ScheduledCollectionAction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1245,6 +1230,21 @@
                 />
                 <File
                     RelPath = "Impl\ScheduledUpdate.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionFactoryImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1634,6 +1634,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Property\LowerCaseStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Property\LowerCaseUnderscoreStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1645,6 +1650,11 @@
                 />
                 <File
                     RelPath = "Property\PascalCaseMUnderscoreStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Property\PascalCaseUnderscoreStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2019,6 +2029,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\CharBooleanType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\CharType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\ClobType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2080,16 +2100,6 @@
                 />
                 <File
                     RelPath = "Type\GuidType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\CharBooleanType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\CharType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

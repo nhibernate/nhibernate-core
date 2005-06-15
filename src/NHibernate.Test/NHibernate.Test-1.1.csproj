@@ -819,12 +819,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "PropertyTest\FieldLowerCaseFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "PropertyTest\FieldLowerCaseUnderscoreFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "PropertyTest\FieldPascalCaseMUnderscoreFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\FieldPascalCaseUnderscoreFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -849,12 +859,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "PropertyTest\NoSetterLowerCaseFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "PropertyTest\NoSetterLowerCaseUnderscoreFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "PropertyTest\NoSetterPascalCaseMUnderscoreFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyTest\NoSetterPascalCaseUnderscoreFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

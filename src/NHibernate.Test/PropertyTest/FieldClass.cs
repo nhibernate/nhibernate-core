@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.PropertyTest
 {
 	/// <summary>
-	/// Summary description for FieldClass.
+	/// Contains examples of all of the built in Naming Strategies.
 	/// </summary>
 	public class FieldClass 
 	{
@@ -12,11 +12,15 @@ namespace NHibernate.Test.PropertyTest
 		private int m_Blah = 3;
 		private int camelBaz = 4;
 		private int _lowerunderscorefoo = 5;
+		private int lowerfoo = 6;
+		private int _PascalUnderscoreFoo = 7;
 
 		public bool CamelUnderscoreFooGetterCalled = false;
 		public bool BlahGetterCalled = false;
 		public bool CamelBazGetterCalled = false;
 		public bool LowerUnderscoreFooGetterCalled = false;
+		public bool LowerFooGetterCalled = false;
+		public bool PascalUnderscoreFooCalled = false;
 
 		public FieldClass( ) 
 		{	
@@ -42,6 +46,16 @@ namespace NHibernate.Test.PropertyTest
 			camelBaz = value;
 		}
 
+		public void InitLowerFoo(int value)
+		{
+			lowerfoo = value;
+		}
+
+		public void InitPascalUnderscoreFoo(int value)
+		{
+			_PascalUnderscoreFoo = value;
+		}
+
 		public void InitLowerUnderscoreFoo(int value) 
 		{
 			_lowerunderscorefoo = value;
@@ -54,6 +68,8 @@ namespace NHibernate.Test.PropertyTest
 			m_Blah++;
 			camelBaz++;
 			_lowerunderscorefoo++;
+			_PascalUnderscoreFoo++;
+			lowerfoo++;
 		}
 
 		public int CamelUnderscoreFoo
@@ -90,6 +106,24 @@ namespace NHibernate.Test.PropertyTest
 			{
 				LowerUnderscoreFooGetterCalled = true;
 				return _lowerunderscorefoo;
+			}
+		}
+
+		public int LowerFoo
+		{
+			get
+			{
+				LowerFooGetterCalled = true;
+				return lowerfoo;
+			}
+		}
+
+		public int PascalUnderscoreFoo
+		{
+			get
+			{
+				PascalUnderscoreFooCalled = true;
+				return _PascalUnderscoreFoo;
 			}
 		}
 	}
