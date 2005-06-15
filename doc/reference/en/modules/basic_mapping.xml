@@ -1079,6 +1079,15 @@
 								</entry>	
 							</row>	
 							<row>
+								<entry><literal>lowercase</literal></entry>
+								<entry>
+									<para>
+										The <literal>name</literal> attribute is converted to all LowerCase to find the Field.
+										<literal>&lt;property name="FooBar" ... &gt;</literal> uses the Field <literal>foobar</literal>.
+									</para>
+								</entry>	
+							</row>	
+							<row>
 								<entry><literal>lowercase-underscore</literal></entry>
 								<entry>
 									<para>
@@ -1087,7 +1096,16 @@
 										<literal>&lt;property name="FooBar" ... &gt;</literal> uses the Field <literal>_foobar</literal>.
 									</para>
 								</entry>	
-							</row>	
+							</row>
+							<row>
+								<entry><literal>pascalcase-underscore</literal></entry>
+								<entry>
+									<para>
+										The <literal>name</literal> attribute is prefixed with an underscore to find the Field.
+										<literal>&lt;property name="Foo" ... &gt;</literal> uses the Field <literal>_Foo</literal>.
+									</para>
+								</entry>	
+							</row>		
 							<row>
 								<entry><literal>pascalcase-m-underscore</literal></entry>
 								<entry>
