@@ -39,7 +39,7 @@
 		in that specifies a location to output all the files
 	-->
 	<property name="output.dir" value="build/${lang}" />
-	<if propertyexists="build.dir">
+	<if test="${property::exists('build.dir')}">
 		<property name="output.dir" value="${build.dir}/doc/${lang}" />
 	</if>
 	
