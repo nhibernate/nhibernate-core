@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH251">
+
+    <class name="CustomAccessDO">
+		<id 
+			name="id" 
+			access="field"
+			column="id"
+			unsaved-value="0"
+		>
+			<generator class="native" />
+		</id>
+
+		<component class="Name" name="name"
+			access="NHibernate.Test.NHSpecificTest.NH251.DictionaryAccessor, NHibernate.Test">
+			<property name="first" access="field" column="FName" type="String(255)"/>
+			<property name="last" access="field" column="LName" type="String(255)"/>
+		</component>
+
+    </class>
+
+</hibernate-mapping>

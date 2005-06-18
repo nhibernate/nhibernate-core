@@ -84,19 +84,49 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		/// <summary>
+		/// Attempts to find a type by its full name. Throws a MappingException using
+		/// the provided <c>errorMessage</c> in case of failure.
+		/// </summary>
+		/// <param name="name">name of the class to find</param>
+		/// <param name="errorMessage">Error message to use for
+		/// the <see cref="MappingException" /> in case of failure. Should contain
+		/// the <c>{0}</c> formatting placeholder.</param>
+		/// <returns></returns>
+		/// <exception cref="MappingException">
+		/// Thrown when there is an error loading the class.
+		/// </exception>
+		private static System.Type ClassForFullNameChecked( string fullName, string errorMessage )
+		{
+			try
+			{
+				return ReflectHelper.ClassForName( fullName );
+			}
+			catch( Exception e )
+			{
+				throw new MappingException( String.Format( errorMessage, fullName ), e );
+			}
+		}
+
+		/// <summary>
+		/// Similar to <see cref="ClassForNameChecked" />, but handles short class names
+		/// by calling <see cref="FullClassName" />.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="mappings"></param>
+		/// <param name="errorMessage"></param>
+		/// <returns></returns>
+		private static System.Type ClassForNameChecked( string name, Mappings mappings, string errorMessage )
+		{
+			return ClassForFullNameChecked( FullClassName( name, mappings ), errorMessage );
+		}
+
 		public static void BindClass(XmlNode node, PersistentClass model, Mappings mapping) 
 		{
 			string className = node.Attributes["name"] == null ? null : FullClassName( node.Attributes["name"].Value, mapping );
 			
 			//CLASS
-			try 
-			{
-				model.MappedClass = ReflectHelper.ClassForName(className);
-			} 
-			catch ( Exception cnfe ) 
-			{
-				throw new MappingException( "persistent class " + className + " not found", cnfe );
-			}
+			model.MappedClass = ClassForFullNameChecked( className, "persistent class {0} not found" );
 
 			//PROXY INTERFACE
 			XmlAttribute proxyNode = node.Attributes["proxy"];
@@ -104,15 +134,8 @@ namespace NHibernate.Cfg
 			bool lazyTrue = lazyNode != null && "true".Equals( lazyNode.Value );
 			if ( proxyNode != null && ( lazyNode == null || lazyTrue ) )
 			{
-				try 
-				{
-					model.ProxyInterface = ReflectHelper.ClassForName(
-						FullClassName( proxyNode.Value, mapping ) );
-				} 
-				catch (Exception cnfe) 
-				{
-					throw new MappingException( "proxy class not found", cnfe );
-				}
+				model.ProxyInterface = ClassForNameChecked( proxyNode.Value, mapping,
+					"proxy class not found: {0}" );
 			}
 			if ( proxyNode == null && lazyTrue )
 			{
@@ -179,19 +202,13 @@ namespace NHibernate.Cfg
 			XmlAttribute persisterNode = node.Attributes["persister"];
 			if ( persisterNode == null )
 			{
-				//persister = CollectionPersisterImpl.class;
+				//persister = typeof( EntityPersister );
 			}
 			else
 			{
-				try
-				{
-					string persisterName = FullClassName( persisterNode.Value, mapping );
-					model.ClassPersisterClass = ReflectHelper.ClassForName( persisterName );
-				}
-				catch (Exception)
-				{
-					throw new MappingException("could not instantiate persister class: " + persisterNode.Value );
-				}
+				model.ClassPersisterClass = ClassForNameChecked(
+					persisterNode.Value, mapping,
+					"could not instantiate persister class: {0}" );
 			}
 		}
 
@@ -337,7 +354,7 @@ namespace NHibernate.Cfg
 						} 
 						else 
 						{
-							System.Type reflectedClass = ReflectHelper.GetGetter( model.MappedClass, propertyName ).ReturnType;
+							System.Type reflectedClass = GetPropertyType( subnode, mappings, model.MappedClass, propertyName );
 							BindComponent(subnode, compId, reflectedClass, model.Name, propertyName, false, mappings);
 							Mapping.Property prop = new Mapping.Property(compId);
 							BindProperty(subnode, prop, mappings);
@@ -409,8 +426,8 @@ namespace NHibernate.Cfg
 					Table table = model.Table;
 					Column col = new Column( model.Type, count++ );
 					BindColumn(subnode, col, isNullable);
-					// TODO: Check, isn't the name attribute mandatory in the schema?
-					string name = (subnode.Attributes["name"]==null) ? String.Empty : subnode.Attributes["name"].Value;
+
+					string name = subnode.Attributes["name"].Value;
 					col.Name = mappings.NamingStrategy.ColumnName( name );
 					if (table!=null) table.AddColumn(col); //table=null -> an association, fill it in later
 					model.AddColumn(col);
@@ -453,18 +470,6 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		/*
-		/// <remarks>
-		/// Does _not_ automatically make a column if none is specifed by XML
-		/// </remarks>
-		public static void BindValue(XmlNode node, Value model, bool isNullable) 
-		{
-			//TYPE
-			model.Type = GetTypeFromXML(node);
-			BindColumns(node, model, isNullable, false, null);
-		}
-		*/
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -489,27 +494,6 @@ namespace NHibernate.Cfg
 				BindColumns(node, model, isNullable, true, path, mappings);
 			}
 		}
-
-		/*
-		/// <remarks>
-		/// automatically makes a column with the default name if none is specifed by XML
-		/// </remarks>
-		public static void BindValue(XmlNode node, Value model, bool isNullable, string defaultColumnName) 
-		{
-			model.Type = GetTypeFromXML(node);
-			XmlAttribute formulaNode = node.Attributes["formula"];
-			if (formulaNode != null)
-			{
-				Formula f = new Formula();
-				f.FormulaString = formulaNode.InnerText;
-				model.Formula = f;
-			}
-			else
-			{
-				BindColumns(node, model, isNullable, true, defaultColumnName);
-			}
-		}
-		*/
 
 		private static string PropertyAccess( XmlNode node, Mappings mappings )
 		{
@@ -600,15 +584,9 @@ namespace NHibernate.Cfg
 			}
 			else
 			{
-				try
-				{
-					string persisterName = FullClassName( persisterNode.Value, mappings );
-					model.CollectionPersisterClass = ReflectHelper.ClassForName( persisterName );
-				}
-				catch (Exception)
-				{
-					throw new MappingException("could not instantiate collection persister class: " + className);
-				}
+				model.CollectionPersisterClass = ClassForNameChecked(
+					persisterNode.Value, mappings,
+					"could not instantiate collection persister class: {0}" );
 			}
 
 			InitOuterJoinFetchSetting( node, model );
@@ -664,8 +642,8 @@ namespace NHibernate.Cfg
 					try 
 					{
 						model.Comparer = (IComparer) Activator.CreateInstance( ReflectHelper.ClassForName( comparatorClassName ) );
-					} 
-					catch (Exception) 
+					}
+					catch
 					{
 						throw new MappingException( "could not instantiate comparer class: " + comparatorClassName );
 					}
@@ -728,15 +706,10 @@ namespace NHibernate.Cfg
 			
 			if ( typeNode!=null ) 
 			{
-				try 
-				{
-					string name = FullClassName( typeNode.Value, mappings );
-					model.Type = TypeFactory.ManyToOne( ReflectHelper.ClassForName( name ), model.ReferencedPropertyName ); 
-				} 
-				catch 
-				{
-					throw new MappingException("could not find class: " + typeNode.Value);
-				}
+				model.Type = TypeFactory.ManyToOne(
+					ClassForNameChecked( typeNode.Value, mappings,
+						"could not find class: {0}" ),
+					model.ReferencedPropertyName );
 			}
 
 			XmlAttribute fkNode = node.Attributes[ "foreign-key" ];
@@ -789,29 +762,17 @@ namespace NHibernate.Cfg
 			XmlAttribute classNode = node.Attributes[ "class" ];
 			if ( classNode != null ) 
 			{
-				try 
-				{
-					string name = FullClassName( classNode.Value, mappings );
-					model.Type = TypeFactory.OneToOne( ReflectHelper.ClassForName( name ), model.ForeignKeyType, model.ReferencedPropertyName ) ;
-				} 
-				catch (Exception) 
-				{
-					throw new MappingException("could not find class: " + classNode.Value);
-				}
+				model.Type = TypeFactory.OneToOne(
+					ClassForNameChecked( classNode.Value, mappings, "could not find class: {0}" ),
+					model.ForeignKeyType, model.ReferencedPropertyName );
 			}
 		}
 
 		public static void BindOneToMany(XmlNode node, OneToMany model, Mappings mappings) 
 		{
-			try 
-			{
-				string name = FullClassName( node.Attributes["class"].Value, mappings );
-				model.Type = (EntityType) NHibernateUtil.Entity( ReflectHelper.ClassForName( name ) );
-			} 
-			catch (Exception e) 
-			{
-				throw new MappingException("associated class not found", e);
-			}
+			model.Type = (EntityType) NHibernateUtil.Entity(
+				ClassForNameChecked( node.Attributes["class"].Value, mappings,
+					"associated class not found: {0}" ) );
 		}
 
 		public static void BindColumn(XmlNode node, Column model, bool isNullable) 
@@ -843,14 +804,8 @@ namespace NHibernate.Cfg
 
 			if ( att!=null ) 
 			{
-				try 
-				{
-					model.ElementClass = ReflectHelper.ClassForName( att.Value );
-				} 
-				catch (Exception e) 
-				{
-					throw new MappingException(e);
-				}
+				model.ElementClass = ClassForNameChecked( att.Value, mappings,
+					"could not find element class: {0}" );
 			} 
 			else 
 			{
@@ -873,15 +828,9 @@ namespace NHibernate.Cfg
 						case "one-to-many":
 						case "many-to-many":
 						case "composite-element":
-							try 
-							{
-								string className = FullClassName( subnode.Attributes["class"].Value, mappings );								
-								model.ElementClass = ReflectHelper.ClassForName( className );
-							} 
-							catch (Exception e) 
-							{
-								throw new MappingException(e);
-							}
+                            model.ElementClass = ClassForNameChecked(
+								subnode.Attributes["class"].Value, mappings,
+								"element class not found: {0}" );
 							break;
 					}
 				}
@@ -899,14 +848,9 @@ namespace NHibernate.Cfg
 			} 
 			else if ( classNode != null ) 
 			{
-				try 
-				{
-					model.ComponentClass = ReflectHelper.ClassForName( FullClassName( classNode.Value, mappings ) ) ;
-				} 
-				catch (Exception e) 
-				{
-					throw new MappingException("component class not found", e);
-				}
+				model.ComponentClass = ClassForNameChecked(
+					classNode.Value, mappings,
+					"component class not found: {0}" );
 				model.IsEmbedded = false;
 			} 
 			else if ( reflectedClass != null )
@@ -960,9 +904,7 @@ namespace NHibernate.Cfg
 				} 
 				else if ( "component".Equals(name) || "dynamic-component".Equals(name) || "nested-composite-element".Equals(name) ) 
 				{
-					System.Type subreflectedClass = (model.ComponentClass == null) ?
-						null :
-						ReflectHelper.GetGetter( model.ComponentClass, propertyName ).ReturnType;
+					System.Type subreflectedClass = GetPropertyType( subnode, mappings, model.ComponentClass, propertyName );
 					value = ( model.Owner!=null ) ?
 						new Component( model.Owner ) : // a class component
 						new Component( model.Table );  // a composite element
@@ -1145,6 +1087,21 @@ namespace NHibernate.Cfg
 				model.NullValue = "undefined";
 		}
 
+		private static System.Type GetPropertyType( XmlNode definingNode, Mappings mappings,
+			System.Type containingType, string propertyName )
+		{
+			if( definingNode.Attributes["class"] != null )
+			{
+				return ClassForNameChecked( definingNode.Attributes["class"].Value, mappings,
+					"could not find class: {0}" );
+			}
+			else if( containingType == null )
+			{
+				return null;
+			}
+			return ReflectHelper.GetGetter( containingType, propertyName ).ReturnType;
+		}
+
 		protected static void PropertiesFromXML(XmlNode node, PersistentClass model, Mappings mappings) 
 		{
 			Table table = model.Table;
@@ -1187,7 +1144,7 @@ namespace NHibernate.Cfg
 				} 
 				else if ( "component".Equals(name) || "dynamic-component".Equals(name) ) 
 				{
-					System.Type reflectedClass = ReflectHelper.GetGetter( model.MappedClass, propertyName ).ReturnType;
+					System.Type reflectedClass = GetPropertyType( subnode, mappings, model.MappedClass, propertyName );
 					value = new Component(model);
 					BindComponent(subnode, (Component) value, reflectedClass, model.Name, propertyName, true, mappings);
 				} 
@@ -1442,16 +1399,9 @@ namespace NHibernate.Cfg
 				foreach(XmlNode returns in n.SelectNodes( nsReturn, nsmgr ) )
 				{
 					string alias = returns.Attributes["alias"].Value;
-					System.Type clazz;
-					try
-					{
-						string name = FullClassName( returns.Attributes["class"].Value, model );
-						clazz = ReflectHelper.ClassForName( name );
-					}
-					catch (Exception)
-					{
-						throw new MappingException( string.Format( "class not found for alias:", alias ) );
-					}
+					System.Type clazz = ClassForNameChecked(
+						returns.Attributes["class"].Value, model,
+						"class not found: {0} for alias " + alias );
 					namedQuery.AddAliasedClass( alias, clazz );
 				}
 
@@ -1508,15 +1458,8 @@ namespace NHibernate.Cfg
 				throw new MappingException( "'extends' attribute is not found." );
 			}
 			String extendsValue = FullClassName( extendsAttr.Value, model );
-			System.Type superclass;
-			try
-			{
-				superclass = ReflectHelper.ClassForName( extendsValue );
-			}
-			catch( Exception e )
-			{
-				throw new MappingException( "extended class not found: " + extendsValue, e );
-			}
+			System.Type superclass = ClassForFullNameChecked( extendsValue,
+				"extended class not found: {0}" );
 			PersistentClass superModel = model.GetClass( superclass );
 
 			if( superModel == null )
@@ -1528,7 +1471,7 @@ namespace NHibernate.Cfg
 
 		// TODO: rename this to something like SecondPassBase so we can rename the
 		// method secondPass(...) to .net conventions.
-		public abstract class SecondPass 
+		public abstract class SecondPass
 		{
 			internal XmlNode node;
 			internal Mappings mappings;
@@ -1549,7 +1492,7 @@ namespace NHibernate.Cfg
 				if ( log.IsDebugEnabled ) 
 				{
 					string msg = "Mapped collection key: " + Columns( collection.Key );
-					if ( collection.IsIndexed ) msg+= ", index: " + Columns( ( (IndexedCollection) collection ).Index );
+					if ( collection.IsIndexed ) msg += ", index: " + Columns( ( (IndexedCollection) collection ).Index );
 					if ( collection.IsOneToMany ) 
 					{
 						msg += ", one-to-many: " + collection.Element.Type.Name;
@@ -1730,7 +1673,7 @@ namespace NHibernate.Cfg
 			}	
 			
 			private static Hashtable Instances = new Hashtable();
-			static CollectionType() 
+			static CollectionType()
 			{
 				Instances.Add(MAP.ToString(), MAP);
 				Instances.Add(BAG.ToString(), BAG);
