@@ -82,7 +82,7 @@
 	</target>
 	
 	<target name="test">
-		<nunit2 failonerror="false">
+		<nunit2 failonerror="true">
 			<formatter 
 				type="Xml" 
 				usefile="true" 
