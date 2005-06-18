@@ -42,7 +42,7 @@ namespace NHibernate.Proxy
 		{
 			// let the generic LazyInitializer figure out if this can be handled
 			// with the proxy or if the real class needs to be initialized
-			object result = base.Invoke( invocation.Method, args );
+			object result = base.Invoke( invocation.Method, args, invocation.Proxy );
 
 			// the base LazyInitializer could not handle it so we need to Invoke
 			// the method/property against the real class

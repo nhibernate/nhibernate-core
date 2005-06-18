@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using log4net;
 using NHibernate.Engine;
@@ -33,6 +35,7 @@ namespace NHibernate.Proxy
 
 		private System.Type _persistentClass;
 		private PropertyInfo _identifierPropertyInfo;
+		private MethodInfo _getIdentifierMethod;
 		private bool _overridesEquals;
 
 		/// <summary>
@@ -49,6 +52,12 @@ namespace NHibernate.Proxy
 			_id = id;
 			_session = session;
 			_identifierPropertyInfo = identifierPropertyInfo;
+			
+			if( _identifierPropertyInfo != null )
+			{
+				_getIdentifierMethod = _identifierPropertyInfo.GetGetMethod( true );
+			}
+
 			_overridesEquals = ReflectHelper.OverridesEquals( _persistentClass );
 		}
 
@@ -66,9 +75,13 @@ namespace NHibernate.Proxy
 				{
 					throw new HibernateException( "Could not initialize proxy - no Session." );
 				}
-				else if( _session.IsOpen == false )
+				else if( !_session.IsOpen )
 				{
 					throw new HibernateException( "Could not initialize proxy - the owning Session was closed." );
+				}
+				else if( !_session.IsConnected )
+				{
+					throw new HibernateException( "Could not initialize proxy - the owning Session is disconnected." );
 				}
 				else
 				{
@@ -186,61 +199,54 @@ namespace NHibernate.Proxy
 		/// underlying proxied object is needed then it returns the result <see cref="InvokeImplementation"/>
 		/// which indicates that the Proxy will need to forward to the real implementation.
 		/// </returns>
-		public virtual object Invoke( MethodBase method, params object[ ] args )
+		public virtual object Invoke( MethodBase method, object[ ] args, object proxy )
 		{
-			// if the Proxy Engine delegates the call of GetObjectData to the Initializer
-			// then we need to handle it.  Castle.DynamicProxy takes care of serializing
-			// proxies for us, but other providers might not.
-			if( method.Name.Equals( "GetObjectData" ) )
-			{
-				SerializationInfo info = ( SerializationInfo ) args[ 0 ];
-				StreamingContext context = ( StreamingContext ) args[ 1 ]; // not used !?!
+			int paramCount = method.GetParameters().Length;
 
-				if( _target == null & _session != null )
+			if( paramCount == 0 )
+			{
+				if( !_overridesEquals && method.Name.Equals( "GetHashCode" ) )
 				{
-					Key key = new Key( _id, _session.Factory.GetPersister( _persistentClass ) );
-					_target = _session.GetEntity( key );
+					return RuntimeHelpers.GetHashCode( proxy );
 				}
-
-				// let the specific LazyInitializer write its requirements for deserialization 
-				// into the stream.
-				AddSerializationInfo( info );
-
-				// don't need a return value for proxy.
-				return null;
+				else if( method.Equals( _getIdentifierMethod ) )
+				{
+					return _id;
+				}
 			}
-			else if( !_overridesEquals && _identifierPropertyInfo != null && method.Name.Equals( "GetHashCode" ) )
+			else if( paramCount == 1 )
 			{
-				// kinda dodgy, since it redefines the hashcode of the proxied object.
-				// but necessary if we are to keep proxies in HashSets without
-				// forcing them to be initialized
-				return _id.GetHashCode();
+				if( !_overridesEquals && method.Name.Equals( "Equals" ) )
+				{
+					return args[0] == proxy;
+				}
 			}
-			else if( _identifierPropertyInfo != null && method.Equals( _identifierPropertyInfo.GetGetMethod( true ) ) )
+			else if( paramCount == 2)
 			{
-				return _id;
-			}
-			else if( method.Name.Equals( "Dispose" ) )
-			{
-				return null;
+				// if the Proxy Engine delegates the call of GetObjectData to the Initializer
+				// then we need to handle it.  Castle.DynamicProxy takes care of serializing
+				// proxies for us, but other providers might not.
+				if( method.Name.Equals( "GetObjectData" ) )
+				{
+					SerializationInfo info = ( SerializationInfo ) args[ 0 ];
+					StreamingContext context = ( StreamingContext ) args[ 1 ]; // not used !?!
+
+					if( _target == null & _session != null )
+					{
+						Key key = new Key( _id, _session.Factory.GetPersister( _persistentClass ) );
+						_target = _session.GetEntity( key );
+					}
+
+					// let the specific LazyInitializer write its requirements for deserialization 
+					// into the stream.
+					AddSerializationInfo( info );
+
+					// don't need a return value for proxy.
+					return null;
+				}
 			}
 
-			else if( args.Length == 1 && !_overridesEquals && _identifierPropertyInfo != null && method.Name.Equals( "Equals" ) )
-			{
-				// less dodgy because NHibernate forces == to be the same as Identifier Equals
-				object rhs = args[0];
-				
-				if( rhs == null ) return false;
-				if( !_persistentClass.IsAssignableFrom( rhs.GetType() ) ) return false;
-
-				return _id.Equals( _identifierPropertyInfo.GetValue( rhs, null ) );
-			}
-
-			else
-			{
-				return InvokeImplementation;
-			}
-
+			return InvokeImplementation;
 		}
 	}
 }
