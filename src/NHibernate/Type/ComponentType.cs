@@ -16,7 +16,6 @@ namespace NHibernate.Type
 		private static readonly ILog log = LogManager.GetLogger( typeof( ComponentType ) );
 
 		private readonly System.Type componentClass;
-		private readonly ConstructorInfo contructor;
 		private readonly IType[ ] propertyTypes;
 		private readonly IGetter[ ] getters;
 		private readonly ISetter[ ] setters;
@@ -114,7 +113,6 @@ namespace NHibernate.Type
 			this.propertyNames = propertyNames;
 			this.cascade = cascade;
 			this.joinedFetch = joinedFetch;
-			contructor = ReflectHelper.GetDefaultConstructor( componentClass );
 		}
 
 		/// <summary></summary>
@@ -397,7 +395,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return contructor.Invoke( null );
+				return Activator.CreateInstance( componentClass, true );
 			}
 			catch( Exception e )
 			{
