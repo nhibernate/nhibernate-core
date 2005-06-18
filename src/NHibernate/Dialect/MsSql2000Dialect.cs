@@ -1,6 +1,9 @@
+using System;
 using System.Data;
-using NHibernate.Cfg;
+
 using NHibernate.SqlCommand;
+
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -256,6 +259,93 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Does this Dialect have some kind of <c>LIMIT</c> syntax?
+		/// </summary>
+		/// <value>True, we'll use the SELECT TOP nn syntax.</value>
+		public override bool SupportsLimit
+		{
+			get { return true; }
+		}
+
+		/// <summary>
+		/// Does this Dialect support an offset?
+		/// </summary>
+		public override bool SupportsLimitOffset
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// Can parameters be used for a statement containing a LIMIT?
+		/// </summary>
+		public override bool SupportsVariableLimit
+		{
+			get { return false; }
+		}
+		/// <summary>
+		/// Add a <c>LIMIT (TOP)</c> clause to the given SQL <c>SELECT</c>
+		/// </summary>
+		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
+		/// <param name="limit">Maximum number of rows to be returned by the query</param>
+		/// <param name="offset">Offset of the first row to process in the result set</param>
+		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
+		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
+		{
+			if (offset > 0)
+			{
+				throw new NotSupportedException("SQL Server does not support an offset" );
+			}
+
+			/*
+			 * "SELECT TOP limit rest-of-sql-statement"
+			 */
+			querySqlString = querySqlString.Compact();
+			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
+			bool topAdded = false;
+			foreach( object sqlPart in querySqlString.SqlParts )
+			{
+				if (!topAdded)
+				{
+					string sqlPartString = sqlPart as string;
+					if( sqlPartString != null )
+					{
+						string sqlFragment = sqlPartString.ToLower().TrimStart();
+						int insertIndex = GetAfterSelectInsertPoint(sqlFragment);
+						if( insertIndex > 0 )
+						{
+							string newFragment = sqlFragment.Insert(insertIndex, " top " + limit.ToString());
+							pagingBuilder.Add(newFragment);
+							topAdded = true;
+							continue;
+						}
+					}
+				}
+				pagingBuilder.AddObject(sqlPart);
+			}
+
+			return pagingBuilder.ToSqlString();
+		}
+
+		/// <summary>
+		/// Does the <c>LIMIT</c> clause take a "maximum" row number
+		/// instead of a total number of returned rows?
+		/// </summary>
+		/// <returns>false, unless overridden</returns>
+		public override bool UseMaxForLimit
+		{
+			get { return true; }
+		}
+
+		/// <summary>
+		/// Should we use a <c>LIMIT</c> clause when there is no first result
+		/// specified?
+		/// </summary>
+		public override bool PreferLimit
+		{
+			get { return true; }
+		}
+
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="name"></param>
@@ -282,6 +372,19 @@ namespace NHibernate.Dialect
 			}
 
 			return quoted.Replace( new string( CloseQuote, 2 ), CloseQuote.ToString() );
+		}
+
+		private static int GetAfterSelectInsertPoint(string fragment)
+		{
+			if (fragment.StartsWith("select distinct"))
+			{
+				return 15;
+			}
+			else if (fragment.StartsWith("select"))
+			{
+				return 6;
+			}
+			return 0;
 		}
 	}
 }

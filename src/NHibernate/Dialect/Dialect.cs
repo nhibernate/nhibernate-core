@@ -2,13 +2,15 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Text;
+
 using log4net;
+
 using NHibernate.Engine;
-using NHibernate.Hql;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
+
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
@@ -496,7 +498,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Does this Diealect have some kind of <c>LIMIT</c> syntax?
+		/// Does this Dialect have some kind of <c>LIMIT</c> syntax?
 		/// </summary>
 		/// <value>False, unless overridden.</value>
 		public virtual bool SupportsLimit
@@ -505,11 +507,29 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Does this Dialect support an offset?
+		/// </summary>
+		public virtual bool SupportsLimitOffset
+		{
+			get { return SupportsLimit; }
+		}
+
+		/// <summary>
+		/// Can parameters be used for a statement containing a LIMIT?
+		/// </summary>
+		public virtual bool SupportsVariableLimit
+		{
+			get { return SupportsLimit; }
+		}
+
+		/// <summary>
 		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
 		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
+		/// <param name="limit">Maximum number of rows to be returned by the query</param>
+		/// <param name="offset">Offset of the first row to process in the result set</param>
 		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
-		public virtual SqlString GetLimitString( SqlString querySqlString )
+		public virtual SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
 		{
 			throw new NotSupportedException( "Paged Queries not supported" );
 		}

@@ -284,7 +284,6 @@ namespace NHibernate.Loader
 
 			ILoadable[ ] persisters = Persisters;
 			int cols = persisters.Length;
-			ICollectionPersister collectionPersister = this.CollectionPersister;
 			ArrayList hydratedObjects = cols > 0 ? new ArrayList() : null;
 			IList results = new ArrayList();
 
@@ -759,14 +758,13 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Advance the cursor to the first required row of the <c>ResultSet</c>
+		/// Advance the cursor to the first required row of the <c>IDataReader</c>
 		/// </summary>
 		/// <param name="rs"></param>
 		/// <param name="selection"></param>
-		/// <param name="session"></param>
-		protected void Advance( IDataReader rs, RowSelection selection, ISessionImplementor session )
+		private void Advance( IDataReader rs, RowSelection selection )
 		{
-			int firstRow = Loader.GetFirstRow( selection );
+			int firstRow = GetFirstRow( selection );
 
 			if( firstRow != 0 )
 			{
@@ -777,18 +775,26 @@ namespace NHibernate.Loader
 				}
 			}
 		}
+		/// <summary>
+		/// Some dialect-specific LIMIT clauses require the maximum last row number,
+		/// others require the maximum returned row count.
+		/// </summary>
+		private static int GetMaxOrLimit(Dialect.Dialect dialect, RowSelection selection)
+		{
+			int firstRow = GetFirstRow(selection);
+			int lastRow = selection.MaxRows;
+
+			if( dialect.UseMaxForLimit )
+			{
+				lastRow += firstRow;
+			}
+
+			return lastRow;
+		}
 
 		private static int GetFirstRow( RowSelection selection )
 		{
-			if( selection == null )
-				// || selection.FirstRow==null -> won't ever be null because structs are initialized... 
-			{
-				return 0;
-			}
-			else
-			{
-				return selection.FirstRow;
-			}
+			return ( selection == null ) ? 0 : selection.FirstRow;		
 		}
 
 		private static bool UseLimit( RowSelection selection, Dialect.Dialect dialect )
@@ -796,9 +802,13 @@ namespace NHibernate.Loader
 			// it used to be selection.MaxRows != null -> since an Int32 will always
 			// have a value I'll compare it to the static field NoValue used to initialize 
 			// max rows to nothing
-			return dialect.SupportsLimit &&
-				( selection != null && selection.MaxRows != RowSelection.NoValue ) && // there is a max rows
+			return dialect.SupportsLimit && HasMaxRows(selection) && // there is a max rows
 				( dialect.PreferLimit || GetFirstRow( selection ) != 0 );
+		}
+
+		private static bool HasMaxRows(RowSelection selection)
+		{
+			return selection != null && selection.MaxRows != RowSelection.NoValue;
 		}
 
 		/// <summary>
@@ -814,28 +824,34 @@ namespace NHibernate.Loader
 		{
 			Dialect.Dialect dialect = session.Factory.Dialect;
 
-			bool useLimit = UseLimit( parameters.RowSelection, dialect );
-			bool scrollable = scroll || ( !useLimit && GetFirstRow( parameters.RowSelection ) != 0 );
+			RowSelection selection = parameters.RowSelection;
+			bool useLimit = UseLimit( selection, dialect );
+			bool hasFirstRow = GetFirstRow( selection ) > 0;
+			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
+			//TODO: In .Net all resultsets are scrollable (we receive an IDataReader), so this is not needed
+			bool scrollable = scroll || ( !useLimit && hasFirstRow );
+
 			if( useLimit )
 			{
-				sqlString = dialect.GetLimitString( sqlString );
+				sqlString = dialect.GetLimitString( sqlString,
+					useOffset ? GetFirstRow( selection ) : 0,
+					GetMaxOrLimit( dialect, selection ) );
 			}
 
 			IDbCommand command = session.Batcher.PrepareQueryCommand( sqlString, scrollable );
 
 			try
 			{
-				if( parameters.RowSelection != null && parameters.RowSelection.Timeout != RowSelection.NoValue )
+				if( selection != null && selection.Timeout != RowSelection.NoValue )
 				{
-					command.CommandTimeout = parameters.RowSelection.Timeout;
+					command.CommandTimeout = selection.Timeout;
 				}
 
 				int colIndex = 0;
 
 				if( useLimit && dialect.BindLimitParametersFirst )
 				{
-					BindLimitParameters( command, colIndex, parameters.RowSelection, session );
-					colIndex += 2;
+					colIndex += BindLimitParameters( command, colIndex, selection, session );
 				}
 
 				for( int i = 0; i < parameters.PositionalParameterValues.Length; i++ )
@@ -849,16 +865,16 @@ namespace NHibernate.Loader
 
 				if( useLimit && !dialect.BindLimitParametersFirst )
 				{
-					BindLimitParameters( command, colIndex, parameters.RowSelection, session );
+					colIndex += BindLimitParameters( command, colIndex, selection, session );
 				}
 
 				if( !useLimit )
 				{
-					SetMaxRows( command, parameters.RowSelection );
+					SetMaxRows( command, selection );
 				}
-				if( parameters.RowSelection != null && parameters.RowSelection.Timeout != RowSelection.NoValue )
+				if( selection != null && selection.Timeout != RowSelection.NoValue )
 				{
-					command.CommandTimeout = parameters.RowSelection.Timeout;
+					command.CommandTimeout = selection.Timeout;
 				}
 
 			}
@@ -872,20 +888,30 @@ namespace NHibernate.Loader
 			return command;
 		}
 
-		private void BindLimitParameters( IDbCommand st, int index, RowSelection selection, ISessionImplementor session )
+		/// <summary>
+		/// Bind parameters needed by the dialect-specific LIMIT clause
+		/// </summary>
+		/// <returns>The number of parameters bound</returns>
+		private int BindLimitParameters(IDbCommand st, int index, RowSelection selection, ISessionImplementor session)
 		{
-			int firstRow = ( selection == null ) ? 0 : selection.FirstRow;
-			int lastRow = selection.MaxRows;
 			Dialect.Dialect dialect = session.Factory.Dialect;
-
-			if( dialect.UseMaxForLimit )
+			if( !dialect.SupportsVariableLimit )
 			{
-				lastRow += firstRow;
+				return 0;
 			}
-			bool reverse = dialect.BindLimitParametersInReverseOrder;
+			int firstRow = GetFirstRow( selection );
+			int lastRow = GetMaxOrLimit( dialect, selection );
 
-			( ( IDataParameter ) st.Parameters[ index + ( reverse ? 1 : 0 ) ] ).Value = firstRow;
-			( ( IDataParameter ) st.Parameters[ index + ( reverse ? 0 : 1 ) ] ).Value = lastRow;
+			bool reverse = dialect.BindLimitParametersInReverseOrder;
+			bool hasFirstRow = firstRow > 0 && dialect.SupportsLimitOffset;
+
+			if( hasFirstRow )
+			{ 
+				( ( IDataParameter ) st.Parameters[ index + ( reverse ? 1 : 0 ) ] ).Value = firstRow;
+			}
+			( ( IDataParameter ) st.Parameters[ index + ( ( reverse || !hasFirstRow ) ? 0 : 1 ) ] ).Value = lastRow;
+
+			return hasFirstRow ? 2 : 1;
 		}
 
 		/// <summary>
@@ -920,9 +946,10 @@ namespace NHibernate.Loader
 				log.Info( st.CommandText );
 				rs = session.Batcher.ExecuteReader( st );
 
-				if( !UseLimit( selection, session.Factory.Dialect ) )
+				Dialect.Dialect dialect = session.Factory.Dialect;
+				if( !dialect.SupportsLimitOffset || !UseLimit( selection, dialect ) )
 				{
-					Advance( rs, selection, session );
+					Advance( rs, selection );
 				}
 
 				return rs;
@@ -1132,13 +1159,13 @@ namespace NHibernate.Loader
 
 			for( int i = 0; i < persisters.Length; i++ )
 			{
-				IClassPersister persister = persisters[ i ];
-				suffixedKeyColumns[ i ] = persisters[ i ].GetIdentifierAliases( suffixes[ i ] );
-				suffixedPropertyColumns[ i ] = GetSuffixedPropertyAliases( persisters[ i ], suffixes[ i ] );
-				suffixedDiscriminatorColumn[ i ] = persisters[ i ].GetDiscriminatorAlias( suffixes[ i ] );
-				if( persisters[ i ].IsVersioned )
+				ILoadable persister = persisters[ i ];
+				suffixedKeyColumns[ i ] = persister.GetIdentifierAliases( suffixes[ i ] );
+				suffixedPropertyColumns[ i ] = GetSuffixedPropertyAliases( persister, suffixes[ i ] );
+				suffixedDiscriminatorColumn[ i ] = persister.GetDiscriminatorAlias( suffixes[ i ] );
+				if( persister.IsVersioned )
 				{
-					suffixedVersionColumnNames[ i ] = suffixedPropertyColumns[ i ][ persisters[ i ].VersionProperty ];
+					suffixedVersionColumnNames[ i ] = suffixedPropertyColumns[ i ][ persister.VersionProperty ];
 				}
 			}
 		}

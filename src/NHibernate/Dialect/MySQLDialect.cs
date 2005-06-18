@@ -130,8 +130,10 @@ namespace NHibernate.Dialect
 		/// 
 		/// </summary>
 		/// <param name="querySqlString"></param>
+		/// <param name="offset"></param>
+		/// <param name="limit"></param>
 		/// <returns></returns>
-		public override SqlString GetLimitString( SqlString querySqlString )
+		public override SqlString GetLimitString( SqlString querySqlString, int offset, int limit )
 		{
 			Parameter p1 = new Parameter( "p1", new Int32SqlType() );
 			Parameter p2 = new Parameter( "p2", new Int32SqlType() );
