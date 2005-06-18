@@ -1622,7 +1622,7 @@ namespace NHibernate.Persister
 				IDataReader rs = null;
 				try
 				{
-					IdentifierType.NullSafeSet( st, id, 1, session );
+					IdentifierType.NullSafeSet( st, id, 0, session );
 					rs = session.Batcher.ExecuteReader( st );
 					if ( !rs.Read() )
 					{
@@ -1872,9 +1872,23 @@ namespace NHibernate.Persister
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		protected SqlString GenerateSelectVersionString( )
+		protected SqlString GenerateSelectVersionString( ISessionFactoryImplementor factory )
 		{
-			return null;
+			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder( factory );
+			builder.SetTableName( VersionedTableName );
+
+			if( IsVersioned )
+			{
+				builder.AddColumn( VersionColumnName );
+			}
+			else
+			{
+				builder.AddColumns( IdentifierColumnNames );
+			}
+
+			builder.AddWhereFragment( IdentifierColumnNames, IdentifierType, " = " );
+
+			return builder.ToSqlString();
 		}
 
 		/// <summary></summary>

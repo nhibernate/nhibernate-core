@@ -360,7 +360,7 @@ namespace NHibernate.Persister
 
 			sqlUpdateString = GenerateUpdateString( PropertyUpdateability );
 			sqlConcreteSelectString = GenerateConcreteSelectString( PropertyUpdateability );
-			sqlVersionSelectString = GenerateSelectVersionString();
+			sqlVersionSelectString = GenerateSelectVersionString( factory );
 
 			SqlString selectForUpdate = Dialect.SupportsForUpdate ? GenerateSelectForUpdateString() : GenerateSelectString( null );
 

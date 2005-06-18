@@ -1016,7 +1016,7 @@ namespace NHibernate.Impl
 				// TODO: make OnReplicateVisitor extend WrapVisitor
 				if ( replicate )
 				{
-					OnReplicateVisitor visitor = new OnReplicateVisitor( this, key );
+					OnReplicateVisitor visitor = new OnReplicateVisitor( this, id );
 					visitor.ProcessValues( values, types );
 				}
 				WrapVisitor visitor2 = new WrapVisitor( this );

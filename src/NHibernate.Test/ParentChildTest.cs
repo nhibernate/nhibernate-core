@@ -43,7 +43,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Need to implement AbstractEntityPersister.GenerateSelectVersionString")]
 		public void Replicate()
 		{
 			ISession s = OpenSession();
@@ -100,7 +99,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Need to implement AbstractEntityPersister.GenerateSelectVersionString")]
 		public void ProxyReuse()
 		{
 			ISession s = OpenSession();

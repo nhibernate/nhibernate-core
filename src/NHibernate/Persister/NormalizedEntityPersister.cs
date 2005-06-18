@@ -494,7 +494,7 @@ namespace NHibernate.Persister
 
 			sqlUpdateStrings = GenerateUpdateStrings( PropertyUpdateability );
 
-			sqlVersionSelectString = GenerateSelectVersionString();
+			sqlVersionSelectString = GenerateSelectVersionString( factory );
 			sqlConcreteSelectString = GenerateConcreteSelectString();
 
 			// This is used to determine updates for objects that came in via update()
