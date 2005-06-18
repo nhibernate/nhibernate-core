@@ -80,7 +80,7 @@ namespace NHibernate.Cfg
 		/// <summary></summary>
 		static Environment()
 		{
-			DOMConfigurator.Configure();
+			XmlConfigurator.Configure();
 
 			NameValueCollection props = ConfigurationSettings.GetConfig( "nhibernate" ) as NameValueCollection;
 			if( props == null )
