@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using log4net;
 using NHibernate.Engine;
@@ -26,6 +25,9 @@ namespace NHibernate.Proxy
 		/// method call against the object that is being proxied.
 		/// </summary>
 		protected static readonly object InvokeImplementation = new object();
+
+		private static readonly IHashCodeProvider IdentityHashCodeProvider =
+			new HashCodeProvider.IdentityHashCodeProvider();
 
 		private object _target = null;
 		private object _id;
@@ -65,7 +67,7 @@ namespace NHibernate.Proxy
 		/// Perform an ImmediateLoad of the actual object for the Proxy.
 		/// </summary>
 		/// <exception cref="HibernateException">
-		/// Thrown when the Proxy has no Session or the Session is not open.
+		/// Thrown when the Proxy has no Session or the Session is closed or disconnected.
 		/// </exception>
 		public void Initialize()
 		{
@@ -207,7 +209,7 @@ namespace NHibernate.Proxy
 			{
 				if( !_overridesEquals && method.Name.Equals( "GetHashCode" ) )
 				{
-					return RuntimeHelpers.GetHashCode( proxy );
+					return IdentityHashCodeProvider.GetHashCode( proxy );
 				}
 				else if( method.Equals( _getIdentifierMethod ) )
 				{
