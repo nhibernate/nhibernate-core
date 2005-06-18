@@ -1,5 +1,4 @@
 using System;
-using System;
 using NHibernate.Property;
 using NUnit.Framework;
 
