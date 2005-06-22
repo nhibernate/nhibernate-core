@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH315">
+
+	<class name="Client">
+		<id name="Id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		<component class="ClientPersons" name="Contacts">
+			<property column="PERS_ID" name="PersonId" />
+			<many-to-one column="PERS_ID" name="Person"
+				insert="false" update="false" />
+		</component>
+	</class>
+
+	<class name="Person">
+		<id name="Id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+	</class>
+
+</hibernate-mapping>
