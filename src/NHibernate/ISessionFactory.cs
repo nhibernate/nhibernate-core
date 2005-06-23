@@ -140,5 +140,10 @@ namespace NHibernate
 		/// Get the <see cref="IConnectionProvider" /> used.
 		/// </summary>
 		IConnectionProvider ConnectionProvider { get; }
+
+		/// <summary>
+		/// Get the <see cref="Dialect.Dialect" /> used.
+		/// </summary>
+		Dialect.Dialect Dialect { get; }
 	}
 }
