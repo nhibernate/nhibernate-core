@@ -142,7 +142,7 @@ namespace NHibernate
 		IConnectionProvider ConnectionProvider { get; }
 
 		/// <summary>
-		/// Get the <see cref="Dialect.Dialect" /> used.
+		/// Get the SQL <c>Dialect</c>
 		/// </summary>
 		Dialect.Dialect Dialect { get; }
 	}

@@ -63,11 +63,6 @@ namespace NHibernate.Engine
 		string DefaultSchema { get; }
 
 		/// <summary>
-		/// Get the SQL <c>Dialect</c>
-		/// </summary>
-		Dialect.Dialect Dialect { get; }
-
-		/// <summary>
 		/// Get the return types of a query
 		/// </summary>
 		/// <param name="queryString"></param>
