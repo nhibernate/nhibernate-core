@@ -62,6 +62,12 @@ namespace NHibernate.Test.ExpressionTest
 			}
 		}
 
+		[Test]
+		public void ToString()
+		{
+			Assert.AreEqual( "(Address is null and Count between 5 and 10)",
+				_conjunction.ToString() );
+		}
 		
 	}
 }

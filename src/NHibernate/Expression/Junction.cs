@@ -94,7 +94,14 @@ namespace NHibernate.Expression
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return '(' + String.Join( Op, ( string[ ] ) _criteria ) + ')';
+			string[ ] criteriaStrings = new string[ _criteria.Count ];
+			
+			for( int i = 0; i < _criteria.Count; i++ )
+			{
+				criteriaStrings[ i ] = _criteria[ i ].ToString();
+			}
+
+			return '(' + String.Join( Op, criteriaStrings ) + ')';
 		}
 	}
 }
