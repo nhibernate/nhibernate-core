@@ -76,6 +76,9 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void InsertZeroLength() 
 		{
+			if (typeof(Dialect.Oracle9Dialect).IsInstanceOfType( dialect)) {
+				return;
+			}
 			BinaryClass bcBinary = new BinaryClass();
 			bcBinary.Id = 1;
 
