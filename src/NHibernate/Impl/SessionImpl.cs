@@ -1032,7 +1032,7 @@ namespace NHibernate.Impl
 
 			TypeFactory.DeepCopy( values, types, persister.PropertyUpdateability, values );
 			NullifyTransientReferences( values, types, useIdentityColumn, obj );
-			CheckNullability( values, persister, false );
+			CheckNullability(values, persister, false );
 
 			if ( useIdentityColumn )
 			{
@@ -1485,7 +1485,7 @@ namespace NHibernate.Impl
 
 			for ( int i = 0; i < values.Length; i++ )
 			{
-				if ( !nullability[ i ] && checkability[ i ] && values[ i ] == null )
+				if ( !nullability[ i ] && checkability[ i ] && values[ i ] == null && isUpdate)
 				{
 					throw new HibernateException( string.Format( "not-null property references a null or transient value: {0}, {1}", persister.MappedClass.Name, persister.PropertyNames[ i ] ) );
 				}
