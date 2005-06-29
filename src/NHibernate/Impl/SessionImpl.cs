@@ -1422,7 +1422,7 @@ namespace NHibernate.Impl
 			}
 
 			NullifyTransientReferences( entry.DeletedState, propTypes, false, obj );
-			CheckNullability( entry.DeletedState, persister, true );
+			//CheckNullability( entry.DeletedState, persister, true );
 			nullifiables.Add( key );
 
 			ScheduledDeletion delete = new ScheduledDeletion( entry.Id, version, obj, persister, this );
@@ -1485,7 +1485,7 @@ namespace NHibernate.Impl
 
 			for ( int i = 0; i < values.Length; i++ )
 			{
-				if ( !nullability[ i ] && checkability[ i ] && values[ i ] == null && isUpdate)
+				if ( !nullability[ i ] && checkability[ i ] && values[ i ] == null )
 				{
 					throw new HibernateException( string.Format( "not-null property references a null or transient value: {0}, {1}", persister.MappedClass.Name, persister.PropertyNames[ i ] ) );
 				}
