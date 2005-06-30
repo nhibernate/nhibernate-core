@@ -121,7 +121,7 @@
 		<bag 
 			name="Bag" 
 			order-by="`name!`" 
-			table="`$%^^b'a'g`"
+			table="`$%^^b a g`"
 		>
 			<key>
 				<column 
