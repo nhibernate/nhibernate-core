@@ -20,10 +20,10 @@ namespace NHibernate.Test.NHSpecificTest
 		public void BeginWithIsolationLevel()
 		{
 			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction( IsolationLevel.RepeatableRead ) )
+			using( ITransaction t = s.BeginTransaction( IsolationLevel.ReadCommitted ) )
 			{
 				AdoTransaction at = ( AdoTransaction ) t;
-				Assert.AreEqual( IsolationLevel.RepeatableRead, at.IsolationLevel );
+				Assert.AreEqual( IsolationLevel.ReadCommitted, at.IsolationLevel );
 			}
 		}
 	}
