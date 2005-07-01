@@ -2354,7 +2354,7 @@ namespace NHibernate.Test
 				s.Find("select count(*) from Bar as bar where 1 in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')");
 				
 				// TODO: figure out why this is throwing an ORA-1722 error
-				if( !( dialect is Dialect.Oracle9Dialect) && !( dialect is Dialect.OracleDialect) ) 
+				if( !( dialect is Dialect.Oracle9Dialect)) 
 				{
 					s.Find("select count(*) from Bar as bar left outer join bar.Component.Glarch.ProxyArray as pg where 1 in (from g in bar.Component.Glarch.ProxyArray)");
 				}

@@ -60,7 +60,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 1,
 				s.Find( "select count(*) from s in class Simple" ).Count );
 
-			if ( dialect is OracleDialect) 
+			if ( dialect is Oracle9Dialect) 
 			{
 				// Check Oracle Dialect mix of dialect functions - no args (no parenthesis and single arg functions
 				IList rset = s.Find( "select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple" );
