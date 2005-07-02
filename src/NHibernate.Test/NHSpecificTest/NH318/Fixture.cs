@@ -3,13 +3,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH318
 {
-	/// <summary>
-	/// Summary description for Ficture.
-	/// </summary>
 	[TestFixture]
-	public class Ficture : TestCase
+	public class Fixture : TestCase
 	{
-
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -22,6 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH318
 				return new string[] { "NHSpecificTest.NH318.Mappings.hbm.xml" };
 			}
 		}
+
 		[Test]
 		public void DeleteWithNotNullPropertySetToNull()
 		{
