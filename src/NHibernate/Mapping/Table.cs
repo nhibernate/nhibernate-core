@@ -444,22 +444,21 @@ namespace NHibernate.Mapping
 				fk.Table = this;
 				fk.ReferencedClass = referencedClass;
 				foreignKeys.Add( keyName, fk );
+				foreach( Column col in columns )
+				{
+					fk.AddColumn( col );
+				}
 			}
 			else
 			{
 				// "X"= hexadecimal format
-				keyName += referencedClass.Name.GetHashCode().ToString( "X" ).ToUpper();
 				if ( fk.ReferencedClass != referencedClass ) 
 				{
-					fk = CreateForeignKey( keyName, columns, referencedClass );
+					foreignKeys.Remove(keyName);
+					keyName += referencedClass.Name.GetHashCode().ToString( "X" ).ToUpper();
+					return CreateForeignKey( keyName, columns, referencedClass );
 				}
 			}
-
-			foreach( Column col in columns )
-			{
-				fk.AddColumn( col );
-			}
-
 			return fk;
 		}
 
