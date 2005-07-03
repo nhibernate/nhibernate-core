@@ -345,6 +345,25 @@ namespace NHibernate.Type
 			}
 		}
 
+		protected virtual void Clear( ICollection collection )
+		{
+			throw new NotImplementedException(
+				"PersistentCollectionType.Clear was not overriden for type "
+				+ GetType().FullName );
+		}
+
+		protected virtual void Add( ICollection collection, object element )
+		{
+			throw new NotImplementedException(
+				"PersistentCollectionType.Add was not overriden for type "
+				+ GetType().FullName );
+		}
+
+		protected virtual object CopyElement( ICollectionPersister persister, object element, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		{
+			return persister.ElementType.Copy( element, null, session, owner, copiedAlready );
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -360,18 +379,23 @@ namespace NHibernate.Type
 			{
 				return null;
 			}
+
 			if ( !NHibernateUtil.IsInitialized( original ) )
 			{
 				return target;
 			}
 
-			IList originalCopy = new ArrayList( (IList) original );
-			IList result = target == null ? (IList) Instantiate( session, session.Factory.GetCollectionPersister( role ) ) : (IList) target;
-			result.Clear();
-			IType elemType = GetElementType( session.Factory );
+			IList originalCopy = new ArrayList( ( ICollection ) original );
+			ICollectionPersister cp = session.Factory.GetCollectionPersister( role );
+
+			ICollection result = target == null
+				? Instantiate( session, cp )
+				: ( ICollection ) target;
+			Clear( result );
+
 			foreach ( object obj in originalCopy )
 			{
-				result.Add( elemType.Copy( obj, null, session, owner, copiedAlready ) );
+				Add( result, CopyElement( cp, obj, session, owner, copiedAlready ) );
 			}
 
 			return result;

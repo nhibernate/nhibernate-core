@@ -42,5 +42,16 @@ namespace NHibernate.Type
 		{
 			return new List( session, ( IList ) collection );
 		}
+
+		protected override void Add(ICollection collection, object element)
+		{
+			( ( IList ) collection ).Add( element );
+		}
+
+		protected override void Clear(ICollection collection)
+		{
+			( ( IList ) collection ).Clear();
+		}
+
 	}
 }

@@ -54,5 +54,26 @@ namespace NHibernate.Type
 		{
 			return new Map( session, ( IDictionary ) collection );
 		}
+
+		protected override void Add( ICollection collection, object element )
+		{
+			DictionaryEntry de = ( DictionaryEntry ) element;
+			( ( IDictionary ) collection ).Add( de.Key, de.Value );
+		}
+
+		protected override void Clear( ICollection collection )
+		{
+			( ( IDictionary ) collection ).Clear();
+		}
+
+		protected override object CopyElement(ICollectionPersister persister, object element, ISessionImplementor session, object owner, IDictionary copiedAlready)
+		{
+			DictionaryEntry de = ( DictionaryEntry ) element;
+			return new DictionaryEntry(
+				persister.IndexType.Copy( de.Key, null, session, owner, copiedAlready ),
+				persister.ElementType.Copy( de.Value, null, session, owner, copiedAlready ) );
+		}
+
+
 	}
 }

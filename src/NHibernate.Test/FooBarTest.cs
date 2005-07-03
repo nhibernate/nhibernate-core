@@ -5164,6 +5164,32 @@ namespace NHibernate.Test
 				s.Flush();
  			}
 		}
+
+		[Test]
+		public void Copy()
+		{
+			Baz baz = new Baz();
+			baz.SetDefaults();
+
+			using( ISession s = OpenSession() )
+			{
+				Baz persistentBaz = new Baz();
+				s.Save( persistentBaz );
+				s.Flush();
+
+				baz.Code = persistentBaz.Code;
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				Baz persistentBaz = s.Get( typeof( Baz ), baz.Code ) as Baz;
+				Assert.AreSame( persistentBaz, s.SaveOrUpdateCopy( baz ) );
+
+				s.Delete( persistentBaz );
+				s.Flush();
+			}
+		}
+
 		#endregion
 	}
 }

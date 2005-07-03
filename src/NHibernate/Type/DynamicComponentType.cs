@@ -40,6 +40,21 @@ namespace NHibernate.Type
 			propertySpan = propertyTypes.Length;
 		}
 
+		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		{
+			if( original == null ) return null;
+			if( original == target ) return target;
+		
+			object[] values = TypeFactory.Copy(
+				GetPropertyValues( original ),
+				GetPropertyValues( target ),
+				propertyTypes, session, owner, copiedAlready );
+		
+			object result = target == null ? Instantiate() : target;
+			SetPropertyValues( result, values );
+			return result;
+		}
+
 		#region IAbstractComponentType Members
 
 		/// <summary>

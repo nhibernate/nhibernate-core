@@ -58,6 +58,15 @@ namespace NHibernate.Type
 			return ( ICollection ) collection;
 		}
 
+		protected override void Add( ICollection collection, object element )
+		{
+			( ( Iesi.Collections.ISet ) collection ).Add( element );
+		}
+
+		protected override void Clear( ICollection collection )
+		{
+			( ( Iesi.Collections.ISet ) collection ).Clear();
+		}
 
 	}
 }

@@ -153,7 +153,6 @@ namespace NHibernate.Type
 			return NullSafeGet( rs, names, session, owner );
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -171,7 +170,6 @@ namespace NHibernate.Type
 			}
 			return Assemble( Disassemble( original, session ), session, owner );
 		}
-
 
 		/// <summary>
 		/// Maps identifiers to Entities or Collections. 

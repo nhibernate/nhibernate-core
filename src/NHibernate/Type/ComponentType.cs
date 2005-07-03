@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Reflection;
 using log4net;
@@ -591,5 +592,30 @@ namespace NHibernate.Type
 			}
 			return false;
 		}
+
+		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		{
+			if( original == null )
+			{
+				return null;
+			}
+
+			if( original == target )
+			{
+				return target;
+			}
+		
+			object result = target == null
+				? Instantiate( owner, session )
+				: target;
+		
+			object[] values = TypeFactory.Copy(
+				GetPropertyValues( original ), GetPropertyValues( result ),
+				propertyTypes, session, owner, copiedAlready );
+		
+			SetPropertyValues( result, values );
+			return result;
+		}
+
 	}
 }

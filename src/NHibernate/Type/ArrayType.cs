@@ -114,14 +114,17 @@ namespace NHibernate.Type
 			{
 				return target;
 			}
-			object[] orig = (object[]) original;
+			
+			System.Array orig = ( System.Array ) original;
 			int length = orig.Length;
-			object[] result = (object[]) System.Array.CreateInstance( elementClass, length );
+			System.Array result = System.Array.CreateInstance( elementClass, length );
 
 			IType elemType = GetElementType( session.Factory );
 			for ( int i = 0; i < length; i++ )
 			{
-				result[ i ] = elemType.Copy( orig[ i ], null, session, owner, copiedAlready );
+				result.SetValue(
+					elemType.Copy( orig.GetValue( i ), null, session, owner, copiedAlready ),
+					i );
 			}
 			return result;
 		}

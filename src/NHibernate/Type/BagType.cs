@@ -45,5 +45,14 @@ namespace NHibernate.Type
 			return new Bag( session, ( ICollection ) collection );
 		}
 
+		protected override void Add(ICollection collection, object element)
+		{
+			( ( IList ) collection ).Add( element );
+		}
+
+		protected override void Clear(ICollection collection)
+		{
+			( ( IList ) collection ).Clear();
+		}
 	}
 }
