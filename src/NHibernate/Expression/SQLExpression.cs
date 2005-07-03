@@ -23,7 +23,7 @@ namespace NHibernate.Expression
 		/// <param name="sql"></param>
 		/// <param name="values"></param>
 		/// <param name="types"></param>
-		internal SQLExpression( SqlString sql, object[ ] values, IType[ ] types )
+		public SQLExpression( SqlString sql, object[ ] values, IType[ ] types )
 		{
 			_sql = sql;
 			_typedValues = new TypedValue[values.Length];

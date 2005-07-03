@@ -20,7 +20,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="lhs">The <see cref="ICriterion"/> to use in the Left Hand Side.</param>
 		/// <param name="rhs">The <see cref="ICriterion"/> to use in the Right Hand Side.</param>
-		internal LogicalExpression( ICriterion lhs, ICriterion rhs )
+		protected LogicalExpression( ICriterion lhs, ICriterion rhs )
 		{
 			_lhs = lhs;
 			_rhs = rhs;

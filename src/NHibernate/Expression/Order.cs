@@ -17,7 +17,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <param name="ascending"></param>
-		protected Order( string propertyName, bool ascending )
+		public Order( string propertyName, bool ascending )
 		{
 			_propertyName = propertyName;
 			_ascending = ascending;

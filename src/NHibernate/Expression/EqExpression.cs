@@ -11,7 +11,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
-		internal EqExpression( string propertyName, object value ) : base( propertyName, value )
+		public EqExpression( string propertyName, object value ) : base( propertyName, value )
 		{
 		}
 

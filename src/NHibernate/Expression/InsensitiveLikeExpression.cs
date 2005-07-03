@@ -24,7 +24,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
-		internal InsensitiveLikeExpression( string propertyName, object value )
+		public InsensitiveLikeExpression( string propertyName, object value )
 		{
 			_propertyName = propertyName;
 			_value = value;

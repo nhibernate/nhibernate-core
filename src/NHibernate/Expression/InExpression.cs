@@ -25,7 +25,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <param name="values"></param>
-		internal InExpression( string propertyName, object[ ] values )
+		public InExpression( string propertyName, object[ ] values )
 		{
 			_propertyName = propertyName;
 			_values = values;

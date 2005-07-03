@@ -12,7 +12,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="lhs">The <see cref="ICriterion"/> to use as the left hand side.</param>
 		/// <param name="rhs">The <see cref="ICriterion"/> to use as the right hand side.</param>
-		internal AndExpression( ICriterion lhs, ICriterion rhs ) : base( lhs, rhs )
+		public AndExpression( ICriterion lhs, ICriterion rhs ) : base( lhs, rhs )
 		{
 		}
 

@@ -23,7 +23,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property of the Class.</param>
 		/// <param name="lo">The low value for the BetweenExpression.</param>
 		/// <param name="hi">The high value for the BetweenExpression.</param>
-		internal BetweenExpression( string propertyName, object lo, object hi )
+		public BetweenExpression( string propertyName, object lo, object hi )
 		{
 			_propertyName = propertyName;
 			_lo = lo;

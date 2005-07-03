@@ -19,7 +19,7 @@ namespace NHibernate.Expression
 		/// Property that should be null.
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
-		internal NullExpression( string propertyName )
+		public NullExpression( string propertyName )
 		{
 			_propertyName = propertyName;
 		}

@@ -16,7 +16,7 @@ namespace NHibernate.Expression
 		/// <see cref="ICriterion"/>
 		/// </summary>
 		/// <param name="criterion">The <see cref="ICriterion"/> to negate.</param>
-		internal NotExpression( ICriterion criterion )
+		public NotExpression( ICriterion criterion )
 		{
 			_criterion = criterion;
 		}
