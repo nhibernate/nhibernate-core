@@ -56,7 +56,10 @@ namespace NHibernate.SqlCommand
 			sqlParts = new ArrayList( sqlString.SqlParts.Length );
 			foreach( object part in sqlString.SqlParts )
 			{
-				sqlParts.Add( part );
+				if (part != null) 
+				{
+					sqlParts.Add( part );
+				}
 			}
 		}
 
@@ -67,7 +70,10 @@ namespace NHibernate.SqlCommand
 		/// <returns>This SqlStringBuilder</returns>
 		public SqlStringBuilder Add( string sql )
 		{
-			sqlParts.Add( sql );
+			if ( sql != null )
+			{
+				sqlParts.Add( sql );
+			}
 			return this;
 		}
 
@@ -81,7 +87,10 @@ namespace NHibernate.SqlCommand
 		/// <returns>This SqlStringBuilder</returns>
 		public SqlStringBuilder Add( Parameter parameter )
 		{
-			sqlParts.Add( parameter );
+			if ( parameter != null )
+			{
+				sqlParts.Add( parameter );
+			}
 			return this;
 		}
 
@@ -94,6 +103,9 @@ namespace NHibernate.SqlCommand
 		/// <exception cref="ArgumentException">Thrown when the part is not a Parameter, String, or SqlString.</exception>
 		public SqlStringBuilder AddObject( object part )
 		{
+			if ( part == null ){
+				return this;
+			}
 			Parameter paramPart = part as Parameter;
 			if( paramPart!=null )
 			{
@@ -127,7 +139,14 @@ namespace NHibernate.SqlCommand
 		/// <remarks>This calls the overloaded Add(sqlString, null, null, null, false)</remarks>
 		public SqlStringBuilder Add( SqlString sqlString )
 		{
-			return Add( sqlString, null, null, null, false );
+			if ( sqlString == null )
+			{
+				return this;
+			} 
+			else 
+			{
+				return Add( sqlString, null, null, null, false );
+			}
 		}
 
 
@@ -207,10 +226,12 @@ namespace NHibernate.SqlCommand
 				{
 					sqlParts.Add( "(" );
 				}
-
 				foreach( object sqlPart in sqlString.SqlParts )
 				{
-					sqlParts.Add( sqlPart );
+					if (sqlPart != null )
+					{
+						sqlParts.Add( sqlPart );
+					}
 				}
 
 				if( wrapStatement )
