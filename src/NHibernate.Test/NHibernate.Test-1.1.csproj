@@ -374,6 +374,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "IdTest\IdentifierGeneratorFactoryFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "JoinedSubclass\Address.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

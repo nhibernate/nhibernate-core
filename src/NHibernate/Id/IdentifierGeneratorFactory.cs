@@ -196,7 +196,12 @@ namespace NHibernate.Id
 			}
 			catch( Exception e )
 			{
-				throw new MappingException( "could not instantiate id generator", e );
+				string message = "could not instantiate id generator";
+				if( strategy!=null )
+				{
+					message += " for strategy '" + strategy + "'";
+				}
+				throw new MappingException( message, e );
 			}
 		}
 
