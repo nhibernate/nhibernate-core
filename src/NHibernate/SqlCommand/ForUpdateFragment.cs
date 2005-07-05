@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Collections;
 using NHibernate.Dialect;
 using NHibernate.Util;
 
@@ -17,6 +18,29 @@ namespace NHibernate.SqlCommand
 		public ForUpdateFragment()
 		{
 		}
+		public ForUpdateFragment(IDictionary lockModes)  {
+			LockMode upgradeType = null;
+			IEnumerator keys = lockModes.Keys.GetEnumerator();
+			object current;
+			while ( keys.MoveNext() ) 
+			{
+				current = keys.Current;
+				LockMode lockMode = (LockMode) lockModes[current];
+				if ( LockMode.Read.LessThan(lockMode) )
+				{
+					AddTableAlias((string) current);
+					if ( upgradeType != null && lockMode != upgradeType )
+					{
+						throw new QueryException("mixed LockModes");
+					}
+					upgradeType = lockMode;
+				}
+				if ( upgradeType == LockMode.UpgradeNoWait ){
+					this.NoWait = true;
+				}
+			}
+		}
+
 
 		/// <summary></summary>
 		public bool NoWait
