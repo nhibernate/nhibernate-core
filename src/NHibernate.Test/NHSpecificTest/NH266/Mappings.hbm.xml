@@ -4,10 +4,10 @@
 		<id name="Id">
 			<generator class="assigned" />
 		</id>
-		<discriminator column="`type`" type="string" />
+		<discriminator column="`type`" type="String" />
 		<property name="Name" />
 		<subclass name="NHibernate.Test.NHSpecificTest.NH266.B, NHibernate.Test" discriminator-value="nh_266_b">
-			<property name="Number"/>
+			<property name="Number" column ="`Number`"/>
 		</subclass>
 		<subclass name="NHibernate.Test.NHSpecificTest.NH266.C, NHibernate.Test" discriminator-value="nh_266_c">
 			<property name="Code" />
