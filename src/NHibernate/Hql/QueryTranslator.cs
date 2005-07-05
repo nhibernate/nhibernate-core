@@ -1578,35 +1578,17 @@ namespace NHibernate.Hql
 			{
 				return sql;
 			}
-			else if( dialect.SupportsForUpdateOf )
+			else 
 			{
-				LockMode upgradeType = null;
-				ForUpdateFragment updateClause = new ForUpdateFragment();
-				IDictionaryEnumerator it = lockModes.GetEnumerator();
-				it.MoveNext();
-				DictionaryEntry me = ( DictionaryEntry ) it.Current;
-				String name = GetAliasName( ( String ) me.Key );
-				LockMode lockMode = ( LockMode ) me.Value;
-				if( LockMode.Read.LessThan( lockMode ) )
+				IDictionary aliasedLockModes = new Hashtable();
+				IEnumerator keys = lockModes.Keys.GetEnumerator();
+				object key;
+				while ( keys.MoveNext() ) 
 				{
-					updateClause.AddTableAlias( name );
-					if( upgradeType != null && lockMode != upgradeType )
-					{
-						throw new QueryException( "mixed LockModes" );
-					}
-					upgradeType = lockMode;
+					key = keys.Current;
+					aliasedLockModes.Add( GetAliasName( (String)  key ), lockModes[key] );
 				}
-				if( upgradeType == LockMode.UpgradeNoWait && dialect.SupportsForUpdateNoWait )
-				{
-					updateClause.NoWait = true;
-				}
-
-				return sql.Append( updateClause.ToSqlStringFragment( dialect ) );
-			}
-			else
-			{
-				log.Debug( "dialect does not support FOR UPDATE OF" );
-				return sql;
+				return sql.Append(new ForUpdateFragment(aliasedLockModes).ToSqlStringFragment(dialect));
 			}
 		}
 
