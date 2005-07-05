@@ -218,14 +218,7 @@ namespace NHibernate.Loader
 			querySpaces.Add( space );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sqlSelectString"></param>
-		/// <param name="lockModes"></param>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
-		protected string ApplyLocks( string sqlSelectString, IDictionary lockModes, Dialect.Dialect dialect )
+		protected override SqlString ApplyLocks( SqlString sqlSelectString, IDictionary lockModes, Dialect.Dialect dialect )
 		{
 			if ( lockModes == null || lockModes.Count == 0 )
 			{
@@ -233,7 +226,8 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				return sqlSelectString + new ForUpdateFragment( ).ToSqlStringFragment( dialect );
+				ForUpdateFragment fragment = new ForUpdateFragment( lockModes );
+				return sqlSelectString.Append( fragment.ToSqlStringFragment( dialect ) );
 			}
 		}
 
