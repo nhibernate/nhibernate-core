@@ -217,7 +217,7 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public override bool SupportsForUpdateOf
 		{
-			get { return true; }
+			get { return false; }
 		}
 
 		/// <summary></summary>
