@@ -19,7 +19,7 @@
         <property name="Name" />
         <property name="Address" />
         <property name="Date" column="date_" />
-        <many-to-one name="top" access="field" column="_top"/> <!-- changed column name because of MSSQL conflicts -->
+        <many-to-one name="top" access="field" column="`_top`"/> <!-- changed column name because of MSSQL conflicts -->
         <joined-subclass name="NHibernate.DomainModel.TrivialClass, NHibernate.DomainModel">
         	<key column="tcid"/>
         </joined-subclass>
