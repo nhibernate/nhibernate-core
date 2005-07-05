@@ -70,8 +70,8 @@ namespace NHibernate.Test
 			}
 		}
 
-		[Test]
-		public void Many() 
+		[Test, Explicit]
+			public void Many() 
 		{
 			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
 
@@ -145,22 +145,171 @@ namespace NHibernate.Test
 			System.GC.Collect();
 		}
 
-		[Test]
-		[Ignore("Test not written yet.")]
+		[Test, Explicit]
 		public void Simultaneous() 
 		{
+			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
+			for ( int n=2; n<4000; n*=2 ) 
+			{
+			
+				Simple[] simples = new Simple[n];
+				object[] ids = new object[n];
+				for ( int i=0; i<n; i++ ) 
+				{
+					simples[i] = new Simple();
+					simples[i].Init();
+					simples[i].Count = i;
+					ids[i] = (long)(i);
+				}
+			
+				//allow cache to settle
+			
+				ISession s = OpenSession();
+				Hibernate(s, simples, ids, n, "h0");
+				s.Close();
+			
+				IDbConnection c = cp.GetConnection();
+				DirectAdoNet( c, simples, ids, n, "j0" );
+				cp.CloseConnection(c);
+			
+				s = OpenSession();
+				Hibernate(s, simples, ids, n, "h0");
+				s.Close();
+			
+				c = cp.GetConnection();
+				DirectAdoNet( c, simples, ids, n, "j0" );
+				cp.CloseConnection(c);
+			
+				//Now do timings
+			
+				s = OpenSession();
+				long time = DateTime.Now.Ticks;
+				Hibernate(s, simples, ids, n, "h1");
+				long hiber = DateTime.Now.Ticks - time;
+				s.Close();
+			
+				c = cp.GetConnection();
+				time = DateTime.Now.Ticks;
+				DirectAdoNet( c, simples, ids, n, "j1" );
+				long adonet = DateTime.Now.Ticks - time;
+				cp.CloseConnection(c);
+			
+				s = OpenSession();
+				time = DateTime.Now.Ticks;
+				Hibernate(s, simples, ids, n, "h2");
+				hiber += DateTime.Now.Ticks - time;
+				s.Close();
+			
+				c = cp.GetConnection();
+				time = DateTime.Now.Ticks;
+				DirectAdoNet( c, simples, ids, n, "j2" );
+				adonet += DateTime.Now.Ticks - time;
+				cp.CloseConnection(c);
+			
+				s = OpenSession();
+				time = DateTime.Now.Ticks;
+				Hibernate(s, simples, ids, n, "h2");
+				hiber += DateTime.Now.Ticks - time;
+				s.Close();
+			
+				c = cp.GetConnection();
+				time = DateTime.Now.Ticks;
+				DirectAdoNet( c, simples, ids, n, "j2" );
+				adonet += DateTime.Now.Ticks - time;
+				cp.CloseConnection(c);
+				System.Console.Out.WriteLine("Objects " + n + " NHibernate: " + hiber + "ms / Direct ADO.NET: " + adonet + "ms = Ratio: " + (((float)hiber/adonet)).ToString() );			
+			}
+		
+			cp.Dispose();
+			System.GC.Collect();
 		}
 
-		[Test]
-		[Ignore("Test not written yet.")]
-		public void HibernateOnly() 
+		[Test, Explicit]
+		public void NHibernateOnly() 
 		{
+			for ( int n=2; n<4000; n*=2 ) {
+		
+				Simple[] simples = new Simple[n];
+				object[] ids = new object[n];
+				for ( int i=0; i<n; i++ ) {
+					simples[i] = new Simple();
+					simples[i].Init();
+					simples[i].Count = i;
+					ids[i] = (long)i;
+				}
+				
+				//Now do timings
+				
+				ISession s = OpenSession();
+				long time = DateTime.Now.Ticks;
+				Hibernate(s, simples, ids, n, "h1");
+				long hiber = DateTime.Now.Ticks - time;
+				s.Close();
+				
+				s = OpenSession();
+				time = DateTime.Now.Ticks;
+				Hibernate(s, simples, ids, n, "h2");
+				hiber += DateTime.Now.Ticks - time;
+				s.Close();
+				
+				s = OpenSession();
+				time = DateTime.Now.Ticks;
+				Hibernate(s, simples, ids, n, "h2");
+				hiber += DateTime.Now.Ticks - time;
+				s.Close();
+			
+				System.Console.WriteLine( "Objects: " + n + " - NHibernate: " + hiber );
+			
+			}
+		
+			System.GC.Collect();
+
 		}
 
-		[Test]
-		[Ignore("Test not written yet.")]
+		[Test, Explicit]
 		public void AdoNetOnly()
 		{
+			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
+		
+			for ( int n=2; n<4000; n*=2 ) 
+			{
+				Simple[] simples = new Simple[n];
+				object[] ids = new object[n];
+				for ( int i=0; i<n; i++ ) 
+				{
+					simples[i] = new Simple();
+					simples[i].Init();
+					simples[i].Count = i;
+					ids[i] = (long)i;
+				}
+			
+				//Now do timings
+			
+				IDbConnection c = cp.GetConnection();
+				long time = DateTime.Now.Ticks;
+				DirectAdoNet( c, simples, ids, n, "j1" );
+				long adonet = DateTime.Now.Ticks - time;
+				cp.CloseConnection(c);
+			
+				c = cp.GetConnection();
+				time = DateTime.Now.Ticks;
+				DirectAdoNet( c, simples, ids, n, "j2" );
+				adonet += DateTime.Now.Ticks - time;
+				cp.CloseConnection(c);
+						
+				c = cp.GetConnection();
+				time = DateTime.Now.Ticks;
+				DirectAdoNet( c, simples, ids, n, "j2" );
+				adonet += DateTime.Now.Ticks - time;
+				cp.CloseConnection(c);
+			
+				System.Console.Out.WriteLine( "Objects: " + n + " Direct ADO.NET: " + adonet );
+			
+			}
+		
+			cp.Dispose();
+			System.GC.Collect();
+
 		}
 
 		private void Hibernate(ISession s, Simple[] simples, object[] ids, int N, string runname) 
