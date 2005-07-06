@@ -493,6 +493,12 @@ namespace NHibernate.Cfg
 			{
 				BindColumns(node, model, isNullable, true, path, mappings);
 			}
+
+			XmlAttribute fkNode = node.Attributes["foreign-key"];
+			if( fkNode != null )
+			{
+				model.ForeignKeyName = fkNode.Value;
+			}
 		}
 
 		private static string PropertyAccess( XmlNode node, Mappings mappings )

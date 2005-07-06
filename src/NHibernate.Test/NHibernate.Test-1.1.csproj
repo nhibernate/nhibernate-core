@@ -728,6 +728,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NHSpecificTest\NH283\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHSpecificTest\NH295\JoinedSubclass.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
