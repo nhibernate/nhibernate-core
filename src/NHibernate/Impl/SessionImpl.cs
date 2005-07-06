@@ -2775,7 +2775,9 @@ namespace NHibernate.Impl
 					}
 					try
 					{
-						return persister.Load( id, optionalObject, lockMode, this );
+						object o = persister.Load( id, optionalObject, lockMode, this );
+						if( o == null ) AddNonExist( key );
+						return o;
 					} 
 						//TODO: change to some kind of SqlException
 					catch( Exception e )
