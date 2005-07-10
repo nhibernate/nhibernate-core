@@ -782,10 +782,13 @@ namespace NHibernate.Cfg
 						break;
 					}
 				}
-				if (!found) throw new MappingException( 
+				if (!found) 
+				{
+					throw new MappingException( 
 								"property-ref not found: " + upr.PropertyName + 
 								" in class: " + upr.ReferencedClass.Name
 								);
+				}
 			}
 
 			//TODO: Somehow add the newly created foreign keys to the internal collection
@@ -813,18 +816,34 @@ namespace NHibernate.Cfg
 					PersistentClass referencedClass = ( PersistentClass ) classes[ fk.ReferencedClass ];
 					if( referencedClass == null )
 					{
-						throw new MappingException(
-							"An association from the table " +
-							fk.Table.Name +
-							" refers to an unmapped class: " +
-							fk.ReferencedClass.Name
-							);
+						string message = "An association from the table {0} refers to an unmapped class: {1}";
+
+						if( log.IsErrorEnabled )
+						{
+							log.Error( message );
+						}
+
+						throw new MappingException( string.Format( message, fk.Table.Name, fk.ReferencedClass.Name ) );
 					}
 					if ( referencedClass.IsJoinedSubclass )
 					{
 						SecondPassCompileForeignKeys( referencedClass.Superclass.Table, done );
 					}
-					fk.ReferencedTable = referencedClass.Table;
+
+					try 
+					{
+						fk.ReferencedTable = referencedClass.Table;
+					}
+					catch( MappingException me )
+					{
+						if( log.IsErrorEnabled )
+						{
+							log.Error( me );
+						}
+
+						// rethrow the error - only caught it for logging purposes
+						throw;
+					}
 				}
 			}
 		}

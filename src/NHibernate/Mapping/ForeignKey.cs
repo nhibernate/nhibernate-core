@@ -63,7 +63,9 @@ namespace NHibernate.Mapping
 			{
 				if( value.PrimaryKey.ColumnSpan != ColumnSpan )
 				{
-					throw new MappingException( "Foreign key must have same number of columns as referenced primary key" );
+					string message = "Foreign key in table {0} must have same number of columns as referenced primary key in table {1}";
+
+					throw new MappingException( string.Format( message, this.Table.Name , value.Name ) );
 				}
 
 				IEnumerator fkCols = ColumnCollection.GetEnumerator();

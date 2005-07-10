@@ -476,6 +476,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MappingTest\ForeignKeyFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MappingTest\TableFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
