@@ -309,6 +309,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DriverTest\OracleDataClientDriverFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ExpressionTest\BaseExpressionFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
