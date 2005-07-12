@@ -12,7 +12,7 @@ namespace NHibernate.Test
 {
 	public abstract class TestCase
 	{
-		private const bool OUTPUT_DDL = false;
+		private const bool OUTPUT_DDL = true;
 		protected Configuration cfg;
 		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
@@ -120,6 +120,13 @@ namespace NHibernate.Test
 
 		private bool CheckDatabaseWasCleaned()
 		{
+			if( sessions.GetAllClassMetadata().Count == 0 )
+			{
+				// Return early in the case of no mappings, also avoiding
+				// a warning when executing the HQL below.
+				return true;
+			}
+
 			int objectCount;
 			using( ISession s = sessions.OpenSession() )
 			{

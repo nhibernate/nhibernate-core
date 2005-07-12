@@ -4468,6 +4468,11 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public void Reconnect()
 		{
+			if( !IsOpen )
+			{
+				throw new HibernateException( "Session is closed" );
+			}
+
 			if( IsConnected )
 			{
 				throw new HibernateException( "session already connected" );

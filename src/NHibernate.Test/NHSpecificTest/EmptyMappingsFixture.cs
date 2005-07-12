@@ -8,8 +8,13 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	/// <summary>
+	/// This fixture contains no mappings, it is thus faster and can be used
+	/// to run tests for basic features that don't require any mapping files
+	/// to function.
+	/// </summary>
 	[TestFixture]
-	public class TransactionFixture : TestCase
+	public class EmptyMappingsFixture : TestCase
 	{
 		protected override IList Mappings
 		{
@@ -24,6 +29,16 @@ namespace NHibernate.Test.NHSpecificTest
 			{
 				AdoTransaction at = ( AdoTransaction ) t;
 				Assert.AreEqual( IsolationLevel.ReadCommitted, at.IsolationLevel );
+			}
+		}
+
+		[Test, ExpectedException(typeof(HibernateException))]
+		public void ReconnectAfterClose()
+		{
+			using( ISession s = OpenSession() )
+			{
+				s.Close();
+				s.Reconnect();
 			}
 		}
 	}
