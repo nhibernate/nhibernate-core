@@ -57,13 +57,17 @@ namespace NHibernate.Impl
 				throw new QueryException( "Not all named parameters have been set: " + missingParams ) ;
 			}
 
-			if ( positionalParameterCount != values.Count )
+			if ( positionalParameterCount != values.Count ) 
+			{
 				throw new QueryException( string.Format( "Not all positional parameters have been set. Expected {0}, set {1}.", positionalParameterCount, values.Count ) );
+			}
 
 			for ( int i = 0; i < values.Count; i++ )
 			{
-				if ( values[i] == UNSET_PARAMETER || types[i] == UNSET_TYPE )
+				if ( values[i] == UNSET_PARAMETER || types[i] == UNSET_TYPE ) 
+				{
 					throw new QueryException( string.Format( "Not all positional parameters have been set. Found unset parameter at position {0}.", i) );
+				}
 			}
 		}
 
@@ -179,11 +183,15 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetParameter( int position, object val, IType type )
 		{
-			if ( positionalParameterCount == 0 )
+			if ( positionalParameterCount == 0 ) 
+			{
 				throw new ArgumentOutOfRangeException( string.Format( "No positional parameters in query: {0}", queryString ) );
+			}
 
-			if ( position < 0 || position > positionalParameterCount - 1 )
+			if ( position < 0 || position > positionalParameterCount - 1 ) 
+			{
 				throw new ArgumentOutOfRangeException( string.Format( "Positional parameter does not exists: {0} in query: {1}", position, queryString ) );
+			}
 
 			int size = values.Count;
 			if ( position < size )
@@ -634,6 +642,10 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetParameter( string name, object val )
 		{
+			if( val==null )
+			{
+				throw new ArgumentNullException( "val", "A type specific Set(name, val) should be called because the Type can not be guessed from a null value." );
+			}
 			SetParameter( name, val, GuessType( val ) );
 			return this;
 		}
@@ -646,22 +658,54 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetParameter( int position, object val )
 		{
+			if( val==null )
+			{
+				throw new ArgumentNullException( "val", "A type specific Set(position, val) should be called because the Type can not be guessed from a null value." );
+			}
 			SetParameter( position, val, GuessType( val ) );
 			return this;
 		}
 
+		/// <summary>
+		/// Guesses the <see cref="IType"/> from the <c>param</c>'s value.
+		/// </summary>
+		/// <param name="param">The object to guess the <see cref="IType"/> of.</param>
+		/// <returns>An <see cref="IType"/> for the object.</returns>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the <c>param</c> is null because the <see cref="IType"/>
+		/// can't be guess from a null value.
+		/// </exception>
 		private IType GuessType( object param )
 		{
+			if( param==null )
+			{
+				throw new ArgumentNullException( "param", "The IType can not be guessed for a null value." );
+			}
+			
 			System.Type clazz = NHibernateProxyHelper.GetClass( param );
 			return GuessType( clazz );
 		}
 
+		/// <summary>
+		/// Guesses the <see cref="IType"/> from the <see cref="System.Type"/>.
+		/// </summary>
+		/// <param name="clazz">The <see cref="System.Type"/> to guess the <see cref="IType"/> of.</param>
+		/// <returns>An <see cref="IType"/> for the <see cref="System.Type"/>.</returns>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the <c>clazz</c> is null because the <see cref="IType"/>
+		/// can't be guess from a null type.
+		/// </exception>
 		private IType GuessType( System.Type clazz )
 		{
+			if( clazz==null )
+			{
+				throw new ArgumentNullException( "clazz", "The IType can not be guessed for a null value." );
+			}
+			
 			string typename = clazz.AssemblyQualifiedName;
 			IType type = TypeFactory.HueristicType( typename );
-			bool serializable = type != null && type is SerializableType;
-			if( type == null || serializable )
+			bool serializable = (type!=null && type is SerializableType);
+			if( type==null || serializable )
 			{
 				try
 				{

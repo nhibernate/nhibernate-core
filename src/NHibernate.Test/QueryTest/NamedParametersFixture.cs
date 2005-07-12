@@ -41,5 +41,25 @@ namespace NHibernate.Test.QueryTest
 				s.Close();
 			}
 		}
+
+		/// <summary>
+		/// Verifying that a <c>null</c> value passed into SetParameter(name, val) throws
+		/// an exception
+		/// </summary>
+		[Test, ExpectedException( typeof( ArgumentNullException ) )]
+		public void TestNullNamedParameter()
+		{
+			ISession s = OpenSession();
+
+			try
+			{
+				IQuery q = s.CreateQuery( "from Simple as s where s.Name=:Name" );
+				q.SetParameter( "Name", null );
+			}
+			finally
+			{
+				s.Close();
+			}
+		}
 	}
 }
