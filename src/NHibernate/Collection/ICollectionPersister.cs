@@ -17,7 +17,7 @@ namespace NHibernate.Collection
 	/// Implements persistence of a collection instance while the instance is
 	/// referenced in a particular role.</p>
 	/// <p>
-	/// This class is highly coupled to the <tt>PersistentCollection</tt>
+	/// This class is highly coupled to the <see cref="PersistentCollection" />
 	/// hierarchy, since double dispatch is used to load and update collection 
 	/// elements.</p>
 	/// </summary>
@@ -70,7 +70,7 @@ namespace NHibernate.Collection
 		System.Type ElementClass { get; }
 
 		/// <summary>
-		/// Read the key from a row of the <tt>IDataReader</tt>
+		/// Read the key from a row of the <see cref="IDataReader" />
 		/// </summary>
 		/// <param name="rs"></param>
 		/// <param name="session"></param>

@@ -752,7 +752,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Generate a sequence of <tt>LEFT OUTER JOIN</tt> clauses for the given associations.
+		/// Generate a sequence of <c>LEFT OUTER JOIN</c> clauses for the given associations.
 		/// </summary>
 		/// <param name="associations"></param>
 		/// <returns></returns>

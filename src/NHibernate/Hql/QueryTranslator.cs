@@ -194,8 +194,8 @@ namespace NHibernate.Hql
 		}
 
 		/// <summary>
-		///Types of the return values of an <tt>iterate()</tt> style query.
-		///Return an array of <tt>Type</tt>s.
+		///Types of the return values of an <c>Enumerate()</c> style query.
+		///Return an array of <see cref="IType" />s.
 		/// </summary>
 		public virtual IType[ ] ReturnTypes
 		{

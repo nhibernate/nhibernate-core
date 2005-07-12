@@ -5,8 +5,8 @@ using log4net;
 namespace NHibernate
 {
 	/// <summary>
-	/// Thrown when the application calls <tt>Query.uniqueResult()</tt> and
-	/// the query returned more than one result. Unlike all other Hibernate 
+	/// Thrown when the application calls <see cref="IQuery.UniqueResult()">IQuery.UniqueResult()</see> 
+	/// and the query returned more than one result. Unlike all other NHibernate 
 	/// exceptions, this one is recoverable!
 	/// </summary>
 	[Serializable]

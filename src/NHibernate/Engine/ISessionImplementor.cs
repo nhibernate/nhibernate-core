@@ -103,8 +103,8 @@ namespace NHibernate.Engine
 		object InternalLoad( System.Type persistentClass, object id );
 
 		/// <summary>
-		/// Load an instance without checking if it was deleted. If it does not exist, return <tt>null</tt>.
-		/// Do not create a proxy (but do return any existing proxy).
+		/// Load an instance without checking if it was deleted. If it does not exist, 
+		/// return <c>null</c>. Do not create a proxy (but do return any existing proxy).
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <param name="id"></param>

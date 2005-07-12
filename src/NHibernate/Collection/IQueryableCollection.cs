@@ -33,7 +33,7 @@ namespace NHibernate.Collection
 		/// Get the persister of the element class, if this is a
 		/// collection of entities (optional operation).  Note that
 		/// for a one-to-many association, the returned persister
-		/// must be <tt>OuterJoinLoadable</tt>.
+		/// must be <c>OuterJoinLoadable</c>.
 		/// </summary>
 		IClassPersister ElementPersister { get; }
 

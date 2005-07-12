@@ -9,7 +9,7 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// Handles "dynamic" components, represented as <tt>Map</tt>s
+	/// Handles "dynamic" components, represented as <c>&lt;map&gt;</c>s
 	/// </summary>
 	public class DynamicComponentType : AbstractType, IAbstractComponentType
 	{

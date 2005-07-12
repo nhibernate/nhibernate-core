@@ -48,12 +48,12 @@ namespace NHibernate.Engine
 		bool IsOuterJoinedFetchEnabled { get; }
 		
 		/// <summary>
-		/// Are scrollable <tt>ResultSet</tt>s supported?
+		/// Are scrollable <c>ResultSet</c>s supported?
 		/// </summary>
 		bool IsScrollableResultSetsEnabled { get; }
 
 		/// <summary>
-		/// Get the database schema specified in <tt>hibernate.default_schema</tt>
+		/// Get the database schema specified in <c>hibernate.default_schema</c>
 		/// </summary>
 		bool IsGetGeneratedKeysEnabled { get; }
 

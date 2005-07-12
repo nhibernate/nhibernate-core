@@ -560,16 +560,16 @@ namespace NHibernate
 		/// Create a new instance of <c>IQuery</c> for the given SQL string.
 		/// </summary>
 		/// <param name="sql">a query expressed in SQL</param>
-		/// <param name="returnAlias">a table alias that appears inside <tt>{}</tt> in the SQL string</param>
+		/// <param name="returnAlias">a table alias that appears inside <c>{}</c> in the SQL string</param>
 		/// <param name="returnClass">the returned persistent class</param>
 		/// <returns></returns>
 		IQuery CreateSQLQuery( string sql, string returnAlias, System.Type returnClass );
 
 		/// <summary>
-		/// Create a new instance of <tt>Query</tt> for the given SQL string.
+		/// Create a new instance of <see cref="IQuery" /> for the given SQL string.
 		/// </summary>
 		/// <param name="sql">a query expressed in SQL</param>
-		/// <param name="returnAliases">an array of table aliases that appear inside <tt>{}</tt> in the SQL string</param>
+		/// <param name="returnAliases">an array of table aliases that appear inside <c>{}</c> in the SQL string</param>
 		/// <param name="returnClasses">the returned persistent classes</param>
 		/// <returns></returns>
 		IQuery CreateSQLQuery( string sql, string[] returnAliases, System.Type[] returnClasses );
@@ -577,7 +577,7 @@ namespace NHibernate
 		/// <summary>
 		/// Completely clear the session. Evict all loaded instances and cancel all pending
 		/// saves, updates and deletions. Do not close open enumerables or instances of
-		/// <tt>ScrollableResults</tt>.
+		/// <c>ScrollableResults</c>.
 		/// </summary>
 		void Clear();
 	}

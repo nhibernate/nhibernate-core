@@ -96,7 +96,7 @@ namespace NHibernate
 		/// Convenience method to return a single instance that matches
 		/// the query, or null if the query returns no results.
 		/// </summary>
-		/// <returns>the single result or <tt>null</tt></returns>
+		/// <returns>the single result or <c>null</c></returns>
 		/// <exception cref="HibernateException">
 		/// Thrown when there is more than one matching result.
 		/// </exception>
@@ -122,9 +122,9 @@ namespace NHibernate
 
 		/// <summary>
 		/// Set the lockmode for the objects idententified by the
-		/// given alias that appears in the <tt>FROM</tt> clause.
+		/// given alias that appears in the <c>FROM</c> clause.
 		/// </summary>
-		/// <param name="alias">alias a query alias, or <tt>this</tt> for a collection filter</param>
+		/// <param name="alias">alias a query alias, or <c>this</c> for a collection filter</param>
 		/// <param name="lockMode"></param>
 		void SetLockMode( string alias, LockMode lockMode );
 
