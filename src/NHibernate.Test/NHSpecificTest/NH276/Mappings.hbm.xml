@@ -7,7 +7,7 @@
 		<id name="Id">
 			<generator class="assigned" />
 		</id>
-		<property name="Number" />
+		<property name="Number" column="`Number`"/>
 	</class>
 	
 	<class name="Office" table="o_276">
