@@ -5,7 +5,7 @@
     <class name="Party" discriminator-value="~party">
 
         <id name="Id" unsaved-value="-1">
-            <generator class="identity" />
+            <generator class="native" />
         </id>
 
         <discriminator column="party_type" type="string" />
