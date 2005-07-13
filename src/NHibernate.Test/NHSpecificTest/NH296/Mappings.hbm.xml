@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping
 	xmlns="urn:nhibernate-mapping-2.0"
 	assembly="NHibernate.Test"
@@ -7,7 +7,7 @@
 	<class name="Product" discriminator-value="0">
 		<composite-id name="ProductPK" class="ProductPK">
 			<key-property name="Type" />
-			<key-property name="Number" />
+			<key-property name="Number" column="`Number`"/>
 		</composite-id>
 		<discriminator column="Type" type="Int32" insert="false" />
 		<subclass name="Stock" discriminator-value="1">
