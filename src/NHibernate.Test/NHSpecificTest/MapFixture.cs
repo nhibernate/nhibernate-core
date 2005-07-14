@@ -44,12 +44,6 @@ namespace NHibernate.Test.NHSpecificTest
 
 
 		[Test]
-		[Ignore("Have not written the Test yet.")]
-		public void TestDelete() {
-			//System.Diagnostics.Debug.Write("testing some crap");
-		}
-
-		[Test]
 		public void TestSelect()
 		{
 			TestInsert();
@@ -72,25 +66,6 @@ namespace NHibernate.Test.NHSpecificTest
 			t.Commit();
 			s.Close();
 		}
-
-		[Test]
-		[Ignore("Code is incomplete")]
-		public void TestInverse() 
-		{
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
-
-			TestInsert();
-			Parent bobJones = (Parent)s.CreateCriteria(typeof(Parent))
-								.Add(Expression.Expression.Eq("AdultName", "Bob Jones"))
-								.List()[0];
-			
-			
-
-			t.Commit();
-			s.Close();
-		}
-
 
 		[Test]
 		public void TestSort() {
