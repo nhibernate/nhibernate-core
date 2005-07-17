@@ -49,6 +49,11 @@ namespace NHibernate.SqlCommand
 				unquoted = sqlIdentifier;
 			}
 
+			// Oracle doesn't like underscores at the start of identifiers (NH-320).
+			// It should be safe to trim them here, because the aliases are postfixed
+			// with a unique number anyway, so they won't collide.
+			unquoted = unquoted.TrimStart( '_' );
+
 			if( unquoted.Length > length )
 			{
 				unquoted = unquoted.Substring( 0, length );
@@ -79,6 +84,9 @@ namespace NHibernate.SqlCommand
 		public string ToUnquotedAliasString( string sqlIdentifier, Dialect.Dialect dialect )
 		{
 			string unquoted = dialect.UnQuote( sqlIdentifier );
+
+			// See comment in ToAliasString above
+			unquoted = unquoted.TrimStart( '_' );
 
 			if( unquoted.Length > length )
 			{
