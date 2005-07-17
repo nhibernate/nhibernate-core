@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest  
 { 
 	[TestFixture]
-	public class NH47Fxiture : TestCase
+	public class NH47Fixture : TestCase
 	{ 
 		protected override IList Mappings
 		{
