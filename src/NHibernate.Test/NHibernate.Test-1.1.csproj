@@ -842,6 +842,20 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NHSpecificTest\NH317\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH317\Node.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH317\Node.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "NHSpecificTest\NH318\Fixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
