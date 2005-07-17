@@ -364,7 +364,7 @@ namespace NHibernate.Test
 				Simple s = new Simple();
 				if ( ! reader.IsDBNull(0) )
 				{
-					reader.GetInt32(0);
+					reader.GetInt64(0);
 				}
 				if ( ! reader.IsDBNull(1) )
 				{
@@ -388,7 +388,7 @@ namespace NHibernate.Test
 				}
 				if ( ! reader.IsDBNull(6) )
 				{
-					reader.GetInt32(6); 
+					reader.GetInt64(6); 
 				} 
 				s.Other = null;
 				result.Add(s);
