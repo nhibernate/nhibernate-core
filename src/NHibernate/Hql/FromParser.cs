@@ -301,6 +301,12 @@ namespace NHibernate.Hql
 		/// <param name="q"></param>
 		public virtual void End( QueryTranslator q )
 		{
+			string token = "<end-of-text>";
+			if( alias != null && expectingIn )
+			{
+				throw new QueryException( "in expected: <end-of-text>"
+					+ " (possibly an invalid or unmapped class name was used in the query)");
+			}
 		}
 	}
 }

@@ -1168,19 +1168,17 @@ namespace NHibernate.Test
 			fooBag.Add( new Foo() );
 			baz.FooBag=fooBag;
 			s.Save(baz);
+			s.Flush();
 			fooBag = baz.FooBag;
 			s.Find("from Baz baz left join fetch baz.FooBag");
 			Assert.IsTrue( NHibernateUtil.IsInitialized(fooBag) );
-			Assert.IsTrue( fooBag==baz.FooBag );
-			Assert.IsTrue( baz.FooBag.Count==2 );
 			s.Close();
 			
 			s = OpenSession();
 			baz = (Baz) s.Load( typeof(Baz), baz.Code );
 			Object bag = baz.FooBag;
 			Assert.IsFalse( NHibernateUtil.IsInitialized(bag) );
-			s.Find("from Baz baz left join fetch fooBag");
-			Assert.IsFalse( NHibernateUtil.IsInitialized(bag) );
+			s.Find("from Baz baz left join fetch baz.FooBag");
 			Assert.IsTrue( bag==baz.FooBag );
 			Assert.IsTrue( baz.FooBag.Count==2 );
 			s.Delete(baz);

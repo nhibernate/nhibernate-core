@@ -32,13 +32,22 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(HibernateException))]
+		[Test, ExpectedException( typeof( HibernateException ) )]
 		public void ReconnectAfterClose()
 		{
 			using( ISession s = OpenSession() )
 			{
 				s.Close();
 				s.Reconnect();
+			}
+		}
+
+		[Test, ExpectedException( typeof( QueryException ) )]
+		public void InvalidQuery()
+		{
+			using( ISession s = OpenSession() )
+			{
+				s.Find( "from SomeInvalidClass" );
 			}
 		}
 	}
