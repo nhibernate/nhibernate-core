@@ -55,7 +55,7 @@ namespace NHibernate.Mapping
 		public override PersistentClass Superclass
 		{
 			get { return superclass; }
-			set { this.superclass = superclass; }
+			set { this.superclass = value; }
 		}
 
 		/// <summary>
