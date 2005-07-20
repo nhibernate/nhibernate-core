@@ -116,7 +116,7 @@ namespace NHibernate.Cfg
 				throw new HibernateException( "could not instantiate CacheProvider: " + cacheClassName, e );
 			}
 
-			bool prepareSql = PropertiesHelper.GetBoolean( Environment.PrepareSql, properties, true );
+			bool prepareSql = PropertiesHelper.GetBoolean( Environment.PrepareSql, properties, false );
 
 			int cmdTimeout = PropertiesHelper.GetInt32( Environment.CommandTimeout, properties, 0 );
 
