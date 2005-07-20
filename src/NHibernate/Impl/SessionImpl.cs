@@ -1974,32 +1974,27 @@ namespace NHibernate.Impl
 				return new ArrayList();
 			}
 
-			IEnumerable result = null;
-			IEnumerable[ ] results = null;
-			bool many = q.Length > 1;
-			if( many )
-			{
-				results = new IEnumerable[q.Length];
-			}
+			IEnumerable[ ] results = new IEnumerable[q.Length];
 
+			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 			//execute the queries and return all results as a single enumerable
-			for( int i = 0; i < q.Length; i++ )
+			try
 			{
-				try
+				for( int i = 0; i < q.Length; i++ )	
 				{
-					result = q[ i ].GetEnumerable( parameters, this );
+					results[i] = q[ i ].GetEnumerable( parameters, this );
 				}
-				catch( Exception e )
-				{
-					throw new ADOException( "Could not execute query", e );
-				}
-				if( many )
-				{
-					results[ i ] = result;
-				}
+			} 				
+			catch( Exception e )
+			{
+				throw new ADOException( "Could not execute query", e );
+			} 
+			finally 
+			{
+				dontFlushFromFind--; 
 			}
 
-			return many ? new JoinedEnumerable( results ) : result;
+			return results.Length > 0 ? new JoinedEnumerable( results ) : results[0];
 		}
 
 		/// <summary>
@@ -4541,6 +4536,17 @@ namespace NHibernate.Impl
 			// know this call came through Dispose()
 			if( isDisposing )
 			{
+
+				if( transaction != null )
+				{
+					transaction.Dispose();
+				}
+
+				if( batcher != null )
+				{
+					batcher.Dispose();
+				}
+
 				// we are not reusing the Close() method because that sets the connection==null
 				// during the Close() - if the connection is null we can't get to it to Dispose
 				// of it.
@@ -4560,17 +4566,6 @@ namespace NHibernate.Impl
 						}
 					}
 				}
-
-				if( transaction != null )
-				{
-					transaction.Dispose();
-				}
-
-				if( batcher != null )
-				{
-					batcher.Dispose();
-				}
-
 				// it is important to call Cleanup because that marks the Session as being
 				// closed - the Session could still be associated with a Proxy that is attempting
 				// to be reassociated with another Session.  If the Proxy sees ISession.IsOpen==true
