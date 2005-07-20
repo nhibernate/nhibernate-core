@@ -6,7 +6,6 @@ using log4net;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-
 namespace NHibernate.Impl
 {
 	/// <summary>
@@ -15,7 +14,7 @@ namespace NHibernate.Impl
 	internal abstract class BatcherImpl : IBatcher
 	{
 		protected static readonly ILog log = LogManager.GetLogger( typeof( BatcherImpl ) );
-
+	
 		private static int openCommandCount;
 		private static int openReaderCount;
 
@@ -61,11 +60,12 @@ namespace NHibernate.Impl
 		{
 			// need to build the IDbCommand from the sqlString bec
 			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand( factory.Dialect, sqlString );
+			LogOpenPreparedCommand();
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Building an IDbCommand object for the SqlString: " + sqlString.ToString() );
 			}
-
+			commandsToClose.Add( cmd );
 			return cmd;
 		}
 
@@ -145,8 +145,6 @@ namespace NHibernate.Impl
 			// started - so execute the current batch of commands.
 			ExecuteBatch();
 
-			LogOpenPreparedCommand();
-
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
@@ -164,16 +162,12 @@ namespace NHibernate.Impl
 		{
 			//TODO: figure out what to do with scrollable - don't think it applies
 			// to ado.net since DataReader is forward only
-			LogOpenPreparedCommand();
 
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
 			IDbCommand command = Generate( sql );
-
-			commandsToClose.Add( command );
-
 			return command;
 		}
 
@@ -204,7 +198,6 @@ namespace NHibernate.Impl
 
 			Prepare( cmd );
 			rowsAffected = cmd.ExecuteNonQuery();
-
 			return rowsAffected;
 		}
 
@@ -273,7 +266,7 @@ namespace NHibernate.Impl
 				try
 				{
 					LogCloseReader();
-					reader.Close();
+					reader.Dispose();
 				}
 				catch( Exception e )
 				{
@@ -305,6 +298,7 @@ namespace NHibernate.Impl
 				if ( cmd != null )
 				{
 					cmd.Dispose();
+					LogClosePreparedCommand();
 				}
 			}
 			catch( Exception e )
@@ -314,7 +308,6 @@ namespace NHibernate.Impl
 				return; // NOTE: early exit!
 			}
 
-			LogClosePreparedCommand();
 		}
 
 		/// <summary>
@@ -329,13 +322,13 @@ namespace NHibernate.Impl
 			{
 				readersToClose.Remove( reader );
 			}
-
 			try
 			{
 				if( reader != null )
 				{
-					LogCloseReader();
 					reader.Close();
+					reader.Dispose();
+					LogCloseReader();
 				}
 			}
 			finally
@@ -411,8 +404,8 @@ namespace NHibernate.Impl
 		{
 			if( log.IsDebugEnabled )
 			{
-				log.Debug( "about to open: " + openCommandCount + " open IDbCommands, " + openReaderCount + " open DataReaders" );
 				openCommandCount++;
+				log.Debug( "Opened new IDbCommand, open IDbCommands :" + openCommandCount );
 			}
 		}
 
@@ -421,7 +414,7 @@ namespace NHibernate.Impl
 			if( log.IsDebugEnabled )
 			{
 				openCommandCount--;
-				log.Debug( "done closing: " + openCommandCount + " open IDbCommands, " + openReaderCount + " open DataReaders" );
+				log.Debug( "Closed IDbCommand, open IDbCommands :" + openCommandCount );
 			}
 		}
 
@@ -430,6 +423,7 @@ namespace NHibernate.Impl
 			if( log.IsDebugEnabled )
 			{
 				openReaderCount++;
+				log.Debug( "Opened Reader, open Readers :" + openReaderCount );				
 			}
 		}
 
@@ -438,6 +432,7 @@ namespace NHibernate.Impl
 			if( log.IsDebugEnabled )
 			{
 				openReaderCount--;
+				log.Debug( "Closed Reader, open Readers :" + openReaderCount );
 			}
 		}
 
@@ -453,6 +448,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		~BatcherImpl()
 		{
+			log.Debug( "running BatcherImpl.Dispose(false)" );
 			Dispose( false );
 		}
 
@@ -462,7 +458,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void Dispose()
 		{
-			log.Debug( "running BatcherImpl.Dispose()" );
+			log.Debug( "running BatcherImpl.Dispose(true)" );
 			Dispose( true );
 		}
 
@@ -487,34 +483,7 @@ namespace NHibernate.Impl
 			// know this call came through Dispose()
 			if( isDisposing )
 			{
-				foreach( IDataReader reader in readersToClose )
-				{
-					try
-					{
-						LogCloseReader();
-						reader.Dispose();
-					}
-					catch( Exception e )
-					{
-						log.Warn( "Could not dispose IDataReader", e );
-					}
-				}
-				readersToClose.Clear();
-
-				foreach( IDbCommand cmd in commandsToClose )
-				{
-					try
-					{
-						LogClosePreparedCommand();
-						cmd.Dispose();
-					}
-					catch( Exception e )
-					{
-						// no big deal
-						log.Warn( "Could not dispose of ADO.NET Command", e );
-					}
-				}
-				commandsToClose.Clear();
+				CloseCommands();
 			}
 
 			// free unmanaged resources here
@@ -524,9 +493,6 @@ namespace NHibernate.Impl
 			GC.SuppressFinalize( this );
 			
 		}
-
 		#endregion
-
-
 	}
 }
