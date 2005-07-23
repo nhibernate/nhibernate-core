@@ -1018,7 +1018,9 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration Configure()
 		{
-			return Configure( "hibernate.cfg.xml" );
+			string binPath = Path.Combine( AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.RelativeSearchPath );
+			string filePath = Path.Combine( binPath, "hibernate.cfg.xml" );
+			return Configure( filePath );
 		}
 
 		/// <summary>
