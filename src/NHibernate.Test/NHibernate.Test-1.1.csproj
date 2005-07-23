@@ -1305,6 +1305,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "UtilityTest\JoinedEnumerableFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UtilityTest\ReflectHelperFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
