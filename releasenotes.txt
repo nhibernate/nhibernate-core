@@ -35,6 +35,7 @@ Build 0.9.0.0
 - Added more information to the exception thrown when expected and actual row counts from a command do not match.
 - Remove underscores from the beginning of generated aliases for fields (Oracle cannot handle them).
 - Search the current AppDomain's bin directory for hibernate.cfg.xml, in addition to the application directory.
+- Added <cache> element as a synonym for <jcs-cache>.
 
 Build 0.8.4.0
 ========================
