@@ -20,7 +20,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompanyAttribute("nhibernate.sourceforge.net")]
 [assembly: AssemblyProductAttribute("NHibernate")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
-[assembly: AssemblyVersionAttribute("0.8.4.0")]
-[assembly: AssemblyInformationalVersionAttribute("0.8")]
-[assembly: AssemblyFileVersionAttribute("0.8.4.0")]
+[assembly: AssemblyVersionAttribute("0.9.0.0")]
+[assembly: AssemblyInformationalVersionAttribute("0.9")]
+[assembly: AssemblyFileVersionAttribute("0.9.0.0")]
+//[assembly: AssemblyKeyFileAttribute("..\\NHibernate.snk")]
 
