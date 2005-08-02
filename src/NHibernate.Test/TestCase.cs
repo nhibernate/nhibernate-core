@@ -12,7 +12,7 @@ namespace NHibernate.Test
 {
 	public abstract class TestCase
 	{
-		private const bool OUTPUT_DDL = true;
+		private const bool OUTPUT_DDL = false;
 		protected Configuration cfg;
 		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
