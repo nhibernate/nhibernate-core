@@ -448,7 +448,9 @@ namespace NHibernate.Impl
 		/// </summary>
 		~BatcherImpl()
 		{
-			log.Debug( "running BatcherImpl.Dispose(false)" );
+			// Don't log in the finalizer, it causes problems
+			// if the output stream is finalized before the batcher.
+			//log.Debug( "running BatcherImpl.Dispose(false)" );
 			Dispose( false );
 		}
 
