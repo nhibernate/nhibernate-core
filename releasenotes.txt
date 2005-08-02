@@ -1,3 +1,41 @@
+Build 0.9.0.0
+========================
+- Added ISession.Clear().
+- Added configurable command timeout property (hibernate.command_timeout).
+- Added named SQL query support.
+- Allow to specify an isolation level when starting a transaction.
+- Upgraded Castle.DynamicProxy library to the latest version (1.1.5).
+- Upgraded log4net library to the latest version (1.2.9).
+- Fixed bug with Get/Load loading wrong subclasses because of class discriminant not being included in the generated query (Alexander Popov).
+- Fixed VersionNegative unsaved-value strategy not to treat 0 as the unsaved value.
+- Fixed bug in SchemaExport for a many-to-many relationship, it now generates a table with non-null columns and a primary key.
+- Added IncrementGenerator (Mark Holden).
+- Fixed bug with <discriminator> insert attribute not being declared in the schema and having a wrong default value.
+- Fixed bug in proxy Equals method always either returning true or failing with a NPE.
+- Changed LazyInitializer to match Hibernate 2.1, proxies now don't have their own special implementation of Equals and GetHashCode, either System.Object's or the real class methods are used instead.
+- Added more naming strategies (lower case, pascal-case underscored).
+- Fixed bug with custom access strategy not working for components.
+- Allow using structs (value types) as components.
+- Added ISession.Replicate().
+- Added support for using MS SQL TOP clause for paging (Yves Derrick).
+- Added persister attribute for collection mappings.
+- Fixed a NPE in Junction.ToString().
+- Disabled nullability checks when deleting an object.
+- Fixed SchemaExport not to generate duplicate foreign key constraints (this caused problems with Oracle).
+- Implemented Copy methods for various ITypes, so that SaveOrUpdateCopy actually works.
+- Changed visibility of CollectionEntry class to public to aid XML serializability of collections. It should not be expected to work in all cases since XML serialization has many limitations in .NET.
+- Several Oracle-related improvements.
+- More informative error message for a bad identifier generation strategy.
+- Fixed bug with SchemaExport ignoring foreign-key attribute sometimes.
+- Fixed bug with Get/Load not updating the internal nonExists collection of the session (Jerry Shea).
+- More informative error message for foreign key problems.
+- Throw a more informative exception when attempting to set the value of a non-existent query parameter.
+- Do not allow reconnecting a closed session.
+- More informative error message when executing ISession.Find("from NonexistentClass").
+- Added more information to the exception thrown when expected and actual row counts from a command do not match.
+- Remove underscores from the beginning of generated aliases for fields (Oracle cannot handle them).
+- Search the current AppDomain's bin directory for hibernate.cfg.xml, in addition to the application directory.
+
 Build 0.8.4.0
 ========================
 - Added limited support for storing an enum type using its string representation. See the documentation of EnumStringType and TypesTest\EnumStringTypeFixture.cs for an example.
