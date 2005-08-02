@@ -51,6 +51,17 @@
 		<xs:attribute name="inverse" type="xs:boolean" use="optional" default="false"/>
 		<xs:attribute name="persister" type="xs:string" use="optional" />
 	</xs:attributeGroup>
+	<xs:complexType name="cacheType">
+		<xs:attribute name="usage" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="read-only"/>
+					<xs:enumeration value="read-write"/>
+					<xs:enumeration value="nonstrict-read-write"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
 	<xs:simpleType name="unsavedValueType">
 		<xs:annotation>
 			<xs:documentation>Values used to restrict composite-id, does not apply to meta/column/generator</xs:documentation>
@@ -110,7 +121,10 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="jcs-cache"/>
+					<xs:element ref="cache"/>
+				</xs:choice>
 				<xs:choice>
 					<xs:element ref="id"/>
 					<xs:element ref="composite-id"/>
@@ -376,7 +390,10 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="jcs-cache"/>
+					<xs:element ref="cache"/>
+				</xs:choice>
 				<xs:element ref="key"/>
 				<xs:element ref="index"/>
 				<xs:choice>
@@ -396,6 +413,7 @@
 			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="cache" type="cacheType" />
 	<xs:element name="collection-id">
 		<xs:complexType>
 			<xs:sequence>
@@ -492,7 +510,10 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="jcs-cache"/>
+					<xs:element ref="cache"/>
+				</xs:choice>
 				<xs:element ref="collection-id"/>
 				<xs:element ref="key"/>
 				<xs:choice>
@@ -541,19 +562,7 @@
 			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="jcs-cache">
-		<xs:complexType>
-			<xs:attribute name="usage" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="read-only"/>
-						<xs:enumeration value="read-write"/>
-						<xs:enumeration value="nonstrict-read-write"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-		</xs:complexType>
-	</xs:element>
+	<xs:element name="jcs-cache" type="cacheType" />
 	<xs:element name="key">
 		<xs:complexType>
 			<xs:sequence>
@@ -683,7 +692,10 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="jcs-cache"/>
+					<xs:element ref="cache"/>
+				</xs:choice>
 				<xs:element ref="key"/>
 				<xs:element ref="index"/>
 				<xs:element ref="element"/>
@@ -722,7 +734,10 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="jcs-cache"/>
+					<xs:element ref="cache"/>
+				</xs:choice>
 				<xs:element ref="key"/>
 				<xs:element ref="index"/>
 				<xs:choice>
@@ -740,7 +755,10 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="jcs-cache"/>
+					<xs:element ref="cache"/>
+				</xs:choice>
 				<xs:element ref="key"/>
 				<xs:choice>
 					<xs:element ref="element"/>
@@ -758,7 +776,10 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="jcs-cache"/>
+					<xs:element ref="cache"/>
+				</xs:choice>
 				<xs:element ref="key"/>
 				<xs:choice>
 					<xs:element ref="element"/>
@@ -777,7 +798,10 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="jcs-cache" minOccurs="0"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="jcs-cache"/>
+					<xs:element ref="cache"/>
+				</xs:choice>
 				<xs:element ref="key"/>
 				<xs:choice>
 					<xs:element ref="index"/>

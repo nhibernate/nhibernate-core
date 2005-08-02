@@ -12,7 +12,7 @@
   		dynamic-update="true"
   		dynamic-insert="true"
   	>
-  		<jcs-cache usage="nonstrict-read-write"/>
+  		<cache usage="nonstrict-read-write"/>
   
 		<id name="Key" type="String">
 			<column name="`foo_id`" length="36"/>

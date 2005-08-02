@@ -400,6 +400,7 @@ namespace NHibernate.Cfg
 						break;
 
 					case "jcs-cache":
+					case "cache":
 						string className = model.MappedClass.FullName;
 						ICacheConcurrencyStrategy cache = CacheFactory.CreateCache( subnode, className, model.IsMutable );
 						mappings.AddCache( className, cache );
@@ -1324,7 +1325,7 @@ namespace NHibernate.Cfg
 					model.Element = element;
 					BindAny(subnode, element, true, mappings);
 				} 
-				else if ( "jcs-cache".Equals(name) )
+				else if ( "jcs-cache".Equals(name) || "cache".Equals(name) )
 				{
 					ICacheConcurrencyStrategy cache = CacheFactory.CreateCache( subnode, model.Role, model.Owner.IsMutable );
 					mappings.AddCache( model.Role, cache );
