@@ -25,7 +25,7 @@ namespace NHibernate.Persister
 
 		private static readonly System.Type[ ] PersisterConstructorArgs = new System.Type[ ] {typeof( PersistentClass ), typeof( ISessionFactoryImplementor )};
 
-		private static readonly System.Type[ ] CollectionPersisterConstructorArgs = new System.Type[] { typeof( Mapping.Collection ), typeof( Configuration ), typeof( ISessionFactoryImplementor ) };
+		private static readonly System.Type[ ] CollectionPersisterConstructorArgs = new System.Type[] { typeof( Mapping.Collection ), typeof( ISessionFactoryImplementor ) };
 
 
 		/// <summary>
@@ -85,11 +85,10 @@ namespace NHibernate.Persister
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="cfg"></param>
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static ICollectionPersister CreateCollectionPersister( Configuration cfg, Mapping.Collection model, ISessionFactoryImplementor factory )
+		public static ICollectionPersister CreateCollectionPersister( Mapping.Collection model, ISessionFactoryImplementor factory )
 		{
 			/*
 			return new CollectionPersister( model, cfg, factory );
@@ -100,12 +99,12 @@ namespace NHibernate.Persister
 			{
 				// default behaviour
 				return model.IsOneToMany ? 
-					(ICollectionPersister) new OneToManyPersister( model, cfg, factory ) :
-					(ICollectionPersister) new BasicCollectionPersister( model, cfg, factory ) ;
+					(ICollectionPersister) new OneToManyPersister( model, factory ) :
+					(ICollectionPersister) new BasicCollectionPersister( model, factory ) ;
 			}
 			else
 			{
-				return Create( persisterClass, cfg, model, factory );
+				return Create( persisterClass, model, factory );
 			}
 		}
 
@@ -113,11 +112,10 @@ namespace NHibernate.Persister
 		/// 
 		/// </summary>
 		/// <param name="persisterClass"></param>
-		/// <param name="cfg"></param>
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static ICollectionPersister Create( System.Type persisterClass, Configuration cfg, Mapping.Collection model, ISessionFactoryImplementor factory )
+		public static ICollectionPersister Create( System.Type persisterClass, Mapping.Collection model, ISessionFactoryImplementor factory )
 		{
 			ConstructorInfo pc;
 			try
@@ -131,7 +129,7 @@ namespace NHibernate.Persister
 
 			try
 			{
-				return ( ICollectionPersister ) pc.Invoke( new object[ ] {model, cfg, factory} );
+				return ( ICollectionPersister ) pc.Invoke( new object[ ] {model, factory} );
 			}
 				//TODO: add more specialized error catches
 			catch( Exception e )

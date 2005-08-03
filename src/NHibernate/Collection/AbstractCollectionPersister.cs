@@ -84,9 +84,8 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="collection"></param>
-		/// <param name="datastore"></param>
 		/// <param name="factory"></param>
-		public AbstractCollectionPersister( Mapping.Collection collection, Configuration datastore, ISessionFactoryImplementor factory )
+		public AbstractCollectionPersister( Mapping.Collection collection, ISessionFactoryImplementor factory )
 		{
 			this.factory = factory;
 			this.dialect = factory.Dialect;

@@ -26,9 +26,8 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="collection"></param>
-		/// <param name="datastore"></param>
 		/// <param name="factory"></param>
-		public OneToManyPersister( Mapping.Collection collection, Configuration datastore, ISessionFactoryImplementor factory ) : base( collection, datastore, factory )
+		public OneToManyPersister( Mapping.Collection collection, ISessionFactoryImplementor factory ) : base( collection, factory )
 		{
 		}
 
