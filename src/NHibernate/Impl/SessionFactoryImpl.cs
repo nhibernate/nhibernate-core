@@ -157,7 +157,7 @@ namespace NHibernate.Impl
 			collectionPersisters = new Hashtable();
 			foreach( Mapping.Collection map in cfg.CollectionMappings )
 			{
-				collectionPersisters[ map.Role ] = PersisterFactory.CreateCollectionPersister( cfg, map, this );
+				collectionPersisters[ map.Role ] = PersisterFactory.CreateCollectionPersister( map, this );
 			}
 			collectionMetadata = new Hashtable( collectionPersisters );
 
