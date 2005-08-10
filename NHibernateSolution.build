@@ -226,18 +226,17 @@
 				<include name="MyTest*.dll" />
 				<include name="MyTest*.pdb" />
 				
-				<!-- Go ahead and delete the log file that contains all the sql output-->
-				<include name="log.txt" />
-				
 				<!-- 
 					Remove test related assemblies and files so the bin directory is 
-					clean and ready for the downloader to use.	
+					clean and ready for the downloader to use. Leave test results for
+ 					CruiseControl.NET (we exclude them from package)	
 				-->
 				<include name="Iesi.Collections.Test.*" />
 				<include name="NHibernate.DomainModel.*" />
 				<include name="NHibernate.Examples.*" />
 				<include name="NHibernate.Test.*" />
 				<include name="nunit.framework.*" />
+				<exclude name="*-results.xml" />
 				
 			</fileset>
 		</delete>
@@ -423,7 +422,10 @@
 				
 				<!-- exclude any keys that exist on the build machine -->
 				<exclude name="**/*.snk" />
-			
+
+				<!-- exclude test results -->
+				<exclude name="bin/*-results.xml" />
+							
 			</fileset>
 		</copy>
 		<property name="project.zip-path" value="${nant.project.basedir}/build/${build.name}.zip" />
@@ -513,5 +515,17 @@
 		<property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
 		<call target="set-runtime-configuration-flags" />
 	</target>
+
+ 	<target name="fxcop" depends="init" >
+ 		<exec program="${fxcop.exe}" 
+ 			  commandline="/f:${build.dir}\bin\nhibernate.dll /o:${build.dir}\bin\fxcop-results.xml"
+ 			  failonerror="false"/>
+ 	</target>
+ 	
+ 	<target name="simian" depends="init" >
+ 		<exec program="${simian.exe}" verbose="true" 
+ 			  commandline="-recurse=src/*.cs -formatter=xml:${build.dir}\bin\simian-results.xml -failOnDuplication-"
+ 			  failonerror="false"/>
+ 	</target>
 
 </project>
