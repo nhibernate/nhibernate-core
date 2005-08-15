@@ -481,6 +481,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MappingTest\ColumnFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MappingTest\ForeignKeyFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -886,6 +891,25 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\NH318\NotNullPropertyHolder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH345\Client.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH345\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH345\Mappings.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH345\Project.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
