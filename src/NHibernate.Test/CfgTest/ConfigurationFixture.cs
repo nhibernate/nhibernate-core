@@ -181,5 +181,23 @@ namespace NHibernate.Test.CfgTest
 			Configuration cfg = new Configuration();
 			cfg.AddXmlString( hbm );
 		}
+
+		[Test]
+		public void AddDocument()
+		{
+			string hbm = @"<?xml version='1.0' ?>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+	<class name='NHibernate.DomainModel.A, NHibernate.DomainModel'>
+		<id name='Id' column='somecolumn'>
+			<generator class='native' />
+		</id>
+	</class>
+</hibernate-mapping>";
+
+			Configuration cfg = new Configuration();
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml( hbm );
+			cfg.AddDocument( doc );
+		}
 	}
 }

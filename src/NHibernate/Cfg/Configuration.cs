@@ -224,7 +224,7 @@ namespace NHibernate.Cfg
 		/// creating Mapping objects from the Mapping Xml.
 		/// </summary>
 		/// <param name="doc">The <b>validated</b> XmlDocument that contains the Mappings.</param>
-		private void Add( XmlDocument doc )
+		private void AddValidatedDocument( XmlDocument doc )
 		{
 			try
 			{
@@ -387,26 +387,25 @@ namespace NHibernate.Cfg
 		/// <returns>This Configuration object.</returns>
 		public Configuration AddDocument( XmlDocument doc )
 		{
-			XmlNodeReader nodeReader = null;
-
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Mapping XML:\n" + doc.OuterXml );
 			}
+
 			try
 			{
-				nodeReader = new XmlNodeReader( doc );
-				AddXmlReader( nodeReader );
+				using( MemoryStream ms = new MemoryStream() )
+				{
+					doc.Save( ms );
+					ms.Position = 0;
+					AddInputStream( ms );
+				}
 				return this;
 			}
 			catch( Exception e )
 			{
 				log.Error( "Could not configure datastore from XML document", e );
 				throw new MappingException( e );
-			}
-			finally
-			{
-				nodeReader.Close();
 			}
 		}
 
@@ -506,7 +505,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Load and validate the mappings in the XmlReader against
+		/// Load and validate the mappings in the <see cref="XmlTextReader" /> against
 		/// the nhibernate-mapping-2.0 schema, without adding them to the configuration.
 		/// </summary>
 		/// <remarks>
@@ -515,7 +514,7 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
 		/// <returns>Validated XmlDocument built from the XmlReader.</returns>
-		public XmlDocument LoadMappingDocument( XmlReader hbmReader )
+		public XmlDocument LoadMappingDocument( XmlTextReader hbmReader )
 		{
 			XmlValidatingReader validatingReader = new XmlValidatingReader( hbmReader );
 
@@ -537,14 +536,14 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds the Mappings in the XmlReader after validating it against the
-		/// nhibernate-mapping-2.0 schema.
+		/// Adds the Mappings in the <see cref="XmlTextReader"/> after validating it
+		/// against the nhibernate-mapping-2.0 schema.
 		/// </summary>
-		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
+		/// <param name="hbmReader">The XmlTextReader that contains the mapping.</param>
 		/// <returns>This Configuration object.</returns>
-		public Configuration AddXmlReader( XmlReader hbmReader )
+		public Configuration AddXmlReader( XmlTextReader hbmReader )
 		{
-			Add( LoadMappingDocument( hbmReader ) );
+			AddValidatedDocument( LoadMappingDocument( hbmReader ) );
 			return this;
 		}
 
