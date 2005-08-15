@@ -219,7 +219,7 @@ namespace NHibernate.Impl
 			// if the collection is initialized and it was previously persistent
 			// initialize the dirty flag
 			dirty = ( initialized && loadedPersister != null && IsDirty( collection ) ) ||
-				( !initialized && dirty ); //only need this so collection with queued adds will be removed from JCS cache
+				( !initialized && dirty ); //only need this so collection with queued adds will be removed from second-level cache
 
 			if( log.IsDebugEnabled && dirty && loadedPersister != null )
 			{

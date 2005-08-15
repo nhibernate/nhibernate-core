@@ -2787,7 +2787,7 @@ namespace NHibernate.Impl
 		{
 			if( log.IsDebugEnabled )
 			{
-				log.Debug( "resolved object in JCS cache " + MessageHelper.InfoString( persister, id ) );
+				log.Debug( "resolved object in second-level cache " + MessageHelper.InfoString( persister, id ) );
 			}
 			IClassPersister subclassPersister = GetPersister( entry.Subclass );
 			object result = optionalObject != null ? optionalObject : Instantiate( subclassPersister, id );
@@ -2933,7 +2933,7 @@ namespace NHibernate.Impl
 			{
 				if( log.IsDebugEnabled )
 				{
-					log.Debug( "adding entity to JCS cache " + MessageHelper.InfoString( persister, id ) );
+					log.Debug( "adding entity to second-level cache " + MessageHelper.InfoString( persister, id ) );
 				}
 				persister.Cache.Put( id, new CacheEntry( obj, persister, this ), timestamp );
 			}

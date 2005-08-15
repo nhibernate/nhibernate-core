@@ -127,7 +127,7 @@ namespace NHibernate.Collection
 					additions = new ArrayList( 10 );
 				}
 				additions.Add( element );
-				collectionSnapshot.SetDirty(); //needed so that we remove this collection from the JCS cache
+				collectionSnapshot.SetDirty(); //needed so that we remove this collection from the second-level cache
 				return true;
 			}
 			else
