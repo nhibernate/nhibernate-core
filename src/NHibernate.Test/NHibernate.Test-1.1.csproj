@@ -516,6 +516,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NHSpecificTest\BugTestCase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHSpecificTest\CollectionFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -527,6 +532,11 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\GetTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\KeyFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -567,6 +577,11 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\UserTypeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\VersionTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -871,6 +886,20 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\NH318\NotNullPropertyHolder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH350\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH350\Mappings.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH350\SecurityDomain.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

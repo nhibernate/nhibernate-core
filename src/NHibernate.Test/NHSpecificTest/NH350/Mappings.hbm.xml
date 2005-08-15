@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH350">
+
+   <class name="SecurityDomain" table="Security_Domain">
+      <id name="Id" column="Security_Domain_Key" type="Int64" unsaved-value="-1">
+         <generator class="native" />
+      </id>
+      <property name="Name" column= "Domain_Name" type="String" length="100"/>
+      <bag
+         name="ChildDomains"
+         lazy="false"
+         cascade="all">
+         <key column="Parent_Domain_Key" />
+         <one-to-many class="SecurityDomain" />
+      </bag>
+      
+      <many-to-one name="ParentDomain" column="Parent_Domain_Key" not-null="false" />
+   </class>
+
+</hibernate-mapping>

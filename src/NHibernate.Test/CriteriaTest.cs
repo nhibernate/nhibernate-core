@@ -82,8 +82,8 @@ namespace NHibernate.Test
 
 			using( ISession s = OpenSession() )
 			{
-				s.Save( s1, 1 );
-				s.Save( s2, 2 );
+				s.Save( s1, 1L );
+				s.Save( s2, 2L );
 				s.Flush();
 			}
 

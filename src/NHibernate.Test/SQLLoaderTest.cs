@@ -43,7 +43,7 @@ namespace NHibernate.Test
 
 			Simple sim = new Simple();
 			sim.Date = DateTime.Today;	// NB We don't use Now() due to the millisecond alignment problem with SQL Server
-			session.Save( sim, 1 );
+			session.Save( sim, 1L );
 			IQuery q = session.CreateSQLQuery( "select {sim.*} from Simple {sim} where {sim}.date_ = ?", "sim", typeof( Simple ) );
 			q.SetTimestamp( 0, sim.Date );
 			Assert.AreEqual( 1, q.List().Count, "q.List.Count");
@@ -64,7 +64,7 @@ namespace NHibernate.Test
 
 			Simple sim = new Simple();
 			sim.Date = DateTime.Today;	// NB We don't use Now() due to the millisecond alignment problem with SQL Server
-			session.Save( sim, 1 );
+			session.Save( sim, 1L );
 			IQuery q = session.CreateSQLQuery( "select {sim.*} from Simple {sim} where {sim}.date_ = :fred", "sim", typeof( Simple ) );
 			q.SetTimestamp( "fred", sim.Date );
 			Assert.AreEqual( 1, q.List().Count, "q.List.Count");

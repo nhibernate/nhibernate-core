@@ -7,7 +7,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// </summary>
 	public class SimpleComponent
 	{
-		private int m_Key = 0;
+		private long m_Key = 0;
 		private string _name;
 		private string _address;
 		private int _count;
@@ -20,7 +20,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			_audit = new AuditComponent();
 		}
 
-		public int Key 
+		public long Key 
 		{
 			get {return m_Key;}
 		}

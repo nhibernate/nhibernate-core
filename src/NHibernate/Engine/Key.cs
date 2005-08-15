@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Persister;
+using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
@@ -15,12 +16,18 @@ namespace NHibernate.Engine
 		private readonly System.Type clazz;
 		private readonly bool isBatchLoadable;
 
-		private Key( object id, object identifierSpace, System.Type clazz, bool isBatchLoadable )
+		private Key( object id, IType identifierType, object identifierSpace, System.Type clazz, bool isBatchLoadable )
 		{
 			if( id == null )
 			{
-				throw new ArgumentException( "null identifier", "id" );
+				throw new ArgumentNullException( "id" );
 			}
+
+			if( !identifierType.ReturnedClass.IsAssignableFrom( id.GetType() ) )
+			{
+				throw new ArgumentException( "identifier type mismatch", "id" );
+			}
+
 			this.identifier = id;
 			this.identifierSpace = identifierSpace;
 			this.clazz = clazz;
@@ -32,7 +39,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="p"></param>
-		public Key( object id, IClassPersister p ) : this( id, p.IdentifierSpace, p.MappedClass, p.IsBatchLoadable )
+		public Key( object id, IClassPersister p ) : this( id, p.IdentifierType, p.IdentifierSpace, p.MappedClass, p.IsBatchLoadable )
 		{
 		}
 

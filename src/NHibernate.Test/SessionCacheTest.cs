@@ -21,13 +21,13 @@ namespace NHibernate.Test
 		{
 			ISession fixture = OpenSession();
 
-			for( int i = 1; i < 6; i++ )
+			for( long i = 1L; i < 6L; i++ )
 			{
-				Simple s = new Simple( i );
+				Simple s = new Simple( (int) i );
 				s.Address = "dummy collection address " + i;
 				s.Date = DateTime.Now;
 				s.Name = "dummy collection name " + i;
-				s.Pay = i * 1279;
+				s.Pay = i * 1279L;
 				fixture.Save( s, i );
 			}
 			
@@ -61,7 +61,7 @@ namespace NHibernate.Test
 			// First, prime the fixture session to think the entity does not exist
 			try
 			{
-				fixture.Load( typeof( Simple ), -1 );
+				fixture.Load( typeof( Simple ), -1L );
 			}
 			catch( ObjectNotFoundException )
 			{
@@ -80,7 +80,7 @@ namespace NHibernate.Test
 				oneSimple.Date = DateTime.Now;
 				oneSimple.Pay = 1000000f;
 				
-				anotherSession.Save( oneSimple, -1 );
+				anotherSession.Save( oneSimple, -1L );
 				anotherSession.Flush();
 			}
 			finally
@@ -91,7 +91,7 @@ namespace NHibernate.Test
 			// Verify that the original session is still unable to see the new entry...
 			try
 			{
-				fixture.Load( typeof( Simple ), -1 );
+				fixture.Load( typeof( Simple ), -1L );
 			}
 			catch( ObjectNotFoundException )
 			{
@@ -103,7 +103,7 @@ namespace NHibernate.Test
 			string failedMessage = "Unable to load entity with id = -1.";
 			try
 			{
-				Simple dummy = fixture.Load( typeof( Simple ), -1 ) as Simple;
+				Simple dummy = fixture.Load( typeof( Simple ), -1L ) as Simple;
 				Assert.IsNotNull( dummy, failedMessage );
 				fixture.Delete( dummy );
 				fixture.Flush();

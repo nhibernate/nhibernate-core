@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest
 				simpleComp.Audit.UpdatedUserId = "TestUpdated";
 			
 			
-				s.Save(simpleComp, 10);
+				s.Save(simpleComp, 10L);
 			
 				t.Commit();
 			}
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			using( ISession s = OpenSession() )
 			{
-				s.Delete( s.Load( typeof( SimpleComponent ), 10 ) );
+				s.Delete( s.Load( typeof( SimpleComponent ), 10L ) );
 				s.Flush();
 			}
 		}
@@ -60,9 +60,9 @@ namespace NHibernate.Test.NHSpecificTest
 			using( ITransaction t = s.BeginTransaction() )
 			{
 
-				SimpleComponent simpleComp = (SimpleComponent)s.Load(typeof(SimpleComponent), 10);
+				SimpleComponent simpleComp = (SimpleComponent)s.Load( typeof( SimpleComponent ), 10L );
 
-				Assert.AreEqual(10, simpleComp.Key);
+				Assert.AreEqual(10L, simpleComp.Key);
 				Assert.AreEqual("TestCreated", simpleComp.Audit.CreatedUserId);
 				Assert.AreEqual("TestUpdated", simpleComp.Audit.UpdatedUserId);
 

@@ -3300,10 +3300,10 @@ namespace NHibernate.Test
 			// this test used to be called Iterators()
 
 			ISession s = OpenSession();
-			for( int i=0; i<10; i++ ) 
+			for( long i = 0L; i < 10L; i++ ) 
 			{
 				Simple simple = new Simple();
-				simple.Count = i;
+				simple.Count = (int) i;
 				s.Save(simple, i);
 				Assert.IsNotNull(simple, "simple is not null");
 			}
@@ -3312,7 +3312,7 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Simple simp = (Simple)s.Load( typeof(Simple), 8 );
+			Simple simp = (Simple)s.Load( typeof(Simple), 8L );
 			
 			// the reader under the enum has to still be a SqlDataReader (subst db name here) and 
 			// can't be a NDataReader - the best way to get this result is to query on just a property
