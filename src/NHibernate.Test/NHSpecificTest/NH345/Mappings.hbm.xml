@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH345">
+	
+	<class name="Project" table="Project">
+		<id name="Id" column="id" type="Int32">
+			<generator class="native" />
+		</id>
+
+		<property name="Name" column="name" type="String"/>
+		<many-to-one name="Client" column="clientId"/>
+	</class>
+
+	<class name="Client" table="client">
+		<id name="Id" column="id" type="Int32">
+			<generator class="native" />
+		</id>
+		<property name="Name" column="name" type="String"/>
+	</class>
+</hibernate-mapping>
