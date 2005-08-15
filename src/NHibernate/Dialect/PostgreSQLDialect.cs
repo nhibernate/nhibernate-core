@@ -35,6 +35,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType( DbType.AnsiString, "varchar(255)" );
 			RegisterColumnType( DbType.AnsiString, 8000, "varchar($1)" );
 			RegisterColumnType( DbType.AnsiString, 2147483647, "text" );
+			RegisterColumnType( DbType.Binary, "bytea" );
 			RegisterColumnType( DbType.Binary, 2147483647, "bytea" );
 			RegisterColumnType( DbType.Boolean, "boolean" );
 			RegisterColumnType( DbType.Byte, "int2" );

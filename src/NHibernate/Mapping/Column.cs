@@ -14,6 +14,7 @@ namespace NHibernate.Mapping
 	{
 		private static readonly int DefaultPropertyLength = 255;
 
+		private bool hasExplicitLength = false;
 		private int length = DefaultPropertyLength;
 		private IType type;
 		private int typeIndex = 0;
@@ -34,7 +35,11 @@ namespace NHibernate.Mapping
 		public int Length
 		{
 			get { return length; }
-			set { length = value; }
+			set
+			{
+				length = value;
+				hasExplicitLength = true;
+			}
 		}
 
 		/// <summary>
@@ -238,7 +243,14 @@ namespace NHibernate.Mapping
 			if( sqlType == null )
 			{
 				SqlType sqlTypeObject = GetAutoSqlType( mapping );
-				return dialect.GetTypeName( sqlTypeObject, Length );
+				if( hasExplicitLength )
+				{
+					return dialect.GetTypeName( sqlTypeObject, Length );
+				}
+				else
+				{
+					return dialect.GetTypeName( sqlTypeObject );
+				}
 			}
 			else
 			{
