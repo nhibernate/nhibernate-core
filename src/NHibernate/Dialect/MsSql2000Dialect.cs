@@ -337,15 +337,6 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Should we use a <c>LIMIT</c> clause when there is no first result
-		/// specified?
-		/// </summary>
-		public override bool PreferLimit
-		{
-			get { return true; }
-		}
-
-		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="name"></param>

@@ -209,17 +209,13 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// 
+		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
-		/// <param name="querySqlString"></param>
-		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <param name="offset">Offset of the first row to process in the result set</param>
-		/// <returns></returns>
-		public override SqlString GetLimitString( SqlString querySqlString, int offset, int limit )
+		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
+		/// <param name="hasOffset">Offset of the first row is not zero</param>
+		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
+		public override SqlString GetLimitString( SqlString querySqlString, bool hasOffset )
 		{
-			Parameter p1 = new Parameter( "p1", new Int32SqlType() );
-			Parameter p2 = new Parameter( "p2", new Int32SqlType() );
-			
 			/*
 			 * "select * from (select row_number() over(orderby_clause) as rownum, "
 			 * querySqlString_without select
@@ -257,11 +253,22 @@ namespace NHibernate.Dialect
 			// Add the rest
 			pagingBuilder.Insert( 0, "select * from (" );
 			pagingBuilder.Add( ") as tempresult " );
+			
 			// Add the where clause
-			pagingBuilder.Add( " where rownum between " );
-			pagingBuilder.Add( p1 );
-			pagingBuilder.Add( " and " );
-			pagingBuilder.Add( p2 );
+			pagingBuilder.Add( "where rownum " );
+
+			if( hasOffset )
+			{
+				pagingBuilder.Add( "between " );
+				pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) ).Add("+1");
+				pagingBuilder.Add( " and " );
+				pagingBuilder.Add( new Parameter( "p2", new Int32SqlType() ) );
+			}
+			else
+			{
+				pagingBuilder.Add( "<= " );
+				pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) );
+			}
 
 			return pagingBuilder.ToSqlString();
 		}

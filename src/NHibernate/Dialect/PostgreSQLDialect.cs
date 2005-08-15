@@ -129,20 +129,20 @@ namespace NHibernate.Dialect
 		/// 
 		/// </summary>
 		/// <param name="querySqlString"></param>
-		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <param name="offset">Offset of the first row to process in the result set</param>
+		/// <param name="hasOffset">Offset of the first row to process in the result set is non-zero</param>
 		/// <returns></returns>
-		public override SqlString GetLimitString( SqlString querySqlString, int offset, int limit )
+		public override SqlString GetLimitString( SqlString querySqlString, bool hasOffset )
 		{
-			Parameter p1 = new Parameter( "p1", new Int32SqlType() );
-			Parameter p2 = new Parameter( "p2", new Int32SqlType() );
-
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			pagingBuilder.Add( querySqlString );
 			pagingBuilder.Add( " limit " );
-			pagingBuilder.Add( p1 );
-			pagingBuilder.Add( " offset " );
-			pagingBuilder.Add( p2 );
+			pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) );
+
+			if( hasOffset )
+			{
+				pagingBuilder.Add( " offset " );
+				pagingBuilder.Add( new Parameter( "p2", new Int32SqlType() ) );
+			}
 
 			return pagingBuilder.ToSqlString();
 		}
@@ -152,11 +152,5 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
-
-		public override bool PreferLimit
-		{
-			get { return true; }
-		}
-
 	}
 }

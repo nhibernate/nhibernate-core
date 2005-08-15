@@ -802,15 +802,14 @@ namespace NHibernate.Loader
 
 		private static bool UseLimit( RowSelection selection, Dialect.Dialect dialect )
 		{
-			// it used to be selection.MaxRows != null -> since an Int32 will always
-			// have a value I'll compare it to the static field NoValue used to initialize 
-			// max rows to nothing
-			return dialect.SupportsLimit && HasMaxRows(selection) && // there is a max rows
-				( dialect.PreferLimit || GetFirstRow( selection ) != 0 );
+			return dialect.SupportsLimit && HasMaxRows(selection);
 		}
 
 		private static bool HasMaxRows(RowSelection selection)
 		{
+			// it used to be selection.MaxRows != null -> since an Int32 will always
+			// have a value I'll compare it to the static field NoValue used to initialize 
+			// max rows to nothing
 			return selection != null && selection.MaxRows != RowSelection.NoValue;
 		}
 

@@ -120,30 +120,24 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary></summary>
-		public override bool PreferLimit
-		{
-			get { return true; }
-		}
-
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="querySqlString"></param>
-		/// <param name="offset"></param>
-		/// <param name="limit"></param>
+		/// <param name="hasOffset"></param>
 		/// <returns></returns>
-		public override SqlString GetLimitString( SqlString querySqlString, int offset, int limit )
+		public override SqlString GetLimitString( SqlString querySqlString, bool hasOffset )
 		{
-			Parameter p1 = new Parameter( "p1", new Int32SqlType() );
-			Parameter p2 = new Parameter( "p2", new Int32SqlType() );
-
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			pagingBuilder.Add( querySqlString );
 			pagingBuilder.Add( " limit " );
-			pagingBuilder.Add( p1 );
-			pagingBuilder.Add( ", " );
-			pagingBuilder.Add( p2 );
+			pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) );
+
+			if( hasOffset )
+			{
+				pagingBuilder.Add( ", " );
+				pagingBuilder.Add( new Parameter( "p2", new Int32SqlType() ) );
+			}
 
 			return pagingBuilder.ToSqlString();
 		}

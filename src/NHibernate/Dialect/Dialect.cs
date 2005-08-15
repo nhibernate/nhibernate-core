@@ -515,25 +515,35 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Can parameters be used for a statement containing a LIMIT?
+		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
-		public virtual bool SupportsVariableLimit
+		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
+		/// <param name="hasOffset">Offset of the first row is not zero</param>
+		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
+		public virtual SqlString GetLimitString( SqlString querySqlString, bool hasOffset )
 		{
-			get { return SupportsLimit; }
+			throw new NotSupportedException( "Paged Queries not supported" );
 		}
 
 		/// <summary>
 		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
 		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
+		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
 		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <param name="offset">Offset of the first row to process in the result set</param>
 		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
-		public virtual SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
+		public virtual SqlString GetLimitString( SqlString querySqlString, int offset, int limit )
 		{
-			throw new NotSupportedException( "Paged Queries not supported" );
+			return GetLimitString( querySqlString, offset > 0 );
 		}
 
+		/// <summary>
+		/// Can parameters be used for a statement containing a LIMIT?
+		/// </summary>
+		public virtual bool SupportsVariableLimit
+		{
+			get { return SupportsLimit; }
+		}
 
 		/// <summary>
 		/// Does the <c>LIMIT</c> clause specify arguments in the "reverse" order
@@ -562,15 +572,6 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <returns>false, unless overridden</returns>
 		public virtual bool UseMaxForLimit
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// Should we use a <c>LIMIT</c> clause when there is no first result
-		/// specified?
-		/// </summary>
-		public virtual bool PreferLimit
 		{
 			get { return false; }
 		}
