@@ -1309,6 +1309,15 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TypesTest\StringClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\StringClass.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "TypesTest\StringClobClass.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1319,6 +1328,11 @@
                 />
                 <File
                     RelPath = "TypesTest\StringClobTypeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\StringTypeFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
