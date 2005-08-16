@@ -32,5 +32,28 @@ namespace NHibernate.Test.TypesTest
 			s.Flush();
 			s.Close();
 		}
+
+		[Test]
+		public void LongString()
+		{
+			string longString = new string('x', 10000);
+			using( ISession s = OpenSession() )
+			{
+				StringClobClass b = new StringClobClass();
+				b.StringClob = longString;
+
+				s.Save( b );
+				s.Flush();
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				StringClobClass b = (StringClobClass) s.CreateCriteria(
+					typeof( StringClobClass ) ).UniqueResult();
+				Assert.AreEqual( longString, b.StringClob );
+				s.Delete( b );
+				s.Flush();
+			}
+		}
 	}
 }
