@@ -115,7 +115,6 @@ namespace NHibernate.Cfg
 			secondPasses = new ArrayList();
 			propertyReferences = new ArrayList();
 			interceptor = emptyInterceptor;
-			properties = Environment.Properties;
 			caches = new Hashtable();
 			mapping = new Mapping( classes );
 		}
@@ -125,7 +124,22 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public Configuration()
 		{
+			Environment.Configure();
 			Reset();
+			XmlNode confNode = Environment.ConfigurationNode;
+			if ( confNode != null ) 
+			{
+				properties = new Hashtable();
+				Environment.SetProperties(properties);
+				XmlTextReader reader = new XmlTextReader(new StringReader(confNode.OuterXml));
+				Configure(reader);
+				reader.Close();
+			} 
+			else 
+			{
+				properties = Environment.Properties;
+			}
+
 		}
 
 		/// <summary></summary>

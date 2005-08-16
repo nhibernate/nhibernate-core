@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Xml;
+
 using log4net;
 using log4net.Config;
 
@@ -76,23 +78,51 @@ namespace NHibernate.Cfg
 		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
 
 		private static IDictionary properties = new Hashtable();
+		
+		private static XmlNode configNode = null;
 
-		/// <summary></summary>
-		static Environment()
+		private static bool isConfigured = false;
+
+		internal static void Configure(){
+			if ( !isConfigured){
+				XmlConfigurator.Configure();
+				bool configurationFound = false;				
+
+				configurationFound = ConfigureFromNameValueCollection();
+				if ( !configurationFound ){
+					configurationFound = ConfigureFromXmlNode();
+				}
+				if ( !configurationFound ) 
+				{
+					log.Debug( "no hibernate settings in app.config/web.config were found" );
+				}
+				isConfigured = true;
+			}
+		}
+
+		private static bool ConfigureFromXmlNode()
 		{
-			XmlConfigurator.Configure();
+			configNode = ConfigurationSettings.GetConfig( "hibernate-configuration" ) as XmlNode;
+			return configNode != null;
+		}
 
+		private static bool ConfigureFromNameValueCollection()
+		{
 			NameValueCollection props = ConfigurationSettings.GetConfig( "nhibernate" ) as NameValueCollection;
-			if( props == null )
+			if( props != null )
 			{
-				log.Debug( "no hibernate settings in app.config/web.config were found" );
-				return;
+				foreach( string key in props.Keys )
+				{
+					properties[ key ] = props[ key ];
+				}
+				return true;
 			}
-
-			foreach( string key in props.Keys )
-			{
-				properties[ key ] = props[ key ];
-			}
+			return false;
+		}
+		
+		internal static XmlNode ConfigurationNode {
+		
+			get { return configNode; }
 		}
 
 		private Environment()
@@ -117,6 +147,11 @@ namespace NHibernate.Cfg
 				}
 				return copy;
 			}
+		}
+
+		internal static void SetProperties (IDictionary props)
+		{
+			properties = props;
 		}
 
 		/// <summary></summary>
