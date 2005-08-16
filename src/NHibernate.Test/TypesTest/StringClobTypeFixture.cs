@@ -55,5 +55,24 @@ namespace NHibernate.Test.TypesTest
 				s.Flush();
 			}
 		}
+		[Test]
+		public void InsertNullValue (){
+			using( ISession s = OpenSession() )
+			{
+				StringClobClass b = new StringClobClass();
+				b.StringClob = null;
+				s.Save( b );
+				s.Flush();
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				StringClobClass b = (StringClobClass) s.CreateCriteria(
+					typeof( StringClobClass ) ).UniqueResult();
+				Assert.IsNull( b.StringClob );
+				s.Delete( b );
+				s.Flush();
+			}
+		}
 	}
 }
