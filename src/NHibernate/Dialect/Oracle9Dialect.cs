@@ -199,10 +199,11 @@ namespace NHibernate.Dialect
 			pagingBuilder.Add( querySqlString );
 			pagingBuilder.Add( " ) row_ where rownum <= " );
 			pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) );
+			pagingBuilder.Add( ")" );
 
 			if( hasOffset )
 			{
-				pagingBuilder.Add( ") where rownum_ > " );
+				pagingBuilder.Add( " where rownum_ > " );
 				pagingBuilder.Add( new Parameter( "p2", new Int32SqlType() ) );
 			}
 
