@@ -379,7 +379,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string Qualify( string prefix, string name )
 		{
-			char first = name.Substring( 0, 1 ).ToCharArray()[ 0 ];
+			char first = name[ 0 ];
 
 			// Should we check for prefix == string.Empty rather than a length check?
 			if ( prefix != null && prefix.Length > 0 && first != StringHelper.SingleQuote && !char.IsDigit( first ) )
