@@ -47,12 +47,26 @@ namespace NHibernate.Cache
 		void Destroy();
 
 		/// <summary>
-		/// Sets the Cache Region name.
+		/// If this is a clustered cache, lock the item
 		/// </summary>
-		/// <exception cref="CacheException"></exception>
-		string Region { set; }
+		/// <param name="key"></param>
+		void Lock( object key );
 
+		/// <summary>
+		/// If this is a clustered cache, unlock the item
+		/// </summary>
+		/// <param name="key"></param>
+		void Unlock( object key );
+
+		/// <summary>
+		/// Generate a timestamp
+		/// </summary>
+		/// <returns></returns>
+		long NextTimestamp();
+
+		/// <summary>
+		/// Get a reasonable "lock timeout"
+		/// </summary>
+		int Timeout { get; }
 	}
-
-
 }

@@ -359,12 +359,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cache\IQueryCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cache\IQueryCacheFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cache\ISoftLock.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Cache\NonstrictReadWriteCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cache\QueryKey.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -380,6 +395,11 @@
                 />
                 <File
                     RelPath = "Cache\Timestamper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cache\UpdateTimestampsCache.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

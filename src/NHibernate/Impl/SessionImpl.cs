@@ -74,17 +74,17 @@ namespace NHibernate.Impl
 		/// An <see cref="IdentityMap"/> with the <see cref="Object"/> as the key
 		/// and an <see cref="EntityEntry"/> as the value.
 		/// </summary>
-		private IdentityMap entityEntries; 
+		private readonly IdentityMap entityEntries; 
 		/// <summary>
 		/// An <see cref="IdentityMap"/> with the <see cref="Array"/> as the key
 		/// and an <see cref="ArrayHolder"/> as the value.
 		/// </summary>
-		private IdentityMap arrayHolders; 
+		private readonly IdentityMap arrayHolders; 
 		/// <summary>
 		/// An <see cref="IdentityMap"/> with the <see cref="PersistentCollection"/> as the key
 		/// and an <see cref="CollectionEntry"/> as the value.
 		/// </summary>
-		private IdentityMap collectionEntries;
+		private readonly IdentityMap collectionEntries;
 
 		/// <summary>
 		/// An <see cref="IdentityMap"/> with the <see cref="CollectionKey"/> as the key
@@ -3085,6 +3085,18 @@ namespace NHibernate.Impl
 			return false;
 		}
 
+		/**
+		 * Execute all SQL and second-level cache updates, in a
+		 * special order so that foreign-key constraints cannot
+		 * be violated:
+		 * <ol>
+		 * <li> Inserts, in the order they were performed </li>
+		 * <li> Updates</li>
+		 * <li> Deletion of collection elements</li>
+		 * <li> Insertion of collection elements</li>
+		 * <li> Deletes, in the order they were performed</li>
+		 * </ol>
+		 */
 		private void Execute()
 		{
 			log.Debug( "executing flush" );

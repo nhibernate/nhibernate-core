@@ -3,11 +3,11 @@ using System;
 namespace NHibernate.Cache
 {
 	/// <summary>
-	/// Geterates increasing identifiers. 
+	/// Generates increasing identifiers (in a single application domain only).
 	/// </summary>
 	/// <remarks>
 	/// Not valid across multiple application domains. Identifiers are not necessarily
-	/// strickly increasing, but usually are.
+	/// strictly increasing, but usually are.
 	///	</remarks>
 	public sealed class Timestamper
 	{

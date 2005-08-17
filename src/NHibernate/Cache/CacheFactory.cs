@@ -46,7 +46,7 @@ namespace NHibernate.Cache
 		{
 			if( log.IsDebugEnabled )
 			{
-				log.Debug( "cache for: " + name + "usage strategy: " + usage );
+				log.Debug( string.Format( "cache for: {0} usage strategy: {1}", name, usage ) );
 			}
 
 			ICacheConcurrencyStrategy ccs = null;

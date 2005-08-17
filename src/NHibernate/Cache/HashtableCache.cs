@@ -7,7 +7,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class HashtableCache : ICache
 	{
-//		private static object synchObject = new object();
+		//		private static object synchObject = new object();
 		private Hashtable cache = new Hashtable();
 		private string region;
 
@@ -46,18 +46,33 @@ namespace NHibernate.Cache
 			cache.Clear();
 		}
 
-		/// <summary>
-		/// Destroys the existing cache by setting it to a new Hashtable.
-		/// </summary>
+		/// <summary></summary>
 		public void Destroy()
 		{
-			cache = new Hashtable();
 		}
 
 		/// <summary></summary>
-		public string Region
+		public void Lock( object key )
 		{
-			set { region = value; }
+			// local cache, so we use synchronization
+		}
+
+		/// <summary></summary>
+		public void Unlock( object key )
+		{
+			// local cache, so we use synchronization
+		}
+
+		/// <summary></summary>
+		public long NextTimestamp()
+		{
+			return Timestamper.Next();
+		}
+
+		/// <summary></summary>
+		public int Timeout
+		{
+			get { return Timestamper.OneMs * 60000;	 }// i.e. 60 seconds
 		}
 
 		#endregion
