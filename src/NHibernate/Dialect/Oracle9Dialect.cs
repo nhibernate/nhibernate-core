@@ -199,6 +199,10 @@ namespace NHibernate.Dialect
 			pagingBuilder.Add( querySqlString );
 			pagingBuilder.Add( " ) row_ where rownum <= " );
 			pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) );
+			pagingBuilder.Add( ") where rownum_ > " );
+			pagingBuilder.Add( new Parameter( "p2", new Int32SqlType() ) );
+
+			/*  (2005-08-18) Temporarily commented out, need to figure out why CC.NET build fails
 			pagingBuilder.Add( ")" );
 
 			if( hasOffset )
@@ -206,6 +210,7 @@ namespace NHibernate.Dialect
 				pagingBuilder.Add( " where rownum_ > " );
 				pagingBuilder.Add( new Parameter( "p2", new Int32SqlType() ) );
 			}
+			*/
 
 			return pagingBuilder.ToSqlString();
 		}
