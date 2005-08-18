@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Text;
 using log4net;
 using NHibernate.Type;
 using NHibernate.Impl;
