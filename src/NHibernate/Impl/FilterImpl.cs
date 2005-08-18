@@ -25,22 +25,20 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public override IEnumerable Enumerable()
 		{
-			// HACK: Reintroduce once Filter parsing bug resolved
-			//VerifyParameters();
+			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.EnumerableFilter( collection, BindParameterLists( namedParams ), QueryParams( namedParams ) );
+			return Session.EnumerableFilter( collection, BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
 		}
 
 		/// <summary></summary>
 		public override IList List()
 		{
-			// HACK: Reintroduce once Filter parsing bug resolved
-			//VerifyParameters();
+			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.Filter( collection, BindParameterLists( namedParams ), QueryParams( namedParams ) );
+			return Session.Filter( collection, BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
 		}
 
-		protected override IType[ ] TypeArray()
+		public override IType[ ] TypeArray()
 		{
 			IList typeList = Types;
 			int size = typeList.Count;
@@ -52,7 +50,7 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		protected override object[ ] ValueArray()
+		public override object[ ] ValueArray()
 		{
 			IList valueList = Values;
 			int size = valueList.Count;

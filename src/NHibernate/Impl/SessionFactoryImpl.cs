@@ -3,8 +3,9 @@ using System.Collections;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Text;
+
 using log4net;
+
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Collection;
@@ -15,9 +16,11 @@ using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Persister;
+using NHibernate.Tool.hbm2ddl;
 using NHibernate.Transaction;
 using NHibernate.Type;
-using NHibernate.Tool.hbm2ddl;
+using NHibernate.Util;
+
 using HibernateDialect = NHibernate.Dialect.Dialect;
 
 namespace NHibernate.Impl
@@ -99,7 +102,16 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private SchemaExport schemaExport;
 
-		private static readonly IIdentifierGenerator uuidgen = new UUIDHexGenerator();
+		[NonSerialized]
+		private readonly IQueryCache queryCache;
+
+		[NonSerialized]
+		private readonly UpdateTimestampsCache updateTimestampsCache;
+
+		[NonSerialized]
+		private readonly IDictionary queryCaches;
+
+		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( SessionFactoryImpl ) );
 
@@ -118,12 +130,8 @@ namespace NHibernate.Impl
 
 			if( log.IsDebugEnabled )
 			{
-				StringBuilder sb = new StringBuilder( "instantiating session factory with properties: " );
-				foreach( DictionaryEntry entry in properties )
-				{
-					sb.AppendFormat( "{0}={1};", entry.Key, ( ( string ) entry.Key ).IndexOf( "connection_string" ) > 0 ? "***" : entry.Value );
-				}
-				log.Debug( sb.ToString() );
+				log.Debug( "instantiating session factory with properties: "
+					+ CollectionPrinter.ToString( properties ) );
 			}
 
 			// Persisters:
@@ -134,9 +142,7 @@ namespace NHibernate.Impl
 
 			foreach( PersistentClass model in cfg.ClassMappings )
 			{
-				System.Type persisterClass = model.ClassPersisterClass; // not used !?!
-				IClassPersister cp;
-				cp = PersisterFactory.Create( model, this );
+				IClassPersister cp = PersisterFactory.CreateClassPersister( model, this );
 				classPersisters[ model.MappedClass ] = cp;
 
 				// Adds the "Namespace.ClassName" (FullClassname) as a lookup to get to the Persiter.
@@ -157,24 +163,29 @@ namespace NHibernate.Impl
 			collectionPersisters = new Hashtable();
 			foreach( Mapping.Collection map in cfg.CollectionMappings )
 			{
-				collectionPersisters[ map.Role ] = PersisterFactory.CreateCollectionPersister( map, this );
+				collectionPersisters[ map.Role ] = PersisterFactory
+					.CreateCollectionPersister( map, this )
+					.CollectionMetadata;
 			}
 			collectionMetadata = new Hashtable( collectionPersisters );
 
 			// after *all* persisters are registered
 			foreach( IClassPersister persister in classPersisters.Values )
 			{
+				// TODO: H2.1 doesn't pass this to PostInstantiate
 				persister.PostInstantiate( this );
 			}
 
-			//TODO: Add for databinding
+			//TODO:
+			// For databinding:
+			//templates = XMLDatabinder.GetOutputStyleSheetTemplates( properties );
 
 
 			// serialization info
 			name = settings.SessionFactoryName;
 			try
 			{
-				uuid = ( string ) uuidgen.Generate( null, null );
+				uuid = ( string ) UuidGenerator.Generate( null, null );
 			}
 			catch( Exception )
 			{
@@ -185,11 +196,12 @@ namespace NHibernate.Impl
 
 			// Named queries:
 			// TODO: precompile and cache named queries
+
 			namedQueries = new Hashtable( cfg.NamedQueries );
-			namedSqlQueries = new Hashtable( cfg.NamedSQLQueries.Count  );
-			foreach ( DictionaryEntry de in cfg.NamedSQLQueries )
+			namedSqlQueries = new Hashtable( cfg.NamedSQLQueries.Count );
+			foreach( DictionaryEntry de in cfg.NamedSQLQueries )
 			{
-				NamedSQLQuery nsq = (NamedSQLQuery) de.Value;
+				NamedSQLQuery nsq = ( NamedSQLQuery ) de.Value;
 				namedSqlQueries[ de.Key ] = new InternalNamedSQLQuery( nsq.QueryString, nsq.ReturnAliases, nsq.ReturnClasses, nsq.SynchronizedTables );
 			}
 
@@ -197,7 +209,7 @@ namespace NHibernate.Impl
 
 			log.Debug( "Instantiated session factory" );
 
-			if ( settings.IsAutoCreateSchema )
+			if( settings.IsAutoCreateSchema )
 			{
 				new SchemaExport( cfg ).Create( false, true );
 			}
@@ -209,9 +221,25 @@ namespace NHibernate.Impl
 			}
 			*/
 
-			if ( settings.IsAutoDropSchema )
+			if( settings.IsAutoDropSchema )
 			{
 				schemaExport = new SchemaExport( cfg );
+			}
+
+			// Obtaining TransactionManager - not ported from H2.1
+
+			if( settings.IsQueryCacheEnabled )
+			{
+				updateTimestampsCache = new UpdateTimestampsCache( settings.CacheProvider, properties );
+				queryCache = settings.QueryCacheFactory
+					.GetQueryCache( null, settings.CacheProvider, updateTimestampsCache, properties );
+				queryCaches = Hashtable.Synchronized( new Hashtable() );
+			}
+			else
+			{
+				updateTimestampsCache = null;
+				queryCache = null;
+				queryCaches = null;
 			}
 		}
 
@@ -227,6 +255,7 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private readonly IDictionary softQueryCache = new Hashtable(); //TODO: make soft reference map
+		// both keys and values may be soft since value keeps a hard ref to the key (and there is a hard ref to MRU values)
 
 		/// <summary></summary>
 		static SessionFactoryImpl()
@@ -357,7 +386,7 @@ namespace NHibernate.Impl
 			object result = softQueryCache[ key ];
 			if( result != null )
 			{
-				strongRefs[ ++strongRefIndex%MaxStrongRefCount ] = result;
+				strongRefs[ ++strongRefIndex % MaxStrongRefCount ] = result;
 			}
 			return result;
 		}
@@ -366,107 +395,70 @@ namespace NHibernate.Impl
 		private void Put( object key, object value )
 		{
 			softQueryCache[ key ] = value;
-			strongRefs[ ++strongRefIndex%MaxStrongRefCount ] = value;
+			strongRefs[ ++strongRefIndex % MaxStrongRefCount ] = value;
 		}
 
-		/// <summary></summary>
-		public int MaximumFetchDepth
+		[MethodImpl( MethodImplOptions.Synchronized )]
+		private QueryTranslator[ ] CreateQueryTranslators( string[ ] concreteQueryStrings, QueryCacheKey cacheKey )
 		{
-			get { return settings.MaximumFetchDepth; }
+			int length = concreteQueryStrings.Length;
+			QueryTranslator[ ] queries = new QueryTranslator[length];
+			for( int i = 0; i < length; i++ )
+			{
+				queries[ i ] = new QueryTranslator( Dialect, concreteQueryStrings[ i ] );
+			}
+			Put( cacheKey, queries );
+			return queries;
 		}
 
-		/// <summary></summary>
-		public bool IsShowSqlEnabled
+		[MethodImpl( MethodImplOptions.Synchronized )]
+		private FilterTranslator CreateFilterTranslator( string filterString, FilterCacheKey cacheKey )
 		{
-			get { return settings.IsShowSqlEnabled; }
+			FilterTranslator filter = new FilterTranslator( Dialect, filterString );
+			Put( cacheKey, filter );
+			return filter;
 		}
 
-		/// <summary></summary>
-		public int FetchSize
+		public QueryTranslator[ ] GetQuery( string queryString, bool shallow )
 		{
-			get { return settings.StatementFetchSize; }
-		}
-
-		/// <summary></summary>
-		public IConnectionProvider ConnectionProvider
-		{
-			get { return settings.ConnectionProvider; }
-		}
-
-		/// <summary></summary>
-		public IsolationLevel Isolation
-		{
-			get { return settings.IsolationLevel; }
-		}
-
-		/// <summary></summary>
-		public bool PrepareSql
-		{
-			get { return settings.PrepareSql; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="query"></param>
-		/// <returns></returns>
-		public QueryTranslator GetQuery( string query )
-		{
-			return GetQuery( query, false );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="query"></param>
-		/// <returns></returns>
-		public QueryTranslator GetShallowQuery( string query )
-		{
-			return GetQuery( query, true );
-		}
-
-		private QueryTranslator GetQuery( string query, bool shallow )
-		{
-			QueryCacheKey cacheKey = new QueryCacheKey( query, shallow );
+			QueryCacheKey cacheKey = new QueryCacheKey( queryString, shallow );
 
 			// have to be careful to ensure that if the JVM does out-of-order execution
 			// then another thread can't get an uncompiled QueryTranslator from the cache
 			// we also have to be very careful to ensure that other threads can perform
 			// compiled queries while another query is being compiled
 
-			QueryTranslator q = ( QueryTranslator ) Get( cacheKey );
-			if( q == null )
+			QueryTranslator[ ] queries = ( QueryTranslator[ ] ) Get( cacheKey );
+
+			if( queries == null )
 			{
-				q = new QueryTranslator( Dialect );
-				Put( cacheKey, q );
+				// a query that names an interface or unmapped class in the from clause
+				// is actually executed as multiple queries
+				string[ ] concreteQueryStrings = QueryTranslator.ConcreteQueries( queryString, this );
+				queries = CreateQueryTranslators( concreteQueryStrings, cacheKey );
 			}
 
-			q.Compile( this, query, settings.QuerySubstitutions, shallow );
+			foreach( QueryTranslator q in queries )
+			{
+				q.Compile( this, settings.QuerySubstitutions, shallow );
+			}
+			// see comment above. note that QueryTranslator.compile() is synchronized
 
-			return q;
+			return queries;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="collectionRole"></param>
-		/// <param name="scalar"></param>
-		/// <returns></returns>
-		public FilterTranslator GetFilter( string query, string collectionRole, bool scalar )
+		public FilterTranslator GetFilter( string filterString, string collectionRole, bool scalar )
 		{
-			FilterCacheKey cacheKey = new FilterCacheKey( collectionRole, query, scalar );
+			FilterCacheKey cacheKey = new FilterCacheKey( collectionRole, filterString, scalar );
 
-			FilterTranslator q = ( FilterTranslator ) Get( cacheKey );
-			if( q == null )
+			FilterTranslator filter = ( FilterTranslator ) Get( cacheKey );
+			if( filter == null )
 			{
-				q = new FilterTranslator( Dialect );
-				Put( cacheKey, q );
+				filter = CreateFilterTranslator( filterString, cacheKey );
 			}
 
-			q.Compile( collectionRole, this, query, settings.QuerySubstitutions, scalar );
-
-			return q;
+			filter.Compile( collectionRole, this, settings.QuerySubstitutions, scalar );
+			return filter;
 		}
 
 		private ISession OpenSession( IDbConnection connection, bool autoClose, long timestamp, IInterceptor interceptor )
@@ -516,35 +508,6 @@ namespace NHibernate.Impl
 			return OpenSession( interceptor );
 		}
 
-		/// <summary></summary>
-		public IDbConnection OpenConnection()
-		{
-			try
-			{
-				return ConnectionProvider.GetConnection();
-			}
-			catch( Exception sqle )
-			{
-				throw new ADOException( "cannot open connection", sqle );
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="conn"></param>
-		public void CloseConnection( IDbConnection conn )
-		{
-			try
-			{
-				ConnectionProvider.CloseConnection( conn );
-			}
-			catch( Exception e )
-			{
-				throw new ADOException( "cannot close connection", e );
-			}
-		}
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -552,20 +515,14 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IClassPersister GetPersister( string className )
 		{
-			return GetPersister( className, true );
-		}
+			// TODO: H2.1 has the code below, an equivalent for .NET would be useful
+			//if( className.StartsWith( "[" ) )
+			//{
+			//	throw new MappingException( "No persister for array result, likely a broken query" );
+			//}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="className"></param>
-		/// <param name="throwException"></param>
-		/// <returns></returns>
-		public IClassPersister GetPersister( string className, bool throwException )
-		{
 			IClassPersister result = classPersistersByName[ className ] as IClassPersister;
-
-			if( result == null && throwException )
+			if( result == null )
 			{
 				throw new MappingException( "No persister for: " + className );
 			}
@@ -582,22 +539,17 @@ namespace NHibernate.Impl
 			IClassPersister result = classPersisters[ theClass ] as IClassPersister;
 			if( result == null )
 			{
-				throw new MappingException( "No persisters for: " + theClass.FullName );
+				throw new MappingException( "Unknown entity class: " + theClass.FullName );
 			}
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="role"></param>
-		/// <returns></returns>
 		public ICollectionPersister GetCollectionPersister( string role )
 		{
 			ICollectionPersister result = collectionPersisters[ role ] as ICollectionPersister;
 			if( result == null )
 			{
-				throw new MappingException( "No persisters for collection role: " + role );
+				throw new MappingException( "Unknown collection role: " + role );
 			}
 			return result;
 		}
@@ -609,6 +561,21 @@ namespace NHibernate.Impl
 		public IDatabinder OpenDatabinder()
 		{
 			throw new NotImplementedException( "Have not coded Databinder yet." );
+			//if( templates == null )
+			//{
+			//	throw new HibernateException(
+			//		"No output stylesheet configured. Use the property hibernate.output_stylesheet and ensure xalan.jar is in classpath"
+			//	);
+			//}
+			//try
+			//{
+			//	return new XMLDatabinder( this, templates.NewTransformer() );
+			//}
+			//catch( Exception e )
+			//{
+			//	log.Error( "Could not open Databinder", e );
+			//	throw new HibernateException( "Could not open Databinder", e );
+			//}
 		}
 
 		/// <summary></summary>
@@ -617,17 +584,52 @@ namespace NHibernate.Impl
 			get { return settings.Dialect; }
 		}
 
-		// not used !?!
-		private ITransactionFactory BuildTransactionFactory( IDictionary transactionProps )
-		{
-			return new TransactionFactory();
-		}
-
 		/// <summary></summary>
 		public ITransactionFactory TransactionFactory
 		{
 			get { return settings.TransactionFactory; }
 		}
+
+		// TransactionManager - not ported
+
+		// TODO: SQLExceptionConverter
+		// JNDI Reference - not ported
+
+		#region System.Runtime.Serialization.IObjectReference Members
+
+		public object GetRealObject( StreamingContext context )
+		{
+			// the SessionFactory that was serialized only has values in the properties
+			// "name" and "uuid".  In here convert the serialized SessionFactory into
+			// an instance of the SessionFactory in the current AppDomain.
+			log.Debug( "Resolving serialized SessionFactory" );
+
+			// look for the instance by uuid - this will work when a SessionFactory
+			// is serialized and deserialized in the same AppDomain.
+			ISessionFactory result = SessionFactoryObjectFactory.GetInstance( uuid );
+			if( result == null )
+			{
+				// if we were deserialized into a different AppDomain, look for an instance with the
+				// same name.
+				result = SessionFactoryObjectFactory.GetNamedInstance( name );
+				if( result == null )
+				{
+					throw new NullReferenceException( "Could not find a SessionFactory named " + name + " or identified by uuid " + uuid );
+				}
+				else
+				{
+					log.Debug( "resolved SessionFactory by name" );
+				}
+			}
+			else
+			{
+				log.Debug( "resolved SessionFactory by uuid" );
+			}
+
+			return result;
+		}
+
+		#endregion
 
 		/// <summary></summary>
 		public bool IsBatchUpdateEnabled
@@ -703,86 +705,14 @@ namespace NHibernate.Impl
 			return GetPersister( objectClass ).IdentifierPropertyName;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
-		public IType GetPropertyType( System.Type persistentClass, string propertyName )
-		{
-			return GetPersister( persistentClass ).GetPropertyType( propertyName );
-		}
-
-		#region System.Runtime.Serialization.IObjectReference Members
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="context"></param>
-		/// <returns></returns>
-		public object GetRealObject( StreamingContext context )
-		{
-			// the SessionFactory that was serialized only has values in the properties
-			// "name" and "uuid".  In here convert the serialized SessionFactory into
-			// an instance of the SessionFactory in the current AppDomain.
-			log.Debug( "Resolving serialized SessionFactory" );
-
-			// look for the instance by uuid - this will work when a SessionFactory
-			// is serialized and deserialized in the same AppDomain.
-			ISessionFactory result = SessionFactoryObjectFactory.GetInstance( uuid );
-			if( result == null )
-			{
-				// if we were deserialized into a different AppDomain, look for an instance with the
-				// same name.
-				result = SessionFactoryObjectFactory.GetNamedInstance( name );
-				if( result == null )
-				{
-					throw new NullReferenceException( "Could not find a SessionFactory named " + name + " or identified by uuid " + uuid );
-				}
-				else
-				{
-					log.Debug( "resolved SessionFactory by name" );
-				}
-			}
-			else
-			{
-				log.Debug( "resolved SessionFactory by uuid" );
-			}
-
-			return result;
-		}
-
-		#endregion
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="queryString"></param>
-		/// <returns></returns>
-		public IType[ ] GetReturnTypes( string queryString )
+		public IType[ ] GetReturnTypes( String queryString )
 		{
 			string[ ] queries = QueryTranslator.ConcreteQueries( queryString, this );
 			if( queries.Length == 0 )
 			{
 				throw new HibernateException( "Query does not refer to any persistent classes: " + queryString );
 			}
-			return GetShallowQuery( queries[ 0 ] ).ReturnTypes;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="queryString"></param>
-		/// <returns></returns>
-		public ICollection GetNamedParameters( string queryString )
-		{
-			string[ ] queries = QueryTranslator.ConcreteQueries( queryString, this );
-			if( queries.Length == 0 )
-			{
-				throw new HibernateException( "Query does not refer to any persistent classes: " + queryString );
-			}
-			return GetQuery( queries[ 0 ] ).NamedParameters;
+			return GetQuery( queries[ 0 ], true )[ 0 ].ReturnTypes;
 		}
 
 		/// <summary></summary>
@@ -791,36 +721,20 @@ namespace NHibernate.Impl
 			get { return settings.DefaultSchemaName; }
 		}
 
-		//		public void SetFetchSize(IDbCommand statement) 
-		//		{
-		//			if ( settings.sstatementFetchSize!=null) 
-		//			{
-		//				// nothing to do in ADO.NET
-		//			}
-		//		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
 		public IClassMetadata GetClassMetadata( System.Type persistentClass )
 		{
 			return GetPersister( persistentClass ).ClassMetadata;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="roleName"></param>
-		/// <returns></returns>
 		public ICollectionMetadata GetCollectionMetadata( string roleName )
 		{
 			return GetCollectionPersister( roleName ) as ICollectionMetadata;
 		}
 
 		/// <summary>
-		/// 
+		/// Return the names of all persistent (mapped) classes that extend or implement the
+		/// given class or interface, accounting for implicit/explicit polymorphism settings
+		/// and excluding mapped subclasses/joined-subclasses of other classes in the result.
 		/// </summary>
 		/// <param name="clazz"></param>
 		/// <returns></returns>
@@ -832,26 +746,26 @@ namespace NHibernate.Impl
 				if( p is IQueryable )
 				{
 					IQueryable q = ( IQueryable ) p;
-					string name = q.ClassName;
+					string className = q.ClassName;
 					bool isMappedClass = clazz.Equals( q.MappedClass );
 					if( q.IsExplicitPolymorphism )
 					{
 						if( isMappedClass )
 						{
-							return new string[ ] {name};
+							return new string[ ] {className};
 						}
 					}
 					else
 					{
 						if( isMappedClass )
 						{
-							results.Add( name );
+							results.Add( className );
 						}
 						else if(
 							clazz.IsAssignableFrom( q.MappedClass ) &&
 								( !q.IsInherited || !clazz.IsAssignableFrom( q.MappedSuperclass ) ) )
 						{
-							results.Add( name );
+							results.Add( className );
 						}
 					}
 				}
@@ -859,30 +773,31 @@ namespace NHibernate.Impl
 			return ( string[ ] ) results.ToArray( typeof( string ) );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public string GetImportedClassName( string name )
+		public string GetImportedClassName( string className )
 		{
-			string result = imports[ name ] as string;
-			return ( result == null ) ? name : result;
+			string result = imports[ className ] as string;
+			return ( result == null ) ? className : result;
 		}
 
 		/// <summary></summary>
 		public IDictionary GetAllClassMetadata()
 		{
-			return classPersisters;
+			return classMetadata;
 		}
 
 		/// <summary></summary>
 		public IDictionary GetAllCollectionMetadata()
 		{
-			return collectionPersisters;
+			return collectionMetadata;
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Closes the session factory, releasing all held resources.
+		/// <list>
+		/// <item>cleans up used cache regions and "stops" the cache provider.</item>
+		/// <item>close the ADO.NET connection</item>
+		/// </list>
+		/// </summary>
 		public void Close()
 		{
 			log.Info( "Closing" );
@@ -903,119 +818,258 @@ namespace NHibernate.Impl
 				}
 			}
 
+			if( IsQueryCacheEnabled )
+			{
+				queryCache.Destroy();
+
+				foreach( IQueryCache cache in queryCaches.Values )
+				{
+					cache.Destroy();
+				}
+
+				updateTimestampsCache.Destroy();
+			}
+
+			settings.CacheProvider.Stop();
+
 			try
 			{
-				ConnectionProvider.Dispose();
+				settings.ConnectionProvider.Dispose();
 			}
 			finally
 			{
 				SessionFactoryObjectFactory.RemoveInstance( uuid, name, properties );
 			}
+
+			if( settings.IsAutoDropSchema )
+			{
+				schemaExport.Drop( false, true );
+			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="id"></param>
 		public void Evict( System.Type persistentClass, object id )
 		{
 			IClassPersister p = GetPersister( persistentClass );
 			if( p.HasCache )
 			{
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "evicting second-level cache: " + MessageHelper.InfoString( p, id ) );
+				}
 				p.Cache.Remove( id );
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
 		public void Evict( System.Type persistentClass )
 		{
 			IClassPersister p = GetPersister( persistentClass );
 			if( p.HasCache )
 			{
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "evicting second-level cache: " + p.ClassName );
+				}
 				p.Cache.Clear();
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="roleName"></param>
-		/// <param name="id"></param>
 		public void EvictCollection( string roleName, object id )
 		{
 			ICollectionPersister p = GetCollectionPersister( roleName );
 			if( p.HasCache )
 			{
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "evicting second-level cache: " + MessageHelper.InfoString( p, id ) );
+				}
 				p.Cache.Remove( id );
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void EvictQueries( )
-		{
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cacheRegion"></param>
-		public void EvictQueries( string cacheRegion )
-		{
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="roleName"></param>
 		public void EvictCollection( string roleName )
 		{
 			ICollectionPersister p = GetCollectionPersister( roleName );
 			if( p.HasCache )
 			{
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "evicting second-level cache: " + p.Role );
+				}
 				p.Cache.Clear();
+			}
+		}
+
+		/// <summary></summary>
+		public int MaximumFetchDepth
+		{
+			get { return settings.MaximumFetchDepth; }
+		}
+
+		public IType GetPropertyType( System.Type persistentClass, string propertyName )
+		{
+			return GetPersister( persistentClass ).GetPropertyType( propertyName );
+		}
+
+		/// <summary></summary>
+		public bool IsShowSqlEnabled
+		{
+			get { return settings.IsShowSqlEnabled; }
+		}
+
+		/// <summary></summary>
+		public int FetchSize
+		{
+			get { return settings.StatementFetchSize; }
+		}
+
+		/// <summary></summary>
+		public IConnectionProvider ConnectionProvider
+		{
+			get { return settings.ConnectionProvider; }
+		}
+
+		public UpdateTimestampsCache UpdateTimestampsCache
+		{
+			get { return updateTimestampsCache; }
+		}
+
+		public IQueryCache QueryCache
+		{
+			get { return queryCache; }
+		}
+
+		public IQueryCache GetQueryCache( string cacheRegion )
+		{
+			if( cacheRegion == null )
+			{
+				return QueryCache;
+			}
+
+			IQueryCache currentQueryCache = ( IQueryCache ) queryCaches[ cacheRegion ];
+			if( currentQueryCache == null )
+			{
+				currentQueryCache = settings.QueryCacheFactory.GetQueryCache(
+					cacheRegion,
+					settings.CacheProvider,
+					updateTimestampsCache,
+					properties
+					);
+				queryCaches[ cacheRegion ] = currentQueryCache;
+			}
+			return currentQueryCache;
+		}
+
+		public bool IsQueryCacheEnabled
+		{
+			get { return settings.IsQueryCacheEnabled; }
+		}
+
+		// TODO: isBatchVersionedData()
+		// TODO: isWrapDataReadersEnabled()
+
+		public void EvictQueries()
+		{
+			if( queryCache != null )
+			{
+				queryCache.Clear();
+				if( queryCaches.Count == 0 )
+				{
+					updateTimestampsCache.Clear();
+				}
+			}
+		}
+
+		public void EvictQueries( string cacheRegion )
+		{
+			if( cacheRegion == null )
+			{
+				throw new ArgumentNullException( "cacheRegion", "use the zero-argument form to evict the default query cache" );
+			}
+			else if( queryCaches != null )
+			{
+				IQueryCache currentQueryCache = ( IQueryCache ) queryCaches[ cacheRegion ];
+				if( currentQueryCache != null )
+				{
+					currentQueryCache.Clear();
+				}
 			}
 		}
 
 		// TODO: a better way to normalised the NamedSQLQUery aspect
 		internal class InternalNamedSQLQuery
 		{
-			private readonly string queryString;
-			private readonly string[] returnAliases;
-			private readonly System.Type[] returnClasses;
+			private readonly string query;
+			private readonly string[ ] returnAliases;
+			private readonly System.Type[ ] returnClasses;
 			private readonly IList querySpaces;
 
-			public InternalNamedSQLQuery( string query, string[] aliases, System.Type[] clazz, IList querySpaces )
+			public InternalNamedSQLQuery( string query, string[ ] aliases, System.Type[ ] clazz, IList querySpaces )
 			{
 				this.returnClasses = clazz;
 				this.returnAliases = aliases;
-				this.queryString = query;
+				this.query = query;
 				this.querySpaces = querySpaces;
 			}
 
-			public string[] ReturnAliases
+			public string[ ] ReturnAliases
 			{
 				get { return returnAliases; }
 			}
 
-			public System.Type[] ReturnClasses
+			public System.Type[ ] ReturnClasses
 			{
 				get { return returnClasses; }
 			}
 
 			public string QueryString
 			{
-				get { return queryString; }
+				get { return query; }
 			}
 
 			public ICollection QuerySpaces
 			{
 				get { return querySpaces; }
+			}
+		}
+
+		/// <summary></summary>
+		public IsolationLevel Isolation
+		{
+			get { return settings.IsolationLevel; }
+		}
+
+		/// <summary></summary>
+		public bool PrepareSql
+		{
+			get { return settings.PrepareSql; }
+		}
+
+		/// <summary></summary>
+		public IDbConnection OpenConnection()
+		{
+			try
+			{
+				return ConnectionProvider.GetConnection();
+			}
+			catch( Exception sqle )
+			{
+				throw new ADOException( "cannot open connection", sqle );
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="conn"></param>
+		public void CloseConnection( IDbConnection conn )
+		{
+			try
+			{
+				ConnectionProvider.CloseConnection( conn );
+			}
+			catch( Exception e )
+			{
+				throw new ADOException( "cannot close connection", e );
 			}
 		}
 	}

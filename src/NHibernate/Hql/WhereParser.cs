@@ -231,10 +231,10 @@ namespace NHibernate.Hql
 
 				if( bracketsSinceSelect == -1 )
 				{
-					QueryTranslator subq = new QueryTranslator( d );
+					QueryTranslator subq = new QueryTranslator( d, subselect.ToString() );
 					try
 					{
-						subq.Compile( q, subselect.ToString() );
+						subq.Compile( q );
 					}
 					catch( MappingException me )
 					{

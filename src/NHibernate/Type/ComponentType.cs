@@ -357,9 +357,28 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public override string ToXML( object value, ISessionFactoryImplementor factory )
+		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
-			return ( value == null ) ? null : value.ToString();
+			if( value==null ) return "null";
+			IDictionary result = new Hashtable();
+			object[ ] values = GetPropertyValues( value );
+			
+			for( int i = 0; i < propertyTypes.Length; i++ )
+			{
+				result[ propertyNames[ i ] ] = propertyTypes[ i ].ToString( values[ i ], factory );
+			}
+
+			return StringHelper.Unqualify( Name ) + CollectionPrinter.ToString( result );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public override object FromString(string xml)
+		{
+			throw new NotSupportedException();
 		}
 
 		/// <summary></summary>

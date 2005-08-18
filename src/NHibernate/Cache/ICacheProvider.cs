@@ -20,5 +20,18 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <returns></returns>
 		long NextTimestamp();
+
+		/// <summary>
+		/// Callback to perform any necessary initialization of the underlying cache implementation
+		/// during ISessionFactory construction.
+		/// </summary>
+		/// <param name="properties">current configuration settings</param>
+		void Start( IDictionary properties );
+
+		/// <summary>
+		/// Callback to perform any necessary cleanup of the underlying cache implementation
+		/// during <see cref="ISessionFactory.Close" />.
+		/// </summary>
+		void Stop();
 	}
 }

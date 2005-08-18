@@ -156,7 +156,7 @@
 		</remarks>
 	</member>
 	
-	<member name="M:IType.ToXML">
+	<member name="M:IType.ToString">
 		<summary>
 		When implemented by a class, a representation of the value to be 
 		embedded in an XML element
@@ -165,7 +165,15 @@
 		<param name="factory"></param>
 		<returns>An Xml formatted string.</returns>
 	</member>
-	
+
+	<member name="M:IType.FromString">
+		<summary>
+		Parse the XML representation of an instance
+		</summary>
+		<param name="xml"></param>
+		<returns>an instance of the type</returns>
+	</member>
+
 	<member name="P:IType.Name">
 		<summary>
 		When implemented by a class, gets the abbreviated name of the type.

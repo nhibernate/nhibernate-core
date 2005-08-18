@@ -21,27 +21,27 @@ namespace NHibernate.Hql
 	/// </summary>
 	public class QueryTranslator : Loader.Loader
 	{
-		private string queryString;
+		private readonly string queryString;
 
-		private IDictionary typeMap = new SequencedHashMap();
-		private IDictionary collections = new SequencedHashMap();
+		private readonly IDictionary typeMap = new SequencedHashMap();
+		private readonly IDictionary collections = new SequencedHashMap();
 		private IList returnedTypes = new ArrayList();
-		private IList fromTypes = new ArrayList();
-		private IList scalarTypes = new ArrayList();
-		private IDictionary namedParameters = new Hashtable();
-		private IDictionary aliasNames = new Hashtable();
-		private IDictionary oneToOneOwnerNames = new Hashtable();
-		private ISet crossJoins = new HashedSet();
-		private IDictionary decoratedPropertyMappings = new Hashtable();
+		private readonly IList fromTypes = new ArrayList();
+		private readonly IList scalarTypes = new ArrayList();
+		private readonly IDictionary namedParameters = new Hashtable();
+		private readonly IDictionary aliasNames = new Hashtable();
+		private readonly IDictionary oneToOneOwnerNames = new Hashtable();
+		private readonly ISet crossJoins = new HashedSet();
+		private readonly IDictionary decoratedPropertyMappings = new Hashtable();
 
-		private IList scalarSelectTokens = new ArrayList(); // contains a List of strings
-		private IList whereTokens = new ArrayList(); // contains a List of strings containing Sql or SqlStrings
-		private IList havingTokens = new ArrayList();
-		private IDictionary joins = new SequencedHashMap();
-		private IList orderByTokens = new ArrayList();
-		private IList groupByTokens = new ArrayList();
-		private ISet querySpaces = new HashedSet();
-		private ISet entitiesToFetch = new HashedSet();
+		private readonly IList scalarSelectTokens = new ArrayList(); // contains a List of strings
+		private readonly IList whereTokens = new ArrayList(); // contains a List of strings containing Sql or SqlStrings
+		private readonly IList havingTokens = new ArrayList();
+		private readonly IDictionary joins = new SequencedHashMap();
+		private readonly IList orderByTokens = new ArrayList();
+		private readonly IList groupByTokens = new ArrayList();
+		private readonly ISet querySpaces = new HashedSet();
+		private readonly ISet entitiesToFetch = new HashedSet();
 
 		private IQueryable[ ] persisters;
 		private int[] owners;
@@ -86,23 +86,23 @@ namespace NHibernate.Hql
 		/// Construct a query translator
 		/// </summary>
 		/// <param name="d"></param>
-		public QueryTranslator( Dialect.Dialect d ) : base( d )
+		public QueryTranslator( Dialect.Dialect d, string queryString ) : base( d )
 		{
+			this.queryString = queryString;
 		}
 
 		/// <summary>
 		/// Compile a subquery
 		/// </summary>
 		/// <param name="superquery"></param>
-		/// <param name="queryString"></param>
-		protected internal void Compile( QueryTranslator superquery, string queryString )
+		protected internal void Compile( QueryTranslator superquery )
 		{
 			this.factory = superquery.factory;
 			this.tokenReplacements = superquery.tokenReplacements;
 			this.superQuery = superquery;
 			this.shallowQuery = true;
 
-			Compile( queryString );
+			Compile( );
 		}
 
 		/// <summary>
@@ -110,11 +110,10 @@ namespace NHibernate.Hql
 		/// times. Subsequent invocations are no-ops.
 		/// </summary>
 		/// <param name="factory"></param>
-		/// <param name="queryString"></param>
 		/// <param name="replacements"></param>
 		/// <param name="scalar"></param>
 		[MethodImpl( MethodImplOptions.Synchronized )]
-		public void Compile( ISessionFactoryImplementor factory, string queryString, IDictionary replacements, bool scalar )
+		public void Compile( ISessionFactoryImplementor factory, IDictionary replacements, bool scalar )
 		{
 			if( !Compiled )
 			{
@@ -122,18 +121,15 @@ namespace NHibernate.Hql
 				this.tokenReplacements = replacements;
 				this.shallowQuery = scalar;
 
-				Compile( queryString );
+				Compile( );
 			}
 		}
 
 		/// <summary> 
 		/// Compile the query (generate the SQL).
 		/// </summary>
-		/// <param name="queryString"></param>
-		protected void Compile( string queryString )
+		protected void Compile( )
 		{
-			this.queryString = queryString;
-
 			log.Debug( "compiling query" );
 			try
 			{
@@ -419,7 +415,7 @@ namespace NHibernate.Hql
 				{
 					throw new QueryException( string.Format( "persistent class not found: {0}", type.Name ) );
 				}
-				return (IPropertyMapping) persister;
+				return persister;
 			}
 		}
 
@@ -449,9 +445,9 @@ namespace NHibernate.Hql
 		{
 			try
 			{
-				return ( IQueryable ) factory.GetPersister( factory.GetImportedClassName( className ), false );
+				return ( IQueryable ) factory.GetPersister( factory.GetImportedClassName( className ) );
 			}
-			catch( Exception )
+			catch( MappingException )
 			{
 				return null;
 			}

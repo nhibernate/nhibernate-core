@@ -134,9 +134,19 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ToXML( object value )
+		public override string ToString( object value )
 		{
-			return ( value == null ) ? null : binaryType.ToXML( ToBytes( value ) );
+			return ( value == null ) ? null : binaryType.ToString( ToBytes( value ) );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public override object FromStringValue(string xml)
+		{
+			return FromBytes( ( byte[ ] ) binaryType.FromString( xml ) );
 		}
 
 		/// <summary></summary>

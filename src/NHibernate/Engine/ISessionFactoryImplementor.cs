@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Data;
+using NHibernate.Cache;
 using NHibernate.Collection;
-using NHibernate.Connection;
 using NHibernate.Persister;
 using NHibernate.Type;
 
@@ -27,15 +27,6 @@ namespace NHibernate.Engine
 		IClassPersister GetPersister( string className );
 
 		/// <summary>
-		/// Get the persister for the named class
-		/// </summary>
-		/// <param name="className">The name of the class that is persisted.</param>
-		/// <param name="throwException"><c>true</c> if the exception should be thrown if no <see cref="IClassPersister"/> is found.</param>
-		/// <returns>The <see cref="IClassPersister"/> for the class.</returns>
-		/// <exception cref="MappingException">If no <see cref="IClassPersister"/> can be found and throwException is <c>true</c>.</exception>
-		IClassPersister GetPersister( string className, bool throwException );
-
-		/// <summary>
 		/// Get the persister object for a collection role
 		/// </summary>
 		/// <param name="role"></param>
@@ -53,7 +44,7 @@ namespace NHibernate.Engine
 		bool IsScrollableResultSetsEnabled { get; }
 
 		/// <summary>
-		/// Get the database schema specified in <c>hibernate.default_schema</c>
+		/// Is <c>PreparedStatement.getGeneratedKeys</c> supported (Java-specific?)
 		/// </summary>
 		bool IsGetGeneratedKeysEnabled { get; }
 
@@ -94,16 +85,33 @@ namespace NHibernate.Engine
 		int FetchSize { get; }
 
 		/// <summary>
-		/// 
+		/// Maximum depth of outer join fetching
 		/// </summary>
 		int MaximumFetchDepth { get; }
 
 		/// <summary>
-		/// Get the named parameter names for a query
+		/// Are we logging SQL to the console?
 		/// </summary>
-		/// <param name="queryString"></param>
-		/// <returns></returns>
-		ICollection GetNamedParameters( string queryString );
+		bool IsShowSqlEnabled { get; }
+
+		/// <summary>
+		/// Get the default query cache
+		/// </summary>
+		IQueryCache QueryCache { get; }
+
+		/// <summary>
+		/// Get a particular named query cache, or the default cache
+		/// </summary>
+		/// <param name="regionName">the name of the cache region, or null for the default
+		/// query cache</param>
+		/// <returns>the existing cache, or a newly created cache if none by that
+		/// region name</returns>
+		IQueryCache GetQueryCache( string regionName );
+		
+		/// <summary>
+		/// Is query caching enabled?
+		/// </summary>
+		bool IsQueryCacheEnabled { get; }
 
 		/// <summary>
 		/// Obtain an ADO.NET connection
@@ -125,11 +133,13 @@ namespace NHibernate.Engine
 		/// </remarks>
 		IsolationLevel Isolation { get; }
 
-
 		/// <summary>
 		/// Gets a boolean indicating if the sql statement should be prepared.  The value
 		/// is read from <c>hibernate.prepare_sql</c>.
 		/// </summary>
 		bool PrepareSql { get; }
+
+		// TODO: H2.1
+		// bool IsWrapDataReadersEnabled { get; }
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using NHibernate.SqlTypes;
 
@@ -70,9 +71,19 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="val"></param>
 		/// <returns></returns>
-		public override string ToXML( object val )
+		public override string ToString( object val )
 		{
 			return ( ( DateTime ) val ).Ticks.ToString();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public override object FromStringValue(string xml)
+		{
+			return new DateTime( long.Parse( xml ) );
 		}
 
 		/// <summary>
@@ -135,6 +146,11 @@ namespace NHibernate.Type
 		public object StringToObject( string xml )
 		{
 			return long.Parse( xml );
+		}
+
+		public IComparer Comparator
+		{
+			get { return Comparer.DefaultInvariant; }
 		}
 
 		#endregion

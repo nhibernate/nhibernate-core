@@ -1,27 +1,40 @@
 using System;
+using System.Collections;
+
 using log4net;
 
 namespace NHibernate.Cache
 {
 	/// <summary>
-	/// Summary description for NonstrictReadWriteCache.
+	/// Caches data that is sometimes updated without ever locking the cache. 
+	/// If concurrent access to an item is possible, this concurrency strategy 
+	/// makes no guarantee that the item returned from the cache is the latest 
+	/// version available in the database. Configure your cache timeout accordingly! 
+	/// This is an "asynchronous" concurrency strategy.
+	/// <seealso cref="ReadWriteCache"/> for a much stricter algorithm
 	/// </summary>
 	public class NonstrictReadWriteCache : ICacheConcurrencyStrategy
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( NonstrictReadWriteCache ) );
-		private static readonly long timeout = 10000;
+		private ICache cache;
 
-		private ICache _cache;
+		private static readonly ILog log = LogManager.GetLogger( typeof( NonstrictReadWriteCache ) );
+
+		private bool minimalPuts;
 
 		/// <summary></summary>
 		public NonstrictReadWriteCache()
 		{
 		}
 
-		#region ICacheConcurrencyStrategy Members
+		/// <summary></summary>
+		public ICache Cache
+		{
+			get { return cache; }
+			set { cache = value; }
+		}
 
 		/// <summary>
-		/// 
+		/// Get the most recent version, if available.
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="txTimestamp"></param>
@@ -33,125 +46,69 @@ namespace NHibernate.Cache
 				log.Debug( "Cache lookup: " + key );
 			}
 
-			object result = _cache.Get( key );
-			if( result != null & !( result is Int64 ) )
+			object result = cache.Get( key );
+			if( result != null )
 			{
-				if( log.IsDebugEnabled )
-				{
-					log.Debug( "Cache hit" );
-				}
-				return result;
+				log.Debug( "Cache hit" );
 			}
 			else
 			{
-				if( log.IsDebugEnabled )
-				{
-					log.Debug( "Cache miss" );
-				}
+				log.Debug( "Cache miss" );
 			}
-
-			return null;
+			return result;
 		}
 
 		/// <summary>
-		/// 
+		/// Add an item to the cache
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
 		/// <param name="txTimestamp"></param>
 		/// <returns></returns>
-		public bool Put( object key, object value, long txTimestamp )
+		public bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparator )
 		{
-			object result = _cache.Get( key );
-			if( result == null )
+			if( minimalPuts && cache.Get( key ) != null )
 			{
 				if( log.IsDebugEnabled )
 				{
-					log.Debug( "Caching new: " + key );
+					log.Debug( "item already cached: " + key );
 				}
+				return false;
 			}
-			else if( ( result is Int64 ) && ( ( Int64 ) result < txTimestamp/Timestamper.OneMs ) )
+			if( log.IsDebugEnabled )
 			{
-				// note that this is not guaranteed to be correct in a cluster
-				// because system times could be inconsistent
-				if( log.IsDebugEnabled )
-				{
-					log.Debug( "Caching invalidated: " + key );
-				}
+				log.Debug( "Caching: " + key );
 			}
-			else
-			{
-				return false; // note early exit
-			}
-
-			_cache.Put( key, value );
+			cache.Put( key, value );
 			return true;
 		}
 
 		/// <summary>
-		/// 
+		/// Do nothing
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="version"></param>
 		public ISoftLock Lock( object key, object version )
 		{
-			// TODO: Differs from the 2.1 implemenation
-			// in case the server crashes, we need the lock to timeout
-			_cache.Put( key, ( timeout + Timestamper.Next()/Timestamper.OneMs ) );
-
 			return null;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="lock"></param>
-		public void Release( object key, ISoftLock @lock )
-		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Invalidating: " + key );
-			}
-
-			//remove the lock (any later transactions can recache)
-			_cache.Put( key, Timestamper.Next()/Timestamper.OneMs );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
 		public void Remove( object key )
 		{
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Removing: " + key );
 			}
-			_cache.Remove( key );
+			cache.Remove( key );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		public void Evict( object key )
-		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Evicting: " + key );
-			}
-			_cache.Remove( key );
-		}
-
-		/// <summary></summary>
 		public void Clear()
 		{
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Clearing" );
 			}
-			_cache.Clear();
+			cache.Clear();
 		}
 
 		/// <summary></summary>
@@ -159,7 +116,7 @@ namespace NHibernate.Cache
 		{
 			try
 			{
-				_cache.Destroy();
+				cache.Destroy();
 			}
 			catch( Exception e )
 			{
@@ -168,7 +125,20 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary>
-		/// 
+		/// Invalidate the item
+		/// </summary>
+		/// <param name="key"></param>
+		public void Evict( object key )
+		{
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Invalidating: " + key );
+			}
+			cache.Remove( key );
+		}
+
+		/// <summary>
+		/// Invalidate the item
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
@@ -178,20 +148,27 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary>
-		/// 
+		/// Do nothing
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
 		public void Insert( object key, object value )
 		{
-			// Do nothing;
 		}
 
-		/// <summary></summary>
-		public ICache Cache
+		/// <summary>
+		/// Invalidate the item (again, for safety).
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="lock"></param>
+		public void Release( object key, ISoftLock @lock )
 		{
-			get { return _cache; }
-			set { _cache = value; }
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Invalidating (again): " + key );
+			}
+
+			cache.Remove( key );
 		}
 
 		/// <summary>
@@ -207,15 +184,18 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary>
-		/// 
+		/// Do nothing
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
 		/// <param name="version"></param>
 		public void AfterInsert( object key, object value, object version )
 		{
-			// Do nothing
 		}
-		#endregion
+
+		public bool MinimalPuts
+		{
+			set { this.minimalPuts = value; }
+		}
 	}
 }

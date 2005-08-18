@@ -76,6 +76,16 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public object StringToObject( string xml )
 		{
+			return FromString( xml );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public override object FromStringValue(string xml)
+		{
 			return Decimal.Parse( xml );
 		}
 

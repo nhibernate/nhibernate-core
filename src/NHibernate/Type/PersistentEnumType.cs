@@ -115,7 +115,7 @@ namespace NHibernate.Type
 				case "System.UInt64":
 					return Convert.ToUInt64( code );
 				default:
-					throw new HibernateException( "Unknown UnderlyingType for Enum" ); //Impossible exception
+					throw new AssertionFailure( "Unknown UnderlyingType for Enum" ); //Impossible exception
 			}
 		}
 
@@ -202,9 +202,19 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ToXML( object value )
+		public override string ToString( object value )
 		{
 			return ( value == null ) ? null : GetValue( value ).ToString();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public override object FromStringValue( string xml )
+		{
+			return GetInstance( long.Parse( xml ) );
 		}
 
 		/// <summary>

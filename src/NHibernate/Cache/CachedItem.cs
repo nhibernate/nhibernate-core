@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 
 namespace NHibernate.Cache
 {
@@ -7,28 +8,21 @@ namespace NHibernate.Cache
 	/// when it was unlocked
 	/// </summary>
 	[Serializable]
-	public class CachedItem
+	public class CachedItem : ILockable
 	{
-		private long freshTimestamp;
-		private bool fresh;
-		private long unlockTimestamp;
-		private int theLock;
-		private object value;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		public CachedItem(object value)
+		private readonly long freshTimestamp;
+		private readonly object value;
+		private readonly object version;
+	
+		public CachedItem(object value, long currentTimestamp, object version) 
 		{
 			this.value = value;
-			freshTimestamp = Timestamper.Next();
-			fresh = true;
-			unlockTimestamp = -1;
+			freshTimestamp = currentTimestamp;
+			this.version = version;
 		}
 
 		/// <summary>
-		/// The timestamp on the Cached Data.
+		/// The timestamp on the cached data
 		/// </summary>
 		public long FreshTimestamp
 		{
@@ -36,61 +30,59 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary>
-		/// 
-		/// </summary>
-		public long UnlockTimestamp
-		{
-			get { return unlockTimestamp; }
-		}
-
-		/// <summary>
-		/// The actual cached Data.
+		/// The actual cached data
 		/// </summary>
 		public object Value
 		{
 			get { return value; }
 		}
-
+		
 		/// <summary>
-		/// A boolean indicating if the Cached Item is fresh.
+		/// Lock the item
 		/// </summary>
-		/// <value>true if the CachedItem has not ever been locked.</value>
-		public bool IsFresh
+		public CacheLock Lock(long timeout, int id) 
 		{
-			get { return fresh; }
+			return new CacheLock(timeout, id, version);
 		}
 
 		/// <summary>
-		/// Lock the Item.
+		/// Not a lock!
 		/// </summary>
-		public void Lock()
+		public bool IsLock
 		{
-			if( 0 == theLock++ )
-			{
-				fresh = false;
-				value = null;
-			}
+			get { return false; }
 		}
 
 		/// <summary>
-		/// Unlock the Item
+		/// Is this item visible to the timestamped transaction?
 		/// </summary>
-		public void Unlock()
+		/// <param name="txTimestamp"></param>
+		/// <returns></returns>
+		public bool IsGettable(long txTimestamp) 
 		{
-			if( --theLock == 0 )
-			{
-				unlockTimestamp = Timestamper.Next();
-			}
+			return freshTimestamp < txTimestamp;
 		}
 
 		/// <summary>
-		/// Value indicating if the CachedItem is unlocked. 
+		/// Don't overwite already cached items
 		/// </summary>
-		/// <value>true if there are no locks on the CachedItem.</value>
-		public bool IsUnlocked
+		/// <param name="txTimestamp"></param>
+		/// <param name="newVersion"></param>
+		/// <param name="comparator"></param>
+		/// <returns></returns>
+		public bool IsPuttable( long txTimestamp, object newVersion, IComparer comparator) 
 		{
-			get { return theLock == 0; }
+			// we really could refresh the item if it  
+			// is not a lock, but it might be slower
+			//return freshTimestamp < txTimestamp
+			return version!=null && comparator.Compare(version, newVersion) < 0;
 		}
 
+		public override string ToString() 
+		{
+			return "Item{version=" + version +
+				",freshTimestamp=" + freshTimestamp +
+				"}";
+		}
 	}
 }

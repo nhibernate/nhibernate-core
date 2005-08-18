@@ -149,7 +149,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="val"></param>
 		/// <returns></returns>
-		public override string ToXML( object val )
+		public override string ToString( object val )
 		{
 			byte[ ] bytes = ( byte[ ] ) val;
 			StringBuilder buf = new StringBuilder();
@@ -176,6 +176,37 @@ namespace NHibernate.Type
 			byte[ ] result = new byte[bytes.Length];
 			Array.Copy( bytes, 0, result, 0, bytes.Length );
 			return result;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public override object FromStringValue( string xml )
+		{
+			if( xml == null )
+			{
+				return null;
+			}
+			
+			if( xml.Length % 2 != 0 )
+			{
+				throw new ArgumentException(
+					"The string is not a valid xml representation of a binary content.",
+					"xml");
+			}
+
+			byte[ ] bytes = new byte[xml.Length / 2];
+			for( int i = 0; i < bytes.Length; i++ )
+			{
+				string hexStr = xml.Substring( i * 2, (i + 1) * 2 );
+				bytes[ i ] = ( byte ) ( byte.MinValue
+					+ byte.Parse( hexStr, System.Globalization.NumberStyles.HexNumber ) );
+					
+			}
+
+			return bytes;
 		}
 	}
 }

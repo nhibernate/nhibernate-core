@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using NHibernate.SqlTypes;
 
@@ -68,8 +69,14 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public object StringToObject( string xml )
 		{
+			return FromString( xml );
+		}
+
+		public override object FromStringValue( string xml )
+		{
 			return long.Parse( xml );
 		}
+
 
 		#region IVersionType Members
 
@@ -87,6 +94,11 @@ namespace NHibernate.Type
 		public object Seed
 		{
 			get { return ( long ) 0; }
+		}
+
+		public IComparer Comparator
+		{
+			get { return Comparer.DefaultInvariant; }
 		}
 
 		#endregion

@@ -21,6 +21,12 @@ namespace NHibernate.Cache
 		public const string ReadWrite = "read-write";
 		/// <summary></summary>
 		public const string NonstrictReadWrite = "nonstrict-read-write";
+		/// <summary></summary>
+		/// <remarks>
+		/// No providers implement transactional caching currently,
+		/// it was ported from Hibernate just for the sake of completeness.
+		/// </remarks>
+		public const string Transactional = "transactional";
 
 		/// <summary>
 		/// Creates an <see cref="ICacheConcurrencyStrategy"/> from the parameters.
@@ -65,13 +71,14 @@ namespace NHibernate.Cache
 				case CacheFactory.NonstrictReadWrite:
 					ccs = new NonstrictReadWriteCache();
 					break;
+				//case CacheFactory.Transactional:
+				//	ccs = new TransactionalCache();
+				//	break;
 				default:
 					throw new MappingException( "cache usage attribute should be read-write, read-only, nonstrict-read-write, or transactional" );
 			}
 
 			return ccs;
-
 		}
-
 	}
 }

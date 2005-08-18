@@ -98,7 +98,7 @@ namespace NHibernate.Type
 		/// <param name="value">The <see cref="System.Type"/> that contains the values.
 		/// </param>
 		/// <returns>An Xml formatted string that contains the Assembly Qualified Name.</returns>
-		public override string ToXML( object value )
+		public override string ToString( object value )
 		{
 			return ( ( System.Type ) value ).AssemblyQualifiedName;
 		}
@@ -140,6 +140,18 @@ namespace NHibernate.Type
 		public override string Name
 		{
 			get { return "Type"; }
+		}
+
+		public override object FromStringValue( string xml )
+		{
+			try 
+			{
+				return ReflectHelper.ClassForName( xml );
+			}
+			catch( TypeLoadException tle )
+			{
+				throw new HibernateException( "could not parse xml", tle );
+			}
 		}
 	}
 }

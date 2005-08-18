@@ -91,5 +91,11 @@ namespace NHibernate.Type
 			}
 			return xml[ 0 ];
 		}
+
+		public override object FromStringValue( string xml )
+		{
+			return xml[ 0 ];
+		}
+
 	}
 }

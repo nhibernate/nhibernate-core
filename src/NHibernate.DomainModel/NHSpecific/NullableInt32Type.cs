@@ -78,9 +78,15 @@ namespace NHibernate.DomainModel.NHSpecific
 			}
 		}
 
-		public override string ToXML(object val)
+		public override string ToString(object val)
 		{
 			return val.ToString();
-		} 
+		}
+
+		public override object FromStringValue( string xml )
+		{
+			return new NullableInt32( int.Parse( xml ) );
+		}
+
 	}
 }

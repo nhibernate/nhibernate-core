@@ -133,7 +133,7 @@ namespace NHibernate.Cfg
 			settings.SessionFactoryName = sessionFactoryName;
 			settings.IsOuterJoinFetchEnabled = useOuterJoin;
 			settings.PrepareSql = prepareSql;
-			settings.commandTimeout = cmdTimeout;
+			settings.CommandTimeout = cmdTimeout;
 
 			return settings;
 

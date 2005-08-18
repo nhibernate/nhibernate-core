@@ -106,7 +106,13 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public virtual object StringToObject( string xml )
 		{
+			return FromString( xml );
+		}
+
+		public override object FromStringValue(string xml)
+		{
 			return bool.Parse( xml );
 		}
+
 	}
 }

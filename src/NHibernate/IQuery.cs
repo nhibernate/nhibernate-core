@@ -115,6 +115,26 @@ namespace NHibernate
 		IQuery SetFirstResult( int firstResult );
 
 		/// <summary>
+		/// Enable caching of this query result set.
+		/// </summary>
+		/// <param name="cacheable">Should the query results be cacheable?</param>
+		IQuery SetCacheable( bool cacheable );
+
+		/// Set the name of the cache region.
+		/// <param name="cacheRegion">The name of a query cache region, or <c>null</c>
+		/// for the default query cache</param>
+		IQuery SetCacheRegion( string cacheRegion );
+
+		/// Should the query force a refresh of the specified query cache region?
+		/// This is particularly useful in cases where underlying data may have been
+		/// updated via a seperate process (i.e., not modified through Hibernate) and
+		/// allows the application to selectively refresh the query cache regions
+		/// based on its knowledge of those events.
+		/// <param name="forceCacheRefresh">Should the query result in a forceable refresh of
+		/// the query cache?</param>
+		IQuery SetForceCacheRefresh( bool forceCacheRefresh );
+
+		/// <summary>
 		/// The timeout for the underlying ADO query
 		/// </summary>
 		/// <param name="timeout"></param>

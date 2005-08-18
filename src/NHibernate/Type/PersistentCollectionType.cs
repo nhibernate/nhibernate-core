@@ -5,6 +5,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -121,10 +122,35 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public override string ToXML( object value, ISessionFactoryImplementor factory )
+		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
-			return ( value == null ) ? null : value.ToString();
+			if( value == null )
+			{
+				return "null";
+			}
+
+			IType elemType = GetElementType( factory );
+			if( NHibernateUtil.IsInitialized( value ) )
+			{
+				IList list = new ArrayList();
+				ICollection elements = GetElementsCollection( value );
+				foreach( object element in elements )
+				{
+					list.Add( elemType.ToString( element, factory ) );
+				}
+				return CollectionPrinter.ToString( list );
+			}
+			else 
+			{
+				return "uninitialized";
+			}
 		}
+
+		public override object FromString( string xml )
+		{
+			throw new NotSupportedException();
+		}
+
 
 		/// <summary>
 		/// 

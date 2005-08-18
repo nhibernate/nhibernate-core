@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
@@ -113,9 +114,15 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ToXML( object value )
+		public override string ToString( object value )
 		{
 			return ( string ) value;
 		}
+
+		public override object FromStringValue( string xml )
+		{
+			return xml;
+		}
+
 	}
 }

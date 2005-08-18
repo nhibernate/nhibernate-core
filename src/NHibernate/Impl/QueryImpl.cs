@@ -16,7 +16,7 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.Enumerable( BindParameterLists( namedParams ), QueryParams( namedParams ) );
+			return Session.Enumerable( BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
 		}
 
 		/// <summary></summary>
@@ -24,7 +24,7 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.Find( BindParameterLists( namedParams ), QueryParams( namedParams ) );
+			return Session.Find( BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
 		}
 	}
 }

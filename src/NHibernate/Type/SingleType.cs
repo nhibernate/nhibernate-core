@@ -74,5 +74,10 @@ namespace NHibernate.Type
 		{
 			return value.ToString();
 		}
+
+		public override object FromStringValue( string xml )
+		{
+			return float.Parse( xml );
+		}
 	}
 }

@@ -64,5 +64,4 @@ namespace NHibernate.Cache
 		{
 		}
 	}
-
 }

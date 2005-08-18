@@ -219,7 +219,7 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ToXML(object value) 
+		public override string ToString(object value) 
 		{
 			return (value==null) ? null : GetValue(value).ToString();
 		}
@@ -271,7 +271,13 @@ namespace NHibernate.Type {
 		/// <returns></returns>
 		public object StringToObject( string xml )
 		{
+			return FromString( xml );
+		}
+
+		public override object FromStringValue( string xml )
+		{
 			return GetInstance( xml );
 		}
+
 	}
 }

@@ -2,21 +2,26 @@ using System.Collections;
 using System.Text;
 using log4net;
 using NHibernate.Type;
+using NHibernate.Impl;
 
 namespace NHibernate.Engine
 {
 	/// <summary>
 	/// Container for data that is used during the NHibernate query/load process. 
 	/// </summary>
-	public class QueryParameters
+	public sealed class QueryParameters
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( QueryParameters ) );
 
 		private IType[ ] _positionalParameterTypes;
 		private object[ ] _positionalParameterValues;
-		private RowSelection _rowSelection;
-		private IDictionary _lockModes;
 		private IDictionary _namedParameters;
+		private IDictionary _lockModes;
+		private RowSelection _rowSelection;
+		private bool _cacheable;
+		private string _cacheRegion;
+		private bool _forceCacheRefresh;
+		// not implemented: private ScrollMode _scrollMode;
 
 		/// <summary>
 		/// Initializes an instance of the <see cref="QueryParameters"/> class.
@@ -36,7 +41,7 @@ namespace NHibernate.Engine
 		/// <param name="lockModes">An <see cref="IDictionary"/> that is hql alias keyed to a LockMode value.</param>
 		/// <param name="rowSelection"></param>
 		public QueryParameters( IType[ ] positionalParameterTypes, object[ ] positionalParameterValues, IDictionary lockModes, RowSelection rowSelection )
-			: this( positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection )
+			: this( positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, false, null, false )
 		{
 		}
 
@@ -48,24 +53,30 @@ namespace NHibernate.Engine
 		/// <param name="namedParameters">An <see cref="IDictionary"/> that is <c>parameter name</c> keyed to a <see cref="TypedValue"/> value.</param>
 		/// <param name="lockModes">An <see cref="IDictionary"/> that is <c>hql alias</c> keyed to a LockMode value.</param>
 		/// <param name="rowSelection"></param>
-		public QueryParameters( IType[ ] positionalParameterTypes, object[ ] positionalParameterValues, IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection )
+		public QueryParameters(
+			IType[ ] positionalParameterTypes,
+			object[ ] positionalParameterValues,
+			IDictionary namedParameters,
+			IDictionary lockModes,
+			RowSelection rowSelection,
+			bool cacheable,
+			string cacheRegion,
+			bool forceCacheRefresh )
 		{
 			_positionalParameterTypes = positionalParameterTypes;
 			_positionalParameterValues = positionalParameterValues;
-			_rowSelection = rowSelection;
-			_lockModes = lockModes;
 			_namedParameters = namedParameters;
+			_lockModes = lockModes;
+			_rowSelection = rowSelection;
+			_cacheable = cacheable;
+			_cacheRegion = cacheRegion;
+			_forceCacheRefresh = forceCacheRefresh;
 		}
 
-		/// <summary>
-		/// Gets or sets an <see cref="IDictionary"/> that contains the alias name of the
-		/// object from hql as the key and the <see cref="LockMode"/> as the value.
-		/// </summary>
-		/// <value>An <see cref="IDictionary"/> of lock modes.</value>
-		public IDictionary LockModes
+		/// <summary></summary>
+		public bool HasRowSelection
 		{
-			get { return _lockModes; }
-			set { _lockModes = value; }
+			get { return _rowSelection != null; }
 		}
 
 		/// <summary>
@@ -99,12 +110,6 @@ namespace NHibernate.Engine
 			set { _positionalParameterValues = value; }
 		}
 
-		/// <summary></summary>
-		public bool HasRowSelection
-		{
-			get { return _rowSelection != null; }
-		}
-
 		/// <summary>
 		/// Gets or sets the <see cref="RowSelection"/> for the Query.
 		/// </summary>
@@ -114,11 +119,51 @@ namespace NHibernate.Engine
 			set { _rowSelection = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets an <see cref="IDictionary"/> that contains the alias name of the
+		/// object from hql as the key and the <see cref="LockMode"/> as the value.
+		/// </summary>
+		/// <value>An <see cref="IDictionary"/> of lock modes.</value>
+		public IDictionary LockModes
+		{
+			get { return _lockModes; }
+			set { _lockModes = value; }
+		}
+
         private int SafeLength( System.Array array )
         {
             if( array == null ) return 0;
             return array.Length;
         }            
+
+		/// <summary></summary>
+		public void LogParameters( ISessionFactoryImplementor factory )
+		{
+			Printer print = new Printer( factory );
+			if( _positionalParameterValues.Length != 0 )
+			{
+				log.Debug( "parameters: "
+					+ print.ToString( _positionalParameterTypes, _positionalParameterValues ) );
+			}
+
+			if( _namedParameters != null )
+			{
+				log.Debug( "named parameters: "
+					+ print.ToString( _namedParameters ) );
+			}
+		}
+
+		public bool Cacheable
+		{
+			get { return _cacheable; }
+			set { _cacheable = value; }
+		}
+
+		public string CacheRegion
+		{
+			get { return _cacheRegion; }
+			set { _cacheRegion = value; }
+		}
 
 		/// <summary>
 		/// Ensure the Types and Values are the same length.
@@ -138,45 +183,11 @@ namespace NHibernate.Engine
 			}
 		}
 
-		/// <summary></summary>
-		internal void LogParameters()
+		public bool ForceCacheRefresh
 		{
-			StringBuilder builder = new StringBuilder();
-
-			if( PositionalParameterTypes != null && PositionalParameterTypes.Length > 0 )
-			{
-				for( int i = 0; i < PositionalParameterTypes.Length; i++ )
-				{
-					if( PositionalParameterTypes[ i ] != null )
-					{
-						builder.Append( PositionalParameterTypes[ i ].Name );
-					}
-					else
-					{
-						builder.Append( "null type" );
-					}
-
-					builder.Append( " = " );
-
-					if( PositionalParameterValues[ i ] != null )
-					{
-						builder.Append( PositionalParameterValues[ i ].ToString() );
-					}
-					else
-					{
-						builder.Append( "null value" );
-					}
-
-					builder.Append( ", " );
-				}
-			}
-			else
-			{
-				builder.Append( "No Types and Values" );
-			}
-
-			//TODO: add logging for named parameters
-			log.Debug( builder.ToString() );
+			get { return _forceCacheRefresh; }
+			set { _forceCacheRefresh = value; }
 		}
 	}
+
 }

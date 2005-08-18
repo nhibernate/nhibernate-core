@@ -46,7 +46,7 @@ namespace NHibernate.Type
 		/// TODO: figure out if this is used to build Xml strings or will have encoding
 		/// done automattically.
 		/// </remarks>
-		public override string ToXML( object val )
+		public override string ToString( object val )
 		{
 			return val.ToString();
 		}

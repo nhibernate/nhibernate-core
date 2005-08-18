@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace NHibernate.Cache
 {
 	/// <summary>
@@ -30,9 +32,11 @@ namespace NHibernate.Cache
 		/// <param name="key">The key (id) of the object to put in the Cache.</param>
 		/// <param name="value">The value</param>
 		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
+		/// <param name="version">the version number of the object we are putting</param>
+		/// <param name="versionComparer">a Comparer to be used to compare version numbers</param>
 		/// <returns><c>true</c> if the object was successfully cached</returns>
 		/// <exception cref="CacheException"></exception>
-		bool Put( object key, object value, long txTimestamp );
+		bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparer );
 
 		/// <summary>
 		/// We are going to attempt to update/delete the keyed object
@@ -47,13 +51,17 @@ namespace NHibernate.Cache
 		/// Called after an item has become stale (before the transaction completes).
 		/// </summary>
 		/// <param name="key"></param>
+		/// <exception cref="CacheException"></exception>
+		/// <remarks>This method is used by "synchronous" concurrency strategies.</remarks>
 		void Evict( object key );
 
 		/// <summary>
-		/// Called after an item has been updated (before the transaction completes), instead of calling Evict().
+		/// Called after an item has been updated (before the transaction completes),
+		/// instead of calling Evict().
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
+		/// <remarks>This method is used by "synchronous" concurrency strategies.</remarks>
 		void Update( object key, object value );
 
 		/// <summary>
@@ -61,18 +69,22 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
+		/// <remarks>This method is used by "synchronous" concurrency strategies.</remarks>
 		void Insert( object key, object value );
 
 		/// <summary>
-		/// We have finished the attempted update/delete (which may or may not have been successful)
+		/// Called when we have finished the attempted update/delete (which may or
+		/// may not have been successful), after transaction completion.
 		/// </summary>
 		/// <param name="key">The key</param>
 		/// <param name="lock">The soft lock</param>
 		/// <exception cref="CacheException"></exception>
+		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
 		void Release( object key, ISoftLock @lock );
 
 		/// <summary>
-		/// Called after an item has been updated (after the transaction completes), instead of calling Release().
+		/// Called after an item has been updated (after the transaction completes),
+		/// instead of calling Release().
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
@@ -114,5 +126,11 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <value>The <see cref="ICache"/> for this strategy to use.</value>
 		ICache Cache { get; set; }
+
+		/// <summary>
+		/// Enable "minimal puts" mode for this cache
+		/// </summary>
+		/// <exception cref="CacheException"></exception>
+		bool MinimalPuts { set; }
 	}
 }

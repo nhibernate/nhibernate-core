@@ -71,6 +71,11 @@ namespace NHibernate.Type
 			return "'" + value.ToString() + "'";
 		}
 
+		public override object FromStringValue(string xml)
+		{
+			return new Guid( xml );
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -78,8 +83,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public object StringToObject( string xml )
 		{
-			return new Guid( xml );
+			return FromString( xml );
 		}
-
 	}
 }

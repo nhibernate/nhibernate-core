@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 
 namespace NHibernate.Cache
 {
@@ -13,7 +14,7 @@ namespace NHibernate.Cache
 		/// <param name="timeout"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		ISoftLock Lock( long timeout, int id );
+		CacheLock Lock( long timeout, int id );
 
 		/// <summary>
 		/// 
@@ -33,6 +34,6 @@ namespace NHibernate.Cache
 		/// <param name="txTimestamp"></param>
 		/// <param name="newVersion"></param>
 		/// <returns></returns>
-		bool IsPuttable( long txTimestamp, object newVersion ); // IComparator comparator );
+		bool IsPuttable( long txTimestamp, object newVersion, IComparer comparator );
 	}
 }

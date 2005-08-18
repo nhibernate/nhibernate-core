@@ -77,7 +77,17 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public virtual object StringToObject( string xml )
 		{
-			return SByte.Parse( xml );
+			return FromString( xml );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public override object FromStringValue( string xml )
+		{
+			return sbyte.Parse( xml );
 		}
 	}
 }

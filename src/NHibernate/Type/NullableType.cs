@@ -74,25 +74,51 @@ namespace NHibernate.Type
 		/// <param name="val">The object that contains the values.
 		/// </param>
 		/// <returns>An Xml formatted string.</returns>
-		public abstract string ToXML( object val );
+		public abstract string ToString( object val );
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.ToXML"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
 		/// /> 
 		/// <remarks>
 		/// <para>
-		/// This implemenation forwards the call to <see cref="ToXML(object)"/> if the parameter 
+		/// This implementation forwards the call to <see cref="ToString(object)"/> if the parameter 
 		/// value is not null.
 		/// </para>
 		/// <para>
 		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
 		/// do not need and should not override this method.  All of their implementation
-		/// should be in <see cref="ToXML(object)"/>.
+		/// should be in <see cref="ToString(object)"/>.
 		/// </para>
 		/// </remarks>
-		public override sealed string ToXML( object value, ISessionFactoryImplementor factory )
+		public override sealed string ToString( object value, ISessionFactoryImplementor factory )
 		{
-			return ( value == null ) ? null : ToXML( value );
+			return ( value == null ) ? null : ToString( value );
+		}
+
+		/// <summary>
+		/// Parse the XML representation of an instance
+		/// </summary>
+		/// <param name="xml">XML string to parse, guaranteed to be non-empty</param>
+		/// <returns></returns>
+		public abstract object FromStringValue( string xml );
+
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
+		/// /> 
+		/// <remarks>
+		/// <para>
+		/// This implementation forwards the call to <see cref="FromStringValue"/> if the parameter
+		/// value is not empty.
+		/// </para>
+		/// <para>
+		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
+		/// do not need and should not override this method.  All of their implementation
+		/// should be in <see cref="FromStringValue"/>.
+		/// </para>
+		/// </remarks>
+		public override sealed object FromString( string xml )
+		{
+			return ( xml == null || xml.Length == 0 ) ? null : FromStringValue( xml );
 		}
 
 		/// <include file='IType.cs.xmldoc' 
@@ -148,7 +174,7 @@ namespace NHibernate.Type
 			{
 				if( log.IsDebugEnabled )
 				{
-					log.Debug( "binding '" + ToXML( value ) + "' to parameter: " + index );
+					log.Debug( "binding '" + ToString( value ) + "' to parameter: " + index );
 				}
 
 				Set( cmd, value, index );
@@ -235,7 +261,7 @@ namespace NHibernate.Type
 
 				if( log.IsDebugEnabled )
 				{
-					log.Debug( "returning '" + ToXML( val ) + "' as column: " + name );
+					log.Debug( "returning '" + ToString( val ) + "' as column: " + name );
 				}
 
 				return val;

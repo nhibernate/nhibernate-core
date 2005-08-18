@@ -81,6 +81,10 @@ namespace NHibernate.Impl
 		/// </summary>
 		internal bool initialized;
 
+		// For the fields below, "current" means the reference that was found
+		// during Flush(), and "loaded" means the reference that is consistent
+		// with the current database state
+
 		/// <summary>
 		/// The <see cref="ICollectionPersister"/> that is currently responsible
 		/// for the Collection.
@@ -116,7 +120,7 @@ namespace NHibernate.Impl
 		internal ICollection snapshot;
 
 		/// <summary>allow the snapshot to be serialized</summary>
-		internal string role;
+		private string role;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="CollectionEntry"/>.
@@ -129,8 +133,6 @@ namespace NHibernate.Impl
 		{
 			//a newly wrapped collection is NOT dirty (or we get unnecessary version updates)
 			this.dirty = false;
-			// A newly wrapped collection is NOT dirty (or we get unnecessary version updates)
-			//this.dirty = false;
 			this.initialized = true;
 
 			// New collections that get found and wrapped during flush shouldn't be ignored
@@ -190,7 +192,7 @@ namespace NHibernate.Impl
 		/// <remarks>
 		/// default behavior; will be overridden in deep lazy collections
 		/// </remarks>
-		public virtual bool IsDirty( PersistentCollection coll )
+		private bool IsDirty( PersistentCollection coll )
 		{
 			// if this has already been marked as dirty or the collection can not 
 			// be directly accessed (ie- we can guarantee that the NHibernate collection
@@ -214,7 +216,7 @@ namespace NHibernate.Impl
 		/// Prepares this CollectionEntry for the Flush process.
 		/// </summary>
 		/// <param name="collection">The <see cref="PersistentCollection"/> that this CollectionEntry will be responsible for flushing.</param>
-		public void PreFlush( PersistentCollection collection )
+		internal void PreFlush( PersistentCollection collection )
 		{
 			// if the collection is initialized and it was previously persistent
 			// initialize the dirty flag
@@ -240,7 +242,7 @@ namespace NHibernate.Impl
 		/// has been initialized.
 		/// </summary>
 		/// <param name="collection">The initialized <see cref="PersistentCollection"/> that this Entry is for.</param>
-		public void PostInitialize( PersistentCollection collection )
+		internal void PostInitialize( PersistentCollection collection )
 		{
 			initialized = true;
 			snapshot = collection.GetSnapshot( loadedPersister );
@@ -250,7 +252,7 @@ namespace NHibernate.Impl
 		/// Updates the CollectionEntry to reflect that it is has been successfully flushed to the database.
 		/// </summary>
 		/// <param name="collection">The <see cref="PersistentCollection"/> that was flushed.</param>
-		public void PostFlush( PersistentCollection collection )
+		internal void PostFlush( PersistentCollection collection )
 		{
 			if( ignore )
 			{

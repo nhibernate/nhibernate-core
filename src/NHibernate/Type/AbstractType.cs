@@ -242,8 +242,13 @@ namespace NHibernate.Type
 		public abstract System.Type ReturnedClass { get; }
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.ToXML"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
 		/// /> 
-		public abstract string ToXML( object value, ISessionFactoryImplementor factory );
+		public abstract string ToString( object value, ISessionFactoryImplementor factory );
+
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
+		/// /> 
+		public abstract object FromString( string xml );
 	}
 }

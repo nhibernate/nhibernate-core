@@ -13,6 +13,13 @@ namespace NHibernate.Metadata
 		System.Type MappedClass { get; }
 
 		/// <summary>
+		/// Create a class instance initialized with the given identifier
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		object Instantiate( object id );
+
+		/// <summary>
 		/// The name of the identifier property (or return null)
 		/// </summary>
 		string IdentifierPropertyName { get; }
@@ -31,6 +38,13 @@ namespace NHibernate.Metadata
 		/// The Hibernate types of the classes properties
 		/// </summary>
 		IType[ ] PropertyTypes { get; }
+
+		/// <summary>
+		/// Get the type of a particular (named) property
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		IType GetPropertyType( string propertyName );
 
 		/// <summary>
 		/// Get the value of a particular (named) property 
@@ -113,5 +127,14 @@ namespace NHibernate.Metadata
 		/// </summary>
 		int VersionProperty { get; }
 
+		/// <summary>
+		/// Get the nullability of the class' persistent properties
+		/// </summary>
+		bool[ ] PropertyNullability { get; }
+
+		/// <summary>
+		/// Does the class have an identifier property?
+		/// </summary>
+		bool HasIdentifierProperty { get; }
 	}
 }

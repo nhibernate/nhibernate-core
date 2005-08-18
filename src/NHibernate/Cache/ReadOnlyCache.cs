@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+
 using log4net;
 
 namespace NHibernate.Cache
@@ -8,17 +10,22 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class ReadOnlyCache : ICacheConcurrencyStrategy
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( ReadOnlyCache ) );
-
 		private object lockObject = new object();
-		private ICache _cache;
+
+		private ICache cache;
+		private static readonly ILog log = LogManager.GetLogger( typeof( ReadOnlyCache ) );
+		private bool minimalPuts;
 
 		/// <summary></summary>
 		public ReadOnlyCache()
 		{
 		}
 
-		#region ICacheConcurrencyStrategy Members
+		public ICache Cache
+		{
+			get { return cache; }
+			set { cache = value; }
+		}
 
 		/// <summary>
 		/// 
@@ -30,26 +37,17 @@ namespace NHibernate.Cache
 		{
 			lock( lockObject )
 			{
-				if( log.IsDebugEnabled )
-				{
-					log.Debug( "Cache lookup: " + key );
-				}
-
-				object result = _cache.Get( key );
+				object result = cache.Get( key );
 				if( result != null && log.IsDebugEnabled )
 				{
-					log.Debug( "Cache hit" );
-				}
-				else if( log.IsDebugEnabled )
-				{
-					log.Debug( "Cache miss" );
+					log.Debug( "Cache hit: " + key );
 				}
 				return result;
 			}
 		}
 
 		/// <summary>
-		/// 
+		/// Unsupported!
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="version"></param>
@@ -66,55 +64,53 @@ namespace NHibernate.Cache
 		/// <param name="value"></param>
 		/// <param name="timestamp"></param>
 		/// <returns></returns>
-		public bool Put( object key, object value, long timestamp )
+		public bool Put( object key, object value, long timestamp, object version, IComparer versionComparator )
 		{
 			lock( lockObject )
 			{
+				if( minimalPuts && cache.Get( key ) != null )
+				{
+					if( log.IsDebugEnabled )
+					{
+						log.Debug( "item already cached: " + key );
+					}
+					return false;
+				}
 				if( log.IsDebugEnabled )
 				{
 					log.Debug( "Caching: " + key );
 				}
-				_cache.Put( key, value );
+				cache.Put( key, value );
 				return true;
 			}
 		}
 
 		/// <summary>
-		/// 
+		/// Unsupported!
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="lock"></param>
 		public void Release( object key, ISoftLock @lock )
 		{
 			log.Error( "Application attempted to edit read only item: " + key );
-			throw new InvalidOperationException( "Can't write to a readonly object" );
+			//throw new InvalidOperationException( "Can't write to a readonly object" );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public void Clear()
 		{
-			_cache.Clear();
+			cache.Clear();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
 		public void Remove( object key )
 		{
-			_cache.Remove( key );
+			cache.Remove( key );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public void Destroy()
 		{
 			try
 			{
-				_cache.Destroy();
+				cache.Destroy();
 			}
 			catch( Exception e )
 			{
@@ -123,16 +119,7 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary>
-		/// 
-		/// </summary>
-		public ICache Cache
-		{
-			get { return _cache; }
-			set { _cache = value; }
-		}
-
-		/// <summary>
-		/// 
+		/// Unsupported!
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
@@ -145,7 +132,7 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary>
-		/// 
+		/// Do nothing.
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
@@ -156,7 +143,7 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary>
-		/// 
+		/// Do nothing.
 		/// </summary>
 		/// <param name="key"></param>
 		public void Evict( object key )
@@ -165,7 +152,7 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary>
-		/// 
+		/// Do nothing.
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
@@ -175,7 +162,7 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary>
-		/// 
+		/// Unsupported!
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
@@ -184,6 +171,10 @@ namespace NHibernate.Cache
 			log.Error( "Application attempted to edit read only item: " + key );
 			throw new InvalidOperationException( "Can't write to a readonly object" );
 		}
-		#endregion
+
+		public bool MinimalPuts
+		{
+			set { minimalPuts = value; }	
+		}
 	}
 }

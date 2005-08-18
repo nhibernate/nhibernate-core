@@ -11,39 +11,48 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public sealed class Settings
 	{
-		private bool _isShowSqlEnabled;
-		private bool _isOuterJoinFetchEnabled;
+		private bool _showSql;
+		private bool _outerJoinFetchEnabled;
 		private int maximumFetchDepth;
 		private IDictionary _querySubstitutions;
 		private Dialect.Dialect _dialect;
 		private int batchSize;
 		private bool scrollableResultSetsEnabled;
 		private bool getGeneratedKeysEnabled;
+		private string _defaultSchemaName;
 		private int statementFetchSize;
-		private IsolationLevel _isolationLevel;
 		private IConnectionProvider _connectionProvider;
 		private ITransactionFactory _transactionFactory;
+		// not ported - TransactionManagerLookup
 		private string _sessionFactoryName;
 		private bool autoCreateSchema;
 		private bool autoDropSchema;
 		//private bool autoUpdateSchema;
 		private ICacheProvider _cacheProvider;
-		private string _defaultSchemaName;
+		private bool _queryCacheEnabled;
+		private IQueryCacheFactory _queryCacheFactory;
+		private bool _minimalPutsEnabled;
+		// not ported - private bool _jdbcBatchVersionedData
+		// TODO: private bool _sqlExceptionConverter;
+		// TODO: private bool _wrapDataReadersEnabled;
+		
+		// New in NH:
+		private IsolationLevel _isolationLevel;
 		private bool _prepareSql;
 		private int _commandTimeout;
 
 		/// <summary></summary>
 		public bool IsShowSqlEnabled
 		{
-			get { return _isShowSqlEnabled; }
-			set { _isShowSqlEnabled = value; }
+			get { return _showSql; }
+			set { _showSql = value; }
 		}
 
 		/// <summary></summary>
 		public bool IsOuterJoinFetchEnabled
 		{
-			get { return _isOuterJoinFetchEnabled; }
-			set { _isOuterJoinFetchEnabled = value; }
+			get { return _outerJoinFetchEnabled; }
+			set { _outerJoinFetchEnabled = value; }
 		}
 
 		/// <summary></summary>
@@ -58,6 +67,12 @@ namespace NHibernate.Cfg
 		{
 			get { return getGeneratedKeysEnabled; }
 			set { getGeneratedKeysEnabled = value; }
+		}
+
+		public bool IsMinimalPutsEnabled
+		{
+			get { return _minimalPutsEnabled; }
+			set { _minimalPutsEnabled = value; }
 		}
 
 		/// <summary></summary>
@@ -158,6 +173,18 @@ namespace NHibernate.Cfg
 			set { _cacheProvider = value; }
 		}
 
+		public bool IsQueryCacheEnabled
+		{
+			get { return _queryCacheEnabled; }
+			set { _queryCacheEnabled = value; }
+		}
+
+		public IQueryCacheFactory QueryCacheFactory
+		{
+			get { return _queryCacheFactory; }
+			set { _queryCacheFactory = value; }
+		}
+
 		/// <summary></summary>
 		public bool PrepareSql
 		{
@@ -166,7 +193,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary></summary>
-		public int commandTimeout
+		public int CommandTimeout
 		{
 			get { return _commandTimeout; }
 			set { _commandTimeout = value; }

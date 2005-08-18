@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace NHibernate.Type
 {
 	/// <summary>
@@ -30,5 +32,10 @@ namespace NHibernate.Type
 		/// for the System.Type.
 		/// </remarks>
 		object StringToObject( string xml );
+
+		/// <summary>
+		/// Get a comparator for the version numbers
+		/// </summary>
+		IComparer Comparator { get; }
 	}
 }

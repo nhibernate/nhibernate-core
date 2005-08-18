@@ -100,7 +100,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="val"></param>
 		/// <returns></returns>
-		public override string ToXML( object val )
+		public override string ToString( object val )
 		{
 			return ( ( DateTime ) val ).ToShortDateString();
 		}
@@ -116,9 +116,19 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public object StringToObject( string xml )
+		public override object FromStringValue( string xml )
 		{
 			return DateTime.Parse( xml );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public object StringToObject( string xml )
+		{
+			return FromString( xml );
 		}
 
 		/// <summary>

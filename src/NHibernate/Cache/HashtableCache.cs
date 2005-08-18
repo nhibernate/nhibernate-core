@@ -7,43 +7,32 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class HashtableCache : ICache
 	{
-		//		private static object synchObject = new object();
-		private Hashtable cache = new Hashtable();
-		private string region;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="region"></param>
-		public HashtableCache( string region )
-		{
-			this.region = region;
-		}
+		private IDictionary hashtable = new Hashtable();
 
 		#region ICache Members
 
 		/// <summary></summary>
 		public object Get( object key )
 		{
-			return cache[ key ];
+			return hashtable[ key ];
 		}
 
 		/// <summary></summary>
 		public void Put( object key, object value )
 		{
-			cache[ key ] = value;
+			hashtable[ key ] = value;
 		}
 
 		/// <summary></summary>
 		public void Remove( object key )
 		{
-			cache.Remove( key );
+			hashtable.Remove( key );
 		}
 
 		/// <summary></summary>
 		public void Clear()
 		{
-			cache.Clear();
+			hashtable.Clear();
 		}
 
 		/// <summary></summary>
@@ -72,7 +61,10 @@ namespace NHibernate.Cache
 		/// <summary></summary>
 		public int Timeout
 		{
-			get { return Timestamper.OneMs * 60000;	 }// i.e. 60 seconds
+			get
+			{
+				return Timestamper.OneMs * 60000; // ie. 60 seconds
+			}
 		}
 
 		#endregion

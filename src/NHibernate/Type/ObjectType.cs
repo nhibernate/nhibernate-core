@@ -199,9 +199,14 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public override string ToXML( object value, ISessionFactoryImplementor factory )
+		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
-			return NHibernateUtil.Entity( value.GetType() ).ToXML( value, factory );
+			return NHibernateUtil.Entity( value.GetType() ).ToString( value, factory );
+		}
+
+		public override object FromString( string xml )
+		{
+			throw new NotSupportedException();//TODO: is this right??
 		}
 
 		/// <summary></summary>

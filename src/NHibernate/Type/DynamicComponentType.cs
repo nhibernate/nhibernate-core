@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate;
 using NHibernate.Collection;
@@ -54,6 +55,12 @@ namespace NHibernate.Type
 			SetPropertyValues( result, values );
 			return result;
 		}
+
+		public override object FromString( string xml )
+		{
+			throw new NotSupportedException();
+		}
+
 
 		#region IAbstractComponentType Members
 
@@ -376,7 +383,7 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public override string ToXML(object value, ISessionFactoryImplementor factory)
+		public override string ToString(object value, ISessionFactoryImplementor factory)
 		{
 			// TODO:  Add DynamicComponentType.ToXML implementation
 			return null;

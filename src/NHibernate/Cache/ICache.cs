@@ -49,13 +49,15 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// If this is a clustered cache, lock the item
 		/// </summary>
-		/// <param name="key"></param>
+		/// <param name="key">The Key of the Item in the Cache to lock.</param>
+		/// <exception cref="CacheException"></exception>
 		void Lock( object key );
 
 		/// <summary>
 		/// If this is a clustered cache, unlock the item
 		/// </summary>
-		/// <param name="key"></param>
+		/// <param name="key">The Key of the Item in the Cache to unlock.</param>
+		/// <exception cref="CacheException"></exception>
 		void Unlock( object key );
 
 		/// <summary>

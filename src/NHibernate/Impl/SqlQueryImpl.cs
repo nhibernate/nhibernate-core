@@ -80,7 +80,7 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.FindBySQL( BindParameterLists( namedParams ), returnAliases, returnClasses, QueryParams( namedParams ), querySpaces );
+			return Session.FindBySQL( BindParameterLists( namedParams ), returnAliases, returnClasses, GetQueryParameters( namedParams ), querySpaces );
 		}
 		
 		/// <summary></summary>

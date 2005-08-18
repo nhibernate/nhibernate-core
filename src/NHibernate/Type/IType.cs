@@ -86,9 +86,14 @@ namespace NHibernate.Type
 		void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session );
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.ToXML"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
 		/// /> 
-		string ToXML( object value, ISessionFactoryImplementor factory );
+		string ToString( object value, ISessionFactoryImplementor factory );
+
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
+		/// /> 
+		object FromString( string xml );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.Name"]/*'

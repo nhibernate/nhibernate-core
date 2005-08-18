@@ -14,12 +14,12 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Abstract implementation of the IQuery interface.
 	/// </summary>
-	internal abstract class AbstractQueryImpl : IQuery
+	public abstract class AbstractQueryImpl : IQuery
 	{
 		private string queryString;
 		private IDictionary lockModes = new Hashtable( 2 );
 
-		private ISessionImplementor session;
+		private readonly ISessionImplementor session;
 
 		private RowSelection selection;
 		private ArrayList values = new ArrayList( 4 );
@@ -27,12 +27,12 @@ namespace NHibernate.Impl
 		private int positionalParameterCount = 0;
 		private ISet actualNamedParameters;
 		private IDictionary namedParameters = new Hashtable( 4 );
-		private IDictionary namedParametersLists = new Hashtable( 4 );
+		private IDictionary namedParameterLists = new Hashtable( 4 );
 		private bool cacheable;
 		private string cacheRegion;
 		private bool forceCacheRefresh;
-		private static readonly object UNSET_PARAMETER = new Object();
-		private static readonly object UNSET_TYPE = new Object();
+		private static readonly object UNSET_PARAMETER = new object();
+		private static readonly object UNSET_TYPE = new object();
 
 		/// <summary>
 		/// 
@@ -47,99 +47,65 @@ namespace NHibernate.Impl
 			InitParameterBookKeeping();
 		}
 
+		/// <summary></summary>
+		public string QueryString
+		{
+			get { return queryString; }
+		}
+
+		/// <summary></summary>
+		protected IDictionary NamedParams
+		{
+			// NB The java one always returns a copy, so I'm going to reproduce that behaviour
+			get { return new Hashtable( namedParameters ); }
+		}
+
 		protected void VerifyParameters()
 		{
-			if ( actualNamedParameters.Count != namedParameters.Count + namedParametersLists.Count )
+			if ( actualNamedParameters.Count != namedParameters.Count + namedParameterLists.Count )
 			{
 				Set missingParams = new ListSet( actualNamedParameters );
-				missingParams.RemoveAll( namedParametersLists.Keys );
+				missingParams.RemoveAll( namedParameterLists.Keys );
 				missingParams.RemoveAll( namedParameters.Keys );
-				throw new QueryException( "Not all named parameters have been set: " + missingParams ) ;
+				throw new QueryException( "Not all named parameters have been set: " + missingParams, QueryString );
 			}
 
 			if ( positionalParameterCount != values.Count ) 
 			{
-				throw new QueryException( string.Format( "Not all positional parameters have been set. Expected {0}, set {1}.", positionalParameterCount, values.Count ) );
+				throw new QueryException( string.Format( "Not all positional parameters have been set. Expected {0}, set {1}", positionalParameterCount, values.Count ),
+					QueryString );
 			}
 
 			for ( int i = 0; i < values.Count; i++ )
 			{
 				if ( values[i] == UNSET_PARAMETER || types[i] == UNSET_TYPE ) 
 				{
-					throw new QueryException( string.Format( "Not all positional parameters have been set. Found unset parameter at position {0}.", i) );
+					throw new QueryException( string.Format( "Not all positional parameters have been set. Found unset parameter at position {0}", i),
+						QueryString );
 				}
 			}
 		}
 
-		// Leave it to the kids to do
-		public abstract IEnumerable Enumerable();
-
-		/// <summary></summary>
-		public IDictionary LockModes
+		protected IDictionary NamedParameterLists
 		{
-			get { return lockModes; }
+			get { return namedParameterLists; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="lockMode"></param>
-		public virtual void SetLockMode( string alias, LockMode lockMode )
+		protected IList Values
 		{
-			lockModes[ alias ] = lockMode;
+			get { return values; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public object UniqueResult()
+		protected IList Types
 		{
-			return UniqueElement( List() );
+			get { return types; }
 		}
 
-		internal static object UniqueElement( IList list )
+		// TODO: maybe call it RowSelection ?
+		public RowSelection Selection
 		{
-			int size = list.Count;
-			if ( size == 0 )
-			{
-				return null;
-			}
-			object first = list[ 0 ];
-			for ( int i = 1; i < size; i++ )
-			{
-				if ( list[ i ] != first )
-				{
-					throw new NonUniqueResultException( size );
-				}
-			}
-			return first;
+			get { return selection; }
 		}
-
-		protected virtual IType[] TypeArray()
-		{
-			return ( IType[ ] ) types.ToArray( typeof( IType ) );
-		}
-
-		protected virtual object[] ValueArray()
-		{
-			return ( object[ ] ) values.ToArray( typeof( object ) );
-		}
-
-		protected QueryParameters QueryParams( IDictionary namedParams )
-		{
-			return new QueryParameters(
-				TypeArray(),
-				ValueArray(),
-				namedParams,
-				lockModes,
-				selection );
-		}
-
-
-		// Leave it to the kids to do
-		public abstract IList List();
 
 		/// <summary>
 		/// 
@@ -166,6 +132,17 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="fetchSize"></param>
+		/// <returns></returns>
+		public IQuery SetFetchSize( int fetchSize )
+		{
+			selection.FetchSize = fetchSize;
+			return this;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="firstResult"></param>
 		/// <returns></returns>
 		public IQuery SetFirstResult( int firstResult )
@@ -185,12 +162,12 @@ namespace NHibernate.Impl
 		{
 			if ( positionalParameterCount == 0 ) 
 			{
-				throw new ArgumentOutOfRangeException( string.Format( "No positional parameters in query: {0}", queryString ) );
+				throw new ArgumentOutOfRangeException( string.Format( "No positional parameters in query: {0}", QueryString ) );
 			}
 
 			if ( position < 0 || position > positionalParameterCount - 1 ) 
 			{
-				throw new ArgumentOutOfRangeException( string.Format( "Positional parameter does not exists: {0} in query: {1}", position, queryString ) );
+				throw new ArgumentOutOfRangeException( string.Format( "Positional parameter does not exists: {0} in query: {1}", position, QueryString ) );
 			}
 
 			int size = values.Count;
@@ -748,7 +725,7 @@ namespace NHibernate.Impl
 			if ( !actualNamedParameters.Contains(name) )
 				throw new ArgumentOutOfRangeException(string.Format("Parameter {0} does not exist as a named parameter in [{1}]", name, queryString));
 
-			namedParametersLists.Add( name, new TypedValue( type, vals ) );
+			namedParameterLists.Add( name, new TypedValue( type, vals ) );
 			return this;
 		}
 
@@ -760,7 +737,7 @@ namespace NHibernate.Impl
 		protected string BindParameterLists( IDictionary namedParams )
 		{
 			string query = queryString;
-			foreach( DictionaryEntry de in namedParametersLists )
+			foreach( DictionaryEntry de in namedParameterLists )
 			{
 				query = BindParameterList( query, ( string ) de.Key, ( TypedValue ) de.Value, namedParams );
 			}
@@ -860,42 +837,6 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		/// <summary></summary>
-		internal ISessionImplementor Session
-		{
-			get { return session; }
-		}
-
-		/// <summary></summary>
-		internal ArrayList Values
-		{
-			get { return values; }
-		}
-
-		/// <summary></summary>
-		internal ArrayList Types
-		{
-			get { return types; }
-		}
-
-		internal RowSelection Selection
-		{
-			get { return selection; }
-		}
-
-		/// <summary></summary>
-		public string QueryString
-		{
-			get { return queryString; }
-		}
-
-		/// <summary></summary>
-		internal IDictionary NamedParams
-		{
-			// NB The java one always returns a copy, so I'm going to reproduce that behaviour
-			get { return new Hashtable( namedParameters ); }
-		}
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -913,5 +854,105 @@ namespace NHibernate.Impl
 		{
 			return SetParameterList( name, vals );
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="lockMode"></param>
+		public virtual void SetLockMode( string alias, LockMode lockMode )
+		{
+			lockModes[ alias ] = lockMode;
+		}
+
+		/// <summary></summary>
+		public IDictionary LockModes
+		{
+			get { return lockModes; }
+		}
+
+		/// <summary></summary>
+		internal ISessionImplementor Session
+		{
+			get { return session; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public object UniqueResult()
+		{
+			return UniqueElement( List() );
+		}
+
+		internal static object UniqueElement( IList list )
+		{
+			int size = list.Count;
+			if ( size == 0 )
+			{
+				return null;
+			}
+			object first = list[ 0 ];
+			for ( int i = 1; i < size; i++ )
+			{
+				if ( list[ i ] != first )
+				{
+					throw new NonUniqueResultException( size );
+				}
+			}
+			return first;
+		}
+
+		protected RowSelection RowSelection
+		{
+			get { return selection; }
+		}
+
+		public virtual IType[] TypeArray()
+		{
+			return ( IType[ ] ) types.ToArray( typeof( IType ) );
+		}
+
+		public virtual object[] ValueArray()
+		{
+			return ( object[ ] ) values.ToArray( typeof( object ) );
+		}
+
+		public QueryParameters GetQueryParameters( IDictionary namedParams )
+		{
+			return new QueryParameters(
+				TypeArray(),
+				ValueArray(),
+				namedParams,
+				lockModes,
+				selection,
+				cacheable,
+				cacheRegion,
+				forceCacheRefresh);
+		}
+
+		public IQuery SetCacheable( bool cacheable )
+		{
+			this.cacheable = cacheable;
+			return this;
+		}
+
+		public IQuery SetCacheRegion( string cacheRegion )
+		{
+			if( cacheRegion != null )
+				this.cacheRegion = cacheRegion.Trim();
+			return this;
+		}
+
+		public IQuery SetForceCacheRefresh( bool forceCacheRefresh )
+		{
+			this.forceCacheRefresh = forceCacheRefresh;
+			return this;
+		}
+
+		// Remaining methods of IQuery interface - left for children to implement
+		public abstract IEnumerable Enumerable();
+		public abstract IList List();
 	}
 }

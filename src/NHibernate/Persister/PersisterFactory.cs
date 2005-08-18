@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using NHibernate.Cfg;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
@@ -9,15 +8,12 @@ using NHibernate.Mapping;
 namespace NHibernate.Persister
 {
 	/// <summary>
-	/// Factory for <c>ClassPersister</c> instances.
+	/// Factory for <c>IClassPersister</c> and <c>ICollectionPersister</c> instances.
 	/// </summary>
 	public sealed class PersisterFactory
 	{
 		//TODO: make ClassPersisters *not* depend on ISessionFactoryImplementor
 		// interface, if possible
-
-		// TODO: is it really neceassry to provide Configuration to CollectionPersisters ? Should it not be enough with associated class ?
-		// or why does ClassPersister's not get access to configuration ?
 
 		private PersisterFactory()
 		{
@@ -25,8 +21,9 @@ namespace NHibernate.Persister
 
 		private static readonly System.Type[ ] PersisterConstructorArgs = new System.Type[ ] {typeof( PersistentClass ), typeof( ISessionFactoryImplementor )};
 
+		// TODO: is it really neceassry to provide Configuration to CollectionPersisters ? Should it not be enough with associated class ?
+		// or why does ClassPersister's not get access to configuration ?
 		private static readonly System.Type[ ] CollectionPersisterConstructorArgs = new System.Type[] { typeof( Mapping.Collection ), typeof( ISessionFactoryImplementor ) };
-
 
 		/// <summary>
 		/// Creates a built in Entity Persister or a custom Persister.
@@ -34,7 +31,7 @@ namespace NHibernate.Persister
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static IClassPersister Create( PersistentClass model, ISessionFactoryImplementor factory )
+		public static IClassPersister CreateClassPersister( PersistentClass model, ISessionFactoryImplementor factory )
 		{
 			System.Type persisterClass = model.ClassPersisterClass;
 
@@ -45,6 +42,22 @@ namespace NHibernate.Persister
 			else if( persisterClass == typeof( NormalizedEntityPersister ) )
 			{
 				return new NormalizedEntityPersister( model, factory );
+			}
+			else
+			{
+				return Create( persisterClass, model, factory );
+			}
+		}
+
+		public static ICollectionPersister CreateCollectionPersister( Mapping.Collection model, ISessionFactoryImplementor factory )
+		{
+			System.Type persisterClass = model.CollectionPersisterClass;
+			if ( persisterClass == null )
+			{
+				// default behaviour
+				return model.IsOneToMany ? 
+					(ICollectionPersister) new OneToManyPersister( model, factory ) :
+					(ICollectionPersister) new BasicCollectionPersister( model, factory ) ;
 			}
 			else
 			{
@@ -75,36 +88,21 @@ namespace NHibernate.Persister
 			{
 				return ( IClassPersister ) pc.Invoke( new object[ ] {model, factory} );
 			}
-				//TODO: add more specialized error catches
+			catch( TargetInvocationException tie )
+			{
+				Exception e = tie.InnerException;
+				if( e is HibernateException )
+				{
+					throw e;
+				}
+				else
+				{
+					throw new MappingException( "Could not instantiate persister " + persisterClass.Name, e );
+				}
+			}
 			catch( Exception e )
 			{
 				throw new MappingException( "Could not instantiate persister " + persisterClass.Name, e );
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="model"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public static ICollectionPersister CreateCollectionPersister( Mapping.Collection model, ISessionFactoryImplementor factory )
-		{
-			/*
-			return new CollectionPersister( model, cfg, factory );
-			*/
-			
-			System.Type persisterClass = model.CollectionPersisterClass;
-			if ( persisterClass == null )
-			{
-				// default behaviour
-				return model.IsOneToMany ? 
-					(ICollectionPersister) new OneToManyPersister( model, factory ) :
-					(ICollectionPersister) new BasicCollectionPersister( model, factory ) ;
-			}
-			else
-			{
-				return Create( persisterClass, model, factory );
 			}
 		}
 
@@ -131,10 +129,21 @@ namespace NHibernate.Persister
 			{
 				return ( ICollectionPersister ) pc.Invoke( new object[ ] {model, factory} );
 			}
-				//TODO: add more specialized error catches
+			catch( TargetInvocationException tie )
+			{
+				Exception e = tie.InnerException;
+				if( e is HibernateException )
+				{
+					throw e;
+				}
+				else
+				{
+					throw new MappingException( "Could not instantiate collection persister " + persisterClass.Name, e );
+				}
+			}
 			catch( Exception e )
 			{
-				throw new MappingException( "Could not instantiate persister " + persisterClass.Name, e );
+				throw new MappingException( "Could not instantiate collection persister " + persisterClass.Name, e );
 			}
 		}
 	}

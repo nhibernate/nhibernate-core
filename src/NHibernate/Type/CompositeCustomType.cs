@@ -294,9 +294,19 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public override string ToXML( object value, ISessionFactoryImplementor factory )
+		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
-			return value.ToString();
+			return value == null ? "null" : value.ToString();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public override object FromString(string xml)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

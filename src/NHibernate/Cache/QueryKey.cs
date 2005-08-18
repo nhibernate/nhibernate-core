@@ -1,121 +1,145 @@
 using System;
 using System.Collections;
+using System.Text;
+
 using NHibernate.Engine;
-using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
-	/// <summary>
-	/// A key that identifies a particular query with bound parameter values
-	/// </summary>
+	[Serializable]
 	public class QueryKey
 	{
-		private readonly SqlString sqlQueryString;
-		private readonly IType[] types;
-		private readonly object[] values;
-		private readonly int firstRow;
-		private readonly int maxRows;
+		private readonly string sqlQueryString;
+		private readonly IType[ ] types;
+		private readonly object[ ] values;
+		private readonly int firstRow = RowSelection.NoValue;
+		private readonly int maxRows = RowSelection.NoValue;
 		private readonly IDictionary namedParameters;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="queryString"></param>
-		/// <param name="queryParameters"></param>
-		public QueryKey( SqlString queryString, QueryParameters queryParameters )
+		public QueryKey( string queryString, QueryParameters queryParameters )
 		{
-			this.sqlQueryString = queryString;
-			this.types = queryParameters.PositionalParameterTypes;
-			this.values = queryParameters.PositionalParameterValues;
+			sqlQueryString = queryString;
+			types = queryParameters.PositionalParameterTypes;
+			values = queryParameters.PositionalParameterValues;
+
 			RowSelection selection = queryParameters.RowSelection;
-			if ( selection != null )
+			if( selection != null )
 			{
 				firstRow = selection.FirstRow;
 				maxRows = selection.MaxRows;
 			}
 			else
 			{
-				firstRow = -1;
-				maxRows = -1;
+				firstRow = RowSelection.NoValue;
+				maxRows = RowSelection.NoValue;
 			}
-			this.namedParameters = queryParameters.NamedParameters;
+			namedParameters = queryParameters.NamedParameters;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="other"></param>
-		/// <returns></returns>
 		public override bool Equals( object other )
 		{
-			QueryKey that = other as QueryKey;
-			if ( sqlQueryString != that.sqlQueryString )
+			QueryKey that = ( QueryKey ) other;
+			if( sqlQueryString != that.sqlQueryString )
 			{
 				return false;
 			}
-			if ( firstRow != that.firstRow || maxRows != that.maxRows )
+			if( firstRow != that.firstRow
+				|| maxRows != that.maxRows )
 			{
 				return false;
 			}
 
-			if ( types == null )
+			if( types == null )
 			{
-				if ( that.types != null )
+				if( that.types != null )
 				{
 					return false;
 				}
 			}
 			else
 			{
-				if ( that.types == null )
+				if( that.types == null )
 				{
 					return false;
 				}
-				if ( types.Length != that.types.Length )
+				if( types.Length != that.types.Length )
 				{
 					return false;
 				}
-				for ( int i = 0; i < types.Length; i++ )
+
+				for( int i = 0; i < types.Length; i++ )
 				{
-					if ( !types[ i ].Equals( that.types[ i ] ) )
+					if( !types[ i ].Equals( that.types[ i ] ) )
 					{
 						return false;
 					}
-					if ( !values[ i ].Equals( that.values[ i ] ) )
+					if( !object.Equals( values[ i ], that.values[ i ] ) )
 					{
 						return false;
 					}
 				}
 			}
-			// TODO: Probably need to ensure we check the members rather than just reference equality!
-			if ( !namedParameters.Equals( that.namedParameters ) )
+			if( !object.Equals( namedParameters, that.namedParameters ) )
 			{
-				return false; 
+				return false;
 			}
 			return true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public override int GetHashCode()
 		{
-			int result = 13;
-			result = 37 * result + ( firstRow == -1 ? 0 : firstRow.GetHashCode() );
-			result = 37 * result + ( maxRows == -1 ? 0 : maxRows.GetHashCode() );
-			result = 37 * result + ( namedParameters == null ? 0 : namedParameters.GetHashCode() );
-			for ( int i = 0; i < types.Length; i++ ) 
+			unchecked
 			{
-				result = 37 * result + ( types[i] == null ? 0 : types[i].GetHashCode() );
+				int result = 13;
+				result = 37 * result + firstRow.GetHashCode();
+				result = 37 * result + maxRows.GetHashCode();
+				result = 37 * result
+					+ ( namedParameters == null ? 0 : namedParameters.GetHashCode() );
+				for( int i = 0; i < types.Length; i++ )
+				{
+					result = 37 * result + ( types[ i ] == null ? 0 : types[ i ].GetHashCode() );
+				}
+				for( int i = 0; i < values.Length; i++ )
+				{
+					result = 37 * result + ( values[ i ] == null ? 0 : values[ i ].GetHashCode() );
+				}
+				result = 37 * result + sqlQueryString.GetHashCode();
+				return result;
 			}
-			for ( int i = 0; i < values.Length; i++ ) 
+		}
+
+		public override string ToString()
+		{
+			StringBuilder buf = new StringBuilder()
+				.Append( "sql: " )
+				.Append( sqlQueryString );
+
+			if( values != null )
 			{
-				result = 37 * result + ( values[i] == null ? 0 : values[i].GetHashCode() );
+				buf.Append( "; parameters: " );
+				for( int i = 0; i < values.Length; i++ )
+				{
+					buf.Append( values[ i ] )
+						.Append( ", " );
+				}
 			}
-			result = 37 * result + sqlQueryString.GetHashCode();
-			return result;
+			if( namedParameters != null )
+			{
+				buf.Append( "; named parameters: " )
+					.Append( CollectionPrinter.ToString( namedParameters ) );
+			}
+			if( firstRow != RowSelection.NoValue )
+			{
+				buf.Append( "; first row: " ).Append( firstRow );
+			}
+			if( maxRows != RowSelection.NoValue )
+			{
+				buf.Append( "; max rows: " ).Append( maxRows );
+			}
+
+			return buf.ToString();
 		}
 	}
 }

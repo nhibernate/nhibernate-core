@@ -109,10 +109,20 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public override string ToXML( object value, ISessionFactoryImplementor factory )
+		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
 			IClassPersister persister = factory.GetPersister( associatedClass );
-			return ( value == null ) ? null : persister.IdentifierType.ToXML( persister.GetIdentifier( value ), factory );
+			return ( value == null ) ? null : persister.IdentifierType.ToString( persister.GetIdentifier( value ), factory );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public override object FromString( string xml )
+		{
+			throw new NotSupportedException(); //TODO: is this correct???
 		}
 
 		/// <summary></summary>

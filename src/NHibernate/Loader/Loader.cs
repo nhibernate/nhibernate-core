@@ -18,7 +18,7 @@ namespace NHibernate.Loader
 	/// </summary>
 	/// <remarks>
 	/// <p>
-	/// This class implements useful common funtionality that concrete loaders would delegate to.
+	/// This class implements useful common functionality that concrete loaders would delegate to.
 	/// It is not intended that this functionality would be directly accessed by client code (Hence,
 	/// all methods of this class are declared <c>protected</c> or <c>private</c>.) This class relies heavily upon the
 	/// <see cref="ILoadable" /> interface, which is the contract between this class and 

@@ -19,8 +19,8 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	/// <summary>
-	/// Concrete implementation of a Session, also the central, organizing component of
-	/// Hibernate's internal implementaiton.
+	/// Concrete implementation of a Session, also the central, organizing component
+	/// of Hibernate's internal implementation.
 	/// </summary>
 	/// <remarks>
 	/// Exposes two interfaces: ISession itself, to the application and ISessionImplementor
@@ -32,11 +32,13 @@ namespace NHibernate.Impl
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( SessionImpl ) );
 
+		[NonSerialized]
 		private SessionFactoryImpl factory;
 
 		private readonly bool autoClose;
 		private readonly long timestamp;
-
+		private bool isCurrentTransaction;		// a bit dodgy!
+		
 		/// <summary>
 		/// Indicates if the Session has been closed.
 		/// </summary>
@@ -46,8 +48,6 @@ namespace NHibernate.Impl
 		/// <c>Dispose()</c> invoked.</value>
 		private bool closed = false;
 		private FlushMode flushMode = FlushMode.Auto;
-
-		private bool isCurrentTransaction;		// a bit dodgy!
 
 		/// <summary>
 		/// An <see cref="IDictionary"/> with the <see cref="Key"/> as the key
@@ -75,11 +75,13 @@ namespace NHibernate.Impl
 		/// and an <see cref="EntityEntry"/> as the value.
 		/// </summary>
 		private readonly IdentityMap entityEntries; 
+		
 		/// <summary>
 		/// An <see cref="IdentityMap"/> with the <see cref="Array"/> as the key
 		/// and an <see cref="ArrayHolder"/> as the value.
 		/// </summary>
 		private readonly IdentityMap arrayHolders; 
+		
 		/// <summary>
 		/// An <see cref="IdentityMap"/> with the <see cref="PersistentCollection"/> as the key
 		/// and an <see cref="CollectionEntry"/> as the value.
@@ -133,7 +135,7 @@ namespace NHibernate.Impl
 
 		// We keep scheduled insertions, deletions and updates in collections
 		// and actually execute them as part of the flush() process. Actually,
-		// not every flush() ends in execution of the scheduled actions. Auto-
+		// not every Flush() ends in execution of the scheduled actions. Auto-
 		// flushes initiated by a query execution might be "shortcircuited".
 
 		// Object insertions and deletions have list semantics because they
@@ -168,6 +170,19 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private ArrayList executions;
 
+		// The collections we are currently loading
+		[NonSerialized]
+		private IDictionary loadingCollections = new Hashtable();
+
+		[NonSerialized]
+		private IList nonlazyCollections;
+
+		// A set of entity keys that we predict might be needed for
+		// loading soon
+		[NonSerialized]
+		private IDictionary batchLoadableEntityKeys; // actually, a Set
+		private static readonly object Marker = new object();
+
 		[NonSerialized]
 		private int dontFlushFromFind = 0;
 
@@ -182,13 +197,6 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private IBatcher batcher;
-
-		[NonSerialized]
-		private IList nonlazyCollections;
-
-		[NonSerialized]
-		private IDictionary batchLoadableEntityKeys; // actually, a Set
-		private static readonly object Marker = new object();
 
 		#region System.Runtime.Serialization.ISerializable Members 
 
@@ -364,7 +372,6 @@ namespace NHibernate.Impl
 				}
 				catch( MappingException me )
 				{
-					// Different from h2.0.3
 					throw new InvalidOperationException( me.Message );
 				}
 			}
@@ -1460,13 +1467,6 @@ namespace NHibernate.Impl
 			return newList;
 		}
 
-		private void RollbackDeletion( EntityEntry entry, ScheduledDeletion delete )
-		{
-			entry.Status = Status.Loaded;
-			entry.DeletedState = null;
-			deletions.Remove( delete );
-		}
-
 		/// <summary>
 		/// Checks to see if there are any Properties that should not be null 
 		/// are references to null or to a transient object.
@@ -1859,7 +1859,7 @@ namespace NHibernate.Impl
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "find: " + query );
-				parameters.LogParameters();
+				parameters.LogParameters( factory );
 			}
 
 			parameters.ValidateParameters();
@@ -1901,16 +1901,11 @@ namespace NHibernate.Impl
 
 		private QueryTranslator[ ] GetQueries( string query, bool scalar )
 		{
-			// a query that naemes an interface or unmapped class in the from clause
-			// is actually executed as multiple queries
-			string[ ] concreteQueries = QueryTranslator.ConcreteQueries( query, factory );
-
 			// take the union of the query spaces (ie the queried tables)
-			QueryTranslator[ ] q = new QueryTranslator[concreteQueries.Length];
+			QueryTranslator[ ] q = factory.GetQuery( query, scalar );
 			HashedSet qs = new HashedSet();
-			for( int i = 0; i < concreteQueries.Length; i++ )
+			for( int i = 0; i < q.Length; i++ )
 			{
-				q[ i ] = scalar ? factory.GetShallowQuery( concreteQueries[ i ] ) : factory.GetQuery( concreteQueries[ i ] );
 				qs.AddAll( q[ i ].QuerySpaces );
 			}
 
@@ -1964,7 +1959,7 @@ namespace NHibernate.Impl
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "GetEnumerable: " + query );
-				parameters.LogParameters();
+				parameters.LogParameters( factory );
 			}
 
 			QueryTranslator[ ] q = GetQueries( query, true );
@@ -2496,13 +2491,16 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		/**
-		* Load the data for the object with the specified id into the supplied
-		* instance. A new key will be assigned to the object. If there is an
-		* existing uninitialized proxy, this will break identity equals as far
-		* as the application is concerned.
-		*/
-
+		/// <summary>
+		/// Load the data for the object with the specified id into the supplied
+		/// instance. A new key will be assigned to the object. If there is an
+		/// existing uninitialized proxy, this will break identity equals as far
+		/// as the application is concerned.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="id"></param>
+		/// <param name="checkDeleted"></param>
+		/// <param name="lockMode"></param>
 		private void DoLoadByObject( object obj, object id, bool checkDeleted, LockMode lockMode )
 		{
 			System.Type clazz = obj.GetType();
@@ -2727,8 +2725,6 @@ namespace NHibernate.Impl
 				log.Debug( "attempting to resolve " + MessageHelper.InfoString( theClass, id ) );
 			}
 
-			bool isOptionalObject = optionalObject != null;
-
 			IClassPersister persister = GetPersister( theClass );
 			Key key = new Key( id, persister );
 
@@ -2910,6 +2906,10 @@ namespace NHibernate.Impl
 		public void InitializeEntity( object obj )
 		{
 			EntityEntry e = GetEntry( obj );
+			if( e == null )
+			{
+				throw new AssertionFailure( "possible non-threadsafe access to the session" );
+			}
 			IClassPersister persister = e.Persister;
 			object id = e.Id;
 			object[ ] hydratedState = e.LoadedState;
@@ -2920,12 +2920,12 @@ namespace NHibernate.Impl
 				log.Debug( "resolving associations for: " + MessageHelper.InfoString( persister, id ) );
 			}
 
-			interceptor.OnLoad( obj, id, hydratedState, persister.PropertyNames, types );
-
 			for( int i = 0; i < hydratedState.Length; i++ )
 			{
 				hydratedState[ i ] = types[ i ].ResolveIdentifier( hydratedState[ i ], this, obj );
 			}
+
+			interceptor.OnLoad( obj, id, hydratedState, persister.PropertyNames, types );
 
 			persister.SetPropertyValues( obj, hydratedState );
 
@@ -2935,12 +2935,18 @@ namespace NHibernate.Impl
 				{
 					log.Debug( "adding entity to second-level cache " + MessageHelper.InfoString( persister, id ) );
 				}
-				persister.Cache.Put( id, new CacheEntry( obj, persister, this ), timestamp );
+				persister.Cache.Put(
+					id,
+					new CacheEntry( obj, persister, this ),
+					Timestamp,
+					Versioning.GetVersion( hydratedState, persister ),
+					persister.IsVersioned ?
+						persister.VersionType.Comparator : null );
 			}
 
-			// reentrantCallback=true;
 			if( persister.ImplementsLifecycle )
 			{
+				log.Debug( "calling OnLoad()" );
 				( ( ILifecycle ) obj ).OnLoad( this, id );
 			}
 
@@ -3899,8 +3905,6 @@ namespace NHibernate.Impl
 			return entry.initialized && entry.Dirty; //( entry.dirty || coll.hasQueuedAdds() ); 
 		}
 
-		private IDictionary loadingCollections = new Hashtable();
-
 		private sealed class LoadingCollectionEntry
 		{
 			private readonly CollectionKey key;
@@ -4041,7 +4045,7 @@ namespace NHibernate.Impl
 
 		private void EndLoadingCollections( ICollectionPersister persister, IList resultSetCollections )
 		{
-			int count = resultSetCollections.Count;
+			int count = resultSetCollections == null ? 0 : resultSetCollections.Count;
 
 			if ( log.IsDebugEnabled )
 			{
@@ -4069,21 +4073,20 @@ namespace NHibernate.Impl
 					{
 						log.Debug( "caching collection: " + MessageHelper.InfoString( persister, lce.Id ) );
 					}
-					// TODO: 2.1 - implemented versioned cache
-					/*
 					IClassPersister ownerPersister = factory.GetPersister( persister.OwnerClass );
 					object version;
+					IComparer versionComparator;
 					if ( ownerPersister.IsVersioned ) 
 					{
 						version = GetEntry( GetCollectionOwner( ce ) ).Version;
+						versionComparator = ownerPersister.VersionType.Comparator;
 					}
 					else
 					{
 						version = null;
+						versionComparator = null;
 					}
-					persister.Cache.Put( lce.Id, lce.Collection.Disassemble( persister ), Timestamp, version );
-					*/
-					persister.Cache.Put( lce.Id, lce.Collection.Disassemble( persister ), Timestamp );
+					persister.Cache.Put( lce.Id, lce.Collection.Disassemble( persister ), Timestamp, version, versionComparator );
 				}
 				if ( log.IsDebugEnabled )
 				{
@@ -4103,7 +4106,7 @@ namespace NHibernate.Impl
 		/// <param name="role"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public PersistentCollection GetLoadingCollection( string role, object id )
+		private PersistentCollection GetLoadingCollection( string role, object id )
 		{
 			LoadingCollectionEntry lce = GetLoadingCollectionEntry( new CollectionKey( role, id ) );
 			return ( lce != null ) ? lce.Collection : null;
@@ -4656,7 +4659,7 @@ namespace NHibernate.Impl
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "filter: " + filter );
-				parameters.LogParameters();
+				parameters.LogParameters( factory );
 			}
 
 			CollectionEntry entry = GetCollectionEntryOrNull( collection );

@@ -11,7 +11,7 @@ namespace NHibernate.Hql
 		/// 
 		/// </summary>
 		/// <param name="d"></param>
-		public FilterTranslator( Dialect.Dialect d ) : base( d )
+		public FilterTranslator( Dialect.Dialect d, string queryString ) : base( d, queryString )
 		{
 		}
 
@@ -20,13 +20,13 @@ namespace NHibernate.Hql
 		/// times. Subsequent invocations are no-ops.
 		/// </summary>
 		[MethodImpl( MethodImplOptions.Synchronized )]
-		public void Compile( string collectionRole, ISessionFactoryImplementor factory, string queryString, IDictionary replacements, bool scalar )
+		public void Compile( string collectionRole, ISessionFactoryImplementor factory, IDictionary replacements, bool scalar )
 		{
 			if( !Compiled )
 			{
 				this.factory = factory; // yick!
 				AddFromAssociation( "this", collectionRole );
-				base.Compile( factory, queryString, replacements, scalar );
+				base.Compile( factory, replacements, scalar );
 			}
 		}
 	}

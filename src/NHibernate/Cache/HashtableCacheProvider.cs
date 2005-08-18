@@ -18,7 +18,7 @@ namespace NHibernate.Cache
 		/// <returns></returns>
 		public ICache BuildCache( string regionName, IDictionary properties )
 		{
-			return new HashtableCache( regionName );
+			return new HashtableCache( );
 		}
 
 		/// <summary>
@@ -28,6 +28,21 @@ namespace NHibernate.Cache
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="properties"></param>
+		public void Start( IDictionary properties )
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public void Stop()
+		{
 		}
 
 		#endregion

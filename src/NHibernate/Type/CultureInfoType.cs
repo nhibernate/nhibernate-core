@@ -65,9 +65,19 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ToXML( object value )
+		public override string ToString( object value )
 		{
 			return ( ( CultureInfo ) value ).Name;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public override object FromStringValue(string xml)
+		{
+			return CultureInfo.CreateSpecificCulture( xml );
 		}
 
 		/// <summary></summary>

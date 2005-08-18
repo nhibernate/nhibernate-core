@@ -15,6 +15,7 @@ namespace NHibernate.Engine
 		private int firstRow;
 		private int maxRows = RowSelection.NoValue;
 		private int timeout = RowSelection.NoValue;
+		private int fetchSize = RowSelection.NoValue;
 
 		/// <summary>
 		/// Gets or Sets the Index of the First Row to Select
@@ -47,6 +48,12 @@ namespace NHibernate.Engine
 		{
 			get { return timeout; }
 			set { timeout = value; }
+		}
+
+		public int FetchSize
+		{
+			get { return fetchSize; }
+			set { fetchSize = value; }
 		}
 	}
 }
