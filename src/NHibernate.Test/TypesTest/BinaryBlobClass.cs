@@ -9,7 +9,6 @@ namespace NHibernate.Test.TypesTest
 	{
 		private int _id;
 		private byte[] _blob;
-		private string _clob;
 
 		public int Id
 		{
