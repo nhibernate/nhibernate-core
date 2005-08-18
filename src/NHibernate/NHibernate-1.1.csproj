@@ -399,6 +399,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cache\StandardQueryCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cache\StandardQueryCacheFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cache\Timestamper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
