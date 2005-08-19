@@ -14,7 +14,8 @@ namespace NHibernate.Impl
 	internal abstract class BatcherImpl : IBatcher
 	{
 		protected static readonly ILog log = LogManager.GetLogger( typeof( BatcherImpl ) );
-	
+		protected static readonly ILog logSql = LogManager.GetLogger("NHibernate.SQL");	
+		
 		private static int openCommandCount;
 		private static int openReaderCount;
 
@@ -82,10 +83,7 @@ namespace NHibernate.Impl
 		{
 			try
 			{
-				if( log.IsInfoEnabled )
-				{
-					log.Info( "Preparing " + command.CommandText );
-				}
+				Log(command.CommandText);
 
 				if( command.Connection != null )
 				{
@@ -130,7 +128,13 @@ namespace NHibernate.Impl
 			{
 				batchCommand = PrepareCommand( sql ); // calls ExecuteBatch()
 				batchCommandSql = sql;
+			} 
+			else 
+			{
+				log.Debug("reusing command");
+				Log(batchCommand.CommandText);
 			}
+
 			return batchCommand;
 		}
 
@@ -209,10 +213,7 @@ namespace NHibernate.Impl
 		public IDataReader ExecuteReader( IDbCommand cmd )
 		{
 			CheckReaders();
-
 			Prepare( cmd );
-			
-
 			IDataReader reader;
 			if( factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders == false )
 			{
@@ -400,6 +401,13 @@ namespace NHibernate.Impl
 			get { return session; }
 		}
 
+		private void Log(String sql){
+			logSql.Debug(sql);
+			if ( factory.IsShowSqlEnabled ) {
+				Console.Out.WriteLine("NHibernate :" + sql);
+			}
+		}
+		
 		private static void LogOpenPreparedCommand()
 		{
 			if( log.IsDebugEnabled )
