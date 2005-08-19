@@ -189,28 +189,29 @@ namespace NHibernate.Dialect
 		/// <returns></returns>
 		public override SqlString GetLimitString( SqlString querySqlString, bool hasOffset )
 		{
-			/*
-			 * "select * from ( select row_.*, rownum rownum_ from ( "
-			 * sql
-			 * " ) row_ where rownum <= ?) where rownum_ > ?"
-			 */
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-			pagingBuilder.Add( "select * from ( select row_.*, rownum rownum_ from ( " );
-			pagingBuilder.Add( querySqlString );
-			pagingBuilder.Add( " ) row_ where rownum <= " );
-			pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) );
-			pagingBuilder.Add( ") where rownum_ > " );
-			pagingBuilder.Add( new Parameter( "p2", new Int32SqlType() ) );
-
-			/*  (2005-08-18) Temporarily commented out, need to figure out why CC.NET build fails
-			pagingBuilder.Add( ")" );
-
-			if( hasOffset )
+			if ( hasOffset )
 			{
-				pagingBuilder.Add( " where rownum_ > " );
+				pagingBuilder.Add( "select * from ( select row_.*, rownum rownum_ from ( " );
+			} 
+			else 
+			{
+				pagingBuilder.Add( "select * from ( " );
+			} 
+			pagingBuilder.Add( querySqlString );
+			if ( hasOffset )
+			{
+				pagingBuilder.Add( " ) row_ where rownum <= " );
+				pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) );
+				pagingBuilder.Add( " ) where rownum_ > " );
 				pagingBuilder.Add( new Parameter( "p2", new Int32SqlType() ) );
-			}
-			*/
+			} 
+			else 
+			{
+				pagingBuilder.Add( " ) where rownum <= " );
+				pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) );
+			
+			} 
 
 			return pagingBuilder.ToSqlString();
 		}
