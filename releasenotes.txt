@@ -1,3 +1,12 @@
+Build 0.9.1.0
+========================
+- Fixed bug in limit clause generation on MySQL.
+- Fixed bug in Configuration.AddDocument.
+- Fixed <version unsaved-value="negative" /> not working with ints or shorts.
+- NHibernate now checks whether object identifier passed to its methods is of the right type.
+- Fixed bug with YesNo type generating CHAR(255) column, it now generates CHAR(1).
+- Implemented hibernate.show_sql feature, logging all SQL executed using NHibernate.SQL logger.
+
 Build 0.9.0.0
 ========================
 - Added ISession.Clear().
