@@ -12,77 +12,30 @@ namespace NHibernate
 	/// a row exists in the database.
 	/// </summary>
 	[Serializable]
-	public class ObjectNotFoundException : HibernateException, ISerializable
+	public class ObjectNotFoundException : UnresolvableObjectException
 	{
-		private object identifier;
-		private System.Type type;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObjectNotFoundException"/> class.
 		/// </summary>
-		public ObjectNotFoundException(  ) : base( "No object could be found with the supplied identifier." )
+		public ObjectNotFoundException(  ) : base( "No object could be found with the supplied identifier.", null, null )
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObjectNotFoundException"/> class.
 		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		public ObjectNotFoundException( string message ) : base( message )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ObjectNotFoundException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		/// <param name="innerException">
-		/// The exception that is the cause of the current exception. If the innerException parameter 
-		/// is not a null reference, the current exception is raised in a catch block that handles 
-		/// the inner exception.
-		/// </param>
-		public ObjectNotFoundException( string message, Exception innerException ) : base( message, innerException  )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ObjectNotFoundException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
 		/// <param name="identifier">The identifier of the object that was attempting to be loaded.</param>
 		/// <param name="type">The <see cref="System.Type"/> that NHibernate was trying to find a row for in the database.</param>
-		public ObjectNotFoundException( string message, object identifier, System.Type type ) : base( message )
+		public ObjectNotFoundException( object identifier, System.Type type ) : base( identifier, type )
 		{
-			this.identifier = identifier;
-			this.type = type;
 		}
 
-		/// <summary>
-		/// Gets the identifier of the object that was attempting to be loaded.
-		/// </summary>
-		public object Identifier
+		public static new void ThrowIfNull( object o, object id, System.Type clazz )
 		{
-			get { return identifier; }
-		}
-
-		/// <summary>
-		/// Gets a message that describes the current <see cref="ObjectNotFoundException"/>.
-		/// </summary>
-		/// <value>
-		/// The error message that explains the reason for this exception and details of
-		/// the object that was attempting to be loaded.
-		/// </value>
-		public override string Message
-		{
-			get { return base.Message + ": " + identifier + ", of class: " + type.FullName; }
-		}
-
-		/// <summary>
-		/// Gets the <see cref="System.Type"/> that NHibernate was trying to find a row for in the database.
-		/// </summary>
-		public System.Type Type
-		{
-			get { return type; }
+			if( o == null )
+			{
+				throw new ObjectNotFoundException( id, clazz );
+			}
 		}
 
 		#region ISerializable Members
@@ -100,8 +53,6 @@ namespace NHibernate
 		/// </param>
 		protected ObjectNotFoundException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
-			type = (System.Type)info.GetValue( "type", typeof(System.Type) );
-			identifier = info.GetValue( "identifier", typeof(object) ) ;
 		}
 
 		/// <summary>
@@ -118,8 +69,6 @@ namespace NHibernate
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData( info, context );
-			info.AddValue( "type", type, typeof(System.Type) );
-			info.AddValue( "identifier", identifier, typeof(object) );
 		}
 
 		#endregion

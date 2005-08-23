@@ -1,7 +1,10 @@
 using System;
 using System.Data;
+using System.Text;
+
 using NHibernate.Engine;
 using NHibernate.Persister;
+using NHibernate.Proxy;
 using NHibernate.Util;
 
 namespace NHibernate.Type
@@ -112,7 +115,19 @@ namespace NHibernate.Type
 		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
 			IClassPersister persister = factory.GetPersister( associatedClass );
-			return ( value == null ) ? null : persister.IdentifierType.ToString( persister.GetIdentifier( value ), factory );
+			if( value == null )
+			{
+				return "null";
+			}
+			StringBuilder result = new StringBuilder();
+			result.Append(  StringHelper.Unqualify( NHibernateProxyHelper.GetClass( value ).FullName ) );
+			if( persister.HasIdentifierProperty )
+			{
+				result.Append( '#' )
+					.Append( persister.IdentifierType.ToString( NHibernateProxyHelper.GetIdentifier( value, persister ), factory ) );
+			}
+
+			return result.ToString();
 		}
 
 		/// <summary>

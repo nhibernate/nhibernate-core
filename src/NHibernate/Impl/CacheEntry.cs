@@ -39,7 +39,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		private object[ ] Disassemble( object obj, IClassPersister persister, ISessionImplementor session )
+		private static object[ ] Disassemble( object obj, IClassPersister persister, ISessionImplementor session )
 		{
 			object[ ] values = persister.GetPropertyValues( obj );
 			IType[ ] propertyTypes = persister.PropertyTypes;
@@ -58,14 +58,14 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object[ ] Assemble( object instance, object id, IClassPersister persister, ISessionImplementor session )
+		public object[ ] Assemble( object instance, object id, IClassPersister persister, IInterceptor interceptor, ISessionImplementor session )
 		{
 			if( subclass != persister.MappedClass )
 			{
 				throw new AssertionFailure( "Tried to assemble a different subclass instance" );
 			}
 
-			return Assemble( state, instance, id, persister, session );
+			return Assemble( state, instance, id, persister, interceptor, session );
 		}
 
 		/// <summary>
@@ -77,7 +77,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		private object[ ] Assemble( object[ ] values, object result, object id, IClassPersister persister, ISessionImplementor session )
+		private static object[ ] Assemble( object[ ] values, object result, object id, IClassPersister persister, IInterceptor interceptor, ISessionImplementor session )
 		{
 			IType[ ] propertyTypes = persister.PropertyTypes;
 			object[ ] assembledProps = new object[propertyTypes.Length];
@@ -85,8 +85,10 @@ namespace NHibernate.Impl
 			{
 				assembledProps[ i ] = propertyTypes[ i ].Assemble( values[ i ], session, result );
 			}
+
+			interceptor.OnLoad( result, id, assembledProps, persister.PropertyNames, propertyTypes );
+
 			persister.SetPropertyValues( result, assembledProps );
-			persister.SetIdentifier( result, id );
 
 			if( persister.ImplementsLifecycle )
 			{

@@ -581,11 +581,11 @@ namespace NHibernate.Test
 			list = s.Find("select new Foo(fo.Integer) from Foo fo");
 
 			list = s.CreateQuery("select new Foo(fo.X) from Foo fo")
-				// TODO: .SetCacheable(true)
+				.SetCacheable(true)
 				.List();
 			Assert.IsTrue(list.Count==3);
 			list = s.CreateQuery("select new Foo(fo.X) from Foo fo")
-				// TODO: .SetCacheable(true)
+				.SetCacheable(true)
 				.List();
 			Assert.IsTrue(list.Count==3);
 

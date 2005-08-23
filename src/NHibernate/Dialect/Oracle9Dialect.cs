@@ -1,8 +1,10 @@
+using System;
 using System.Data;
 
-using NHibernate.Cfg;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -32,9 +34,9 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public Oracle9Dialect() : base()
 		{
-//			DefaultProperties[Cfg.Environment.UseStreamsForBinary] = "true";
-			DefaultProperties[ Environment.UseOuterJoin ] = "true";
-			DefaultProperties[ Environment.PrepareSql ] = "false";
+			//			DefaultProperties[Cfg.Environment.UseStreamsForBinary] = "true";
+			DefaultProperties[ Cfg.Environment.UseOuterJoin ] = "true";
+			DefaultProperties[ Cfg.Environment.PrepareSql ] = "false";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.OracleClientDriver";
 
 			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(255)" );
@@ -105,9 +107,9 @@ namespace NHibernate.Dialect
 			RegisterFunction( "to_date", new StandardSQLFunction( NHibernateUtil.Timestamp ) );
 
 			RegisterFunction( "lastday", new StandardSQLFunction( NHibernateUtil.Date ) );
-			RegisterFunction( "sysdate", new NoArgSQLFunction( NHibernateUtil.Date, false) );
-			RegisterFunction( "uid", new NoArgSQLFunction( NHibernateUtil.Int32, false) );
-			RegisterFunction( "user", new NoArgSQLFunction( NHibernateUtil.String, false) );
+			RegisterFunction( "sysdate", new NoArgSQLFunction( NHibernateUtil.Date, false ) );
+			RegisterFunction( "uid", new NoArgSQLFunction( NHibernateUtil.Int32, false ) );
+			RegisterFunction( "user", new NoArgSQLFunction( NHibernateUtil.String, false ) );
 
 			// Multi-param string dialect functions...
 			RegisterFunction( "concat", new StandardSQLFunction( NHibernateUtil.String ) );

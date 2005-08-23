@@ -195,6 +195,17 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// Construct a new sequenced hash map with the specified initial size, hash code provider
+		/// and comparer
+		/// </summary>
+		/// <param name="capacity">the initial size for the hashtable</param>
+		/// <param name="hcp"></param>
+		/// <param name="comparer"></param>
+		public SequencedHashMap( int capacity, IHashCodeProvider hcp, IComparer comparer ) : this( capacity, 1.0F, hcp, comparer )
+		{
+		}
+
+		/// <summary>
 		/// Creates an empty Hashtable with the default initial capacity and using the default load factor, 
 		/// the specified hash code provider and the specified comparer
 		/// </summary>

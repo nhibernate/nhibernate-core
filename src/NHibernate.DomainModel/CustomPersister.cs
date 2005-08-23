@@ -186,7 +186,7 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
-		public bool IsDefaultVersion( object obj )
+		public bool IsUnsavedVersion( object[ ] values )
 		{
 			return false;
 		}
@@ -356,6 +356,11 @@ namespace NHibernate.DomainModel
 		public object CurrentVersion( object id, ISessionImplementor session )
 		{
 			return this;
+		}
+
+		public object CreateProxy( object id, ISessionImplementor session )
+		{
+			throw new NotSupportedException("CustomPersister.CreateProxy is not implemented");
 		}
 		#endregion
 	}

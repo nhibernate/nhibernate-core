@@ -102,7 +102,7 @@ namespace NHibernate.Collection
 		{
 			this.map = map;
 			SetInitialized();
-			DirectlyAccessible = true;
+			IsDirectlyAccessible = true;
 		}
 
 		/// <summary>
@@ -267,11 +267,13 @@ namespace NHibernate.Collection
 			map.Clear();
 		}
 
+		/*
 		/// <summary></summary>
 		public override ICollection Elements()
 		{
 			return map.Values;
 		}
+		*/
 
 		/// <summary></summary>
 		public override bool Empty

@@ -387,7 +387,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public bool IsDefaultVersion(object obj)
+		public bool IsUnsavedVersion( object [ ] values )
 		{
 			// TODO:  Add TestingClassPersister.IsDefaultVersion implementation
 			return false;
@@ -437,6 +437,11 @@ namespace NHibernate.Test.NHSpecificTest
 		public void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session)
 		{
 			// TODO:  Add TestingClassPersister.Lock implementation
+		}
+
+		public object CreateProxy( object id, ISessionImplementor session )
+		{
+			return null;
 		}
 
 		#endregion

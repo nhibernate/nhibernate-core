@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -11,14 +12,14 @@ namespace NHibernate.Cache
 	[Serializable]
 	public class QueryKey
 	{
-		private readonly string sqlQueryString;
+		private readonly SqlString sqlQueryString;
 		private readonly IType[ ] types;
 		private readonly object[ ] values;
 		private readonly int firstRow = RowSelection.NoValue;
 		private readonly int maxRows = RowSelection.NoValue;
 		private readonly IDictionary namedParameters;
 
-		public QueryKey( string queryString, QueryParameters queryParameters )
+		public QueryKey( SqlString queryString, QueryParameters queryParameters )
 		{
 			sqlQueryString = queryString;
 			types = queryParameters.PositionalParameterTypes;
@@ -38,10 +39,43 @@ namespace NHibernate.Cache
 			namedParameters = queryParameters.NamedParameters;
 		}
 
+		private static bool DictionariesAreEqual( IDictionary a, IDictionary b )
+		{
+			if( a == null && b == null )
+			{
+				return true;
+			}
+
+			if( a == null && b != null )
+			{
+				return false;
+			}
+
+			if( a != null && b == null )
+			{
+				return false;
+			}
+
+			if( a.Count != b.Count )
+			{
+				return false;
+			}
+
+			foreach( object key in a.Keys )
+			{
+				if( !object.Equals( a[ key ], b[ key ] ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		public override bool Equals( object other )
 		{
 			QueryKey that = ( QueryKey ) other;
-			if( sqlQueryString != that.sqlQueryString )
+			if( !sqlQueryString.Equals( that.sqlQueryString ) )
 			{
 				return false;
 			}
@@ -81,10 +115,12 @@ namespace NHibernate.Cache
 					}
 				}
 			}
-			if( !object.Equals( namedParameters, that.namedParameters ) )
+
+			if( !DictionariesAreEqual( namedParameters, that.namedParameters ) )
 			{
 				return false;
 			}
+
 			return true;
 		}
 
@@ -95,8 +131,11 @@ namespace NHibernate.Cache
 				int result = 13;
 				result = 37 * result + firstRow.GetHashCode();
 				result = 37 * result + maxRows.GetHashCode();
-				result = 37 * result
-					+ ( namedParameters == null ? 0 : namedParameters.GetHashCode() );
+
+				// NH - commented this out, namedParameters don't have a useful GetHashCode implementations
+				//result = 37 * result
+				//	+ ( namedParameters == null ? 0 : namedParameters.GetHashCode() );
+
 				for( int i = 0; i < types.Length; i++ )
 				{
 					result = 37 * result + ( types[ i ] == null ? 0 : types[ i ].GetHashCode() );

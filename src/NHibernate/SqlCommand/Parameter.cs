@@ -13,8 +13,8 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public class Parameter : ICloneable
 	{
-		private string _name;
-		private SqlType _sqlType;
+		private readonly string _name;
+		private readonly SqlType _sqlType;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="Parameter"/> class.
@@ -88,7 +88,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="type">The IType to turn into Parameters</param>
 		/// <param name="factory"></param>
 		/// <returns>An Array of <see cref="Parameter"/> objects</returns>
-		public static Parameter[ ] GenerateParameters( ISessionFactoryImplementor factory, string[ ] columnNames, IType type )
+		public static Parameter[ ] GenerateParameters( IMapping factory, string[ ] columnNames, IType type )
 		{
 			return Parameter.GenerateParameters( factory, null, columnNames, type );
 		}
@@ -102,7 +102,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">The names of the Columns that compose the IType</param>
 		/// <param name="type">The IType to turn into Parameters</param>
 		/// <returns>An Array of <see cref="Parameter"/> objects</returns>
-		public static Parameter[ ] GenerateParameters( ISessionFactoryImplementor factory, string tableAlias, string[ ] columnNames, IType type )
+		public static Parameter[ ] GenerateParameters( IMapping factory, string tableAlias, string[ ] columnNames, IType type )
 		{
 			SqlType[ ] sqlTypes = type.SqlTypes( factory );
 

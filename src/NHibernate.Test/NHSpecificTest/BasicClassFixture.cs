@@ -1,8 +1,5 @@
 using System;
 using System.Collections;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
@@ -41,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Close();
 
 			s = OpenSession();
-			bc = (BasicClass)s.Load( typeof(BasicClass), (int)1 );
+			bc = (BasicClass)s.Load( typeof(BasicClass), 1 );
 			Assert.AreEqual( 5, bc.ValueOfPrivateField, "private field accessor" );
 			s.Delete( bc );
 			s.Flush();
@@ -791,7 +788,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			try 
 			{
-				BasicClass bc = (BasicClass)s.Load(typeof(BasicClass), id);
+				s.Load(typeof(BasicClass), id);
 			}
 			catch(ObjectNotFoundException onfe) 
 			{

@@ -67,6 +67,8 @@ namespace NHibernate.Impl
 			//this.classByAlias.put( CriteriaImpl.RootAlias, persistentClass);
 		
 			this.criteria = original.Criteria;
+			//ADDED this:
+			this.conjunction = original.conjunction;
 			this.orderings = original.Orderings;
 			this.fetchModes = original.FetchModes;
 			this.associationPathByAlias = original.AssociationPathByAlias;
@@ -81,6 +83,7 @@ namespace NHibernate.Impl
 			this.counter = original.Counter;
 			this.cacheable = original.Cacheable;
 			this.cacheRegion = original.CacheRegion;
+			this.selection = original.Selection;
 		}
 
 		/// <summary>
@@ -257,6 +260,11 @@ namespace NHibernate.Impl
 
 		/// <summary></summary>
 		public System.Type PersistentClass
+		{
+			get { return persistentClass; }
+		}
+
+		public System.Type CriteriaClass
 		{
 			get { return persistentClass; }
 		}

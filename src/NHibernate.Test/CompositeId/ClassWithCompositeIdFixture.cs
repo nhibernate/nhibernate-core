@@ -100,6 +100,7 @@ namespace NHibernate.Test.CompositeId
 			ITransaction t2 = s2.BeginTransaction();
 
 			ClassWithCompositeId theClass2 = (ClassWithCompositeId)s2.Load(typeof(ClassWithCompositeId), id);
+			Assert.AreEqual( id, theClass2.Id );
 			
 			IList results2 = s2.CreateCriteria(typeof(ClassWithCompositeId))
 					.Add(Expression.Expression.Eq("Id", secondId))

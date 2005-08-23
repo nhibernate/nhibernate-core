@@ -251,7 +251,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add CollectionPersisterStub.WriteKey implementation
 		}
 
-		public void Initialize(object key, object owner, ISessionImplementor session)
+		public void Initialize(object key, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.Initialize implementation
 		}

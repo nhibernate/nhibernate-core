@@ -201,7 +201,10 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
-			return NHibernateUtil.Entity( value.GetType() ).ToString( value, factory );
+			return value == null ?
+				"null" :
+				NHibernateUtil.Entity( NHibernateProxyHelper.GetClass( value ) )
+					.ToString( value, factory );
 		}
 
 		public override object FromString( string xml )

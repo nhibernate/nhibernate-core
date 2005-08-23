@@ -250,5 +250,15 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
 		/// /> 
 		public abstract object FromString( string xml );
+
+		public override bool Equals( object obj )
+		{
+			return obj == this || ( obj != null && obj.GetType() == GetType() );
+		}
+
+		public override int GetHashCode()
+		{
+			return GetType().GetHashCode();
+		}
 	}
 }

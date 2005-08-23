@@ -11,25 +11,31 @@ namespace NHibernate.Proxy
 	/// </summary>
 	[Serializable]
 	[CLSCompliant( false )]
-	public class CastleLazyInitializer : LazyInitializer, Castle.DynamicProxy.IInterceptor //, ISerializable
+	public class CastleLazyInitializer : LazyInitializer, Castle.DynamicProxy.IInterceptor
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( CastleLazyInitializer ) );
+
+		#region Instance
+
+		internal bool _constructed = false;
 
 		/// <summary>
 		/// Initializes a new <see cref="CastleLazyInitializer"/> object.
 		/// </summary>
 		/// <param name="persistentClass">The Class to Proxy.</param>
-		/// <param name="concreteProxy">The <see cref="System.Type"/> to use as the Proxy.</param>
-		/// <param name="interfaces">An array of <see cref="System.Type"/> interfaces that the Proxy should implement.</param>
 		/// <param name="id">The Id of the Object we are Proxying.</param>
-		/// <param name="identifierPropertyInfo">The PropertyInfo for the &lt;id&gt; property.</param>
+		/// <param name="getIdentifierMethod"></param>
+		/// <param name="setIdentifierMethod"></param>
 		/// <param name="session">The ISession this Proxy is in.</param>
-		internal CastleLazyInitializer( System.Type persistentClass, System.Type concreteProxy, System.Type[ ] interfaces, object id, PropertyInfo identifierPropertyInfo, ISessionImplementor session )
-			: base( persistentClass, id, identifierPropertyInfo, session )
+		internal CastleLazyInitializer(
+			System.Type persistentClass,
+			object id,
+			MethodInfo getIdentifierMethod,
+			MethodInfo setIdentifierMethod,
+			ISessionImplementor session )
+			: base( persistentClass, id, getIdentifierMethod, setIdentifierMethod, session )
 		{
 		}
-
-		#region Castle.DynamicProxy.IInterceptor Members
 
 		/// <summary>
 		/// Invoke the actual Property/Method using the Proxy or instantiate the actual
@@ -40,20 +46,28 @@ namespace NHibernate.Proxy
 		/// <returns>The result just like the actual object was called.</returns>
 		public object Intercept( IInvocation invocation, params object[ ] args )
 		{
-			// let the generic LazyInitializer figure out if this can be handled
-			// with the proxy or if the real class needs to be initialized
-			object result = base.Invoke( invocation.Method, args, invocation.Proxy );
-
-			// the base LazyInitializer could not handle it so we need to Invoke
-			// the method/property against the real class
-			if( result == InvokeImplementation )
+			if( _constructed )
 			{
-				invocation.InvocationTarget = GetImplementation();
-				return invocation.Proceed( args );
+				// let the generic LazyInitializer figure out if this can be handled
+				// with the proxy or if the real class needs to be initialized
+				object result = base.Invoke( invocation.Method, args, invocation.Proxy );
+
+				// the base LazyInitializer could not handle it so we need to Invoke
+				// the method/property against the real class
+				if( result == InvokeImplementation )
+				{
+					invocation.InvocationTarget = GetImplementation();
+					return invocation.Proceed( args );
+				}
+				else
+				{
+					return result;
+				}
 			}
 			else
 			{
-				return result;
+				// TODO: Find out equivalent to CGLIB's 'method.invokeSuper'.
+				return invocation.Proceed( args );
 			}
 		}
 

@@ -13,7 +13,6 @@ namespace NHibernate.SqlCommand
 		private string tableName;
 
 		private IList columnNames = new ArrayList(); // name of the column
-		private IList columnValues = new ArrayList(); //string or a Parameter -- not used !?!
 		private IDictionary aliases = new Hashtable(); //key=column Name, value=column Alias
 
 		private int versionFragmentIndex = -1;  // not used !?!
@@ -118,7 +117,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSimpleSelectBuilder.</returns>
 		public SqlSimpleSelectBuilder SetIdentityColumn( string[ ] columnNames, IType identityType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, columnNames, identityType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, columnNames, identityType );
 
 			identityFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
 
@@ -133,7 +132,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSimpleSelectBuilder.</returns>
 		public SqlSimpleSelectBuilder SetVersionColumn( string[ ] columnNames, IVersionType versionType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, columnNames, versionType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, columnNames, versionType );
 
 			versionFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
 
@@ -171,7 +170,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSimpleSelectBuilder</returns>
 		public SqlSimpleSelectBuilder AddWhereFragment( string[ ] columnNames, IType type, string op )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, columnNames, type );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, columnNames, type );
 
 			whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
 

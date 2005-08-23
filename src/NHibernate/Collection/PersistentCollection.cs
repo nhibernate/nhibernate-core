@@ -9,6 +9,10 @@ using NHibernate.Type;
 namespace NHibernate.Collection
 {
 	/// <summary>
+	/// Base class for persistent collections
+	/// </summary>
+	/// <remarks>
+	/// <para>
 	/// Persistent collections are treated as value objects by Hibernate.
 	/// i.e. they have no independent existence beyond the object holding
 	/// a reference to them. Unlike instances of entity classes, they are
@@ -16,30 +20,32 @@ namespace NHibernate.Collection
 	/// persistent when held by a persistent object. Collections can be
 	/// passed between different objects (change "roles") and this might
 	/// cause their elements to move from one database table to another.
-	/// <br /><br />
+	/// </para>
+	/// <para>
 	/// Hibernate "wraps" a java collection in an instance of
 	/// PersistentCollection. This mechanism is designed to support
 	/// tracking of changes to the collection's persistent state and
 	/// lazy instantiation of collection elements. The downside is that
 	/// only certain abstract collection types are supported and any
 	/// extra semantics are lost.
-	/// <br /><br />
-	/// Applications should <b>never</b> use classes in this package 
+	/// </para>
+	/// <para>
+	/// Applications should <em>never</em> use classes in this package 
 	/// directly, unless extending the "framework" here.
-	/// <br /><br />
-	/// Changes to <b>structure</b> of the collection are recorded by the
+	/// </para>
+	/// <para>
+	/// Changes to <em>structure</em> of the collection are recorded by the
 	/// collection calling back to the session. Changes to mutable
 	/// elements (ie. composite elements) are discovered by cloning their
 	/// state when the collection is initialized and comparing at flush
 	/// time.
-	/// 
-	/// </summary>
+	/// </para>
+	/// </remarks>
 	[Serializable]
 	public abstract class PersistentCollection : ICollection
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( PersistentCollection ) );
 
-		/// <summary></summary>
 		[NonSerialized]
 		private ISessionImplementor session;
 
@@ -50,7 +56,6 @@ namespace NHibernate.Collection
 
 		private ICollectionSnapshot collectionSnapshot;
 
-		/// <summary></summary>
 		[NonSerialized]
 		private bool directlyAccessible;
 
@@ -59,10 +64,9 @@ namespace NHibernate.Collection
 
 		//careful: these methods do not initialize the collection
 		
-		/// <summary></summary>
-		public abstract ICollection Elements();
-		
-		/// <summary></summary>
+		/// <summary>
+		/// Is the initialized collection empty?
+		/// </summary>
 		public abstract bool Empty { get; }
 
 		/// <summary>
@@ -73,24 +77,12 @@ namespace NHibernate.Collection
 			Initialize( false );
 		}
 
-		/// <summary></summary>
-		protected ISessionImplementor Session
-		{
-			get { return session; }
-		}
-
 		/// <summary>
 		/// Is the collection currently connected to an open session?
 		/// </summary>
 		private bool IsConnectedToSession
 		{
 			get { return session != null && session.IsOpen; }
-		}
-
-		/// <summary></summary>
-		protected bool DirectlyAccessible
-		{
-			set { directlyAccessible = value; }
 		}
 
 		/// <summary>
@@ -167,16 +159,6 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Gets or Sets an <see cref="ArrayList"/> of objects that have been placed in the Queue 
-		/// to be added.
-		/// </summary>
-		/// <value>An <see cref="ArrayList"/> of objects or null.</value>
-		protected ArrayList Additions
-		{
-			get { return additions; }
-		}
-
-		/// <summary>
 		/// Clears out any Queued Additions.
 		/// </summary>
 		/// <remarks>
@@ -223,24 +205,24 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Override on some subclasses
+		/// Called just before reading any rows from the <see cref="IDataReader" />
 		/// </summary>
 		public virtual void BeginRead()
 		{
+			// override on some subclasses
 			initializing = true;
 		}
 
 		/// <summary>
-		/// Called when the reading the Collection from the database is finished.
+		/// Called after reading all rows from the <see cref="IDataReader" />
 		/// </summary>
 		/// <remarks>
-		/// <p>
 		/// This should be overridden by sub collections that use temporary collections
 		/// to store values read from the db.
-		/// </p>
 		/// </remarks>
 		public virtual bool EndRead()
 		{
+			// override on some subclasses
 			SetInitialized();
 			//do this bit after setting initialized to true or it will recurse
 			if ( additions != null ) 
@@ -256,9 +238,11 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Initialize the collection, if possible, wrapping any exceptions in a runtime exception
+		/// Initialize the collection, if possible, wrapping any exceptions
+		/// in a runtime exception
 		/// </summary>
-		/// <param name="writing"></param>
+		/// <param name="writing">currently obsolete</param>
+		/// <exception cref="LazyInitializationException">if we cannot initialize</exception>
 		protected void Initialize( bool writing )
 		{
 			if( !initialized )
@@ -300,10 +284,30 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Gets a <see cref="Boolean"/> indicating if the underlying collection is directly
+		/// accessable through code.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if we are not guaranteed that the NHibernate collection wrapper
+		/// is being used.
+		/// </value>
+		/// <remarks>
+		/// This is typically <c>false</c> whenever a transient object that contains a collection is being
+		/// associated with an ISession through <c>Save</c> or <c>SaveOrUpdate</c>.  NHibernate can't guarantee
+		/// that it will know about all operations that would call cause NHibernate's collections to call
+		/// <c>Read()</c> or <c>Write()</c>.
+		/// </remarks>
+		public virtual bool IsDirectlyAccessible
+		{
+			get { return directlyAccessible; }
+			set { directlyAccessible = value; }
+		}
+
+		/// <summary>
+		/// Disassociate this collection from the given session.
 		/// </summary>
 		/// <param name="session"></param>
-		/// <returns></returns>
+		/// <returns>true if this was currently associated with the given session</returns>
 		public bool UnsetSession( ISessionImplementor session )
 		{
 			if( session == this.session )
@@ -343,39 +347,6 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Gets a <see cref="Boolean"/> indicating if the underlying collection is directly
-		/// accessable through code.
-		/// </summary>
-		/// <value>
-		/// <c>true</c> if we are not guaranteed that the NHibernate collection wrapper
-		/// is being used.
-		/// </value>
-		/// <remarks>
-		/// This is typically <c>false</c> whenever a transient object that contains a collection is being
-		/// associated with an ISession through <c>Save</c> or <c>SaveOrUpdate</c>.  NHibernate can't guarantee
-		/// that it will know about all operations that would call cause NHibernate's collections to call
-		/// <c>Read()</c> or <c>Write()</c>.
-		/// </remarks>
-		public virtual bool IsDirectlyAccessible
-		{
-			get { return directlyAccessible; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public virtual bool IsArrayHolder
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public abstract ICollection Entries();
-
-		/// <summary>
 		/// Read the state of the collection from a disassembled cached value.
 		/// </summary>
 		/// <param name="persister"></param>
@@ -383,7 +354,12 @@ namespace NHibernate.Collection
 		/// <param name="owner"></param>
 		public abstract void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner );
 
-		
+		/// <summary>
+		/// Iterate all collection entries, during update of the database
+		/// </summary>
+		/// <returns></returns>
+		public abstract ICollection Entries();
+
 		/// <summary>
 		/// Reads the elements Identifier from the reader.
 		/// </summary>
@@ -404,14 +380,7 @@ namespace NHibernate.Collection
 		public abstract void WriteTo( IDbCommand st, ICollectionPersister role, object entry, int i, bool writeOrder );
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
-		public abstract bool IsWrapper( object collection );
-
-		/// <summary>
-		/// 
+		/// Get the index of the given collection entry
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
@@ -419,27 +388,28 @@ namespace NHibernate.Collection
 		public abstract object GetIndex( object entry, int i );
 
 		/// <summary>
-		/// 
+		/// Called before any elements are read into the collection,
+		/// allowing appropriate initializations to occur.
 		/// </summary>
 		/// <param name="persister"></param>
 		public abstract void BeforeInitialize( ICollectionPersister persister );
 
 		/// <summary>
-		/// 
+		/// Does the current state exactly match the snapshot?
 		/// </summary>
 		/// <param name="elementType"></param>
 		/// <returns></returns>
 		public abstract bool EqualsSnapshot( IType elementType );
 
 		/// <summary>
-		/// 
+		/// Return a new snapshot of the current state
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
 		protected abstract ICollection Snapshot( ICollectionPersister persister );
 
 		/// <summary>
-		/// 
+		/// Disassemble the collection, ready for the cache
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
@@ -489,7 +459,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Does an element exist at this entry in the collection?
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
@@ -497,7 +467,7 @@ namespace NHibernate.Collection
 		public abstract bool EntryExists( object entry, int i );
 		
 		/// <summary>
-		/// 
+		/// Do we need to insert this element?
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
@@ -506,7 +476,7 @@ namespace NHibernate.Collection
 		public abstract bool NeedsInserting( object entry, int i, IType elemType );
 
 		/// <summary>
-		/// 
+		/// Do we need to update this element?
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
@@ -515,12 +485,18 @@ namespace NHibernate.Collection
 		public abstract bool NeedsUpdating( object entry, int i, IType elemType );
 
 		/// <summary>
-		/// 
+		/// Get all the elements that need deleting
 		/// </summary>
 		/// <param name="elemType"></param>
 		/// <returns></returns>
 		public abstract ICollection GetDeletes( IType elemType );
 
+		/// <summary>
+		/// Is this the wrapper for the given underlying collection instance?
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public abstract bool IsWrapper( object collection );
 		
 		/// <summary></summary>
 		protected object GetSnapshot()
@@ -680,6 +656,12 @@ namespace NHibernate.Collection
 					list.RemoveAt( indexOfEntityToRemove );
 				}
 			}
+		}
+
+		/// <summary></summary>
+		protected ISessionImplementor Session
+		{
+			get { return session; }
 		}
 
 		#region - Hibernate Collection Proxy Classes

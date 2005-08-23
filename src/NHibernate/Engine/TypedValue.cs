@@ -32,5 +32,33 @@ namespace NHibernate.Engine
 			get { return type; }
 			set { type = value; }
 		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int result = 17;
+				result = 37 * result + type.GetHashCode();
+				result = 37 * result + ( value == null ? 0 : value.GetHashCode() );
+				return result;
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			TypedValue that = obj as TypedValue;
+			if( that == null )
+			{
+				return false;
+			}
+
+			return that.type.Equals( type )
+				&& object.Equals( that.value, value );
+		}
+
+		public override string ToString()
+		{
+			return value.ToString();
+		}
 	}
 }

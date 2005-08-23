@@ -31,6 +31,7 @@ namespace NHibernate.Impl
 
 		private ISet commandsToClose = new HashedSet();
 		private ISet readersToClose = new HashedSet();
+		private IDbCommand lastQuery;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BatcherImpl"/> class.
@@ -172,6 +173,7 @@ namespace NHibernate.Impl
 			// another open one Command is doing something then an exception will be 
 			// thrown.
 			IDbCommand command = Generate( sql );
+			lastQuery = command;
 			return command;
 		}
 
@@ -309,6 +311,10 @@ namespace NHibernate.Impl
 				return; // NOTE: early exit!
 			}
 
+			if( lastQuery == cmd )
+			{
+				lastQuery = null;
+			}
 		}
 
 		/// <summary>
@@ -441,6 +447,22 @@ namespace NHibernate.Impl
 			{
 				openReaderCount--;
 				log.Debug( "Closed Reader, open Readers :" + openReaderCount );
+			}
+		}
+
+		public void CancelLastQuery()
+		{
+			try
+			{
+				if( lastQuery != null )
+				{
+					lastQuery.Cancel();
+				}
+			}
+			catch( Exception sqle )
+			{
+				throw;
+				//throw Convert( sqle, "Could not cancel query" );
 			}
 		}
 

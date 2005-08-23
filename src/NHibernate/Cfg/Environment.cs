@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -28,7 +29,7 @@ namespace NHibernate.Cfg
 	public sealed class Environment
 	{
 		/// <summary></summary>
-		public const string Version = "0.8.0.0";
+		public const string Version = "0.9.0.0";
 
 		/// <summary></summary>
 		public const string ConnectionProvider = "hibernate.connection.provider";
@@ -65,11 +66,21 @@ namespace NHibernate.Cfg
 		/// <summary></summary>
 		public const string TransactionManagerStrategy = "hibernate.transaction.manager_lookup_class";
 		/// <summary></summary>
+		public const string CacheProvider = "hibernate.cache.provider_class";
+		public const string UseQueryCache = "hibernate.cache.use_query_cache";
+		public const string QueryCacheFactory = "hibernate.cache.query_cache_factory";
+		public const string CacheRegionPrefix = "hibernate.cache.region_prefix";
+		public const string UseMinimalPuts = "hibernate.cache.use_minimal_puts";
+		/// <summary></summary>
 		public const string QuerySubstitutions = "hibernate.query.substitutions";
 		/// <summary></summary>
 		public const string QueryImports = "hibernate.query.imports";
-		/// <summary></summary>
-		public const string CacheProvider = "hibernate.cache.provider_class";
+		public const string Hbm2ddlAuto = "hibernate.hbm2ddl.auto";
+		public const string SqlExceptionConverter = "hibernate.sql_exception_converter";
+		public const string WrapResultSets = "hibernate.wrap_result_sets";
+
+		// NHibernate-specific properties
+
 		/// <summary></summary>
 		public const string PrepareSql = "hibernate.prepare_sql";
 		/// <summary></summary>
@@ -78,21 +89,24 @@ namespace NHibernate.Cfg
 		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
 
 		private static IDictionary properties = new Hashtable();
-		
+
 		private static XmlNode configNode = null;
 
 		private static bool isConfigured = false;
 
-		internal static void Configure(){
-			if ( !isConfigured){
+		internal static void Configure()
+		{
+			if( !isConfigured )
+			{
 				XmlConfigurator.Configure();
-				bool configurationFound = false;				
+				bool configurationFound = false;
 
 				configurationFound = ConfigureFromNameValueCollection();
-				if ( !configurationFound ){
+				if( !configurationFound )
+				{
 					configurationFound = ConfigureFromXmlNode();
 				}
-				if ( !configurationFound ) 
+				if( !configurationFound )
 				{
 					log.Debug( "no hibernate settings in app.config/web.config were found" );
 				}
@@ -119,9 +133,9 @@ namespace NHibernate.Cfg
 			}
 			return false;
 		}
-		
-		internal static XmlNode ConfigurationNode {
-		
+
+		internal static XmlNode ConfigurationNode
+		{
 			get { return configNode; }
 		}
 
@@ -149,7 +163,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		internal static void SetProperties (IDictionary props)
+		internal static void SetProperties( IDictionary props )
 		{
 			properties = props;
 		}
@@ -165,9 +179,8 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="props"></param>
 		/// <returns></returns>
-		public static bool VerifyProperties( IDictionary props )
+		public static void VerifyProperties( IDictionary props )
 		{
-			return false;
 		}
 	}
 }

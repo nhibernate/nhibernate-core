@@ -1,4 +1,3 @@
-using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -25,7 +24,7 @@ namespace NHibernate.Persister
 
 		/// <summary>
 		/// Returns an object that identifies the space in which identifiers of this class hierarchy
-		/// are uniue. eg. a table name, etc.
+		/// are unique. eg. a table name, etc.
 		/// </summary>
 		object IdentifierSpace { get; }
 
@@ -62,15 +61,17 @@ namespace NHibernate.Persister
 		bool HasProxy { get; }
 
 		/// <summary>
-		/// Get an array of interfaces that the proxy object implements - must include
-		/// proxy interfaces for all subclasses
-		/// </summary>
-		System.Type[ ] ProxyInterfaces { get; }
-
-		/// <summary>
 		/// Get the proxy interface that instances of <c>this</c> concrete class will be cast to
 		/// </summary>
 		System.Type ConcreteProxyClass { get; }
+
+		/// <summary>
+		/// Create a new proxy instance
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		object CreateProxy( object id, ISessionImplementor session );
 
 		/// <summary>
 		/// Do instances of this class contain collections?
@@ -104,13 +105,6 @@ namespace NHibernate.Persister
 		bool IsUnsaved( object obj );
 
 		/// <summary>
-		/// Does this object have the default version
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		bool IsDefaultVersion( object obj );
-
-		/// <summary>
 		/// Set the given values to the mapped properties of the given object
 		/// </summary>
 		/// <param name="obj"></param>
@@ -131,14 +125,6 @@ namespace NHibernate.Persister
 		/// <param name="i"></param>
 		/// <param name="value"></param>
 		void SetPropertyValue( object obj, int i, object value );
-
-		/// <summary>
-		/// Set the value of a particular property
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		void SetPropertyValue( object obj, string name, object value );
 
 		/// <summary>
 		/// Get the value of a particular property
@@ -209,11 +195,6 @@ namespace NHibernate.Persister
 		/// <param name="obj">The object to set the Id property on.</param>
 		/// <param name="id">The value to set the Id property to.</param>
 		void SetIdentifier( object obj, object id );
-
-		/// <summary>
-		/// A method of the proxy interface that returns the identifier value (optional operation)
-		/// </summary>
-		PropertyInfo ProxyIdentifierProperty { get; }
 
 		/// <summary>
 		/// Are instances of this class versioned by a timestamp or version number column?
@@ -401,5 +382,12 @@ namespace NHibernate.Persister
 		/// <param name="session"></param>
 		/// <returns></returns>
 		object CurrentVersion( object id, ISessionImplementor session );
+
+		/// <summary>
+		/// </summary>
+		/// <param name="values"></param>
+		/// <returns></returns>
+		/// <remarks>NHibernate-specific feature, not present in H2.1</remarks>
+		bool IsUnsavedVersion( object[ ] values );
 	}
 }

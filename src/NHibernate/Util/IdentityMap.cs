@@ -39,11 +39,11 @@ namespace NHibernate.Util
 		/// iteration order.
 		/// </summary>
 		/// <returns>A new IdentityMap based on a Hashtable.</returns>
-		public static IDictionary Instantiate()
+		public static IDictionary Instantiate( int size )
 		{
 			IHashCodeProvider ihcp = new IdentityHashCodeProvider();
 			IComparer comp = new IdentityComparer();
-			return new IdentityMap( new Hashtable( ihcp, comp ) );
+			return new IdentityMap( new Hashtable( size, ihcp, comp ) );
 		}
 
 		/// <summary>
@@ -52,11 +52,11 @@ namespace NHibernate.Util
 		/// to the Map.
 		/// </summary>
 		/// <returns>A new IdentityMap based on ListDictionary.</returns>
-		public static IDictionary InstantiateSequenced()
+		public static IDictionary InstantiateSequenced( int size )
 		{
 			IHashCodeProvider ihcp = new IdentityHashCodeProvider();
 			IComparer comp = new IdentityComparer();
-			return new IdentityMap( new SequencedHashMap( ihcp, comp ) );
+			return new IdentityMap( new SequencedHashMap( size, ihcp, comp ) );
 		}
 
 		/// <summary>
@@ -67,6 +67,11 @@ namespace NHibernate.Util
 		/// <param name="map">The IDictionary to get the enumeration safe list.</param>
 		/// <returns>A Collection of DictionaryEntries</returns>
 		public static ICollection ConcurrentEntries( IDictionary map )
+		{
+			return ( ( IdentityMap ) map ).EntryList;
+		}
+
+		public static ICollection Entries( IDictionary map )
 		{
 			return ( ( IdentityMap ) map ).EntryList;
 		}

@@ -1,3 +1,5 @@
+using NHibernate.Persister;
+
 namespace NHibernate.Proxy
 {
 	/// <summary>
@@ -44,6 +46,20 @@ namespace NHibernate.Proxy
 			else
 			{
 				return obj.GetType();
+			}
+		}
+
+		public static object GetIdentifier( object obj, IClassPersister persister )
+		{
+			if( obj is INHibernateProxy )
+			{
+				INHibernateProxy proxy = ( INHibernateProxy ) obj;
+				LazyInitializer li = GetLazyInitializer( proxy );
+				return li.Identifier;
+			}
+			else
+			{
+				return persister.GetIdentifier( obj );
 			}
 		}
 	}

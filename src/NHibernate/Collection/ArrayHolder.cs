@@ -146,7 +146,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public override ICollection Elements()
+		public ICollection Elements()
 		{
 			//if (array==null) return tempList;
 			int length = array.Length;
@@ -244,14 +244,6 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public override bool IsArrayHolder
-		{
-			get { return true; }
 		}
 
 		/// <summary>

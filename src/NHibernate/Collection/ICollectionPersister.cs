@@ -30,9 +30,8 @@ namespace NHibernate.Collection
 		/// Initialize the given collection with the given key
 		/// </summary>
 		/// <param name="key"></param>
-		/// <param name="owner"></param>
 		/// <param name="session"></param>
-		void Initialize( object key, object owner, ISessionImplementor session );
+		void Initialize( object key, ISessionImplementor session );
 
 		/// <summary>
 		/// Get the cache
@@ -78,7 +77,7 @@ namespace NHibernate.Collection
 		object ReadKey( IDataReader rs, ISessionImplementor session );
 
 		/// <summary>
-		/// 
+		/// Read the element from a row of the <see cref="IDataReader" />
 		/// </summary>
 		/// <param name="rs"></param>
 		/// <param name="owner"></param>
@@ -87,15 +86,7 @@ namespace NHibernate.Collection
 		object ReadElement( IDataReader rs, object owner, ISessionImplementor session );
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		object ReadIdentifier( IDataReader rs, ISessionImplementor session );
-
-		/// <summary>
-		/// 
+		/// Read the index from a row of the <see cref="IDataReader" />
 		/// </summary>
 		/// <param name="rs"></param>
 		/// <param name="session"></param>
@@ -103,7 +94,15 @@ namespace NHibernate.Collection
 		object ReadIndex( IDataReader rs, ISessionImplementor session );
 
 		/// <summary>
-		/// 
+		/// Read the identifier from a row of the <see cref="IDataReader" />
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		object ReadIdentifier( IDataReader rs, ISessionImplementor session );
+
+		/// <summary>
+		/// Write the key to an <see cref="IDbCommand" />
 		/// </summary>
 		/// <param name="st"></param>
 		/// <param name="key"></param>
@@ -112,7 +111,7 @@ namespace NHibernate.Collection
 		void WriteKey( IDbCommand st, object key, bool writeOrder, ISessionImplementor session );
 
 		/// <summary>
-		/// 
+		/// Write the element to an <see cref="IDbCommand" />
 		/// </summary>
 		/// <param name="st"></param>
 		/// <param name="elt"></param>
@@ -121,7 +120,7 @@ namespace NHibernate.Collection
 		void WriteElement( IDbCommand st, object elt, bool writeOrder, ISessionImplementor session );
 
 		/// <summary>
-		/// 
+		/// Write the index to an <see cref="IDbCommand" />
 		/// </summary>
 		/// <param name="st"></param>
 		/// <param name="idx"></param>
@@ -130,7 +129,7 @@ namespace NHibernate.Collection
 		void WriteIndex( IDbCommand st, object idx, bool writeOrder, ISessionImplementor session );
 
 		/// <summary>
-		/// 
+		/// Write the identifier to an <see cref="IDbCommand" />
 		/// </summary>
 		/// <param name="st"></param>
 		/// <param name="idx"></param>

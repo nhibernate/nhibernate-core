@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Reflection;
-using log4net;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Property;
@@ -14,8 +12,6 @@ namespace NHibernate.Type
 	/// <summary></summary>
 	public class ComponentType : AbstractType, IAbstractComponentType
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( ComponentType ) );
-
 		private readonly System.Type componentClass;
 		private readonly IType[ ] propertyTypes;
 		private readonly IGetter[ ] getters;

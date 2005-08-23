@@ -26,7 +26,7 @@ namespace NHibernate.SqlCommand
 		/// <returns></returns>
 		public SqlString WhereClause( string alias, string[ ] columnNames, IType whereType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Factory, alias, columnNames, whereType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, alias, columnNames, whereType );
 
 			return ToWhereString( alias, columnNames, parameters );
 		}

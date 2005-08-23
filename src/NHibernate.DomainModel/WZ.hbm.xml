@@ -20,7 +20,7 @@
 
 	<class 
 		name="NHibernate.DomainModel.W, NHibernate.DomainModel" 
-		proxy="NHibernate.DomainModel.Z, NHibernate.DomainModel"
+		proxy="NHibernate.DomainModel.W, NHibernate.DomainModel"
 		discriminator-value="0" 
 	>
 		<id name="Id" unsaved-value="0">

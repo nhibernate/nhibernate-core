@@ -92,7 +92,7 @@ namespace NHibernate.Collection
 		{
 			this.list = list;
 			SetInitialized();
-			DirectlyAccessible = true;
+			IsDirectlyAccessible = true;
 		}
 
 		/// <summary>
@@ -269,12 +269,6 @@ namespace NHibernate.Collection
 		{
 			Read();
 			return list.IndexOf( obj );
-		}
-
-		/// <summary></summary>
-		public override ICollection Elements()
-		{
-			return list;
 		}
 
 		/// <summary></summary>

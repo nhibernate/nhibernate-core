@@ -254,7 +254,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="results"></param>
 		/// <returns></returns>
-		protected override IList ResultList( IList results )
+		protected override IList GetResultList( IList results )
 		{
 			// TODO: 2.1 Transform the results
 			//return criteria.ResultTransformer.TransformList( results );

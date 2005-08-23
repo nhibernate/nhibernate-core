@@ -1,14 +1,10 @@
 using System;
 using System.Collections;
-using System.Data;
 using System.Reflection;
 
 using NUnit.Framework;
-using NHibernate.DomainModel;
 
 using NHibernate.Cfg;
-using NHibernate.Dialect;
-using NHibernate.Tool.hbm2ddl;
 
 namespace NHibernate.Test
 {
@@ -43,6 +39,22 @@ namespace NHibernate.Test
 												  "XY.hbm.xml"
 											  };
 		private string assemblyName = "NHibernate.DomainModel";
+
+		[TearDown]
+		public void TearDown()
+		{
+			if( session != null )
+			{
+				session.Close();
+				session = null;
+			}
+
+			if( sessions != null )
+			{
+				sessions.Close();
+				sessions = null;
+			}
+		}
 
 		private void CreateConfig()
 		{

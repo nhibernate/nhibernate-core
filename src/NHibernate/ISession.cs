@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+
 using NHibernate.Type;
 
 namespace NHibernate
@@ -29,13 +30,14 @@ namespace NHibernate
 	///	method is persistent.
 	/// </para>
 	/// <para>
-	/// <c>Create()</c>, <c>Save()</c>, or <c>Insert()</c> result in an SQL <c>CREATE</c>, <c>Delete()</c>
-	/// in an SQL <c>DELETE</c> and <c>Update()</c> in an SQL <c>UPDATE</c>. Changes to persistent instances
-	/// are deteced at flush time and also result in an SQL <c>UPDATE</c>.
+	/// <c>Save()</c> results in an SQL <c>INSERT</c>, <c>Delete()</c>
+	/// in an SQL <c>DELETE</c> and <c>Update()</c> in an SQL <c>UPDATE</c>. Changes to
+	/// <em>persistent</em> instances are deteced at flush time and also result in an SQL
+	/// <c>UPDATE</c>.
 	/// </para>
 	/// <para>
-	/// It is not intended that implementors be threadsave. Instead each thread/transaction should obtain
-	/// its own instance from a <c>SessionFactory</c>.
+	/// It is not intended that implementors be threadsafe. Instead each thread/transaction should obtain
+	/// its own instance from an <c>ISessionFactory</c>.
 	/// </para>
 	/// <para>
 	/// A <c>ISession</c> instance is serializable if its persistent classes are serializable
@@ -44,7 +46,7 @@ namespace NHibernate
 	/// A typical transaction should use the following idiom:
 	///		<code>
 	///			ISession sess = factory.OpenSession();
-	///			Transaction tx;
+	///			ITransaction tx;
 	///			try {
 	///				tx = sess.BeginTransaction();
 	///				//do some work
@@ -63,6 +65,7 @@ namespace NHibernate
 	///	discarded. The internal state of the <c>ISession</c> might not be consistent with the database
 	///	after the exception occurs.
 	/// </para>
+	/// <seealso cref="ISessionFactory"/>
 	/// </remarks>
 	public interface ISession : IDisposable
 	{
@@ -84,6 +87,11 @@ namespace NHibernate
 		/// at the start of the session (in order to achieve some extra performance).
 		/// </remarks>
 		FlushMode FlushMode { get; set; }
+
+		/// <summary>
+		/// Get the <see cref="ISessionFactory" /> that created this instance.
+		/// </summary>
+		ISessionFactory SessionFactory { get; }
 
 		/// <summary>
 		/// Gets the ADO.NET connection.
@@ -131,6 +139,15 @@ namespace NHibernate
 		IDbConnection Close();
 
 		/// <summary>
+		/// Cancel execution of the current query.
+		/// </summary>
+		/// <remarks>
+		/// May be called from one thread to stop execution of a query in another thread.
+		/// Use with care!
+		/// </remarks>
+		void CancelQuery();
+
+		/// <summary>
 		/// Is the <c>ISession</c> still open?
 		/// </summary>
 		bool IsOpen { get; }
@@ -139,6 +156,13 @@ namespace NHibernate
 		/// Is the <c>ISession</c> currently connected?
 		/// </summary>
 		bool IsConnected { get; }
+
+		/// <summary>
+		/// Does this <c>ISession</c> contain any changes which must be
+		/// synchronized with the database? Would any SQL be executed if
+		/// we flushed this session?
+		/// </summary>
+		bool IsDirty();
 
 		/// <summary>
 		/// Return the identifier of an entity instance cached by the <c>ISession</c>
@@ -159,9 +183,13 @@ namespace NHibernate
 		bool Contains( object obj );
 
 		/// <summary>
-		/// Remove this instance from the session cache. Changes to the instance will
-		/// not be synchronized with the database.
+		/// Remove this instance from the session cache.
 		/// </summary>
+		/// <remarks>
+		/// Changes to the instance will not be synchronized with the database.
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <c>cascade="all"</c> or <c>cascade="all-delete-orphan"</c>.
+		/// </remarks>
 		/// <param name="obj">a persistent instance</param>
 		void Evict( Object obj );
 
@@ -176,11 +204,17 @@ namespace NHibernate
 		object Load( System.Type theType, object id, LockMode lockMode );
 
 		/// <summary>
-		/// Return the persistent instance of the given entity class with the given identifier
+		/// Return the persistent instance of the given entity class with the given identifier,
+		/// assuming that the instance exists.
 		/// </summary>
+		/// <remarks>
+		/// You should not use this method to determine if an instance exists (use <see cref="Find" />
+		/// instead). Use this only to retrieve an instance that you assume exists, where non-existence
+		/// would be an actual error.
+		/// </remarks>
 		/// <param name="theType">A persistent class</param>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
-		/// <returns>The persistent instance</returns>
+		/// <returns>The persistent instance or proxy</returns>
 		object Load( System.Type theType, object id );
 
 		/// <summary>
@@ -190,27 +224,6 @@ namespace NHibernate
 		/// <param name="obj">An "empty" instance of the persistent class</param>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
 		void Load( object obj, object id );
-
-		/// <summary>
-		/// Return the persistent instance of the given entity class with the given identifier, or null
-		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
-		/// already associated with the session, return that instance or proxy.)
-		/// </summary>
-		/// <param name="clazz">a persistent class</param>
-		/// <param name="id">an identifier</param>
-		/// <returns>a persistent instance or null</returns>
-		object Get(System.Type clazz, object id);
-
-		/// <summary>
-		/// Return the persistent instance of the given entity class with the given identifier, or null
-		/// if there is no such persistent instance. Obtain the specified lock mode if the instance
-		/// exists.
-		/// </summary>
-		/// <param name="clazz">a persistent class</param>
-		/// <param name="id">an identifier</param>
-		/// <param name="lockMode">the lock mode</param>
-		/// <returns>a persistent instance or null</returns>
-		object Get(System.Type clazz, object id, LockMode lockMode);
 
 		/// <summary>
 		/// Persist all reachable transient objects, reusing the current identifier 
@@ -331,7 +344,7 @@ namespace NHibernate
 		/// <param name="types">An array of Hibernate types of the values</param>
 		/// <returns>A distinct list of instances</returns>
 		/// <remarks>See <see cref="IQuery.List"/> for implications of <c>cache</c> usage.</remarks>
-		IList Find( string query, object[] values, IType[] types );
+		IList Find( string query, object[ ] values, IType[ ] types );
 
 		/// <summary>
 		/// Execute a query and return the results in an interator.
@@ -391,7 +404,7 @@ namespace NHibernate
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of hibernate types of the values</param>
 		/// <returns>An enumerator</returns>
-		IEnumerable Enumerable( string query, object[] values, IType[] types );
+		IEnumerable Enumerable( string query, object[ ] values, IType[ ] types );
 
 		/// <summary>
 		/// Apply a filter to a persistent collection.
@@ -434,7 +447,7 @@ namespace NHibernate
 		/// <param name="values">The values to be written to "?" placeholders in the query</param>
 		/// <param name="types">The hibernate types of the values</param>
 		/// <returns>A collection</returns>
-		ICollection Filter( object collection, string filter, object[] values, IType[] types );
+		ICollection Filter( object collection, string filter, object[ ] values, IType[ ] types );
 
 		/// <summary>
 		/// Delete all objects returned by the query.
@@ -459,7 +472,7 @@ namespace NHibernate
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of Hibernate types of the values</param>
 		/// <returns>The number of instances deleted</returns>
-		int Delete( string query, object[] values, IType[] types );
+		int Delete( string query, object[ ] values, IType[ ] types );
 
 		/// <summary>
 		/// Obtain the specified lock level upon the given object.
@@ -572,7 +585,7 @@ namespace NHibernate
 		/// <param name="returnAliases">an array of table aliases that appear inside <c>{}</c> in the SQL string</param>
 		/// <param name="returnClasses">the returned persistent classes</param>
 		/// <returns></returns>
-		IQuery CreateSQLQuery( string sql, string[] returnAliases, System.Type[] returnClasses );
+		IQuery CreateSQLQuery( string sql, string[ ] returnAliases, System.Type[ ] returnClasses );
 
 		/// <summary>
 		/// Completely clear the session. Evict all loaded instances and cancel all pending
@@ -580,5 +593,26 @@ namespace NHibernate
 		/// <c>ScrollableResults</c>.
 		/// </summary>
 		void Clear();
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <param name="clazz">a persistent class</param>
+		/// <param name="id">an identifier</param>
+		/// <returns>a persistent instance or null</returns>
+		object Get( System.Type clazz, object id );
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. Obtain the specified lock mode if the instance
+		/// exists.
+		/// </summary>
+		/// <param name="clazz">a persistent class</param>
+		/// <param name="id">an identifier</param>
+		/// <param name="lockMode">the lock mode</param>
+		/// <returns>a persistent instance or null</returns>
+		object Get( System.Type clazz, object id, LockMode lockMode );
 	}
 }

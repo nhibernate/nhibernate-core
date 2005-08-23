@@ -59,7 +59,7 @@ namespace NHibernate.Collection
 			}
 
 			SetInitialized();
-			DirectlyAccessible = true;
+			IsDirectlyAccessible = true;
 			identifiers = new Hashtable();
 		}
 
@@ -274,12 +274,6 @@ namespace NHibernate.Collection
 			}
 
 			return result;
-		}
-
-		/// <summary></summary>
-		public override ICollection Elements()
-		{
-			return values;
 		}
 
 		/// <summary></summary>

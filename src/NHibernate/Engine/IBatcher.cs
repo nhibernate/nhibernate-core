@@ -134,6 +134,11 @@ namespace NHibernate.Engine
 		void AbortBatch( Exception e );
 
 		/// <summary>
+		/// Cancel the current query statement
+		/// </summary>
+		void CancelLastQuery();
+
+		/// <summary>
 		/// Generates an <see cref="IDbCommand"/> from a <see cref="SqlString"/>.
 		/// </summary>
 		/// <param name="sqlString">The <see cref="SqlString"/> to use to generate an <see cref="IDbCommand"/>.</param>

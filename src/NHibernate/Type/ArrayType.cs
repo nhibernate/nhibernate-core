@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Collection;
@@ -58,7 +59,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override ICollection GetElementsCollection( object collection )
 		{
-			return ( ( object[ ] ) collection );
+			return ( Array ) collection;
 		}
 
 		/// <summary>

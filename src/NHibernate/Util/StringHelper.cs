@@ -371,6 +371,11 @@ namespace NHibernate.Util
 			return count;
 		}
 
+		public static bool IsNotEmpty( string str )
+		{
+			return str != null && str.Length > 0;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

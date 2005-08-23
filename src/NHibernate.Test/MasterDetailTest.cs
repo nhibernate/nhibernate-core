@@ -2,8 +2,7 @@ using System;
 using System.Collections;
 
 using NHibernate.DomainModel;
-using NHibernate.Expression;
-using NHibernate.Mapping;
+using NHibernate.Engine;
 
 using NUnit.Framework;
 
@@ -1213,7 +1212,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "Polymorphic criteria queries don't work" )]
 		public void PolymorphicCriteria()
 		{
 			ISession s = OpenSession();
@@ -1231,6 +1229,13 @@ namespace NHibernate.Test
 			s.Delete( b );
 			s.Flush();
 			s.Close();
+		}
+
+		[Test]
+		public void ToStringWithNoIdentifier()
+		{
+			NHibernateUtil.Entity( typeof( Master ) ).ToString( new Master(),
+				( ISessionFactoryImplementor ) sessions );
 		}
 	}
 }

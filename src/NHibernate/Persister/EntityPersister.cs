@@ -4,7 +4,6 @@ using System.Data;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Engine;
-using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Mapping;
@@ -390,7 +389,7 @@ namespace NHibernate.Persister
 		}
 
 		/// <summary></summary>
-		public override string DiscriminatorAlias
+		protected override string DiscriminatorAlias
 		{
 			get { return discriminatorAlias; }
 		}

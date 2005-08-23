@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Util;
 
 namespace NHibernate.Proxy
@@ -20,14 +21,14 @@ namespace NHibernate.Proxy
 	[Serializable]
 	public abstract class LazyInitializer
 	{
+		private static readonly IHashCodeProvider IdentityHashCodeProvider =
+			new HashCodeProvider.IdentityHashCodeProvider();
+
 		/// <summary>
 		/// If this is returned by Invoke then the subclass needs to Invoke the
 		/// method call against the object that is being proxied.
 		/// </summary>
 		protected static readonly object InvokeImplementation = new object();
-
-		private static readonly IHashCodeProvider IdentityHashCodeProvider =
-			new HashCodeProvider.IdentityHashCodeProvider();
 
 		private object _target = null;
 		private object _id;
@@ -36,8 +37,8 @@ namespace NHibernate.Proxy
 		private ISessionImplementor _session;
 
 		private System.Type _persistentClass;
-		private PropertyInfo _identifierPropertyInfo;
 		private MethodInfo _getIdentifierMethod;
+		private MethodInfo _setIdentifierMethod;
 		private bool _overridesEquals;
 
 		/// <summary>
@@ -46,20 +47,19 @@ namespace NHibernate.Proxy
 		/// </summary>
 		/// <param name="persistentClass">The Class to Proxy.</param>
 		/// <param name="id">The Id of the Object we are Proxying.</param>
-		/// <param name="identifierPropertyInfo">The PropertyInfo for the &lt;id&gt; property.</param>
+		/// <param name="getIdentifierMethod"></param>
+		/// <param name="setIdentifierMethod"></param>
 		/// <param name="session">The ISession this Proxy is in.</param>
-		protected LazyInitializer( System.Type persistentClass, object id, PropertyInfo identifierPropertyInfo, ISessionImplementor session )
+		protected LazyInitializer( System.Type persistentClass, object id,
+			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
+			ISessionImplementor session )
 		{
-			_persistentClass = persistentClass;
 			_id = id;
 			_session = session;
-			_identifierPropertyInfo = identifierPropertyInfo;
+			_persistentClass = persistentClass;
+			_getIdentifierMethod = getIdentifierMethod;
+			_setIdentifierMethod = setIdentifierMethod;
 			
-			if( _identifierPropertyInfo != null )
-			{
-				_getIdentifierMethod = _identifierPropertyInfo.GetGetMethod( true );
-			}
-
 			_overridesEquals = ReflectHelper.OverridesEquals( _persistentClass );
 		}
 
@@ -111,7 +111,10 @@ namespace NHibernate.Proxy
 			catch( Exception e )
 			{
 				LogManager.GetLogger( typeof( LazyInitializer ) ).Error( "Exception initializing proxy.", e );
-				throw new LazyInitializationException( e );
+				throw new LazyInitializationException(
+					"Exception initializing proxy: " +
+						MessageHelper.InfoString( _persistentClass, _id ),
+					e );
 			}
 		}
 
@@ -125,8 +128,80 @@ namespace NHibernate.Proxy
 		/// This will only be called if the Dynamic Proxy generator does not handle serialization
 		/// itself or delegates calls to the method GetObjectData to the LazyInitializer.
 		/// </remarks>
-		protected virtual void AddSerializationInfo( SerializationInfo info )
+		protected virtual void AddSerializationInfo( SerializationInfo info, StreamingContext context )
 		{
+		}
+
+		/// <summary>
+		/// Invokes the method if this is something that the LazyInitializer can handle
+		/// without the underlying proxied object being instantiated.
+		/// </summary>
+		/// <param name="method">The name of the method/property to Invoke.</param>
+		/// <param name="args">The arguments to pass the method/property.</param>
+		/// <returns>
+		/// The result of the Invoke if the underlying proxied object is not needed.  If the 
+		/// underlying proxied object is needed then it returns the result <see cref="InvokeImplementation"/>
+		/// which indicates that the Proxy will need to forward to the real implementation.
+		/// </returns>
+		public virtual object Invoke( MethodBase method, object[ ] args, object proxy )
+		{
+			string methodName = method.Name;
+			int paramCount = method.GetParameters().Length;
+
+			if( paramCount == 0 )
+			{
+				if( !_overridesEquals && methodName == "GetHashCode" )
+				{
+					return IdentityHashCodeProvider.GetHashCode( proxy );
+				}
+				else if( method.Equals( _getIdentifierMethod ) )
+				{
+					return _id;
+				}
+				else if( methodName == "Finalize" )
+				{
+					return null;
+				}
+			}
+			else if( paramCount == 1 )
+			{
+				if( !_overridesEquals && methodName == "Equals" )
+				{
+					return args[0] == proxy;
+				}
+				else if( method.Equals( _setIdentifierMethod ) )
+				{
+					Initialize();
+					_id = args[ 0 ];
+					return InvokeImplementation;
+				}
+			}
+			else if( paramCount == 2)
+			{
+				// if the Proxy Engine delegates the call of GetObjectData to the Initializer
+				// then we need to handle it.  Castle.DynamicProxy takes care of serializing
+				// proxies for us, but other providers might not.
+				if( methodName == "GetObjectData" )
+				{
+					SerializationInfo info = ( SerializationInfo ) args[ 0 ];
+					StreamingContext context = ( StreamingContext ) args[ 1 ]; // not used !?!
+
+					if( _target == null & _session != null )
+					{
+						Key key = new Key( _id, _session.Factory.GetPersister( _persistentClass ) );
+						_target = _session.GetEntity( key );
+					}
+
+					// let the specific LazyInitializer write its requirements for deserialization 
+					// into the stream.
+					AddSerializationInfo( info, context );
+
+					// don't need a return value for proxy.
+					return null;
+				}
+			}
+
+			return InvokeImplementation;
 		}
 
 		/// <summary></summary>
@@ -190,65 +265,5 @@ namespace NHibernate.Proxy
 			return s.GetEntity( key );
 		}
 
-		/// <summary>
-		/// Invokes the method if this is something that the LazyInitializer can handle
-		/// without the underlying proxied object being instantiated.
-		/// </summary>
-		/// <param name="method">The name of the method/property to Invoke.</param>
-		/// <param name="args">The arguments to pass the method/property.</param>
-		/// <returns>
-		/// The result of the Invoke if the underlying proxied object is not needed.  If the 
-		/// underlying proxied object is needed then it returns the result <see cref="InvokeImplementation"/>
-		/// which indicates that the Proxy will need to forward to the real implementation.
-		/// </returns>
-		public virtual object Invoke( MethodBase method, object[ ] args, object proxy )
-		{
-			int paramCount = method.GetParameters().Length;
-
-			if( paramCount == 0 )
-			{
-				if( !_overridesEquals && method.Name.Equals( "GetHashCode" ) )
-				{
-					return IdentityHashCodeProvider.GetHashCode( proxy );
-				}
-				else if( method.Equals( _getIdentifierMethod ) )
-				{
-					return _id;
-				}
-			}
-			else if( paramCount == 1 )
-			{
-				if( !_overridesEquals && method.Name.Equals( "Equals" ) )
-				{
-					return args[0] == proxy;
-				}
-			}
-			else if( paramCount == 2)
-			{
-				// if the Proxy Engine delegates the call of GetObjectData to the Initializer
-				// then we need to handle it.  Castle.DynamicProxy takes care of serializing
-				// proxies for us, but other providers might not.
-				if( method.Name.Equals( "GetObjectData" ) )
-				{
-					SerializationInfo info = ( SerializationInfo ) args[ 0 ];
-					StreamingContext context = ( StreamingContext ) args[ 1 ]; // not used !?!
-
-					if( _target == null & _session != null )
-					{
-						Key key = new Key( _id, _session.Factory.GetPersister( _persistentClass ) );
-						_target = _session.GetEntity( key );
-					}
-
-					// let the specific LazyInitializer write its requirements for deserialization 
-					// into the stream.
-					AddSerializationInfo( info );
-
-					// don't need a return value for proxy.
-					return null;
-				}
-			}
-
-			return InvokeImplementation;
-		}
 	}
 }

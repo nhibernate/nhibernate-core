@@ -8,21 +8,16 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public abstract class SqlBaseBuilder
 	{
-		private ISessionFactoryImplementor factory;
+		private IMapping mapping;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		protected SqlBaseBuilder( ISessionFactoryImplementor factory )
+		protected SqlBaseBuilder( IMapping mapping )
 		{
-			this.factory = factory;
+			this.mapping = mapping;
 		}
 
-		/// <summary></summary>
-		protected ISessionFactoryImplementor Factory
+		protected IMapping Mapping
 		{
-			get { return factory; }
+			get { return mapping; }
 		}
 
 		/// <summary>

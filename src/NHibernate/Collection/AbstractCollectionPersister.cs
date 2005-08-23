@@ -1129,9 +1129,8 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="key"></param>
-		/// <param name="owner"></param>
 		/// <param name="session"></param>
-		public void Initialize( object key, object owner, ISessionImplementor session )
+		public void Initialize( object key, ISessionImplementor session )
 		{
 			try
 			{

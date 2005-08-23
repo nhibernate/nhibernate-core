@@ -773,6 +773,47 @@ namespace NHibernate.Impl
 			return ( string[ ] ) results.ToArray( typeof( string ) );
 		}
 
+		/// <summary>
+		/// Added to solve a problem with SessionImpl.Find( CriteriaImpl ),
+		/// see the comment there for an explanation.
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <returns></returns>
+		public System.Type[ ] GetImplementorClasses( System.Type clazz )
+		{
+			ArrayList results = new ArrayList();
+			foreach( IClassPersister p in classPersisters.Values )
+			{
+				if( p is IQueryable )
+				{
+					IQueryable q = ( IQueryable ) p;
+					string className = q.ClassName;
+					bool isMappedClass = clazz.Equals( q.MappedClass );
+					if( q.IsExplicitPolymorphism )
+					{
+						if( isMappedClass )
+						{
+							return new System.Type[ ] { q.MappedClass };
+						}
+					}
+					else
+					{
+						if( isMappedClass )
+						{
+							results.Add( q.MappedClass );
+						}
+						else if(
+							clazz.IsAssignableFrom( q.MappedClass ) &&
+							( !q.IsInherited || !clazz.IsAssignableFrom( q.MappedSuperclass ) ) )
+						{
+							results.Add( q.MappedClass );
+						}
+					}
+				}
+			}
+			return ( System.Type[ ] ) results.ToArray( typeof( System.Type ) );
+		}
+
 		public string GetImportedClassName( string className )
 		{
 			string result = imports[ className ] as string;

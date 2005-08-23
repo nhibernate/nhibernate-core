@@ -41,16 +41,7 @@ namespace NHibernate.Collection
 			}
 
 			SetInitialized();
-			DirectlyAccessible = true;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public override ICollection Elements()
-		{
-			return bag;
+			IsDirectlyAccessible = true;
 		}
 
 		/// <summary>

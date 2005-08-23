@@ -17,7 +17,7 @@ namespace NHibernate.Test.UtilityTest
 
 		protected override IDictionary GetIdentityMap()
 		{
-			return IdentityMap.InstantiateSequenced();
+			return IdentityMap.InstantiateSequenced( 10 );
 		}
 
 	}

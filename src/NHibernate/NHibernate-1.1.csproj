@@ -249,6 +249,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NonUniqueObjectException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NonUniqueResultException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -279,6 +284,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "PropertyValueException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QueryException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -300,6 +310,11 @@
                 />
                 <File
                     RelPath = "TransientObjectException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UnresolvableObjectException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -795,6 +810,11 @@
                 />
                 <File
                     RelPath = "Engine\Versioning.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Exceptions\ADOExceptionHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1714,12 +1734,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Proxy\CastleProxyFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Proxy\CastleProxyGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Proxy\INHibernateProxy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Proxy\IProxyFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2344,6 +2374,11 @@
                 />
                 <File
                     RelPath = "Type\YesNoType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\ADOExceptionReporter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

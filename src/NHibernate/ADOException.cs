@@ -6,7 +6,9 @@ using log4net;
 namespace NHibernate
 {
 	/// <summary>
-	/// Wraps an <c>DataException</c>. Indicates that an exception occurred during an ADO.NET call.
+	/// Wraps exceptions that occur during ADO.NET calls. Exceptions thrown
+	/// by various ADO.NET providers are not derived from a common base class
+	/// (<c>SQLException</c> in Java), so just <c>Exception</c>
 	/// </summary>
 	[ Serializable ]
 	public class ADOException : HibernateException

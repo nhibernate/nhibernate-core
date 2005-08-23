@@ -183,10 +183,8 @@ namespace NHibernate.Test
 
 
 		[Test]
-		[Ignore("Requires IQuery.SetCacheable")]
 		public void CachedQuery()
 		{
-			/*
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
@@ -197,7 +195,7 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IQuery q = s.CreateQuery( "from Simple s where s.name=?" );
+			IQuery q = s.CreateQuery( "from Simple s where s.Name=?" );
 			q.SetCacheable( true );
 			q.SetString( 0, "Simple 1" );
 
@@ -205,7 +203,7 @@ namespace NHibernate.Test
 			Assert.AreEqual( 1, q.List().Count );
 			Assert.AreEqual( 1, q.List().Count );
 
-			q = s.CreateQuery( "from Simple s where s.name=:name" );
+			q = s.CreateQuery( "from Simple s where s.Name=:name" );
 			q.SetCacheable( true );
 			q.SetString( "name", "Simple 1" );
 			Assert.AreEqual( 1, q.List().Count );
@@ -223,7 +221,7 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			q = s.CreateQuery("from Simple s where s.name=:name");
+			q = s.CreateQuery("from Simple s where s.Name=:name");
 			q.SetString( "name", "Simple 2" );
 			q.SetCacheable( true );
 			Assert.AreEqual( 1, q.List().Count );
@@ -240,14 +238,13 @@ namespace NHibernate.Test
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			q = s.CreateQuery("from Simple s where s.name=?");
+			q = s.CreateQuery("from Simple s where s.Name=?");
 			q.SetCacheable( true );
 			q.SetString( 0, "Simple 1" );
 			Assert.AreEqual( 0, q.List().Count );
 			Assert.AreEqual( 0, q.List().Count );
 			t.Commit();
 			s.Close();
-			*/
 		}
 
 		private string LocateAppropriateDialectFunctionNameForAliasTest()
@@ -296,10 +293,8 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Requires IQuery.SetCacheable")]
 		public void CachedQueryOnInsert()
 		{
-			/*
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
@@ -351,14 +346,11 @@ namespace NHibernate.Test
 			}
 			t.Commit();
 			s.Close();
-			*/
 		}
 
 		[Test]
-		[Ignore("Requires IQuery.SetCacheable and IQuery.SetCacheRegion")]
 		public void CachedQueryRegion()
 		{
-			/*
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
@@ -410,7 +402,6 @@ namespace NHibernate.Test
 			Assert.AreEqual( 0, q.List().Count );
 			t.Commit();
 			s.Close();
-			*/
 		}
 
 		[Test]

@@ -129,7 +129,7 @@ namespace NHibernate.Collection
 		{
 			internalSet = collection;
 			SetInitialized();
-			DirectlyAccessible = true;
+			IsDirectlyAccessible = true;
 		}
 
 		/// <summary>
@@ -381,6 +381,7 @@ namespace NHibernate.Collection
 
 		#endregion
 
+		/*
 		/// <summary>
 		/// <see cref="PersistentCollection.Elements"/>
 		/// </summary>
@@ -388,6 +389,7 @@ namespace NHibernate.Collection
 		{
 			return internalSet;
 		}
+		*/
 
 		/// <summary>
 		/// <see cref="PersistentCollection.Empty"/>

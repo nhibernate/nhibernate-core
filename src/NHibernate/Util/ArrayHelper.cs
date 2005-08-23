@@ -16,6 +16,7 @@ namespace NHibernate.Util
 
 		public static readonly object[ ] EmptyObjectArray = new object[0];
 		public static readonly IType[ ] EmptyTypeArray = new IType[0];
+		public static readonly int[ ] EmptyIntArray = new int[0];
 
 		private ArrayHelper()
 		{

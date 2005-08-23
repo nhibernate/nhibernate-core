@@ -555,7 +555,7 @@ namespace NHibernate.Persister
 		}
 
 		/// <summary></summary>
-		public override string DiscriminatorAlias
+		protected override string DiscriminatorAlias
 		{
 			// Is always "clazz_", so just use columnName
 			get { return DiscriminatorColumnName; }

@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Runtime.CompilerServices;
+
 using log4net;
 using Iesi.Collections;
+
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -33,8 +37,7 @@ namespace NHibernate.Loader
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( Loader ) );
 
-		/// <summary></summary>
-		protected static readonly string[] NoSuffix = { string.Empty };
+		// TODO: private ColumnNameCache columnNameCache;
 
 		private Dialect.Dialect dialect;
 
@@ -84,7 +87,12 @@ namespace NHibernate.Loader
 		/// The suffix identifies a particular column of results in the SQL <c>IDataReader</c>;
 		/// implemented by all subclasses
 		/// </summary>
-		/// added set
+		/// <remarks>
+		/// <p>
+		/// The <c>setter</c> was added so that classes inheriting from Loader could write a 
+		/// value using the Property instead of directly to the field.
+		/// </p>
+		/// </remarks>
 		protected abstract string[ ] Suffixes { get; set; }
 
 		/// <summary>
@@ -118,7 +126,9 @@ namespace NHibernate.Loader
 
 
 		/// <summary>
-		/// Append <c>FOR UPDATE OF</c> clause, if necessary
+		/// Append <c>FOR UPDATE OF</c> clause, if necessary. This
+		/// empty superclass implementation merely returns its first
+		/// argument.
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <param name="lockModes"></param>
@@ -148,18 +158,9 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Actually execute a query, ignoring the query cache
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="queryParameters"></param>
-		/// <returns></returns>
-		protected IList DoList( ISessionImplementor session, QueryParameters queryParameters )
-		{
-			return DoQueryAndInitializeNonLazyCollections( session, queryParameters, null, null, null, true );
-		}
-
-		/// <summary>
-		/// 
+		/// Execute an SQL query and attempt to instantiate instances of the class mapped by the given
+		/// persister from each row of the <c>DataReader</c>. If an object is supplied, will attempt to
+		/// initialize that object. If a collection is supplied, attempt to initialize that collection.
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="queryParameters"></param>
@@ -191,14 +192,6 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="resultSet"></param>
-		/// <param name="session"></param>
-		/// <param name="queryParameters"></param>
-		/// <param name="returnProxies"></param>
-		/// <returns></returns>
 		protected object LoadSingleRow( IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, bool returnProxies )
 		{
 			int cols = Persisters.Length;
@@ -255,7 +248,7 @@ namespace NHibernate.Loader
 
 			if ( returnProxies )
 			{
-				for ( int i = 0 ; i < cols; i++ )
+				for ( int i = 0; i < cols; i++ )
 				{
 					// now get an existing proxy for each row element (if there is one)
 					row[ i ] = session.ProxyFor( Persisters[ i ], keys[ i ], row[ i ] );
@@ -283,20 +276,19 @@ namespace NHibernate.Loader
 			)
 		{
 			RowSelection selection = queryParameters.RowSelection;
-			int maxRows = ( selection == null || selection.MaxRows == RowSelection.NoValue ) ? int.MaxValue : selection.MaxRows;
+			int maxRows = HasMaxRows( selection ) ? selection.MaxRows : int.MaxValue;
 
 			ILoadable[ ] persisters = Persisters;
 			int cols = persisters.Length;
+			
 			ArrayList hydratedObjects = cols > 0 ? new ArrayList() : null;
 			IList results = new ArrayList();
 
 			IDbCommand st = PrepareQueryCommand(
 				ApplyLocks( SqlString, queryParameters.LockModes, session.Factory.Dialect ),
-				queryParameters,
-				false,
-				session );
+				queryParameters, false, session );
 
-			IDataReader rs = GetResultSet( st, queryParameters.RowSelection, session );
+			IDataReader rs = GetResultSet( st, selection, session );
 
 			try
 			{
@@ -309,7 +301,7 @@ namespace NHibernate.Loader
 
 				if ( log.IsDebugEnabled )
 				{
-					log.Debug( "processing result set") ;
+					log.Debug( "processing result set" );
 				}
 
 				int count;
@@ -324,9 +316,9 @@ namespace NHibernate.Loader
 					log.Debug( string.Format( "done processing result set ({0} rows)", count ) ) ;
 				}
 			}
-			catch ( Exception )
+			catch ( Exception sqle )
 			{
-				// Might want to log this here as well.
+				ADOExceptionReporter.LogExceptions( sqle );
 				throw;
 			}
 			finally
@@ -336,7 +328,7 @@ namespace NHibernate.Loader
 
 			InitializeEntitiesAndCollections( hydratedObjects, rs, session );
 
-			return results;  // ResultList( results );
+			return results;  // GetResultList( results );
 		}
 
 		private void InitializeEntitiesAndCollections( IList hydratedObjects, object resultSetId, ISessionImplementor session )
@@ -368,7 +360,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="results"></param>
 		/// <returns></returns>
-		protected virtual IList ResultList( IList results )
+		protected virtual IList GetResultList( IList results )
 		{
 			return results;
 		}
@@ -411,7 +403,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// 
+		/// Read one collection element from the current row of the ADO.NET result set
 		/// </summary>
 		/// <param name="optionalOwner"></param>
 		/// <param name="optionalKey"></param>
@@ -460,6 +452,14 @@ namespace NHibernate.Loader
 			}
 		}
 
+		/// <summary>
+		/// If this is a collection initializer, we need to tell the session that a collection
+		/// is being initilized, to account for the possibility of the collection having
+		/// no elements (hence no rows in the result set).
+		/// </summary>
+		/// <param name="keys"></param>
+		/// <param name="resultSetId"></param>
+		/// <param name="session"></param>
 		private void HandleEmptyCollections(
 			object[] keys,
 			object resultSetId,
@@ -633,11 +633,25 @@ namespace NHibernate.Loader
 			}
 		}
 
+		/// <summary>
+		/// The entity instance is not in the session cache
+		/// </summary>
+		/// <param name="dr"></param>
+		/// <param name="i"></param>
+		/// <param name="persister"></param>
+		/// <param name="suffix"></param>
+		/// <param name="key"></param>
+		/// <param name="lockMode"></param>
+		/// <param name="optionalObjectKey"></param>
+		/// <param name="optionalObject"></param>
+		/// <param name="hydratedObjects"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
 		private object InstanceNotYetLoaded( IDataReader dr, int i, ILoadable persister, string suffix, Key key, LockMode lockMode, Key optionalObjectKey, object optionalObject, IList hydratedObjects, ISessionImplementor session )
 		{
 			object obj;
 
-			System.Type instanceClass = GetInstanceClass( dr, i, persister, suffix, key.Identifier, session );
+			System.Type instanceClass = GetInstanceClass( dr, i, persister, key.Identifier, session );
 
 			if( optionalObjectKey != null && key.Equals( optionalObjectKey ) )
 			{
@@ -664,7 +678,9 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Hydrate an object from the SQL <c>IDataReader</c>
+		/// Hydrate the state of an object from the SQL <c>IDataReader</c>, into
+		/// an array of "hydrated" values (do not resolve associations yet),
+		/// and pass the hydrated state to the session.
 		/// </summary>
 		/// <param name="rs"></param>
 		/// <param name="i"></param>
@@ -686,9 +702,10 @@ namespace NHibernate.Loader
 			// advantage of two-phase-load (esp. components)
 			session.AddUninitializedEntity( key, obj, lockMode );
 
-			// Get the persister for the subclass
+			// Get the persister for the _subclass_
 			ILoadable persister = ( ILoadable ) session.GetPersister( obj );
 
+			// This is not very nice (and quite slow):
 			string[ ][ ] cols = persister == rootPersister ?
 				suffixedPropertyColumns[ i ] :
 				GetSuffixedPropertyAliases( persister, suffix );
@@ -704,11 +721,10 @@ namespace NHibernate.Loader
 		/// <param name="rs"></param>
 		/// <param name="i"></param>
 		/// <param name="persister"></param>
-		/// <param name="suffix"></param>
 		/// <param name="id"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		private System.Type GetInstanceClass( IDataReader rs, int i, ILoadable persister, string suffix, object id, ISessionImplementor session )
+		private System.Type GetInstanceClass( IDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session )
 		{
 			System.Type topClass = persister.MappedClass;
 
@@ -778,32 +794,6 @@ namespace NHibernate.Loader
 				}
 			}
 		}
-		/// <summary>
-		/// Some dialect-specific LIMIT clauses require the maximum last row number,
-		/// others require the maximum returned row count.
-		/// </summary>
-		private static int GetMaxOrLimit(Dialect.Dialect dialect, RowSelection selection)
-		{
-			int firstRow = GetFirstRow(selection);
-			int lastRow = selection.MaxRows;
-
-			if( dialect.UseMaxForLimit )
-			{
-				lastRow += firstRow;
-			}
-
-			return lastRow;
-		}
-
-		private static int GetFirstRow( RowSelection selection )
-		{
-			return ( selection == null ) ? 0 : selection.FirstRow;		
-		}
-
-		private static bool UseLimit( RowSelection selection, Dialect.Dialect dialect )
-		{
-			return dialect.SupportsLimit && HasMaxRows(selection);
-		}
 
 		private static bool HasMaxRows(RowSelection selection)
 		{
@@ -811,6 +801,51 @@ namespace NHibernate.Loader
 			// have a value I'll compare it to the static field NoValue used to initialize 
 			// max rows to nothing
 			return selection != null && selection.MaxRows != RowSelection.NoValue;
+		}
+
+		private static int GetFirstRow( RowSelection selection )
+		{
+			return ( selection == null ) ? 0 : selection.FirstRow;		
+		}
+
+		/// <summary>
+		/// Should we pre-process the SQL string, adding a dialect-specific
+		/// LIMIT clause.
+		/// </summary>
+		/// <param name="selection"></param>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		private static bool UseLimit( RowSelection selection, Dialect.Dialect dialect )
+		{
+			return dialect.SupportsLimit && HasMaxRows(selection);
+		}
+
+		/// <summary>
+		/// Bind positional parameter values to the <c>IDbCommand</c>
+		/// (these are parameters specified by ?).
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="queryParameters"></param>
+		/// <param name="start"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		protected int BindPositionalParameters(
+			IDbCommand st,
+			QueryParameters queryParameters,
+			int start,
+			ISessionImplementor session )
+		{
+			object[ ] values = queryParameters.PositionalParameterValues;
+			IType[ ] types = queryParameters.PositionalParameterTypes;
+
+			int span = 0;
+			for( int i = 0; i < values.Length; i++ )
+			{
+				types[ i ].NullSafeSet( st, values[ i ], start + span, session );
+				span += types[ i ].GetColumnSpan( session.Factory );
+			}
+
+			return span;
 		}
 
 		/// <summary>
@@ -831,11 +866,12 @@ namespace NHibernate.Loader
 			bool hasFirstRow = GetFirstRow( selection ) > 0;
 			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
 			//TODO: In .Net all resultsets are scrollable (we receive an IDataReader), so this is not needed
-			bool scrollable = scroll || ( !useLimit && hasFirstRow );
+			bool scrollable = session.Factory.IsScrollableResultSetsEnabled &&
+				(scroll || ( hasFirstRow && !useOffset ) );
 
 			if( useLimit )
 			{
-				sqlString = dialect.GetLimitString( sqlString,
+				sqlString = dialect.GetLimitString( sqlString.Trim(),
 					useOffset ? GetFirstRow( selection ) : 0,
 					GetMaxOrLimit( dialect, selection ) );
 			}
@@ -856,13 +892,7 @@ namespace NHibernate.Loader
 					colIndex += BindLimitParameters( command, colIndex, selection, session );
 				}
 
-				for( int i = 0; i < parameters.PositionalParameterValues.Length; i++ )
-				{
-					parameters.PositionalParameterTypes[ i ].NullSafeSet( command, parameters.PositionalParameterValues[ i ], colIndex, session );
-					colIndex += parameters.PositionalParameterTypes[ i ].GetColumnSpan( session.Factory );
-				}
-
-				//if (namedParams!=null)	
+				colIndex += BindPositionalParameters( command, parameters, colIndex, session );
 				colIndex += BindNamedParameters( command, parameters.NamedParameters, colIndex, session );
 
 				if( useLimit && !dialect.BindLimitParametersFirst )
@@ -874,20 +904,48 @@ namespace NHibernate.Loader
 				{
 					SetMaxRows( command, selection );
 				}
-				if( selection != null && selection.Timeout != RowSelection.NoValue )
+				if( selection != null )
 				{
-					command.CommandTimeout = selection.Timeout;
+					if( selection.Timeout != RowSelection.NoValue )
+					{
+						command.CommandTimeout = selection.Timeout;
+					}
+					// H2.1 handles FetchSize here - not ported
 				}
 
 			}
-				//TODO: fix up the Exception handling here...
-			catch( Exception )
+			catch( HibernateException )
 			{
+				ClosePreparedCommand( command, null, session );
+				throw;
+			}
+			catch( Exception sqle )
+			{
+				ADOExceptionReporter.LogExceptions( sqle );
 				ClosePreparedCommand( command, null, session );
 				throw;
 			}
 
 			return command;
+		}
+
+		/// <summary>
+		/// Some dialect-specific LIMIT clauses require the maximum last row number,
+		/// others require the maximum returned row count.
+		/// </summary>
+		private static int GetMaxOrLimit(Dialect.Dialect dialect, RowSelection selection)
+		{
+			int firstRow = GetFirstRow(selection);
+			int lastRow = selection.MaxRows;
+
+			if( dialect.UseMaxForLimit )
+			{
+				return lastRow + firstRow;
+			}
+			else
+			{
+				return lastRow;
+			}
 		}
 
 		/// <summary>
@@ -901,11 +959,15 @@ namespace NHibernate.Loader
 			{
 				return 0;
 			}
+			if( !HasMaxRows( selection ) )
+			{
+				throw new AssertionFailure( "max results not set" );
+			}
 			int firstRow = GetFirstRow( selection );
 			int lastRow = GetMaxOrLimit( dialect, selection );
 
-			bool reverse = dialect.BindLimitParametersInReverseOrder;
 			bool hasFirstRow = firstRow > 0 && dialect.SupportsLimitOffset;
+			bool reverse = dialect.BindLimitParametersInReverseOrder;
 
 			if( hasFirstRow )
 			{ 
@@ -924,7 +986,7 @@ namespace NHibernate.Loader
 		/// <remarks>TODO: This does not apply to ADO.NET at all</remarks>
 		protected void SetMaxRows( IDbCommand st, RowSelection selection )
 		{
-			if( selection != null && selection.MaxRows != RowSelection.NoValue )
+			if( HasMaxRows( selection ) )
 			{
 				//TODO: H2.0.3 - do we need this method??
 				// there is nothing in ADO.NET to do anything  similar
@@ -956,13 +1018,44 @@ namespace NHibernate.Loader
 
 				return rs;
 			}
-			catch( Exception )
+			catch( Exception sqle )
 			{
+				ADOExceptionReporter.LogExceptions( sqle );
 				ClosePreparedCommand( st, rs, session );
 				throw;
 			}
 		}
 
+		/* TODO:
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		private IDataReader WrapDataReaderIfEnabled( IDataReader rs, ISessionImplementor session )
+		{
+			if( session.Factory.IsWrapResultSetsEnabled )
+			{
+				try
+				{
+					log.Debug( "Wrapping data reader [" + rs + "]" );
+					return new DataReaderWrapper( rs, RetrieveColumnNameToIndexCache( rs ) );
+				}
+				catch( Exception e )
+				{
+					log.Info( "Error wrapping result set; using naked result set", e );
+				}
+			}
+			return rs;
+		}
+
+		private ColumnNameCache RetrieveColumnNameToIndexCache( IDataReader rs )
+		{
+			if( columnNameCache == null )
+			{
+				log.Debug( "Building columnName->columnIndex cache" );
+				columnNameCache = ColumnNameCache.Construct( rs.GetSchemaTable() );
+			}
+
+			return columnNameCache;
+		}
+		*/
 
 		/// <summary>
 		/// Cleans up the resources used by this Loader.
@@ -1033,7 +1126,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// 
+		/// Called by subclasses that batch load entities
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="ids"></param>
@@ -1058,12 +1151,12 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// 
+		/// Called by subclasses that load collections
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="id"></param>
 		/// <param name="type"></param>
-		internal void LoadCollection(
+		protected internal void LoadCollection(
 			ISessionImplementor session,
 			object id,
 			IType type )
@@ -1072,12 +1165,12 @@ namespace NHibernate.Loader
 		}
 			
 		/// <summary>
-		/// 
+		/// Called by subclasses that batch initialize collections
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="ids"></param>
 		/// <param name="type"></param>
-		internal void LoadCollectionBatch(
+		protected internal void LoadCollectionBatch(
 			ISessionImplementor session,
 			object[] ids,
 			IType type )
@@ -1090,6 +1183,12 @@ namespace NHibernate.Loader
 			LoadCollection( session, ids, idTypes );
 		}
 
+		/// <summary>
+		/// Called by subclasses that initialize collections
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="ids"></param>
+		/// <param name="types"></param>
 		private void LoadCollection(
 			ISessionImplementor session,
 			object[] ids,
@@ -1100,7 +1199,8 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// 
+		/// Return the query results, using the query cache, called
+		/// by subclasses that implement cacheable queries
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="queryParameters"></param>
@@ -1115,33 +1215,40 @@ namespace NHibernate.Loader
 		{
 			ISessionFactoryImplementor factory = session.Factory;
 
-			// TODO: 2.1 - Uncomment when QueryCache implemented
-			/*
-			bool cacheable = factory.IsQueryCacheable && queryParameters.IsCacheable;
+			bool cacheable = factory.IsQueryCacheEnabled && queryParameters.Cacheable;
 
 			if ( cacheable )
 			{
-				QueryCache queryCache = factory.GetQueryCache( queryParameters.CacheRegion ) ;
+				IQueryCache queryCache = factory.GetQueryCache( queryParameters.CacheRegion ) ;
 				QueryKey key = new QueryKey( SqlString, queryParameters );
 				IList result = null;
-				if ( !queryParameters.IsForceCacheRefresh )
+				if ( !queryParameters.ForceCacheRefresh )
 				{
 					result = queryCache.Get( key, resultTypes, querySpaces, session );
 				}
 				if ( result == null )
 				{
 					result = DoList( session, queryParameters );
-					queryCache.Add( key, resultTypes, result, session );
+					queryCache.Put( key, resultTypes, result, session );
 				}
+
+				return GetResultList( result );
 			}
 			else
 			{
-				return DoList( session, queryParameters );
+				return GetResultList( DoList( session, queryParameters ) );
 			}
-			*/
+		}
 
-			// Wrapper the result set - esp in Criteria loads
-			return ResultList( DoList( session, queryParameters ) );
+		/// <summary>
+		/// Actually execute a query, ignoring the query cache
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="queryParameters"></param>
+		/// <returns></returns>
+		protected IList DoList( ISessionImplementor session, QueryParameters queryParameters )
+		{
+			return DoQueryAndInitializeNonLazyCollections( session, queryParameters, null, null, null, true );
 		}
 
 		private string[ ][ ] suffixedKeyColumns;
@@ -1149,7 +1256,12 @@ namespace NHibernate.Loader
 		private string[ ][ ][ ] suffixedPropertyColumns;
 		private string[ ] suffixedDiscriminatorColumn;
 
-		/// <summary></summary>
+		protected static readonly string[] NoSuffix = { string.Empty };
+
+		/// <summary>
+		/// Calculate and cache select-clause suffixes. Must be
+		/// called by subclasses after instantiation.
+		/// </summary>
 		protected void PostInstantiate()
 		{
 			ILoadable[ ] persisters = Persisters;

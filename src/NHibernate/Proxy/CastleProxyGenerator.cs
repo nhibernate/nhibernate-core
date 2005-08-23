@@ -46,7 +46,7 @@ namespace NHibernate.Proxy
 			object generatedProxy = null;
 			try
 			{
-				CastleLazyInitializer initializer = new CastleLazyInitializer( persistentClass, concreteProxy, interfaces, id, identifierPropertyInfo, session );
+				CastleLazyInitializer initializer = null; //new CastleLazyInitializer( persistentClass, concreteProxy, interfaces, id, identifierPropertyInfo, session );
 				System.Type proxyType = null;
 
 				// if I try to generate a proxy twice for the same type the Castle library will do the same

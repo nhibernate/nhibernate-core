@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+
 using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Engine;
 
@@ -96,7 +98,6 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		internal ICollectionPersister currentPersister;
 
-		/// <summary></summary>
 		[NonSerialized]
 		internal object currentKey;
 
@@ -252,7 +253,10 @@ namespace NHibernate.Impl
 		/// Updates the CollectionEntry to reflect that it is has been successfully flushed to the database.
 		/// </summary>
 		/// <param name="collection">The <see cref="PersistentCollection"/> that was flushed.</param>
-		internal void PostFlush( PersistentCollection collection )
+		/// <remarks>
+		/// Called after a <em>successful</em> flush.
+		/// </remarks>
+		internal bool PostFlush( PersistentCollection collection )
 		{
 			if( ignore )
 			{
@@ -285,11 +289,13 @@ namespace NHibernate.Impl
 					InitSnapshot( collection, loadedPersister );
 				}
 			}
+
+			return loadedPersister == null;
 		}
 
 		#region Engine.ICollectionSnapshot Members
 
-		internal void InitSnapshot(PersistentCollection collection, ICollectionPersister persister)
+		internal void InitSnapshot( PersistentCollection collection, ICollectionPersister persister )
 		{
 			snapshot = collection.GetSnapshot( persister );
 		}
@@ -344,19 +350,13 @@ namespace NHibernate.Impl
 		internal void SetLoadedPersister( ICollectionPersister persister )
 		{
 			loadedPersister = persister;
-			if( persister != null )
-			{
-				role = persister.Role;
-			}
+			role = ( persister == null ) ? null : persister.Role;
 		}
 
 		/// <summary></summary>
 		public bool SnapshotIsEmpty
 		{
-			get
-			{
-				return initialized && snapshot != null && snapshot.Count == 0;
-			}
+			get { return initialized && snapshot != null && snapshot.Count == 0; }
 		}
 
 		/// <summary></summary>
