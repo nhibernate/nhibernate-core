@@ -45,29 +45,13 @@ namespace NHibernate.Engine
 			return seed;
 		}
 
-		private static bool IsNegativeNumber( object obj )
-		{
-			if( !( obj is IConvertible ) )
-			{
-				return false;
-			}
-
-			try
-			{
-				return Convert.ToInt64( obj ) < 0L;
-			}
-			catch( InvalidCastException )
-			{
-				return false;
-			}
-		}
-
 		/// <summary>
 		/// Seed the given instance state snapshot with an initial version number
 		/// </summary>
 		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
 		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
+		/// <param name="force">Force the version to initialize</param>
 		/// <returns><c>true</c> if the version property needs to be seeded with an initial value.</returns>
 		public static bool SeedVersion( object[ ] fields, int versionProperty, IVersionType versionType, bool force )
 		{
