@@ -421,5 +421,17 @@ namespace NHibernate.Util
 				return names;
 			}
 		}
+
+		public static string Truncate( string str, int length )
+		{
+			if( str.Length <= length )
+			{
+				return str;
+			}
+			else
+			{
+				return str.Substring( 0, length );
+			}
+		}
 	}
 }

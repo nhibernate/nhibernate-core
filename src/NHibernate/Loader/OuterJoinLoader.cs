@@ -738,11 +738,11 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="tableName"></param>
+		/// <param name="className"></param>
 		/// <returns></returns>
-		protected virtual string GenerateRootAlias( string tableName )
+		protected virtual string GenerateRootAlias( string className )
 		{
-			return GenerateAlias( tableName, 0 );
+			return GenerateAlias( className, 0 );
 		}
 
 		/// <summary></summary>

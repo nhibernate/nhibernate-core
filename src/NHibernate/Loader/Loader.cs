@@ -1327,11 +1327,15 @@ namespace NHibernate.Loader
 		/// <param name="description"></param>
 		/// <param name="unique"></param>
 		/// <returns>an alias of the form <c>foo1_</c></returns>
-		protected string GenerateAlias( string description, int unique )
+		protected static string GenerateAlias( string description, int unique )
 		{
-			// NB Java has this as static but we need the Dialect to achieve correct quoting.
-			return new Alias( 10, unique.ToString() + StringHelper.Underscore )
-				.ToAliasString( StringHelper.Unqualify( description ).ToLower().Replace( "$", "_" ), Dialect );
+			// TODO: this matches H2.1, but will break on .NET with inner classes.
+			// The alias is not quoted, and the + delimiter will thus cause problems.
+			return StringHelper.Truncate( StringHelper.Unqualify( description ), 10 )
+				.ToLower()
+				.Replace( '$', '_' ) +
+				unique.ToString() +
+				StringHelper.Underscore;
 		}
 	}
 }

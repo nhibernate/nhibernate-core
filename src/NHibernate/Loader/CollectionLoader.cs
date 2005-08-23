@@ -38,7 +38,7 @@ namespace NHibernate.Loader
 			this.collectionPersister = persister;
 			this.keyType = persister.KeyType;
 
-			string alias = GenerateRootAlias( persister.TableName );
+			string alias = GenerateRootAlias( persister.Role );
 			IList associations = WalkCollectionTree( persister, alias, factory );
 
 			InitStatementString( persister, alias, associations, batchSize, factory );
