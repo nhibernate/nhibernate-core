@@ -77,8 +77,9 @@ namespace NHibernate.Hql
 		/// Indicates if the SqlString has been fully populated - it goes
 		/// through a 2 phase process.  The first part is the parsing of the
 		/// hql and it puts in placeholders for the parameters, the second phase 
-		/// puts in the actual types for the parameters.  The completion of 
-		/// the second phase is when <c>isSqlStringPopulated==true</c>.
+		/// puts in the actual types for the parameters using QueryParameters
+		/// passed to query methods.  The completion of the second phase is
+		/// when <c>isSqlStringPopulated==true</c>.
 		/// </summary>
 		private bool isSqlStringPopulated;
 
@@ -1260,6 +1261,11 @@ namespace NHibernate.Hql
 		public IList List( ISessionImplementor session, QueryParameters queryParameters )
 		{
 			LogQuery( queryString, sqlString.ToString() );
+
+			// NH: added this call to initialize parameter types in SqlString
+			// so that it gets cached and looked up properly in the call to List
+			PopulateSqlString( queryParameters );
+
 			return List( session, queryParameters, QuerySpaces, actualReturnTypes );
 		}
 
@@ -1271,6 +1277,9 @@ namespace NHibernate.Hql
 		/// <returns></returns>
 		public IEnumerable GetEnumerable( QueryParameters parameters, ISessionImplementor session )
 		{
+			// NH: added this call to initialize parameter types in SqlString
+			PopulateSqlString( parameters );
+
 			SqlString sqlWithLock = ApplyLocks( SqlString, parameters.LockModes, session.Factory.Dialect );
 
 			IDbCommand st = PrepareQueryCommand(
@@ -1423,21 +1432,6 @@ namespace NHibernate.Hql
 			}
 			return names;
 		}
-
-
-		/*
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="parameters"></param>
-		/// <param name="returnProxies"></param>
-		/// <returns></returns>
-		public IList FindList( ISessionImplementor session, QueryParameters parameters, bool returnProxies )
-		{
-			return base.Find( session, parameters, returnProxies );
-		}
-		*/
 
 		/// <summary>
 		/// 
@@ -1630,6 +1624,123 @@ namespace NHibernate.Hql
 
 		private object prepareCommandLock = new object();
 
+		private void PopulateSqlString( QueryParameters parameters )
+		{
+			lock( prepareCommandLock )
+			{
+				if( isSqlStringPopulated )
+				{
+					return;
+				}
+
+				SqlString sql = null;
+
+				// when there is no untyped Parameters then we can avoid the need to create
+				// a new sql string and just return the existing one because it is ready 
+				// to be prepared and executed.
+				if( sqlString.ContainsUntypedParameter == false )
+				{
+					sql = sqlString;
+				}
+				else
+				{
+					// holds the index of the sqlPart that should be replaced
+					int sqlPartIndex = 0;
+
+					// holds the index of the paramIndexes array that is the current position
+					int paramIndex = 0;
+
+					sql = sqlString.Clone();
+					int[ ] paramIndexes = sql.ParameterIndexes;
+
+					// if there are no Parameters in the SqlString then there is no reason to 
+					// bother with this code.
+					if( paramIndexes.Length > 0 )
+					{
+						for( int i = 0; i < parameters.PositionalParameterTypes.Length; i++ )
+						{
+							string[ ] colNames = new string[parameters.PositionalParameterTypes[ i ].GetColumnSpan( factory )];
+							for( int j = 0; j < colNames.Length; j++ )
+							{
+								colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
+							}
+
+							Parameter[ ] sqlParameters = Parameter.GenerateParameters( factory, colNames, parameters.PositionalParameterTypes[ i ] );
+
+							foreach( Parameter param in sqlParameters )
+							{
+								sqlPartIndex = paramIndexes[ paramIndex ];
+								sql.SqlParts[ sqlPartIndex ] = param;
+
+								paramIndex++;
+							}
+						}
+
+						if( parameters.NamedParameters != null && parameters.NamedParameters.Count > 0 )
+						{
+							// convert the named parameters to an array of types
+							ArrayList paramTypeList = new ArrayList();
+
+							foreach( DictionaryEntry e in parameters.NamedParameters )
+							{
+								string name = ( string ) e.Key;
+								TypedValue typedval = ( TypedValue ) e.Value;
+								int[ ] locs = GetNamedParameterLocs( name );
+
+								for( int i = 0; i < locs.Length; i++ )
+								{
+									int lastInsertedIndex = paramTypeList.Count;
+
+									int insertAt = locs[ i ];
+
+									// need to make sure that the ArrayList is populated with null objects
+									// up to the index we are about to add the values into.  An Index Out 
+									// of Range exception will be thrown if we add an element at an index
+									// that is greater than the Count.
+									if( insertAt >= lastInsertedIndex )
+									{
+										for( int j = lastInsertedIndex; j <= insertAt; j++ )
+										{
+											paramTypeList.Add( null );
+										}
+									}
+
+									paramTypeList[ insertAt ] = typedval.Type;
+								}
+							}
+
+							for( int i = 0; i < paramTypeList.Count; i++ )
+							{
+								IType type = ( IType ) paramTypeList[ i ];
+								string[ ] colNames = new string[type.GetColumnSpan( factory )];
+
+								for( int j = 0; j < colNames.Length; j++ )
+								{
+									colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
+								}
+
+								Parameter[ ] sqlParameters = Parameter.GenerateParameters( factory, colNames, type );
+
+								foreach( Parameter param in sqlParameters )
+								{
+									sqlPartIndex = paramIndexes[ paramIndex ];
+									sql.SqlParts[ sqlPartIndex ] = param;
+
+									paramIndex++;
+								}
+							}
+						}
+					}
+				}
+
+				// replace the local field used by the SqlString property with the one we just built 
+				// that has the correct parameters
+				this.sqlString = sql;
+				isSqlStringPopulated = true;
+			}
+		}
+
+		/*
 		/// <summary>
 		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
 		/// database to Load an Entity.
@@ -1647,118 +1758,9 @@ namespace NHibernate.Hql
 		/// </remarks>
 		protected override IDbCommand PrepareQueryCommand( SqlString sqlString, QueryParameters parameters, bool scroll, ISessionImplementor session )
 		{
-			lock( prepareCommandLock )
-			{
-				if( !isSqlStringPopulated )
-				{
-					SqlString sql = null;
-
-					// when there is no untyped Parameters then we can avoid the need to create
-					// a new sql string and just return the existing one because it is ready 
-					// to be prepared and executed.
-					if( sqlString.ContainsUntypedParameter == false )
-					{
-						sql = sqlString;
-					}
-					else
-					{
-						// holds the index of the sqlPart that should be replaced
-						int sqlPartIndex = 0;
-
-						// holds the index of the paramIndexes array that is the current position
-						int paramIndex = 0;
-
-						sql = sqlString.Clone();
-						int[ ] paramIndexes = sql.ParameterIndexes;
-
-						// if there are no Parameters in the SqlString then there is no reason to 
-						// bother with this code.
-						if( paramIndexes.Length > 0 )
-						{
-							for( int i = 0; i < parameters.PositionalParameterTypes.Length; i++ )
-							{
-								string[ ] colNames = new string[parameters.PositionalParameterTypes[ i ].GetColumnSpan( factory )];
-								for( int j = 0; j < colNames.Length; j++ )
-								{
-									colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
-								}
-
-								Parameter[ ] sqlParameters = Parameter.GenerateParameters( factory, colNames, parameters.PositionalParameterTypes[ i ] );
-
-								foreach( Parameter param in sqlParameters )
-								{
-									sqlPartIndex = paramIndexes[ paramIndex ];
-									sql.SqlParts[ sqlPartIndex ] = param;
-
-									paramIndex++;
-								}
-							}
-
-							if( parameters.NamedParameters != null && parameters.NamedParameters.Count > 0 )
-							{
-								// convert the named parameters to an array of types
-								ArrayList paramTypeList = new ArrayList();
-
-								foreach( DictionaryEntry e in parameters.NamedParameters )
-								{
-									string name = ( string ) e.Key;
-									TypedValue typedval = ( TypedValue ) e.Value;
-									int[ ] locs = GetNamedParameterLocs( name );
-
-									for( int i = 0; i < locs.Length; i++ )
-									{
-										int lastInsertedIndex = paramTypeList.Count;
-
-										int insertAt = locs[ i ];
-
-										// need to make sure that the ArrayList is populated with null objects
-										// up to the index we are about to add the values into.  An Index Out 
-										// of Range exception will be thrown if we add an element at an index
-										// that is greater than the Count.
-										if( insertAt >= lastInsertedIndex )
-										{
-											for( int j = lastInsertedIndex; j <= insertAt; j++ )
-											{
-												paramTypeList.Add( null );
-											}
-										}
-
-										paramTypeList[ insertAt ] = typedval.Type;
-									}
-								}
-
-								for( int i = 0; i < paramTypeList.Count; i++ )
-								{
-									IType type = ( IType ) paramTypeList[ i ];
-									string[ ] colNames = new string[type.GetColumnSpan( factory )];
-
-									for( int j = 0; j < colNames.Length; j++ )
-									{
-										colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
-									}
-
-									Parameter[ ] sqlParameters = Parameter.GenerateParameters( factory, colNames, type );
-
-									foreach( Parameter param in sqlParameters )
-									{
-										sqlPartIndex = paramIndexes[ paramIndex ];
-										sql.SqlParts[ sqlPartIndex ] = param;
-
-										paramIndex++;
-									}
-								}
-							}
-						}
-					}
-
-					// replace the local field used by the SqlString property with the one we just built 
-					// that has the correct parameters
-					this.sqlString = sql;
-					isSqlStringPopulated = true;
-				}
-			}
-
+			PopulateSqlString( parameters );
 			return base.PrepareQueryCommand( this.sqlString, parameters, scroll, session );
 		}
+		*/
 	}
 }

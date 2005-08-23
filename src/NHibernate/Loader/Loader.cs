@@ -1219,7 +1219,7 @@ namespace NHibernate.Loader
 
 			if ( cacheable )
 			{
-				IQueryCache queryCache = factory.GetQueryCache( queryParameters.CacheRegion ) ;
+				IQueryCache queryCache = factory.GetQueryCache( queryParameters.CacheRegion );
 				QueryKey key = new QueryKey( SqlString, queryParameters );
 				IList result = null;
 				if ( !queryParameters.ForceCacheRefresh )
