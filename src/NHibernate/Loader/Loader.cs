@@ -1329,11 +1329,10 @@ namespace NHibernate.Loader
 		/// <returns>an alias of the form <c>foo1_</c></returns>
 		protected static string GenerateAlias( string description, int unique )
 		{
-			// TODO: this matches H2.1, but will break on .NET with inner classes.
-			// The alias is not quoted, and the + delimiter will thus cause problems.
 			return StringHelper.Truncate( StringHelper.Unqualify( description ), 10 )
 				.ToLower()
-				.Replace( '$', '_' ) +
+				.Replace( '$', '_' )
+				.Replace( '+', '_' ) + // .NET inner classes
 				unique.ToString() +
 				StringHelper.Underscore;
 		}
