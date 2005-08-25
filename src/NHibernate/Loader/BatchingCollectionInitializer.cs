@@ -1,6 +1,9 @@
+using System;
+
+using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Engine;
-using log4net;
 
 namespace NHibernate.Loader
 {
@@ -18,16 +21,7 @@ namespace NHibernate.Loader
 		private readonly int smallBatchSize;
 		private readonly ICollectionPersister collectionPersister;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collPersister"></param>
-		/// <param name="batchSize"></param>
-		/// <param name="batchLoader"></param>
-		/// <param name="smallBatchSize"></param>
-		/// <param name="smallBatchLoader"></param>
-		/// <param name="nonBatchLoader"></param>
-		public BatchingCollectionInitializer( ICollectionPersister collPersister, int batchSize, Loader batchLoader, int smallBatchSize, Loader smallBatchLoader, Loader nonBatchLoader)
+		public BatchingCollectionInitializer( ICollectionPersister collPersister, int batchSize, Loader batchLoader, int smallBatchSize, Loader smallBatchLoader, Loader nonBatchLoader )
 		{
 			this.batchLoader = batchLoader;
 			this.nonBatchLoader = nonBatchLoader;
@@ -37,52 +31,33 @@ namespace NHibernate.Loader
 			this.smallBatchSize = smallBatchSize;
 		}
 
-		#region ICollectionInitializer Members
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="collection"></param>
-		/// <param name="owner"></param>
-		/// <param name="session"></param>
-		public void Initialize(object id, PersistentCollection collection, object owner, ISessionImplementor session)
-		{
-			// TODO:  Add BatchingCollectionInitializer.Initialize implementation
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="session"></param>
 		public void Initialize( object id, ISessionImplementor session )
 		{
-			object[] batch = session.GetCollectionBatch( collectionPersister, id, batchSize );
-			if ( smallBatchSize == 1 || batch[ smallBatchSize - 1 ] == null )
+			object[ ] batch = session.GetCollectionBatch( collectionPersister, id, batchSize );
+			if( smallBatchSize == 1 || batch[ smallBatchSize - 1 ] == null )
 			{
 				nonBatchLoader.LoadCollection( session, id, collectionPersister.KeyType );
 			}
-			else if ( batch[ batchSize - 1 ] == null )
+			else if( batch[ batchSize - 1 ] == null )
 			{
-				if ( log.IsDebugEnabled )
+				if( log.IsDebugEnabled )
 				{
-					log.Debug( string.Format( "batch loading collection role (small batch): {0} ", collectionPersister.Role ) );
+					log.Debug( string.Format( "batch loading collection role (small batch): {0}", collectionPersister.Role ) );
 				}
-				// TODO: (2.1) BatchLoader - Copy the array from batch
-				object[] smallBatch = new object[ smallBatchSize ];
+				object[ ] smallBatch = new object[smallBatchSize];
+				Array.Copy( batch, 0, smallBatch, 0, smallBatchSize );
 				smallBatchLoader.LoadCollectionBatch( session, smallBatch, collectionPersister.KeyType );
-				log.Debug( "done batch load");
+				log.Debug( "done batch load" );
 			}
 			else
 			{
-				if ( log.IsDebugEnabled )
+				if( log.IsDebugEnabled )
 				{
-					log.Debug( string.Format( "batch loading collection role (small batch): {0} ", collectionPersister.Role ) );
+					log.Debug( string.Format( "batch loading collection role (small batch): {0}", collectionPersister.Role ) );
 				}
 				batchLoader.LoadCollectionBatch( session, batch, collectionPersister.KeyType );
-				log.Debug( "done batch load");
+				log.Debug( "done batch load" );
 			}
 		}
-		#endregion
 	}
 }

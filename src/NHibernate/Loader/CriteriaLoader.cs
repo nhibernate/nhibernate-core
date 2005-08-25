@@ -56,7 +56,7 @@ namespace NHibernate.Loader
 				}
 				commaNeeded = true;
 
-				orderByBuilder.Append( ord.ToStringForSql( factory, criteria.PersistentClass, Alias ) );
+				orderByBuilder.Append( ord.ToSqlString( factory, criteria.PersistentClass, Alias ) );
 			}
 
 			IList associations = WalkTree( persister, Alias, factory );

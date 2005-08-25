@@ -405,7 +405,7 @@ namespace NHibernate.Impl
 			QueryTranslator[ ] queries = new QueryTranslator[length];
 			for( int i = 0; i < length; i++ )
 			{
-				queries[ i ] = new QueryTranslator( Dialect, concreteQueryStrings[ i ] );
+				queries[ i ] = new QueryTranslator( concreteQueryStrings[ i ] );
 			}
 			Put( cacheKey, queries );
 			return queries;
@@ -414,7 +414,7 @@ namespace NHibernate.Impl
 		[MethodImpl( MethodImplOptions.Synchronized )]
 		private FilterTranslator CreateFilterTranslator( string filterString, FilterCacheKey cacheKey )
 		{
-			FilterTranslator filter = new FilterTranslator( Dialect, filterString );
+			FilterTranslator filter = new FilterTranslator( filterString );
 			Put( cacheKey, filter );
 			return filter;
 		}

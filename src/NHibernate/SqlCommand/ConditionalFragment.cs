@@ -1,4 +1,3 @@
-using System.Text;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -8,7 +7,7 @@ namespace NHibernate.SqlCommand
 	{
 		private string tableAlias;
 		private string[ ] lhs;
-		private string[ ] rhs;
+		private object[ ] rhs;
 		private string op = "=";
 
 		/// <summary>
@@ -45,6 +44,13 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		public ConditionalFragment SetCondition( string[ ] lhs, Parameter[ ] rhs )
+		{
+			this.lhs = lhs;
+			this.rhs = rhs;
+			return this;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -61,20 +67,21 @@ namespace NHibernate.SqlCommand
 		/// <summary></summary>
 		public SqlString ToSqlStringFragment()
 		{
-			StringBuilder buf = new StringBuilder( lhs.Length*10 );
+			SqlStringBuilder buf = new SqlStringBuilder( lhs.Length * 4 );
+			string prefix = tableAlias + StringHelper.Dot;
 			for( int i = 0; i < lhs.Length; i++ )
 			{
-				buf.Append( tableAlias )
-					.Append( StringHelper.Dot )
-					.Append( lhs[ i ] )
-					.Append( op )
-					.Append( rhs[ i ] );
+				buf.Add( prefix )
+					.Add( lhs[ i ] + op );
+
+				buf.AddObject( rhs[ i ] );
+
 				if( i < lhs.Length - 1 )
 				{
-					buf.Append( " and " );
+					buf.Add( " and " );
 				}
 			}
-			return new SqlString( buf.ToString() );
+			return buf.ToSqlString();
 		}
 	}
 }

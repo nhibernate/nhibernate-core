@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Expression
 {
@@ -32,12 +33,6 @@ namespace NHibernate.Expression
 		/// </summary>
 		protected abstract String Op { get; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
 		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
 			ArrayList typedValues = new ArrayList();
@@ -55,23 +50,15 @@ namespace NHibernate.Expression
 
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="persistentClass"></param>
-		/// <param name="alias"></param>
-		/// <returns></returns>
 		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
-			//TODO: add default capacity
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-
 			if( _criteria.Count == 0 )
 			{
-				return new SqlString( new object[ ] {"1=1"} );
+				return new SqlString( "1=1" );
 			}
 
+			//TODO: add default capacity
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
 			sqlBuilder.Add( "(" );
 
@@ -91,17 +78,9 @@ namespace NHibernate.Expression
 			return sqlBuilder.ToSqlString();
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
-			string[ ] criteriaStrings = new string[ _criteria.Count ];
-			
-			for( int i = 0; i < _criteria.Count; i++ )
-			{
-				criteriaStrings[ i ] = _criteria[ i ].ToString();
-			}
-
-			return '(' + String.Join( Op, criteriaStrings ) + ')';
+			return '(' + StringHelper.Join( Op, _criteria ) + ')';
 		}
 	}
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Text;
+
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
@@ -13,27 +13,23 @@ namespace NHibernate.Loader
 	/// <summary>
 	/// Loads a collection of values or a many-to-many association
 	/// </summary>
+	/// <remarks>
+	/// The collection persister must implement <see cref="IQueryableCollection" />. For
+	/// other collections, create a customized subclass of <see cref="Loader" />.
+	/// <seealso cref="OneToManyLoader" />
+	/// </remarks>
 	public class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{
 		private readonly IQueryableCollection collectionPersister;
 		private readonly IType keyType;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="factory"></param>
-		public CollectionLoader( IQueryableCollection persister, ISessionFactoryImplementor factory ) : this( persister, 1, factory )
+		public CollectionLoader( IQueryableCollection persister, ISessionFactoryImplementor factory )
+			: this( persister, 1, factory )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="batchSize"></param>
-		/// <param name="factory"></param>
-		public CollectionLoader( IQueryableCollection persister, int batchSize, ISessionFactoryImplementor factory ) : base( factory.Dialect )
+		public CollectionLoader( IQueryableCollection persister, int batchSize, ISessionFactoryImplementor factory )
+			: base( factory.Dialect )
 		{
 			this.collectionPersister = persister;
 			this.keyType = persister.KeyType;
@@ -43,43 +39,37 @@ namespace NHibernate.Loader
 
 			InitStatementString( persister, alias, associations, batchSize, factory );
 			InitClassPersisters( associations );
-			
+
 			PostInstantiate();
 		}
 
 		private void InitClassPersisters( IList associations )
 		{
 			int joins = associations.Count;
-			LockModeArray = CreateLockModeArray( joins, LockMode.None );
+			lockModeArray = CreateLockModeArray( joins, LockMode.None );
 
-			classPersisters = new ILoadable[ joins ];
-			SetOwners( new int[ joins ] );
+			classPersisters = new ILoadable[joins];
+			Owners = new int[joins];
 
 			int i = 0;
 			foreach( OuterJoinableAssociation oj in associations )
 			{
-				classPersisters[ i ] = (ILoadable) oj.Joinable;
+				classPersisters[ i ] = ( ILoadable ) oj.Joinable;
 				Owners[ i ] = ToOwner( oj, joins, oj.IsOneToOne );
 				i++;
 			}
 
-			if ( ArrayHelper.IsAllNegative( Owners ) )
+			if( ArrayHelper.IsAllNegative( Owners ) )
 			{
-				SetOwners( null );
+				Owners = null;
 			}
 		}
 
-		/// <summary></summary>
 		protected override ICollectionPersister CollectionPersister
 		{
 			get { return collectionPersister; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="session"></param>
 		public void Initialize( object id, ISessionImplementor session )
 		{
 			LoadCollection( session, id, keyType );
@@ -89,54 +79,46 @@ namespace NHibernate.Loader
 		{
 			Suffixes = GenerateSuffixes( associations.Count );
 
-			SqlString whereString = WhereString( factory, alias, persister.KeyColumnNames, persister.KeyType, batchSize );
-			if ( persister.HasWhere )
+			SqlStringBuilder whereString = WhereString( factory, alias, persister.KeyColumnNames, persister.KeyType, batchSize );
+			if( persister.HasWhere )
 			{
-				whereString = whereString.Append( " and ").Append( persister.GetSQLWhereString( alias ) );
+				whereString
+					.Add( " and " )
+					.Add( persister.GetSQLWhereString( alias ) );
 			}
 
 			JoinFragment ojf = MergeOuterJoins( associations );
-			SqlSelectBuilder select = new SqlSelectBuilder( factory );
-			select.SetSelectClause(
-					persister.SelectFragment( alias ).Append(
+			SqlSelectBuilder select = new SqlSelectBuilder( factory )
+				.SetSelectClause(
+				persister.SelectFragment( alias ).Append(
 					SelectString( associations, factory ) ).ToString()
-				);
-			select.SetFromClause( persister.TableName, alias );
-			select.SetWhereClause( whereString );
-			select.SetOuterJoins(
-					ojf.ToFromFragmentString,
-					ojf.ToWhereFragmentString 
+				)
+				.SetFromClause( persister.TableName, alias )
+				.SetWhereClause( whereString.ToSqlString() )
+				.SetOuterJoins(
+				ojf.ToFromFragmentString,
+				ojf.ToWhereFragmentString
 				);
 
-			if ( persister.HasOrdering )
+			if( persister.HasOrdering )
 			{
 				select.SetOrderByClause( persister.GetSQLOrderByString( alias ) );
 			}
 			SqlString = select.ToSqlString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="config"></param>
-		/// <param name="path"></param>
-		/// <param name="table"></param>
-		/// <param name="foreignKeyColumns"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		protected override JoinType GetJoinType(
 			IAssociationType type,
 			OuterJoinFetchStrategy config,
 			string path,
 			string table,
-			string[] foreignKeyColumns,
+			string[ ] foreignKeyColumns,
 			ISessionFactoryImplementor factory
 			)
 		{
 			JoinType joinType = base.GetJoinType( type, config, path, table, foreignKeyColumns, factory );
 			// We can use an inner-join for the many-to-many
-			if ( joinType == JoinType.LeftOuterJoin && path.Equals( string.Empty ) )
+			if( joinType == JoinType.LeftOuterJoin && string.Empty.Equals( path ) )
 			{
 				joinType = JoinType.InnerJoin;
 			}

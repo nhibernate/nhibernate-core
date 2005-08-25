@@ -24,13 +24,6 @@ namespace NHibernate.Expression
 			_propertyName = propertyName;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="persistentClass"></param>
-		/// <param name="alias"></param>
-		/// <returns></returns>
 		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
 			//TODO: add default capacity
@@ -39,37 +32,35 @@ namespace NHibernate.Expression
 			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
 
 
-			bool andNeeded = false;
+			bool opNeeded = false;
 
 			for( int i = 0; i < columnNames.Length; i++ )
 			{
-				if( andNeeded )
+				if( opNeeded )
 				{
-					// TODO: h2.1 SYNCH - why did hibernate change this to " or "
-					sqlBuilder.Add( " AND " );
+					sqlBuilder.Add( " or " );
 				}
-				andNeeded = true;
+				opNeeded = true;
 
 				sqlBuilder.Add( columnNames[ i ] )
-					.Add( " IS NOT NULL" );
+					.Add( " is not null" );
 
+			}
+
+			if( columnNames.Length > 1 )
+			{
+				sqlBuilder.Insert( 0, "(" );
+				sqlBuilder.Add( ")" );
 			}
 
 			return sqlBuilder.ToSqlString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
 		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
 			return NoValues;
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			return _propertyName + " is not null";

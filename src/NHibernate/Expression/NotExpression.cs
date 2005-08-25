@@ -32,9 +32,22 @@ namespace NHibernate.Expression
 		{
 			//TODO: set default capacity
 			SqlStringBuilder builder = new SqlStringBuilder();
-			builder.Add( "not " );
-			// TODO: h2.1 SYNCH: add a MySqlDialect check
+
+			if( factory.Dialect is Dialect.MySQLDialect )
+			{
+				builder.Add( "not (" );
+			}
+			else
+			{
+				builder.Add( "not " );
+			}
+
 			builder.Add( _criterion.ToSqlString( factory, persistentClass, alias, aliasClasses ) );
+
+			if( factory.Dialect is Dialect.MySQLDialect )
+			{
+				builder.Add( ")" );
+			}
 
 			return builder.ToSqlString();
 		}

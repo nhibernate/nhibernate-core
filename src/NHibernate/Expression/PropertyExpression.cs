@@ -1,6 +1,7 @@
 using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Expression
 {
@@ -41,21 +42,17 @@ namespace NHibernate.Expression
 			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _lhsPropertyName, alias, aliasClasses );
 			string[ ] otherColumnNames = AbstractCriterion.GetColumns( factory, persistentClass, _rhsPropertyName, alias, aliasClasses );
 
-			bool andNeeded = false;
+			string result = string.Join(
+				" and ",
+				StringHelper.Add( columnNames, Op, otherColumnNames )
+			);
 
-			for( int i = 0; i < columnNames.Length; i++ )
+			if( columnNames.Length > 1 )
 			{
-				if( andNeeded )
-				{
-					sqlBuilder.Add( " AND " );
-				}
-				andNeeded = true;
-
-				sqlBuilder.Add( columnNames[ i ] ).Add( Op ).Add( otherColumnNames[ i ] );
+				result = StringHelper.OpenParen + result + StringHelper.ClosedParen;
 			}
 
-			return sqlBuilder.ToSqlString();
-
+			return new SqlString( result );
 			//TODO: get SQL rendering out of this package!
 		}
 

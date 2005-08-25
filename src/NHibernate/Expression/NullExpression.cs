@@ -42,12 +42,17 @@ namespace NHibernate.Expression
 			{
 				if( i > 0 )
 				{
-					sqlBuilder.Add( " AND " );
+					sqlBuilder.Add( " and " );
 				}
 
 				sqlBuilder.Add( columnNames[ i ] )
-					.Add( " IS NULL" );
+					.Add( " is null" );
+			}
 
+			if( columnNames.Length > 1 )
+			{
+				sqlBuilder.Insert( 0, "(" );
+				sqlBuilder.Add( ")" );
 			}
 
 			return sqlBuilder.ToSqlString();

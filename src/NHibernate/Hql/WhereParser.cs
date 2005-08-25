@@ -29,15 +29,12 @@ namespace NHibernate.Hql
 		private static ISet booleanOperators = new HashedSet(); //tokens that would indicate a sub expression is a boolean expression
 
 		private static IDictionary negations = new Hashtable();
-		private Dialect.Dialect d;
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="d"></param>
-		public WhereParser( Dialect.Dialect d )
+		public WhereParser()
 		{
-			this.d = d;
 			pathExpressionParser.UseThetaStyleJoin = true;
 		}
 
@@ -231,7 +228,7 @@ namespace NHibernate.Hql
 
 				if( bracketsSinceSelect == -1 )
 				{
-					QueryTranslator subq = new QueryTranslator( d, subselect.ToString() );
+					QueryTranslator subq = new QueryTranslator( subselect.ToString() );
 					try
 					{
 						subq.Compile( q );

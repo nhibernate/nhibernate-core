@@ -363,11 +363,11 @@ namespace NHibernate.Persister
 
 			SqlString selectForUpdate = Dialect.SupportsForUpdate ? GenerateSelectForUpdateString() : GenerateSelectString( null );
 
-			loaders.Add( LockMode.Upgrade, new SimpleEntityLoader( this, selectForUpdate, LockMode.Upgrade, Dialect ) );
+			loaders.Add( LockMode.Upgrade, new SimpleEntityLoader( this, selectForUpdate, LockMode.Upgrade ) );
 
 			SqlString selectForUpdateNoWaitString = Dialect.SupportsForUpdateNoWait ? GenerateSelectForUpdateNoWaitString() : selectForUpdate.Clone();
 			
-			loaders.Add( LockMode.UpgradeNoWait, new SimpleEntityLoader( this, selectForUpdateNoWaitString, LockMode.UpgradeNoWait, factory.Dialect ) );
+			loaders.Add( LockMode.UpgradeNoWait, new SimpleEntityLoader( this, selectForUpdateNoWaitString, LockMode.UpgradeNoWait ) );
 
 			CreateUniqueKeyLoaders( factory );
 		}

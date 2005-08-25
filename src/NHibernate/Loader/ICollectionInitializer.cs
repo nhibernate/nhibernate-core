@@ -1,4 +1,3 @@
-using NHibernate.Collection;
 using NHibernate.Engine;
 
 namespace NHibernate.Loader

@@ -7,6 +7,15 @@ namespace NHibernate.Expression
 	public class AndExpression : LogicalExpression
 	{
 		/// <summary>
+		/// Get the Sql operator to put between the two <see cref="ICriterion"/>s.
+		/// </summary>
+		/// <value>The string "<c>and</c>"</value>
+		protected override string Op
+		{
+			get { return "and"; }
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="AndExpression"/> class
 		/// that combines two <see cref="ICriterion"/>.
 		/// </summary>
@@ -14,15 +23,6 @@ namespace NHibernate.Expression
 		/// <param name="rhs">The <see cref="ICriterion"/> to use as the right hand side.</param>
 		public AndExpression( ICriterion lhs, ICriterion rhs ) : base( lhs, rhs )
 		{
-		}
-
-		/// <summary>
-		/// Get the Sql operator to put between the two <see cref="ICriterion"/>s.
-		/// </summary>
-		/// <value>The string "<c>and</c>"</value>
-		protected override string Op
-		{
-			get { return "and"; }
 		}
 	}
 }

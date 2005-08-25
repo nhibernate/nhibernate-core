@@ -16,42 +16,22 @@ namespace NHibernate.Loader
 	{
 		private readonly ILoadable[ ] persister;
 		private readonly IType idType;
-		private SqlString sqlString;
+		private SqlString sql;
 		private readonly LockMode[ ] lockMode;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="sqlString"></param>
-		/// <param name="lockMode"></param>
-		/// <param name="d"></param>
-		public SimpleEntityLoader( ILoadable persister, SqlString sqlString, LockMode lockMode, Dialect.Dialect d ) : base( d )
+		public SimpleEntityLoader( ILoadable persister, SqlString sql, LockMode lockMode )
 		{
 			this.persister = new ILoadable[ ] {persister};
 			this.idType = persister.IdentifierType;
-			this.sqlString = sqlString;
+			this.sql = sql;
 			this.lockMode = new LockMode[ ] {lockMode};
 			PostInstantiate();
 		}
 
-		/// <summary></summary>
 		protected internal override SqlString SqlString
 		{
-			get { return sqlString; }
-			set { sqlString = value; }
-		}
-
-		/// <summary></summary>
-		protected override int[] Owners
-		{
-			get { return null; }
-		}
-
-		/// <summary></summary>
-		protected override bool IsSingleRowLoader
-		{
-			get { return true; }
+			get { return sql; }
+			set { sql = value; }
 		}
 
 		/// <summary></summary>
@@ -74,13 +54,6 @@ namespace NHibernate.Loader
 			set { throw new NotSupportedException( "A SimpleEntityLoader has no Suffixes" ); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="id"></param>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		public object Load( ISessionImplementor session, object id, object obj )
 		{
 			IList list = LoadEntity( session, id, idType, obj, id );
@@ -98,29 +71,28 @@ namespace NHibernate.Loader
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="lockModes"></param>
-		/// <returns></returns>
 		protected override LockMode[ ] GetLockModes( IDictionary lockModes )
 		{
 			return lockMode;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="row"></param>
-		/// <param name="rs"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		protected override Object GetResultColumnOrRow(
 			Object[ ] row,
 			IDataReader rs,
 			ISessionImplementor session )
 		{
 			return row[ 0 ];
+		}
+
+		protected override bool IsSingleRowLoader
+		{
+			get { return true; }
+		}
+
+		protected override int[] Owners
+		{
+			get { return null; }
+			set { throw new NotSupportedException("SimpleEntityLoader.set_Owners"); }
 		}
 	}
 }

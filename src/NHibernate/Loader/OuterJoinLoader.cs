@@ -3,7 +3,6 @@ using System.Collections;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Collection;
-using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.SqlCommand;
@@ -15,46 +14,39 @@ namespace NHibernate.Loader
 	/// <summary></summary>
 	public enum OuterJoinFetchStrategy
 	{
-		/// <summary></summary>
 		Lazy = -1,
-		/// <summary></summary>
 		Auto = 0,
-		/// <summary></summary>
 		Eager = 1
 	}
 
-	/// <summary></summary>
+	/// <summary>
+	/// Implements logic for walking a tree of associated classes.
+	/// </summary>
+	/// <remarks>
+	/// Generates an SQL select string containing all properties of those classes.
+	/// Tablse are joined using an ANSI-style left outer join.
+	/// </remarks>
 	public class OuterJoinLoader : Loader
 	{
-		/// <summary></summary>
-		protected static readonly IType[ ] NoTypes = new IType[0];
-
-		/// <summary></summary>
-		protected static readonly string[ ][ ] NoStringArrays = new string[0][ ];
-
-		/// <summary></summary>
-		protected static readonly string[ ] NoStrings = new string[0];
-
-		/// <summary></summary>
-		protected static readonly ILoadable[ ] NoPersisters = new ILoadable[0];
-
-		/// <summary></summary>
 		protected ILoadable[ ] classPersisters;
-
-		private LockMode[ ] lockModeArray;
-		private int[] owners;
+		protected LockMode[ ] lockModeArray;
+		
+		// Having these fields as protected prevents CLS compliance, so they are
+		// private in NHibernate, and setters are created for the relevant
+		// properties.
+		private int[ ] owners;
 		private SqlString sqlString;
 		private string[ ] suffixes;
-		//private Dialect.Dialect dialect;
+
+		private Dialect.Dialect dialect;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="dialect"></param>
-		public OuterJoinLoader( Dialect.Dialect dialect ) : base( dialect )
+		public OuterJoinLoader( Dialect.Dialect dialect )
 		{
-			// The java version has Dialect here, but we have it at Loader
-			//this.dialect = dialect;
+			this.dialect = dialect;
 		}
 
 		/// <summary>
@@ -71,40 +63,28 @@ namespace NHibernate.Loader
 			return type.IsEntityType && mappingDefault;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="config"></param>
-		/// <param name="path"></param>
-		/// <param name="table"></param>
-		/// <param name="foreignKeyColumns"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		protected virtual JoinType GetJoinType( IAssociationType type, OuterJoinFetchStrategy config, string path, string table, string[] foreignKeyColumns, ISessionFactoryImplementor factory )
 		{
 			bool mappingDefault = IsJoinedFetchEnabledByDefault( config, type, factory );
-			return IsJoinedFetchEnabled( type, mappingDefault, path, table, foreignKeyColumns) ? JoinType.LeftOuterJoin : JoinType.None;
+			return IsJoinedFetchEnabled( type, mappingDefault, path, table, foreignKeyColumns) ?
+				JoinType.LeftOuterJoin :
+				JoinType.None;
 		}
 
 		/// <summary></summary>
 		public sealed class OuterJoinableAssociation // struct?
 		{
-			/// <summary></summary>
 			public IJoinable Joinable;
-			/// <summary></summary>
+			
+			// belong to other persister
 			public string[ ] ForeignKeyColumns;
-			/// <summary></summary>
 			public string Subalias;
-			/// <summary></summary>
 			public string[] PrimaryKeyColumns;
-			/// <summary></summary>
 			public string TableName;
-			/// <summary></summary>
+			
+			// the position of the persister we came from in the list
 			public int Owner;
-			/// <summary></summary>
 			public JoinType JoinType;
-			/// <summary></summary>
 			public bool IsOneToOne;
 		}
 
@@ -118,7 +98,7 @@ namespace NHibernate.Loader
 		public IList WalkTree( IOuterJoinLoadable persister, string alias, ISessionFactoryImplementor factory )
 		{
 			IList associations = new ArrayList();
-			WalkClassTree( persister, alias, associations, new HashedSet(), String.Empty, 0, factory );
+			WalkClassTree( persister, alias, associations, new HashedSet(), string.Empty, 0, factory );
 			return associations;
 		}
 
@@ -226,22 +206,11 @@ namespace NHibernate.Loader
 			//TODO: really, this should use the "key" columns of the subclass table, then we don't need this check!
 			//      (I *think*)
 
-			return type.IsEntityType && ( (EntityType) type).IsOneToOne && persister.IsDefinedOnSubclass( propertyNumber );
+			return type.IsEntityType &&
+				( (EntityType) type).IsOneToOne &&
+				persister.IsDefinedOnSubclass( propertyNumber );
 		}
 
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="associationType"></param>
-		/// <param name="persister"></param>
-		/// <param name="propertyNumber"></param>
-		/// <param name="alias"></param>
-		/// <param name="associations"></param>
-		/// <param name="visitedPersisters"></param>
-		/// <param name="path"></param>
-		/// <param name="currentDepth"></param>
-		/// <param name="factory"></param>
 		private void WalkAssociationTree(
 			IAssociationType associationType,
 			IOuterJoinLoadable persister,
@@ -253,12 +222,14 @@ namespace NHibernate.Loader
 			int currentDepth,
 			ISessionFactoryImplementor factory )
 		{
+			string[] aliasedForeignKeyColumns = GetAliasedForeignKeyColumns( persister, alias, associationType, persister.ToColumns( alias, propertyNumber ) );
+			string[] foreignKeyColumns = GetForeignKeyColumns( persister, associationType, persister.GetSubclassPropertyColumnNames( propertyNumber ) );
+
 			if ( IsJoinedFetchAlwaysDisabled( persister, associationType, propertyNumber ) )
 			{
 				return;
 			}
-			string[] aliasedForeignKeyColumns = GetAliasedForeignKeyColumns( persister, alias, associationType, persister.ToColumns( alias, propertyNumber ) );
-			string[] foreignKeyColumns = GetForeignKeyColumns( persister, associationType, persister.GetSubclassPropertyColumnNames( propertyNumber ) );
+			
 			string subpath = SubPath( path, persister.GetSubclassPropertyName( propertyNumber ) );
 			JoinType joinType = GetJoinType(
 				associationType,
@@ -522,6 +493,55 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
+		/// Does the mapping, and Hibernate default semantics, specify that
+		/// this association should be fetched by outer joining
+		/// </summary>
+		/// <param name="config"></param>
+		/// <param name="type"></param>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		protected bool IsJoinedFetchEnabledByDefault( OuterJoinFetchStrategy config, IAssociationType type, ISessionFactoryImplementor factory )
+		{
+			if ( !type.IsEntityType && !type.IsPersistentCollectionType )
+			{
+				return false;
+			}
+			else
+			{
+				switch ( config )
+				{
+					case OuterJoinFetchStrategy.Eager:
+						return true;
+
+					case OuterJoinFetchStrategy.Lazy:
+						return false;
+
+					case OuterJoinFetchStrategy.Auto:
+						if ( !factory.IsOuterJoinedFetchEnabled )
+						{
+							return false;
+						}
+						if ( type.IsEntityType )
+						{
+							EntityType entityType = type as EntityType;
+							IClassPersister persister = factory.GetPersister( entityType.AssociatedClass );
+							return !persister.HasProxy || (
+								entityType.IsOneToOne &&
+								( (OneToOneType) entityType).IsNullable
+								);
+						}
+						else
+						{
+							return false;
+						}
+
+					default:
+						throw new ArgumentOutOfRangeException( "config", config, "Unknown OJ strategy " + config.ToString() );
+				}
+			}
+		}
+
+		/// <summary>
 		///  Add on association (one-to-one or many-to-one) to a list of associations be fetched by outerjoin (if necessary)
 		/// </summary>
 		/// <param name="type"></param>
@@ -563,7 +583,11 @@ namespace NHibernate.Loader
 				associations.Add( assoc );
 
 				// After adding to collection!!
-				string subalias = GenerateTableAlias( joinable.Name, associations.Count, path, joinable.IsManyToMany );
+				string subalias = GenerateTableAlias(
+					joinable.Name,
+					associations.Count,
+					path,
+					joinable.IsManyToMany );
 
 				assoc.Joinable = joinable;
 				assoc.TableName = joinable.TableName;
@@ -571,10 +595,13 @@ namespace NHibernate.Loader
 				assoc.ForeignKeyColumns = aliasedForeignKeyColumns;
 				assoc.Subalias = subalias;
 				assoc.Owner = GetPosition( alias, associations );
-				assoc.IsOneToOne = type.IsEntityType && ( (EntityType) type).IsOneToOne;
+				assoc.IsOneToOne = type.IsEntityType &&
+					( (EntityType) type ).IsOneToOne &&
+					!( (EntityType) type ).IsUniqueKeyReference;
 				assoc.JoinType = joinType;
 
-				if ( assoc.ForeignKeyColumns.Length != assoc.PrimaryKeyColumns.Length || assoc.ForeignKeyColumns.Length == 0 )
+				if ( assoc.ForeignKeyColumns.Length != assoc.PrimaryKeyColumns.Length ||
+					assoc.ForeignKeyColumns.Length == 0 )
 				{
 					throw new MappingException( string.Format( "Invalid join columns for association: {0}", path ) );
 				}
@@ -597,78 +624,12 @@ namespace NHibernate.Loader
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="config"></param>
-		/// <param name="type"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		protected bool IsJoinedFetchEnabledByDefault( OuterJoinFetchStrategy config, IAssociationType type, ISessionFactoryImplementor factory )
-		{
-			if ( !type.IsEntityType && !type.IsPersistentCollectionType )
-			{
-				return false;
-			}
-			else
-			{
-				switch ( config )
-				{
-					case OuterJoinFetchStrategy.Eager:
-						return true;
-
-					case OuterJoinFetchStrategy.Lazy:
-						return false;
-
-					case OuterJoinFetchStrategy.Auto:
-						if ( !factory.IsOuterJoinedFetchEnabled )
-						{
-							return false;
-						}
-						if ( type.IsEntityType )
-						{
-							EntityType entityType = type as EntityType;
-							IClassPersister persister = factory.GetPersister( entityType.AssociatedClass );
-							return !persister.HasProxy || ( entityType.IsOneToOne && ( (OneToOneType) entityType).IsNullable );
-						}
-						else
-						{
-							return false;
-						}
-
-					default:
-						throw new ArgumentOutOfRangeException( "config", config, "Unknown OJ strategy " + config.ToString() );
-				}
-			}
-		}
-
-		/// <summary></summary>
-		protected override int[] Owners
-		{
-			get { return owners; }
-		}
-
-		/// <summary></summary>
-		protected void SetOwners( int[] values )
-		{
-			owners = values;
-		}
-
-		/// <summary></summary>
-		protected LockMode[ ] LockModeArray
-		{
-			get { return lockModeArray; }
-			set { lockModeArray = value; }
-		}
-
-		/// <summary></summary>
 		protected internal override SqlString SqlString
 		{
 			get { return sqlString; }
 			set { sqlString = value; }
 		}
 
-		/// <summary></summary>
 		protected override ILoadable[ ] Persisters
 		{
 			get { return classPersisters; }
@@ -706,7 +667,8 @@ namespace NHibernate.Loader
 					{
 						aliasCount++;
 					}
-					if( i < associations.Count - 1 && !selectFragment.Trim().Equals( string.Empty ) )
+					if( i < associations.Count - 1 &&
+						!selectFragment.Trim().Equals( string.Empty ) )
 					{
 						buf.Append( StringHelper.CommaSpace );
 					}
@@ -758,7 +720,7 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		protected JoinFragment MergeOuterJoins( IList associations )
 		{
-			JoinFragment outerjoin = Dialect.CreateOuterJoinFragment();
+			JoinFragment outerjoin = dialect.CreateOuterJoinFragment();
 
 			foreach( OuterJoinLoader.OuterJoinableAssociation oj in associations )
 			{
@@ -773,8 +735,8 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Count the number of instances of Joinable which are actually
-		/// also instances of Loadable, or are one-to-many associations
+		/// Count the number of instances of IJoinable which are actually
+		/// also instances of ILoadable, or are one-to-many associations
 		/// </summary>
 		/// <param name="associations"></param>
 		/// <returns></returns>
@@ -792,11 +754,6 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="associations"></param>
-		/// <returns></returns>
 		protected static bool ContainsCollectionPersister( IList associations )
 		{
 			foreach( OuterJoinLoader.OuterJoinableAssociation oj in associations )
@@ -809,22 +766,11 @@ namespace NHibernate.Loader
 			return false;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="lockModes"></param>
-		/// <returns></returns>
 		protected override LockMode[ ] GetLockModes( IDictionary lockModes )
 		{
 			return lockModeArray;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="length"></param>
-		/// <param name="lockMode"></param>
-		/// <returns></returns>
 		protected LockMode[ ] CreateLockModeArray( int length, LockMode lockMode )
 		{
 			LockMode[ ] lmArray = new LockMode[length];
@@ -835,7 +781,7 @@ namespace NHibernate.Loader
 			return lmArray;
 		}
 
-		private string SubPath( string path, string property )
+		private static string SubPath( string path, string property )
 		{
 			if( path == null || path.Length == 0 )
 			{
@@ -856,11 +802,32 @@ namespace NHibernate.Loader
 		/// <param name="type"></param>
 		/// <param name="batchSize"></param>
 		/// <returns></returns>
-		protected static SqlString WhereString( ISessionFactoryImplementor factory, string alias, string[] columnNames, IType type, int batchSize )
+		protected static SqlStringBuilder WhereString( ISessionFactoryImplementor factory, string alias, string[] columnNames, IType type, int batchSize )
 		{
-			WhereBuilder whereFrag = new WhereBuilder( factory );
+			Parameter[ ] columnParameters = Parameter.GenerateParameters( factory, columnNames, type );
+			ConditionalFragment byId = new ConditionalFragment()
+				.SetTableAlias( alias )
+				.SetCondition( columnNames, columnParameters );
 
-			return whereFrag.WhereClause( alias, columnNames, type );
+			SqlStringBuilder whereString = new SqlStringBuilder();
+
+			if( batchSize == 1 )
+			{
+				whereString.Add( byId.ToSqlStringFragment() );
+			}
+			else
+			{
+				whereString.Add( StringHelper.OpenParen ); // TODO: unnecessary for databases with ANSI-style joins
+				DisjunctionFragment df = new DisjunctionFragment();
+				for( int i = 0; i < batchSize; i++ )
+				{
+					df.AddCondition( byId );
+				}
+				whereString.Add( df.ToFragmentString() );
+				whereString.Add( StringHelper.ClosedParen ); // TODO: unnecessary for databases with ANSI-style joins
+			}
+
+			return whereString;
 		}
 
 		/// <summary>
@@ -914,13 +881,12 @@ namespace NHibernate.Loader
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="oj"></param>
-		/// <param name="joins"></param>
-		/// <param name="dontIgnore"></param>
-		/// <returns></returns>
+		protected override int[ ] Owners
+		{
+			get { return owners; }
+			set { owners = value; }
+		}
+
 		protected int ToOwner( OuterJoinableAssociation oj, int joins, bool dontIgnore )
 		{
 			if ( dontIgnore )

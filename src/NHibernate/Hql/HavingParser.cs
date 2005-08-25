@@ -9,14 +9,6 @@ namespace NHibernate.Hql
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="d"></param>
-		public HavingParser( Dialect.Dialect d ) : base( d )
-		{
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <param name="q"></param>
 		/// <param name="token"></param>
 		protected override void AppendToken( QueryTranslator q, string token )

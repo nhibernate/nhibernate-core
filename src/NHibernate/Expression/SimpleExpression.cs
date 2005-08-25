@@ -1,8 +1,8 @@
 using System.Collections;
 using NHibernate.Engine;
-using NHibernate.Persister;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Expression
 {
@@ -13,8 +13,8 @@ namespace NHibernate.Expression
 	public abstract class SimpleExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;
-
 		private readonly object _value;
+		private bool _ignoreCase;
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="SimpleExpression" /> class for a named
@@ -26,6 +26,19 @@ namespace NHibernate.Expression
 		{
 			_propertyName = propertyName;
 			_value = value;
+		}
+
+		public SimpleExpression( string propertyName, object value, bool ignoreCase )
+		{
+			_propertyName = propertyName;
+			_value = value;
+			_ignoreCase = ignoreCase;
+		}
+
+		public SimpleExpression IgnoreCase()
+		{
+			_ignoreCase = true;
+			return this;
 		}
 
 		/// <summary>
@@ -55,39 +68,56 @@ namespace NHibernate.Expression
 		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
 		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
-			//TODO: add default capacity
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-
-			IType propertyType = AbstractCriterion.GetType( factory, persistentClass, _propertyName, aliasClasses );
 			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
+			IType propertyType = AbstractCriterion.GetType( factory, persistentClass, _propertyName, aliasClasses );
 			Parameter[ ] parameters = Parameter.GenerateParameters( factory, columnNames, propertyType );
 
-
-			for( int i = 0; i < columnNames.Length; i++ )
+			if( _ignoreCase )
 			{
-				if( i > 0 )
+				if( columnNames.Length != 1 )
 				{
-					sqlBuilder.Add( " AND " );
+					throw new HibernateException(
+						"case insensitive expression may only be applied to single-column properties: " +
+						_propertyName );
 				}
 
-				sqlBuilder.Add( columnNames[ i ] )
+				return new SqlStringBuilder( 6 )
+					.Add( factory.Dialect.LowercaseFunction )
+					.Add( StringHelper.OpenParen )
+					.Add( columnNames[ 0 ] )
+					.Add( StringHelper.ClosedParen )
 					.Add( Op )
-					.Add( parameters[ i ] );
-
+					.Add( parameters[ 0 ] )
+					.ToSqlString();
 			}
+			else
+			{
+				//TODO: add default capacity
+				SqlStringBuilder sqlBuilder = new SqlStringBuilder( 4 * columnNames.Length );
 
-			return sqlBuilder.ToSqlString();
+				for( int i = 0; i < columnNames.Length; i++ )
+				{
+					if( i > 0 )
+					{
+						sqlBuilder.Add( " and " );
+					}
+
+					sqlBuilder.Add( columnNames[ i ] )
+						.Add( Op )
+						.Add( parameters[ i ] );
+
+				}
+				return sqlBuilder.ToSqlString();
+			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
 		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
-			return new TypedValue[ ] {AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _value, aliasClasses )};
+			object icvalue = _ignoreCase ? _value.ToString().ToLower() : _value;
+			return new TypedValue[ ]
+				{
+					AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, icvalue, aliasClasses )
+				};
 		}
 
 		/// <summary></summary>

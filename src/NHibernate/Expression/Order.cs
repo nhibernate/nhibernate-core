@@ -31,7 +31,7 @@ namespace NHibernate.Expression
 		/// <param name="persistentClass"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		public string ToStringForSql( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias )
+		public string ToSqlString( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias )
 		{
 			string[ ] columns = AbstractCriterion.GetColumns( sessionFactory, persistentClass, _propertyName, alias, emptyMap );
 			if( columns.Length != 1 )

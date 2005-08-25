@@ -10,8 +10,7 @@ namespace NHibernate.Hql
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="d"></param>
-		public FilterTranslator( Dialect.Dialect d, string queryString ) : base( d, queryString )
+		public FilterTranslator( string queryString ) : base( queryString )
 		{
 		}
 

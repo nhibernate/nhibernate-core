@@ -18,11 +18,7 @@ namespace NHibernate.SqlCommand
 
 		private IList whereStrings = new ArrayList();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		public SqlDeleteBuilder( ISessionFactoryImplementor factory ) : base( factory )
+		public SqlDeleteBuilder( IMapping mapping ) : base( mapping )
 		{
 		}
 

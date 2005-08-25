@@ -22,37 +22,6 @@ namespace NHibernate.Loader
 		private IType idType;
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collPersister"></param>
-		/// <param name="factory"></param>
-		public OneToManyLoader( IQueryableCollection collPersister, ISessionFactoryImplementor factory ) : this( collPersister, 1, factory )
-		{
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collPersister"></param>
-		/// <param name="batchSize"></param>
-		/// <param name="factory"></param>
-		public OneToManyLoader( IQueryableCollection collPersister, int batchSize, ISessionFactoryImplementor factory ) : base( factory.Dialect )
-		{
-			collectionPersister = collPersister;
-			idType = collectionPersister.KeyType;
-
-			IOuterJoinLoadable persister = ( IOuterJoinLoadable ) collPersister.ElementPersister;
-
-			string alias = GenerateRootAlias( collPersister.Role );
-			IList associations = WalkTree( persister, alias, factory );
-
-			InitStatementString( collPersister, persister, alias, associations, batchSize, factory );
-			InitClassPersisters( persister, associations );
-
-			PostInstantiate();
-		}
-
-		/// <summary>
 		/// Disable a join back to this same association
 		/// </summary>
 		/// <param name="type"></param>
@@ -69,42 +38,58 @@ namespace NHibernate.Loader
 				);
 		}
 
-		/// <summary></summary>
-		protected override ICollectionPersister CollectionPersister
+		public OneToManyLoader( IQueryableCollection collPersister, ISessionFactoryImplementor factory )
+			: this( collPersister, 1, factory )
 		{
-			get { return collectionPersister; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="session"></param>
-		public void Initialize( object id, ISessionImplementor session )
+		public OneToManyLoader( IQueryableCollection collPersister, int batchSize, ISessionFactoryImplementor factory )
+			: base( factory.Dialect )
 		{
-			LoadCollection( session, id, idType );
+			collectionPersister = collPersister;
+			idType = collectionPersister.KeyType;
+
+			IOuterJoinLoadable persister = ( IOuterJoinLoadable ) collPersister.ElementPersister;
+
+			string alias = GenerateRootAlias( collPersister.Role );
+			IList associations = WalkTree( persister, alias, factory );
+
+			InitStatementString( collPersister, persister, alias, associations, batchSize, factory );
+			InitClassPersisters( persister, associations );
+
+			PostInstantiate();
 		}
 
 		private void InitClassPersisters( IOuterJoinLoadable persister, IList associations )
 		{
 			int joins = associations.Count;
-			LockModeArray = CreateLockModeArray( joins + 1, LockMode.None );
+			lockModeArray = CreateLockModeArray( joins + 1, LockMode.None );
 
-			Persisters = new ILoadable[joins + 1];
-			SetOwners( new int[ joins + 1 ] );
+			classPersisters = new ILoadable[joins + 1];
+			Owners = new int[ joins + 1 ];
 			for( int i = 0; i < joins; i++ )
 			{
 				OuterJoinableAssociation oj = ( OuterJoinableAssociation ) associations[ i ];
 				Persisters[ i ] = (ILoadable) oj.Joinable;
 				Owners[ i ] = ToOwner( oj, joins, oj.IsOneToOne );
 			}
-			Persisters[ joins ] = persister;
+			classPersisters[ joins ] = persister;
 			Owners[ joins ] = -1;
 
 			if ( ArrayHelper.IsAllNegative( Owners ) )
 			{
-				SetOwners( null );
+				Owners = null;
 			}
+		}
+
+		protected override ICollectionPersister CollectionPersister
+		{
+			get { return collectionPersister; }
+		}
+
+		public void Initialize( object id, ISessionImplementor session )
+		{
+			LoadCollection( session, id, idType );
 		}
 
 		private void InitStatementString(
@@ -120,27 +105,29 @@ namespace NHibernate.Loader
 
 			Suffixes = GenerateSuffixes( joins + 1 );
 
-			SqlString whereSqlString = WhereString( factory, alias, collPersister.KeyColumnNames, collPersister.KeyType, batchSize );
+			SqlStringBuilder whereSqlString = WhereString( factory, alias, collPersister.KeyColumnNames, collPersister.KeyType, batchSize );
 
 			if( collectionPersister.HasWhere )
 			{
-				whereSqlString = whereSqlString.Append( " and " ).Append( collectionPersister.GetSQLWhereString( alias ) );
+				whereSqlString
+					.Add( " and " )
+					.Add( collectionPersister.GetSQLWhereString( alias ) );
 			}
 
 			JoinFragment ojf = MergeOuterJoins( associations );
 
-			SqlSelectBuilder selectBuilder = new SqlSelectBuilder( factory );
-			selectBuilder.SetSelectClause(
+			SqlSelectBuilder select = new SqlSelectBuilder( factory )
+				.SetSelectClause(
 					collectionPersister.SelectFragment( alias, Suffixes[ joins ], true ).ToString() +
 					SelectString( associations, factory )
-				);
-			selectBuilder.SetFromClause(
+				)
+				.SetFromClause(
 					persister.FromTableFragment( alias ).Append(
 					persister.FromJoinFragment( alias, true, true )
 					)
-				);
-			selectBuilder.SetWhereClause( whereSqlString );
-			selectBuilder.SetOuterJoins(
+				)
+				.SetWhereClause( whereSqlString.ToSqlString() )
+				.SetOuterJoins(
 					ojf.ToFromFragmentString,
 					ojf.ToWhereFragmentString.Append(
 					persister.WhereJoinFragment( alias, true, true )
@@ -149,10 +136,10 @@ namespace NHibernate.Loader
 
 			if( collectionPersister.HasOrdering )
 			{
-				selectBuilder.SetOrderByClause( collectionPersister.GetSQLOrderByString( alias ) );
+				select.SetOrderByClause( collectionPersister.GetSQLOrderByString( alias ) );
 			}
 
-			this.SqlString = selectBuilder.ToSqlString();
+			SqlString = select.ToSqlString();
 		}
 	}
 }

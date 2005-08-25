@@ -38,7 +38,7 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			SqlString sqlString = _conjunction.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 			
-			string expectedSql = "(simple_alias.address IS NULL and simple_alias.count_ between :simple_alias.count__lo and :simple_alias.count__hi)";
+			string expectedSql = "(simple_alias.address is null and simple_alias.count_ between :simple_alias.count__lo and :simple_alias.count__hi)";
 			
 			CompareSqlStrings(sqlString, expectedSql, 2);
 	

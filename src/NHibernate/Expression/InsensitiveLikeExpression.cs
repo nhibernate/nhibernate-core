@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
+
 using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.Persister;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
@@ -30,6 +30,11 @@ namespace NHibernate.Expression
 			_value = value;
 		}
 
+		public InsensitiveLikeExpression( string propertyName, string value, MatchMode matchMode )
+			: this( propertyName, matchMode.ToMatchString( value ) )
+		{
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -42,9 +47,14 @@ namespace NHibernate.Expression
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			IType propertyType = AbstractCriterion.GetType( factory, persistentClass,_propertyName, aliasClasses );
+			IType propertyType = AbstractCriterion.GetType( factory, persistentClass, _propertyName, aliasClasses );
 			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
 			Parameter[ ] parameters = Parameter.GenerateParameters( factory, columnNames, propertyType );
+
+			if( columnNames.Length != 1 )
+			{
+				throw new HibernateException( "insensitive like may only be used with single-column properties" );
+			}
 
 			if( factory.Dialect is PostgreSQLDialect )
 			{
@@ -73,7 +83,7 @@ namespace NHibernate.Expression
 		/// <returns></returns>
 		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
-			return new TypedValue[ ] { AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _value.ToString().ToLower(), aliasClasses )};
+			return new TypedValue[ ] {AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _value.ToString().ToLower(), aliasClasses )};
 		}
 
 		/// <summary></summary>

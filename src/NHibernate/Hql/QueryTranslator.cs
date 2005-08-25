@@ -73,21 +73,11 @@ namespace NHibernate.Hql
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( QueryTranslator ) );
 
-		/// <summary>
-		/// Indicates if the SqlString has been fully populated - it goes
-		/// through a 2 phase process.  The first part is the parsing of the
-		/// hql and it puts in placeholders for the parameters, the second phase 
-		/// puts in the actual types for the parameters using QueryParameters
-		/// passed to query methods.  The completion of the second phase is
-		/// when <c>isSqlStringPopulated==true</c>.
-		/// </summary>
-		private bool isSqlStringPopulated;
-
 		/// <summary> 
 		/// Construct a query translator
 		/// </summary>
-		/// <param name="d"></param>
-		public QueryTranslator( Dialect.Dialect d, string queryString ) : base( d )
+		/// <param name="queryString"></param>
+		public QueryTranslator( string queryString )
 		{
 			this.queryString = queryString;
 		}
@@ -203,6 +193,7 @@ namespace NHibernate.Hql
 		protected override int[] Owners
 		{
 			get { return owners; }
+			set { owners = value; }
 		}
 
 		/// <summary></summary>
@@ -804,7 +795,7 @@ namespace NHibernate.Hql
 				returnTypes[ i ] = ( IType ) scalarTypes[ i ];
 			}
 
-			QuerySelect sql = new QuerySelect( Dialect );
+			QuerySelect sql = new QuerySelect( factory.Dialect );
 			sql.Distinct = distinct;
 
 			if( !shallowQuery )
@@ -1513,7 +1504,7 @@ namespace NHibernate.Hql
 		/// <returns></returns>
 		internal QueryJoinFragment CreateJoinFragment( bool useThetaStyleInnerJoins )
 		{
-			return new QueryJoinFragment( Dialect, useThetaStyleInnerJoins );
+			return new QueryJoinFragment( factory.Dialect, useThetaStyleInnerJoins );
 		}
 
 		/// <summary></summary>
@@ -1619,8 +1610,18 @@ namespace NHibernate.Hql
 		/// <summary></summary>
 		public IDictionary Functions
 		{
-			get { return Dialect.Functions; }
+			get { return factory.Dialect.Functions; }
 		}
+
+		/// <summary>
+		/// Indicates if the SqlString has been fully populated - it goes
+		/// through a 2 phase process.  The first part is the parsing of the
+		/// hql and it puts in placeholders for the parameters, the second phase 
+		/// puts in the actual types for the parameters using QueryParameters
+		/// passed to query methods.  The completion of the second phase is
+		/// when <c>isSqlStringPopulated==true</c>.
+		/// </summary>
+		private bool isSqlStringPopulated;
 
 		private object prepareCommandLock = new object();
 
@@ -1739,28 +1740,5 @@ namespace NHibernate.Hql
 				isSqlStringPopulated = true;
 			}
 		}
-
-		/*
-		/// <summary>
-		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
-		/// database to Load an Entity.
-		/// </summary>
-		/// <param name="sqlString">The SqlString to convert into a prepared IDbCommand.</param>
-		/// <param name="parameters"></param>
-		/// <param name="scroll">TODO: find out where this is used...</param>
-		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
-		/// <returns>An IDbCommand that is ready to be executed.</returns>
-		/// <remarks>
-		/// This ensures that the SqlString does not contained any parameters that don't have a SqlType
-		/// set.  During Hql parsing the SqlType is not set and a Parameter "placeholder" is added to
-		/// the SqlString.  If there are any untyped parameters this replaces them using the types and
-		/// namedParams parameters.
-		/// </remarks>
-		protected override IDbCommand PrepareQueryCommand( SqlString sqlString, QueryParameters parameters, bool scroll, ISessionImplementor session )
-		{
-			PopulateSqlString( parameters );
-			return base.PrepareQueryCommand( this.sqlString, parameters, scroll, session );
-		}
-		*/
 	}
 }

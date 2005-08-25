@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Data;
 using Iesi.Collections;
 using log4net;
@@ -459,7 +458,7 @@ namespace NHibernate.Impl
 					lastQuery.Cancel();
 				}
 			}
-			catch( Exception sqle )
+			catch( Exception /*sqle*/ )
 			{
 				throw;
 				//throw Convert( sqle, "Could not cancel query" );

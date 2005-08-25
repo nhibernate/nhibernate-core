@@ -1,8 +1,9 @@
 using System;
 using System.Collections;
+
 using NHibernate.Engine;
-using NHibernate.Persister;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -31,72 +32,95 @@ namespace NHibernate.Expression
 			_values = values;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="persistentClass"></param>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses)
+		private static Parameter[ ] GenerateValueParameters( string prefix, SqlType sqlType, int count )
 		{
-			//TODO: add default capacity
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
+			Parameter[ ] parameters = new Parameter[count];
 
-			IType propertyType = AbstractCriterion.GetType( factory, persistentClass,_propertyName, aliasClasses );
-			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
-			
-			if( columnNames.Length != 1 )
+			for( int i = 0; i < count; i++ )
 			{
-				throw new HibernateException( "InExpression may only be used with single-column properties" );
+				string parameterName = StringHelper.Suffix( prefix, StringHelper.Underscore + i.ToString() );
+				parameters[ i ] = new Parameter( parameterName, sqlType );
 			}
 
-			// each value should have its own parameter
-			Parameter[ ] parameters = new Parameter[_values.Length];
-
-			for( int i = 0; i < _values.Length; i++ )
-			{
-				// we can hardcode 0 because this will only be for a single column
-				string paramInColumnNames = columnNames[ 0 ] + StringHelper.Underscore + i;
-				parameters[ i ] = Parameter.GenerateParameters( factory, new string[ ] {paramInColumnNames}, propertyType )[ 0 ];
-			}
-
-			sqlBuilder.Add( columnNames[ 0 ] )
-				.Add( " in (" );
-
-			bool commaNeeded = false;
-			foreach( Parameter parameter in parameters )
-			{
-				if( commaNeeded )
-				{
-					sqlBuilder.Add( StringHelper.CommaSpace );
-				}
-				commaNeeded = true;
-
-				sqlBuilder.Add( parameter );
-
-			}
-
-			sqlBuilder.Add( ")" );
-
-			return sqlBuilder.ToSqlString();
+			return parameters;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
+		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
+		{
+			//TODO: add default capacity
+			SqlStringBuilder result = new SqlStringBuilder();
+
+			IType propertyType = AbstractCriterion.GetType( factory, persistentClass, _propertyName, aliasClasses );
+
+			SqlType[ ] columnSqlTypes = propertyType.SqlTypes( factory );
+			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
+
+			// Generate SqlString of the form:
+			// columnName1 in (values) and columnName2 in (values) and ...
+
+			for( int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++ )
+			{
+				string columnName = columnNames[ columnIndex ];
+				SqlType columnSqlType = columnSqlTypes[ columnIndex ];
+
+				if( columnIndex > 0 )
+				{
+					result.Add( " and " );
+				}
+
+				result
+					.Add( columnName )
+					.Add( " in (" );
+
+				if( _values.Length > 0 )
+				{
+					Parameter[ ] valueParameters = GenerateValueParameters( columnName, columnSqlType, _values.Length );
+					for( int i = 0; i < valueParameters.Length; i++ )
+					{
+						if( i > 0 )
+						{
+							result.Add( StringHelper.CommaSpace );
+						}
+						result.Add( valueParameters[ i ] );
+					}
+				}
+
+				result.Add( ")" );
+			}
+
+			return result.ToSqlString();
+		}
+
 		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
 		{
-			//TODO: h2.1 synch: fix this up quite a bit
-			TypedValue[ ] tvs = new TypedValue[_values.Length];
-			for( int i = 0; i < tvs.Length; i++ )
+			ArrayList list = new ArrayList();
+			IType type = GetType( sessionFactory, persistentClass, _propertyName, aliasClasses );
+
+			if( type.IsComponentType )
 			{
-				tvs[ i ] = AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _values[ i ], aliasClasses );
+				IAbstractComponentType actype = ( IAbstractComponentType ) type;
+				IType[ ] types = actype.Subtypes;
+
+				for( int i = 0; i < types.Length; i++ )
+				{
+					for( int j = 0; j < _values.Length; j++ )
+					{
+						object subval = _values[ j ] == null ?
+							null :
+							actype.GetPropertyValues( _values[ j ] )[ i ];
+						list.Add( new TypedValue( types[ i ], subval ) );
+					}
+				}
 			}
-			return tvs;
+			else
+			{
+				for( int j = 0; j < _values.Length; j++ )
+				{
+					list.Add( new TypedValue( type, _values[ j ] ) );
+				}
+			}
+
+			return ( TypedValue[ ] ) list.ToArray( typeof( TypedValue ) );
 		}
 
 		/// <summary></summary>

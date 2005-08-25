@@ -33,6 +33,35 @@ namespace NHibernate.Util
 		/// <summary></summary>
 		public const string SqlParameter = "?";
 
+		public static string Join( string separator, IEnumerable objects )
+		{
+			StringBuilder buf = new StringBuilder();
+			bool first = true;
+
+			foreach( object obj in objects )
+			{
+				if( !first )
+				{
+					buf.Append( separator );
+				}
+
+				first = false;
+				buf.Append( obj );
+			}
+
+			return buf.ToString();
+		}
+
+		public static string[ ] Add( string[ ] x, string sep, string[ ] y )
+		{
+			string[ ] result = new string[ x.Length ];
+			for( int i = 0; i < x.Length; i++ )
+			{
+				result[ i ] = x[ i ] + sep + y[ i ];
+			}
+			return result;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -397,12 +426,6 @@ namespace NHibernate.Util
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="prefix"></param>
-		/// <param name="names"></param>
-		/// <returns></returns>
 		public static string[] Qualify( string prefix, string[] names )
 		{
 			// Should we check for prefix == string.Empty rather than a length check?
@@ -420,6 +443,11 @@ namespace NHibernate.Util
 			{
 				return names;
 			}
+		}
+
+		public static int FirstIndexOfChar( string sqlString, string str, int startIndex )
+		{
+			return sqlString.IndexOfAny( str.ToCharArray(), startIndex );
 		}
 
 		public static string Truncate( string str, int length )

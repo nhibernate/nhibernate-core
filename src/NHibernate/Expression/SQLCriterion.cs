@@ -6,24 +6,19 @@ using NHibernate.Type;
 namespace NHibernate.Expression
 {
 	/// <summary>
-	/// An <see cref="ICriterion"/> that creates a SQLExpression
+	/// An <see cref="ICriterion"/> that creates a SQLExpression.
+	/// The string {alias} will be replaced by the alias of the root entity.
 	/// </summary>
 	/// <remarks>
 	/// This allows for database specific Expressions at the cost of needing to 
 	/// write a correct <see cref="SqlString"/>.
 	/// </remarks>
-	public class SQLExpression : AbstractCriterion
+	public class SQLCriterion : AbstractCriterion
 	{
 		private readonly SqlString _sql;
 		private readonly TypedValue[ ] _typedValues;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		public SQLExpression( SqlString sql, object[ ] values, IType[ ] types )
+		public SQLCriterion( SqlString sql, object[ ] values, IType[ ] types )
 		{
 			_sql = sql;
 			_typedValues = new TypedValue[values.Length];
@@ -42,8 +37,7 @@ namespace NHibernate.Expression
 		/// <returns></returns>
 		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
 		{
-			// TODO: h2.1 SYNCH - need to add an overload to Replace that takes 3 params
-			return _sql.Replace( "$alias", alias );
+			return _sql.Replace( "{alias}", alias );
 		}
 
 		/// <summary>

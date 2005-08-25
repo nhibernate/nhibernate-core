@@ -27,7 +27,7 @@ namespace NHibernate.Test.ExpressionTest
 
 			SqlString sqlString = notNullExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
-			string expectedSql = "simple_alias.address IS NOT NULL";
+			string expectedSql = "simple_alias.address is not null";
 			CompareSqlStrings(sqlString, expectedSql, 0);
 
 			session.Close();
