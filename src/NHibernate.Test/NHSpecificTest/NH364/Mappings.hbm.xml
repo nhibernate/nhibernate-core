@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH364">
+
+	<class name="Category" table="Category364">
+		<id name="Id" column="CategoryId" type="Int32" unsaved-value="0">
+			<generator class="identity" />
+		</id>
+		<property name="Name" column="CategoryName" type="String" length="100"/>
+		<many-to-one name="Parent" column="ParentCategoryId" class="Category"/>
+	</class>
+
+	<class name="Link" table="Link364">
+		<id name="Id" column="LinkId" type="Int32" unsaved-value="0">
+			<generator class="identity"/>
+		</id>
+		<property name="Name" column="LinkName" type="String" not-null="true"/>
+		<idbag name="Categories" table="CategoryLink364" lazy="true">
+			<collection-id column="CategoryLinkId" type="Int32">
+				<generator class="identity"/>
+			</collection-id>
+			<key column="LinkId" />
+			<many-to-many class="Category" column="CategoryId" />
+		</idbag>
+		<!--
+		This version works, but we don't get a single PK from it
+		<bag name="Categories" table="CategoryLink364" lazy="true">
+			<key column="LinkId" />
+			<many-to-many class="Category" column="CategoryId" />
+		</bag>
+		-->
+	</class>
+</hibernate-mapping>
