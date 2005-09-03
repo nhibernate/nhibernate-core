@@ -1,0 +1,45 @@
+<!-- <!DOCTYPE chapter SYSTEM "../docbook-xml/docbookx.dtd"> -->
+<chapter id="NHibernate.Tool.hbm2net">
+	<title>NHibernate.Tool.hbm2net</title>
+
+
+	<abstract id="NHibernate.Tool.hbm2net-abstract">
+		<title>What is NHibernate.Tool.hbm2net?</title>
+		<formalpara>
+			<title>NHibernate.Tool.hbm2net is an add-in for <ulink url="http://www.nhibernate.org">NHibernate</ulink></title>
+			<para>It makes it possible to generate source files from hbm.xml mapping files.</para>
+		</formalpara>
+		<para>In the directory <filename>NHibernate.Tasks</filename>, there is a tool called <command>Hbm2NetTask</command> that you can use to automate your build process (using NAnt)</para>
+	</abstract>
+
+<!--
+
+	<section id="NHibernate.Tool.hbm2net-howto">
+		<title>How to use it?</title>
+		<para>!</para>
+	</section>
+
+
+	<section id="NHibernate.Tool.hbm2net-tips">
+		<title>Tips</title>
+		<itemizedlist>
+			<listitem><para>!</para></listitem>
+		</itemizedlist>
+	</section>
+
+
+	<section id="NHibernate.Tool.hbm2net-todo">
+		<title>Know issues and TODOs</title>
+		<para>Read TODOs in the source code ;)</para>
+		<para>!</para>
+	</section>
+
+
+	<section id="NHibernate.Tool.hbm2net-devnotes">
+		<title>Developer Notes</title>
+		<para>!</para>
+	</section>
+
+-->
+
+</chapter>

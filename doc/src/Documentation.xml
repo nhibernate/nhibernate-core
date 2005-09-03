@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5b1//EN"
+               "../docbook-xml/docbookx.dtd" [
+				<!ENTITY legalnotice SYSTEM "LegalNotice.xml">
+
+				<!ENTITY preface SYSTEM "Preface.xml">
+				<!ENTITY architecture SYSTEM "Architecture.xml">
+				<!ENTITY configuration SYSTEM "Configuration.xml">
+				<!ENTITY persistent-classes SYSTEM "PersistentClasses.xml">
+
+				<!ENTITY basic-mapping SYSTEM "BasicMapping.xml">
+				<!ENTITY collection-mapping SYSTEM "CollectionMapping.xml">
+				<!ENTITY association-mapping SYSTEM "AssociationMapping.xml">
+				<!ENTITY example-parentchild SYSTEM "Example.ParentChild.xml">
+
+				<!ENTITY nhc-preface SYSTEM "NHibernateContrib.Preface.xml">
+				<!ENTITY nhcaches-chapter SYSTEM "NHibernate.Caches.xml">
+				<!ENTITY nhma-chapter SYSTEM "NHibernate.Mapping.Attributes.xml">
+				<!ENTITY nhbm2net-chapter SYSTEM "NHibernate.Tool.hbm2net.xml">
+				<!ENTITY nullables-chapter SYSTEM "Nullables.xml">
+
+				<!ENTITY support SYSTEM "Support.xml">
+				<!ENTITY license SYSTEM "License.xml">
+				<!ENTITY gnu-lgpl SYSTEM "../../lgpl.txt">
+				<!ENTITY gnu-fdl SYSTEM "../../gfdl.txt">
+ ]>
+
+
+<book id="NHibernate.Documentation" lang="en">
+	<bookinfo>
+		<title>NHibernate Documentation</title>
+		<releaseinfo>Status: Beta</releaseinfo>
+		<author>
+			<firstname><ulink url="http://www.nhibernate.org/">NHibernate</ulink></firstname>
+			<contrib>Thanks to all the contributors!</contrib>
+			<address>http://www.nhibernate.org/</address>
+		</author>
+
+		&legalnotice;
+
+	</bookinfo>
+
+
+	&preface;
+	&architecture;
+	&configuration;
+	&persistent-classes;
+
+
+	<part id="NHibernate.Mapping">
+		<title>NHibernate Mapping</title>
+		&basic-mapping;
+		&collection-mapping;
+		&association-mapping;
+		&example-parentchild;
+	</part>
+
+
+	<part id="NHibernateContrib">
+		<title>NHibernateContrib Documentation</title>
+		&nhc-preface;
+		&nhcaches-chapter;
+		&nhma-chapter;
+		&nhbm2net-chapter;
+		&nullables-chapter;
+	</part>
+
+
+	&support;
+	&license;
+
+</book>

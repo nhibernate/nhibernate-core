@@ -1,0 +1,222 @@
+
+NOTE: This file contains what should be done for the documentation.
+It is a place to keep ideas/TODOs (to share and not forget them)
+It don't necessarily depict what the doc is/will be.
+
+--------------------------------------------------------------------------------
+
+- Check/Update "html.css": Change fonts/colors
+
+- Add version in all xml files (Create files "Version" & "DocOfCurrentVersion")
+	"Documentation for NHibernate version &Version;."
+
+- Complete NHibernate.Tool.hbm2net doc
+- Write content of "\NHC\src\NamespaceSummary.xml"
+
+- Update NH/readme.html		to look more like NH/Home !
+- Update NHC/readme.html	to tell that the doc is in NH
+- Integrate the logo in the doc (& in readme.html)
+- Update the Wiki (contains dynamic stuff; others are moved to this doc)
+
+- Improve the Reference content (=> add more comments in the source code :)
+
+- Generate the PDF version of this documentation
+
+--------------------------------------------------------------------------------
+
+Elements (that should be available to the users)
+
+- Installer: (use WiX)
+	- Copy NHibernate & NHibernateContrib assemblies + source code
+	- Register/Copy  VS.NET/CHM  help
+	- "install" LokateIt Application (+ other QuickStart/Sample) + Add shortcuts
+- Source : VS.NET / Borland / #D / Nant build files  +  Add-ins
+- Documentation + Reference : CHM file + Integration to VS.NET help
+- Samples : Quick starts in C#, VB.NET, … (for all IDEs and NAnt)
+- Video / Macromedia / SlideShow Demo (Architecture, Working Samples)
+	(this is very important for newbies and any person trying to pick an ORM)
+
+--------------------------------------------------------------------------------
+
+NHibernate Documentation Hierarchy:
+
+nhibernate
+----------
++ /doc/
+  - .ini and *.Hx?		(.chm & .HxS, appear in /build/doc/)
+  - "NHibernate.[Reference|Documentation].[chm|HxS]"
+  - "NHibernate.Documentation.html" (single version)	(+ its /NHD_files/ dir)
++ /doc/docbook-xml/
++ /doc/docbook-xsl/
++ /doc/html/		(the chunk version) + html.css
+  - /doc/html/reference/
+  - /doc/html/images/
+- /doc/src/				DocBook xml files + doc.build + urls + "DocBook.txt" ...
+
+
+Notes:
+* Add versioning !?!
+* Put /doc/html/ online:	http://nhibernate.sf.net/documentation/
+ - Can put http://nhibernate.sf.net/NHibernate[Contrib].Documentation.html	?!?
+ - http://nhibernate.sf.net/documentation/Architecture.html
+ - http://nhibernate.sf.net/documentation/reference/NHibernate.ISession.html
+ => Don't release it (in zip) ? Or without reference (because heavy...)
+* Can save release versions in sub-dir like /doc/nh0950/
+* Find a way to create links between Documentation (DocBook) & Reference (NDoc)
+ - Try relative urls...
+* To locate H2Reg.exe using the Register:
+"LocalMach\SOFT\MS\Win\CurVersion\Uninstall\H2Refxx_is1\Inno Setup: App Path"
+ => Create a WinApp that can (un)register the help ???
+
+--------------------------------------------------------------------------------
+
+- NH/Readme.html : Presentation (like NH/Home)
+	+ Link to the doc + how to open/install it (html, chm & VS.NET)
+	+ What to read to quickly get started (how to see NH in action :)
+	+ Add a "readme.txt" refering the html version
+- NHC/readme.html	IDEM
+
+
+NHibernate Documentation: (replace "NHibernate : Table of Contents" in Wiki)
+- Legal Information / Terms of Use / Licenses (LGPL & FDL)						=>	License						DONE
+- Documentation Map by Technology + FAQ links (questions to topics to read)		=>	Technology.Map				VOID
+
++ Getting Started
+	- What's new in NHibernate x.x: Changelog + (backward comp) issues			=>	WhatIsNew					VOID
+		+ notes on plans & unachieved features (link to NH Dev on Wiki & Jira)
+	+ Overview of NHibernate
+		- What is an ORM and what is NHibernate (and Hibernate + their link)	=>	Overview					VOID
+		  + why using it (for Developers, IT and Business guys)
+		  + Why not using Dataset, StoredProcs, ... (+ when they should be used)
+		  + Supported .NET versions:	.NET 1.x & 2.0 / CompactFram / Mono
+	+ First steps																=>	First.Steps					VOID
+		- How to get the lastest release of NHibernate
+		- How to quickly learn using NHibernate (links and newbies tips)
+		- How to contribute (Code/Doc) + how to report bugs or get support
+		  (guideline, policy, most needed topics)
+		- NHibernate in CVS: How to get it, (sign +) build it and run its tests
+			+ CruiseControl setup (build+test+release) + doc generation
+	- Credits (NHTeam, Contributors, Tools makers and Supporters)				=>	Credits						VOID
+	- Document Conventions + Note about DocBook & NDoc							=>	Document.Conventions		VOID
+
++ Inside NHibernate (+ UML diagrams)
+	- Development Standards														=>	Development.Standards		VOID
+	+ WorkFlow: What NHibernate does and how									=>	WorkFlow					VOID
+		At Configuration + SessionFactory building + Session open/flush/close
+	+ Presentation of the main classes:											=>	Internal.Presentation		VOID
+		Mapping, Config, SessFactory, Session, Persister, Loader, Dialect, Query
+	+ Agile Patterns (links): UnitOfWork, IdentityMap ...						=>	Patterns.NET				VOID
+	+ .NET techs used: Reflection, Nullables, Proxy, Attribute, XML & x.config
+
++ Programming with NHibernate (features / internal stuff)	+	FAQ & Tips
+	- Configuration (techs to  set DB connection + add mapping streams)			=>	Configuration				VOID
+	- <hibernate-mapping> elements and attributes								=>	Mapping.Hibernate			VOID
+	+ Basic Mapping (class, component, ID, property)							=>	Mapping.Basic				VOID
+		- Versioning + Optimistic/Pessimistic locking
+	+ Collections: any, map, set, list, bag, array, <x-to-many>					=>	Mapping.Collection			VOID
+		+ BLOB + value-typed collections + operations on them + Lazy loading
+	+ Associations (<x-to-one>) + Bidirectional + Lazy loading					=>	Mapping.Association			VOID
+	- Inheritance mapping strategies (table-per-x)								=>	Mapping.Inheritance			VOID
+	+ Query systems (HQL, ICriteria, IQuery): Aggregate funcs/Exprs,			=>	HQL/Criteria/Query			VOID
+		Formula in mapping, OrderBy, Join, ... + Session. Iterate/Scroll/Filter
+	+ Entities lifecycle (through CRUD ops), ID & Equals/GetHashCode tips		=>	Entity.Lifecycle			VOID
+		- Interacting using IInterceptor, IValidatable, ILyfeCycle
+	- Caching (1st & 2nd levels)												=>	Caching						VOID
+	+ Config & Mapping Schemas (reference)										=>	Schemas.Reference			VOID
+
++ Building Applications
+	- Quick starts (simple config.xml + mapping + sessionCreation & CRUD ops)	=>	QuickStarts					VOID
+	+ Architecture:																=>	Application.Architecture	VOID
+		- Layering your application (NHibernate in a n-tier Architecture)
+		- About TDD, Continuous Integration, Refactoring ...
+		- Applying Patterns: Gateway, DTO, Mapper ...
+		- Implementing/Validating Business Rules (+ link to FIT)
+	+ Using .NET feats: Win/Web Services, Remoting, Serialization, Dataset		=>	Using.NET					VOID
+			Enums, Generics, ...
+	- Using Code Generation: MyGeneration & CodeSmith templates + others usages	=>	Using.CodeGeneration		VOID
+	- On Performance, Memory usage, traps to avoid, common mistakes and caveats	=>	Performance.Tips			VOID
+	- Exceptions explained (ExistingID, NoPersistersFor, ...)					=> Exceptions					VOID
+	- Guidelines to debug NHibernate (how to quickly solve a problem)			=>	Debugging					VOID
+	+ Creating Win Apps (issues like databinding & session management)			=>	Application.Windows			VOID
+	+ Creating Web Apps (issues like databinding & session management)			=>	Application.Web				VOID
+	- Report generation and Batch processing									=>	Report.Batch				VOID
+	+ Supported Databases + related issues + Howto: Clustering, Paging ...		=>	Databases					VOID
+		- Native SQL support (named sql-query, sql-insert/update/delete, ...)
+
+
++ Contributions and Tools	=> ReadMe  +  Quick Start / Links					*** In /Contrib/	Preface		TODO
+	+ NHibernate.Caches															=>	NH.Caches					TODO
+	+ NHibernate.Mapping.Attributes												=>	NH.Mapping.Attributes		DONE
+	+ NHibernate.Tool.hbm2net													=>	NH.Tool.hbm2net				TODO
+	+ Nullables																	=>	Nullables					DONE
+	- Iesi.Collections, HashCodeProvider, Castle.DynamicProxy					=>	Libraries					VOID
+	- Used/Useable tools - Quick notes:											=>	Tools						VOID
+		- log4net, NUnit (+addins), NDoc, NQA, Castle, NMock, ObjectView ...
+		- NAnt, VS.NET/#D, CVS, CC.NET, Clover.NET, FIT, Jira, DocBook ...
+
++ LokateIt																		*** In /Contrib/
+	- Overview: What is LokateIt + features + goals (technical & academic)		=>	LI.Preface					VOID
+	- Link to Quick starts (in "Prog with NH" + in NHContrib) + LokateIt specs	=>	LI.GettingStarted			VOID
+	- Link to Agile & Patterns (for TDD) + Link to external tool NUnit
+	- Rules and Domain Logic ([User] and [Rights])								=>	LI.Implementation.Base		VOID
+	- The Windows User Interface (for [User] edition) => link to Create WinApps
+	- Reference (Full Rules and Domain Logic) => link to NH feats used			=>	LI.Implementation.Full		VOID
+	- The Windows User Interface (Full) : Specificities of each Form
+	- Reports - Multi-Database support - Server Application						=>	LI.Additional.Features		VOID
+	- Web Application => link to creating WebApps								=>	LI.Implementation.Web		VOID
+	- Conclusion (+ link to "Building Apps - Architecture")						=>	LI.Conclusion				VOID
+
+
++ More QuickStarts / Samples / Tutorials										=>	More						VOID
+	- There + links to internet ones ...
+	- More information and support
+
++ NHibernate Reference (Class Library)
++ NHibernateContrib Reference (Class Library)
+
+--------------------------------------------------------------------------------
+
+ADD IF USEFUL:
+
+    <!-- These extensions are required for table printing and other stuff
+    <xsl:param name="use.extensions">0</xsl:param>
+    <xsl:param name="tablecolumns.extension">0</xsl:param>
+    <xsl:param name="callout.extensions">1</xsl:param>
+    <xsl:param name="graphicsize.extension">0</xsl:param-->
+
+
+<!--###################################################
+                      Table Of Contents
+    ###################################################
+
+    <! Generate the TOCs for named components only
+    <xsl:param name="generate.toc">
+        book   toc
+    </xsl:param>
+    
+    <! Show only Sections up to level 3 in the TOCs
+    <xsl:param name="toc.section.depth">3</xsl:param>
+
+<!###################################################
+                         Labels
+    ###################################################
+
+    <! Label Chapters and Sections (numbering)
+    <xsl:param name="chapter.autolabel">1</xsl:param>
+    <xsl:param name="section.autolabel" select="1"/>
+    <xsl:param name="section.label.includes.component.label" select="1"/>
+
+<!###################################################
+                          Misc
+    ###################################################
+
+    <! Placement of titles
+    <xsl:param name="formal.title.placement">
+        figure after
+        example before
+        equation before
+        table before
+        procedure before
+    </xsl:param>     -->
+
+--------------------------------------------------------------------------------

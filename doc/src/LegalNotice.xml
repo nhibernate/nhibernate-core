@@ -1,0 +1,27 @@
+<legalnotice id="LegalNotice">
+
+<para>This product is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by the
+Free Software Foundation; either version 2.1 of the License, or (at your
+option) any later version.</para>
+
+<para>This product is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+for more details.</para>
+
+<para>You should have received a copy of the <link linkend="License.gnu.lgpl">GNU Lesser General Public License</link>
+along with this product; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</para>
+
+<para>Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1
+or any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"<link linkend="License.gnu.fdl">GNU Free Documentation License</link>".</para>
+
+<para>For more information, go to
+<ulink url="http://www.gnu.org/copyleft/">this website</ulink>.</para>
+
+</legalnotice>

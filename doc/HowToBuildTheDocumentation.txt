@@ -1,0 +1,57 @@
+
+						How To Build The Documentation
+
+================================================================================
+Introduction
+================================================================================
+
+This documentation (in /src/) is represented as DocBook (xml) files.
+Before running "Build.bat" (to build the documentation), you have to install
+some tools.
+
+================================================================================
+Required DLLs and EXEs
+================================================================================
+Download the files at ftp://ftp.zlatkovic.com/pub/libxml/ (or somewhere else ;)
+
+Create a "tools" directory.
+Add these files to the "tools" directory:
+
+iconv.dll		- from iconv-1.9.1.win32.zip
+libexslt.dll	- from libxslt-1.1.12.win32.zip
+libxml2.dll		- from libxml2-2.6.15.win32.zip
+libxslt.dll		- from libxslt-1.1.12.win32.zip
+xmlcatalog.exe	- from libxml2-2.6.15.win32.zip
+xmllint.exe		- from libxml2-2.6.15.win32.zip
+xsltproc.exe	- from libxslt-1.1.12.win32.zip
+zlib1.dll		- from zlib-1.2.1.win32.zip
+
+Add the "tools" directory to your %PATH% so the NAnt build file can use them.
+
+
+================================================================================
+Quick Start
+================================================================================
+Read this article on Code Project (by Jim Crafton)
+	Documention with DocBook on Win32
+	http://www.codeproject.com/winhelp/docbook_howto.asp
+
+
+================================================================================
+Docbook Manual
+================================================================================
+Can be downloaded at http://docbook.org/tdg/en/tdg-en-html-2.0.10.zip
+Can be viewed (online) at
+http://www.oasis-open.org/docbook/documentation/reference/html/docbook.html
+
+
+================================================================================
+Docbook Xsl Guide
+================================================================================
+Can be viewed at http://www.sagehill.net/docbookxsl/index.html
+
+
+================================================================================
+URL for htmlhelp parameters
+================================================================================
+http://docbook.sourceforge.net/release/xsl/snapshot/doc/html/

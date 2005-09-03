@@ -1,0 +1,150 @@
+BODY
+{
+	font-family: Verdana;
+}
+
+
+HR  
+{
+    width: 100%;
+    height: 1px;
+    color: #000000;
+}
+
+
+A
+{
+    color: #005500;
+}
+A:active
+{
+    color: #000055;
+}
+A:visited
+{
+    color: #550000;
+}
+
+
+
+H1
+{
+    color: #800000;
+	font-size: 140%;
+	font-weight: bold;
+    padding-top:15px;
+}
+
+H2
+{
+    color: #000080;
+	font-size: 120%;
+	font-weight: bold;
+    padding-top:15px;
+}
+
+H3
+{
+    color: #008000;
+	font-size: 110%;
+	font-weight: bold;
+}
+
+H4, H5, H6
+{
+    color: #000000;
+	font-size: 100%;
+	font-style: italic;
+}
+
+
+
+
+P, DL, DT, DD
+{
+    color: #000000;
+}
+
+UL, OL, LI
+{
+    color: #000000;
+    list-style: disc;
+}
+
+UL
+{
+    color: #000000;
+    list-style: disc;
+    padding-top: 0;
+    padding-bottom:0;
+    margin:0;
+}
+
+TH, SPAN
+{
+    color: #000000;
+}
+
+TD
+{
+    color: #000000;
+    padding: 4pt;
+}
+
+TT
+{
+	font-size: 90%;
+    font-family: "Courier New", Courier, monospace;
+    color: #000000;
+}
+
+
+
+PRE
+{
+	font-size: 90%;
+	font-family: "Courier New";
+    padding: 5px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #CCCCCC;
+    background-color: #F4F4F4;
+}
+
+
+
+BLOCKQUOTE
+{
+    color: #000000;
+    margin-right: 5px;
+}
+
+
+TABLE
+{
+    border-collapse: collapse;
+    border-spacing:0;
+    border: 1px thin black;
+    empty-cells: hide;
+}
+
+
+
+.variablelist
+{
+    padding-top: 10;
+    padding-bottom:10;
+    margin:0;
+}
+
+.itemizedlist
+{
+    padding-top: 0;
+    padding-bottom:0;
+    margin:0;
+}
+
+.term
+{
+    font-weight:bold;
+}

@@ -1,0 +1,107 @@
+<!-- <!DOCTYPE chapter SYSTEM "../docbook-xml/docbookx.dtd"> -->
+<chapter id="Nullables">
+	<title>Nullables</title>
+
+
+	<abstract id="Nullables-abstract">
+		<title>What is Nullables?</title>
+		<formalpara>
+			<title>Nullables is an add-in for <ulink url="http://www.nhibernate.org">NHibernate</ulink> contributed by Donald L Mull Jr. (aka <emphasis>luggage</emphasis>)</title>
+			<para>Most database systems allow base types (like <emphasis>int</emphasis> or <emphasis>bool</emphasis>) to be null. This means that a boolean column can take the values <emphasis>0</emphasis>, <emphasis>1</emphasis> or <emphasis>null</emphasis>, where <emphasis>null</emphasis> doesn't have the same meaning as <emphasis>0</emphasis>. But it is not possible with .NET 1.x; a bool is always either true or false.</para>
+		</formalpara>
+		<para>Nullables makes it possible to use nullable base types in NHibernate. Note that .NET 2.0 has this feature.</para>
+	</abstract>
+
+
+	<section id="Nullables-howto">
+		<title>How to use it?</title>
+		<para>Here is a simple example that uses a NullableDateTime to store (optionally) a date of birth for a 'Person'.</para>
+		<programlisting>
+public <emphasis role="strong">class Person</emphasis>
+{
+    int _id;
+    string _name;
+    <emphasis role="strong">Nullables.NullableDateTime</emphasis> _dateOfBirth;
+
+    public Person()
+    {
+    }
+
+    public int Id
+    {
+        get { return this._id; }
+    }
+
+    public string Name
+    {
+        get { return this._name; }
+        set { this._name = value; }
+    }
+
+    public <emphasis role="strong">Nullables.NullableDateTime</emphasis> DateOfBirth
+    {
+        get { return this._dateOfBirth; }
+        set { this._dateOfBirth = value; }
+    }
+}</programlisting>
+
+		<para>As you can see, <emphasis>DateOfBirth</emphasis> has the type <emphasis>Nullables.NullableDateTime</emphasis> (instead of <emphasis>System.DateTime</emphasis>).</para>
+
+		<para>Here is the mapping</para>
+		<programlisting><![CDATA[
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+    <class name="Example.Person, Example" table="Person">
+        <id name="Id" access="field.camelcase-underscore" unsaved-value="0">
+            <generator class="native" />
+        </id>
+        <property name="Name" type="String" length="200" />
+        <]]>property name="<emphasis>DateOfBirth</emphasis>" type="<emphasis role="strong">Nullables.NHibernate.NullableDateTimeType</emphasis>, Nullables.NHibernate"<![CDATA[ />
+    </class>
+</hibernate-mapping>]]></programlisting>
+
+		<important><para>In the mapping, the type of <emphasis>DateOfBirth</emphasis> <emphasis role="strong">must</emphasis> be <emphasis>Nullables.NHibernate.NullableDateTimeType</emphasis>.</para>
+		<para><emphasis>Nullables.NHibernate.NullableXXXType</emphasis>s are wrapper types used to translate Nullables types to Database types.</para></important>
+
+		<para>Here is a piece of code using this example:</para>
+		<programlisting>
+Person per = new Person();
+
+textBox1.Text = per.DateOfBirth.Value.ToString() // will throw an exception when there is no value.
+
+textBox1.Text = per.DateOfBirth.ToString() // will work. it will return an empty string if there is no value.
+
+textBox1.Text = (per.DateOfBirth.HasValue ? per.DateOfBirth.Value.ToShortDateString() : "Unknown") // friendly message
+
+per.DateOfBirth = new System.DateTime(1979, 11, 8); // implicit cast from the "plain" System.DateTime.
+per.DateOfBirth = new NullableDateTime(new System.DateTime(1979, 11, 8)); // the long way.
+
+per.DateOfBirth = null; // this works.
+per.DateOfBirth = NullableDateTime.Default; // this is more correct.</programlisting>
+	</section>
+
+<!--
+
+	<section id="Nullables-tips">
+		<title>Tips</title>
+		<itemizedlist>
+			<listitem><para>!</para></listitem>
+		</itemizedlist>
+	</section>
+
+
+	<section id="Nullables-todo">
+		<title>Know issues and TODOs</title>
+		<para>Read TODOs in the source code ;)</para>
+		<para>!</para>
+	</section>
+
+
+	<section id="Nullables-devnotes">
+		<title>Developer Notes</title>
+		<para>!</para>
+	</section>
+
+-->
+
+</chapter>
