@@ -129,7 +129,7 @@
 		
 		<copy file="lgpl.txt" tofile="${build.dir}/bin/NHibernate.license.txt"  />
 		
-		<!-- copy framework-nuetral libraries -->
+		<!-- copy framework-neutral libraries -->
 		<copy todir="${build.dir}/bin">
 			<fileset basedir="lib">
 				<include name="HashCodeProvider.*" />
@@ -255,31 +255,22 @@
 			</current>
 		</clover-report>
 	</target>
-	
-	<target name="doc" depends="init" description="Builds the API documentation and the Help Documentation" >
-		<call target="sdkdoc" />
+
+	<target name="doc" depends="init" description="Builds the Help Documentation and the API documentation" >
+		<call target="doc-manual" /><!-- Call this first because it deletes the directory /build/doc/ -->
+		<call target="doc-reference" />
+	</target>
+
+	<target name="doc-manual" depends="init" description="Builds the Help Documentation" >
 		<property name="lang" value="en" />
-		<nant target="clean build" buildfile="doc/reference/doc.build">
+		<nant target="clean build" buildfile="doc/documentation.build">
 			<properties>
 				<property name="lang" value="${lang}" />
 			</properties>
 		</nant>
-		<if test="${vshik.installed}">
-			
-			<!-- 
-				move the generated Help2 (HxS) files from the sdk that
-				were built by ndoc into the help2 folder for this build.
-			-->
-			<move flatten="true" todir="${build.dir}/doc/${lang}/help2/Titles">
-				<fileset basedir="${build.dir}/doc/sdk">
-					<include name="**/*.HxS" />
-				</fileset>
-			</move>
-			
-		</if>
 	</target>
-	
-	<target name="sdkdoc" depends="init" description="Generates MSDN sytle documentation">
+
+	<target name="doc-reference" depends="init" description="Generates the API documentation (in MSDN sytle and VS.NET 2003 if available)">
 		<ndoc>
 			<assemblies basedir="${build.dir}/bin">
 				<include name="NHibernate.dll" />
@@ -291,8 +282,8 @@
 			</summaries>
 			<documenters>
 				<documenter name="MSDN">
-					<property name="OutputDirectory" value="${build.dir}/doc/sdk" />
-					<property name="HtmlHelpName" value="NHibernate-SDK" />
+					<property name="OutputDirectory" value="${build.dir}/doc/temp" />
+					<property name="HtmlHelpName" value="NHibernate.Reference" />
 					<property name="IncludeFavorites" value="False" />
 					<property name="Title" value="NHibernate Class Library - v.${project.version}" />
 					<property name="SplitTOCs" value="False" />
@@ -326,13 +317,18 @@
 					<property name="AutoDocumentConstructors" value="True" />
 					<property name="DocumentAttributes" value="True" />
 					<property name="ShowTypeIdInAttributes" value="False" />
-					<property name="DocumentedAttributes" value="True" />
+					<property name="DocumentedAttributes" value="" />
 					<property name="GetExternalSummaries" value="True" />
 					<property name="EditorBrowsableFilter" value="Off" />
 					<property name="UseNDocXmlFile" value="" />
 				</documenter>
 			</documenters> 
 		</ndoc>
+		<copy todir="${build.dir}/doc">
+			<fileset basedir="${build.dir}/doc/temp">
+				<include name="*.chm" />
+			</fileset>
+		</copy>
 		
 		<if test="${vshik.installed}">
 			<ndoc>
@@ -346,8 +342,8 @@
 				</summaries>
 				<documenters>
 					<documenter name="VS.NET 2003">
-						<property name="OutputDirectory" value="${build.dir}/doc/sdk" />
-						<property name="HtmlHelpName" value="NHibernate-SDK" />
+						<property name="OutputDirectory" value="${build.dir}/doc/temp" />
+						<property name="HtmlHelpName" value="NHibernate.Reference" />
 						<property name="Title" value="NHibernate Class Library - v.${project.version}" />
 						<property name="HeaderHtml" value="" />
 						<property name="FooterHtml" value="" />
@@ -371,21 +367,26 @@
 						<property name="AutoDocumentConstructors" value="True" />
 						<property name="DocumentAttributes" value="True" />
 						<property name="ShowTypeIdInAttributes" value="False" />
-						<property name="DocumentedAttributes" value="True" />
+						<property name="DocumentedAttributes" value="" />
 						<property name="EditorBrowsableFilter" value="Off" />
 						<property name="UseNDocXmlFile" value="" />
 					</documenter>
 				</documenters> 
 			</ndoc>
+
+			<copy todir="${build.dir}/doc">
+				<fileset basedir="${build.dir}/doc/temp">
+					<include name="*.HxS" />
+				</fileset>
+			</copy>
+			<copy todir="${build.dir}/doc">
+				<fileset basedir="doc/Help2">
+					<include name="*" />
+				</fileset>
+			</copy>
 		</if>
-		<delete>
-			<!-- remove all of the html, gif, etc... files and leave only the chm and HxS -->
-			<fileset basedir="${build.dir}/doc/sdk">
-				<include name="**" />
-				<exclude name="*SDK.chm" />
-				<exclude name="*SDK.HxS" />
-			</fileset>
-		</delete>
+
+		<delete dir="${build.dir}/doc/temp" />
 		
 	</target>
 	
@@ -410,6 +411,7 @@
 				<include name="src/**" />
 				
 				<include name="NHibernateSolution.build" />
+				<include name="gfdl.txt" />
 				<include name="lgpl.txt" />
 				<include name="releasenotes.txt" />
 				<include name="readme.html" />

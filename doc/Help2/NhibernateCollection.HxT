@@ -13,8 +13,8 @@
    PluginStyle="Hierarchical"
    PluginTitle="NHibernate">
 
-   <HelpTOCNode NodeType="TOC" Url="reference"/>
-   <HelpTOCNode Title="NHibernate SDK">
-      <HelpTOCNode NodeType="TOC" Url="NHibernate-SDK"/>
+   <HelpTOCNode NodeType="TOC" Url="Nhibernate.Documentation"/>
+   <HelpTOCNode Title="NHibernate Reference">
+      <HelpTOCNode NodeType="TOC" Url="NHibernate.Reference"/>
    </HelpTOCNode>
 </HelpTOC>

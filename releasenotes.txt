@@ -1,3 +1,7 @@
+In CVS
+========================
+- Heavy refactoring of the Documentation; and now it contains a Documentation for NHibernate Contributions (Pierre Henri Kuaté)
+
 Build 0.9.1.0
 ========================
 - Fixed bug in limit clause generation on MySQL.
