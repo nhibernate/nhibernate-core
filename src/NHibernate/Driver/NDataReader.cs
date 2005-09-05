@@ -105,7 +105,6 @@ namespace NHibernate.Driver
 		{
 			get
 			{
-				// TODO:  Add NDataReader.RecordsAffected getter implementation
 				throw new NotImplementedException( "NDataReader should only be used for SELECT statements!" );
 			}
 		}

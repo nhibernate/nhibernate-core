@@ -367,7 +367,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetTime( int position, DateTime val )
 		{
-			SetParameter( position, val, NHibernateUtil.DateTime ); //TODO: change to time
+			SetParameter( position, val, NHibernateUtil.Time );
 			return this;
 		}
 
@@ -571,7 +571,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetTime( string name, DateTime val )
 		{
-			SetParameter( name, val, NHibernateUtil.DateTime ); //TODO: change to time
+			SetParameter( name, val, NHibernateUtil.Time ); 
 			return this;
 		}
 

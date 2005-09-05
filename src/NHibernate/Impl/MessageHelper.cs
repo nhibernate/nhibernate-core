@@ -17,11 +17,11 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// 
+		/// Generate small message that can be used in traces and exception messages.
 		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
+		/// <param name="clazz">The <see cref="System.Type"/> to create the string from.</param>
+		/// <param name="id">The identifier of the object.</param>
+		/// <returns>A descriptive <see cref="String" /> in the format of <c>[classname#id]</c></returns>
 		public static string InfoString( System.Type clazz, object id )
 		{
 			StringBuilder s = new StringBuilder();
@@ -52,9 +52,9 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Generate small message that can be used in traces and exception messages.
 		/// </summary>
-		/// <param name="persister">The persister for the class in question</param>
+		/// <param name="persister">The <see cref="IClassPersister"/> for the class in question</param>
 		/// <param name="id">The id</param>
-		/// <returns>String on the form [FooBar#id]</returns>
+		/// <returns>A descriptive <see cref="String" /> in the form <c>[FooBar#id]</c></returns>
 		public static string InfoString( IClassPersister persister, object id )
 		{
 			StringBuilder s = new StringBuilder();
@@ -83,10 +83,10 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// 
+		/// Generate small message that can be used in traces and exception messages.
 		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
+		/// <param name="persister">The <see cref="IClassPersister"/> for the class in question</param>
+		/// <returns>A descriptive <see cref="String" /> in the form <c>[FooBar]</c></returns>
 		public static String InfoString( IClassPersister persister )
 		{
 			StringBuilder s = new StringBuilder();
@@ -104,11 +104,11 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// 
+		/// Generate small message that can be used in traces and exception messages.
 		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> for the class in question</param>
+		/// <param name="id">The id</param>
+		/// <returns>A descriptive <see cref="String" /> in the form <c>[collectionrole#id]</c></returns>
 		public static String InfoString( ICollectionPersister persister, object id )
 		{
 			StringBuilder s = new StringBuilder();

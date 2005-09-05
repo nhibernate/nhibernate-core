@@ -25,7 +25,6 @@ namespace NHibernate.Connection
 		public override void CloseConnection( IDbConnection conn )
 		{
 			base.CloseConnection( conn );
-			//TODO: make sure I want to do this - pretty sure I do because of Oracle problems.
 			conn.Dispose();
 		}
 

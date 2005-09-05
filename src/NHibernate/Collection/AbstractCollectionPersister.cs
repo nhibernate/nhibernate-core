@@ -1138,9 +1138,7 @@ namespace NHibernate.Collection
 			}
 			catch ( Exception e )
 			{
-				// TODO: Improve the exception info, original java shown below
-				// throw convert( sqle, "could not initialize collection: " + MessageHelper.infoString(this, key) );
-				throw new Exception( "could not initialize collection: ", e );
+				throw new Exception( "could not initialize collection: " + MessageHelper.InfoString( this, key ), e );
 			}
 		}
 

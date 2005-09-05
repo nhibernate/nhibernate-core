@@ -84,10 +84,5 @@ namespace NHibernate.Collection
 		{
 			this.map = new SortedList( comparer );
 		}
-
-
-		//TODO: H2.0.3 - there are many more methods - probably because Java has a much
-		// better set of interfaces for Collections than .NET does.
-
 	}
 }
