@@ -1,5 +1,7 @@
 using System;
 
+using NHibernate.DomainModel.NHSpecific;
+
 namespace NHibernate.DomainModel
 {
 
@@ -43,7 +45,7 @@ namespace NHibernate.DomainModel
 			set;
 		}
 
-		int NullInt32
+		NullableInt32 Null
 		{
 			get;
 			set;

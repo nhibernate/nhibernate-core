@@ -328,9 +328,35 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Requires ICriteria.CreateCriteria")]
 		public void CriteriaCollection()
 		{
+			ISession s = OpenSession();
+			Baz bb = (Baz) s.CreateCriteria(typeof( Baz )).UniqueResult();
+			Baz baz = new Baz();
+			s.Save(baz);
+			s.Flush();
+			s.Close();
+
+			s = OpenSession();
+			Baz b = (Baz) s.CreateCriteria(typeof( Baz )).UniqueResult();
+			Assert.IsTrue( NHibernateUtil.IsInitialized( b.TopGlarchez ) );
+			Assert.AreEqual( 0, b.TopGlarchez.Count );
+			s.Delete(b);
+			s.Flush();
+
+			s.CreateCriteria( typeof( Baz ) )
+				.CreateCriteria( "TopFoos" )
+					.Add( Expression.Expression.IsNotNull( "id" ) )
+				.List();
+
+			s.CreateCriteria(typeof( Baz ))
+				.CreateCriteria( "Foo" )
+					.CreateCriteria( "Component.Glarch" )
+						.CreateCriteria( "ProxySet" )
+							.Add( Expression.Expression.IsNotNull( "id" ) )
+				.List();
+
+			s.Close();
 		}
 
 		private static bool IsEmpty( IEnumerable enumerable )

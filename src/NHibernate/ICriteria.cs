@@ -1,35 +1,46 @@
 using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Expression;
+using NHibernate.Transform;
 
 namespace NHibernate
 {
-	///<summary>
-	///Criteria is a simplified API for retrieving entities
-	///by composing Expression objects. This is a very
-	///convenient approach for functionality like "search" screens
-	///where there is a variable number of conditions to be placed
-	///upon the result set.
-	///
-	///The Session is a factory for ICriteria. 
-	///Expression instances are usually obtained via 
-	///the factory methods on Expression. eg: 
-	///<code>
+	/// <summary>
+	/// <p>
+	/// Criteria is a simplified API for retrieving entities
+	/// by composing Expression objects. This is a very
+	/// convenient approach for functionality like "search" screens
+	/// where there is a variable number of conditions to be placed
+	/// upon the result set.
+	/// </p>
+	/// <p>
+	/// The Session is a factory for ICriteria. 
+	/// Expression instances are usually obtained via 
+	/// the factory methods on Expression. eg:
+	/// <code>
 	/// IList cats = session.CreateCriteria(typeof(Cat)) 
 	///     .Add( Expression.Like("name", "Iz%") ) 
 	///     .Add( Expression.Gt( "weight", minWeight ) ) 
 	///     .AddOrder( Order.Asc("age") ) 
 	///     .List(); 
-	///</code>
-	///In the current implementation, conditions may only be placed 
-	///upon properties of the class being retrieved (and its 
-	///components). Hibernate's query language is much more general
-	///and should be used for non-simple cases.
-	///
-	///This is an experimental API
-	///</summary>
+	/// </code> 
+	/// You may navigate associations using <c>CreateAlias()</c> or
+	/// <c>CreateCriteria()</c>.
+	/// <code>
+	/// IList cats = session.CreateCriteria(typeof(Cat))
+	///		.CreateCriteria("kittens")
+	///			.Add( Expression.like("name", "Iz%") )
+	///			.List();
+	///	</code>
+	/// Hibernate's query language is much more general
+	/// and should be used for non-simple cases.
+	/// </p>
+	/// This is an experimental API
+	/// </summary>
 	public interface ICriteria
 	{
+		// NH: Static declarations moved to CriteriaUtil class (CriteriaUtil.cs)
+
 		/// <summary>
 		/// Set a limit upon the number of objects to be retrieved
 		/// </summary>
@@ -42,17 +53,14 @@ namespace NHibernate
 		/// <param name="firstResult"></param>
 		ICriteria SetFirstResult( int firstResult );
 
+		// SetFetchSize - not ported from H2.1
+
 		/// <summary>
 		/// Set a timeout for the underlying ADO.NET query
 		/// </summary>
 		/// <param name="timeout"></param>
 		/// <returns></returns>
 		ICriteria SetTimeout( int timeout );
-
-		/// <summary>
-		/// Gets the <see cref="RowSelection"/> for the ICriteria
-		/// </summary>
-		RowSelection Selection { get; }
 
 		/// <summary>
 		/// Add an Expression to constrain the results to be retrieved.
@@ -67,7 +75,6 @@ namespace NHibernate
 		/// <param name="order"></param>
 		ICriteria AddOrder( Order order );
 
-
 		/// <summary>
 		/// Get the results
 		/// </summary>
@@ -75,36 +82,14 @@ namespace NHibernate
 		IList List();
 
 		/// <summary>
-		/// Contains all of the Expressions that were added as one 
-		/// resulting expression.
+		/// Convenience method to return a single instance that matches
+		/// the query, or null if the query returns no results.
 		/// </summary>
-		Expression.ICriterion Expression { get; }
-
-		/// <summary>
-		/// Provides an Enumerator to Iterate through the Expressions 
-		/// that have been added
-		/// </summary>
-		/// <returns></returns>
-		IEnumerator IterateExpressions();
-
-		/// <summary>
-		/// Provides an Enumerator to Iterate through the Order clauses
-		/// that have been added.
-		/// </summary>
-		/// <returns></returns>
-		IEnumerator IterateOrderings();
-
-		/// <summary>
-		/// The PersistentClass that is the entry point for the Criteria.
-		/// </summary>
-		System.Type PersistentClass { get; }
-
-		/// <summary>
-		/// Gets the association's fetching strategy.
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
-		FetchMode GetFetchMode( string path );
+		/// <returns>the single result or <c>null</c></returns>
+		/// <exception cref="HibernateException">
+		/// If there is more than one matching result
+		/// </exception>
+		object UniqueResult();
 
 		/// <summary>
 		/// Specify an association fetching strategy.  Currently, only
@@ -114,6 +99,55 @@ namespace NHibernate
 		/// <param name="mode">The Fetch mode.</param>
 		/// <returns></returns>
 		ICriteria SetFetchMode( string associationPath, FetchMode mode );
+
+		/// <summary>
+		/// Join an association, assigning an alias to the joined entity
+		/// </summary>
+		/// <param name="associationPath"></param>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		ICriteria CreateAlias( string associationPath, string alias );
+
+		/// <summary>
+		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity
+		/// </summary>
+		/// <param name="associationPath"></param>
+		/// <returns></returns>
+		ICriteria CreateCriteria( string associationPath );
+
+		/// <summary>
+		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity,
+		/// assigning the given alias
+		/// </summary>
+		/// <param name="associationPath"></param>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		ICriteria CreateCriteria( string associationPath, string alias );
+
+		/// <summary>
+		/// Get the persistent class that this <c>ICriteria</c> applies to
+		/// </summary>
+		System.Type CriteriaClass { get; }
+
+		// NH: Deprecated methods not ported
+
+		/// <summary>
+		/// Get the persistent class that the alias refers to
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		System.Type GetCriteriaClass( string alias );
+
+		/// <summary>
+		/// Set a strategy for handling the query results. This determines the
+		/// "shape" of the query result set.
+		/// <seealso cref="CriteriaUtil.RootEntity"/>
+		/// <seealso cref="CriteriaUtil.DistinctRootEntity"/>
+		/// <seealso cref="CriteriaUtil.AliasToEntityMap"/>
+		/// </summary>
+		/// <param name="resultTransformer"></param>
+		/// <returns></returns>
+		ICriteria SetResultTransformer( IResultTransformer resultTransformer );
 
 		/// <summary>
 		/// Set the lock mode of the current entity
@@ -131,13 +165,18 @@ namespace NHibernate
 		ICriteria SetLockMode( string alias, LockMode lockMode );
 
 		/// <summary>
-		/// Convenience method to return a single instance that matches
-		/// the query, or null if the query returns no results.
+		/// Enable caching of this query result set
 		/// </summary>
-		/// <returns>the single result or <c>null</c></returns>
-		/// <exception cref="HibernateException">
-		/// If there is more than one matching result
-		/// </exception>
-		object UniqueResult();
+		/// <param name="cacheable"></param>
+		/// <returns></returns>
+		ICriteria SetCacheable( bool cacheable );
+
+		/// <summary>
+		/// Set the name of the cache region.
+		/// </summary>
+		/// <param name="cacheRegion">the name of a query cache region, or <c>null</c>
+		/// for the default query cache</param>
+		/// <returns></returns>
+		ICriteria SetCacheRegion( string cacheRegion );
 	}
 }

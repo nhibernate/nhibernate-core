@@ -209,7 +209,7 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
 		{
-			return new SqlString(string.Empty);
+			return SqlString.Empty;
 		}
 
 		/// <summary>
@@ -221,7 +221,7 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override SqlString WhereJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
 		{
-			return null;
+			return SqlString.Empty;
 		}
 
 		/// <summary>
@@ -233,7 +233,7 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public override SqlString SelectFragment( string alias, string suffix, bool includeCollectionColumns )
 		{
-			return includeCollectionColumns ? SelectFragment( alias ) : null ;
+			return includeCollectionColumns ? SelectFragment( alias ) : SqlString.Empty;
 		}
 	}
 }

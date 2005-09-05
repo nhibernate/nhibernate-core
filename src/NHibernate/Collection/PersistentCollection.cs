@@ -170,7 +170,7 @@ namespace NHibernate.Collection
 		{
 			if( additions != null )
 			{
-				additions.Clear();
+				additions = null;
 			}
 		}
 
@@ -322,10 +322,10 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Associate the collection with the given session.
 		/// </summary>
 		/// <param name="session"></param>
-		/// <returns></returns>
+		/// <returns>false if the collection was already associated with the session</returns>
 		public bool SetCurrentSession( ISessionImplementor session )
 		{
 			if( session == this.session )

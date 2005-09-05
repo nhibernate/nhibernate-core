@@ -26,13 +26,8 @@ namespace NHibernate.Loader
 		private ISet querySpaces = new HashedSet();
 		private IType[] resultTypes;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="factory"></param>
-		/// <param name="criteria"></param>
-		public CriteriaLoader( IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl criteria ) : base( persister, factory )
+		public CriteriaLoader( IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl criteria )
+			: base( persister, factory )
 		{
 			this.criteria = criteria;
 
@@ -41,48 +36,64 @@ namespace NHibernate.Loader
 			resultTypes = new IType[ 1 ];
 			resultTypes[ 0 ] = NHibernateUtil.Entity( persister.MappedClass );
 
-			StringBuilder orderByBuilder = new StringBuilder( 60 );
+			SqlStringBuilder condition = new SqlStringBuilder( 10 );
 
-			bool commaNeeded = false;
+			bool foundCriterion = false;
 
-			IEnumerator iter = criteria.IterateOrderings();
-			while( iter.MoveNext() )
+			foreach( CriteriaImpl.CriterionEntry ee in criteria.IterateExpressionEntries() )
 			{
-				Order ord = ( Order ) iter.Current;
-
-				if( commaNeeded )
+				if( foundCriterion )
 				{
-					orderByBuilder.Append( StringHelper.CommaSpace );
+					condition.Add( " and " );
 				}
-				commaNeeded = true;
 
-				orderByBuilder.Append( ord.ToSqlString( factory, criteria.PersistentClass, Alias ) );
+				SqlString sqlString = ee.Criterion.ToSqlString(
+					factory,
+					criteria.GetPersistentClass( ee.Alias ),
+					ee.Alias,
+					criteria.AliasClasses );
+				condition.Add( sqlString );
+
+				foundCriterion = true;
+			}
+
+			if( !foundCriterion )
+			{
+				condition.Add( "1=1" ); // TODO: fix this ugliness
+			}
+
+			StringBuilder orderBy = new StringBuilder( 30 );
+			bool foundOrder = false;
+
+			foreach( Order ord in criteria.IterateOrderings() )
+			{
+				if( foundOrder )
+				{
+					orderBy.Append( StringHelper.CommaSpace );
+				}
+				orderBy.Append( ord.ToSqlString( factory, criteria.CriteriaClass, Alias ) );
+				foundOrder = true;
 			}
 
 			IList associations = WalkTree( persister, Alias, factory );
 			InitClassPersisters( associations );
-			// TODO: H2.1 SYNCH - new Hashtable() is a HACK until it is all up to H2.1 code
-			InitStatementString( associations, criteria.Expression.ToSqlString( factory, criteria.PersistentClass, Alias, new Hashtable() ), orderByBuilder.ToString(), factory );
+			InitStatementString( associations, condition.ToSqlString(), orderBy.ToString(), factory );
 
 			PostInstantiate();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public IList List( ISessionImplementor session )
 		{
 			ArrayList values = new ArrayList();
 			ArrayList types = new ArrayList();
 
-			IEnumerator iter = criteria.IterateExpressions();
-			while( iter.MoveNext() )
+			foreach( CriteriaImpl.CriterionEntry ce in criteria.IterateExpressionEntries() )
 			{
-				Expression.ICriterion expr = ( Expression.ICriterion ) iter.Current;
-				// TODO: h2.1 SYNCH - the new Hashtable() is a HACK
-				TypedValue[ ] tv = expr.GetTypedValues(  session.Factory, criteria.PersistentClass,  new Hashtable() );
+				TypedValue[ ] tv = ce.Criterion.GetTypedValues(
+					session.Factory,
+					criteria.GetCriteriaClass( ce.Alias ),
+					criteria.AliasClasses );
+
 				for( int i = 0; i < tv.Length; i++ )
 				{
 					values.Add( tv[ i ].Value );
@@ -92,8 +103,6 @@ namespace NHibernate.Loader
 			object[ ] valueArray = values.ToArray();
 			IType[ ] typeArray = ( IType[ ] ) types.ToArray( typeof( IType ) );
 
-			// TODO: 2.1 Uncomment once CriteriaImpl up to standard
-			/*
 			RowSelection selection = new RowSelection();
 			selection.FirstRow = criteria.FirstResult;
 			selection.MaxRows = criteria.MaxResults;
@@ -103,36 +112,15 @@ namespace NHibernate.Loader
 			QueryParameters qp = new QueryParameters( typeArray, valueArray, criteria.LockModes, selection );
 			qp.Cacheable = criteria.Cacheable;
 			qp.CacheRegion = criteria.CacheRegion;
-			*/
-
-			QueryParameters qp = new QueryParameters( typeArray, valueArray, criteria.LockModes, criteria.Selection );
 
 			return List( session, qp, querySpaces, resultTypes );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="row"></param>
-		/// <param name="rs"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		protected override object GetResultColumnOrRow( object[ ] row, IDataReader rs, ISessionImplementor session )
 		{
-			//return criteria.ResultTransformer.TransformTuple( row, EntityAliases );
-			return row[ row.Length - 1 ];
+			return criteria.ResultTransformer.TransformTuple( row, EntityAliases );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="config"></param>
-		/// <param name="path"></param>
-		/// <param name="table"></param>
-		/// <param name="foreignKeyColumns"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		protected override JoinType GetJoinType(
 			IAssociationType type,
 			OuterJoinFetchStrategy config,
@@ -160,24 +148,12 @@ namespace NHibernate.Loader
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		/// <remarks>Uses the discriminator, to narrow the select to instances of the queried subclass.</remarks>
 		protected override SqlString GetWhereFragment( )
 		{
 			return ( (IQueryable) Persister).QueryWhereFragment( Alias, true, true );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="className"></param>
-		/// <param name="n"></param>
-		/// <param name="path"></param>
-		/// <param name="isLinkTable"></param>
-		/// <returns></returns>
 		protected override string GenerateTableAlias( string className, int n, string path, bool isLinkTable )
 		{
 			if ( !isLinkTable )
@@ -191,28 +167,16 @@ namespace NHibernate.Loader
 			return base.GenerateTableAlias( className, n, path, isLinkTable );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableName"></param>
-		/// <returns></returns>
 		protected override string GenerateRootAlias( string tableName )
 		{
-			return CriteriaImpl.RootAlias;
+			return CriteriaUtil.RootAlias;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public ISet QuerySpaces
 		{
 			get { return querySpaces; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="space"></param>
 		protected override void AddToPropertySpaces( object space )
 		{
 			querySpaces.Add( space );
@@ -231,11 +195,6 @@ namespace NHibernate.Loader
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="lockModes"></param>
-		/// <returns></returns>
 		protected override LockMode[] GetLockModes( IDictionary lockModes )
 		{
 			string[] aliases = EntityAliases;
@@ -249,16 +208,9 @@ namespace NHibernate.Loader
 			return lockModesArray;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="results"></param>
-		/// <returns></returns>
 		protected override IList GetResultList( IList results )
 		{
-			// TODO: 2.1 Transform the results
-			//return criteria.ResultTransformer.TransformList( results );
-			return results;
+			return criteria.ResultTransformer.TransformList( results );
 		}
 	}
 }

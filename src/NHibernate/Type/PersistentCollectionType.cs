@@ -359,7 +359,7 @@ namespace NHibernate.Type
 			try
 			{
 				IQueryableCollection collectionPersister = (IQueryableCollection) factory.GetCollectionPersister( role );
-				if ( collectionPersister.ElementType.IsEntityType )
+				if ( !collectionPersister.ElementType.IsEntityType )
 				{
 					throw new MappingException( string.Format( "collection was not an association: {0}", collectionPersister.Role ) ) ;
 				}

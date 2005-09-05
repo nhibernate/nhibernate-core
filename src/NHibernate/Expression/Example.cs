@@ -68,14 +68,21 @@ namespace NHibernate.Expression
 		{
 			private static bool IsZero( object value )
 			{
-				if( value is IConvertible )
+				// Only try to check IConvertibles, to be able to handle various flavors
+				// of nullable numbers, etc. Skip strings.
+				if( value is IConvertible && !(value is string) )
 				{
 					try
 					{
 						return Convert.ToInt64( value ) == 0L;
 					}
+					catch( FormatException )
+					{
+						// Ignore
+					}
 					catch( InvalidCastException )
 					{
+						// Ignore
 					}
 				}
 
@@ -94,7 +101,8 @@ namespace NHibernate.Expression
 		/// returned by <c>propertyValue.ToString()</c>.
 		/// </summary>
 		/// <remarks>
-		/// This selector is not present in H2.1. It may be useful for nullable types.
+		/// This selector is not present in H2.1. It may be useful if nullable types
+		/// are used for some properties.
 		/// </remarks>
 		private class NotNullOrEmptyStringPropertySelector : IPropertySelector
 		{
@@ -102,11 +110,7 @@ namespace NHibernate.Expression
 			{
 				if( propertyValue != null )
 				{
-					// TODO: find out why we are checking ToString() - why is null
-					// and not null not good enough???
-					// used to be propertyValue.ToString()!="" but that creates an 
-					// extra string in memory
-					return ( propertyValue.ToString().Length > 0 );
+					return propertyValue.ToString().Length > 0;
 				}
 				else
 				{

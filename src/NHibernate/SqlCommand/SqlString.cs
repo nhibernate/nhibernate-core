@@ -17,6 +17,8 @@ namespace NHibernate.SqlCommand
 		private readonly object[ ] sqlParts;
 		private int[ ] parameterIndexes;
 
+		public static readonly SqlString Empty = new SqlString(new object[0]);
+
 		/// <summary>
 		/// 
 		/// </summary>

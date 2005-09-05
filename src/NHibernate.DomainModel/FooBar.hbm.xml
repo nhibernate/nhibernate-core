@@ -54,7 +54,7 @@
 		<property name="Timestamp" type="Timestamp" column="timestamp_"/>
 		<property name="Boolean" column="boolean_" type="boolean"/>
 		<property name="Bool" column="bool_"/>
-		<property name="NullInt32" column="null_"/>
+		<property name="Null" column="null_" type="NHibernate.DomainModel.NHSpecific.NullableInt32Type, NHibernate.DomainModel"/>
 		<property name="Short" column="short_" type="short"/>
 		<property name="Char" column="char_" type="character"/>
 		<property name="Zero" column="zero_"/>

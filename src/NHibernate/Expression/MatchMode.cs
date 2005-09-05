@@ -87,8 +87,7 @@ namespace NHibernate.Expression
 		public static readonly MatchMode Anywhere = new AnywhereMatchMode();
 
 		/// <summary>
-		/// The <see cref="MatchMode"/> that exactly matches the entire
-		/// string to the pattern.
+		/// The <see cref="MatchMode"/> that matches the entire string to the pattern.
 		/// </summary>
 		private class ExactMatchMode : MatchMode
 		{
@@ -111,8 +110,7 @@ namespace NHibernate.Expression
 		}
 
 		/// <summary>
-		/// The <see cref="MatchMode"/> that exactly matches the string
-		/// by appending "<c>%</c>" to the beginning.
+		/// The <see cref="MatchMode"/> that matches the start of the string to the pattern.
 		/// </summary>
 		private class StartMatchMode : MatchMode
 		{
@@ -127,16 +125,15 @@ namespace NHibernate.Expression
 			/// Converts the string to the Start MatchMode.
 			/// </summary>
 			/// <param name="pattern">The string to convert to the appropriate match pattern.</param>
-			/// <returns>The <c>pattern</c> with a "<c>%</c>" appended at the beginning.</returns>
+			/// <returns>The <c>pattern</c> with a "<c>%</c>" appended at the end.</returns>
 			public override string ToMatchString(string pattern)
 			{
-				return '%' + pattern;
+				return pattern + '%';
 			}
 		}
 
 		/// <summary>
-		/// The <see cref="MatchMode"/> that exactly matches the string
-		/// by appending "<c>%</c>" to the end.
+		/// The <see cref="MatchMode"/> that matches the end of the string to the pattern.
 		/// </summary>
 		private class EndMatchMode : MatchMode
 		{
@@ -151,10 +148,10 @@ namespace NHibernate.Expression
 			/// Converts the string to the End MatchMode.
 			/// </summary>
 			/// <param name="pattern">The string to convert to the appropriate match pattern.</param>
-			/// <returns>The <c>pattern</c> with a "<c>%</c>" appended at the end.</returns>
+			/// <returns>The <c>pattern</c> with a "<c>%</c>" appended at the beginning.</returns>
 			public override string ToMatchString(string pattern)
 			{
-				return pattern + '%';
+				return '%' + pattern;
 			}
 
 		}

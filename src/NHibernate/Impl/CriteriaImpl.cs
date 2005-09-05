@@ -1,9 +1,13 @@
+using System;
 using System.Collections;
+
 using NHibernate.Engine;
+using NHibernate.Expression;
 using NHibernate.Persister;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+
 using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Impl
@@ -20,36 +24,206 @@ namespace NHibernate.Impl
 		private IDictionary aliasByAssociationPath = new Hashtable();
 		private IDictionary classByAlias = new Hashtable();
 		private IDictionary lockModes = new Hashtable();
-		private int maxResults;
+		private int maxResults = RowSelection.NoValue;
 		private int firstResult;
-		private int timeout;
-		private int fetchSize;
+		private int timeout = RowSelection.NoValue;
+		private int fetchSize = RowSelection.NoValue;
 		private System.Type persistentClass;
 		private SessionImpl session;
-		private IResultTransformer resultTransformer; //== new RootEntityResultTransformer();
+		private IResultTransformer resultTransformer = new RootEntityResultTransformer();
 		private bool cacheable;
 		private string cacheRegion;
-		private RowSelection selection = new RowSelection();
 
 		private int counter = 0;
 
-		private NExpression.Junction conjunction = NExpression.Expression.Conjunction();
+		private string GenerateAlias()
+		{
+			return "x" + counter++ + StringHelper.Underscore;
+		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public const string RootAlias = "this";
+		public sealed class Subcriteria : ICriteria
+		{
+			// Added to simulate Java-style inner class
+			private CriteriaImpl parent;
+			private string rootAlias;
+			private string rootPath;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="session"></param>
+			internal Subcriteria( CriteriaImpl parent, string rootAlias, string rootPath )
+			{
+				this.parent = parent;
+				this.rootAlias = rootAlias;
+				this.rootPath = rootPath;
+			}
+
+			public ICriteria Add( ICriterion expression )
+			{
+				parent.Add( rootAlias, expression );
+				return this;
+			}
+
+			public ICriteria CreateAlias( string associationPath, string alias )
+
+			{
+				parent.CreateAlias( rootAlias, associationPath, alias );
+				return this;
+			}
+
+			public ICriteria AddOrder( Order order )
+			{
+				throw new NotSupportedException( "subcriteria cannot be ordered" );
+			}
+
+			public ICriteria CreateCriteria( string associationPath )
+
+			{
+				return parent.CreateCriteriaAt( rootAlias, associationPath );
+			}
+
+			public IList List()
+			{
+				return parent.List();
+			}
+
+			public object UniqueResult()
+			{
+				return parent.UniqueResult();
+			}
+
+			public ICriteria SetFetchMode( string associationPath, FetchMode mode )
+
+			{
+				parent.SetFetchMode( StringHelper.Qualify( rootPath, associationPath ), mode );
+				return this;
+			}
+
+			public ICriteria SetFirstResult( int firstResult )
+			{
+				parent.SetFirstResult( firstResult );
+				return this;
+			}
+
+			public ICriteria SetMaxResults( int maxResults )
+			{
+				parent.SetMaxResults( maxResults );
+				return this;
+			}
+
+			public ICriteria SetTimeout( int timeout )
+			{
+				parent.SetTimeout( timeout );
+				return this;
+			}
+
+			public ICriteria SetFetchSize( int fetchSize )
+			{
+				parent.SetFetchSize( fetchSize );
+				return this;
+			}
+
+			public System.Type CriteriaClass
+			{
+				get { return parent.GetCriteriaClass( rootAlias ); }
+			}
+
+			public System.Type GetCriteriaClass( string alias )
+			{
+				return parent.GetCriteriaClass( alias );
+			}
+
+			public ICriteria CreateCriteria( string associationPath, string alias )
+
+			{
+				return parent.CreateCriteriaAt( rootAlias, associationPath, alias );
+			}
+
+			// Deprecated methods not ported: ReturnMaps, ReturnRootEntities
+
+			public ICriteria SetLockMode( LockMode lockMode )
+			{
+				parent.SetLockMode( rootAlias, lockMode );
+				return this;
+			}
+
+			public ICriteria SetLockMode( string alias, LockMode lockMode )
+			{
+				parent.SetLockMode( alias, lockMode );
+				return this;
+			}
+
+			public ICriteria SetResultTransformer( IResultTransformer resultProcessor )
+			{
+				parent.SetResultTransformer( resultProcessor );
+				return this;
+			}
+
+			public ICriteria SetCacheable( bool cacheable )
+			{
+				parent.SetCacheable( cacheable );
+				return this;
+			}
+
+			public ICriteria SetCacheRegion( string cacheRegion )
+			{
+				parent.SetCacheRegion( cacheRegion );
+				return this;
+			}
+		}
+
+		public ICriteria SetMaxResults( int maxResults )
+		{
+			this.maxResults = maxResults;
+			return this;
+		}
+
+		public ICriteria SetFirstResult( int firstResult )
+		{
+			this.firstResult = firstResult;
+			return this;
+		}
+
+		public ICriteria SetTimeout( int timeout )
+		{
+			this.timeout = timeout;
+			return this;
+		}
+
+		public ICriteria SetFetchSize( int fetchSize )
+		{
+			this.fetchSize = fetchSize;
+			return this;
+		}
+
+		public ICriteria Add( ICriterion expression )
+		{
+			Add( CriteriaUtil.RootAlias, expression );
+			return this;
+		}
+
+		public int MaxResults
+		{
+			get { return maxResults; }
+		}
+
+		public int FirstResult
+		{
+			get { return firstResult; }
+		}
+
+		public int Timeout
+		{
+			get { return timeout; }
+		}
+
+		public int FetchSize
+		{
+			get { return fetchSize; }
+		}
+
 		public CriteriaImpl( System.Type persistentClass, SessionImpl session )
 		{
 			this.persistentClass = persistentClass;
 			this.session = session;
-			this.classByAlias[ CriteriaImpl.RootAlias ] = persistentClass ;
+			this.classByAlias[ CriteriaUtil.RootAlias ] = persistentClass;
 			this.cacheable = false;
 		}
 
@@ -63,308 +237,96 @@ namespace NHibernate.Impl
 		{
 			this.persistentClass = persistentClass;
 
-			//this.classByAlias = original.ClassByAlias;
-			//this.classByAlias.put( CriteriaImpl.RootAlias, persistentClass);
-		
-			this.criteria = original.Criteria;
-			//ADDED this:
-			this.conjunction = original.conjunction;
-			this.orderings = original.Orderings;
-			this.fetchModes = original.FetchModes;
-			this.associationPathByAlias = original.AssociationPathByAlias;
-			this.aliasByAssociationPath = original.AliasByAssociationPath;
-			this.lockModes = original.LockModes;
-			this.maxResults = original.MaxResults;
-			this.firstResult = original.FirstResult;
-			this.timeout = original.Timeout;
-			this.fetchSize = original.FetchSize;
-			this.session = original.Session;
-			this.resultTransformer = original.ResultTransformer;
-			this.counter = original.Counter;
-			this.cacheable = original.Cacheable;
-			this.cacheRegion = original.CacheRegion;
-			this.selection = original.Selection;
+			this.classByAlias = original.classByAlias;
+			this.classByAlias[ CriteriaUtil.RootAlias ] = persistentClass;
+
+			this.criteria = original.criteria;
+			this.orderings = original.orderings;
+			this.fetchModes = original.fetchModes;
+			this.associationPathByAlias = original.associationPathByAlias;
+			this.aliasByAssociationPath = original.aliasByAssociationPath;
+			this.lockModes = original.lockModes;
+			this.maxResults = original.maxResults;
+			this.firstResult = original.firstResult;
+			this.timeout = original.timeout;
+			this.fetchSize = original.fetchSize;
+			this.session = original.session;
+			this.resultTransformer = original.resultTransformer;
+			this.counter = original.counter;
+			this.cacheable = original.cacheable;
+			this.cacheRegion = original.cacheRegion;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="maxResults"></param>
-		/// <returns></returns>
-		public ICriteria SetMaxResults( int maxResults )
-		{
-			selection.MaxRows = maxResults;
-			return this;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="firstResult"></param>
-		/// <returns></returns>
-		public ICriteria SetFirstResult( int firstResult )
-		{
-			selection.FirstRow = firstResult;
-			return this;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="timeout"></param>
-		/// <returns></returns>
-		public ICriteria SetTimeout( int timeout )
-		{
-			selection.Timeout = timeout;
-			return this;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fetchSize"></param>
-		/// <returns></returns>
-		public ICriteria SetFetchSize( int fetchSize )
-		{
-			this.fetchSize = fetchSize;
-			return this;
-		}
-
-		//ADDED this
-		/// <summary></summary>
-		public NExpression.ICriterion Expression
-		{
-			get { return conjunction; }
-		}
-
-		/// <summary></summary>
-		public RowSelection Selection
-		{
-			get { return selection; }
-		}
-
-		internal IList Criteria
-		{
-			get { return criteria; }
-		}
-
-		internal IList Orderings
-		{
-			get { return orderings; }
-		}
-
-		internal IDictionary LockModes
-		{
-			get { return lockModes; }
-		}
-
-		internal IDictionary FetchModes
-		{
-			get { return fetchModes; }
-		}
-
-		internal IDictionary AssociationPathByAlias
-		{
-			get { return associationPathByAlias; }
-		}
-
-		internal IDictionary AliasByAssociationPath
-		{
-			get { return aliasByAssociationPath; }
-		}
-
-		internal SessionImpl Session
-		{
-			get { return session; }
-		}
-
-		internal IResultTransformer ResultTransformer
-		{
-			get { return resultTransformer; }
-		}
-
-		internal int Counter
-		{
-			get { return counter; }
-		}
-
-		internal bool Cacheable 
-		{
-			get { return cacheable; }
-		}
-
-		internal string CacheRegion
-		{
-			get { return cacheRegion; }
-		}
-
-		/// <summary></summary>
-		public int MaxResults
-		{
-			get { return maxResults; }
-		}
-
-		/// <summary></summary>
-		public int FirstResult
-		{
-			get { return firstResult; }
-		}
-
-		/// <summary></summary>
-		public int Timeout
-		{
-			get { return timeout; }
-		}
-
-		/// <summary></summary>
-		public int FetchSize
-		{
-			get { return fetchSize; }
-		}
-
-		/// <summary></summary>
-		public bool IsJoin( string path )
-		{
-			return aliasByAssociationPath.Contains( path );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public ICriteria Add( NExpression.ICriterion expression )
-		{
-			criteria.Add( expression );
-			conjunction.Add( expression );
-			return this;
-		}
-
-		/// <summary></summary>
 		public IList List()
 		{
 			return session.Find( this );
 		}
 
-		/// <summary></summary>
-		public IEnumerator IterateExpressions()
+		public IEnumerable IterateExpressionEntries()
 		{
-			return criteria.GetEnumerator();
+			return criteria;
 		}
 
-		/// <summary></summary>
-		public IEnumerator IterateOrderings()
+		public IEnumerable IterateOrderings()
 		{
-			return orderings.GetEnumerator();
+			return orderings;
 		}
 
-		/// <summary></summary>
-		public System.Type PersistentClass
+		public System.Type GetPersistentClass( string alias )
 		{
-			get { return persistentClass; }
+			return ( System.Type ) classByAlias[ alias ];
 		}
 
-		public System.Type CriteriaClass
+		public IDictionary AliasClasses
 		{
-			get { return persistentClass; }
+			get { return classByAlias; }
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			return criteria.ToString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="ordering"></param>
-		/// <returns></returns>
-		public ICriteria AddOrder( NExpression.Order ordering )
+		public ICriteria AddOrder( Order ordering )
 		{
 			orderings.Add( ordering );
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
 		public FetchMode GetFetchMode( string path )
 		{
-			if( fetchModes.Contains( path ) )
-			{
-				return ( FetchMode ) fetchModes[ path ];
-			}
-			else
-			{
-				return FetchMode.Default;
-			}
+			object result = fetchModes[ path ];
+			return result == null ? FetchMode.Default : ( FetchMode ) result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="associationPath"></param>
-		/// <param name="mode"></param>
-		/// <returns></returns>
 		public ICriteria SetFetchMode( string associationPath, FetchMode mode )
 		{
 			fetchModes[ associationPath ] = mode;
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="lockMode"></param>
-		/// <returns></returns>
-		public ICriteria SetLockMode( LockMode lockMode )
-		{
-			return SetLockMode( CriteriaImpl.RootAlias, lockMode );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="lockMode"></param>
-		/// <returns></returns>
-		public ICriteria SetLockMode( string alias, LockMode lockMode )
-		{
-			lockModes[ alias ] = lockMode;
-			return this;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="associationPath"></param>
-		/// <param name="alias"></param>
-		/// <returns></returns>
 		public ICriteria CreateAlias( string associationPath, string alias )
 		{
-			CreateAlias( CriteriaImpl.RootAlias, associationPath, alias );
+			CreateAlias( CriteriaUtil.RootAlias, associationPath, alias );
 			return this;
 		}
 
 		private void CreateAlias( string rootAlias, string associationPath, string alias )
 		{
 			string testAlias = StringHelper.Root( associationPath );
-			if ( classByAlias.Contains( testAlias ) )
+			if( classByAlias.Contains( testAlias ) )
 			{
 				rootAlias = testAlias;
 				associationPath = associationPath.Substring( rootAlias.Length + 1 );
 			}
 
-			string rootPath = (string) associationPathByAlias[ rootAlias ];
+			string rootPath = ( string ) associationPathByAlias[ rootAlias ];
 			string wholeAssociationPath;
-			if ( rootPath == null )
+			if( rootPath == null )
 			{
-				if ( !CriteriaImpl.RootAlias.Equals( rootAlias ) )
+				if( !CriteriaUtil.RootAlias.Equals( rootAlias ) )
 				{
-					throw new HibernateException( string.Format( "unknown alias: {0}", rootAlias ) );
+					throw new HibernateException( "unknown alias: " + rootAlias );
 				}
 				wholeAssociationPath = associationPath;
 			}
@@ -373,50 +335,165 @@ namespace NHibernate.Impl
 				wholeAssociationPath = StringHelper.Qualify( rootPath, associationPath );
 			}
 
-			object oldPath = associationPathByAlias[ alias ] = wholeAssociationPath;
-			if ( oldPath != null )
+			object oldPath = associationPathByAlias[ alias ];
+			associationPathByAlias[ alias ] = wholeAssociationPath;
+			if( oldPath != null )
 			{
+				throw new HibernateException( "alias already defined: " + alias );
 			}
-			object oldAlias = aliasByAssociationPath[ wholeAssociationPath ] = alias;
-			if ( oldAlias != null )
+			
+			object oldAlias = aliasByAssociationPath[ wholeAssociationPath ];
+			aliasByAssociationPath[ wholeAssociationPath ] = alias;
+			if( oldAlias != null )
 			{
+				throw new HibernateException( "association already joined: " + wholeAssociationPath );
 			}
 			classByAlias[ alias ] = GetClassForPath( rootAlias, associationPath );
 		}
 
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="associationPath"></param>
-		/// <returns></returns>
-		public string GetAlias( string associationPath )
+		public bool IsJoin( string path )
 		{
-			return (string) aliasByAssociationPath[ associationPath ];
+			return aliasByAssociationPath.Contains( path );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rootAlias"></param>
-		/// <param name="associationPath"></param>
-		/// <returns></returns>
+		public string GetAlias( string associationPath )
+		{
+			return ( string ) aliasByAssociationPath[ associationPath ];
+		}
+
+		public ICriteria Add( string alias, ICriterion expression )
+		{
+			criteria.Add( new CriterionEntry( expression, alias ) );
+			return this;
+		}
+
 		public System.Type GetClassForPath( string rootAlias, string associationPath )
 		{
 			ISessionFactoryImplementor factory = session.Factory;
-			System.Type clazz = (System.Type) classByAlias[ rootAlias ];
-			IType type = ( (IPropertyMapping) factory.GetPersister( clazz ) ).ToType( associationPath );
-			if ( !type.IsAssociationType )
+			System.Type clazz = ( System.Type ) classByAlias[ rootAlias ];
+			IType type = ( ( IPropertyMapping ) factory.GetPersister( clazz ) ).ToType( associationPath );
+			if( !type.IsAssociationType )
 			{
 				throw new QueryException( string.Format( "not an association path: {0}", associationPath ) );
 			}
 
-			return ( (IAssociationType) type).GetAssociatedClass( factory );
+			return ( ( IAssociationType ) type ).GetAssociatedClass( factory );
+		}
+
+		public sealed class CriterionEntry
+		{
+			private readonly ICriterion criterion;
+			private readonly string alias;
+
+			internal CriterionEntry( ICriterion criterion, string alias )
+			{
+				this.alias = alias;
+				this.criterion = criterion;
+			}
+
+			public ICriterion Criterion
+			{
+				get { return criterion; }
+			}
+
+			public string Alias
+			{
+				get { return alias; }
+			}
+		}
+
+		public ICriteria CreateCriteria( string associationPath )
+		{
+			return CreateCriteriaAt( CriteriaUtil.RootAlias, associationPath );
+		}
+
+		private ICriteria CreateCriteriaAt( String rootAlias, String associationPath )
+		{
+			return CreateCriteriaAt( rootAlias, associationPath, GenerateAlias() );
+		}
+
+		private ICriteria CreateCriteriaAt( String rootAlias, String associationPath, String alias )
+		{
+			String testAlias = StringHelper.Root( associationPath );
+			if( classByAlias.Contains( testAlias ) )
+			{
+				rootAlias = testAlias;
+				associationPath = associationPath.Substring( rootAlias.Length + 1 );
+			}
+
+			CreateAlias( rootAlias, associationPath, alias );
+			return new Subcriteria( this, alias, associationPath );
 		}
 
 		public object UniqueResult()
 		{
 			return AbstractQueryImpl.UniqueElement( List() );
+		}
+
+		public System.Type CriteriaClass
+		{
+			get { return persistentClass; }
+		}
+
+		public System.Type GetCriteriaClass( string alias )
+		{
+			return ( System.Type ) classByAlias[ alias ];
+		}
+
+		public ICriteria CreateCriteria( string associationPath, string alias )
+		{
+			return CreateCriteriaAt( CriteriaUtil.RootAlias, associationPath, alias );
+		}
+
+		// Deprecated methods not ported: ReturnMaps, ReturnRootEntities
+
+		public ICriteria SetLockMode( LockMode lockMode )
+		{
+			return SetLockMode( CriteriaUtil.RootAlias, lockMode );
+		}
+
+		public ICriteria SetLockMode( string alias, LockMode lockMode )
+		{
+			lockModes[ alias ] = lockMode;
+			return this;
+		}
+
+		public IDictionary LockModes
+		{
+			get { return lockModes; }
+		}
+
+		public IResultTransformer ResultTransformer
+		{
+			get { return resultTransformer; }
+		}
+
+		public ICriteria SetResultTransformer( IResultTransformer tupleMapper )
+		{
+			this.resultTransformer = tupleMapper;
+			return this;
+		}
+
+		public bool Cacheable
+		{
+			get { return cacheable; }
+		}
+
+		public string CacheRegion
+		{
+			get { return cacheRegion; }
+		}
+
+		public ICriteria SetCacheable( bool cacheable )
+		{
+			this.cacheable = cacheable;
+			return this;
+		}
+
+		public ICriteria SetCacheRegion( string cacheRegion )
+		{
+			this.cacheRegion = cacheRegion.Trim();
+			return this;
 		}
 	}
 }

@@ -10,6 +10,8 @@
 
 using System;
 
+using NHibernate.DomainModel.NHSpecific;
+
 namespace NHibernate.DomainModel
 {
 
@@ -37,7 +39,7 @@ namespace NHibernate.DomainModel
 		private DateTime _timestamp;
 		private bool _boolean;
 		private bool _bool;
-		private int _null;
+		private NullableInt32 _null;
 		private short _short;
 		private char _char;
 		private float _zero;
@@ -166,7 +168,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for null
 		/// </summary>
-		public int NullInt32
+		public NullableInt32 Null
 		{
 			get { return _null; }
 			set { _null = value; }
@@ -375,9 +377,8 @@ namespace NHibernate.DomainModel
 			_foo=null;
 		}
 
-		public bool EqualsFoo(Foo obj)
+		public bool EqualsFoo(Foo other)
 		{
-			Foo other = (Foo)obj;
 			if ( _bytes!=other._bytes ) 
 			{
 				if ( _bytes==null || other.Bytes==null ) return false;
@@ -398,7 +399,7 @@ namespace NHibernate.DomainModel
 				&& ( _int == other.Int )
 				&& ( ( _integer == other.Integer ) || ( _integer.Equals(other.Integer) ) )
 				&& ( ( _long == other.Long ) || ( _long.Equals(other.Long) ) )
-				&& ( _null == other.NullInt32 )
+				&& ( _null == other.Null )
 				&& ( ( _short == other.Short ) || ( _short.Equals(other.Short) ) )
 				&& ( ( _string == other.String) || ( _string.Equals(other.String) ) )
 				//&& ( ( this._timestamp==other._timestamp) || ( this._timestamp.getDate() == other._timestamp.getDate() && this._timestamp.getYear() == other._timestamp.getYear() && this._timestamp.getMonth() == other._timestamp.getMonth() ) )

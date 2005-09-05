@@ -169,10 +169,8 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Requires ICriteria.CreateCriteria")]
 		public void ComplexCriteria()
 		{
-			/*
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
@@ -202,24 +200,24 @@ namespace NHibernate.Test
 
 			ICriteria crit = s.CreateCriteria(typeof( Baz ));
 			crit.CreateCriteria("TopGlarchez")
-				.Add( Expression.Expression.IsNotNull("name") )
+				.Add( Expression.Expression.IsNotNull("Name") )
 				.CreateCriteria("ProxyArray")
-				.Add( Expression.Expression.EqProperty("name", "name") )
-				.Add( Expression.Expression.Eq("name", "g2") )
-				.Add( Expression.Expression.Gt("x", -666 ) );
+				.Add( Expression.Expression.EqProperty("Name", "Name") )
+				.Add( Expression.Expression.Eq("Name", "g2") )
+				.Add( Expression.Expression.Gt("X", -666 ) );
 			crit.CreateCriteria("FooSet")
-				.Add( Expression.Expression.IsNull("null") )
+				.Add( Expression.Expression.IsNull("Null") )
 				.Add( Expression.Expression.Eq("String", "a string") )
 				.Add( Expression.Expression.Lt("Integer", -665 ) );
 			crit.CreateCriteria("FooArray")
-				.Add( Expression.Expression.Eq( "string", "a string" ) )
+				.Add( Expression.Expression.Eq( "String", "a string" ) )
 				.SetLockMode( lockMode );
 
 			IList list = crit.List();
 			Assert.AreEqual( 2, list.Count );
 
 			s.CreateCriteria( typeof( Glarch ) ).SetLockMode(LockMode.Upgrade).List();
-			s.CreateCriteria( typeof( Glarch ) ).SetLockMode(ICriteria.ROOT_ALIAS, LockMode.Upgrade).List();
+			s.CreateCriteria( typeof( Glarch ) ).SetLockMode(CriteriaUtil.RootAlias, LockMode.Upgrade).List();
 
 			g2.Name = null;
 			t.Commit();
@@ -231,9 +229,9 @@ namespace NHibernate.Test
 			crit = s.CreateCriteria( typeof( Baz ) )
 				.SetLockMode( lockMode );
 			crit.CreateCriteria( "TopGlarchez" )
-				.Add( Expression.Expression.Gt( "x", -666 ) );
+				.Add( Expression.Expression.Gt( "X", -666 ) );
 			crit.CreateCriteria( "FooSet" )
-				.Add( Expression.Expression.IsNull( "null" ) );
+				.Add( Expression.Expression.IsNull( "Null" ) );
 			list = crit.List();
 
 			Assert.AreEqual( 4, list.Count );
@@ -248,20 +246,20 @@ namespace NHibernate.Test
 			//	.list();
 			//assertTrue( list.size()==0 );
 			list = s.CreateCriteria(typeof( Baz ))
-				.CreateCriteria("fooSet")
-				.CreateCriteria("foo")
-				.CreateCriteria("component.glarch")
-				.Add( Expression.Expression.Eq("name", "xxx") )
+				.CreateCriteria("FooSet")
+					.CreateCriteria("TheFoo")
+						.CreateCriteria("Component.Glarch")
+							.Add( Expression.Expression.Eq("Name", "xxx") )
 				.List();
 			Assert.AreEqual( 0, list.Count );
 
 			list = s.CreateCriteria( typeof( Baz ) )
 				.CreateAlias( "FooSet", "foo" )
-				.CreateAlias( "TheFoo.TheFoo", "foo2" )
+				.CreateAlias( "foo.TheFoo", "foo2" )
 				.SetLockMode( "foo2", lockMode )
 				.Add( Expression.Expression.IsNull( "foo2.Component.Glarch" ) )
 				.CreateCriteria( "foo2.Component.Glarch" )
-				.Add( Expression.Expression.Eq( "name", "xxx" ) )
+				.Add( Expression.Expression.Eq( "Name", "xxx" ) )
 				.List();
 			Assert.AreEqual( 0, list.Count );
 
@@ -273,9 +271,9 @@ namespace NHibernate.Test
 
 			crit = s.CreateCriteria(typeof( Baz ));
 			crit.CreateCriteria("TopGlarchez")
-				.Add( Expression.Expression.IsNotNull("name") );
+				.Add( Expression.Expression.IsNotNull("Name") );
 			crit.CreateCriteria("FooSet")
-				.Add( Expression.Expression.IsNull("null") );
+				.Add( Expression.Expression.IsNull("Null") );
 
 			list = crit.List();
 			Assert.AreEqual( 2, list.Count );
@@ -288,7 +286,6 @@ namespace NHibernate.Test
 			s.Delete( baz );
 			t.Commit();
 			s.Close();
-			*/
 		}
 
 		[Test]
@@ -423,7 +420,7 @@ namespace NHibernate.Test
 			s.Find("select c, c.Parent from c in class NHibernate.DomainModel.Child order by c.Parent.Count");
 			s.Find("select c, c.Parent from c in class NHibernate.DomainModel.Child where c.Parent.Count=66 order by c.Parent.Count");
 			s.Enumerable("select c, c.Parent, c.Parent.Count from c in class NHibernate.DomainModel.Child order by c.Parent.Count");
-			Assert.AreEqual( 1, s.Find("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?", (int)66, NHibernateUtil.Int32).Count, "1-1 query" );
+			Assert.AreEqual( 1, s.Find("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?", 66, NHibernateUtil.Int32).Count, "1-1 query" );
 			s.Delete(c);
 			s.Delete(p);
 			t.Commit();

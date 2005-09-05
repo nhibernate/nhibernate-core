@@ -124,6 +124,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "CriteriaUtil.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "FetchMode.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2064,7 +2069,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Transform\AliasToEntityMapResultTransformer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Transform\DistinctRootEntityResultTransformer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Transform\IResultTransformer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Transform\RootEntityResultTransformer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

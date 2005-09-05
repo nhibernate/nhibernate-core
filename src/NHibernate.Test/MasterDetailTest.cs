@@ -3,6 +3,7 @@ using System.Collections;
 
 using NHibernate.DomainModel;
 using NHibernate.Engine;
+using NHibernate.Expression;
 
 using NUnit.Framework;
 
@@ -232,10 +233,8 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Requires ICriteria.CreateCriteria, Example.IgnoreCase, Example.ExcludeZeroes")]
 		public void ExampleTest()
 		{
-			/*
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Master m = new Master();
@@ -255,14 +254,14 @@ namespace NHibernate.Test
 			Assert.AreSame( m1.OtherMaster, m1 );
 
 			m1 = (Master) s.CreateCriteria( typeof( Master ) )
-				.Add( Expression.Eq( "name", "foobar" ) )
+				.Add( Expression.Expression.Eq( "Name", "foobar" ) )
 				.UniqueResult();
 			Assert.IsNull( m1 );
 			
 			m1 = (Master) s.CreateCriteria( typeof( Master ) )
 				.Add( Example.Create( m ) )
-				.CreateCriteria( "otherMaster" )
-				.Add( Example.Create( m ).ExcludeZeroes() )
+				.CreateCriteria( "OtherMaster" )
+					.Add( Example.Create( m ).ExcludeZeroes() )
 				.UniqueResult();
 			Assert.AreSame( m1.OtherMaster, m1 );
 			Master m2 = (Master) s.CreateCriteria( typeof( Master ) )
@@ -280,7 +279,6 @@ namespace NHibernate.Test
 			s.Delete(m1);
 			t.Commit();
 			s.Close();
-			*/
 		}
 
 		[Test]
