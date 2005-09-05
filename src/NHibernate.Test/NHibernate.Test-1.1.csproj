@@ -357,6 +357,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ExceptionsTest\PropertyAccessExceptionFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ExpressionTest\BaseExpressionFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

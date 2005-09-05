@@ -9,6 +9,7 @@ namespace NHibernate
 	[Serializable]
 	public class PropertyAccessException : HibernateException, ISerializable
 	{
+		private bool isFullyInstantiated;
 		private System.Type persistentType;
 		private string propertyName;
 		private bool wasSetter;
@@ -57,6 +58,7 @@ namespace NHibernate
 		public PropertyAccessException( Exception innerException, string message, bool wasSetter, System.Type persistentType, string propertyName ) 
 			: base( message, innerException )
 		{
+			this.isFullyInstantiated = true;
 			this.persistentType = persistentType;
 			this.wasSetter = wasSetter;
 			this.propertyName = propertyName;
@@ -81,11 +83,15 @@ namespace NHibernate
 		{
 			get
 			{
-				return base.Message +
-					( wasSetter ? " setter of " : " getter of " ) +
-					persistentType.FullName +
-					"." +
-					propertyName;
+				string message = base.Message;
+				if( isFullyInstantiated )
+				{
+					message += ( wasSetter ? " setter of " : " getter of " ) +
+						( persistentType==null ? "unknown persistent type" : persistentType.FullName ) +
+						"." +
+						propertyName;
+				}
+				return message;
 			}
 		}
 
@@ -104,7 +110,8 @@ namespace NHibernate
 		/// </param>
 		protected PropertyAccessException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
-			persistentType = (System.Type)info.GetValue( "persistentType", typeof(System.Type) );
+			isFullyInstantiated = info.GetBoolean( "isFullyInstantiated" );
+			persistentType = info.GetValue( "persistentType", typeof(System.Type) ) as System.Type;
 			propertyName = info.GetString( "propertyName" );
 			wasSetter = info.GetBoolean( "wasSetter" );
 		}
@@ -123,6 +130,7 @@ namespace NHibernate
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData( info, context );
+			info.AddValue( "isFullyInstantiated", isFullyInstantiated );
 			info.AddValue( "persistentType", persistentType, typeof(System.Type) );
 			info.AddValue( "propertyName", propertyName );
 			info.AddValue( "wasSetter", wasSetter );
