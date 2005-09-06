@@ -13,42 +13,30 @@ namespace NHibernate
 	[ Serializable ]
 	public class ADOException : HibernateException
 	{
-		/// <summary></summary>
-		public ADOException() : this( "DataException occured", new InvalidOperationException( "Invalid Operation" ) )
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ADOException"/> class.
+		/// </summary>
+		/// <param name="message">The message that describes the error. </param>
+		/// <param name="innerException">
+		/// The exception that is the cause of the current exception. If the innerException parameter 
+		/// is not a null reference, the current exception is raised in a catch block that handles 
+		/// the inner exception.
+		/// </param>
+		public ADOException( string message, Exception innerException ) : base( message, innerException )
 		{
+			LogManager.GetLogger( typeof( ADOException ) ).Error( message, innerException );
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="ADOException"/> class.
 		/// </summary>
-		/// <param name="message"></param>
-		public ADOException( string message ) : this( message, new InvalidOperationException( "Invalid Operation" ) )
-		{
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="root"></param>
-		public ADOException( DataException root ) : this( "DataException occurred", root )
-		{
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="message"></param>
-		/// <param name="root"></param>
-		public ADOException( string message, Exception root ) : base( message, root )
-		{
-			LogManager.GetLogger( typeof( ADOException ) ).Error( message, root );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="info"></param>
-		/// <param name="context"></param>
+		/// <param name="info">
+		/// The <see cref="SerializationInfo"/> that holds the serialized object 
+		/// data about the exception being thrown.
+		/// </param>
+		/// <param name="context">
+		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
+		/// </param>
 		protected ADOException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
 		}

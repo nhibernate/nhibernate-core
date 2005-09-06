@@ -10,19 +10,12 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CallbackException"/> class.
 		/// </summary>
-		public CallbackException() : this( "An exception occured in a callback" )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CallbackException"/> class.
-		/// </summary>
 		/// <param name="innerException">
 		/// The exception that is the cause of the current exception. If the innerException parameter 
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public CallbackException( Exception innerException ) : base( "An exception occured in a callback", innerException )
+		public CallbackException( Exception innerException ) : this( "An exception occured in a callback", innerException )
 		{
 		}
 

@@ -9,14 +9,6 @@ namespace NHibernate
 	[Serializable]
 	public class TransactionException : HibernateException
 	{
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TransactionException"/> class.
-		/// </summary>
-		public TransactionException() : base( "A Transaction could not be begun, committed, or rolled back.")
-		{
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TransactionException"/> class.
 		/// </summary>

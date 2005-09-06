@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NHibernate.Id
 {
 	/// <summary>
-	/// Thrown by <c>IIdentifierGenerator</c> implementation class when ID generation fails
+	/// Thrown by <see cref="IIdentifierGenerator" /> implementation class when ID generation fails
 	/// </summary>
 	[Serializable]
 	public class IdentifierGenerationException : HibernateException

@@ -17,8 +17,7 @@ namespace NHibernate
 		/// <param name="propertyName">The name of the missing property</param>
 		/// <param name="accessorType">The type of the missing accessor
 		/// ("getter" or "setter")</param>
-		public PropertyNotFoundException( System.Type type, string propertyName,
-			string accessorType )
+		public PropertyNotFoundException( System.Type type, string propertyName, string accessorType )
 			: base( String.Format( "Could not find a {0} for property '{1}' in class '{2}'",
 				accessorType, propertyName, type.FullName
 				) )

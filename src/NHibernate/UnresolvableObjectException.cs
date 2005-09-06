@@ -8,20 +8,27 @@ namespace NHibernate
 	/// loading an association.
 	/// </summary>
 	[Serializable]
-	public class UnresolvableObjectException : HibernateException
+	public class UnresolvableObjectException : HibernateException, ISerializable
 	{
 		private readonly object identifier;
 		private readonly System.Type clazz;
 
-		public UnresolvableObjectException()
-		{
-		}
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UnresolvableObjectException"/> class.
+		/// </summary>
+		/// <param name="identifier">The identifier of the object that caused the exception.</param>
+		/// <param name="clazz">The <see cref="System.Type"/> of the object attempted to be loaded.</param>
 		public UnresolvableObjectException( object identifier, System.Type clazz ) :
 			this( "No row with the given identifier exists", identifier, clazz )
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UnresolvableObjectException"/> class.
+		/// </summary>
+		/// <param name="message">The message that describes the error.</param>
+		/// <param name="identifier">The identifier of the object that caused the exception.</param>
+		/// <param name="clazz">The <see cref="System.Type"/> of the object attempted to be loaded.</param>
 		internal UnresolvableObjectException( string message, object identifier, System.Type clazz )
 			: base( message )
 		{
@@ -52,6 +59,8 @@ namespace NHibernate
 			}
 		}
 
+		#region ISerializable Members
+
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData (info, context);
@@ -63,8 +72,9 @@ namespace NHibernate
 			: base(info, context)
 		{
 			identifier = info.GetValue( "identifier", typeof( object ) );
-			clazz = ( System.Type ) info.GetValue( "clazz", typeof( System.Type ) );
+			clazz = info.GetValue( "clazz", typeof( System.Type ) ) as System.Type;
 		}
 
+		#endregion
 	}
 }

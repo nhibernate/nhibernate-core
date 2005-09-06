@@ -261,8 +261,8 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="type">The <see cref="System.Type"/> to find the constructor for.</param>
 		/// <returns>
-		/// The <see cref="ConstructorInfo"/> for the no argument constructor, or <c>null</c> if a 
-		/// default constructor could not be found.
+		/// The <see cref="ConstructorInfo"/> for the no argument constructor, or <c>null</c> if the
+		/// <c>type</c> is an abstract class.
 		/// </returns>
 		/// <exception cref="InstantiationException">
 		/// Thrown when there is a problem calling the method GetConstructor on <see cref="System.Type"/>.
@@ -276,14 +276,24 @@ namespace NHibernate.Util
 				ConstructorInfo contructor = type.GetConstructor( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, CallingConventions.HasThis, NoClasses, null );
 				return contructor;
 			}
-			catch( Exception )
+			catch( Exception e)
 			{
-				throw new InstantiationException(
-					"Object class " + type.FullName + " must declare a default (no-arg) constructor"
-					);
+				throw new InstantiationException( "A default (no-arg) constructor could not be found for: ", e, type );
 			}
 		}
 
+		/// <summary>
+		/// Finds the constructor that takes the parameters.
+		/// </summary>
+		/// <param name="type">The <see cref="System.Type"/> to find the constructor in.</param>
+		/// <param name="types">The <see cref="IType"/> objects to use to find the appropriate constructor.</param>
+		/// <returns>
+		/// An <see cref="ConstructorInfo"/> that can be used to create the type with
+		/// the specified parameters.
+		/// </returns>
+		/// <exception cref="InstantiationException">
+		/// Thrown when no constructor with the correct signature can be found.
+		/// </exception>
 		public static ConstructorInfo GetConstructor(System.Type type, IType[] types)
 		{
 			ConstructorInfo[] candidates = type.GetConstructors( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
@@ -314,8 +324,7 @@ namespace NHibernate.Util
 					}
 				}
 			}
-			throw new InstantiationException( "no appropriate constructor in class: "
-				+ type.FullName );
+			throw new InstantiationException( "no appropriate constructor in class: ", null, type );
 		}
 
 		/// <summary>

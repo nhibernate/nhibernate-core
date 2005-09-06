@@ -17,13 +17,6 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObjectNotFoundException"/> class.
 		/// </summary>
-		public ObjectNotFoundException(  ) : base( "No object could be found with the supplied identifier.", null, null )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ObjectNotFoundException"/> class.
-		/// </summary>
 		/// <param name="identifier">The identifier of the object that was attempting to be loaded.</param>
 		/// <param name="type">The <see cref="System.Type"/> that NHibernate was trying to find a row for in the database.</param>
 		public ObjectNotFoundException( object identifier, System.Type type ) : base( identifier, type )
@@ -53,22 +46,6 @@ namespace NHibernate
 		/// </param>
 		protected ObjectNotFoundException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
-		}
-
-		/// <summary>
-		/// Sets the serialization info for <see cref="ObjectNotFoundException"/> after 
-		/// getting the info from the base Exception.
-		/// </summary>
-		/// <param name="info">
-		/// The <see cref="SerializationInfo"/> that holds the serialized object 
-		/// data about the exception being thrown.
-		/// </param>
-		/// <param name="context">
-		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
-		/// </param>
-		public override void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			base.GetObjectData( info, context );
 		}
 
 		#endregion

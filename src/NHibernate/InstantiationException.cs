@@ -10,34 +10,6 @@ namespace NHibernate
 	public class InstantiationException : HibernateException, ISerializable
 	{
 		private System.Type type;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="InstantiationException"/> class.
-		/// </summary>
-		public InstantiationException() : base( "An entity or component class could not be instantiated." )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="InstantiationException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		public InstantiationException( string message ) : base( message )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="InstantiationException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		/// <param name="innerException">
-		/// The exception that is the cause of the current exception. If the innerException parameter 
-		/// is not a null reference, the current exception is raised in a catch block that handles 
-		/// the inner exception.
-		/// </param>
-		public InstantiationException( string message, Exception innerException ) : base( message, innerException )
-		{
-		}
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InstantiationException"/> class.
@@ -75,8 +47,6 @@ namespace NHibernate
 			get { return base.Message + ( type == null ? "" : type.FullName ); }
 		}
 
-		
-
 		#region ISerializable Members
 
 		/// <summary>
@@ -92,7 +62,7 @@ namespace NHibernate
 		/// </param>
 		protected InstantiationException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
-			this.type = (System.Type)info.GetValue( "type", typeof(System.Type) );
+			this.type = info.GetValue( "type", typeof(System.Type) ) as System.Type;
 		}
 
 		/// <summary>

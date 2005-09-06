@@ -13,13 +13,6 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MappingException"/> class.
 		/// </summary>
-		public MappingException() : base()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="MappingException"/> class.
-		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
 		public MappingException( string message ) : base( message )
 		{

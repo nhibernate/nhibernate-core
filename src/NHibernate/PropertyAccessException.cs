@@ -9,39 +9,9 @@ namespace NHibernate
 	[Serializable]
 	public class PropertyAccessException : HibernateException, ISerializable
 	{
-		private bool isFullyInstantiated;
 		private System.Type persistentType;
 		private string propertyName;
 		private bool wasSetter;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PropertyAccessException"/> class.
-		/// </summary>
-		public PropertyAccessException(  ) : base( "A problem occurred accessing a mapped property of an instance of a persistent class by reflection." )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PropertyAccessException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		public PropertyAccessException( string message ) : base( message )
-		{
-			
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PropertyAccessException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		/// <param name="innerException">
-		/// The exception that is the cause of the current exception. If the innerException parameter 
-		/// is not a null reference, the current exception is raised in a catch block that handles 
-		/// the inner exception.
-		/// </param>
-		public PropertyAccessException( string message, Exception innerException ) : base( message, innerException )
-		{
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PropertyAccessException"/> class.
@@ -58,7 +28,6 @@ namespace NHibernate
 		public PropertyAccessException( Exception innerException, string message, bool wasSetter, System.Type persistentType, string propertyName ) 
 			: base( message, innerException )
 		{
-			this.isFullyInstantiated = true;
 			this.persistentType = persistentType;
 			this.wasSetter = wasSetter;
 			this.propertyName = propertyName;
@@ -83,15 +52,10 @@ namespace NHibernate
 		{
 			get
 			{
-				string message = base.Message;
-				if( isFullyInstantiated )
-				{
-					message += ( wasSetter ? " setter of " : " getter of " ) +
-						( persistentType==null ? "unknown persistent type" : persistentType.FullName ) +
+				return base.Message + ( wasSetter ? " setter of " : " getter of " ) +
+						( persistentType==null ? "UnknownType" : persistentType.FullName ) +
 						"." +
 						propertyName;
-				}
-				return message;
 			}
 		}
 
@@ -110,7 +74,6 @@ namespace NHibernate
 		/// </param>
 		protected PropertyAccessException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
-			isFullyInstantiated = info.GetBoolean( "isFullyInstantiated" );
 			persistentType = info.GetValue( "persistentType", typeof(System.Type) ) as System.Type;
 			propertyName = info.GetString( "propertyName" );
 			wasSetter = info.GetBoolean( "wasSetter" );
@@ -130,7 +93,6 @@ namespace NHibernate
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData( info, context );
-			info.AddValue( "isFullyInstantiated", isFullyInstantiated );
 			info.AddValue( "persistentType", persistentType, typeof(System.Type) );
 			info.AddValue( "propertyName", propertyName );
 			info.AddValue( "wasSetter", wasSetter );

@@ -16,35 +16,6 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WrongClassException"/> class.
 		/// </summary>
-		public WrongClassException(  ) 
-			: base( "A row with the supplied identifier was found but the discriminator specifies a different subclass." )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="WrongClassException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		public WrongClassException( string message ) : base( message )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="WrongClassException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		/// <param name="innerException">
-		/// The exception that is the cause of the current exception. If the innerException parameter 
-		/// is not a null reference, the current exception is raised in a catch block that handles 
-		/// the inner exception.
-		/// </param>
-		public WrongClassException( string message, Exception innerException ) : base( message, innerException  )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="WrongClassException"/> class.
-		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
 		/// <param name="identifier">The identifier of the object that was being loaded.</param>
 		/// <param name="type">The <see cref="System.Type"/> that NHibernate was told to load.</param>
@@ -99,7 +70,7 @@ namespace NHibernate
 		/// </param>
 		protected WrongClassException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
-			type = (System.Type)info.GetValue( "type", typeof(System.Type) );
+			type = info.GetValue( "type", typeof(System.Type) ) as System.Type;
 			identifier = info.GetValue( "identifier", typeof(object) ) ;
 		}
 

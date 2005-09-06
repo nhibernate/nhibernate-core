@@ -6,7 +6,7 @@ namespace NHibernate
 {
 	/// <summary>
 	/// Thrown when a version number check failed, indicating that the 
-	/// <c>ISession</c> contained stale data (when using long transactions with
+	/// <see cref="ISession" /> contained stale data (when using long transactions with
 	/// versioning).
 	/// </summary>
 	[Serializable]
@@ -14,34 +14,6 @@ namespace NHibernate
 	{
 		private System.Type persistentType;
 		private object identifier;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class.
-		/// </summary>
-		public StaleObjectStateException() : base( "A version number check failed.  The ISession contained stale data." )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		public StaleObjectStateException( string message ) : base( message )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		/// <param name="innerException">
-		/// The exception that is the cause of the current exception. If the innerException parameter 
-		/// is not a null reference, the current exception is raised in a catch block that handles 
-		/// the inner exception.
-		/// </param>
-		public StaleObjectStateException( string message, Exception innerException ) : base( message, innerException )
-		{
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class.
@@ -96,7 +68,7 @@ namespace NHibernate
 		/// </param>
 		protected StaleObjectStateException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
-			persistentType = (System.Type)info.GetValue( "persistentType", typeof(System.Type) );
+			persistentType = info.GetValue( "persistentType", typeof(System.Type) ) as System.Type;
 			identifier = info.GetValue( "identifier", typeof(object) );
 		}
 

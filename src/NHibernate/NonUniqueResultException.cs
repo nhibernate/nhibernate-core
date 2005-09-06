@@ -15,42 +15,11 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonUniqueResultException"/> class.
 		/// </summary>
-		public NonUniqueResultException() : this( 0 )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="NonUniqueResultException"/> class.
-		/// </summary>
 		/// <param name="resultCount">The number of items in the result.</param>
-		public NonUniqueResultException( int resultCount ) : base( "query did not return a unique result: " + resultCount.ToString() )
+		public NonUniqueResultException( int resultCount ) 
+			: base( "query did not return a unique result: " + resultCount.ToString() )
 		{
-			LogManager.GetLogger( typeof( NonUniqueResultException ) ).Error( "query did not return a unique result: " + resultCount.ToString(), this );
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
-		/// </summary>
-		/// <param name="innerException">
-		/// The exception that is the cause of the current exception. If the innerException parameter 
-		/// is not a null reference, the current exception is raised in a catch block that handles 
-		/// the inner exception.
-		/// </param>
-		public NonUniqueResultException( Exception innerException ) : base( "NHibernate non-unique result problem", innerException )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="NonUniqueResultException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		/// <param name="innerException">
-		/// The exception that is the cause of the current exception. If the innerException parameter 
-		/// is not a null reference, the current exception is raised in a catch block that handles 
-		/// the inner exception.
-		/// </param>
-		public NonUniqueResultException( string message, Exception innerException ) : base( message, innerException )
-		{
+			LogManager.GetLogger( typeof( NonUniqueResultException ) ).Error( "query did not return a unique result: " + resultCount.ToString() );
 		}
 
 		/// <summary>
@@ -64,7 +33,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected NonUniqueResultException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected NonUniqueResultException( SerializationInfo info, StreamingContext context ) 
+			: base( info, context )
 		{
 		}
 	}

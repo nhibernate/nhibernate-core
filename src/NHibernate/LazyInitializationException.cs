@@ -14,17 +14,9 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
 		/// </summary>
-		public LazyInitializationException() : this( "LazyInitalizationException" )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
-		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public LazyInitializationException( string message ) : base( message )
+		public LazyInitializationException( string message ) : this( message, null )
 		{
-			LogManager.GetLogger( typeof( LazyInitializationException ) ).Error( message, this );
 		}
 
 		/// <summary>
@@ -35,7 +27,7 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public LazyInitializationException( Exception innerException ) : base( "NHibernate lazy initialization problem", innerException )
+		public LazyInitializationException( Exception innerException ) : this( "NHibernate lazy initialization problem", innerException )
 		{
 		}
 
@@ -50,6 +42,7 @@ namespace NHibernate
 		/// </param>
 		public LazyInitializationException( string message, Exception innerException ) : base( message, innerException )
 		{
+			LogManager.GetLogger( typeof( LazyInitializationException ) ).Error( message, this );
 		}
 
 		/// <summary>

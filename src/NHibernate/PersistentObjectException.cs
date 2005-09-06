@@ -13,28 +13,8 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PersistentObjectException"/> class.
 		/// </summary>
-		public PersistentObjectException() : this( "User passed a persistent instance to an ISession method that expected a transient instance." )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PersistentObjectException"/> class.
-		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
 		public PersistentObjectException( string message ) : base( message )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PersistentObjectException"/> class.
-		/// </summary>
-		/// <param name="message">The message that describes the error. </param>
-		/// <param name="innerException">
-		/// The exception that is the cause of the current exception. If the innerException parameter 
-		/// is not a null reference, the current exception is raised in a catch block that handles 
-		/// the inner exception.
-		/// </param>
-		public PersistentObjectException( string message, Exception innerException ) : base( message, innerException )
 		{
 		}
 

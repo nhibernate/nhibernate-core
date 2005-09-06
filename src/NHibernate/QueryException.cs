@@ -14,13 +14,6 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QueryException"/> class.
 		/// </summary>
-		public QueryException( ) : base( "The HQL could not be translated to SQL." )
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="QueryException"/> class.
-		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
 		public QueryException( string message ) : base( message )
 		{
