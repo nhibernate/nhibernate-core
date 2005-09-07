@@ -7,7 +7,7 @@
 		<title>What is Nullables?</title>
 		<formalpara>
 			<title>Nullables is an add-in for <ulink url="http://www.nhibernate.org">NHibernate</ulink> contributed by Donald L Mull Jr. (aka <emphasis>luggage</emphasis>)</title>
-			<para>Most database systems allow base types (like <emphasis>int</emphasis> or <emphasis>bool</emphasis>) to be null. This means that a boolean column can take the values <emphasis>0</emphasis>, <emphasis>1</emphasis> or <emphasis>null</emphasis>, where <emphasis>null</emphasis> doesn't have the same meaning as <emphasis>0</emphasis>. But it is not possible with .NET 1.x; a bool is always either true or false.</para>
+			<para>Most database systems allow base types (like <classname>int</classname> or <classname>bool</classname>) to be null. This means that a boolean column can take the values <emphasis>0</emphasis>, <emphasis>1</emphasis> or <emphasis>null</emphasis>, where <emphasis>null</emphasis> doesn't have the same meaning as <emphasis>0</emphasis>. But it is not possible with .NET 1.x; a bool is always either true or false.</para>
 		</formalpara>
 		<para>Nullables makes it possible to use nullable base types in NHibernate. Note that .NET 2.0 has this feature.</para>
 	</abstract>
@@ -15,7 +15,7 @@
 
 	<section id="Nullables-howto">
 		<title>How to use it?</title>
-		<para>Here is a simple example that uses a NullableDateTime to store (optionally) a date of birth for a 'Person'.</para>
+		<para>Here is a simple example that uses a <classname>Nullables.NullableDateTime</classname> to (optionally) store the date of birth for a <classname>Person</classname>.</para>
 		<programlisting>
 public <emphasis role="strong">class Person</emphasis>
 {
@@ -44,8 +44,7 @@ public <emphasis role="strong">class Person</emphasis>
         set { this._dateOfBirth = value; }
     }
 }</programlisting>
-
-		<para>As you can see, <emphasis>DateOfBirth</emphasis> has the type <emphasis>Nullables.NullableDateTime</emphasis> (instead of <emphasis>System.DateTime</emphasis>).</para>
+		<para>As you can see, <emphasis>DateOfBirth</emphasis> has the type <classname>Nullables.NullableDateTime</classname> (instead of <classname>System.DateTime</classname>).</para>
 
 		<para>Here is the mapping</para>
 		<programlisting><![CDATA[
@@ -59,9 +58,11 @@ public <emphasis role="strong">class Person</emphasis>
         <]]>property name="<emphasis>DateOfBirth</emphasis>" type="<emphasis role="strong">Nullables.NHibernate.NullableDateTimeType</emphasis>, Nullables.NHibernate"<![CDATA[ />
     </class>
 </hibernate-mapping>]]></programlisting>
-
-		<important><para>In the mapping, the type of <emphasis>DateOfBirth</emphasis> <emphasis role="strong">must</emphasis> be <emphasis>Nullables.NHibernate.NullableDateTimeType</emphasis>.</para>
-		<para><emphasis>Nullables.NHibernate.NullableXXXType</emphasis>s are wrapper types used to translate Nullables types to Database types.</para></important>
+		<important>
+			<para>In the mapping, the type of <emphasis>DateOfBirth</emphasis>
+				<emphasis role="strong">must</emphasis> be <classname>Nullables.NHibernate.NullableDateTimeType</classname>. Note that <link linkend="NHibernate.Mapping.Attributes">NHibernate.Mapping.Attributes</link> handles that automatically.</para>
+			<para><classname>Nullables.NHibernate.NullableXXXType</classname>s are wrapper types used to translate Nullables types to Database types.</para>
+		</important>
 
 		<para>Here is a piece of code using this example:</para>
 		<programlisting>
@@ -80,7 +81,8 @@ per.DateOfBirth = null; // this works.
 per.DateOfBirth = NullableDateTime.Default; // this is more correct.</programlisting>
 	</section>
 
-<!--
+
+	<!--
 
 	<section id="Nullables-tips">
 		<title>Tips</title>
@@ -103,5 +105,6 @@ per.DateOfBirth = NullableDateTime.Default; // this is more correct.</programlis
 	</section>
 
 -->
+
 
 </chapter>

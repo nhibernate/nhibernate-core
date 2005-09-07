@@ -308,8 +308,8 @@
 					<property name="DocumentProtectedInternalAsProtected" value="False" />
 					<property name="DocumentEmptyNamespaces" value="False" />
 					<property name="IncludeAssemblyVersion" value="False" />
-					<property name="CopyrightText" value="" />
-					<property name="CopyrightHref" value="" />
+					<property name="CopyrightText" value="NHibernate is licensed under GNU LGPL." />
+					<property name="CopyrightHref" value="http://www.nhibernate.org/" />
 					<property name="ReferencesPath" value="" />
 					<property name="SkipNamespacesWithoutSummaries" value="False" />
 					<property name="UseNamespaceDocSummaries" value="False" />
@@ -358,8 +358,8 @@
 						<property name="DocumentPrivates" value="False" />
 						<property name="DocumentProtectedInternalAsProtected" value="False" />
 						<property name="DocumentEmptyNamespaces" value="False" />
-						<property name="CopyrightText" value="" />
-						<property name="CopyrightHref" value="" />
+						<property name="CopyrightText" value="NHibernate is licensed under GNU LGPL." />
+						<property name="CopyrightHref" value="http://www.nhibernate.org/" />
 						<property name="ReferencesPath" value="" />
 						<property name="SkipNamespacesWithoutSummaries" value="False" />
 						<property name="UseNamespaceDocSummaries" value="False" />

@@ -7,20 +7,27 @@ It don't necessarily depict what the doc is/will be.
 
 - Check/Update "html.css": Change fonts/colors
 
-- Add version in all xml files (Create files "Version" & "DocOfCurrentVersion")
-	"Documentation for NHibernate version &Version;."
+- Include a file "DocOfCurrentVersion" in all xml files
+The file "Version" contains the version only (+ should be updated by the build)
+	Content of DocOfCurrentVersion:
+Documentation for <ulink url="http://www.nhibernate.org/">NHibernate</ulink> version &Version;.
+NHibernate is licensed under <link linkend="License.gnu.lgpl">GNU LGPL</link> and this documentation under <link linkend="License.gnu.fdl">GNU FDL</link>.
 
 - Complete NHibernate.Tool.hbm2net doc
 - Write content of "\NHC\src\NamespaceSummary.xml"
 
-- Update NH/readme.html		to look more like NH/Home !
-- Update NHC/readme.html	to tell that the doc is in NH
 - Integrate the logo in the doc (& in readme.html)
 - Update the Wiki (contains dynamic stuff; others are moved to this doc)
 
 - Improve the Reference content (=> add more comments in the source code :)
 
 - Generate the PDF version of this documentation
+
+- NH/Readme.html : Presentation (like NH/Home)
+	+ Link to the doc + how to open/install it (html, chm & VS.NET)
+	+ What to read to quickly get started (how to see NH in action :)
+	+ Add a "readme.txt" referring to the html version
+- NHC/readme.html	+ tell that the doc is in NH
 
 --------------------------------------------------------------------------------
 
@@ -70,109 +77,121 @@ Notes:
 
 --------------------------------------------------------------------------------
 
-- NH/Readme.html : Presentation (like NH/Home)
-	+ Link to the doc + how to open/install it (html, chm & VS.NET)
-	+ What to read to quickly get started (how to see NH in action :)
-	+ Add a "readme.txt" refering the html version
-- NHC/readme.html	IDEM
+Legend:
+---------------------
+XXX		=>	YYY		z
+---------------------
+- XXX is the topic
+- YYY is the name of the xml/html files that contains this topic
+- z is used to track the completion  of this topic (9=NotStarted; 0=Complete)
+	note that it is rather suggestive ;)
+
 
 
 NHibernate Documentation: (replace "NHibernate : Table of Contents" in Wiki)
-- Legal Information / Terms of Use / Licenses (LGPL & FDL)						=>	License						DONE
-- Documentation Map by Technology + FAQ links (questions to topics to read)		=>	Technology.Map				VOID
+-------------------------
+- Legal Information / Terms of Use / Licenses (LGPL & FDL)						=>	License						1
+- Documentation Map by Technology + FAQ links (questions to topics to read)		=>	Technology.Map				9
 
-+ Getting Started
-	- What's new in NHibernate x.x: Changelog + (backward comp) issues			=>	WhatIsNew					VOID
++ Getting Started														Preface	=>	Getting.Started				9
+	- What's new in NHibernate x.x: Changelog + (backward comp) issues			=>	WhatIsNew					9
 		+ notes on plans & unachieved features (link to NH Dev on Wiki & Jira)
 	+ Overview of NHibernate
-		- What is an ORM and what is NHibernate (and Hibernate + their link)	=>	Overview					VOID
+		- What is an ORM and what is NHibernate (and Hibernate + their link)	=>	Overview					9
 		  + why using it (for Developers, IT and Business guys)
 		  + Why not using Dataset, StoredProcs, ... (+ when they should be used)
 		  + Supported .NET versions:	.NET 1.x & 2.0 / CompactFram / Mono
-	+ First steps																=>	First.Steps					VOID
+	+ First steps																=>	First.Steps					9
 		- How to get the lastest release of NHibernate
 		- How to quickly learn using NHibernate (links and newbies tips)
 		- How to contribute (Code/Doc) + how to report bugs or get support
 		  (guideline, policy, most needed topics)
 		- NHibernate in CVS: How to get it, (sign +) build it and run its tests
 			+ CruiseControl setup (build+test+release) + doc generation
-	- Credits (NHTeam, Contributors, Tools makers and Supporters)				=>	Credits						VOID
-	- Document Conventions + Note about DocBook & NDoc							=>	Document.Conventions		VOID
+	- Credits (NHTeam, Contributors, Tools makers and Supporters)				=>	Credits						9
+	- Document Conventions + Note about DocBook & NDoc							=>	Document.Conventions		9
 
-+ Inside NHibernate (+ UML diagrams)
-	- Development Standards														=>	Development.Standards		VOID
-	+ WorkFlow: What NHibernate does and how									=>	WorkFlow					VOID
++ Inside NHibernate (+ UML diagrams)									Preface	=>	Inside.NHibernate			9
+	- Development Standards														=>	Development.Standards		9
+	+ WorkFlow: What NHibernate does and how									=>	WorkFlow					9
 		At Configuration + SessionFactory building + Session open/flush/close
-	+ Presentation of the main classes:											=>	Internal.Presentation		VOID
+	+ Presentation of the main classes:											=>	Internal.Presentation		9
 		Mapping, Config, SessFactory, Session, Persister, Loader, Dialect, Query
-	+ Agile Patterns (links): UnitOfWork, IdentityMap ...						=>	Patterns.NET				VOID
+	+ Agile Patterns (links): UnitOfWork, IdentityMap ...						=>	Patterns.NET				9
 	+ .NET techs used: Reflection, Nullables, Proxy, Attribute, XML & x.config
 
-+ Programming with NHibernate (features / internal stuff)	+	FAQ & Tips
-	- Configuration (techs to  set DB connection + add mapping streams)			=>	Configuration				VOID
-	- <hibernate-mapping> elements and attributes								=>	Mapping.Hibernate			VOID
-	+ Basic Mapping (class, component, ID, property)							=>	Mapping.Basic				VOID
++ Programming with NHibernate	+	FAQ & Tips							Preface	=>	Programming.NHibernate		9
+	- Configuration (techs to  set DB connection + add mapping streams)			=>	Configuration				9
+	- <hibernate-mapping> elements and attributes								=>	Mapping.Hibernate			9
+	+ Basic Mapping (class, component, ID, property)							=>	Mapping.Basic				9
 		- Versioning + Optimistic/Pessimistic locking
-	+ Collections: any, map, set, list, bag, array, <x-to-many>					=>	Mapping.Collection			VOID
+	+ Collections: any, map, set, list, bag, array, <x-to-many>					=>	Mapping.Collection			9
 		+ BLOB + value-typed collections + operations on them + Lazy loading
-	+ Associations (<x-to-one>) + Bidirectional + Lazy loading					=>	Mapping.Association			VOID
-	- Inheritance mapping strategies (table-per-x)								=>	Mapping.Inheritance			VOID
-	+ Query systems (HQL, ICriteria, IQuery): Aggregate funcs/Exprs,			=>	HQL/Criteria/Query			VOID
-		Formula in mapping, OrderBy, Join, ... + Session. Iterate/Scroll/Filter
-	+ Entities lifecycle (through CRUD ops), ID & Equals/GetHashCode tips		=>	Entity.Lifecycle			VOID
+	+ Associations (<x-to-one>) + Bidirectional + Lazy loading					=>	Mapping.Association			9
+	- Inheritance mapping strategies (table-per-x)								=>	Mapping.Inheritance			9
+	+ Query systems (HQL, ICriteria, IQuery): Aggregate funcs/Exprs,			=>	HQL/Criteria/Query			9
+		Formula in mapping, OrderBy, Join	+	Session.Enumerable/Scroll/Filter
+	+ Entities lifecycle (through CRUD ops), ID & Equals/GetHashCode tips		=>	Entity.Lifecycle			9
 		- Interacting using IInterceptor, IValidatable, ILyfeCycle
-	- Caching (1st & 2nd levels)												=>	Caching						VOID
-	+ Config & Mapping Schemas (reference)										=>	Schemas.Reference			VOID
+	+ Session methods usage:													=>	Session						9
+		- Reconnect, Disconnect, Flush, IsDirty
+		- Load, Get
+		- Save, SaveOrUpdate, SaveOrUpdateCopy, Update + Delete
+		- Evict, Lock, Refresh, Replicate
+	- Exceptions explained (ExistingID, NoPersistersFor, StaleObjectState, ...)	=>	Exceptions					9
+	- Caching (1st & 2nd levels) + Session.Clear								=>	Caching						9
+	- SchemaExport																=>	SchemaExport				9
+	+ Config & Mapping Schemas (reference)										=>	Schemas.Reference			9
 
-+ Building Applications
-	- Quick starts (simple config.xml + mapping + sessionCreation & CRUD ops)	=>	QuickStarts					VOID
-	+ Architecture:																=>	Application.Architecture	VOID
++ Building Applications													Preface	=>	Building.Applications		9
+	- Quick starts (simple config.xml + mapping + sessionCreation & CRUD ops)	=>	QuickStarts					9
+	+ Architecture:																=>	Application.Architecture	9
 		- Layering your application (NHibernate in a n-tier Architecture)
 		- About TDD, Continuous Integration, Refactoring ...
 		- Applying Patterns: Gateway, DTO, Mapper ...
 		- Implementing/Validating Business Rules (+ link to FIT)
-	+ Using .NET feats: Win/Web Services, Remoting, Serialization, Dataset		=>	Using.NET					VOID
+	+ Using .NET feats: Win/Web Services, Remoting, Serialization, Dataset		=>	Using.NET					9
 			Enums, Generics, ...
-	- Using Code Generation: MyGeneration & CodeSmith templates + others usages	=>	Using.CodeGeneration		VOID
-	- On Performance, Memory usage, traps to avoid, common mistakes and caveats	=>	Performance.Tips			VOID
-	- Exceptions explained (ExistingID, NoPersistersFor, ...)					=> Exceptions					VOID
-	- Guidelines to debug NHibernate (how to quickly solve a problem)			=>	Debugging					VOID
-	+ Creating Win Apps (issues like databinding & session management)			=>	Application.Windows			VOID
-	+ Creating Web Apps (issues like databinding & session management)			=>	Application.Web				VOID
-	- Report generation and Batch processing									=>	Report.Batch				VOID
-	+ Supported Databases + related issues + Howto: Clustering, Paging ...		=>	Databases					VOID
+	- Using Code Generation: MyGeneration & CodeSmith templates + others usages	=>	Using.CodeGeneration		9
+	- On Performance, Memory usage, traps to avoid, common mistakes and caveats	=>	Performance.Tips			9
+	- Guidelines to debug NHibernate (how to quickly solve a problem)			=>	Debugging					9
+	+ Creating Win/Web Applications (databinding & session management)			=>	Application.Windows/Web		9
+	- Report generation and Batch processing									=>	Report.Batch				9
+	+ Supported Databases + related issues + Howto: Clustering, Paging ...		=>	Databases					9
 		- Native SQL support (named sql-query, sql-insert/update/delete, ...)
 
 
-+ Contributions and Tools	=> ReadMe  +  Quick Start / Links					*** In /Contrib/	Preface		TODO
-	+ NHibernate.Caches															=>	NH.Caches					TODO
-	+ NHibernate.Mapping.Attributes												=>	NH.Mapping.Attributes		DONE
-	+ NHibernate.Tool.hbm2net													=>	NH.Tool.hbm2net				TODO
-	+ Nullables																	=>	Nullables					DONE
-	- Iesi.Collections, HashCodeProvider, Castle.DynamicProxy					=>	Libraries					VOID
-	- Used/Useable tools - Quick notes:											=>	Tools						VOID
++ Contributions and Tools	=> ReadMe  +  Quick Start / Links	- In /Contrib/	=>	Preface						5
+	- NHibernate.Caches															=>	NH.Caches					1
+	- NHibernate.Mapping.Attributes												=>	NH.Mapping.Attributes		0
+	- NHibernate.Tool.hbm2net													=>	NH.Tool.hbm2net				7
+	- Nullables																	=>	Nullables					1
+	- Iesi.Collections, HashCodeProvider, Castle.DynamicProxy					=>	Libraries					9
+	- Used/Useable tools - Quick notes:											=>	Tools						9
 		- log4net, NUnit (+addins), NDoc, NQA, Castle, NMock, ObjectView ...
 		- NAnt, VS.NET/#D, CVS, CC.NET, Clover.NET, FIT, Jira, DocBook ...
 
-+ LokateIt																		*** In /Contrib/
-	- Overview: What is LokateIt + features + goals (technical & academic)		=>	LI.Preface					VOID
-	- Link to Quick starts (in "Prog with NH" + in NHContrib) + LokateIt specs	=>	LI.GettingStarted			VOID
++ LokateIt														- In /Contrib/
+	- Overview: What is LokateIt + features + goals (technical & academic)		=>	LI.Preface					9
+	- Link to Quick starts (in "Prog with NH" + in NHContrib) + LokateIt specs	=>	LI.GettingStarted			9
 	- Link to Agile & Patterns (for TDD) + Link to external tool NUnit
-	- Rules and Domain Logic ([User] and [Rights])								=>	LI.Implementation.Base		VOID
+	- Rules and Domain Logic ([User] and [Rights])								=>	LI.Implementation.Base		9
 	- The Windows User Interface (for [User] edition) => link to Create WinApps
-	- Reference (Full Rules and Domain Logic) => link to NH feats used			=>	LI.Implementation.Full		VOID
+	- Reference (Full Rules and Domain Logic) => link to NH feats used			=>	LI.Implementation.Full		9
 	- The Windows User Interface (Full) : Specificities of each Form
-	- Reports - Multi-Database support - Server Application						=>	LI.Additional.Features		VOID
-	- Web Application => link to creating WebApps								=>	LI.Implementation.Web		VOID
-	- Conclusion (+ link to "Building Apps - Architecture")						=>	LI.Conclusion				VOID
+	- Reports - Multi-Database support - Server Application						=>	LI.Additional.Features		9
+	- Web Application => link to creating WebApps								=>	LI.Implementation.Web		9
+	- Conclusion (+ link to "Building Apps - Architecture")						=>	LI.Conclusion				9
 
 
-+ More QuickStarts / Samples / Tutorials										=>	More						VOID
++ More QuickStarts / Samples / Tutorials										=>	More						9
 	- There + links to internet ones ...
 	- More information and support
 
 + NHibernate Reference (Class Library)
 + NHibernateContrib Reference (Class Library)
+
+- Appendix: Licenses (GNU LGPL & FDL)
 
 --------------------------------------------------------------------------------
 
