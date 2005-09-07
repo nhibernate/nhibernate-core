@@ -16,7 +16,6 @@ using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Persister;
 using NHibernate.Proxy;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -916,7 +915,7 @@ namespace NHibernate.Impl
 				// Keep the existing version number in the case of replicate!
 				if( persister.IsVersioned )
 				{
-					// IsDefaultVersion bit below is NHibernate-specific
+					// IsUnsavedVersion bit below is NHibernate-specific
 					substitute = Versioning.SeedVersion(
 						values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion( values )
 						) || substitute;
@@ -5123,7 +5122,7 @@ namespace NHibernate.Impl
 			else
 			{
 				//what is the version on the database?
-				oldVersion = persister.CurrentVersion( id, this );
+				oldVersion = persister.GetCurrentVersion( id, this );
 			}
 
 			if( oldVersion != null )

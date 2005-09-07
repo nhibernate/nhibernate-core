@@ -771,7 +771,7 @@ namespace NHibernate.Cfg
 		{
 			log.Info( "processing one-to-many association mappings" );
 
-			foreach( Binder.SecondPass sp in secondPasses )
+			foreach( Binder.AbstractSecondPass sp in secondPasses )
 			{
 				sp.DoSecondPass( classes );
 			}

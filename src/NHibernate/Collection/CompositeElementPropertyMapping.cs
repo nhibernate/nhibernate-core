@@ -1,7 +1,6 @@
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Collection
 {

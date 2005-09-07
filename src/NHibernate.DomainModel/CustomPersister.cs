@@ -353,7 +353,7 @@ namespace NHibernate.DomainModel
 		/// <param name="id"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object CurrentVersion( object id, ISessionImplementor session )
+		public object GetCurrentVersion( object id, ISessionImplementor session )
 		{
 			return this;
 		}

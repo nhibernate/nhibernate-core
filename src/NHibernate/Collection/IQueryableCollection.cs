@@ -10,6 +10,13 @@ namespace NHibernate.Collection
 	public interface IQueryableCollection : IPropertyMapping, IJoinable, ICollectionPersister
 	{
 		/// <summary>
+		/// Generate a list of collection index and element columns
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		SqlString SelectFragment( string alias );
+
+		/// <summary>
 		/// Get the names of the collection index columns if this is an indexed collection (optional operation)
 		/// </summary>
 		string[] IndexColumnNames { get; }
@@ -23,6 +30,20 @@ namespace NHibernate.Collection
 		/// Get the names of the collection key columns
 		/// </summary>
 		string[] KeyColumnNames { get; }
+
+		/// <summary>
+		/// Get the extra where clause filter SQL
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		string GetSQLWhereString( string alias );
+
+		/// <summary>
+		/// Get the order by SQL
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <returns></returns>
+		string GetSQLOrderByString( string alias );
 
 		/// <summary>
 		/// Does this collection role have a where clause filter?
@@ -41,26 +62,5 @@ namespace NHibernate.Collection
 		/// Should we load this collection role by outer joining?
 		/// </summary>
 		OuterJoinFetchStrategy EnableJoinedFetch { get; }
-
-		/// <summary>
-		/// Generate a list of collection index and element columns
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		SqlString SelectFragment( string alias );
-
-		/// <summary>
-		/// Get the extra where clause filter SQL
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		string GetSQLWhereString( string alias );
-
-		/// <summary>
-		/// Get the order by SQL
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		string GetSQLOrderByString( string alias );
 	}
 }

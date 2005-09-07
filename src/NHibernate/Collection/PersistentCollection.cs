@@ -564,12 +564,6 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public abstract ICollection GetOrphans( object snapshot );
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="list"></param>
-		/// <param name="collection"></param>
-		/// <param name="session"></param>
 		public static void IdentityRemoveAll( IList list, ICollection collection, ISessionImplementor session )
 		{
 			IEnumerator enumer = collection.GetEnumerator();
@@ -579,13 +573,6 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="oldElements"></param>
-		/// <param name="currentElements"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		protected static ICollection GetOrphans( ICollection oldElements, ICollection currentElements, ISessionImplementor session )
 		{
 			// short-circuit(s)
@@ -626,12 +613,6 @@ namespace NHibernate.Collection
 			return res;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="list"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
 		public static void IdentityRemove( IList list, object obj, ISessionImplementor session )
 		{
 			int indexOfEntityToRemove = -1;

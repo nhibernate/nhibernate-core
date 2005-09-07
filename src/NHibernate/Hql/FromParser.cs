@@ -35,11 +35,6 @@ namespace NHibernate.Hql
 			joinTypes.Add( "inner", JoinType.InnerJoin );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
-		/// <param name="q"></param>
 		public void Token( string token, QueryTranslator q )
 		{
 			// start by looking for HQL keywords....
@@ -61,7 +56,7 @@ namespace NHibernate.Hql
 					{
 						throw new QueryException( "unexpected token: join" );
 					}
-					// inner joings can be abbreviated to 'join'
+					// inner joins can be abbreviated to 'join'
 					joinType = JoinType.InnerJoin;
 					expectingJoin = false;
 					expectingAs = false;
@@ -278,10 +273,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public virtual void Start( QueryTranslator q )
 		{
 			entityName = null;
@@ -295,10 +286,6 @@ namespace NHibernate.Hql
 			joinType = JoinType.None;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public virtual void End( QueryTranslator q )
 		{
 			if( alias != null && expectingIn )

@@ -351,7 +351,7 @@ namespace NHibernate.Type
 
 			if ( uniqueKeyPropertyName == null ) 
 			{
-				return joinable.JoinKeyColumns ;
+				return joinable.JoinKeyColumnNames ;
 			}
 			else 
 			{

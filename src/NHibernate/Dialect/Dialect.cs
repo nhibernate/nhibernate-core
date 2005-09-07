@@ -472,7 +472,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// Completely optional cascading drop clause
 		/// </summary>
-		public virtual string CascadeConstraintsString
+		protected virtual string CascadeConstraintsString
 		{
 			get { return String.Empty; }
 		}
@@ -608,6 +608,45 @@ namespace NHibernate.Dialect
 		public virtual IDictionary Functions
 		{
 			get { return sqlFunctions; }
+		}
+
+		/// <summary>
+		/// Return SQL needed to drop the named table. May (and should) use
+		/// some form of "if exists" clause, and cascade constraints.
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <returns></returns>
+		public virtual string GetDropTableString( string tableName )
+		{
+			StringBuilder buf = new StringBuilder( "drop table " );
+			if( SupportsIfExistsBeforeTableName )
+			{
+				buf.Append( "if exists " );
+			}
+			
+			buf.Append( tableName ).Append( CascadeConstraintsString );
+			
+			if( SupportsIfExistsAfterTableName )
+			{
+				buf.Append( " if exists" );
+			}
+			return buf.ToString();
+		}
+
+		/// <summary>
+		/// Does the dialect support the syntax 'drop table if exists NAME'
+		/// </summary>
+		protected virtual bool SupportsIfExistsBeforeTableName
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// Does the dialect support the syntax 'drop table NAME if exists'
+		/// </summary>
+		protected virtual bool SupportsIfExistsAfterTableName
+		{
+			get { return false; }
 		}
 
 		/// <summary>

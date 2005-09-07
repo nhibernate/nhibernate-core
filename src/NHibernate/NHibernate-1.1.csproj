@@ -799,6 +799,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Engine\OptimisticLockMode.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Engine\QueryParameters.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2284,6 +2289,11 @@
                 />
                 <File
                     RelPath = "Type\MapType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\MetaType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

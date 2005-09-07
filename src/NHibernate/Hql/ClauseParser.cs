@@ -14,11 +14,6 @@ namespace NHibernate.Hql
 		private bool byExpected = false;
 		private int parenCount = 0;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
-		/// <param name="q"></param>
 		public virtual void Token( string token, QueryTranslator q )
 		{
 			string lcToken = token.ToLower();
@@ -124,18 +119,10 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public virtual void Start( QueryTranslator q )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public virtual void End( QueryTranslator q )
 		{
 			EndChild( q );

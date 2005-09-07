@@ -44,23 +44,14 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public void Start( QueryTranslator q )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public void End( QueryTranslator q )
 		{
 		}
 
-		/// <summary></summary>
 		public OrderByParser()
 		{
 			pathExpressionParser.UseThetaStyleJoin = true;

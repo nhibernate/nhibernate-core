@@ -7,8 +7,7 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public abstract class IdentifierCollection : Collection
 	{
-		/// <summary></summary>
-		public static readonly string DefaultIdentifierColumnName = "id";
+		public const string DefaultIdentifierColumnName = "id";
 		private SimpleValue identifier;
 
 		/// <summary>

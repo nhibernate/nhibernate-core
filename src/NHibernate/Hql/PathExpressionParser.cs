@@ -24,24 +24,9 @@ namespace NHibernate.Hql
 
 		//The class is now way to complex!
 
-		/// <summary></summary>
 		public const string EntityID = "id";
-		/// <summary></summary>
+
 		public const string EntityClass = "class";
-		/// <summary></summary>
-		public const string CollectionSize = "size";
-		/// <summary></summary>
-		public const string CollectionElements = "elements";
-		/// <summary></summary>
-		public const string CollectionIndices = "indices";
-		/// <summary></summary>
-		public const string CollectionMaxIndex = "maxIndex";
-		/// <summary></summary>
-		public const string CollectionMinIndex = "minIndex";
-		/// <summary></summary>
-		public const string CollectionMaxElement = "maxElement";
-		/// <summary></summary>
-		public const string CollectionMinElement = "minElement";
 
 		private int dotcount;
 		private string currentName;
@@ -54,7 +39,6 @@ namespace NHibernate.Hql
 		private string collectionRole;
 		//private StringBuilder componentPath = new StringBuilder();
 		private string componentPath;
-		/// <summary></summary>
 		private IType type;
 		private string path;
 		private bool ignoreInitialJoin;
@@ -63,14 +47,12 @@ namespace NHibernate.Hql
 		private bool useThetaStyleJoin = true;
 		private IPropertyMapping currentPropertyMapping;
 
-		/// <summary></summary>
 		public JoinType JoinType
 		{
 			get { return joinType; }
 			set { joinType = value; }
 		}
 
-		/// <summary></summary>
 		public bool UseThetaStyleJoin
 		{
 			get { return useThetaStyleJoin; }
@@ -88,13 +70,6 @@ namespace NHibernate.Hql
 			join.AddJoin( table, name, lhsCols, rhsCols, joinType );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="joinColumns"></param>
-		/// <param name="q"></param>
-		/// <returns></returns>
 		public string ContinueFromManyToMany( System.Type clazz, string[ ] joinColumns, QueryTranslator q )
 		{
 			Start( q );
@@ -107,17 +82,11 @@ namespace NHibernate.Hql
 			return currentName;
 		}
 
-		/// <summary></summary>
 		public void IgnoreInitialJoin()
 		{
 			ignoreInitialJoin = true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
-		/// <param name="q"></param>
 		public void Token( string token, QueryTranslator q )
 		{
 			if( token != null )
@@ -222,7 +191,7 @@ namespace NHibernate.Hql
 			string idPropertyName;
 			try 
 			{
-				idPropertyName = propertyType.GetIdentifierOrUniqueKeyPropertyName( q.GetFactory() );
+				idPropertyName = propertyType.GetIdentifierOrUniqueKeyPropertyName( q.Factory );
 			}
 			catch (MappingException me) 
 			{
@@ -246,7 +215,7 @@ namespace NHibernate.Hql
 				string[] keyColNames;
 				try 
 				{
-					keyColNames = propertyType.GetReferencedColumns( q.GetFactory() );
+					keyColNames = propertyType.GetReferencedColumns( q.Factory );
 				}
 				catch (MappingException me) 
 				{

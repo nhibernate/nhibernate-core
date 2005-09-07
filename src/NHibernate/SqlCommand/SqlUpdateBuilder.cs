@@ -23,11 +23,7 @@ namespace NHibernate.SqlCommand
 
 		private IList whereStrings = new ArrayList();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		public SqlUpdateBuilder( ISessionFactoryImplementor factory ) : base( factory )
+		public SqlUpdateBuilder( IMapping mapping ) : base( mapping )
 		{
 		}
 

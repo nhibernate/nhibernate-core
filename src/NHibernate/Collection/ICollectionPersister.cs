@@ -243,9 +243,6 @@ namespace NHibernate.Collection
 		/// </summary>
 		object CollectionSpace { get; }
 
-		/// <summary>
-		/// 
-		/// </summary>
 		ICollectionMetadata CollectionMetadata { get; }
 	}
 }

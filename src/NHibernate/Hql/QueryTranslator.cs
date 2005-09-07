@@ -153,14 +153,6 @@ namespace NHibernate.Hql
 			compiled = true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="resultSet"></param>
-		/// <param name="session"></param>
-		/// <param name="queryParameters"></param>
-		/// <param name="returnProxies"></param>
-		/// <returns></returns>
 		public new object LoadSingleRow( IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, bool returnProxies )
 		{
 			return base.LoadSingleRow( resultSet, session, queryParameters, returnProxies );
@@ -189,26 +181,11 @@ namespace NHibernate.Hql
 			get { return returnTypes; }
 		}
 
-		/// <summary></summary>
-		protected override int[] Owners
-		{
-			get { return owners; }
-			set { owners = value; }
-		}
-
-		/// <summary></summary>
-		protected bool HasScalarValues
-		{
-			get { return hasScalars; }
-		}
-
-		/// <summary></summary>
 		public virtual string[ ][ ] ScalarColumnNames
 		{
 			get { return scalarColumnNames; }
 		}
 
-		/// <summary></summary>
 		private void LogQuery( string hql, string sql )
 		{
 			if( log.IsDebugEnabled )
@@ -218,21 +195,11 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="name"></param>
 		internal void SetAliasName( string alias, string name )
 		{
 			aliasNames.Add( alias, name );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <returns></returns>
 		internal string GetAliasName( String alias )
 		{
 			String name = ( String ) aliasNames[ alias ];
@@ -250,11 +217,6 @@ namespace NHibernate.Hql
 			return name;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
 		internal string Unalias( string path )
 		{
 			string alias = StringHelper.Root( path );
@@ -269,25 +231,15 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="oneToOneOwnerName"></param>
 		public void AddEntityToFetch( string name, string oneToOneOwnerName )
 		{
 			AddEntityToFetch( name );
-			entitiesToFetch.Add( name );
 			if ( oneToOneOwnerName != null )
 			{
 				oneToOneOwnerNames.Add( name, oneToOneOwnerName );
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
 		public void AddEntityToFetch( string name )
 		{
 			entitiesToFetch.Add( name );
@@ -297,15 +249,10 @@ namespace NHibernate.Hql
 		protected internal override SqlString SqlString
 		{
 			// this needs internal access because the WhereParser needs to be able to "get" it.
-			get
-			{
-				LogQuery( queryString, sqlString.ToString() );
-				return sqlString;
-			}
+			get { return sqlString; }
 			set
 			{
 				throw new NotSupportedException( "SqlString can not be set by class outside of QueryTranslator" );
-				//sqlString = value; }
 			}
 		}
 
@@ -314,31 +261,16 @@ namespace NHibernate.Hql
 			return ( superQuery == null ) ? nameCount++ : superQuery.nameCount++;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
 		internal string CreateNameFor( System.Type type )
 		{
 			return GenerateAlias( type.Name, NextCount() );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="role"></param>
-		/// <returns></returns>
 		internal string CreateNameForCollection( string role )
 		{
 			return GenerateAlias( role, NextCount() );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		internal System.Type GetType( string name )
 		{
 			System.Type type = ( System.Type ) typeMap[ name ];
@@ -349,11 +281,6 @@ namespace NHibernate.Hql
 			return type;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		internal string GetRole( string name )
 		{
 			string role = ( string ) collections[ name ];
@@ -364,11 +291,6 @@ namespace NHibernate.Hql
 			return role;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		internal bool IsName( string name )
 		{
 			return aliasNames.Contains( name ) ||
@@ -377,11 +299,6 @@ namespace NHibernate.Hql
 				( superQuery != null && superQuery.IsName( name ) );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		public IPropertyMapping GetPropertyMapping( string name )
 		{
 			IPropertyMapping decorator = GetDecoratedPropertyMapping( name );
@@ -411,11 +328,16 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
+		public IPropertyMapping GetDecoratedPropertyMapping( string name )
+		{
+			return (IPropertyMapping) decoratedPropertyMappings[name];
+		}
+
+		public void DecoratePropertyMapping( string name, IPropertyMapping mapping )
+		{
+			decoratedPropertyMappings.Add( name, mapping );
+		}
+
 		internal IQueryable GetPersisterForName( string name )
 		{
 			System.Type type = GetType( name );
@@ -428,11 +350,6 @@ namespace NHibernate.Hql
 			return persister;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="className"></param>
-		/// <returns></returns>
 		internal IQueryable GetPersisterUsingImports( string className )
 		{
 			try
@@ -445,11 +362,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <returns></returns>
 		internal IQueryable GetPersister( System.Type clazz )
 		{
 			try
@@ -462,11 +374,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="role"></param>
-		/// <returns></returns>
 		internal IQueryableCollection GetCollectionPersister( string role )
 		{
 			try
@@ -483,66 +390,35 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="type"></param>
 		internal void AddType( string name, System.Type type )
 		{
 			typeMap.Add( name, type );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="role"></param>
 		internal void AddCollection( string name, string role )
 		{
 			collections.Add( name, role );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="type"></param>
-		/// <param name="join"></param>
 		internal void AddFrom( string name, System.Type type, JoinFragment join )
 		{
 			AddType( name, type );
 			AddFrom( name, join );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="collectionRole"></param>
-		/// <param name="join"></param>
 		internal void AddFromCollection( string name, string collectionRole, JoinFragment join )
 		{
+			//register collection role
 			AddCollection( name, collectionRole );
 			AddJoin( name, join );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="join"></param>
 		internal void AddFrom( string name, JoinFragment join )
 		{
 			fromTypes.Add( name );
 			AddJoin( name, join );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="classPersister"></param>
 		internal void AddFromClass( string name, IQueryable classPersister )
 		{
 			JoinFragment ojf = CreateJoinFragment( false );
@@ -551,92 +427,51 @@ namespace NHibernate.Hql
 			AddFrom( name, classPersister.MappedClass, ojf );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
 		internal void AddSelectClass( string name )
 		{
 			returnedTypes.Add( name );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="type"></param>
 		internal void AddSelectScalar( IType type )
 		{
 			scalarTypes.Add( type );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
 		internal void AppendWhereToken( string token )
 		{
 			whereTokens.Add( token );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
 		internal void AppendWhereToken( SqlString token )
 		{
 			whereTokens.Add( token );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
 		internal void AppendHavingToken( string token )
 		{
 			havingTokens.Add( token );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
 		internal void AppendOrderByToken( string token )
 		{
 			orderByTokens.Add( token );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
 		internal void AppendGroupByToken( string token )
 		{
 			groupByTokens.Add( token );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
 		internal void AppendScalarSelectToken( string token )
 		{
 			scalarSelectTokens.Add( token );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tokens"></param>
 		internal void AppendScalarSelectTokens( string[ ] tokens )
 		{
 			scalarSelectTokens.Add( tokens );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="newjoin"></param>
 		internal void AddJoin( string name, JoinFragment newjoin )
 		{
 			JoinFragment oldjoin = ( JoinFragment ) joins[ name ];
@@ -656,10 +491,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
 		internal void AddNamedParameter( string name )
 		{
 			if( superQuery != null )
@@ -688,11 +519,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		internal int[ ] GetNamedParameterLocs( string name )
 		{
 			object o = namedParameters[ name ];
@@ -712,18 +538,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary></summary>
-		public ICollection NamedParameters
-		{
-			get { return namedParameters.Keys; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
 		public static string ScalarName( int x, int y )
 		{
 			return new StringBuilder()
@@ -813,7 +627,7 @@ namespace NHibernate.Hql
 				sql.AddSelectFragmentString( scalarSelect );
 			}
 
-			// TODO: for some dialects it would be appropriate to add the renderOrderByProertySelecT() to other select strings
+			// TODO: for some dialects it would be appropriate to add the renderOrderByPropertiesSelect() to other select strings
 			MergeJoins( sql.JoinFragment );
 
 			sql.SetWhereTokens( whereTokens );
@@ -829,7 +643,7 @@ namespace NHibernate.Hql
 
 			scalarColumnNames = GenerateColumnNames( returnTypes, factory );
 
-			// initialize the set of queries identifer spaces
+			// initialize the set of queried identifer spaces (ie. tables)
 			foreach( string name in collections.Values )
 			{
 				IQueryableCollection p = GetCollectionPersister( name );
@@ -1034,7 +848,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary></summary>
 		public ISet QuerySpaces
 		{
 			get { return querySpaces; }
@@ -1049,10 +862,6 @@ namespace NHibernate.Hql
 			get { return shallowQuery; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="table"></param>
 		internal void AddQuerySpace( object table )
 		{
 			querySpaces.Add( table );
@@ -1062,7 +871,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary></summary>
 		internal bool Distinct
 		{
 			set { distinct = value; }
@@ -1074,39 +882,11 @@ namespace NHibernate.Hql
 			get { return superQuery != null; }
 		}
 
-		/// <summary></summary>
 		protected override ICollectionPersister CollectionPersister
 		{
 			get { return collectionPersister; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public IPropertyMapping GetDecoratedPropertyMapping( string name )
-		{
-			return (IPropertyMapping) decoratedPropertyMappings[name];
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="mapping"></param>
-		public void DecoratePropertyMapping( string name, IPropertyMapping mapping )
-		{
-			decoratedPropertyMappings.Add( name, mapping );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="role"></param>
-		/// <param name="name"></param>
-		/// <param name="ownerName"></param>
-		/// <param name="entityName"></param>
 		public void SetCollectionToFetch( string role, string name, string ownerName, string entityName )
 		{
 			fetchName = name;
@@ -1118,18 +898,12 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary></summary>
 		protected override string[ ] Suffixes
 		{
 			get { return suffixes; }
 			set { suffixes = value; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elementName"></param>
-		/// <param name="collectionRole"></param>
 		/// <remarks>Used for collection filters</remarks>
 		protected void AddFromAssociation( string elementName, string collectionRole )
 		{
@@ -1175,46 +949,22 @@ namespace NHibernate.Hql
 		private IDictionary pathAliases = new Hashtable();
 		private IDictionary pathJoins = new Hashtable();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
 		internal string GetPathAlias( string path )
 		{
 			return ( string ) pathAliases[ path ];
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
 		internal JoinFragment GetPathJoin( string path )
 		{
 			return ( JoinFragment ) pathJoins[ path ];
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="alias"></param>
-		/// <param name="join"></param>
 		internal void AddPathAliasAndJoin( string path, string alias, JoinFragment join )
 		{
 			pathAliases.Add( path, alias );
 			pathJoins.Add( path, join.Copy() );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="ps"></param>
-		/// <param name="namedParams"></param>
-		/// <param name="start"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		protected override int BindNamedParameters( IDbCommand ps, IDictionary namedParams, int start, ISessionImplementor session )
 		{
 			if( namedParams != null )
@@ -1243,12 +993,6 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="queryParameters"></param>
-		/// <returns></returns>
 		public IList List( ISessionImplementor session, QueryParameters queryParameters )
 		{
 			LogQuery( queryString, sqlString.ToString() );
@@ -1260,14 +1004,10 @@ namespace NHibernate.Hql
 			return List( session, queryParameters, QuerySpaces, actualReturnTypes );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="parameters"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public IEnumerable GetEnumerable( QueryParameters parameters, ISessionImplementor session )
 		{
+			LogQuery( queryString, sqlString.ToString() );
+			
 			// NH: added this call to initialize parameter types in SqlString
 			PopulateSqlString( parameters );
 
@@ -1277,19 +1017,12 @@ namespace NHibernate.Hql
 				sqlWithLock,
 				parameters, false, session );
 
-			// TODO: 2.1 - Check that something tidies up this cmd/reader
+			// This IDataReader is disposed of in EnumerableImpl.Dispose
 			IDataReader rs = GetResultSet( st, parameters.RowSelection, session );
 			return new EnumerableImpl( rs, st, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection,
 				holderClass );
-
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		public static string[ ] ConcreteQueries( string query, ISessionFactoryImplementor factory )
 		{
 			//scan the query string for class names appearing in the from clause and replace 
@@ -1424,13 +1157,6 @@ namespace NHibernate.Hql
 			return names;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="row"></param>
-		/// <param name="rs"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		protected override object GetResultColumnOrRow( object[ ] row, IDataReader rs, ISessionImplementor session )
 		{
 			IType[ ] returnTypes = ReturnTypes;
@@ -1450,32 +1176,40 @@ namespace NHibernate.Hql
 					{
 						row[ i ] = returnTypes[ i ].NullSafeGet( rs, names[ i ], session, null );
 					}
-					if( holderClass == null )
-					{
-						return row;
-					}
+					return row;
 				}
 			}
 			else if( holderClass == null )
 			{
 				return ( row.Length == 1 ) ? row[ 0 ] : row;
 			}
-
-			try
+			else
 			{
-				return holderConstructor.Invoke( row );
-			}
-			catch( Exception e )
-			{
-				throw new QueryException( "could not instantiate: " + holderClass, e );
+				return row;
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="row"></param>
-		/// <returns></returns>
+		protected override IList GetResultList(IList results)
+		{
+			if( holderClass != null )
+			{
+				for( int i = 0; i < results.Count; i++ )
+				{
+					object[] row = (object[]) results[i];
+					try
+					{
+						results[i] = holderConstructor.Invoke( row );
+					}
+					catch( Exception e)
+					{
+						throw new QueryException( "could not instantiate: " + holderClass, e );
+					}
+				}
+			}
+
+			return results;
+		}
+
 		private object[ ] ToResultRow( object[ ] row )
 		{
 			if( selectLength == row.Length )
@@ -1497,29 +1231,21 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="useThetaStyleInnerJoins"></param>
-		/// <returns></returns>
 		internal QueryJoinFragment CreateJoinFragment( bool useThetaStyleInnerJoins )
 		{
 			return new QueryJoinFragment( factory.Dialect, useThetaStyleInnerJoins );
 		}
 
-		/// <summary></summary>
 		internal System.Type HolderClass
 		{
 			set { holderClass = value; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="lockModes"></param>
-		/// <returns></returns>
 		protected override LockMode[ ] GetLockModes( IDictionary lockModes )
 		{
+			// unfortunately this stuff can't be cached because
+			// it is per-invocation, not constant for the
+			// QueryTranslator instance
 			IDictionary nameLockModes = new Hashtable();
 			if( lockModes != null )
 			{
@@ -1546,13 +1272,6 @@ namespace NHibernate.Hql
 			return lockModeArray;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="lockModes"></param>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
 		protected override SqlString ApplyLocks( SqlString sql, IDictionary lockModes, Dialect.Dialect dialect )
 		{
 			if( lockModes == null || lockModes.Count == 0 )
@@ -1573,44 +1292,37 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary></summary>
 		protected override bool UpgradeLocks()
 		{
 			return true;
 		}
 
-		/// <summary></summary>
 		protected override int CollectionOwner
 		{
 			get { return collectionOwnerColumn; }
 		}
 
-		/// <summary></summary>
-		protected ISessionFactoryImplementor Factory
+		protected internal ISessionFactoryImplementor Factory
 		{
 			set { this.factory = value; }
 			get { return factory; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public ISessionFactoryImplementor GetFactory()
-		{
-			return Factory;
-		}
-
-		/// <summary></summary>
 		protected bool Compiled
 		{
 			get { return compiled; }
 		}
 
-		/// <summary></summary>
-		public IDictionary Functions
+		public override string ToString()
 		{
-			get { return factory.Dialect.Functions; }
+			return queryString;
+		}
+
+		/// <summary></summary>
+		protected override int[] Owners
+		{
+			get { return owners; }
+			set { owners = value; }
 		}
 
 		/// <summary>

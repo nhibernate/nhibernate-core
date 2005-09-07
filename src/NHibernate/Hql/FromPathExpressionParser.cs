@@ -1,3 +1,4 @@
+using NHibernate.Collection;
 using NHibernate.Type;
 
 namespace NHibernate.Hql
@@ -26,7 +27,7 @@ namespace NHibernate.Hql
 				{
 					// default to element set if no elements() specified
 					Token( ".", q );
-					Token( CollectionElements, q );
+					Token( CollectionPropertyMapping.CollectionElements, q );
 				}
 			}
 			base.End( q );

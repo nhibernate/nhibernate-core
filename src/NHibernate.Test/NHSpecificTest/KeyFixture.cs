@@ -43,9 +43,9 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public object CurrentVersion(object id, ISessionImplementor session)
+		public object GetCurrentVersion(object id, ISessionImplementor session)
 		{
-			// TODO:  Add TestingClassPersister.CurrentVersion implementation
+			// TODO:  Add TestingClassPersister.GetCurrentVersion implementation
 			return null;
 		}
 

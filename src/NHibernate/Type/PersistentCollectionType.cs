@@ -290,7 +290,7 @@ namespace NHibernate.Type
 		{
 			//I really, really don't like the fact that a Type now knows about column mappings!
 			//bad seperation of concerns ... could we move this somehow to Joinable interface??
-			return GetJoinable( factory ).JoinKeyColumns ;
+			return GetJoinable( factory ).JoinKeyColumnNames ;
 		}
 
 		/// <summary></summary>

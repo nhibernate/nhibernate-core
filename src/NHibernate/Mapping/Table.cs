@@ -1,7 +1,8 @@
+using System;
 using System.Collections;
 using System.Data;
 using System.Text;
-using NHibernate.Cfg;
+
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Util;
@@ -355,8 +356,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlDropString( Dialect.Dialect dialect, string defaultSchema )
 		{
-			// TODO: NH 1.0+ Get this from the dialect
-			return "drop table " + GetQualifiedName( dialect, defaultSchema ) + dialect.CascadeConstraintsString;
+			return dialect.GetDropTableString( GetQualifiedName( dialect, defaultSchema ) );
 		}
 
 		/// <summary>
@@ -431,7 +431,7 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public ForeignKey CreateForeignKey( string keyName, IList columns, System.Type referencedClass )
 		{
-			if ( keyName == null )
+			if( keyName == null )
 			{
 				keyName = "FK" + UniqueColumnString( columns );
 			}
@@ -452,9 +452,9 @@ namespace NHibernate.Mapping
 			else
 			{
 				// "X"= hexadecimal format
-				if ( fk.ReferencedClass != referencedClass ) 
+				if( fk.ReferencedClass != referencedClass )
 				{
-					foreignKeys.Remove(keyName);
+					foreignKeys.Remove( keyName );
 					keyName += referencedClass.Name.GetHashCode().ToString( "X" ).ToUpper();
 					return CreateForeignKey( keyName, columns, referencedClass );
 				}

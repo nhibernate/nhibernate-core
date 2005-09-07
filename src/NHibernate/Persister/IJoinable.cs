@@ -1,7 +1,5 @@
 using System;
-using NHibernate.Loader;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 namespace NHibernate.Persister
 {
@@ -52,7 +50,7 @@ namespace NHibernate.Persister
 		/// <summary>
 		/// The columns to join on.
 		/// </summary>
-		string[] JoinKeyColumns { get; }
+		string[] JoinKeyColumnNames { get; }
 
 		/// <summary>
 		/// Is this instance actually a ICollectionPersister?

@@ -1,18 +1,11 @@
 using System;
 using System.Collections;
 using System.Data;
-using NHibernate.Cache;
-using NHibernate.Cfg;
-using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Loader;
-using NHibernate.Mapping;
-using NHibernate.Metadata;
 using NHibernate.Persister;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Collection
@@ -22,23 +15,18 @@ namespace NHibernate.Collection
 	/// </summary>
 	public class OneToManyPersister : AbstractCollectionPersister
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="factory"></param>
 		public OneToManyPersister( Mapping.Collection collection, ISessionFactoryImplementor factory ) : base( collection, factory )
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Generate the SQL UPDATE that updates all the foreign keys to null
 		/// </summary>
 		/// <returns></returns>
 		protected override SqlString GenerateDeleteString( )
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder( factory )
-				.SetTableName( QualifiedTableName )
+				.SetTableName( qualifiedTableName )
 				.AddColumns( KeyColumnNames, "null" )
 				.SetIdentityColumn( KeyColumnNames, KeyType );
 			if( HasIndex )
@@ -47,32 +35,33 @@ namespace NHibernate.Collection
 			}
 			if( HasWhere )
 			{
-				update.AddWhereFragment( Where );
+				update.AddWhereFragment( sqlWhereString );
 			}
 
 			return update.ToSqlString();
 		}
 
 		/// <summary>
-		/// 
+		/// Generate the SQL UPDATE that updates a foreign key to a value
 		/// </summary>
 		/// <returns></returns>
 		protected override SqlString GenerateInsertRowString( )
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder( factory );
-			update.SetTableName( QualifiedTableName )
+			update.SetTableName( qualifiedTableName )
 				.AddColumns( KeyColumnNames, KeyType )
 				.SetIdentityColumn( ElementColumnNames, ElementType );
 			if( HasIndex )
 			{
 				update.AddColumns( IndexColumnNames, IndexType );
 			}
+			//identifier collections not supported for 1-to-many 
 
 			return update.ToSqlString();
 		}
 
 		/// <summary>
-		/// 
+		/// Not needed for one-to-many association
 		/// </summary>
 		/// <returns></returns>
 		protected override SqlString GenerateUpdateRowString( )
@@ -81,13 +70,14 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Generate the SQL UPDATE that updates a particular row's foreign
+		/// key to null
 		/// </summary>
 		/// <returns></returns>
 		protected override SqlString GenerateDeleteRowString( )
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder( factory );
-			update.SetTableName( QualifiedTableName )
+			update.SetTableName( qualifiedTableName )
 				.AddColumns( KeyColumnNames, "null" );
 
 			if( HasIndex )
@@ -95,51 +85,34 @@ namespace NHibernate.Collection
 				update.AddColumns( IndexColumnNames, "null" );
 			}
 
-			if( HasIdentifier )
+			if( hasIdentifier )
 			{
-				update.AddWhereFragment( RowSelectColumnNames, RowSelectType, " = " );
+				update.AddWhereFragment( rowSelectColumnNames, rowSelectType, " = " );
 			}
 			else
 			{
 				update.AddWhereFragment( KeyColumnNames, KeyType, " = " );
-				update.AddWhereFragment( RowSelectColumnNames, RowSelectType, " = " );
+				update.AddWhereFragment( rowSelectColumnNames, rowSelectType, " = " );
 			}
 
 			return update.ToSqlString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public override bool ConsumesAlias( )
 		{
 			return true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override bool IsOneToMany
 		{
 			get { return true; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override bool IsManyToMany
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="collection"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		protected override int DoUpdateRows( object id, PersistentCollection collection, ISessionImplementor session )
 		{
 			// we finish all the "removes" first to take care of possible unique 
@@ -177,7 +150,6 @@ namespace NHibernate.Collection
 				}
 				catch( Exception e )
 				{
-					//TODO: change to SqlException
 					session.Batcher.AbortBatch( e );
 					throw;
 				}
@@ -213,20 +185,12 @@ namespace NHibernate.Collection
 				}
 				return count;
 			}
-			catch ( Exception )
+			catch ( Exception sqle )
 			{
-				//TODO: change to SqlException
-				throw;
+				throw Convert( sqle, "could not update collection rows: " + MessageHelper.InfoString( this, id ) );
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="suffix"></param>
-		/// <param name="includeCollectionColumns"></param>
-		/// <returns></returns>
 		public override SqlString SelectFragment( string alias, string suffix, bool includeCollectionColumns )
 		{
 			IOuterJoinLoadable ojl = (IOuterJoinLoadable) ElementPersister;
@@ -244,7 +208,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Create the <see cref="OneToManyLoader" />
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <returns></returns>
@@ -252,12 +216,11 @@ namespace NHibernate.Collection
 		{
 			Loader.Loader nonbatchLoader = new OneToManyLoader( this, factory );
 
-			/*
 			if ( batchSize > 1 )
 			{
-				Loader batchLoader = new OneToManyLoader( this, batchSize, factory );
+				Loader.Loader batchLoader = new OneToManyLoader( this, batchSize, factory );
 				int smallBatchSize = (int) Math.Round( Math.Sqrt( batchSize ) );
-				Loader smallBatchLoader = new OneToManyLoader( this, smallBatchSize, factory );
+				Loader.Loader smallBatchLoader = new OneToManyLoader( this, smallBatchSize, factory );
 				// the strategy for choosing batch or single load
 				return new BatchingCollectionInitializer( this, batchSize, batchLoader, smallBatchSize, smallBatchLoader, nonbatchLoader );
 			}
@@ -266,31 +229,13 @@ namespace NHibernate.Collection
 				// don't to batch loading
 				return (ICollectionInitializer) nonbatchLoader;
 			}
-			*/
-
-			// Don't worry about batching for now
-			return nonbatchLoader as ICollectionInitializer;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="innerJoin"></param>
-		/// <param name="includeSubclasses"></param>
-		/// <returns></returns>
 		public override SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
 		{
 			return ( (IJoinable) ElementPersister).FromJoinFragment( alias, innerJoin, includeSubclasses );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="innerJoin"></param>
-		/// <param name="includeSubclasses"></param>
-		/// <returns></returns>
 		public override SqlString WhereJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
 		{
 			return ( (IJoinable) ElementPersister).WhereJoinFragment( alias, innerJoin, includeSubclasses );

@@ -1,19 +1,11 @@
 using System;
 using System.Collections;
 using System.Data;
-using NHibernate.Cache;
-using NHibernate.Cfg;
-using NHibernate.Dialect;
+
 using NHibernate.Engine;
-using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Loader;
-using NHibernate.Mapping;
-using NHibernate.Metadata;
-using NHibernate.Persister;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Collection
 {
@@ -22,11 +14,6 @@ namespace NHibernate.Collection
 	/// </summary>
 	public class BasicCollectionPersister : AbstractCollectionPersister
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="factory"></param>
 		public BasicCollectionPersister( Mapping.Collection collection, ISessionFactoryImplementor factory ) : base( collection, factory )
 		{
 		}
@@ -35,14 +22,14 @@ namespace NHibernate.Collection
 		/// Generate the SQL DELETE that deletes all rows
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateDeleteString( )
+		protected override SqlString GenerateDeleteString()
 		{
 			SqlDeleteBuilder delete = new SqlDeleteBuilder( factory )
-				.SetTableName( QualifiedTableName )
+				.SetTableName( qualifiedTableName )
 				.SetIdentityColumn( KeyColumnNames, KeyType );
 			if( HasWhere )
 			{
-				delete.AddWhereFragment( Where );
+				delete.AddWhereFragment( sqlWhereString );
 			}
 			return delete.ToSqlString();
 		}
@@ -51,18 +38,18 @@ namespace NHibernate.Collection
 		/// Generate the SQL INSERT that creates a new row
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateInsertRowString( )
+		protected override SqlString GenerateInsertRowString()
 		{
 			SqlInsertBuilder insert = new SqlInsertBuilder( factory )
-				.SetTableName( QualifiedTableName )
+				.SetTableName( qualifiedTableName )
 				.AddColumn( KeyColumnNames, KeyType );
 			if( HasIndex )
 			{
 				insert.AddColumn( IndexColumnNames, IndexType );
 			}
-			if( HasIdentifier )
+			if( hasIdentifier )
 			{
-				insert.AddColumn( new string[ ] { IdentifierColumnName }, IdentifierType );
+				insert.AddColumn( new string[ ] {identifierColumnName}, IdentifierType );
 			}
 			insert.AddColumn( ElementColumnNames, ElementType );
 
@@ -73,19 +60,19 @@ namespace NHibernate.Collection
 		/// Generate the SQL UPDATE that updates a row
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateUpdateRowString( )
+		protected override SqlString GenerateUpdateRowString()
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder( factory )
-				.SetTableName( QualifiedTableName )
+				.SetTableName( qualifiedTableName )
 				.AddColumns( ElementColumnNames, ElementType );
-			if( HasIdentifier )
+			if( hasIdentifier )
 			{
-				update.AddWhereFragment( RowSelectColumnNames, RowSelectType, " = " );
+				update.AddWhereFragment( rowSelectColumnNames, rowSelectType, " = " );
 			}
 			else
 			{
 				update.AddWhereFragment( KeyColumnNames, KeyType, " = " )
-					.AddWhereFragment( RowSelectColumnNames, RowSelectType, " = " );
+					.AddWhereFragment( rowSelectColumnNames, rowSelectType, " = " );
 			}
 
 			return update.ToSqlString();
@@ -95,55 +82,38 @@ namespace NHibernate.Collection
 		/// Generate the SQL DELETE that deletes a particular row
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateDeleteRowString( )
+		protected override SqlString GenerateDeleteRowString()
 		{
 			SqlDeleteBuilder delete = new SqlDeleteBuilder( factory );
-			delete.SetTableName( QualifiedTableName );
-			if( HasIdentifier )
+			delete.SetTableName( qualifiedTableName );
+			if( hasIdentifier )
 			{
-				delete.AddWhereFragment( RowSelectColumnNames, RowSelectType, " = " );
+				delete.AddWhereFragment( rowSelectColumnNames, rowSelectType, " = " );
 			}
 			else
 			{
 				delete.AddWhereFragment( KeyColumnNames, KeyType, " = " )
-					.AddWhereFragment( RowSelectColumnNames, RowSelectType, " = " );
+					.AddWhereFragment( rowSelectColumnNames, rowSelectType, " = " );
 			}
 
 			return delete.ToSqlString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public override bool ConsumesAlias( )
+		public override bool ConsumesAlias()
 		{
 			return false;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override bool IsOneToMany
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override bool IsManyToMany
 		{
 			get { return ElementType.IsEntityType; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="collection"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		protected override int DoUpdateRows( object id, PersistentCollection collection, ISessionImplementor session )
 		{
 			try
@@ -162,7 +132,7 @@ namespace NHibernate.Collection
 							{
 								st = session.Batcher.PrepareBatchCommand( SqlUpdateRowString );
 							}
-							if ( !HasIdentifier )
+							if( !hasIdentifier )
 							{
 								WriteKey( st, id, true, session );
 							}
@@ -182,22 +152,33 @@ namespace NHibernate.Collection
 					throw;
 				}
 			}
-			catch ( Exception )
+			catch( Exception sqle )
 			{
-				//TODO: change to SqlException
-				throw;
+				throw Convert( sqle, "could not update collection rows: " + MessageHelper.InfoString( this, id ) );
 			}
 		}
 
 		/// <summary>
-		/// 
+		/// Create the <see cref="CollectionLoader" />
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <returns></returns>
 		protected override ICollectionInitializer CreateCollectionInitializer( ISessionFactoryImplementor factory )
 		{
-			// Don't worry about batching for now
-			return new CollectionLoader( this, factory ) as ICollectionInitializer;
+			Loader.Loader nonbatchLoader = new CollectionLoader( this, factory );
+			if( batchSize > 1 )
+			{
+				Loader.Loader batchLoader = new CollectionLoader( this, batchSize, factory );
+				int smallBatchSize = ( int ) Math.Round( Math.Sqrt( batchSize ) );
+				Loader.Loader smallBatchLoader = new CollectionLoader( this, smallBatchSize, factory );
+				// the strategy for choosing batch or single load:
+				return new BatchingCollectionInitializer( this, batchSize, batchLoader, smallBatchSize, smallBatchLoader, nonbatchLoader );
+			}
+			else
+			{
+				// don't do batch loading
+				return ( ICollectionInitializer ) nonbatchLoader;
+			}
 		}
 
 		/// <summary>

@@ -381,7 +381,7 @@ namespace NHibernate.Persister
 		/// <param name="id"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object CurrentVersion( object id, ISessionImplementor session );
+		object GetCurrentVersion( object id, ISessionImplementor session );
 
 		/// <summary>
 		/// </summary>

@@ -25,7 +25,7 @@ namespace NHibernate.Util
 		/// implementation of Equals from <see cref="Object"/>
 		/// </summary>
 		/// <param name="clazz">The <see cref="System.Type"/> to reflect.</param>
-		/// <returns><c>true</c> if any type in the heirarchy overrides Equals(object).</returns>
+		/// <returns><c>true</c> if any type in the hierarchy overrides Equals(object).</returns>
 		public static bool OverridesEquals( System.Type clazz )
 		{
 			try
@@ -49,6 +49,36 @@ namespace NHibernate.Util
 				return true;
 			}
 
+		}
+
+		/// <summary>
+		/// Determine if the specified <see cref="System.Type"/> overrides the
+		/// implementation of GetHashCode from <see cref="Object"/>
+		/// </summary>
+		/// <param name="clazz">The <see cref="System.Type"/> to reflect.</param>
+		/// <returns><c>true</c> if any type in the hierarchy overrides GetHashCode().</returns>
+		public static bool OverridesGetHashCode( System.Type clazz )
+		{
+			try
+			{
+				MethodInfo getHashCode = clazz.GetMethod( "GetHashCode", new System.Type[0] );
+				if( getHashCode == null )
+				{
+					return false;
+				}
+				else
+				{
+					// make sure that the DeclaringType is not System.Object - if that is the
+					// declaring type then there is no override.
+					return !getHashCode.DeclaringType.Equals( typeof( object ) );
+				}
+			}
+			catch( AmbiguousMatchException )
+			{
+				// an ambigious match means that there is an override and it
+				// can't determine which one to use.
+				return true;
+			}
 		}
 
 		/// <summary>

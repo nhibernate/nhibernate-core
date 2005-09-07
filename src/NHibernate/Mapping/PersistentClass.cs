@@ -33,8 +33,8 @@ namespace NHibernate.Mapping
 		private bool dynamicUpdate;
 		private int batchSize = 1;
 		private bool selectBeforeUpdate;
-		private int optimisticLockMode;
-		//private IDictionary metaAttributes;
+		private OptimisticLockMode optimisticLockMode;
+		private IDictionary metaAttributes;
 
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
@@ -91,7 +91,7 @@ namespace NHibernate.Mapping
 			{
 				if ( subclass.Name == superclass.Name )
 				{
-					throw new MappingException( string.Format( "Circular inheritance mapping detected {0} will have itself as superclass when extending {1}", subclass.Name, Name ) );
+					throw new MappingException( string.Format( "Circular inheritance mapping detected: {0} will have itself as superclass when extending {1}", subclass.Name, Name ) );
 				}
 				superclass = superclass.Superclass;
 			}
@@ -166,14 +166,15 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// 
+		/// Add a new property definition
 		/// </summary>
 		/// <param name="p"></param>
+		/// <exception cref="MappingException">if the property was already defined</exception>
 		public void AddNewProperty( Property p )
 		{
 			if ( properties.Contains( p.Name ) )
 			{
-				throw new MappingException( string.Format( "Duplication mapping for property: {0}", StringHelper.Qualify( Name, p.Name ) ) );
+				throw new MappingException( string.Format( "Duplicate mapping for property: {0}", StringHelper.Qualify( Name, p.Name ) ) );
 			}
 			else
 			{
@@ -182,7 +183,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Add the <see cref="Property"/> to this PersistentClass.
+		/// Change the property definition or add a new property definition
 		/// </summary>
 		/// <param name="p">The <see cref="Property"/> to add.</param>
 		public virtual void AddProperty( Property p )
@@ -464,6 +465,12 @@ namespace NHibernate.Mapping
 			get { return NullDiscriminatorMapping.Equals( DiscriminatorValue ); }
 		}
 
+		public IDictionary MetaAttributes
+		{
+			get { return metaAttributes; }
+			set { metaAttributes = value; }
+		}
+
 		/// <summary>
 		/// When implemented by a class, gets or sets a boolean indicating if the identifier is 
 		/// embedded in the class.
@@ -559,10 +566,7 @@ namespace NHibernate.Mapping
 			throw new MappingException( string.Format( "property not found: {0}", propertyName ) );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int OptimisticLockMode
+		public OptimisticLockMode OptimisticLockMode
 		{
 			get { return optimisticLockMode; }
 			set { optimisticLockMode = value; }

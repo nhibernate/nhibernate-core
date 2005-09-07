@@ -9,47 +9,23 @@ namespace NHibernate.Collection
 	/// </summary>
 	public class CollectionPropertyMapping : IPropertyMapping
 	{
-		/// <summary></summary>
 		public const string CollectionSize = "size";
-		/// <summary></summary>
 		public const string CollectionElements = "elements";
-		/// <summary></summary>
 		public const string CollectionIndices = "indices";
-		/// <summary></summary>
 		public const string CollectionMaxIndex = "maxIndex";
-		/// <summary></summary>
 		public const string CollectionMinIndex = "minIndex";
-		/// <summary></summary>
 		public const string CollectionMaxElement = "maxElement";
-		/// <summary></summary>
 		public const string CollectionMinElement = "minElement";
 
 		private readonly IQueryableCollection memberPersister;
 
-		private const string InvalidPropertyMessage = "expecting 'elements' or 'indicies' after {0}";
+		private const string InvalidPropertyMessage = "expecting 'elements' or 'indices' after {0}";
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="memberPersister"></param>
 		public CollectionPropertyMapping( IQueryableCollection memberPersister )
 		{
 			this.memberPersister = memberPersister;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public IType Type
-		{
-			get { return memberPersister.CollectionType; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
 		public IType ToType( string propertyName )
 		{
 			switch ( propertyName )
@@ -73,12 +49,6 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
 		public string[] ToColumns( string alias, string propertyName )
 		{
 			string[] cols;
@@ -106,10 +76,10 @@ namespace NHibernate.Collection
 					return ColumnFunction( propertyName, "min", memberPersister.IndexColumnNames ) ;
 
 				case CollectionMaxElement:
-					return ColumnFunction( propertyName, "max", memberPersister.IndexColumnNames ) ;
+					return ColumnFunction( propertyName, "max", memberPersister.ElementColumnNames ) ;
 
 				case CollectionMinElement:
-					return ColumnFunction( propertyName, "min", memberPersister.IndexColumnNames ) ;
+					return ColumnFunction( propertyName, "min", memberPersister.ElementColumnNames ) ;
 
 				default:
 					throw new QueryException( string.Format( InvalidPropertyMessage, propertyName ) );
@@ -131,6 +101,11 @@ namespace NHibernate.Collection
 				throw new QueryException( string.Format( "composite collection element in {0}", propertyName ) );
 			}
 			return new string[] { function + StringHelper.OpenParen + cols[0] + StringHelper.ClosedParen };
+		}
+
+		public IType Type
+		{
+			get { return memberPersister.CollectionType; }
 		}
 	}
 }

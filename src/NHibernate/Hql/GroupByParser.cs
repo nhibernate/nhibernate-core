@@ -19,11 +19,6 @@ namespace NHibernate.Hql
 
 		private PathExpressionParser pathExpressionParser = new PathExpressionParser();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
-		/// <param name="q"></param>
 		public void Token( string token, QueryTranslator q )
 		{
 			if( q.IsName( StringHelper.Root( token ) ) )
@@ -38,18 +33,10 @@ namespace NHibernate.Hql
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public void Start( QueryTranslator q )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public void End( QueryTranslator q )
 		{
 		}

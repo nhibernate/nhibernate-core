@@ -114,6 +114,11 @@ namespace NHibernate.Dialect
 			get { return '`'; }
 		}
 
+		protected override bool SupportsIfExistsBeforeTableName
+		{
+			get { return true; }
+		}
+
 		/// <summary></summary>
 		public override bool SupportsLimit
 		{

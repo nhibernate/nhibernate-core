@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Runtime.CompilerServices;
+using System.Text;
+
 using log4net;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -250,7 +252,7 @@ namespace NHibernate.Id
 		/// </returns>
 		public string SqlDropString( Dialect.Dialect dialect )
 		{
-			return "drop table " + tableName + dialect.CascadeConstraintsString;
+			return dialect.GetDropTableString( tableName );
 		}
 
 		/// <summary>
