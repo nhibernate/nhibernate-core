@@ -388,7 +388,7 @@ namespace NHibernate.Type
 
 
 		/// <summary>
-		/// Uses hueristics to deduce a NHibernate type given a string naming the 
+		/// Uses heuristics to deduce a NHibernate type given a string naming the 
 		/// type. 
 		/// </summary>
 		/// <param name="typeName"></param>
@@ -401,7 +401,7 @@ namespace NHibernate.Type
 		/// IPersistentEnum.  If none of those are implemented then we will serialize the Type to the
 		/// database using NHibernate.Type.SerializableType(typeName)  
 		/// </remarks>
-		public static IType HueristicType( string typeName )
+		public static IType HeuristicType( string typeName )
 		{
 			IType type = TypeFactory.Basic( typeName );
 

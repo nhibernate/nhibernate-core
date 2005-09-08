@@ -781,7 +781,7 @@ namespace NHibernate.Cfg
 			XmlAttribute metaAttribute = node.Attributes[ "meta-type" ];
 			if( metaAttribute != null )
 			{
-				IType metaType = TypeFactory.HueristicType( metaAttribute.Value );
+				IType metaType = TypeFactory.HeuristicType( metaAttribute.Value );
 				if( metaType == null )
 				{
 					throw new MappingException( "could not interpret meta-type" );
@@ -1091,7 +1091,7 @@ namespace NHibernate.Cfg
 			}
 			else
 			{
-				type = TypeFactory.HueristicType( typeNode.Value );
+				type = TypeFactory.HeuristicType( typeNode.Value );
 				if( type == null )
 				{
 					throw new MappingException( "could not interpret type: " + typeNode.Value );

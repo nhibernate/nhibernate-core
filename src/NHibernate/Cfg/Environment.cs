@@ -5,7 +5,6 @@ using System.Configuration;
 using System.Xml;
 
 using log4net;
-using log4net.Config;
 
 namespace NHibernate.Cfg
 {
@@ -98,7 +97,6 @@ namespace NHibernate.Cfg
 		{
 			if( !isConfigured )
 			{
-				XmlConfigurator.Configure();
 				bool configurationFound = false;
 
 				configurationFound = ConfigureFromNameValueCollection();

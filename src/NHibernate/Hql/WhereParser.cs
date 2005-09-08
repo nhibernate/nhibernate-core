@@ -492,7 +492,7 @@ namespace NHibernate.Hql
 						IType type;
 						try
 						{
-							type = TypeFactory.HueristicType( constant.GetType().AssemblyQualifiedName );
+							type = TypeFactory.HeuristicType( constant.GetType().AssemblyQualifiedName );
 						}
 						catch( MappingException me )
 						{

@@ -680,7 +680,7 @@ namespace NHibernate.Impl
 			}
 			
 			string typename = clazz.AssemblyQualifiedName;
-			IType type = TypeFactory.HueristicType( typename );
+			IType type = TypeFactory.HeuristicType( typename );
 			bool serializable = (type!=null && type is SerializableType);
 			if( type==null || serializable )
 			{

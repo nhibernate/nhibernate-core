@@ -62,8 +62,8 @@ namespace NHibernate.Persister
 		private readonly Hashtable subclassesByDiscriminatorValue = new Hashtable();
 		private readonly bool forceDiscriminator;
 		private readonly string discriminatorColumnName;
-		private readonly IType discriminatorType;
 		private readonly string discriminatorAlias;
+		private readonly IType discriminatorType;
 		private readonly object discriminatorSQLValue;
 		private readonly bool discriminatorInsertable;
 
@@ -74,11 +74,43 @@ namespace NHibernate.Persister
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( EntityPersister ) );
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="model"></param>
-		/// <param name="factory"></param>
+		public override void PostInstantiate( ISessionFactoryImplementor factory )
+		{
+			InitPropertyPaths( factory );
+
+			IUniqueEntityLoader loader = CreateEntityLoader( factory );
+
+			InitLockers();
+
+			loaders.Add( LockMode.None, loader );
+			loaders.Add( LockMode.Read, loader );
+
+			// initialize the SqlStrings - these are in the PostInstantiate method because we need
+			// to have every other IClassPersister loaded so we can resolve the IType for the 
+			// relationships.  In Hibernate they are able to just use ? and not worry about Parameters until
+			// the statement is actually called.  We need to worry about Parameters when we are building
+			// the IClassPersister...
+			sqlDeleteString = GenerateDeleteString();
+			sqlInsertString = GenerateInsertString( false, PropertyInsertability );
+			sqlIdentityInsertString = IsIdentifierAssignedByInsert ?
+				GenerateInsertString( true, PropertyInsertability ) :
+				null;
+
+			sqlUpdateString = GenerateUpdateString( PropertyUpdateability );
+			sqlConcreteSelectString = GenerateConcreteSelectString( PropertyUpdateability );
+			sqlVersionSelectString = GenerateSelectVersionString( factory );
+
+			SqlString selectForUpdate = Dialect.SupportsForUpdate ? GenerateSelectForUpdateString() : GenerateSelectString( null );
+
+			loaders.Add( LockMode.Upgrade, new SimpleEntityLoader( this, selectForUpdate, LockMode.Upgrade ) );
+
+			SqlString selectForUpdateNoWaitString = Dialect.SupportsForUpdateNoWait ? GenerateSelectForUpdateNoWaitString() : selectForUpdate.Clone();
+			
+			loaders.Add( LockMode.UpgradeNoWait, new SimpleEntityLoader( this, selectForUpdateNoWaitString, LockMode.UpgradeNoWait ) );
+
+			CreateUniqueKeyLoaders( factory );
+		}
+
 		public EntityPersister( PersistentClass model, ISessionFactoryImplementor factory )
 			: base( model, factory )
 		{
@@ -329,47 +361,6 @@ namespace NHibernate.Persister
 			//InitLockers();
 
 			InitSubclassPropertyAliasesMap( model );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		public override void PostInstantiate( ISessionFactoryImplementor factory )
-		{
-			InitPropertyPaths( factory );
-
-			IUniqueEntityLoader loader = CreateEntityLoader( factory );
-
-			InitLockers();
-
-			loaders.Add( LockMode.None, loader );
-			loaders.Add( LockMode.Read, loader );
-
-			// initialize the SqlStrings - these are in the PostInstantiate method because we need
-			// to have every other IClassPersister loaded so we can resolve the IType for the 
-			// relationships.  In Hibernate they are able to just use ? and not worry about Parameters until
-			// the statement is actually called.  We need to worry about Parameters when we are building
-			// the IClassPersister...
-			sqlDeleteString = GenerateDeleteString();
-			sqlInsertString = GenerateInsertString( false, PropertyInsertability );
-			sqlIdentityInsertString = IsIdentifierAssignedByInsert ?
-				GenerateInsertString( true, PropertyInsertability ) :
-				null;
-
-			sqlUpdateString = GenerateUpdateString( PropertyUpdateability );
-			sqlConcreteSelectString = GenerateConcreteSelectString( PropertyUpdateability );
-			sqlVersionSelectString = GenerateSelectVersionString( factory );
-
-			SqlString selectForUpdate = Dialect.SupportsForUpdate ? GenerateSelectForUpdateString() : GenerateSelectString( null );
-
-			loaders.Add( LockMode.Upgrade, new SimpleEntityLoader( this, selectForUpdate, LockMode.Upgrade ) );
-
-			SqlString selectForUpdateNoWaitString = Dialect.SupportsForUpdateNoWait ? GenerateSelectForUpdateNoWaitString() : selectForUpdate.Clone();
-			
-			loaders.Add( LockMode.UpgradeNoWait, new SimpleEntityLoader( this, selectForUpdateNoWaitString, LockMode.UpgradeNoWait ) );
-
-			CreateUniqueKeyLoaders( factory );
 		}
 
 		/// <summary>
