@@ -11,6 +11,8 @@
   		discriminator-value="F"
   		dynamic-update="true"
   		dynamic-insert="true"
+  		batch-size="4"
+  		select-before-update="false"
   	>
   		<cache usage="nonstrict-read-write"/>
   
@@ -169,7 +171,7 @@
 			proxy="NHibernate.DomainModel.AbstractProxy, NHibernate.DomainModel"
     		discriminator-value="null"
     	>
-			<set name="Abstracts">
+			<set name="Abstracts" batch-size="2">
 				<key column="abstract_id"/>
 				<one-to-many class="NHibernate.DomainModel.Abstract, NHibernate.DomainModel"/>
 			</set>

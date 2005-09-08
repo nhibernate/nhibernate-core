@@ -341,7 +341,7 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		public void MutliTableGeneratedId() 
+		public void MultiTableGeneratedId() 
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();

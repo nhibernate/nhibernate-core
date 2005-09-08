@@ -1093,7 +1093,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Batch loading not implemented")]
 		public void BatchLoad()
 		{
 			Baz baz, baz2, baz3;

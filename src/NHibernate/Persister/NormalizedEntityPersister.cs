@@ -846,71 +846,64 @@ namespace NHibernate.Persister
 			return results;
 		}
 
+		private const string ConcreteAlias = "x";
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		protected virtual SqlString GenerateConcreteSelectString( )
 		{
-			// TODO: 2.1 This needs work - java version shown below
-			/*
-			String select = "select " + 
-				StringHelper.join( 
-					StringHelper.COMMA_SPACE, 
-					StringHelper.qualify( CONCRETE_ALIAS, getIdentifierColumnNames() ) 
-				) +
-				concretePropertySelectFragment( CONCRETE_ALIAS, getPropertyUpdateability() ) + 
-				" from " +
-				fromTableFragment(CONCRETE_ALIAS) + 
-				fromJoinFragment(CONCRETE_ALIAS, true, false) +
-				" where " +
-				StringHelper.join(
-					"=? and ", 
-					StringHelper.qualify( CONCRETE_ALIAS, getIdentifierColumnNames() ) 
-				) +
-				"=?" +
-				whereJoinFragment(CONCRETE_ALIAS, true, false);
-			if ( isVersioned() ) {
-				select += 
-					" and " + 
-					getVersionColumnName() + 
-					"=?";
-			} 
-			return select;
-			*/
-			const string ConcreteAlias = "x";
+			SqlStringBuilder select = new SqlStringBuilder();
 
-			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder( factory );
+			select
+				.Add( "select " )
+				.Add( string.Join( StringHelper.CommaSpace,
+					StringHelper.Qualify( ConcreteAlias, IdentifierColumnNames ) ) )
+				.Add( ConcretePropertySelectFragment( ConcreteAlias, PropertyUpdateability ) )
+				.Add( " from " )
+				.Add( FromTableFragment( ConcreteAlias ) )
+				.Add( FromJoinFragment( ConcreteAlias, true, false ) )
+				.Add( " where " )
+				.Add( WhereJoinFragment( ConcreteAlias, true, false ) );
 
-			// set the table and the identity columns
-			builder.SetTableName( TableName )
-				.AddColumns( StringHelper.Qualify( ConcreteAlias, IdentifierColumnNames ) );
+			Parameter[] idParameters = Parameter.GenerateParameters( factory, ConcreteAlias, IdentifierColumnNames, IdentifierType );
 
-			ConcretePropertySelectFragment( builder, ConcreteAlias, PropertyUpdateability );
-			//FromTableFragment( ConcreteAlias );
-			//FromJoinFragment( ConcreteAlias, true, false );
-			//" where "
-			builder.SetIdentityColumn( StringHelper.Qualify( ConcreteAlias, IdentifierColumnNames ), IdentifierType );
-			//WhereJoinFragment( alias, true, false );
-			if( IsVersioned )
+			for( int i = 0; i < idParameters.Length; i++ )
 			{
-				builder.SetVersionColumn( new string[ ] { VersionColumnName }, VersionType );
+				if( i > 0 )
+				{
+					select.Add( " and " );
+				}
+
+				select
+					.Add( IdentifierColumnNames[ i ] )
+					.Add( " = " )
+					.Add( idParameters[ i ] );
 			}
 
-			return builder.ToSqlString();
+			if( IsVersioned )
+			{
+				Parameter[] versionParameters = Parameter.GenerateParameters(
+					factory, ConcreteAlias, new string[1] { VersionColumnName }, VersionType );
+				select.Add( " and " )
+					.Add( VersionColumnName )
+					.Add( " = " )
+					.Add( versionParameters[ 0 ] );
+			}
+
+			return select.ToSqlString();
 		}
 
-		private SqlString ConcretePropertySelectFragment( SqlSimpleSelectBuilder builder, string alias, bool[] includeProperty)
+		private SqlString ConcretePropertySelectFragment( string alias, bool[] includeProperty )
 		{
 			int propertyCount = propertyColumnNames.Length;
 			SelectFragment frag = new SelectFragment( Dialect );
 
-			for( int i = 0; i < HydrateSpan; i++ )
+			for( int i = 0; i < propertyCount; i++ )
 			{
 				if( includeProperty[ i ] )
 				{
-					frag.AddColumns( Alias( alias, propertyTables[ i ] ), propertyColumnNames[ i ], propertyColumnNameAliases[ i ] );
+					frag.AddColumns(
+						Alias( alias, propertyTables[ i ] ),
+						propertyColumnNames[ i ],
+						propertyColumnNameAliases[ i ] );
 				}
 			}
 

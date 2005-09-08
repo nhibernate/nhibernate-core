@@ -38,6 +38,7 @@
 		<xs:attribute name="lazy" type="xs:boolean" use="optional"/>
 		<xs:attribute name="dynamic-update" type="xs:boolean" use="optional" default="false"/>
 		<xs:attribute name="dynamic-insert" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="select-before-update" type="xs:boolean" use="optional" default="false"/>
 	</xs:attributeGroup>
 	<xs:attributeGroup name="baseAssociationAttributes">
 		<xs:attribute name="name" type="xs:string" use="required"/>
@@ -50,6 +51,7 @@
 		<xs:attribute name="where" type="xs:string" use="optional"/>
 		<xs:attribute name="inverse" type="xs:boolean" use="optional" default="false"/>
 		<xs:attribute name="persister" type="xs:string" use="optional" />
+		<xs:attribute name="batch-size" type="xs:positiveInteger" use="optional" default="1" />
 	</xs:attributeGroup>
 	<xs:complexType name="cacheType">
 		<xs:attribute name="usage" use="required">
@@ -177,6 +179,7 @@
 					<xs:documentation>default: none  </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="batch-size" type="xs:positiveInteger" use="optional" default="1" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="id">

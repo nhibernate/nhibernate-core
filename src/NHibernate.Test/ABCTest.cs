@@ -23,11 +23,10 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Requires TestCase refactoring to H2.1")]
+		[Ignore("Not implemented")]
 		public void HigherLevelIndexDefinition()
 		{
-			/*
-			string[] commands = Cfg.GenerateSchemaCreationScript( Dialect );
+			string[] commands = cfg.GenerateSchemaCreationScript( dialect );
 			int max = commands.Length;
 			bool found = false;
 			
@@ -39,7 +38,6 @@ namespace NHibernate.Test
 					break;
 			}
 			Assert.IsTrue( found, "Unable to locate indx_a_name index creation" );
-			*/
 		}
 
 		[Test]

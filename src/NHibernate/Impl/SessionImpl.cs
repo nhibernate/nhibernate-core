@@ -4896,7 +4896,7 @@ namespace NHibernate.Impl
 			object[ ] keys = new object[batchSize];
 			keys[ 0 ] = id;
 			int i = 0;
-			foreach( CollectionEntry ce in collectionEntries )
+			foreach( CollectionEntry ce in collectionEntries.Values )
 			{
 				if( !ce.initialized && ce.loadedPersister == collectionPersister && !id.Equals( ce.loadedKey ) )
 				{
