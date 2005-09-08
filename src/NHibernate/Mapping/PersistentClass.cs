@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -87,9 +88,9 @@ namespace NHibernate.Mapping
 		{
 			// Inheritable cycle detection (paranoid check)
 			PersistentClass superclass = Superclass;
-			while ( superclass != null )
+			while( superclass != null )
 			{
-				if ( subclass.Name == superclass.Name )
+				if( subclass.Name == superclass.Name )
 				{
 					throw new MappingException( string.Format( "Circular inheritance mapping detected: {0} will have itself as superclass when extending {1}", subclass.Name, Name ) );
 				}
@@ -172,7 +173,7 @@ namespace NHibernate.Mapping
 		/// <exception cref="MappingException">if the property was already defined</exception>
 		public void AddNewProperty( Property p )
 		{
-			if ( properties.Contains( p.Name ) )
+			if( properties.Contains( p.Name ) )
 			{
 				throw new MappingException( string.Format( "Duplicate mapping for property: {0}", StringHelper.Qualify( Name, p.Name ) ) );
 			}
@@ -471,6 +472,11 @@ namespace NHibernate.Mapping
 			set { metaAttributes = value; }
 		}
 
+		public MetaAttribute GetMetaAttribute( string name )
+		{
+			return ( MetaAttribute ) metaAttributes[ name ];
+		}
+
 		/// <summary>
 		/// When implemented by a class, gets or sets a boolean indicating if the identifier is 
 		/// embedded in the class.
@@ -558,7 +564,7 @@ namespace NHibernate.Mapping
 		{
 			foreach( Property prop in PropertyClosureCollection )
 			{
-				if ( prop.Name == propertyName )
+				if( prop.Name == propertyName )
 				{
 					return prop;
 				}
@@ -584,6 +590,11 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public abstract string Where { get; set; }
 
+		public override string ToString()
+		{
+			return GetType() + " for " + MappedClass;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -600,11 +611,11 @@ namespace NHibernate.Mapping
 		/// <param name="mapping"></param>
 		public virtual void Validate( IMapping mapping )
 		{
-			foreach( Mapping.Property prop in PropertyCollection )
+			foreach( Property prop in PropertyCollection )
 			{
-				if ( !prop.IsValid( mapping ) )
+				if( !prop.IsValid( mapping ) )
 				{
-					throw new MappingException( string.Format( "property mapping has wrong number of columns: {0} type: {1}", StringHelper.Qualify( MappedClass.Name, Name ), prop.Type.Name ) ) ;
+					throw new MappingException( string.Format( "property mapping has wrong number of columns: {0} type: {1}", StringHelper.Qualify( MappedClass.Name, Name ), prop.Type.Name ) );
 				}
 			}
 		}

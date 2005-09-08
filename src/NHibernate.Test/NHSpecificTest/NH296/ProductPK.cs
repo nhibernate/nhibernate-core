@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH296
 {
@@ -19,5 +18,22 @@ namespace NHibernate.Test.NHSpecificTest.NH296
 			get { return _number; }
 			set { _number = value; }
 		}
+
+		public override bool Equals(object obj)
+		{
+			if( !(obj is ProductPK))
+			{
+				return false;
+			}
+
+			ProductPK other = (ProductPK) obj;
+			return other._type == _type && other._number == _number;
+		}
+
+		public override int GetHashCode()
+		{
+			return _type.GetHashCode();
+		}
+
 	}
 }

@@ -1,12 +1,16 @@
 <?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="NHibernate.DomainModel.Master, NHibernate.DomainModel">
+		<meta attribute="foo">foo</meta>
 		<id column="master_key_column" type="Int64">
 			<generator class="native"/>
 		</id>
 		<!--TODO: make sure this type has an equiv .net type-->
 		<version name="version" type="Timestamp" column="ts_" access="field" unsaved-value="1/1/0001"/>
-		<property name="Name"/>
+		<property name="Name">
+			<meta attribute="bar">bar</meta>
+			<meta attribute="bar">bar2</meta>
+		</property>
 		<property name="X"/>
 		<!--
 			length="5" 

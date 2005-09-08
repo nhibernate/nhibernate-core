@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.DomainModel
 {
@@ -26,6 +25,21 @@ namespace NHibernate.DomainModel
 		{
 			get { return _timestamp; }
 			set { _timestamp = value; }
+		}
+
+		public override bool Equals( object other )
+		{
+			if( !( other is Broken ) )
+			{
+				return false;
+			}
+			Broken that = ( Broken ) other;
+			return this._id.Equals( that._id ) && this._otherId.Equals( that._otherId );
+		}
+
+		public override int GetHashCode()
+		{
+			return 1;
 		}
 	}
 }

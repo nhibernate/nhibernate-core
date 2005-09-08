@@ -217,6 +217,11 @@ namespace NHibernate.Mapping
 			set { metaAttributes = value; }
 		}
 
+		public MetaAttribute GetMetaAttribute( string name )
+		{
+			return ( MetaAttribute ) metaAttributes[ name ];
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

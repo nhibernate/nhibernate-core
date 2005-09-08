@@ -1,23 +1,16 @@
 using System;
-using System.Collections;
 
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH296
 {
 	[TestFixture]
-	public class Fixture : TestCase
+	public class Fixture : BugTestCase
 	{
-		protected override string MappingsAssembly
+		public override string BugNumber
 		{
-			get { return "NHibernate.Test"; }
+			get { return "NH296"; }
 		}
-
-		protected override IList Mappings
-		{
-			get { return new string[] { "NHSpecificTest.NH296.Mappings.hbm.xml" }; }
-		}
-
 
 		[Test]
 		public void CRUD()

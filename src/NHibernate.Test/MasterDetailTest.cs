@@ -4,6 +4,7 @@ using System.Collections;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
 using NHibernate.Expression;
+using NHibernate.Mapping;
 
 using NUnit.Framework;
 
@@ -83,16 +84,13 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Meta-attributes not implemented")]
 		public void Meta()
 		{
-			/*
 			PersistentClass clazz = cfg.GetClassMapping( typeof( Master ) );
 			MetaAttribute meta = clazz.GetMetaAttribute( "foo" );
 			Assert.AreEqual( "foo", meta.Value );
-			meta = clazz.GetProperty( "name" ).GetMetaAttribute( "bar" );
+			meta = clazz.GetProperty( "Name" ).GetMetaAttribute( "bar" );
 			Assert.IsTrue( meta.IsMultiValued );
-			*/
 		}
 
 		[Test]
