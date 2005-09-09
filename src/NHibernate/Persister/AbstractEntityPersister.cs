@@ -410,7 +410,10 @@ namespace NHibernate.Persister
 			get { return versioned; }
 		}
 
-		// Not ported: IsBatchable
+		public bool IsBatchable
+		{
+			get { return /* jdbcBatchVersionedData || */ !IsVersioned; }
+		}
 
 		public virtual bool IsIdentifierAssignedByInsert
 		{
@@ -1133,7 +1136,7 @@ namespace NHibernate.Persister
 		{
 			foreach( Column col in columns )
 			{
-				if( distinctColumns.Contains( col.Name ) )
+				if( !distinctColumns.Add( col.Name ) )
 				{
 					throw new MappingException(
 						"Repated column in mapping for class " +

@@ -334,13 +334,22 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// 
+		/// Generate SQL to get the identifier of an inserted row.
+		/// If the returned value is not null, the caller will prepare a statement from it,
+		/// set SQL parameters just as it would for insertSQL, and execute it as a query
+		/// which is expected to return the identifier of the inserted row.
+		/// If the returned value is null, the caller will execute insertSQL as an update
+		/// and then execute IdentitySelectString as a query.
+		/// The default implementation (in this class) returns <c>null</c>.
 		/// </summary>
-		/// <param name="insertSql"></param>
-		/// <returns></returns>
+		/// <param name="insertSql">a parameterized SQL statement to insert a row into a table.</param>
+		/// <returns>a SQL statement that has the same effect as insertSQL
+		/// and also gets the identifier of the inserted row.
+		/// Return <c>null</c> if this dialect doesn't support this feature.
+		/// </returns>
 		public virtual SqlString AddIdentitySelectToInsert( SqlString insertSql )
 		{
-			throw new NotSupportedException( "This Dialect does not implement AddIdentitySelectToInsert" );
+			return null;
 		}
 
 		/// <summary>

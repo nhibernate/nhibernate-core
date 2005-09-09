@@ -508,12 +508,12 @@ namespace NHibernate.Impl
 			return OpenSession( interceptor );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="className"></param>
-		/// <returns></returns>
 		public IClassPersister GetPersister( string className )
+		{
+			return GetPersister( className, true );
+		}
+
+		public IClassPersister GetPersister( string className, bool throwIfNotFound )
 		{
 			// TODO: H2.1 has the code below, an equivalent for .NET would be useful
 			//if( className.StartsWith( "[" ) )
@@ -522,7 +522,7 @@ namespace NHibernate.Impl
 			//}
 
 			IClassPersister result = classPersistersByName[ className ] as IClassPersister;
-			if( result == null )
+			if( result == null && throwIfNotFound )
 			{
 				throw new MappingException( "No persister for: " + className );
 			}

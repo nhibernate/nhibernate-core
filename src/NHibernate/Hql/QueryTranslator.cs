@@ -352,14 +352,11 @@ namespace NHibernate.Hql
 
 		internal IQueryable GetPersisterUsingImports( string className )
 		{
-			try
-			{
-				return ( IQueryable ) factory.GetPersister( factory.GetImportedClassName( className ) );
-			}
-			catch( MappingException )
-			{
-				return null;
-			}
+			// Slightly altered from H2.1 to avoid needlessly throwing
+			// and catching a MappingException.
+			return ( IQueryable ) factory.GetPersister(
+				factory.GetImportedClassName( className ),
+				false );
 		}
 
 		internal IQueryable GetPersister( System.Type clazz )
@@ -889,6 +886,11 @@ namespace NHibernate.Hql
 
 		public void SetCollectionToFetch( string role, string name, string ownerName, string entityName )
 		{
+			if( fetchName != null )
+			{
+				throw new QueryException( "cannot fetch multiple collections in one query" );
+			}
+
 			fetchName = name;
 			collectionPersister = GetCollectionPersister( role );
 			collectionOwnerName = ownerName;
