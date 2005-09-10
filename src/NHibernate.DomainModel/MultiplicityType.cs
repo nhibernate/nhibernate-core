@@ -89,7 +89,7 @@ namespace NHibernate.DomainModel
 			Multiplicity v = (Multiplicity) value;
 			Multiplicity m = new Multiplicity();
 			m.count = v.count;
-			m.glarch = m.glarch;
+			m.glarch = v.glarch;
 			return m;
 		}
 		public bool IsMutable

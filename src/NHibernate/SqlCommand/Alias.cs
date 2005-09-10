@@ -3,6 +3,14 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Aliases tables and fields for Sql Statements.
 	/// </summary>
+	/// <remarks>
+	/// Several methods of this class take an additional
+	/// <see cref="Dialect.Dialect" /> parameter, while their Java counterparts
+	/// do not. The dialect is used to correctly quote and unquote identifiers.
+	/// Java versions do the quoting and unquoting themselves and fail to
+	/// consider dialect-specific rules, such as escaping closing brackets in
+	/// identifiers on MS SQL 2000.
+	/// </remarks>
 	public class Alias
 	{
 		private readonly int length;

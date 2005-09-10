@@ -28,6 +28,14 @@
 			<xs:enumeration value="delete-orphan"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="optimisticLockMode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="none" />
+			<xs:enumeration value="version" />
+			<xs:enumeration value="dirty" />
+			<xs:enumeration value="all" />
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:attributeGroup name="baseClassAttributes">
 		<xs:attribute name="name" type="xs:string" use="required"/>
 		<xs:attribute name="proxy" type="xs:string" use="optional">
@@ -52,6 +60,7 @@
 		<xs:attribute name="inverse" type="xs:boolean" use="optional" default="false"/>
 		<xs:attribute name="persister" type="xs:string" use="optional" />
 		<xs:attribute name="batch-size" type="xs:positiveInteger" use="optional" default="1" />
+		<xs:attribute name="check" type="xs:string" use="optional" />
 	</xs:attributeGroup>
 	<xs:complexType name="cacheType">
 		<xs:attribute name="usage" use="required">
@@ -180,6 +189,8 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="batch-size" type="xs:positiveInteger" use="optional" default="1" />
+			<xs:attribute name="optimistic-lock" type="optimisticLockMode" use="optional" default="version" />
+			<xs:attribute name="check" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="id">
@@ -336,6 +347,7 @@
 					<xs:documentation>default: unqualified classname </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="check" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="property">
@@ -438,6 +450,7 @@
 			<xs:attribute name="unique-key" type="xs:string"/>
 			<xs:attribute name="sql-type" type="xs:string"/>
 			<xs:attribute name="index" type="xs:string"/>
+			<xs:attribute name="check" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="component">

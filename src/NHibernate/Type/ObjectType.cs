@@ -135,18 +135,30 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
 		{
-			//if ( names.length!=2 ) throw new HibernateException("object type mapping must specify exactly two columns");
+			return Resolve(
+				( System.Type ) metaType.NullSafeGet( rs, names[ 0 ], session, owner ),
+				identifierType.NullSafeGet( rs, names[ 1 ], session, owner ),
+				session );
+		}
 
+		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		{
 			System.Type clazz = ( System.Type ) metaType.NullSafeGet( rs, names[ 0 ], session, owner );
 			object id = identifierType.NullSafeGet( rs, names[ 1 ], session, owner );
-			if( clazz == null || id == null )
-			{
-				return null;
-			}
-			else
-			{
-				return session.Load( clazz, id );
-			}
+			return new ObjectTypeCacheEntry( clazz, id );
+		}
+
+		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
+		{
+			ObjectTypeCacheEntry holder = ( ObjectTypeCacheEntry ) value;
+			return Resolve( holder.clazz, holder.id, session );
+		}
+
+		private object Resolve( System.Type clazz, object id, ISessionImplementor session )
+		{
+			return (clazz == null || id == null ) ?
+				null :
+				session.InternalLoad( clazz, id );
 		}
 
 		/// <summary>
@@ -169,7 +181,7 @@ namespace NHibernate.Type
 			else
 			{
 				id = session.GetEntityIdentifierIfNotUnsaved( value );
-				clazz = value.GetType();
+				clazz = NHibernateProxyHelper.GetClass( value );
 			}
 			metaType.NullSafeSet( st, clazz, index, session );
 			identifierType.NullSafeSet( st, id, index + 1, session ); // metaType must be single-column type
@@ -301,7 +313,7 @@ namespace NHibernate.Type
 		public object GetPropertyValue( Object component, int i, ISessionImplementor session )
 		{
 			return ( i == 0 ) ?
-				component.GetType() :
+				NHibernateProxyHelper.GetClass( component ) :
 				Id( component, session );
 		}
 
@@ -313,7 +325,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public object[ ] GetPropertyValues( Object component, ISessionImplementor session )
 		{
-			return new object[ ] {component.GetType(), Id( component, session )};
+			return new object[ ] { NHibernateProxyHelper.GetClass( component ), Id( component, session )};
 		}
 
 		/// <summary>
@@ -371,28 +383,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="old"></param>
-		/// <param name="current"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public override bool IsModified(object old, object current, ISessionImplementor session)
-		{
-			if ( old == null )
-			{
-				return current != null;
-			}
-			if ( current == null )
-			{
-				return old != null;
-			}
-			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) old;
-
-			return holder.clazz != NHibernateProxyHelper.GetClass( current ) || identifierType.IsModified( holder.id, Id( current, session ), session );
-		}
-
 		/// <summary></summary>
 		public override bool IsAssociationType
 		{
@@ -405,16 +395,6 @@ namespace NHibernate.Type
 		public bool UsePrimaryKeyAsForeignKey
 		{
 			get { return false; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
-		{
-			throw new InvalidOperationException( "any types do not have a unique referenced persister" );
 		}
 
 		/// <summary>
@@ -435,6 +415,49 @@ namespace NHibernate.Type
 		public string[] GetReferencedColumns( ISessionFactoryImplementor factory )
 		{
 			throw new InvalidOperationException( "any types do not have unique referenced columns" );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override bool IsModified(object old, object current, ISessionImplementor session)
+		{
+			if ( current == null )
+			{
+				return old != null;
+			}
+			if ( old == null )
+			{
+				return current != null;
+			}
+			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) old;
+
+			return holder.clazz != NHibernateProxyHelper.GetClass( current ) ||
+				identifierType.IsModified( holder.id, Id( current, session ), session );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
+		{
+			throw new InvalidOperationException( "any types do not have a unique referenced persister" );
+		}
+
+		public override bool Equals(object obj)
+		{
+			return this == obj;
+		}
+
+		public override int GetHashCode()
+		{
+			return 1; // Originally: System.identityHashCode(this);
 		}
 	}
 }

@@ -5,7 +5,7 @@ using Iesi.Collections;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Hql;
-using NHibernate.Id;
+using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
@@ -129,10 +129,811 @@ namespace NHibernate.Persister
 		private SqlString sqlConcreteSelectString;
 		private SqlString sqlVersionSelectString;
 
-		/// <summary></summary>
-		protected IUniqueEntityLoader loader;
+		private IUniqueEntityLoader loader;
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( NormalizedEntityPersister ) );
+
+		public override void PostInstantiate( ISessionFactoryImplementor factory )
+		{
+			InitPropertyPaths( factory );
+
+			loader = CreateEntityLoader( factory );
+
+			CreateUniqueKeyLoaders( factory );
+
+			InitLockers( );
+
+			// initialize the Statements - these are in the PostInstantiate method because we need
+			// to have every other IClassPersister loaded so we can resolve the IType for the 
+			// relationships.  In Hibernate they are able to just use ? and not worry about Parameters until
+			// the statement is actually called.  We need to worry about Parameters when we are building
+			// the IClassPersister...
+
+			sqlDeleteStrings = GenerateDeleteStrings();
+			sqlInsertStrings = GenerateInsertStrings( false, PropertyInsertability );
+			sqlIdentityInsertStrings = IsIdentifierAssignedByInsert ?
+				GenerateInsertStrings( true, PropertyInsertability ) :
+				null;
+
+			sqlUpdateStrings = GenerateUpdateStrings( PropertyUpdateability );
+
+			sqlVersionSelectString = GenerateSelectVersionString( factory );
+			sqlConcreteSelectString = GenerateConcreteSelectString();
+
+			// This is used to determine updates for objects that came in via update()
+			propertyHasColumns = new bool[sqlUpdateStrings.Length];
+			for( int m = 0; m < sqlUpdateStrings.Length; m++ )
+			{
+				propertyHasColumns[ m ] = ( sqlUpdateStrings[ m ] != null );
+			}
+		}
+
+		public override bool IsDefinedOnSubclass( int i )
+		{
+			return propertyDefinedOnSubclass[ i ];
+		}
+
+		public override string DiscriminatorColumnName
+		{
+			get { return discriminatorColumnName; }
+		}
+
+		protected override string DiscriminatorAlias
+		{
+			// Is always "clazz_", so just use columnName
+			get { return DiscriminatorColumnName; }
+		}
+
+		public override IType GetSubclassPropertyType( int i )
+		{
+			return subclassPropertyTypeClosure[ i ];
+		}
+
+		public override string GetSubclassPropertyName( int i )
+		{
+			return subclassPropertyNameClosure[ i ];
+		}
+
+		public override int CountSubclassProperties()
+		{
+			return subclassPropertyTypeClosure.Length;
+		}
+
+		public override string GetSubclassPropertyTableName( int i )
+		{
+			return subclassTableNameClosure[ subclassPropertyTableNumberClosure[ i ] ];
+		}
+
+		public override string[ ] GetSubclassPropertyColumnNames( int i )
+		{
+			return subclassPropertyColumnNameClosure[ i ];
+		}
+
+		public override string[ ] GetPropertyColumnNames( int i )
+		{
+			return propertyColumnNameAliases[ i ];
+		}
+
+		/// <summary></summary>
+		public override IType DiscriminatorType
+		{
+			get { return discriminatorType; }
+		}
+
+		/// <summary></summary>
+		public override object DiscriminatorSQLValue
+		{
+			get { return discriminatorSQLString; }
+		}
+
+		public override System.Type GetSubclassForDiscriminatorValue( object value )
+		{
+			return ( System.Type ) subclassesByDiscriminatorValue[ value ];
+		}
+
+		public override OuterJoinFetchStrategy EnableJoinedFetch( int i )
+		{
+			return subclassPropertyEnableJoinedFetch[ i ];
+		}
+
+		public override object[ ] PropertySpaces
+		{
+			get
+			{
+				// don't need subclass tables, because they can't appear in conditions
+				return tableNames;
+			}
+		}
+
+		//Access cached SQL
+
+		/// <summary>
+		/// The queries that delete rows by id (and version)
+		/// </summary>
+		protected SqlString[ ] SqlDeleteStrings
+		{
+			get { return sqlDeleteStrings; }
+		}
+
+		/// <summary>
+		/// The queries that insert rows with a given id
+		/// </summary>
+		protected SqlString[ ] SqlInsertStrings
+		{
+			get { return sqlInsertStrings; }
+		}
+
+		/// <summary>
+		/// The queries that insert rows, letting the database generate an id
+		/// </summary>
+		protected SqlString[ ] SqlIdentityInsertStrings
+		{
+			get { return sqlIdentityInsertStrings; }
+		}
+
+		/// <summary>
+		/// The queries that update rows by id (and version)
+		/// </summary>
+		protected SqlString[ ] SqlUpdateStrings
+		{
+			get { return sqlUpdateStrings; }
+		}
+
+		protected override SqlString VersionSelectString
+		{
+			get { return sqlVersionSelectString; }
+		}
+
+		// Generate all the SQL
+
+		/// <summary>
+		/// Generate the SQL that deletes rows by id (and version)
+		/// </summary>
+		/// <returns>An array of SqlStrings</returns>
+		protected virtual SqlString[ ] GenerateDeleteStrings()
+		{
+			SqlString[ ] deleteStrings = new SqlString[ naturalOrderTableNames.Length ];
+
+			for( int i = 0; i < naturalOrderTableNames.Length; i++ )
+			{
+				SqlDeleteBuilder deleteBuilder = new SqlDeleteBuilder( factory );
+
+				// TODO: find out why this is using tableKeyColumns and when
+				// they would ever be different between the two tables - I thought
+				// a requirement of Hibernate is that joined/subclassed tables
+				// had to have the same pk - otherwise you had an association.
+				deleteBuilder.SetTableName( naturalOrderTableNames[ i ] )
+					.SetIdentityColumn( naturalOrderTableKeyColumns[ i ], IdentifierType );
+
+				if( i == 0 && IsVersioned )
+				{
+					deleteBuilder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+				}
+
+				deleteStrings[ i ] = deleteBuilder.ToSqlString();
+			}
+
+			return deleteStrings;
+		}
+
+		/// <summary>
+		/// Generate the SQL that inserts rows
+		/// </summary>
+		/// <param name="identityInsert"></param>
+		/// <param name="includeProperty"></param>
+		/// <returns>An array of SqlStrings</returns>
+		protected virtual SqlString[ ] GenerateInsertStrings( bool identityInsert, bool[ ] includeProperty )
+		{
+			SqlString[ ] insertStrings = new SqlString[naturalOrderTableNames.Length];
+
+			for( int j = 0; j < naturalOrderTableNames.Length; j++ )
+			{
+				SqlInsertBuilder builder = new SqlInsertBuilder( factory );
+				builder.SetTableName( naturalOrderTableNames[ j ] );
+
+				for( int i = 0; i < PropertyTypes.Length; i++ )
+				{
+					if( includeProperty[ i ] && naturalOrderPropertyTables[ i ] == j )
+					{
+						builder.AddColumn( propertyColumnNames[ i ], PropertyTypes[ i ] );
+					}
+				}
+
+				if( identityInsert && j == 0 )
+				{
+					// make sure the Dialect has an identity insert string because we don't want
+					// to add the column when there is no value to supply the SqlBuilder
+					if( Dialect.IdentityInsertString != null )
+					{
+						// only 1 column if there is IdentityInsert enabled.
+						builder.AddColumn( naturalOrderTableKeyColumns[ j ][ 0 ], Dialect.IdentityInsertString );
+					}
+				}
+				else
+				{
+					builder.AddColumn( naturalOrderTableKeyColumns[ j ], IdentifierType );
+				}
+
+				insertStrings[ j ] = builder.ToSqlString();
+			}
+
+			return insertStrings;
+		}
+
+
+		/// <summary>
+		/// Generate the SQL that updates rows by id (and version)
+		/// </summary>
+		/// <param name="includeProperty"></param>
+		/// <returns>An array of SqlStrings</returns>
+		protected virtual SqlString[ ] GenerateUpdateStrings( bool[ ] includeProperty )
+		{
+			SqlString[ ] results = new SqlString[naturalOrderTableNames.Length];
+
+			for( int j = 0; j < naturalOrderTableNames.Length; j++ )
+			{
+				SqlUpdateBuilder updateBuilder = new SqlUpdateBuilder( factory )
+					.SetTableName( naturalOrderTableNames[ j ] )
+					.SetIdentityColumn( naturalOrderTableKeyColumns[ j ], IdentifierType );
+
+				if( j == 0 && IsVersioned )
+				{
+					updateBuilder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+				}
+
+				//TODO: figure out what the hasColumns variable comes into play for??
+				bool hasColumns = false;
+				for( int i = 0; i < propertyColumnNames.Length; i++ )
+				{
+					if( includeProperty[ i ] && naturalOrderPropertyTables[ i ] == j )
+					{
+						updateBuilder.AddColumns( propertyColumnNames[ i ], PropertyTypes[ i ] );
+						hasColumns = hasColumns || propertyColumnNames[ i ].Length > 0;
+					}
+				}
+				results[ j ] = hasColumns ?	updateBuilder.ToSqlString() : null;
+			}
+
+			return results;
+		}
+
+		/// <summary>
+		/// Generate the SQL that pessimistic locks a row by id (and version)
+		/// </summary>
+		/// <param name="sqlString">An existing SqlString to copy for then new SqlString.</param>
+		/// <param name="forUpdateFragment"></param>
+		/// <returns>A new SqlString</returns>
+		/// <remarks>
+		/// The parameter <c>sqlString</c> does not get modified.  It is Cloned to make a new SqlString.
+		/// If the parameter<c>sqlString</c> is null a new one will be created.
+		/// </remarks>
+		protected override SqlString GenerateLockString( SqlString sqlString, string forUpdateFragment )
+		{
+			SqlStringBuilder sqlBuilder = null;
+
+			if( sqlString == null )
+			{
+				SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder( factory );
+
+				// set the table name and add the columns to select
+				builder.SetTableName( qualifiedTableName )
+					.AddColumn( base.IdentifierColumnNames[ 0 ] );
+
+				// add the parameters to use in the WHERE clause
+				builder.SetIdentityColumn( base.IdentifierColumnNames, IdentifierType );
+				if( IsVersioned )
+				{
+					builder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+				}
+
+				sqlBuilder = new SqlStringBuilder( builder.ToSqlString() );
+			}
+			else
+			{
+				sqlBuilder = new SqlStringBuilder( sqlString );
+			}
+
+			// add any special text that is contained in the forUpdateFragment
+			if( forUpdateFragment != null )
+			{
+				sqlBuilder.Add( forUpdateFragment );
+			}
+
+			return sqlBuilder.ToSqlString();
+		}
+
+		protected override SqlString ConcreteSelectString
+		{
+			get { return sqlConcreteSelectString; }
+		}
+
+		private const string ConcreteAlias = "x";
+
+		protected virtual SqlString GenerateConcreteSelectString( )
+		{
+			SqlStringBuilder select = new SqlStringBuilder();
+
+			select
+				.Add( "select " )
+				.Add( string.Join( StringHelper.CommaSpace,
+					StringHelper.Qualify( ConcreteAlias, IdentifierColumnNames ) ) )
+				.Add( ConcretePropertySelectFragment( ConcreteAlias, PropertyUpdateability ) )
+				.Add( " from " )
+				.Add( FromTableFragment( ConcreteAlias ) )
+				.Add( FromJoinFragment( ConcreteAlias, true, false ) )
+				.Add( " where " )
+				.Add( WhereJoinFragment( ConcreteAlias, true, false ) );
+
+			Parameter[] idParameters = Parameter.GenerateParameters( factory, ConcreteAlias, IdentifierColumnNames, IdentifierType );
+
+			for( int i = 0; i < idParameters.Length; i++ )
+			{
+				if( i > 0 )
+				{
+					select.Add( " and " );
+				}
+
+				select
+					.Add( IdentifierColumnNames[ i ] )
+					.Add( " = " )
+					.Add( idParameters[ i ] );
+			}
+
+			if( IsVersioned )
+			{
+				Parameter[] versionParameters = Parameter.GenerateParameters(
+					factory, ConcreteAlias, new string[1] { VersionColumnName }, VersionType );
+				select.Add( " and " )
+					.Add( VersionColumnName )
+					.Add( " = " )
+					.Add( versionParameters[ 0 ] );
+			}
+
+			return select.ToSqlString();
+		}
+
+		/// <summary>
+		/// Marshall the fields of a persistent instance to a properared statement
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="fields"></param>
+		/// <param name="includeProperty"></param>
+		/// <param name="statements"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		protected virtual int Dehydrate( object id, object[ ] fields, bool[ ] includeProperty, IDbCommand[ ] statements, ISessionImplementor session )
+		{
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Dehydrating entity: " + ClassName + '#' + id );
+			}
+
+			int versionParm = 0;
+
+			for( int i = 0; i < tableNames.Length; i++ )
+			{
+				int index = Dehydrate( id, fields, includeProperty, i, statements[ i ], session );
+				if( i == 0 )
+				{
+					versionParm = index;
+				}
+			}
+
+			return versionParm;
+		}
+
+		private int Dehydrate( object id, object[ ] fields, bool[ ] includeProperty, int table, IDbCommand statement, ISessionImplementor session )
+		{
+			if( statement == null )
+			{
+				return -1;
+			}
+
+			int index = 0;
+			for( int j = 0; j < HydrateSpan; j++ )
+			{
+				if( includeProperty[ j ] && naturalOrderPropertyTables[ j ] == table )
+				{
+					PropertyTypes[ j ].NullSafeSet( statement, fields[ j ], index, session );
+					index += propertyColumnSpans[ j ];
+				}
+			}
+
+			if( id != null )
+			{
+				IdentifierType.NullSafeSet( statement, id, index, session );
+				index += IdentifierColumnNames.Length;
+			}
+
+			return index;
+		}
+
+		// Execute the SQL:
+
+		/// <summary>
+		/// Load an instance using either the <c>ForUpdateLoader</c> or the outer joining <c>loader</c>,
+		/// depending on the value of the <c>lock</c> parameter
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="optionalObject"></param>
+		/// <param name="lockMode"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public override object Load( object id, object optionalObject, LockMode lockMode, ISessionImplementor session )
+		{
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Materializing entity: " + MessageHelper.InfoString( this, id ) );
+			}
+			
+			try
+			{
+				object result = loader.Load( session, id, optionalObject );
+
+				if( result != null )
+				{
+					Lock( id, GetVersion( result ), result, lockMode, session );
+				}
+				return result;
+			}
+			catch( Exception sqle )
+			{
+				throw Convert( sqle, "could not load by id: " + MessageHelper.InfoString( this, id ) );
+			}
+		}
+
+		public override object Insert( object[ ] fields, object obj, ISessionImplementor session )
+		{
+			if( UseDynamicInsert )
+			{
+				bool[ ] notNull = GetNotNullInsertableColumns( fields );
+				return Insert( fields, notNull, GenerateInsertStrings( true, notNull ), obj, session );
+			}
+			else
+			{
+				return Insert( fields, PropertyInsertability, SqlIdentityInsertStrings, obj, session );
+			}
+		}
+
+		public override void Insert( object id, object[ ] fields, object obj, ISessionImplementor session )
+		{
+			if( UseDynamicInsert )
+			{
+				bool[ ] notNull = GetNotNullInsertableColumns( fields );
+				Insert( id, fields, notNull, GenerateInsertStrings( false, notNull ), obj, session );
+			}
+			else
+			{
+				Insert( id, fields, PropertyInsertability, SqlInsertStrings, obj, session );
+			}
+		}
+
+		/// <summary>
+		/// Persist an object
+		/// </summary>
+		/// <param name="id">The Id to give the new object/</param>
+		/// <param name="fields">The fields to transfer to the Command</param>
+		/// <param name="notNull"></param>
+		/// <param name="sql"></param>
+		/// <param name="obj">The object to Insert into the database.  I don't see where this is used???</param>
+		/// <param name="session">The Session to use when Inserting the object.</param>
+		public void Insert( object id, object[ ] fields, bool[ ] notNull, SqlString[ ] sql, object obj, ISessionImplementor session )
+		{
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Inserting entity: " + MessageHelper.InfoString( this, id ) );
+				if( IsVersioned )
+				{
+					log.Debug( "Version: " + Versioning.GetVersion( fields, this ) );
+				}
+			}
+
+			try
+			{
+				// render the SQL query
+				IDbCommand[ ] insertCmds = new IDbCommand[tableNames.Length];
+
+				try
+				{
+					for( int i = 0; i < tableNames.Length; i++ )
+					{
+						insertCmds[ i ] = session.Batcher.PrepareCommand( sql[ i ] );
+					}
+
+					// write the value of fields onto the prepared statements - we MUST use the state at the time
+					// the insert was issued (cos of foreign key constraints).
+					Dehydrate( id, fields, notNull, insertCmds, session );
+
+					for( int i = 0; i < tableNames.Length; i++ )
+					{
+						session.Batcher.ExecuteNonQuery( insertCmds[ i ] );
+					}
+				} 
+				finally
+				{
+					for( int i = 0; i < tableNames.Length; i++ )
+					{
+						if( insertCmds[ i ] != null )
+						{
+							session.Batcher.CloseCommand( insertCmds[ i ], null );
+						}
+					}
+				}
+			}
+			catch( Exception sqle )
+			{
+				throw Convert( sqle, "could not insert: " + MessageHelper.InfoString( this, id ) );
+			}
+		}
+
+		/// <summary>
+		/// Persist an object, using a natively generated identifier
+		/// </summary>
+		/// <param name="fields"></param>
+		/// <param name="notNull"></param>
+		/// <param name="sql"></param>
+		/// <param name="obj"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public object Insert( object[ ] fields, bool[ ] notNull, SqlString[ ] sql, object obj, ISessionImplementor session )
+		{
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Inserting entity: " + ClassName + " (native id)" );
+				if( IsVersioned )
+				{
+					log.Debug( "Version: " + Versioning.GetVersion( fields, this ) );
+				}
+			}
+
+			object id = null;
+
+			try
+			{
+				//TODO: refactor all this stuff up to AbstractEntityPersister:
+				SqlString insertSelectSQL = Dialect.AddIdentitySelectToInsert( sql[0] );
+				if (insertSelectSQL != null) 
+				{
+				
+					//use one statement to insert the row and get the generated id
+					IDbCommand insertSelect = session.Batcher.PrepareCommand(insertSelectSQL);
+					IDataReader dr = null;
+					try 
+					{
+						Dehydrate(null, fields, notNull, 0, insertSelect, session);
+						dr = session.Batcher.ExecuteReader( insertSelect );
+						id = GetGeneratedIdentity( obj, session, dr );
+					}
+					finally 
+					{
+						session.Batcher.CloseCommand( insertSelect, dr );
+					}
+				}
+				else 
+				{
+		  
+					//do the insert
+					IDbCommand statement = session.Batcher.PrepareCommand( sql[0] );
+					try 
+					{
+						Dehydrate(null, fields, notNull, 0, statement, session);
+						session.Batcher.ExecuteNonQuery( statement );
+					}
+					finally 
+					{
+						session.Batcher.CloseCommand( statement, null );
+					}
+				
+					// fetch the generated id in a separate query
+					IDbCommand idselect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect ) );
+					IDataReader dr = null;
+					try
+					{
+						dr = session.Batcher.ExecuteReader( idselect );
+						id = GetGeneratedIdentity( obj, session, dr );
+					}
+					finally 
+					{
+						session.Batcher.CloseCommand( idselect, dr );
+					}
+				}
+			
+				for ( int i=1; i<naturalOrderTableNames.Length; i++ )
+				{
+					IDbCommand statement = session.Batcher.PrepareCommand( sql[i] );
+				
+					try 
+					{
+						Dehydrate( id, fields, notNull, i, statement, session );
+						session.Batcher.ExecuteNonQuery( statement );
+					}
+					finally 
+					{
+						session.Batcher.CloseCommand( statement, null );
+					}
+				}
+			
+				return id;
+
+			}
+			catch( Exception sqle )
+			{
+				throw Convert( sqle, "could not insert: " + MessageHelper.InfoString( this ) );
+			}
+		}
+
+		/// <summary>
+		/// Delete an object.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="version"></param>
+		/// <param name="obj"></param>
+		/// <param name="session"></param>
+		public override void Delete( object id, object version, object obj, ISessionImplementor session )
+		{
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Deleting entity: " + MessageHelper.InfoString( this, id ) );
+			}
+
+			try
+			{
+				IDbCommand[ ] statements = new IDbCommand[naturalOrderTableNames.Length];
+				try
+				{
+					for( int i = 0; i < naturalOrderTableNames.Length; i++ )
+					{
+						statements[ i ] = session.Batcher.PrepareCommand( SqlDeleteStrings[ i ] );
+					}
+
+					if( IsVersioned )
+					{
+						// don't need to add the 1 because the parameter indexes begin at 0, unlike jdbc's which begin at 1
+						VersionType.NullSafeSet( statements[ 0 ], version, IdentifierColumnNames.Length, session );
+					}
+
+					for( int i = naturalOrderTableNames.Length - 1; i >= 0; i-- )
+					{
+						// Do the key. The key is immutable so we can use the _current_ object state
+						IdentifierType.NullSafeSet( statements[ i ], id, 0, session );
+
+						Check( session.Batcher.ExecuteNonQuery( statements[ i ] ), id );
+					}
+				} 
+				finally
+				{
+					for( int i = 0; i < naturalOrderTableNames.Length; i++ )
+					{
+						if( statements[ i ] != null )
+						{
+							session.Batcher.CloseCommand( statements[ i ], null );
+						}
+					}
+				}
+			}
+			catch( Exception sqle )
+			{
+				throw Convert( sqle, "could not delete: " + MessageHelper.InfoString( this, id ) );
+			}
+		}
+
+		/// <summary>
+		/// Decide which tables need to be updated
+		/// </summary>
+		/// <param name="dirtyFields"></param>
+		/// <returns></returns>
+		private bool[] GetTableUpdateNeeded( int[] dirtyFields )
+		{
+			if( dirtyFields == null )
+			{
+				return propertyHasColumns; //for object that came in via update()
+			}
+			else
+			{
+				bool[ ] tableUpdateNeeded = new bool[naturalOrderTableNames.Length];
+				for( int i = 0; i < dirtyFields.Length; i++ )
+				{
+					tableUpdateNeeded[ naturalOrderPropertyTables[ dirtyFields[ i ] ] ] = true;
+				}
+				if( IsVersioned )
+				{
+					tableUpdateNeeded[ 0 ] = true;
+				}
+				return tableUpdateNeeded;
+			}
+		}
+
+		/// <summary>
+		/// Update an object.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="fields"></param>
+		/// <param name="dirtyFields"></param>
+		/// <param name="oldFields"></param>
+		/// <param name="oldVersion"></param>
+		/// <param name="obj"></param>
+		/// <param name="session"></param>
+		public override void Update( object id, object[ ] fields, int[ ] dirtyFields, object[] oldFields, object oldVersion, object obj, ISessionImplementor session )
+		{
+			bool[ ] tableUpdateNeeded = GetTableUpdateNeeded( dirtyFields );
+
+			SqlString[] updateStrings;
+			bool[] propsToUpdate;
+			if( UseDynamicUpdate && dirtyFields != null )
+			{
+				// decide which columns we really need to update
+				propsToUpdate = GetPropertiesToUpdate( dirtyFields );
+				updateStrings = GenerateUpdateStrings( propsToUpdate );
+			}
+			else
+			{
+				// just update them all
+				propsToUpdate = PropertyUpdateability;
+				updateStrings = SqlUpdateStrings;
+			}
+			Update( id, fields, propsToUpdate, tableUpdateNeeded, oldVersion, obj, updateStrings, session );
+		}
+
+		protected virtual void Update( object id, object[ ] fields, bool[ ] includeProperty, bool[ ] includeTable, object oldVersion, object obj, SqlString[ ] sql, ISessionImplementor session )
+		{
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "Updating entity: " + MessageHelper.InfoString( this, id ) );
+				if( IsVersioned )
+				{
+					log.Debug( "Existing version: " + oldVersion + " -> New version: " + fields[ VersionProperty ] );
+				}
+			}
+
+			int tables = naturalOrderTableNames.Length;
+
+			try
+			{
+				IDbCommand[ ] statements = new IDbCommand[tables];
+
+				try
+				{
+					for( int i = 0; i < tables; i++ )
+					{
+						if( includeTable[ i ] )
+						{
+							statements[ i ] = session.Batcher.PrepareCommand( sql[ i ] );
+						}
+					}
+
+					int versionParam = Dehydrate( id, fields, includeProperty, statements, session );
+
+					if( IsVersioned )
+					{
+						VersionType.NullSafeSet( statements[ 0 ], oldVersion, versionParam, session );
+					}
+
+					for( int i = 0; i < tables; i++ )
+					{
+						if( includeTable[ i ] )
+						{
+							Check( session.Batcher.ExecuteNonQuery( statements[ i ] ), id );
+						}
+					}
+				} 
+				finally
+				{
+					for( int i = 0; i < tables; i++ )
+					{
+						if( statements[ i ] != null )
+						{
+							session.Batcher.CloseCommand( statements[ i ], null );
+						}
+					}
+				}
+			}
+			catch( Exception sqle )
+			{
+				throw Convert( sqle, "could not update: " + MessageHelper.InfoString( this, id ) );
+			}
+		}
+
+		//INITIALIZATION:
 
 		/// <summary>
 		/// Constructs the NormalizedEntityPerister for the PersistentClass.
@@ -179,6 +980,11 @@ namespace NHibernate.Persister
 				this.discriminatorType = null;
 				discriminatorValue = null;
 				this.discriminatorSQLString = null;
+			}
+
+			if( OptimisticLockMode != OptimisticLockMode.Version )
+			{
+				throw new MappingException( "optimistic-lock attribute not supported for joined-subclass mappings: " + ClassName );
 			}
 
 			//MULTITABLES
@@ -467,45 +1273,6 @@ namespace NHibernate.Persister
 		}
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		public override void PostInstantiate( ISessionFactoryImplementor factory )
-		{
-			InitPropertyPaths( factory );
-
-			loader = CreateEntityLoader( factory );
-
-			CreateUniqueKeyLoaders( factory );
-
-			InitLockers( );
-
-			// initialize the Statements - these are in the PostInstantiate method because we need
-			// to have every other IClassPersister loaded so we can resolve the IType for the 
-			// relationships.  In Hibernate they are able to just use ? and not worry about Parameters until
-			// the statement is actually called.  We need to worry about Parameters when we are building
-			// the IClassPersister...
-
-			sqlDeleteStrings = GenerateDeleteStrings();
-			sqlInsertStrings = GenerateInsertStrings( false, PropertyInsertability );
-			sqlIdentityInsertStrings = IsIdentifierAssignedByInsert ?
-				GenerateInsertStrings( true, PropertyInsertability ) :
-				null;
-
-			sqlUpdateStrings = GenerateUpdateStrings( PropertyUpdateability );
-
-			sqlVersionSelectString = GenerateSelectVersionString( factory );
-			sqlConcreteSelectString = GenerateConcreteSelectString();
-
-			// This is used to determine updates for objects that came in via update()
-			propertyHasColumns = new bool[sqlUpdateStrings.Length];
-			for( int m = 0; m < sqlUpdateStrings.Length; m++ )
-			{
-				propertyHasColumns[ m ] = ( sqlUpdateStrings[ m ] != null );
-			}
-		}
-
-		/// <summary>
 		/// Create a new one dimensional array sorted in the Reverse order of the original array.
 		/// </summary>
 		/// <param name="objects">The original array.</param>
@@ -538,894 +1305,6 @@ namespace NHibernate.Persister
 			return temp;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public override bool IsDefinedOnSubclass( int i )
-		{
-			return propertyDefinedOnSubclass[ i ];
-		}
-
-		/// <summary></summary>
-		public override string DiscriminatorColumnName
-		{
-			get { return discriminatorColumnName; }
-		}
-
-		/// <summary></summary>
-		protected override string DiscriminatorAlias
-		{
-			// Is always "clazz_", so just use columnName
-			get { return DiscriminatorColumnName; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public override IType GetSubclassPropertyType( int i )
-		{
-			return subclassPropertyTypeClosure[ i ];
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public override string GetSubclassPropertyName( int i )
-		{
-			return subclassPropertyNameClosure[ i ];
-		}
-
-		/// <summary></summary>
-		public override int CountSubclassProperties()
-		{
-			return subclassPropertyTypeClosure.Length;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public override string GetSubclassPropertyTableName( int i )
-		{
-			return subclassTableNameClosure[ subclassPropertyTableNumberClosure[ i ] ];
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public override string[ ] GetSubclassPropertyColumnNames( int i )
-		{
-			return subclassPropertyColumnNameClosure[ i ];
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public override string[ ] GetPropertyColumnNames( int i )
-		{
-			return propertyColumnNameAliases[ i ];
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		protected override string[ ] GetActualPropertyColumnNames( int i )
-		{
-			return propertyColumnNames[ i ];
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		protected override string GetFormulaTemplate( int i )
-		{
-			return propertyFormulaTemplates[ i ];
-		}
-
-		/// <summary></summary>
-		public override IType DiscriminatorType
-		{
-			get { return discriminatorType; }
-		}
-
-		/*
-		/// <summary></summary>
-		public override string DiscriminatorSQLString
-		{
-			get { return discriminatorSQLString; }
-		}
-		*/
-
-		/// <summary></summary>
-		public override object DiscriminatorSQLValue
-		{
-			get { return discriminatorSQLString; }
-		}
-
-		/// <summary></summary>
-		public virtual System.Type[ ] SubclassClosure
-		{
-			get { return subclassClosure; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public override System.Type GetSubclassForDiscriminatorValue( object value )
-		{
-			return ( System.Type ) subclassesByDiscriminatorValue[ value ];
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public override OuterJoinFetchStrategy EnableJoinedFetch( int i )
-		{
-			return subclassPropertyEnableJoinedFetch[ i ];
-		}
-
-		/// <summary></summary>
-		public override object IdentifierSpace
-		{
-			get { return qualifiedTableName; }
-		}
-
-		/// <summary></summary>
-		public override object[ ] PropertySpaces
-		{
-			get
-			{
-				// don't need subclass tables, because they can't appear in conditions
-				return tableNames;
-			}
-		}
-
-		/// <summary>
-		/// The SqlStrings to Delete this Entity
-		/// </summary>
-		protected SqlString[ ] SqlDeleteStrings
-		{
-			get { return sqlDeleteStrings; }
-		}
-
-		/// <summary>
-		/// The SqlStrings to Insert this Entity
-		/// </summary>
-		protected SqlString[ ] SqlInsertStrings
-		{
-			get { return sqlInsertStrings; }
-		}
-
-		/// <summary>
-		/// The SqlStrings to Insert this Entity when the DB handles
-		/// generating the Identity.
-		/// </summary>
-		protected SqlString[ ] SqlIdentityInsertStrings
-		{
-			get { return sqlIdentityInsertStrings; }
-		}
-
-		/// <summary>
-		/// The SqlStrings to Update this Entity
-		/// </summary>
-		protected SqlString[ ] SqlUpdateStrings
-		{
-			get { return sqlUpdateStrings; }
-		}
-
-		/// <summary>
-		/// Generates an array of SqlStrings that encapsulates what later will be translated
-		/// to ADO.NET IDbCommands to Delete this Entity.
-		/// </summary>
-		/// <returns>An array of SqlStrings </returns>
-		protected virtual SqlString[ ] GenerateDeleteStrings()
-		{
-			SqlString[ ] deleteStrings = new SqlString[tableNames.Length];
-
-			for( int i = 0; i < tableNames.Length; i++ )
-			{
-				SqlDeleteBuilder deleteBuilder = new SqlDeleteBuilder( factory );
-
-				// TODO: find out why this is using tableKeyColumns and when
-				// they would ever be different between the two tables - I thought
-				// a requirement of Hibernate is that joined/subclassed tables
-				// had to have the same pk - otherwise you had an association.
-				deleteBuilder.SetTableName( naturalOrderTableNames[ i ] )
-					.SetIdentityColumn( naturalOrderTableKeyColumns[ i ], IdentifierType );
-
-				if( i == 0 && IsVersioned )
-				{
-					deleteBuilder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
-				}
-
-				deleteStrings[ i ] = deleteBuilder.ToSqlString();
-			}
-
-			return deleteStrings;
-		}
-
-		/// <summary>
-		/// Generates SqlStrings that encapsulates what later will be translated
-		/// to ADO.NET IDbCommands to Insert this Entity.
-		/// </summary>
-		/// <param name="identityInsert"></param>
-		/// <param name="includeProperty"></param>
-		/// <returns>An array of SqlStrings</returns>
-		protected virtual SqlString[ ] GenerateInsertStrings( bool identityInsert, bool[ ] includeProperty )
-		{
-			SqlString[ ] insertStrings = new SqlString[tableNames.Length];
-
-			for( int j = 0; j < naturalOrderTableNames.Length; j++ )
-			{
-				SqlInsertBuilder builder = new SqlInsertBuilder( factory );
-				builder.SetTableName( naturalOrderTableNames[ j ] );
-
-				for( int i = 0; i < PropertyTypes.Length; i++ )
-				{
-					if( includeProperty[ i ] && naturalOrderPropertyTables[ i ] == j )
-					{
-						builder.AddColumn( propertyColumnNames[ i ], PropertyTypes[ i ] );
-					}
-				}
-
-				if( identityInsert && j == 0 )
-				{
-					// make sure the Dialect has an identity insert string because we don't want
-					// to add the column when there is no value to supply the SqlBuilder
-					if( Dialect.IdentityInsertString != null )
-					{
-						// only 1 column if there is IdentityInsert enabled.
-						builder.AddColumn( naturalOrderTableKeyColumns[ j ][ 0 ], Dialect.IdentityInsertString );
-					}
-				}
-				else
-				{
-					builder.AddColumn( naturalOrderTableKeyColumns[ j ], IdentifierType );
-				}
-
-				insertStrings[ j ] = builder.ToSqlString();
-			}
-
-			return insertStrings;
-		}
-
-
-		/// <summary>
-		/// Generates SqlStrings that encapsulates what later will be translated
-		/// to ADO.NET IDbCommands to Update this Entity.
-		/// </summary>
-		/// <param name="includeProperty"></param>
-		/// <returns>An array of SqlStrings</returns>
-		protected virtual SqlString[ ] GenerateUpdateStrings( bool[ ] includeProperty )
-		{
-			SqlString[ ] results = new SqlString[naturalOrderTableNames.Length];
-
-			for( int j = 0; j < naturalOrderTableNames.Length; j++ )
-			{
-				SqlUpdateBuilder updateBuilder = new SqlUpdateBuilder( factory )
-					.SetTableName( naturalOrderTableNames[ j ] )
-					.SetIdentityColumn( naturalOrderTableKeyColumns[ j ], IdentifierType );
-
-				if( j == 0 && IsVersioned )
-				{
-					updateBuilder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
-				}
-
-				//TODO: figure out what the hasColumns variable comes into play for??
-				bool hasColumns = false;
-				for( int i = 0; i < propertyColumnNames.Length; i++ )
-				{
-					if( includeProperty[ i ] && naturalOrderPropertyTables[ i ] == j )
-					{
-						updateBuilder.AddColumns( propertyColumnNames[ i ], PropertyTypes[ i ] );
-						hasColumns = hasColumns || propertyColumnNames[ i ].Length > 0;
-					}
-				}
-				results[ j ] = hasColumns ?	updateBuilder.ToSqlString() : null;
-			}
-
-			return results;
-		}
-
-		private const string ConcreteAlias = "x";
-
-		protected virtual SqlString GenerateConcreteSelectString( )
-		{
-			SqlStringBuilder select = new SqlStringBuilder();
-
-			select
-				.Add( "select " )
-				.Add( string.Join( StringHelper.CommaSpace,
-					StringHelper.Qualify( ConcreteAlias, IdentifierColumnNames ) ) )
-				.Add( ConcretePropertySelectFragment( ConcreteAlias, PropertyUpdateability ) )
-				.Add( " from " )
-				.Add( FromTableFragment( ConcreteAlias ) )
-				.Add( FromJoinFragment( ConcreteAlias, true, false ) )
-				.Add( " where " )
-				.Add( WhereJoinFragment( ConcreteAlias, true, false ) );
-
-			Parameter[] idParameters = Parameter.GenerateParameters( factory, ConcreteAlias, IdentifierColumnNames, IdentifierType );
-
-			for( int i = 0; i < idParameters.Length; i++ )
-			{
-				if( i > 0 )
-				{
-					select.Add( " and " );
-				}
-
-				select
-					.Add( IdentifierColumnNames[ i ] )
-					.Add( " = " )
-					.Add( idParameters[ i ] );
-			}
-
-			if( IsVersioned )
-			{
-				Parameter[] versionParameters = Parameter.GenerateParameters(
-					factory, ConcreteAlias, new string[1] { VersionColumnName }, VersionType );
-				select.Add( " and " )
-					.Add( VersionColumnName )
-					.Add( " = " )
-					.Add( versionParameters[ 0 ] );
-			}
-
-			return select.ToSqlString();
-		}
-
-		private SqlString ConcretePropertySelectFragment( string alias, bool[] includeProperty )
-		{
-			int propertyCount = propertyColumnNames.Length;
-			SelectFragment frag = new SelectFragment( Dialect );
-
-			for( int i = 0; i < propertyCount; i++ )
-			{
-				if( includeProperty[ i ] )
-				{
-					frag.AddColumns(
-						Alias( alias, propertyTables[ i ] ),
-						propertyColumnNames[ i ],
-						propertyColumnNameAliases[ i ] );
-				}
-			}
-
-			return frag.ToSqlStringFragment( );
-		}
-
-		/// <summary>
-		/// Generates a SqlString that will append the forUpdateFragment to the sql.
-		/// </summary>
-		/// <param name="sqlString">An existing SqlString to copy for then new SqlString.</param>
-		/// <param name="forUpdateFragment"></param>
-		/// <returns>A new SqlString</returns>
-		/// <remarks>
-		/// The parameter <c>sqlString</c> does not get modified.  It is Cloned to make a new SqlString.
-		/// If the parameter<c>sqlString</c> is null a new one will be created.
-		/// </remarks>
-		protected override SqlString GenerateLockString( SqlString sqlString, string forUpdateFragment )
-		{
-			SqlStringBuilder sqlBuilder = null;
-
-			if( sqlString == null )
-			{
-				SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder( factory );
-
-				// set the table name and add the columns to select
-				builder.SetTableName( qualifiedTableName )
-					.AddColumn( base.IdentifierColumnNames[ 0 ] );
-
-				// add the parameters to use in the WHERE clause
-				builder.SetIdentityColumn( base.IdentifierColumnNames, IdentifierType );
-				if( IsVersioned )
-				{
-					builder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
-				}
-
-				sqlBuilder = new SqlStringBuilder( builder.ToSqlString() );
-			}
-			else
-			{
-				sqlBuilder = new SqlStringBuilder( sqlString );
-			}
-
-			// add any special text that is contained in the forUpdateFragment
-			if( forUpdateFragment != null )
-			{
-				sqlBuilder.Add( forUpdateFragment );
-			}
-
-			return sqlBuilder.ToSqlString();
-		}
-
-
-		/// <summary>
-		/// Marshall the fields of a persistent instance to a properared statement
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="fields"></param>
-		/// <param name="includeProperty"></param>
-		/// <param name="statements"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		protected virtual int Dehydrate( object id, object[ ] fields, bool[ ] includeProperty, IDbCommand[ ] statements, ISessionImplementor session )
-		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Dehydrating entity: " + ClassName + '#' + id );
-			}
-
-			int versionParm = 0;
-
-			for( int i = 0; i < tableNames.Length; i++ )
-			{
-				int index = Dehydrate( id, fields, includeProperty, i, statements[ i ], session );
-				if( i == 0 )
-				{
-					versionParm = index;
-				}
-			}
-
-			return versionParm;
-		}
-
-		private int Dehydrate( object id, object[ ] fields, bool[ ] includeProperty, int table, IDbCommand statement, ISessionImplementor session )
-		{
-			if( statement == null )
-			{
-				return -1;
-			}
-
-			int index = 0;
-			for( int j = 0; j < HydrateSpan; j++ )
-			{
-				if( includeProperty[ j ] && naturalOrderPropertyTables[ j ] == table )
-				{
-					PropertyTypes[ j ].NullSafeSet( statement, fields[ j ], index, session );
-					index += propertyColumnSpans[ j ];
-				}
-			}
-
-			if( id != null )
-			{
-				IdentifierType.NullSafeSet( statement, id, index, session );
-				index += IdentifierColumnNames.Length;
-			}
-
-			return index;
-		}
-
-		//Execute the SQL:
-
-		/// <summary>
-		/// Load an instance using either the <c>ForUpdateLoader</c> or the outer joining <c>loader</c>,
-		/// depending on the value of the <c>lock</c> parameter
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="optionalObject"></param>
-		/// <param name="lockMode"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public override object Load( object id, object optionalObject, LockMode lockMode, ISessionImplementor session )
-		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Materializing entity: " + ClassName + '#' + id );
-			}
-			object result = loader.Load( session, id, optionalObject );
-
-			if( result != null )
-			{
-				Lock( id, GetVersion( result ), result, lockMode, session );
-			}
-			return result;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fields"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public override object Insert( object[ ] fields, object obj, ISessionImplementor session )
-		{
-			if( UseDynamicInsert )
-			{
-				bool[ ] notNull = GetNotNullInsertableColumns( fields );
-				return Insert( fields, notNull, GenerateInsertStrings( true, notNull ), obj, session );
-			}
-			else
-			{
-				return Insert( fields, PropertyInsertability, SqlIdentityInsertStrings, obj, session );
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="fields"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		public override void Insert( object id, object[ ] fields, object obj, ISessionImplementor session )
-		{
-			if( UseDynamicInsert )
-			{
-				bool[ ] notNull = GetNotNullInsertableColumns( fields );
-				Insert( id, fields, notNull, GenerateInsertStrings( false, notNull ), obj, session );
-			}
-			else
-			{
-				Insert( id, fields, PropertyInsertability, SqlInsertStrings, obj, session );
-			}
-		}
-
-		/// <summary>
-		/// Persist an object
-		/// </summary>
-		/// <param name="id">The Id to give the new object/</param>
-		/// <param name="fields">The fields to transfer to the Command</param>
-		/// <param name="notNull"></param>
-		/// <param name="sql"></param>
-		/// <param name="obj">The object to Insert into the database.  I don't see where this is used???</param>
-		/// <param name="session">The Session to use when Inserting the object.</param>
-		public void Insert( object id, object[ ] fields, bool[ ] notNull, SqlString[ ] sql, object obj, ISessionImplementor session )
-		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Inserting entity: " + ClassName + '#' + id );
-				if( IsVersioned )
-				{
-					log.Debug( "Version: " + Versioning.GetVersion( fields, this ) );
-				}
-			}
-
-			// render the SQL query
-			IDbCommand[ ] insertCmds = new IDbCommand[tableNames.Length];
-
-			try
-			{
-				for( int i = 0; i < tableNames.Length; i++ )
-				{
-					insertCmds[ i ] = session.Batcher.PrepareCommand( sql[ i ] );
-				}
-
-				// write the value of fields onto the prepared statements - we MUST use the state at the time
-				// the insert was issued (cos of foreign key constraints).
-				Dehydrate( id, fields, notNull, insertCmds, session );
-
-				for( int i = 0; i < tableNames.Length; i++ )
-				{
-					session.Batcher.ExecuteNonQuery( insertCmds[ i ] );
-				}
-
-			} 
-				//TODO: change this to SQLException catching and log it
-			catch( Exception e )
-			{
-				log.Error( e.Message, e );
-				throw;
-			}
-			finally
-			{
-				for( int i = 0; i < tableNames.Length; i++ )
-				{
-					if( insertCmds[ i ] != null )
-					{
-						session.Batcher.CloseCommand( insertCmds[ i ], null );
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Persist an object, using a natively generated identifier
-		/// </summary>
-		/// <param name="fields"></param>
-		/// <param name="notNull"></param>
-		/// <param name="sql"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public object Insert( object[ ] fields, bool[ ] notNull, SqlString[ ] sql, object obj, ISessionImplementor session )
-		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Inserting entity: " + ClassName + " (native id)" );
-				if( IsVersioned )
-				{
-					log.Debug( "Version: " + Versioning.GetVersion( fields, this ) );
-				}
-			}
-
-			IDbCommand statement = null;
-			IDbCommand idSelect = null;
-			IDataReader rs = null;
-
-			object id;
-
-			if( Dialect.SupportsIdentitySelectInInsert )
-			{
-				statement = session.Batcher.PrepareCommand( Dialect.AddIdentitySelectToInsert( sql[ 0 ] ) );
-				idSelect = statement;
-			}
-			else
-			{
-				// do not Prepare the Command to be part of a batch.  When the second command
-				// is Prepared for the Batch that would cause the first one to be executed and
-				// we don't want that yet.  
-				statement = session.Batcher.Generate( sql[ 0 ] );
-				idSelect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect ) );
-			}
-
-			try
-			{
-				Dehydrate( null, fields, notNull, 0, statement, session );
-			}
-			catch( Exception e )
-			{
-				throw new HibernateException( "NormalizedEntityPersister had a problem Dehydrating for an Insert", e );
-			}
-
-			try
-			{
-				// if it doesn't support identity select in insert then we have to issue the Insert
-				// as a seperate command here
-				if( Dialect.SupportsIdentitySelectInInsert == false )
-				{
-					session.Batcher.ExecuteNonQuery( statement );
-				}
-
-				rs = session.Batcher.ExecuteReader( idSelect );
-				if( !rs.Read() )
-				{
-					throw new HibernateException( "The database returned no natively generated identity value" );
-				}
-				id = IdentifierGeneratorFactory.Get( rs, IdentifierType.ReturnedClass );
-
-				log.Debug( "Natively generated identity: " + id );
-
-			} 
-				//TODO: change this to SQLException and log it
-			catch( Exception e )
-			{
-				log.Error( e.Message, e );
-				throw;
-			}
-			finally
-			{
-				if( Dialect.SupportsIdentitySelectInInsert == false )
-				{
-					session.Batcher.CloseCommand( statement, null );
-				}
-				session.Batcher.CloseCommand( idSelect, rs );
-			}
-
-			for( int i = 1; i < naturalOrderTableNames.Length; i++ )
-			{
-				statement = session.Batcher.PrepareCommand( sql[ i ] );
-				try
-				{
-					Dehydrate( id, fields, notNull, i, statement, session );
-					session.Batcher.ExecuteNonQuery( statement );
-				} 
-					//TODO: change this to SQLException and log it
-				catch( Exception e )
-				{
-					log.Error( e.Message, e );
-					throw;
-				}
-				finally
-				{
-					session.Batcher.CloseCommand( statement, null );
-				}
-			}
-			return id;
-		}
-
-		/// <summary>
-		/// Delete an object.
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="version"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		public override void Delete( object id, object version, object obj, ISessionImplementor session )
-		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Deleting entity: " + ClassName + '#' + id );
-			}
-
-			IDbCommand[ ] statements = new IDbCommand[naturalOrderTableNames.Length];
-			try
-			{
-				for( int i = 0; i < naturalOrderTableNames.Length; i++ )
-				{
-					statements[ i ] = session.Batcher.PrepareCommand( SqlDeleteStrings[ i ] );
-				}
-
-				if( IsVersioned )
-				{
-					// don't need to add the 1 because the parameter indexes begin at 0, unlike jdbc's which begin at 1
-					VersionType.NullSafeSet( statements[ 0 ], version, IdentifierColumnNames.Length, session );
-				}
-
-				for( int i = naturalOrderTableNames.Length - 1; i >= 0; i-- )
-				{
-					// Do the key. The key is immutable so we can use the _current_ object state
-					IdentifierType.NullSafeSet( statements[ i ], id, 0, session );
-
-					Check( session.Batcher.ExecuteNonQuery( statements[ i ] ), id );
-				}
-			} 
-				//TODO: change to SqlException
-			catch( Exception e )
-			{
-				log.Error( e.Message, e );
-				throw;
-			}
-			finally
-			{
-				for( int i = 0; i < naturalOrderTableNames.Length; i++ )
-				{
-					if( statements[ i ] != null )
-					{
-						session.Batcher.CloseCommand( statements[ i ], null );
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Decide which tables need to be updated
-		/// </summary>
-		/// <param name="dirtyFields"></param>
-		/// <returns></returns>
-		private bool[] GetTableUpdateNeeded( int[] dirtyFields )
-		{
-			if( dirtyFields == null )
-			{
-				return propertyHasColumns; //for object that came in via update()
-			}
-			else
-			{
-				bool[ ] tableUpdateNeeded = new bool[naturalOrderTableNames.Length];
-				for( int i = 0; i < dirtyFields.Length; i++ )
-				{
-					tableUpdateNeeded[ naturalOrderPropertyTables[ dirtyFields[ i ] ] ] = true;
-				}
-				if( IsVersioned )
-				{
-					tableUpdateNeeded[ 0 ] = true;
-				}
-				return tableUpdateNeeded;
-			}
-		}
-
-		/// <summary>
-		/// Update an object.
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="fields"></param>
-		/// <param name="dirtyFields"></param>
-		/// <param name="oldFields"></param>
-		/// <param name="oldVersion"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		public override void Update( object id, object[ ] fields, int[ ] dirtyFields, object[] oldFields, object oldVersion, object obj, ISessionImplementor session )
-		{
-			bool[ ] tableUpdateNeeded = GetTableUpdateNeeded( dirtyFields );
-
-			SqlString[] updateStrings;
-			bool[] propsToUpdate;
-			if( UseDynamicUpdate && dirtyFields != null )
-			{
-				// decide which columns we really need to update
-				propsToUpdate = GetPropertiesToUpdate( dirtyFields );
-				updateStrings = GenerateUpdateStrings( propsToUpdate );
-			}
-			else
-			{
-				// just update them all
-				propsToUpdate = PropertyUpdateability;
-				updateStrings = SqlUpdateStrings;
-			}
-			Update( id, fields, propsToUpdate, tableUpdateNeeded, oldVersion, obj, updateStrings, session );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="fields"></param>
-		/// <param name="includeProperty"></param>
-		/// <param name="includeTable"></param>
-		/// <param name="oldVersion"></param>
-		/// <param name="obj"></param>
-		/// <param name="sql"></param>
-		/// <param name="session"></param>
-		protected virtual void Update( object id, object[ ] fields, bool[ ] includeProperty, bool[ ] includeTable, object oldVersion, object obj, SqlString[ ] sql, ISessionImplementor session )
-		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Updating entity: " + ClassName + '#' + id );
-				if( IsVersioned )
-				{
-					log.Debug( "Existing version: " + oldVersion + " -> New version: " + fields[ VersionProperty ] );
-				}
-			}
-
-			int tables = naturalOrderTableNames.Length;
-
-			IDbCommand[ ] statements = new IDbCommand[tables];
-
-			try
-			{
-				for( int i = 0; i < tables; i++ )
-				{
-					if( includeTable[ i ] )
-					{
-						statements[ i ] = session.Batcher.PrepareCommand( sql[ i ] );
-					}
-				}
-
-				int versionParam = Dehydrate( id, fields, includeProperty, statements, session );
-
-				if( IsVersioned )
-				{
-					VersionType.NullSafeSet( statements[ 0 ], oldVersion, versionParam, session );
-				}
-
-				for( int i = 0; i < tables; i++ )
-				{
-					if( includeTable[ i ] )
-					{
-						Check( session.Batcher.ExecuteNonQuery( statements[ i ] ), id );
-					}
-				}
-			} 
-				// TODO: change to SQLException and log
-			catch( Exception e )
-			{
-				log.Error( e.Message, e );
-				throw;
-			}
-			finally
-			{
-				for( int i = 0; i < tables; i++ )
-				{
-					if( statements[ i ] != null )
-					{
-						session.Batcher.CloseCommand( statements[ i ], null );
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
 		protected int GetPropertyTableNumber( string propertyName )
 		{
 			string[] propertyNames = PropertyNames;
@@ -1440,11 +1319,6 @@ namespace NHibernate.Persister
 			return 0;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="type"></param>
 		protected override void HandlePath( string path, IType type )
 		{
 			if ( type.IsAssociationType && ( (IAssociationType) type ).UsePrimaryKeyAsForeignKey )
@@ -1458,17 +1332,11 @@ namespace NHibernate.Persister
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <returns></returns>
 		public override SqlString FromTableFragment( string alias )
 		{
 			return new SqlString( subclassTableNameClosure[ 0 ] + ' ' + alias );
 		}
 
-		/// <summary></summary>
 		public override string TableName
 		{
 			get { return subclassTableNameClosure[ 0 ]; }
@@ -1487,7 +1355,9 @@ namespace NHibernate.Persister
 						Alias( name, i ),
 						StringHelper.Qualify( name, IdentifierColumnNames ),
 						subclassTableKeyColumns[ i ],
-						innerJoin && isClassOrSuperclassTable[ i ] ? JoinType.InnerJoin : JoinType.LeftOuterJoin );
+						innerJoin && isClassOrSuperclassTable[ i ] ?
+							JoinType.InnerJoin :
+							JoinType.LeftOuterJoin );
 				}
 			}
 			return outerjoin;
@@ -1513,12 +1383,6 @@ namespace NHibernate.Persister
 			throw new AssertionFailure( string.Format( "table [{0}] not found", tableName ) );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="property"></param>
-		/// <returns></returns>
 		public override string[ ] ToColumns( string alias, string property )
 		{
 			if( PathExpressionParser.EntityClass.Equals( property ) )
@@ -1539,26 +1403,33 @@ namespace NHibernate.Persister
 			return base.ToColumns( Alias( alias, tab ), property );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public override string[ ] ToColumns( string alias, int i )
 		{
 			int tab = subclassPropertyTableNumberClosure[ i ];
-			return StringHelper.Prefix(
-				subclassPropertyColumnNameClosure[ i ],
-				Alias( alias, tab ) + StringHelper.Dot );
+			return StringHelper.Qualify(
+				Alias( alias, tab ),
+				subclassPropertyColumnNameClosure[ i ] );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
+		private SqlString ConcretePropertySelectFragment( string alias, bool[] includeProperty )
+		{
+			int propertyCount = propertyColumnNames.Length;
+			SelectFragment frag = new SelectFragment( Dialect );
+
+			for( int i = 0; i < propertyCount; i++ )
+			{
+				if( includeProperty[ i ] )
+				{
+					frag.AddColumns(
+						Alias( alias, propertyTables[ i ] ),
+						propertyColumnNames[ i ],
+						propertyColumnNameAliases[ i ] );
+				}
+			}
+
+			return frag.ToSqlStringFragment( );
+		}
+
 		public override SqlString PropertySelectFragment( string alias, string suffix )
 		{
 			SelectFragment frag = new SelectFragment( factory.Dialect )
@@ -1623,37 +1494,16 @@ namespace NHibernate.Persister
 			return Dialect.QuoteForAliasName( Dialect.UnQuote( name ) + StringHelper.Underscore + tableNumber + StringHelper.Underscore );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="innerJoin"></param>
-		/// <param name="includeSubclasses"></param>
-		/// <returns></returns>
 		public override SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
 		{
 			return Outerjoin( alias, innerJoin, includeSubclasses ).ToFromFragmentString;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="innerJoin"></param>
-		/// <param name="includeSubclasses"></param>
-		/// <returns></returns>
 		public override SqlString WhereJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
 		{
 			return Outerjoin( alias, innerJoin, includeSubclasses ).ToWhereFragmentString;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="innerJoin"></param>
-		/// <param name="includeSubclasses"></param>
-		/// <returns></returns>
 		public override SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSubclasses )
 		{
 			SqlString result = WhereJoinFragment( alias, innerJoin, includeSubclasses );
@@ -1666,34 +1516,29 @@ namespace NHibernate.Persister
 			return result;
 		}
 
-		/// <summary></summary>
 		public override string[ ] IdentifierColumnNames
 		{
 			get { return tableKeyColumns[ 0 ]; }
 		}
 
-		/// <summary></summary>
-		protected override SqlString ConcreteSelectString
+		protected override string[ ] GetActualPropertyColumnNames( int i )
 		{
-			get { return sqlConcreteSelectString; }
+			return propertyColumnNames[ i ];
 		}
 
-		/// <summary></summary>
+		protected override string GetFormulaTemplate( int i )
+		{
+			return propertyFormulaTemplates[ i ];
+		}
+
 		public override bool IsCacheInvalidationRequired
 		{
 			get { return hasFormulaProperties || ( !IsVersioned && UseDynamicUpdate ); }
 		}
 
-		/// <summary></summary>
 		protected override string VersionedTableName
 		{
 			get	{ return qualifiedTableName; }
-		}
-
-		/// <summary></summary>
-		protected override SqlString VersionSelectString
-		{
-			get { return sqlVersionSelectString; }
 		}
 	}
 }

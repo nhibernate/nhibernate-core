@@ -5,6 +5,7 @@
 		proxy="NHibernate.DomainModel.GlarchProxy, NHibernate.DomainModel"
 		table="`glarchez`"
 		dynamic-update="true"
+		optimistic-lock="dirty"
 	>
 		<!-- <jcs-cache usage="read-write" /> -->
 		<!-- commented out in h2.0.3 also -->

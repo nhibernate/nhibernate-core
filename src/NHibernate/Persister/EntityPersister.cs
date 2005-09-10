@@ -406,7 +406,7 @@ namespace NHibernate.Persister
 					PropertyUpdateability :
 					includeProperty;
 
-				for( int i = 0; i > HydrateSpan; i++ )
+				for( int i = 0; i < HydrateSpan; i++ )
 				{
 					if( includeInWhere[ i ] )
 					{
@@ -445,7 +445,10 @@ namespace NHibernate.Persister
 			builder.SetIdentityColumn( IdentifierColumnNames, IdentifierType );
 			if( IsVersioned )
 			{
-				builder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+				if( OptimisticLockMode == OptimisticLockMode.Version )
+				{
+					builder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+				}
 			}
 
 			return builder;

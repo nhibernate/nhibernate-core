@@ -141,8 +141,12 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder</returns>
 		public SqlUpdateBuilder AddWhereFragment( string[ ] columnNames, IType type, string op )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, columnNames, type );
-			whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
+			if( columnNames.Length > 0 )
+			{
+				// Don't add empty conditions - we get extra ANDs
+				Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, columnNames, type );
+				whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
+			}
 
 			return this;
 		}
@@ -154,7 +158,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder</returns>
 		public SqlUpdateBuilder AddWhereFragment( string whereSql )
 		{
-			// Don't add empty condition's - we get extra ANDs
+			// Don't add empty conditions - we get extra ANDs
 			if ( whereSql != null && whereSql.Length > 0 )
 			{
 				whereStrings.Add( new SqlString( whereSql ) );
