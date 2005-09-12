@@ -2,9 +2,6 @@ using System;
 
 using NUnit.Framework;
 
-using NHibernate;
-using NHibernate.DomainModel;
-
 namespace NHibernate.Test
 {
 	/// <summary>
