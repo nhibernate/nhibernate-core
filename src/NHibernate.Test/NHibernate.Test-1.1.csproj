@@ -138,11 +138,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ConfigPerformanceTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "CriteriaTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -187,16 +182,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "NewerPerformanceTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NewPerformanceTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "NHibernate.Test.build"
                     BuildAction = "None"
                 />
@@ -211,11 +196,6 @@
                 />
                 <File
                     RelPath = "ParentChildTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PerformanceTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

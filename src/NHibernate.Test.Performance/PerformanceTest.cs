@@ -7,7 +7,7 @@ using NHibernate.DomainModel;
 
 using NUnit.Framework;
 
-namespace NHibernate.Test 
+namespace NHibernate.Test.Performance
 {
 
 	/// <summary>
@@ -70,8 +70,8 @@ namespace NHibernate.Test
 			}
 		}
 
-		[Test, Explicit]
-			public void Many() 
+		[Test]
+		public void Many() 
 		{
 			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
 
@@ -145,7 +145,7 @@ namespace NHibernate.Test
 			System.GC.Collect();
 		}
 
-		[Test, Explicit]
+		[Test]
 		public void Simultaneous() 
 		{
 			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
@@ -224,7 +224,7 @@ namespace NHibernate.Test
 			System.GC.Collect();
 		}
 
-		[Test, Explicit]
+		[Test]
 		public void NHibernateOnly() 
 		{
 			for ( int n=2; n<4000; n*=2 ) {
@@ -266,7 +266,7 @@ namespace NHibernate.Test
 
 		}
 
-		[Test, Explicit]
+		[Test]
 		public void AdoNetOnly()
 		{
 			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );

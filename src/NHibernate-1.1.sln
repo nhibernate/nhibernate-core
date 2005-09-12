@@ -11,10 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test-1.1", "NHib
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test.Performance-1.1", "NHibernate.Test.Performance\NHibernate.Test.Performance-1.1.csproj", "{C0854E20-0743-424C-8BC9-F2560718678E}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
-		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
-	EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release
@@ -32,9 +33,16 @@ Global
 		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.Build.0 = Debug|.NET
 		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.ActiveCfg = Release|.NET
 		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.Build.0 = Release|.NET
+		{C0854E20-0743-424C-8BC9-F2560718678E}.Debug.ActiveCfg = Debug|.NET
+		{C0854E20-0743-424C-8BC9-F2560718678E}.Debug.Build.0 = Debug|.NET
+		{C0854E20-0743-424C-8BC9-F2560718678E}.Release.ActiveCfg = Release|.NET
+		{C0854E20-0743-424C-8BC9-F2560718678E}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
 	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
 	EndGlobalSection
 EndGlobal

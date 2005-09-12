@@ -3,7 +3,7 @@ using System.Collections;
 using NHibernate.DomainModel;
 using NUnit.Framework;
 
-namespace NHibernate.Test
+namespace NHibernate.Test.Performance
 {
 	/// <summary>
 	/// Summary description for NewPerformanceTest.
@@ -19,7 +19,7 @@ namespace NHibernate.Test
 			}
 		}
 
-		[Test, Explicit]
+		[Test]
 		public void Performance() 
 		{
 			for ( int n=2; n<4000; n*=2 ) 

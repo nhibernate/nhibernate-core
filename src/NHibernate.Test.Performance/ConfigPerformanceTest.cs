@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 using NHibernate.Cfg;
 
-namespace NHibernate.Test
+namespace NHibernate.Test.Performance
 {
 	/// <summary>
 	/// Summary description for ConfigPerformanceTest.

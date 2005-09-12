@@ -6,7 +6,7 @@ using NHibernate.DomainModel;
 
 using NUnit.Framework;
 
-namespace NHibernate.Test
+namespace NHibernate.Test.Performance
 {
 	/// <summary>
 	/// Summary description for NewerPerformanceTest.
