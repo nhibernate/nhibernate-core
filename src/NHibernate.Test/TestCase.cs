@@ -178,9 +178,16 @@ namespace NHibernate.Test
 		/// <summary>
 		/// Drops the schema that was built with the TestCase's Configuration.
 		/// </summary>
-		public void DropSchema() 
+		private void DropSchema() 
 		{
-			new SchemaExport(cfg).Drop(OUTPUT_DDL, true);
+			sessions.Close();
+			sessions = null;
+			dialect = null;
+			connectionProvider = null;
+			lastOpenedSession = null;
+
+			new SchemaExport( cfg ).Drop(OUTPUT_DDL, true);
+			cfg = null;
 		}
 
 		public void ExecuteStatement(string sql)
