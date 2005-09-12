@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	namespace="NHibernate.Test.NHSpecificTest.NH369"
+	assembly="NHibernate.Test">
+	<class name="BaseClass">
+		<composite-id>
+			<key-many-to-one name="Id" />
+		</composite-id>
+		
+		<joined-subclass name="JoinedSubClass">
+			<key column="subclass_key" />
+		</joined-subclass>
+	</class>
+</hibernate-mapping>

@@ -31,7 +31,7 @@ namespace NHibernate.Cfg
 	/// </remarks>
 	public sealed class Configuration : IMapping
 	{
-		private Hashtable classes;
+        private IDictionary classes;
 		private Hashtable imports; 
 		private Hashtable collections;
 		private Hashtable tables;
@@ -53,14 +53,14 @@ namespace NHibernate.Cfg
 
 		private class Mapping : IMapping
 		{
-			private Hashtable classes;
+			private IDictionary classes;
 
-			public Mapping( Hashtable classes )
+			public Mapping( IDictionary classes )
 			{
 				this.classes = classes;
 			}
 
-			public Hashtable Classes
+			public IDictionary Classes
 			{
 				set { classes = value; }
 			}
@@ -106,7 +106,7 @@ namespace NHibernate.Cfg
 		//protected void Reset()
 		private void Reset()
 		{
-			classes = new Hashtable();
+			classes = new Hashtable(); //new SequencedHashMap(); - to make NH-369 bug deterministic
 			imports = new Hashtable();
 			collections = new Hashtable();
 			tables = new Hashtable();
@@ -896,7 +896,6 @@ namespace NHibernate.Cfg
 			SecondPassCompile();
 			Validate();
 			Environment.VerifyProperties( properties );
-			Hashtable copy = new Hashtable( properties );
 			Settings settings = BuildSettings();
 			ConfigureCaches( settings );
 

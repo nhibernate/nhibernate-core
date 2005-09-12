@@ -995,8 +995,6 @@ namespace NHibernate.Persister
 			tables.Add( this.qualifiedTableName );
 			keyColumns.Add( base.IdentifierColumnNames );
 
-			int idColumnSpan = IdentifierType.GetColumnSpan( factory );
-
 			// move through each table that contains the data for this entity.
 			foreach( Table tab in model.TableClosureCollection )
 			{
@@ -1004,7 +1002,7 @@ namespace NHibernate.Persister
 				if( !tabname.Equals( qualifiedTableName ) )
 				{
 					tables.Add( tabname );
-					string[ ] key = new string[idColumnSpan];
+					string[ ] key = new string[tab.PrimaryKey.ColumnCollection.Count];
 					int k = 0;
 					foreach( Column col in tab.PrimaryKey.ColumnCollection )
 					{
@@ -1028,7 +1026,7 @@ namespace NHibernate.Persister
 				if( !tabname.Equals( qualifiedTableName ) )
 				{
 					subtables.Add( tabname );
-					string[ ] key = new string[idColumnSpan];
+					string[ ] key = new string[tab.PrimaryKey.ColumnCollection.Count];
 					int k = 0;
 					foreach( Column col in tab.PrimaryKey.ColumnCollection )
 					{
