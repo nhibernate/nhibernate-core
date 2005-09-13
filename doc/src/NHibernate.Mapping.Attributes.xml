@@ -43,7 +43,7 @@
 			As this file can change at each new release of NHibernate, you should regenerate it before using it
 			with a different version (open the Generator solution, compile and run the Generator project).
 			But, no test has been done with versions prior to 0.8.
-		</para>
+				</para>
 			</warning>
 		</para>
 	</abstract>

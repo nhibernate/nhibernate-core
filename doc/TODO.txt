@@ -5,14 +5,6 @@ It don't necessarily depict what the doc is/will be.
 
 --------------------------------------------------------------------------------
 
-- Check/Update "html.css": Change fonts/colors
-
-- Include a file "DocOfCurrentVersion" in all xml files
-The file "Version" contains the version only (+ should be updated by the build)
-	Content of DocOfCurrentVersion:
-Documentation for <ulink url="http://www.nhibernate.org/">NHibernate</ulink> version &Version;.
-NHibernate is licensed under <link linkend="License.gnu.lgpl">GNU LGPL</link> and this documentation under <link linkend="License.gnu.fdl">GNU FDL</link>.
-
 - Complete NHibernate.Tool.hbm2net doc
 - Write content of "\NHC\src\NamespaceSummary.xml"
 
@@ -90,7 +82,7 @@ XXX		=>	YYY		z
 
 NHibernate Documentation: (replace "NHibernate : Table of Contents" in Wiki)
 -------------------------
-- Legal Information / Terms of Use / Licenses (LGPL & FDL)						=>	License						1
+- Legal Information / Terms of Use / Licenses (LGPL & FDL)						=>	Legal.Information			1
 - Documentation Map by Technology + FAQ links (questions to topics to read)		=>	Technology.Map				9
 
 + Getting Started														Preface	=>	Getting.Started				9
@@ -125,9 +117,9 @@ NHibernate Documentation: (replace "NHibernate : Table of Contents" in Wiki)
 	- <hibernate-mapping> elements and attributes								=>	Mapping.Hibernate			9
 	+ Basic Mapping (class, component, ID, property)							=>	Mapping.Basic				9
 		- Versioning + Optimistic/Pessimistic locking
+	+ Associations (<x-to-one>) + Bidirectional + Lazy loading					=>	Mapping.Association			9
 	+ Collections: any, map, set, list, bag, array, <x-to-many>					=>	Mapping.Collection			9
 		+ BLOB + value-typed collections + operations on them + Lazy loading
-	+ Associations (<x-to-one>) + Bidirectional + Lazy loading					=>	Mapping.Association			9
 	- Inheritance mapping strategies (table-per-x)								=>	Mapping.Inheritance			9
 	+ Query systems (HQL, ICriteria, IQuery): Aggregate funcs/Exprs,			=>	HQL/Criteria/Query			9
 		Formula in mapping, OrderBy, Join	+	Session.Enumerable/Scroll/Filter
@@ -158,7 +150,7 @@ NHibernate Documentation: (replace "NHibernate : Table of Contents" in Wiki)
 	+ Creating Win/Web Applications (databinding & session management)			=>	Application.Windows/Web		9
 	- Report generation and Batch processing									=>	Report.Batch				9
 	+ Supported Databases + related issues + Howto: Clustering, Paging ...		=>	Databases					9
-		- Native SQL support (named sql-query, sql-insert/update/delete, ...)
+		- Native SQL support (named sql-query, running SQL queries ...)
 
 
 + Contributions and Tools	=> ReadMe  +  Quick Start / Links	- In /Contrib/	=>	Preface						5
@@ -184,14 +176,14 @@ NHibernate Documentation: (replace "NHibernate : Table of Contents" in Wiki)
 	- Conclusion (+ link to "Building Apps - Architecture")						=>	LI.Conclusion				9
 
 
-+ More QuickStarts / Samples / Tutorials										=>	More						9
-	- There + links to internet ones ...
-	- More information and support
++ More Samples and Getting Help
+	- QuickStarts / Samples / Tutorials + links to internet ones ...			=>	OnePageForEach				9
+	- More information and support												=>	Support						5
 
 + NHibernate Reference (Class Library)
 + NHibernateContrib Reference (Class Library)
 
-- Appendix: Licenses (GNU LGPL & FDL)
+- Appendix: Licenses (GNU LGPL & FDL)											=>	License						0
 
 --------------------------------------------------------------------------------
 

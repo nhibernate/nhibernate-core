@@ -19,7 +19,7 @@
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="strong">NHibernate.Caches.SysCache</emphasis> makes it possible to use the underlaying <classname>System.Web.Caching.Cache</classname> implementation as cache provider. This means that you can rely on ASP.NET caching feature to understand how it works.</para>
+						<emphasis role="strong">NHibernate.Caches.SysCache</emphasis> makes it possible to use the underlaying <classname>System.Web.Caching.Cache</classname> implementation as cache provider. This means that you can rely on ASP.NET caching feature to understand how it works. For more information, read (on the MSDN): <ulink url="http://msdn.microsoft.com/library/en-us/cpguide/html/cpconcacheapis.asp">Caching Application Data</ulink>.</para>
 				</listitem>
 			</itemizedlist>
 		</para>

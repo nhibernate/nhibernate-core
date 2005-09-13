@@ -9,7 +9,7 @@
 			* build.dir	- (path) root level to build documentation to.  If this is not supplied
 				then it will be built to a folder named build under the doc folder.
 	-->
-	
+
 	<!-- 
 		I have not figured out a way to modify the Path through NAnt so you
 		need to make sure that xsltproc is in the path.  
@@ -17,20 +17,20 @@
 		2005-05-03: probably is doable with nant-0.85 but I'm not going to mess with
 		it since the easy solution is put xsltproc in the path.
 	-->
-	
+
 	<!--
 		if Visual Studio Help Integration Kit has been installed
 		then change this to true or include -D:vshik.installed=true in the command line.
 		It generates Visual Studio.NET 2003 documentation.
 	-->
 	<property name="vshik.installed" value="false" overwrite="false" />
-	
+
 	<!--
 		The path to the VSHIK executable files. If VSHIK is installed in a different path, then
 		specify the path in the command line using -D:vshik.path=<path>
 	-->
-	<property name="vshik.path" value="C:\Program Files\Microsoft Help 2.0 SDK" overwrite="false" />
-	
+	<property name="vshik.path" value="${environment::get-folder-path('ProgramFiles')}\Microsoft Help 2.0 SDK" overwrite="false" />
+
 	<property name="lang" value="en" />
 	
 	<!-- 
@@ -42,19 +42,44 @@
 	<if test="${property::exists('build.dir')}">
 		<property name="output.dir" value="${build.dir}/doc" />
 	</if>
-	
+
+	<tstamp property="build.date" pattern="u" verbose="true" />
+
+	<target name="init"  unless="${target::has-executed('init')}" description="Set the documentation version and the date of generation.">
+		<copy file="src/Documentation.xml" tofile="src/Documentation.gen" overwrite="true" />
+		<!--
+			Modify the file "Documentation.gen" instead of the .xml one because:
+			- We don't have to remove these changes after building
+				And it would be hard because the build can fail...
+			- When doing <xmlpoke>, NAnt also change the layout of the xml file.
+		-->
+		<if test="${property::exists('project.version')}">
+			<xmlpoke
+				file="src/Documentation.gen"
+				xpath="/book/bookinfo/title"
+				value="NHibernate Documentation ${project.version}"
+			/>
+		</if>
+		<xmlpoke
+			file="src/Documentation.gen"
+			xpath="/book/bookinfo/releaseinfo"
+			value="Status: Beta. Generated on ${build.date}."
+		/>
+	</target>
+
 	<target name="clean" description="Cleans any previous builds">
 		<delete dir="${output.dir}" failonerror="false" />
 	</target>
-	
-	<target name="build" description="Generates the documentation in multiple formats from the docbook files.">
+
+
+	<target name="build" depends="init" description="Generates the documentation in multiple formats from the docbook files.">
 		<call target="build-html" />
 		<call target="build-chm" />
 		<call target="build-help2" />
 	</target>
-	
-	<target name="build-html" description="Generates html from docbook files.">
-		 
+
+	<target name="build-html" depends="init" description="Generates html from docbook files.">
+
 		<property name="build.html.dir" value="${output.dir}" />
 		<property name="build.single.dir" value="${build.html.dir}" />
 		<property name="build.chunk.dir" value="${build.html.dir}/html" />
@@ -67,14 +92,14 @@
 			<arg value="--output" />
 			<arg file="${build.single.dir}/NHibernate.Documentation.html" /><!-- file to output transform results to -->
 			<arg file="html_single.xsl" /><!-- xsl to do the transforming -->
-			<arg file="src/Documentation.xml" /><!-- xml file to transform -->
+			<arg file="src/Documentation.gen" /><!-- xml file to transform -->
 		</exec>
 
 		<exec program="xsltproc" >
 			<arg value="--output" />
 			<arg path="${build.chunk.dir}/" /><!-- dir to output transform results to (add the trailing '/' for xsltproc) -->
 			<arg file="html_chunk.xsl" /><!-- xsl to do the transforming -->
-			<arg file="src/Documentation.xml" /><!-- xml file to transform -->
+			<arg file="src/Documentation.gen" /><!-- xml file to transform -->
 		</exec>
 
 		<!-- Copy the images and the stylesheet -->
@@ -92,20 +117,20 @@
 		</copy>
 	</target>
 
-	<target name="build-chm" description="Generates chm file from docbook files." unless="${target::has-executed('build-chm')}">
+	<target name="build-chm" depends="init" description="Generates chm file from docbook files." unless="${target::has-executed('build-chm')}">
 		
 		<!-- default install location -->
 		<property name="hhc.exe" value="C:\Program Files\HTML Help Workshop\hhc" />
 		<property name="build.chm.dir" value="${output.dir}/chm" />
-		
+
 		<mkdir dir="${build.chm.dir}" failonerror="false" />
-		
+
 		<!-- make the htmlhelp version of the helpfile -->
 		<exec program="xsltproc">
 			<arg value="--output" />
 			<arg path="${build.chm.dir}/" /><!-- dir to output transform results to (add the trailing '/' for xsltproc) -->
 			<arg file="chm_help.xsl" /> <!-- xsl to do the transforming -->
-			<arg file="src/Documentation.xml" /> <!-- xml file to transform -->
+			<arg file="src/Documentation.gen" /> <!-- xml file to transform -->
 		</exec>
 
 		<!-- Copy the images and the stylesheet -->
@@ -121,11 +146,11 @@
 			<arg file="${build.chm.dir}/htmlhelp.hhp" />
 		</exec>
 
-		<copy file="${build.chm.dir}/htmlhelp.chm" tofile="${output.dir}/NHibernate.Documentation.chm" failonerror="true" />
+		<copy file="${build.chm.dir}/htmlhelp.chm" tofile="${output.dir}/NHibernate.Documentation.chm" />
 		<delete dir="${build.chm.dir}" />
 
 	</target>
-	
+
 	<target name="build-help2" if="${vshik.installed}" depends="build-chm" description="Generates help2 file from chm file.">
 		<property name="build.help2.dir" value="${output.dir}/help2" />
 		

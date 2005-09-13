@@ -17,7 +17,7 @@
 	</xs:simpleType>
 	<xs:simpleType name="cascadeStyle">
 		<xs:annotation>
-			<xs:documentation>Rule as to how to operate on child objects</xs:documentation>
+			<xs:documentation>Rule as to how to operate on child objects (for more information, read topics about "persistence by reachability" or "transparent/transitive/cascading persistence")</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="all"/>
@@ -40,10 +40,14 @@
 		<xs:attribute name="name" type="xs:string" use="required"/>
 		<xs:attribute name="proxy" type="xs:string" use="optional">
 			<xs:annotation>
-				<xs:documentation>default: no proxy interface </xs:documentation>
+				<xs:documentation>default: no proxy interface</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="lazy" type="xs:boolean" use="optional"/>
+		<xs:attribute name="lazy" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Enable the lazy loading of this class in associations</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="dynamic-update" type="xs:boolean" use="optional" default="false"/>
 		<xs:attribute name="dynamic-insert" type="xs:boolean" use="optional" default="false"/>
 		<xs:attribute name="select-before-update" type="xs:boolean" use="optional" default="false"/>
@@ -53,7 +57,11 @@
 		<xs:attribute name="access" type="xs:string" use="optional"/>
 		<xs:attribute name="table" type="xs:string" use="optional"/>
 		<xs:attribute name="schema" type="xs:string" use="optional"/>
-		<xs:attribute name="lazy" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="lazy" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Enable the lazy loading of this collection</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional"/>
 		<xs:attribute name="cascade" type="cascadeStyle" use="optional"/>
 		<xs:attribute name="where" type="xs:string" use="optional"/>
@@ -84,7 +92,7 @@
 	</xs:simpleType>
 	<xs:element name="hibernate-mapping">
 		<xs:annotation>
-			<xs:documentation>hibernate-mapping is the document root.</xs:documentation>
+			<xs:documentation>hibernate-mapping is the document root</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -106,14 +114,20 @@
 			<xs:attribute name="default-cascade" type="cascadeStyle" use="optional" default="none"/>
 			<xs:attribute name="default-access" type="xs:string" use="optional" default="property">
 				<xs:annotation>
-					<xs:documentation>
-					Can specify how the default access to Get/Set the values for the property
-					</xs:documentation>
+					<xs:documentation>Can specify how the default access to Get/Set the values for the property</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="auto-import" type="xs:boolean" use="optional" default="true"/>
-			<xs:attribute name="namespace" type="xs:string" use="optional"/>
-			<xs:attribute name="assembly" type="xs:string" use="optional"/>
+			<xs:attribute name="namespace" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Namespace used to find not-Fully Qualified Type Names</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="assembly" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Assembly used to find not-Fully Qualified Type Names</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="import">
@@ -127,7 +141,7 @@
 	</xs:element>
 	<xs:element name="class">
 		<xs:annotation>
-			<xs:documentation>Root of an entity class hierarchy. Entities have their own tables.</xs:documentation>
+			<xs:documentation>Root of an entity class hierarchy. Entities have their own tables</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -167,17 +181,17 @@
 			<xs:attributeGroup ref="baseClassAttributes"/>
 			<xs:attribute name="table" type="xs:string" use="optional">
 				<xs:annotation>
-					<xs:documentation>default: unqualified classname </xs:documentation>
+					<xs:documentation>default: unqualified classname</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="schema" type="xs:string" use="optional">
 				<xs:annotation>
-					<xs:documentation>default: no value </xs:documentation>
+					<xs:documentation>default: no value</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="discriminator-value" type="xs:string" use="optional">
 				<xs:annotation>
-					<xs:documentation>default: unqualified class name | none  </xs:documentation>
+					<xs:documentation>default: unqualified class name | none</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="mutable" type="xs:boolean" use="optional" default="true"/>
@@ -185,7 +199,7 @@
 			<xs:attribute name="persister" type="xs:string" use="optional"/>
 			<xs:attribute name="where" type="xs:string" use="optional">
 				<xs:annotation>
-					<xs:documentation>default: none  </xs:documentation>
+					<xs:documentation>default: none</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="batch-size" type="xs:positiveInteger" use="optional" default="1" />
@@ -210,14 +224,14 @@
 			<xs:attribute name="length" type="xs:positiveInteger"/>
 			<xs:attribute name="unsaved-value" type="xs:string" default="null">
 				<xs:annotation>
-					<xs:documentation>any|none|null|0|-1|... </xs:documentation>
+					<xs:documentation>any|none|null|0|-1|...</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="composite-id">
 		<xs:annotation>
-			<xs:documentation>A composite key may be modelled by a .NET class with a property for each key column. The class must be Serializable and override equals() and hashCode().</xs:documentation>
+			<xs:documentation>A composite key may be modelled by a .NET class with a property for each key column. The class must be Serializable and override equals() and hashCode()</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -234,13 +248,13 @@
 	</xs:element>
 	<xs:element name="discriminator">
 		<xs:annotation>
-			<xs:documentation>Polymorphic data requires a column holding a class discriminator value. This value is not directly exposed to the application.</xs:documentation>
+			<xs:documentation>Polymorphic data requires a column holding a class discriminator value. This value is not directly exposed to the application</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="column" minOccurs="0">
 					<xs:annotation>
-						<xs:documentation>default: "class"|none </xs:documentation>
+						<xs:documentation>default: "class"|none</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
@@ -254,7 +268,7 @@
 	</xs:element>
 	<xs:element name="version">
 		<xs:annotation>
-			<xs:documentation>Versioned data requires a column holding a version number. This is exposed to the application through a property of the .NET class.</xs:documentation>
+			<xs:documentation>Versioned data requires a column holding a version number. This is exposed to the application through a property of the .NET class</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
@@ -270,7 +284,7 @@
 	</xs:element>
 	<xs:element name="timestamp">
 		<xs:annotation>
-			<xs:documentation>TODO: supply documentation</xs:documentation>
+			<xs:documentation>Is equivalent to &lt;version type="timestamp"&gt;</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
@@ -285,7 +299,7 @@
 	</xs:element>
 	<xs:element name="subclass">
 		<xs:annotation>
-			<xs:documentation>Subclass declarations are nested beneath the root class declaration to achieve polymorphic persistence.</xs:documentation>
+			<xs:documentation>Subclass declarations are nested beneath the root class declaration to achieve polymorphic persistence</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -307,10 +321,14 @@
 				<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="baseClassAttributes"/>
-			<xs:attribute name="extends" type="xs:string" use="optional"/>
+			<xs:attribute name="extends" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Name of the root class. Required if the Subclass is declared outside the declaration of its root class</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="discriminator-value" type="xs:string" use="optional">
 				<xs:annotation>
-					<xs:documentation>default: unqualified class name | none  </xs:documentation>
+					<xs:documentation>default: unqualified class name | none</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>
@@ -340,11 +358,15 @@
 				<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="baseClassAttributes"/>
-			<xs:attribute name="extends" type="xs:string" use="optional"/>
+			<xs:attribute name="extends" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Name of the root class. Required if the Joined Subclass is declared outside the declaration of its root class</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="schema" type="xs:string" use="optional"/>
 			<xs:attribute name="table" type="xs:string" use="optional">
 				<xs:annotation>
-					<xs:documentation>default: unqualified classname </xs:documentation>
+					<xs:documentation>default: unqualified classname</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="check" type="xs:string" use="optional" />
@@ -352,7 +374,7 @@
 	</xs:element>
 	<xs:element name="property">
 		<xs:annotation>
-			<xs:documentation>Property of an entity class or component, component-element, composite-id, etc. Class Properties (get_ and set_ methods) are mapped to table columns.</xs:documentation>
+			<xs:documentation>Property of an entity class or component, component-element, composite-id, etc. Class Properties (get_ and set_ methods) are mapped to table columns</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -368,23 +390,17 @@
 			<xs:attribute name="unique" type="xs:boolean" default="false"/>
 			<xs:attribute name="update" type="xs:boolean" default="true">
 				<xs:annotation>
-					<xs:documentation>
-						only supported for properties of a class (not component) 
-					</xs:documentation>
+					<xs:documentation>only supported for properties of a class (not component)</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="insert" type="xs:boolean" default="true">
 				<xs:annotation>
-					<xs:documentation>
-						only supported for properties of a class (not component) 
-					</xs:documentation>
+					<xs:documentation>only supported for properties of a class (not component)</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="formula" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>
-						only supported for properties of a class (not component) 
-					</xs:documentation>
+					<xs:documentation>only supported for properties of a class (not component)</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>
@@ -454,6 +470,9 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="component">
+		<xs:annotation>
+			<xs:documentation>Map properties of a child object to columns of the table of a parent class</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="parent" minOccurs="0"/>
@@ -515,6 +534,9 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="generator">
+		<xs:annotation>
+			<xs:documentation>Tells which algorithm to use to generate the identifier</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="param" minOccurs="0" maxOccurs="unbounded"/>

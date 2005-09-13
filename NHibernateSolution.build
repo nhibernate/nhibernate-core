@@ -24,7 +24,7 @@
 	<property name="clover.enabled" value="false" />
 	<property name="clover.src" value="src\CloverSrc" />
 	<property name="clover.db" value="${clover.src}\clover.cdb" />
-	<property name="clover.home" value="C:/Program Files/Cenqua/Clover.NET for Visual Studio" />
+	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET for Visual Studio" />
 	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
 	<!-- 
 		Use this to determine if the key file NHibernate.key should be used to 
@@ -310,6 +310,7 @@
 					<property name="IncludeAssemblyVersion" value="False" />
 					<property name="CopyrightText" value="NHibernate is licensed under GNU LGPL." />
 					<property name="CopyrightHref" value="http://www.nhibernate.org/" />
+					<property name="FeedbackEmailAddress" value="nhibernate-development@lists.sourceforge.net" />
 					<property name="ReferencesPath" value="" />
 					<property name="SkipNamespacesWithoutSummaries" value="False" />
 					<property name="UseNamespaceDocSummaries" value="False" />
@@ -360,6 +361,7 @@
 						<property name="DocumentEmptyNamespaces" value="False" />
 						<property name="CopyrightText" value="NHibernate is licensed under GNU LGPL." />
 						<property name="CopyrightHref" value="http://www.nhibernate.org/" />
+						<property name="FeedbackEmailAddress" value="nhibernate-development@lists.sourceforge.net" />
 						<property name="ReferencesPath" value="" />
 						<property name="SkipNamespacesWithoutSummaries" value="False" />
 						<property name="UseNamespaceDocSummaries" value="False" />
@@ -393,7 +395,7 @@
 	<target name="package" depends="test doc" description="Creates Zip files for the File Release System on SourceForge">
 		<copy todir="${build.dir}">
 			<fileset>
-				<!-- copy framework nuetral dlls -->
+				<!-- copy framework neutral dlls -->
 				<include name="lib/*" />
 				<include name="${lib.dir}/**" />
 				
