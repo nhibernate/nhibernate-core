@@ -59,5 +59,13 @@ namespace NHibernate.Driver
 			get { return String.Empty; }
 		}
 
+		/// <summary>
+		/// OLE DB provider does not support multiple open data readers
+		/// </summary>
+		public override bool SupportsMultipleOpenReaders
+		{
+			get { return false; }
+		}
+
 	}
 }
