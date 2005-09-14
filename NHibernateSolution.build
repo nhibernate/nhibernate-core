@@ -11,6 +11,9 @@
 	-->
 	<property name="nunit2report.installed" value="false" />
 
+	<!-- Disable performance tests by default. They take too much time. -->
+	<property name="run.performance.tests" value="false" overwrite="false" />
+
 	<!--
 		if Visual Studio Help Integration Kit has been installed
 		then change this to true or include -D:vshik.installed=true in the command line.
@@ -38,10 +41,10 @@
 		These are used to set the correct Attributes in AssemblyInfo.cs.  
 	-->
 	<property name="project.name" value="nhibernate" />
-	<property name="project.version.major" value="0" />
-	<property name="project.version.minor" value="9" />
-	<property name="project.version.build" value="1" />
-	<property name="project.version.revision" value="0" />
+	<property name="project.version.major" value="0" overwrite="false" />
+	<property name="project.version.minor" value="9" overwrite="false" />
+	<property name="project.version.build" value="1" overwrite="false" />
+	<property name="project.version.revision" value="0" overwrite="false" />
 	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
 	
 	<!-- default configuration -->
@@ -94,7 +97,7 @@
 	<target 
 		name="build-external" 
 		depends="init" 
-		description="Builds code that NHibernate depends on but is not a core peice of NHibernate.  The built dll/exes will be distributed in the lib folder so there should be no need for a user to build it."
+		description="Builds code that NHibernate depends on but is not a core piece of NHibernate.  The built dll/exes will be distributed in the lib folder so there should be no need for a user to build it."
 	>
 		<nant target="build" buildfile="src/HashCodeProvider/HashCodeProvider.build" />
 		<!-- the Iesi.Collections.build takes care of determining if this is a clover build or not -->
@@ -159,44 +162,67 @@
 		<nant target="build" buildfile="src/NHibernate/NHibernate.build" />
 		<nant target="build" buildfile="src/NHibernate.DomainModel/NHibernate.DomainModel.build" />
 		<nant target="build" buildfile="src/NHibernate.Test/NHibernate.Test.build" />
+		<nant target="build" buildfile="src/NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
 		<nant target="build" buildfile="src/NHibernate.Examples/NHibernate.Examples.build" />
 		
 	</target>
-	
-	<target name="test" depends="build" description="Runs the tests contained in NHibernate.Test" >
-		<!-- make sure the config file is NOT readonly -->
-		<attrib file="${build.dir}/bin/NHibernate.Test.dll.config" readonly="false" />
 
+	<target name="put-connection-settings-into-app-config">
+		<!-- make sure the config file is writable -->
+		<attrib file="${app.config}" readonly="false" />
+		
 		<!-- 
 			Tell nhibernate how to connect to the test database.
 		-->
 		<xmlpoke
-			file="${build.dir}/bin/NHibernate.Test.dll.config"
+			file="${app.config}"
 			xpath="/configuration/nhibernate/add[@key='hibernate.dialect']/@value"
 			value="${nhibernate.dialect}" 
 		/>
 		<xmlpoke
-			file="${build.dir}/bin/NHibernate.Test.dll.config"
+			file="${app.config}"
 			xpath="/configuration/nhibernate/add[@key='hibernate.connection.driver_class']/@value"
 			value="${nhibernate.connection.driver_class}" 
 		/>
 		<xmlpoke
-			file="${build.dir}/bin/NHibernate.Test.dll.config"
+			file="${app.config}"
 			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
 			value="${nhibernate.connection.connection_string}" 
 		/>
+	</target>
 
-		<nant target="test" buildfile="src/NHibernate.Test/NHibernate.Test.build" />
-		<nant target="test" buildfile="src/Iesi.Collections.Test/Iesi.Collections.Test.build" />
-		
-		<!--
-			Remove the connnection string information that was just entered...
-		-->
+	<target name="remove-connection-settings-from-app-config">
 		<xmlpoke
-			file="${build.dir}/bin/NHibernate.Test.dll.config"
+			file="${app.config}"
 			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
 			value="conn string here" 
 		/>
+	</target>
+
+	<target name="run-nhibernate-tests">
+		<!--
+			Run tests in ${test.project}, putting connection settings into its App.config
+			before the tests and removing them afterwards.
+		-->
+		<property name="app.config" value="${build.dir}/bin/${test.project}.dll.config" />
+		<call target="put-connection-settings-into-app-config" />
+		<nant target="test" buildfile="src/${test.project}/${test.project}.build" />
+		<call target="remove-connection-settings-from-app-config" />
+	</target>
+
+	<target name="test" depends="build" description="Runs all NHibernate tests" >
+		<!-- Run Iesi.Collections tests -->
+		<nant target="test" buildfile="src/Iesi.Collections.Test/Iesi.Collections.Test.build" />
+
+		<!-- Run NHibernate.Test tests -->
+		<property name="test.project" value="NHibernate.Test" />
+		<call target="run-nhibernate-tests" />
+
+		<!-- Run NHibernate.Test.Performance tests, unless disabled -->
+		<if test="${run.performance.tests}">
+			<property name="test.project" value="NHibernate.Test.Performance" />
+			<call target="run-nhibernate-tests" />
+		</if>
 
 		<if test="${nunit2report.installed}">
 			<mkdir dir="${build.dir}/testresults" />
