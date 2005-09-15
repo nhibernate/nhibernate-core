@@ -917,6 +917,26 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Quotes a name for being used as a schemaname
+		/// </summary>
+		/// <param name="schemaName">Name of the schema</param>
+		/// <returns>A Quoted name in the format of OpenQuote + schemaName + CloseQuote</returns>
+		/// <remarks>
+		/// <p>
+		/// If the schemaName is already enclosed in the OpenQuote and CloseQuote then this 
+		/// method will return the schemaName that was passed in without going through any
+		/// Quoting process.  So if schemaName is passed in already Quoted make sure that 
+		/// you have escaped all of the chars according to your DataBase's specifications.
+		/// </p>
+		/// </remarks>
+		public virtual string QuoteForSchemaName( string schemaName )
+		{
+			return IsQuoted( schemaName ) ?
+				schemaName :
+				Quote( schemaName );
+		}
+
+		/// <summary>
 		/// 
 		/// </summary>
 		public class CountQueryFunctionInfo : ISQLFunction

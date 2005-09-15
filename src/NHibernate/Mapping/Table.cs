@@ -43,7 +43,8 @@ namespace NHibernate.Mapping
 		public string GetQualifiedName( Dialect.Dialect dialect )
 		{
 			string quotedName = GetQuotedName( dialect );
-			return schema == null ? quotedName : schema + StringHelper.Dot + quotedName;
+			return schema == null ? quotedName :
+				GetQuotedSchemaName( dialect ) + StringHelper.Dot + quotedName;
 		}
 
 
@@ -112,6 +113,31 @@ namespace NHibernate.Mapping
 			return IsQuoted ?
 				dialect.QuoteForTableName( name ) :
 				name;
+		}
+
+		/// <summary>
+		/// Gets the schema for this table in quoted form if it is necessary.
+		/// </summary>
+		/// <param name="dialect">
+		/// The <see cref="Dialect.Dialect" /> that knows how to quote the table name.
+		/// </param>
+		/// <returns>
+		/// The schema name for this table in a form that is safe to use inside
+		/// of a SQL statement. Quoted if it needs to be, not quoted if it does not need to be.
+		/// </returns>
+		private string GetQuotedSchemaName( Dialect.Dialect dialect )
+		{
+			if( schema == null )
+			{
+				return null;
+			}
+
+			if( schema.StartsWith( "`" ) )
+			{
+				return dialect.QuoteForSchemaName( schema.Substring( 1, schema.Length - 2 ) );
+			}
+
+			return schema;
 		}
 
 		/// <summary>
