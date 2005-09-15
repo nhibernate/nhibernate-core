@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Runtime.Serialization;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -8,8 +11,10 @@ namespace NHibernate.Impl
 	/// The base class for a scheduled action to perform on a Collection during a
 	/// flush.
 	/// </summary>
-	internal abstract class ScheduledCollectionAction : IExecutable
+	[Serializable]
+	internal abstract class ScheduledCollectionAction : IExecutable, IDeserializationCallback
 	{
+		[NonSerialized]
 		private ICollectionPersister persister;
 		private object id;
 		private ISessionImplementor session;
@@ -29,6 +34,22 @@ namespace NHibernate.Impl
 			this.id = id;
 			this.collectionRole = persister.Role;
 		}
+
+		#region IDeserializationCallback member
+
+		void IDeserializationCallback.OnDeserialization(object sender)
+		{
+			try
+			{
+				persister = session.Factory.GetCollectionPersister(collectionRole);
+			}
+			catch (MappingException e)
+			{
+				throw new IOException("Unable to resolve collection persister on deserialization", e);
+			}
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets the <see cref="ICollectionPersister"/> that is responsible for persisting the Collection.
@@ -108,5 +129,6 @@ namespace NHibernate.Impl
 		}
 
 		#endregion
+
 	}
 }

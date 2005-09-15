@@ -258,11 +258,6 @@ namespace NHibernate.Impl
 				throw new InvalidOperationException( "Cannot serialize a Session while connected" );
 			}
 
-			if( insertions.Count != 0 || deletions.Count != 0 )
-			{
-				throw new InvalidOperationException( "Cannot serialize a Session which has work waiting to be flushed" );
-			}
-
 			info.AddValue( "factory", factory, typeof( SessionFactoryImpl ) );
 			info.AddValue( "autoClose", autoClose );
 			info.AddValue( "timestamp", timestamp );

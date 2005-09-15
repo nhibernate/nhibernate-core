@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Persister;
 
@@ -8,11 +10,13 @@ namespace NHibernate.Impl
 	/// The base class for a scheduled action to perform on an entity during a
 	/// flush.
 	/// </summary>
-	internal abstract class ScheduledEntityAction : IExecutable
+	[Serializable]
+	internal abstract class ScheduledEntityAction : IExecutable, IDeserializationCallback
 	{
 		private readonly ISessionImplementor session;
 		private readonly object id;
-		private readonly IClassPersister persister;
+		[NonSerialized]
+		private IClassPersister persister;
 		private readonly object instance;
 
 		/// <summary>
@@ -97,6 +101,22 @@ namespace NHibernate.Impl
 		public object[ ] PropertySpaces
 		{
 			get { return persister.PropertySpaces; }
+		}
+
+		#endregion
+
+		#region IDeserializationCallback member
+
+		void IDeserializationCallback.OnDeserialization(object sender)
+		{
+			try
+			{
+				persister = session.GetPersister(instance);
+			}
+			catch (MappingException e)
+			{
+				throw new IOException("Unable to resolve class persister on deserialization", e);
+			}
 		}
 
 		#endregion

@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Engine;
 using NHibernate.Persister;
 
@@ -6,6 +7,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// A scheduled insertion of an object.
 	/// </summary>
+	[Serializable]
 	internal class ScheduledInsertion : ScheduledEntityAction
 	{
 		private readonly object[ ] state;

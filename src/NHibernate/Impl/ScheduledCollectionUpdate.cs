@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Collection;
 using NHibernate.Engine;
 
@@ -10,6 +11,7 @@ namespace NHibernate.Impl
 	/// Entities in the Collection or the contents of the Collection have been modified
 	/// and the database should be updated accordingly.
 	/// </remarks>
+	[Serializable]
 	internal sealed class ScheduledCollectionUpdate : ScheduledCollectionAction
 	{
 		private readonly PersistentCollection _collection;

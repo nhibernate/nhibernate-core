@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Collection;
 using NHibernate.Engine;
 
@@ -6,6 +7,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// A scheduled recreation of the Collection in the database.
 	/// </summary>
+	[Serializable]
 	internal sealed class ScheduledCollectionRecreate : ScheduledCollectionAction
 	{
 		private PersistentCollection _collection;

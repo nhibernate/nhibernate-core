@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Persister;
@@ -7,6 +8,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// A scheduled update of an object.
 	/// </summary>
+	[Serializable]
 	internal class ScheduledUpdate : ScheduledEntityAction
 	{
 		private readonly object[] fields;

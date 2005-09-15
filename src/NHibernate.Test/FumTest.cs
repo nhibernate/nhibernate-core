@@ -608,7 +608,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "TODO: Requires serializable ScheduledActions" )]
 		public void UnflushedSessionSerialization()
 		{
 			///////////////////////////////////////////////////////////////////////////
@@ -625,7 +624,7 @@ namespace NHibernate.Test
 				Simple simple = new Simple();
 				simple.Address = "123 Main St. Anytown USA";
 				simple.Count = 1;
-				simple.Date = new DateTime();
+				simple.Date = new DateTime(2005, 1, 1);
 				simple.Name = "My UnflushedSessionSerialization Simple";
 				simple.Pay = 5000.0f;
 
@@ -697,6 +696,12 @@ namespace NHibernate.Test
 			using( ISession s = s2 )
 			{
 				s.Reconnect();
+				s.Flush();
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				s.Delete( "from Simple" );
 				s.Flush();
 			}
 		}

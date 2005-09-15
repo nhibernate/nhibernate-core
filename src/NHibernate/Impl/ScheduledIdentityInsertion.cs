@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Engine;
 using NHibernate.Persister;
 
@@ -6,6 +7,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Summary description for ScheduledIdentityInsertion.
 	/// </summary>
+	[Serializable]
 	internal sealed class ScheduledIdentityInsertion : ScheduledEntityAction, IExecutable
 	{
 		private readonly object[] state;

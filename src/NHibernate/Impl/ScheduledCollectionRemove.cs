@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Collection;
 using NHibernate.Engine;
 
@@ -9,6 +10,7 @@ namespace NHibernate.Impl
 	/// <remarks>
 	/// This Collection is not represented in the database anymore.
 	/// </remarks>
+	[Serializable]
 	internal sealed class ScheduledCollectionRemove : ScheduledCollectionAction
 	{
 		private bool _emptySnapshot;
