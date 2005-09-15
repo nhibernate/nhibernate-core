@@ -13,7 +13,7 @@ namespace NHibernate.Id
 	///	This id generation strategy is specified in the mapping file as 
 	///	<code>
 	///	&lt;generator class="foreign"&gt;
-	///		&lt;param name="sequence"&gt;uid_sequence&lt;/param&gt;
+	///		&lt;param name="property"&gt;AssociatedObject&lt;/param&gt;
 	///	&lt;/generator&gt;
 	///	</code>
 	/// </para>
