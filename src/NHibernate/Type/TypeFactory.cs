@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	/// Used internally to obtain instances of IType.
 	/// </summary>
 	/// <remarks>
-	/// Applications should use static methods and constants on NHibernate.NHibernate if the default
+	/// Applications should use static methods and constants on NHibernate.NHibernateUtil if the default
 	/// IType is good enough.  For example, the TypeFactory should only be used when the String needs
 	/// to have a length of 300 instead of 255.  At this point NHibernate.String does not get you the 
 	/// correct IType.  Instead use TypeFactory.GetString(300) and keep a local variable that holds
