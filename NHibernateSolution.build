@@ -458,15 +458,23 @@
 							
 			</fileset>
 		</copy>
+
+		<zip zipfile="${build.dir}/${project.name}-clover-${project.version}.zip">
+			<fileset basedir="${build.dir}/clover/">
+				<include name="**/*" />
+			</fileset>
+		</zip>
+
 		<property name="project.zip-path" value="${nant.project.basedir}/build/${build.name}.zip" />
-		
+
 		<zip zipfile="${project.zip-path}">
 			<fileset basedir="${build.dir}">
 				<include name="**/*" />
+				<exclude name="clover/**" />
 				<exclude name="bin/log.txt" />
 			</fileset>
 		</zip>
-		
+
 		<!-- delete the directory that was used to create the zip -->
 		<!--<delete dir="${build.dir}" />-->
 		
