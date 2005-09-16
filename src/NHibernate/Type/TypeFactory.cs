@@ -314,38 +314,10 @@ namespace NHibernate.Type
 			return type;
 		}
 
-		// not used !?!
-//		private static string GetKeyForLengthBased( IType type )
-//		{
-//			NullableType nullableType = type as NullableType;
-//			if( nullableType != null )
-//			{
-//				return GetKeyForLengthBased( type.Name, nullableType.SqlType.Length );
-//			}
-//			else
-//			{
-//				throw new ApplicationException( "Can't get a Key for a Length Based item of IType = " + type.Name );
-//			}
-//		}
-
 		private static string GetKeyForLengthBased( string name, int length )
 		{
 			return name + "(" + length + ")";
 		}
-
-		// not used !?!
-//		private static string GetKeyForPrecisionScaleBased( IType type )
-//		{
-//			NullableType nullableType = type as NullableType;
-//			if( nullableType != null )
-//			{
-//				return GetKeyForPrecisionScaleBased( nullableType.Name, nullableType.SqlType.Precision, nullableType.SqlType.Scale );
-//			}
-//			else
-//			{
-//				throw new ApplicationException( "Can't get a Key for a Precision Scale Based item of IType = " + type.Name );
-//			}
-//		}
 
 		private static string GetKeyForPrecisionScaleBased( string name, byte precision, byte scale )
 		{
@@ -444,12 +416,6 @@ namespace NHibernate.Type
 			return type;
 		}
 
-		/// <summary></summary>
-		public static NullableType GetAnsiStringType()
-		{
-			return NHibernateUtil.AnsiString;
-		}
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -466,27 +432,6 @@ namespace NHibernate.Type
 				AddToTypeOfNameWithLength( key, returnType );
 			}
 			return returnType;
-		}
-
-
-		/// <summary>
-		/// Gets the BinaryType with the default size.
-		/// </summary>
-		/// <returns>A BinaryType</returns>
-		/// <remarks>
-		/// <para>
-		/// In addition to returning the BinaryType it will also ensure that it has
-		/// been added to the basicNameMap with the keys <c>Byte[]</c> and 
-		/// <c>NHibernate.Type.BinaryType</c>.
-		/// </para>
-		/// <para>
-		/// Since this method calls the <see cref="GetBinaryType(Int32)">GetBinaryType(Int32)</see>
-		/// with the default length those keys will also be added.
-		/// </para>
-		/// </remarks>
-		public static NullableType GetBinaryType()
-		{
-			return NHibernateUtil.Binary;
 		}
 
 		/// <summary>
@@ -522,79 +467,6 @@ namespace NHibernate.Type
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetBooleanType()
-		{
-			return NHibernateUtil.Boolean;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetByteType()
-		{
-			return NHibernateUtil.Byte;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetSByteType() 
-		{
-			return NHibernateUtil.SByte;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetCharType() 
-		{
-			return NHibernateUtil.Character;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetCultureInfoType()
-		{
-			return NHibernateUtil.CultureInfo;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetDateTimeType()
-		{
-			return NHibernateUtil.DateTime;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetDateType()
-		{
-			return NHibernateUtil.Date;
-		}
-
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetDecimalType()
-		{
-			return NHibernateUtil.Decimal;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <param name="precision"></param>
 		/// <param name="scale"></param>
 		/// <returns></returns>
@@ -609,79 +481,6 @@ namespace NHibernate.Type
 			}
 
 			return returnType;
-
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetDoubleType()
-		{
-			return NHibernateUtil.Double;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetGuidType()
-		{
-			return NHibernateUtil.Guid;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetInt16Type()
-		{
-			return NHibernateUtil.Int16;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetInt32Type()
-		{
-			return NHibernateUtil.Int32;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetInt64Type()
-		{
-			return NHibernateUtil.Int64;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static IType GetObjectType()
-		{
-			return NHibernateUtil.Object;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetSingleType()
-		{
-			return NHibernateUtil.Single;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetSerializableType()
-		{
-			return NHibernateUtil.Serializable;
 
 		}
 
@@ -763,15 +562,6 @@ namespace NHibernate.Type
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetStringType()
-		{
-			return NHibernateUtil.String;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <param name="length"></param>
 		/// <returns></returns>
 		public static NullableType GetStringType( int length )
@@ -787,60 +577,6 @@ namespace NHibernate.Type
 
 			return returnType;
 
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetTicksType()
-		{
-			return NHibernateUtil.Ticks;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetTimeSpanType()
-		{
-			return NHibernateUtil.TimeSpan;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetTimestampType()
-		{
-			return NHibernateUtil.Timestamp;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetTimeType()
-		{
-			return NHibernateUtil.Time;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetTrueFalseType()
-		{
-			return NHibernateUtil.TrueFalse;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetTypeType()
-		{
-			return NHibernateUtil.Class;
 		}
 
 		/// <summary>
@@ -862,16 +598,6 @@ namespace NHibernate.Type
 			return returnType;
 
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static NullableType GetYesNoType()
-		{
-			return NHibernateUtil.YesNo;
-		}
-
 
 		// Association Types
 

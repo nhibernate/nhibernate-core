@@ -21,8 +21,8 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void GetGuidSingleton() 
 		{
-			NullableType guidType = TypeFactory.GetGuidType();
-			NullableType guidType2 = TypeFactory.GetGuidType();
+			NullableType guidType = NHibernateUtil.Guid;
+			NullableType guidType2 = NHibernateUtil.Guid;
 
 			Assert.AreSame(guidType, guidType2);
 		}
@@ -37,19 +37,6 @@ namespace NHibernate.Test.TypesTest
 			NullableType string30 = TypeFactory.GetStringType(30);
 
 			Assert.IsFalse(string25==string30, "string25 & string30 should be different strings");
-		}
-
-		/// <summary>
-		/// Test that the String returned from NHibernate.String and TypeFactory.GetStringType 
-		/// returns the exact same Type.
-		/// </summary>
-		[Test]
-		public void GetDefaultString() 
-		{
-			NullableType stringFromNH = NHibernateUtil.String;
-			NullableType stringFromTF = TypeFactory.GetStringType();
-
-			Assert.AreSame(stringFromNH, stringFromTF);
 		}
 	}
 }
