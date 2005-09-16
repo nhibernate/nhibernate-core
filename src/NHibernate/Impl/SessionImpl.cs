@@ -558,6 +558,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public LockMode GetCurrentLockMode( object obj )
 		{
+			CheckIsOpen();
+
 			if( obj == null )
 			{
 				throw new ArgumentNullException( "obj", "null object passed to GetCurrentLockMode" );
@@ -681,6 +683,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Save( object obj )
 		{
+			CheckIsOpen();
+
 			if( obj == null )
 			{
 				throw new NullReferenceException( "attempted to save null" );
@@ -767,6 +771,8 @@ namespace NHibernate.Impl
 		/// <param name="id"></param>
 		public void Save( object obj, object id )
 		{
+			CheckIsOpen();
+
 			if( obj == null )
 			{
 				throw new ArgumentNullException( "obj", "attemted to insert null" );
@@ -1168,6 +1174,8 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
 		public void Delete( object obj )
 		{
+			CheckIsOpen();
+
 			if( obj == null )
 			{
 				throw new ArgumentNullException( "obj", "attempted to delete null" );
@@ -1443,6 +1451,8 @@ namespace NHibernate.Impl
 
 		public void Update( object obj )
 		{
+			CheckIsOpen();
+
 			if( obj == null )
 			{
 				throw new ArgumentNullException( "obj", "attempted to update null" );
@@ -1481,6 +1491,8 @@ namespace NHibernate.Impl
 
 		public void SaveOrUpdate( object obj )
 		{
+			CheckIsOpen();
+
 			if( obj == null )
 			{
 				throw new ArgumentNullException( "obj", "attempted to update null" );
@@ -1551,6 +1563,8 @@ namespace NHibernate.Impl
 		/// <param name="id"></param>
 		public void Update( object obj, object id )
 		{
+			CheckIsOpen();
+
 			if( id == null )
 			{
 				throw new ArgumentNullException( "id", "null is not a valid identifier" );
@@ -1700,6 +1714,8 @@ namespace NHibernate.Impl
 
 		public IList Find( string query, QueryParameters parameters )
 		{
+			CheckIsOpen();
+
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "find: " + query );
@@ -1775,6 +1791,8 @@ namespace NHibernate.Impl
 
 		public IEnumerable Enumerable( string query, QueryParameters parameters )
 		{
+			CheckIsOpen();
+
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "GetEnumerable: " + query );
@@ -1838,6 +1856,8 @@ namespace NHibernate.Impl
 
 		public int Delete( string query, object[ ] values, IType[ ] types )
 		{
+			CheckIsOpen();
+
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "delete: " + query );
@@ -1888,6 +1908,8 @@ namespace NHibernate.Impl
 
 		public void Lock( object obj, LockMode lockMode )
 		{
+			CheckIsOpen();
+
 			if( obj == null )
 			{
 				throw new ArgumentNullException( "obj", "attempted to lock null" );
@@ -1978,6 +2000,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery CreateFilter( object collection, string queryString )
 		{
+			CheckIsOpen();
+
 			return new FilterImpl( queryString, collection, this );
 		}
 
@@ -1988,6 +2012,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery CreateQuery( string queryString )
 		{
+			CheckIsOpen();
+
 			return new QueryImpl( queryString, this );
 		}
 
@@ -2002,6 +2028,8 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public IQuery GetNamedQuery( string queryName )
 		{
+			CheckIsOpen();
+
 			string queryString = factory.GetNamedQuery( queryName );
 			if( queryString != null )
 			{
@@ -2204,6 +2232,8 @@ namespace NHibernate.Impl
 
 		public void Load( object obj, object id )
 		{
+			CheckIsOpen();
+
 			if( id == null )
 			{
 				throw new ArgumentNullException( "id", "null is not a valid identifier" );
@@ -2211,14 +2241,10 @@ namespace NHibernate.Impl
 			DoLoadByObject( obj, id, LockMode.None );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
 		public object Load( System.Type clazz, object id )
 		{
+			CheckIsOpen();
+
 			if( id == null )
 			{
 				throw new ArgumentNullException( "id", "null is not a valid identifier" );
@@ -2230,6 +2256,8 @@ namespace NHibernate.Impl
 
 		public object Get( System.Type clazz, object id )
 		{
+			CheckIsOpen();
+
 			if( id == null )
 			{
 				throw new ArgumentNullException( "id", "null is not a valid identifier" );
@@ -2441,6 +2469,8 @@ namespace NHibernate.Impl
 		/// </exception>
 		public object Load( System.Type clazz, object id, LockMode lockMode )
 		{
+			CheckIsOpen();
+
 			if( lockMode == LockMode.Write )
 			{
 				throw new HibernateException( "Invalid lock mode for Load()" );
@@ -2468,6 +2498,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Get( System.Type clazz, object id, LockMode lockMode )
 		{
+			CheckIsOpen();
+
 			if( lockMode == LockMode.Write )
 			{
 				throw new HibernateException( "Invalid lock mode for Get()" );
@@ -2607,6 +2639,8 @@ namespace NHibernate.Impl
 
 		public void Refresh( object obj, LockMode lockMode )
 		{
+			CheckIsOpen();
+
 			if( obj == null )
 			{
 				throw new ArgumentNullException( "obj", "attempted to refresh null" );
@@ -2734,6 +2768,8 @@ namespace NHibernate.Impl
 
 		public ITransaction BeginTransaction( IsolationLevel isolationLevel )
 		{
+			CheckIsOpen();
+
 			transaction = factory.TransactionFactory.BeginTransaction( this, isolationLevel );
 			isCurrentTransaction = true;
 			return transaction;
@@ -2741,6 +2777,8 @@ namespace NHibernate.Impl
 
 		public ITransaction BeginTransaction()
 		{
+			CheckIsOpen();
+
 			transaction = factory.TransactionFactory.BeginTransaction( this );
 			isCurrentTransaction = true;
 			return transaction;
@@ -2774,6 +2812,8 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public void Flush()
 		{
+			CheckIsOpen();
+
 			if( cascading > 0 )
 			{
 				throw new HibernateException( "Flush during cascade is dangerous" );
@@ -2867,6 +2907,8 @@ namespace NHibernate.Impl
 
 		public bool IsDirty()
 		{
+			CheckIsOpen();
+
 			log.Debug( "checking session dirtiness" );
 			if( insertions.Count > 0 || deletions.Count > 0 )
 			{
@@ -3354,6 +3396,11 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object GetIdentifier( object obj )
 		{
+			CheckIsOpen();
+			// Actually the case for proxies will probably work even with
+			// the session closed, but do the check here anyway, so that
+			// the behavior is uniform.
+
 			if( obj is INHibernateProxy )
 			{
 				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj );
@@ -4217,6 +4264,8 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public IDbConnection Disconnect()
 		{
+			CheckIsOpen();
+
 			log.Debug( "disconnecting session" );
 
 			try
@@ -4280,10 +4329,7 @@ namespace NHibernate.Impl
 
 		public void Reconnect()
 		{
-			if( !IsOpen )
-			{
-				throw new HibernateException( "Session is closed" );
-			}
+			CheckIsOpen();
 
 			if( IsConnected )
 			{
@@ -4297,10 +4343,7 @@ namespace NHibernate.Impl
 
 		public void Reconnect( IDbConnection conn )
 		{
-			if( !IsOpen )
-			{
-				throw new HibernateException( "Session is closed" );
-			}
+			CheckIsOpen();
 
 			if( IsConnected )
 			{
@@ -4312,7 +4355,7 @@ namespace NHibernate.Impl
 		#region System.IDisposable Members
 
 		/// <summary>
-		/// A flag to indicate if <c>Disose()</c> has been called.
+		/// A flag to indicate if <c>Dispose()</c> has been called.
 		/// </summary>
 		private bool _isAlreadyDisposed;
 
@@ -4422,6 +4465,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public ICollection Filter( object collection, string filter, object[ ] values, IType[ ] types )
 		{
+			CheckIsOpen();
+
 			object[ ] vals = new object[values.Length + 1];
 			IType[ ] typs = new IType[values.Length + 1];
 			Array.Copy( values, 0, vals, 1, values.Length );
@@ -4649,6 +4694,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public ICriteria CreateCriteria( System.Type persistentClass )
 		{
+			CheckIsOpen();
+
 			return new CriteriaImpl( persistentClass, this );
 		}
 
@@ -4732,6 +4779,8 @@ namespace NHibernate.Impl
 
 		public bool Contains( object obj )
 		{
+			CheckIsOpen();
+
 			if( obj is INHibernateProxy )
 			{
 				//do not use proxiesByKey, since not all
@@ -4764,6 +4813,8 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
 		public void Evict( object obj )
 		{
+			CheckIsOpen();
+
 			if( obj is INHibernateProxy )
 			{
 				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj );
@@ -4954,6 +5005,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery CreateSQLQuery( string sql, string returnAlias, System.Type returnClass )
 		{
+			CheckIsOpen();
+
 			return new SqlQueryImpl( sql, new string[ ] {returnAlias}, new System.Type[ ] {returnClass}, this, null );
 		}
 
@@ -4966,6 +5019,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery CreateSQLQuery( string sql, string[ ] returnAliases, System.Type[ ] returnClasses )
 		{
+			CheckIsOpen();
+
 			return new SqlQueryImpl( sql, returnAliases, returnClasses, this, null );
 		}
 
@@ -4979,6 +5034,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery CreateSQLQuery( string sql, string[ ] returnAliases, System.Type[ ] returnClasses, ICollection querySpaces )
 		{
+			CheckIsOpen();
+
 			return new SqlQueryImpl( sql, returnAliases, returnClasses, this, querySpaces );
 		}
 
@@ -5039,6 +5096,8 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public void Clear()
 		{
+			CheckIsOpen();
+
 			arrayHolders.Clear();
 			entitiesByKey.Clear();
 			entityEntries.Clear();
@@ -5083,6 +5142,8 @@ namespace NHibernate.Impl
 
 		public void Replicate( object obj, ReplicationMode replicationMode )
 		{
+			CheckIsOpen();
+
 			if( obj == null )
 			{
 				throw new ArgumentNullException( "obj", "attempt to replicate null" );
@@ -5237,6 +5298,8 @@ namespace NHibernate.Impl
 
 		public void CancelQuery()
 		{
+			CheckIsOpen();
+
 			Batcher.CancelLastQuery();
 		}
 
@@ -5252,6 +5315,8 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object SaveOrUpdateCopy( object obj )
 		{
+			CheckIsOpen();
+
 			return DoCopy( obj, null, IdentityMap.Instantiate( 10 ) );
 		}
 
@@ -5363,12 +5428,22 @@ namespace NHibernate.Impl
 
 		public object SaveOrUpdateCopy( object obj, object id )
 		{
+			CheckIsOpen();
+
 			return DoCopy( obj, id, IdentityMap.Instantiate( 10 ) );
 		}
 
 		protected ADOException Convert( Exception sqlException, string message )
 		{
 			return ADOExceptionHelper.Convert( /*Factory.SQLExceptionConverter,*/ sqlException, message );
+		}
+
+		private void CheckIsOpen()
+		{
+			if( _isAlreadyDisposed || closed )
+			{
+				throw new ObjectDisposedException("ISession", "Session was disposed of or closed" );
+			}
 		}
 	}
 }

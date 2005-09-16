@@ -502,6 +502,18 @@ namespace NHibernate
 		void Refresh( object obj );
 
 		/// <summary>
+		/// Re-read the state of the given instance from the underlying database, with
+		/// the given <c>LockMode</c>.
+		/// </summary>
+		/// <remarks>
+		/// It is inadvisable to use this to implement long-running sessions that span many
+		/// business tasks. This method is, however, useful in certain special circumstances.
+		/// </remarks>
+		/// <param name="obj">a persistent or transient instance</param>
+		/// <param name="lockMode">the lock mode to use</param>
+		void Refresh( object obj, LockMode lockMode );
+
+		/// <summary>
 		/// Determine the current lock mode of the given object
 		/// </summary>
 		/// <param name="obj">A persistent instance</param>

@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		[Test, ExpectedException( typeof( HibernateException ) )]
+		[Test, ExpectedException( typeof( ObjectDisposedException ) )]
 		public void ReconnectAfterClose()
 		{
 			using( ISession s = OpenSession() )
