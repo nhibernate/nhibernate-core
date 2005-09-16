@@ -93,6 +93,21 @@ namespace NHibernate
 		public static readonly NullableType SByte = new SByteType();
 
 		/// <summary>
+		/// NHibernate System.UInt16 (ushort in C#) type
+		/// </summary>
+		public static readonly NullableType UInt16 = new UInt16Type();
+
+		/// <summary>
+		/// NHibernate System.UInt32 (uint in C#) type
+		/// </summary>
+		public static readonly NullableType UInt32 = new UInt32Type();
+
+		/// <summary>
+		/// NHibernate System.UInt64 (ulong in C#) type
+		/// </summary>
+		public static readonly NullableType UInt64 = new UInt64Type();
+
+		/// <summary>
 		/// NHIbernate System.Single (float in C#) Type
 		/// </summary>
 		public static readonly NullableType Single = new SingleType();

@@ -2044,6 +2044,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlTypes\UInt16SqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\UInt32SqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTypes\UInt64SqlType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tool\hbm2ddl\AdoColumn.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2404,6 +2419,21 @@
                 />
                 <File
                     RelPath = "Type\TypeType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\UInt16Type.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\UInt32Type.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\UInt64Type.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

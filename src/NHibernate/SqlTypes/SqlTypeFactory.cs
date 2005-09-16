@@ -101,6 +101,20 @@ namespace NHibernate.SqlTypes
 		}
 
 		/// <summary></summary>
+		public static SByteSqlType GetSByte()
+		{
+			string key = typeof( SByteSqlType ).Name;
+			SByteSqlType returnSqlType = ( SByteSqlType ) sqlTypes[ key ];
+			if( returnSqlType == null )
+			{
+				returnSqlType = new SByteSqlType();
+				sqlTypes.Add( key, returnSqlType );
+			}
+
+			return returnSqlType;
+		}
+
+		/// <summary></summary>
 		public static CurrencySqlType GetCurrency()
 		{
 			string key = typeof( CurrencySqlType ).Name;
@@ -212,6 +226,21 @@ namespace NHibernate.SqlTypes
 		}
 
 		/// <summary></summary>
+		public static UInt16SqlType GetUInt16()
+		{
+			string key = typeof( UInt16SqlType ).Name;
+
+			UInt16SqlType returnSqlType = ( UInt16SqlType ) sqlTypes[ key ];
+			if( returnSqlType == null )
+			{
+				returnSqlType = new UInt16SqlType();
+				sqlTypes.Add( key, returnSqlType );
+			}
+
+			return returnSqlType;
+		}
+
+		/// <summary></summary>
 		public static Int32SqlType GetInt32()
 		{
 			string key = typeof( Int32SqlType ).Name;
@@ -227,6 +256,21 @@ namespace NHibernate.SqlTypes
 		}
 
 		/// <summary></summary>
+		public static UInt32SqlType GetUInt32()
+		{
+			string key = typeof( UInt32SqlType ).Name;
+
+			UInt32SqlType returnSqlType = ( UInt32SqlType ) sqlTypes[ key ];
+			if( returnSqlType == null )
+			{
+				returnSqlType = new UInt32SqlType();
+				sqlTypes.Add( key, returnSqlType );
+			}
+
+			return returnSqlType;
+		}
+
+		/// <summary></summary>
 		public static Int64SqlType GetInt64()
 		{
 			string key = typeof( Int64SqlType ).Name;
@@ -235,6 +279,21 @@ namespace NHibernate.SqlTypes
 			if( returnSqlType == null )
 			{
 				returnSqlType = new Int64SqlType();
+				sqlTypes.Add( key, returnSqlType );
+			}
+
+			return returnSqlType;
+		}
+
+		/// <summary></summary>
+		public static UInt64SqlType GetUInt64()
+		{
+			string key = typeof( UInt64SqlType ).Name;
+
+			UInt64SqlType returnSqlType = ( UInt64SqlType ) sqlTypes[ key ];
+			if( returnSqlType == null )
+			{
+				returnSqlType = new UInt64SqlType();
 				sqlTypes.Add( key, returnSqlType );
 			}
 

@@ -47,13 +47,13 @@ namespace NHibernate.Type
 				case "System.Int64":
 					return SqlTypeFactory.GetInt64(); //DbType.Int64;
 				case "System.SByte":
-					return SqlTypeFactory.GetByte(); //DbType.SByte;
+					return SqlTypeFactory.GetSByte(); //DbType.SByte;
 				case "System.UInt16":
-					return SqlTypeFactory.GetInt16(); //DbType.UInt16;
+					return SqlTypeFactory.GetUInt16(); //DbType.UInt16;
 				case "System.UInt32":
-					return SqlTypeFactory.GetInt32(); //DbType.UInt32;
+					return SqlTypeFactory.GetUInt32(); //DbType.UInt32;
 				case "System.UInt64":
-					return SqlTypeFactory.GetInt64(); //DbType.UInt64;
+					return SqlTypeFactory.GetUInt64(); //DbType.UInt64;
 				default:
 					throw new HibernateException( "Unknown UnderlyingDbType for Enum" ); //Impossible exception
 			}
