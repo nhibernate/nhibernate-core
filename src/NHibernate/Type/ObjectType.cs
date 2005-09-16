@@ -24,7 +24,7 @@ namespace NHibernate.Type
 	///	class_name					id_col1
 	///	========================================
 	///	Simple, AssemblyName			5
-	///	DiffClass, AssebmlyName			5
+	///	DiffClass, AssemblyName			5
 	///	Simple, AssemblyName			4
 	///	
 	///	You can also provide you own type that might map the name of the class to a table
