@@ -120,6 +120,11 @@ namespace NHibernate.Transaction
 				throw new TransactionException( "Transaction not successfully started" );
 			}
 
+			if( rolledBack || committed )
+			{
+				throw new TransactionException( "Transaction already finished" );
+			}
+
 			log.Debug( "commit" );
 
 			try
@@ -159,6 +164,11 @@ namespace NHibernate.Transaction
 			if( !begun )
 			{
 				throw new TransactionException( "Transaction not successfully started" );
+			}
+
+			if( rolledBack || committed )
+			{
+				throw new TransactionException( "Transaction already finished" );
 			}
 
 			log.Debug( "rollback" );
