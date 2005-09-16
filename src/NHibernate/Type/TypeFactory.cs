@@ -132,7 +132,7 @@ namespace NHibernate.Type
 			RegisterType( typeof( Object ), NHibernateUtil.Object, "object" );
 
 			// These are in here for Hibernate mapping compatibility
-			typeByTypeOfName[ "date" ] = NHibernateUtil.DateTime;
+			typeByTypeOfName[ "date" ] = NHibernateUtil.Date;
 			typeByTypeOfName[ "serializable" ] = NHibernateUtil.Serializable;
 			typeByTypeOfName[ "timestamp" ] = NHibernateUtil.Timestamp;
 			typeByTypeOfName[ "time" ] = NHibernateUtil.Time;
