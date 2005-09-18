@@ -39,6 +39,12 @@ namespace NHibernate.DomainModel
 			set;
 		}	
 		
+		IDictionary DynaBean
+		{
+			get;
+			set;
+		}
+
 		Iesi.Collections.ISet StringSets
 		{
 			get;

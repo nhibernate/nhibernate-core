@@ -44,6 +44,11 @@
 			column="order_" 
 		/>
 		
+		<dynamic-component name="DynaBean">
+        	<property name="foo" type="string" />
+        	<property name="bar" type="integer" />
+		</dynamic-component>
+		
 		<property name="X" />
 		
 		<list name="Strings">

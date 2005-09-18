@@ -164,6 +164,7 @@
 					<xs:element ref="many-to-one"/>
 					<xs:element ref="one-to-one"/>
 					<xs:element ref="component"/>
+					<xs:element ref="dynamic-component"/>
 					<xs:element ref="any"/>
 					<xs:element ref="map"/>
 					<xs:element ref="set"/>
@@ -309,6 +310,7 @@
 					<xs:element ref="many-to-one"/>
 					<xs:element ref="one-to-one"/>
 					<xs:element ref="component"/>
+					<xs:element ref="dynamic-component"/>
 					<xs:element ref="any"/>
 					<xs:element ref="map"/>
 					<xs:element ref="set"/>
@@ -346,6 +348,7 @@
 					<xs:element ref="many-to-one"/>
 					<xs:element ref="one-to-one"/>
 					<xs:element ref="component"/>
+					<xs:element ref="dynamic-component"/>
 					<xs:element ref="any"/>
 					<xs:element ref="map"/>
 					<xs:element ref="set"/>
@@ -481,6 +484,7 @@
 					<xs:element ref="many-to-one"/>
 					<xs:element ref="one-to-one"/>
 					<xs:element ref="component"/>
+					<xs:element ref="dynamic-component"/>
 					<xs:element ref="any"/>
 					<xs:element ref="map"/>
 					<xs:element ref="set"/>
@@ -493,6 +497,30 @@
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="class" type="xs:string"/>
+			<xs:attribute name="update" type="xs:boolean" default="true"/>
+			<xs:attribute name="insert" type="xs:boolean" default="true"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dynamic-component">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="property"/>
+					<xs:element ref="many-to-one"/>
+					<xs:element ref="one-to-one"/>
+					<xs:element ref="component"/>
+					<xs:element ref="dynamic-component"/>
+					<xs:element ref="any"/>
+					<xs:element ref="map"/>
+					<xs:element ref="set"/>
+					<xs:element ref="list"/>
+					<xs:element ref="bag"/>
+					<xs:element ref="array"/>
+					<xs:element ref="primitive-array"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="update" type="xs:boolean" default="true"/>
 			<xs:attribute name="insert" type="xs:boolean" default="true"/>
 		</xs:complexType>

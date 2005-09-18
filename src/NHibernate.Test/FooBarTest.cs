@@ -1992,9 +1992,40 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore( "Dynamic components not implemented yet" )]
 		public void Dyna()
 		{
+			ISession s = OpenSession();
+			GlarchProxy g = new Glarch();
+			g.Name = "G";
+			object id = s.Save( g );
+			s.Flush();
+			s.Close();
+
+			s = OpenSession();
+			g = ( GlarchProxy ) s.Load( typeof( Glarch ), id );
+			Assert.AreEqual( "G", g.Name );
+			Assert.AreEqual( "foo", g.DynaBean[ "foo" ] );
+			Assert.AreEqual( 66, g.DynaBean[ "bar" ] );
+
+			Assert.IsFalse( g is Glarch );
+			g.DynaBean[ "foo" ] = "bar";
+			s.Flush();
+			s.Close();
+
+			s = OpenSession();
+			g = ( GlarchProxy ) s.Load( typeof( Glarch ), id );
+			Assert.AreEqual( "bar", g.DynaBean[ "foo" ] );
+			Assert.AreEqual( 66, g.DynaBean[ "bar" ] );
+			g.DynaBean = null;
+			s.Flush();
+			s.Close();
+
+			s = OpenSession();
+			g = ( GlarchProxy ) s.Load( typeof( Glarch ), id );
+			Assert.IsNull( g.DynaBean );
+			s.Delete( g );
+			s.Flush();
+			s.Close();
 		}
 
 		[Test]
@@ -3080,7 +3111,7 @@ namespace NHibernate.Test
 			Assert.IsTrue( bar.Abstracts.Contains( bar ), "collection contains self" );
 			Assert.AreSame( bar, bar.TheFoo, "association to self" );
 
-			if( dialect is Dialect.MySQLDialect )
+			if( dialect is MySQLDialect )
 			{
 				// Break the self-reference cycle to avoid error when deleting the row
 				bar.TheFoo = null;
