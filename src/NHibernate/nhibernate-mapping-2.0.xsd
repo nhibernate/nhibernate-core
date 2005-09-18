@@ -406,6 +406,7 @@
 					<xs:documentation>only supported for properties of a class (not component)</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="index" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="any">

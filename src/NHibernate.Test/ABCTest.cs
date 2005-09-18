@@ -23,7 +23,6 @@ namespace NHibernate.Test
 		}
 
 		[Test]
-		[Ignore("Not implemented")]
 		public void HigherLevelIndexDefinition()
 		{
 			string[] commands = cfg.GenerateSchemaCreationScript( dialect );

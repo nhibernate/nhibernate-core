@@ -18,7 +18,10 @@
 			not-null="false" 
 		/>
 		
-		<property name="Name" />
+		<property name="Name" index="indx_a_name">
+			<column name="name" index="indx_a_name2" />
+		</property>
+
 		<subclass 
 			name="NHibernate.DomainModel.B, NHibernate.DomainModel" 
 			discriminator-value="-1"

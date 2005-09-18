@@ -459,17 +459,18 @@ namespace NHibernate.Cfg
 		public static void BindColumns( XmlNode node, SimpleValue model, bool isNullable, bool autoColumn, string propertyPath, Mappings mappings )
 		{
 			//COLUMN(S)
-			XmlAttribute columnNode = node.Attributes[ "column" ];
-			if( columnNode == null )
+			XmlAttribute columnAttribute = node.Attributes[ "column" ];
+			if( columnAttribute == null )
 			{
 				int count = 0;
-				foreach( XmlNode subnode in node.SelectNodes( nsColumn, nsmgr ) )
-				{
-					Table table = model.Table;
-					Column col = new Column( model.Type, count++ );
-					BindColumn( subnode, col, isNullable );
+				Table table = model.Table;
 
-					string name = subnode.Attributes[ "name" ].Value;
+				foreach( XmlNode columnElement in node.SelectNodes( nsColumn, nsmgr ) )
+				{
+					Column col = new Column( model.Type, count++ );
+					BindColumn( columnElement, col, isNullable );
+
+					string name = columnElement.Attributes[ "name" ].Value;
 					col.Name = mappings.NamingStrategy.ColumnName( name );
 					if( table != null )
 					{
@@ -477,13 +478,21 @@ namespace NHibernate.Cfg
 					}
 					//table=null -> an association, fill it in later
 					model.AddColumn( col );
+					
 					//column index
-					XmlAttribute indexNode = subnode.Attributes[ "index" ];
+					XmlAttribute indexNode = columnElement.Attributes[ "index" ];
 					if( indexNode != null && table != null )
 					{
 						table.GetIndex( indexNode.Value ).AddColumn( col );
 					}
-					XmlAttribute uniqueNode = subnode.Attributes[ "unique-key" ];
+
+					//column group index (although it can serve as a separate column index)
+					XmlAttribute parentElementIndexAttr = node.Attributes[ "index" ];
+					if( parentElementIndexAttr != null && table != null )
+					{
+						table.GetIndex( parentElementIndexAttr.Value ).AddColumn( col );
+					}
+					XmlAttribute uniqueNode = columnElement.Attributes[ "unique-key" ];
 					if( uniqueNode != null && table != null )
 					{
 						table.GetUniqueKey( uniqueNode.Value ).AddColumn( col );
@@ -494,7 +503,7 @@ namespace NHibernate.Cfg
 			{
 				Column col = new Column( model.Type, 0 );
 				BindColumn( node, col, isNullable );
-				col.Name = mappings.NamingStrategy.ColumnName( columnNode.Value );
+				col.Name = mappings.NamingStrategy.ColumnName( columnAttribute.Value );
 				Table table = model.Table;
 				if( table != null )
 				{
@@ -502,7 +511,7 @@ namespace NHibernate.Cfg
 				} //table=null -> an association - fill it in later
 				model.AddColumn( col );
 				//column group index (although can serve as a separate column index)
-				XmlAttribute indexAttr = node.Attributes[ "unique-key" ];
+				XmlAttribute indexAttr = node.Attributes[ "index" ];
 				if( indexAttr != null && table != null )
 				{
 					table.GetIndex( indexAttr.Value ).AddColumn( col );
