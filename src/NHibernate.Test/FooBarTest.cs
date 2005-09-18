@@ -3810,12 +3810,9 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
-
-		[Test]
-		[Ignore( "Not applicable to NHibernate?" )]
-		public void ScrollableIterator()
-		{
-		}
+		// Not ported - testScrollableIterator - ScrollableResults are not supported by NH,
+		// since they rely on the underlying ResultSet to support scrolling, and ADO.NET
+		// IDataReaders do not support it.
 
 		private bool DialectSupportsCountDistinct
 		{
@@ -5248,11 +5245,7 @@ namespace NHibernate.Test
 			s.Close();
 		}
 
-		[Test]
-		[Ignore( "Not applicable to NHibernate?" )]
-		public void Service()
-		{
-		}
+		// Not ported - testService() - not applicable to NHibernate
 
 		[Test]
 		public void PSCache()
