@@ -38,6 +38,8 @@ namespace NHibernate.Transaction
 		/// </remarks>
 		public void Enlist( IDbCommand command )
 		{
+			CheckNotDisposed();
+
 			if( trans == null )
 			{
 				if( log.IsWarnEnabled )
@@ -115,15 +117,8 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Commit()
 		{
-			if( !begun )
-			{
-				throw new TransactionException( "Transaction not successfully started" );
-			}
-
-			if( rolledBack || committed )
-			{
-				throw new TransactionException( "Transaction already finished" );
-			}
+			CheckNotDisposed();
+			CheckRunning();
 
 			log.Debug( "commit" );
 
@@ -161,15 +156,8 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Rollback()
 		{
-			if( !begun )
-			{
-				throw new TransactionException( "Transaction not successfully started" );
-			}
-
-			if( rolledBack || committed )
-			{
-				throw new TransactionException( "Transaction already finished" );
-			}
+			CheckNotDisposed();
+			CheckRunning();
 
 			log.Debug( "rollback" );
 			try
@@ -279,5 +267,25 @@ namespace NHibernate.Transaction
 		}
 		#endregion
 
+		private void CheckNotDisposed()
+		{
+			if( _isAlreadyDisposed )
+			{
+				throw new ObjectDisposedException( "AdoTransaction" );
+			}
+		}
+
+		private void CheckRunning()
+		{
+			if( !begun )
+			{
+				throw new TransactionException( "Transaction not successfully started" );
+			}
+	
+			if( rolledBack || committed )
+			{
+				throw new TransactionException( "Transaction already finished" );
+			}
+		}
 	}
 }
