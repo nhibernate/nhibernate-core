@@ -1285,5 +1285,29 @@ namespace NHibernate.Test
 				}
 			}
 		}
+
+		[Test]
+		[ExpectedException( typeof( QueryException ) )]
+		public void CriteriaTypeMismatch()
+		{
+			using( ISession s = OpenSession() )
+			{
+				s.CreateCriteria( typeof( Master ) )
+					.Add( Expression.Expression.Like( "Details", "SomeString" ) )
+					.List();
+			}
+		}
+
+		[Test]
+		[ExpectedException( typeof( QueryException ) )]
+		public void CriteriaCompositeProperty()
+		{
+			using( ISession s = OpenSession() )
+			{
+				s.CreateCriteria( typeof( Master ) )
+					.Add( Expression.Expression.Eq( "Details.I", 10 ) )
+					.List();
+			}
+		}
 	}
 }
