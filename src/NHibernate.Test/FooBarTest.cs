@@ -3080,6 +3080,13 @@ namespace NHibernate.Test
 			Assert.IsTrue( bar.Abstracts.Contains( bar ), "collection contains self" );
 			Assert.AreSame( bar, bar.TheFoo, "association to self" );
 
+			if( dialect is Dialect.MySQLDialect )
+			{
+				// Break the self-reference cycle to avoid error when deleting the row
+				bar.TheFoo = null;
+				s.Flush();
+			}
+
 			foreach( object obj in bar.Abstracts )
 			{
 				s.Delete( obj );

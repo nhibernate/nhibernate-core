@@ -450,7 +450,10 @@ namespace NHibernate.Test
 		[Test]
 		public void MultiTableCollections() 
 		{
-			//if( dialect is Dialect.HSQLDialect) return;
+			if( dialect is Dialect.MySQLDialect )
+			{
+				return;
+			}
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -528,7 +531,10 @@ namespace NHibernate.Test
 		[Test]
 		public void MultiTableManyToOne() 
 		{
-			//if( dialect is Dialect.HSQLDialect) return;
+			if( dialect is Dialect.MySQLDialect )
+			{
+				return;
+			}
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();

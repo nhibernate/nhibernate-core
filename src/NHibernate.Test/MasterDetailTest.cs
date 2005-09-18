@@ -227,6 +227,13 @@ namespace NHibernate.Test
 			enumer.MoveNext();
 			m = (Master)enumer.Current;
 			Assert.AreSame(m, m.OtherMaster);
+
+			if( dialect is Dialect.MySQLDialect )
+			{
+				m.OtherMaster = null;
+				s.Flush();
+			}
+
 			s.Delete(m);
 			t.Commit();
 			s.Close();
@@ -275,7 +282,12 @@ namespace NHibernate.Test
 				.UniqueResult();
 			Assert.IsNull( m2 );
 
-			// H2.1: if (getDialect() instanceof HSQLDialect) { m1.setOtherMaster(null); s.flush(); }
+			if( dialect is Dialect.MySQLDialect )
+			{
+				m1.OtherMaster = null;
+				s.Flush();
+			}
+
 			s.Delete(m1);
 			t.Commit();
 			s.Close();

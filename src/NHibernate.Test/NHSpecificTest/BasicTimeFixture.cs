@@ -17,13 +17,23 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			get
 			{
-				return new string[] { "NHSpecific.BasicTime.hbm.xml"};
+				return new string[] { "NHSpecific.BasicTime.hbm.xml" };
+			}
+		}
+
+		private void IgnoreOnMySQL()
+		{
+			if( dialect is Dialect.MySQLDialect )
+			{
+				Assert.Ignore( "MySQL requires TimeSpan for type='time'" );
 			}
 		}
 
 		[Test]
 		public void Insert() 
 		{
+			IgnoreOnMySQL();
+
 			BasicTime basic = Create(1);
 
 			ISession s = OpenSession();
@@ -50,6 +60,8 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void TimeArray() 
 		{
+			IgnoreOnMySQL();
+
 			BasicTime basic = Create(1);
 
 			ISession s = OpenSession();
@@ -88,6 +100,8 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void Update() 
 		{
+			IgnoreOnMySQL();
+
 			BasicTime basic = Create(1);
 			
 			ISession s = OpenSession();
