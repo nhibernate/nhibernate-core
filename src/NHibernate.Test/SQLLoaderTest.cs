@@ -473,6 +473,8 @@ namespace NHibernate.Test
 		[Test]
 		public void FindBySQLSimpleByDiffSessions()
 		{
+			if ( dialect is Dialect.MySQLDialect ) return;
+
 			ISession session = OpenSession();
 			Category s = new Category();
 			nextLong++;
@@ -481,8 +483,6 @@ namespace NHibernate.Test
 			session.Flush();
 			session.Close();
 		
-			if ( dialect is Dialect.MySQLDialect ) return;
-
 			session = OpenSession();
 
 			IQuery query = session.CreateSQLQuery("select s.category_key_col as {category.id}, s.Name as {category.Name}, s.\"assign able id\" as {category.Assignable} from {category} s", "category", typeof( Category ));
