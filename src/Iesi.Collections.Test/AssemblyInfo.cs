@@ -13,7 +13,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitleAttribute("Iesi.Collections.Test for Microsoft .NET Framework 1.1")]
 [assembly: AssemblyDescriptionAttribute("The Unit Tests for Iesi.Collections.")]
-[assembly: AssemblyCompanyAttribute("nhibernate.sourceforge.net")]
+[assembly: AssemblyCompanyAttribute("NHibernate.org")]
 [assembly: AssemblyProductAttribute("Iesi.Collections.Test")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
 [assembly: AssemblyVersionAttribute("1.0.0.1")]

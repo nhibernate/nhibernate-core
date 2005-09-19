@@ -15,6 +15,7 @@
 			* project.version.major	- the major number of the build
 			* project.version.minor - the minor number of the build
 			* project.version.build - the build number
+			* project.company       - value to use for AssemblyCompanyAttribute
 			* sign					- (true|false)indicates if the Assembly should be signed.
 			* clover.enabled		- (true|false) indicates if Clover.NET should handle the build
 			* clover.src			- location of the clovered source to be stored at from the root of nhibernate
@@ -52,7 +53,7 @@
 				<attribute type="CLSCompliantAttribute" value="true" />
 				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
 				<attribute type="AssemblyDescriptionAttribute" value="Enhanced Collections for .NET.  Code was published at http://www.codeproject.com/csharp/sets.asp" />
-				<attribute type="AssemblyCompanyAttribute" value="nhibernate.sourceforge.net" />
+				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
 				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
 				<attribute type="AssemblyCopyrightAttribute" value="Declaration of code in public domain can be found in comment by Jason Smith at http://www.codeproject.com/csharp/sets.asp#xx703510xx.  Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith." />
 				<attribute type="AssemblyVersionAttribute" value="1.0.0.1" />

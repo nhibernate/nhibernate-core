@@ -14,6 +14,7 @@
 			* project.version.major	- the major number of the build
 			* project.version.minor - the minor number of the build
 			* project.version.build - the build number
+			* project.company       - value to use for AssemblyCompanyAttribute
 	-->
 
 	<target name="build">
@@ -28,7 +29,7 @@
 			<attributes>
 				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
 				<attribute type="AssemblyDescriptionAttribute" value="The Unit Tests for NHibernate." />
-				<attribute type="AssemblyCompanyAttribute" value="nhibernate.sourceforge.net" />
+				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
 				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
 				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
 				<attribute type="AssemblyVersionAttribute" value="${project.version}" />

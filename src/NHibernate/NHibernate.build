@@ -15,6 +15,7 @@
 			* project.version.major	- the major number of the build
 			* project.version.minor - the minor number of the build
 			* project.version.build - the build number
+			* project.company       - value to use for AssemblyCompanyAttribute
 			* sign					- (true|false) indicates if the Assembly should be signed.
 			* clover.enabled		- (true|false) indicates if Clover.NET should handle the build
 			* clover.src			- location of the clovered source to be stored at from the root of nhibernate
@@ -54,7 +55,7 @@
 				<attribute type="ComVisibleAttribute" value="false" />
 				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
 				<attribute type="AssemblyDescriptionAttribute" value="An object persistence library for relational databases." />
-				<attribute type="AssemblyCompanyAttribute" value="nhibernate.sourceforge.net" />
+				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
 				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
 				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
 				<attribute type="AssemblyVersionAttribute" value="${project.version}" />

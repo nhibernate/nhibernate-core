@@ -13,11 +13,11 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitleAttribute("NHibernate.DomainModel for Microsoft .NET Framework 1.1")]
 [assembly: AssemblyDescriptionAttribute("The Domain Model used by the Unit Tests.")]
-[assembly: AssemblyCompanyAttribute("nhibernate.sourceforge.net")]
+[assembly: AssemblyCompanyAttribute("NHibernate.org")]
 [assembly: AssemblyProductAttribute("NHibernate.DomainModel")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
-[assembly: AssemblyVersionAttribute("0.9.1.0")]
-[assembly: AssemblyInformationalVersionAttribute("0.9")]
-[assembly: AssemblyFileVersionAttribute("0.9.1.0")]
+[assembly: AssemblyVersionAttribute("0.99.1.0")]
+[assembly: AssemblyInformationalVersionAttribute("0.99")]
+[assembly: AssemblyFileVersionAttribute("0.99.1.0")]
 [assembly: AssemblyDelaySignAttribute(false)]
 
