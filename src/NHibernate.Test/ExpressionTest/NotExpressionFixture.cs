@@ -28,7 +28,7 @@ namespace NHibernate.Test.ExpressionTest
 			SqlString sqlString = notExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
 
 			string expectedSql = dialect is Dialect.MySQLDialect ?
-				"not(simple_alias.address = :simple_alias.address)" :
+				"not (simple_alias.address = :simple_alias.address)" :
 				"not simple_alias.address = :simple_alias.address";
 			
 			Parameter firstParam = new Parameter( "address", "simple_alias", new SqlTypes.StringSqlType() );
