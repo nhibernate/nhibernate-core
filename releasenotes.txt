@@ -49,6 +49,8 @@ Bug fixes and enhancements:
 - Added index attribute for <property>.
 - SchemaExport now generates SQL to create an index when index attribute is
   used on <property> or <column>.
+- SchemaExport will add an "if exists" clause to "drop table" statement,
+  if supported by the dialect.
 - Heavy refactoring of the documentation; it now contains the documentation for
   NHibernate Contributions.
 
