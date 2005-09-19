@@ -1,6 +1,56 @@
-In CVS
+Build 0.99.1.0 (1.0-rc1)
 ========================
-- Heavy refactoring of the Documentation; and now it contains a Documentation for NHibernate Contributions (Pierre Henri Kuaté)
+
+Breaking changes to external API:
+- Updated to a newer version of Castle.DynamicProxy.
+  WARNING: this new version has the same number (1.1.5.0) as the version used
+           by the previous release of NHibernate, but the binaries are in fact
+           different and the old 1.1.5.0 will not work with 1.0-rc1.
+- NHibernate no longer configures log4net internally. It is now up to the user
+  to configure logging.
+- Accessing a disposed or closed ISession or ITransaction now causes
+  an ObjectDisposedException. HibernateException or TransactionException could
+  be thrown in this case before, such cases were also changed to
+  throw ObjectDisposedException.
+- Renamed SQLExpression to SQLCriterion per Hibernate 2.1. Now, {alias} should
+  be used instead of $alias in SQL criteria.
+- Unused constructors for some exceptions were removed.
+
+Breaking changes to NHibernate extension interfaces:
+- Renamed IClassPersister.IsDefaultVersion to IsUnsavedVersion. It now takes
+  as argument an array of property values instead of an object.
+- Renamed IClassPersister.CurrentVersion to GetCurrentVersion to follow naming
+  conventions closer.
+- Fixed MatchMode.Start and MatchMode.End for Like expressions, their meanings
+  were reversed.
+- Dialect.AddIdentitySelectToInsert should now return null if the functionality
+  is not supported, instead of throwing an exception.
+
+Bug fixes and enhancements:
+- Ported almost all remaining Hibernate 2.1 features to NHibernate:
+  * subcriteria
+  * meta attributes
+  * optimistic-lock setting
+  * query cache
+  * select-before-update
+  * batch lazy loading
+  * dynamic components
+  Missing features are Databinder, ScrollableResults and SchemaUpdate.
+- Allow serializing an unflushed session (NH-292, Yves Dierick).
+- Check that composite id classes override GetHashCode and Equals.
+- Throw QueryException when attempting to fetch multiple collections in
+  a query.
+- Added a SectionHandler to allow using .cfg.xml syntax to configure NHibernate
+  from App.config files. (This was already part of 0.9.1 release but was not
+  announced in the release notes.)
+- Fixed bug when using joined-subclass with key-many-to-one (NH-369).
+- Added IType implementations and constants in NHibernateUtil for unsigned
+  integer types.
+- Added index attribute for <property>.
+- SchemaExport now generates SQL to create an index when index attribute is
+  used on <property> or <column>.
+- Heavy refactoring of the documentation; it now contains the documentation for
+  NHibernate Contributions.
 
 Build 0.9.1.0
 ========================
