@@ -54,10 +54,6 @@ namespace NHibernate.Test
 		public void CriteriaCollection()
 		{
 			//if( dialect is Dialect.HSQLDialect ) return;
-			if( dialect is MsSql2000Dialect )
-			{
-				return;
-			}
 
 			using( ISession s = OpenSession() )
 			{
