@@ -24,9 +24,11 @@ namespace NHibernate.Proxy
 		/// </returns>
 		public static LazyInitializer GetLazyInitializer( INHibernateProxy proxy )
 		{
-			LazyInitializer li = ProxyGeneratorFactory.GetProxyGenerator().GetLazyInitializer( proxy );
-			return li;
-
+			// have to hard code in "__interceptor" - very dependant on them not changing their
+			// implementation - TODO: email Hammet about this - or at least to provide a static
+			// field 
+			object fieldValue = proxy.GetType().GetField( "__interceptor" ).GetValue( proxy );
+			return ( LazyInitializer ) fieldValue;
 		}
 
 		/// <summary>
