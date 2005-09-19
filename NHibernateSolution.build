@@ -242,7 +242,7 @@
 			of the test fixtures.
 		-->
 		<delete> 
-			<fileset basedir="${build.dir}/bin">>
+			<fileset basedir="${build.dir}/bin">
 				
 				<!-- Any hbm.xml and cfg.xml files in the bin are for testing purposes -->
 				<include name="*.hbm.xml" />
