@@ -82,14 +82,15 @@ namespace NHibernate.Test
 				Assert.IsTrue( b.MapComponent.Fummap.Count == 1 );
 				Assert.IsTrue( b.MapComponent.Stringmap.Count == 2 );
 
-				if( !( dialect is Dialect.MySQLDialect ) )
+				/* This is commented out in H2.1 - 'field in ()' doesn't work on a lot of databases
+				if( !( dialect is Dialect.MySQLDialect ) && !( dialect is Dialect.Oracle9Dialect ) )
 				{
-					// "in ()" doesn't work on MySQL
 					int none = s.CreateCriteria( typeof( Fum ) )
 						.Add( Expression.Expression.In( "FumString", new string[0] ) )
 						.List().Count;
 					Assert.AreEqual( 0, none );
 				}
+				*/
 				s.Delete( b );
 				s.Flush();
 			}
