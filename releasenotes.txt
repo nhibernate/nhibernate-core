@@ -53,6 +53,8 @@ Bug fixes and enhancements:
   if supported by the dialect.
 - Heavy refactoring of the documentation; it now contains the documentation for
   NHibernate Contributions.
+- Fixed a bug when generating a TOP clause for MS SQL Server - the whole SQL
+  string was being converted to lower case.
 
 Build 0.9.1.0
 ========================
