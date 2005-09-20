@@ -9,7 +9,7 @@
 		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
 		then change this to true.  It generates a nice looking html report for the test files
 	-->
-	<property name="nunit2report.installed" value="false" />
+	<property name="nunit2report.installed" value="false" overwrite="false" />
 
 	<!-- Disable performance tests by default. They take too much time. -->
 	<property name="run.performance.tests" value="false" overwrite="false" />
@@ -35,7 +35,7 @@
 		build have _no_ copy of the private key.  If they do their own private
 		builds then they should make their own key 
 	-->
-	<property name="sign" value="false" />
+	<property name="sign" value="false" overwrite="false" />
 	
 	<!-- 
 		These are used to set the correct Attributes in AssemblyInfo.cs.  
@@ -49,7 +49,7 @@
 	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
 	
 	<!-- default configuration -->
-	<property name="project.config" value="debug" />
+	<property name="project.config" value="debug" overwrite="false" />
 
 	<!-- debug|release -->
 	<property name="build.defines" value="" />
@@ -460,9 +460,9 @@
 			</fileset>
 		</copy>
 
-		<zip zipfile="${build.dir}/${project.name}-clover-${project.version}.zip">
-			<fileset basedir="${build.dir}/clover/">
-				<include name="**/*" />
+		<zip zipfile="${nant.project.basedir}/build/${project.name}-clover-${project.version}.zip">
+			<fileset basedir="${build.dir}">
+				<include name="clover/**" />
 			</fileset>
 		</zip>
 
