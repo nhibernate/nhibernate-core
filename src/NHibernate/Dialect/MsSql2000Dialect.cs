@@ -309,7 +309,7 @@ namespace NHibernate.Dialect
 					string sqlPartString = sqlPart as string;
 					if( sqlPartString != null )
 					{
-						string sqlFragment = sqlPartString.ToLower().TrimStart();
+						string sqlFragment = sqlPartString.TrimStart();
 						int insertIndex = GetAfterSelectInsertPoint(sqlFragment);
 						if( insertIndex > 0 )
 						{
@@ -367,11 +367,12 @@ namespace NHibernate.Dialect
 
 		private static int GetAfterSelectInsertPoint(string fragment)
 		{
-			if (fragment.StartsWith("select distinct"))
+			string fragmentLowerCased = fragment.ToLower();
+			if (fragmentLowerCased.StartsWith("select distinct"))
 			{
 				return 15;
 			}
-			else if (fragment.StartsWith("select"))
+			else if (fragmentLowerCased.StartsWith("select"))
 			{
 				return 6;
 			}
