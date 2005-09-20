@@ -128,9 +128,7 @@ namespace NHibernate
 					return true;
 				}
 
-				// TODO: 2.1 implement Comparator on versionType
-				//return versionType.Comparator.Compare( currentVersion, newVersion ) <= 0;
-				return true;
+				return versionType.Comparator.Compare( currentVersion, newVersion ) <= 0;
 			}
 		}
 	}
