@@ -71,10 +71,10 @@ namespace NHibernate.Expression
 			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
 			IType propertyType = AbstractCriterion.GetType( factory, persistentClass, _propertyName, aliasClasses );
 
-			if( propertyType.IsPersistentCollectionType || propertyType.IsAssociationType )
+			if( propertyType.IsPersistentCollectionType )
 			{
 				throw new QueryException( string.Format (
-					"cannot use association or collection ({0}.{1}) directly in a criterion,"
+					"cannot use collection property ({0}.{1}) directly in a criterion,"
 					+ " use ICriteria.CreateCriteria instead",
 					persistentClass.FullName, _propertyName ) );
 			}

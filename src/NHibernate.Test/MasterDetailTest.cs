@@ -1299,6 +1299,21 @@ namespace NHibernate.Test
 		}
 
 		[Test]
+		public void CriteriaManyToOneEquals()
+		{
+			using( ISession s = OpenSession() )
+			{
+				Master master = new Master();
+				s.Save( master );
+				s.CreateCriteria( typeof( Detail ) )
+					.Add( Expression.Expression.Eq( "Master", master ) )
+					.List();
+				s.Delete( master );
+				s.Flush();
+			}
+		}
+
+		[Test]
 		[ExpectedException( typeof( QueryException ) )]
 		public void CriteriaCompositeProperty()
 		{
