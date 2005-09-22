@@ -107,6 +107,11 @@ namespace NHibernate.Transaction
 			begun = true;
 		}
 
+		private void AfterTransactionCompletion( bool successful )
+		{
+			session.AfterTransactionCompletion( successful );
+			session = null;
+		}
 		/// <summary>
 		/// Commits the <see cref="ITransaction"/> by flushing the <see cref="ISession"/>
 		/// and committing the <see cref="IDbTransaction"/>.
@@ -142,7 +147,7 @@ namespace NHibernate.Transaction
 			}
 			finally
 			{
-				session.AfterTransactionCompletion( true );
+				AfterTransactionCompletion( true );
 			}
 		}
 
@@ -173,7 +178,7 @@ namespace NHibernate.Transaction
 			}
 			finally
 			{
-				session.AfterTransactionCompletion( false );
+				AfterTransactionCompletion( false );
 			}
 		}
 
@@ -255,6 +260,12 @@ namespace NHibernate.Transaction
 				if( trans!=null ) 
 				{
 					trans.Dispose();
+				}
+
+				if( !committed && !rolledBack && session != null )
+				{
+					// Assume we are rolled back
+					AfterTransactionCompletion( false );
 				}
 			}
 

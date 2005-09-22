@@ -10,8 +10,8 @@ namespace NHibernate.Test.TransactionTest
 	{
 		protected override IList Mappings
 		{
-			// Only need to be able to open a session, no tables required.
-			get { return new string[0]; }
+			// The mapping is only actually needed in one test
+			get { return new string[ ] { "Simple.hbm.xml" }; }
 		}
 
 		[Test]
@@ -65,6 +65,33 @@ namespace NHibernate.Test.TransactionTest
 				ITransaction t = s.BeginTransaction();
 				t.Dispose();
 				t.Enlist( null );
+			}
+		}
+
+		[Test]
+		public void CommandAfterTransactionShouldWork()
+		{
+			using( ISession s = OpenSession() )
+			{
+				using( ITransaction t = s.BeginTransaction() )
+				{
+				}
+
+				s.Find( "from Simple" );
+
+				using( ITransaction t = s.BeginTransaction() )
+				{
+					t.Commit();
+				}
+
+				s.Find( "from Simple" );
+
+				using( ITransaction t = s.BeginTransaction() )
+				{
+					t.Rollback();
+				}
+
+				s.Find( "from Simple" );
 			}
 		}
 	}
