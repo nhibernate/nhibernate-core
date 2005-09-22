@@ -14,7 +14,11 @@ namespace NHibernate.Test
 		{
 			get
 			{
-				return new string[] { "Simple.hbm.xml"};
+				return new string[]
+					{
+						"Simple.hbm.xml",
+						"MasterDetail.hbm.xml"
+					};
 			}
 		}
 
@@ -109,6 +113,45 @@ namespace NHibernate.Test
 
 				s.Delete( "from Simple" );
 				s.Flush();
+			}
+		}
+
+		[Test]
+		[ExpectedException( typeof( QueryException ) )]
+		public void CriteriaTypeMismatch()
+		{
+			using( ISession s = OpenSession() )
+			{
+				s.CreateCriteria( typeof( Master ) )
+					.Add( Expression.Expression.Like( "Details", "SomeString" ) )
+					.List();
+			}
+		}
+
+		[Test]
+		public void CriteriaManyToOneEquals()
+		{
+			using( ISession s = OpenSession() )
+			{
+				Master master = new Master();
+				s.Save( master );
+				s.CreateCriteria( typeof( Detail ) )
+					.Add( Expression.Expression.Eq( "Master", master ) )
+					.List();
+				s.Delete( master );
+				s.Flush();
+			}
+		}
+
+		[Test]
+		[ExpectedException( typeof( QueryException ) )]
+		public void CriteriaCompositeProperty()
+		{
+			using( ISession s = OpenSession() )
+			{
+				s.CreateCriteria( typeof( Master ) )
+					.Add( Expression.Expression.Eq( "Details.I", 10 ) )
+					.List();
 			}
 		}
 	}
