@@ -34,76 +34,41 @@ namespace NHibernate.Type
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
 		public override object Get( IDataReader rs, int index )
 		{
 			return Convert.ToBoolean( rs[ index ] );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		public override object Get( IDataReader rs, string name )
 		{
 			return Convert.ToBoolean( rs[ name ] );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public System.Type PrimitiveClass
 		{
 			get { return typeof( bool ); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override System.Type ReturnedClass
 		{
 			get { return typeof( bool ); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
 		public override void Set( IDbCommand cmd, object value, int index )
 		{
 			( ( IDataParameter ) cmd.Parameters[ index ] ).Value = ( bool ) value;
 		}
 
-		/// <summary></summary>
 		public override string Name
 		{
 			get { return "Boolean"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public override string ObjectToSQLString( object value )
 		{
 			return ( ( bool ) value ) ? TRUE : FALSE;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public virtual object StringToObject( string xml )
 		{
 			return FromString( xml );
@@ -113,6 +78,5 @@ namespace NHibernate.Type
 		{
 			return bool.Parse( xml );
 		}
-
 	}
 }
