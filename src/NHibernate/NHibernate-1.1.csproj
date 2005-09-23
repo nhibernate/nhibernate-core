@@ -819,6 +819,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Engine\UnsavedValueFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Engine\Versioning.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

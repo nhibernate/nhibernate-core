@@ -45,8 +45,8 @@ namespace NHibernate.Test.CfgTest
 			XmlNode node = document.GetElementsByTagName( versionTag )[0];
 			SimpleValue model = new SimpleValue();
 			Binder.MakeVersion( node, model );
-			Assert.AreEqual( "undefined", model.NullValue,
-				"default unsaved-value for tag {0} should be 'undefined', but is '{1}'",
+			Assert.IsNull( model.NullValue,
+				"default unsaved-value for tag {0} should be null, but is '{1}'",
 				versionTag, model.NullValue );
 		}
 

@@ -1181,7 +1181,17 @@ namespace NHibernate.Cfg
 			}
 			else
 			{
-				model.NullValue = "null";
+				if( model.IdentifierGeneratorStrategy == "assigned" )
+				{
+					// TODO: H3 has model.setNullValue("undefined") here, but
+					// NH doesn't (yet) allow "undefined" for id unsaved-value,
+					// so we use "null" here
+					model.NullValue = "null";
+				}
+				else
+				{
+					model.NullValue = null;
+				}
 			}
 		}
 
@@ -1195,7 +1205,7 @@ namespace NHibernate.Cfg
 			}
 			else
 			{
-				model.NullValue = "undefined";
+				model.NullValue = null;
 			}
 		}
 

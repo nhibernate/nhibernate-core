@@ -223,7 +223,7 @@
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="type" type="xs:string"/>
 			<xs:attribute name="length" type="xs:positiveInteger"/>
-			<xs:attribute name="unsaved-value" type="xs:string" default="null">
+			<xs:attribute name="unsaved-value" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>any|none|null|0|-1|...</xs:documentation>
 				</xs:annotation>
@@ -276,7 +276,7 @@
 			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="type" type="xs:string" default="Int32"/>
-			<xs:attribute name="unsaved-value" type="xs:string" default="undefined">
+			<xs:attribute name="unsaved-value" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>undefined|any|none|null|0|-1|... </xs:documentation>
 				</xs:annotation>
@@ -291,7 +291,7 @@
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="access" type="xs:string"/>
 			<xs:attribute name="column" type="xs:string"/>
-			<xs:attribute name="unsaved-value" type="xs:string" default="undefined">
+			<xs:attribute name="unsaved-value" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>undefined|any|none|null|0|-1|... </xs:documentation>
 				</xs:annotation>

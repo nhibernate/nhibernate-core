@@ -383,7 +383,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug( "unsaved-value: " + value );
 				}
-				return id == null || value.Equals( id );
+				return id == null || id.Equals( value );
 			}
 
 			/// <summary>

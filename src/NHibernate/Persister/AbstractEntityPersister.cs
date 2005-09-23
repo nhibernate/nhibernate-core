@@ -689,35 +689,11 @@ namespace NHibernate.Persister
 			identitySelectString = useIdentityColumn ? dialect.IdentitySelectString : null;
 
 			// UNSAVED-VALUE:
-			string unsavedValue = model.Identifier.NullValue;
-			if( unsavedValue == null || "null".Equals( unsavedValue ) )
-			{
-				unsavedIdentifierValue = Cascades.IdentifierValue.SaveNull;
-			}
-			else if( "none".Equals( unsavedValue ) )
-			{
-				unsavedIdentifierValue = Cascades.IdentifierValue.SaveNone;
-			}
-			else if( "any".Equals( unsavedValue ) )
-			{
-				unsavedIdentifierValue = Cascades.IdentifierValue.SaveAny;
-			}
-			else
-			{
-				IType idType = model.Identifier.Type;
-				try
-				{
-					unsavedIdentifierValue = new Cascades.IdentifierValue( ( ( IIdentifierType ) idType ).StringToObject( unsavedValue ) );
-				}
-				catch( InvalidCastException )
-				{
-					throw new MappingException( "Bad identifier type: " + idType.GetType().Name );
-				}
-				catch( Exception )
-				{
-					throw new MappingException( "Could not parse unsaved-value: " + unsavedValue );
-				}
-			}
+			unsavedIdentifierValue = UnsavedValueFactory.GetUnsavedIdentifierValue(
+				model.Identifier.NullValue,
+				identifierGetter,
+				identifierType,
+				constructor );
 
 			// VERSION:
 
@@ -750,46 +726,13 @@ namespace NHibernate.Persister
 			}
 
 			// VERSION UNSAVED-VALUE:
-			string versionUnsavedValue = null;
-			if( model.IsVersioned )
-			{
-				versionUnsavedValue = model.Version.NullValue;
-			}
-
-			if( versionUnsavedValue == null || "undefined".Equals( versionUnsavedValue ) )
-			{
-				unsavedVersionValue = Cascades.VersionValue.VersionUndefined;
-			}
-			else if( "null".Equals( versionUnsavedValue ) )
-			{
-				unsavedVersionValue = Cascades.VersionValue.VersionSaveNull;
-			}
-			else if( "negative".Equals( versionUnsavedValue ) )
-			{
-				unsavedVersionValue = Cascades.VersionValue.VersionNegative;
-				/*
-				 * used to be none and any strategies but this is kind of a nonsense for version
-				 * especially for none since an 'update where' would be generated
-				 * Lot's of hack to support none ?
-				 */
-			}
-			else
-			{
-				// NB This is NHibernate specific - needed so we can specify a default value for dates as we don't have null as a possibility
-				IType idType = model.Identifier.Type;
-				try
-				{
-					unsavedVersionValue = new Cascades.VersionValue( versionType.StringToObject( versionUnsavedValue ) );
-				}
-				catch( InvalidCastException )
-				{
-					throw new MappingException( "Bad version type: " + idType.GetType().Name );
-				}
-				catch( Exception )
-				{
-					throw new MappingException( "Could not parse version unsaved-value: " + versionUnsavedValue );
-				}
-			}
+			unsavedVersionValue = model.IsVersioned ?
+				UnsavedValueFactory.GetUnsavedVersionValue(
+					model.Version.NullValue,
+					versionGetter,
+					versionType,
+					constructor ) :
+				Cascades.VersionValue.VersionUndefined;
 
 			// PROPERTIES 
 
