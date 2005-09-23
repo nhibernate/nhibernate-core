@@ -18,7 +18,7 @@
 			not-null="false" 
 		/>
 		
-		<property name="Name" index="indx_a_name">
+		<property name="Name" >
 			<column name="name" index="indx_a_name2" />
 		</property>
 
