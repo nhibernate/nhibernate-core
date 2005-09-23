@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 
 using NHibernate.Dialect;
 using NUnit.Framework;
@@ -122,5 +123,16 @@ namespace NHibernate.Test.DialectTest
 
 		}
 
+		[Test]
+		public void GetDialectUntrimmedName()
+		{
+			IDictionary props = new Hashtable();
+			props[ Cfg.Environment.Dialect ] = "\r\n\t "
+				+ typeof(NHibernate.Dialect.MsSql2000Dialect).AssemblyQualifiedName
+				+ " \t\r\n  ";
+
+			Dialect.Dialect dialect = Dialect.Dialect.GetDialect( props );
+			Assert.IsTrue( dialect is Dialect.MsSql2000Dialect );
+		}
 	}
 }

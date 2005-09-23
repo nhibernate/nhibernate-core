@@ -423,6 +423,19 @@ namespace NHibernate.Dialect
 			get { return null; }
 		}
 
+		private static Dialect InstantiateDialect( string dialectName )
+		{
+			dialectName = dialectName.Trim();
+			try
+			{
+				return ( Dialect ) Activator.CreateInstance( ReflectHelper.ClassForName( dialectName ) );
+			}
+			catch( Exception e )
+			{
+				throw new HibernateException( "Could not instantiate dialect class " + dialectName, e );
+			}
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -434,14 +447,8 @@ namespace NHibernate.Dialect
 			{
 				throw new HibernateException( "The dialect was not set. Set the property hibernate.dialect." );
 			}
-			try
-			{
-				return ( Dialect ) Activator.CreateInstance( ReflectHelper.ClassForName( dialectName ) );
-			}
-			catch( Exception e )
-			{
-				throw new HibernateException( "Could not instanciate dialect class", e );
-			}
+
+			return InstantiateDialect( dialectName );
 		}
 
 		/// <summary>
@@ -460,14 +467,8 @@ namespace NHibernate.Dialect
 			{
 				return GetDialect();
 			}
-			try
-			{
-				return ( Dialect ) Activator.CreateInstance( ReflectHelper.ClassForName( dialectName ) );
-			}
-			catch( Exception e )
-			{
-				throw new HibernateException( "could not instantiate dialect class", e );
-			}
+
+			return InstantiateDialect( dialectName );
 		}
 
 		/// <summary>
