@@ -6,13 +6,18 @@
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 	<!-- 
+		Use this to determine if the key file NHibernate.key should be used to 
+		sign the Assemblies.  This defaults to false since users doing their own
+		build have _no_ copy of the private key.  If they do their own private
+		builds then they should make their own key 
+	-->
+	<property name="sign" value="false" />
+
+	<!-- 
 		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
 		then change this to true.  It generates a nice looking html report for the test files
 	-->
 	<property name="nunit2report.installed" value="false" overwrite="false" />
-
-	<!-- Disable performance tests by default. They take too much time. -->
-	<property name="run.performance.tests" value="false" overwrite="false" />
 
 	<!--
 		if Visual Studio Help Integration Kit has been installed
@@ -29,14 +34,8 @@
 	<property name="clover.db" value="${clover.src}\clover.cdb" />
 	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET for Visual Studio" />
 	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
-	<!-- 
-		Use this to determine if the key file NHibernate.key should be used to 
-		sign the Assemblies.  This defaults to false since users doing their own
-		build have _no_ copy of the private key.  If they do their own private
-		builds then they should make their own key 
-	-->
-	<property name="sign" value="false" overwrite="false" />
-	
+
+
 	<!-- 
 		These are used to set the correct Attributes in AssemblyInfo.cs.  
 	-->
@@ -60,7 +59,13 @@
 	<!-- properties used to connect to database for testing -->
 	<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2000Dialect" />
 	<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlClientDriver" />
-	<property name="nhibernate.connection.connection_string" value="Server=localhost;initial catalog=nhibernate;Integrated Security=SSPI" />
+	<property name="nhibernate.connection.connection_string" value="Server=(local);initial catalog=nhibernate;Integrated Security=SSPI" />
+
+
+	<!-- Disable performance tests by default. They take too much time. -->
+	<property name="run.performance.tests" value="false" overwrite="false" />
+
+
 
 	<!-- named project configurations -->
 	<target name="debug" description="Perform a 'debug' build">

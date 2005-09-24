@@ -1,3 +1,8 @@
+In CVS
+========================
+- The documentation has an "installer" to integrate it in VS .NET Help.
+
+
 Build 0.99.1.0 (1.0-rc1)
 ========================
 
