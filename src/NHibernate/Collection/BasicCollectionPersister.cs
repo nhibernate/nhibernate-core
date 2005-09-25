@@ -152,6 +152,11 @@ namespace NHibernate.Collection
 					throw;
 				}
 			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
 			catch( Exception sqle )
 			{
 				throw Convert( sqle, "could not update collection rows: " + MessageHelper.InfoString( this, id ) );

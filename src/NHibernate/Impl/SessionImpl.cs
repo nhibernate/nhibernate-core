@@ -759,6 +759,11 @@ namespace NHibernate.Impl
 					return DoSave( obj, id, persister, false, action, anything );
 				}
 			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
 			catch( Exception ex )
 			{
 				throw Convert( ex, "Could not save object" );
@@ -1824,6 +1829,11 @@ namespace NHibernate.Impl
 					try
 					{
 						result = q[ i ].GetEnumerable( parameters, this );
+					}
+					catch( HibernateException )
+					{
+						// Do not call Convert on HibernateExceptions
+						throw;
 					}
 					catch( Exception sqle )
 					{
@@ -4749,6 +4759,11 @@ namespace NHibernate.Impl
 					{
 						currentResults = loaders[ i ].List( this );
 					}
+					catch( HibernateException )
+					{
+						// Do not call Convert on HibernateExceptions
+						throw;
+					}
 					catch( Exception sqle )
 					{
 						throw Convert( sqle, "Unable to perform find" );
@@ -5073,6 +5088,11 @@ namespace NHibernate.Impl
 			{
 				return loader.List( this, queryParameters );
 			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
 			catch( Exception sqle )
 			{
 				throw Convert( sqle, "error in FindBySQL" );
@@ -5134,6 +5154,11 @@ namespace NHibernate.Impl
 				// TODO: Implement caching?! proxies?!
 				object result = persister.LoadByUniqueKey( uniqueKeyPropertyName, id, this );
 				return result == null ? null : ProxyFor( result );
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
 			}
 			catch( Exception sqle )
 			{

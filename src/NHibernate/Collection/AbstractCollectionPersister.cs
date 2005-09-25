@@ -8,6 +8,7 @@ using log4net;
 
 using NHibernate.Cache;
 using NHibernate.Engine;
+using NHibernate.Exceptions;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Loader;
@@ -284,9 +285,14 @@ namespace NHibernate.Collection
 			{
 				initializer.Initialize( key, session );
 			}
-			catch( Exception e )
+			catch( HibernateException )
 			{
-				throw Convert( e, "could not initialize collection: " + MessageHelper.InfoString( this, key ) );
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch( Exception sqle )
+			{
+				throw Convert( sqle, "could not initialize collection: " + MessageHelper.InfoString( this, key ) );
 			}
 		}
 
@@ -541,9 +547,14 @@ namespace NHibernate.Collection
 						log.Debug( "done deleting collection" );
 					}
 				}
-				catch( Exception e )
+				catch( HibernateException )
 				{
-					throw Convert( e, "could not delete collection: " + MessageHelper.InfoString( this, id ) );
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch( Exception sqle )
+				{
+					throw Convert( sqle, "could not delete collection: " + MessageHelper.InfoString( this, id ) );
 				}
 			}
 		}
@@ -602,6 +613,11 @@ namespace NHibernate.Collection
 						}
 					}
 				}
+				catch( HibernateException )
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
 				catch( Exception sqle )
 				{
 					throw Convert( sqle, "could not insert collection: " + MessageHelper.InfoString( this, id ) );
@@ -656,6 +672,11 @@ namespace NHibernate.Collection
 							log.Debug( "no rows to delete" );
 						}
 					}
+				}
+				catch( HibernateException )
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
 				}
 				catch( Exception sqle )
 				{
@@ -713,6 +734,11 @@ namespace NHibernate.Collection
 						session.Batcher.AbortBatch( e );
 						throw;
 					}
+				}
+				catch( HibernateException )
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
 				}
 				catch( Exception sqle )
 				{
@@ -864,7 +890,7 @@ namespace NHibernate.Collection
 
 		protected ADOException Convert( Exception sqlException, string message )
 		{
-			return new ADOException( message, sqlException );
+			return ADOExceptionHelper.Convert( sqlException, message );
 		}
 
 		public override string ToString()

@@ -576,6 +576,11 @@ namespace NHibernate.Persister
 				}
 				return result;
 			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
 			catch( Exception sqle )
 			{
 				throw Convert( sqle, "could not load by id: " + MessageHelper.InfoString( this, id ) );
@@ -659,6 +664,11 @@ namespace NHibernate.Persister
 						}
 					}
 				}
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
 			}
 			catch( Exception sqle )
 			{
@@ -756,6 +766,11 @@ namespace NHibernate.Persister
 				return id;
 
 			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
 			catch( Exception sqle )
 			{
 				throw Convert( sqle, "could not insert: " + MessageHelper.InfoString( this ) );
@@ -810,6 +825,11 @@ namespace NHibernate.Persister
 						}
 					}
 				}
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
 			}
 			catch( Exception sqle )
 			{
@@ -926,6 +946,11 @@ namespace NHibernate.Persister
 						}
 					}
 				}
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
 			}
 			catch( Exception sqle )
 			{

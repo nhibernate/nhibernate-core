@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 		}
 
 		[Test]
-		[ExpectedException( typeof(ADOException) )]
+		[ExpectedException( typeof( PropertyValueException ) )]
 		public void TestErrorUsage()
 		{
 			using( ISession session = OpenSession() ) 

@@ -559,6 +559,11 @@ namespace NHibernate.Persister
 			{
 				return ( ( IUniqueEntityLoader ) loaders[ lockMode ] ).Load( session, id, optionalObject );
 			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
 			catch( Exception sqle )
 			{
 				throw Convert( sqle, "could not load: " + MessageHelper.InfoString( this, id ) );
@@ -632,6 +637,11 @@ namespace NHibernate.Persister
 					session.Batcher.AbortBatch( e );
 					throw;
 				}
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
 			}
 			catch( Exception sqle )
 			{
@@ -709,6 +719,11 @@ namespace NHibernate.Persister
 
 				}
 			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
 			catch( Exception sqle )
 			{
 				throw Convert( sqle, "could not insert: " + MessageHelper.InfoString( this ) );
@@ -780,6 +795,11 @@ namespace NHibernate.Persister
 						session.Batcher.CloseCommand( deleteCmd, null );
 					}
 				}
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
 			}
 			catch( Exception sqle )
 			{
@@ -892,6 +912,11 @@ namespace NHibernate.Persister
 						session.Batcher.CloseCommand( statement, null );
 					}
 				}
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
 			}
 			catch( Exception sqle )
 			{

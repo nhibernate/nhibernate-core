@@ -4,6 +4,7 @@ using Iesi.Collections;
 using log4net;
 using NHibernate.Driver;
 using NHibernate.Engine;
+using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 namespace NHibernate.Impl
 {
@@ -458,11 +459,20 @@ namespace NHibernate.Impl
 					lastQuery.Cancel();
 				}
 			}
-			catch( Exception /*sqle*/ )
+			catch( HibernateException )
 			{
+				// Do not call Convert on HibernateExceptions
 				throw;
-				//throw Convert( sqle, "Could not cancel query" );
 			}
+			catch( Exception sqle )
+			{
+				throw Convert( sqle, "Could not cancel query" );
+			}
+		}
+
+		protected ADOException Convert( Exception sqlException, string message )
+		{
+			return ADOExceptionHelper.Convert( sqlException, message );
 		}
 
 		#region IDisposable Members

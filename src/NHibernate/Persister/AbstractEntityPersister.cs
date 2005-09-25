@@ -1271,9 +1271,14 @@ namespace NHibernate.Persister
 					session.Batcher.CloseQueryCommand( st, rs );
 				}
 			}
-			catch( Exception ex )
+			catch( HibernateException )
 			{
-				throw Convert( ex, "could not retrieve version: " + MessageHelper.InfoString( this, id ) );
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch( Exception sqle )
+			{
+				throw Convert( sqle, "could not retrieve version: " + MessageHelper.InfoString( this, id ) );
 			}
 		}
 
@@ -1321,6 +1326,11 @@ namespace NHibernate.Persister
 					{
 						session.Batcher.CloseCommand( st, rs );
 					}
+				}
+				catch( HibernateException )
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
 				}
 				catch( Exception sqle )
 				{
@@ -1397,6 +1407,11 @@ namespace NHibernate.Persister
 				{
 					session.Batcher.CloseCommand( st, rs );
 				}
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
 			}
 			catch( Exception sqle )
 			{
