@@ -487,11 +487,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "NotMono.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "MoreStuff.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -532,6 +527,11 @@
                 <File
                     RelPath = "NHibernate.DomainModel.build"
                     BuildAction = "None"
+                />
+                <File
+                    RelPath = "NotMono.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "One.cs"
@@ -819,6 +819,15 @@
                     RelPath = "NHSpecific\NullInt32UserType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\Optimistic.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecific\Optimistic.hbm.xml"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "NHSpecific\Parent.cs"
