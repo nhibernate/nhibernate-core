@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH386">
+
+	<class name="_Parent" table="parent">
+		<id name="_Id" column="parent_id">
+			<generator class="native" />
+		</id>
+		
+		<set name="_Children">
+			<key column="parent_id" />
+			<one-to-many class="_Child" />
+		</set>
+	</class>
+
+	<class name="_Child" table="child">
+		<id name="_Id" column="child_id">
+			<generator class="native" />
+		</id>
+	</class>
+</hibernate-mapping>
+ 

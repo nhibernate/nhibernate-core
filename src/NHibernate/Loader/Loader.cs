@@ -1390,7 +1390,7 @@ namespace NHibernate.Loader
 		/// <returns>an alias of the form <c>foo1_</c></returns>
 		protected static string GenerateAlias( string description, int unique )
 		{
-			return StringHelper.Truncate( StringHelper.Unqualify( description ), 10 )
+			return StringHelper.Truncate( StringHelper.Unqualify( description ).TrimStart( '_' ), 10 )
 				.ToLower()
 				.Replace( '$', '_' )
 				.Replace( '+', '_' ) + // .NET inner classes
