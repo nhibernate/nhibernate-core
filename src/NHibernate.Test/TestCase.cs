@@ -3,22 +3,25 @@ using System.Collections;
 using System.Data;
 using System.Reflection;
 
+using log4net;
+
 using NHibernate.Cfg;
+using NHibernate.Connection;
 using NHibernate.Tool.hbm2ddl;
 
 using NUnit.Framework;
 
-namespace NHibernate.Test 
+namespace NHibernate.Test
 {
 	public abstract class TestCase
 	{
-		private const bool OUTPUT_DDL = false;
+		private const bool OutputDdl = false;
 		protected Configuration cfg;
 		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
 
-		private static readonly log4net.ILog log =
-			log4net.LogManager.GetLogger( typeof( TestCase ) );
+		private static readonly ILog log =
+			LogManager.GetLogger( typeof( TestCase ) );
 
 		private ISession lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;
@@ -91,18 +94,18 @@ namespace NHibernate.Test
 		/// is not overridable, but it calls <see cref="OnTearDown" /> which is.
 		/// </summary>
 		[TearDown]
-		public void TearDown() 
+		public void TearDown()
 		{
 			OnTearDown();
 
-			bool wasClosed  = CheckSessionWasClosed();
+			bool wasClosed = CheckSessionWasClosed();
 			bool wasCleaned = CheckDatabaseWasCleaned();
 			bool wereConnectionsClosed = CheckConnectionsWereClosed();
 			bool fail = !wasClosed || !wasCleaned || !wereConnectionsClosed;
 
 			if( fail )
 			{
-				Assert.Fail("Test didn't clean up after itself");
+				Assert.Fail( "Test didn't clean up after itself" );
 			}
 		}
 
@@ -147,7 +150,9 @@ namespace NHibernate.Test
 		private bool CheckConnectionsWereClosed()
 		{
 			if( connectionProvider == null || !connectionProvider.HasOpenConnections )
+			{
 				return true;
+			}
 
 			log.Error( "Test case didn't close all open connections, closing" );
 			connectionProvider.CloseAllConnections();
@@ -163,13 +168,13 @@ namespace NHibernate.Test
 		{
 			cfg = new Configuration();
 
-			for (int i=0; i<files.Count; i++) 
+			for( int i = 0; i < files.Count; i++ )
 			{
-				cfg.AddResource( assemblyName + "." + files[i].ToString(), Assembly.Load( assemblyName ) );
+				cfg.AddResource( assemblyName + "." + files[ i ].ToString(), Assembly.Load( assemblyName ) );
 			}
 
-			new SchemaExport( cfg ).Create( OUTPUT_DDL, true );
-			
+			new SchemaExport( cfg ).Create( OutputDdl, true );
+
 			sessions = cfg.BuildSessionFactory();
 			dialect = Dialect.Dialect.GetDialect();
 			connectionProvider = sessions.ConnectionProvider as DebugConnectionProvider;
@@ -178,7 +183,7 @@ namespace NHibernate.Test
 		/// <summary>
 		/// Drops the schema that was built with the TestCase's Configuration.
 		/// </summary>
-		private void DropSchema() 
+		private void DropSchema()
 		{
 			sessions.Close();
 			sessions = null;
@@ -186,24 +191,26 @@ namespace NHibernate.Test
 			connectionProvider = null;
 			lastOpenedSession = null;
 
-			new SchemaExport( cfg ).Drop(OUTPUT_DDL, true);
+			new SchemaExport( cfg ).Drop( OutputDdl, true );
 			cfg = null;
 		}
 
-		public void ExecuteStatement(string sql)
+		public void ExecuteStatement( string sql )
 		{
-			ExecuteStatement(sql, true);
+			ExecuteStatement( sql, true );
 		}
 
-		public void ExecuteStatement(string sql, bool error)
+		public void ExecuteStatement( string sql, bool error )
 		{
 			IDbConnection conn = null;
 			IDbTransaction tran = null;
 			try
 			{
-				if (cfg == null)
+				if( cfg == null )
+				{
 					cfg = new Configuration();
-				Connection.IConnectionProvider prov = Connection.ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
+				}
+				IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider( cfg.Properties );
 				conn = prov.GetConnection();
 				tran = conn.BeginTransaction();
 				IDbCommand comm = conn.CreateCommand();
@@ -213,17 +220,23 @@ namespace NHibernate.Test
 				comm.ExecuteNonQuery();
 				tran.Commit();
 			}
-			catch(Exception)
+			catch( Exception )
 			{
-				if (tran != null)
+				if( tran != null )
+				{
 					tran.Rollback();
-				if (error)
+				}
+				if( error )
+				{
 					throw;
+				}
 			}
 			finally
 			{
-				if (conn != null)
+				if( conn != null )
+				{
 					conn.Close();
+				}
 			}
 		}
 
