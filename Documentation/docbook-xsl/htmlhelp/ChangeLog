@@ -1,0 +1,234 @@
+2005-06-21  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Fixed bug #1223236. Mode attribute was removed from named templates.
+
+2005-05-24  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Classical HTML index is suppressed in a cleaner way as suggested by David Cramer
+
+2005-05-13  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* Makefile: clean target added
+
+	* Makefile: revert to MAIN
+
+2004-12-02  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* Makefile: New file.
+
+2004-11-17  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Removed reference to index HTML pages from manifest if the output format is HTML Help
+
+2004-08-19  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Added several patches from W. Borgert
+
+2004-02-19  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Added anchors to bibliodivs
+
+2003-12-10  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Fixed parameter name collision
+
+2003-11-29  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Added new HTML Help parameters from patches by W. Borgert
+
+2003-10-27  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Handle setindex in a proper way
+
+2003-09-23  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Added new parameter manifest.in.base.dir which can be used to place manifest file and also project files for HTML Help and Eclipse Help into base.dir. This improvement also fixes bug (feature) #662955.
+
+2003-08-12  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: It seems that HH can handle fragments identifiers in context help, so I changed
+	stylesheets back to emit filename with fragment identifier.
+
+2003-07-22  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Moving template to place where it can be reused
+
+2003-05-25  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl, langcodes.xml: HTML Help language codes were moved to localization files.
+
+2003-01-31  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Xalan workaround for HHK files.
+
+2002-10-15  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: HTML sensitive characters are manually escaped in attribute values (we must do it, as we don't use HTML/XML output method).
+
+2002-10-14  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Options->Home command works also when base.dir parameter is used and home button is disabled
+
+2002-08-22  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Index can be alternatively created using HHK file from now. This allows see-also processing and index terms also points to their exact location.
+
+2002-06-13  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* .cvsignore: Reflect changes in HTML Help stylesheet organization.
+
+	* htmlhelp-common.xsl: Added parameter for disabling HTML output when testing various HTML Help features.
+
+	* htmlhelp-common.xsl: New features. A lot of new features. For HTML Help.
+
+	* htmlhelp-common.xsl: Turn on more verbose messages during compilation to CHM
+
+2002-06-12  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* Makefile: branches:  1.3.2;
+	Rearranged code so HTML Help can be easily combined with custom chunking schemes. This is needed for TDG processing.
+
+	* htmlhelp-common.xsl, htmlhelp.xsl, profile-htmlhelp.xsl: 
+	Rearranged code so HTML Help can be easily combined with custom chunking schemes. This is needed for TDG processing.
+
+2002-06-09  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Fixed bug #438793. HTML Help stylesheet works also in Xalan from now.
+
+2002-06-03  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* Makefile: Added dependencies for profiling stylesheets
+
+2002-05-10  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Updated to use shared manifest code.
+
+2002-04-11  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Updated to support new generate.toc parameter.
+
+2002-03-14  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* .cvsignore: New file.
+
+	* htmlhelp.xsl: Whitespace changes only: use PC-style CR/LF because Unix clients choke on this far less often than PC clients choke on the reverse. Grrr.
+
+	* htmlhelp.xsl, langcodes.xml: Whitespace only: change CR/LF back to LF. Norm was a total moron.
+
+2002-03-01  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* Makefile: First portion of new profiling code. New stylesheet parameters will come later.
+
+2002-02-16  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Added missing support for refentries inside sections and for glossaries.
+
+	* htmlhelp.xsl: Fixed bug #514883. Added missing colophon.
+
+2002-02-10  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Added parameter htmlhelp.default.topic for overriding default topic to display.
+
+	* htmlhelp.xsl: Entry with link to page with Table of Contents is put into HTML Help ToC when htmlhelp.hhc.show.root=0 and generate.{set|book}.toc=1
+
+2002-02-09  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Added parameter which controls appearance of root element in HTML Help ToC.
+
+2002-02-07  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Duplicate image filenames from [FILES] section are now automatically removed in EXSLT friendly processors.
+
+2002-02-05  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Removed fragment identifiers from hrefs in alias.h file.
+
+2002-02-03  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Added parameter htmlhelp.title for manual control over HTML Help title. Improved code for automatic extraction of title from document.
+
+2002-01-24  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Fixed bug in alias.h when base.dir parameter was used.
+
+2002-01-22  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Feature request #507087. Added parameter for controling appearance of icons in HTML Help ToC.
+
+2001-12-06  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Template write.text.chunk moved to common place.
+
+2001-12-04  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Make compatible with last changes in chunking code.
+
+2001-11-28  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Use common pi-attribute template
+
+	* htmlhelp.xsl: Added parameter htmlhelp.hhc.section.depth for controlling depth of sections in a TOC in a left pane of HTML Help viewer.
+
+	* htmlhelp.xsl: Added support for automatic generation of map and context files for HTML Help. Topic names and IDs are marked by special PI <?dbhh topicname="..." topicid="..."?>.
+
+2001-11-27  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* htmlhelp-common.xsl, htmlhelp.xsl: Removed obsolete XT support; added support for rootid parameter
+
+	* htmlhelp.xsl: Fixed simple select typo
+
+2001-11-27  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp.xsl: Added $rootid support also for title of HTML Help window
+
+2001-11-27  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* xthtmlhelp.xsl: Removed obsolete XT support; added support for rootid parameter
+
+2001-11-05  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Parameters moved to params subdirectory.
+
+2001-11-04  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Added parameter htmlhelp.enumerate.images which controls inclusion of image filenames list
+	in project file. This is necessary when images are inserted as external binary entities.
+
+2001-08-23  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Synchronized puncation generation in ToC with rest of stylesheets.
+
+2001-08-21  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Fixed presentation of secondary indexterms in index pane
+
+2001-08-13  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Fixed problems with new lines in titles for TOC
+
+2001-08-08  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Added new parameters for controling filenames of project and output files.
+	New parameter htmlhelp.hhp.tail for specifying user content for project file.
+
+2001-07-23  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Fixed bug #442162 - bibliography element is included in ToC in the left pane, index is not generated because it has own dialog also in the left pane of HTML Help viewer
+
+2001-06-25  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Added htmlhelp.autolabel parameter to control inclusion of component and section labels into tree-like ToC.
+
+2001-05-05  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Colophon is now included in toc.hhc
+
+2001-04-21  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* README: Removed obsolete file
+
+2001-04-04  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* README, htmlhelp-common.xsl, htmlhelp.xsl, langcodes.xml, xthtmlhelp.xsl: 
+	New file.
+
