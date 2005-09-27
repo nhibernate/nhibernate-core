@@ -1,7 +1,21 @@
-In CVS
+Build 0.99.2.0 (1.0-rc2)
 ========================
-- The documentation has an "installer" to integrate it in VS .NET Help.
 
+Bug Fixes:
+ * [NH-377] - Allow whitespace around dialect name in cfg.xml
+ * [NH-380] - Error with query after comitted transaction
+ * [NH-385] - ADOException thrown instead of StaleObjectStateException when
+   updating stale record
+ * [NH-386] - Aliases generated for properties with initial underscores should
+   NOT begin with an underscore
+ * Using Expression.Eq on a many-to-one property now works again (it was broken
+   by mistake in 1.0-rc1)
+
+Improvements:
+ * [NH-329] - If unsaved-value for <id> or <version> is not specified,
+   NHibernate will now try to guess it by instantiating an empty object and
+   retrieving default property values from it (as Hibernate 3 does it).
+ * The documentation has an "installer" to integrate it in VS .NET Help.
 
 Build 0.99.1.0 (1.0-rc1)
 ========================
