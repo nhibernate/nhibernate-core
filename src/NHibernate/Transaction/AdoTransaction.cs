@@ -32,14 +32,17 @@ namespace NHibernate.Transaction
 		/// </summary>
 		/// <param name="command">The <see cref="IDbCommand"/> to enlist in this Transaction.</param>
 		/// <remarks>
+		/// <para>
 		/// This takes care of making sure the <see cref="IDbCommand"/>'s Transaction property 
 		/// contains the correct <see cref="IDbTransaction"/> or <c>null</c> if there is no
 		/// Transaction for the ISession - ie <c>BeginTransaction()</c> not called.
+		/// </para>
+		/// <para>
+		/// This method may be called even when the transaction is disposed.
+		/// </para>
 		/// </remarks>
 		public void Enlist( IDbCommand command )
 		{
-			CheckNotDisposed();
-
 			if( trans == null )
 			{
 				if( log.IsWarnEnabled )

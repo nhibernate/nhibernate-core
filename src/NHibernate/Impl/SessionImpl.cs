@@ -482,7 +482,6 @@ namespace NHibernate.Impl
 			log.Debug( "transaction completion" );
 
 			isCurrentTransaction = false;
-			transaction = null;
 
 			// Downgrade locks
 			foreach( EntityEntry entry in entityEntries.Values )

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Data;
 
 using NUnit.Framework;
 
@@ -57,14 +58,17 @@ namespace NHibernate.Test.TransactionTest
 		}
 
 		[Test]
-		[ExpectedException( typeof( ObjectDisposedException ) )]
-		public void EnlistAfterDisposeThrowsException()
+		public void EnlistAfterDisposeDoesNotThrowException()
 		{
 			using( ISession s = OpenSession() )
 			{
 				ITransaction t = s.BeginTransaction();
-				t.Dispose();
-				t.Enlist( null );
+
+				using( IDbCommand cmd = s.Connection.CreateCommand() )
+				{
+					t.Dispose();
+					t.Enlist( cmd );
+				}
 			}
 		}
 
@@ -92,6 +96,32 @@ namespace NHibernate.Test.TransactionTest
 				}
 
 				s.Find( "from Simple" );
+			}
+		}
+
+		[Test]
+		public void WasCommittedOrRolledBack()
+		{
+			using( ISession s = OpenSession() )
+			{
+				using( ITransaction t = s.BeginTransaction() )
+				{
+					Assert.AreSame( t, s.Transaction );
+					Assert.IsFalse( s.Transaction.WasCommitted );
+					Assert.IsFalse( s.Transaction.WasRolledBack );
+					t.Commit();
+					Assert.IsNotNull( s.Transaction );
+					Assert.IsTrue( s.Transaction.WasCommitted );
+					Assert.IsFalse( s.Transaction.WasRolledBack );
+				}
+
+				using( ITransaction t = s.BeginTransaction() )
+				{
+					t.Rollback();
+					Assert.IsNotNull( s.Transaction );
+					Assert.IsTrue( s.Transaction.WasRolledBack );
+					Assert.IsFalse( s.Transaction.WasCommitted );
+				}
 			}
 		}
 	}
