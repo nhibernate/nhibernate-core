@@ -11,7 +11,7 @@
 		build have _no_ copy of the private key.  If they do their own private
 		builds then they should make their own key 
 	-->
-	<property name="sign" value="false" />
+	<property name="sign" value="false" overwrite="false" />
 
 	<!-- 
 		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
