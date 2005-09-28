@@ -409,16 +409,27 @@
 			<xs:attribute name="index" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="meta-value">
+		<xs:complexType>
+			<xs:attribute name="value" type="xs:string" use="required" />
+			<xs:attribute name="class" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="any">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="meta-value" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="column" maxOccurs="unbounded"/>
 			</xs:sequence>
+			<xs:attribute name="id-type" type="xs:string" use="required"/>
+			<xs:attribute name="meta-type" type="xs:string"/>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="access" type="xs:string"/>
+			<xs:attribute name="insert" type="xs:boolean" default="true" />
+			<xs:attribute name="update" type="xs:boolean" default="true" />
 			<xs:attribute name="cascade" type="cascadeStyle" default="none"/>
-			<xs:attribute name="meta-type" type="xs:string"/>
-			<xs:attribute name="id-type" type="xs:string" use="required"/>
+			<xs:attribute name="index" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="array">
