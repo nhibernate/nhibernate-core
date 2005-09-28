@@ -17,6 +17,7 @@ namespace NHibernate.Transaction
 		private bool begun;
 		private bool committed;
 		private bool rolledBack;
+		private bool commitFailed;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AdoTransaction"/> class.
@@ -126,7 +127,7 @@ namespace NHibernate.Transaction
 		public void Commit()
 		{
 			CheckNotDisposed();
-			CheckRunning();
+			CheckBegun();
 
 			log.Debug( "commit" );
 
@@ -144,6 +145,8 @@ namespace NHibernate.Transaction
 			catch( Exception e )
 			{
 				log.Error( "Commit failed", e );
+				AfterTransactionCompletion( false );
+				commitFailed = true;
 				throw new TransactionException( "Commit failed with SQL exception", e );
 			}
 		}
@@ -159,23 +162,27 @@ namespace NHibernate.Transaction
 		public void Rollback()
 		{
 			CheckNotDisposed();
-			CheckRunning();
+			CheckBegun();
 
 			log.Debug( "rollback" );
-			try
+
+			if( !commitFailed )
 			{
-				trans.Rollback();
-				rolledBack = true;
-				Dispose();
-			}
-			catch( Exception e )
-			{
-				log.Error( "Rollback failed", e );
-				throw new TransactionException( "Rollback failed with SQL Exception", e );
-			}
-			finally
-			{
-				AfterTransactionCompletion( false );
+				try
+				{
+					trans.Rollback();
+					rolledBack = true;
+					Dispose();
+				}
+				catch( Exception e )
+				{
+					log.Error( "Rollback failed", e );
+					throw new TransactionException( "Rollback failed with SQL Exception", e );
+				}
+				finally
+				{
+					AfterTransactionCompletion( false );
+				}
 			}
 		}
 
@@ -283,16 +290,11 @@ namespace NHibernate.Transaction
 			}
 		}
 
-		private void CheckRunning()
+		private void CheckBegun()
 		{
 			if( !begun )
 			{
 				throw new TransactionException( "Transaction not successfully started" );
-			}
-	
-			if( rolledBack || committed )
-			{
-				throw new TransactionException( "Transaction already finished" );
 			}
 		}
 	}
