@@ -173,9 +173,15 @@ namespace NHibernate.Cache
 		/// <param name="key"></param>
 		/// <param name="value"></param>
 		/// <param name="txTimestamp"></param>
-		/// <returns></returns>
+		/// <returns>Whether the item was actually put into the cache</returns>
 		public bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparator )
 		{
+			if( txTimestamp == long.MinValue )
+			{
+				// MinValue means cache is disabled
+				return false;
+			}
+
 			lock( _lockObject )
 			{
 				if( log.IsDebugEnabled )

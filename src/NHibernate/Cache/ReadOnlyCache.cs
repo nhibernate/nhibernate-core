@@ -66,6 +66,12 @@ namespace NHibernate.Cache
 		/// <returns></returns>
 		public bool Put( object key, object value, long timestamp, object version, IComparer versionComparator )
 		{
+			if( timestamp == long.MinValue )
+			{
+				// MinValue means cache is disabled
+				return false;
+			}
+
 			lock( lockObject )
 			{
 				if( minimalPuts && cache.Get( key ) != null )

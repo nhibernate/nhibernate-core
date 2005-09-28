@@ -123,5 +123,26 @@ namespace NHibernate.Test.CacheTest {
 			Assert.AreEqual("baz", ccs.Get("foo", longLongAfter) );
 
 		}
+
+		private void DoTestMinValueTimestampOnStrategy( ICache cache, ICacheConcurrencyStrategy strategy )
+		{
+			strategy.Cache = cache;
+			strategy.Put( "key", "value", long.MinValue, 0, null );
+
+			Assert.IsNull( strategy.Get( "key", long.MinValue ), "{0} strategy fails the test", strategy.GetType() );
+			Assert.IsNull( strategy.Get( "key", long.MaxValue ), "{0} strategy fails the test", strategy.GetType() );
+		}
+
+		[Test]
+		public void MinValueTimestamp()
+		{
+			ICache cache = new HashtableCacheProvider().BuildCache( "region", new Hashtable() );
+			ICacheConcurrencyStrategy strategy = new ReadWriteCache();
+			strategy.Cache = cache;
+
+			DoTestMinValueTimestampOnStrategy( cache, new ReadWriteCache() );
+			DoTestMinValueTimestampOnStrategy( cache, new NonstrictReadWriteCache() );
+			DoTestMinValueTimestampOnStrategy( cache, new ReadOnlyCache() );
+		}
 	}
 }

@@ -26,6 +26,12 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="conn">A connection provided by the application</param>
 		/// <returns>A session</returns>
+		/// <remarks>
+		/// Note that the second-level cache will be disabled if you
+		/// supply a ADO.NET connection. NHibernate will not be able to track
+		/// any statements you might have executed in the same transaction.
+		/// Consider implementing your own <see cref="IConnectionProvider" />.
+		/// </remarks>
 		ISession OpenSession( IDbConnection conn );
 
 		/// <summary>
@@ -41,6 +47,12 @@ namespace NHibernate
 		/// <param name="conn">A connection provided by the application</param>
 		/// <param name="interceptor">A session-scoped interceptor</param>
 		/// <returns>A session</returns>
+		/// <remarks>
+		/// Note that the second-level cache will be disabled if you
+		/// supply a ADO.NET connection. NHibernate will not be able to track
+		/// any statements you might have executed in the same transaction.
+		/// Consider implementing your own <see cref="IConnectionProvider" />.
+		/// </remarks>
 		ISession OpenSession( IDbConnection conn, IInterceptor interceptor );
 
 		/// <summary>
