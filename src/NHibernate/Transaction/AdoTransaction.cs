@@ -130,27 +130,21 @@ namespace NHibernate.Transaction
 
 			log.Debug( "commit" );
 
+			if( session.FlushMode != FlushMode.Never )
+			{
+				session.Flush();
+			}
 			try
 			{
-				if( session.FlushMode != FlushMode.Never )
-				{
-					session.Flush();
-				}
-				try
-				{
-					trans.Commit();
-					committed = true;
-					Dispose();
-				}
-				catch( Exception e )
-				{
-					log.Error( "Commit failed", e );
-					throw new TransactionException( "Commit failed with SQL exception", e );
-				}
-			}
-			finally
-			{
+				trans.Commit();
+				committed = true;
 				AfterTransactionCompletion( true );
+				Dispose();
+			}
+			catch( Exception e )
+			{
+				log.Error( "Commit failed", e );
+				throw new TransactionException( "Commit failed with SQL exception", e );
 			}
 		}
 
