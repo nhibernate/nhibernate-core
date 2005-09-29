@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE HelpCollection>
+<HelpCollection
+  DTDVersion="1.0"
+  Id=""
+  FileVersion="0.8.0.0"
+  LangId=""
+  Font=""
+  FontSize=""
+  Charset=""
+  Title="NHibernate Collection"
+  Copyright="">
+
+  <TOCDef File="NHibernateCollection.HxT"/>
+
+  <KeywordIndexDef File="NHibernateCollection_NamedURL.HxK"/>
+
+  <ItemMoniker Name="!DefaultFullTextSearch" ProgId="HxDs.HxFullTextSearch" InitData="FTS"/>
+  <ItemMoniker Name="!DefaultTOC" ProgId="HxDs.HxHierarchy" InitData="NHibernateCollection"/>
+  <ItemMoniker Name="!DefaultNamedUrlIndex" ProgId="HxDs.HxIndex" InitData="NamedURLIndex"/>
+
+</HelpCollection>

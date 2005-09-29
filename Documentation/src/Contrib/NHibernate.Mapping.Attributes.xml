@@ -1,0 +1,196 @@
+<!-- <!DOCTYPE chapter SYSTEM "../../docbook-xml/docbookx.dtd"> -->
+<chapter id="NHibernate.Mapping.Attributes">
+	<title>NHibernate.Mapping.Attributes</title>
+
+
+	<abstract id="NHibernate.Mapping.Attributes-abstract">
+		<title>What is NHibernate.Mapping.Attributes?</title>
+		<formalpara>
+			<title>NHibernate.Mapping.Attributes is an add-in for <ulink url="http://www.nhibernate.org">NHibernate</ulink> contributed by Pierre Henri Kuat&eacute; (aka <emphasis>KPixel</emphasis>); the former implementation was made by John Morris.</title>
+			<para>NHibernate require mapping streams to bind your domain model to your database. Usually, they are written (and maintained) in separated hbm.xml files.</para>
+		</formalpara>
+		<para>With NHibernate.Mapping.Attributes, you can use .NET attributes to decorate your entities and this attributes will be used to generate these mapping .hbm.xml (as files or streams). So you will no longer have to bother with this <emphasis>nasty</emphasis> xml files ;).</para>
+		<formalpara>
+			<title>Content of this library</title>
+			<para>
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis role="strong">NHibernate.Mapping.Attributes</emphasis>: That the only project you need (as end-user)</para>
+					</listitem>
+					<listitem>
+						<para>
+							<emphasis role="strong">Test</emphasis>: a working sample using attributes and HbmSerializer as NUnit TestFixture</para>
+					</listitem>
+					<listitem>
+						<para>
+							<emphasis role="strong">Generator</emphasis>: The program used to generate attributes and HbmWriter</para>
+					</listitem>
+					<listitem>
+						<para>
+							<ulink url="http://mbunit.tigris.org/">
+								<emphasis role="strong">Refly</emphasis>
+							</ulink>: Thanks to <ulink url="http://www.dotnetwiki.org/">Jonathan de Halleux</ulink> for this library which make it so easy to generate code</para>
+					</listitem>
+				</itemizedlist>
+			</para>
+		</formalpara>
+		<para>
+			<important>
+				<para>
+					This library is generated using the file <filename>/src/NHibernate.Mapping.Attributes/nhibernate-mapping-2.0.xsd</filename>
+					(which is embedded in the assembly to be able to validate generated XML streams).
+					As this file can change at each new release of NHibernate, you should regenerate it before using it
+					with a different version (open the Generator solution, compile and run the Generator project).
+					But, no test has been done with versions prior to 0.8.
+				</para>
+			</important>
+		</para>
+	</abstract>
+
+
+	<section id="NHibernate.Mapping.Attributes-howto">
+		<title>How to use it?</title>
+		<formalpara>
+			<title>The <emphasis>end-user class</emphasis> is <classname>NHibernate.Mapping.Attributes.HbmSerializer</classname></title>
+			<para>This class <emphasis>serialize</emphasis> your domain model to mapping streams. You can either serialize classes one by one or an assembly. Look at <classname>NHibernate.Mapping.Attributes.Test</classname> project for a working sample.</para>
+		</formalpara>
+		<para>The first step is to decorate your entities with attributes; you can use: <classname>[Class]</classname>, <classname>[Subclass]</classname>, <classname>[JoinedSubclass]</classname> or <classname>[Component]</classname>. Then, you decorate your fields/properties; they can take as many attributes as required by your mapping. Eg:</para>
+		<programlisting>
+    [NHibernate.Mapping.Attributes.Class]
+    public class Example
+    {
+        [NHibernate.Mapping.Attributes.Property]
+        public string Name;
+    }</programlisting>
+		<para>After this step, you use <classname>NHibernate.Mapping.Attributes.HbmSerializer</classname>: (here, we use <methodname>Default</methodname> which is an instance you can use if you don't need/want to create it yourself).</para>
+		<programlisting>
+    System.IO.MemoryStream stream = new System.IO.MemoryStream(); // where the xml will be written
+    NHibernate.Mapping.Attributes.HbmSerializer.Default.Validate = true; // Enable validation (optional)
+    // Here, we serialize all decorated classes (but you can also do it class by class)
+    NHibernate.Mapping.Attributes.HbmSerializer.Default.Serialize(
+        stream, System.Reflection.Assembly.GetExecutingAssembly() );
+    stream.Position = 0; // Rewind
+    NHibernate.Cfg.Configuration cfg = new NHibernate.Cfg.Configuration();
+    cfg.Configure();
+    cfg.AddInputStream(stream); // Use the stream here
+    stream.Close();
+    // Now you can use this configuration to build your SessionFactory...</programlisting>
+	</section>
+
+
+	<section id="NHibernate.Mapping.Attributes-tips">
+		<title>Tips</title>
+		<itemizedlist>
+			<listitem>
+				<para>Use <methodname>HbmSerializer.Validate</methodname> to enable/disable the validation of generated xml streams (against NHibernate mapping schema); this is useful to quickly find errors (they are written in StringBuilder <methodname>HbmSerializer.Error</methodname>). If the error is due to this library then see if it is a know issue and report it; you can contribute a solution if you solve the problem :)</para>
+			</listitem>
+			<listitem>
+				<para>Your classes, fields and properties (members) can be private; just make sure that you have the permission to access private members using reflection (<methodname>ReflectionPermissionFlag.MemberAccess</methodname>).</para>
+			</listitem>
+			<listitem>
+				<para>Members of a mapped classes are also seek in its base classes (until we reach <emphasis>mapped</emphasis> base class). So you can decorate some members of a (not mapped) base class and use it in its (mapped) sub class(es).</para>
+			</listitem>
+			<listitem>
+				<para>For a Name taking a <classname>System.Type</classname>, set the type with <methodname>Name</methodname><literal>="xxx"</literal> (as <classname>string</classname>) or <methodname>Name</methodname><literal>Type=typeof(xxx)</literal>; (add "<literal>Type</literal>" to "<methodname>Name</methodname>")</para>
+			</listitem>
+			<listitem>
+				<para>By default, .NET attributes don't keep the order of attributes; so you need to set them yourself when the order matter; it is <emphasis>highly</emphasis> recommended to set them when you have more than one attribute on the same member.</para>
+			</listitem>
+			<listitem>
+				<para>As long as there is no ambiguity, you can decorate a member with many unrelated attributes. A good example is to put class-related attributes (like <literal>&lt;discriminator&gt;</literal>) on the identifier member. But don't forget that the order matter (the <literal>&lt;discriminator&gt;</literal> must be after the <literal>&lt;id&gt;</literal>). The order used comes from the order of elements in the NHibernate mapping schema. Personally, I prefer using negative numbers for these attributes (if they come before!).</para>
+			</listitem>
+			<listitem>
+				<para>You can add <classname>[HibernateMapping]</classname> on your classes to specify <literal>&lt;hibernate-mapping&gt;</literal> attributes (used when serializing the class in its stream). You can also use <methodname>HbmSerializer.Hbm*</methodname> properties (used when serializing an assembly or a type that is not decorated with <classname>[HibernateMapping]</classname>).</para>
+			</listitem>
+			<listitem>
+				<para>Instead of using a string for <methodname>DiscriminatorValue</methodname> (in <classname>[Class]</classname> and <classname>[Subclass]</classname>), you can use any object you want. Example: <programlisting>[Subclass(DiscriminatorValueEnumFormat="d", DiscriminatorValueObject=DiscEnum.Val1)]</programlisting> Here, the object is an Enum, and you can set the format you want (the default value is "g"). Note that you must put it <emphasis role="strong">before</emphasis>! For others types, It simply use the <methodname>ToString()</methodname> method of the object.</para>
+			</listitem>
+			<listitem>
+				<para>If you are using properties of the type <classname>Nullables.NullableXXX</classname> (from the library <link linkend="Nullables">Nullables</link>), then they will be mapped to <classname>Nullables.NHibernate.NullableXXXType</classname> automatically; don't set <literal>Type="..."</literal> in <classname>[Property]</classname> (leave it null). Thanks to <emphasis>Michael Third</emphasis> for the idea :)</para>
+			</listitem>
+			<listitem>
+				<para>Each stream generated by NHibernate.Mapping.Attributes can contain a comment with the date of the generation; You may enable/disable this by using the method <methodname>WriteDateComment</methodname>.</para>
+			</listitem>
+			<listitem>
+				<para>If you forget to provide a required xml attribute, it will obviously throw an exception while generating the mapping.</para>
+			</listitem>
+			<listitem>
+				<para><classname>[Component]</classname> is not obvious to map; and it is harder when you want to share this component in many classes. <emphasis>NHibernate.Mapping.Attributes.Test</emphasis> contains the classes <classname>JoinedBaz</classname> and <classname>Stuff</classname> which both use the component <classname>Address</classname>.</para>
+				<para>Basically, it is done by adding <programlisting>[Component(Name = "MyAddress")] private class SubAddress : Address {}</programlisting> in each class. One of the advantages is that you don't have to use the same name for the property. But you have to add it in <emphasis role="strong">each</emphasis> class (and it can not be inherited; though, you can customize it to do that...).</para>
+			</listitem>
+			<listitem>
+				<formalpara><title>About customization</title>
+					<para><classname>HbmSerializer</classname> uses <classname>HbmWriter</classname> to serialize each kind of attributes. Their methods are virtual; so you can create a subclass and override any method you want (to change its default behavior).</para>
+				</formalpara>
+				<para>Use the property <methodname>HbmSerializer.HbmWriter</methodname> to change the writer used (you may set a subclass of <classname>HbmWriter</classname>).</para>
+			</listitem>
+		</itemizedlist>
+		<para>Example using some this tips: (0, 1 and 2 are position indexes)
+<programlisting>
+    [NHibernate.Mapping.Attributes.Id(0, TypeType=typeof(int))] // Don't put it after [ManyToOne] !!!
+        [NHibernate.Mapping.Attributes.Generator(1, Class="uuid.hex")]
+    [NHibernate.Mapping.Attributes.ManyToOne(2, ClassType=typeof(Foo), OuterJoin=OuterJoinStrategy.True)]
+    private Foo Entity;
+</programlisting>
+Generates:
+<programlisting><![CDATA[
+    <id type="Int32">
+        <generator class="uuid.hex" />
+    </id>
+    <many-to-one name="Entity" class="Namespaces.Foo, SampleAssembly" outer-join="true" />
+]]></programlisting>
+		</para>
+		<para>There is still a potential problem with ordering the attributes:</para>
+		<para>When a parent element "p" has a child element "x" that is also the child element of another child element "c" of "p" (preceding "x") :D
+Illustration:<programlisting><![CDATA[
+    <p>
+        <c>
+            <x />
+        </c>
+        <x />
+    </p>
+]]></programlisting>
+		</para>
+		<para>In this case, when writing:
+			<programlisting>
+    [Attributes.P(0)]
+        [Attributes.C(1)]
+            [Attributes.X(2)]
+        [Attributes.X(3)]
+    public MyType MyProperty;</programlisting>
+		X(3) will always belong to C(1) ! (as X(2)). But I haven't found a "real-world situation" :)
+		</para>
+		<para>Anyway, the solution would be to add a "int Parent" property to BaseAttribute so that you can create a real graph...</para>
+	</section>
+
+
+	<section id="NHibernate.Mapping.Attributes-todo">
+		<title>Know issues and TODOs</title>
+		<para>Read TODOs in the source code ;)</para>
+		<para>Actually, there is no know issue nor planned modification. This library should be stable and complete; but if you find a bug or think of an useful improvement, <link linkend="Support">contact us</link>!</para>
+		<para>On side note, it would be nice to write a better TestFixture than <emphasis>NHibernate.Mapping.Attributes.Test</emphasis> :D</para>
+	</section>
+
+
+	<section id="NHibernate.Mapping.Attributes-devnotes">
+		<title>Developer Notes</title>
+		<para>Any change to the schema (nhibernate-mapping-2.0.xsd) implies:</para>
+		<itemizedlist>
+			<listitem>
+				<para>Checking if there is any change to do in the Generator (like updating KnowEnums / AllowMultipleValue / IsRoot / IsSystemType)</para>
+			</listitem>
+			<listitem>
+				<para>Updating <filename>/src/NHibernate.Mapping.Attributes/nhibernate-mapping-2.0.xsd</filename> and running the Generator again (even if it wasn't modified)</para>
+			</listitem>
+			<listitem>
+				<para>Running the Test project and make sure that no exception is thrown. A class/property should be modified/added in this project to be sure that any new breaking change will be caught (=> update the reference hbm.xml files and/or the project <filename>NHibernate.Mapping.Attributes-1.1.csproj</filename>)</para>
+			</listitem>
+		</itemizedlist>
+		<para>This implementation is based on NHibernate mapping schema; so there is probably lot of "standard schema features" that are not supported...</para>
+		<para>The version of NHibernate.Mapping.Attributes should be the version of the NHibernate schema used to generate it (=> the version of NHibernate library).</para>
+		<para>In the design of this project, performance is a (<emphasis>very</emphasis>) minor goal :) Easier implementation and maintenance are far more important.</para>
+	</section>
+
+
+</chapter>
