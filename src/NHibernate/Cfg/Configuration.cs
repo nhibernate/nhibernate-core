@@ -166,14 +166,6 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Returns the identifier type of a mapped class
-		/// </summary>
-		public IType GetIdentifierType( System.Type persistentClass )
-		{
-			return ( ( PersistentClass ) classes[ persistentClass ] ).Identifier.Type;
-		}
-
-		/// <summary>
 		/// The class mappings 
 		/// </summary>
 		public ICollection ClassMappings
