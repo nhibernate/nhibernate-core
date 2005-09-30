@@ -94,45 +94,26 @@ namespace NHibernate.Type
 			return 2;
 		}
 
-		/// <summary></summary>
 		public override string Name
 		{
 			get { return "Object"; }
 		}
 
-		/// <summary></summary>
 		public override bool HasNiceEquals
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public override bool IsMutable
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
 		{
 			throw new NotSupportedException( "object is a multicolumn type" );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="names"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
 		{
 			return Resolve(
@@ -161,13 +142,6 @@ namespace NHibernate.Type
 				session.InternalLoad( clazz, id );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		/// <param name="session"></param>
 		public override void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session )
 		{
 			object id;
@@ -187,17 +161,11 @@ namespace NHibernate.Type
 			identifierType.NullSafeSet( st, id, index + 1, session ); // metaType must be single-column type
 		}
 
-		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
 			get { return typeof( object ); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns></returns>
 		public override SqlType[ ] SqlTypes( IMapping mapping )
 		{
 			return ArrayHelper.Join(
@@ -205,12 +173,6 @@ namespace NHibernate.Type
 				identifierType.SqlTypes( mapping ) );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
 			return value == null ?
@@ -224,20 +186,12 @@ namespace NHibernate.Type
 			throw new NotSupportedException();//TODO: is this right??
 		}
 
-		/// <summary></summary>
 		[Serializable]
 		public sealed class ObjectTypeCacheEntry
 		{
-			/// <summary></summary>
 			public System.Type clazz;
-			/// <summary></summary>
 			public object id;
 
-			/// <summary>
-			/// 
-			/// </summary>
-			/// <param name="clazz"></param>
-			/// <param name="id"></param>
 			public ObjectTypeCacheEntry( System.Type clazz, object id )
 			{
 				this.clazz = clazz;
@@ -245,51 +199,31 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cached"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object Assemble( object cached, ISessionImplementor session, object owner )
 		{
 			ObjectTypeCacheEntry e = ( ObjectTypeCacheEntry ) cached;
 			return ( cached == null ) ? null : session.Load( e.clazz, e.id );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public override object Disassemble( object value, ISessionImplementor session )
 		{
-			return ( value == null ) ? null : new ObjectTypeCacheEntry( value.GetType(), session.GetEntityIdentifier( value ) );
+			return ( value == null ) ?
+				null :
+				new ObjectTypeCacheEntry(
+					value.GetType(),
+					session.GetEntityIdentifier( value ) );
 		}
 
-		/// <summary></summary>
 		public override bool IsObjectType
 		{
 			get { return true; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public Cascades.CascadeStyle Cascade( int i )
 		{
 			return Cascades.CascadeStyle.StyleNone;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public OuterJoinFetchStrategy EnableJoinedFetch( int i )
 		{
 			return OuterJoinFetchStrategy.Lazy;
@@ -297,19 +231,11 @@ namespace NHibernate.Type
 
 		private static readonly string[ ] PROPERTY_NAMES = new string[ ] {"class", "id"};
 
-		/// <summary></summary>
 		public string[ ] PropertyNames
 		{
 			get { return ObjectType.PROPERTY_NAMES; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="i"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public object GetPropertyValue( Object component, int i, ISessionImplementor session )
 		{
 			return ( i == 0 ) ?
@@ -317,23 +243,11 @@ namespace NHibernate.Type
 				Id( component, session );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public object[ ] GetPropertyValues( Object component, ISessionImplementor session )
 		{
 			return new object[ ] { NHibernateProxyHelper.GetClass( component ), Id( component, session )};
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		private object Id( object component, ISessionImplementor session )
 		{
 			try
@@ -346,17 +260,11 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary></summary>
 		public IType[ ] Subtypes
 		{
-			get { return new IType[ ] {metaType, identifierType}; }
+			get { return new IType[ ] { metaType, identifierType }; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="values"></param>
 		public void SetPropertyValues( object component, object[ ] values )
 		{
 			throw new NotSupportedException();
@@ -367,13 +275,11 @@ namespace NHibernate.Type
 			throw new NotSupportedException();
 		}
 
-		/// <summary></summary>
 		public override bool IsComponentType
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public ForeignKeyType ForeignKeyType
 		{
 			get
@@ -383,7 +289,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary></summary>
 		public override bool IsAssociationType
 		{
 			get { return true; }
@@ -397,33 +302,16 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
 		{
 			throw new InvalidOperationException( "any types do not have a unique referenced persister" );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		public string[] GetReferencedColumns( ISessionFactoryImplementor factory )
 		{
 			throw new InvalidOperationException( "any types do not have unique referenced columns" );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="old"></param>
-		/// <param name="current"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public override bool IsModified(object old, object current, ISessionImplementor session)
 		{
 			if ( current == null )
@@ -440,11 +328,6 @@ namespace NHibernate.Type
 				identifierType.IsModified( holder.id, Id( current, session ), session );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
 		{
 			throw new InvalidOperationException( "any types do not have a unique referenced persister" );

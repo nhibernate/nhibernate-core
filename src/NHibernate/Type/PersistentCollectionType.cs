@@ -17,33 +17,21 @@ namespace NHibernate.Type
 		private readonly string role;
 		private static readonly SqlType[ ] NoSqlTypes = {};
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="role"></param>
 		protected PersistentCollectionType( string role )
 		{
 			this.role = role;
 		}
 
-		/// <summary></summary>
 		public virtual string Role
 		{
 			get { return role; }
 		}
 
-		/// <summary></summary>
 		public override bool IsPersistentCollectionType
 		{
 			get { return true; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
 		public override sealed bool Equals( object x, object y )
 		{
 			return x == y ||
@@ -51,77 +39,32 @@ namespace NHibernate.Type
 				( y is PersistentCollection && ( (PersistentCollection) y ).IsWrapper( x ) );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <returns></returns>
 		public abstract PersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister );
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
 		{
 			throw new AssertionFailure( "bug in PersistentCollectionType" );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object NullSafeGet( IDataReader rs, string[ ] name, ISessionImplementor session, object owner )
 		{
 			return ResolveIdentifier( Hydrate( rs, name, session, owner ), session, owner );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		/// <param name="session"></param>
 		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public override SqlType[ ] SqlTypes( IMapping session )
 		{
 			return NoSqlTypes;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public override int GetColumnSpan( IMapping session )
 		{
 			return 0;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
 			if( value == null )
@@ -152,17 +95,11 @@ namespace NHibernate.Type
 		}
 
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public override object DeepCopy( object value )
 		{
 			return value;
 		}
 
-		/// <summary></summary>
 		public override string Name
 		{
 			get { return ReturnedClass.Name; }
@@ -184,30 +121,16 @@ namespace NHibernate.Type
 			return ( ( ICollection ) collection );
 		}
 
-		/// <summary></summary>
 		public override bool IsMutable
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public override object Disassemble( object value, ISessionImplementor session )
 		{
 			return null;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cached"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object Assemble( object cached, ISessionImplementor session, object owner )
 		{
 			object id = session.GetEntityIdentifier( owner );
@@ -225,13 +148,6 @@ namespace NHibernate.Type
 			return session.Factory.GetPersister( ownerClass ).IsVersioned;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="old"></param>
-		/// <param name="current"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public override bool IsDirty( object old, object current, ISessionImplementor session )
 		{
 			// collections don't dirty an unversioned parent entity
@@ -240,7 +156,6 @@ namespace NHibernate.Type
 			return IsOwnerVersioned( session ) && base.IsDirty( old, current, session );
 		}
 
-		/// <summary></summary>
 		public override bool HasNiceEquals
 		{
 			get { return false; }
@@ -259,66 +174,21 @@ namespace NHibernate.Type
 
 		// Note: return true because this type is castable to IAssociationType. Not because
 		// all collections are associations.
-		/// <summary></summary>
 		public override bool IsAssociationType
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
-		public bool UsePrimaryKeyAsForeignKey
-		{
-			get { return true; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
-		{
-			return (IJoinable) factory.GetCollectionPersister( role );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public string[] GetReferencedColumns( ISessionFactoryImplementor factory )
-		{
-			//I really, really don't like the fact that a Type now knows about column mappings!
-			//bad seperation of concerns ... could we move this somehow to Joinable interface??
-			return GetJoinable( factory ).JoinKeyColumnNames ;
-		}
-
-		/// <summary></summary>
 		public virtual ForeignKeyType ForeignKeyType
 		{
 			get { return ForeignKeyType.ForeignKeyToParent; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object Hydrate( IDataReader rs, string[ ] name, ISessionImplementor session, object owner )
 		{
 			return session.GetEntityIdentifier( owner );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object ResolveIdentifier( object value, ISessionImplementor session, object owner )
 		{
 			if( value == null )
@@ -331,29 +201,33 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary></summary>
 		public virtual bool IsArrayType
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="old"></param>
-		/// <param name="current"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
+		public bool UsePrimaryKeyAsForeignKey
+		{
+			get { return true; }
+		}
+
+		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
+		{
+			return (IJoinable) factory.GetCollectionPersister( role );
+		}
+
+		public string[] GetReferencedColumns( ISessionFactoryImplementor factory )
+		{
+			//I really, really don't like the fact that a Type now knows about column mappings!
+			//bad seperation of concerns ... could we move this somehow to Joinable interface??
+			return GetJoinable( factory ).JoinKeyColumnNames ;
+		}
+
 		public override bool IsModified(object old, object current, ISessionImplementor session)
 		{
 			return false;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
 		{
 			try
@@ -367,38 +241,10 @@ namespace NHibernate.Type
 			}
 			catch ( InvalidCastException ice)
 			{
-				throw new MappingException( "collection role is not queryable", ice );
+				throw new MappingException( "collection role is not queryable " + role, ice );
 			}
 		}
 
-		protected virtual void Clear( ICollection collection )
-		{
-			throw new NotImplementedException(
-				"PersistentCollectionType.Clear was not overriden for type "
-				+ GetType().FullName );
-		}
-
-		protected virtual void Add( ICollection collection, object element )
-		{
-			throw new NotImplementedException(
-				"PersistentCollectionType.Add was not overriden for type "
-				+ GetType().FullName );
-		}
-
-		protected virtual object CopyElement( ICollectionPersister persister, object element, ISessionImplementor session, object owner, IDictionary copiedAlready )
-		{
-			return persister.ElementType.Copy( element, null, session, owner, copiedAlready );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="original"></param>
-		/// <param name="target"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <param name="copiedAlready"></param>
-		/// <returns></returns>
 		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
 		{
 			if ( original == null )
@@ -427,14 +273,36 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		public IType GetElementType( ISessionFactoryImplementor factory )
 		{
 			return factory.GetCollectionPersister( Role ).ElementType;
 		}
+
+		public override string ToString()
+		{
+			return base.ToString() + " for " + Role;
+		}
+
+		// Methods added in NH
+
+		protected virtual void Clear( ICollection collection )
+		{
+			throw new NotImplementedException(
+				"PersistentCollectionType.Clear was not overriden for type "
+				+ GetType().FullName );
+		}
+
+		protected virtual void Add( ICollection collection, object element )
+		{
+			throw new NotImplementedException(
+				"PersistentCollectionType.Add was not overriden for type "
+				+ GetType().FullName );
+		}
+
+		protected virtual object CopyElement( ICollectionPersister persister, object element, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		{
+			return persister.ElementType.Copy( element, null, session, owner, copiedAlready );
+		}
+
 	}
 }

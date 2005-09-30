@@ -16,7 +16,18 @@ namespace NHibernate.Type
 	/// </remarks>
 	public abstract class NullableType : AbstractType
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( NullableType ) );
+		private static readonly bool IsDebugEnabled;
+
+		static NullableType()
+		{
+			//cache this, because it was a significant performance cost
+			IsDebugEnabled = LogManager.GetLogger( typeof( IType ).Namespace ).IsDebugEnabled;
+		}
+
+		private ILog Log
+		{
+			get { return LogManager.GetLogger( GetType() ); }
+		}
 
 		private SqlType _sqlType;
 
@@ -159,9 +170,9 @@ namespace NHibernate.Type
 		{
 			if( value == null )
 			{
-				if( log.IsDebugEnabled )
+				if( IsDebugEnabled )
 				{
-					log.Debug( "binding null to parameter: " + index.ToString() );
+					Log.Debug( "binding null to parameter: " + index.ToString() );
 				}
 
 				//Do we check IsNullable?
@@ -172,9 +183,9 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				if( log.IsDebugEnabled )
+				if( IsDebugEnabled )
 				{
-					log.Debug( "binding '" + ToString( value ) + "' to parameter: " + index );
+					Log.Debug( "binding '" + ToString( value ) + "' to parameter: " + index );
 				}
 
 				Set( cmd, value, index );
@@ -237,9 +248,9 @@ namespace NHibernate.Type
 
 			if( rs.IsDBNull( index ) )
 			{
-				if( log.IsDebugEnabled )
+				if( IsDebugEnabled )
 				{
-					log.Debug( "returning null as column: " + name );
+					Log.Debug( "returning null as column: " + name );
 				}
 				// TODO: add a method to NullableType.GetNullValue - if we want to
 				// use "MAGIC" numbers to indicate null values...
@@ -259,9 +270,9 @@ namespace NHibernate.Type
 							".  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.", ice );
 				}
 
-				if( log.IsDebugEnabled )
+				if( IsDebugEnabled )
 				{
-					log.Debug( "returning '" + ToString( val ) + "' as column: " + name );
+					Log.Debug( "returning '" + ToString( val ) + "' as column: " + name );
 				}
 
 				return val;

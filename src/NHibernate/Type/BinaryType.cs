@@ -132,23 +132,11 @@ namespace NHibernate.Type
 			return ArrayHelper.Equals( ( byte[ ] ) x, ( byte[ ] ) y );
 		}
 
-		/// <summary></summary>
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
-		/// <summary></summary>
 		public override string Name
 		{
 			get { return "Byte[]"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="val"></param>
-		/// <returns></returns>
 		public override string ToString( object val )
 		{
 			byte[ ] bytes = ( byte[ ] ) val;

@@ -25,18 +25,12 @@ namespace NHibernate.Type
 	public class SerializableType : MutableType
 	{
 		private System.Type serializableClass;
-
 		private BinaryType binaryType;
 
-		/// <summary></summary>
 		internal SerializableType() : this( typeof( Object ) )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="serializableClass"></param>
 		internal SerializableType( System.Type serializableClass ) : base( new BinarySqlType() )
 		{
 			this.serializableClass = serializableClass;
@@ -44,34 +38,22 @@ namespace NHibernate.Type
 
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="serializableClass"></param>
-		/// <param name="sqlType"></param>
 		internal SerializableType( System.Type serializableClass, BinarySqlType sqlType ) : base( sqlType )
 		{
 			this.serializableClass = serializableClass;
 			binaryType = ( BinaryType ) TypeFactory.GetBinaryType( sqlType.Length );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
 		public override void Set( IDbCommand st, object value, int index )
 		{
 			binaryType.Set( st, ToBytes( value ), index );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
+		public override object Get( IDataReader rs, string name )
+		{
+			return Get( rs, rs.GetOrdinal( name ) );
+		}
+
 		public override object Get( IDataReader rs, int index )
 		{
 			byte[ ] bytes = ( byte[ ] ) binaryType.Get( rs, index );
@@ -85,31 +67,11 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
-		{
-			return Get( rs, rs.GetOrdinal( name ) );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		public override System.Type ReturnedClass
 		{
 			get { return serializableClass; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
 		public override bool Equals( object x, object y )
 		{
 			if( x == y )
@@ -123,20 +85,9 @@ namespace NHibernate.Type
 			return binaryType.Equals( ToBytes( x ), ToBytes( y ) );
 		}
 
-		/// <summary></summary>
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public override string ToString( object value )
 		{
-			return ( value == null ) ? null : binaryType.ToString( ToBytes( value ) );
+			return binaryType.ToString( ToBytes( value ) );
 		}
 
 		/// <summary>

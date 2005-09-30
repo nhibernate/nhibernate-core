@@ -9,75 +9,48 @@ namespace NHibernate.Type
 	/// </summary>
 	public class ManyToOneType : EntityType, IAssociationType
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public override int GetColumnSpan( IMapping session )
+		private IType GetReferencedType( IMapping mapping )
 		{
-			return session.GetIdentifierType( AssociatedClass ).GetColumnSpan( session );
+			if( uniqueKeyPropertyName == null )
+			{
+				return mapping.GetIdentifierType( AssociatedClass );
+			}
+			else
+			{
+				return mapping.GetPropertyType( AssociatedClass, uniqueKeyPropertyName );
+			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public override SqlType[ ] SqlTypes( IMapping session )
+		public override int GetColumnSpan( IMapping mapping )
 		{
-			return session.GetIdentifierType( AssociatedClass ).SqlTypes( session );
+			return GetReferencedType( mapping ).GetColumnSpan( mapping );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="uniqueKeyPropertyName"></param>
-		public ManyToOneType( System.Type persistentClass, string uniqueKeyPropertyName ) : base( persistentClass, uniqueKeyPropertyName )
+		public override SqlType[ ] SqlTypes( IMapping mapping )
+		{
+			return GetReferencedType( mapping ).SqlTypes( mapping );
+		}
+
+		public ManyToOneType( System.Type persistentClass ) : this( persistentClass, null )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		/// <param name="session"></param>
+		public ManyToOneType( System.Type persistentClass, string uniqueKeyPropertyName )
+			: base( persistentClass, uniqueKeyPropertyName )
+		{
+		}
+
 		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
 		{
 			GetIdentifierOrUniqueKeyType( session.Factory )
 				.NullSafeSet( cmd, GetIdentifier( value, session ), index, session );
 		}
 
-		/// <summary></summary>
 		public override bool IsOneToOne
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
-		public override bool UsePrimaryKeyAsForeignKey
-		{
-			get { return false; }
-		}
-
-		/// <summary></summary>
-		public override bool IsModified(object old, object current, ISessionImplementor session)
-		{
-			if ( current == null )
-			{
-				return old != null;
-			}
-			if ( old == null )
-			{
-				return current != null ;
-			}
-			return GetIdentifierOrUniqueKeyType( session.Factory ).IsModified( old, GetIdentifier( current, session ), session );
-		}
-
-		/// <summary></summary>
 		public override ForeignKeyType ForeignKeyType
 		{
 			get { return ForeignKeyType.ForeignKeyFromParent; }
@@ -116,32 +89,24 @@ namespace NHibernate.Type
 			return session.InternalLoad( AssociatedClass, id );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="oid"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object Assemble( object oid, ISessionImplementor session, object owner )
+		public override bool UsePrimaryKeyAsForeignKey
 		{
-			object id = GetIdentifierType( session ).Assemble( oid, session, owner );
-			if ( id == null )
-			{
-				return null;
-			}
-			else
-			{
-				return ResolveIdentifier( id, session );
-			}
+			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
+		public override bool IsModified(object old, object current, ISessionImplementor session)
+		{
+			if ( current == null )
+			{
+				return old != null;
+			}
+			if ( old == null )
+			{
+				return current != null ;
+			}
+			return GetIdentifierOrUniqueKeyType( session.Factory ).IsModified( old, GetIdentifier( current, session ), session );
+		}
+
 		public override object Disassemble( object value, ISessionImplementor session )
 		{
 			if ( value == null )
@@ -161,5 +126,17 @@ namespace NHibernate.Type
 			}
 		}
 
+		public override object Assemble( object oid, ISessionImplementor session, object owner )
+		{
+			object id = GetIdentifierType( session ).Assemble( oid, session, owner );
+			if ( id == null )
+			{
+				return null;
+			}
+			else
+			{
+				return ResolveIdentifier( id, session );
+			}
+		}
 	}
 }

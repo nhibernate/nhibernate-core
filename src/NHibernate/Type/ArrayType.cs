@@ -96,6 +96,9 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
+		// Not ported - ToString( object value, ISessionFactoryImplementor factory )
+		// - PesistentCollectionType implementation is able to handle arrays too in .NET
+
 		/// <summary>
 		/// 
 		/// </summary>

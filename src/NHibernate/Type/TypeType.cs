@@ -48,9 +48,9 @@ namespace NHibernate.Type
 				{
 					return ReflectHelper.ClassForName( str );
 				}
-				catch( TypeLoadException )
+				catch( TypeLoadException cnfe )
 				{
-					throw new HibernateException( "Class not found: " + str );
+					throw new HibernateException( "Class not found: " + str, cnfe );
 				}
 			}
 		}
@@ -123,17 +123,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override bool Equals( object x, object y )
 		{
-			if( x == null && y == null )
-			{
-				return true;
-			}
-
-			if( x == null || y == null )
-			{
-				return false;
-			}
-
-			return x.Equals( y );
+			return ObjectUtils.Equals( x, y );
 		}
 
 		/// <summary></summary>

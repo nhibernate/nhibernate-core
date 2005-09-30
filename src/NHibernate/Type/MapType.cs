@@ -73,7 +73,5 @@ namespace NHibernate.Type
 				persister.IndexType.Copy( de.Key, null, session, owner, copiedAlready ),
 				persister.ElementType.Copy( de.Value, null, session, owner, copiedAlready ) );
 		}
-
-
 	}
 }

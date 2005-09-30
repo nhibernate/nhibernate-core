@@ -50,30 +50,6 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		///Gets a value indicating if the implementation is an "object" type
-		/// </summary>
-		/// <value>false - by default an <see cref="AbstractType"/> is not a "object" type.</value>
-		public virtual bool IsObjectType
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// Says whether the value has been modified
-		/// </summary>
-		/// <param name="old"></param>
-		/// <param name="current"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public virtual bool IsModified(
-			object old,
-			object current,
-			ISessionImplementor session )
-		{
-			return IsDirty( old, current, session );
-		}
-
-		/// <summary>
 		/// Disassembles the object into a cacheable representation.
 		/// </summary>
 		/// <param name="value">The value to disassemble.</param>
@@ -116,7 +92,6 @@ namespace NHibernate.Type
 			}
 		}
 
-
 		/// <summary>
 		/// Should the parent be considered dirty, given both the old and current 
 		/// field or element value?
@@ -130,7 +105,6 @@ namespace NHibernate.Type
 		{
 			return !Equals( old, current );
 		}
-
 
 		/// <summary>
 		/// Retrives an instance of the mapped class, or the identifier of an entity 
@@ -154,6 +128,47 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
+		/// Maps identifiers to Entities or Collections. 
+		/// </summary>
+		/// <param name="value">An identifier or value returned by <c>Hydrate()</c></param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
+		/// <param name="owner">The parent Entity is not used by this method.</param>
+		/// <returns>The value.</returns>
+		/// <remarks>
+		/// There is nothing done in this method other than return the value parameter passed in.
+		/// </remarks>
+		public virtual object ResolveIdentifier( object value, ISessionImplementor session, object owner )
+		{
+			return value;
+		}
+
+		/// <summary>
+		///Gets a value indicating if the implementation is an "object" type
+		/// </summary>
+		/// <value>false - by default an <see cref="AbstractType"/> is not a "object" type.</value>
+		public virtual bool IsObjectType
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// Says whether the value has been modified
+		/// </summary>
+		/// <param name="old"></param>
+		/// <param name="current"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public virtual bool IsModified(
+			object old,
+			object current,
+			ISessionImplementor session )
+		{
+			return IsDirty( old, current, session );
+		}
+
+
+
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="original"></param>
@@ -171,19 +186,14 @@ namespace NHibernate.Type
 			return Assemble( Disassemble( original, session ), session, owner );
 		}
 
-		/// <summary>
-		/// Maps identifiers to Entities or Collections. 
-		/// </summary>
-		/// <param name="value">An identifier or value returned by <c>Hydrate()</c></param>
-		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
-		/// <param name="owner">The parent Entity is not used by this method.</param>
-		/// <returns>The value.</returns>
-		/// <remarks>
-		/// There is nothing done in this method other than return the value parameter passed in.
-		/// </remarks>
-		public virtual object ResolveIdentifier( object value, ISessionImplementor session, object owner )
+		public override bool Equals( object obj )
 		{
-			return value;
+			return obj == this || ( obj != null && obj.GetType() == GetType() );
+		}
+
+		public override int GetHashCode()
+		{
+			return GetType().GetHashCode();
 		}
 
 		/// <include file='IType.cs.xmldoc' 
@@ -250,15 +260,5 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
 		/// /> 
 		public abstract object FromString( string xml );
-
-		public override bool Equals( object obj )
-		{
-			return obj == this || ( obj != null && obj.GetType() == GetType() );
-		}
-
-		public override int GetHashCode()
-		{
-			return GetType().GetHashCode();
-		}
 	}
 }

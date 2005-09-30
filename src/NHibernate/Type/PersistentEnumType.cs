@@ -60,6 +60,19 @@ namespace NHibernate.Type
 
 		}
 
+		public override object Get( IDataReader rs, int index )
+		{
+			object code = rs[ index ];
+			if( code == DBNull.Value || code == null )
+			{
+				return null;
+			}
+			else
+			{
+				return GetInstance( code );
+			}
+		}
+
 		/// <summary>
 		/// Gets an instance of the Enum
 		/// </summary>
@@ -119,35 +132,16 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
 		public override bool Equals( object x, object y )
 		{
 			return ( x == y ) || ( x != null && y != null && x.Equals( y ) );
 		}
 
-		/// <summary></summary>
-		public override int GetHashCode()
-		{
-			return base.GetHashCode ();
-		}
-
-		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
 			get { return enumClass; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
 		public override void Set( IDbCommand cmd, object value, int index )
 		{
 			IDataParameter par = ( IDataParameter ) cmd.Parameters[ index ];
@@ -161,31 +155,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
-		{
-			object code = rs[ index ];
-			if( code == DBNull.Value || code == null )
-			{
-				return null;
-			}
-			else
-			{
-				return GetInstance( code );
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		public override object Get( IDataReader rs, string name )
 		{
 			return Get( rs, rs.GetOrdinal( name ) );
@@ -194,36 +163,19 @@ namespace NHibernate.Type
 		/// <summary></summary> 
 		public override string Name
 		{
-			get { return enumClass.Name; }
+			get { return enumClass.FullName; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public override string ToString( object value )
 		{
 			return ( value == null ) ? null : GetValue( value ).ToString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public override object FromStringValue( string xml )
 		{
 			return GetInstance( long.Parse( xml ) );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cached"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object Assemble( object cached, ISessionImplementor session, object owner )
 		{
 			if( cached == null )
@@ -236,25 +188,30 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public override object Disassemble( object value, ISessionImplementor session )
 		{
 			return ( value == null ) ? null : GetValue( value );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public override string ObjectToSQLString( object value )
 		{
 			return GetValue( value ).ToString();
 		}
+
+		public override bool Equals(object obj)
+		{
+			if( !base.Equals (obj) )
+			{
+				return false;
+			}
+
+			return ( ( PersistentEnumType ) obj ).enumClass == enumClass;
+		}
+
+		public override int GetHashCode()
+		{
+			return enumClass.GetHashCode();
+		}
+
 	}
 }

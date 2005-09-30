@@ -164,7 +164,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
-			return value.ToString();
+			return value == null ? "null" : value.ToString();
 		}
 
 		/// <summary>
@@ -203,6 +203,21 @@ namespace NHibernate.Type
 		public override bool HasNiceEquals
 		{
 			get { return false; }
+		}
+
+		public override bool Equals(object obj)
+		{
+			if( !base.Equals( obj ) )
+			{
+				return false;
+			}
+
+			return ( ( CustomType ) obj ).userType.GetType() == userType.GetType();
+		}
+
+		public override int GetHashCode()
+		{
+			return userType.GetHashCode();
 		}
 	}
 }

@@ -46,7 +46,7 @@ namespace NHibernate.Type
 			}
 			if( !userType.ReturnedClass.IsSerializable )
 			{
-				LogManager.GetLogger( typeof( CustomType ) ).Warn( "custom type does not implement Serializable: " + userTypeClass );
+				LogManager.GetLogger( typeof( CustomType ) ).Warn( "custom type is not Serializable: " + userTypeClass );
 			}
 		}
 
@@ -307,6 +307,21 @@ namespace NHibernate.Type
 		public override object FromString(string xml)
 		{
 			throw new NotSupportedException();
+		}
+
+		public override bool Equals(object obj)
+		{
+			if( !base.Equals( obj ) )
+			{
+				return false;
+			}
+
+			return ( ( CompositeCustomType ) obj ).userType.GetType() == userType.GetType();
+		}
+
+		public override int GetHashCode()
+		{
+			return userType.GetHashCode();
 		}
 	}
 }

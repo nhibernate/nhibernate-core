@@ -29,7 +29,7 @@ namespace NHibernate.Cfg
 	/// are immutable and do not retain any association back to the <c>Configuration</c>
 	/// </para>
 	/// </remarks>
-	public sealed class Configuration : IMapping
+	public sealed class Configuration
 	{
         private IDictionary classes;
 		private Hashtable imports; 
@@ -53,36 +53,27 @@ namespace NHibernate.Cfg
 
 		private class Mapping : IMapping
 		{
-			private IDictionary classes;
+			private Configuration configuration;
 
-			public Mapping( IDictionary classes )
+			public Mapping( Configuration configuration )
 			{
-				this.classes = classes;
+				this.configuration = configuration;
 			}
-
-			public IDictionary Classes
-			{
-				set { classes = value; }
-			}
-
-			#region IMapping Members
 
 			public IType GetIdentifierType( System.Type persistentClass )
 			{
-				return ( (PersistentClass) classes[ persistentClass ] ).Identifier.Type;
+				return ( (PersistentClass) configuration.classes[ persistentClass ] ).Identifier.Type;
 			}
 
 			public string GetIdentifierPropertyName( System.Type persistentClass )
 			{
-				return ( (PersistentClass) classes[ persistentClass ] ).IdentifierProperty.Name;
+				return ( (PersistentClass) configuration.classes[ persistentClass ] ).IdentifierProperty.Name;
 			}
 
 			public IType GetPropertyType( System.Type persistentClass, string propertyName )
 			{
-				return ( (PersistentClass) classes[ persistentClass ] ).GetProperty( propertyName ).Type;
+				return ( (PersistentClass) configuration.classes[ persistentClass ] ).GetProperty( propertyName ).Type;
 			}
-
-			#endregion
 		}
 
 		private Mapping mapping;
@@ -116,7 +107,6 @@ namespace NHibernate.Cfg
 			propertyReferences = new ArrayList();
 			interceptor = emptyInterceptor;
 			caches = new Hashtable();
-			mapping = new Mapping( classes );
 		}
 
 		/// <summary>
@@ -125,7 +115,6 @@ namespace NHibernate.Cfg
 		public Configuration()
 		{
 			Environment.Configure();
-			Reset();
 			XmlNode confNode = Environment.ConfigurationNode;
 			if ( confNode != null ) 
 			{
@@ -140,6 +129,8 @@ namespace NHibernate.Cfg
 				properties = Environment.Properties;
 			}
 
+			mapping = new Mapping( this );
+			Reset();
 		}
 
 		/// <summary></summary>
@@ -656,20 +647,20 @@ namespace NHibernate.Cfg
 
 			foreach( Table table in TableMappings )
 			{
-				script.Add( table.SqlCreateString( dialect, this, (string) properties[ Environment.DefaultSchema ] ) );
+				script.Add( table.SqlCreateString( dialect, mapping, (string) properties[ Environment.DefaultSchema ] ) );
 			}
 
 			foreach( Table table in TableMappings )
 			{
 				foreach( Index index in table.IndexCollection )
 				{
-					script.Add( index.SqlCreateString( dialect, this, (string) properties[ Environment.DefaultSchema ] ) );
+					script.Add( index.SqlCreateString( dialect, mapping, (string) properties[ Environment.DefaultSchema ] ) );
 				}
 				if( dialect.HasAlterTable )
 				{
 					foreach( ForeignKey fk in table.ForeignKeyCollection )
 					{
-						script.Add( fk.SqlCreateString( dialect, this, (string) properties[ Environment.DefaultSchema ] ) );
+						script.Add( fk.SqlCreateString( dialect, mapping, (string) properties[ Environment.DefaultSchema ] ) );
 					}
 				}
 			}
@@ -1235,29 +1226,5 @@ namespace NHibernate.Cfg
 		{
 			get { return imports; }
 		}
-
-		// HACK: SHould really implement IMapping, but simpler than dealing with the cascades
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="objectClass"></param>
-		/// <returns></returns>
-		public string GetIdentifierPropertyName( System.Type objectClass )
-		{
-			return null;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
-		public IType GetPropertyType( System.Type persistentClass, string propertyName )
-		{
-			return null;
-		}
-
 	}
 }

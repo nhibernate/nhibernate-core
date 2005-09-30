@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using NHibernate.SqlTypes;
 
@@ -8,7 +9,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.Byte"/> Property 
 	/// to a <see cref="DbType.Byte"/> column.
 	/// </summary>
-	public class ByteType : ValueTypeType, IDiscriminatorType
+	public class ByteType : ValueTypeType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
 		internal ByteType() : base( new ByteSqlType() )
@@ -83,6 +84,21 @@ namespace NHibernate.Type
 		public override object FromStringValue( string xml )
 		{
 			return byte.Parse( xml );
+		}
+
+		public object Next( object current )
+		{
+			return ( byte ) ( ( byte ) current + ( byte )1 );
+		}
+
+		public object Seed
+		{
+			get { return ( byte ) 0; }
+		}
+
+		public IComparer Comparator
+		{
+			get { return Comparer.DefaultInvariant; }
 		}
 	}
 }

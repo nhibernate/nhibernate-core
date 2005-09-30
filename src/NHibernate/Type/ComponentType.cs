@@ -199,6 +199,9 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
 		{
+			return ResolveIdentifier( Hydrate( rs, names, session, owner ), session, owner );
+
+			/*
 			int begin = 0;
 			bool notNull = false;
 			object[ ] values = new object[propertySpan];
@@ -228,6 +231,7 @@ namespace NHibernate.Type
 			{
 				return null;
 			}
+			*/
 		}
 
 		/// <summary>
@@ -403,10 +407,49 @@ namespace NHibernate.Type
 
 			object result = Instantiate();
 			SetPropertyValues( result, values );
+
+			// TODO NH: The code below is present in H2.1, but it breaks some
+			// tests in NH because FooComponent.Parent setter throws
+			// an exception if setting parent to null.
+			//
+			// not absolutely necessary, but helps for some
+			// Equals/GetHashCode implementations
+			//
+			if( parentGetter != null )
+			{
+				parentSetter.Set( result, parentGetter.Get( component ) );
+			}
+
 			return result;
 		}
 
-		/// <summary></summary>
+		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		{
+			if( original == null )
+			{
+				return null;
+			}
+
+			if( original == target )
+			{
+				return target;
+			}
+		
+			object result = target == null
+				? Instantiate( owner, session )
+				: target;
+		
+			object[] values = TypeFactory.Copy(
+				GetPropertyValues( original ), GetPropertyValues( result ),
+				propertyTypes, session, owner, copiedAlready );
+		
+			SetPropertyValues( result, values );
+			return result;
+		}
+
+		/// <remarks>
+		/// This method does not populate the component parent
+		/// </remarks>
 		public object Instantiate()
 		{
 			try
@@ -419,12 +462,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="parent"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public object Instantiate( object parent, ISessionImplementor session )
 		{
 			object result = Instantiate();
@@ -553,13 +590,6 @@ namespace NHibernate.Type
 			return notNull ? values : null;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object ResolveIdentifier( object value, ISessionImplementor session, object owner )
 		{
 			if ( value != null )
@@ -579,13 +609,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="old"></param>
-		/// <param name="current"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public override bool IsModified( object old, object current, ISessionImplementor session )
 		{
 			if ( current == null )
@@ -607,30 +630,5 @@ namespace NHibernate.Type
 			}
 			return false;
 		}
-
-		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
-		{
-			if( original == null )
-			{
-				return null;
-			}
-
-			if( original == target )
-			{
-				return target;
-			}
-		
-			object result = target == null
-				? Instantiate( owner, session )
-				: target;
-		
-			object[] values = TypeFactory.Copy(
-				GetPropertyValues( original ), GetPropertyValues( result ),
-				propertyTypes, session, owner, copiedAlready );
-		
-			SetPropertyValues( result, values );
-			return result;
-		}
-
 	}
 }

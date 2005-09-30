@@ -130,7 +130,7 @@ namespace NHibernate.DomainModel
 			get { return _parent; }
 			set
 			{
-				if (value==null)
+				if (_parent != null && value==null)
 					throw new ArgumentNullException("null parent set");
 				_parent = value;
 			}

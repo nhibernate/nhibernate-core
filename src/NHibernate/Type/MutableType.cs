@@ -36,11 +36,11 @@ namespace NHibernate.Type
 		///	</summary>
 		/// <value>
 		/// false - it is assumed that a MutableType does not implement a 
-		/// well-behaived <c>Equals()</c>.
+		/// well-behaved <c>Equals()</c>.
 		/// </value>
 		/// <remarks>
 		/// There is no concrete rule that <see cref="MutableType"/>s don't implement
-		/// a well-behaived <c>Equals()</c>.  If the <see cref="MutableType"/> does implement
+		/// a well-behaved <c>Equals()</c>.  If the <see cref="MutableType"/> does implement
 		/// the <c>Equals()</c> then set this to <c>true</c>.
 		/// </remarks>
 		public override bool HasNiceEquals

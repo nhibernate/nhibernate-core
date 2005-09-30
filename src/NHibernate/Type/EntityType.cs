@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Text;
 
@@ -16,44 +17,23 @@ namespace NHibernate.Type
 	{
 		private readonly System.Type associatedClass;
 		private readonly bool niceEquals;
-
-		/// <summary></summary>
 		protected readonly string uniqueKeyPropertyName;
 
-		/// <summary></summary>
 		public override sealed bool IsEntityType
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public System.Type AssociatedClass
 		{
 			get { return associatedClass; }
 		}
 
-		/// <summary></summary>
-		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
-		{
-			return associatedClass;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
 		public override sealed bool Equals( object x, object y )
 		{
 			return x == y;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="uniqueKeyPropertyName"></param>
 		protected EntityType( System.Type persistentClass, string uniqueKeyPropertyName )
 		{
 			this.associatedClass = persistentClass;
@@ -61,14 +41,6 @@ namespace NHibernate.Type
 			this.uniqueKeyPropertyName = uniqueKeyPropertyName;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
 		{
 			return NullSafeGet( rs, new string[ ] {name}, session, owner );
@@ -76,29 +48,22 @@ namespace NHibernate.Type
 
 		// This returns the wrong class for an entity with a proxy. Theoretically
 		// it should return the proxy class, but it doesn't.
-		/// <summary></summary>
 		public override sealed System.Type ReturnedClass
 		{
 			get { return associatedClass; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		protected object GetIdentifier( object value, ISessionImplementor session )
 		{
-			if( uniqueKeyPropertyName==null )
+			if( uniqueKeyPropertyName == null )
 			{
 				return session.GetEntityIdentifierIfNotUnsaved( value ); //tolerates nulls
 			}
-			else if( value == null ) 
+			else if( value == null )
 			{
 				return null;
 			}
-			else 
+			else
 			{
 				return session.Factory
 					.GetPersister( AssociatedClass )
@@ -106,12 +71,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		public override string ToString( object value, ISessionFactoryImplementor factory )
 		{
 			IClassPersister persister = factory.GetPersister( associatedClass );
@@ -120,7 +79,7 @@ namespace NHibernate.Type
 				return "null";
 			}
 			StringBuilder result = new StringBuilder();
-			result.Append(  StringHelper.Unqualify( NHibernateProxyHelper.GetClass( value ).FullName ) );
+			result.Append( StringHelper.Unqualify( NHibernateProxyHelper.GetClass( value ).FullName ) );
 			if( persister.HasIdentifierProperty )
 			{
 				result.Append( '#' )
@@ -130,27 +89,16 @@ namespace NHibernate.Type
 			return result.ToString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public override object FromString( string xml )
 		{
 			throw new NotSupportedException(); //TODO: is this correct???
 		}
 
-		/// <summary></summary>
 		public override string Name
 		{
 			get { return associatedClass.Name; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public override object DeepCopy( object value )
 		{
 			return value; //special case ... this is the leaf of the containment graph, even though not immutable
@@ -162,99 +110,35 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public abstract bool IsOneToOne { get; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		protected IType GetIdentifierType( ISessionImplementor session )
+		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
 		{
-			return session.Factory.GetIdentifierType( associatedClass );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public IType GetIdentifierOrUniqueKeyType( ISessionFactoryImplementor factory )
-		{
-			if ( uniqueKeyPropertyName == null )
-			{
-				return factory.GetIdentifierType( associatedClass );
-			}
-			else
-			{
-				return factory.GetPersister( associatedClass ).GetPropertyType( uniqueKeyPropertyName );
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public string GetIdentifierOrUniqueKeyPropertyName( ISessionFactoryImplementor factory )
-		{
-			if ( uniqueKeyPropertyName == null )
-			{
-				return factory.GetIdentifierPropertyName( associatedClass );
-			}
-			else
-			{
-				return uniqueKeyPropertyName;
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		protected abstract object ResolveIdentifier( object id, ISessionImplementor session );
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object ResolveIdentifier( object id, ISessionImplementor session, object owner )
-		{
-			if ( id == null )
+			if( original == null )
 			{
 				return null;
 			}
-			else
+			if( original == target )
 			{
-				if ( uniqueKeyPropertyName == null )
-				{
-					return ResolveIdentifier( id, session );
-				}
-				else
-				{
-					return session.LoadByUniqueKey( AssociatedClass, uniqueKeyPropertyName, id );
-				}
+				return target;
 			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="oid"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object Assemble( object oid, ISessionImplementor session, object owner )
-		{
-			object assembledId = GetIdentifierType( session ).Assemble( oid, session, owner );
-
-			return ResolveIdentifier( assembledId, session, owner );
+			
+			object copied = copiedAlready[ original ];
+			if( copied != null )
+			{
+				return copied;
+			}
+			
+			//its not clear that the rest of code can ever get called...
+			
+			object id = GetIdentifier( original, session );
+			if( id == null )
+			{
+				throw new AssertionFailure( "cannot copy a reference to an object with a null id" );
+			}
+			
+			id = GetIdentifierOrUniqueKeyType( session.Factory ).Copy( id, null, session, owner, copiedAlready );
+			return ResolveIdentifier( id, session, owner );
 		}
 
 		/// <summary></summary>
@@ -267,12 +151,6 @@ namespace NHibernate.Type
 		public override bool IsAssociationType
 		{
 			get { return true; }
-		}
-
-		/// <summary></summary>
-		public bool IsUniqueKeyReference
-		{
-			get { return uniqueKeyPropertyName != null; }
 		}
 
 		/// <summary>
@@ -290,23 +168,8 @@ namespace NHibernate.Type
 			return ResolveIdentifier( Hydrate( rs, names, session, owner ), session, owner );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="names"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public abstract override object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner );
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="old"></param>
-		/// <param name="current"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public override bool IsDirty( object old, object current, ISessionImplementor session )
 		{
 			if( Equals( old, current ) )
@@ -319,7 +182,100 @@ namespace NHibernate.Type
 			return !GetIdentifierType( session ).Equals( oldid, newid );
 		}
 
-		#region IAssociationType Members
+		public bool IsUniqueKeyReference
+		{
+			get { return uniqueKeyPropertyName != null; }
+		}
+
+		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
+		{
+			return ( IJoinable ) factory.GetPersister( associatedClass );
+		}
+
+		public string[ ] GetReferencedColumns( ISessionFactoryImplementor factory )
+		{
+			//I really, really don't like the fact that a Type now knows about column mappings!
+			//bad seperation of concerns ... could we move this somehow to Joinable interface??
+			IJoinable joinable = GetJoinable( factory );
+
+			if( uniqueKeyPropertyName == null )
+			{
+				return joinable.JoinKeyColumnNames;
+			}
+			else
+			{
+				return ( ( IUniqueKeyLoadable ) joinable ).GetUniqueKeyColumnNames( uniqueKeyPropertyName );
+			}
+		}
+
+		protected IType GetIdentifierType( ISessionImplementor session )
+		{
+			return session.Factory.GetIdentifierType( associatedClass );
+		}
+
+		public IType GetIdentifierOrUniqueKeyType( ISessionFactoryImplementor factory )
+		{
+			if( uniqueKeyPropertyName == null )
+			{
+				return factory.GetIdentifierType( associatedClass );
+			}
+			else
+			{
+				return factory.GetPersister( associatedClass ).GetPropertyType( uniqueKeyPropertyName );
+			}
+		}
+
+		public string GetIdentifierOrUniqueKeyPropertyName( ISessionFactoryImplementor factory )
+		{
+			if( uniqueKeyPropertyName == null )
+			{
+				return factory.GetIdentifierPropertyName( associatedClass );
+			}
+			else
+			{
+				return uniqueKeyPropertyName;
+			}
+		}
+
+		/// <summary>
+		/// Resolve an identifier
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		protected abstract object ResolveIdentifier( object id, ISessionImplementor session );
+
+		/// <summary>
+		/// Resolve an identifier or unique key value
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <returns></returns>
+		public override object ResolveIdentifier( object id, ISessionImplementor session, object owner )
+		{
+			if( id == null )
+			{
+				return null;
+			}
+			else
+			{
+				if( uniqueKeyPropertyName == null )
+				{
+					return ResolveIdentifier( id, session );
+				}
+				else
+				{
+					return session.LoadByUniqueKey( AssociatedClass, uniqueKeyPropertyName, id );
+				}
+			}
+		}
+
+		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
+		{
+			return associatedClass;
+		}
+
 		/// <summary>
 		/// When implemented by a class, gets the type of foreign key directionality 
 		/// of this association.
@@ -332,32 +288,20 @@ namespace NHibernate.Type
 		/// </summary>
 		public abstract bool UsePrimaryKeyAsForeignKey { get; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
+		public override bool Equals(object obj)
 		{
-			return (IJoinable) factory.GetPersister( associatedClass );
+			if( !base.Equals( obj ) )
+			{
+				return false;
+			}
+
+			return ( (EntityType) obj ).associatedClass == associatedClass;
 		}
 
-		/// <summary></summary>
-		public string[] GetReferencedColumns( ISessionFactoryImplementor factory )
+		public override int GetHashCode()
 		{
-			//I really, really don't like the fact that a Type now knows about column mappings!
-			//bad seperation of concerns ... could we move this somehow to Joinable interface??
-			IJoinable joinable = GetJoinable( factory );
-
-			if ( uniqueKeyPropertyName == null ) 
-			{
-				return joinable.JoinKeyColumnNames ;
-			}
-			else 
-			{
-				return ( (IUniqueKeyLoadable) joinable ).GetUniqueKeyColumnNames( uniqueKeyPropertyName );
-			}
+			return associatedClass.GetHashCode();
 		}
-		#endregion
+
 	}
 }
