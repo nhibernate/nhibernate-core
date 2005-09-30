@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -180,7 +181,7 @@ namespace NHibernate.Id
 				}
 				if( clazz == null )
 				{
-					clazz = System.Type.GetType( strategy );
+					clazz = ReflectHelper.ClassForName( strategy );
 				}
 				
 				IIdentifierGenerator idgen = ( IIdentifierGenerator ) Activator.CreateInstance( clazz );
