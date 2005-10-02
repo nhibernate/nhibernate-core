@@ -3,6 +3,8 @@ using System.Collections;
 using System.Data;
 using log4net;
 using NHibernate.Driver;
+using NHibernate.Util;
+
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Connection
@@ -75,7 +77,7 @@ namespace NHibernate.Connection
 			{
 				try
 				{
-					driver = ( IDriver ) Activator.CreateInstance( System.Type.GetType( driverClass ) );
+					driver = ( IDriver ) Activator.CreateInstance( ReflectHelper.ClassForName( driverClass ) );
 				}
 				catch( Exception e )
 				{

@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using log4net;
+
+using NHibernate.Util;
+
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Connection
@@ -32,7 +35,7 @@ namespace NHibernate.Connection
 				try
 				{
 					log.Info( "Intitializing connection provider: " + providerClass );
-					connections = ( IConnectionProvider ) Activator.CreateInstance( System.Type.GetType( providerClass ) );
+					connections = ( IConnectionProvider ) Activator.CreateInstance( ReflectHelper.ClassForName( providerClass ) );
 				}
 				catch( Exception e )
 				{

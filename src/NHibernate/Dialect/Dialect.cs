@@ -415,17 +415,8 @@ namespace NHibernate.Dialect
 			throw new MappingException( "Dialect does not support sequences" );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public virtual string QuerySequenceString
-		{
-			get { return null; }
-		}
-
 		private static Dialect InstantiateDialect( string dialectName )
 		{
-			dialectName = dialectName.Trim();
 			try
 			{
 				return ( Dialect ) Activator.CreateInstance( ReflectHelper.ClassForName( dialectName ) );

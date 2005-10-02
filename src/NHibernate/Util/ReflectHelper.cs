@@ -186,7 +186,7 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static System.Type ClassForName( string name )
 		{
-			return System.Type.GetType( name, true );
+			return System.Type.GetType( name.Trim(), true );
 		}
 
 		/// <summary>
