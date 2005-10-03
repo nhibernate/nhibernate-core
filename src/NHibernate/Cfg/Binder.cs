@@ -1111,24 +1111,44 @@ namespace NHibernate.Cfg
 
 		private static void InitOuterJoinFetchSetting( XmlNode node, IFetchable model )
 		{
-			XmlAttribute jfNode = node.Attributes[ "outer-join" ];
-			if( jfNode == null )
+			XmlAttribute fetchNode = node.Attributes[ "fetch" ];
+
+			OuterJoinFetchStrategy fetchStyle;
+
+			if( fetchNode == null )
 			{
-				model.OuterJoinFetchSetting = OuterJoinFetchStrategy.Auto;
-			}
-			else
-			{
-				string eoj = jfNode.Value;
-				if( "auto".Equals( eoj ) )
+				XmlAttribute jfNode = node.Attributes[ "outer-join" ];
+				if( jfNode == null )
 				{
-					model.OuterJoinFetchSetting = OuterJoinFetchStrategy.Auto;
+					fetchStyle = OuterJoinFetchStrategy.Auto;
 				}
 				else
 				{
-					model.OuterJoinFetchSetting = ( "true".Equals( eoj ) ) ?
-						OuterJoinFetchStrategy.Eager : OuterJoinFetchStrategy.Lazy;
+					// use old (HB 2.1) defaults if outer-join is specified
+					string eoj = jfNode.Value;
+					if( "auto".Equals( eoj ) )
+					{
+						// TODO: H3 has two special cases here, for many-to-many and one-to-one
+						fetchStyle = OuterJoinFetchStrategy.Auto;
+					}
+					else
+					{
+						bool join = "true".Equals( eoj );
+						fetchStyle = join ?
+							OuterJoinFetchStrategy.Join :
+							OuterJoinFetchStrategy.Select;
+					}
 				}
 			}
+			else
+			{
+				bool join = "join".Equals( fetchNode.Value );
+				fetchStyle = join ?
+					OuterJoinFetchStrategy.Join :
+					OuterJoinFetchStrategy.Select;
+			}
+
+			model.OuterJoinFetchSetting = fetchStyle;
 		}
 
 		private static void MakeIdentifier( XmlNode node, SimpleValue model, Mappings mappings )

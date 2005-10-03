@@ -11,12 +11,19 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader
 {
-	/// <summary></summary>
+	// TODO: This is actually the same as enum FetchMode, except that
+	// the underlying values are different. There are instances in the code
+	// where an enum value is compared to 0 or -1, so I'm afraid to unify
+	// the two types. - Sergey K
 	public enum OuterJoinFetchStrategy
 	{
 		Lazy = -1,
 		Auto = 0,
-		Eager = 1
+		Eager = 1,
+
+		Default = Auto,
+		Join = Eager,
+		Select = Lazy
 	}
 
 	/// <summary>

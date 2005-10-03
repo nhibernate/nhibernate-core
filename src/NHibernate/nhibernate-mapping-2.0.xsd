@@ -15,6 +15,12 @@
 			<xs:enumeration value="false"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="fetchMode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="select"/> <!-- equivalent to outer-join="false" -->
+			<xs:enumeration value="join"/> <!-- equivalent to outer-join="true" -->
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="cascadeStyle">
 		<xs:annotation>
 			<xs:documentation>Rule as to how to operate on child objects (for more information, read topics about "persistence by reachability" or "transparent/transitive/cascading persistence")</xs:documentation>
@@ -63,6 +69,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional"/>
+		<xs:attribute name="fetch" type="fetchMode" use="optional" />
 		<xs:attribute name="cascade" type="cascadeStyle" use="optional"/>
 		<xs:attribute name="where" type="xs:string" use="optional"/>
 		<xs:attribute name="inverse" type="xs:boolean" use="optional" default="false"/>
@@ -693,6 +700,7 @@
 			<xs:attribute name="column" type="xs:string"/>
 			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
+			<xs:attribute name="fetch" type="fetchMode" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="many-to-one">
@@ -709,6 +717,7 @@
 			<xs:attribute name="unique" type="xs:boolean" default="false"/>
 			<xs:attribute name="cascade" type="cascadeStyle"/>
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
+			<xs:attribute name="fetch" type="fetchMode" use="optional" />
 			<xs:attribute name="update" type="xs:boolean" default="true"/>
 			<xs:attribute name="insert" type="xs:boolean" default="true"/>
 			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
@@ -751,6 +760,7 @@
 			<xs:attribute name="class" type="xs:string"/>
 			<xs:attribute name="cascade" type="cascadeStyle"/>
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto"/>
+			<xs:attribute name="fetch" type="fetchMode" use="optional" />
 			<xs:attribute name="constrained" type="xs:boolean" default="false"/>
 			<xs:attribute name="foreign-key" type="xs:string" use="optional"/>
 			<xs:attribute name="property-ref" type="xs:string"/>

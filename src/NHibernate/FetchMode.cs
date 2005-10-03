@@ -20,12 +20,17 @@ namespace NHibernate
 		/// </summary>
 		Default = 0,
 		/// <summary>
-		/// Fetch lazily.  Equivalent to <c>outer-join="false"</c>
+		/// Fetch eagerly, using a separate select. Equivalent to
+		/// <c>fetch="select"</c> (and <c>outer-join="false"</c>)
 		/// </summary>
-		Lazy = 1,
+		Select = 1,
 		/// <summary>
-		/// Fetch eagerly, using an outer join.  Equivalent to <c>outer-join="true"</c>
+		/// Fetch using an outer join.  Equivalent to
+		/// <c>fetch="join"</c> (and <c>outer-join="true"</c>)
 		/// </summary>
-		Eager = 2
+		Join = 2,
+
+		Lazy = Select,
+		Eager = Join
 	}
 }
