@@ -994,7 +994,7 @@ namespace NHibernate.Cfg
 			foreach( XmlNode node in parent.SelectNodes( CfgNamespacePrefix + ":property", CfgNamespaceMgr ) )
 			{
 				string name = node.Attributes[ "name" ].Value;
-				string value = node.FirstChild.Value;
+				string value = node.InnerText;
 				log.Debug( name + "=" + value );
 				properties[ name ] = value;
 				if( !name.StartsWith( "hibernate" ) )

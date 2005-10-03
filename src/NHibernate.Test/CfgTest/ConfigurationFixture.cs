@@ -110,7 +110,24 @@ namespace NHibernate.Test.CfgTest
 				// the file to delete.
 				System.IO.File.Delete( "hibernate.invalid.cfg.xml" );
 			}
+		}
 
+		[Test]
+		public void EmptyPropertyTag()
+		{
+			string xml = @"<?xml version='1.0' encoding='utf-8' ?>
+<hibernate-configuration xmlns='urn:nhibernate-configuration-2.0'>
+	<session-factory name='NHibernate.Test'>
+		<property name='connection.provider'></property>
+	</session-factory>
+</hibernate-configuration>";
+
+			XmlDocument cfgXml = new XmlDocument();
+			cfgXml.LoadXml( xml );
+
+			Configuration cfg = new Configuration();
+			XmlTextReader xtr = new XmlTextReader( xml, XmlNodeType.Document, null );
+			cfg.Configure( xtr );
 		}
 
 		[Test]
