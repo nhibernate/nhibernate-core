@@ -12,7 +12,6 @@ Bug Fixes:
  * [NH-397] - ConfigurationSectionHandler doesn't reads empty properties
 
 Improvements:
- * [NH-95] - NVelocity template of the hbm2net tool (Carlos Guzmán Álvarez)
  * [NH-388] - Support for the "Any", "Meta-Value" tags
  * Added fetch attribute from Hibernate 3 with values "select"/"join".
    fetch="select" is equivalent to outer-join="false", and fetch="join"
