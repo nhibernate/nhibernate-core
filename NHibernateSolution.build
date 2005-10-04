@@ -43,7 +43,7 @@
 	<property name="project.company" value="NHibernate.org" />
 	<property name="project.version.major" value="0" overwrite="false" />
 	<property name="project.version.minor" value="99" overwrite="false" />
-	<property name="project.version.build" value="2" overwrite="false" />
+	<property name="project.version.build" value="3" overwrite="false" />
 	<property name="project.version.revision" value="0" overwrite="false" />
 	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
 	
