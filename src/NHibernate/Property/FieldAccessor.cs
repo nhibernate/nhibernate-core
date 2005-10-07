@@ -83,6 +83,25 @@ namespace NHibernate.Property
 
 		#endregion
 
+        private static FieldInfo GetField( System.Type type, string fieldName, System.Type originalType )
+        {
+			if( type == null || type == typeof( object ) )
+			{
+				// the full inheritance chain has been walked and we could
+				// not find the Field
+				throw new PropertyNotFoundException( originalType, fieldName );
+			}
+
+			FieldInfo field = type.GetField( fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
+			if( field == null )
+			{
+				// recursively call this method for the base Type
+				field = GetField( type.BaseType, fieldName, originalType );
+			}
+
+			return field;
+        }
+
 		/// <summary>
 		/// Helper method to find the Field.
 		/// </summary>
@@ -96,24 +115,7 @@ namespace NHibernate.Property
 		/// </exception>
 		internal static FieldInfo GetField( System.Type type, string fieldName )
 		{
-			if( type == null || type == typeof( object ) )
-			{
-				// the full inheritance chain has been walked and we could
-				// not find the Field
-				throw new PropertyNotFoundException( type, fieldName );
-			}
-
-			FieldInfo field = type.GetField( fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
-			if( field == null )
-			{
-				// recursively call this method for the base Type
-				field = GetField( type.BaseType, fieldName );
-			}
-
-			// h2.0.3 has a check to see if the field is public - is there a worry about
-			// that in .net??
-
-			return field;
+            return GetField( type, fieldName, type );
 		}
 
 		/// <summary>
