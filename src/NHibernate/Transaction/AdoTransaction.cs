@@ -102,6 +102,11 @@ namespace NHibernate.Transaction
 					trans = session.Connection.BeginTransaction( isolationLevel );
 				}
 			}
+			catch( HibernateException )
+			{
+				// Don't wrap HibernateExceptions
+				throw;
+			}
 			catch( Exception e )
 			{
 				log.Error( "Begin transaction failed", e );
@@ -142,6 +147,11 @@ namespace NHibernate.Transaction
 				AfterTransactionCompletion( true );
 				Dispose();
 			}
+			catch( HibernateException )
+			{
+				// Don't wrap HibernateExceptions
+				throw;
+			}
 			catch( Exception e )
 			{
 				log.Error( "Commit failed", e );
@@ -173,6 +183,11 @@ namespace NHibernate.Transaction
 					trans.Rollback();
 					rolledBack = true;
 					Dispose();
+				}
+				catch( HibernateException )
+				{
+					// Don't wrap HibernateExceptions
+					throw;
 				}
 				catch( Exception e )
 				{
