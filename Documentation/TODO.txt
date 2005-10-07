@@ -93,7 +93,8 @@ NHibernate Documentation: (replace "NHibernate : Table of Contents" in Wiki)
 
 + Programming with NHibernate	+	FAQ & Tips							Preface	=>	Programming.NHibernate		8
 	- Configuration (techs to set properties and adding mapping streams)		=>	Configuration				8
-		Cf. "NHibernate.Cfg.Environment" properties ...
+		Cf. <hibernate-configuration> & "NH.Cfg.Environment" properties ...
+		+ Configuring Log4Net
 	- <hibernate-mapping> elements and attributes								=>	HibernateMapping			8
 	+ Basic Mapping (class, component, ID, property)							=>	Mapping.Basic				8
 		- Versioning + Optimistic/Pessimistic locking
@@ -101,7 +102,7 @@ NHibernate Documentation: (replace "NHibernate : Table of Contents" in Wiki)
 	+ Collections: any, map, set, list, bag, array, <x-to-many>					=>	Mapping.Collection			8
 		+ BLOB + value-typed collections + operations on them + Lazy loading
 	- Inheritance mapping strategies (table-per-x)								=>	Mapping.Inheritance			8
-	+ Query systems (HQL, ICriteria, IQuery): Aggregate funcs/Exprs,			=>	HQL/Criteria/Query			8
+	+ Query systems (HQL/IQuery, ICriteria): Aggregate funcs/Exprs,				=>	HQLQuery/Criteria			8
 		Formula in mapping, OrderBy, Join	+	Session.Enumerable/Scroll/Filter
 	+ Entities lifecycle (through CRUD ops), ID & Equals/GetHashCode tips		=>	Entity.Lifecycle			8
 		- Interacting using IInterceptor, IValidatable, ILyfeCycle
@@ -123,7 +124,7 @@ NHibernate Documentation: (replace "NHibernate : Table of Contents" in Wiki)
 		- Applying Patterns: Gateway, DTO, Mapper ...
 		- Implementing/Validating Business Rules (+ link to FIT)
 	+ Using .NET feats: Win/Web Services, Remoting, Serialization, Dataset,		=>	Using.NET					8
-			Enums, Generics, ...
+			Enums, Generics, Localization (+ of Ex)...
 	- Using Code Generation: MyGeneration & CodeSmith templates + others usages	=>	CodeGeneration				8
 	- On Performance, Memory usage, traps to avoid, common mistakes and caveats	=>	Performance.Tips			9
 	- Guidelines to debug NHibernate (how to quickly solve a problem)			=>	Debugging					9

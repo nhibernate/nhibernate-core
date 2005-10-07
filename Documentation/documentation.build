@@ -4,9 +4,9 @@
 	default="build" 
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
-	<property name="project.version.major" value="0" overwrite="false" />
-	<property name="project.version.minor" value="99" overwrite="false" />
-	<property name="project.version.build" value="1" overwrite="false" />
+	<property name="project.version.major" value="1" overwrite="false" />
+	<property name="project.version.minor" value="0" overwrite="false" />
+	<property name="project.version.build" value="0" overwrite="false" />
 	<property name="project.version.revision" value="0" overwrite="false" />
 	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
 
