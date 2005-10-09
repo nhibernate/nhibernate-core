@@ -1,3 +1,14 @@
+Build 1.0.0.0
+========================
+
+Improvements:
+ * ITransaction.Commit and Rollback will not wrap exceptions that derive
+   from HibernateException into TransactionExceptions, those exceptions
+   will instead be propagated untouched.
+ * FieldAccessor now includes correct type in PropertyNotFoundException.
+ * Oracle9Dialect will now generate a column of type TIMESTAMP(4)
+   for date fields mapped as "datetime".
+
 Build 0.99.3.0 (1.0-rc3)
 ========================
 
