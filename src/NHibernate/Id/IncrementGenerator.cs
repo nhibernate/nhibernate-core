@@ -61,7 +61,7 @@ namespace NHibernate.Id
 			}
 			returnClass = type.ReturnedClass;
 
-			sql = "select max(" + columnName + ") from " + ( schemaName==null ? tableName : schemaName + '.' + tableName );
+			sql = "select max(" + columnName + ") from " + tableName;
 		}
 
 		/// <summary>
