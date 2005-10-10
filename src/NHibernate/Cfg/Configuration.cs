@@ -107,6 +107,7 @@ namespace NHibernate.Cfg
 			propertyReferences = new ArrayList();
 			interceptor = emptyInterceptor;
 			caches = new Hashtable();
+			mapping = new Mapping( this );
 		}
 
 		/// <summary>
@@ -114,6 +115,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public Configuration()
 		{
+			Reset();
 			Environment.Configure();
 			XmlNode confNode = Environment.ConfigurationNode;
 			if ( confNode != null ) 
@@ -128,9 +130,6 @@ namespace NHibernate.Cfg
 			{
 				properties = Environment.Properties;
 			}
-
-			mapping = new Mapping( this );
-			Reset();
 		}
 
 		/// <summary></summary>
