@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 using NHibernate;
 using NHibernate.Type;
@@ -7,45 +8,48 @@ using NHibernate.SqlTypes;
 namespace NHibernate.DomainModel.NHSpecific
 {
 	/// <summary>
-	/// Abstract type used for implementing types from the Nullables library.
+	/// Abstract type used for implementing NHibernate <see cref="IType"/>s for 
+	/// the Nullables library.
 	/// </summary>
-	public abstract class NullableTypesType : NullableType
+	public abstract class NullableTypesType : ImmutableType
 	{
-		public NullableTypesType(SqlType type) : base(type)
+		public NullableTypesType( SqlType type ) : base( type )
 		{
 		}
 
-		public override object NullSafeGet(System.Data.IDataReader rs, string name)
+		public override object NullSafeGet( IDataReader rs, string name )
 		{
-			int index = rs.GetOrdinal(name);
-
-			if( rs.IsDBNull(index) ) 
+			object value = base.NullSafeGet( rs, name );
+			if( value == null )
 			{
-				return NullValue; //this value is determined by the subclass.
+				return NullValue;
 			}
-			else 
-			{		
-				object val = null;
-				try 
-				{
-					val = Get(rs, index);
-				}
-				catch(System.InvalidCastException ice) 
-				{
-					throw new ADOException(
-						"Could not cast the value in field " + name + " to the Type " + this.GetType().Name + 
-						".  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.", ice);
-				}
-
-				return val;
+			else
+			{
+				return value;
 			}
 		}
 
-		public override object Get(System.Data.IDataReader rs, string name)
+		public override object Get( IDataReader rs, string name )
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get( rs, rs.GetOrdinal( name ) );
 		}
 
-		public abstract object NullValue{ get; }
+		public override string ToString( object value )
+		{
+			return value.ToString();
+		}
+
+		public override string Name
+		{
+			get { return ReturnedClass.Name; }
+		}
+
+		public override bool Equals( object x, object y )
+		{
+			return object.Equals( x, y );
+		}
+
+		public abstract object NullValue { get; }
 	}
 }

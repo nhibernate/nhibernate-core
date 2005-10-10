@@ -4,7 +4,10 @@ using System.Runtime.Serialization;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
-	[Serializable, TypeConverter(typeof(NullableInt32Converter))]
+	/// <summary>
+	/// An <see cref="INullableType"/> that wraps an <see cref="Int32"/> value.
+	/// </summary>
+	[System.ComponentModel.TypeConverter(typeof(NullableInt32Converter)), Serializable()]
 	public struct NullableInt32 : IFormattable, IComparable
 	{
 		public static readonly NullableInt32 Default = new NullableInt32();
@@ -22,10 +25,14 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		#endregion
 
+		#region INullable Members
+
 		public bool HasValue
 		{
 			get { return hasValue; }
 		}
+
+		#endregion
 
 		public Int32 Value
 		{
@@ -200,6 +207,30 @@ namespace NHibernate.DomainModel.NHSpecific
 
 			throw new ArgumentException("NullableInt32 can only compare to another NullableInt32 or a System.Int32");
 		}
+
+		#endregion
+
+		#region Parse Members
+
+		public static NullableInt32 Parse(string s)
+		{
+			if ((s == null) || (s.Trim().Length==0) )
+			{
+				return new NullableInt32();
+			}
+			else
+			{
+				try 
+				{
+					return new NullableInt32(Int32.Parse(s));
+				}
+				catch (System.Exception ex) 
+				{ 
+					throw new FormatException("Error parsing '" + s + "' to NullableInt32." , ex);
+				}
+			}
+		}
+		// TODO: implement the rest of the Parse overloads found in Int32
 
 		#endregion
 	}

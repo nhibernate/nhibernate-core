@@ -1,92 +1,53 @@
 using System;
+using System.Data;
 
 using NHibernate.Type;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
+	/// <summary>
+	/// A NHibernate <see cref="IType"/> for a <see cref="NullableInt32"/>.
+	/// </summary>
 	public class NullableInt32Type : NullableTypesType
 	{
-		public NullableInt32Type() : base(new Int32SqlType())
+		public NullableInt32Type() : base( new Int32SqlType() )
 		{
-		}
-
-		public override bool Equals(object x, object y)
-		{
-			//get boxed values.
-			NullableInt32 xTyped = (NullableInt32)x;
-			return xTyped.Equals(y);
 		}
 
 		public override object NullValue
 		{
 			get { return NullableInt32.Default; }
 		}
-		
-		public override bool HasNiceEquals
-		{
-			get { return true; }
-		}
-		
-		public override bool IsMutable
-		{
-			get { return true; }
-		}
-
-		public override string Name
-		{
-			get { return "NullableInt32"; }
-		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof(NullableInt32); }
+			get { return typeof( NullableInt32 ); }
 		}
 
-		public override object DeepCopyNotNull(object val)
+		public override object Get( IDataReader rs, int index )
 		{
-			return val;
+			return new NullableInt32( Convert.ToInt32( rs[ index ] ) );
 		}
 
-		public override object Get(System.Data.IDataReader rs, int index)
+		public override void Set( IDbCommand cmd, object value, int index )
 		{
-			//TODO: perhaps NullableInt32 has a method/operator/contructor that will take an object.
-			object value = rs[index];
+			IDataParameter parameter = ( IDataParameter ) cmd.Parameters[ index ];
+			NullableInt32 nullableValue = ( NullableInt32 ) value;
 
-			if( value==DBNull.Value )
-			{
-				return NullableInt32.Default;
-			}
-			else 
-			{
-				return new NullableInt32(Convert.ToInt32(value));
-			}
-		}
-
-		public override void Set(System.Data.IDbCommand cmd, object value, int index)
-		{
-			System.Data.IDataParameter parameter = (System.Data.IDataParameter)cmd.Parameters[index];
-			NullableInt32 nullableValue = (NullableInt32)value;
-
-			if( nullableValue.HasValue ) 
+			if( nullableValue.HasValue )
 			{
 				parameter.Value = nullableValue.Value;
 			}
-			else 
+			else
 			{
 				parameter.Value = DBNull.Value;
 			}
 		}
 
-		public override string ToString(object val)
-		{
-			return val.ToString();
-		}
-
 		public override object FromStringValue( string xml )
 		{
-			return new NullableInt32( int.Parse( xml ) );
+			return NullableInt32.Parse( xml );
 		}
-
 	}
 }
