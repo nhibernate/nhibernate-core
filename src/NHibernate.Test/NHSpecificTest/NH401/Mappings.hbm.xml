@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" schema="dbo" default-cascade="save-update" auto-import="false"
+    namespace="NHibernate.Test.NHSpecificTest.NH401" assembly="NHibernate.Test">
+  <class name="Club" table="CLUB">
+    
+    <id name="Id" unsaved-value="0">
+      <column name="CLUB_ID" />
+      <generator class="increment" />
+    </id>
+    
+    <property name="LastUpdated" type="timestamp"/>
+    
+    <property name="Active" />
+    <property name="CheckLPCMember" column="CHECK_LPC_MEMBER" type="Decimal" />
+    <property name="Clubcode" column="CLUB_CODE" type="String" />
+    <property name="FreeLPCMember" column="FREE_LPC_MEMBER" type="Boolean" />
+    <property name="ClubName" column="NAME" type="String" />
+  </class>
+
+  <class name="Clubmember" table="CLUB_MEMBERS">
+    <id name="Id" unsaved-value="0">
+      <column name="CLUB_MEMBER_ID" />
+      <generator class="increment" />
+    </id>
+    <many-to-one name="Club" class="Club">
+      <column name="CLUB_ID" />
+    </many-to-one>
+    <property name="Expirydate" column="EXPIRY_DATE" type="DateTime" />
+    <property name="Joindate" column="JOIN_DATE" type="DateTime" />
+    <property name="ProfileId" column="PROFILE_ID" type="Decimal"/>
+    <property name="Withdrawlamount" column="WITHDRAWL_AMOUNT" type="Decimal" />
+  </class>
+
+</hibernate-mapping>

@@ -112,33 +112,34 @@ namespace NHibernate.Type
 
 		public abstract bool IsOneToOne { get; }
 
-		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copyCache )
 		{
 			if( original == null )
 			{
 				return null;
 			}
-			if( original == target )
+			
+			object cached = copyCache[ original ];
+			if( cached != null )
 			{
-				return target;
+				return cached;
 			}
-			
-			object copied = copiedAlready[ original ];
-			if( copied != null )
+			else
 			{
-				return copied;
+				if( original == target )
+				{
+					return target;
+				}
+				//TODO: can this ever get called????
+				object id = GetIdentifier( original, session );
+				if( id == null )
+				{
+					throw new AssertionFailure( "cannot copy a reference to an object with a null id" );
+				}
+				id = GetIdentifierOrUniqueKeyType( session.Factory )
+						.Copy( id, null, session, owner, copyCache );
+				return ResolveIdentifier( id, session, owner );
 			}
-			
-			//its not clear that the rest of code can ever get called...
-			
-			object id = GetIdentifier( original, session );
-			if( id == null )
-			{
-				throw new AssertionFailure( "cannot copy a reference to an object with a null id" );
-			}
-			
-			id = GetIdentifierOrUniqueKeyType( session.Factory ).Copy( id, null, session, owner, copiedAlready );
-			return ResolveIdentifier( id, session, owner );
 		}
 
 		/// <summary></summary>
