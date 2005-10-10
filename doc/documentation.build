@@ -120,7 +120,7 @@
 	<target name="build-chm" depends="init" description="Generates chm file from docbook files." unless="${target::has-executed('build-chm')}">
 		
 		<!-- default install location -->
-		<property name="hhc.exe" value="C:\Program Files\HTML Help Workshop\hhc" />
+		<property name="hhc.exe" value="${environment::get-folder-path('ProgramFiles')}\HTML Help Workshop\hhc" />
 		<property name="build.chm.dir" value="${output.dir}/chm" />
 
 		<mkdir dir="${build.chm.dir}" failonerror="false" />
