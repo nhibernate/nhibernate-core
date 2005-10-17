@@ -16,8 +16,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCompanyAttribute("NHibernate.org")]
 [assembly: AssemblyProductAttribute("NHibernate.Test")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
-[assembly: AssemblyVersionAttribute("0.99.3.0")]
-[assembly: AssemblyInformationalVersionAttribute("0.99")]
-[assembly: AssemblyFileVersionAttribute("0.99.3.0")]
+[assembly: AssemblyVersionAttribute("1.0.0.0")]
+[assembly: AssemblyInformationalVersionAttribute("1.0")]
+[assembly: AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: AssemblyDelaySignAttribute(false)]
 
