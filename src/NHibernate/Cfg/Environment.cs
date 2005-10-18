@@ -28,7 +28,7 @@ namespace NHibernate.Cfg
 	public sealed class Environment
 	{
 		/// <summary></summary>
-		public const string Version = "0.9.0.0";
+		public const string Version = "1.0.0.0";
 
 		/// <summary></summary>
 		public const string ConnectionProvider = "hibernate.connection.provider";
