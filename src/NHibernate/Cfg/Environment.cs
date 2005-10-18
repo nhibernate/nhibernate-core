@@ -166,7 +166,7 @@ namespace NHibernate.Cfg
 			properties = props;
 		}
 
-		/// <summary></summary>
+		[Obsolete]
 		public static bool UseStreamsForBinary
 		{
 			get { return true; }

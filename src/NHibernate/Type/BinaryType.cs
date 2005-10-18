@@ -55,44 +55,24 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object Get( IDataReader rs, int index )
 		{
-			if( Environment.UseStreamsForBinary )
+			int length = ( int ) rs.GetBytes( index, 0, null, 0, 0 );
+			byte[ ] buffer = new byte[ length ];
+
+			int offset = 0;
+
+			while( length - offset > 0 )
 			{
-				// Is this really necessary?
-				// see http://msdn.microsoft.com/library/en-us/cpguide/html/cpconobtainingblobvaluesfromdatabase.asp?frame=true 
-				// for a how to on reading binary/blob values from a db...
-				MemoryStream outputStream = new MemoryStream( 2048 );
-				byte[ ] buffer = new byte[2048];
-				long fieldOffset = 0;
+				int countRead = ( int ) rs.GetBytes( index, offset, buffer, offset, length - offset );
+				offset += countRead;
 
-				try
+				if( countRead == 0 )
 				{
-					while( true )
-					{
-						long amountRead = rs.GetBytes( index, fieldOffset, buffer, 0, buffer.Length );
-
-						fieldOffset += amountRead;
-						outputStream.Write( buffer, 0, ( int ) amountRead );
-
-						if( amountRead < buffer.Length )
-						{
-							break;
-						}
-					}
-					outputStream.Close();
+					// Should never happen
+					throw new AssertionFailure( "Error in BinaryType.Get, IDataRecord.GetBytes read zero bytes" );
 				}
-				catch( IOException ioe )
-				{
-					throw new HibernateException( "IOException occurred reading a binary value", ioe );
-				}
-
-				return outputStream.ToArray();
-
 			}
-			else
-			{
-				//TODO: not sure if this will work with all dbs
-				return ( byte[ ] ) rs[ index ];
-			}
+
+			return buffer;
 		}
 
 		/// <summary>
