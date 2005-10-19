@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	
+	<class name="NHibernate.DomainModel.NHSpecific.GetSetHelper, NHibernate.DomainModel"
+         table="GetSetHelper">
+
+    <id name="ID" >
+      <generator class="assigned" />
+    </id>
+				
+		<!-- properties -->
+    <property name="A" not-null="false" />
+    <property name="B" not-null="false" />
+    <property name="C" not-null="false" />
+    <property name="D" not-null="false" />
+    <property name="E" not-null="false" />
+    <property name="F" not-null="false" />
+    <property name="G" not-null="false" />
+    <property name="H" not-null="false" />
+    <property name="I" not-null="false" />
+    <property name="L" not-null="false" />
+    <property name="M" not-null="false" />
+
+  </class>
+
+</hibernate-mapping>
+
+

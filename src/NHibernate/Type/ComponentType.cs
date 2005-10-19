@@ -6,6 +6,7 @@ using NHibernate.Loader;
 using NHibernate.Property;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using NHibernate.Persister;
 
 namespace NHibernate.Type
 {
@@ -21,7 +22,9 @@ namespace NHibernate.Type
 		private readonly Cascades.CascadeStyle[ ] cascade;
 		private readonly OuterJoinFetchStrategy[ ] joinedFetch;
 		private ISetter parentSetter;
-		private IGetter parentGetter; 
+		private IGetter parentGetter;
+        private IGetSetHelper getset = null;
+
 
 		/// <summary>
 		/// 
@@ -110,6 +113,8 @@ namespace NHibernate.Type
 			this.propertyNames = propertyNames;
 			this.cascade = cascade;
 			this.joinedFetch = joinedFetch;
+
+            this.getset = GetSetHelperFactory.Create(componentClass, setters, getters);
 		}
 
 		/// <summary></summary>
@@ -314,29 +319,49 @@ namespace NHibernate.Type
 		/// <summary>
 		/// 
 		/// </summary>
+        /// <remarks>
+        /// Use the IGetSetHelper if available
+        /// </remarks>
 		/// <param name="component"></param>
 		/// <returns></returns>
 		public object[ ] GetPropertyValues( object component )
 		{
-			object[ ] values = new object[propertySpan];
-			for( int i = 0; i < propertySpan; i++ )
-			{
-				values[ i ] = GetPropertyValue( component, i );
-			}
-			return values;
+            if (getset == null)
+            {
+                object[] values = new object[propertySpan];
+                for (int i = 0; i < propertySpan; i++)
+                {
+                    values[i] = GetPropertyValue(component, i);
+                }
+                return values;
+            }
+            else
+            {
+                return getset.GetPropertyValues(component);
+            }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="component"></param>
+        /// <remarks>
+        /// Use the IGetSetHelper if available
+        /// </remarks>
+        /// <param name="component"></param>
 		/// <param name="values"></param>
 		public void SetPropertyValues( object component, object[ ] values )
 		{
-			for( int i = 0; i < propertySpan; i++ )
-			{
-				setters[ i ].Set( component, values[ i ] );
-			}
+            if (this.getset == null)
+            {
+                for (int i = 0; i < propertySpan; i++)
+                {
+                    setters[i].Set(component, values[i]);
+                }
+            }
+            else
+            {
+                this.getset.SetPropertyValues(component, values);
+            }
 		}
 
 		/// <summary></summary>

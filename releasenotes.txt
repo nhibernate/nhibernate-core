@@ -1,3 +1,10 @@
+Build 1.0.1.0
+========================
+
+Improvements:
+ * BinaryType.Get should now perform faster
+ * [NH-398] - Bulk property get/set optimization in AbstractEntityPersister (Roberto Paterlini)
+
 Build 1.0.0.0
 ========================
 

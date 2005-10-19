@@ -124,6 +124,8 @@ namespace NHibernate.Persister
 
 		private readonly Hashtable lockers = new Hashtable();
 
+        private readonly IGetSetHelper getset = null;
+
 		protected SqlString GetLockString( LockMode lockMode )
 		{
 			return ( SqlString ) lockers[ lockMode ];
@@ -160,32 +162,52 @@ namespace NHibernate.Persister
 		/// <summary>
 		/// Set the given values to the mapped properties of the given object
 		/// </summary>
+        /// <remarks>
+        /// Use the IGetSetHelper if available
+        /// </remarks>
 		/// <param name="obj"></param>
 		/// <param name="values"></param>
 		public virtual void SetPropertyValues( object obj, object[ ] values )
 		{
-			//TODO: optimizer implementation
-			for( int j = 0; j < HydrateSpan; j++ )
-			{
-				Setters[ j ].Set( obj, values[ j ] );
-			}
+            if (getset == null)
+            {
+                //TODO: optimizer implementation
+                for (int j = 0; j < HydrateSpan; j++)
+                {
+                    Setters[j].Set(obj, values[j]);
+                }
+            }
+            else
+            {
+                getset.SetPropertyValues(obj, values);
+            }
 		}
 
 		/// <summary>
 		/// Return the values of the mapped properties of the object
 		/// </summary>
-		/// <param name="obj"></param>
+        /// <remarks>
+        /// Use the IGetSetHelper if available
+        /// </remarks>
+        /// <param name="obj"></param>
 		/// <returns></returns>
 		public virtual object[ ] GetPropertyValues( object obj )
 		{
-			int span = HydrateSpan;
-			//TODO: optimizer implementation
-			object[ ] result = new object[span];
-			for( int j = 0; j < span; j++ )
-			{
-				result[ j ] = Getters[ j ].Get( obj );
-			}
-			return result;
+            if (getset == null)
+            {
+                int span = HydrateSpan;
+                //TODO: optimizer implementation
+                object[] result = new object[span];
+                for (int j = 0; j < span; j++)
+                {
+                    result[j] = Getters[j].Get(obj);
+                }
+                return result;
+            }
+            else
+            {
+                return getset.GetPropertyValues(obj);
+            }
 		}
 
 		/// <summary>
@@ -854,6 +876,8 @@ namespace NHibernate.Persister
 			{
 				proxyFactory = null;
 			}
+
+            getset = GetSetHelperFactory.Create(MappedClass, Setters, Getters);
 		}
 
 		protected virtual IProxyFactory CreateProxyFactory()
