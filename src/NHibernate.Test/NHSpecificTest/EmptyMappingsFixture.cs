@@ -50,5 +50,12 @@ namespace NHibernate.Test.NHSpecificTest
 				s.Find( "from SomeInvalidClass" );
 			}
 		}
+
+		[Test, ExpectedException( typeof( ArgumentNullException ) )]
+		public void NullInterceptor()
+		{
+			IInterceptor nullInterceptor = null;
+			sessions.OpenSession(nullInterceptor).Close();
+		}
 	}
 }

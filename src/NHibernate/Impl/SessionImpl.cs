@@ -397,6 +397,9 @@ namespace NHibernate.Impl
 		/// <param name="interceptor"></param>
 		internal SessionImpl( IDbConnection connection, SessionFactoryImpl factory, bool autoClose, long timestamp, IInterceptor interceptor )
 		{
+			if(interceptor == null)
+				throw new ArgumentNullException("interceptor", "The interceptor can not be null");
+
 			this.connection = connection;
 			connect = connection == null;
 			this.interceptor = interceptor;
