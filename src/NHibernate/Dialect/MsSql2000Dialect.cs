@@ -166,6 +166,23 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		/// <summary>
+		/// Generates the string to drop the table using the MsSql syntax
+		/// <code>
+		/// if exists (select * from dbo.sysobjects where id = object_id(N'{0}') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+		/// drop table {0}
+		/// </code>
+		/// </summary>
+		/// <param name="tableName">The name of the table to drop.</param>
+		/// <returns>The SQL with the <c>tableName</c> inserted.</returns>
+		public override string GetDropTableString(string tableName)
+		{
+			string dropTable = "if exists (select * from dbo.sysobjects where id = object_id(N'{0}') and OBJECTPROPERTY(id, N'IsUserTable') = 1)" + 
+				" drop table {0}";
+
+			return String.Format( dropTable, tableName );
+		}
+
 		/// <summary></summary>
 		public override bool SupportsForUpdate
 		{
