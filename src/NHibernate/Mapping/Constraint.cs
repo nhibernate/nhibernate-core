@@ -81,7 +81,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public virtual string SqlDropString( Dialect.Dialect dialect, string defaultSchema )
 		{
-			// TODO: NH 1.0+ - Get this string from the dialect
+			// TODO: NH-421
 			return string.Format( "alter table {0} drop constraint {1}", Table.GetQualifiedName( dialect, defaultSchema ), Name );
 		}
 
@@ -96,7 +96,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlCreateString( Dialect.Dialect dialect, IMapping p, string defaultSchema )
 		{
-			// TODO: NH 1.0+ - Get this string from the dialect
+			// TODO: NH-421
 			return string.Format( "alter table {0} {1} ", Table.GetQualifiedName( dialect, defaultSchema ), SqlConstraintString( dialect, Name, defaultSchema ) );
 		}
 

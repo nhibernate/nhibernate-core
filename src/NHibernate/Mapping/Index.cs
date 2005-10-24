@@ -25,7 +25,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlCreateString( Dialect.Dialect dialect, IMapping p, string defaultSchema )
 		{
-			// TODO: NH 1.0+ Get these string from the dialect
+			// TODO: NH-421
 			StringBuilder buf = new StringBuilder( "create index " )
 				.Append( dialect.QualifyIndexName ? name : StringHelper.Unqualify( name ) )
 				.Append( " on " )
@@ -58,7 +58,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlDropString( Dialect.Dialect dialect, string defaultSchema )
 		{
-			// TODO: NH 1.0+ Get this string from the dialect
+			// TODO: NH-421
 			return string.Format( "drop index {0}.{1}", table.GetQualifiedName( dialect, defaultSchema ), name );
 		}
 

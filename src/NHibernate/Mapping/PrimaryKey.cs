@@ -71,7 +71,8 @@ namespace NHibernate.Mapping
  		/// </returns>
  		public override string SqlDropString(NHibernate.Dialect.Dialect dialect, string defaultSchema )
 		{
- 			return "alter table " + Table.GetQualifiedName( dialect, defaultSchema ) + dialect.GetDropPrimaryKeyConstraintString( Name );
+ 			// TODO: NH-421
+			return "alter table " + Table.GetQualifiedName( dialect, defaultSchema ) + dialect.GetDropPrimaryKeyConstraintString( Name );
  		}
 		#endregion
 	}

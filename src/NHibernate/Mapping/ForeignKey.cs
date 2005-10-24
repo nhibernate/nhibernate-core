@@ -104,7 +104,7 @@ namespace NHibernate.Mapping
  		/// </returns>
  		public override string SqlDropString(NHibernate.Dialect.Dialect dialect, string defaultSchema )		
 		{
-			// TODO: NH 1.0+ Get this from the Dialect
+			// TODO: NH-421
  			return string.Format( "alter table {0} {1}", Table.GetQualifiedName( dialect, defaultSchema ),  dialect.GetDropForeignKeyConstraintString( Name ) );
  		}
 
