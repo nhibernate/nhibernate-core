@@ -7,6 +7,26 @@
 			Copyright (C) 2002, 2003 Syntext Inc. See http://www.syntext.com for updates.
 		</xs:documentation>
 	</xs:annotation>
+
+	<!-- Type definitions -->
+	<xs:simpleType name='cacheUsage'>
+		<xs:restriction base='xs:string'>
+			<xs:enumeration value='read-only' />
+			<xs:enumeration value='read-write' />
+			<xs:enumeration value='nonstrict-read-write' />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="classCache">
+		<xs:attribute name='class' use='required' />
+		<xs:attribute name='region' />
+		<xs:attribute name='usage' use='required' type="cacheUsage" />
+	</xs:complexType>
+	<xs:complexType name="collectionCache">
+		<xs:attribute name='collection' use='required' />
+		<xs:attribute name='region' />
+		<xs:attribute name='usage' use='required' type="cacheUsage" />
+	</xs:complexType>
+
 	<xs:element name='hibernate-configuration'>
 		<xs:complexType>
 			<xs:sequence>
@@ -14,36 +34,13 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name='jcs-class-cache'>
-		<xs:complexType>
-			<xs:attribute name='class' use='required' />
-			<xs:attribute name='region' />
-			<xs:attribute name='usage' use='required'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='read-only' />
-						<xs:enumeration value='read-write' />
-						<xs:enumeration value='nonstrict-read-write' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name='jcs-collection-cache'>
-		<xs:complexType>
-			<xs:attribute name='collection' use='required' />
-			<xs:attribute name='region' />
-			<xs:attribute name='usage' use='required'>
-				<xs:simpleType>
-					<xs:restriction base='xs:string'>
-						<xs:enumeration value='read-only' />
-						<xs:enumeration value='read-write' />
-						<xs:enumeration value='nonstrict-read-write' />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-		</xs:complexType>
-	</xs:element>
+	
+	<!-- Caches -->
+	<xs:element name="jcs-class-cache" type="classCache" />
+	<xs:element name="class-cache" type="classCache" />
+	<xs:element name="jcs-collection-cache" type="collectionCache" />
+	<xs:element name="collection-cache" type="collectionCache" />
+	
 	<xs:element name='mapping'>
 		<xs:annotation>
 			<xs:documentation>
@@ -71,7 +68,9 @@
 				<xs:element ref='mapping' minOccurs='0' maxOccurs='unbounded' />
 				<xs:choice minOccurs='0' maxOccurs='unbounded'>
 					<xs:element ref='jcs-class-cache' />
+					<xs:element ref='class-cache' />
 					<xs:element ref='jcs-collection-cache' />
+					<xs:element ref='collection-cache' />
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name='name' />

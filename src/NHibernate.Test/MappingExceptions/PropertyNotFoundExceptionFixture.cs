@@ -24,7 +24,10 @@ namespace NHibernate.Test.MappingExceptions
 			{
 				//"Problem trying to set property type by reflection"
 				// "Could not find a getter for property 'Naame' in class 'NHibernate.Test.MappingExceptions.A'"
-				Exception inner = me.InnerException;
+				Assert.IsTrue( me.InnerException is MappingException );
+				Assert.IsTrue( me.InnerException.InnerException is PropertyNotFoundException );
+
+				Exception inner = me.InnerException.InnerException;
 				Assert.IsTrue( inner.Message.IndexOf( "Naame" ) > 0, "should contain name of missing property 'Naame' in exception" );
 				Assert.IsTrue( inner.Message.IndexOf( "NHibernate.Test.MappingExceptions.A" ) > 0, "should contain name of class that is missing the property" );
 				excCaught = true;

@@ -45,7 +45,8 @@ namespace NHibernate.Test.MappingExceptions
 			}
 			catch( MappingException me ) 
 			{
-				Assert.AreEqual( "duplicate import: A", me.Message );
+				Assert.IsTrue( me.InnerException is MappingException );
+				Assert.AreEqual( "duplicate import: A", me.InnerException.Message );
 			}
 		}
 	}

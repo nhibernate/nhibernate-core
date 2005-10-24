@@ -36,7 +36,9 @@ namespace NHibernate.Test.MappingExceptions
 			}
 			catch( MappingException me ) 
 			{
-				Assert.AreEqual( "persistent class " + typeof(A).FullName + " not found", me.Message );
+				Assert.IsTrue( me.InnerException is MappingException );
+				MappingException innerMe = ( MappingException ) me.InnerException;
+				Assert.AreEqual( "persistent class " + typeof(A).FullName + " not found", innerMe.Message );
 			}
 		}	
 	}

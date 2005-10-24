@@ -131,6 +131,53 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
+		[ExpectedException( typeof( MappingException ) )]
+		public void CacheConfigurationForUnmappedClass()
+		{
+			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
+							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.0'>
+								<session-factory>
+									<class-cache class='NHibernate.DomainModel.A, NHibernate.DomainModel' usage='read-write' region='xx' />
+								</session-factory>
+							</hibernate-configuration>";
+
+			Configuration cfg = new Configuration();
+			cfg.Configure( new XmlTextReader( cfgString, XmlNodeType.Document, null ) );
+		}
+
+		[Test]
+		[ExpectedException( typeof( MappingException ) )]
+		public void CacheConfigurationForUnmappedCollection()
+		{
+			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
+							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.0'>
+								<session-factory>
+									<mapping resource='NHibernate.DomainModel.ABC.hbm.xml' assembly='NHibernate.DomainModel' />
+									<collection-cache collection='NHibernate.DomainModel.B.XX' usage='nonstrict-read-write' region='yy' />
+								</session-factory>
+							</hibernate-configuration>";
+
+			Configuration cfg = new Configuration();
+			cfg.Configure( new XmlTextReader( cfgString, XmlNodeType.Document, null ) );
+		}
+
+		[Test]
+		public void CacheConfiguration()
+		{
+			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
+							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.0'>
+								<session-factory>
+									<mapping resource='NHibernate.DomainModel.ABC.hbm.xml' assembly='NHibernate.DomainModel' />
+									<class-cache class='NHibernate.DomainModel.A, NHibernate.DomainModel' usage='read-write' region='xx' />
+									<collection-cache collection='NHibernate.DomainModel.B.Map' usage='nonstrict-read-write' region='yy' />
+								</session-factory>
+							</hibernate-configuration>";
+
+			Configuration cfg = new Configuration();
+			cfg.Configure( new XmlTextReader( cfgString, XmlNodeType.Document, null ) ).BuildSessionFactory();
+		}
+
+		[Test]
 		public void InvalidXmlInHbmFile()
 		{
 			string filename = "invalid.hbm.xml";
