@@ -210,9 +210,9 @@ namespace NHibernate.Persister
             StringBuilder sb = new StringBuilder();
 
             sb.Append(header);
-            sb.AppendFormat(classDef, mappedClass.FullName.Replace('.', '_'));
+            sb.AppendFormat(classDef, mappedClass.FullName.Replace('.', '_').Replace("+", "__"));
 
-            sb.AppendFormat(startSetMethod, mappedClass.FullName);
+            sb.AppendFormat(startSetMethod, mappedClass.FullName.Replace('+', '.'));
             for (int i = 0; i < setters.Length; i++)
             {
                 ISetter setter = setters[i];
@@ -242,7 +242,7 @@ namespace NHibernate.Persister
             }
             sb.Append(closeSetMethod);  // Close Set
 
-            sb.AppendFormat(startGetMethod, mappedClass.FullName, getters.Length);
+            sb.AppendFormat(startGetMethod, mappedClass.FullName.Replace('+', '.'), getters.Length);
             for (int i = 0; i < getters.Length; i++)
             {
                 IGetter getter = getters[i];

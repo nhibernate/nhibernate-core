@@ -182,7 +182,8 @@ namespace NHibernate.Util
 		/// <returns>The Type for the Class.</returns>
 		/// <remarks>
 		/// See <see cref="System.Type.GetType(System.String, System.Boolean)"/> for a full
-		/// description of how this works.
+		/// description of how this works. This method trims the <c>name</c> before passing
+		/// it to GetType.
 		/// </remarks>
 		public static System.Type ClassForName( string name )
 		{
