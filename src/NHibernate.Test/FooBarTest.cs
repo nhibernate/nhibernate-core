@@ -4677,12 +4677,36 @@ namespace NHibernate.Test
 			IDbCommand cmd = s.Connection.CreateCommand();
 			cmd.CommandText = "update " + dialect.QuoteForTableName( "foos" ) + " set long_ = -3";
 			cmd.ExecuteNonQuery();
+			
+			s.Refresh( foo );
+			Assert.AreEqual( ( long ) -3, foo.Long );
+			Assert.AreEqual( LockMode.Read, s.GetCurrentLockMode( foo ) );
+			s.Refresh( foo, LockMode.Upgrade );
+			Assert.AreEqual( LockMode.Upgrade, s.GetCurrentLockMode( foo ) );
+			s.Delete( foo );
+			s.Flush();
+			s.Close();
+
+		}
+
+		[Test]
+		public void RefreshTransient()
+		{
+			ISession s = OpenSession();
+			Foo foo = new Foo();
+			s.Save( foo );
+			s.Flush();
+			s.Close();
+			
+			s = OpenSession();
+			IDbCommand cmd = s.Connection.CreateCommand();
+			cmd.CommandText = "update " + dialect.QuoteForTableName( "foos" ) + " set long_ = -3";
+			cmd.ExecuteNonQuery();
 			s.Refresh( foo );
 			Assert.AreEqual( ( long ) -3, foo.Long );
 			s.Delete( foo );
 			s.Flush();
 			s.Close();
-
 		}
 
 		[Test]

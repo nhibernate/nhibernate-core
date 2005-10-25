@@ -2682,7 +2682,7 @@ namespace NHibernate.Impl
 				{
 					throw new PersistentObjectException(
 						"attempted to refresh transient instance when persistent instance was already associated with the Session: " +
-							MessageHelper.InfoString( persister, id ) );
+						MessageHelper.InfoString( persister, id ) );
 				}
 			}
 			else
@@ -2705,15 +2705,16 @@ namespace NHibernate.Impl
 				{
 					new EvictVisitor( this ).Process( obj, persister );
 				}
-
-				if( persister.HasCache )
-				{
-					persister.Cache.Remove( id );
-				}
-				EvictCachedCollections( persister, id );
-				object result = e.Persister.Load( e.Id, theObj, lockMode, this );
-				UnresolvableObjectException.ThrowIfNull( result, id, persister.MappedClass );
 			}
+
+			if( persister.HasCache )
+			{
+				persister.Cache.Remove( id );
+			}
+			
+			EvictCachedCollections( persister, id );
+			object result = persister.Load( id, theObj, lockMode, this );
+			UnresolvableObjectException.ThrowIfNull( result, id, persister.MappedClass );
 		}
 
 		/// <summary>
