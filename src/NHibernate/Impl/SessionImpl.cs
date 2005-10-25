@@ -3437,7 +3437,7 @@ namespace NHibernate.Impl
 
 		/// <summary>
 		/// Get the id value for an object that is actually associated with the session.
-		/// This is a bit stricter than getEntityIdentifierIfNotUnsaved().
+		/// This is a bit stricter than GetEntityIdentifierIfNotUnsaved().
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>

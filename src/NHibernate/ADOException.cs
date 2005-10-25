@@ -6,10 +6,13 @@ using log4net;
 namespace NHibernate
 {
 	/// <summary>
-	/// Wraps exceptions that occur during ADO.NET calls. Exceptions thrown
-	/// by various ADO.NET providers are not derived from a common base class
-	/// (<c>SQLException</c> in Java), so just <c>Exception</c>
+	/// Wraps exceptions that occur during ADO.NET calls.
 	/// </summary>
+	/// <remarks>
+	/// Exceptions thrown by various ADO.NET providers are not derived from
+	/// a common base class (<c>SQLException</c> in Java), so <c>Exception</c>
+	/// is used instead in NHibernate.
+	/// </remarks>
 	[ Serializable ]
 	public class ADOException : HibernateException
 	{
