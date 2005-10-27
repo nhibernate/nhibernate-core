@@ -138,7 +138,7 @@ namespace NHibernate.Mapping
 		{
 			if( quoted || name[0] == StringHelper.SingleQuote || char.IsDigit( name, 0 ) )
 			{
-				return "y" + uniqueInteger.ToString() + StringHelper.Underscore;
+				return "y" + uniqueInteger.ToString() + StringHelper.Underscore + suffix;
 			}
 
 			if( ( name.Length + suffix.Length ) < 11 )
