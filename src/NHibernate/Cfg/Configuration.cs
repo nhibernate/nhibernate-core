@@ -1203,6 +1203,12 @@ namespace NHibernate.Cfg
 			XmlNamespaceManager cfgNamespaceMgr = CreateXmlNamespaceManager( doc );
 
 			XmlNode sfNode = doc.DocumentElement.SelectSingleNode( "//" + CfgNamespacePrefix + ":session-factory", cfgNamespaceMgr );
+
+			if( sfNode == null )
+			{
+				throw new MappingException( "<session-factory> element was not found in the configuration file." );
+			}
+
 			XmlAttribute nameNode = sfNode.Attributes[ "name" ];
 			string name = nameNode == null ? null : nameNode.Value;
 

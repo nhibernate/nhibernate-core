@@ -162,6 +162,16 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
+		[ExpectedException( typeof( MappingException ) )]
+		public void NoSessionFactoriesInConfiguration()
+		{
+			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?><someElement />";
+
+			Configuration cfg = new Configuration();
+			cfg.Configure( new XmlTextReader( cfgString, XmlNodeType.Document, null ) );
+		}
+
+		[Test]
 		public void CacheConfiguration()
 		{
 			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
