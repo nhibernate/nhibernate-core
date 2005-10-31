@@ -684,6 +684,7 @@
 	<xs:element name="many-to-any">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="meta-value" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="column" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="id-type" type="xs:string" use="required"/>
