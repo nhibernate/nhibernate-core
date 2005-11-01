@@ -12,13 +12,13 @@ namespace NHibernate.DomainModel
 		// <set> mapping
 		private Iesi.Collections.ISet _zeds;
 		
-		public long Id
+		public virtual long Id
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
 
-		public Iesi.Collections.ISet Zeds
+		public virtual Iesi.Collections.ISet Zeds
 		{
 			get { return _zeds; }
 			set { _zeds = value; }

@@ -22,11 +22,12 @@ namespace NHibernate.Cfg
 		private IDictionary imports;
 		private string schemaName;
 		private string defaultCascade;
-		private bool autoImport;
-		private IList propertyReferences;
-		private string defaultAccess;
 		private string defaultNamespace;
 		private string defaultAssembly;
+		private string defaultAccess;
+		private bool autoImport;
+		private bool defaultLazy;
+		private IList propertyReferences;
 		private IDictionary caches;
 		private INamingStrategy namingStrategy;
 
@@ -306,6 +307,12 @@ namespace NHibernate.Cfg
 		{
 			get { return autoImport; }
 			set { autoImport = value; }
+		}
+
+		public bool DefaultLazy
+		{
+			get { return defaultLazy; }
+			set { defaultLazy = value; }
 		}
 	}
 }

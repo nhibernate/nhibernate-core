@@ -109,14 +109,14 @@ namespace NHibernate.Loader
 
 		protected override JoinType GetJoinType(
 			IAssociationType type,
-			OuterJoinFetchStrategy config,
+			FetchMode fetchMode,
 			string path,
 			string table,
 			string[ ] foreignKeyColumns,
 			ISessionFactoryImplementor factory
 			)
 		{
-			JoinType joinType = base.GetJoinType( type, config, path, table, foreignKeyColumns, factory );
+			JoinType joinType = base.GetJoinType( type, fetchMode, path, table, foreignKeyColumns, factory );
 			// We can use an inner-join for the many-to-many
 			if( joinType == JoinType.LeftOuterJoin && string.Empty.Equals( path ) )
 			{

@@ -21,7 +21,7 @@ namespace NHibernate.Test.CfgTest
 		// Base class mapping
 		private const string aJoinedHbmXml = 
 			@"<?xml version=""1.0"" encoding=""utf-8"" ?>
-        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" namespace=""NHibernate.Test.CfgTest"" assembly=""NHibernate.Test"">
+        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" namespace=""NHibernate.Test.CfgTest"" assembly=""NHibernate.Test"" default-lazy=""false"">
           <class name=""A"" table=""A"">
             <id name=""Id"">
               <generator class=""assigned"" />
@@ -32,7 +32,7 @@ namespace NHibernate.Test.CfgTest
 		// Derived class mapping
 		private const string bJoinedHbmXml = 
 			@"<?xml version=""1.0"" encoding=""utf-8"" ?>
-        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" namespace=""NHibernate.Test.CfgTest"">
+        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" namespace=""NHibernate.Test.CfgTest"" default-lazy=""false"">
           <joined-subclass 
               name=""B, NHibernate.Test""
               extends=""NHibernate.Test.CfgTest.A, NHibernate.Test""
@@ -45,7 +45,7 @@ namespace NHibernate.Test.CfgTest
 		// Add another level
 		private const string cJoinedHbmXml = 
 			@"<?xml version=""1.0"" encoding=""utf-8"" ?>
-        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" assembly=""NHibernate.Test"">
+        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" assembly=""NHibernate.Test"" default-lazy=""false"">
           <joined-subclass 
               name=""NHibernate.Test.CfgTest.C""
               extends=""NHibernate.Test.CfgTest.B, NHibernate.Test""
@@ -57,7 +57,7 @@ namespace NHibernate.Test.CfgTest
 
 		private const string aSubclassHbmXml = 
 			@"<?xml version=""1.0"" encoding=""utf-8"" ?>
-        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" namespace=""NHibernate.Test.CfgTest"" assembly=""NHibernate.Test"">
+        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" namespace=""NHibernate.Test.CfgTest"" assembly=""NHibernate.Test"" default-lazy=""false"">
           <class name=""A"" table=""A"" discriminator-value=""0"">
             <id name=""Id"">
               <generator class=""assigned"" />
@@ -69,7 +69,7 @@ namespace NHibernate.Test.CfgTest
 		// Derived class mapping
 		private const string bSubclassHbmXml = 
 			@"<?xml version=""1.0"" encoding=""utf-8"" ?>
-        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"">
+        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" default-lazy=""false"">
           <joined-subclass 
               name=""NHibernate.Test.CfgTest.B, NHibernate.Test""
               extends=""NHibernate.Test.CfgTest.A, NHibernate.Test""
@@ -83,7 +83,7 @@ namespace NHibernate.Test.CfgTest
 		// Add another level
 		private const string cSubclassHbmXml = 
 			@"<?xml version=""1.0"" encoding=""utf-8"" ?>
-        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" namespace=""NHibernate.Test.CfgTest"" assembly=""NHibernate.Test"">
+        <hibernate-mapping xmlns=""urn:nhibernate-mapping-2.0"" namespace=""NHibernate.Test.CfgTest"" assembly=""NHibernate.Test"" default-lazy=""false"">
           <joined-subclass 
               name=""NHibernate.Test.CfgTest.C, NHibernate.Test""
               extends=""B""

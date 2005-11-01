@@ -59,7 +59,7 @@ namespace NHibernate.Persister
 		private readonly string[ ][ ] subclassPropertyColumnNameClosure;
 		private readonly string[ ] subclassPropertyNameClosure;
 		private readonly IType[ ] subclassPropertyTypeClosure;
-		private readonly OuterJoinFetchStrategy[ ] subclassPropertyEnableJoinedFetch;
+		private readonly FetchMode[ ] subclassPropertyFetchModeClosure;
 
 		// discriminator column
 		private readonly Hashtable subclassesByDiscriminatorValue = new Hashtable();
@@ -129,9 +129,9 @@ namespace NHibernate.Persister
 			get { return discriminatorAlias; }
 		}
 
-		public override OuterJoinFetchStrategy EnableJoinedFetch( int i )
+		public override FetchMode GetFetchMode( int i )
 		{
-			return subclassPropertyEnableJoinedFetch[ i ];
+			return subclassPropertyFetchModeClosure[ i ];
 		}
 
 		public override IType GetSubclassPropertyType( int i )
@@ -1103,7 +1103,7 @@ namespace NHibernate.Persister
 					}
 					propColumns.Add( cols );
 				}
-				joinedFetchesList.Add( prop.Value.OuterJoinFetchSetting );
+				joinedFetchesList.Add( prop.Value.FetchMode );
 			}
 
 			subclassColumnClosure = ( string[ ] ) columns.ToArray( typeof( string ) );
@@ -1115,11 +1115,11 @@ namespace NHibernate.Persister
 			subclassPropertyNameClosure = ( string[ ] ) names.ToArray( typeof( string ) );
 			subclassPropertyColumnNameClosure = ( string[ ][ ] ) propColumns.ToArray( typeof( string[ ] ) );
 
-			subclassPropertyEnableJoinedFetch = new OuterJoinFetchStrategy[joinedFetchesList.Count];
+			subclassPropertyFetchModeClosure = new FetchMode[ joinedFetchesList.Count ];
 			int m = 0;
-			foreach( OuterJoinFetchStrategy qq in joinedFetchesList )
+			foreach( FetchMode qq in joinedFetchesList )
 			{
-				subclassPropertyEnableJoinedFetch[ m++ ] = qq;
+				subclassPropertyFetchModeClosure[ m++ ] = qq;
 			}
 
 			propertyDefinedOnSubclass = new bool[definedBySubclass.Count];

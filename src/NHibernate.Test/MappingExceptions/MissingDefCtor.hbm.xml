@@ -3,7 +3,7 @@
 	This is a valid mapping for a class that is missing
 	a default no arg constructor.
 -->
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" default-lazy="false">
 	<class name="NHibernate.Test.MappingExceptions.MissingDefCtor, NHibernate.Test">
 		<id name="Id">
 			<generator class="native" />

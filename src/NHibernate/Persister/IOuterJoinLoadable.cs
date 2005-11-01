@@ -33,7 +33,7 @@ namespace NHibernate.Persister
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		OuterJoinFetchStrategy EnableJoinedFetch( int i );
+		FetchMode GetFetchMode( int i );
 
 		/// <summary>
 		/// Is this property defined on a subclass of the mapped class?

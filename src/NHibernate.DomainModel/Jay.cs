@@ -20,13 +20,13 @@ namespace NHibernate.DomainModel
 			this.eye = eye;
 		}
 
-		public long Id
+		public virtual long Id
 		{
 			get { return id; }
 			set { id = value; }
 		}
 
-		public Eye Eye
+		public virtual Eye Eye
 		{
 			get { return eye; }
 			set { eye = value; }

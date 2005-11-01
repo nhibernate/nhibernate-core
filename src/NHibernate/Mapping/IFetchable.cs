@@ -7,9 +7,7 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public interface IFetchable
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		OuterJoinFetchStrategy OuterJoinFetchSetting { get; set; }
+		FetchMode FetchMode { get; set; }
+		bool IsLazy { get; set; }
 	}
 }

@@ -68,7 +68,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType( DbType.String, 16777215, "MEDIUMTEXT" );
 			RegisterColumnType( DbType.Time, "TIME" );
 
-			DefaultProperties[ Environment.UseOuterJoin ] = "true";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.MySqlDataDriver";
 		}
 

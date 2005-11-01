@@ -17,25 +17,25 @@ namespace NHibernate.DomainModel
 		{
 		}
 
-		public long Id
+		public virtual long Id
 		{
 			get { return id; }
 			set { id = value; }
 		}
 
-		public string Name
+		public virtual string Name
 		{
 			get { return name; }
 			set { name = value; }
 		}
 
-		public Jay Jay
+		public virtual Jay Jay
 		{
 			get { return jay; }
 			set { jay = value; }
 		}
 
-		public ISet Jays
+		public virtual ISet Jays
 		{
 			get { return jays; }
 			set { jays = value; }

@@ -64,7 +64,7 @@ namespace NHibernate.Collection
 		private readonly System.Type elementClass;
 		private readonly ICacheConcurrencyStrategy cache;
 		private readonly PersistentCollectionType collectionType;
-		private readonly OuterJoinFetchStrategy enableJoinedFetch;
+		private readonly FetchMode fetchMode;
 		private readonly System.Type ownerClass;
 		//private readonly bool isSorted;
 		private readonly IIdentifierGenerator identifierGenerator;
@@ -133,7 +133,7 @@ namespace NHibernate.Collection
 			int elementSpan = element.ColumnSpan;
 			ICollection iter = element.ColumnCollection;
 			Table table = collection.CollectionTable;
-			enableJoinedFetch = element.OuterJoinFetchSetting;
+			fetchMode = element.FetchMode;
 			elementType = element.Type;
 
 			if( !collection.IsOneToMany )
@@ -323,9 +323,9 @@ namespace NHibernate.Collection
 			return StringHelper.Replace( sqlOrderByStringTemplate, Template.Placeholder, alias );
 		}
 
-		public OuterJoinFetchStrategy EnableJoinedFetch
+		public FetchMode FetchMode
 		{
-			get { return enableJoinedFetch; }
+			get { return fetchMode; }
 		}
 
 		public bool HasOrdering

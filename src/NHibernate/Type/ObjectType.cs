@@ -224,9 +224,9 @@ namespace NHibernate.Type
 			return Cascades.CascadeStyle.StyleNone;
 		}
 
-		public OuterJoinFetchStrategy EnableJoinedFetch( int i )
+		public FetchMode GetFetchMode( int i )
 		{
-			return OuterJoinFetchStrategy.Lazy;
+			return FetchMode.Select;
 		}
 
 		private static readonly string[ ] PROPERTY_NAMES = new string[ ] {"class", "id"};

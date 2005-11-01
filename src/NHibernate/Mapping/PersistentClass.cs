@@ -24,6 +24,7 @@ namespace NHibernate.Mapping
 
 		private System.Type mappedClass;
 		private string discriminatorValue;
+		private bool lazy;
 		private Hashtable properties = new Hashtable();
 		private Table table;
 		private System.Type proxyInterface;
@@ -475,6 +476,12 @@ namespace NHibernate.Mapping
 		public MetaAttribute GetMetaAttribute( string name )
 		{
 			return ( MetaAttribute ) metaAttributes[ name ];
+		}
+
+		public bool IsLazy
+		{
+			get { return lazy; }
+			set { lazy = value; }
 		}
 
 		/// <summary>

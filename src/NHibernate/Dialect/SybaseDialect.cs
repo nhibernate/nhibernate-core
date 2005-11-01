@@ -55,7 +55,6 @@ namespace NHibernate.Dialect
 			Types.CLOB, "TEXT" );
 			*/
 
-			DefaultProperties[ Environment.UseOuterJoin ] = "true";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.SybaseClientDriver";
 			DefaultProperties[ Environment.PrepareSql ] = "false";
 		}

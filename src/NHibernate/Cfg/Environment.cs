@@ -47,8 +47,6 @@ namespace NHibernate.Cfg
 		/// <summary></summary>
 		public const string ShowSql = "hibernate.show_sql";
 		/// <summary></summary>
-		public const string UseOuterJoin = "hibernate.use_outer_join";
-		/// <summary></summary>
 		public const string MaxFetchDepth = "hibernate.max_fetch_depth";
 		/// <summary></summary>
 		public const string UseGetGeneratedKeys = "hibernate.jdbc.use_get_generated_keys";

@@ -81,9 +81,6 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		bool IsValid( IMapping mapping );
 
-		/// <summary>
-		/// 
-		/// </summary>
-		OuterJoinFetchStrategy OuterJoinFetchSetting { get; }
+		FetchMode FetchMode { get; }
 	}
 }

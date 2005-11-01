@@ -35,7 +35,6 @@ namespace NHibernate.Dialect
 		public Oracle9Dialect() : base()
 		{
 			//			DefaultProperties[Cfg.Environment.UseStreamsForBinary] = "true";
-			DefaultProperties[ Cfg.Environment.UseOuterJoin ] = "true";
 			DefaultProperties[ Cfg.Environment.PrepareSql ] = "false";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.OracleClientDriver";
 

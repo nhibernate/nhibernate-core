@@ -11,21 +11,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader
 {
-	// TODO: This is actually the same as enum FetchMode, except that
-	// the underlying values are different. There are instances in the code
-	// where an enum value is compared to 0 or -1, so I'm afraid to unify
-	// the two types. - Sergey K
-	public enum OuterJoinFetchStrategy
-	{
-		Lazy = -1,
-		Auto = 0,
-		Eager = 1,
-
-		Default = Auto,
-		Join = Eager,
-		Select = Lazy
-	}
-
 	/// <summary>
 	/// Implements logic for walking a tree of associated classes.
 	/// </summary>
@@ -70,7 +55,7 @@ namespace NHibernate.Loader
 			return type.IsEntityType && mappingDefault;
 		}
 
-		protected virtual JoinType GetJoinType( IAssociationType type, OuterJoinFetchStrategy config, string path, string table, string[] foreignKeyColumns, ISessionFactoryImplementor factory )
+		protected virtual JoinType GetJoinType( IAssociationType type, FetchMode config, string path, string table, string[] foreignKeyColumns, ISessionFactoryImplementor factory )
 		{
 			bool mappingDefault = IsJoinedFetchEnabledByDefault( config, type, factory );
 			return IsJoinedFetchEnabled( type, mappingDefault, path, table, foreignKeyColumns) ?
@@ -156,7 +141,7 @@ namespace NHibernate.Loader
 					IAssociationType associationType = (IAssociationType) type;
 					JoinType joinType = GetJoinType(
 						associationType,
-						persister.EnableJoinedFetch,
+						persister.FetchMode,
 						path,
 						persister.TableName,
 						persister.ElementColumnNames,
@@ -240,7 +225,7 @@ namespace NHibernate.Loader
 			string subpath = SubPath( path, persister.GetSubclassPropertyName( propertyNumber ) );
 			JoinType joinType = GetJoinType(
 				associationType,
-				persister.EnableJoinedFetch( propertyNumber ),
+				persister.GetFetchMode( propertyNumber ),
 				subpath,
 				persister.GetSubclassPropertyTableName( propertyNumber ),
 				foreignKeyColumns,
@@ -371,7 +356,7 @@ namespace NHibernate.Loader
 					string subpath = SubPath( path, propertyNames[ i ] );
 					JoinType joinType = GetJoinType(
 						associationType,
-						componentType.EnableJoinedFetch( i ),
+						componentType.GetFetchMode( i ),
 						subpath,
 						persister.GetSubclassPropertyTableName( propertyNumber ),
 						fkColumns,
@@ -456,7 +441,7 @@ namespace NHibernate.Loader
 					string subpath = SubPath( path, propertyNames[ i ] );
 					JoinType joinType = GetJoinType(
 						associationType,
-						compositeType.EnableJoinedFetch( i ),
+						compositeType.GetFetchMode( i ),
 						subpath,
 						persister.TableName,
 						range,
@@ -507,7 +492,7 @@ namespace NHibernate.Loader
 		/// <param name="type"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		protected bool IsJoinedFetchEnabledByDefault( OuterJoinFetchStrategy config, IAssociationType type, ISessionFactoryImplementor factory )
+		protected bool IsJoinedFetchEnabledByDefault( FetchMode config, IAssociationType type, ISessionFactoryImplementor factory )
 		{
 			if ( !type.IsEntityType && !type.IsPersistentCollectionType )
 			{
@@ -517,25 +502,20 @@ namespace NHibernate.Loader
 			{
 				switch ( config )
 				{
-					case OuterJoinFetchStrategy.Eager:
+					case FetchMode.Join:
 						return true;
 
-					case OuterJoinFetchStrategy.Lazy:
+					case FetchMode.Select:
 						return false;
 
-					case OuterJoinFetchStrategy.Auto:
-						if ( !factory.IsOuterJoinedFetchEnabled )
-						{
-							return false;
-						}
+					case FetchMode.Default:
 						if ( type.IsEntityType )
 						{
+							//TODO: look at the owning property and check that it 
+							//      isn't lazy (by instrumentation)
 							EntityType entityType = type as EntityType;
 							IClassPersister persister = factory.GetPersister( entityType.AssociatedClass );
-							return !persister.HasProxy || (
-								entityType.IsOneToOne &&
-								( (OneToOneType) entityType).IsNullable
-								);
+							return !persister.HasProxy;
 						}
 						else
 						{

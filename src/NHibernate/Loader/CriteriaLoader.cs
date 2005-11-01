@@ -123,7 +123,7 @@ namespace NHibernate.Loader
 
 		protected override JoinType GetJoinType(
 			IAssociationType type,
-			OuterJoinFetchStrategy config,
+			FetchMode fetchMode,
 			string path,
 			string table,
 			string[] foreignKeyColumns,
@@ -139,11 +139,11 @@ namespace NHibernate.Loader
 				//fm==null ||  - an Enum can't be null
 				if( fm == FetchMode.Default )
 				{
-					return base.GetJoinType( type, config, path, table, foreignKeyColumns, factory );
+					return base.GetJoinType( type, fetchMode, path, table, foreignKeyColumns, factory );
 				}
 				else
 				{
-					return fm == FetchMode.Eager ? JoinType.LeftOuterJoin : JoinType.None;
+					return fm == FetchMode.Join ? JoinType.LeftOuterJoin : JoinType.None;
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" namespace="NHibernate.DomainModel" assembly="NHibernate.DomainModel" default-access="property">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" namespace="NHibernate.DomainModel" assembly="NHibernate.DomainModel" default-access="property" default-lazy="false">
 	<class name="M" table="M">
 		<id name="UniqueSequence" column="uniqueSequence" type="long" unsaved-value="0">
 			<generator class="native">             </generator>

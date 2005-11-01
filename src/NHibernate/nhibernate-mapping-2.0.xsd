@@ -121,7 +121,7 @@
 			<xs:attribute name="default-cascade" type="cascadeStyle" use="optional" default="none"/>
 			<xs:attribute name="default-access" type="xs:string" use="optional" default="property">
 				<xs:annotation>
-					<xs:documentation>Can specify how the default access to Get/Set the values for the property</xs:documentation>
+					<xs:documentation>Default property access setting</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="auto-import" type="xs:boolean" use="optional" default="true"/>
@@ -133,6 +133,11 @@
 			<xs:attribute name="assembly" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>Assembly used to find not-Fully Qualified Type Names</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="default-lazy" type="xs:boolean" use="optional" default="true">
+				<xs:annotation>
+					<xs:documentation>Default value of the lazy attribute for persistent classes and collections</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>

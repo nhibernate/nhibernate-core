@@ -273,5 +273,31 @@ namespace NHibernate.Test.CfgTest
 			doc.LoadXml( hbm );
 			cfg.AddDocument( doc );
 		}
+
+		[Test]
+		public void ProxyValidator()
+		{
+			string hbm = @"<?xml version='1.0' ?>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+	<class name='NHibernate.DomainModel.NHSpecific.InvalidProxyClass, NHibernate.DomainModel'
+		lazy='true'>
+		<id name='Id' column='somecolumn'>
+			<generator class='native' />
+		</id>
+	</class>
+</hibernate-mapping>";
+
+			Configuration cfg = new Configuration();
+
+			try
+			{
+				cfg.AddXmlString( hbm ).BuildSessionFactory();
+				Assert.Fail( "Validation should have failed" );
+			}
+			catch( MappingException e )
+			{
+				Assert.IsTrue( e.InnerException is InvalidProxyTypeException );
+			}
+		}
 	}
 }

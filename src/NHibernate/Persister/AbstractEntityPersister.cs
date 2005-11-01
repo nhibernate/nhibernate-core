@@ -1552,7 +1552,7 @@ namespace NHibernate.Persister
 
 		public abstract IType DiscriminatorType { get; }
 
-		public abstract OuterJoinFetchStrategy EnableJoinedFetch( int i );
+		public abstract FetchMode GetFetchMode( int i );
 
 		public abstract SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses );
 

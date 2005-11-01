@@ -4,7 +4,7 @@
 	a mapped property, either through misspelling or user
 	error, etc...
 -->
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" default-lazy="false">
 	<class name="NHibernate.Test.MappingExceptions.A, NHibernate.Test">
 		<id name="Id">
 			<generator class="native" />

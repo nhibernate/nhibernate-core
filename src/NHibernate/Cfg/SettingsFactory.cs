@@ -58,10 +58,6 @@ namespace NHibernate.Cfg
 				log.Info( "Maximum outer join fetch depth: " + maxFetchDepth );
 			}
 
-			//deprecated:
-			bool useOuterJoin = PropertiesHelper.GetBoolean( Environment.UseOuterJoin, properties, true );
-			log.Info( "use outer join fetching: " + useOuterJoin );
-
 			IConnectionProvider connectionProvider = ConnectionProviderFactory.NewConnectionProvider( properties );
 			ITransactionFactory transactionFactory = new TransactionFactory(); // = TransactionFactoryFactory.BuildTransactionFactory(properties);
 			// TransactionManagerLookup transactionManagerLookup = TransactionManagerLookupFactory.GetTransactionManagerLookup( properties );
@@ -173,7 +169,6 @@ namespace NHibernate.Cfg
 			settings.TransactionFactory = transactionFactory;
 			// Not ported - TransactionManagerLookup
 			settings.SessionFactoryName = sessionFactoryName;
-			settings.IsOuterJoinFetchEnabled = useOuterJoin;
 			settings.MaximumFetchDepth = maxFetchDepth;
 			settings.IsQueryCacheEnabled = useQueryCache;
 			settings.IsMinimalPutsEnabled = useMinimalPuts;

@@ -18,12 +18,12 @@ namespace NHibernate.Type
 		private IType[ ] propertyTypes;
 		private int propertySpan;
 		private readonly Cascades.CascadeStyle[ ] cascade;
-		private readonly OuterJoinFetchStrategy[ ] joinedFetch;
+		private readonly FetchMode[ ] joinedFetch;
 
 		public DynamicComponentType(
 			string[ ] propertyNames,
 			IType[ ] propertyTypes,
-			OuterJoinFetchStrategy[ ] joinedFetch,
+			FetchMode[ ] joinedFetch,
 			Cascades.CascadeStyle[ ] cascade
 			)
 		{
@@ -39,7 +39,7 @@ namespace NHibernate.Type
 			return cascade[ i ];
 		}
 
-		public OuterJoinFetchStrategy EnableJoinedFetch( int i )
+		public FetchMode GetFetchMode( int i )
 		{
 			return joinedFetch[ i ];
 		}

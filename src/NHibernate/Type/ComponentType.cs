@@ -20,7 +20,7 @@ namespace NHibernate.Type
 		private readonly string[ ] propertyNames;
 		private readonly int propertySpan;
 		private readonly Cascades.CascadeStyle[ ] cascade;
-		private readonly OuterJoinFetchStrategy[ ] joinedFetch;
+		private readonly FetchMode[ ] joinedFetch;
 		private ISetter parentSetter;
 		private IGetter parentGetter;
         private IGetSetHelper getset = null;
@@ -80,7 +80,7 @@ namespace NHibernate.Type
 		                      ISetter[ ] propertySetters,
 		                      bool foundCustomAcessor, // not used !?!
 		                      IType[ ] propertyTypes,
-		                      OuterJoinFetchStrategy[ ] joinedFetch,
+		                      FetchMode[ ] joinedFetch,
 		                      Cascades.CascadeStyle[ ] cascade,
 		                      string parentProperty)
 		{
@@ -581,7 +581,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public OuterJoinFetchStrategy EnableJoinedFetch( int i )
+		public FetchMode GetFetchMode( int i )
 		{
 			return joinedFetch[ i ];
 		}

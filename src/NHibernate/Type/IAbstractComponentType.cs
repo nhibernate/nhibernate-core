@@ -52,11 +52,6 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		Cascades.CascadeStyle Cascade( int i );
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		OuterJoinFetchStrategy EnableJoinedFetch( int i );
+		FetchMode GetFetchMode( int i );
 	}
 }

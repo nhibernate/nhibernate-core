@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
 	assembly="NHibernate.DomainModel"
-	namespace="NHibernate.DomainModel" >
+	namespace="NHibernate.DomainModel"
+	default-lazy="false">
 
 	<class name="A" lazy="true" discriminator-value="0">
 		<id name="Id" unsaved-value="0" type="Int64">

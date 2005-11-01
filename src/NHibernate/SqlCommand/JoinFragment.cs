@@ -7,15 +7,10 @@ namespace NHibernate.SqlCommand
 	/// <summary></summary>
 	public enum JoinType
 	{
-		/// <summary></summary>
-		None = -666,
-		/// <summary></summary>
-		InnerJoin = 0,
-		/// <summary></summary>
-		FullJoin = -1,
-		/// <summary></summary>
-		LeftOuterJoin = 1,
-		/// <summary></summary>
+		None           = -666,
+		InnerJoin      = 0,
+		FullJoin       = 4,
+		LeftOuterJoin  = 1,
 		RightOuterJoin = 2
 	}
 

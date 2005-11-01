@@ -61,6 +61,6 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Should we load this collection role by outer joining?
 		/// </summary>
-		OuterJoinFetchStrategy EnableJoinedFetch { get; }
+		FetchMode FetchMode { get; }
 	}
 }

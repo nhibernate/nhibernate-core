@@ -34,7 +34,7 @@ namespace NHibernate.Mapping
 		private IComparer comparer;
 		private bool orphanDelete;
 		private int batchSize = 1;
-		private OuterJoinFetchStrategy joinedFetch;
+		private FetchMode fetchMode;
 		private System.Type collectionPersisterClass;
 
 		/// <summary>
@@ -239,10 +239,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public OuterJoinFetchStrategy OuterJoinFetchSetting
+		public FetchMode FetchMode
 		{
-			get { return joinedFetch; }
-			set { joinedFetch = value; }
+			get { return fetchMode; }
+			set { fetchMode = value; }
 		}
 
 		/// <summary>

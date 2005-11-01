@@ -128,82 +128,91 @@ namespace NHibernate.Cfg
 			return ClassForFullNameChecked( FullClassName( name, mappings ), errorMessage );
 		}
 
-		public static void BindClass( XmlNode node, PersistentClass model, Mappings mapping )
+		public static void BindClass( XmlNode node, PersistentClass model, Mappings mappings )
 		{
-			string className = node.Attributes[ "name" ] == null ? null : FullClassName( node.Attributes[ "name" ].Value, mapping );
+			string className = node.Attributes[ "name" ] == null ? null : FullClassName( node.Attributes[ "name" ].Value, mappings );
 
-			//CLASS
+			// CLASS
 			model.MappedClass = ClassForFullNameChecked( className, "persistent class {0} not found" );
 
-			//PROXY INTERFACE
+			// PROXY INTERFACE
 			XmlAttribute proxyNode = node.Attributes[ "proxy" ];
 			XmlAttribute lazyNode = node.Attributes[ "lazy" ];
-			bool lazyTrue = lazyNode != null && "true".Equals( lazyNode.Value );
-			if( proxyNode != null && ( lazyNode == null || lazyTrue ) )
+			bool lazy = lazyNode == null ?
+				mappings.DefaultLazy :
+				"true".Equals( lazyNode.Value );
+
+			// go ahead and set the lazy here, since pojo.proxy can override it.
+			model.IsLazy = lazy;
+
+			if( proxyNode != null )
 			{
-				model.ProxyInterface = ClassForNameChecked( proxyNode.Value, mapping,
+				model.ProxyInterface = ClassForNameChecked( proxyNode.Value, mappings,
 				                                            "proxy class not found: {0}" );
+				model.IsLazy = true;
 			}
-			if( proxyNode == null && lazyTrue )
+			else if( model.IsLazy )
 			{
 				model.ProxyInterface = model.MappedClass;
 			}
 
-			//DISCRIMINATOR
+			ValidateProxyInterface( model );
+
+			// DISCRIMINATOR
 			XmlAttribute discriminatorNode = node.Attributes[ "discriminator-value" ];
 			model.DiscriminatorValue = ( discriminatorNode == null )
 				? model.Name
 				: discriminatorNode.Value;
 
-			//DYNAMIC UPDATE
+			// DYNAMIC UPDATE
 			XmlAttribute dynamicNode = node.Attributes[ "dynamic-update" ];
 			model.DynamicUpdate = ( dynamicNode == null )
 				? false :
 				"true".Equals( dynamicNode.Value );
 
-			//DYNAMIC INSERT
+			// DYNAMIC INSERT
 			XmlAttribute insertNode = node.Attributes[ "dynamic-insert" ];
 			model.DynamicInsert = ( insertNode == null ) ?
 				false :
 				"true".Equals( insertNode.Value );
 
-			//IMPORT
+			// IMPORT
 
 			// we automatically want to add an import of the Assembly Qualified Name (includes version, 
 			// culture, public-key) to the className supplied in the hbm.xml file.  The most common use-case
 			// will have it contain the "FullClassname, AssemblyName", it might contain version, culture, 
 			// public key, etc...) but should not assume it does.
-			mapping.AddImport( model.MappedClass.AssemblyQualifiedName, StringHelper.GetFullClassname( className ) );
+			mappings.AddImport( model.MappedClass.AssemblyQualifiedName, StringHelper.GetFullClassname( className ) );
 
 			// if we are supposed to auto-import the Class then add an import to get from the Classname
 			// to the Assembly Qualified Class Name
-			if( mapping.IsAutoImport )
+			if( mappings.IsAutoImport )
 			{
-				mapping.AddImport( model.MappedClass.AssemblyQualifiedName, StringHelper.GetClassname( className ) );
+				mappings.AddImport( model.MappedClass.AssemblyQualifiedName, StringHelper.GetClassname( className ) );
 			}
 
-			//BATCH SIZE
+			// BATCH SIZE
 			XmlAttribute batchNode = node.Attributes[ "batch-size" ];
 			if( batchNode != null )
 			{
 				model.BatchSize = int.Parse( batchNode.Value );
 			}
 
-			//SELECT BEFORE UPDATE
+			// SELECT BEFORE UPDATE
 			XmlAttribute sbuNode = node.Attributes[ "select-before-update" ];
 			if( sbuNode != null )
 			{
 				model.SelectBeforeUpdate = "true".Equals( sbuNode.Value );
 			}
 
-			//OPTIMISTIC LOCK MODE
+			// OPTIMISTIC LOCK MODE
 			XmlAttribute olNode = node.Attributes[ "optimistic-lock" ];
 			model.OptimisticLockMode = GetOptimisticLockMode( olNode );
 
-			//META ATTRIBUTES
+			// META ATTRIBUTES
 			model.MetaAttributes = GetMetas( node );
 
-			//PERSISTER
+			// PERSISTER
 			XmlAttribute persisterNode = node.Attributes[ "persister" ];
 			if( persisterNode == null )
 			{
@@ -212,9 +221,26 @@ namespace NHibernate.Cfg
 			else
 			{
 				model.ClassPersisterClass = ClassForNameChecked(
-					persisterNode.Value, mapping,
+					persisterNode.Value, mappings,
 					"could not instantiate persister class: {0}" );
 			}
+		}
+
+		private static void ValidateProxyInterface( PersistentClass persistentClass )
+		{
+			if( !persistentClass.IsLazy )
+			{
+				// Nothing to validate
+				return;
+			}
+
+			if( persistentClass.ProxyInterface == null )
+			{
+				// Nothing to validate
+				return;
+			}
+
+			new Proxy.ProxyTypeValidator( persistentClass.ProxyInterface ).Validate();
 		}
 
 		public static void BindSubclass( XmlNode node, Subclass model, Mappings mappings )
@@ -626,14 +652,17 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public static void BindCollection( XmlNode node, Mapping.Collection model, string className, string path, Mappings mappings )
 		{
-			//ROLENAME
+			// ROLENAME
 			model.Role = StringHelper.Qualify( className, path );
+			// TODO: H3.1 has just collection.setRole(path) here - why?
 
 			XmlAttribute inverseNode = node.Attributes[ "inverse" ];
 			if( inverseNode != null )
 			{
 				model.IsInverse = StringHelper.BooleanValue( inverseNode.Value );
 			}
+
+			// TODO: H3.1 - not ported: mutable, optimistic-lock
 
 			XmlAttribute orderNode = node.Attributes[ "order-by" ];
 			if( orderNode != null )
@@ -651,7 +680,7 @@ namespace NHibernate.Cfg
 				model.BatchSize = Int32.Parse( batchNode.Value );
 			}
 
-			//PERSISTER
+			// PERSISTER
 			XmlAttribute persisterNode = node.Attributes[ "persister" ];
 			if( persisterNode == null )
 			{
@@ -664,7 +693,14 @@ namespace NHibernate.Cfg
 					"could not instantiate collection persister class: {0}" );
 			}
 
+			// FETCH STRATEGY
 			InitOuterJoinFetchSetting( node, model );
+
+			// TODO: H3.1 - fetch="subselect"
+
+			// LAZINESS
+			InitLaziness( node, model, mappings, "true", mappings.DefaultLazy );
+			// TODO: H3.1 - lazy="extra"
 
 			XmlNode oneToManyNode = node.SelectSingleNode( nsOneToMany, nsmgr );
 			if( oneToManyNode != null )
@@ -692,13 +728,6 @@ namespace NHibernate.Cfg
 				model.CollectionTable = mappings.AddTable( schema, tableName );
 
 				log.Info( "Mapping collection: " + model.Role + " -> " + model.CollectionTable.Name );
-			}
-
-			//LAZINESS
-			XmlAttribute lazyNode = node.Attributes[ "lazy" ];
-			if( lazyNode != null )
-			{
-				model.IsLazy = StringHelper.BooleanValue( lazyNode.Value );
 			}
 
 			//SORT
@@ -755,10 +784,44 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		private static void InitLaziness(
+			XmlNode node,
+			IFetchable fetchable,
+			Mappings mappings,
+			string proxyVal,
+			bool defaultLazy )
+		{
+			XmlAttribute lazyNode = node.Attributes[ "lazy" ];
+			bool isLazyTrue = lazyNode == null ?
+				defaultLazy && fetchable.IsLazy : //fetch="join" overrides default laziness
+				lazyNode.Value.Equals( proxyVal ); //fetch="join" overrides default laziness
+			fetchable.IsLazy = isLazyTrue;
+		}
+
+		private static void InitLaziness(
+			XmlNode node,
+			ToOne fetchable,
+			Mappings mappings,
+			bool defaultLazy )
+		{
+			XmlAttribute lazyNode = node.Attributes[ "lazy" ];
+			if( lazyNode != null && "no-proxy".Equals( lazyNode.Value ) )
+			{
+				//fetchable.UnwrapProxy = true;
+				fetchable.IsLazy = true;
+				//TODO: better to degrade to lazy="false" if uninstrumented
+			}
+			else
+			{
+				InitLaziness( node, fetchable, mappings, "proxy", defaultLazy );
+			}
+		}
+
 		public static void BindManyToOne( XmlNode node, ManyToOne model, string defaultColumnName, bool isNullable, Mappings mappings )
 		{
 			BindColumns( node, model, isNullable, true, defaultColumnName, mappings );
 			InitOuterJoinFetchSetting( node, model );
+			InitLaziness( node, model, mappings, true );
 
 			XmlAttribute ukName = node.Attributes[ "property-ref" ];
 			if( ukName != null )
@@ -833,6 +896,7 @@ namespace NHibernate.Cfg
 		{
 			//BindColumns( node, model, isNullable, false, null, mappings );
 			InitOuterJoinFetchSetting( node, model );
+			InitLaziness( node, model, mappings, true );
 
 			XmlAttribute constrNode = node.Attributes[ "constrained" ];
 			bool constrained = constrNode != null && constrNode.Value.Equals( "true" );
@@ -1029,7 +1093,7 @@ namespace NHibernate.Cfg
 			string[ ] names = new string[span];
 			IType[ ] types = new IType[span];
 			Cascades.CascadeStyle[ ] cascade = new Cascades.CascadeStyle[span];
-			OuterJoinFetchStrategy[ ] joinedFetch = new OuterJoinFetchStrategy[span];
+			FetchMode[ ] joinedFetch = new FetchMode[ span ];
 
 			int i = 0;
 			foreach( Mapping.Property prop in model.PropertyCollection )
@@ -1045,7 +1109,7 @@ namespace NHibernate.Cfg
 				names[ i ] = prop.Name;
 				types[ i ] = prop.Type;
 				cascade[ i ] = prop.CascadeStyle;
-				joinedFetch[ i ] = prop.Value.OuterJoinFetchSetting;
+				joinedFetch[ i ] = prop.Value.FetchMode;
 				i++;
 			}
 
@@ -1112,15 +1176,34 @@ namespace NHibernate.Cfg
 		private static void InitOuterJoinFetchSetting( XmlNode node, IFetchable model )
 		{
 			XmlAttribute fetchNode = node.Attributes[ "fetch" ];
-
-			OuterJoinFetchStrategy fetchStyle;
+			FetchMode fetchStyle;
+			bool lazy = true;
 
 			if( fetchNode == null )
 			{
 				XmlAttribute jfNode = node.Attributes[ "outer-join" ];
 				if( jfNode == null )
 				{
-					fetchStyle = OuterJoinFetchStrategy.Auto;
+					if( "many-to-many".Equals( node.Name ) )
+					{
+						//NOTE SPECIAL CASE:
+						// default to join and non-lazy for the "second join"
+						// of the many-to-many
+						lazy = false;
+						fetchStyle = FetchMode.Join;
+					}
+					else if( "one-to-one".Equals( node.Name ) )
+					{
+						//NOTE SPECIAL CASE:
+						// one-to-one constrained=falase cannot be proxied,
+						// so default to join and non-lazy
+						lazy = ( ( OneToOne ) model ).IsConstrained;
+						fetchStyle = lazy ? FetchMode.Default : FetchMode.Join;
+					}
+					else
+					{
+						fetchStyle = FetchMode.Default;
+					}
 				}
 				else
 				{
@@ -1128,15 +1211,14 @@ namespace NHibernate.Cfg
 					string eoj = jfNode.Value;
 					if( "auto".Equals( eoj ) )
 					{
-						// TODO: H3 has two special cases here, for many-to-many and one-to-one
-						fetchStyle = OuterJoinFetchStrategy.Auto;
+						fetchStyle = FetchMode.Default;
 					}
 					else
 					{
 						bool join = "true".Equals( eoj );
 						fetchStyle = join ?
-							OuterJoinFetchStrategy.Join :
-							OuterJoinFetchStrategy.Select;
+							FetchMode.Join :
+							FetchMode.Select;
 					}
 				}
 			}
@@ -1144,11 +1226,12 @@ namespace NHibernate.Cfg
 			{
 				bool join = "join".Equals( fetchNode.Value );
 				fetchStyle = join ?
-					OuterJoinFetchStrategy.Join :
-					OuterJoinFetchStrategy.Select;
+					FetchMode.Join :
+					FetchMode.Select;
 			}
 
-			model.OuterJoinFetchSetting = fetchStyle;
+			model.FetchMode = fetchStyle;
+			model.IsLazy = lazy;
 		}
 
 		private static void MakeIdentifier( XmlNode node, SimpleValue model, Mappings mappings )
@@ -1510,18 +1593,7 @@ namespace NHibernate.Cfg
 		public static void BindRoot( XmlDocument doc, Mappings model )
 		{
 			XmlNode hmNode = doc.DocumentElement;
-			XmlAttribute schemaNode = hmNode.Attributes[ "schema" ];
-			model.SchemaName = ( schemaNode == null ) ? null : schemaNode.Value;
-			XmlAttribute dcNode = hmNode.Attributes[ "default-cascade" ];
-			model.DefaultCascade = ( dcNode == null ) ? "none" : dcNode.Value;
-			XmlAttribute daNode = hmNode.Attributes[ "default-access" ];
-			model.DefaultAccess = ( daNode == null ) ? "property" : daNode.Value;
-			XmlAttribute aiNode = hmNode.Attributes[ "auto-import" ];
-			model.IsAutoImport = ( aiNode == null ) ? true : "true".Equals( aiNode.Value );
-			XmlAttribute nsNode = hmNode.Attributes[ "namespace" ];
-			model.DefaultNamespace = ( nsNode == null ) ? null : nsNode.Value;
-			XmlAttribute assemblyNode = hmNode.Attributes[ "assembly" ];
-			model.DefaultAssembly = ( assemblyNode == null ) ? null : assemblyNode.Value;
+			ExtractRootAttributes( hmNode, model );
 
 			nsmgr = new XmlNamespaceManager( doc.NameTable );
 			// note that the prefix has absolutely nothing to do with what the user
@@ -1588,6 +1660,30 @@ namespace NHibernate.Cfg
 				log.Debug( "Import: " + rename + " -> " + className );
 				model.AddImport( className, rename );
 			}
+		}
+
+		private static void ExtractRootAttributes( XmlNode hmNode, Mappings mappings )
+		{
+			XmlAttribute schemaNode = hmNode.Attributes[ "schema" ];
+			mappings.SchemaName = ( schemaNode == null ) ? null : schemaNode.Value;
+			
+			XmlAttribute dcNode = hmNode.Attributes[ "default-cascade" ];
+			mappings.DefaultCascade = ( dcNode == null ) ? "none" : dcNode.Value;
+			
+			XmlAttribute daNode = hmNode.Attributes[ "default-access" ];
+			mappings.DefaultAccess = ( daNode == null ) ? "property" : daNode.Value;
+
+			XmlAttribute dlNode = hmNode.Attributes[ "default-lazy" ];
+			mappings.DefaultLazy = dlNode == null || dlNode.Value.Equals( "true" );
+			
+			XmlAttribute aiNode = hmNode.Attributes[ "auto-import" ];
+			mappings.IsAutoImport = ( aiNode == null ) ? true : "true".Equals( aiNode.Value );
+			
+			XmlAttribute nsNode = hmNode.Attributes[ "namespace" ];
+			mappings.DefaultNamespace = ( nsNode == null ) ? null : nsNode.Value;
+			
+			XmlAttribute assemblyNode = hmNode.Attributes[ "assembly" ];
+			mappings.DefaultAssembly = ( assemblyNode == null ) ? null : assemblyNode.Value;
 		}
 
 		private static PersistentClass GetSuperclass( Mappings model, XmlNode subnode )

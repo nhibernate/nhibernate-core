@@ -99,9 +99,9 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public OuterJoinFetchStrategy OuterJoinFetchSetting
+		public FetchMode FetchMode
 		{
-			get { return OuterJoinFetchStrategy.Eager; }
+			get { return FetchMode.Join; }
 		}
 
 		/// <summary>

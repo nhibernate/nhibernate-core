@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?> 
+<?xml version="1.0" encoding="utf-8" ?> 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
 	assembly="NHibernate.Test"
-	namespace="NHibernate.Test.NHSpecificTest.NH251">
+	namespace="NHibernate.Test.NHSpecificTest.NH251"
+	default-lazy="false">
 
     <class name="CustomAccessDO">
 		<id 

@@ -167,10 +167,10 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary></summary>
-		public virtual OuterJoinFetchStrategy OuterJoinFetchSetting
+		public virtual FetchMode FetchMode
 		{
-			get { return OuterJoinFetchStrategy.Lazy; }
+			get { return FetchMode.Select; }
+			// Needed so that subclasses have something to override
 			set { throw new NotSupportedException(); }
 		}
 

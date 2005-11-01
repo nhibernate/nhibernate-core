@@ -8,7 +8,8 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public abstract class ToOne : SimpleValue, IFetchable
 	{
-		private OuterJoinFetchStrategy joinedFetch;
+		private FetchMode fetchMode;
+		private bool lazy = true;
 		private string referencedPropertyName;
 
 		/// <summary>
@@ -19,10 +20,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public override OuterJoinFetchStrategy OuterJoinFetchSetting
+		public override FetchMode FetchMode
 		{
-			get { return joinedFetch; }
-			set { joinedFetch = value; }
+			get { return fetchMode; }
+			set { fetchMode = value; }
 		}
 
 		/// <summary></summary>
@@ -30,6 +31,12 @@ namespace NHibernate.Mapping
 		{
 			get { return referencedPropertyName; }
 			set { referencedPropertyName = value; }
+		}
+
+		public bool IsLazy
+		{
+			get { return lazy; }
+			set { lazy = value; }
 		}
 
 		/// <summary>

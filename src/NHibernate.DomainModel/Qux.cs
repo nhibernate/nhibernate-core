@@ -74,7 +74,7 @@ namespace NHibernate.DomainModel
 
 		#endregion
 
-		public void Store() 
+		public virtual void Store() 
 		{
 		}
 
