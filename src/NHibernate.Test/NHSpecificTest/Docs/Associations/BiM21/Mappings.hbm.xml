@@ -2,6 +2,7 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
 	namespace="NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21"
 	assembly="NHibernate.Test"
+	default-lazy="false"
 >
 	<class name="Person">
 		<id name="Id" column="personId">

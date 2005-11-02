@@ -2,6 +2,7 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
 	namespace="NHibernate.Test.NHSpecificTest.NH276"
 	assembly="NHibernate.Test"
+	default-lazy="false"
 >
 	<class name="Building" table="b_276">
 		<id name="Id">

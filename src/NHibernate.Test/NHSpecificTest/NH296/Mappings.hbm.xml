@@ -2,7 +2,8 @@
 <hibernate-mapping
 	xmlns="urn:nhibernate-mapping-2.0"
 	assembly="NHibernate.Test"
-	namespace="NHibernate.Test.NHSpecificTest.NH296">
+	namespace="NHibernate.Test.NHSpecificTest.NH296"
+	default-lazy="false">
 	
 	<class name="Product" discriminator-value="0">
 		<composite-id name="ProductPK" class="ProductPK">

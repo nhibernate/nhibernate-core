@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" default-lazy="false">
 	<class name="NHibernate.Test.NHSpecificTest.NH318.NotNullPropertyHolder, NHibernate.Test" table="nh318_table">
 		<id name="Id" column="id" type="Int32" unsaved-value="0">
 			<generator class="native" />

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
 	assembly="NHibernate.Test"
-	namespace="NHibernate.Test.NHSpecificTest.NH392">
+	namespace="NHibernate.Test.NHSpecificTest.NH392"
+	default-lazy="false">
 
 	<class name="UnsavedValueMinusOne" table="UnsavedValueMinusOne">
 		<id name="Id" column="id" unsaved-value="-1">

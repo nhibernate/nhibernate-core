@@ -2,6 +2,7 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
 	namespace="NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass"
 	assembly="NHibernate.Test"
+	default-lazy="false"
 >
 	<class name="AbstractRequest" table="nb_276">
 		<id name="RequestId" column="id_req">

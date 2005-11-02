@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 	<class name="NHibernate.Test.NHSpecificTest.NH309.Node, NHibernate.Test" table="nh309_node"
-		proxy="NHibernate.Test.NHSpecificTest.NH309.Node, NHibernate.Test">
+		lazy="true">
 		
 		<id name="Id" column="nodeid" type="Int32" unsaved-value="-1">
 			<generator class="assigned" />

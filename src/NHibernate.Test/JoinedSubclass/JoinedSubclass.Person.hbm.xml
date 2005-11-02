@@ -4,7 +4,7 @@
 	subclasses are spread out in different hbm.xml files.  It is used by the 
 	JoinedSubclassExtendsFixture.
 -->
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" default-lazy="false">
 	<class 
 		name="NHibernate.Test.JoinedSubclass.Person, NHibernate.Test" 
 		table="j_sc"	

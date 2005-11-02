@@ -9,7 +9,7 @@
 	nhibernate are important.  The base class must be added first and then the 
 	subclass can be added.  It is used by the JoinedSubclassExtendsFixture.
 -->
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" default-lazy="false">
 	
 	<joined-subclass 
 		extends="NHibernate.Test.JoinedSubclass.Person, NHibernate.Test" 

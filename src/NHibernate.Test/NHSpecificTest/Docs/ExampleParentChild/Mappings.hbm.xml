@@ -2,6 +2,7 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
 	namespace="NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild"
 	assembly="NHibernate.Test"
+	default-lazy="false"
 >
 	<class name="Child">
 		<id name="Id" column="child_id" unsaved-value="0">

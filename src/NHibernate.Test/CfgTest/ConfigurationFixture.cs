@@ -235,7 +235,8 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-mapping>";
 
 			Configuration cfg = new Configuration();
-			cfg.AddXmlString( hbm );
+			cfg.AddXmlString( hbm )
+				.BuildSessionFactory();
 		}
 
 		[Test]
@@ -253,7 +254,7 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-mapping>";
 
 			Configuration cfg = new Configuration();
-			cfg.AddXmlString( hbm );
+			cfg.AddXmlString( hbm ); //.BuildSessionFactory();
 		}
 
 		[Test]

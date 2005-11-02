@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" schema="dbo" default-cascade="save-update" auto-import="false"
-    namespace="NHibernate.Test.NHSpecificTest.NH401" assembly="NHibernate.Test">
+    namespace="NHibernate.Test.NHSpecificTest.NH401" assembly="NHibernate.Test" default-lazy="false">
   <class name="Club" table="CLUB">
     
     <id name="Id" unsaved-value="0">
