@@ -12,7 +12,7 @@ using NHibernate.Type;
 
 using NUnit.Framework;
 
-namespace NHibernate.Test
+namespace NHibernate.Test.Legacy
 {
 	/// <summary>
 	/// FumTest handles testing Composite Ids.

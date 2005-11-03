@@ -6,7 +6,7 @@ using NHibernate;
 using NHibernate.DomainModel;
 
 
-namespace NHibernate.Test
+namespace NHibernate.Test.Legacy
 {
 	/// <summary>
 	/// Summary description for ABCTest.

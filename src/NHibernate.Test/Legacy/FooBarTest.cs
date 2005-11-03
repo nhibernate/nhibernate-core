@@ -21,7 +21,7 @@ using NHibernate.Util;
 
 using NUnit.Framework;
 
-namespace NHibernate.Test
+namespace NHibernate.Test.Legacy
 {
 	[TestFixture]
 	public class FooBarTest : TestCase

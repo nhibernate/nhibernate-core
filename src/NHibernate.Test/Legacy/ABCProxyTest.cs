@@ -6,7 +6,7 @@ using NUnit.Framework;
 using NHibernate;
 using NHibernate.DomainModel;
 
-namespace NHibernate.Test
+namespace NHibernate.Test.Legacy
 {
 	[TestFixture]
 	public class ABCProxyTest : TestCase
