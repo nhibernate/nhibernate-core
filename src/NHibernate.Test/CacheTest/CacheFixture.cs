@@ -4,7 +4,7 @@ using System.Collections;
 using NHibernate.Cache;
 using NUnit.Framework;
 
-namespace NHibernate.Test.Cache {
+namespace NHibernate.Test.CacheTest {
 
 	[TestFixture]
 	public class CacheFixture 

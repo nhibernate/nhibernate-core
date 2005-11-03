@@ -4,7 +4,7 @@ using NHibernate.Cache;
 
 using NUnit.Framework;
 
-namespace NHibernate.Test.Cache
+namespace NHibernate.Test.CacheTest
 {
 	/// <summary>
 	/// Summary description for TimestamperFixture.

@@ -165,12 +165,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Cache\CacheFixture.cs"
+                    RelPath = "CacheTest\CacheFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Cache\TimestamperFixture.cs"
+                    RelPath = "CacheTest\TimestamperFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
