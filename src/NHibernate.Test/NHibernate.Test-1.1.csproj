@@ -408,11 +408,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Legacy\BlobClobTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Legacy\CriteriaTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
