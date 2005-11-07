@@ -69,7 +69,8 @@ namespace NHibernate.Persister
             }
             catch (Exception e)
             {
-                log.Error("Compilation failed", e);
+                log.Info( "Disabling reflection optimizer for class " + mappedClass.FullName );
+				log.Debug( "CodeDOM compilation failed", e );
                 return null;
             }
         }

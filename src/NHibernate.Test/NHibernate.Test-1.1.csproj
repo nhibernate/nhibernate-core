@@ -1060,6 +1060,29 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "NHSpecificTest\NH440\Apple.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH440\Apple.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH440\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH440\Fruit.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH440\Fruit.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "NHSpecificTest\ProxyValidator\Fixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

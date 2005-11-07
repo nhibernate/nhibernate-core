@@ -773,7 +773,8 @@ namespace NHibernate.Persister
 			i = 0;
 			int tempVersionProperty = -66;
 			bool foundCascade = false;
-			//bool foundCustomAccessor = false;
+			
+			bool foundCustomAccessor = false;
 
 			foreach( Mapping.Property prop in model.PropertyClosureCollection )
 			{
@@ -782,6 +783,11 @@ namespace NHibernate.Persister
 					tempVersionProperty = i;
 				}
 				propertyNames[ i ] = prop.Name;
+				if( !prop.IsBasicPropertyAccessor )
+				{
+					foundCustomAccessor = true;
+				}
+
 				getters[ i ] = prop.GetGetter( mappedClass );
 				setters[ i ] = prop.GetSetter( mappedClass );
 				getterNames[ i ] = getters[ i ].PropertyName;
@@ -805,7 +811,10 @@ namespace NHibernate.Persister
 				i++;
 			}
 
-			//TODO: optimizer implementation
+			if( !foundCustomAccessor && Cfg.Environment.UseReflectionOptimizer )
+			{
+				getset = GetSetHelperFactory.Create( MappedClass, Setters, Getters );
+			}
 
 			hasCascades = foundCascade;
 			versionProperty = tempVersionProperty;
@@ -876,8 +885,6 @@ namespace NHibernate.Persister
 			{
 				proxyFactory = null;
 			}
-
-            getset = GetSetHelperFactory.Create(MappedClass, Setters, Getters);
 		}
 
 		protected virtual IProxyFactory CreateProxyFactory()

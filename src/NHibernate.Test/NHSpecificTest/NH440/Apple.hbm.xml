@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH440"
+	default-lazy="false">
+	<class name="Apple" table="apple">
+		<id name="Id" column="appleId" unsaved-value="0">
+			<generator class="native"/>
+		</id>
+
+		<many-to-one name="TheFruit" column="theFruitId" unique="true"/>
+	</class>
+</hibernate-mapping>
