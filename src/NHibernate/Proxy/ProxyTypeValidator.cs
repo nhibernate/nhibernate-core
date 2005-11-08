@@ -5,22 +5,19 @@ namespace NHibernate.Proxy
 {
 	public class ProxyTypeValidator
 	{
-		private System.Type type;
-
-		public ProxyTypeValidator( System.Type type )
+		private ProxyTypeValidator()
 		{
-			this.type = type;
 		}
 
-		public void Validate()
+		public static void ValidateType( System.Type type )
 		{
 			if( type.IsInterface )
 			{
 				// Any interface is valid as a proxy
 				return;
 			}
-			CheckHasVisibleDefaultConstructor();
-			CheckEveryPublicMemberIsVirtual();
+			CheckHasVisibleDefaultConstructor( type );
+			CheckEveryPublicMemberIsVirtual( type );
 		}
 
 		public static void Error( System.Type type, string reason )
@@ -28,7 +25,7 @@ namespace NHibernate.Proxy
 			throw new InvalidProxyTypeException( type, reason );
 		}
 
-		public void CheckHasVisibleDefaultConstructor()
+		public static void CheckHasVisibleDefaultConstructor( System.Type type )
 		{
 			if( !HasVisibleDefaultConstructor( type ) )
 			{
@@ -36,7 +33,7 @@ namespace NHibernate.Proxy
 			}
 		}
 
-		public void CheckEveryPublicMemberIsVirtual()
+		public static void CheckEveryPublicMemberIsVirtual( System.Type type )
 		{
 			MemberInfo[] members = type.GetMembers( BindingFlags.Instance | BindingFlags.Public );
 

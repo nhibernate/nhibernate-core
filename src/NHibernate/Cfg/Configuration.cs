@@ -816,15 +816,38 @@ namespace NHibernate.Cfg
 
 		private void Validate()
 		{
+			bool validateProxy = PropertiesHelper.GetBoolean( Environment.UseProxyValidator, properties, true );
+
 			foreach( PersistentClass clazz in classes.Values )
 			{
 				clazz.Validate( mapping );
+				if( validateProxy )
+				{
+					ValidateProxyInterface( clazz );
+				}
 			}
 
 			foreach( NHibernate.Mapping.Collection col in collections.Values )
 			{
 				col.Validate( mapping );
 			}
+		}
+
+		private static void ValidateProxyInterface( PersistentClass persistentClass )
+		{
+			if( !persistentClass.IsLazy )
+			{
+				// Nothing to validate
+				return;
+			}
+
+			if( persistentClass.ProxyInterface == null )
+			{
+				// Nothing to validate
+				return;
+			}
+
+			Proxy.ProxyTypeValidator.ValidateType( persistentClass.ProxyInterface );
 		}
 
 		/// <remarks>

@@ -87,6 +87,7 @@ namespace NHibernate.Cfg
 		public const string PrepareSql = "hibernate.prepare_sql";
 		public const string CommandTimeout = "hibernate.command_timeout";
 		public const string PropertyUseReflectionOptimizer = "hibernate.use_reflection_optimizer";
+		public const string UseProxyValidator = "hibernate.use_proxy_validator";
 
 		private static bool EnableReflectionOptimizer;
 

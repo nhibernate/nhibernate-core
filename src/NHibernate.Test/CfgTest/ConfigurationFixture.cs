@@ -297,8 +297,26 @@ namespace NHibernate.Test.CfgTest
 			}
 			catch( MappingException e )
 			{
-				Assert.IsTrue( e.InnerException is InvalidProxyTypeException );
+				Assert.IsTrue( e is InvalidProxyTypeException );
 			}
+		}
+
+		[Test]
+		public void DisabledProxyValidator()
+		{
+			string hbm = @"<?xml version='1.0' ?>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+	<class name='NHibernate.DomainModel.NHSpecific.InvalidProxyClass, NHibernate.DomainModel'
+		lazy='true'>
+		<id name='Id' column='somecolumn'>
+			<generator class='native' />
+		</id>
+	</class>
+</hibernate-mapping>";
+
+			Configuration cfg = new Configuration();
+			cfg.Properties[ Cfg.Environment.UseProxyValidator ] = "false";
+			cfg.AddXmlString( hbm ).BuildSessionFactory();
 		}
 	}
 }

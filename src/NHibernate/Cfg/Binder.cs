@@ -7,7 +7,6 @@ using log4net;
 
 using NHibernate.Cache;
 using NHibernate.Engine;
-using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.Persister;
 using NHibernate.Property;
@@ -156,8 +155,6 @@ namespace NHibernate.Cfg
 				model.ProxyInterface = model.MappedClass;
 			}
 
-			ValidateProxyInterface( model );
-
 			// DISCRIMINATOR
 			XmlAttribute discriminatorNode = node.Attributes[ "discriminator-value" ];
 			model.DiscriminatorValue = ( discriminatorNode == null )
@@ -224,23 +221,6 @@ namespace NHibernate.Cfg
 					persisterNode.Value, mappings,
 					"could not instantiate persister class: {0}" );
 			}
-		}
-
-		private static void ValidateProxyInterface( PersistentClass persistentClass )
-		{
-			if( !persistentClass.IsLazy )
-			{
-				// Nothing to validate
-				return;
-			}
-
-			if( persistentClass.ProxyInterface == null )
-			{
-				// Nothing to validate
-				return;
-			}
-
-			new Proxy.ProxyTypeValidator( persistentClass.ProxyInterface ).Validate();
 		}
 
 		public static void BindSubclass( XmlNode node, Subclass model, Mappings mappings )
