@@ -1,0 +1,33 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial1A", "Tutorial1A\Tutorial1A.csproj", "{C0B0866D-49D5-4869-A8C0-4984D97F3A62}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial1B", "Tutorial1B\Tutorial1B.csproj", "{88C6DCD6-CBA9-4948-9736-CBE65D573297}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{C0B0866D-49D5-4869-A8C0-4984D97F3A62}.Debug.ActiveCfg = Debug|.NET
+		{C0B0866D-49D5-4869-A8C0-4984D97F3A62}.Debug.Build.0 = Debug|.NET
+		{C0B0866D-49D5-4869-A8C0-4984D97F3A62}.Release.ActiveCfg = Release|.NET
+		{C0B0866D-49D5-4869-A8C0-4984D97F3A62}.Release.Build.0 = Release|.NET
+		{88C6DCD6-CBA9-4948-9736-CBE65D573297}.Debug.ActiveCfg = Debug|.NET
+		{88C6DCD6-CBA9-4948-9736-CBE65D573297}.Debug.Build.0 = Debug|.NET
+		{88C6DCD6-CBA9-4948-9736-CBE65D573297}.Release.ActiveCfg = Release|.NET
+		{88C6DCD6-CBA9-4948-9736-CBE65D573297}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(SolutionItems) = postSolution
+		license.txt = license.txt
+		readme.txt = readme.txt
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

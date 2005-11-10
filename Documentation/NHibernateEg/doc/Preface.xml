@@ -1,0 +1,138 @@
+<!-- <!DOCTYPE preface SYSTEM "../../docbook-xml/docbookx.dtd"> -->
+<preface id="Preface">
+	<title>Preface</title>
+
+
+	<abstract id="Preface-abstract">
+		<title>Overview</title>
+
+		<para>
+			I will teach you here what <emphasis role="strong">Object / Relational Mapping</emphasis> (ORM) is
+			and how to use <emphasis role="strong"><ulink url="http://www.nhibernate.org/">NHibernate</ulink></emphasis>.
+		</para>
+
+		<para>There are three big steps that we will folllow:
+			<itemizedlist>
+				<listitem><formalpara>
+					<title><xref linkend="NHibernateEg.Tutorial1A" /></title>
+					<para>Introduce to NHibernate with a Console Application</para>
+				</formalpara></listitem>
+				<listitem><formalpara>
+					<title><xref linkend="NHibernateEg.Tutorial1B" /></title>
+					<para>Show a more complex usage of NHibernate in a Windows Application</para>
+				</formalpara></listitem>
+				<listitem><formalpara>
+					<title><xref linkend="NHibernateEg.Tutorial1C" /></title>
+					<para>Show an even more complex usage of NHibernate in a Web Application</para>
+				</formalpara></listitem>
+			</itemizedlist>
+		</para>
+
+		<para>
+			These tutorials are very long so it may take you lot of time to master them.
+			I recommend you to practice as much as you can; test each feature by coding and executing some samples.
+		</para>
+	</abstract>
+
+
+	<section id="Preface-GetNHibernateEg">
+		<title>Where you can get these tutorials and its code</title>
+
+		<para>
+			These tutorials are currently available in English only.
+			You can find the online version here: <ulink url="http://nhibernate.sourceforge.net/NHibernateEg/" />.
+			The French version will be released soon.
+		</para>
+		<para>
+			The source code is available on NHibernate CVS
+			(<ulink url="http://cvs.sourceforge.net/viewcvs.py/nhibernate/Documentation/NHibernateEg/">in the "Documentation" branch</ulink>)
+			and can be downloaded at <ulink url="http://nhibernate.sourceforge.net/NHibernateEg.zip" />.
+		</para>
+	</section>
+
+
+	<section id="Preface-Requirements">
+		<title>Requirements</title>
+
+		<para>
+			I expect you to have some basic knowledge in the development of
+			database-based applications with the .NET framework.
+			That is, working with a SQL database, creating a connection to it in a .NET Application,
+			doing basic CRUD operations and manipulating transactions.
+		</para>
+
+		<para>The applications need the .NET framework to be executed.</para>
+		<para>
+			To modify and build the source code, you need the .NET SDK and <ulink url="http://nant.sourceforge.net/">NAnt</ulink>
+			or <ulink url="http://www.icsharpcode.net/opensource/sd/">SharpDevelop</ulink> or Visual Studio .NET.
+		</para>
+	</section>
+
+
+	<section id="Preface-ORM">
+		<title>Object / Relational Mapping</title>
+
+		<para>
+			An <emphasis role="strong">Object / Relational Mapper</emphasis> is persistence layer
+			connecting objects in an object-oriented system to data stored in a relational database.
+			Using Object / Relational Mapping (ORM) allows one to cleanly apply object-oriented design,
+			analysis, and programming techniques while hiding the specifics of dealing with the relational system.
+		</para>
+		<para>
+			ORM is very popular in the Java world; but even if it is still relatively unknown in the .NET world,
+			there are already plenty of (commercial / open-source) libraries.
+		</para>
+		<para>
+			Do not confuse Object / Relational Mapping with <emphasis>Object / Role Modeling</emphasis> which is
+			a fact-oriented method for performing information analysis at the conceptual level.
+		</para>
+
+		<itemizedlist>
+			<title>There are many kind of Object / Relational Mapping products:</title>
+			<listitem><formalpara>
+				<title>Pure Relational</title>
+				<para>No ORM here; the application deals with tables and rows (using DataSet and/or DataReader).</para>
+			</formalpara></listitem>
+			<listitem><formalpara>
+				<title>Light Object Mapping</title>
+				<para>SQL queries are isolated/encapsulated as much as possible and some rows are manually converted to objects.</para>
+			</formalpara></listitem>
+			<listitem><formalpara>
+				<title>Medium Object Mapping</title>
+				<para>The application is designed with objects. This kind of products allows mapping collections and associations. And it is possible to do queries on objects.</para>
+			</formalpara></listitem>
+			<listitem><formalpara>
+				<title>Full Object Mapping</title>
+				<para>More advanced solution than Medium Object Mapping; it provides support for complex mapping like inheritance. It has a complete and object-oriented query API and advanced features like concurrency and caching strategies.</para>
+			</formalpara></listitem>
+		</itemizedlist>
+
+		<para>The step ahead might be to use a <emphasis>object/XML database</emphasis>; but it can require too much fundamental changes.</para>
+
+		<para>An Object / Relational Mapper uses internally many patterns and .NET features: Unit Of Work, Identity Map, Lazy Loading, Reflection, XML ...</para>
+
+		<itemizedlist>
+			<title>For more details about ORM, read:</title>
+			<listitem><para><ulink url="http://www.chimu.com/publications/objectRelational/objectRelational.pdf">Foundations of Object Relational Mapping</ulink> (by Mark L. Fussell)</para></listitem>
+			<listitem><para><ulink url="http://fredrik.nsquared2.com/viewpost.aspx?PostID=209&amp;showfeedback=true">Introduction to O/R-Mapping</ulink> (on Fredrik Norm&eacute;n's Blog)</para></listitem>
+			<listitem><para><ulink url="http://c2.com/cgi/wiki?ObjectRelationalMapping">Object Relational Mapping</ulink> (on c2.com Wiki)</para></listitem>
+			<listitem><para><ulink url="http://www.martinfowler.com/books.html#eaa">Patterns of Enterprise Application Architecture</ulink> (on Martin Fowler web site)</para></listitem>
+		</itemizedlist>
+
+		<para>NHibernate provides Full Object Mapping.</para>
+		<note>
+			<title>From "NHibernate - Project of the Month, November 2005" on SourceForge.net:</title>
+			<para><emphasis role="strong">NHibernate</emphasis> is a port of the excellent Java <ulink url="http://www.hibernate.org/">Hibernate</ulink> relational persistence tool to the .NET platform. Hibernate is the leading solution for object-relational mapping (ORM) and object persistence in general for the Java platform. The NHibernate object persistence library for relational databases (version 1.0) is almost 100% feature-compatible with Hibernate 2.1. What makes NHibernate and Hibernate both unique is their approach to persistence, where your objects are not required to inherit from a special base class or implement an interface, (N)Hibernate works with plain old Java/CLR objects. Hibernate is also very flexible -- you can define how to persist individual properties and associations, query the database using a very concise and powerful query language, and so on.</para>
+			<formalpara>
+				<title>What is the software's intended audience?</title>
+				<para>Developers writing enterprise applications for the .NET platform, with a complex domain model. People who need a good ORM tool, and people who don't know what an ORM is yet. .NET developers who want to maintain domain model-centric applications backed by an RDBMS.</para>
+			</formalpara>
+			<para><ulink url="http://sourceforge.net/potm/potm-2005-11.php">NHibernate - Project of the Month, November 2005</ulink>.</para>
+		</note>
+		<para>
+			NHibernate is <emphasis role="strong">production-ready</emphasis>; the version 1.0 was released in October 2005.
+			And it is supported by <ulink url="http://www.jboss.org/">JBoss Inc</ulink>.
+		</para>
+	</section>
+
+</preface>

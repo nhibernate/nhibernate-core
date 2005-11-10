@@ -1,0 +1,5 @@
+build
+*.suo
+*.snk
+_ReSharper*
+*.resharperoptions

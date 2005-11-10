@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5b1//EN"
+	"../../docbook-xml/docbookx.dtd" [
+		<!ENTITY Legal-Information SYSTEM "../../src/Legal.Information.xml">
+
+		<!ENTITY Preface SYSTEM "Preface.xml">
+
+		<!ENTITY Tutorial1A SYSTEM "Tutorial1A.xml">
+		<!ENTITY Tutorial1B SYSTEM "Tutorial1B.xml">
+		<!ENTITY Tutorial1C SYSTEM "Tutorial1C.xml">
+
+		<!ENTITY Tutorial2A SYSTEM "Tutorial2A.xml">
+
+		<!ENTITY TutorialMonoA SYSTEM "TutorialMonoA.xml">
+
+		<!ENTITY Support SYSTEM "Support.xml">
+		<!ENTITY GNU-LGPL SYSTEM "../../src/gnu-lgpl.xml">
+		<!ENTITY GNU-FDL SYSTEM "../../src/gnu-fdl.xml">
+ ]>
+
+<book id="NHibernateEg" lang="en">
+	<bookinfo>
+		<title>NHibernateEg</title>
+		<author>
+			<firstname>Pierre Henri</firstname>
+			<surname>Kuat&eacute;</surname>
+			<affiliation>
+				<orgname><ulink url="http://www.nhibernate.org/">NHibernate</ulink></orgname>
+			</affiliation>
+		</author>
+		<copyright>
+			<year>2005</year>
+		</copyright>
+
+		&Legal-Information;
+
+		<releaseinfo>This work is in progress and will heavily evolve in the next weeks.</releaseinfo>
+		<revhistory>
+			<revision>
+				<date>14 Nov 2005</date>
+				<revremark>First release with <link linkend="NHibernateEg.Tutorial1A">Tutorial1A</link> only.</revremark>
+			</revision>
+		</revhistory>
+	</bookinfo>
+
+	&Preface;
+
+	&Tutorial1A;
+	&Tutorial1B;
+	&Tutorial1C;
+<!--
+	&Tutorial2A;
+
+	&TutorialMonoA;
+-->
+	&Support;
+	&GNU-LGPL;
+	&GNU-FDL;
+
+</book>

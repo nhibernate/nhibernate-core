@@ -1,0 +1,166 @@
+<?xml version="1.0" ?>
+<project 
+	name="NHibernateEg" 
+	default="build"
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+>
+	<!-- default configuration -->
+	<property name="build.dir" value="build" overwrite="false" />
+	<property name="build.debug" value="true" overwrite="false" />
+
+
+	<target name="init" unless="${target::has-executed('init')}" description="Initializes build properties">
+		<call target="set-runtime-configuration" />
+	</target>
+
+	<target name="clean" depends="init" description="Deletes current build">
+		<delete dir="${build.dir}" failonerror="false" />
+	</target>
+
+
+
+	<target name="copy-files" depends="init" description="Deletes current build">
+		<property name="tutorial.bin" value="${build.dir}/${tutorial.name}/bin" />
+		<!-- copy license files in the bin directory of the current tutorial -->
+		<mkdir dir="${tutorial.bin}" />
+
+		<copy file="../gnu-lgpl.txt" tofile="${tutorial.bin}/NHibernateEg.${tutorial.name}.license.txt" />
+
+		<!-- copy framework-neutral files -->
+		<copy todir="${tutorial.bin}">
+			<fileset basedir="../lib"><include name="*.txt" /></fileset>
+		</copy>
+
+		<!-- copy framework-specific libraries used by all tutorials -->
+		<copy todir="${tutorial.bin}">
+			<fileset basedir="${lib.dir}">
+				<include name="Castle.DynamicProxy.dll" />
+				<include name="HashCodeProvider.dll" />
+				<include name="Iesi.Collections.dll" />
+				<include name="ICSharpCode.SharpZipLib.dll" />
+				<include name="MySql.Data.dll" />
+				<include name="log4net.dll" />
+				<include name="NHibernate.dll" />
+				<include name="NHibernate.Mapping.Attributes.dll" />
+			</fileset>
+		</copy>
+	</target>
+
+
+
+	<target name="build" depends="init" description="Builds current configuration">
+		<!-- Build NHibernateEg.Tutorial1A -->
+		<property name="tutorial.name" value="Tutorial1A" />
+		<call target="copy-files" />
+		<copy file="${tutorial.name}/App.config" tofile="${tutorial.bin}/NHibernateEg.${tutorial.name}.exe.config" />
+		<csc
+			target="exe"
+			debug="${build.debug}"
+			win32icon="${tutorial.name}/App.ico"
+			output="${tutorial.bin}/NHibernateEg.${tutorial.name}.exe"
+		>
+			<sources basedir="${tutorial.name}" failonempty="true">
+				<include name="*.cs" />
+			</sources>
+
+			<references basedir="${tutorial.bin}">
+				<include name="log4net.dll" />
+				<include name="NHibernate.dll" />
+				<include name="NHibernate.Mapping.Attributes.dll" />
+			</references>
+		</csc>
+
+
+		<!-- Build NHibernateEg.Tutorial1B -->
+		<property name="tutorial.name" value="Tutorial1B" />
+		<call target="copy-files" />
+		<copy file="${tutorial.name}/App.config" tofile="${tutorial.bin}/NHibernateEg.${tutorial.name}.exe.config" />
+		<copy file="${tutorial.name}/hibernate.cfg.xml" tofile="${tutorial.bin}/hibernate.cfg.xml" />
+		<csc
+			target="winexe"
+			debug="${build.debug}"
+			win32icon="${tutorial.name}/App.ico"
+			output="${tutorial.bin}/NHibernateEg.${tutorial.name}.exe"
+		>
+			<sources basedir="${tutorial.name}" failonempty="true">
+				<include name="**/*.cs" />
+			</sources>
+
+			<resources basedir="${tutorial.name}" dynamicprefix="true" prefix="NHibernateEg.Tutorial1B">
+				<include name="**/*.resx"/>
+				<include name="**/*.hbm.xml"/>
+			</resources>
+
+			<references basedir="${tutorial.bin}">
+				<include name="log4net.dll" />
+				<include name="NHibernate.dll" />
+				<include name="NHibernate.Mapping.Attributes.dll" />
+			</references>
+		</csc>
+	</target>
+
+
+
+	<target name="doc" depends="init" description="Builds the Tutorials" >
+		<nant target="clean build" buildfile="doc/documentation.build" />
+	</target>
+
+
+
+	<target name="package" depends="build doc" description="Creates Zip file(s) for Release">
+		<!-- Copy source code, lib directory and other files needed for building -->
+		<copy todir="${build.dir}">
+			<fileset>
+				<!-- copy the source of all tutorials -->
+				<include name="Tutorial*/**" />
+
+				<include name="NHibernateEg.build" />
+				<include name="NHibernateEg.sln" />
+				<include name="Build-in-bin.bat" />
+				<include name="*.txt" />
+				<include name="../gnu-fdl.txt" />
+				<include name="../gnu-lgpl.txt" />
+
+				<!-- exclude ReSharper stuff -->
+				<exclude name="**/_ReSharper*/**" />
+				<exclude name="**/*.resharperoptions" />
+
+				<!-- exclude VS.NET stuff -->
+				<exclude name="**/*.suo" />
+				<exclude name="**/*j.user" />
+				<exclude name="**/bin/**" />
+				<exclude name="**/obj/**" />
+			</fileset>
+		</copy>
+		<copy todir="${build.dir}/lib/"><!-- copy libraries -->
+			<fileset basedir="../lib/">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+
+		<zip zipfile="${build.dir}/NHibernateEg.zip">
+			<fileset basedir="${build.dir}">
+				<include name="**/*" />
+				<exclude name="build.log" />
+				<exclude name="**/bin/log.txt" />
+			</fileset>
+		</zip>
+	</target>
+
+
+
+	<!-- Framework specific configuration -->
+	<target name="set-runtime-configuration">
+		<property name="current.runtime.config.net" value="true" />
+		<property name="current.runtime.config" value="net" />
+		<property name="current.runtime.version" value="1.1" />
+		<property name="current.runtime.net-1.1" value="true" />
+		<property name="current.runtime.description" value="Microsoft .NET Framework 1.1" />
+		<property name="current.build.defines" value="NET,NET_1_1" />
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
+
+		<property name="lib.dir" value="../lib/${current.runtime.config}-${current.runtime.version}" />
+	</target>
+
+</project>
