@@ -1529,7 +1529,7 @@ namespace NHibernate.Cfg
 
 		private XmlNode GetAppConfigConfigurationNode()
 		{
-			XmlNode node = ConfigurationSettings.GetConfig( "hibernate-config" ) as XmlNode;
+			XmlNode node = ConfigurationSettings.GetConfig( "hibernate-configuration" ) as XmlNode;
 			return node;
 		}
 
