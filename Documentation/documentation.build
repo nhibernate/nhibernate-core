@@ -30,7 +30,7 @@
 	<tstamp property="build.date" pattern="u" verbose="true" />
 
 
-	<target name="init"  unless="${target::has-executed('init')}" description="Set the documentation version and the date of generation.">
+	<target name="init" unless="${target::has-executed('init')}" description="Set the documentation version and the date of generation.">
 		<copy file="src/Documentation.xml" tofile="src/Documentation.gen" overwrite="true" />
 		<!--
 			Modify the file "Documentation.gen" instead of the .xml one because:
@@ -46,7 +46,7 @@
 		<xmlpoke
 			file="src/Documentation.gen"
 			xpath="/book/bookinfo/releaseinfo"
-			value="Status: Beta. Built Date: ${build.date}."
+			value="Status: Production/Stable. Built Date: ${build.date}."
 		/>
 	</target>
 

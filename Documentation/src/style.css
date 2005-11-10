@@ -7,7 +7,6 @@ div.legalnotice
 BODY
 {
 	font-family: Verdana;
-/*	text-align: justify;*/
 
 	SCROLLBAR-FACE-COLOR: #777777;
 	SCROLLBAR-SHADOW-COLOR: #000000;
@@ -79,31 +78,6 @@ P, DL, DT, DD
 	color: #000000;
 }
 
-.classname
-{
-	color: #004080;
-	font-weight: bold;
-}
-
-.methodname
-{
-	color: #004080;
-	font-weight: bold;
-}
-
-.literal
-{
-	color: #804000;
-	font-weight: bold;
-}
-
-.filename
-{
-	color: #000070;
-	font-weight: bold;
-	font-style: italic;
-}
-
 OL, LI
 {
 	color: #000000;
@@ -169,6 +143,32 @@ TABLE
 	empty-cells: hide;
 }
 
+
+
+.classname
+{
+	color: #400080;
+	font-weight: bold;
+}
+
+.methodname
+{
+	color: #004080;
+	font-weight: bold;
+}
+
+.literal
+{
+	color: #804000;
+	font-weight: bold;
+}
+
+.filename
+{
+	color: #000070;
+	font-weight: bold;
+	font-style: italic;
+}
 
 
 .variablelist

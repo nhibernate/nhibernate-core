@@ -20,6 +20,8 @@ It don't necessarily depict what the doc is/will be.
 	+ Add a "readme.txt" referring to the html version
 - NHC/readme.html	+ tell that the doc is in NH
 
+- Add to "Support": HowToContribute and NHibernateSurvey
+
 --------------------------------------------------------------------------------
 
 Elements (that should be available to the users)
@@ -129,7 +131,7 @@ NHibernate Documentation: (replace "NHibernate : Table of Contents" in Wiki)
 	- On Performance, Memory usage, traps to avoid, common mistakes and caveats	=>	Performance.Tips			9
 	- Guidelines to debug NHibernate (how to quickly solve a problem)			=>	Debugging					9
 	+ Creating Win/Web Applications (databinding & session management)			=>	Application.Windows/Web		8
-	- Report generation and Batch processing									=>	Report.Batch				9
+	- Report generation and Batch processing									=>	Report.BatchProcessing		9
 	+ Supported Databases + related issues + Howto: Clustering, Paging ...		=>	Databases					8
 		- Native SQL support (named sql-query, running SQL queries ...)
 
@@ -183,9 +185,6 @@ ADD IF USEFUL:
     <xsl:param name="generate.toc">
         book   toc
     </xsl:param>
-    
-    <! Show only Sections up to level 3 in the TOCs
-    <xsl:param name="toc.section.depth">3</xsl:param>
 
 <!###################################################
                          Labels

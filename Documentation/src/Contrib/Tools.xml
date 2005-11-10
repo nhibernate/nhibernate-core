@@ -96,7 +96,7 @@
 
 	<section id="NHibernateQueryAnalyzer">
 		<title>NHibernate Query Analyzer</title>
-		<para><ulink url="http://www.ayende.com/">Ayende Rahein</ulink> has created a GUI to help with the process of creating/editing configuration information, hbm.xml mapping files, and HQL statements for NHibernate. You can download it on its <ulink url="http://developer.berlios.de/projects/nqa/">repository</ulink>.</para>
+		<para><ulink url="http://www.ayende.com/">Ayende Rahein</ulink> has created a GUI to help with the process of creating/editing configuration information, hbm.xml mapping files, and HQL statements for NHibernate. You can download it on its <ulink url="http://www.ayende.com/projects/nhibernate-query-analyzer.aspx">web site</ulink>.</para>
 	</section>
 
 

@@ -55,7 +55,7 @@
 			<title>The <emphasis>end-user class</emphasis> is <classname>NHibernate.Mapping.Attributes.HbmSerializer</classname></title>
 			<para>This class <emphasis>serialize</emphasis> your domain model to mapping streams. You can either serialize classes one by one or an assembly. Look at <classname>NHibernate.Mapping.Attributes.Test</classname> project for a working sample.</para>
 		</formalpara>
-		<para>The first step is to decorate your entities with attributes; you can use: <classname>[Class]</classname>, <classname>[Subclass]</classname>, <classname>[JoinedSubclass]</classname> or <classname>[Component]</classname>. Then, you decorate your members (fields/properties); they can take as many attributes as required by your mapping. Eg:</para>
+		<para>The first step (after adding a reference to <filename>NHibernate.Mapping.Attributes.dll</filename> in your project) is to decorate your entities with attributes; you can use: <classname>[Class]</classname>, <classname>[Subclass]</classname>, <classname>[JoinedSubclass]</classname> or <classname>[Component]</classname>. Then, you decorate your members (fields/properties); they can take as many attributes as required by your mapping. Eg:</para>
 		<programlisting>
     [NHibernate.Mapping.Attributes.Class]
     public class Example
