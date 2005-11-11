@@ -22,7 +22,7 @@ namespace NHibernate.Proxy
 	public abstract class LazyInitializer
 	{
 		private static readonly IHashCodeProvider IdentityHashCodeProvider =
-			new HashCodeProvider.IdentityHashCodeProvider();
+			new NHibernate.IdentityHashCodeProvider();
 
 		/// <summary>
 		/// If this is returned by Invoke then the subclass needs to Invoke the

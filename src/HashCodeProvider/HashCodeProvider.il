@@ -34,7 +34,7 @@
 .file alignment 4096
 .corflags 0x00000001
 // Image base: 0x07b50000
-.namespace HashCodeProvider 
+.namespace NHibernate 
 {
   .class public serializable IdentityHashCodeProvider
        implements [mscorlib]System.Collections.IHashCodeProvider
