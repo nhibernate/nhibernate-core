@@ -170,7 +170,28 @@
 		<nant target="build" buildfile="src/NHibernate.Test/NHibernate.Test.build" />
 		<nant target="build" buildfile="src/NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
 		<nant target="build" buildfile="src/NHibernate.Examples/NHibernate.Examples.build" />
+
+		<call target="merge" />
 		
+	</target>
+
+	<target name="merge">
+		
+		<exec program="ilmerge.exe" basedir="external-bin" useruntimeengine="true">
+			<arg value="/ndebug:${build.debug}" />
+			<arg value="/lib:${build.dir}/bin" />
+			<arg value="/keyfile:src/NHibernate.snk" />
+			<arg value="/out:${build.dir}/NHibernate.dll" />
+			<arg value="NHibernate.dll" />
+			<arg value="HashCodeProvider.dll" />
+		</exec>
+		
+		<!-- clean up -->
+		<delete file="${build.dir}/bin/NHibernate.dll" />
+		<delete file="${build.dir}/bin/HashCodeProvider.dll" />
+		<delete file="${build.dir}/bin/HashCodeProvider.license.txt" />
+		<move file="${build.dir}/NHibernate.dll" tofile="${build.dir}/bin/NHibernate.dll" />
+
 	</target>
 
 	<target name="put-connection-settings-into-app-config">
