@@ -1,9 +1,4 @@
 
-div.legalnotice
-{
-	font-size: 75%;
-}
-
 BODY
 {
 	font-family: Verdana;
@@ -145,27 +140,32 @@ TABLE
 
 
 
+div.legalnotice
+{
+	font-size: 75%;
+}
+
 .classname
 {
-	color: #400080;
+	color: #300060;
 	font-weight: bold;
 }
 
 .methodname
 {
-	color: #004080;
+	color: #003060;
 	font-weight: bold;
 }
 
 .literal
 {
-	color: #804000;
+	color: #603000;
 	font-weight: bold;
 }
 
 .filename
 {
-	color: #000070;
+	color: #000060;
 	font-weight: bold;
 	font-style: italic;
 }
