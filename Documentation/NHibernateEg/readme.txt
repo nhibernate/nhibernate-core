@@ -10,16 +10,26 @@
 \*/
 
 
-TODO:
-- Sort the methods in ProductsList (and others)
+Open the file "doc/index.html" to read the tutorials.
 
+The source code of Tutorial1A is in "src/Tutorial1A/"
+and the binaries are in "src/Tutorial1A/bin/".
+
+The VS .NET 2003 solution of the tutorials is the file "src/NHibernateEg.sln".
+You can also build the source code by running the file "src/Build-in-bin.bat".
+(make sure that you correctly set up NAnt)
+
+
+--------------------------------------------------------------------------------
+TODO:
+-----
 - Add #D combines!
-- "Build-in-bin.bat" don't work!
 
 
 --------------------------------------------------------------------------------
 Tutorial1A:
 -----------
+- Introduction to Object / Relational Mapping with NHibernate
 - Order + Entity Mapping
 - NHibernate Configuration
 - Basic CRUD operations
@@ -28,7 +38,7 @@ Tutorial1A:
 --------------------------------------------------------------------------------
 Tutorial1B:
 -----------
-- Put hibernate.cfg.xml code in App.config
+- Use hibernate.cfg.xml
 - Relationship: Order - OrderDetail - Product
 - Lazy loading for Order.Details and Product
 - Product.<version>
@@ -38,7 +48,7 @@ Tutorial1B:
 --------------------------------------------------------------------------------
 Tutorial1C:
 -----------
-- Put hibernate.cfg.xml code in Web.config
+- Put NHibernate configuration in Web.config
 - ProductEx as <joined-subclass> with Supplier as <component> + Nullables
 - "Advanced" HQL query (+ Count(order) & Sum(price)) and Criteria usage
 - Web App: 2nd level caching, list/edit/report (=> typed Dataset & Databinding)

@@ -92,7 +92,7 @@ namespace NHibernateEg.Tutorial1A
 
 
 		/// <summary> Add 'n' hours to the date. </summary>
-		public void ChangeTimeZone(int n)
+		public virtual void ChangeTimeZone(int n)
 		{
 			this._date = this.Date.AddHours(n);
 		}

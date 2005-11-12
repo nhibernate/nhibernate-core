@@ -8,3 +8,7 @@
  * Read the file "license.txt" for more details.
  *
 \*/
+
+
+Open the file "doc/NHibernateEg.Tutorial1A.html"
+to read the tutorial of this application.

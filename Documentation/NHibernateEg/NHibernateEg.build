@@ -5,7 +5,7 @@
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 	<!-- default configuration -->
-	<property name="build.dir" value="build" overwrite="false" />
+	<property name="build.dir" value="build/src" overwrite="false" />
 	<property name="build.debug" value="true" overwrite="false" />
 
 
@@ -22,6 +22,7 @@
 	<target name="copy-files" depends="init" description="Deletes current build">
 		<property name="tutorial.bin" value="${build.dir}/${tutorial.name}/bin" />
 		<!-- copy license files in the bin directory of the current tutorial -->
+		<delete dir="${tutorial.bin}" failonerror="false" />
 		<mkdir dir="${tutorial.bin}" />
 
 		<copy file="../gnu-lgpl.txt" tofile="${tutorial.bin}/NHibernateEg.${tutorial.name}.license.txt" />
@@ -109,6 +110,18 @@
 
 	<target name="package" depends="build doc" description="Creates Zip file(s) for Release">
 		<!-- Copy source code, lib directory and other files needed for building -->
+		<copy todir="build">
+			<fileset>
+				<include name="../gnu-fdl.txt" />
+				<include name="../gnu-lgpl.txt" />
+				<include name="*.txt" />
+			</fileset>
+		</copy>
+		<copy todir="build/lib"><!-- copy libraries -->
+			<fileset basedir="../lib/">
+				<include name="**/*" />
+			</fileset>
+		</copy>
 		<copy todir="${build.dir}">
 			<fileset>
 				<!-- copy the source of all tutorials -->
@@ -117,9 +130,6 @@
 				<include name="NHibernateEg.build" />
 				<include name="NHibernateEg.sln" />
 				<include name="Build-in-bin.bat" />
-				<include name="*.txt" />
-				<include name="../gnu-fdl.txt" />
-				<include name="../gnu-lgpl.txt" />
 
 				<!-- exclude ReSharper stuff -->
 				<exclude name="**/_ReSharper*/**" />
@@ -132,14 +142,9 @@
 				<exclude name="**/obj/**" />
 			</fileset>
 		</copy>
-		<copy todir="${build.dir}/lib/"><!-- copy libraries -->
-			<fileset basedir="../lib/">
-				<include name="**/*" />
-			</fileset>
-		</copy>
 
-		<zip zipfile="${build.dir}/NHibernateEg.zip">
-			<fileset basedir="${build.dir}">
+		<zip zipfile="build/NHibernateEg.zip">
+			<fileset basedir="build">
 				<include name="**/*" />
 				<exclude name="build.log" />
 				<exclude name="**/bin/log.txt" />

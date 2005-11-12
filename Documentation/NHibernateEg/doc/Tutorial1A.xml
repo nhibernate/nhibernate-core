@@ -11,8 +11,8 @@
 	</abstract>
 
 
-	<section id="NHibernateEg.Tutorial1A-Shop">
-		<title>The Shop (+ Order)</title>
+	<section id="NHibernateEg.Tutorial1A-Presentation">
+		<title>Presentation of Order and Shop</title>
 
 		<para>The application of this tutorial mimics a (very simple) shop. The main (and only) managed class is the <classname>Order</classname>.</para>
 
@@ -41,7 +41,7 @@
 			<title>Before running the application</title>
 			<para>
 				You need to configure your database. Open the file <filename>NHibernateEg.Tutorial1A.exe.config</filename>.
-				By default, this application uses a database named "<emphasis>nhibernate</emphasis>" in Microsoft SQL Server 2000 (or MSDE).
+				By default, this application uses a database named "<emphasis role="strong">nhibernate</emphasis>" in Microsoft SQL Server 2000 (or MSDE).
 			</para>
 			<para>
 				If you want to use a MySQL database, change the line:
@@ -118,6 +118,46 @@ Application is closed!
 		<para>
 			Study this output to understand what we will achieve in the next sections.
 		</para>
+		<para>
+			Here is the code of the method <methodname>Program.Main()</methodname> which generate this output:
+		</para>
+		<programlisting>
+	string <emphasis role="strong">database</emphasis> = System.Configuration.ConfigurationSettings.AppSettings["Database"];
+	string <emphasis role="strong">connectionString</emphasis> = System.Configuration.ConfigurationSettings.AppSettings[database + ".ConnectionString"];
+
+	Shop shop = new <link linkend="NHibernateEg.Tutorial1A-Configuration">Shop</link>(database, connectionString);
+
+	shop.<link linkend="NHibernateEg.Tutorial1A-CRUD.Create">GenerateRandomOrders</link>(3);
+
+	shop.<link linkend="NHibernateEg.Tutorial1A-CRUD.Retrieve">WriteAllOrders</link>();
+
+	Order o = shop.<link linkend="NHibernateEg.Tutorial1A-CRUD.Retrieve">LoadOrder</link>(1);
+
+	o.Product += " (updated)";
+	shop.Write(o);
+	shop.<link linkend="NHibernateEg.Tutorial1A-CRUD.Update">Save</link>(o);
+
+	shop.<link linkend="NHibernateEg.Tutorial1A-CRUD.Update">Save</link>( new Order("New", 4, 2) );
+
+	shop.<link linkend="NHibernateEg.Tutorial1A-CRUD.Update">ChangeTimeZone</link>(25);
+
+	shop.<link linkend="NHibernateEg.Tutorial1A-CRUD.Delete">Delete</link>(2);
+
+	shop.<link linkend="NHibernateEg.Tutorial1A-CRUD.Retrieve">WriteAllOrders</link>();</programlisting>
+
+		<para>
+			The strings <emphasis role="strong">database</emphasis> and <emphasis role="strong">connectionString</emphasis>
+			are extracted from the file <filename>NHibernateEg.Tutorial1A.exe.config</filename> and sent to the <classname>Shop</classname>
+			for its configuration.
+		</para>
+		<para>
+			Then we do some CRUD operations on <classname>Order</classname>:
+			<link linkend="NHibernateEg.Tutorial1A-CRUD.Update">Create</link>,
+			<link linkend="NHibernateEg.Tutorial1A-CRUD.Retrieve">Retrieve</link>,
+			<link linkend="NHibernateEg.Tutorial1A-CRUD.Update">Update</link> and
+			<link linkend="NHibernateEg.Tutorial1A-CRUD.Delete">Delete</link>.
+			Their implementations will exhibit the usage of NHibernate for basic operations.
+		</para>
 	</section>
 
 
@@ -158,16 +198,23 @@ Application is closed!
 		<para>You will discover the benefits of this technology when using it.</para>
 		<para>
 			The step zero is to create a Console Application and add the libraries:
-			<filename>NHibernate.dll</filename>, <filename>log4net.dll</filename> and <filename>NHibernate.Mapping.Attributes.dll</filename> as references.</para>
+			<filename>NHibernate.dll</filename>, <filename>log4net.dll</filename> and <filename>NHibernate.Mapping.Attributes.dll</filename> as references.
+		</para>
 	</section>
 
 
-	<section id="NHibernateEg.Tutorial1A-Order.NHMA">
+	<section id="NHibernateEg.Tutorial1A-Order">
 		<title>Implementation of Order and introduction to NHibernate.Mapping.Attributes</title>
 
-		<para>Now, we are going to implement the class <classname>Order</classname>. That is: Create the class, add the fields / properties and the methods.</para>
+		<para>
+			Now, we are going to implement the class <classname>Order</classname>.
+			That is: Create the class, add the fields / properties and the methods.
+		</para>
 
-		<para>To manipulate the classes, NHibernate needs a mapping between these classes and the database tables. Here, we use the <emphasis role="strong">NHibernate.Mapping.Attributes</emphasis> to provide this mapping information.</para>
+		<para>
+			To manipulate the classes, NHibernate needs a mapping between these classes and the database tables.
+			Here, we use the <emphasis role="strong">NHibernate.Mapping.Attributes</emphasis>
+			to provide this mapping information.</para>
 		<formalpara>
 			<title>NHibernate.Mapping.Attributes uses .NET Attributes to define the mapping.</title>
 			<para>
@@ -210,15 +257,15 @@ Application is closed!
 				The identifier can be assigned by the database, the application (you) or NHibernate.
 				Read the documentation for more details on these options.
 				The attribute <classname>[Generator]</classname> is used to select one of these strategies.
-				We will let the database choose the identifier, that's why we write <literal>Class="native"</literal>.
+				We let the database choose the identifier, that's why we write <literal>Class="native"</literal>.
 			</para><para>
 				There is no <literal>set { ... }</literal> because the Id should never be changed
 				(only NHibernate changes it when it is loaded/persisted).
 			</para><para>
 				As you can see, we have two attributes on this property (and there can be even more).
 				<classname>[Generator]</classname> is indented to stress that it belongs to <classname>[Id]</classname>;
-				and "1" (same as <literal>Position=1</literal>) tells that it comes after <classname>[Id]</classname> (which position is "0");
-				.NET attributes are not automatically ordered.
+				and "1" (same as <literal>Position=1</literal>) tells that it comes after <classname>[Id]</classname>
+				(which position is "0"); .NET attributes are not automatically ordered.
 			</para>
 			<para></para>
 		</section>
@@ -271,38 +318,52 @@ Application is closed!
 				The advantage of this setting is that you can use the properties names in Queries
 				and as NHibernate accesses directly to fields, it doesn't execute eventual business logic contained in the properties.
 			</para><para>
-				In your methods, you should not access these fields directly because they will not contain valid values in lazy loadable classes.
-				Instead, you should use properties; they are <literal>virtual</literal> because it is required for entity lazy loading
-				(it will be used in <xref linkend="NHibernateEg.Tutorial1B" />).
+				All your members (properties, methods and events) which access
+				these fields directly should be <literal>virtual</literal>;
+				it is required when lazy loading is enable on the entity
+				(it is used in <xref linkend="NHibernateEg.Tutorial1B" />).
+			</para><para>
+				Therefore, if you have a member which is not virtual
+				(or doesn't belong the entity) and which need to access to a field,
+				it should use a <emphasis role="strong">virtual</emphasis> member of the entity
+				(directly or not); most of the time, the virtual property of this field.
 			</para>
 		</section>
 
 		<section id="NHibernateEg.Tutorial1A-Order.Methods">
 			<title>The methods</title>
 			<programlisting>
-	public Order()
+	public <methodname>Order</methodname>()
 	{
 	}
 
-	public Order(string product, int unitPrice, int quantity)
+	public <methodname>Order</methodname>(string product, int unitPrice, int quantity)
 	{
 		this.Product = product;
 		this.Quantity = quantity;
 		this.ComputeTotalPrice(unitPrice);
 	}
 
-	public void ComputeTotalPrice(int unitPrice)
+	public void <methodname>ComputeTotalPrice</methodname>(int unitPrice)
 	{
 		this.TotalPrice = unitPrice * this.Quantity;
 	}
 
-	public void ChangeTimeZone(int n)
+	public <emphasis role="strong">virtual</emphasis> void <methodname>ChangeTimeZone</methodname>(int n)
 	{
 		this._date = this.Date.AddHours(n);
 	}</programlisting>
 			<para>
-				There is nothing special here.
-				As you can see, fields are never used; this is a good practice because it is required in lazy loadable classes.
+				As you can see, fields are never used directly;
+				the only exception is <methodname>ChangeTimeZone()</methodname>
+				which is <emphasis role="strong">virtual</emphasis>.
+			</para><para>
+				The class <classname>Order</classname> has a constructor
+				which takes no parameter (<literal>public Order()</literal>).
+				This is required as NHibernate needs it to create instances internally.
+				But this constructor can be <emphasis role="strong">protected</emphasis>
+				and even <emphasis role="strong">private</emphasis>
+				if lazy loading is not enable for your entity.
 			</para>
 		</section>
 
@@ -317,9 +378,12 @@ Application is closed!
 				And NHibernate documentation contains explanations for all mapping.
 			</para>
 			<para>
-				As you read other articles/samples, you will discover that the mapping information is stored in <filename>.hbm.xml</filename> files.
-				In fact, using attributes is a simpler and nicer way to generate this information (it is also far less verbose).
-				Anyway, as you progress in your usage of NHibernate, you will probably need someday to hand-write these files.
+				As you read other articles/samples, you will discover that
+				the mapping information is stored in <filename>.hbm.xml</filename> files.
+				In fact, using attributes is a simpler and nicer way
+				to generate this information (it is also far less verbose).
+				Anyway, someday, as you progress in your usage of NHibernate,
+				you will probably have to hand-write these files.
 			</para>
 		</section>
 	</section>
@@ -328,7 +392,15 @@ Application is closed!
 	<section id="NHibernateEg.Tutorial1A-Configuration">
 		<title>Configuration of NHibernate (database and mapping)</title>
 
-		<para>Before configuring NHibernate, there is a library you need to know: <emphasis role="strong">log4net</emphasis>.</para>
+		<para>
+			This configuration is done in the constructor of <classname>Shop</classname>:
+			<literal>public Shop(string database, string connectionString)</literal>.
+		</para>
+
+		<para>
+			Before configuring NHibernate, there is a library
+			you need to know: <emphasis role="strong">log4net</emphasis>.
+		</para>
 		<formalpara>
 			<title>log4net is a logging system</title>
 			<para>
@@ -386,26 +458,27 @@ Application is closed!
 		<para>
 			We extract the mapping information using NHibernate.Mapping.Attributes:
 			<programlisting>
-	System.IO.MemoryStream <methodname>stream</methodname> = new System.IO.MemoryStream(); // Where the information will be written
+	System.IO.MemoryStream <emphasis role="strong">stream</emphasis> = new System.IO.MemoryStream(); // Where the information will be written in
 	// Ask to NHibernate to use fields instead of properties
-	NHibernate.Mapping.Attributes.HbmSerializer.Default.<methodname>HbmDefaultAccess</methodname> = <literal>"field.camelcase-underscore"</literal>;<co id="NHEg.Tut1A.HbmDefaultAccess-co" linkends="NHEg.Tut1A.HbmDefaultAccess"/>
+	NHibernate.Mapping.Attributes.HbmSerializer.Default.<methodname>HbmDefaultAccess</methodname> = <literal>"field.camelcase-underscore"</literal>;<co id="NHibernateEg.Tutorial1A-HbmDefaultAccess-co" linkends="NHibernateEg.Tutorial1A-HbmDefaultAccess"/>
 	// Gather information from this assembly (can also be done class by class)
 	NHibernate.Mapping.Attributes.HbmSerializer.Default.<methodname>Serialize</methodname>( stream,
-		System.Reflection.Assembly.<methodname>GetExecutingAssembly()</methodname> );<co id="NHEg.Tut1A.Serialize-co" linkends="NHEg.Tut1A.Serialize"/>
+		System.Reflection.Assembly.<methodname>GetExecutingAssembly()</methodname> );<co id="NHibernateEg.Tutorial1A-Serialize-co" linkends="NHibernateEg.Tutorial1A-Serialize"/>
 	stream.Position = 0;
-	<literal>cfg.AddInputStream(stream);</literal><co id="NHEg.Tut1A.AddInputStream-co" linkends="NHEg.Tut1A.AddInputStream"/> // Send the Mapping information to NHibernate Configuration
+	<literal>cfg.AddInputStream(stream);</literal><co id="NHibernateEg.Tutorial1A-AddInputStream-co" linkends="NHibernateEg.Tutorial1A-AddInputStream"/> // Send the Mapping information to NHibernate Configuration
 	stream.Close();</programlisting>
 			<calloutlist>
-				<callout arearefs="NHEg.Tut1A.HbmDefaultAccess-co" id="NHEg.Tut1A.HbmDefaultAccess"><para>
+				<callout arearefs="NHibernateEg.Tutorial1A-HbmDefaultAccess-co" id="NHibernateEg.Tutorial1A-HbmDefaultAccess"><para>
 					With this setting, NHibernate will convert the name of the property in the camel case
 					and will add an underscore before to get the name of the field that hold this data.
+					Read the documentation to discover other <emphasis role="strong">naming strategies</emphasis>.
 					If the field is private, it will use the reflection (so make sure that the application's security level allows this).
 				</para></callout>
-				<callout arearefs="NHEg.Tut1A.Serialize-co" id="NHEg.Tut1A.Serialize"><para>
+				<callout arearefs="NHibernateEg.Tutorial1A-Serialize-co" id="NHibernateEg.Tutorial1A-Serialize"><para>
 					Here, NHibernate.Mapping.Attributes uses the .NET reflection to find all classes (in the ExecutingAssembly)
 					with the attribute <classname>[Class]</classname> and fill the stream with information about these classes.
 				</para></callout>
-				<callout arearefs="NHEg.Tut1A.AddInputStream-co" id="NHEg.Tut1A.AddInputStream"><para>
+				<callout arearefs="NHibernateEg.Tutorial1A-AddInputStream-co" id="NHibernateEg.Tutorial1A-AddInputStream"><para>
 					Once the stream is filled, we rewind it and send it to the NHibernate Configuration instance.
 					It will parse its XML content to gather all the information NHibernate will need to manipulate your classes.
 				</para></callout>
@@ -423,8 +496,8 @@ Application is closed!
 
 		<para>
 			Finally, we create the <classname>SessionFactory</classname>: (explanation in the next section)
-			<programlisting>_sessionFact = cfg.BuildSessionFactory();</programlisting>
-			Note thate the <emphasis role="strong">_sessionFact</emphasis> is an instance of the class <classname>Shop</classname>
+			<programlisting>_sessionFactory = cfg.BuildSessionFactory();</programlisting>
+			Note thate the <emphasis role="strong">_sessionFactory</emphasis> is an instance of the class <classname>Shop</classname>
 			that will be destroyed only when the Shop instance is destroyed.
 		</para>
 	</section>
@@ -446,17 +519,17 @@ Application is closed!
 		<para>
 			The main interface used to manipulate entities is <emphasis role="strong">ISession</emphasis>
 			(full name: <classname>NHibernate.ISession</classname>).
-		</para>
-		<para>
-			A session is created by an <emphasis role="strong">ISessionFactory</emphasis>.
+		</para><para>
 			You need <emphasis role="strong">one</emphasis> ISessionFactory for each database
 			(which is generally created at the initialization of the application as it is the case here).
 			Its implementation is thread-safe and exception-proof, so that it can live as long as your application is running.
-		</para>
-		<para>
-			For sessions, you should use the <emphasis role="strong">session-per-request pattern</emphasis>;
-			that is one session for each user request.
-			This is recommended because they are not exception-proof (nor thread-safe).
+		</para><para>
+			A session is created by an <emphasis role="strong">ISessionFactory</emphasis>
+			by calling the method <methodname>ISessionFactory.OpenSession()</methodname>.
+		</para><para>
+			You should use the <emphasis role="strong">session-per-request pattern</emphasis>;
+			that is create one session for each user request.
+			This is recommended because a session is not exception-proof (nor thread-safe).
 			If an exception is thrown, you should rollback the transaction and close the session (don’t try to recover it).
 		</para>
 
@@ -467,32 +540,39 @@ Application is closed!
 	NHibernate.ITransaction transaction = null;
 	try
 	{
-		session = _sessionFact.<methodname>OpenSession()</methodname>;
-		transaction = session.<methodname>BeginTransaction()</methodname>;
+		session = _sessionFactory.<methodname>OpenSession</methodname>();
+		transaction = session.<methodname>BeginTransaction</methodname>();
 
 		// CRUD operations here (with the session)
 
-		transaction.<methodname>Commit()</methodname>;
+		transaction.<methodname>Commit</methodname>();
 	}
 	catch
 	{
 		if(transaction != null)
-			transaction.<methodname>Rollback()</methodname>;
+			transaction.<methodname>Rollback</methodname>();
 		throw;
 	}
 	finally
 	{
 		if(session != null)
-			session.<methodname>Close()</methodname>;
+			session.<methodname>Close</methodname>();
 	}</programlisting>
 			As you can read in this code, we create the session, then its transaction.
-			We use the session to do some CRUD operations; finally, we commit the changes and close the session (rollback if any exception is thrown).
+			We use the session to do some CRUD operations; finally,
+			we commit the changes and close the session (rollback if any exception is thrown).
 		</para>
 		<para>
-			NHibernate transactions behave like ADO.NET transactions.
-			The transaction is tightly coupled with the session but it is optional (mainly when you just want to run a SELECT). In this case, you can write:
+			NHibernate transactions behave like ADO.NET transactions. The transaction is tightly coupled with the session.
+			SQL commands are generated and ran only when calling
+			<methodname>transaction.Commit()</methodname>.
+			But it is possible to force that by calling <methodname>session.Flush()</methodname>.
+		</para>
+		<para>
+			Note that creating the transaction is optional (mainly when you just want to run SELECT operations);
+			in this case, you can write:
 			<programlisting>
-	<literal>using</literal>(NHibernate.ISession session = _sessionFact.<methodname>OpenSession()</methodname>)
+	<literal>using</literal>(NHibernate.ISession session = _sessionFactory.<methodname>OpenSession()</methodname>)
 	{
 		// Retrieve data here (with the session)
 	}</programlisting>
@@ -534,8 +614,9 @@ Application is closed!
 		<section id="NHibernateEg.Tutorial1A-CRUD.Create">
 			<title>CREATE: Save</title>
 			<para>
-				<emphasis role="strong">Implementation of the method:
-				<classname>Shop</classname>.<methodname>GenerateRandomOrders()</methodname></emphasis>
+				<emphasis role="strong">Implementation of the method
+				<classname>Shop</classname>.<methodname>GenerateRandomOrders()</methodname></emphasis>:
+				Create "n" random orders and save them.
 			</para>
 			<programlisting>
 	public void GenerateRandomOrders(int n)
@@ -546,12 +627,12 @@ Application is closed!
 		System.Console.Out.WriteLine("\nSaving " + n + " aleatory orders...");
 		try
 		{
-			session = _sessionFact.OpenSession();
+			session = _sessionFactory.OpenSession();
 			transaction = session.BeginTransaction();
 	
 			for(int i=0; i&lt;n; i++)
 			{
-				Order o = new Order();
+				<literal>Order o = new Order();</literal>
 	
 				o.Product = "P" + (i+1).ToString();
 				o.Quantity = n - i;
@@ -575,7 +656,10 @@ Application is closed!
 				session.Close();
 		}
 	}</programlisting>
-			<para>In this method, orders are randomly created and filled. Then, the method <methodname>session.Save()</methodname> is used to save them.</para>
+			<para>
+				In this method, orders are randomly created and filled. Then, the method
+				<methodname>session.Save()</methodname> is used to save them.
+			</para>
 		</section>
 
 
@@ -584,8 +668,13 @@ Application is closed!
 			<para>
 				To retrieve entities, NHibernate has two query APIs:
 				<itemizedlist>
-					<listitem><para>The <emphasis role="strong">Hibernate Query Language</emphasis> (<emphasis role="strong">HQL</emphasis>) is a language similar to SQL but "object-oriented".</para></listitem>
-					<listitem><para>The <emphasis role="strong">Criteria API</emphasis>: Use classes to express your query.</para></listitem>
+					<listitem><para>
+						The <emphasis role="strong">Hibernate Query Language</emphasis>
+						(<emphasis role="strong">HQL</emphasis>) is a language similar to SQL but "object-oriented".
+					</para></listitem>
+					<listitem><para>
+						The <emphasis role="strong">Criteria API</emphasis>: Use classes to express your query.
+					</para></listitem>
 				</itemizedlist>
 				These APIs return as result an <classname>IList</classname> which contains all the items matching the criteria.
 			</para>
@@ -603,13 +692,14 @@ Application is closed!
 			</para>
 
 			<para>
-				<emphasis role="strong">Implementation of the method:
-				<classname>Shop</classname>.<methodname>WriteAllOrders()</methodname></emphasis>
+				<emphasis role="strong">Implementation of the method
+				<classname>Shop</classname>.<methodname>WriteAllOrders()</methodname></emphasis>:
+				For each order (in the database), write the identifier, the date and the product name.
 			</para>
 			<programlisting>
 	public void WriteAllOrders()
 	{
-		using(NHibernate.ISession session = _sessionFact.OpenSession())
+		using(NHibernate.ISession session = _sessionFactory.OpenSession())
 		{
 			System.Collections.IList result = session.<methodname>Find</methodname>(<literal>"select o.Id, o.Date, o.Product from Order o"</literal>);
 	
@@ -629,15 +719,16 @@ Application is closed!
 			</para>
 
 			<para>
-				<emphasis role="strong">Implementation of the method:
-				<classname>Shop</classname>.<methodname>LoadOrder()</methodname></emphasis>
+				<emphasis role="strong">Implementation of the method
+				<classname>Shop</classname>.<methodname>LoadOrder()</methodname></emphasis>:
+				Return the order with the specified identifier.
 			</para>
 			<programlisting>
 	public Order LoadOrder(int id)
 	{
 		System.Console.Out.WriteLine("\nLoading order N° " + id + "...");
-		using(NHibernate.ISession session = _sessionFact.OpenSession())
-			return <literal>session.Load(typeof(Order), id)</literal> as Order;
+		using(NHibernate.ISession session = _sessionFactory.OpenSession())
+			return <literal>session.Load(typeof(Order), id)</literal> as <classname>Order</classname>;
 		// finally { session.Close(); }	is done by using()
 	}</programlisting>
 			<para>
@@ -653,8 +744,9 @@ Application is closed!
 			<para></para>
 
 			<para>
-				<emphasis role="strong">Implementation of the method:
-				<classname>Shop</classname>.<methodname>Save()</methodname></emphasis>
+				<emphasis role="strong">Implementation of the method
+				<classname>Shop</classname>.<methodname>Save()</methodname></emphasis>:
+				Save or Update the order (in the database).
 			</para>
 			<programlisting>
 	public void Save(Order o)
@@ -663,11 +755,11 @@ Application is closed!
 		NHibernate.ITransaction transaction = null;
 
 		// That's how the Session decide to save or to update; set NHMA.Id(UnsavedValue=x) to replace 0
-		System.Console.Out.Write("\n"  +  (o.Id == 0  ?  "Save"  :  "Update"));
+		System.Console.Out.Write("\n"  +  (<literal>o.Id == 0  ?  "Save"  :  "Update"</literal>));
 		System.Console.Out.WriteLine(" the order N° " + o.Id + "...");
 		try
 		{
-			session = _sessionFact.OpenSession();
+			session = _sessionFactory.OpenSession();
 			transaction = session.BeginTransaction();
 
 			// NHibernate Session will automatically find out if it has to build an INSERT or an UPDATE
@@ -692,15 +784,17 @@ Application is closed!
 				This method uses a particular technique to issue INSERT or UPDATE commands:
 				An identifier has an unsaved value which is by default, the value that it takes when it is created
 				(an integer takes the value 0 at its creation).
-				You can set <literal>NHibernate.Mapping.Attributes.Id(UnsavedValue=?)</literal> to replace the unsaved value.
+				You can set <literal>[NHibernate.Mapping.Attributes.Id(UnsavedValue=?)]</literal> to replace the unsaved value.
 				So a new entity will have the unsaved value as identifier and the session will know that it needs to insert this entity.
 				Refer to the documentation to see how you can customize this behavior even more.
-				There are still the methods <methodname>session.Save()</methodname> and <methodname>session.Update()</methodname> if you need them.
+				There are still the methods <methodname>session.Save()</methodname>
+				and <methodname>session.Update()</methodname> if you need them.
 			</para>
 
 			<para>
-				<emphasis role="strong">Implementation of the method:
-				<classname>Shop</classname>.<methodname>ChangeTimeZone()</methodname></emphasis>
+				<emphasis role="strong">Implementation of the method
+				<classname>Shop</classname>.<methodname>ChangeTimeZone()</methodname></emphasis>:
+				Add 'n' hours to all orders.
 			</para>
 			<programlisting>
 	public void ChangeTimeZone(int n)
@@ -711,13 +805,13 @@ Application is closed!
 		System.Console.Out.WriteLine("\nChange the time zone of all orders: n=" + n + "...");
 		try
 		{
-			session = _sessionFact.OpenSession();
+			session = _sessionFactory.OpenSession();
 			transaction = session.BeginTransaction();
 
 			System.Collections.IList commandes = <literal>session.CreateCriteria(typeof(Order)).List();</literal>
-			// == <literal>session.Find("from Order");</literal>
+			// same as: <literal>session.Find("from Order");</literal>
 			foreach(Order o in commandes)
-				o.ChangeTimeZone(n);
+				o.<methodname>ChangeTimeZone</methodname>(n);
 			// It is useless to call Update(), the Session will automatically
 			// detect modified entities (as long as it loaded them)
 			System.Console.Out.WriteLine(commandes.Count + " updated orders!");
@@ -745,7 +839,8 @@ Application is closed!
 			</para>
 			<para>
 				Once loaded, these entities are kept in the session cache. This means that you don’t need to save them again.
-				When doing <methodname>transaction.Commit()</methodname>; the session will browse its cache to detect changed entities and it will persist them.
+				When doing <methodname>transaction.Commit()</methodname>;
+				the session will browse its cache to detect changed entities and it will persist them.
 				This feature is called <emphasis role="strong">transparent persistence</emphasis>.
 			</para>
 		</section>
@@ -764,8 +859,9 @@ Application is closed!
 			</para>
 
 			<para>
-				<emphasis role="strong">Implementation of the method:
-				<classname>Shop</classname>.<methodname>Delete()</methodname></emphasis>
+				<emphasis role="strong">Implementation of the method
+				<classname>Shop</classname>.<methodname>Delete()</methodname></emphasis>:
+				Delete the order (in the database).
 			</para>
 			<programlisting>
 	public void Delete(int id)
@@ -776,7 +872,7 @@ Application is closed!
 		System.Console.Out.WriteLine("\nDeleting the order N° " + id + "...");
 		try
 		{
-			session = _sessionFact.OpenSession();
+			session = _sessionFactory.OpenSession();
 			transaction = session.BeginTransaction();
 
 			session.<methodname>Delete</methodname>(<literal>"from Order o where o.Id = :Id"</literal>, id, <methodname>NHibernate.NHibernateUtil.Int32</methodname>);
@@ -819,7 +915,7 @@ Application is closed!
 		</para>
 
 		<para>
-			The most obvious advantage of using an ORM (for beginners) is the simplicity when doing CRUD operations.
+			The most obvious advantage of using an ORM (for beginners) is the <emphasis role="strong">simplicity when doing CRUD operations</emphasis>.
 			When you are familiar with the API, you can load, save, update and delete entities without any knowledge of the underlining database;
 			you don’t even need to know SQL. But this knowledge is still important if you want get the best performance.
 		</para>
@@ -827,19 +923,23 @@ Application is closed!
 		<para>
 			Another more important advantage is that your entities don’t even know that they are ever persisted;
 			which can be useful in complex applications.
-			Persistence becomes an external service (which is not intrusive).
+			<emphasis role="strong">Persistence becomes an external service</emphasis> which is not intrusive here (almost).
 		</para>
 
-		<para>Finally, you can design your application with OOP in mind and then create a database that can keep your entities.</para>
 		<para>
-			But NHibernate is also impressive when dealing with legacy database.
+			Finally, you can <emphasis role="strong">design your application with OOP in mind</emphasis>
+			and then create a database that can keep your entities.
+		</para>
+		<para>
+			But NHibernate is also impressive when <emphasis role="strong">dealing with legacy database</emphasis>.
 			You can take a classic relational database and map it to your object-oriented entities.
 		</para>
 
 		<para>
-			You have to understand that if DataSet is not the perfect answer to every problem, ORM is neither perfect in every situation.
+			You have to understand that if DataSet is not the perfect answer to every problem,
+			<emphasis role="strong">ORM is neither perfect in every situation</emphasis>.
 			Reporting and batch processing are situations where DataSet and DataReader might perform better.
-			And it is probably simpler to use them in straightforward applications.
+			And it is probably less brainstorming to use them in straightforward applications.
 		</para>
 
 		<para>
@@ -850,7 +950,7 @@ Application is closed!
 
 		<para>
 			A tool that you should really try is <ulink url="http://www.ayende.com/projects/nhibernate-query-analyzer.aspx">NHibernate Query Analyzer</ulink>.
-			With it, you can edit configuration (<filename>hibernate.cfg.xml</filename>) and mapping (<filename>.hbm.xml</filename>) files.
+			With it, you can edit NHibernate XML configuration files and mapping (<filename>.hbm.xml</filename>) files.
 			You can also easily run HQL queries after setting up the configuration. To see it in action, download the flash videos available on its web site.
 		</para>
 
@@ -862,6 +962,8 @@ Application is closed!
 		<para>
 			And if you want to discuss about this tutorial, use
 			<ulink url="http://nhibernate.sourceforge.net/forum/viewforum.php?f=9">this NHibernate forum</ulink>.
+			Note that you should only use it if you want to talk about this tutorial;
+			if you do your own tests, you should create a new topic.
 		</para>
 	</section>
 

@@ -15,7 +15,7 @@ namespace NHibernateEg.Tutorial1A
 	/// </summary>
 	public sealed class Shop
 	{
-		private NHibernate.ISessionFactory _sessionFact;
+		private NHibernate.ISessionFactory _sessionFactory;
 
 
 		/// <summary> Configure the access to the data source. </summary>
@@ -50,7 +50,7 @@ namespace NHibernateEg.Tutorial1A
 
 
 			// Use NHibernate.Mapping.Attributes to create information about our entities
-			System.IO.MemoryStream stream = new System.IO.MemoryStream(); // Where the information will be written
+			System.IO.MemoryStream stream = new System.IO.MemoryStream(); // Where the information will be written in
 			NHibernate.Mapping.Attributes.HbmSerializer.Default.Validate = true; // Enable validation (optional)
 			// Ask to NHibernate to use fields instead of properties
 			NHibernate.Mapping.Attributes.HbmSerializer.Default.HbmDefaultAccess = "field.camelcase-underscore";
@@ -69,7 +69,7 @@ namespace NHibernateEg.Tutorial1A
 
 			// Build the SessionFactory
 			System.Console.Out.WriteLine("\n\nsessionFact = cfg.BuildSessionFactory();\n\n");
-			_sessionFact = cfg.BuildSessionFactory();
+			_sessionFactory = cfg.BuildSessionFactory();
 		}
 
 
@@ -84,7 +84,7 @@ namespace NHibernateEg.Tutorial1A
 			System.Console.Out.WriteLine("\nSaving " + n + " aleatory orders...");
 			try
 			{
-				session = _sessionFact.OpenSession();
+				session = _sessionFactory.OpenSession();
 				transaction = session.BeginTransaction();
 
 				for(int i=0; i<n; i++)
@@ -118,7 +118,7 @@ namespace NHibernateEg.Tutorial1A
 		/// <summary> For each order (in the database), write the identifier, the date and the product name. </summary>
 		public void WriteAllOrders()
 		{
-			using(NHibernate.ISession session = _sessionFact.OpenSession())
+			using(NHibernate.ISession session = _sessionFactory.OpenSession())
 			{
 				System.Collections.IList result = session.Find("select o.Id, o.Date, o.Product from Order o");
 
@@ -134,7 +134,7 @@ namespace NHibernateEg.Tutorial1A
 		public Order LoadOrder(int id)
 		{
 			System.Console.Out.WriteLine("\nLoading order N° " + id + "...");
-			using(NHibernate.ISession session = _sessionFact.OpenSession())
+			using(NHibernate.ISession session = _sessionFactory.OpenSession())
 				return session.Load(typeof(Order), id) as Order;
 			// finally { session.Close(); }	is done by using()
 		}
@@ -160,7 +160,7 @@ namespace NHibernateEg.Tutorial1A
 			System.Console.Out.WriteLine(" the order N° " + o.Id + "...");
 			try
 			{
-				session = _sessionFact.OpenSession();
+				session = _sessionFactory.OpenSession();
 				transaction = session.BeginTransaction();
 
 				// NHibernate Session will automatically find out if it has to build an INSERT or an UPDATE
@@ -192,7 +192,7 @@ namespace NHibernateEg.Tutorial1A
 			System.Console.Out.WriteLine("\nChange the time zone of all orders: n=" + n + "...");
 			try
 			{
-				session = _sessionFact.OpenSession();
+				session = _sessionFactory.OpenSession();
 				transaction = session.BeginTransaction();
 
 				System.Collections.IList commandes = session.CreateCriteria(typeof(Order)).List();//session.Find("from Order");
@@ -228,7 +228,7 @@ namespace NHibernateEg.Tutorial1A
 			System.Console.Out.WriteLine("\nDeleting the order N° " + id + "...");
 			try
 			{
-				session = _sessionFact.OpenSession();
+				session = _sessionFactory.OpenSession();
 				transaction = session.BeginTransaction();
 
 				session.Delete("from Order o where o.Id = :Id", id, NHibernate.NHibernateUtil.Int32);

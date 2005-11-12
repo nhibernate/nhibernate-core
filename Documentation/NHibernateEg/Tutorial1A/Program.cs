@@ -42,11 +42,11 @@ namespace NHibernateEg.Tutorial1A
 
 				shop.WriteAllOrders();
 
-				Order c = shop.LoadOrder(1);
+				Order o = shop.LoadOrder(1);
 
-				c.Product += " (updated)";
-				shop.Write(c);
-				shop.Save(c);
+				o.Product += " (updated)";
+				shop.Write(o);
+				shop.Save(o);
 
 				shop.Save( new Order("New", 4, 2) );
 
