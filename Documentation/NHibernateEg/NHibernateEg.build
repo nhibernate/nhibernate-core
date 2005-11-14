@@ -13,8 +13,13 @@
 		<call target="set-runtime-configuration" />
 	</target>
 
-	<target name="clean" depends="init" description="Deletes current build">
+	<target name="clean-src" depends="init" description="Deletes current build">
 		<delete dir="${build.dir}" failonerror="false" />
+	</target>
+
+	<target name="clean-all" depends="init" description="Deletes current build">
+		<delete dir="build" failonerror="false" />
+		<mkdir dir="build" />
 	</target>
 
 

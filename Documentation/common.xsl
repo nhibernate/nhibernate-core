@@ -13,7 +13,7 @@
 	<!-- Don't use graphics, use a simple number style !-->
 	<xsl:param name="callout.graphics" select="'0'" />
 
-	<!-- Set <a ... target="_blank">...</a> !-->
+	<!-- Set <a ... target="_blank">...</a> for external links !-->
 	<xsl:param name="ulink.target" select="'_blank'" />
 
 </xsl:stylesheet>

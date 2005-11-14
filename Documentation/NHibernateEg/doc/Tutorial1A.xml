@@ -915,8 +915,10 @@ Application is closed!
 		</para>
 
 		<para>
-			The most obvious advantage of using an ORM (for beginners) is the <emphasis role="strong">simplicity when doing CRUD operations</emphasis>.
-			When you are familiar with the API, you can load, save, update and delete entities without any knowledge of the underlining database;
+			The most obvious advantage of using an ORM (for beginners) is the
+			<emphasis role="strong">simplicity when doing CRUD operations</emphasis>.
+			When you are familiar with the API, you can load, save, update and delete entities
+			without any knowledge of the underlining database;
 			you don’t even need to know SQL. But this knowledge is still important if you want get the best performance.
 		</para>
 
@@ -931,7 +933,7 @@ Application is closed!
 			and then create a database that can keep your entities.
 		</para>
 		<para>
-			But NHibernate is also impressive when <emphasis role="strong">dealing with legacy database</emphasis>.
+			But NHibernate is <emphasis role="strong">also impressive when dealing with legacy database</emphasis>.
 			You can take a classic relational database and map it to your object-oriented entities.
 		</para>
 
@@ -949,9 +951,11 @@ Application is closed!
 		</para>
 
 		<para>
-			A tool that you should really try is <ulink url="http://www.ayende.com/projects/nhibernate-query-analyzer.aspx">NHibernate Query Analyzer</ulink>.
+			A tool that you should really try is
+			<ulink url="http://www.ayende.com/projects/nhibernate-query-analyzer.aspx">NHibernate Query Analyzer</ulink>.
 			With it, you can edit NHibernate XML configuration files and mapping (<filename>.hbm.xml</filename>) files.
-			You can also easily run HQL queries after setting up the configuration. To see it in action, download the flash videos available on its web site.
+			You can also easily run HQL queries after setting up the configuration.
+			To see it in action, download the flash videos available on its web site.
 		</para>
 
 		<para>
@@ -961,9 +965,9 @@ Application is closed!
 
 		<para>
 			And if you want to discuss about this tutorial, use
-			<ulink url="http://nhibernate.sourceforge.net/forum/viewforum.php?f=9">this NHibernate forum</ulink>.
-			Note that you should only use it if you want to talk about this tutorial;
-			if you do your own tests, you should create a new topic.
+			<ulink url="http://nhibernate.sourceforge.net/forum/viewtopic.php?t=1309">this NHibernate topic</ulink>.
+			Note that you should only use it for topics directly linked to this tutorial;
+			if you have some problems with your own tests, you should create a new topic (read <xref linkend="Support" />).
 		</para>
 	</section>
 

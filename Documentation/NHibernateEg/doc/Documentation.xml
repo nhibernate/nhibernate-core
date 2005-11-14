@@ -37,7 +37,7 @@
 		<releaseinfo>This work is in progress and will heavily evolve in the next weeks.</releaseinfo>
 		<revhistory>
 			<revision>
-				<date>11 Nov 2005</date>
+				<date>14 Nov 2005</date>
 				<revremark>First release with <link linkend="NHibernateEg.Tutorial1A">Tutorial1A</link> only.</revremark>
 			</revision>
 		</revhistory>
