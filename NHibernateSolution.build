@@ -180,6 +180,7 @@
 		<exec program="ilmerge.exe" basedir="external-bin" useruntimeengine="true">
 			<arg value="/ndebug:${build.debug}" />
 			<arg value="/lib:${build.dir}/bin" />
+			<arg value="/targetplatform:v1.1" />
 			<arg value="/keyfile:src/NHibernate.snk" />
 			<arg value="/out:${build.dir}/NHibernate.dll" />
 			<arg value="NHibernate.dll" />

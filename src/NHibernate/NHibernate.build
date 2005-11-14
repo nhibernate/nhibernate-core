@@ -49,6 +49,7 @@
 				<import namespace="System.Reflection" />
 				<import namespace="System.Runtime.CompilerServices" />
 				<import namespace="System.Runtime.InteropServices" />
+				<import namespace="System.Security" />
 			</imports>
 			<attributes>
 				<attribute type="CLSCompliantAttribute" value="true" />
@@ -62,6 +63,7 @@
 				<attribute type="AssemblyInformationalVersionAttribute" value="${project.version.major}.${project.version.minor}" />
 				<attribute type="AssemblyFileVersionAttribute" value="${project.version}" />
 				<attribute type="AssemblyKeyFileAttribute" value="${keyFile}" if="${sign}"/>
+				<attribute type="AllowPartiallyTrustedCallersAttribute" asis="true" />
 			</attributes>
 		</asminfo>
 
