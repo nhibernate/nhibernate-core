@@ -74,7 +74,6 @@ namespace NHibernate.Impl
 			}
 
 			public ICriteria CreateCriteria( string associationPath )
-
 			{
 				return parent.CreateCriteriaAt( rootAlias, associationPath );
 			}

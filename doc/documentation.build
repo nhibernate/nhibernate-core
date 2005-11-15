@@ -63,7 +63,7 @@
 		<xmlpoke
 			file="src/Documentation.gen"
 			xpath="/book/bookinfo/releaseinfo"
-			value="Status: Beta. Generated on ${build.date}."
+			value="Status: Production/Stable. Generated on ${build.date}."
 		/>
 	</target>
 

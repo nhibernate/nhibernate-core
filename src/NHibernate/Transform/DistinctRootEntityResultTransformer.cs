@@ -10,7 +10,7 @@ namespace NHibernate.Transform
 	public class DistinctRootEntityResultTransformer : IResultTransformer
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( DistinctRootEntityResultTransformer ) );
-		private static readonly IHashCodeProvider IdentityHashCodeProvider = new HashCodeProvider.IdentityHashCodeProvider();
+		private static readonly IHashCodeProvider IdentityHashCodeProvider = new NHibernate.IdentityHashCodeProvider();
 
 		internal sealed class Identity
 		{
