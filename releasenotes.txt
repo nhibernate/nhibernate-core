@@ -17,8 +17,15 @@ New Features:
       to avoid unnecessary warnings.
     * [NH-450] - Added hbm2ddl NAnt task by James Geurts
 
-Tasks:
-
+Improvements:
+    * [NH-403] - BinaryType.Get should now perform faster
+    * [NH-398] - Bulk property get/set optimization in AbstractEntityPersister
+      contributed by Roberto Paterlini. The optimization is enabled by default,
+      set hibernate.use_reflection_optimizer property to false in your
+      App.config file to disable it. Note that the property is global, thus
+      it is only possible to set it in the app.config file in <nhibernate>
+      session (see above).
+    * [NH-443] - Added more details to "broken column mapping" message
     * [NH-448] - NHibernate configuration process is now closer to Hibernate:
       - hibernate.properties file corresponds to <nhibernate> section
         in app.config (mapped to NameValueSectionHandler)
@@ -29,16 +36,8 @@ Tasks:
       - creating a new configuration instance in version 1.0 would cause it
         to read <hibernate-configuration> section immediately. In 1.0.1 this
         was changed so that the section is only read when Configure() is called
-
-Improvements:
-    * [NH-403] - BinaryType.Get should now perform faster
-    * [NH-398] - Bulk property get/set optimization in AbstractEntityPersister
-      contributed by Roberto Paterlini. The optimization is enabled by default,
-      set hibernate.use_reflection_optimizer property to false in your
-      App.config file to disable it. Note that the property is global, thus
-      it is only possible to set it in the app.config file in <nhibernate>
-      session (see above).
-    * [NH-443] - Added more details to "broken column mapping" message
+    * HashCodeProvider is now merged into NHibernate assembly during build,
+      thus it does not have to be distributed along with NHibernate.dll.
 
 Build 1.0.0.0
 ========================
