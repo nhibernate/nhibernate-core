@@ -132,9 +132,11 @@ namespace NHibernate.Persister
 		/// <param name="factory"></param>
 		protected void InitPropertyPaths( string path, IType type, string[] columns, ISessionFactoryImplementor factory )
 		{
-			if(columns.Length!=type.GetColumnSpan( factory ) )
+			if(columns.Length != type.GetColumnSpan( factory ) )
 			{
-				throw new MappingException( string.Format( "broken column mapping for: {0} of: {1}", path, ClassName ) );
+				throw new MappingException(
+					string.Format( "broken column mapping for: {0} of: {1}, type {2} expects {3} columns, but {4} were mapped",
+					path, ClassName, type.Name, type.GetColumnSpan( factory ), columns.Length ) );
 			}
 
 			if( type.IsAssociationType && ((IAssociationType) type).UsePrimaryKeyAsForeignKey )

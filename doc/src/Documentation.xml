@@ -29,7 +29,7 @@
 <book id="NHibernate.Documentation" lang="en">
 	<bookinfo>
 		<title>NHibernate Documentation</title>
-		<releaseinfo>Status: Beta</releaseinfo>
+		<releaseinfo>Status: Production/Stable</releaseinfo>
 		<author>
 			<firstname><ulink url="http://www.nhibernate.org/">NHibernate</ulink></firstname>
 			<contrib>Thanks to all the contributors!</contrib>

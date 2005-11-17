@@ -18,7 +18,7 @@ namespace NHibernate.Util
 			// not creatable
 		}
 
-		private static System.Type[ ] NoClasses = new System.Type[0];
+		private static System.Type[ ] NoClasses = System.Type.EmptyTypes;
 
 		/// <summary>
 		/// Determine if the specified <see cref="System.Type"/> overrides the
@@ -304,8 +304,8 @@ namespace NHibernate.Util
 
 			try
 			{
-				ConstructorInfo contructor = type.GetConstructor( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, CallingConventions.HasThis, NoClasses, null );
-				return contructor;
+				ConstructorInfo constructor = type.GetConstructor( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, CallingConventions.HasThis, NoClasses, null );
+				return constructor;
 			}
 			catch( Exception e)
 			{

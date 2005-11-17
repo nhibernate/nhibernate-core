@@ -114,7 +114,10 @@ namespace NHibernate.Type
 			this.cascade = cascade;
 			this.joinedFetch = joinedFetch;
 
-            this.getset = GetSetHelperFactory.Create(componentClass, setters, getters);
+			if( !foundCustomAcessor && Cfg.Environment.UseReflectionOptimizer )
+			{
+				this.getset = GetSetHelperFactory.Create(componentClass, setters, getters);
+			}
 		}
 
 		/// <summary></summary>
