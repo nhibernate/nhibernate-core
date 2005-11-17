@@ -10,6 +10,7 @@ Bugs Fixed:
     * [NH-422] - <meta-value> child tag missing from <many-to-any>
     * [NH-440] - one-to-one unique foreign key mapping fails during query
     * [NH-415] - AddXmlString should rethrow exceptions it catches
+    * [NH-463] - IncrementGenerator returns Int64 but uses an Int32 internally
 
 New Features:
 
