@@ -181,7 +181,7 @@
 			<arg value="/ndebug:${build.debug}" />
 			<arg value="/lib:${build.dir}/bin" />
 			<arg value="/targetplatform:v1.1" />
-			<arg value="/keyfile:src/NHibernate.snk" />
+			<arg value="/keyfile:src/NHibernate.snk" if="${sign}" />
 			<arg value="/out:${build.dir}/NHibernate.dll" />
 			<arg value="NHibernate.dll" />
 			<arg value="HashCodeProvider.dll" />
