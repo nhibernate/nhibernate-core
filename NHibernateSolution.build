@@ -13,7 +13,12 @@
 	-->
 	<property name="sign" value="false" overwrite="false" />
 
-	<!-- 
+	<!-- Path to the folder that contain the external Assemblies  -->
+	<property name="lib.dir" value="lib" dynamic="true" />
+	<property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
+	<property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version(framework::get-target-framework())))}" dynamic="true" />
+
+	!-- 
 		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
 		then change this to true.  It generates a nice looking html report for the test files
 	-->
@@ -61,11 +66,8 @@
 	<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlClientDriver" />
 	<property name="nhibernate.connection.connection_string" value="Server=(local);initial catalog=nhibernate;Integrated Security=SSPI" />
 
-
 	<!-- Disable performance tests by default. They take too much time. -->
 	<property name="run.performance.tests" value="false" overwrite="false" />
-
-
 
 	<!-- named project configurations -->
 	<target name="debug" description="Perform a 'debug' build">
@@ -84,7 +86,7 @@
 	
 	<target name="init" description="Initializes build properties">
 		<call target="${project.config}" />
-		<call target="set-runtime-configuration" />
+		<call target="set-framework-configuration" />
 	</target>
 	
 	<target name="clean" depends="init" description="Deletes current build">
@@ -145,9 +147,18 @@
 			</fileset>
 		</copy>
 		
+	<!-- copy family-specific libraries-->
+	<!-- 
+	<copy todir="${build.dir}/bin">
+		<fileset basedir="${lib.family.dir}">
+			<include name="HashCodeProvider.*" />
+		</fileset>
+	</copy>
+	-->
 		<!-- copy framework-specific libraries -->
 		<copy todir="${build.dir}/bin">
-			<fileset basedir="${lib.dir}">
+				<!--<fileset basedir="${lib.framework.dir}">-->
+		<fileset basedir="${lib.dir}/net/1.1/">
 				<!-- 
 					Excludes the Iesi.Collections Assembly because it is built during the build
 					of NHibernate.  It is in the lib folder for vs.net convenience.  However, we
@@ -156,8 +167,12 @@
 				<exclude name="Iesi.Collections.dll" />
 				<exclude name="Iesi.Collections.xml" />
 				<include name="Iesi.Collections.license.txt" />
-				
-				<include name="Castle.DynamicProxy.*" />
+
+		<!-- 
+			hard coding this from the .net-1.1 directory since there doesn't appear
+			to be any difference in them for .net-2.0.  
+		-->
+		<include name="Castle.DynamicProxy.*" />
 				<include name="log4net.*" />
 				<include name="nunit.framework.*" />
 			</fileset>
@@ -176,23 +191,33 @@
 	</target>
 
 	<target name="merge">
-		
-		<exec program="ilmerge.exe" basedir="external-bin" useruntimeengine="true">
-			<arg value="/ndebug:${build.debug}" />
-			<arg value="/lib:${build.dir}/bin" />
-			<arg value="/targetplatform:v1.1" />
-			<arg value="/keyfile:src/NHibernate.snk" if="${sign}" />
-			<arg value="/out:${build.dir}/NHibernate.dll" />
-			<arg value="NHibernate.dll" />
-			<arg value="HashCodeProvider.dll" />
-		</exec>
-		
-		<!-- clean up -->
-		<delete file="${build.dir}/bin/NHibernate.dll" />
-		<delete file="${build.dir}/bin/HashCodeProvider.dll" />
-		<delete file="${build.dir}/bin/HashCodeProvider.license.txt" />
-		<move file="${build.dir}/NHibernate.dll" tofile="${build.dir}/bin/NHibernate.dll" />
+		<property name="merge.targetplatform" value="unsupported" />
 
+		<if test="${framework::get-target-framework()=='net-1.1'}">
+			<property name="merge.targetplatform" value="v1.1" />
+		</if>
+
+		<if test="${framework::get-target-framework()=='net-2.0'}">
+			<property name="merge.targetplatform" value="v2" />
+		</if>
+
+		<if test="${merge.targetplatform!='unsupported'}">
+			<exec program="ilmerge.exe" basedir="external-bin" useruntimeengine="true">
+				<arg value="/ndebug:${build.debug}" />
+				<arg value="/lib:${build.dir}/bin" />
+				<arg value="/targetplatform:${merge.targetplatform}" />
+				<arg value="/keyfile:src/NHibernate.snk" if="${sign}" />
+				<arg value="/out:${build.dir}/NHibernate.dll" />
+				<arg value="NHibernate.dll" />
+				<arg value="HashCodeProvider.dll" />
+			</exec>
+
+			<!-- clean up -->
+			<delete file="${build.dir}/bin/NHibernate.dll" />
+			<delete file="${build.dir}/bin/HashCodeProvider.dll" />
+			<delete file="${build.dir}/bin/HashCodeProvider.license.txt" />
+			<move file="${build.dir}/NHibernate.dll" tofile="${build.dir}/bin/NHibernate.dll" />
+		</if>
 	</target>
 
 	<target name="put-connection-settings-into-app-config">
@@ -509,80 +534,48 @@
 		<echo message="Create a '${project.config}' package as file://${project.zip-path}" />
 		
 	</target>
-	
-	<!-- Framework specific configuration -->
-	<target name="set-runtime-configuration">
-		<!--
-			We are not building for anything but the .net 1.1 framework right now
-			I've been goofing around with mono but am having problems with nant 0.85
-			and nunit-2.2 related tasks. Probably something simple, but I think I've 
-			followed all the instructions to get that working...
-		-->
-		<call target="set-net-1.1-runtime-configuration" />
-		<!--
-		<ifnot propertyexists="current.runtime.config">
-			<ifnot propertyexists="nant.settings.currentframework">
-				<fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
-			</ifnot>
-			<ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
-				<fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NAnt." />
-			</ifnot>
-			<call target="set-${nant.settings.currentframework}-runtime-configuration"/>
-		</ifnot>
-		<ifnot propertyexists="current.runtime.version">
-			<ifnot propertyexists="nant.settings.currentframework">
-				<fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
-			</ifnot>
-			<ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
-				<fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NDoc." />
-			</ifnot>
-			<call target="set-${nant.settings.currentframework}-runtime-configuration" />
-		</ifnot>
-		<ifnot targetexists="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration">
-			<fail message="The ${current.runtime.config}-${current.runtime.version} runtime is not supported by NDoc." />
-		</ifnot>
-		<call target="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration"/>
-		-->
+
+	<target name="set-framework-configuration">
+		<if test="${not(target::exists('set-'+framework::get-target-framework()+'-framework-configuration'))}">
+			<fail message="The '${framework::get-target-framework()}' framework is not supported by this version of NHibernate." />
+		</if>
+		<call target="set-${framework::get-target-framework()}-framework-configuration" />
 	</target>
 
-	<target name="set-runtime-configuration-flags">
-		<property name="current.runtime.config.net" value="false" />
-		<property name="current.runtime.config.netcf" value="false" />
-		<property name="current.runtime.config.mono" value="false" />
-		<property name="current.runtime.config.sscli" value="false" />
-		<property name="current.runtime.config.${current.runtime.config}" value="true" />
-		<property name="current.runtime.net-1.0" value="false" />
-		<property name="current.runtime.net-1.1" value="false" />
-		<property name="current.runtime.net-1.2" value="false" />
-		<property name="current.runtime.netcf-1.0" value="false" />
-		<property name="current.runtime.mono-1.0" value="false" />
-		<property name="current.runtime.sscli-1.0" value="false" />
-		<property name="current.runtime.${current.runtime.config}-${current.runtime.version}" value="true" />
+	<target name="set-net-1.1-framework-configuration">
+		<property name="nant.settings.currentframework" value="net-1.1" />
+		<property name="current.build.defines" value="${build.defines}NET,NET_1_1" />
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
 	</target>
 
-	<target name="set-net-1.1-runtime-configuration">
-		<property name="current.runtime.config" value="net" /> 
-		<property name="current.runtime.version" value="1.1" /> 
-		<property name="current.runtime.description" value="Microsoft .NET Framework 1.1" /> 
-		<property name="current.build.defines" value="${build.defines}NET,NET_1_1" /> 
-		<property name="link.sdkdoc.version" value="SDK_v1_1" /> 
-		<property name="lib.dir" value="lib/${current.runtime.config}/${current.runtime.version}" /> 
-		<property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" /> 
-		<call target="set-runtime-configuration-flags" /> 
+	<target name="set-net-2.0-framework-configuration">
+		<property name="nant.settings.currentframework" value="net-2.0" />
+		<property name="current.build.defines" value="${build.defines}NET,NET_2_0" />
+		<property name="link.sdkdoc.version" value="SDK_v2_0" />
 	</target>
 
-	<target name="set-mono-1.0-runtime-configuration">
-		<property name="current.runtime.config" value="mono" />
-		<property name="current.runtime.version" value="1.0" />
-		<property name="current.runtime.description" value="Mono 1.0" />
+	<target name="set-mono-1.0-framework-configuration">
+		<property name="nant.settings.currentframework" value="mono-1.0" />
 		<property name="current.build.defines" value="${build.defines}MONO,MONO_1_0" />
 		<property name="link.sdkdoc.version" value="MsdnOnline" />
-		<property name="lib.dir" value="lib/${current.runtime.config}/${current.runtime.version}" />
-		<property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
-		<call target="set-runtime-configuration-flags" />
 	</target>
 
- 	<target name="fxcop" depends="init" >
+	<target name="display-current-runtime">
+		<echo message="" />
+		<echo message="----------------------------------------------------------" />
+		<echo message=" ${framework::get-description(framework::get-target-framework())}" />
+		<echo message="----------------------------------------------------------" />
+		<echo message="" />
+		<echo message="framework : ${framework::get-target-framework()}" />
+		<echo message="description : ${framework::get-description(framework::get-target-framework())}" />
+		<echo message="sdk directory : ${framework::get-sdk-directory(framework::get-target-framework())}" />
+		<echo message="framework directory : ${framework::get-framework-directory(framework::get-target-framework())}" />
+		<echo message="assembly directory : ${framework::get-assembly-directory(framework::get-target-framework())}" />
+		<echo message="runtime engine : ${framework::get-runtime-engine(framework::get-target-framework())}" />
+		<echo message="" />
+	</target>
+
+	<target name="fxcop" depends="init" >
  		<exec program="${fxcop.exe}" 
  			  commandline="/f:${build.dir}\bin\nhibernate.dll /o:${build.dir}\bin\fxcop-results.xml"
  			  failonerror="false"/>

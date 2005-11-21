@@ -27,7 +27,7 @@
 				<import namespace="System.Runtime.CompilerServices" />
 			</imports>
 			<attributes>
-				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
+				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${framework::get-description(framework::get-target-framework())}" />
 				<attribute type="AssemblyDescriptionAttribute" value="The Unit Tests for NHibernate." />
 				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
 				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
@@ -47,9 +47,9 @@
 		>
 		
 			<references basedir="${build.dir}/bin">
-				<include name="System.dll" />
-				<include name="System.XML.dll" />
-				<include name="System.Data.dll" />
+				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.dll" />
+				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.XML.dll" />
+				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.Data.dll" />
 				<include name="Iesi.Collections.dll" />
 				<include name="log4net.dll" />
 				<include name="NHibernate.DomainModel.dll" />

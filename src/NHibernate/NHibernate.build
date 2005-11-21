@@ -54,7 +54,7 @@
 			<attributes>
 				<attribute type="CLSCompliantAttribute" value="true" />
 				<attribute type="ComVisibleAttribute" value="false" />
-				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
+				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${framework::get-description(framework::get-target-framework())}" />
 				<attribute type="AssemblyDescriptionAttribute" value="An object persistence library for relational databases." />
 				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
 				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />

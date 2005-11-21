@@ -51,7 +51,7 @@
 			</imports>
 			<attributes>
 				<attribute type="CLSCompliantAttribute" value="true" />
-				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
+				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${framework::get-description(framework::get-target-framework())}" />
 				<attribute type="AssemblyDescriptionAttribute" value="Enhanced Collections for .NET.  Code was published at http://www.codeproject.com/csharp/sets.asp" />
 				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
 				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
