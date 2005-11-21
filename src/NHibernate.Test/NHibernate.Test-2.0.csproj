@@ -1,0 +1,363 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NHibernate.Test</RootNamespace>
+    <AssemblyName>NHibernate.Test</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug-2.0\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release-2.0\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\1.1\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\1.1\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="nmock, Version=1.0.1536.20687, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\1.1\nmock.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\1.1\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CacheTest\CacheFixture.cs" />
+    <Compile Include="CacheTest\TimestamperFixture.cs" />
+    <Compile Include="CfgTest\BinderFixture.cs" />
+    <Compile Include="CfgTest\ConfigurationFixture.cs" />
+    <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
+    <Compile Include="CfgTest\HbmOrderingFixture.cs" />
+    <Compile Include="CompositeCollection\BaseClassA.cs" />
+    <Compile Include="CompositeCollection\BaseClassB.cs" />
+    <Compile Include="CompositeCollection\ChildClassA.cs" />
+    <Compile Include="CompositeCollection\ChildClassB.cs" />
+    <Compile Include="CompositeCollection\ChildColl.cs" />
+    <Compile Include="CompositeCollection\CompositeCollection.cs" />
+    <Compile Include="CompositeId\ClassWithCompositeId.cs" />
+    <Compile Include="CompositeId\ClassWithCompositeIdFixture.cs" />
+    <Compile Include="CompositeId\Id.cs" />
+    <Compile Include="DebugConnectionProvider.cs" />
+    <Compile Include="DialectTest\DialectFixture.cs" />
+    <Compile Include="DialectTest\MsSqlDialectFixture.cs" />
+    <Compile Include="DriverTest\NullReferenceFixture.cs" />
+    <Compile Include="DriverTest\OracleClientDriverFixture.cs" />
+    <Compile Include="DriverTest\OracleDataClientDriverFixture.cs" />
+    <Compile Include="ExceptionsTest\PropertyAccessExceptionFixture.cs" />
+    <Compile Include="ExpressionTest\BaseExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\BetweenExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\InExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\InsensitiveLikeExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\JunctionFixture.cs" />
+    <Compile Include="ExpressionTest\LogicalExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\NotExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\NotNullExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\NullExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\PropertyExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\QueryByExampleTest.cs" />
+    <Compile Include="ExpressionTest\SimpleExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\SQLExpressionFixture.cs" />
+    <Compile Include="IdTest\IdentifierGeneratorFactoryFixture.cs" />
+    <Compile Include="JoinedSubclass\Address.cs" />
+    <Compile Include="JoinedSubclass\Customer.cs" />
+    <Compile Include="JoinedSubclass\Employee.cs" />
+    <Compile Include="JoinedSubclass\JoinedSubclassExtendsFixture.cs" />
+    <Compile Include="JoinedSubclass\JoinedSubclassFixture.cs" />
+    <Compile Include="JoinedSubclass\Person.cs" />
+    <Compile Include="Legacy\ABCProxyTest.cs" />
+    <Compile Include="Legacy\ABCTest.cs" />
+    <Compile Include="Legacy\CriteriaTest.cs" />
+    <Compile Include="Legacy\FooBarTest.cs" />
+    <Compile Include="Legacy\FumTest.cs" />
+    <Compile Include="Legacy\MasterDetailTest.cs" />
+    <Compile Include="Legacy\MultiTableTest.cs" />
+    <Compile Include="Legacy\ParentChildTest.cs" />
+    <Compile Include="Legacy\SimpleTest.cs" />
+    <Compile Include="Legacy\SQLFunctionsTest.cs" />
+    <Compile Include="Legacy\SQLLoaderTest.cs" />
+    <Compile Include="Log4netConfiguration.cs" />
+    <Compile Include="MappingExceptions\A.cs" />
+    <Compile Include="MappingExceptions\AddClassFixture.cs" />
+    <Compile Include="MappingExceptions\AddResourceFixture.cs" />
+    <Compile Include="MappingExceptions\AddXmlFileFixture.cs" />
+    <Compile Include="MappingExceptions\MissingDefCtor.cs" />
+    <Compile Include="MappingExceptions\MissingDefCtorFixture.cs" />
+    <Compile Include="MappingExceptions\PropertyNotFoundExceptionFixture.cs" />
+    <Compile Include="MappingTest\ColumnFixture.cs" />
+    <Compile Include="MappingTest\ForeignKeyFixture.cs" />
+    <Compile Include="MappingTest\TableFixture.cs" />
+    <Compile Include="NHSpecificTest\AliasFixture.cs" />
+    <Compile Include="NHSpecificTest\BasicClassFixture.cs" />
+    <Compile Include="NHSpecificTest\BasicObjectFixture.cs" />
+    <Compile Include="NHSpecificTest\BasicSerializableFixture.cs" />
+    <Compile Include="NHSpecificTest\BasicTimeFixture.cs" />
+    <Compile Include="NHSpecificTest\BugTestCase.cs" />
+    <Compile Include="NHSpecificTest\CollectionFixture.cs" />
+    <Compile Include="NHSpecificTest\Docs\Associations\BiM21\Address.cs" />
+    <Compile Include="NHSpecificTest\Docs\Associations\BiM21\Fixture.cs" />
+    <Compile Include="NHSpecificTest\Docs\Associations\BiM21\Person.cs" />
+    <Compile Include="NHSpecificTest\Docs\ExampleParentChild\Child.cs" />
+    <Compile Include="NHSpecificTest\Docs\ExampleParentChild\Parent.cs" />
+    <Compile Include="NHSpecificTest\Docs\ExampleParentChild\UpdateFixture.cs" />
+    <Compile Include="NHSpecificTest\Docs\PersistentClasses\Cat.cs" />
+    <Compile Include="NHSpecificTest\EmptyMappingsFixture.cs" />
+    <Compile Include="NHSpecificTest\GetTest.cs" />
+    <Compile Include="NHSpecificTest\KeyFixture.cs" />
+    <Compile Include="NHSpecificTest\LazyLoadBugTest.cs" />
+    <Compile Include="NHSpecificTest\MapFixture.cs" />
+    <Compile Include="NHSpecificTest\NH251\CustomAccessDO.cs" />
+    <Compile Include="NHSpecificTest\NH251\CustomAccessFixture.cs" />
+    <Compile Include="NHSpecificTest\NH257\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH257\Party.cs" />
+    <Compile Include="NHSpecificTest\NH257\User.cs" />
+    <Compile Include="NHSpecificTest\NH257\UserGroup.cs" />
+    <Compile Include="NHSpecificTest\NH266\A.cs" />
+    <Compile Include="NHSpecificTest\NH266\B.cs" />
+    <Compile Include="NHSpecificTest\NH266\C.cs" />
+    <Compile Include="NHSpecificTest\NH266\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH266\User.cs" />
+    <Compile Include="NHSpecificTest\NH266\UserFixture.cs" />
+    <Compile Include="NHSpecificTest\NH276\Building.cs" />
+    <Compile Include="NHSpecificTest\NH276\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH276\JoinedSubclass\AbstractRequest.cs" />
+    <Compile Include="NHSpecificTest\NH276\JoinedSubclass\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH276\JoinedSubclass\Organization.cs" />
+    <Compile Include="NHSpecificTest\NH276\JoinedSubclass\Request.cs" />
+    <Compile Include="NHSpecificTest\NH276\JoinedSubclass\Status.cs" />
+    <Compile Include="NHSpecificTest\NH276\Office.cs" />
+    <Compile Include="NHSpecificTest\NH283\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH295\JoinedSubclassFixture.cs" />
+    <Compile Include="NHSpecificTest\NH295\Party.cs" />
+    <Compile Include="NHSpecificTest\NH295\SubclassFixture.cs" />
+    <Compile Include="NHSpecificTest\NH295\User.cs" />
+    <Compile Include="NHSpecificTest\NH295\UserGroup.cs" />
+    <Compile Include="NHSpecificTest\NH296\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH296\Product.cs" />
+    <Compile Include="NHSpecificTest\NH296\ProductPK.cs" />
+    <Compile Include="NHSpecificTest\NH296\Stock.cs" />
+    <Compile Include="NHSpecificTest\NH309\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH309\Menu.cs" />
+    <Compile Include="NHSpecificTest\NH309\Node.cs" />
+    <Compile Include="NHSpecificTest\NH315\Client.cs" />
+    <Compile Include="NHSpecificTest\NH315\ClientPersons.cs" />
+    <Compile Include="NHSpecificTest\NH315\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH315\Person.cs" />
+    <Compile Include="NHSpecificTest\NH317\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH317\Node.cs" />
+    <Compile Include="NHSpecificTest\NH318\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH318\NotNullPropertyHolder.cs" />
+    <Compile Include="NHSpecificTest\NH345\Client.cs" />
+    <Compile Include="NHSpecificTest\NH345\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH345\Project.cs" />
+    <Compile Include="NHSpecificTest\NH350\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH350\SecurityDomain.cs" />
+    <Compile Include="NHSpecificTest\NH364\Category.cs" />
+    <Compile Include="NHSpecificTest\NH364\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH364\Link.cs" />
+    <Compile Include="NHSpecificTest\NH369\BaseClass.cs" />
+    <Compile Include="NHSpecificTest\NH369\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH369\JoinedSubClass.cs" />
+    <Compile Include="NHSpecificTest\NH369\KeyManyToOneClass.cs" />
+    <Compile Include="NHSpecificTest\NH47Fixture.cs" />
+    <Compile Include="NHSpecificTest\NodeFixture.cs" />
+    <Compile Include="NHSpecificTest\SetFixture.cs" />
+    <Compile Include="NHSpecificTest\SimpleComponentFixture.cs" />
+    <Compile Include="NHSpecificTest\UnsavedValueFixture.cs" />
+    <Compile Include="NHSpecificTest\UserTypeFixture.cs" />
+    <Compile Include="NHSpecificTest\VersionTest.cs" />
+    <Compile Include="ObjectAssertion.cs" />
+    <Compile Include="PropertyTest\BasicSetterExceptionFixture.cs" />
+    <Compile Include="PropertyTest\FieldAccessorFixture.cs" />
+    <Compile Include="PropertyTest\FieldCamelCaseFixture.cs" />
+    <Compile Include="PropertyTest\FieldCamelCaseUnderscoreFixture.cs" />
+    <Compile Include="PropertyTest\FieldClass.cs" />
+    <Compile Include="PropertyTest\FieldGetterFixture.cs" />
+    <Compile Include="PropertyTest\FieldLowerCaseFixture.cs" />
+    <Compile Include="PropertyTest\FieldLowerCaseUnderscoreFixture.cs" />
+    <Compile Include="PropertyTest\FieldPascalCaseMUnderscoreFixture.cs" />
+    <Compile Include="PropertyTest\FieldPascalCaseUnderscoreFixture.cs" />
+    <Compile Include="PropertyTest\FieldSetterExceptionFixture.cs" />
+    <Compile Include="PropertyTest\NoSetterAccessorFixture.cs" />
+    <Compile Include="PropertyTest\NoSetterCamelCaseFixture.cs" />
+    <Compile Include="PropertyTest\NoSetterCamelCaseUnderscoreFixture.cs" />
+    <Compile Include="PropertyTest\NoSetterLowerCaseFixture.cs" />
+    <Compile Include="PropertyTest\NoSetterLowerCaseUnderscoreFixture.cs" />
+    <Compile Include="PropertyTest\NoSetterPascalCaseMUnderscoreFixture.cs" />
+    <Compile Include="PropertyTest\NoSetterPascalCaseUnderscoreFixture.cs" />
+    <Compile Include="ProxyInterface\CastleProxy.cs" />
+    <Compile Include="ProxyInterface\CastleProxyFixture.cs" />
+    <Compile Include="ProxyInterface\CastleProxyImpl.cs" />
+    <Compile Include="ProxyTest\AProxy.cs" />
+    <Compile Include="ProxyTest\NHibernateProxyHelperFixture.cs" />
+    <Compile Include="QueryTest\NamedParametersFixture.cs" />
+    <Compile Include="QueryTest\PositionalParametersFixture.cs" />
+    <Compile Include="QueryTest\QueryParametersFixture.cs" />
+    <Compile Include="SessionCacheTest.cs" />
+    <Compile Include="SqlCommandTest\InFragmentFixture.cs" />
+    <Compile Include="SqlCommandTest\SqlDeleteBuilderFixture.cs" />
+    <Compile Include="SqlCommandTest\SqlInsertBuilderFixture.cs" />
+    <Compile Include="SqlCommandTest\SqlSelectBuilderFixture.cs" />
+    <Compile Include="SqlCommandTest\SqlSimpleSelectBuilderFixture.cs" />
+    <Compile Include="SqlCommandTest\SqlStringBuilderFixture.cs" />
+    <Compile Include="SqlCommandTest\SqlStringFixture.cs" />
+    <Compile Include="SqlCommandTest\SqlStringParameterFixture.cs" />
+    <Compile Include="SqlCommandTest\SqlUpdateBuilderFixture.cs" />
+    <Compile Include="SqlCommandTest\TemplateFixture.cs" />
+    <Compile Include="Subclass\SubclassAssert.cs" />
+    <Compile Include="Subclass\SubclassBase.cs" />
+    <Compile Include="Subclass\SubclassExtendsFixture.cs" />
+    <Compile Include="Subclass\SubclassFixture.cs" />
+    <Compile Include="Subclass\SubclassOne.cs" />
+    <Compile Include="TestCase.cs" />
+    <Compile Include="TestTestCase.cs" />
+    <Compile Include="TransactionTest\TransactionFixture.cs" />
+    <Compile Include="TypesTest\BinaryBlobClass.cs" />
+    <Compile Include="TypesTest\BinaryBlobTypeFixture.cs" />
+    <Compile Include="TypesTest\BinaryClass.cs" />
+    <Compile Include="TypesTest\BinaryTypeFixture.cs" />
+    <Compile Include="TypesTest\BooleanClass.cs" />
+    <Compile Include="TypesTest\BooleanTypeFixture.cs" />
+    <Compile Include="TypesTest\ByteClass.cs" />
+    <Compile Include="TypesTest\ByteTypeFixture.cs" />
+    <Compile Include="TypesTest\DateTimeTypeFixture.cs" />
+    <Compile Include="TypesTest\DecimalClass.cs" />
+    <Compile Include="TypesTest\DecimalTypeFixture.cs" />
+    <Compile Include="TypesTest\DoubleClass.cs" />
+    <Compile Include="TypesTest\DoubleTypeFixture.cs" />
+    <Compile Include="TypesTest\EnumStringClass.cs" />
+    <Compile Include="TypesTest\EnumStringTypeFixture.cs" />
+    <Compile Include="TypesTest\GuidClass.cs" />
+    <Compile Include="TypesTest\GuidTypeFixture.cs" />
+    <Compile Include="TypesTest\Int16TypeFixture.cs" />
+    <Compile Include="TypesTest\Int32TypeFixture.cs" />
+    <Compile Include="TypesTest\Int64TypeFixture.cs" />
+    <Compile Include="TypesTest\PersistentEnumClass.cs" />
+    <Compile Include="TypesTest\PersistentEnumTypeFixture.cs" />
+    <Compile Include="TypesTest\SByteTypeFixture.cs" />
+    <Compile Include="TypesTest\StringClass.cs" />
+    <Compile Include="TypesTest\StringClobClass.cs" />
+    <Compile Include="TypesTest\StringClobTypeFixture.cs" />
+    <Compile Include="TypesTest\StringTypeFixture.cs" />
+    <Compile Include="TypesTest\TicksTypeFixture.cs" />
+    <Compile Include="TypesTest\TimeSpanTypeFixture.cs" />
+    <Compile Include="TypesTest\TimestampTypeFixture.cs" />
+    <Compile Include="TypesTest\TypeFactoryFixture.cs" />
+    <Compile Include="TypesTest\TypeFixtureBase.cs" />
+    <Compile Include="UtilityTest\IdentityMapFixture.cs" />
+    <Compile Include="UtilityTest\IdentityMapSequencedFixture.cs" />
+    <Compile Include="UtilityTest\JoinedEnumerableFixture.cs" />
+    <Compile Include="UtilityTest\ReflectHelperFixture.cs" />
+    <Compile Include="UtilityTest\SequencedHashMapFixture.cs" />
+    <Compile Include="UtilityTest\StringHelperFixture.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CompositeCollection\BaseClassA.hbm.xml" />
+    <Content Include="CompositeCollection\BaseClassB.hbm.xml" />
+    <Content Include="CompositeCollection\Composite.xml" />
+    <Content Include="CompositeId\ClassWithCompositeId.hbm.xml" />
+    <Content Include="hibernate.cfg.xml" />
+    <Content Include="JoinedSubclass\JoinedSubclass.Customer.hbm.xml" />
+    <Content Include="JoinedSubclass\JoinedSubclass.Employee.hbm.xml" />
+    <Content Include="JoinedSubclass\JoinedSubclass.hbm.xml" />
+    <Content Include="JoinedSubclass\JoinedSubclass.Person.hbm.xml" />
+    <Content Include="MappingExceptions\A.ClassNotFound.hbm.xml" />
+    <Content Include="MappingExceptions\A.PropertyNotFound.hbm.xml" />
+    <Content Include="MappingExceptions\A.Valid.hbm.xml" />
+    <Content Include="MappingExceptions\MissingDefCtor.hbm.xml" />
+    <Content Include="NHSpecificTest\Docs\Associations\BiM21\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\Docs\ExampleParentChild\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH251\CustomAccessDO.hbm.xml" />
+    <Content Include="NHSpecificTest\NH257\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH266\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH266\User.hbm.xml" />
+    <Content Include="NHSpecificTest\NH276\JoinedSubclass\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH276\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH295\JoinedSubclass.hbm.xml" />
+    <Content Include="NHSpecificTest\NH295\Subclass.hbm.xml" />
+    <Content Include="NHSpecificTest\NH296\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH309\Menu.hbm.xml" />
+    <Content Include="NHSpecificTest\NH309\Node.hbm.xml" />
+    <Content Include="NHSpecificTest\NH315\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH317\Node.hbm.xml" />
+    <Content Include="NHSpecificTest\NH318\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH345\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH350\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH364\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH369\BaseClass.hbm.xml" />
+    <Content Include="NHSpecificTest\NH369\KeyManyToOneClass.hbm.xml" />
+    <Content Include="ProxyInterface\CastleProxyImpl.hbm.xml" />
+    <Content Include="ProxyTest\AProxy.hbm.xml" />
+    <Content Include="Subclass\Subclass.Base.hbm.xml" />
+    <Content Include="Subclass\Subclass.hbm.xml" />
+    <Content Include="Subclass\Subclass.One.hbm.xml" />
+    <Content Include="TypesTest\BinaryBlobClass.hbm.xml" />
+    <Content Include="TypesTest\BinaryClass.hbm.xml" />
+    <Content Include="TypesTest\BooleanClass.hbm.xml" />
+    <Content Include="TypesTest\ByteClass.hbm.xml" />
+    <Content Include="TypesTest\DecimalClass.hbm.xml" />
+    <Content Include="TypesTest\DoubleClass.hbm.xml" />
+    <Content Include="TypesTest\EnumStringClass.hbm.xml" />
+    <Content Include="TypesTest\GuidClass.hbm.xml" />
+    <Content Include="TypesTest\PersistentEnumClass.hbm.xml" />
+    <Content Include="TypesTest\StringClass.hbm.xml" />
+    <Content Include="TypesTest\StringClobClass.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="DriverTest\.#OracleClientDriverFixture.cs.1.1" />
+    <None Include="NHibernate.Test.build" />
+    <None Include="NHibernate.Test.nunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel-2.0.csproj">
+      <Project>{5C649B55-1B3F-4C38-9998-1B043E94A244}</Project>
+      <Name>NHibernate.DomainModel-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate\NHibernate-2.0.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate-2.0</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PreBuildEvent>copy "$(ProjectDir)\App.config" "$(TargetPath).config"</PreBuildEvent>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections-1.1", "Iesi.Collections\Iesi.Collections-1.1.csproj", "{CEF80E5F-E838-4F27-9435-2E3630D5F9E0}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections.Test-1.1", "Iesi.Collections.Test\Iesi.Collections.Test-1.1.csproj", "{CD003655-9A41-4D66-A38B-E7A37D89386C}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{CEF80E5F-E838-4F27-9435-2E3630D5F9E0}.Debug.ActiveCfg = Debug|.NET
+		{CEF80E5F-E838-4F27-9435-2E3630D5F9E0}.Debug.Build.0 = Debug|.NET
+		{CEF80E5F-E838-4F27-9435-2E3630D5F9E0}.Release.ActiveCfg = Release|.NET
+		{CEF80E5F-E838-4F27-9435-2E3630D5F9E0}.Release.Build.0 = Release|.NET
+		{CD003655-9A41-4D66-A38B-E7A37D89386C}.Debug.ActiveCfg = Debug|.NET
+		{CD003655-9A41-4D66-A38B-E7A37D89386C}.Debug.Build.0 = Debug|.NET
+		{CD003655-9A41-4D66-A38B-E7A37D89386C}.Release.ActiveCfg = Release|.NET
+		{CD003655-9A41-4D66-A38B-E7A37D89386C}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

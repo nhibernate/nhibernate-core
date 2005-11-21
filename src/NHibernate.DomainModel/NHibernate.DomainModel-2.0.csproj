@@ -1,0 +1,228 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5C649B55-1B3F-4C38-9998-1B043E94A244}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NHibernate.DomainModel</RootNamespace>
+    <AssemblyName>NHibernate.DomainModel</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug-2.0\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release-2.0\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\1.1\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="A.cs" />
+    <Compile Include="Abstract.cs" />
+    <Compile Include="AbstractProxy.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Assignable.cs" />
+    <Compile Include="B.cs" />
+    <Compile Include="Bar.cs" />
+    <Compile Include="BarProxy.cs" />
+    <Compile Include="BasicNameable.cs" />
+    <Compile Include="Baz.cs" />
+    <Compile Include="Blobber.cs" />
+    <Compile Include="Broken.cs" />
+    <Compile Include="C1.cs" />
+    <Compile Include="C2.cs" />
+    <Compile Include="Category.cs" />
+    <Compile Include="Child.cs" />
+    <Compile Include="Circular.cs" />
+    <Compile Include="Component.cs" />
+    <Compile Include="ComponentCollection.cs" />
+    <Compile Include="Componentizable.cs" />
+    <Compile Include="CompositeElement.cs" />
+    <Compile Include="Contained.cs" />
+    <Compile Include="Container.cs" />
+    <Compile Include="Custom.cs" />
+    <Compile Include="CustomPersister.cs" />
+    <Compile Include="D.cs" />
+    <Compile Include="Detail.cs" />
+    <Compile Include="DoubleStringType.cs" />
+    <Compile Include="Down.cs" />
+    <Compile Include="E.cs" />
+    <Compile Include="Eye.cs" />
+    <Compile Include="Fee.cs" />
+    <Compile Include="Fixed.cs" />
+    <Compile Include="Fo.cs" />
+    <Compile Include="Foo.cs" />
+    <Compile Include="FooComponent.cs" />
+    <Compile Include="FooProxy.cs" />
+    <Compile Include="FooStatus.cs" />
+    <Compile Include="Fum.cs" />
+    <Compile Include="FumCompositeID.cs" />
+    <Compile Include="Fumm.cs" />
+    <Compile Include="Glarch.cs" />
+    <Compile Include="GlarchProxy.cs" />
+    <Compile Include="Holder.cs" />
+    <Compile Include="Immutable.cs" />
+    <Compile Include="INameable.cs" />
+    <Compile Include="INamed.cs" />
+    <Compile Include="Inner.cs" />
+    <Compile Include="InnerKey.cs" />
+    <Compile Include="Jay.cs" />
+    <Compile Include="Location.cs" />
+    <Compile Include="Lower.cs" />
+    <Compile Include="M.cs" />
+    <Compile Include="Many.cs" />
+    <Compile Include="Master.cs" />
+    <Compile Include="Middle.cs" />
+    <Compile Include="MiddleKey.cs" />
+    <Compile Include="MoreStuff.cs" />
+    <Compile Include="Multi.cs" />
+    <Compile Include="Multiplicity.cs" />
+    <Compile Include="MultiplicityType.cs" />
+    <Compile Include="N.cs" />
+    <Compile Include="NestingComponent.cs" />
+    <Compile Include="NHSpecific\AuditComponent.cs" />
+    <Compile Include="NHSpecific\BasicClass.cs" />
+    <Compile Include="NHSpecific\BasicObject.cs" />
+    <Compile Include="NHSpecific\BasicSerializable.cs" />
+    <Compile Include="NHSpecific\BasicTime.cs" />
+    <Compile Include="NHSpecific\Child.cs" />
+    <Compile Include="NHSpecific\ClassWithNullColumns.cs" />
+    <Compile Include="NHSpecific\LazyLoadBug.cs" />
+    <Compile Include="NHSpecific\Node.cs" />
+    <Compile Include="NHSpecific\NullableInt32.cs" />
+    <Compile Include="NHSpecific\NullableInt32Converter.cs" />
+    <Compile Include="NHSpecific\NullableInt32Type.cs" />
+    <Compile Include="NHSpecific\NullableTypesType.cs" />
+    <Compile Include="NHSpecific\NullInt32UserType.cs" />
+    <Compile Include="NHSpecific\Parent.cs" />
+    <Compile Include="NHSpecific\ParentComparer.cs" />
+    <Compile Include="NHSpecific\SexType.cs" />
+    <Compile Include="NHSpecific\SimpleComponent.cs" />
+    <Compile Include="NHSpecific\Team.cs" />
+    <Compile Include="NHSpecific\UnsavedType.cs" />
+    <Compile Include="NotMono.cs" />
+    <Compile Include="One.cs" />
+    <Compile Include="Outer.cs" />
+    <Compile Include="OuterKey.cs" />
+    <Compile Include="Parent.cs" />
+    <Compile Include="Part.cs" />
+    <Compile Include="Po.cs" />
+    <Compile Include="Qux.cs" />
+    <Compile Include="Result.cs" />
+    <Compile Include="ReverseComparator.cs" />
+    <Compile Include="S.cs" />
+    <Compile Include="Several.cs" />
+    <Compile Include="Simple.cs" />
+    <Compile Include="Single.cs" />
+    <Compile Include="Sortable.cs" />
+    <Compile Include="StringComparator.cs" />
+    <Compile Include="Stuff.cs" />
+    <Compile Include="SubComponent.cs" />
+    <Compile Include="SubDetail.cs" />
+    <Compile Include="SubMulti.cs" />
+    <Compile Include="Super.cs" />
+    <Compile Include="Top.cs" />
+    <Compile Include="Trivial.cs" />
+    <Compile Include="TrivialClass.cs" />
+    <Compile Include="Up.cs" />
+    <Compile Include="Vetoer.cs" />
+    <Compile Include="W.cs" />
+    <Compile Include="X.cs" />
+    <Compile Include="Y.cs" />
+    <Compile Include="Z.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ABC.hbm.xml" />
+    <Content Include="ABCExtends.hbm.xml" />
+    <Content Include="ABCProxy.hbm.xml" />
+    <Content Include="AltSimple.hbm.xml" />
+    <Content Include="Baz.hbm.xml" />
+    <Content Include="Blobber.hbm.xml" />
+    <Content Include="Broken.hbm.xml" />
+    <Content Include="Category.hbm.xml" />
+    <Content Include="Circular.hbm.xml" />
+    <Content Include="Componentizable.hbm.xml" />
+    <Content Include="Container.hbm.xml" />
+    <Content Include="Custom.hbm.xml" />
+    <Content Include="Eye.hbm.xml" />
+    <Content Include="Fee.hbm.xml" />
+    <Content Include="Fo.hbm.xml" />
+    <Content Include="FooBar.hbm.xml" />
+    <Content Include="Fum.hbm.xml" />
+    <Content Include="Fumm.hbm.xml" />
+    <Content Include="Glarch.hbm.xml" />
+    <Content Include="Holder.hbm.xml" />
+    <Content Include="Immutable.hbm.xml" />
+    <Content Include="INameable.hbm.xml" />
+    <Content Include="Location.hbm.xml" />
+    <Content Include="Many.hbm.xml" />
+    <Content Include="MasterDetail.hbm.xml" />
+    <Content Include="Middle.hbm.xml" />
+    <Content Include="MN.hbm.xml" />
+    <Content Include="Multi.hbm.xml" />
+    <Content Include="MultiExtends.hbm.xml" />
+    <Content Include="NHSpecific\BasicClass.hbm.xml" />
+    <Content Include="NHSpecific\BasicObject.hbm.xml" />
+    <Content Include="NHSpecific\BasicSerializable.hbm.xml" />
+    <Content Include="NHSpecific\BasicTime.hbm.xml" />
+    <Content Include="NHSpecific\Child.hbm.xml" />
+    <Content Include="NHSpecific\ClassWithNullColumns.hbm.xml" />
+    <Content Include="NHSpecific\LazyLoadBug.hbm.xml" />
+    <Content Include="NHSpecific\Node.hbm.xml" />
+    <Content Include="NHSpecific\Parent.hbm.xml" />
+    <Content Include="NHSpecific\SexType.hbm.xml" />
+    <Content Include="NHSpecific\SimpleComponent.hbm.xml" />
+    <Content Include="NHSpecific\Team.hbm.xml" />
+    <Content Include="NHSpecific\UnsavedType.hbm.xml" />
+    <Content Include="One.hbm.xml" />
+    <Content Include="ParentChild.hbm.xml" />
+    <Content Include="Qux.hbm.xml" />
+    <Content Include="Simple.hbm.xml" />
+    <Content Include="SingleSeveral.hbm.xml" />
+    <Content Include="Stuff.hbm.xml" />
+    <Content Include="UpDown.hbm.xml" />
+    <Content Include="Vetoer.hbm.xml" />
+    <Content Include="WZ.hbm.xml" />
+    <Content Include="XY.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NHibernate.DomainModel.build" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate\NHibernate-2.0.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate-2.0</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
