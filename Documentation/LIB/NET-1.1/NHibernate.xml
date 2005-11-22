@@ -4,6 +4,81 @@
         <name>NHibernate</name>
     </assembly>
     <members>
+        <member name="T:NHibernate.Cache.CachedItem">
+            <summary>
+            An item of cached data, timestamped with the time it was cached, when it was locked,
+            when it was unlocked
+            </summary>
+        </member>
+        <member name="T:NHibernate.Cache.ILockable">
+            <summary>
+            Summary description for ILockable.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cache.ILockable.Lock(System.Int64,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="timeout"></param>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Cache.ILockable.IsGettable(System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="txTimestamp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Cache.ILockable.IsPuttable(System.Int64,System.Object,System.Collections.IComparer)">
+            <summary>
+            
+            </summary>
+            <param name="txTimestamp"></param>
+            <param name="newVersion"></param>
+            <returns></returns>
+        </member>
+        <member name="P:NHibernate.Cache.ILockable.IsLock">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cache.CachedItem.Lock(System.Int64,System.Int32)">
+            <summary>
+            Lock the item
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cache.CachedItem.IsGettable(System.Int64)">
+            <summary>
+            Is this item visible to the timestamped transaction?
+            </summary>
+            <param name="txTimestamp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Cache.CachedItem.IsPuttable(System.Int64,System.Object,System.Collections.IComparer)">
+            <summary>
+            Don't overwite already cached items
+            </summary>
+            <param name="txTimestamp"></param>
+            <param name="newVersion"></param>
+            <param name="comparator"></param>
+            <returns></returns>
+        </member>
+        <member name="P:NHibernate.Cache.CachedItem.FreshTimestamp">
+            <summary>
+            The timestamp on the cached data
+            </summary>
+        </member>
+        <member name="P:NHibernate.Cache.CachedItem.Value">
+            <summary>
+            The actual cached data
+            </summary>
+        </member>
+        <member name="P:NHibernate.Cache.CachedItem.IsLock">
+            <summary>
+            Not a lock!
+            </summary>
+        </member>
         <member name="T:NHibernate.Cache.CacheException">
             <summary>
             Represents any exception from an <see cref="T:NHibernate.Cache.ICache"/>.
@@ -155,39 +230,6 @@
             This class was named Lock in H2.1
             </remarks>
         </member>
-        <member name="T:NHibernate.Cache.ILockable">
-            <summary>
-            Summary description for ILockable.
-            </summary>
-        </member>
-        <member name="M:NHibernate.Cache.ILockable.Lock(System.Int64,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="timeout"></param>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Cache.ILockable.IsGettable(System.Int64)">
-            <summary>
-            
-            </summary>
-            <param name="txTimestamp"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Cache.ILockable.IsPuttable(System.Int64,System.Object,System.Collections.IComparer)">
-            <summary>
-            
-            </summary>
-            <param name="txTimestamp"></param>
-            <param name="newVersion"></param>
-            <returns></returns>
-        </member>
-        <member name="P:NHibernate.Cache.ILockable.IsLock">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="T:NHibernate.Cache.ISoftLock">
             <summary>
             Marker interface, denoting a client-visible "soft lock" on a cached item.
@@ -226,48 +268,6 @@
         <member name="P:NHibernate.Cache.CacheLock.IsLock">
             <summary>
             Yes, this is a lock
-            </summary>
-        </member>
-        <member name="T:NHibernate.Cache.CachedItem">
-            <summary>
-            An item of cached data, timestamped with the time it was cached, when it was locked,
-            when it was unlocked
-            </summary>
-        </member>
-        <member name="M:NHibernate.Cache.CachedItem.Lock(System.Int64,System.Int32)">
-            <summary>
-            Lock the item
-            </summary>
-        </member>
-        <member name="M:NHibernate.Cache.CachedItem.IsGettable(System.Int64)">
-            <summary>
-            Is this item visible to the timestamped transaction?
-            </summary>
-            <param name="txTimestamp"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Cache.CachedItem.IsPuttable(System.Int64,System.Object,System.Collections.IComparer)">
-            <summary>
-            Don't overwite already cached items
-            </summary>
-            <param name="txTimestamp"></param>
-            <param name="newVersion"></param>
-            <param name="comparator"></param>
-            <returns></returns>
-        </member>
-        <member name="P:NHibernate.Cache.CachedItem.FreshTimestamp">
-            <summary>
-            The timestamp on the cached data
-            </summary>
-        </member>
-        <member name="P:NHibernate.Cache.CachedItem.Value">
-            <summary>
-            The actual cached data
-            </summary>
-        </member>
-        <member name="P:NHibernate.Cache.CachedItem.IsLock">
-            <summary>
-            Not a lock!
             </summary>
         </member>
         <member name="T:NHibernate.Cache.HashtableCache">
@@ -1088,6 +1088,441 @@
             Called for all collections
             </remarks>
         </member>
+        <member name="T:NHibernate.Cfg.Configuration">
+            <summary>
+            An instance of <c>Configuration</c> allows the application to specify properties
+            and mapping documents to be used when creating a <c>ISessionFactory</c>.
+            </summary>
+            <remarks>
+            Usually an application will create a single <c>Configuration</c>, build a single instance
+            of <c>ISessionFactory</c>, and then instanciate <c>ISession</c>s in threads servicing
+            client requests.
+            <para>
+            The <c>Configuration</c> is meant only as an initialization-time object. <c>ISessionFactory</c>s
+            are immutable and do not retain any association back to the <c>Configuration</c>
+            </para>
+            </remarks>
+        </member>
+        <member name="F:NHibernate.Cfg.Configuration.MappingSchemaXMLNS">
+            <summary>
+            The XML Namespace for the nhibernate-mapping
+            </summary>
+        </member>
+        <member name="F:NHibernate.Cfg.Configuration.CfgSchemaXMLNS">
+            <summary>
+            The XML Namespace for the nhibernate-configuration
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.Reset">
+            <summary>
+            Clear the internal state of the <see cref="T:NHibernate.Cfg.Configuration"/> object.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.#ctor">
+            <summary>
+            Create a new Configuration object.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.GetClassMapping(System.Type)">
+            <summary>
+            Get the mapping for a particular class
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.GetCollectionMapping(System.String)">
+            <summary>
+            Get the mapping for a particular collection role
+            </summary>
+            <param name="role">a collection role</param>
+            <returns><see cref="T:NHibernate.Mapping.Collection"/></returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddFile(System.String)">
+            <summary>
+            Read mappings from a particular XML file. This method is equivalent
+            to <see cref="M:NHibernate.Cfg.Configuration.AddXmlFile(System.String)"/>.
+            </summary>
+            <param name="xmlFile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddXmlFile(System.String)">
+            <summary>
+            Read mappings from a particular XML file.
+            </summary>
+            <param name="xmlFile">a path to a file</param>
+            <returns>This configuration object.</returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddXml(System.String)">
+            <summary>
+            Read mappings from a <c>string</c>. This method is equivalent to
+            <see cref="M:NHibernate.Cfg.Configuration.AddXmlString(System.String)"/>.
+            </summary>
+            <param name="xml">an XML string</param>
+            <returns>This configuration object.</returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddXmlString(System.String)">
+            <summary>
+            Read mappings from a <c>string</c>
+            </summary>
+            <param name="xml">an XML string</param>
+            <returns>This configuration object.</returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddDocument(System.Xml.XmlDocument)">
+            <summary>
+            Read mappings from an <c>XmlDocument</c>.
+            </summary>
+            <param name="doc">A loaded XmlDocument that contains the Mappings.</param>
+            <returns>This Configuration object.</returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddValidatedDocument(System.Xml.XmlDocument)">
+            <summary>
+            Takes the validated XmlDocument and has the Binder do its work of
+            creating Mapping objects from the Mapping Xml.
+            </summary>
+            <param name="doc">The <b>validated</b> XmlDocument that contains the Mappings.</param>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.CreateMappings">
+            <summary>
+            Create a new <c>Mappings</c> to add classes and collection
+            mappings to.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddInputStream(System.IO.Stream)">
+            <summary>
+            Read mappings from a <c>Stream</c>.
+            </summary>
+            <param name="xmlInputStream">The stream containing XML</param>
+            <returns>This Configuration object.</returns>
+            <remarks>
+            The <see cref="T:System.IO.Stream"/> passed in through the parameter <c>xmlInputStream</c>
+            is not <b>guaranteed</b> to be cleaned up by this method.  It is the callers responsiblity to
+            ensure that the <c>xmlInputStream</c> is properly handled when this method
+            completes.
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddResource(System.String,System.Reflection.Assembly)">
+            <summary>
+            Adds the Mappings in the Resource of the Assembly.
+            </summary>
+            <param name="path">The path to the Resource file in the Assembly</param>
+            <param name="assembly">The Assembly that contains the Resource file.</param>
+            <returns>This Configuration object.</returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddClass(System.Type)">
+            <summary>
+            Read a mapping from an application resource, using a convention.
+            The class <c>Foo.Bar.Foo</c> is mapped by the resource named
+            <c>Foo.Bar.Foo.hbm.xml</c>, embedded in the class' assembly.
+            </summary>
+            <param name="persistentClass">The type to map.</param>
+            <returns>This configuration object.</returns>
+            <remarks>
+            If the mappings and classes are defined in different assemblies
+            or don't follow the naming convention, then this method cannot
+            be used.
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddAssembly(System.String)">
+            <summary>
+            Adds all of the Assembly's Resource files that end with "<c>hbm.xml</c>"
+            </summary>
+            <param name="assemblyName">The name of the Assembly to load.</param>
+            <returns>This Configuration object.</returns>
+            <remarks>
+            The Assembly must be in the local bin, probing path, or GAC so that the
+            Assembly can be loaded by name.  If these conditions are not satisfied
+            then your code should load the Assembly and call the override 
+            <see cref="M:NHibernate.Cfg.Configuration.AddAssembly(System.Reflection.Assembly)"/> instead.
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddAssembly(System.Reflection.Assembly)">
+            <summary>
+            Adds all of the Assembly's Resource files that end with "hbm.xml" 
+            </summary>
+            <param name="assembly">The loaded Assembly.</param>
+            <returns>This Configuration object.</returns>
+            <remarks>
+            This assumes that the <c>hbm.xml</c> files in the Assembly need to be put
+            in the correct order by NHibernate.  See <see cref="M:NHibernate.Cfg.Configuration.AddAssembly(System.Reflection.Assembly,System.Boolean)">
+            AddAssembly(Assembly assembly, bool skipOrdering)</see>
+            for the impacts and reasons for letting NHibernate order the 
+            <c>hbm.xml</c> files.
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddAssembly(System.Reflection.Assembly,System.Boolean)">
+            <summary>
+            Adds all of the Assembly's Resource files that end with "hbm.xml" 
+            </summary>
+            <param name="assembly">The loaded Assembly.</param>
+            <param name="skipOrdering">
+            A <see cref="T:System.Boolean"/> indicating if the ordering of hbm.xml files can be skipped.
+            </param>
+            <returns>This Configuration object.</returns>
+            <remarks>
+            <p>
+            The order of <c>hbm.xml</c> files only matters if the attribute "extends" is used.
+            The ordering should only be done when needed because it takes extra time 
+            to read the Xml files to find out the order the files should be passed to the Binder.  
+            If you don't use the "extends" attribute then it is reccommended to call this 
+            with <c>skipOrdering=true</c>.
+            </p>
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddDirectory(System.IO.DirectoryInfo)">
+            <summary>
+            Read all mapping documents from a directory tree. Assume that any
+            file named <c>*.hbm.xml</c> is a mapping document.
+            </summary>
+            <param name="dir">a directory</param>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.GenerateDropSchemaScript(NHibernate.Dialect.Dialect)">
+            <summary>
+            Generate DDL for droping tables
+            </summary>
+            <remarks>
+            <seealso cref="T:NHibernate.Tool.hbm2ddl.SchemaExport"/>
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.GenerateSchemaCreationScript(NHibernate.Dialect.Dialect)">
+            <summary>
+            Generate DDL for creating tables
+            </summary>
+            <param name="dialect"></param>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.SecondPassCompile">
+            <remarks>
+            This method may be called many times!!
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.BuildSessionFactory">
+            <summary>
+            Instantitate a new <c>ISessionFactory</c>, using the properties and mappings in this
+            configuration. The <c>ISessionFactory</c> will be immutable, so changes made to the
+            <c>Configuration</c> after building the <c>ISessionFactory</c> will not affect it.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.SetInterceptor(NHibernate.IInterceptor)">
+            <summary>
+            Configure an <see cref="T:NHibernate.IInterceptor"/>
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.SetProperties(System.Collections.IDictionary)">
+            <summary>
+            Specify a completely new set of properties
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddProperties(System.Collections.IDictionary)">
+            <summary>
+            Adds an <see cref="T:System.Collections.IDictionary"/> of configuration properties.  The 
+            Key is the name of the Property and the Value is the <see cref="T:System.String"/>
+            value of the Property.
+            </summary>
+            <param name="properties">An <see cref="T:System.Collections.IDictionary"/> of configuration properties.</param>
+            <returns>
+            This <see cref="T:NHibernate.Cfg.Configuration"/> object.
+            </returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.SetProperty(System.String,System.String)">
+            <summary>
+            Sets the value of the configuration property.
+            </summary>
+            <param name="name">The name of the property.</param>
+            <param name="value">The value of the property.</param>
+            <returns>
+            This <see cref="T:NHibernate.Cfg.Configuration"/> object.
+            </returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.GetProperty(System.String)">
+            <summary>
+            Gets the value of the configuration property.
+            </summary>
+            <param name="name">The name of the property.</param>
+            <returns>The configured value of the property, or <c>null</c> if the property was not specified.</returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.Configure">
+            <summary>
+            Configure NHibernate using the <c>&lt;hibernate-configuration&gt;</c> section
+            from the application config file, if found, or the file <c>hibernate.cfg.xml</c>
+            otherwise.
+            </summary>
+            <returns>A Configuration object initialized with the file.</returns>
+            <remarks>
+            To configure NHibernate explicitly using <c>hibernate.cfg.xml</c>, ignoring
+            the application configuration file, use this code:
+            <code>
+            	configuration.Configure( "path/to/hibernate.cfg.xml" );
+            </code>
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.Configure(System.Xml.XmlNode)">
+            <summary>
+            Configure NHibernate from an <see cref="T:System.Xml.XmlNode"/> representing the root
+            <c>&lt;hibernate-configuration&gt;</c> element.
+            </summary>
+            <param name="node">Configuration node</param>
+            <returns>This Configuration object</returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.Configure(System.String)">
+            <summary>
+            Configure NHibernate using the file specified.
+            </summary>
+            <param name="resource">The location of the Xml file to use to configure NHibernate.</param>
+            <returns>A Configuration object initialized with the file.</returns>
+            <remarks>
+            Calling Configure(string) will overwrite the values set in app.config or web.config
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.Configure(System.Reflection.Assembly,System.String)">
+            <summary>
+            Configure NHibernate using a resource contained in an Assembly.
+            </summary>
+            <param name="assembly">The <see cref="T:System.Reflection.Assembly"/> that contains the resource.</param>
+            <param name="resourceName">The name of the manifest resource being requested.</param>
+            <returns>A Configuration object initialized from the manifest resource.</returns>
+            <remarks>
+            Calling Configure(Assembly, string) will overwrite the values set in app.config or web.config
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.Configure(System.Xml.XmlTextReader)">
+            <summary>
+            Configure NHibernate using the specified XmlTextReader.
+            </summary>
+            <param name="reader">The <see cref="T:System.Xml.XmlTextReader"/> that contains the Xml to configure NHibernate.</param>
+            <returns>A Configuration object initialized with the file.</returns>
+            <remarks>
+            Calling Configure(XmlTextReader) will overwrite the values set in app.config or web.config
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.SetCacheConcurrencyStrategy(System.Type,NHibernate.Cache.ICacheConcurrencyStrategy)">
+            <summary>
+            Set up a cache for an entity class
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.SetCacheConcurrencyStrategy(System.String,NHibernate.Cache.ICacheConcurrencyStrategy)">
+            <summary>
+            Set up a cache for a collection role
+            </summary>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.BuildSettings">
+            <summary>
+            Create an object-oriented view of the configuration properties
+            </summary>
+            <returns>A <see cref="T:NHibernate.Cfg.Settings"/> object initialized from the settings properties.</returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.SetNamingStrategy(NHibernate.Cfg.INamingStrategy)">
+            <summary>
+            Set a custom naming strategy
+            </summary>
+            <param name="namingStrategy">the NamingStrategy to set</param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.LoadMappingDocument(System.Xml.XmlTextReader)">
+            <summary>
+            Load and validate the mappings in the <see cref="T:System.Xml.XmlTextReader"/> against
+            the nhibernate-mapping-2.0 schema, without adding them to the configuration.
+            </summary>
+            <remarks>
+            This method is made public to be usable from the unit tests. It is not intended
+            to be called by end users.
+            </remarks>
+            <param name="hbmReader">The XmlReader that contains the mapping.</param>
+            <returns>Validated XmlDocument built from the XmlReader.</returns>
+        </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddXmlReader(System.Xml.XmlTextReader)">
+            <summary>
+            Adds the Mappings in the <see cref="T:System.Xml.XmlTextReader"/> after validating it
+            against the nhibernate-mapping-2.0 schema.
+            </summary>
+            <param name="hbmReader">The XmlTextReader that contains the mapping.</param>
+            <returns>This Configuration object.</returns>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.MappingSchemaCollection">
+            <summary></summary>
+            <remarks>Allocate on first use as we are expensive in time/space</remarks>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.CfgSchemaCollection">
+            <summary></summary>
+            <remarks>Allocate on first use as we are expensive in time/space</remarks>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.ClassMappings">
+            <summary>
+            The class mappings 
+            </summary>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.CollectionMappings">
+            <summary>
+            The collection mappings
+            </summary>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.TableMappings">
+            <summary>
+            The table mappings
+            </summary>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.NamedQueries">
+            <summary>
+            The named queries
+            </summary>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.Interceptor">
+            <summary>
+            Gets or sets the <see cref="T:NHibernate.IInterceptor"/> to use.
+            </summary>
+            <value>The <see cref="T:NHibernate.IInterceptor"/> to use.</value>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.Properties">
+            <summary>
+            Gets or sets the <see cref="T:System.Collections.IDictionary"/> that contains the configuration
+            Properties and their values.
+            </summary>
+            <value>
+            The <see cref="T:System.Collections.IDictionary"/> that contains the configuration
+            Properties and their values.
+            </value>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.Imports">
+            <summary>
+            Get the query language imports
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.NamedSQLQueries">
+            <summary>
+            The named SQL queries
+            </summary>
+        </member>
+        <member name="P:NHibernate.Cfg.Configuration.NamingStrategy">
+            <summary>
+            Naming strategy for tables and columns
+            </summary>
+        </member>
+        <member name="T:NHibernate.Engine.IMapping">
+            <summary>
+            Defines operations common to "compiled" mappings (ie. <c>SessionFactory</c>) and
+            "uncompiled" mappings (ie <c>Configuration</c> that are used by implementors of <c>IType</c>
+            </summary>
+        </member>
+        <member name="M:NHibernate.Engine.IMapping.GetIdentifierType(System.Type)">
+            <summary>
+            
+            </summary>
+            <param name="persistentClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Engine.IMapping.GetIdentifierPropertyName(System.Type)">
+            <summary>
+            
+            </summary>
+            <param name="persistentClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Engine.IMapping.GetPropertyType(System.Type,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="persistentClass"></param>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
         <member name="T:NHibernate.Cfg.ConfigurationSectionHandler">
             <summary>
             Summary description for ConfigurationSectionHandler.
@@ -1335,76 +1770,11 @@
             	 by the <c>Environment</c> properties
             	</item>
             </list>
+            In NHibernate, <c>&lt;nhibernate&gt;</c> section in the application configuration file
+            corresponds to Java system-level properties; <c>&lt;hibernate-configuration&gt;</c>
+            section is considered to be the session-factory-level configuration. It is possible
+            to use the configuration file at the same time.
             </remarks>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.Version">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.ConnectionProvider">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.ConnectionDriver">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.ConnectionString">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.Isolation">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.SessionFactoryName">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.Dialect">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.DefaultSchema">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.ShowSql">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.UseOuterJoin">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.MaxFetchDepth">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.UseGetGeneratedKeys">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.StatementFetchSize">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.StatementBatchSize">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.BatchVersionedData">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.OutputStylesheet">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.TransactionStrategy">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.TransactionManagerStrategy">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.CacheProvider">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.QuerySubstitutions">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.QueryImports">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.PrepareSql">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Environment.CommandTimeout">
-            <summary></summary>
         </member>
         <member name="M:NHibernate.Cfg.Environment.VerifyProperties(System.Collections.IDictionary)">
             <summary>
@@ -1415,14 +1785,12 @@
         </member>
         <member name="P:NHibernate.Cfg.Environment.Properties">
             <summary>
-            Gets a copy of the configuration found in app.config/web.config
+            Gets a copy of the configuration found in <c>&lt;nhibernate&gt;</c> section
+            of app.config/web.config.
             </summary>
             <remarks>
             This is the replacement for hibernate.properties
             </remarks>
-        </member>
-        <member name="P:NHibernate.Cfg.Environment.UseStreamsForBinary">
-            <summary></summary>
         </member>
         <member name="T:NHibernate.Cfg.ImprovedNamingStrategy">
             <summary>
@@ -1691,386 +2059,6 @@
             <summary>
             Reads configuration properties and configures a <see cref="T:NHibernate.Cfg.Settings"/> instance. 
             </summary>
-        </member>
-        <member name="T:NHibernate.Cfg.Configuration">
-            <summary>
-            An instance of <c>Configuration</c> allows the application to specify properties
-            and mapping documents to be used when creating a <c>ISessionFactory</c>.
-            </summary>
-            <remarks>
-            Usually an application will create a single <c>Configuration</c>, build a single instance
-            of <c>ISessionFactory</c>, and then instanciate <c>ISession</c>s in threads servicing
-            client requests.
-            <para>
-            The <c>Configuration</c> is meant only as an initialization-time object. <c>ISessionFactory</c>s
-            are immutable and do not retain any association back to the <c>Configuration</c>
-            </para>
-            </remarks>
-        </member>
-        <member name="F:NHibernate.Cfg.Configuration.MappingSchemaXMLNS">
-            <summary>
-            The XML Namespace for the nhibernate-mapping
-            </summary>
-        </member>
-        <member name="F:NHibernate.Cfg.Configuration.CfgSchemaXMLNS">
-            <summary>
-            The XML Namespace for the nhibernate-configuration
-            </summary>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.Reset">
-            <summary>
-            Clear the internal state of the <see cref="T:NHibernate.Cfg.Configuration"/> object.
-            </summary>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.#ctor">
-            <summary>
-            Create a new Configuration object.
-            </summary>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.GetClassMapping(System.Type)">
-            <summary>
-            Get the mapping for a particular class
-            </summary>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.GetCollectionMapping(System.String)">
-            <summary>
-            Get the mapping for a particular collection role
-            </summary>
-            <param name="role">role a collection role</param>
-            <returns>collection</returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.CreateMappings">
-            <summary>
-            Create a new <c>Mappings</c> to add classes and collection mappings to
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddValidatedDocument(System.Xml.XmlDocument)">
-            <summary>
-            Takes the validated XmlDocument and has the Binder do its work of
-            creating Mapping objects from the Mapping Xml.
-            </summary>
-            <param name="doc">The <b>validated</b> XmlDocument that contains the Mappings.</param>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddAssembly(System.String)">
-            <summary>
-            Adds all of the Assembly's Resource files that end with "<c>hbm.xml</c>"
-            </summary>
-            <param name="assemblyName">The name of the Assembly to load.</param>
-            <returns>This Configuration object.</returns>
-            <remarks>
-            The Assembly must be in the local bin, probing path, or GAC so that the
-            Assembly can be loaded by name.  If these conditions are not satisfied
-            then your code should load the Assembly and call the override 
-            <see cref="M:NHibernate.Cfg.Configuration.AddAssembly(System.Reflection.Assembly)"/> instead.
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddAssembly(System.Reflection.Assembly)">
-            <summary>
-            Adds all of the Assembly's Resource files that end with "hbm.xml" 
-            </summary>
-            <param name="assembly">The loaded Assembly.</param>
-            <returns>This Configuration object.</returns>
-            <remarks>
-            This assumes that the <c>hbm.xml</c> files in the Assembly need to be put
-            in the correct order by NHibernate.  See <see cref="M:NHibernate.Cfg.Configuration.AddAssembly(System.Reflection.Assembly,System.Boolean)">
-            AddAssembly(Assembly assembly, bool skipOrdering)</see>
-            for the impacts and reasons for letting NHibernate order the 
-            <c>hbm.xml</c> files.
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddAssembly(System.Reflection.Assembly,System.Boolean)">
-            <summary>
-            Adds all of the Assembly's Resource files that end with "hbm.xml" 
-            </summary>
-            <param name="assembly">The loaded Assembly.</param>
-            <param name="skipOrdering">
-            A <see cref="T:System.Boolean"/> indicating if the ordering of hbm.xml files can be skipped.
-            </param>
-            <returns>This Configuration object.</returns>
-            <remarks>
-            <p>
-            The order of <c>hbm.xml</c> files only matters if the attribute "extends" is used.
-            The ordering should only be done when needed because it takes extra time 
-            to read the Xml files to find out the order the files should be passed to the Binder.  
-            If you don't use the "extends" attribute then it is reccommended to call this 
-            with <c>skipOrdering=true</c>.
-            </p>
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddClass(System.Type)">
-            <summary>
-            Adds the Class' Mapping by appending an ".hbm.xml" to the end of the Full Class Name
-            and looking in the Class' Assembly.
-            </summary>
-            <param name="persistentClass">The Type to Map.</param>
-            <returns>This Configuration object.</returns>
-            <remarks>
-            If the Mappings and Classes are defined in different Assemblies or don't follow
-            the same naming convention then this can not be used.
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddDocument(System.Xml.XmlDocument)">
-            <summary>
-            Adds the Mappings in the XML Document
-            </summary>
-            <param name="doc">A loaded XmlDocument that contains the Mappings.</param>
-            <returns>This Configuration object.</returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddInputStream(System.IO.Stream)">
-            <summary>
-            Adds the Xml Mappings from the Stream.
-            </summary>
-            <param name="xmlInputStream">The Stream to read Xml from.</param>
-            <returns>This Configuration object.</returns>
-            <remarks>
-            The <see cref="T:System.IO.Stream"/> passed in through the parameter <c>xmlInputStream</c>
-            is not <b>guaranteed</b> to be cleaned up by this method.  It is the callers responsiblity to
-            ensure that the <c>xmlInputStream</c> is properly handled when this method
-            completes.
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddResource(System.String,System.Reflection.Assembly)">
-            <summary>
-            Adds the Mappings in the Resource of the Assembly.
-            </summary>
-            <param name="path">The path to the Resource file in the Assembly</param>
-            <param name="assembly">The Assembly that contains the Resource file.</param>
-            <returns>This Configuration object.</returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddXmlFile(System.String)">
-            <summary>
-            Adds the Mappings contained in the file specified.
-            </summary>
-            <param name="xmlFile">The name of the file (url or file system) that contains the Xml.</param>
-            <returns>This Configuration object.</returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.LoadMappingDocument(System.Xml.XmlTextReader)">
-            <summary>
-            Load and validate the mappings in the <see cref="T:System.Xml.XmlTextReader"/> against
-            the nhibernate-mapping-2.0 schema, without adding them to the configuration.
-            </summary>
-            <remarks>
-            This method is made public to be usable from the unit tests. It is not intended
-            to be called by end users.
-            </remarks>
-            <param name="hbmReader">The XmlReader that contains the mapping.</param>
-            <returns>Validated XmlDocument built from the XmlReader.</returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddXmlReader(System.Xml.XmlTextReader)">
-            <summary>
-            Adds the Mappings in the <see cref="T:System.Xml.XmlTextReader"/> after validating it
-            against the nhibernate-mapping-2.0 schema.
-            </summary>
-            <param name="hbmReader">The XmlTextReader that contains the mapping.</param>
-            <returns>This Configuration object.</returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddXmlString(System.String)">
-            <summary>
-            Adds the Mappings from a <c>String</c>
-            </summary>
-            <param name="xml">A string that contains the Mappings for the Xml</param>
-            <returns>This Configuration object.</returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.GenerateDropSchemaScript(NHibernate.Dialect.Dialect)">
-            <summary>
-            Generate DDL for droping tables
-            </summary>
-            <param name="dialect"></param>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.GenerateSchemaCreationScript(NHibernate.Dialect.Dialect)">
-            <summary>
-            Generate DDL for creating tables
-            </summary>
-            <param name="dialect"></param>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.SecondPassCompile">
-            <remarks>
-            This method may be called many times!!
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.BuildSessionFactory">
-            <summary>
-            Instantitate a new <c>ISessionFactory</c>, using the properties and mappings in this
-            configuration. The <c>ISessionFactory</c> will be immutable, so changes made to the
-            <c>Configuration</c> after building the <c>ISessionFactory</c> will not affect it.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.BuildSettings">
-            <summary>
-            Builds an object-oriented view of the settings.
-            </summary>
-            <returns>A <see cref="T:NHibernate.Cfg.Settings"/> object initialized from the settings properties.</returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.AddProperties(System.Collections.IDictionary)">
-            <summary>
-            Adds an <see cref="T:System.Collections.IDictionary"/> of configuration properties.  The 
-            Key is the name of the Property and the Value is the <see cref="T:System.String"/>
-            value of the Property.
-            </summary>
-            <param name="properties">An <see cref="T:System.Collections.IDictionary"/> of configuration properties.</param>
-            <returns>
-            This <see cref="T:NHibernate.Cfg.Configuration"/> object.
-            </returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.SetProperty(System.String,System.String)">
-            <summary>
-            Sets the value of the configuration property.
-            </summary>
-            <param name="name">The name of the property.</param>
-            <param name="value">The value of the property.</param>
-            <returns>
-            This <see cref="T:NHibernate.Cfg.Configuration"/> object.
-            </returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.SetNamingStrategy(NHibernate.Cfg.INamingStrategy)">
-            <summary>
-            Set a custom naming strategy
-            </summary>
-            <param name="namingStrategy">the NamingStrategy to set</param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.GetProperty(System.String)">
-            <summary>
-            Gets the value of the configuration property.
-            </summary>
-            <param name="name">The name of the property.</param>
-            <returns>The configured value of the property, or <c>null</c> if the property was not specified.</returns>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.Configure">
-            <summary>
-            Configure NHibernate using the file "hibernate.cfg.xml"
-            </summary>
-            <returns>A Configuration object initialized with the file.</returns>
-            <remarks>
-            Calling Configure() will overwrite the values set in app.config or web.config
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.Configure(System.String)">
-            <summary>
-            Configure NHibernate using the file specified.
-            </summary>
-            <param name="resource">The location of the Xml file to use to configure NHibernate.</param>
-            <returns>A Configuration object initialized with the file.</returns>
-            <remarks>
-            Calling Configure(string) will overwrite the values set in app.config or web.config
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.Configure(System.Reflection.Assembly,System.String)">
-            <summary>
-            Configure NHibernate using a resource contained in an Assembly.
-            </summary>
-            <param name="assembly">The <see cref="T:System.Reflection.Assembly"/> that contains the resource.</param>
-            <param name="resourceName">The name of the manifest resource being requested.</param>
-            <returns>A Configuration object initialized from the manifest resource.</returns>
-            <remarks>
-            Calling Configure(Assembly, string) will overwrite the values set in app.config or web.config
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.Configure(System.Xml.XmlTextReader)">
-            <summary>
-            Configure NHibernate using the specified XmlTextReader.
-            </summary>
-            <param name="reader">The <see cref="T:System.Xml.XmlTextReader"/> that contains the Xml to configure NHibernate.</param>
-            <returns>A Configuration object initialized with the file.</returns>
-            <remarks>
-            Calling Configure(XmlTextReader) will overwrite the values set in app.config or web.config
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Cfg.Configuration.ConfigureCaches(NHibernate.Cfg.Settings)">
-            <summary>
-            
-            </summary>
-            <param name="settings"></param>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.MappingSchemaCollection">
-            <summary></summary>
-            <remarks>Allocate on first use as we are expensive in time/space</remarks>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.CfgSchemaCollection">
-            <summary></summary>
-            <remarks>Allocate on first use as we are expensive in time/space</remarks>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.ClassMappings">
-            <summary>
-            The class mappings 
-            </summary>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.CollectionMappings">
-            <summary>
-            The collection mappings
-            </summary>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.TableMappings">
-            <summary>
-            The table mappings
-            </summary>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.NamedQueries">
-            <summary>
-            The named queries
-            </summary>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.NamedSQLQueries">
-            <summary>
-            The named SQL queries
-            </summary>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.NamingStrategy">
-            <summary>
-            Naming strategy for tables and columns
-            </summary>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.Interceptor">
-            <summary>
-            Gets or sets the <see cref="T:NHibernate.IInterceptor"/> to use.
-            </summary>
-            <value>The <see cref="T:NHibernate.IInterceptor"/> to use.</value>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.Properties">
-            <summary>
-            Gets or sets the <see cref="T:System.Collections.IDictionary"/> that contains the configuration
-            Properties and their values.
-            </summary>
-            <value>
-            The <see cref="T:System.Collections.IDictionary"/> that contains the configuration
-            Properties and their values.
-            </value>
-        </member>
-        <member name="P:NHibernate.Cfg.Configuration.Imports">
-            <summary>
-            Get the query language imports
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:NHibernate.Engine.IMapping">
-            <summary>
-            Defines operations common to "compiled" mappings (ie. <c>SessionFactory</c>) and
-            "uncompiled" mappings (ie <c>Configuration</c> that are used by implementors of <c>IType</c>
-            </summary>
-        </member>
-        <member name="M:NHibernate.Engine.IMapping.GetIdentifierType(System.Type)">
-            <summary>
-            
-            </summary>
-            <param name="persistentClass"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Engine.IMapping.GetIdentifierPropertyName(System.Type)">
-            <summary>
-            
-            </summary>
-            <param name="persistentClass"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Engine.IMapping.GetPropertyType(System.Type,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="persistentClass"></param>
-            <param name="propertyName"></param>
-            <returns></returns>
         </member>
         <member name="T:NHibernate.Collection.AbstractCollectionPersister">
             <summary>
@@ -5683,6 +5671,17 @@
         <member name="M:NHibernate.Dialect.MsSql2000Dialect.#ctor">
             <summary></summary>
         </member>
+        <member name="M:NHibernate.Dialect.MsSql2000Dialect.GetDropTableString(System.String)">
+            <summary>
+            Generates the string to drop the table using the MsSql syntax
+            <code>
+            if exists (select * from dbo.sysobjects where id = object_id(N'{0}') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+            drop table {0}
+            </code>
+            </summary>
+            <param name="tableName">The name of the table to drop.</param>
+            <returns>The SQL with the <c>tableName</c> inserted.</returns>
+        </member>
         <member name="M:NHibernate.Dialect.MsSql2000Dialect.AddIdentitySelectToInsert(NHibernate.SqlCommand.SqlString)">
             <summary>
             Add the Identity Select string to the Insert Sql.
@@ -5937,11 +5936,6 @@
             
             </summary>
         </member>
-        <member name="T:NHibernate.Dialect.OracleDialect">
-            <summary>
-            An SQL dialect for Oracle, compatible with Oracle 8.
-            </summary>
-        </member>
         <member name="T:NHibernate.Dialect.Oracle9Dialect">
             <summary>
             It's a immature version, it just work.
@@ -6008,6 +6002,11 @@
         </member>
         <member name="P:NHibernate.Dialect.Oracle9Dialect.UseMaxForLimit">
             <summary></summary>
+        </member>
+        <member name="T:NHibernate.Dialect.OracleDialect">
+            <summary>
+            An SQL dialect for Oracle, compatible with Oracle 8.
+            </summary>
         </member>
         <member name="M:NHibernate.Dialect.OracleDialect.#ctor">
             <summary></summary>
@@ -7459,56 +7458,6 @@
         <member name="P:NHibernate.Driver.OracleDataClientDriver.NamedPrefix">
             <summary></summary>
         </member>
-        <member name="T:NHibernate.Driver.SQLiteDriver">
-            <summary>
-            NHibernate driver for the SQLite.NET data provider.
-            <p>
-            Author: <a href="mailto:ib@stalker.ro"> Ioan Bizau </a>
-            </p>
-            </summary>
-            <remarks>
-            <p>
-            In order to use this Driver you must have the SQLite.NET.dll Assembly available for NHibernate to load it.
-            You must also have the SQLite.dll and SQLite3.dll libraries.
-            </p>
-            <p>
-            Please check <a href="http://www.sqlite.org/"> http://www.sqlite.org/ </a> for more information regarding SQLite.
-            </p>
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Driver.SQLiteDriver.#ctor">
-            <summary>
-            Initializes a new instance of <see cref="T:NHibernate.Driver.SQLiteDriver"/>.
-            </summary>
-            <exception cref="T:NHibernate.HibernateException">
-            Thrown when the <c>SQLite.NET</c> assembly is not and can not be loaded.
-            </exception>
-        </member>
-        <member name="P:NHibernate.Driver.SQLiteDriver.CommandType">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:NHibernate.Driver.SQLiteDriver.ConnectionType">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:NHibernate.Driver.SQLiteDriver.UseNamedPrefixInSql">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:NHibernate.Driver.SQLiteDriver.UseNamedPrefixInParameter">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:NHibernate.Driver.SQLiteDriver.NamedPrefix">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="T:NHibernate.Driver.SqlClientDriver">
             <summary>
             A NHibernate Driver for using the SqlClient DataProvider
@@ -7596,6 +7545,56 @@
             attempted to be Opened.  When Yukon comes out a new Driver will be 
             created for Yukon because it is supposed to support it.
             </remarks>
+        </member>
+        <member name="T:NHibernate.Driver.SQLiteDriver">
+            <summary>
+            NHibernate driver for the SQLite.NET data provider.
+            <p>
+            Author: <a href="mailto:ib@stalker.ro"> Ioan Bizau </a>
+            </p>
+            </summary>
+            <remarks>
+            <p>
+            In order to use this Driver you must have the SQLite.NET.dll Assembly available for NHibernate to load it.
+            You must also have the SQLite.dll and SQLite3.dll libraries.
+            </p>
+            <p>
+            Please check <a href="http://www.sqlite.org/"> http://www.sqlite.org/ </a> for more information regarding SQLite.
+            </p>
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Driver.SQLiteDriver.#ctor">
+            <summary>
+            Initializes a new instance of <see cref="T:NHibernate.Driver.SQLiteDriver"/>.
+            </summary>
+            <exception cref="T:NHibernate.HibernateException">
+            Thrown when the <c>SQLite.NET</c> assembly is not and can not be loaded.
+            </exception>
+        </member>
+        <member name="P:NHibernate.Driver.SQLiteDriver.CommandType">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NHibernate.Driver.SQLiteDriver.ConnectionType">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NHibernate.Driver.SQLiteDriver.UseNamedPrefixInSql">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NHibernate.Driver.SQLiteDriver.UseNamedPrefixInParameter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NHibernate.Driver.SQLiteDriver.NamedPrefix">
+            <summary>
+            
+            </summary>
         </member>
         <member name="T:NHibernate.Driver.SybaseClientDriver">
             <summary>
@@ -10710,26 +10709,6 @@
         <member name="M:NHibernate.Expression.NullExpression.ToString">
             <summary></summary>
         </member>
-        <member name="T:NHibernate.Expression.OrExpression">
-            <summary>
-            An <see cref="T:NHibernate.Expression.ICriterion"/> that combines two <see cref="T:NHibernate.Expression.ICriterion"/>s with an 
-            <c>"or"</c> between them.
-            </summary>
-        </member>
-        <member name="M:NHibernate.Expression.OrExpression.#ctor(NHibernate.Expression.ICriterion,NHibernate.Expression.ICriterion)">
-            <summary>
-            Initialize a new instance of the <see cref="T:NHibernate.Expression.OrExpression"/> class for 
-            two <see cref="T:NHibernate.Expression.ICriterion"/>s.
-            </summary>
-            <param name="lhs">The <see cref="T:NHibernate.Expression.ICriterion"/> to use as the left hand side.</param>
-            <param name="rhs">The <see cref="T:NHibernate.Expression.ICriterion"/> to use as the right hand side.</param>
-        </member>
-        <member name="P:NHibernate.Expression.OrExpression.Op">
-            <summary>
-            Get the Sql operator to put between the two <see cref="T:NHibernate.Expression.Expression"/>s.
-            </summary>
-            <value>Returns "<c>or</c>"</value>
-        </member>
         <member name="T:NHibernate.Expression.Order">
             <summary>
             Represents an order imposed upon a <see cref="T:NHibernate.ICriteria"/>
@@ -10765,6 +10744,26 @@
             </summary>
             <param name="propertyName"></param>
             <returns></returns>
+        </member>
+        <member name="T:NHibernate.Expression.OrExpression">
+            <summary>
+            An <see cref="T:NHibernate.Expression.ICriterion"/> that combines two <see cref="T:NHibernate.Expression.ICriterion"/>s with an 
+            <c>"or"</c> between them.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Expression.OrExpression.#ctor(NHibernate.Expression.ICriterion,NHibernate.Expression.ICriterion)">
+            <summary>
+            Initialize a new instance of the <see cref="T:NHibernate.Expression.OrExpression"/> class for 
+            two <see cref="T:NHibernate.Expression.ICriterion"/>s.
+            </summary>
+            <param name="lhs">The <see cref="T:NHibernate.Expression.ICriterion"/> to use as the left hand side.</param>
+            <param name="rhs">The <see cref="T:NHibernate.Expression.ICriterion"/> to use as the right hand side.</param>
+        </member>
+        <member name="P:NHibernate.Expression.OrExpression.Op">
+            <summary>
+            Get the Sql operator to put between the two <see cref="T:NHibernate.Expression.Expression"/>s.
+            </summary>
+            <value>Returns "<c>or</c>"</value>
         </member>
         <member name="T:NHibernate.Expression.SQLCriterion">
             <summary>
@@ -11914,43 +11913,6 @@
             <param name="obj">The entity for which the id is being generated.</param>
             <returns>The new identifier as a <see cref="T:System.Guid"/>.</returns>
         </member>
-        <member name="T:NHibernate.Id.IPersistentIdentifierGenerator">
-            <summary>
-            An <see cref="T:NHibernate.Id.IIdentifierGenerator"/> that requires creation of database objects
-            All <see cref="T:NHibernate.Id.IPersistentIdentifierGenerator"/>s that also implement 
-            An <see cref="T:NHibernate.Id.IConfigurable"/>  have access to a special mapping parameter: schema
-            </summary>
-        </member>
-        <member name="M:NHibernate.Id.IPersistentIdentifierGenerator.SqlCreateStrings(NHibernate.Dialect.Dialect)">
-            <summary>
-            The SQL required to create the underlying database objects
-            </summary>
-            <param name="dialect">The <see cref="T:NHibernate.Dialect.Dialect"/> to help with creating the sql.</param>
-            <returns>
-            An array of <see cref="T:System.String"/> objects that contain the sql to create the 
-            necessary database objects.
-            </returns>
-        </member>
-        <member name="M:NHibernate.Id.IPersistentIdentifierGenerator.SqlDropString(NHibernate.Dialect.Dialect)">
-            <summary>
-            The SQL required to remove the underlying database objects
-            </summary>
-            <param name="dialect">The <see cref="T:NHibernate.Dialect.Dialect"/> to help with creating the sql.</param>
-            <returns>
-            A <see cref="T:System.String"/> that will drop the database objects.
-            </returns>
-        </member>
-        <member name="M:NHibernate.Id.IPersistentIdentifierGenerator.GeneratorKey">
-            <summary>
-            Return a key unique to the underlying database objects.
-            </summary>
-            <returns>
-            A key unique to the underlying database objects.
-            </returns>
-            <remarks>
-            Prevents us from trying to create/remove them multiple times
-            </remarks>
-        </member>
         <member name="T:NHibernate.Id.IdentifierGenerationException">
             <summary>
             Thrown by <see cref="T:NHibernate.Id.IIdentifierGenerator"/> implementation class when ID generation fails
@@ -12155,6 +12117,100 @@
             <c>IdentityColumnIndicator</c> Indicates to the Session that identity (i.e. identity/autoincrement column)
             key generation should be used.
             </returns>
+        </member>
+        <member name="T:NHibernate.Id.IncrementGenerator">
+            <summary>
+            An <c>IIdentifierGenerator</c> that returns a <c>Int64</c>, constructed by
+            counting from the maximum primary key value at startup. Not safe for use in a
+            cluster!
+            </summary>
+            <remarks>
+            <para>
+            java author Gavin King, .NET port Mark Holden
+            </para>
+            <para>
+            Mapping parameters supported, but not usually needed: table, column.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:NHibernate.Id.IPersistentIdentifierGenerator">
+            <summary>
+            An <see cref="T:NHibernate.Id.IIdentifierGenerator"/> that requires creation of database objects
+            All <see cref="T:NHibernate.Id.IPersistentIdentifierGenerator"/>s that also implement 
+            An <see cref="T:NHibernate.Id.IConfigurable"/>  have access to a special mapping parameter: schema
+            </summary>
+        </member>
+        <member name="M:NHibernate.Id.IPersistentIdentifierGenerator.SqlCreateStrings(NHibernate.Dialect.Dialect)">
+            <summary>
+            The SQL required to create the underlying database objects
+            </summary>
+            <param name="dialect">The <see cref="T:NHibernate.Dialect.Dialect"/> to help with creating the sql.</param>
+            <returns>
+            An array of <see cref="T:System.String"/> objects that contain the sql to create the 
+            necessary database objects.
+            </returns>
+        </member>
+        <member name="M:NHibernate.Id.IPersistentIdentifierGenerator.SqlDropString(NHibernate.Dialect.Dialect)">
+            <summary>
+            The SQL required to remove the underlying database objects
+            </summary>
+            <param name="dialect">The <see cref="T:NHibernate.Dialect.Dialect"/> to help with creating the sql.</param>
+            <returns>
+            A <see cref="T:System.String"/> that will drop the database objects.
+            </returns>
+        </member>
+        <member name="M:NHibernate.Id.IPersistentIdentifierGenerator.GeneratorKey">
+            <summary>
+            Return a key unique to the underlying database objects.
+            </summary>
+            <returns>
+            A key unique to the underlying database objects.
+            </returns>
+            <remarks>
+            Prevents us from trying to create/remove them multiple times
+            </remarks>
+        </member>
+        <member name="F:NHibernate.Id.IncrementGenerator.Column">
+            <summary></summary>
+        </member>
+        <member name="F:NHibernate.Id.IncrementGenerator.Table">
+            <summary></summary>
+        </member>
+        <member name="F:NHibernate.Id.IncrementGenerator.Schema">
+            <summary></summary>
+        </member>
+        <member name="M:NHibernate.Id.IncrementGenerator.Configure(NHibernate.Type.IType,System.Collections.IDictionary,NHibernate.Dialect.Dialect)">
+            <summary>
+            
+            </summary>
+            <param name="type"></param>
+            <param name="parms"></param>
+            <param name="d"></param>
+        </member>
+        <member name="M:NHibernate.Id.IncrementGenerator.Generate(NHibernate.Engine.ISessionImplementor,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="session"></param>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Id.IncrementGenerator.SqlCreateStrings(NHibernate.Dialect.Dialect)">
+            <summary>
+            
+            </summary>
+            <param name="dialect"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Id.IncrementGenerator.SqlDropString(NHibernate.Dialect.Dialect)">
+            <summary>
+            
+            </summary>
+            <param name="dialect"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Id.IncrementGenerator.GeneratorKey">
+            <summary></summary>
         </member>
         <member name="T:NHibernate.Id.SequenceGenerator">
             <summary>
@@ -12503,63 +12559,6 @@
             <param name="session">The <see cref="T:NHibernate.Engine.ISessionImplementor"/> this id is being generated in.</param>
             <param name="obj">The entity for which the id is being generated.</param>
             <returns>The new identifier as a <see cref="T:System.String"/>.</returns>
-        </member>
-        <member name="T:NHibernate.Id.IncrementGenerator">
-            <summary>
-            An <c>IIdentifierGenerator</c> that returns a <c>Int64</c>, constructed by
-            counting from the maximum primary key value at startup. Not safe for use in a
-            cluster!
-            </summary>
-            <remarks>
-            <para>
-            java author Gavin King, .NET port Mark Holden
-            </para>
-            <para>
-            Mapping parameters supported, but not usually needed: table, column.
-            </para>
-            </remarks>
-        </member>
-        <member name="F:NHibernate.Id.IncrementGenerator.Column">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Id.IncrementGenerator.Table">
-            <summary></summary>
-        </member>
-        <member name="F:NHibernate.Id.IncrementGenerator.Schema">
-            <summary></summary>
-        </member>
-        <member name="M:NHibernate.Id.IncrementGenerator.Configure(NHibernate.Type.IType,System.Collections.IDictionary,NHibernate.Dialect.Dialect)">
-            <summary>
-            
-            </summary>
-            <param name="type"></param>
-            <param name="parms"></param>
-            <param name="d"></param>
-        </member>
-        <member name="M:NHibernate.Id.IncrementGenerator.Generate(NHibernate.Engine.ISessionImplementor,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="session"></param>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Id.IncrementGenerator.SqlCreateStrings(NHibernate.Dialect.Dialect)">
-            <summary>
-            
-            </summary>
-            <param name="dialect"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Id.IncrementGenerator.SqlDropString(NHibernate.Dialect.Dialect)">
-            <summary>
-            
-            </summary>
-            <param name="dialect"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Id.IncrementGenerator.GeneratorKey">
-            <summary></summary>
         </member>
         <member name="T:NHibernate.Impl.AbstractQueryImpl">
             <summary>
@@ -15595,7 +15594,7 @@
         <member name="M:NHibernate.Impl.SessionImpl.GetEntityIdentifier(System.Object)">
             <summary>
             Get the id value for an object that is actually associated with the session.
-            This is a bit stricter than getEntityIdentifierIfNotUnsaved().
+            This is a bit stricter than GetEntityIdentifierIfNotUnsaved().
             </summary>
             <param name="obj"></param>
             <returns></returns>
@@ -19764,6 +19763,9 @@
             <summary>
             Set the given values to the mapped properties of the given object
             </summary>
+            <remarks>
+            Use the IGetSetHelper if available
+            </remarks>
             <param name="obj"></param>
             <param name="values"></param>
         </member>
@@ -19771,6 +19773,9 @@
             <summary>
             Return the values of the mapped properties of the object
             </summary>
+            <remarks>
+            Use the IGetSetHelper if available
+            </remarks>
             <param name="obj"></param>
             <returns></returns>
         </member>
@@ -20067,6 +20072,93 @@
         </member>
         <member name="P:NHibernate.Persister.EntityPersister.VersionedTableName">
             <summary></summary>
+        </member>
+        <member name="T:NHibernate.Persister.GetSetHelperFactory">
+            <summary>
+            Factory that generate object based on IGetSetHelper needed to replace the use
+            of reflection.
+            </summary>
+            <remarks>
+            Used in <see cref="T:NHibernate.Persister.AbstractEntityPersister"/> and
+            <see cref="T:NHibernate.Type.ComponentType"/>
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Persister.GetSetHelperFactory.#ctor(System.Type,NHibernate.Property.ISetter[],NHibernate.Property.IGetter[])">
+            <summary>
+            ctor
+            </summary>
+            <param name="mappedClass">The target class</param>
+            <param name="setters">Array of setters</param>
+            <param name="getters">Array of getters</param>
+        </member>
+        <member name="M:NHibernate.Persister.GetSetHelperFactory.#ctor">
+            <summary>
+            Private ctor. Can't create an empty object
+            </summary>
+        </member>
+        <member name="M:NHibernate.Persister.GetSetHelperFactory.Create(System.Type,NHibernate.Property.ISetter[],NHibernate.Property.IGetter[])">
+            <summary>
+            Generate the IGetSetHelper object
+            </summary>
+            <param name="mappedClass">The target class</param>
+            <param name="setters">Array of setters</param>
+            <param name="getters">Array of getters</param>
+            <returns>null if the generation fail</returns>
+        </member>
+        <member name="M:NHibernate.Persister.GetSetHelperFactory.InitCompiler">
+            <summary>
+            Set up the compiler options
+            </summary>
+        </member>
+        <member name="M:NHibernate.Persister.GetSetHelperFactory.AddAssembly(System.String)">
+            <summary>
+            Add an assembly to the list of ReferencedAssemblies
+            required to build the class
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:NHibernate.Persister.GetSetHelperFactory.Build(System.String)">
+            <summary>
+            Build the generated code
+            </summary>
+            <param name="code">Generated code</param>
+            <returns>An instance of the generated class</returns>
+        </member>
+        <member name="M:NHibernate.Persister.GetSetHelperFactory.IsPublic(System.String)">
+            <summary>
+            Check if the property is public
+            </summary>
+            <remarks>
+            <para>If IsPublic==true I can directly set the property</para>
+            <para>If IsPublic==false I need to use the setter/getter</para>
+            </remarks>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Persister.GetSetHelperFactory.GenerateCode">
+            <summary>
+            Generate the required code
+            </summary>
+            <returns>C# code</returns>
+        </member>
+        <member name="T:NHibernate.Persister.IGetSetHelper">
+            <summary>
+            Base interface for the object generated by <see cref="T:NHibernate.Persister.GetSetHelperFactory"/>
+            </summary>
+        </member>
+        <member name="M:NHibernate.Persister.IGetSetHelper.SetPropertyValues(System.Object,System.Object[])">
+            <summary>
+            Set all the property of the object
+            </summary>
+            <param name="o">The object to load</param>
+            <param name="values">The properties values</param>
+        </member>
+        <member name="M:NHibernate.Persister.IGetSetHelper.GetPropertyValues(System.Object)">
+            <summary>
+            Get all the property of the object
+            </summary>
+            <param name="o">The object to save</param>
+            <returns>The properties values</returns>
         </member>
         <member name="T:NHibernate.Persister.NormalizedEntityPersister">
             <summary>
@@ -21143,6 +21235,64 @@
             <param name="obj">The object to get the type of.</param>
             <returns>The Underlying Type for the object regardless of if it is a Proxy.</returns>
         </member>
+        <member name="T:NHibernate.SqlCommand.Alias">
+            <summary>
+            Aliases tables and fields for Sql Statements.
+            </summary>
+            <remarks>
+            Several methods of this class take an additional
+            <see cref="T:NHibernate.Dialect.Dialect"/> parameter, while their Java counterparts
+            do not. The dialect is used to correctly quote and unquote identifiers.
+            Java versions do the quoting and unquoting themselves and fail to
+            consider dialect-specific rules, such as escaping closing brackets in
+            identifiers on MS SQL 2000.
+            </remarks>
+        </member>
+        <member name="M:NHibernate.SqlCommand.Alias.#ctor(System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="length"></param>
+            <param name="suffix"></param>
+        </member>
+        <member name="M:NHibernate.SqlCommand.Alias.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="suffix"></param>
+        </member>
+        <member name="M:NHibernate.SqlCommand.Alias.ToAliasString(System.String,NHibernate.Dialect.Dialect)">
+            <summary>
+            
+            </summary>
+            <param name="sqlIdentifier"></param>
+            <param name="dialect"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.SqlCommand.Alias.ToUnquotedAliasString(System.String,NHibernate.Dialect.Dialect)">
+            <summary>
+            
+            </summary>
+            <param name="sqlIdentifier"></param>
+            <param name="dialect"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.SqlCommand.Alias.ToUnquotedAliasStrings(System.String[],NHibernate.Dialect.Dialect)">
+            <summary>
+            
+            </summary>
+            <param name="sqlIdentifiers"></param>
+            <param name="dialect"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.SqlCommand.Alias.ToAliasStrings(System.String[],NHibernate.Dialect.Dialect)">
+            <summary>
+            
+            </summary>
+            <param name="sqlIdentifiers"></param>
+            <param name="dialect"></param>
+            <returns></returns>
+        </member>
         <member name="T:NHibernate.SqlCommand.ANSICaseFragment">
             <summary>
             Represents an SQL <c>case when ... then ... end as ...</c>
@@ -21391,64 +21541,6 @@
         <member name="P:NHibernate.SqlCommand.ANSIJoinFragment.ToWhereFragmentString">
             <summary></summary>
         </member>
-        <member name="T:NHibernate.SqlCommand.Alias">
-            <summary>
-            Aliases tables and fields for Sql Statements.
-            </summary>
-            <remarks>
-            Several methods of this class take an additional
-            <see cref="T:NHibernate.Dialect.Dialect"/> parameter, while their Java counterparts
-            do not. The dialect is used to correctly quote and unquote identifiers.
-            Java versions do the quoting and unquoting themselves and fail to
-            consider dialect-specific rules, such as escaping closing brackets in
-            identifiers on MS SQL 2000.
-            </remarks>
-        </member>
-        <member name="M:NHibernate.SqlCommand.Alias.#ctor(System.Int32,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="length"></param>
-            <param name="suffix"></param>
-        </member>
-        <member name="M:NHibernate.SqlCommand.Alias.#ctor(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="suffix"></param>
-        </member>
-        <member name="M:NHibernate.SqlCommand.Alias.ToAliasString(System.String,NHibernate.Dialect.Dialect)">
-            <summary>
-            
-            </summary>
-            <param name="sqlIdentifier"></param>
-            <param name="dialect"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.SqlCommand.Alias.ToUnquotedAliasString(System.String,NHibernate.Dialect.Dialect)">
-            <summary>
-            
-            </summary>
-            <param name="sqlIdentifier"></param>
-            <param name="dialect"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.SqlCommand.Alias.ToUnquotedAliasStrings(System.String[],NHibernate.Dialect.Dialect)">
-            <summary>
-            
-            </summary>
-            <param name="sqlIdentifiers"></param>
-            <param name="dialect"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.SqlCommand.Alias.ToAliasStrings(System.String[],NHibernate.Dialect.Dialect)">
-            <summary>
-            
-            </summary>
-            <param name="sqlIdentifiers"></param>
-            <param name="dialect"></param>
-            <returns></returns>
-        </member>
         <member name="T:NHibernate.SqlCommand.ConditionalFragment">
             <summary></summary>
         </member>
@@ -21543,15 +21635,6 @@
         <member name="P:NHibernate.SqlCommand.ForUpdateFragment.NoWait">
             <summary></summary>
         </member>
-        <member name="T:NHibernate.SqlCommand.ISqlStringBuilder">
-            <summary></summary>
-        </member>
-        <member name="M:NHibernate.SqlCommand.ISqlStringBuilder.ToSqlString">
-            <summary>
-            Builds a SqlString from the internal data.
-            </summary>
-            <returns>A valid SqlString that can be converted into an IDbCommand</returns>
-        </member>
         <member name="T:NHibernate.SqlCommand.InFragment">
             <summary>
             Represents an <c>... in (...)</c> expression
@@ -21587,6 +21670,15 @@
         </member>
         <member name="M:NHibernate.SqlCommand.InFragment.ToFragmentString">
             <summary></summary>
+        </member>
+        <member name="T:NHibernate.SqlCommand.ISqlStringBuilder">
+            <summary></summary>
+        </member>
+        <member name="M:NHibernate.SqlCommand.ISqlStringBuilder.ToSqlString">
+            <summary>
+            Builds a SqlString from the internal data.
+            </summary>
+            <returns>A valid SqlString that can be converted into an IDbCommand</returns>
         </member>
         <member name="T:NHibernate.SqlCommand.JoinType">
             <summary></summary>
@@ -25615,6 +25707,9 @@
             <summary>
             
             </summary>
+            <remarks>
+            Use the IGetSetHelper if available
+            </remarks>
             <param name="component"></param>
             <returns></returns>
         </member>
@@ -25622,6 +25717,9 @@
             <summary>
             
             </summary>
+            <remarks>
+            Use the IGetSetHelper if available
+            </remarks>
             <param name="component"></param>
             <param name="values"></param>
         </member>
@@ -27663,88 +27761,6 @@
         <member name="P:NHibernate.Type.TimeSpanType.Seed">
             <summary></summary>
         </member>
-        <member name="T:NHibernate.Type.TimeType">
-            <summary>
-            Maps a <see cref="T:System.DateTime"/> Property to an DateTime column that only stores the 
-            Hours, Minutes, and Seconds of the DateTime as significant.
-            </summary>
-            <remarks>
-            <para>
-            This defaults the Date to "1753-01-01" - that should not matter because
-            using this Type indicates that you don't care about the Date portion of the DateTime.
-            </para>
-            <para>
-            A more appropriate choice to store the duration/time is the <see cref="T:NHibernate.Type.TimeSpanType"/>.
-            The underlying <see cref="F:System.Data.DbType.Time"/> tends to be handled diffently by different
-            DataProviders.
-            </para>
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Type.TimeType.#ctor">
-            <summary></summary>
-        </member>
-        <member name="M:NHibernate.Type.TimeType.Get(System.Data.IDataReader,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="rs"></param>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.TimeType.Get(System.Data.IDataReader,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="rs"></param>
-            <param name="name"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.TimeType.Set(System.Data.IDbCommand,System.Object,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="st"></param>
-            <param name="value"></param>
-            <param name="index"></param>
-        </member>
-        <member name="M:NHibernate.Type.TimeType.Equals(System.Object,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.TimeType.ToString(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="val"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.TimeType.StringToObject(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="xml"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.TimeType.ObjectToSQLString(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="P:NHibernate.Type.TimeType.ReturnedClass">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Type.TimeType.Name">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Type.TimeType.HasNiceEquals">
-            <summary></summary>
-        </member>
         <member name="T:NHibernate.Type.TimestampType">
             <summary>
             This is almost the exact same type as the DateTime except it can be used
@@ -27851,6 +27867,88 @@
             <summary></summary>
         </member>
         <member name="P:NHibernate.Type.TimestampType.Seed">
+            <summary></summary>
+        </member>
+        <member name="T:NHibernate.Type.TimeType">
+            <summary>
+            Maps a <see cref="T:System.DateTime"/> Property to an DateTime column that only stores the 
+            Hours, Minutes, and Seconds of the DateTime as significant.
+            </summary>
+            <remarks>
+            <para>
+            This defaults the Date to "1753-01-01" - that should not matter because
+            using this Type indicates that you don't care about the Date portion of the DateTime.
+            </para>
+            <para>
+            A more appropriate choice to store the duration/time is the <see cref="T:NHibernate.Type.TimeSpanType"/>.
+            The underlying <see cref="F:System.Data.DbType.Time"/> tends to be handled diffently by different
+            DataProviders.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Type.TimeType.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:NHibernate.Type.TimeType.Get(System.Data.IDataReader,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="rs"></param>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Type.TimeType.Get(System.Data.IDataReader,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="rs"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Type.TimeType.Set(System.Data.IDbCommand,System.Object,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="st"></param>
+            <param name="value"></param>
+            <param name="index"></param>
+        </member>
+        <member name="M:NHibernate.Type.TimeType.Equals(System.Object,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Type.TimeType.ToString(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="val"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Type.TimeType.StringToObject(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="xml"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.Type.TimeType.ObjectToSQLString(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="P:NHibernate.Type.TimeType.ReturnedClass">
+            <summary></summary>
+        </member>
+        <member name="P:NHibernate.Type.TimeType.Name">
+            <summary></summary>
+        </member>
+        <member name="P:NHibernate.Type.TimeType.HasNiceEquals">
             <summary></summary>
         </member>
         <member name="T:NHibernate.Type.TrueFalseType">
@@ -29023,7 +29121,8 @@
             <returns>The Type for the Class.</returns>
             <remarks>
             See <see cref="M:System.Type.GetType(System.String,System.Boolean)"/> for a full
-            description of how this works.
+            description of how this works. This method trims the <c>name</c> before passing
+            it to GetType.
             </remarks>
         </member>
         <member name="M:NHibernate.Util.ReflectHelper.TypeFromAssembly(System.String,System.String)">
@@ -29524,10 +29623,13 @@
         </member>
         <member name="T:NHibernate.ADOException">
             <summary>
-            Wraps exceptions that occur during ADO.NET calls. Exceptions thrown
-            by various ADO.NET providers are not derived from a common base class
-            (<c>SQLException</c> in Java), so just <c>Exception</c>
+            Wraps exceptions that occur during ADO.NET calls.
             </summary>
+            <remarks>
+            Exceptions thrown by various ADO.NET providers are not derived from
+            a common base class (<c>SQLException</c> in Java), so <c>Exception</c>
+            is used instead in NHibernate.
+            </remarks>
         </member>
         <member name="M:NHibernate.ADOException.#ctor(System.String,System.Exception)">
             <summary>
@@ -29977,6 +30079,63 @@
             Accept the action
             </summary>
         </member>
+        <member name="T:NHibernate.InstantiationException">
+            <summary>
+            Thrown if Hibernate can't instantiate an entity or component class at runtime.
+            </summary>
+        </member>
+        <member name="M:NHibernate.InstantiationException.#ctor(System.String,System.Exception,System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NHibernate.InstantiationException"/> class.
+            </summary>
+            <param name="message">The message that describes the error. </param>
+            <param name="innerException">
+            The exception that is the cause of the current exception. If the innerException parameter 
+            is not a null reference, the current exception is raised in a catch block that handles 
+            the inner exception.
+            </param>
+            <param name="type">The <see cref="T:System.Type"/> that NHibernate was trying to instantiate.</param>
+        </member>
+        <member name="M:NHibernate.InstantiationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NHibernate.InstantiationException"/> class
+            with serialized data.
+            </summary>
+            <param name="info">
+            The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object 
+            data about the exception being thrown.
+            </param>
+            <param name="context">
+            The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.
+            </param>
+        </member>
+        <member name="M:NHibernate.InstantiationException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the serialization info for <see cref="T:NHibernate.InstantiationException"/> after 
+            getting the info from the base Exception.
+            </summary>
+            <param name="info">
+            The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object 
+            data about the exception being thrown.
+            </param>
+            <param name="context">
+            The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.
+            </param>
+        </member>
+        <member name="P:NHibernate.InstantiationException.PersistentType">
+            <summary>
+            Gets the <see cref="T:System.Type"/> that NHibernate was trying to instantiate.
+            </summary>
+        </member>
+        <member name="P:NHibernate.InstantiationException.Message">
+            <summary>
+            Gets a message that describes the current <see cref="T:NHibernate.InstantiationException"/>.
+            </summary>
+            <value>
+            The error message that explains the reason for this exception and the Type that
+            was trying to be instantiated.
+            </value>
+        </member>
         <member name="T:NHibernate.IUserType">
             <summary>
             The inteface to be implemented by user-defined types.
@@ -30066,63 +30225,6 @@
             throw a <c>ValidationFailure</c>. This method must not change the state of the object
             by side-effect.
             </summary>
-        </member>
-        <member name="T:NHibernate.InstantiationException">
-            <summary>
-            Thrown if Hibernate can't instantiate an entity or component class at runtime.
-            </summary>
-        </member>
-        <member name="M:NHibernate.InstantiationException.#ctor(System.String,System.Exception,System.Type)">
-            <summary>
-            Initializes a new instance of the <see cref="T:NHibernate.InstantiationException"/> class.
-            </summary>
-            <param name="message">The message that describes the error. </param>
-            <param name="innerException">
-            The exception that is the cause of the current exception. If the innerException parameter 
-            is not a null reference, the current exception is raised in a catch block that handles 
-            the inner exception.
-            </param>
-            <param name="type">The <see cref="T:System.Type"/> that NHibernate was trying to instantiate.</param>
-        </member>
-        <member name="M:NHibernate.InstantiationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:NHibernate.InstantiationException"/> class
-            with serialized data.
-            </summary>
-            <param name="info">
-            The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object 
-            data about the exception being thrown.
-            </param>
-            <param name="context">
-            The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.
-            </param>
-        </member>
-        <member name="M:NHibernate.InstantiationException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Sets the serialization info for <see cref="T:NHibernate.InstantiationException"/> after 
-            getting the info from the base Exception.
-            </summary>
-            <param name="info">
-            The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object 
-            data about the exception being thrown.
-            </param>
-            <param name="context">
-            The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.
-            </param>
-        </member>
-        <member name="P:NHibernate.InstantiationException.PersistentType">
-            <summary>
-            Gets the <see cref="T:System.Type"/> that NHibernate was trying to instantiate.
-            </summary>
-        </member>
-        <member name="P:NHibernate.InstantiationException.Message">
-            <summary>
-            Gets a message that describes the current <see cref="T:NHibernate.InstantiationException"/>.
-            </summary>
-            <value>
-            The error message that explains the reason for this exception and the Type that
-            was trying to be instantiated.
-            </value>
         </member>
         <member name="T:NHibernate.LazyInitializationException">
             <summary>

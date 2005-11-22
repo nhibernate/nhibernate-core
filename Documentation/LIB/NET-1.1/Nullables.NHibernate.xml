@@ -151,12 +151,5 @@
             Nullables.NHibernate.NullableGuid type
             </summary>
         </member>
-        <member name="M:Nullables.NHibernate.SqlTypesType.GetValue(System.Data.SqlTypes.INullable)">
-            <summary>
-            Get the wrapped value from an INullable (Int32 for SqlInt32, etc.)
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
     </members>
 </doc>
