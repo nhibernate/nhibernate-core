@@ -62,9 +62,9 @@
 	<property name="current.build.defines" value="${build.defines}" />
 
 	<!-- properties used to connect to database for testing -->
-	<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2000Dialect" />
-	<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlClientDriver" />
-	<property name="nhibernate.connection.connection_string" value="Server=(local);initial catalog=nhibernate;Integrated Security=SSPI" />
+	<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2000Dialect" overwrite="false" />
+	<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlClientDriver" overwrite="false" />
+	<property name="nhibernate.connection.connection_string" value="Server=(local);initial catalog=nhibernate;Integrated Security=SSPI" overwrite="false" />
 
 	<!-- Disable performance tests by default. They take too much time. -->
 	<property name="run.performance.tests" value="false" overwrite="false" />
