@@ -489,6 +489,7 @@
 				<exclude name="**/_ReSharper*/**" />
 				<exclude name="**/*.resharperoptions" />
 				
+				<!-- copy all of the source -->
 				<include name="src/**" />
 				
 				<include name="NHibernateSolution.build" />
@@ -505,14 +506,11 @@
 				
 				<!-- exclude any keys that exist on the build machine -->
 				<exclude name="**/*.snk" />
-
-				<!-- exclude test results -->
-				<exclude name="bin/*-results.xml" />
-							
 			</fileset>
 		</copy>
 
-		<zip zipfile="${nant.project.basedir}/build/${project.name}-clover-${project.version}.zip">
+		<!-- put clover files in a separated zip file -->
+		<zip zipfile="${nant.project.basedir}/build/${project.name}-clover-${project.version}.zip" ziplevel="9">
 			<fileset basedir="${build.dir}">
 				<include name="clover/**" />
 			</fileset>
@@ -520,11 +518,12 @@
 
 		<property name="project.zip-path" value="${nant.project.basedir}/build/${build.name}.zip" />
 
-		<zip zipfile="${project.zip-path}">
+		<zip zipfile="${project.zip-path}" ziplevel="9">
 			<fileset basedir="${build.dir}">
 				<include name="**/*" />
 				<exclude name="clover/**" />
 				<exclude name="bin/log.txt" />
+				<exclude name="bin/*-results.xml" />
 			</fileset>
 		</zip>
 
