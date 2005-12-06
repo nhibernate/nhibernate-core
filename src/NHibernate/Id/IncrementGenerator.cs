@@ -96,7 +96,7 @@ namespace NHibernate.Id
 				{
 					if (!rs.IsDBNull(0))
 					{
-						next = rs.GetInt64(0) + 1;
+						next = Convert.ToInt64( rs.GetValue(0) ) + 1;
 					}
 					else
 					{
