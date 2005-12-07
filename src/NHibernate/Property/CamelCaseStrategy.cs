@@ -16,7 +16,7 @@ namespace NHibernate.Property
 		/// <returns>The name of the Field in CamelCase format.</returns>
 		public string GetFieldName( string propertyName )
 		{
-			return propertyName.Substring( 0, 1 ).ToLower() + propertyName.Substring( 1 );
+			return propertyName.Substring( 0, 1 ).ToLower( System.Globalization.CultureInfo.InvariantCulture ) + propertyName.Substring( 1 );
 		}
 
 		#endregion

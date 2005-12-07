@@ -52,7 +52,7 @@ namespace NHibernate.Hql
 		/// <param name="q"></param>
 		public void Token( string token, QueryTranslator q )
 		{
-			string lctoken = token.ToLower();
+			string lctoken = token.ToLower( System.Globalization.CultureInfo.InvariantCulture );
 
 			if( first )
 			{

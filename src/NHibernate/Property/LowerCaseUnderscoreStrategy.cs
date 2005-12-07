@@ -16,7 +16,7 @@ namespace NHibernate.Property
 		/// <returns>The name of the Field in lowercase prefixed with an underscore.</returns>
 		public string GetFieldName( string propertyName )
 		{
-			return "_" + propertyName.ToLower();
+			return "_" + propertyName.ToLower( System.Globalization.CultureInfo.InvariantCulture );
 		}
 
 		#endregion

@@ -1112,6 +1112,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "NHSpecificTest\NH480\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "PropertyTest\BasicSetterExceptionFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
