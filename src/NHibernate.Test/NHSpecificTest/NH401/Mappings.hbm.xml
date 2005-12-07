@@ -12,9 +12,7 @@
     
     <property name="Active" />
     <property name="CheckLPCMember" column="CHECK_LPC_MEMBER" type="Decimal" />
-    <property name="Clubcode" column="CLUB_CODE" type="String" />
     <property name="FreeLPCMember" column="FREE_LPC_MEMBER" type="Boolean" />
-    <property name="ClubName" column="NAME" type="String" />
   </class>
 
   <class name="Clubmember" table="CLUB_MEMBERS">

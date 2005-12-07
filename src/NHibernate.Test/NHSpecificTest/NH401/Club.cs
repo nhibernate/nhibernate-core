@@ -9,18 +9,14 @@ namespace NHibernate.Test.NHSpecificTest.NH401
         private int m_Id;
         private System.Boolean m_Active;
         private System.Decimal m_Checklpcmember;
-        private System.String m_Clubcode;
         private System.Boolean m_Freelpcmember;
         private System.DateTime m_Lastupdated;
-        private System.String m_Name;
 
 
 		public Club()
 		{
 			this.Active = true;
 			this.CheckLPCMember = 0;
-			this.Clubcode = String.Empty;
-			this.ClubName = String.Empty;
 			this.FreeLPCMember = false;
 			this.LastUpdated = DateTime.Now;
 		}
@@ -60,18 +56,6 @@ namespace NHibernate.Test.NHSpecificTest.NH401
             }
         }
 
-        public System.String Clubcode
-        {
-            get
-            {
-                return m_Clubcode;
-            }
-            set
-            {
-                m_Clubcode = value;
-            }
-        }
-
         public System.Boolean FreeLPCMember
         {
             get
@@ -93,18 +77,6 @@ namespace NHibernate.Test.NHSpecificTest.NH401
             set
             {
                 m_Lastupdated = value;
-            }
-        }
-
-        public string ClubName
-        {
-            get
-            {
-                return m_Name;
-            }
-            set
-            {
-                m_Name = value;
             }
         }
 
