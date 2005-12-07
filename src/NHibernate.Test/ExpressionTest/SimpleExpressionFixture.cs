@@ -85,5 +85,14 @@ namespace NHibernate.Test.ExpressionTest
 
 			session.Close();
 		}
+
+		[Test]
+		[ExpectedException(typeof(QueryException))]
+		public void MisspelledPropertyWithNormalizedEntityPersister() 
+		{
+			NExpression.ICriterion expression = NExpression.Expression.Eq( "MisspelledProperty", DateTime.Now );
+			expression.ToSqlString( factoryImpl, typeof(Multi), "multi", BaseExpressionFixture.EmptyAliasClasses  );
+		}
+
 	}
 }
