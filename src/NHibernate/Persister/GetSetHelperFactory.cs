@@ -131,10 +131,10 @@ namespace NHibernate.Persister
 
             if (res.Errors.HasErrors)
             {
-                log.Error("Compiled with error:\n" + code);
+                log.Debug("Compiled with error:\n" + code);
                 foreach (CompilerError e in res.Errors)
                 {
-                    log.Error(
+                    log.Debug(
                         String.Format("Line:{0}, Column:{1} Message:{2}",
                             e.Line, e.Column, e.ErrorText)
                     );
