@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH479">
+
+	<class name="Main" table="Mains" lazy="false">
+		<id name="Id" column="MainID" type="Int64" unsaved-value="0">
+			<generator class="native" />
+		</id>		
+		<one-to-one name="Aggregate" class="Aggregate" property-ref="Main"/>
+	</class>
+
+	<class name="Aggregate" table="Aggregates" lazy="false">
+		<id name="Id" column="AggregateID" type="Int64" unsaved-value="0">
+			<generator class="native" />
+		</id>		
+		<many-to-one name="Main" class="Main" column="MainID" not-null="true" />
+	</class>
+
+</hibernate-mapping>
+ 
