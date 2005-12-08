@@ -27,7 +27,6 @@ namespace NHibernate
 		/// </param>
 		public ADOException( string message, Exception innerException ) : base( message, innerException )
 		{
-			LogManager.GetLogger( typeof( ADOException ) ).Error( message, innerException );
 		}
 
 		/// <summary>
