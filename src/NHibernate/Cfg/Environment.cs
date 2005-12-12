@@ -32,7 +32,13 @@ namespace NHibernate.Cfg
 	/// </remarks>
 	public sealed class Environment
 	{
-		public const string Version = "1.0.1.0";
+		/// <summary>
+		/// NHibernate version (informational).
+		/// </summary>
+		public static string Version
+		{
+			get { return "1.0.2"; }
+		}
 
 		public const string ConnectionProvider = "hibernate.connection.provider";
 		public const string ConnectionDriver = "hibernate.connection.driver_class";
