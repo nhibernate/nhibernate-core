@@ -239,8 +239,6 @@ namespace NHibernate.Persister
 						                 setter.PropertyName,
 						                 setter.Property.PropertyType.FullName.Replace( '+', '.' ), i );
 					}
-
-					AddAssembly( setter.Property.PropertyType.Assembly.Location );
 				}
 				else
 				{
