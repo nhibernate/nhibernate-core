@@ -57,5 +57,25 @@ namespace NHibernate.Test.NHSpecificTest
 			IInterceptor nullInterceptor = null;
 			sessions.OpenSession(nullInterceptor).Close();
 		}
+
+		[Test]
+		public void DisconnectShouldNotCloseUserSuppliedConnection()
+		{
+			IDbConnection conn = sessions.ConnectionProvider.GetConnection();
+			try
+			{
+				using( ISession s = OpenSession() )
+				{
+					s.Disconnect();
+					s.Reconnect( conn );
+					Assert.AreSame( conn, s.Disconnect() );
+					Assert.AreEqual( ConnectionState.Open, conn.State );
+				}
+			}
+			finally
+			{
+				sessions.ConnectionProvider.CloseConnection( conn );
+			}
+		}
 	}
 }

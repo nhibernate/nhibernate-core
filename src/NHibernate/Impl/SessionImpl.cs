@@ -38,7 +38,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private SessionFactoryImpl factory;
 
-		private readonly bool autoClose;
+		private bool autoClose;
 		private readonly long timestamp;
 		private bool isCurrentTransaction; // a bit dodgy!
 
@@ -4353,6 +4353,7 @@ namespace NHibernate.Impl
 			log.Debug( "reconnecting session" );
 
 			connect = true;
+			autoClose = true;
 		}
 
 		public void Reconnect( IDbConnection conn )
@@ -4364,6 +4365,7 @@ namespace NHibernate.Impl
 				throw new HibernateException( "session already connected" );
 			}
 			this.connection = conn;
+			autoClose = false;
 		}
 
 		#region System.IDisposable Members
