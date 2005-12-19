@@ -55,15 +55,21 @@ namespace NHibernate.Persister
 		/// <returns>null if the generation fail</returns>
 		public static IGetSetHelper Create( System.Type mappedClass, ISetter[] setters, IGetter[] getters )
 		{
-			// Uncomment this to work without CodeDom
-			//return null;
+			if (mappedClass.IsValueType)
+			{
+				// Cannot create optimizer for value types - the setter method will not work.
+				log.Info( "Disabling reflection optimizer for value type " + mappedClass.FullName );
+				return null;
+			}
+			return new GetSetHelperFactory( mappedClass, setters, getters ).CreateGetSetHelper();
+		}
 
+		private IGetSetHelper CreateGetSetHelper()
+		{
 			try
 			{
-				GetSetHelperFactory f = new GetSetHelperFactory( mappedClass, setters, getters );
-				f.InitCompiler();
-				string code = f.GenerateCode();
-				return f.Build( code );
+				InitCompiler();
+				return Build( GenerateCode() );
 			}
 			catch( Exception e )
 			{

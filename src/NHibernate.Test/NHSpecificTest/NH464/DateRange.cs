@@ -2,13 +2,12 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH464
 {
-	public class DateRange
+	public struct DateRange
 	{
-		private DateTime start, end;
+		public static readonly DateRange Infinite = new DateRange(new DateTime(2001, 1, 1), new DateTime(2050, 12, 31));
 
-		public DateRange()
-		{
-		}
+		private DateTime start;
+		private DateTime end;
 
 		public DateRange(DateTime start, DateTime end)
 		{
@@ -26,6 +25,11 @@ namespace NHibernate.Test.NHSpecificTest.NH464
 		{
 			get { return end; }
 			set { end = value; }
+		}
+
+		public bool Contains(DateTime date)
+		{
+			return ((date.CompareTo(start) >= 0) && (date.CompareTo(end) <= 0));
 		}
 	}
 }

@@ -1,8 +1,12 @@
 using System;
+using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH464
 {
+	/// <summary>
+	/// This is a test class for composite-element with reflection optimizer
+	/// </summary>
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
@@ -11,38 +15,62 @@ namespace NHibernate.Test.NHSpecificTest.NH464
 			get { return "NH464"; }
 		}
 
-		// Could not reproduce the bug neither with nor without the reflection optimizer.
-		[Test]
-		public void WriteAndRead()
+		/// <summary>
+		/// Mapping files used in the TestCase
+		/// </summary>
+		protected override IList Mappings
 		{
-			DateTime start = new DateTime(2000, 1, 1, 10, 30, 0);
-			DateTime end = new DateTime(2000, 1, 2, 12, 30, 0);
+			get { return new string[] {"NHSpecificTest.NH464.Promotion.hbm.xml"}; }
+		}
 
-			Container container = new Container();
-			container.Id = 1;
-			container.Component = new Component();
-			container.Component.Dates.Add( new DateRange( start, end ) );
-
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+		protected override void OnSetUp()
+		{
+			base.OnSetUp ();
+			using( ISession session = OpenSession() )
+			using( ITransaction t = session.BeginTransaction() )
 			{
-				s.Save( container );
+				session.Delete( "from System.Object" ); // clear everything from database
 				t.Commit();
 			}
+		}
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+		protected override void OnTearDown()
+		{
+			using( ISession session = OpenSession() )
+			using( ITransaction t = session.BeginTransaction() )
 			{
-				container = (Container) s.Load( typeof(Container), container.Id );
-
-				Assert.AreEqual( 1, container.Component.Dates.Count );
-
-				DateRange dr = (DateRange) container.Component.Dates[0];
-				Assert.AreEqual( start, dr.Start );
-				Assert.AreEqual( end, dr.End );
-
-				s.Delete( container );
+				session.Delete("from System.Object"); // clear everything from database
 				t.Commit();
+			}
+			base.OnTearDown ();
+		}
+
+		[Test]
+		public void CompositeElement()
+		{
+			Promotion promo = new Promotion();
+			promo.Description = "test promo";
+			promo.Window = new PromotionWindow();
+			promo.Window.Dates.Add(new DateRange(DateTime.Today, DateTime.Today.AddDays(20)));
+
+			int id = 0;
+			using( ISession session = OpenSession() )
+			using( ITransaction tx = session.BeginTransaction() )
+			{
+				id = (int)session.Save(promo);
+				tx.Commit();
+			}
+
+			using( ISession session = OpenSession() )
+			using( ITransaction tx = session.BeginTransaction() )
+			{
+				promo = (Promotion)session.Load(typeof(Promotion), id);
+
+				Assert.AreEqual(1, promo.Window.Dates.Count);
+				Assert.AreEqual(DateTime.Today, ((DateRange)promo.Window.Dates[0]).Start);
+				Assert.AreEqual(DateTime.Today.AddDays(20), ((DateRange)promo.Window.Dates[0]).End);
+
+				tx.Commit();
 			}
 		}
 	}

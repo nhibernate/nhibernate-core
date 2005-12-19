@@ -1088,16 +1088,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "NHSpecificTest\NH464\Component.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NHSpecificTest\NH464\Container.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "NHSpecificTest\NH464\DateRange.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1108,8 +1098,18 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "NHSpecificTest\NH464\Mappings.hbm.xml"
+                    RelPath = "NHSpecificTest\NH464\Promotion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH464\Promotion.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH464\PromotionWindow.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "NHSpecificTest\NH479\Classes.cs"

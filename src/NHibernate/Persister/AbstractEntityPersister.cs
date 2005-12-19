@@ -811,7 +811,8 @@ namespace NHibernate.Persister
 				i++;
 			}
 
-			if( !foundCustomAccessor && Cfg.Environment.UseReflectionOptimizer )
+			// NH: reflection optimizer works with custom accessors
+			if( /*!foundCustomAccessor &&*/ Cfg.Environment.UseReflectionOptimizer )
 			{
 				getset = GetSetHelperFactory.Create( MappedClass, Setters, Getters );
 			}
