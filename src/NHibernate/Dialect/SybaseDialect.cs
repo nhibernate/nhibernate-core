@@ -108,5 +108,14 @@ namespace NHibernate.Dialect
 			get { return "DEFAULT VALUES"; }
 		}
 
+		/// <remarks>
+		/// Sybase does not support quoted aliases, this function thus returns
+		/// <c>aliasName</c> as is.
+		/// </remarks>
+		public override string QuoteForAliasName(string aliasName)
+		{
+			return aliasName;
+		}
+
 	}
 }
