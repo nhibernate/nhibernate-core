@@ -1,5 +1,5 @@
 <!-- <!DOCTYPE appendix SYSTEM "../docbook-xml/docbookx.dtd"> -->
-<appendix id="License.gnu.lgpl">
+<appendix id="license-gnu-lgpl">
 
 	<title>GNU Lesser General Public License</title>
 
@@ -10,7 +10,7 @@
 </appendix>
 
 
-<appendix id="License.gnu.fdl">
+<appendix id="license-gnu-fdl">
 
 	<title>GNU Free Documentation License</title>
 

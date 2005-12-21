@@ -10,9 +10,9 @@
 
 
 	<!-- Customized HTML stylesheet !-->
-	<xsl:param name="html.stylesheet" select="'NHibernate.Documentation_files/html.css'" />
+	<xsl:param name="html.stylesheet" select="'html.css'" />
 
 	<!-- Allow referring to images without writing the path !-->
-	<xsl:param name="img.src.path">NHibernate.Documentation_files/</xsl:param>
+	<xsl:param name="img.src.path"></xsl:param>
 
 </xsl:stylesheet>
