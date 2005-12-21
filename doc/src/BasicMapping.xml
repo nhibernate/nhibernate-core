@@ -6,7 +6,7 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
   "../../support/docbook-dtd/docbookx.dtd">
 -->
-<chapter id="mapping">
+<chapter id="basic-mapping">
 	<title>Basic O/R Mapping</title>
 
 	<sect1 id="mapping-declaration">

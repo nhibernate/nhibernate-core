@@ -47,7 +47,7 @@
 	&persistent-classes;
 
 
-	<part id="mapping">
+	<part id="part-mapping">
 		<title>NHibernate Mapping</title>
 		&basic-mapping;
 		&collection-mapping;
@@ -56,7 +56,7 @@
 	</part>
 
 
-	<part id="contrib">
+	<part id="part-contrib">
 		<title>NHibernateContrib Documentation</title>
 		&nhc-preface;
 		&nhcaches-chapter;
