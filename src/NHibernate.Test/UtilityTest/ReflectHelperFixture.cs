@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Util;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
@@ -13,30 +11,30 @@ namespace NHibernate.Test.UtilityTest
 	public class ReflectHelperFixture
 	{
 		[Test]
-		public void GetConstantValueEnum() 
+		public void GetConstantValueEnum()
 		{
 			object result = ReflectHelper.GetConstantValue( "NHibernate.DomainModel.FooStatus, NHibernate.DomainModel", "ON" );
-			Assert.AreEqual( 1, (int)result, "Should have found value of 1" );
+			Assert.AreEqual( 1, ( int ) result, "Should have found value of 1" );
 		}
 
 		[Test]
-		public void OverridesEquals() 
+		public void OverridesEquals()
 		{
 			Assert.IsFalse( ReflectHelper.OverridesEquals( this.GetType() ), "ReflectHelperFixture does not override equals" );
-			Assert.IsTrue( ReflectHelper.OverridesEquals( typeof(string) ), "String does override equals" );
-			Assert.IsFalse( ReflectHelper.OverridesEquals( typeof(IDisposable) ), "IDisposable does not override equals" );
-			Assert.IsTrue( ReflectHelper.OverridesEquals( typeof(BRhf) ), "Base class overrides equals" );
+			Assert.IsTrue( ReflectHelper.OverridesEquals( typeof( string ) ), "String does override equals" );
+			Assert.IsFalse( ReflectHelper.OverridesEquals( typeof( IDisposable ) ), "IDisposable does not override equals" );
+			Assert.IsTrue( ReflectHelper.OverridesEquals( typeof( BRhf ) ), "Base class overrides equals" );
 		}
 
 		[Test]
-		public void NoTypeFoundReturnsNull() 
+		public void NoTypeFoundReturnsNull()
 		{
 			System.Type noType = ReflectHelper.TypeFromAssembly( "noclass", "noassembly" );
 			Assert.IsNull( noType );
 		}
 
 		[Test]
-		public void TypeFoundInNotLoadedAssembly() 
+		public void TypeFoundInNotLoadedAssembly()
 		{
 			System.Type httpRequest = ReflectHelper.TypeFromAssembly( "System.Web.HttpRequest", "System.Web" );
 			Assert.IsNotNull( httpRequest );
@@ -46,20 +44,20 @@ namespace NHibernate.Test.UtilityTest
 		}
 	}
 
-	public class ARhf 
+	public class ARhf
 	{
-		public override bool Equals(object obj)
+		public override bool Equals( object obj )
 		{
-			return base.Equals (obj);
+			return base.Equals( obj );
 		}
 
 		public override int GetHashCode()
 		{
-			return base.GetHashCode ();
+			return base.GetHashCode();
 		}
 	}
 
-	public class BRhf : ARhf 
+	public class BRhf : ARhf
 	{
 	}
 

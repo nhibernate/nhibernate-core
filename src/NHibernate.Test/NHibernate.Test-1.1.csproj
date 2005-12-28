@@ -1565,6 +1565,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "UtilityTest\AssemblyQualifiedTypeNameFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UtilityTest\IdentityMapFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -42,6 +42,7 @@ namespace NHibernate.Property
 		/// Gets an <see cref="IDictionary"/> of the built in <see cref="IPropertyAccessor"/> strategies.
 		/// </summary>
 		/// <value>An <see cref="IDictionary"/> of the built in <see cref="IPropertyAccessor"/> strategies.</value>
+		[Obsolete( "Use GetPropertyAccessor method" )]
 		public static IDictionary PropertyAccessors
 		{
 			get { return accessors; }
@@ -193,7 +194,9 @@ namespace NHibernate.Property
 
 			try
 			{
-				return ( IPropertyAccessor ) Activator.CreateInstance( accessorClass );
+				accessor = ( IPropertyAccessor ) Activator.CreateInstance( accessorClass );
+				accessors[ type ] = accessor;
+				return accessor;
 			}
 			catch( Exception e )
 			{

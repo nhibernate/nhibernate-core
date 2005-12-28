@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using log4net;
 using NHibernate.Property;
 using NHibernate.Type;
 
@@ -11,14 +12,14 @@ namespace NHibernate.Util
 	/// </summary>
 	public sealed class ReflectHelper
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof( ReflectHelper ) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( ReflectHelper ) );
 
 		private ReflectHelper()
 		{
 			// not creatable
 		}
 
-		private static System.Type[ ] NoClasses = System.Type.EmptyTypes;
+		private static System.Type[] NoClasses = System.Type.EmptyTypes;
 
 		/// <summary>
 		/// Determine if the specified <see cref="System.Type"/> overrides the
@@ -30,7 +31,7 @@ namespace NHibernate.Util
 		{
 			try
 			{
-				MethodInfo equals = clazz.GetMethod( "Equals", new System.Type[ ] {typeof( object )} );
+				MethodInfo equals = clazz.GetMethod( "Equals", new System.Type[] {typeof( object )} );
 				if( equals == null )
 				{
 					return false;
@@ -94,35 +95,10 @@ namespace NHibernate.Util
 		public static IGetter GetGetter( System.Type theClass, string propertyName, string propertyAccessorName )
 		{
 			IPropertyAccessor accessor = null;
-
-			try
-			{
-				// first try the named strategy since that will be the most likely strategy used.
-				accessor = ( IPropertyAccessor ) PropertyAccessorFactory.PropertyAccessors[ propertyAccessorName ];
-				return accessor.GetGetter( theClass, propertyName );
-			}
-			catch( PropertyNotFoundException )
-			{
-				// the basic named strategy did not work so try the rest of them
-				foreach( DictionaryEntry de in PropertyAccessorFactory.PropertyAccessors )
-				{
-					try
-					{
-						accessor = ( IPropertyAccessor ) de.Value;
-						return accessor.GetGetter( theClass, propertyName );
-					}
-					catch( PropertyNotFoundException )
-					{
-						// ignore this exception because we want to try and move through
-						// the rest of the accessor strategies.
-					}
-				}
-				throw;
-			}
+			accessor = PropertyAccessorFactory.GetPropertyAccessor( propertyAccessorName );
+			return accessor.GetGetter( theClass, propertyName );
 		}
 
-		//TODO: most calls to this will be replaced by the Mapping.Property.GetGetter() but
-		// there will still be a call from hql into this.
 		/// <summary>
 		/// Finds the <see cref="IGetter"/> for the property in the <see cref="System.Type"/>.
 		/// </summary>
@@ -140,6 +116,7 @@ namespace NHibernate.Util
 		/// <exception cref="PropertyNotFoundException">
 		/// No Property or Field with the <c>propertyName</c> could be found.
 		/// </exception>
+		[Obsolete( "Use the overload with property access parameter" )]
 		public static IGetter GetGetter( System.Type theClass, string propertyName )
 		{
 			// first try the basicPropertyAccessor since that will be the most likely strategy used.
@@ -149,19 +126,18 @@ namespace NHibernate.Util
 		//TODO: add a method in here ReflectedPropertyClass and replace most calls to GetGetter
 		// with calls to it
 
-
 		/// <summary>
 		/// Get the NHibernate <see cref="IType" /> for the named property of the <see cref="System.Type"/>.
 		/// </summary>
 		/// <param name="theClass">The <see cref="System.Type"/> to find the Property in.</param>
 		/// <param name="name">The name of the property/field to find in the class.</param>
-		/// <param name="propertyAccess"></param>
+		/// <param name="access">The name of the property accessor for the property.</param>
 		/// <returns>
 		/// The NHibernate <see cref="IType"/> for the named property.
 		/// </returns>
-		public static IType ReflectedPropertyType( System.Type theClass, string name, string propertyAccess )
+		public static IType ReflectedPropertyType( System.Type theClass, string name, string access )
 		{
-			return TypeFactory.HeuristicType( GetGetter( theClass, name, propertyAccess ).ReturnType.AssemblyQualifiedName );
+			return TypeFactory.HeuristicType( GetGetter( theClass, name, access ).ReturnType.AssemblyQualifiedName );
 		}
 
 		/// <summary>
@@ -170,9 +146,9 @@ namespace NHibernate.Util
 		/// <param name="theClass">The <see cref="System.Type"/> to find the property in.</param>
 		/// <param name="name">The name of the property/field to find in the class.</param>
 		/// <returns>The <see cref="System.Type" /> for the named property.</returns>
-		public static System.Type ReflectedPropertyClass( System.Type theClass, string name)
+		public static System.Type ReflectedPropertyClass( System.Type theClass, string name, string access )
 		{
-			return GetGetter(theClass, name).ReturnType;
+			return GetGetter( theClass, name, access ).ReturnType;
 		}
 
 		/// <summary>
@@ -187,7 +163,18 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static System.Type ClassForName( string name )
 		{
-			return System.Type.GetType( name.Trim(), true );
+			AssemblyQualifiedTypeName parsedName = AssemblyQualifiedTypeName.Parse( name );
+			System.Type result = TypeFromAssembly( parsedName );
+			if( result == null )
+			{
+				throw new TypeLoadException( "Could not load type " + parsedName );
+			}
+			return result;
+		}
+
+		public static System.Type TypeFromAssembly( AssemblyQualifiedTypeName typeName )
+		{
+			return TypeFromAssembly( typeName.Type, typeName.Assembly );
 		}
 
 		/// <summary>
@@ -206,20 +193,21 @@ namespace NHibernate.Util
 		/// Attempts to get a reference to the type from an already loaded assembly.  If the 
 		/// Type can be found then the Assembly is loaded using LoadWithPartialName.
 		/// </remarks>
-		public static System.Type TypeFromAssembly( string className, string assemblyName ) 
+		public static System.Type TypeFromAssembly( string className, string assemblyName )
 		{
-			try 
+			string fullName = className + ", " + assemblyName;
+			try
 			{
 				// try to get the Types from an already loaded assembly
-				System.Type type = System.Type.GetType( className + ", " + assemblyName );
+				System.Type type = System.Type.GetType( fullName );
 
 				// if the type is null then the assembly is not loaded.
-				if( type==null ) 
+				if( type == null )
 				{
 					// use the partial name because we don't know the public key, version, culture-info of
 					// the assembly on the local machine.
 					Assembly assembly = Assembly.LoadWithPartialName( assemblyName );
-					if( assembly!=null ) 
+					if( assembly != null )
 					{
 						type = assembly.GetType( className );
 					}
@@ -229,9 +217,9 @@ namespace NHibernate.Util
 			}
 			catch( Exception e )
 			{
-				if( log.IsErrorEnabled ) 
+				if( log.IsErrorEnabled )
 				{
-					log.Error( className + ", " + assemblyName + " could not be loaded.", e );
+					log.Error( fullName + " could not be loaded.", e );
 				}
 				return null;
 			}
@@ -307,7 +295,7 @@ namespace NHibernate.Util
 				ConstructorInfo constructor = type.GetConstructor( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, CallingConventions.HasThis, NoClasses, null );
 				return constructor;
 			}
-			catch( Exception e)
+			catch( Exception e )
 			{
 				throw new InstantiationException( "A default (no-arg) constructor could not be found for: ", e, type );
 			}
@@ -325,7 +313,7 @@ namespace NHibernate.Util
 		/// <exception cref="InstantiationException">
 		/// Thrown when no constructor with the correct signature can be found.
 		/// </exception>
-		public static ConstructorInfo GetConstructor(System.Type type, IType[] types)
+		public static ConstructorInfo GetConstructor( System.Type type, IType[] types )
 		{
 			ConstructorInfo[] candidates = type.GetConstructors( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
 
@@ -339,8 +327,8 @@ namespace NHibernate.Util
 
 					for( int j = 0; j < parameters.Length; j++ )
 					{
-						bool ok = parameters[j].ParameterType.IsAssignableFrom(
-							types[j].ReturnedClass );
+						bool ok = parameters[ j ].ParameterType.IsAssignableFrom(
+							types[ j ].ReturnedClass );
 
 						if( !ok )
 						{
@@ -349,7 +337,7 @@ namespace NHibernate.Util
 						}
 					}
 
-					if (found) 
+					if( found )
 					{
 						return constructor;
 					}
@@ -367,6 +355,5 @@ namespace NHibernate.Util
 		{
 			return ( type.IsAbstract || type.IsInterface );
 		}
-
 	}
 }
