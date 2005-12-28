@@ -14,48 +14,19 @@ namespace NHibernate.Driver
 	/// on the NHibernate forums in this 
 	/// <a href="http://sourceforge.net/forum/message.php?msg_id=2952662">post</a>.
 	/// </remarks>
-	public class OracleDataClientDriver : DriverBase
+	public class OracleDataClientDriver : ReflectionBasedDriver
 	{
-		private System.Type connectionType;
-		private System.Type commandType;
-
 		/// <summary>
 		/// Initializes a new instance of <see cref="OracleDataClientDriver"/>.
 		/// </summary>
 		/// <exception cref="HibernateException">
-		/// Thrown when the <c>Oracle.DataAccess</c> assembly is not and can not be loaded.
+		/// Thrown when the <c>Oracle.DataAccess</c> assembly can not be loaded.
 		/// </exception>
-		public OracleDataClientDriver()
+		public OracleDataClientDriver() : base(
+			"Oracle.DataAccess",
+			"Oracle.DataAccess.Client.OracleConnection",
+			"Oracle.DataAccess.Client.OracleCommand" )
 		{
-			string assemblyName = "Oracle.DataAccess";
-			string connectionClassName = "Oracle.DataAccess.Client.OracleConnection";
-			string commandClassName = "Oracle.DataAccess.Client.OracleCommand";
-
-			// try to get the Types from an already loaded assembly
-			connectionType = Util.ReflectHelper.TypeFromAssembly( connectionClassName, assemblyName );
-			commandType = Util.ReflectHelper.TypeFromAssembly( commandClassName, assemblyName );
-
-			if( connectionType == null || commandType == null )
-			{
-				throw new HibernateException(
-					"The IDbCommand and IDbConnection implementation in the Assembly Oracle.DataAccess could not be found.  " +
-					"Please ensure that the Assemblies Oracle.DataAccess.dll " +
-					"are in the Global Assembly Cache or in a location that NHibernate " +
-					"can use System.Type.GetType(string) to load the types from."
-					);
-			}
-		}
-
-		/// <summary></summary>
-		public override System.Type CommandType
-		{
-			get { return commandType; }
-		}
-
-		/// <summary></summary>
-		public override System.Type ConnectionType
-		{
-			get { return connectionType; }
 		}
 
 		/// <summary></summary>

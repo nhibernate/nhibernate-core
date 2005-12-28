@@ -17,73 +17,31 @@ namespace NHibernate.Driver
 	/// Please check <a href="http://www.sqlite.org/"> http://www.sqlite.org/ </a> for more information regarding SQLite.
 	/// </p>
 	/// </remarks>
-	public class SQLiteDriver : DriverBase
+	public class SQLiteDriver : ReflectionBasedDriver
 	{
-		System.Type _connectionType;
-		System.Type _commandType;
-
 		/// <summary>
 		/// Initializes a new instance of <see cref="SQLiteDriver"/>.
 		/// </summary>
 		/// <exception cref="HibernateException">
-		/// Thrown when the <c>SQLite.NET</c> assembly is not and can not be loaded.
+		/// Thrown when the <c>SQLite.NET</c> assembly can not be loaded.
 		/// </exception>
-		public SQLiteDriver()
+		public SQLiteDriver() : base(
+			"SQLite.NET",
+			"Finisar.SQLite.SQLiteConnection",
+			"Finisar.SQLite.SQLiteCommand" )
 		{
-			string assemblyName = "SQLite.NET";
-			string connectionClassName = "Finisar.SQLite.SQLiteConnection";
-			string commandClassName = "Finisar.SQLite.SQLiteCommand";
-
-			// try to get the Types from an already loaded assembly
-			_connectionType = Util.ReflectHelper.TypeFromAssembly( connectionClassName, assemblyName );
-			_commandType = Util.ReflectHelper.TypeFromAssembly( commandClassName, assemblyName );
-
-			if( _connectionType == null || _commandType == null )
-			{
-				throw new HibernateException(
-					"The IDbCommand and IDbConnection implementation in the Assembly SQLite.dll could not be found.  " +
-					"Please ensure that the Assembly SQLite.dll is " +
-					"in the Global Assembly Cache or in a location that NHibernate " +
-					"can use System.Type.GetType(string) to load the types from."
-					);
-			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public override System.Type CommandType
-		{
-			get { return _commandType; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public override System.Type ConnectionType
-		{
-			get { return _connectionType; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		public override bool UseNamedPrefixInSql 
 		{
 			get { return true; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override bool UseNamedPrefixInParameter 
 		{
 			get { return true; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override string NamedPrefix 	
 		{
 			get { return "@"; }

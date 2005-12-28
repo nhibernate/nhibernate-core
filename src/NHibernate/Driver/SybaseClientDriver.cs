@@ -9,60 +9,19 @@ namespace NHibernate.Driver
 	/// <remarks>
 	/// It has been reported to work with the <see cref="Dialect.MsSql2000Dialect"/>.
 	/// </remarks>
-	public class SybaseClientDriver : DriverBase
+	public class SybaseClientDriver : ReflectionBasedDriver
 	{
-		private System.Type connectionType;
-		private System.Type commandType;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SybaseClientDriver"/> class.
 		/// </summary>
 		/// <exception cref="HibernateException">
-		/// Thrown when the Sybase.Data.AseClient assembly is not and can not be loaded.
+		/// Thrown when the Sybase.Data.AseClient assembly can not be loaded.
 		/// </exception>
-		public SybaseClientDriver()
+		public SybaseClientDriver() : base(
+			"Sybase.Data.AseClient",
+			"Sybase.Data.AseClient.AseConnection",
+			"Sybase.Data.AseClient.AseCommand")
 		{
-
-			string assemblyName = "Sybase.Data.AseClient";
-			string connectionClassName = "Sybase.Data.AseClient.AseConnection";
-			string commandClassName = "Sybase.Data.AseClient.AseCommand";
-
-			// try to get the Types from an already loaded assembly
-			connectionType = Util.ReflectHelper.TypeFromAssembly( connectionClassName, assemblyName );
-			commandType = Util.ReflectHelper.TypeFromAssembly( commandClassName, assemblyName );
-
-			if( connectionType == null || commandType == null )
-			{
-				throw new HibernateException(
-					"The IDbCommand and IDbConnection implementation in the Assembly Sybase.Data.AseClient.dll could not be found.  " +
-					"Please ensure that the Assemblies needed to communicate with Sybase " +
-					"are in the Global Assembly Cache or in a location that NHibernate " +
-					"can use System.Type.GetType(string) to load the types from." 
-					);
-			}
-
-			
-
-		}
-
-		/// <summary>
-		/// Gets the <see cref="System.Type"/> from the Sybase.Data.AseClient assembly
-		/// that implements <see cref="IDbCommand"/>
-		/// </summary>
-		/// <value>The <c>Sybase.Data.AseClient.AseCommand</c>c> type.</value>
-		public override System.Type CommandType
-		{
-			get { return commandType; }
-		}
-
-		/// <summary>
-		/// Gets the <see cref="System.Type"/> from the Sybase.Data.AseClient assembly
-		/// that implements <see cref="IDbCommand"/>
-		/// </summary>
-		/// <value>The <c>Sybase.Data.AseClient.AseConnection</c>c> type.</value>
-		public override System.Type ConnectionType
-		{
-			get { return connectionType; }
 		}
 
 		/// <summary>
