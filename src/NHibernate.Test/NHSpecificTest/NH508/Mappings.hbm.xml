@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" auto-import="true" default-access="nosetter.camelcase"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH508">
+	
+	<class 
+		name="User" 
+		table="SEC_USER_TBL"
+		lazy="true">
+
+		<id name="UserId" column="ID_USER" unsaved-value="0">
+			<generator class="hilo"/>
+		</id>
+
+		<property name="Login" column="USER_LOGIN" unique="true"/>
+		
+<!-- SET config
+		<set name="FriendList" table="SEC_USER_RELATION_TBL" lazy="true" cascade="save-update" inverse="false">
+			<key column="FK_USER"/>
+			<many-to-many 
+				class="User" 
+				column="FK_RELATED_USER"/>
+		</set>
+
+		<set name="FriendOfList" table="SEC_USER_RELATION_TBL" lazy="true" cascade="save-update" inverse="true">
+			<key column="FK_RELATED_USER"/>
+			<many-to-many 
+				class="User" 
+				column="FK_USER"/>
+		</set>
+-->
+
+		<idbag name="FriendList" table="SEC_USER_RELATION_TBL" lazy="true" cascade="save-update">
+
+			<collection-id column="ID_USER_RELATION" type="Int32">
+				<generator class="hilo"/>
+			</collection-id>
+
+			<key column="FK_USER"/>
+			<many-to-many 
+				class="User" 
+				column="FK_RELATED_USER"/>
+		</idbag>
+
+		<idbag name="FriendOfList" table="SEC_USER_RELATION_TBL" lazy="true" cascade="save-update">
+			<collection-id column="ID_USER_RELATION" type="Int32">
+				<generator class="hilo"/>
+			</collection-id>
+
+			<key column="FK_RELATED_USER"/>
+			<many-to-many 
+				class="User" 
+				column="FK_USER"/>
+		</idbag>
+
+	</class>
+</hibernate-mapping>
