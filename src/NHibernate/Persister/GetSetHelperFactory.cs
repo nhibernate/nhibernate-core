@@ -186,9 +186,18 @@ namespace NHibernate.Persister
 
 		private const string startSetMethod =
 			"public void SetPropertyValues(object obj, object[] values) {{\n" +
-				"  {0} t = ({0})obj;\n";
+			"  {0} t = ({0})obj;\n" +
+			"  try\n" +
+			"  {{\n";
 
 		private const string closeSetMethod =
+			"  }\n" +
+			"  catch( InvalidCastException ice )\n" +
+			"  {\n" +
+			"    throw new MappingException(\n" +
+			"      \"Invalid mapping information specified for type \" + obj.GetType() + \", check your mapping file for property type mismatches\",\n" +
+			"      ice);\n" +
+			"  }\n" +
 			"}\n";
 
 		private const string startGetMethod =
@@ -198,7 +207,7 @@ namespace NHibernate.Persister
 
 		private const string closeGetMethod =
 			"  return ret;\n" +
-				"}\n";
+			"}\n";
 
 		/// <summary>
 		/// Check if the property is public
@@ -229,21 +238,24 @@ namespace NHibernate.Persister
 			for( int i = 0; i < setters.Length; i++ )
 			{
 				ISetter setter = setters[ i ];
+				System.Type type = setters[ i ].Property.PropertyType;
+
 				if( setter is BasicSetter && IsPublic( setter.PropertyName ) )
 				{
-					if( setter.Property.PropertyType.IsValueType )
+					if( type.IsValueType )
 					{
 						sb.AppendFormat(
 							"  t.{0} = values[{2}] == null ? new {1}() : ({1})values[{2}];\n",
 							setter.PropertyName,
-							setter.Property.PropertyType.FullName.Replace( '+', '.' ),
+							type.FullName.Replace( '+', '.' ),
 							i );
 					}
 					else
 					{
 						sb.AppendFormat( "  t.{0} = ({1})values[{2}];\n",
 						                 setter.PropertyName,
-						                 setter.Property.PropertyType.FullName.Replace( '+', '.' ), i );
+						                 type.FullName.Replace( '+', '.' ),
+										 i );
 					}
 				}
 				else
