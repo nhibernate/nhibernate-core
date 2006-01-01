@@ -664,6 +664,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\PostgreSQL81Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\PostgreSQLDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
