@@ -21,7 +21,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override PersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
 			return new List( session );
 		}
@@ -38,7 +38,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		public override PersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
 			return new List( session, ( IList ) collection );
 		}

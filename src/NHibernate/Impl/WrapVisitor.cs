@@ -27,9 +27,9 @@ namespace NHibernate.Impl
 
 		protected override object ProcessCollection(object collection, PersistentCollectionType collectionType)
 		{
-			if( collection != null && (collection is PersistentCollection) )
+			if( collection != null && (collection is IPersistentCollection) )
 			{
-				PersistentCollection coll = collection as PersistentCollection;
+				IPersistentCollection coll = collection as IPersistentCollection;
 				if( coll.SetCurrentSession( Session ) )
 				{
 					Session.ReattachCollection( coll, coll.CollectionSnapshot );
@@ -64,7 +64,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				PersistentCollection persistentCollection = collectionType.Wrap( Session, collection );
+				IPersistentCollection persistentCollection = collectionType.Wrap( Session, collection );
 				Session.AddNewCollection( persistentCollection, persister );
 
 				if( log.IsDebugEnabled )

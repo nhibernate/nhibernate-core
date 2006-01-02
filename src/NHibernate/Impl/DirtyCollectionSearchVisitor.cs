@@ -52,7 +52,7 @@ namespace NHibernate.Impl
 			if( collection != null )
 			{
 				SessionImpl session = Session;
-				PersistentCollection coll;
+				IPersistentCollection coll;
 
 				if( type.IsArrayType )
 				{
@@ -67,7 +67,7 @@ namespace NHibernate.Impl
 					// we now always call wrap() before getting to here) 
 					// return ( ! (obj is PersistentCollection) ) ?
 					//	true : SearchForDirtyCollections( (PersistentCollection) obj, type );
-					coll = (PersistentCollection)collection;
+					coll = (IPersistentCollection)collection;
 				}
 
 				if( session.CollectionIsDirty( coll ) )

@@ -39,9 +39,9 @@ namespace NHibernate.Impl
 		{
 			ICollectionPersister persister = Session.GetCollectionPersister( type.Role );
 
-			if( collection is PersistentCollection )
+			if( collection is IPersistentCollection )
 			{
-				PersistentCollection wrapper = (PersistentCollection)collection;
+				IPersistentCollection wrapper = (IPersistentCollection)collection;
 
 				if( wrapper.SetCurrentSession( Session ) )
 				{

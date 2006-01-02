@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 
 using NHibernate.Collection;
@@ -6,29 +7,30 @@ using NHibernate.Engine;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// Extends the SetType to provide Sorting.
+	/// Extends the <see cref="SetType" /> to provide sorting.
 	/// </summary>
 	public class SortedSetType : SetType
 	{
 		private IComparer comparer;
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of a <see cref="SortedSetType"/> class for
+		/// a specific role using the <see cref="IComparer"/> to do the sorting.
 		/// </summary>
-		/// <param name="role"></param>
-		/// <param name="comparer"></param>
+		/// <param name="role">The role the persistent collection is in.</param>
+		/// <param name="comparer">The <see cref="IComparer"/> to use for the sorting.</param>
 		public SortedSetType( string role, IComparer comparer ) : base( role )
 		{
 			this.comparer = comparer;
 		}
 
 		/// <summary>
-		/// 
+		/// Instantiates a new <see cref="IPersistentCollection"/> for the sorted set.
 		/// </summary>
-		/// <param name="session"></param>
+		/// <param name="session">The current <see cref="ISessionImplementor"/> for the set.</param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override PersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
 			SortedSet sortedSet = new SortedSet( session, comparer );
 			return sortedSet;
@@ -46,7 +48,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="SortedSet"/> that wraps the non NHibernate <see cref="Iesi.Collections.ISet"/>.
 		/// </returns>
-		public override PersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
 			return new SortedSet( session, ( Iesi.Collections.ISet ) collection, comparer );
 

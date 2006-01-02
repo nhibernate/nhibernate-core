@@ -27,9 +27,9 @@ namespace NHibernate.Impl
 			{
 				// Do nothing
 			}
-			else if( collection is PersistentCollection )
+			else if( collection is IPersistentCollection )
 			{
-				PersistentCollection coll = (PersistentCollection)collection;
+				IPersistentCollection coll = (IPersistentCollection)collection;
 
 				if( coll.SetCurrentSession( Session ) )
 				{

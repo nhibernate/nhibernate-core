@@ -272,9 +272,9 @@ namespace NHibernate
 			{
 				NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) proxy ).Initialize();
 			}
-			else if( proxy is PersistentCollection )
+			else if( proxy is IPersistentCollection )
 			{
-				( ( PersistentCollection ) proxy ).ForceInitialization();
+				( ( IPersistentCollection ) proxy ).ForceInitialization();
 			}
 		}
 
@@ -289,9 +289,9 @@ namespace NHibernate
 			{
 				return !NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) proxy ).IsUninitialized;
 			}
-			else if( proxy is PersistentCollection )
+			else if( proxy is IPersistentCollection )
 			{
-				return ( ( PersistentCollection ) proxy ).WasInitialized;
+				return ( ( IPersistentCollection ) proxy ).WasInitialized;
 			}
 			else
 			{

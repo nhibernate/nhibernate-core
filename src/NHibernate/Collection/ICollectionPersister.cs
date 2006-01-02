@@ -17,7 +17,7 @@ namespace NHibernate.Collection
 	/// Implements persistence of a collection instance while the instance is
 	/// referenced in a particular role.</p>
 	/// <p>
-	/// This class is highly coupled to the <see cref="PersistentCollection" />
+	/// This class is highly coupled to the <see cref="IPersistentCollection" />
 	/// hierarchy, since double dispatch is used to load and update collection 
 	/// elements.</p>
 	/// </summary>
@@ -180,7 +180,7 @@ namespace NHibernate.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void Recreate( PersistentCollection collection, object key, ISessionImplementor session );
+		void Recreate( IPersistentCollection collection, object key, ISessionImplementor session );
 
 		/// <summary>
 		/// Delete the persistent state of any elements that were removed from the collection
@@ -188,7 +188,7 @@ namespace NHibernate.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void DeleteRows( PersistentCollection collection, object key, ISessionImplementor session );
+		void DeleteRows( IPersistentCollection collection, object key, ISessionImplementor session );
 
 		/// <summary>
 		/// Update the persistent state of any elements that were modified
@@ -196,7 +196,7 @@ namespace NHibernate.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void UpdateRows( PersistentCollection collection, object key, ISessionImplementor session );
+		void UpdateRows( IPersistentCollection collection, object key, ISessionImplementor session );
 
 		/// <summary>
 		/// Insert the persistent state of any new collection elements
@@ -204,7 +204,7 @@ namespace NHibernate.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void InsertRows( PersistentCollection collection, object key, ISessionImplementor session );
+		void InsertRows( IPersistentCollection collection, object key, ISessionImplementor session );
 
 		/// <summary>
 		/// Get the name of this collection role (the fully qualified class name, extended by a "property path")

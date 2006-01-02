@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
@@ -10,13 +11,19 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// PersistentCollectionType.
+	/// The base class for an <see cref="IType"/> that maps collections
+	/// to the database.
 	/// </summary>
 	public abstract class PersistentCollectionType : AbstractType, IAssociationType
 	{
 		private readonly string role;
 		private static readonly SqlType[ ] NoSqlTypes = {};
 
+		/// <summary>
+		/// Initializes a new instance of a <see cref="PersistentCollectionType"/> class for
+		/// a specific role.
+		/// </summary>
+		/// <param name="role">The role the persistent collection is in.</param>
 		protected PersistentCollectionType( string role )
 		{
 			this.role = role;
@@ -35,11 +42,11 @@ namespace NHibernate.Type
 		public override sealed bool Equals( object x, object y )
 		{
 			return x == y ||
-				( x is PersistentCollection && ( (PersistentCollection) x ).IsWrapper( y ) ) ||
-				( y is PersistentCollection && ( (PersistentCollection) y ).IsWrapper( x ) );
+				( x is IPersistentCollection && ( (IPersistentCollection) x ).IsWrapper( y ) ) ||
+				( y is IPersistentCollection && ( (IPersistentCollection) y ).IsWrapper( x ) );
 		}
 
-		public abstract PersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister );
+		public abstract IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister );
 
 		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
 		{
@@ -168,9 +175,9 @@ namespace NHibernate.Type
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped collection.</param>
 		/// <returns>
-		/// A subclass of <see cref="PersistentCollection"/> that wraps the non NHibernate collection.
+		/// A subclass of <see cref="IPersistentCollection"/> that wraps the non NHibernate collection.
 		/// </returns>
-		public abstract PersistentCollection Wrap( ISessionImplementor session, object collection );
+		public abstract IPersistentCollection Wrap( ISessionImplementor session, object collection );
 
 		// Note: return true because this type is castable to IAssociationType. Not because
 		// all collections are associations.
@@ -261,7 +268,7 @@ namespace NHibernate.Type
 			ICollectionPersister cp = session.Factory.GetCollectionPersister( role );
 
 			ICollection result = target == null
-				? Instantiate( session, cp )
+				? (ICollection)Instantiate( session, cp )
 				: ( ICollection ) target;
 			Clear( result );
 

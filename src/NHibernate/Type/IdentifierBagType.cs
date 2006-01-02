@@ -5,25 +5,27 @@ using NHibernate.Engine;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// Summary description for IdentifierBagType.
+	/// An <see cref="IType"/> that maps an <see cref="IList"/> collection
+	/// using bag semantics with an identifier to the database.
 	/// </summary>
 	public class IdentifierBagType : PersistentCollectionType
 	{
 		/// <summary>
-		/// 
+		/// Initializes a new instance of a <see cref="IdentifierBagType"/> class for
+		/// a specific role.
 		/// </summary>
-		/// <param name="role"></param>
+		/// <param name="role">The role the persistent collection is in.</param>
 		public IdentifierBagType( string role ) : base( role )
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Instantiates a new <see cref="IPersistentCollection"/> for the identifier bag.
 		/// </summary>
-		/// <param name="session"></param>
+		/// <param name="session">The current <see cref="ISessionImplementor"/> for the identifier bag.</param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override PersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
 			return new IdentifierBag( session );
 		}
@@ -42,7 +44,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="IdentifierBag"/> that wraps the non NHibernate <see cref="IList"/>.
 		/// </returns>
-		public override PersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
 			return new IdentifierBag( session, ( ICollection ) collection );
 		}

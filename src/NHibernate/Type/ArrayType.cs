@@ -1,29 +1,39 @@
 using System;
 using System.Collections;
 using System.Data;
+
 using NHibernate.Collection;
 using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
-	/// <summary></summary>
+	/// <summary>
+	/// An <see cref="IType"/> that maps an <see cref="Array"/> collection
+	/// to the database.
+	/// </summary>
 	public class ArrayType : PersistentCollectionType
 	{
 		private readonly System.Type elementClass;
 		private readonly System.Type arrayClass;
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of a <see cref="ArrayType"/> class for
+		/// a specific role.
 		/// </summary>
-		/// <param name="role"></param>
-		/// <param name="elementClass"></param>
+		/// <param name="role">The role the persistent collection is in.</param>
+		/// <param name="elementClass">The <see cref="System.Type"/> of the element contained in the array.</param>
+		/// <remarks>
+		/// This creates a bag that is non-generic.
+		/// </remarks>
 		public ArrayType( string role, System.Type elementClass ) : base( role )
 		{
 			this.elementClass = elementClass;
 			arrayClass = System.Array.CreateInstance( elementClass, 0 ).GetType();
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// The <see cref="System.Array"/> for the element.
+		/// </summary>
 		public override System.Type ReturnedClass
 		{
 			get { return arrayClass; }
@@ -35,7 +45,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override PersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
 			return new ArrayHolder( session, persister );
 		}
@@ -85,7 +95,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="ArrayHolder"/> that wraps the non NHibernate <see cref="System.Array"/>.
 		/// </returns>
-		public override PersistentCollection Wrap( ISessionImplementor session, object array )
+		public override IPersistentCollection Wrap( ISessionImplementor session, object array )
 		{
 			return new ArrayHolder( session, array );
 		}

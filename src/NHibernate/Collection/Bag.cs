@@ -133,12 +133,15 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Counts the number of times that the <paramref name="element"/> occurs
+        /// in the <paramref name="list"/>.
 		/// </summary>
-		/// <param name="element"></param>
-		/// <param name="list"></param>
-		/// <param name="elementType"></param>
-		/// <returns></returns>
+		/// <param name="element">The element to find in the list.</param>
+		/// <param name="list">The <see cref="IList"/> to search.</param>
+		/// <param name="elementType">The <see cref="IType"/> that can determine equality.</param>
+		/// <returns>
+        /// The number of occurrences of the element in the list.
+        /// </returns>
 		private int CountOccurrences( object element, IList list, IType elementType )
 		{
 			int result = 0;

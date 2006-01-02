@@ -13,6 +13,8 @@ namespace NHibernate.Util
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof( ReflectHelper ) );
 
+        public static BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
 		private ReflectHelper()
 		{
 			// not creatable
@@ -304,7 +306,7 @@ namespace NHibernate.Util
 
 			try
 			{
-				ConstructorInfo constructor = type.GetConstructor( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, CallingConventions.HasThis, NoClasses, null );
+				ConstructorInfo constructor = type.GetConstructor( ReflectHelper.AnyVisibilityInstance, null, CallingConventions.HasThis, NoClasses, null );
 				return constructor;
 			}
 			catch( Exception e)
@@ -327,7 +329,7 @@ namespace NHibernate.Util
 		/// </exception>
 		public static ConstructorInfo GetConstructor(System.Type type, IType[] types)
 		{
-			ConstructorInfo[] candidates = type.GetConstructors( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
+            ConstructorInfo[] candidates = type.GetConstructors(ReflectHelper.AnyVisibilityInstance);
 
 			foreach( ConstructorInfo constructor in candidates )
 			{

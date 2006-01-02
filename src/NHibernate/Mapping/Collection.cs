@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -7,9 +9,14 @@ using NHibernate.Type;
 namespace NHibernate.Mapping
 {
 	/// <summary>
-	/// Mapping for a collection.  Subclasses specialize to particular
-	/// collection styles.
+	/// Base class that stores the mapping information for <c>&lt;array&gt;</c>, <c>&lt;bag&gt;</c>, 
+	/// <c>&lt;id-bag&gt;</c>, <c>&lt;list&gt;</c>, <c>&lt;map&gt;</c>, and <c>&lt;set&gt;</c>
+	/// collections.
 	/// </summary>
+	/// <remarks> 
+	/// Subclasses are responsible for the specialization required for the particular
+	/// collection style.
+	/// </remarks>
 	public abstract class Collection : IFetchable, IValue
 	{
 		private static readonly ICollection EmptyColumns = new ArrayList();
@@ -36,6 +43,8 @@ namespace NHibernate.Mapping
 		private int batchSize = 1;
 		private FetchMode fetchMode;
 		private System.Type collectionPersisterClass;
+
+		private bool isGeneric;
 
 		/// <summary>
 		/// 
@@ -243,6 +252,24 @@ namespace NHibernate.Mapping
 		{
 			get { return fetchMode; }
 			set { fetchMode = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a <see cref="Boolean"/> indicating if this is a 
+		/// mapping for a generic collection.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if a collection from the System.Collections.Generic namespace
+		/// should be used, <c>false</c> if a collection from the System.Collections 
+		/// namespace should be used.
+		/// </value>
+		/// <remarks>
+		/// This has no affect on any versions of the .net framework before .net-2.0.
+		/// </remarks>
+		public bool IsGeneric
+		{
+			get { return isGeneric; }
+			set { isGeneric = value; }
 		}
 
 		/// <summary>

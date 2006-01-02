@@ -53,8 +53,6 @@ namespace NHibernate.Type
 		private static Hashtable getTypeDelegatesWithLength = Hashtable.Synchronized( new Hashtable( 7 ) );
 		private static Hashtable getTypeDelegatesWithPrecision = Hashtable.Synchronized( new Hashtable( 3 ) );
 
-//		private delegate NullableType GetNullableType();
-
 		private delegate NullableType GetNullableTypeWithLength( int length );
 
 		private delegate NullableType GetNullableTypeWithPrecision( byte precision, byte scale );
@@ -106,6 +104,25 @@ namespace NHibernate.Type
 			RegisterType( typeof( UInt16 ),      NHibernateUtil.UInt16,      null );
 			RegisterType( typeof( UInt32 ),      NHibernateUtil.UInt32,      null );
 			RegisterType( typeof( UInt64 ),      NHibernateUtil.UInt64,      null );
+
+#if NET_2_0
+			RegisterType(typeof(Nullable<Boolean>), NHibernateUtil.Boolean, "Boolean?");
+			RegisterType(typeof(Nullable<Byte>), NHibernateUtil.Byte, "Byte?");
+			RegisterType(typeof(Nullable<Char>), NHibernateUtil.Character, "Char?");
+			RegisterType(typeof(Nullable<DateTime>), NHibernateUtil.DateTime, "DateTime?");
+			RegisterType(typeof(Nullable<Decimal>), NHibernateUtil.Decimal, "Decimal?");
+			RegisterType(typeof(Nullable<Double>), NHibernateUtil.Double, "Double?");
+			RegisterType(typeof(Nullable<Guid>), NHibernateUtil.Guid, "Guid?");
+			RegisterType(typeof(Nullable<Int16>), NHibernateUtil.Int16, "Int16?");
+			RegisterType(typeof(Nullable<Int32>), NHibernateUtil.Int32, "Int32?");
+			RegisterType(typeof(Nullable<Int64>), NHibernateUtil.Int64, "Int64?");
+			RegisterType(typeof(Nullable<SByte>), NHibernateUtil.SByte, "SByte?");
+			RegisterType(typeof(Nullable<Single>), NHibernateUtil.Single, "Single?");
+			RegisterType(typeof(Nullable<TimeSpan>), NHibernateUtil.TimeSpan, "TimeSpan?");
+			RegisterType(typeof(Nullable<UInt16>), NHibernateUtil.UInt16, "UInt16?");
+			RegisterType(typeof(Nullable<UInt32>), NHibernateUtil.UInt32, "UInt32?");
+			RegisterType(typeof(Nullable<UInt64>), NHibernateUtil.UInt64, "UInt64?");
+#endif
 
 			// add the mappings of the NHibernate specific names that are used in type=""
 			typeByTypeOfName[ NHibernateUtil.AnsiString.Name ] = NHibernateUtil.AnsiString;
@@ -645,92 +662,127 @@ namespace NHibernate.Type
 			return new ManyToOneType( persistentClass, uniqueKeyPropertyName );
 		}
 
-		// Collection Types:
-
-
 		/// <summary>
-		/// 
+		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="System.Array"/>.
 		/// </summary>
-		/// <param name="role"></param>
-		/// <param name="elementClass"></param>
-		/// <returns></returns>
+		/// <param name="role">The role the collection is in.</param>
+		/// <param name="elementClass">The <see cref="System.Type"/> to use to create the array.</param>
+		/// <returns>
+		/// An <see cref="ArrayType"/> for the specified role.
+		/// </returns>
 		public static PersistentCollectionType Array( string role, System.Type elementClass )
 		{
 			return new ArrayType( role, elementClass );
 		}
 
 		/// <summary>
-		/// 
+		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IList"/>.
 		/// </summary>
-		/// <param name="role"></param>
-		/// <returns></returns>
-		public static PersistentCollectionType List( string role )
+		/// <param name="role">The role the collection is in.</param>
+		/// <returns>
+		/// A <see cref="ListType"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType List(string role)
 		{
 			return new ListType( role );
 		}
 
 		/// <summary>
-		/// 
+		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IList"/>
+		/// with bag semantics.
 		/// </summary>
-		/// <param name="role"></param>
-		/// <returns></returns>
-		public static PersistentCollectionType Bag( string role )
+		/// <param name="role">The role the collection is in.</param>
+		/// <returns>
+		/// A <see cref="BagType"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType Bag(string role)
 		{
 			return new BagType( role );
 		}
 
 		/// <summary>
-		/// 
+		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IList"/>
+		/// with id-bag semantics.
 		/// </summary>
-		/// <param name="role"></param>
-		/// <returns></returns>
-		public static PersistentCollectionType IdBag( string role )
+		/// <param name="role">The role the collection is in.</param>
+		/// <returns>
+		/// A <see cref="IdentifierBagType"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType IdBag(string role)
 		{
 			return new IdentifierBagType( role );
 		}
 
 		/// <summary>
-		/// 
+		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IDictionary"/>.
 		/// </summary>
-		/// <param name="role"></param>
-		/// <returns></returns>
-		public static PersistentCollectionType Map( string role )
+		/// <param name="role">The role the collection is in.</param>
+		/// <returns>
+		/// A <see cref="MapType"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType Map(string role)
 		{
 			return new MapType( role );
 		}
 
 		/// <summary>
-		/// 
+		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="Iesi.Collections.ISet"/>.
 		/// </summary>
-		/// <param name="role"></param>
-		/// <returns></returns>
-		public static PersistentCollectionType Set( string role )
+		/// <param name="role">The role the collection is in.</param>
+		/// <returns>
+		/// A <see cref="SetType"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType Set(string role)
 		{
 			return new SetType( role );
 		}
 
 		/// <summary>
-		/// 
+		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IDictionary"/>
+		/// that is sorted by an <see cref="IComparer"/>.
 		/// </summary>
-		/// <param name="role"></param>
-		/// <param name="comparer"></param>
-		/// <returns></returns>
-		public static PersistentCollectionType SortedMap( string role, IComparer comparer )
+		/// <param name="role">The role the collection is in.</param>
+		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
+		/// <returns>
+		/// A <see cref="SortedMapType"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType SortedMap(string role, IComparer comparer)
 		{
 			return new SortedMapType( role, comparer );
 		}
 
 		/// <summary>
-		/// 
+		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="Iesi.Collections.ISet"/>
+		/// that is sorted by an <see cref="IComparer"/>.
 		/// </summary>
-		/// <param name="role"></param>
-		/// <param name="comparer"></param>
-		/// <returns></returns>
-		public static PersistentCollectionType SortedSet( string role, IComparer comparer )
+		/// <param name="role">The role the collection is in.</param>
+		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
+		/// <returns>
+		/// A <see cref="SortedSetType"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType SortedSet(string role, IComparer comparer)
 		{
 			return new SortedSetType( role, comparer );
 		}
 
+#if NET_2_0
+
+		/// <summary>
+		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IList"/>
+		/// with bag semantics.
+		/// </summary>
+		/// <param name="role">The role the collection is in.</param>
+		/// <param name="elementClass">The <see cref="System.Type"/> to use to create the array.</param>
+		/// <returns>
+		/// A <see cref="BagType"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType GenericBag(string role, System.Type elementClass)
+		{
+			return new GenericBagType(role, elementClass);
+		}
+		
+		// TODO: add the rest of the Generic collection factories here
+#endif
 
 		/// <summary>
 		/// Deep copy values in the first array into the second

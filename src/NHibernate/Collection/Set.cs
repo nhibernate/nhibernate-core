@@ -40,7 +40,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Returns a Hashtable where the Key &amp; the Value are both a Copy of the
 		/// same object.
-		/// <see cref="PersistentCollection.Snapshot"/>
+		/// <see cref="PersistentCollection.Snapshot(ICollectionPersister)"/>
 		/// </summary>
 		/// <param name="persister"></param>
 		protected override ICollection Snapshot( ICollectionPersister persister )
@@ -73,7 +73,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollection.EqualsSnapshot"/>
+		/// <see cref="IPersistentCollection.EqualsSnapshot"/>
 		/// </summary>
 		/// <param name="elementType"></param>
 		public override bool EqualsSnapshot( IType elementType )
@@ -150,7 +150,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollection.BeforeInitialize"/>
+		/// <see cref="IPersistentCollection.BeforeInitialize"/>
 		/// </summary>
 		/// <param name="persister"></param>
 		public override void BeforeInitialize( ICollectionPersister persister )
@@ -392,7 +392,7 @@ namespace NHibernate.Collection
 		*/
 
 		/// <summary>
-		/// <see cref="PersistentCollection.Empty"/>
+		/// <see cref="IPersistentCollection.Empty"/>
 		/// </summary>
 		public override bool Empty
 		{
@@ -407,7 +407,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollection.WriteTo"/>
+		/// <see cref="IPersistentCollection.WriteTo"/>
 		/// </summary>
 		/// <param name="st"></param>
 		/// <param name="persister"></param>
@@ -420,7 +420,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollection.ReadFrom"/>
+		/// <see cref="IPersistentCollection.ReadFrom"/>
 		/// </summary>
 		/// <param name="rs"></param>
 		/// <param name="persister"></param>
@@ -457,7 +457,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollection.Entries"/>
+		/// <see cref="IPersistentCollection.Entries"/>
 		/// </summary>
 		public override ICollection Entries()
 		{
@@ -466,7 +466,7 @@ namespace NHibernate.Collection
 
 
 		/// <summary>
-		/// <see cref="PersistentCollection.Disassemble"/>
+		/// <see cref="IPersistentCollection.Disassemble"/>
 		/// </summary>
 		/// <param name="persister"></param>
 		public override object Disassemble( ICollectionPersister persister )
@@ -482,7 +482,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollection.GetDeletes"/>
+		/// <see cref="IPersistentCollection.GetDeletes"/>
 		/// </summary>
 		/// <param name="elemType"></param>
 		public override ICollection GetDeletes( IType elemType )
@@ -517,7 +517,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollection.NeedsInserting"/>
+		/// <see cref="IPersistentCollection.NeedsInserting"/>
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
@@ -535,7 +535,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollection.NeedsUpdating"/>
+		/// <see cref="IPersistentCollection.NeedsUpdating"/>
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
@@ -547,7 +547,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollection.GetIndex"/>
+		/// <see cref="IPersistentCollection.GetIndex"/>
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
@@ -558,7 +558,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// <see cref="PersistentCollection.EntryExists"/>
+		/// <see cref="IPersistentCollection.EntryExists"/>
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>

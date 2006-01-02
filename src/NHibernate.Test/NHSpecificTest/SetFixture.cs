@@ -152,7 +152,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public void InsertRows(PersistentCollection collection, object key, ISessionImplementor session)
+		public void InsertRows(IPersistentCollection collection, object key, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.InsertRows implementation
 		}
@@ -175,12 +175,12 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public void UpdateRows(PersistentCollection collection, object key, ISessionImplementor session)
+		public void UpdateRows(IPersistentCollection collection, object key, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.UpdateRows implementation
 		}
 
-		public void DeleteRows(PersistentCollection collection, object key, ISessionImplementor session)
+		public void DeleteRows(IPersistentCollection collection, object key, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.DeleteRows implementation
 		}
@@ -190,7 +190,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add CollectionPersisterStub.WriteElement implementation
 		}
 
-		public void Recreate(PersistentCollection collection, object key, ISessionImplementor session)
+		public void Recreate(IPersistentCollection collection, object key, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.Recreate implementation
 		}

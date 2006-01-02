@@ -8,17 +8,34 @@ namespace NHibernate.Mapping
 	public class Bag : Collection
 	{
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="Bag"/> class.
 		/// </summary>
-		/// <param name="owner"></param>
+		/// <param name="owner">The <see cref="PersistentClass"/> that contains this bag mapping.</param>
 		public Bag( PersistentClass owner ) : base( owner )
 		{
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the appropriate <see cref="PersistentCollectionType"/> that is 
+		/// specialized for this bag mapping.
+		/// </summary>
 		public override PersistentCollectionType CollectionType
 		{
-			get { return TypeFactory.Bag( Role ); }
+			get
+			{
+#if NET_2_0
+				if (this.IsGeneric)
+				{
+					return TypeFactory.GenericBag( Role, this.Element.Type.ReturnedClass );
+				}
+				else
+				{
+					return TypeFactory.Bag( Role );
+				}
+#else
+				return TypeFactory.Bag( Role );
+#endif
+			}
 		}
 
 		/// <summary>

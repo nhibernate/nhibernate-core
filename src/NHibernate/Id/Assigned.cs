@@ -28,12 +28,12 @@ namespace NHibernate.Id
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The value that was assigned to the mapped <c>id</c>'s property.</returns>
 		/// <exception cref="IdentifierGenerationException">
-		/// Thrown when a <see cref="PersistentCollection"/> is passed in as the <c>obj</c> or
+		/// Thrown when a <see cref="IPersistentCollection"/> is passed in as the <c>obj</c> or
 		/// if the identifier of <c>obj</c> is null.
  		/// </exception>
 		public object Generate( ISessionImplementor session, object obj )
 		{
-			if( obj is PersistentCollection )
+			if( obj is IPersistentCollection )
 			{
 				throw new IdentifierGenerationException(
 					"Illegal use of assigned id generation for a toplevel collection"

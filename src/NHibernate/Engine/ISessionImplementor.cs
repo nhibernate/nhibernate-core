@@ -16,12 +16,12 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		object GetLoadedCollectionKey( PersistentCollection collection );
+		object GetLoadedCollectionKey( IPersistentCollection collection );
 
 		/// <summary>
 		/// Get the snapshot of the pre-flush collection state
 		/// </summary>
-		object GetSnapshot( PersistentCollection collection );
+		object GetSnapshot( IPersistentCollection collection );
 
 		/// <summary>
 		/// Get the <c>PersistentCollection</c> object for an array
@@ -41,14 +41,14 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="coolection"></param>
 		/// <param name="writing"></param>
-		void InitializeCollection( PersistentCollection coolection, bool writing );
+		void InitializeCollection( IPersistentCollection coolection, bool writing );
 
 		/// <summary>
 		/// Is this the "inverse" end of a bidirectional association?
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		bool IsInverseCollection( PersistentCollection collection );
+		bool IsInverseCollection( IPersistentCollection collection );
 
 		/// <summary>
 		/// new in h2.1 and no javadoc
@@ -57,7 +57,7 @@ namespace NHibernate.Engine
 		/// <param name="id"></param>
 		/// <param name="resultSetId"></param>
 		/// <returns></returns>
-		PersistentCollection GetLoadingCollection( ICollectionPersister persister, object id, object resultSetId );
+		IPersistentCollection GetLoadingCollection( ICollectionPersister persister, object id, object resultSetId );
 
 		/// <summary>
 		/// new in h2.1 and no javadoc
@@ -320,7 +320,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="coll"></param>
 		/// <returns></returns>
-		ICollection GetOrphans( PersistentCollection coll );
+		ICollection GetOrphans( IPersistentCollection coll );
 
 		/// <summary>
 		/// Get a batch of uninitialized collection keys for this role

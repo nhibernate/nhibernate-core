@@ -189,11 +189,11 @@ namespace NHibernate.Impl
 		/// collections contents or if any of the elements in the collection have been modified.
 		/// </summary>
 		/// <param name="coll"></param>
-		/// <returns><c>true</c> if the <see cref="PersistentCollection"/> is dirty.</returns>
+		/// <returns><c>true</c> if the <see cref="IPersistentCollection"/> is dirty.</returns>
 		/// <remarks>
 		/// default behavior; will be overridden in deep lazy collections
 		/// </remarks>
-		private bool IsDirty( PersistentCollection coll )
+		private bool IsDirty( IPersistentCollection coll )
 		{
 			// if this has already been marked as dirty or the collection can not 
 			// be directly accessed (ie- we can guarantee that the NHibernate collection
@@ -216,8 +216,8 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Prepares this CollectionEntry for the Flush process.
 		/// </summary>
-		/// <param name="collection">The <see cref="PersistentCollection"/> that this CollectionEntry will be responsible for flushing.</param>
-		internal void PreFlush( PersistentCollection collection )
+		/// <param name="collection">The <see cref="IPersistentCollection"/> that this CollectionEntry will be responsible for flushing.</param>
+		internal void PreFlush( IPersistentCollection collection )
 		{
 			// if the collection is initialized and it was previously persistent
 			// initialize the dirty flag
@@ -239,11 +239,11 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Updates the CollectionEntry to reflect that the <see cref="PersistentCollection"/>
+		/// Updates the CollectionEntry to reflect that the <see cref="IPersistentCollection"/>
 		/// has been initialized.
 		/// </summary>
 		/// <param name="collection">The initialized <see cref="PersistentCollection"/> that this Entry is for.</param>
-		internal void PostInitialize( PersistentCollection collection )
+		internal void PostInitialize( IPersistentCollection collection )
 		{
 			initialized = true;
 			snapshot = collection.GetSnapshot( loadedPersister );
@@ -252,11 +252,11 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Updates the CollectionEntry to reflect that it is has been successfully flushed to the database.
 		/// </summary>
-		/// <param name="collection">The <see cref="PersistentCollection"/> that was flushed.</param>
+		/// <param name="collection">The <see cref="IPersistentCollection"/> that was flushed.</param>
 		/// <remarks>
 		/// Called after a <em>successful</em> flush.
 		/// </remarks>
-		internal bool PostFlush( PersistentCollection collection )
+		internal bool PostFlush( IPersistentCollection collection )
 		{
 			if( ignore )
 			{
@@ -295,7 +295,7 @@ namespace NHibernate.Impl
 
 		#region Engine.ICollectionSnapshot Members
 
-		internal void InitSnapshot( PersistentCollection collection, ICollectionPersister persister )
+		internal void InitSnapshot( IPersistentCollection collection, ICollectionPersister persister )
 		{
 			snapshot = collection.GetSnapshot( persister );
 		}

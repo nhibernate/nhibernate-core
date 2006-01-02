@@ -25,14 +25,14 @@ namespace NHibernate.Impl
 
 			if( collection != null )
 			{
-				PersistentCollection coll;
+				IPersistentCollection coll;
 				if( type.IsArrayType )
 				{
 					coll = Session.GetArrayHolder( collection );
 				}
 				else
 				{
-					coll = (PersistentCollection)collection;
+					coll = (IPersistentCollection)collection;
 				}
 				Session.UpdateReachableCollection( coll, type, _owner );
 			}

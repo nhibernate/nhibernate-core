@@ -114,7 +114,7 @@ namespace NHibernate.Collection
 			get { return ElementType.IsEntityType; }
 		}
 
-		protected override int DoUpdateRows( object id, PersistentCollection collection, ISessionImplementor session )
+		protected override int DoUpdateRows( object id, IPersistentCollection collection, ISessionImplementor session )
 		{
 			try
 			{

@@ -23,9 +23,9 @@ namespace NHibernate.Impl
 
 			session.RemoveCollection( persister, key );
 
-			if ( collection != null && ( collection is PersistentCollection ) )
+			if ( collection != null && ( collection is IPersistentCollection ) )
 			{
-				PersistentCollection wrapper = collection as PersistentCollection;
+				IPersistentCollection wrapper = collection as IPersistentCollection;
 				wrapper.SetCurrentSession( session );
 				if ( wrapper.WasInitialized )
 				{

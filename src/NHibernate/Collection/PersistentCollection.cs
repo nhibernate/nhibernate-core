@@ -9,40 +9,10 @@ using NHibernate.Type;
 namespace NHibernate.Collection
 {
 	/// <summary>
-	/// Base class for persistent collections
+	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Persistent collections are treated as value objects by Hibernate.
-	/// i.e. they have no independent existence beyond the object holding
-	/// a reference to them. Unlike instances of entity classes, they are
-	/// automatically deleted when unreferenced and automatically become
-	/// persistent when held by a persistent object. Collections can be
-	/// passed between different objects (change "roles") and this might
-	/// cause their elements to move from one database table to another.
-	/// </para>
-	/// <para>
-	/// Hibernate "wraps" a java collection in an instance of
-	/// PersistentCollection. This mechanism is designed to support
-	/// tracking of changes to the collection's persistent state and
-	/// lazy instantiation of collection elements. The downside is that
-	/// only certain abstract collection types are supported and any
-	/// extra semantics are lost.
-	/// </para>
-	/// <para>
-	/// Applications should <em>never</em> use classes in this package 
-	/// directly, unless extending the "framework" here.
-	/// </para>
-	/// <para>
-	/// Changes to <em>structure</em> of the collection are recorded by the
-	/// collection calling back to the session. Changes to mutable
-	/// elements (ie. composite elements) are discovered by cloning their
-	/// state when the collection is initialized and comparing at flush
-	/// time.
-	/// </para>
-	/// </remarks>
 	[Serializable]
-	public abstract class PersistentCollection : ICollection
+	public abstract class PersistentCollection : IPersistentCollection, ICollection
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( PersistentCollection ) );
 
@@ -108,8 +78,12 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Queue an addition
+		/// Queue an addition if the peristent collection supports it
 		/// </summary>
+        /// <returns>
+        /// <c>true</c> if the addition was queued up, <c>false</c> if the persistent collection
+        /// doesn't support Queued Addition.
+        /// </returns>
 		protected bool QueueAdd( object element )
 		{
 			if( IsQueueAdditionEnabled )
@@ -360,14 +334,14 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public abstract ICollection Entries();
 
-		/// <summary>
-		/// Reads the elements Identifier from the reader.
-		/// </summary>
-		/// <param name="reader">The IDataReader that contains the value of the Identifier</param>
-		/// <param name="role">The persister for this Collection.</param>
-		/// <param name="owner">The owner of this Collection.</param>
-		/// <returns>The value of the Identifier.</returns>
-		public abstract object ReadFrom( IDataReader reader, ICollectionPersister role, object owner );
+        /// <summary>
+        /// Reads the row from the <see cref="IDataReader"/>.
+        /// </summary>
+        /// <param name="reader">The IDataReader that contains the value of the Identifier</param>
+        /// <param name="persister">The persister for this Collection.</param>
+        /// <param name="owner">The owner of this Collection.</param>
+        /// <returns>The object that was contained in the row.</returns>
+        public abstract object ReadFrom(IDataReader reader, ICollectionPersister persister, object owner);
 
 		/// <summary>
 		/// 

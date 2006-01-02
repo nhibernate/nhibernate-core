@@ -113,7 +113,7 @@ namespace NHibernate.Collection
 			get { return false; }
 		}
 
-		protected override int DoUpdateRows( object id, PersistentCollection collection, ISessionImplementor session )
+		protected override int DoUpdateRows( object id, IPersistentCollection collection, ISessionImplementor session )
 		{
 			// we finish all the "removes" first to take care of possible unique 
 			// constraints and so that we can take better advantage of batching

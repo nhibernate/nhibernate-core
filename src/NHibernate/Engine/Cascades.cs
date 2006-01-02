@@ -229,7 +229,7 @@ namespace NHibernate.Engine
 
 		private static bool CollectionIsInitialized( object collection )
 		{
-			return !( collection is PersistentCollection ) || ( ( PersistentCollection ) collection ).WasInitialized;
+			return !( collection is IPersistentCollection ) || ( ( IPersistentCollection ) collection ).WasInitialized;
 		}
 
 		/// <summary></summary>
@@ -678,16 +678,16 @@ namespace NHibernate.Engine
 			}
 
 			// handle oprhaned entities!!
-			if( style.HasOrphanDelete && action.DeleteOrphans() && child is PersistentCollection )
+			if( style.HasOrphanDelete && action.DeleteOrphans() && child is IPersistentCollection )
 			{
 				// We can do the cast since orphan-delete does not apply to:
 				// 1. newly instatiated collections
 				// 2. arrays ( we can't track orphans for detached arrays)
-				DeleteOrphans( child as PersistentCollection, session );
+				DeleteOrphans( child as IPersistentCollection, session );
 			}
 		}
 
-		private static void DeleteOrphans( PersistentCollection pc, ISessionImplementor session )
+		private static void DeleteOrphans( IPersistentCollection pc, ISessionImplementor session )
 		{
 			if( pc.WasInitialized ) // can't be any orphans if it was not initialized
 			{
@@ -710,7 +710,7 @@ namespace NHibernate.Engine
 			{
 				// does not handle arrays (that's ok, cos they can't be lazy)
 				// or newly instantiated collections so we can do the cast
-				return ( (PersistentCollection) collection).QueuedAddsCollection;
+				return ( (IPersistentCollection) collection).QueuedAddsCollection;
 			}
 		}
 

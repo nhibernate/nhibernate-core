@@ -38,6 +38,9 @@ Global
 		{C0854E20-0743-424C-8BC9-F2560718678E}.Release.ActiveCfg = Release|.NET
 		{C0854E20-0743-424C-8BC9-F2560718678E}.Release.Build.0 = Release|.NET
 	EndGlobalSection
+	GlobalSection(SolutionItems) = postSolution
+		..\NHibernateSolution.build = ..\NHibernateSolution.build
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
 	GlobalSection(ExtensibilityAddIns) = postSolution

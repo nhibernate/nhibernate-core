@@ -459,7 +459,7 @@ namespace NHibernate.Loader
 						//throw new AssertionFailure("bug loading unowned collection");
 					}
 				}
-				PersistentCollection rowCollection = session.GetLoadingCollection( collectionPersister, collectionRowKey, rs );
+				IPersistentCollection rowCollection = session.GetLoadingCollection( collectionPersister, collectionRowKey, rs );
 				if( rowCollection != null )
 				{
 					rowCollection.ReadFrom( rs, collectionPersister, owner );

@@ -87,14 +87,14 @@ namespace NHibernate.Impl
 		private readonly IdentityMap arrayHolders;
 
 		/// <summary>
-		/// An <see cref="IdentityMap"/> with the <see cref="PersistentCollection"/> as the key
+		/// An <see cref="IdentityMap"/> with the <see cref="IPersistentCollection"/> as the key
 		/// and an <see cref="CollectionEntry"/> as the value.
 		/// </summary>
 		private readonly IdentityMap collectionEntries;
 
 		/// <summary>
 		/// An <see cref="IdentityMap"/> with the <see cref="CollectionKey"/> as the key
-		/// and an <see cref="PersistentCollection"/> as the value.
+		/// and an <see cref="IPersistentCollection"/> as the value.
 		/// </summary>
 		private readonly IDictionary collectionsByKey;
 
@@ -325,7 +325,7 @@ namespace NHibernate.Impl
 			{
 				try
 				{
-					( ( PersistentCollection ) e.Key ).SetCurrentSession( this );
+					( ( IPersistentCollection ) e.Key ).SetCurrentSession( this );
 					CollectionEntry ce = ( CollectionEntry ) e.Value;
 					if( ce.Role != null )
 					{
@@ -668,7 +668,7 @@ namespace NHibernate.Impl
 			return entityEntries.Contains( obj );
 		}
 
-		private CollectionEntry GetCollectionEntry( PersistentCollection coll )
+		private CollectionEntry GetCollectionEntry( IPersistentCollection coll )
 		{
 			return ( CollectionEntry ) collectionEntries[ coll ];
 		}
@@ -1438,7 +1438,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="snapshot"></param>
-		internal void ReattachCollection( PersistentCollection collection, ICollectionSnapshot snapshot )
+		internal void ReattachCollection( IPersistentCollection collection, ICollectionSnapshot snapshot )
 		{
 			if( collection.WasInitialized )
 			{
@@ -3549,7 +3549,7 @@ namespace NHibernate.Impl
 				CollectionEntry ce = ( CollectionEntry ) e.Value;
 				if( ! ce.reached && ! ce.ignore )
 				{
-					UpdateUnreachableCollection( ( PersistentCollection ) e.Key );
+					UpdateUnreachableCollection( ( IPersistentCollection ) e.Key );
 				}
 
 			}
@@ -3559,7 +3559,7 @@ namespace NHibernate.Impl
 
 			foreach( DictionaryEntry me in IdentityMap.Entries( collectionEntries ) )
 			{
-				PersistentCollection coll = ( PersistentCollection ) me.Key;
+				IPersistentCollection coll = ( IPersistentCollection ) me.Key;
 				CollectionEntry ce = ( CollectionEntry ) me.Value;
 
 				if( ce.dorecreate )
@@ -3590,7 +3590,7 @@ namespace NHibernate.Impl
 			foreach( DictionaryEntry me in collectionEntries )
 			{
 				CollectionEntry ce = ( CollectionEntry ) me.Value;
-				PersistentCollection pc = ( PersistentCollection ) me.Key;
+				IPersistentCollection pc = ( IPersistentCollection ) me.Key;
 
 				if( ce.PostFlush( pc ) )
 				{
@@ -3622,7 +3622,7 @@ namespace NHibernate.Impl
 			foreach( DictionaryEntry de in IdentityMap.Entries( collectionEntries ) )
 			{
 				CollectionEntry ce = ( CollectionEntry ) de.Value;
-				PersistentCollection pc = ( PersistentCollection ) de.Key;
+				IPersistentCollection pc = ( IPersistentCollection ) de.Key;
 
 				ce.PreFlush( pc );
 			}
@@ -3636,7 +3636,7 @@ namespace NHibernate.Impl
 		/// <param name="coll"></param>
 		/// <param name="type"></param>
 		/// <param name="owner"></param>
-		internal void UpdateReachableCollection( PersistentCollection coll, IType type, object owner )
+		internal void UpdateReachableCollection( IPersistentCollection coll, IType type, object owner )
 		{
 			CollectionEntry ce = GetCollectionEntry( coll );
 
@@ -3672,7 +3672,7 @@ namespace NHibernate.Impl
 		/// record the fact that this collection was dereferenced
 		/// </summary>
 		/// <param name="coll"></param>
-		private void UpdateUnreachableCollection( PersistentCollection coll )
+		private void UpdateUnreachableCollection( IPersistentCollection coll )
 		{
 			CollectionEntry entry = GetCollectionEntry( coll );
 
@@ -3719,7 +3719,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="coll"></param>
 		/// <param name="entry"></param>
-		private void PrepareCollectionForUpdate( PersistentCollection coll, CollectionEntry entry )
+		private void PrepareCollectionForUpdate( IPersistentCollection coll, CollectionEntry entry )
 		{
 			if( entry.processed )
 			{
@@ -3775,7 +3775,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="coll"></param>
 		/// <returns></returns>
-		internal bool CollectionIsDirty( PersistentCollection coll )
+		internal bool CollectionIsDirty( IPersistentCollection coll )
 		{
 			CollectionEntry entry = GetCollectionEntry( coll );
 			return entry.initialized && entry.Dirty; //( entry.dirty || coll.hasQueuedAdds() ); 
@@ -3786,11 +3786,11 @@ namespace NHibernate.Impl
 			// Key is not present in H2.1, it was added to be able
 			// to implement EndLoadingCollections efficiently
 			private readonly CollectionKey key;
-			private readonly PersistentCollection collection;
+			private readonly IPersistentCollection collection;
 			private readonly object id;
 			private readonly object resultSetId;
 
-			internal LoadingCollectionEntry( CollectionKey key, PersistentCollection collection, object id, object resultSetId )
+			internal LoadingCollectionEntry( CollectionKey key, IPersistentCollection collection, object id, object resultSetId )
 			{
 				this.key = key;
 				this.collection = collection;
@@ -3803,7 +3803,7 @@ namespace NHibernate.Impl
 				get { return key; }
 			}
 
-			public PersistentCollection Collection
+			public IPersistentCollection Collection
 			{
 				get { return collection; }
 			}
@@ -3825,19 +3825,19 @@ namespace NHibernate.Impl
 			return ( LoadingCollectionEntry ) loadingCollections[ collectionKey ];
 		}
 
-		private void AddLoadingCollectionEntry( CollectionKey key, PersistentCollection collection, object id, object resultSetId )
+		private void AddLoadingCollectionEntry( CollectionKey key, IPersistentCollection collection, object id, object resultSetId )
 		{
 			loadingCollections.Add( key, new LoadingCollectionEntry( key, collection, id, resultSetId ) );
 		}
 
-		public PersistentCollection GetLoadingCollection( ICollectionPersister persister, object id, object resultSetId )
+		public IPersistentCollection GetLoadingCollection( ICollectionPersister persister, object id, object resultSetId )
 		{
 			CollectionKey ckey = new CollectionKey( persister, id );
 			LoadingCollectionEntry lce = GetLoadingCollectionEntry( ckey );
 			if( lce == null )
 			{
 				// look for existing collection
-				PersistentCollection pc = GetCollection( ckey );
+				IPersistentCollection pc = GetCollection( ckey );
 				if( pc != null )
 				{
 					CollectionEntry ce = GetCollectionEntry( pc );
@@ -3982,7 +3982,7 @@ namespace NHibernate.Impl
 		/// <param name="role"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		private PersistentCollection GetLoadingCollection( string role, object id )
+		private IPersistentCollection GetLoadingCollection( string role, object id )
 		{
 			LoadingCollectionEntry lce = GetLoadingCollectionEntry( new CollectionKey( role, id ) );
 			return ( lce != null ) ? lce.Collection : null;
@@ -4012,7 +4012,7 @@ namespace NHibernate.Impl
 					while( nonlazyCollections.Count > 0 )
 					{
 						//note that each iteration of the loop may add new elements
-						PersistentCollection collection = ( PersistentCollection ) nonlazyCollections[ nonlazyCollections.Count - 1 ];
+						IPersistentCollection collection = ( IPersistentCollection ) nonlazyCollections[ nonlazyCollections.Count - 1 ];
 						nonlazyCollections.RemoveAt( nonlazyCollections.Count - 1 );
 						collection.ForceInitialization();
 					}
@@ -4024,12 +4024,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void AddCollection( PersistentCollection collection, CollectionEntry entry, object key )
+		private void AddCollection( IPersistentCollection collection, CollectionEntry entry, object key )
 		{
 			collectionEntries[ collection ] = entry;
 
 			CollectionKey ck = new CollectionKey( entry.loadedPersister, key );
-			PersistentCollection old = ( PersistentCollection ) collectionsByKey[ ck ];
+			IPersistentCollection old = ( IPersistentCollection ) collectionsByKey[ ck ];
 			collectionsByKey[ ck ] = collection;
 
 			if( old != null )
@@ -4046,9 +4046,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private PersistentCollection GetCollection( CollectionKey key )
+		private IPersistentCollection GetCollection( CollectionKey key )
 		{
-			return ( PersistentCollection ) collectionsByKey[ key ];
+			return ( IPersistentCollection ) collectionsByKey[ key ];
 		}
 
 		/// <summary>
@@ -4057,14 +4057,14 @@ namespace NHibernate.Impl
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		private void AddUninitializedCollection( PersistentCollection collection, ICollectionPersister persister, object id )
+		private void AddUninitializedCollection( IPersistentCollection collection, ICollectionPersister persister, object id )
 		{
 			CollectionEntry ce = new CollectionEntry( persister, id, flushing );
 			collection.CollectionSnapshot = ce;
 			AddCollection( collection, ce, id );
 		}
 
-		private void AddUninitializedDetachedCollection( PersistentCollection collection, ICollectionPersister persister, object id )
+		private void AddUninitializedDetachedCollection( IPersistentCollection collection, ICollectionPersister persister, object id )
 		{
 			CollectionEntry ce = new CollectionEntry( persister, id );
 			collection.CollectionSnapshot = ce;
@@ -4077,7 +4077,7 @@ namespace NHibernate.Impl
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		public CollectionEntry AddInitializedCollection( PersistentCollection collection, ICollectionPersister persister, object id )
+		public CollectionEntry AddInitializedCollection( IPersistentCollection collection, ICollectionPersister persister, object id )
 		{
 			CollectionEntry ce = new CollectionEntry( persister, id, flushing );
 			ce.PostInitialize( collection );
@@ -4087,7 +4087,7 @@ namespace NHibernate.Impl
 			return ce;
 		}
 
-		private CollectionEntry AddCollection( PersistentCollection collection )
+		private CollectionEntry AddCollection( IPersistentCollection collection )
 		{
 			CollectionEntry ce = new CollectionEntry();
 			collectionEntries[ collection ] = ce;
@@ -4101,7 +4101,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
-		internal void AddNewCollection( PersistentCollection collection, ICollectionPersister persister )
+		internal void AddNewCollection( IPersistentCollection collection, ICollectionPersister persister )
 		{
 			CollectionEntry ce = AddCollection( collection );
 			if( persister.HasOrphanDelete )
@@ -4117,7 +4117,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="cs"></param>
-		private void AddInitializedDetachedCollection( PersistentCollection collection, ICollectionSnapshot cs )
+		private void AddInitializedDetachedCollection( IPersistentCollection collection, ICollectionSnapshot cs )
 		{
 			if( cs.WasDereferenced )
 			{
@@ -4156,17 +4156,17 @@ namespace NHibernate.Impl
 			return factory.GetCollectionPersister( role );
 		}
 
-		public object GetSnapshot( PersistentCollection coll )
+		public object GetSnapshot( IPersistentCollection coll )
 		{
 			return GetCollectionEntry( coll ).snapshot;
 		}
 
-		public object GetLoadedCollectionKey( PersistentCollection coll )
+		public object GetLoadedCollectionKey( IPersistentCollection coll )
 		{
 			return GetCollectionEntry( coll ).loadedKey;
 		}
 
-		public bool IsInverseCollection( PersistentCollection collection )
+		public bool IsInverseCollection( IPersistentCollection collection )
 		{
 			CollectionEntry ce = GetCollectionEntry( collection );
 			return ce != null && ce.loadedPersister.IsInverse;
@@ -4174,7 +4174,7 @@ namespace NHibernate.Impl
 
 		private static readonly ICollection EmptyCollection = new ArrayList( 0 );
 
-		public ICollection GetOrphans( PersistentCollection coll )
+		public ICollection GetOrphans( IPersistentCollection coll )
 		{
 			CollectionEntry ce = GetCollectionEntry( coll );
 			return ce.IsNew ? EmptyCollection : coll.GetOrphans( ce.Snapshot );
@@ -4185,7 +4185,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="writing"></param>
-		public void InitializeCollection( PersistentCollection collection, bool writing )
+		public void InitializeCollection( IPersistentCollection collection, bool writing )
 		{
 			CollectionEntry ce = GetCollectionEntry( collection );
 
@@ -4569,10 +4569,10 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		private CollectionEntry GetCollectionEntryOrNull( object collection )
 		{
-			PersistentCollection coll;
-			if( collection is PersistentCollection )
+			IPersistentCollection coll;
+			if( collection is IPersistentCollection )
 			{
-				coll = ( PersistentCollection ) collection;
+				coll = ( IPersistentCollection ) collection;
 			}
 			else
 			{
@@ -4581,7 +4581,7 @@ namespace NHibernate.Impl
 				{
 					// it might be an unwrapped collection reference!
 					// try to find a wrapper (slowish)
-					foreach( PersistentCollection pc in collectionEntries.Keys )
+					foreach( IPersistentCollection pc in collectionEntries.Keys )
 					{
 						if( pc.IsWrapper( collection ) )
 						{
@@ -4886,7 +4886,7 @@ namespace NHibernate.Impl
 				pc = arrayHolders[ value ];
 				arrayHolders.Remove( value );
 			}
-			else if( value is PersistentCollection )
+			else if( value is IPersistentCollection )
 			{
 				pc = value;
 			}
@@ -4895,7 +4895,7 @@ namespace NHibernate.Impl
 				return; //EARLY EXIT!
 			}
 
-			PersistentCollection collection = pc as PersistentCollection;
+			IPersistentCollection collection = pc as IPersistentCollection;
 			if( collection.UnsetSession( this ) )
 			{
 				EvictCollection( collection );
@@ -4903,7 +4903,7 @@ namespace NHibernate.Impl
 
 		}
 
-		private void EvictCollection( PersistentCollection collection )
+		private void EvictCollection( IPersistentCollection collection )
 		{
 			CollectionEntry ce = ( CollectionEntry ) collectionEntries[ collection ];
 			collectionEntries.Remove( collection );
@@ -5261,7 +5261,7 @@ namespace NHibernate.Impl
 			// that references it
 
 			ICollectionPersister persister = factory.GetCollectionPersister( role );
-			PersistentCollection collection = GetLoadingCollection( role, id );
+			IPersistentCollection collection = GetLoadingCollection( role, id );
 
 			if( collection != null )
 			{
@@ -5302,7 +5302,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="collection"></param>
 		/// <returns><c>true</c> if the collection was initialized from the cache, otherwise <c>false</c>.</returns>
-		private bool InitializeCollectionFromCache( object id, object owner, ICollectionPersister persister, PersistentCollection collection )
+		private bool InitializeCollectionFromCache( object id, object owner, ICollectionPersister persister, IPersistentCollection collection )
 		{
 			if( !persister.HasCache )
 			{

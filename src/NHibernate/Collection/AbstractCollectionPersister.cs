@@ -559,7 +559,7 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public void Recreate( PersistentCollection collection, object id, ISessionImplementor session )
+		public void Recreate( IPersistentCollection collection, object id, ISessionImplementor session )
 		{
 			if( !isInverse )
 			{
@@ -625,7 +625,7 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public void DeleteRows( PersistentCollection collection, object id, ISessionImplementor session )
+		public void DeleteRows( IPersistentCollection collection, object id, ISessionImplementor session )
 		{
 			if( !isInverse )
 			{
@@ -685,7 +685,7 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public void InsertRows( PersistentCollection collection, object id, ISessionImplementor session )
+		public void InsertRows( IPersistentCollection collection, object id, ISessionImplementor session )
 		{
 			if( !isInverse )
 			{
@@ -862,7 +862,7 @@ namespace NHibernate.Collection
 		protected abstract SqlString GenerateUpdateRowString();
 		protected abstract SqlString GenerateInsertRowString();
 
-		public void UpdateRows( PersistentCollection collection, object id, ISessionImplementor session )
+		public void UpdateRows( IPersistentCollection collection, object id, ISessionImplementor session )
 		{
 			if( !isInverse )
 			{
@@ -881,7 +881,7 @@ namespace NHibernate.Collection
 			}
 		}
 
-		protected abstract int DoUpdateRows( object key, PersistentCollection collection, ISessionImplementor session );
+		protected abstract int DoUpdateRows( object key, IPersistentCollection collection, ISessionImplementor session );
 
 		public ICollectionMetadata CollectionMetadata
 		{
