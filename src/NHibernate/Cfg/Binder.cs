@@ -741,6 +741,12 @@ namespace NHibernate.Cfg
 				model.OrphanDelete = true;
 			}
 
+            XmlAttribute genericAtt = node.Attributes["generic"];
+            if (genericAtt != null)
+            {
+                model.IsGeneric = Boolean.Parse(genericAtt.Value);
+            }
+
 			//set up second pass
 			if( model is List )
 			{

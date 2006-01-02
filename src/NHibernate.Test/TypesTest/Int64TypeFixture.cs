@@ -30,5 +30,22 @@ namespace NHibernate.Test.TypesTest
 			Int64Type type = (Int64Type)NHibernateUtil.Int64;
 			Assert.IsTrue( type.Seed is Int64, "seed should be int64" );
 		}
+
+#if NET_2_0
+
+        [Test]
+        public void NullableWrapperDirty()
+        {
+            Int64Type type = (Int64Type)NHibernateUtil.Int64;
+
+            Nullable<Int64> nullLong = null;
+            Nullable<Int64> valueLong = new Nullable<long>(5);
+            Nullable<long> fiveAgain = (long)5;
+
+            Assert.IsTrue( type.IsDirty( nullLong, valueLong, null ), "should be dirty - null to '5'" );
+            Assert.IsFalse( type.IsDirty( valueLong, fiveAgain, null ), "should not be dirty - 5 to 5" );
+        }
+
+#endif
 	}
 }

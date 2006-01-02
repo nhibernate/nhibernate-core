@@ -126,7 +126,7 @@ namespace NHibernate.Collection
 		/// Reads the row from the <see cref="IDataReader"/>.
 		/// </summary>
 		/// <param name="reader">The IDataReader that contains the value of the Identifier</param>
-        /// <param name="persister">The persister for this Collection.</param>
+		/// <param name="persister">The persister for this Collection.</param>
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <returns>The object that was contained in the row.</returns>
 		object ReadFrom(IDataReader reader, ICollectionPersister persister, object owner);
@@ -135,7 +135,7 @@ namespace NHibernate.Collection
 		/// Writes the element, identifier, and index as needed to the <see cref="IDbCommand"/>.
 		/// </summary>
 		/// <param name="st">The <see cref="IDbCommand"/> of the current write operation.</param>
-        /// <param name="persister">The <see cref="ICollectionPersister"/> for this persistent collection.</param>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> for this persistent collection.</param>
 		/// <param name="entry">An instance of an entry in a collection.</param>
 		/// <param name="i">The index of the element in the collection.</param>
 		/// <param name="writeOrder"></param>
@@ -153,7 +153,7 @@ namespace NHibernate.Collection
 		/// Called before any elements are read into the collection,
 		/// allowing appropriate initializations to occur.
 		/// </summary>
-        /// <param name="persister">The <see cref="ICollectionPersister"/> for this persistent collection.</param>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> for this persistent collection.</param>
 		void BeforeInitialize(ICollectionPersister persister);
 
 		/// <summary>
@@ -166,8 +166,8 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Disassemble the collection, ready for the cache
 		/// </summary>
-        /// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
-        /// <returns>The contents of the persistent collection in a cacheable form.</returns>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
+		/// <returns>The contents of the persistent collection in a cacheable form.</returns>
 		object Disassemble(ICollectionPersister persister);
 
 		/// <summary>
@@ -236,9 +236,9 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="collection">The collection to see if this PersistentCollection is wrapping.</param>
 		/// <returns>
-        /// <c>true</c> if the PersistentCollection is wrappping the collection instance,
-        /// <c>false</c> otherwise.
-        /// </returns>
+		/// <c>true</c> if the PersistentCollection is wrappping the collection instance,
+		/// <c>false</c> otherwise.
+		/// </returns>
 		bool IsWrapper(object collection);
 
 		/// <summary></summary>

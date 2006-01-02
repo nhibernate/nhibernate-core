@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug-2.0\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET,NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
@@ -95,8 +95,10 @@
     <Compile Include="Collection\CollectionPropertyMapping.cs" />
     <Compile Include="Collection\CompositeElementPropertyMapping.cs" />
     <Compile Include="Collection\ElementPropertyMapping.cs" />
+    <Compile Include="Collection\Generic\PersistentGenericBag.cs" />
     <Compile Include="Collection\ICollectionPersister.cs" />
     <Compile Include="Collection\IdentifierBag.cs" />
+    <Compile Include="Collection\IPersistentCollection.cs" />
     <Compile Include="Collection\IQueryableCollection.cs" />
     <Compile Include="Collection\List.cs" />
     <Compile Include="Collection\Map.cs" />
@@ -470,6 +472,7 @@
     <Compile Include="Type\DynamicComponentType.cs" />
     <Compile Include="Type\EntityType.cs" />
     <Compile Include="Type\EnumStringType.cs" />
+    <Compile Include="Type\GenericBagType.cs" />
     <Compile Include="Type\GuidType.cs" />
     <Compile Include="Type\IAbstractComponentType.cs" />
     <Compile Include="Type\IAssociationType.cs" />
@@ -530,22 +533,17 @@
     <Compile Include="WrongClassException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Collection\.#AbstractCollectionPersister.cs.1.4" />
-    <None Include="Collection\.#AbstractCollectionPersister.cs.1.5" />
-    <None Include="Expression\.#Example.cs.1.3" />
-    <None Include="Expression\.#Example.cs.1.4" />
-    <None Include="Expression\.#Example.cs.1.5" />
-    <None Include="Expression\.#InsensitiveLikeExpression.cs.1.10" />
-    <None Include="Expression\.#InsensitiveLikeExpression.cs.1.9" />
-    <None Include="Impl\.#AbstractQueryImpl.cs.1.7" />
-    <None Include="nhibernate-configuration-2.0.xsd">
+    <EmbeddedResource Include="nhibernate-configuration-2.0.xsd">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="nhibernate-generic.xsd">
+    </EmbeddedResource>
+    <EmbeddedResource Include="nhibernate-generic.xsd">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="nhibernate-mapping-2.0.xsd">
+    </EmbeddedResource>
+    <EmbeddedResource Include="nhibernate-mapping-2.0.xsd">
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="nhibernate-mapping-2.0.xsx">
+      <DependentUpon>nhibernate-mapping-2.0.xsd</DependentUpon>
     </None>
     <None Include="NHibernate.build" />
     <None Include="Type\IType.cs.xmldoc" />

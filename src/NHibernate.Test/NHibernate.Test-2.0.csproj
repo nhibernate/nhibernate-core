@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug-2.0\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET,NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -50,6 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BagGeneric\A.cs" />
+    <Compile Include="BagGeneric\B.cs" />
+    <Compile Include="BagGeneric\BagGenericFixture.cs" />
     <Compile Include="CacheTest\CacheFixture.cs" />
     <Compile Include="CacheTest\TimestamperFixture.cs" />
     <Compile Include="CfgTest\BinderFixture.cs" />
@@ -129,6 +132,7 @@
     <Compile Include="NHSpecificTest\Docs\ExampleParentChild\UpdateFixture.cs" />
     <Compile Include="NHSpecificTest\Docs\PersistentClasses\Cat.cs" />
     <Compile Include="NHSpecificTest\EmptyMappingsFixture.cs" />
+    <Compile Include="NHSpecificTest\GetSetHelperFixture.cs" />
     <Compile Include="NHSpecificTest\GetTest.cs" />
     <Compile Include="NHSpecificTest\KeyFixture.cs" />
     <Compile Include="NHSpecificTest\LazyLoadBugTest.cs" />
@@ -186,8 +190,21 @@
     <Compile Include="NHSpecificTest\NH369\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH369\JoinedSubClass.cs" />
     <Compile Include="NHSpecificTest\NH369\KeyManyToOneClass.cs" />
+    <Compile Include="NHSpecificTest\NH386\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH386\_Child.cs" />
+    <Compile Include="NHSpecificTest\NH386\_Parent.cs" />
+    <Compile Include="NHSpecificTest\NH392\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH392\UnsavedValueMinusOne.cs" />
+    <Compile Include="NHSpecificTest\NH401\Club.cs" />
+    <Compile Include="NHSpecificTest\NH401\Clubmember.cs" />
+    <Compile Include="NHSpecificTest\NH401\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH440\Apple.cs" />
+    <Compile Include="NHSpecificTest\NH440\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH440\Fruit.cs" />
     <Compile Include="NHSpecificTest\NH47Fixture.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
+    <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
+    <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
     <Compile Include="NHSpecificTest\SetFixture.cs" />
     <Compile Include="NHSpecificTest\SimpleComponentFixture.cs" />
     <Compile Include="NHSpecificTest\UnsavedValueFixture.cs" />
@@ -279,62 +296,62 @@
     <Compile Include="UtilityTest\StringHelperFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CompositeCollection\BaseClassA.hbm.xml" />
-    <Content Include="CompositeCollection\BaseClassB.hbm.xml" />
-    <Content Include="CompositeCollection\Composite.xml" />
-    <Content Include="CompositeId\ClassWithCompositeId.hbm.xml" />
-    <Content Include="hibernate.cfg.xml" />
-    <Content Include="JoinedSubclass\JoinedSubclass.Customer.hbm.xml" />
-    <Content Include="JoinedSubclass\JoinedSubclass.Employee.hbm.xml" />
-    <Content Include="JoinedSubclass\JoinedSubclass.hbm.xml" />
-    <Content Include="JoinedSubclass\JoinedSubclass.Person.hbm.xml" />
-    <Content Include="MappingExceptions\A.ClassNotFound.hbm.xml" />
-    <Content Include="MappingExceptions\A.PropertyNotFound.hbm.xml" />
-    <Content Include="MappingExceptions\A.Valid.hbm.xml" />
-    <Content Include="MappingExceptions\MissingDefCtor.hbm.xml" />
-    <Content Include="NHSpecificTest\Docs\Associations\BiM21\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\Docs\ExampleParentChild\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH251\CustomAccessDO.hbm.xml" />
-    <Content Include="NHSpecificTest\NH257\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH266\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH266\User.hbm.xml" />
-    <Content Include="NHSpecificTest\NH276\JoinedSubclass\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH276\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH295\JoinedSubclass.hbm.xml" />
-    <Content Include="NHSpecificTest\NH295\Subclass.hbm.xml" />
-    <Content Include="NHSpecificTest\NH296\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH309\Menu.hbm.xml" />
-    <Content Include="NHSpecificTest\NH309\Node.hbm.xml" />
-    <Content Include="NHSpecificTest\NH315\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH317\Node.hbm.xml" />
-    <Content Include="NHSpecificTest\NH318\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH345\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH350\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH364\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH369\BaseClass.hbm.xml" />
-    <Content Include="NHSpecificTest\NH369\KeyManyToOneClass.hbm.xml" />
-    <Content Include="ProxyInterface\CastleProxyImpl.hbm.xml" />
-    <Content Include="ProxyTest\AProxy.hbm.xml" />
-    <Content Include="Subclass\Subclass.Base.hbm.xml" />
-    <Content Include="Subclass\Subclass.hbm.xml" />
-    <Content Include="Subclass\Subclass.One.hbm.xml" />
-    <Content Include="TypesTest\BinaryBlobClass.hbm.xml" />
-    <Content Include="TypesTest\BinaryClass.hbm.xml" />
-    <Content Include="TypesTest\BooleanClass.hbm.xml" />
-    <Content Include="TypesTest\ByteClass.hbm.xml" />
-    <Content Include="TypesTest\DecimalClass.hbm.xml" />
-    <Content Include="TypesTest\DoubleClass.hbm.xml" />
-    <Content Include="TypesTest\EnumStringClass.hbm.xml" />
-    <Content Include="TypesTest\GuidClass.hbm.xml" />
-    <Content Include="TypesTest\PersistentEnumClass.hbm.xml" />
-    <Content Include="TypesTest\StringClass.hbm.xml" />
-    <Content Include="TypesTest\StringClobClass.hbm.xml" />
+    <EmbeddedResource Include="CompositeCollection\BaseClassA.hbm.xml" />
+    <EmbeddedResource Include="CompositeCollection\BaseClassB.hbm.xml" />
+    <EmbeddedResource Include="CompositeCollection\Composite.xml" />
+    <EmbeddedResource Include="CompositeId\ClassWithCompositeId.hbm.xml" />
+    <EmbeddedResource Include="hibernate.cfg.xml" />
+    <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.Customer.hbm.xml" />
+    <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.Employee.hbm.xml" />
+    <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.hbm.xml" />
+    <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.Person.hbm.xml" />
+    <EmbeddedResource Include="MappingExceptions\A.ClassNotFound.hbm.xml" />
+    <EmbeddedResource Include="MappingExceptions\A.PropertyNotFound.hbm.xml" />
+    <EmbeddedResource Include="MappingExceptions\A.Valid.hbm.xml" />
+    <EmbeddedResource Include="MappingExceptions\MissingDefCtor.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\Docs\Associations\BiM21\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\Docs\ExampleParentChild\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH251\CustomAccessDO.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH257\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH266\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH266\User.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH276\JoinedSubclass\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH276\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH295\JoinedSubclass.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH295\Subclass.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH296\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH309\Menu.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH309\Node.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH315\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH317\Node.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH318\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH345\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH350\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH364\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH369\BaseClass.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH369\KeyManyToOneClass.hbm.xml" />
+    <EmbeddedResource Include="ProxyInterface\CastleProxyImpl.hbm.xml" />
+    <EmbeddedResource Include="ProxyTest\AProxy.hbm.xml" />
+    <EmbeddedResource Include="Subclass\Subclass.Base.hbm.xml" />
+    <EmbeddedResource Include="Subclass\Subclass.hbm.xml" />
+    <EmbeddedResource Include="Subclass\Subclass.One.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\BinaryBlobClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\BinaryClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\BooleanClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\ByteClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\DecimalClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\DoubleClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\EnumStringClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\GuidClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\PersistentEnumClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\StringClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\StringClobClass.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="DriverTest\.#OracleClientDriverFixture.cs.1.1" />
+    <None Include="NHibernate.Test-2.0.nunit" />
     <None Include="NHibernate.Test.build" />
-    <None Include="NHibernate.Test.nunit" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel-2.0.csproj">
@@ -345,6 +362,14 @@
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-2.0</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BagGeneric\BagGenericFixture.hbm.xml" />
+    <Content Include="NHSpecificTest\NH386\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH392\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH401\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH440\Apple.hbm.xml" />
+    <Content Include="NHSpecificTest\NH440\Fruit.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -358,6 +383,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>copy "$(ProjectDir)\App.config" "$(TargetPath).config"</PreBuildEvent>
+    <PreBuildEvent>copy "$(ProjectDir)\App.config" "$(TargetPath).config"
+copy "$(ProjectDir)\hibernate.cfg.xml" "hibernate.cfg.xml"
+copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"</PreBuildEvent>
   </PropertyGroup>
 </Project>
