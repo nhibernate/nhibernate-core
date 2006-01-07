@@ -163,53 +163,57 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static System.Type ClassForName( string name )
 		{
-			AssemblyQualifiedTypeName parsedName = AssemblyQualifiedTypeName.Parse( name );
+			AssemblyQualifiedTypeName parsedName = AssemblyQualifiedTypeName.Parse( name,
+				Assembly.GetExecutingAssembly().FullName );
 			System.Type result = TypeFromAssembly( parsedName );
 			if( result == null )
 			{
-				throw new TypeLoadException( "Could not load type " + parsedName );
+				throw new TypeLoadException( "Could not load type '" + parsedName + "', check that type and assembly names are correct" );
 			}
 			return result;
 		}
 
-		public static System.Type TypeFromAssembly( AssemblyQualifiedTypeName typeName )
+		public static System.Type TypeFromAssembly( string type, string assembly )
 		{
-			return TypeFromAssembly( typeName.Type, typeName.Assembly );
+			return TypeFromAssembly( new AssemblyQualifiedTypeName( type, assembly ) );
 		}
 
 		/// <summary>
 		/// Returns a <see cref="System.Type"/> from an already loaded Assembly or an
 		/// Assembly that is loaded with a partial name.
 		/// </summary>
-		/// <param name="className">The full name of the class.</param>
-		/// <param name="assemblyName">
-		/// The name of the assembly.  This can be the full assembly name or just the partial name.
-		/// </param>
+		/// <param name="name">An <see cref="AssemblyQualifiedTypeName" />.</param>
 		/// <returns>
-		/// The <see cref="System.Type"/> for the class in the assembly or 
-		/// <c>null</c> if a <see cref="System.Type"/> can't be found.
+		/// A <see cref="System.Type"/> object that represents the specified type,
+		/// or <c>null</c> if the type cannot be loaded.
 		/// </returns>
 		/// <remarks>
 		/// Attempts to get a reference to the type from an already loaded assembly.  If the 
-		/// Type can be found then the Assembly is loaded using LoadWithPartialName.
+		/// type cannot be found then the assembly is loaded using
+		/// <see cref="Assembly.LoadWithPartialName(string)" />.
 		/// </remarks>
-		public static System.Type TypeFromAssembly( string className, string assemblyName )
+		public static System.Type TypeFromAssembly( AssemblyQualifiedTypeName name )
 		{
-			string fullName = className + ", " + assemblyName;
+			if( name.Assembly == null )
+			{
+				name = new AssemblyQualifiedTypeName( name.Type, Assembly.GetExecutingAssembly().FullName );
+			}
+
 			try
 			{
-				// try to get the Types from an already loaded assembly
-				System.Type type = System.Type.GetType( fullName );
+				// Try to get the types from an already loaded assembly
+				System.Type type = System.Type.GetType( name.ToString() );
 
-				// if the type is null then the assembly is not loaded.
+				// If the type is null then the assembly is not loaded.
 				if( type == null )
 				{
-					// use the partial name because we don't know the public key, version, culture-info of
-					// the assembly on the local machine.
-					Assembly assembly = Assembly.LoadWithPartialName( assemblyName );
+					// Use the partial name because we don't know the public key, version,
+					// culture-info of the assembly on the local machine.
+					Assembly assembly = Assembly.LoadWithPartialName( name.Assembly );
+				
 					if( assembly != null )
 					{
-						type = assembly.GetType( className );
+						type = assembly.GetType( name.Type );
 					}
 				}
 
@@ -219,7 +223,7 @@ namespace NHibernate.Util
 			{
 				if( log.IsErrorEnabled )
 				{
-					log.Error( fullName + " could not be loaded.", e );
+					log.Error( name + " could not be loaded.", e );
 				}
 				return null;
 			}

@@ -82,21 +82,51 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
-		public void ParseWithDefaultAssembly()
+		public void ParseWithDefaultAssemblyUnused()
 		{
-			string defaultAssembly = "SomeAssembly";
-			AssemblyQualifiedTypeName tn = AssemblyQualifiedTypeName.Parse( "SomeType, SomeAssembly", defaultAssembly );
+			string defaultAssembly = "DefaultAssembly";
+			AssemblyQualifiedTypeName tn = AssemblyQualifiedTypeName.Parse( "SomeType, AnotherAssembly", defaultAssembly );
 			Assert.AreEqual( "SomeType", tn.Type );
-			Assert.AreEqual( "SomeAssembly", tn.Assembly );
+			Assert.AreEqual( "AnotherAssembly", tn.Assembly );
 		}
 
 		[Test]
-		public void ParseWithDefaultAssemblyUnused()
+		public void ParseWithDefaultAssembly()
 		{
 			string defaultAssembly = "SomeAssembly";
 			AssemblyQualifiedTypeName tn = AssemblyQualifiedTypeName.Parse( "SomeType", defaultAssembly );
 			Assert.AreEqual( "SomeType", tn.Type );
 			Assert.AreEqual( defaultAssembly, tn.Assembly );
+		}
+
+		[Test]
+		public void ParseWithDefaultNamespaceAndAssembly()
+		{
+			string defaultAssembly = "DefaultAssembly";
+			string defaultNamespace = "DefaultNamespace";
+
+			AssemblyQualifiedTypeName tn = AssemblyQualifiedTypeName.Parse( "SomeType", defaultNamespace, defaultAssembly );
+			Assert.AreEqual( "SomeType.DefaultNamespace", tn.Type );
+		}
+
+		[Test]
+		public void ParseWithDefaultNamespaceNoAssembly()
+		{
+			string defaultNamespace = "DefaultNamespace";
+
+			AssemblyQualifiedTypeName tn = AssemblyQualifiedTypeName.Parse( "SomeType", defaultNamespace, null );
+			Assert.AreEqual( "SomeType.DefaultNamespace", tn.Type );
+			Assert.IsNull( tn.Assembly );
+		}
+
+		[Test]
+		public void ParseWithDefaultNamespaceUnused()
+		{
+			string defaultAssembly = "DefaultAssembly";
+			string defaultNamespace = "DefaultNamespace";
+
+			AssemblyQualifiedTypeName tn = AssemblyQualifiedTypeName.Parse( "SomeType.SomeNamespace", defaultNamespace, defaultAssembly );
+			Assert.AreEqual( "SomeType.SomeNamespace", tn.Type );
 		}
 
 		[Test]

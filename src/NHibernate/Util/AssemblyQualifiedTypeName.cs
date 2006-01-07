@@ -93,10 +93,15 @@ namespace NHibernate.Util
 
 		public static AssemblyQualifiedTypeName Parse( string text )
 		{
-			return Parse( text, null );
+			return Parse( text, null, null );
 		}
 
 		public static AssemblyQualifiedTypeName Parse( string text, string defaultAssembly )
+		{
+			return Parse( text, null, defaultAssembly );
+		}
+
+		public static AssemblyQualifiedTypeName Parse( string text, string defaultNamespace, string defaultAssembly )
 		{
 			text = text.Trim();
 
@@ -107,8 +112,14 @@ namespace NHibernate.Util
 
 			try
 			{
+				bool needNamespace = true;
 				while( i < text.Length )
 				{
+					if( text[ i ] == '.' )
+					{
+						needNamespace = false;
+					}
+
 					if( text[ i ] == ',' )
 					{
 						assembly = GetAssemblyName( text, i + 1 );
@@ -124,6 +135,10 @@ namespace NHibernate.Util
 					i++;
 				}
 
+				if( needNamespace && defaultNamespace != null )
+				{
+					type.Append( '.' ).Append( defaultNamespace );
+				}
 				return new AssemblyQualifiedTypeName( type.ToString(), assembly );
 			}
 			catch( IndexOutOfRangeException )
