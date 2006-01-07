@@ -5425,6 +5425,14 @@ namespace NHibernate.Impl
 				}
 				else
 				{
+					// NH: Added to fix NH-523. Result might have been loaded as a proxy earlier,
+					// not initializing it here causes Unproxy to throw an exception.
+					//
+					// H2.1 also has this bug. H3 avoids the bug by first loading all objects
+					// to which copy (merge) is going to be cascaded, and then copying. This is
+					// more efficient, but not possible in NH currently.
+					NHibernateUtil.Initialize( result );
+					
 					target = Unproxy( result );
 					copiedAlready[ obj ] = target;
 					if( target == obj )
