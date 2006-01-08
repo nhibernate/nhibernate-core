@@ -13,12 +13,15 @@
 	-->
 	<property name="sign" value="false" overwrite="false" />
 
-	<!-- Path to the folder that contain the external Assemblies  -->
+	<!-- 
+		Path to the folder that contain the external Assemblies.  For net-1.1 the values will
+		be lib, lib/net, and lib/net/1.1 respectively.
+	-->
 	<property name="lib.dir" value="lib" dynamic="true" />
 	<property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
 	<property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version(framework::get-target-framework())))}" dynamic="true" />
 
-	!-- 
+	<!-- 
 		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
 		then change this to true.  It generates a nice looking html report for the test files
 	-->
@@ -39,7 +42,6 @@
 	<property name="clover.db" value="${clover.src}\clover.cdb" />
 	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET for Visual Studio" />
 	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
-
 
 	<!-- 
 		These are used to set the correct Attributes in AssemblyInfo.cs.  
@@ -73,15 +75,17 @@
 	<target name="debug" description="Perform a 'debug' build">
 		<property name="project.config" value="debug" />
 		<property name="build.debug" value="true" />
-		<property name="build.name" value="${project.name}-${project.version}-${project.config}" />
-		<property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
+		<property name="build.name" value="${project.name}-${project.config}" />
+		<property name="build.root.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
+		<property name="build.dir" value="${build.root.dir}/${framework::get-target-framework()}" />
 	</target>
 	
 	<target name="release" description="Perform a 'release' build">
 		<property name="project.config" value="release" />
 		<property name="build.debug" value="false" />
 		<property name="build.name" value="${project.name}-${project.version}" />
-		<property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
+		<property name="build.root.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
+		<property name="build.dir" value="${build.root.dir}/${framework::get-target-framework()}" />
 	</target>
 	
 	<target name="init" description="Initializes build properties">
@@ -141,24 +145,31 @@
 		<copy file="lgpl.txt" tofile="${build.dir}/bin/NHibernate.license.txt"  />
 		
 		<!-- copy framework-neutral libraries -->
-		<copy todir="${build.dir}/bin">
-			<fileset basedir="lib">
-				<include name="HashCodeProvider.*" />
+		<copy todir="${build.dir}/bin" >
+			<fileset basedir="${lib.dir}">
+				<include name="*.dll" />
+				<include name="*.xml" />
+				<include name="*.license.txt" />
 			</fileset>
 		</copy>
 		
-	<!-- copy family-specific libraries-->
-	<!-- 
-	<copy todir="${build.dir}/bin">
-		<fileset basedir="${lib.family.dir}">
-			<include name="HashCodeProvider.*" />
-		</fileset>
-	</copy>
-	-->
+		<!-- copy family-specific libraries-->
+		<!-- 
+			the builds of DynamicProxy, log4net, and nunit all work just fine for all
+			versions of net.  When they do get framework specific extensions then we
+			can just move them to the framework specific section
+		-->
+		<copy todir="${build.dir}/bin">
+			<fileset basedir="${lib.family.dir}">
+				<include name="*.dll" />
+				<include name="*.xml" />
+				<include name="*.license.txt" />
+			</fileset>
+		</copy>
+	
 		<!-- copy framework-specific libraries -->
 		<copy todir="${build.dir}/bin">
-				<!--<fileset basedir="${lib.framework.dir}">-->
-		<fileset basedir="${lib.dir}/net/1.1/">
+			<fileset basedir="${lib.framework.dir}">
 				<!-- 
 					Excludes the Iesi.Collections Assembly because it is built during the build
 					of NHibernate.  It is in the lib folder for vs.net convenience.  However, we
@@ -166,15 +177,9 @@
 				-->
 				<exclude name="Iesi.Collections.dll" />
 				<exclude name="Iesi.Collections.xml" />
-				<include name="Iesi.Collections.license.txt" />
-
-		<!-- 
-			hard coding this from the .net-1.1 directory since there doesn't appear
-			to be any difference in them for .net-2.0.  
-		-->
-		<include name="Castle.DynamicProxy.*" />
-				<include name="log4net.*" />
-				<include name="nunit.framework.*" />
+				<include name="*.dll" />
+				<include name="*.xml" />
+				<include name="*.license.txt" />
 			</fileset>
 		</copy>
 		
@@ -191,17 +196,8 @@
 	</target>
 
 	<target name="merge">
-		<property name="merge.targetplatform" value="unsupported" />
-
-		<if test="${framework::get-target-framework()=='net-1.1'}">
-			<property name="merge.targetplatform" value="v1.1" />
-		</if>
-
-		<if test="${framework::get-target-framework()=='net-2.0'}">
-			<property name="merge.targetplatform" value="v2" />
-		</if>
-
-		<if test="${merge.targetplatform!='unsupported'}">
+		
+		<if test="${property::exists('merge.targetplatform')}">
 			<exec program="ilmerge.exe" basedir="external-bin" useruntimeengine="true">
 				<arg value="/ndebug:${build.debug}" />
 				<arg value="/lib:${build.dir}/bin" />
@@ -375,7 +371,7 @@
 					<property name="HeaderHtml" value="" />
 					<property name="FooterHtml" value="" />
 					<property name="FilesToInclude" value="" />
-					<property name="LinkToSdkDocVersion" value="SDK_v1_1" />
+					<property name="LinkToSdkDocVersion" value="${link.sdkdoc.version}" />
 					<property name="ShowMissingSummaries" value="${build.debug}" />
 					<property name="ShowMissingRemarks" value="${build.debug}" />
 					<property name="ShowMissingParams" value="${build.debug}" />
@@ -427,7 +423,7 @@
 						<property name="Title" value="NHibernate Class Library - v.${project.version}" />
 						<property name="HeaderHtml" value="" />
 						<property name="FooterHtml" value="" />
-						<property name="LinkToSdkDocVersion" value="SDK_v1_1" />
+						<property name="LinkToSdkDocVersion" value="${link.sdkdoc.version}" />
 						<property name="ShowMissingSummaries" value="${build.debug}" />
 						<property name="ShowMissingRemarks" value="${build.debug}" />
 						<property name="ShowMissingParams" value="${build.debug}" />
@@ -471,13 +467,14 @@
 		
 	</target>
 	
-	<target name="package" depends="test doc" description="Creates Zip files for the File Release System on SourceForge">
+	<target name="package" depends="test doc " description="Creates Zip files for the File Release System on SourceForge">
+		
 		<copy todir="${build.dir}">
 			<fileset>
-				<!-- copy framework neutral dlls -->
-				<include name="lib/*" />
-				<include name="${lib.dir}/**" />
-				
+				<!-- copy dlls used by this build -->
+				<include name="${lib.dir}/*"  />
+				<include name="${lib.family.dir}/*" />
+				<include name="${lib.framework.dir}/*" />
 				<!-- 
 					exclude the UnitTesting project that is no longer used and the
 					Clover modified source files.
@@ -509,14 +506,13 @@
 			</fileset>
 		</copy>
 
-		<!-- put clover files in a separated zip file -->
-		<zip zipfile="${nant.project.basedir}/build/${project.name}-clover-${project.version}.zip" ziplevel="9">
+		<zip zipfile="${nant.project.basedir}/build/${build.name}-clover-${nant.settings.currentframework}.zip" ziplevel="9">
 			<fileset basedir="${build.dir}">
 				<include name="clover/**" />
 			</fileset>
 		</zip>
 
-		<property name="project.zip-path" value="${nant.project.basedir}/build/${build.name}.zip" />
+		<property name="project.zip-path" value="${nant.project.basedir}/build/${build.name}-${nant.settings.currentframework}.zip" />
 
 		<zip zipfile="${project.zip-path}" ziplevel="9">
 			<fileset basedir="${build.dir}">
@@ -545,12 +541,15 @@
 		<property name="nant.settings.currentframework" value="net-1.1" />
 		<property name="current.build.defines" value="${build.defines}NET,NET_1_1" />
 		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<property name="merge.targetplatform" value="v1.1" />
 	</target>
 
 	<target name="set-net-2.0-framework-configuration">
 		<property name="nant.settings.currentframework" value="net-2.0" />
 		<property name="current.build.defines" value="${build.defines}NET,NET_2_0" />
-		<property name="link.sdkdoc.version" value="SDK_v2_0" />
+		<!-- not using SDK_v2_0 because ndoc throws an exception -->
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<property name="merge.targetplatform" value="v2" />
 	</target>
 
 	<target name="set-mono-1.0-framework-configuration">
