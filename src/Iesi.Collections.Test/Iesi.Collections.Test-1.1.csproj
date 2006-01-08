@@ -80,14 +80,14 @@
                     HintPath = "..\..\..\..\WINNT\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "Iesi.Collections-1.1"
-                    Project = "{CEF80E5F-E838-4F27-9435-2E3630D5F9E0}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
+                />
+                <Reference
+                    Name = "Iesi.Collections-1.1"
+                    Project = "{CEF80E5F-E838-4F27-9435-2E3630D5F9E0}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>

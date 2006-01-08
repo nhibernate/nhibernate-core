@@ -1,21 +1,22 @@
 #if NET_2_0
 
-	using System;
-	using System.Collections.Generic;
-	using System.Data;
-	using System.Text;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
 
-	using NHibernate.Engine;
-	using NHibernate.Type;
+using NHibernate.Engine;
+using NHibernate.Type;
 
-	namespace NHibernate.Collection.Generic
-	{
+namespace NHibernate.Collection.Generic
+{
 	/// <summary>
 	/// An unordered, unkeyed collection that can contain the same element
 	/// multiple times. The .net collections API, has no <c>Bag</c>.
 	/// The <see cref="ICollection&lt;T&gt;" /> interface closely resembles bag semantics,
 	/// so NHibernate follows this practice.
 	/// </summary>
+	/// <typeparam name="T">The type of the element the bag should hold.</typeparam>
 	[Serializable]
 	class PersistentGenericBag<T> : PersistentCollection, IList<T>
 	{

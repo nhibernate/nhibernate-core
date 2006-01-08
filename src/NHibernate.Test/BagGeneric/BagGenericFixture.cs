@@ -57,7 +57,7 @@ namespace NHibernate.Test.BagGeneric
 			Assert.IsNotNull(secondB.Id);
 
 			s = OpenSession();
-			a = s.Load( typeof(A), a.Id ) as A;
+			a = s.Load<A>(a.Id );
 			B thirdB = new B();
 			thirdB.Name = "third B";
 			// ensuring the correct generic type was constructed

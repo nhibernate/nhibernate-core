@@ -32,7 +32,7 @@
   <ItemGroup>
     <Reference Include="Castle.DynamicProxy, Version=1.1.5.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\1.1\Castle.DynamicProxy.dll</HintPath>
+      <HintPath>..\..\lib\net\Castle.DynamicProxy.dll</HintPath>
     </Reference>
     <Reference Include="HashCodeProvider, Version=1.0.0.0, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
@@ -40,11 +40,11 @@
     </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\1.1\Iesi.Collections.dll</HintPath>
+      <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\1.1\log4net.dll</HintPath>
+      <HintPath>..\..\lib\net\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

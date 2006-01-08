@@ -40,6 +40,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		..\NHibernateSolution.build = ..\NHibernateSolution.build
+		..\nightly.build = ..\nightly.build
+		..\release.build = ..\release.build
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

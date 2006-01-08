@@ -30,7 +30,7 @@
   <ItemGroup>
     <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\1.1\Iesi.Collections.dll</HintPath>
+      <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
