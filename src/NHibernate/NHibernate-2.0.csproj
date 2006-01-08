@@ -96,6 +96,7 @@
     <Compile Include="Collection\CompositeElementPropertyMapping.cs" />
     <Compile Include="Collection\ElementPropertyMapping.cs" />
     <Compile Include="Collection\Generic\PersistentGenericBag.cs" />
+    <Compile Include="Collection\Generic\PersistentGenericList.cs" />
     <Compile Include="Collection\ICollectionPersister.cs" />
     <Compile Include="Collection\IdentifierBag.cs" />
     <Compile Include="Collection\IPersistentCollection.cs" />
@@ -473,6 +474,7 @@
     <Compile Include="Type\EntityType.cs" />
     <Compile Include="Type\EnumStringType.cs" />
     <Compile Include="Type\GenericBagType.cs" />
+    <Compile Include="Type\GenericListType.cs" />
     <Compile Include="Type\GuidType.cs" />
     <Compile Include="Type\IAbstractComponentType.cs" />
     <Compile Include="Type\IAssociationType.cs" />

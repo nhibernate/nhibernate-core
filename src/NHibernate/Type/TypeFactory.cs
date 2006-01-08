@@ -768,11 +768,14 @@ namespace NHibernate.Type
 #if NET_2_0
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IList"/>
-		/// with bag semantics.
+		/// Creates a new <see cref="PersistentCollectionType"/> for an 
+		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
-		/// <param name="elementClass">The <see cref="System.Type"/> to use to create the array.</param>
+		/// <param name="elementClass">
+		/// The <see cref="System.Type"/> to use to create the 
+		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with.
+		/// </param>
 		/// <returns>
 		/// A <see cref="BagType"/> for the specified role.
 		/// </returns>
@@ -780,7 +783,24 @@ namespace NHibernate.Type
 		{
 			return new GenericBagType(role, elementClass);
 		}
-		
+
+		/// <summary>
+		/// Creates a new <see cref="PersistentCollectionType"/> for an 
+		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with list 
+		/// semantics.
+		/// </summary>
+		/// <param name="role">The role the collection is in.</param>
+		/// <param name="elementClass">
+		/// The <see cref="System.Type"/> to use to create the 
+		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with.
+		/// </param>
+		/// <returns>
+		/// A <see cref="ListType"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType GenericList(string role, System.Type elementClass)
+		{
+			return new GenericListType(role, elementClass);
+		}
 		// TODO: add the rest of the Generic collection factories here
 #endif
 

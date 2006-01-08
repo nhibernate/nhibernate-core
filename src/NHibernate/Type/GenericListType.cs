@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IList&lt;T&gt;"/> collection
 	/// to the database using bag semantics.
 	/// </summary>
-	public class GenericBagType : BagType
+	public class GenericListType : ListType
 	{
 		System.Type constructedType = null;
 		System.Type wrappedType = null;
@@ -22,13 +22,13 @@ namespace NHibernate.Type
 		ConstructorInfo wrappedConstructor = null;
 
 		/// <summary>
-		/// Initializes a new instance of a <see cref="GenericBagType"/> class for
+		/// Initializes a new instance of a <see cref="GenericListType"/> class for
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		public GenericBagType(string role, System.Type elementClass) : base( role )
+		public GenericListType(string role, System.Type elementClass) : base( role )
 		{
-			System.Type definition = typeof(Collection.Generic.PersistentGenericBag<>);
+			System.Type definition = typeof(Collection.Generic.PersistentGenericList<>);
 			System.Type[] typeArgs = new System.Type[] { elementClass };
 
 			constructedType = definition.MakeGenericType(typeArgs);
@@ -39,9 +39,9 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Instantiates a new <see cref="IPersistentCollection"/> for the bag.
+		/// Instantiates a new <see cref="IPersistentCollection"/> for the list.
 		/// </summary>
-		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
+		/// <param name="session">The current <see cref="ISessionImplementor"/> for the list.</param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
 		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
@@ -56,12 +56,12 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Wraps an <see cref="IList&lt;T&gt;"/> in a <see cref="PersistentGenericBag&lt;T&gt;"/>.
+		/// Wraps an <see cref="IList&lt;T&gt;"/> in a <see cref="PersistentGenericList&lt;T&gt;"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped <see cref="IList&lt;T&gt;"/>.</param>
 		/// <returns>
-		/// An <see cref="PersistentGenericBag&lt;T&gt;"/> that wraps the non NHibernate <see cref="IList&lt;T&gt;"/>.
+		/// An <see cref="PersistentGenericList&lt;T&gt;"/> that wraps the non NHibernate <see cref="IList&lt;T&gt;"/>.
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{

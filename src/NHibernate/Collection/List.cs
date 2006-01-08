@@ -7,8 +7,11 @@ using NHibernate.Type;
 namespace NHibernate.Collection
 {
 	/// <summary>
-	/// A persistent wrapper for an IList
-	/// </summary>
+	/// A persistent wrapper for an <see cref="IList"/>
+	/// </summary>	
+	/// <remarks>
+	/// The underlying collection used in an <see cref="ArrayList"/>.
+	/// </remarks>
 	[Serializable]
 	public class List : PersistentCollection, IList
 	{
@@ -76,19 +79,23 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes an instance of the <see cref="List"/>
+		/// in the <paramref name="session"/>.
 		/// </summary>
-		/// <param name="session"></param>
-		internal List( ISessionImplementor session ) : base( session )
+		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
+		internal List(ISessionImplementor session)
+			: base(session)
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Initializes an instance of the <see cref="List"/>
+		/// that wraps an existing <see cref="IList"/> in the <paramref name="session"/>.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="list"></param>
-		internal List( ISessionImplementor session, IList list ) : base( session )
+		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
+		/// <param name="list">The <see cref="IList"/> to wrap.</param>
+		internal List(ISessionImplementor session, IList list)
+			: base(session)
 		{
 			this.list = list;
 			SetInitialized();

@@ -17,16 +17,28 @@ namespace NHibernate.Collection.Generic
 	/// so NHibernate follows this practice.
 	/// </summary>
 	/// <typeparam name="T">The type of the element the bag should hold.</typeparam>
+	/// <remarks>The underlying collection used is an <see cref="List&lt;T&gt;"/></remarks>
 	[Serializable]
 	class PersistentGenericBag<T> : PersistentCollection, IList<T>
 	{
 		private IList<T> bag;
 
-		internal PersistentGenericBag(ISessionImplementor session)
+		/// <summary>
+		/// Initializes an instance of the <see cref="PersistentGenericBag&lt;T&gt;"/>
+		/// in the <paramref name="session"/>.
+		/// </summary>
+		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
+        internal PersistentGenericBag(ISessionImplementor session)
 			: base(session)
 		{
 		}
 
+		/// <summary>
+		/// Initializes an instance of the <see cref="PersistentGenericBag&lt;T&gt;"/>
+		/// that wraps an existing <see cref="IList&lt;T&gt;"/> in the <paramref name="session"/>.
+		/// </summary>
+		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
+		/// <param name="coll">The <see cref="IList&lt;T&gt;"/> to wrap.</param>
 		internal PersistentGenericBag(ISessionImplementor session, IList<T> coll)
 			: base(session)
 		{
