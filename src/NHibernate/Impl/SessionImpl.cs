@@ -2267,6 +2267,21 @@ namespace NHibernate.Impl
 			return result;
 		}
 
+#if NET_2_0
+		public T Load<T>(object id)
+		{
+			CheckIsOpen();
+
+			if (id == null)
+			{
+				throw new ArgumentNullException("id", "null is not a valid identifier");
+			}
+			object result = DoLoadByClass(typeof(T), id, true, true);
+			ObjectNotFoundException.ThrowIfNull(result, id, typeof(T));
+			return (T)result;
+		}
+#endif
+
 		public object Get( System.Type clazz, object id )
 		{
 			CheckIsOpen();
@@ -2497,7 +2512,25 @@ namespace NHibernate.Impl
 
 			return DoLoad( clazz, id, lockMode, false );
 		}
+#if NET_2_0
+		public T Load<T>(object id, LockMode lockMode)
+		{
+			CheckIsOpen();
 
+			if (lockMode == LockMode.Write)
+			{
+				throw new HibernateException("Invalid lock mode for Load()");
+			}
+
+			if (lockMode == LockMode.None)
+			{
+				// we don't necessarily need to hit the db in this case
+				return Load<T>(id);
+			}
+
+			return (T)DoLoad(typeof(T), id, lockMode, false);
+		}
+#endif
 		/// <summary>
 		/// Load the data for the object with the specified id into a newly created object
 		/// using "for update", if supported. A new key will be assigned to the object.

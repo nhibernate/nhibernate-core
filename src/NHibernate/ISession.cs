@@ -217,6 +217,32 @@ namespace NHibernate
 		/// <returns>The persistent instance or proxy</returns>
 		object Load( System.Type theType, object id );
 
+#if NET_2_0
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier,
+		/// obtaining the specified lock mode.
+		/// </summary>
+		/// <typeparam name="T">A persistent class</typeparam>
+		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
+		/// <param name="lockMode">The lock level</param>
+		/// <returns>the persistent instance</returns>
+		T Load<T>(object id, LockMode lockMode);
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier,
+		/// assuming that the instance exists.
+		/// </summary>
+		/// <remarks>
+		/// You should not use this method to determine if an instance exists (use <see cref="Find" />
+		/// instead). Use this only to retrieve an instance that you assume exists, where non-existence
+		/// would be an actual error.
+		/// </remarks>
+		/// <typeparam name="T">A persistent class</typeparam>
+		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
+		/// <returns>The persistent instance or proxy</returns>
+		T Load<T>(object id);
+#endif
+
 		/// <summary>
 		/// Read the persistent state associated with the given identifier into the given transient 
 		/// instance.
