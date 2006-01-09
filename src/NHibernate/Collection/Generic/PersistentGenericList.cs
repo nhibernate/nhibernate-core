@@ -12,7 +12,8 @@ namespace NHibernate.Collection.Generic
 	/// </summary>
 	/// <typeparam name="T">The type of the element the list should hold.</typeparam>
 	/// <remarks>The underlying collection used is a <see cref="List&lt;T&gt;"/></remarks>
-	class PersistentGenericList<T> : PersistentCollection, IList<T>
+	[Serializable]
+	public class PersistentGenericList<T> : PersistentCollection, IList<T>
 	{
 		private IList<T> list;
 

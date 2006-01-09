@@ -28,7 +28,7 @@ namespace NHibernate.Collection.Generic
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
-        internal PersistentGenericBag(ISessionImplementor session)
+		internal PersistentGenericBag(ISessionImplementor session)
 			: base(session)
 		{
 		}

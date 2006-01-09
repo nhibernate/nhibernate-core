@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Type;
 
 namespace NHibernate.Mapping
@@ -8,17 +9,37 @@ namespace NHibernate.Mapping
 	public class List : IndexedCollection
 	{
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="List"/> class.
 		/// </summary>
-		/// <param name="owner"></param>
-		public List( PersistentClass owner ) : base( owner )
+		/// <param name="owner">The <see cref="PersistentClass"/> that contains this list mapping.</param>
+		public List(PersistentClass owner)
+			: base(owner)
 		{
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the appropriate <see cref="PersistentCollectionType"/> that is 
+		/// specialized for this list mapping.
+		/// </summary>
 		public override PersistentCollectionType CollectionType
 		{
-			get { return TypeFactory.List( Role ); }
+			get 
+			{
+#if NET_2_0
+				// TODO: uncomment this once PersistentGenricList is actually
+				// implemented
+				//if (this.IsGeneric)
+				//{
+				//    return TypeFactory.GenericList( Role, this.Element.Type.ReturnedClass );
+				//}
+				//else
+				//{
+					return TypeFactory.List( Role );
+				//}
+#else
+				return TypeFactory.List( Role );
+#endif
+			}
 		}
 	}
 }

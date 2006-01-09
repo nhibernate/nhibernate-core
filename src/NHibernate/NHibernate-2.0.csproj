@@ -544,6 +544,7 @@
     <EmbeddedResource Include="nhibernate-mapping-2.0.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Compile Include="Collection\Generic\PersistentGenericMap.cs" />
     <None Include="nhibernate-mapping-2.0.xsx">
       <DependentUpon>nhibernate-mapping-2.0.xsd</DependentUpon>
     </None>
