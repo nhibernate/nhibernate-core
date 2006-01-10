@@ -2124,6 +2124,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\AnsiCharType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\AnsiStringType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2135,6 +2140,11 @@
                 />
                 <File
                     RelPath = "Type\BagType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\BaseCharType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -5,17 +5,17 @@ namespace NHibernate.Type
 {
 	/// <summary>
 	/// Maps a <see cref="System.Char"/> Property 
-	/// to a <c>DbType.StringFixedLength</c> column.
+	/// to a <c>DbType.AnsiStringFixedLength</c> column.
 	/// </summary>
-	public class CharType : BaseCharType
+	public class AnsiCharType : BaseCharType
 	{
-		internal CharType() : base( new StringFixedLengthSqlType( 1 ) )
+		internal AnsiCharType() : base( new AnsiStringFixedLengthSqlType( 1 ) )
 		{
 		}
 
 		public override string Name
 		{
-			get { return "Char"; }
+			get { return "AnsiChar"; }
 		}
 	}
 }
