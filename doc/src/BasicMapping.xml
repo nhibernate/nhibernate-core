@@ -1650,6 +1650,12 @@
 					</thead>	
 					<tbody>
 						<row>
+							<entry><literal>AnsiChar</literal></entry>
+							<entry><literal>System.Char</literal></entry>
+							<entry><literal>DbType.AnsiStringFixedLength - 1 char</literal></entry>
+							<entry></entry>
+						</row>
+						<row>
 							<entry><literal>Boolean</literal></entry>
 							<entry><literal>System.Boolean</literal></entry>
 							<entry><literal>DbType.Boolean</literal></entry>
