@@ -55,7 +55,7 @@ namespace NHibernate.Proxy
 
 				if( IsClassProxy )
 				{
-					generatedProxy = _proxyGenerator.CreateClassProxy( _persistentClass, _interfaces, initializer );
+					generatedProxy = _proxyGenerator.CreateClassProxy( _persistentClass, _interfaces, initializer, false );
 				}
 				else
 				{
