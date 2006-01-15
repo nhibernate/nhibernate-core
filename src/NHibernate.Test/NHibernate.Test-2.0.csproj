@@ -201,7 +201,25 @@
     <Compile Include="NHSpecificTest\NH440\Apple.cs" />
     <Compile Include="NHSpecificTest\NH440\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH440\Fruit.cs" />
+    <Compile Include="NHSpecificTest\NH464\DateRange.cs" />
+    <Compile Include="NHSpecificTest\NH464\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH464\Promotion.cs" />
+    <Compile Include="NHSpecificTest\NH464\PromotionWindow.cs" />
+    <Compile Include="NHSpecificTest\NH479\Classes.cs" />
+    <Compile Include="NHSpecificTest\NH479\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH47Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH480\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH496\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH496\WronglyMappedClass.cs" />
+    <Compile Include="NHSpecificTest\NH508\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH508\User.cs" />
+    <Compile Include="NHSpecificTest\NH521\DomainModel.cs" />
+    <Compile Include="NHSpecificTest\NH521\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH523\ClassA.cs" />
+    <Compile Include="NHSpecificTest\NH523\ClassB.cs" />
+    <Compile Include="NHSpecificTest\NH523\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH525\Classes.cs" />
+    <Compile Include="NHSpecificTest\NH525\Fixture.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
@@ -370,6 +388,13 @@
     <Content Include="NHSpecificTest\NH401\Mappings.hbm.xml" />
     <Content Include="NHSpecificTest\NH440\Apple.hbm.xml" />
     <Content Include="NHSpecificTest\NH440\Fruit.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH496\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH508\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH521\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH523\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH525\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH464\Promotion.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH479\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

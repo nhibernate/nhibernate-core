@@ -32,7 +32,7 @@
   <ItemGroup>
     <Reference Include="Castle.DynamicProxy, Version=1.1.5.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\Castle.DynamicProxy.dll</HintPath>
+      <HintPath>..\..\lib\net\2.0\Castle.DynamicProxy.dll</HintPath>
     </Reference>
     <Reference Include="HashCodeProvider, Version=1.0.0.0, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
@@ -545,6 +545,11 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Collection\Generic\PersistentGenericMap.cs" />
+    <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
+    <Compile Include="Driver\ReflectionBasedDriver.cs" />
+    <Compile Include="Type\AnsiCharType.cs" />
+    <Compile Include="Type\BaseCharType.cs" />
+    <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
     <None Include="nhibernate-mapping-2.0.xsx">
       <DependentUpon>nhibernate-mapping-2.0.xsd</DependentUpon>
     </None>
