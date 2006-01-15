@@ -481,7 +481,7 @@ namespace NHibernate.Mapping
 				if( fk.ReferencedClass != referencedClass )
 				{
 					foreignKeys.Remove( keyName );
-					keyName += referencedClass.Name.GetHashCode().ToString( "X" ).ToUpper();
+					keyName += referencedClass.Name.GetHashCode().ToString( "X" ).ToUpper( System.Globalization.CultureInfo.InvariantCulture );
 					return CreateForeignKey( keyName, columns, referencedClass );
 				}
 			}

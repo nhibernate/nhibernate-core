@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Generated from NHibernate.Mapping.Attributes on 2006-01-02 23:43:25Z.-->
+<hibernate-mapping default-access="field.camelcase-underscore" xmlns="urn:nhibernate-mapping-2.0">
+  <class name="NHibernate.Test.NHSpecificTest.NH521.LazyEntity, NHibernate.Test" lazy="true">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+  </class>
+  <class name="NHibernate.Test.NHSpecificTest.NH521.ReferringEntity, NHibernate.Test">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <many-to-one name="ReferenceToLazyEntity" cascade="all" />
+  </class>
+</hibernate-mapping>

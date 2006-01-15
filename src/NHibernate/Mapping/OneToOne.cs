@@ -35,7 +35,10 @@ namespace NHibernate.Mapping
 			{
 				if( Type == null )
 				{
-					Type = TypeFactory.OneToOne( ReflectHelper.GetGetter( propertyClass, propertyName, propertyAccess ).ReturnType, foreignKeyType );
+					Type = TypeFactory.OneToOne(
+						ReflectHelper.ReflectedPropertyClass( propertyClass, propertyName, propertyAccess ),
+						foreignKeyType,
+						ReferencedPropertyName );
 				}
 			}
 			catch( HibernateException he )

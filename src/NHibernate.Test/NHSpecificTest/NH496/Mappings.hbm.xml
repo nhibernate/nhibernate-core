@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	namespace="NHibernate.Test.NHSpecificTest.NH496"
+	assembly="NHibernate.Test">
+
+	<class name="WronglyMappedClass" lazy="false">
+		<id name="Id" type="Int32">
+			<generator class="increment" />
+		</id>
+		
+		<!-- This field is Int32 but is mapped as Int16 -->
+		<property name="SomeInt" type="Int16" />
+	</class>
+
+</hibernate-mapping>
+ 

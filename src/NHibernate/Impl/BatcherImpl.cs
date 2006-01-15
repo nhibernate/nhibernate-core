@@ -14,7 +14,7 @@ namespace NHibernate.Impl
 	internal abstract class BatcherImpl : IBatcher
 	{
 		protected static readonly ILog log = LogManager.GetLogger( typeof( BatcherImpl ) );
-		protected static readonly ILog logSql = LogManager.GetLogger("NHibernate.SQL");	
+		protected static readonly ILog logSql = LogManager.GetLogger("NHibernate.SQL");
 		
 		private static int openCommandCount;
 		private static int openReaderCount;
@@ -84,7 +84,7 @@ namespace NHibernate.Impl
 		{
 			try
 			{
-				Log(command.CommandText);
+				Log( command );
 
 				if( command.Connection != null )
 				{
@@ -132,8 +132,10 @@ namespace NHibernate.Impl
 			} 
 			else 
 			{
-				log.Debug("reusing command");
-				Log(batchCommand.CommandText);
+				if( log.IsDebugEnabled )
+				{
+					log.Debug( "reusing command " + batchCommand.CommandText );
+				}
 			}
 
 			return batchCommand;
@@ -407,10 +409,24 @@ namespace NHibernate.Impl
 			get { return session; }
 		}
 
-		private void Log(String sql){
-			logSql.Debug(sql);
-			if ( factory.IsShowSqlEnabled ) {
-				Console.Out.WriteLine("NHibernate :" + sql);
+		private void Log( IDbCommand command )
+		{
+			if( logSql.IsDebugEnabled )
+			{
+				logSql.Debug( command.CommandText );
+				foreach( IDataParameter p in command.Parameters )
+				{
+					logSql.Debug( string.Format( "{0} = '{1}'", p.ParameterName, p.Value ) );
+				}
+			}
+
+			if( factory.IsShowSqlEnabled )
+			{
+				Console.Out.WriteLine("NHibernate: " + command.CommandText );
+				foreach( IDataParameter p in command.Parameters )
+				{
+					Console.Out.WriteLine( "{0} = '{1}'", p.ParameterName, p.Value );
+				}
 			}
 		}
 		

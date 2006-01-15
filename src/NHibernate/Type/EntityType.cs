@@ -130,14 +130,21 @@ namespace NHibernate.Type
 				{
 					return target;
 				}
-				//TODO: can this ever get called????
+
+				IType idType = GetIdentifierOrUniqueKeyType( session.Factory );
 				object id = GetIdentifier( original, session );
 				if( id == null )
 				{
 					throw new AssertionFailure( "cannot copy a reference to an object with a null id" );
 				}
-				id = GetIdentifierOrUniqueKeyType( session.Factory )
-						.Copy( id, null, session, owner, copyCache );
+				
+				id = idType.Copy( id, null, session, owner, copyCache );
+
+				// Replace a property-ref'ed entity by its id
+				if( uniqueKeyPropertyName != null && idType.IsEntityType )
+				{
+					id = ( ( EntityType ) idType ).GetIdentifier( id, session );
+				}
 				return ResolveIdentifier( id, session, owner );
 			}
 		}

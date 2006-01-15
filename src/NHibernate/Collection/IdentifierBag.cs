@@ -28,19 +28,10 @@ namespace NHibernate.Collection
 		private IList values;	//element
 		private IDictionary identifiers; //index -> id 
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
 		internal IdentifierBag( ISessionImplementor session ) : base( session )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="coll"></param>
 		internal IdentifierBag( ISessionImplementor session, ICollection coll ) : base( session )
 		{
 			IList list = coll as IList;
@@ -85,11 +76,6 @@ namespace NHibernate.Collection
 			SetInitialized();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
 		public override bool IsWrapper( object collection )
 		{
 			return values == collection;
@@ -97,13 +83,24 @@ namespace NHibernate.Collection
 
 		#region IList Members
 
-		/// <summary></summary>
+		public int Add( object value )
+		{
+			Write();
+			return values.Add( value );
+		}
+
+		public void Clear()
+		{
+			Write();
+			values.Clear();
+			identifiers.Clear();
+		}
+
 		public bool IsReadOnly
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public object this[ int index ]
 		{
 			get
@@ -118,79 +115,42 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="index"></param>
-		public void RemoveAt( int index )
-		{
-			Write();
-			values.RemoveAt( index );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="value"></param>
 		public void Insert( int index, object value )
 		{
 			Write();
+			BeforeAdd( index );
 			values.Insert( index, value );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
+		public void RemoveAt( int index )
+		{
+			Write();
+			BeforeRemove( index );
+			values.RemoveAt( index );
+		}
+
 		public void Remove( object value )
 		{
 			Write();
-			values.Remove( value );
+			int index = values.IndexOf( value );
+			if( index >= 0 )
+			{
+				RemoveAt( index );
+			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public bool Contains( object value )
 		{
 			Read();
 			return values.Contains( value );
 		}
 
-		/// <summary></summary>
-		public void Clear()
-		{
-			Write();
-			values.Clear();
-			identifiers.Clear();
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public int IndexOf( object value )
 		{
 			Read();
 			return values.IndexOf( value );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public int Add( object value )
-		{
-			Write();
-			return values.Add( value );
-		}
-
-		/// <summary></summary>
 		public bool IsFixedSize
 		{
 			get { return false; }
@@ -200,13 +160,11 @@ namespace NHibernate.Collection
 
 		#region ICollection Members
 
-		/// <summary></summary>
 		public override bool IsSynchronized
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public override int Count
 		{
 			get
@@ -216,18 +174,12 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="array"></param>
-		/// <param name="index"></param>
 		public override void CopyTo( Array array, int index )
 		{
 			Read();
 			values.CopyTo( array, index );
 		}
 
-		/// <summary></summary>
 		public override object SyncRoot
 		{
 			get { return values.SyncRoot; }
@@ -237,7 +189,6 @@ namespace NHibernate.Collection
 
 		#region IEnumerable Members
 
-		/// <summary></summary>
 		public override IEnumerator GetEnumerator()
 		{
 			Read();
@@ -246,21 +197,12 @@ namespace NHibernate.Collection
 
 		#endregion
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			identifiers = new Hashtable();
 			values = new ArrayList();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
 		public override object Disassemble( ICollectionPersister persister )
 		{
 			object[ ] result = new object[ values.Count * 2 ];
@@ -276,34 +218,21 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		/// <summary></summary>
 		public override bool Empty
 		{
 			get { return ( values.Count == 0 ); }
 		}
 
-		/// <summary></summary>
 		public override ICollection Entries()
 		{
 			return values;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public override bool EntryExists( object entry, int i )
 		{
 			return entry != null;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elementType"></param>
-		/// <returns></returns>
 		public override bool EqualsSnapshot( IType elementType )
 		{
 			IDictionary snap = ( IDictionary ) GetSnapshot();
@@ -331,11 +260,6 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override ICollection GetDeletes( IType elemType )
 		{
 			IDictionary snap = ( IDictionary ) GetSnapshot();
@@ -352,24 +276,11 @@ namespace NHibernate.Collection
 			return deletes;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public override object GetIndex( object entry, int i )
 		{
 			return new NotImplementedException( "Bags don't have indexes" );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsInserting( object entry, int i, IType elemType )
 		{
 			IDictionary snap = ( IDictionary ) GetSnapshot();
@@ -378,13 +289,6 @@ namespace NHibernate.Collection
 			return entry != null && ( id == null || snap[ id ] == null );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsUpdating( object entry, int i, IType elemType )
 		{
 			if( entry == null )
@@ -403,13 +307,6 @@ namespace NHibernate.Collection
 			return old != null && elemType.IsDirty( old, entry, Session );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="reader"></param>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, object owner )
 		{
 			object element = persister.ReadElement( reader, owner, Session );
@@ -418,11 +315,6 @@ namespace NHibernate.Collection
 			return element;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
 		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
 			IDictionary map = new Hashtable( values.Count );
@@ -437,11 +329,6 @@ namespace NHibernate.Collection
 			return map;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="snapshot"></param>
-		/// <returns></returns>
 		public override ICollection GetOrphans( object snapshot )
 		{
 			/*
@@ -455,10 +342,6 @@ namespace NHibernate.Collection
 			return PersistentCollection.GetOrphans( ( ( IDictionary ) snapshot).Values, values, Session );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
 		public override void PreInsert( ICollectionPersister persister )
 		{
 			try
@@ -480,19 +363,41 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="persister"></param>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="writeOrder"></param>
 		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
 		{
 			persister.WriteElement( st, entry, writeOrder, Session );
 			// TODO: if not using identity columns:
 			persister.WriteIdentifier( st, identifiers[ i ], writeOrder, Session );
 		}
+
+		private void BeforeRemove( int index ) 
+		{
+			// Move the identifier being removed to the end of the list (i.e. it isn't actually removed).
+			object removedId = identifiers[ index ];
+			int last = values.Count - 1;
+			for( int i = index; i < last; i++ ) 
+			{
+				object id = identifiers[ i + 1 ];
+				if( id == null ) 
+				{
+					identifiers.Remove( i );
+				}
+				else 
+				{
+					identifiers[ i ] = id;
+				}
+			}
+			identifiers[ last ] = removedId;
+		}
+
+		private void BeforeAdd( int index ) 
+		{
+			for( int i = index; i < values.Count; i++ ) 
+			{
+				identifiers[ i + 1 ] = identifiers[ i ];
+			}
+			identifiers.Remove( index );
+		}
+
 	}
 }

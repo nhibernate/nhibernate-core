@@ -298,7 +298,7 @@ namespace NHibernate.Util
 		/// </returns>
 		public static bool BooleanValue( string value )
 		{
-			string trimmed = value.Trim().ToLower();
+			string trimmed = value.Trim().ToLower( System.Globalization.CultureInfo.InvariantCulture );
 			return trimmed.Equals( "true" ) || trimmed.Equals( "t" );
 		}
 

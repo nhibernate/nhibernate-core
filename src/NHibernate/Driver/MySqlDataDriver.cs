@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 
 namespace NHibernate.Driver
 {
@@ -8,9 +7,9 @@ namespace NHibernate.Driver
 	/// </summary>
 	/// <remarks>
 	/// <p>
-	/// In order to use this Driver you must have the Assembly <c>MySql.Data.dll</c> available for 
-	/// NHibernate to load it.  The Assembly <c>ICSharpCode.SharpZipLib.dll</c> is also required by
-	/// the Assembly <c>MySql.Data.dll</c>.
+	/// In order to use this Driver you must have the assembly <c>MySql.Data.dll</c> available for 
+	/// NHibernate to load it.  The assembly <c>ICSharpCode.SharpZipLib.dll</c> is also required by
+	/// the assembly <c>MySql.Data.dll</c>.
 	/// </p>
 	/// <p>
 	/// Please check the products website 
@@ -18,56 +17,19 @@ namespace NHibernate.Driver
 	/// for any updates and or documentation.
 	/// </p>
 	/// </remarks>
-	public class MySqlDataDriver : DriverBase
+	public class MySqlDataDriver : ReflectionBasedDriver
 	{
-		private System.Type connectionType;
-		private System.Type commandType;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MySqlDataDriver"/> class.
 		/// </summary>
 		/// <exception cref="HibernateException">
-		/// Thrown when the MySql.Data assembly is not and can not be loaded.
+		/// Thrown when the <c>MySql.Data assembly</c> can not be loaded.
 		/// </exception>
-		public MySqlDataDriver()
+		public MySqlDataDriver() : base(
+			"MySql.Data",
+            "MySql.Data.MySqlClient.MySqlConnection",
+			"MySql.Data.MySqlClient.MySqlCommand" )
 		{
-			string assemblyName = "MySql.Data";
-			string connectionClassName = "MySql.Data.MySqlClient.MySqlConnection";
-			string commandClassName = "MySql.Data.MySqlClient.MySqlCommand";
-
-			// try to get the Types from an already loaded assembly
-			connectionType = Util.ReflectHelper.TypeFromAssembly( connectionClassName, assemblyName );
-			commandType = Util.ReflectHelper.TypeFromAssembly( commandClassName, assemblyName );
-
-			if( connectionType == null || commandType == null )
-			{
-				throw new HibernateException(
-					"The IDbCommand and IDbConnection implementation in the Assembly MySql.Data could not be found.  " +
-						"Please ensure that the Assemblies MySql.Data.dll and ICSharpCode.SharpZipLib.dll " +
-						"are in the Global Assembly Cache or in a location that NHibernate " +
-						"can use System.Type.GetType(string) to load the types from."
-					);
-			}
-		}
-
-		/// <summary>
-		/// Gets the <see cref="System.Type"/> from the MySql.Data assembly
-		/// that implements <see cref="IDbCommand"/>
-		/// </summary>
-		/// <value>The <c>MySql.Data.MySqlClient.MySqlCommand</c> type.</value>
-		public override System.Type CommandType
-		{
-			get { return commandType; }
-		}
-
-		/// <summary>
-		/// Gets the <see cref="System.Type"/> from the MySql.Data assembly
-		/// that implements <see cref="IDbCommand"/>
-		/// </summary>
-		/// <value>The <c>MySql.Data.MySqlClient.MySqlConnection</c> type.</value>
-		public override System.Type ConnectionType
-		{
-			get { return connectionType; }
 		}
 
 		/// <summary>

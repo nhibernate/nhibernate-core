@@ -38,7 +38,7 @@ namespace NHibernate.Hql
 		public void Token( string token, QueryTranslator q )
 		{
 			// start by looking for HQL keywords....
-			string lcToken = token.ToLower();
+			string lcToken = token.ToLower( System.Globalization.CultureInfo.InvariantCulture );
 			if( lcToken.Equals( StringHelper.Comma ) )
 			{
 				if( !( expectingJoin | expectingAs ) )

@@ -1421,7 +1421,12 @@ namespace NHibernate.Persister
 				return new string[ ] {DiscriminatorFragment( alias ).ToSqlStringFragment().ToString()};
 			}
 
-			int tab = (int) tableNumberByPropertyPath[ property ];
+			object objTab = tableNumberByPropertyPath[ property ];
+			if( objTab == null )
+			{
+				throw new QueryException( string.Format( "could not resolve property:{0} of :{1}", property, ClassName ) );
+			}
+			int tab = (int) objTab;
 
 			return base.ToColumns( Alias( alias, tab ), property );
 		}

@@ -664,6 +664,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\PostgreSQL81Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\PostgreSQLDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -745,6 +750,11 @@
                 />
                 <File
                     RelPath = "Driver\OracleDataClientDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\ReflectionBasedDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1269,6 +1279,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\SessionFactoryImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\ScheduledCollectionAction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1310,21 +1335,6 @@
                 />
                 <File
                     RelPath = "Impl\ScheduledUpdate.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionFactoryImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2114,6 +2124,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\AnsiCharType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\AnsiStringType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2125,6 +2140,11 @@
                 />
                 <File
                     RelPath = "Type\BagType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\BaseCharType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2150,16 +2170,6 @@
                 />
                 <File
                     RelPath = "Type\ByteType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\CharBooleanType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\CharType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2225,6 +2235,16 @@
                 />
                 <File
                     RelPath = "Type\GuidType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\CharBooleanType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\CharType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2454,6 +2474,11 @@
                 />
                 <File
                     RelPath = "Util\ArrayHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\AssemblyQualifiedTypeName.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -27,7 +27,7 @@ namespace NHibernate.Mapping
 				if( Type == null )
 				{
 					Type = TypeFactory.ManyToOne(
-						ReflectHelper.ReflectedPropertyClass( propertyClass, propertyName ),
+						ReflectHelper.ReflectedPropertyClass( propertyClass, propertyName, propertyAccess ),
 						ReferencedPropertyName);
 				}
 			}

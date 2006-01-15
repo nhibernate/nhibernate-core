@@ -43,7 +43,7 @@
 	<property name="project.company" value="NHibernate.org" />
 	<property name="project.version.major" value="1" overwrite="false" />
 	<property name="project.version.minor" value="0" overwrite="false" />
-	<property name="project.version.build" value="1" overwrite="false" />
+	<property name="project.version.build" value="2" overwrite="false" />
 	<property name="project.version.revision" value="0" overwrite="false" />
 	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
 	
@@ -170,7 +170,29 @@
 		<nant target="build" buildfile="src/NHibernate.Test/NHibernate.Test.build" />
 		<nant target="build" buildfile="src/NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
 		<nant target="build" buildfile="src/NHibernate.Examples/NHibernate.Examples.build" />
+
+		<call target="merge" />
 		
+	</target>
+
+	<target name="merge">
+		
+		<exec program="ilmerge.exe" basedir="external-bin" useruntimeengine="true">
+			<arg value="/ndebug:${build.debug}" />
+			<arg value="/lib:${build.dir}/bin" />
+			<arg value="/targetplatform:v1.1" />
+			<arg value="/keyfile:src/NHibernate.snk" if="${sign}" />
+			<arg value="/out:${build.dir}/NHibernate.dll" />
+			<arg value="NHibernate.dll" />
+			<arg value="HashCodeProvider.dll" />
+		</exec>
+		
+		<!-- clean up -->
+		<delete file="${build.dir}/bin/NHibernate.dll" />
+		<delete file="${build.dir}/bin/HashCodeProvider.dll" />
+		<delete file="${build.dir}/bin/HashCodeProvider.license.txt" />
+		<move file="${build.dir}/NHibernate.dll" tofile="${build.dir}/bin/NHibernate.dll" />
+
 	</target>
 
 	<target name="put-connection-settings-into-app-config">
@@ -430,6 +452,7 @@
 				<!-- copy framework neutral dlls -->
 				<include name="lib/*" />
 				<include name="${lib.dir}/**" />
+				<include name="external-bin/ILMerge.exe" />
 				
 				<!-- 
 					exclude the UnitTesting project that is no longer used and the

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH523">
+
+	<class name="ClassA" lazy="true">	
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+		<many-to-one name="B" cascade="save-update" />
+	</class>
+
+	<class name="ClassB" lazy="true">	
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+	</class>
+
+</hibernate-mapping>

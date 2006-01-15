@@ -29,6 +29,7 @@ namespace NHibernate.Test.ExpressionTest
 			Assembly dm = Assembly.GetAssembly( typeof(Simple) );
 			cfg.AddResource( "NHibernate.DomainModel.Simple.hbm.xml", dm );
 			cfg.AddResource( "NHibernate.DomainModel.NHSpecific.SimpleComponent.hbm.xml", dm );
+			cfg.AddResource( "NHibernate.DomainModel.Multi.hbm.xml", dm );
 
 			factory = cfg.BuildSessionFactory();
 			factoryImpl = (ISessionFactoryImplementor)factory;

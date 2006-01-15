@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using HashCodeProvider;
 using log4net;
 
 namespace NHibernate.Util
@@ -41,7 +40,7 @@ namespace NHibernate.Util
 		/// <returns>A new IdentityMap based on a Hashtable.</returns>
 		public static IDictionary Instantiate( int size )
 		{
-			IHashCodeProvider ihcp = new IdentityHashCodeProvider();
+			IHashCodeProvider ihcp = new NHibernate.IdentityHashCodeProvider();
 			IComparer comp = new IdentityComparer();
 			return new IdentityMap( new Hashtable( size, ihcp, comp ) );
 		}

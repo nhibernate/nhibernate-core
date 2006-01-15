@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Xml;
 
 using log4net;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
@@ -24,117 +24,132 @@ namespace NHibernate.Cfg
 	///		 by the <c>Environment</c> properties
 	///		</item>
 	/// </list>
+	/// In NHibernate, <c>&lt;nhibernate&gt;</c> section in the application configuration file
+	/// corresponds to Java system-level properties; <c>&lt;hibernate-configuration&gt;</c>
+	/// section is considered to be the session-factory-level configuration. It is possible
+	/// to use the configuration file at the same time.
 	/// </remarks>
 	public sealed class Environment
 	{
-		/// <summary></summary>
-		public const string Version = "1.0.1.0";
+		/// <summary>
+		/// NHibernate version (informational).
+		/// </summary>
+		public static string Version
+		{
+			get { return "1.0.2"; }
+		}
 
-		/// <summary></summary>
 		public const string ConnectionProvider = "hibernate.connection.provider";
-		/// <summary></summary>
 		public const string ConnectionDriver = "hibernate.connection.driver_class";
-		/// <summary></summary>
 		public const string ConnectionString = "hibernate.connection.connection_string";
-		/// <summary></summary>
 		public const string Isolation = "hibernate.connection.isolation";
-		/// <summary></summary>
+
+		// Unused, Java-specific
 		public const string SessionFactoryName = "hibernate.session_factory_name";
-		/// <summary></summary>
+		
 		public const string Dialect = "hibernate.dialect";
-		/// <summary></summary>
 		public const string DefaultSchema = "hibernate.default_schema";
-		/// <summary></summary>
 		public const string ShowSql = "hibernate.show_sql";
-		/// <summary></summary>
 		public const string UseOuterJoin = "hibernate.use_outer_join";
-		/// <summary></summary>
 		public const string MaxFetchDepth = "hibernate.max_fetch_depth";
-		/// <summary></summary>
+		
+		// Unused, Java-specific
 		public const string UseGetGeneratedKeys = "hibernate.jdbc.use_get_generated_keys";
-		/// <summary></summary>
+		
+		// Unused, not implemented
 		public const string StatementFetchSize = "hibernate.jdbc.fetch_size";
-		/// <summary></summary>
+		
+		// Unused, not implemented
 		public const string StatementBatchSize = "hibernate.jdbc.batch_size";
-		/// <summary></summary>
+		
 		public const string BatchVersionedData = "hibernate.jdbc.batch_versioned_data";
-		/// <summary></summary>
+		
+		// Unused, not implemented
 		public const string OutputStylesheet = "hibernate.xml.output_stylesheet";
-		/// <summary></summary>
+		
+		// Unused, not implemented (and somewhat Java-specific)
 		public const string TransactionStrategy = "hibernate.transaction.factory_class";
-		/// <summary></summary>
+		
+		// Unused, not implemented (and somewhat Java-specific)
 		public const string TransactionManagerStrategy = "hibernate.transaction.manager_lookup_class";
-		/// <summary></summary>
+
 		public const string CacheProvider = "hibernate.cache.provider_class";
 		public const string UseQueryCache = "hibernate.cache.use_query_cache";
 		public const string QueryCacheFactory = "hibernate.cache.query_cache_factory";
 		public const string CacheRegionPrefix = "hibernate.cache.region_prefix";
 		public const string UseMinimalPuts = "hibernate.cache.use_minimal_puts";
-		/// <summary></summary>
 		public const string QuerySubstitutions = "hibernate.query.substitutions";
-		/// <summary></summary>
+		
+		// Unused, not implemented
 		public const string QueryImports = "hibernate.query.imports";
 		public const string Hbm2ddlAuto = "hibernate.hbm2ddl.auto";
+		
+		// Unused, not implemented
 		public const string SqlExceptionConverter = "hibernate.sql_exception_converter";
+		
+		// Unused, not implemented
 		public const string WrapResultSets = "hibernate.wrap_result_sets";
 
 		// NHibernate-specific properties
-
-		/// <summary></summary>
 		public const string PrepareSql = "hibernate.prepare_sql";
-		/// <summary></summary>
 		public const string CommandTimeout = "hibernate.command_timeout";
+		public const string PropertyUseReflectionOptimizer = "hibernate.use_reflection_optimizer";
+
+		private static bool EnableReflectionOptimizer;
+
+		private static IDictionary GlobalProperties;
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
 
-		private static IDictionary properties = new Hashtable();
-
-		private static XmlNode configNode = null;
-
-		private static bool isConfigured = false;
-
-		internal static void Configure()
+		/// <summary>
+		/// Issue warnings to user when any obsolete property names are used.
+		/// </summary>
+		/// <param name="props"></param>
+		/// <returns></returns>
+		public static void VerifyProperties( IDictionary props )
 		{
-			if( !isConfigured )
-			{
-				bool configurationFound = false;
+		}
 
-				configurationFound = ConfigureFromNameValueCollection();
-				if( !configurationFound )
-				{
-					configurationFound = ConfigureFromXmlNode();
-				}
-				if( !configurationFound )
-				{
-					log.Debug( "no hibernate settings in app.config/web.config were found" );
-				}
-				isConfigured = true;
+		static Environment()
+		{
+			log.Info( "NHibernate " + Environment.Version );
+
+			GlobalProperties = new Hashtable();
+			GlobalProperties[ PropertyUseReflectionOptimizer ] = true.ToString();
+
+			LoadGlobalPropertiesFromAppConfig();
+
+			VerifyProperties( GlobalProperties );
+
+			EnableReflectionOptimizer = PropertiesHelper.GetBoolean( PropertyUseReflectionOptimizer, GlobalProperties );
+
+			if( EnableReflectionOptimizer )
+			{
+				log.Info( "Using reflection optimizer" );
 			}
 		}
 
-		private static bool ConfigureFromXmlNode()
+		private static void LoadGlobalPropertiesFromAppConfig()
 		{
-			configNode = ConfigurationSettings.GetConfig( "hibernate-configuration" ) as XmlNode;
-			return configNode != null;
-		}
+			object config = ConfigurationSettings.GetConfig( "nhibernate" );
 
-		private static bool ConfigureFromNameValueCollection()
-		{
-			NameValueCollection props = ConfigurationSettings.GetConfig( "nhibernate" ) as NameValueCollection;
-			if( props != null )
+			if( config == null )
 			{
-				foreach( string key in props.Keys )
-				{
-					properties[ key ] = props[ key ];
-				}
-				return true;
+				log.Info( "nhibernate section not found in application configuration file" );
+				return;
 			}
-			return false;
-		}
 
-		internal static XmlNode ConfigurationNode
-		{
-			get { return configNode; }
+			NameValueCollection properties = config as NameValueCollection;
+			if( properties == null )
+			{
+				log.Info( "nhibernate section in application configuration file is not using NameValueSectionHandler, ignoring" );
+				return;
+			}
+
+			foreach( string key in properties )
+			{
+				GlobalProperties[ key ] = properties[ key ];
+			}
 		}
 
 		private Environment()
@@ -143,27 +158,15 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Gets a copy of the configuration found in app.config/web.config
+		/// Gets a copy of the configuration found in <c>&lt;nhibernate&gt;</c> section
+		/// of app.config/web.config.
 		/// </summary>
 		/// <remarks>
 		/// This is the replacement for hibernate.properties
 		/// </remarks>
 		public static IDictionary Properties
 		{
-			get
-			{
-				IDictionary copy = new Hashtable( properties.Count );
-				foreach( DictionaryEntry de in properties )
-				{
-					copy[ de.Key ] = de.Value;
-				}
-				return copy;
-			}
-		}
-
-		internal static void SetProperties( IDictionary props )
-		{
-			properties = props;
+			get { return new Hashtable( GlobalProperties ); }
 		}
 
 		[Obsolete]
@@ -173,12 +176,20 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Issue warnings to user when any obsolete property names are used.
+		/// Enables or disables use of the reflection optimizer.
 		/// </summary>
-		/// <param name="props"></param>
-		/// <returns></returns>
-		public static void VerifyProperties( IDictionary props )
+		/// <remarks>
+		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
+		/// of the application configuration file by default. Since it is not
+		/// always convenient to configure NHibernate through the application
+		/// configuration file, it is also possible to set the property value
+		/// manually. This should only be done before a session factory is
+		/// created, otherwise the change may not take effect.
+		/// </remarks>
+		public static bool UseReflectionOptimizer
 		{
+			get { return EnableReflectionOptimizer; }
+			set { EnableReflectionOptimizer = value; }
 		}
 	}
 }

@@ -307,7 +307,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 			string formatted;
 
-			if( sql.ToLower().StartsWith( "create table" ) )
+			if( sql.ToLower( System.Globalization.CultureInfo.InvariantCulture ).StartsWith( "create table" ) )
 			{
 				StringBuilder result = new StringBuilder( 60 );
 				StringTokenizer tokens = new StringTokenizer( sql, "(,)", true );

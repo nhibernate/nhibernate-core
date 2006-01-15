@@ -1,5 +1,5 @@
 <!-- <!DOCTYPE chapter SYSTEM "../docbook-xml/docbookx.dtd"> -->
-<chapter id="Nullables">
+<chapter id="nullables">
 	<title>Nullables</title>
 
 
@@ -60,7 +60,7 @@ public <emphasis role="strong">class Person</emphasis>
 </hibernate-mapping>]]></programlisting>
 		<important>
 			<para>In the mapping, the type of <emphasis>DateOfBirth</emphasis>
-				<emphasis role="strong">must</emphasis> be <classname>Nullables.NHibernate.NullableDateTimeType</classname>. Note that <link linkend="NHibernate.Mapping.Attributes">NHibernate.Mapping.Attributes</link> handles that automatically.</para>
+				<emphasis role="strong">must</emphasis> be <classname>Nullables.NHibernate.NullableDateTimeType</classname>. Note that <link linkend="mapping-attributes">NHibernate.Mapping.Attributes</link> handles that automatically.</para>
 			<para><classname>Nullables.NHibernate.NullableXXXType</classname>s are wrapper types used to translate Nullables types to Database types.</para>
 		</important>
 

@@ -18,7 +18,7 @@ namespace NHibernate.Property
 		/// <returns>The name of the Field in PascalCase format prefixed with an underscore.</returns>
 		public string GetFieldName( string propertyName )
 		{
-			return "_" + propertyName.Substring( 0, 1 ).ToUpper() + propertyName.Substring( 1 );
+			return "_" + propertyName.Substring( 0, 1 ).ToUpper( System.Globalization.CultureInfo.InvariantCulture ) + propertyName.Substring( 1 );
 		}
 
 		#endregion

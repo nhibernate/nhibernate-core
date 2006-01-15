@@ -384,7 +384,7 @@ namespace NHibernate.Dialect
 
 		private static int GetAfterSelectInsertPoint(string fragment)
 		{
-			string fragmentLowerCased = fragment.ToLower();
+			string fragmentLowerCased = fragment.ToLower( System.Globalization.CultureInfo.InvariantCulture );
 			if (fragmentLowerCased.StartsWith("select distinct"))
 			{
 				return 15;

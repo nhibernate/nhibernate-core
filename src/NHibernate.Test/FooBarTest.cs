@@ -2455,8 +2455,12 @@ namespace NHibernate.Test
 				s.Find( "select count(*) from Baz as baz where 1 in indices(baz.FooArray)" );
 				s.Find( "select count(*) from Bar as bar where 'abc' in elements(bar.Baz.FooArray)" );
 				s.Find( "select count(*) from Bar as bar where 1 in indices(bar.Baz.FooArray)" );
-				s.Find( "select count(*) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)" );
-				s.Find( "select max( elements(bar.Baz.FooArray) ) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)" );
+				if( !( dialect is Dialect.OracleDialect ) )
+				{
+					// These fail on Oracle 10 XE - g.id is a string (guid), indices are integer
+					s.Find( "select count(*) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)" );
+					s.Find( "select max( elements(bar.Baz.FooArray) ) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)" );
+				}
 				s.Find( "select count(*) from Bar as bar where 1 in (from bar.Component.Glarch.ProxyArray g where g.Name='foo')" );
 				s.Find( "select count(*) from Bar as bar where 1 in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')" );
 
@@ -4677,12 +4681,36 @@ namespace NHibernate.Test
 			IDbCommand cmd = s.Connection.CreateCommand();
 			cmd.CommandText = "update " + dialect.QuoteForTableName( "foos" ) + " set long_ = -3";
 			cmd.ExecuteNonQuery();
+			
+			s.Refresh( foo );
+			Assert.AreEqual( ( long ) -3, foo.Long );
+			Assert.AreEqual( LockMode.Read, s.GetCurrentLockMode( foo ) );
+			s.Refresh( foo, LockMode.Upgrade );
+			Assert.AreEqual( LockMode.Upgrade, s.GetCurrentLockMode( foo ) );
+			s.Delete( foo );
+			s.Flush();
+			s.Close();
+
+		}
+
+		[Test]
+		public void RefreshTransient()
+		{
+			ISession s = OpenSession();
+			Foo foo = new Foo();
+			s.Save( foo );
+			s.Flush();
+			s.Close();
+			
+			s = OpenSession();
+			IDbCommand cmd = s.Connection.CreateCommand();
+			cmd.CommandText = "update " + dialect.QuoteForTableName( "foos" ) + " set long_ = -3";
+			cmd.ExecuteNonQuery();
 			s.Refresh( foo );
 			Assert.AreEqual( ( long ) -3, foo.Long );
 			s.Delete( foo );
 			s.Flush();
 			s.Close();
-
 		}
 
 		[Test]

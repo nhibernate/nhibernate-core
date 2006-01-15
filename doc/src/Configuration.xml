@@ -346,7 +346,10 @@ ISession session = sessions.OpenSession(conn);
                             <literal>hibernate.prepare_sql</literal>
                         </entry>
                         <entry>
-                            Enables preparing of sql statements.
+                            Enables preparing of sql statements. Note that this parameter
+                            should not be used in version 1.0.x since prepared statements
+                            are currently not remembered and will be re-prepared over and
+                            over again.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
                                 <literal>true</literal> | <literal>false</literal>

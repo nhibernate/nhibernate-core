@@ -1,9 +1,82 @@
+Build 1.0.2.0
+========================
+
+Bugs Fixed:
+
+    * [NH-409] - Sybase - Polymorphics Queries - wrong SQL generation about aliases/quotes
+    * [NH-418] - Custom persister cannot be instanciated.
+    * [NH-464] - DateTime does not work in composite-element mapping
+    * [NH-470] - Disconnect and Close should not close user-supplied connections
+    * [NH-471] - Misspelled property in ICriteria throws NullReferenceException
+    * [NH-476] - GetSetHelperFactory doesn't work with external dependencies
+    * [NH-477] - IncrementGenerator reads Int64 even if Int32 or Int16 is used.
+    * [NH-479] - One-To-One SaveAndUpdateCopy - Reference Identifier Bug
+    * [NH-480] - Should use invariant culture with ToLower and other string calls
+    * [NH-496] - Reflection optimizer should throw a more informative exception when a property is mapped using a wrong type
+    * [NH-505] - Reflection optimizer does not work with structures
+    * [NH-508] - changes to idbag collection not persisted correctly
+    * [NH-509] - ILMerge is not packaged in the distribution
+    * [NH-512] - Custom properties accessors do not work
+    * [NH-523] - SaveOrUpdateCopy throws PersistentObjectException
+
+New Features:
+
+    * [NH-513] - FOR UPDATE NOWAIT in Postgresql 8.1
+
+Improvements:
+
+    * [NH-483] - Improve type resolution to handle dynamic assemblies
+    * [NH-488] - Change log level for GetSetHelper messages to DEBUG so that users are not confused
+    * [NH-489] - Remove logging from ADOException constructor
+    * [NH-491] - SQLite dialect should use DATETIME type for date/time columns
+    * [NH-493] - Correction in the NHibernate.Type.CharType.cs
+    * [NH-497] - Add more Hibernate-compatible type names
+    * [NH-506] - Make Environment.UseReflectionOptimizer property writable
+    * [NH-516] - Log SQL parameter values
+    * [NH-521] - Locking an unitialized entity causes its initialization
+    * [NH-525] - Upgrade to latest DynamicProxy
+
 Build 1.0.1.0
 ========================
 
+Bugs Fixed:
+
+    * [NH-406] - NHibernate.Cfg.Configuration.Configure("MyAssembly.dll.config") results in System.NullReferenceException
+    * [NH-407] - session.Refresh(myObject) does not refresh/load the object from the datbase if it does not exist in the cache.
+    * [NH-414] - Need to process <cache> and <collection-cache> in configuration files
+    * [NH-417] - Column Alias bug
+    * [NH-422] - <meta-value> child tag missing from <many-to-any>
+    * [NH-440] - one-to-one unique foreign key mapping fails during query
+    * [NH-415] - AddXmlString should rethrow exceptions it catches
+    * [NH-463] - IncrementGenerator returns Int64 but uses an Int32 internally
+
+New Features:
+
+    * [NH-113] - drop table SQL will now check if the table exists on MS SQL
+      to avoid unnecessary warnings.
+    * [NH-450] - Added hbm2ddl NAnt task by James Geurts
+
 Improvements:
- * BinaryType.Get should now perform faster
- * [NH-398] - Bulk property get/set optimization in AbstractEntityPersister (Roberto Paterlini)
+    * [NH-403] - BinaryType.Get should now perform faster
+    * [NH-398] - Bulk property get/set optimization in AbstractEntityPersister
+      contributed by Roberto Paterlini. The optimization is enabled by default,
+      set hibernate.use_reflection_optimizer property to false in your
+      App.config file to disable it. Note that the property is global, thus
+      it is only possible to set it in the app.config file in <nhibernate>
+      session (see above).
+    * [NH-443] - Added more details to "broken column mapping" message
+    * [NH-448] - NHibernate configuration process is now closer to Hibernate:
+      - hibernate.properties file corresponds to <nhibernate> section
+        in app.config (mapped to NameValueSectionHandler)
+      - configuration through hibernate.cfg.xml is supported
+      - instead of hibernate.cfg.xml, <hibernate-configuration> section
+        in app.config (mapped to NHibernate.Cfg.ConfigurationSectionHandler)
+        can also be used.
+      - creating a new configuration instance in version 1.0 would cause it
+        to read <hibernate-configuration> section immediately. In 1.0.1 this
+        was changed so that the section is only read when Configure() is called
+    * HashCodeProvider is now merged into NHibernate assembly during build,
+      thus it does not have to be distributed along with NHibernate.dll.
 
 Build 1.0.0.0
 ========================

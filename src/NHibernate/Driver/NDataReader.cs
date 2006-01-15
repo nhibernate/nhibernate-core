@@ -598,10 +598,10 @@ namespace NHibernate.Driver
 				}
 				else
 				{
-					string colNameUpper = colName.ToUpper();
+					string colNameLower = colName.ToLower( System.Globalization.CultureInfo.InvariantCulture );
 					foreach( DictionaryEntry entry in fieldNameToIndex )
 					{
-						if( entry.Key.ToString().ToUpper() == colNameUpper )
+						if( entry.Key.ToString().ToLower( System.Globalization.CultureInfo.InvariantCulture ) == colNameLower )
 						{
 							return ( int ) entry.Value;
 						}

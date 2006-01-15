@@ -117,7 +117,7 @@ namespace NHibernate.Hql
 			}
 			else
 			{
-				string prop = ( string ) collectionProps[ token.ToLower() ];
+				string prop = ( string ) collectionProps[ token.ToLower( System.Globalization.CultureInfo.InvariantCulture ) ];
 				if( prop != null )
 				{
 					currentCollectionProp = prop;
@@ -136,7 +136,7 @@ namespace NHibernate.Hql
 				string doubleToken = ( token.Length > 1 ) ?
 					lastToken + ' ' + token :
 					lastToken + token;
-				if( operators.Contains( doubleToken.ToLower() ) )
+				if( operators.Contains( doubleToken.ToLower( System.Globalization.CultureInfo.InvariantCulture ) ) )
 				{
 					parser.Token( doubleToken, q );
 					lastToken = null;

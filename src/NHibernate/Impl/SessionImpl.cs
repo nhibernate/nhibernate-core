@@ -38,7 +38,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private SessionFactoryImpl factory;
 
-		private readonly bool autoClose;
+		private bool autoClose;
 		private readonly long timestamp;
 		private bool isCurrentTransaction; // a bit dodgy!
 
@@ -1933,6 +1933,13 @@ namespace NHibernate.Impl
 				throw new HibernateException( "Invalid lock mode for Lock()" );
 			}
 
+			if( lockMode == LockMode.None && ReassociateIfUninitializedProxy( obj ) )
+			{
+				// NH-specific: shortcut for uninitialized proxies - reassociate
+				// without initialization
+				return;
+			}
+
 			obj = UnproxyAndReassociate( obj );
 			//TODO: if object was an uninitialized proxy, this is inefficient, 
 			//resulting in two SQL selects 
@@ -2682,7 +2689,7 @@ namespace NHibernate.Impl
 				{
 					throw new PersistentObjectException(
 						"attempted to refresh transient instance when persistent instance was already associated with the Session: " +
-							MessageHelper.InfoString( persister, id ) );
+						MessageHelper.InfoString( persister, id ) );
 				}
 			}
 			else
@@ -2705,15 +2712,16 @@ namespace NHibernate.Impl
 				{
 					new EvictVisitor( this ).Process( obj, persister );
 				}
-
-				if( persister.HasCache )
-				{
-					persister.Cache.Remove( id );
-				}
-				EvictCachedCollections( persister, id );
-				object result = e.Persister.Load( e.Id, theObj, lockMode, this );
-				UnresolvableObjectException.ThrowIfNull( result, id, persister.MappedClass );
 			}
+
+			if( persister.HasCache )
+			{
+				persister.Cache.Remove( id );
+			}
+			
+			EvictCachedCollections( persister, id );
+			object result = persister.Load( id, theObj, lockMode, this );
+			UnresolvableObjectException.ThrowIfNull( result, id, persister.MappedClass );
 		}
 
 		/// <summary>
@@ -3436,7 +3444,7 @@ namespace NHibernate.Impl
 
 		/// <summary>
 		/// Get the id value for an object that is actually associated with the session.
-		/// This is a bit stricter than getEntityIdentifierIfNotUnsaved().
+		/// This is a bit stricter than GetEntityIdentifierIfNotUnsaved().
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
@@ -4352,6 +4360,7 @@ namespace NHibernate.Impl
 			log.Debug( "reconnecting session" );
 
 			connect = true;
+			autoClose = true;
 		}
 
 		public void Reconnect( IDbConnection conn )
@@ -4363,6 +4372,7 @@ namespace NHibernate.Impl
 				throw new HibernateException( "session already connected" );
 			}
 			this.connection = conn;
+			autoClose = false;
 		}
 
 		#region System.IDisposable Members
@@ -5422,6 +5432,14 @@ namespace NHibernate.Impl
 				}
 				else
 				{
+					// NH: Added to fix NH-523. Result might have been loaded as a proxy earlier,
+					// not initializing it here causes Unproxy to throw an exception.
+					//
+					// H2.1 also has this bug. H3 avoids the bug by first loading all objects
+					// to which copy (merge) is going to be cascaded, and then copying. This is
+					// more efficient, but not possible in NH currently.
+					NHibernateUtil.Initialize( result );
+					
 					target = Unproxy( result );
 					copiedAlready[ obj ] = target;
 					if( target == obj )
