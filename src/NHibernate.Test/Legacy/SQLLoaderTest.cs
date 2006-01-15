@@ -119,7 +119,7 @@ namespace NHibernate.Test.Legacy
 			s.Name = "WannaBeFound";
 			session.Flush();
 
-			IQuery query = session.CreateSQLQuery( "select {category.*} from Category {category} where {category}.Name = :name", "category", typeof( Category ) );
+			IQuery query = session.CreateSQLQuery( "select {category.*} from Category {category} where {category}.Name = :Name", "category", typeof( Category ) );
 			query.SetProperties( s );
 
 			query.List();

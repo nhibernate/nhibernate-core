@@ -39,7 +39,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return code.ToUpper().Equals( TrueString );
+				return code.ToUpper( System.Globalization.CultureInfo.InvariantCulture ).Equals( TrueString );
 			}
 		}
 
@@ -82,11 +82,11 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object StringToObject( String xml )
 		{
-			if( TrueString.Equals( xml ) )
+			if( TrueString.Equals( xml.ToUpper( System.Globalization.CultureInfo.InvariantCulture ) ) )
 			{
 				return true;
 			}
-			else if( FalseString.Equals( xml ) )
+			else if( FalseString.Equals( xml.ToUpper( System.Globalization.CultureInfo.InvariantCulture ) ) )
 			{
 				return false;
 			}

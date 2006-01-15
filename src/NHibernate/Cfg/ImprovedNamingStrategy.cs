@@ -76,14 +76,15 @@ namespace NHibernate.Cfg
 			char[] chars = name.Replace( '.', '_' ).ToCharArray();
 			StringBuilder buf = new StringBuilder( chars.Length ) ;
 
-			char prev = 'a';
+			char prev = 'A';
 			foreach( char c in chars )
 			{
-				if ( c != '_' && char.IsUpper(c) && !char.IsUpper(prev) )
+				if ( c != '_' && char.IsUpper( c ) && !char.IsUpper( prev ) )
 				{
 					buf.Append( '_' );
 				}
-				buf.Append( char.ToLower( c ) );
+				buf.Append( char.ToLower( c, System.Globalization.CultureInfo.InvariantCulture ) );
+				prev = c;
 			}
 
 			return buf.ToString();

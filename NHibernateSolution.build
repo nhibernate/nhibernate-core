@@ -50,7 +50,7 @@
 	<property name="project.company" value="NHibernate.org" />
 	<property name="project.version.major" value="1" overwrite="false" />
 	<property name="project.version.minor" value="0" overwrite="false" />
-	<property name="project.version.build" value="1" overwrite="false" />
+	<property name="project.version.build" value="2" overwrite="false" />
 	<property name="project.version.revision" value="0" overwrite="false" />
 	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
 	
@@ -475,6 +475,8 @@
 				<include name="${lib.dir}/*"  />
 				<include name="${lib.family.dir}/*" />
 				<include name="${lib.framework.dir}/*" />
+				<include name="external-bin/ILMerge.exe" />
+
 				<!-- 
 					exclude the UnitTesting project that is no longer used and the
 					Clover modified source files.

@@ -81,7 +81,7 @@
 	<target name="build-html" depends="init" description="Generates html from docbook files.">
 
 		<property name="build.html.dir" value="${output.dir}" />
-		<property name="build.single.dir" value="${build.html.dir}" />
+		<property name="build.single.dir" value="${build.html.dir}/html_single" />
 		<property name="build.chunk.dir" value="${build.html.dir}/html" />
 
 		<mkdir dir="${build.html.dir}" failonerror="false" />
@@ -90,7 +90,7 @@
 
 		<exec program="xsltproc" >
 			<arg value="--output" />
-			<arg file="${build.single.dir}/NHibernate.Documentation.html" /><!-- file to output transform results to -->
+			<arg file="${build.single.dir}/index.html" /><!-- file to output transform results to -->
 			<arg file="html_single.xsl" /><!-- xsl to do the transforming -->
 			<arg file="src/Documentation.gen" /><!-- xml file to transform -->
 		</exec>
@@ -103,7 +103,7 @@
 		</exec>
 
 		<!-- Copy the images and the stylesheet -->
-		<copy todir="${build.single.dir}/NHibernate.Documentation_files/" overwrite="true" >
+		<copy todir="${build.single.dir}" overwrite="true" >
 			<fileset basedir="./src/">
 				<include name="*.gif" />
 				<include name="html.css" />

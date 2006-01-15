@@ -96,16 +96,16 @@ namespace NHibernate.Id
 				{
 					if (!rs.IsDBNull(0))
 					{
-						next = rs.GetInt32(0) + 1;
+						next = Convert.ToInt64( rs.GetValue(0) ) + 1;
 					}
 					else
 					{
-						next = 1;
+						next = 1L;
 					}
 				}
 				else
 				{
-					next = 1;
+					next = 1L;
 				}
 				sql=null;
 				log.Debug("first free id: " + next);

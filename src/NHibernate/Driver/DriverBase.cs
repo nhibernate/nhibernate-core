@@ -15,48 +15,32 @@ namespace NHibernate.Driver
 		#region IDriver Members
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(DriverBase));
 
-		/// <summary></summary>
 		public abstract System.Type CommandType { get; }
-		/// <summary></summary>
 		public abstract System.Type ConnectionType { get; }
 
-		/// <summary></summary>
+		// TODO: this should be moved down to ReflectionBasedDriver, but not in 1.0.x
 		public virtual IDbConnection CreateConnection()
 		{
 			return ( IDbConnection ) Activator.CreateInstance( ConnectionType );
 		}
 
-		/// <summary></summary>
+		// TODO: this should be moved down to ReflectionBasedDriver, but not in 1.0.x
 		public virtual IDbCommand CreateCommand()
 		{
 			return ( IDbCommand ) Activator.CreateInstance( CommandType );
 		}
 
-		/// <summary></summary>
 		public abstract bool UseNamedPrefixInSql { get; }
 
-		/// <summary></summary>
 		public abstract bool UseNamedPrefixInParameter { get; }
 
-		/// <summary></summary>
 		public abstract string NamedPrefix { get; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="parameterName"></param>
-		/// <returns></returns>
 		public string FormatNameForSql( string parameterName )
 		{
 			return UseNamedPrefixInSql ? ( NamedPrefix + parameterName ) : StringHelper.SqlParameter;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableAlias"></param>
-		/// <param name="parameterName"></param>
-		/// <returns></returns>
 		public string FormatNameForSql( string tableAlias, string parameterName )
 		{
 			if( !UseNamedPrefixInSql )
@@ -75,22 +59,11 @@ namespace NHibernate.Driver
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="parameterName"></param>
-		/// <returns></returns>
 		public string FormatNameForParameter( string parameterName )
 		{
 			return UseNamedPrefixInParameter ? ( NamedPrefix + parameterName ) : parameterName;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableAlias"></param>
-		/// <param name="parameterName"></param>
-		/// <returns></returns>
 		public string FormatNameForParameter( string tableAlias, string parameterName )
 		{
 			if( !UseNamedPrefixInParameter )
@@ -109,24 +82,16 @@ namespace NHibernate.Driver
 			}
 		}
 
-		/// <summary></summary>
 		public virtual bool SupportsMultipleOpenReaders
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public virtual bool SupportsPreparingCommands
 		{
 			get { return true; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="dialect"></param>
-		/// <param name="sqlString"></param>
-		/// <returns></returns>
 		public virtual IDbCommand GenerateCommand( Dialect.Dialect dialect, SqlString sqlString )
 		{
 			int paramIndex = 0;
@@ -184,12 +149,6 @@ namespace NHibernate.Driver
 			return cmd;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="dialect"></param>
-		/// <param name="sqlString"></param>
-		/// <returns></returns>
 		public virtual IDbCommand GenerateCommand( Dialect.Dialect dialect, string sqlString )
 		{
 			IDbCommand cmd = this.CreateCommand();

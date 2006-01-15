@@ -6,7 +6,7 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
   "../../support/docbook-dtd/docbookx.dtd">
 -->
-<chapter id="mapping">
+<chapter id="basic-mapping">
 	<title>Basic O/R Mapping</title>
 
 	<sect1 id="mapping-declaration">
@@ -344,9 +344,9 @@
 				</callout>
 				<callout arearefs="id4-co" id="id4">
 					<para>
-						<literal>unsaved-value</literal> (optional - defaults to <literal>null</literal>): 
+						<literal>unsaved-value</literal> (optional - defaults to a "sensible" value): 
 						An identifier property value that indicates that an instance is newly instantiated
-						(unsaved), distinguishing it from transient instances that were saved or loaded
+						(unsaved), distinguishing it from detached instances that were saved or loaded
 						in a previous session.
 					</para>
 				</callout>            
@@ -363,14 +363,9 @@
 				If the <literal>name</literal> attribute is missing, it is assumed that the class has no 
 				identifier property.
 			</para>
-	        
+
 			<para>
-				The <literal>unsaved-value</literal> attribute is important! If the identfier property of your 
-				class does not default to <literal>null</literal>, then you should specify the actual default.
-				This is especially important when using a <literal>System.ValueType</literal> such as 
-				<literal>System.Int32</literal> or <literal>System.Guid</literal> as your <literal>&lt;id&gt;</literal>
-				 property.  Make sure to explicity set this attribute because <literal>System.ValueType</literal> 
-				objects can not be <literal>null</literal>.
+				The <literal>unsaved-value</literal> attribute is almost never needed in NHibernate 1.0.
 			</para>
 
 			<para>
@@ -1655,6 +1650,12 @@
 					</thead>	
 					<tbody>
 						<row>
+							<entry><literal>AnsiChar</literal></entry>
+							<entry><literal>System.Char</literal></entry>
+							<entry><literal>DbType.AnsiStringFixedLength - 1 char</literal></entry>
+							<entry></entry>
+						</row>
+						<row>
 							<entry><literal>Boolean</literal></entry>
 							<entry><literal>System.Boolean</literal></entry>
 							<entry><literal>DbType.Boolean</literal></entry>
@@ -1846,9 +1847,9 @@
 			<para>
 				For those of you coming over from Hibernate or using some of the tools to generate <literal>hbm.xml</literal> files
 				that are intended for Hibernate, there is a Hibernate compatiblity layer for type names.  A <literal>type="integer"</literal>
-				will map to an <literal>Int32</literal> NHibernateType, <literal>type="short"</literal> to an <literal>Int16</literal>
-				NHibernateType.  To see all of the conversions you can view the source of static constructor of the class 
-				<literal>NHibernate.Type.TypeFactory</literal>. 
+				or <literal>type="int"</literal> will map to an <literal>Int32</literal> NHibernateType, <literal>type="short"</literal>
+				to an <literal>Int16</literal> NHibernateType.  To see all of the conversions you can view the source of static constructor
+				of the class <literal>NHibernate.Type.TypeFactory</literal>. 
 			</para>
 		</sect2>
 		<sect2 id="mapping-types-custom">
@@ -1885,11 +1886,11 @@
 				Even though NHibernate's rich range of built-in types and support for components means you
 				will very rarely <emphasis>need</emphasis> to use a custom type, it is nevertheless
 				considered good form to use custom types for (non-entity) classes that occur frequently
-				in your application. For example, a <literal>MonetoryAmount</literal> class is a good
+				in your application. For example, a <literal>MonetaryAmount</literal> class is a good
 				candidate for a <literal>ICompositeUserType</literal>, even though it could easily be mapped 
 				as a component. One motivation for this is abstraction. With a custom type, your mapping 
 				documents would be future-proofed against possible changes in your way of representing 
-				monetory values.
+				monetary values.
 			</para>
 		</sect2>
 		<sect2 id="mapping-types-anymapping">
@@ -1897,9 +1898,8 @@
 			<para>TODO</para>
 		</sect2>
 	
-	</sect1>	
+	</sect1>
 
-	
 	<sect1 id="mapping-quotedidentifiers">
 		<title>SQL quoted identifiers</title>
 		<para>

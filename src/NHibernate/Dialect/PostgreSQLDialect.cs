@@ -6,7 +6,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Dialect
 {
 	/// <summary>
-	///  An SQL dialect for PostgreSQL.
+	/// An SQL dialect for PostgreSQL.
 	/// </summary>
 	/// <remarks>
 	/// The PostgreSQLDialect defaults the following configuration properties:

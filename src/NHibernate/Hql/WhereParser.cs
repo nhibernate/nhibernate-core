@@ -190,7 +190,7 @@ namespace NHibernate.Hql
 		/// <param name="q"></param>
 		public void Token( string token, QueryTranslator q )
 		{
-			string lcToken = token.ToLower();
+			string lcToken = token.ToLower( System.Globalization.CultureInfo.InvariantCulture );
 
 			//Cope with [,]
 
@@ -517,7 +517,7 @@ namespace NHibernate.Hql
 					{
 						//anything else
 
-						string negatedToken = negated ? ( string ) negations[ token.ToLower() ] : null;
+						string negatedToken = negated ? ( string ) negations[ token.ToLower( System.Globalization.CultureInfo.InvariantCulture ) ] : null;
 						if( negatedToken != null && ( !betweenSpecialCase || !"or".Equals( negatedToken ) ) )
 						{
 							AppendToken( q, negatedToken );

@@ -35,7 +35,7 @@ namespace NHibernate.Driver
 		/// <value>The <see cref="System.Data.SqlClient.SqlConnection"/> type.</value>
 		public override System.Type ConnectionType
 		{
-			get { return typeof( System.Data.SqlClient.SqlConnection ); }
+			get { return typeof( SqlConnection ); }
 		}
 
 		/// <summary>
@@ -45,7 +45,7 @@ namespace NHibernate.Driver
 		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlConnection"/> object.</value>
 		public override IDbConnection CreateConnection()
 		{
-			return new System.Data.SqlClient.SqlConnection();
+			return new SqlConnection();
 		}
 
 		/// <summary>
@@ -185,7 +185,6 @@ namespace NHibernate.Driver
 			return dbParam;
 
 		}
-
 
 	}
 }

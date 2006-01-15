@@ -67,7 +67,7 @@ namespace NHibernate.Impl
 				Set missingParams = new ListSet( actualNamedParameters );
 				missingParams.RemoveAll( namedParameterLists.Keys );
 				missingParams.RemoveAll( namedParameters.Keys );
-				throw new QueryException( "Not all named parameters have been set: " + missingParams, QueryString );
+				throw new QueryException( "Not all named parameters have been set: " + CollectionPrinter.ToString( missingParams ), QueryString );
 			}
 
 			if ( positionalParameterCount != values.Count ) 
@@ -827,7 +827,7 @@ namespace NHibernate.Impl
 			{
 				try
 				{
-					IGetter getter = ReflectHelper.GetGetter( clazz, namedParam );
+					IGetter getter = ReflectHelper.GetGetter( clazz, namedParam, "property" );
 					SetParameter( namedParam, getter.Get( bean ), GuessType( getter.ReturnType ) );
 				}
 				catch( Exception )

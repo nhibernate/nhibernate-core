@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" auto-import="true">
+
+    <class name="NHibernate.Test.NHSpecificTest.NH464.Promotion, NHibernate.Test" table="PROMOTIONS" mutable="true" lazy="false">
+		
+		<id name="Id" column="PromotionID" type="Int32" unsaved-value="0" access="nosetter.camelcase">
+			<generator class="native" />
+		</id>		
+		<property name="Description" column="Description" type="String"/>
+
+		<component name="Window" class="NHibernate.Test.NHSpecificTest.NH464.PromotionWindow, NHibernate.Test" access="nosetter.camelcase" insert="true" update="true">
+			<bag name="Dates" inverse="false" access="nosetter.camelcase" cascade="none" table="PROMOTION_WINDOWS" lazy="true" batch-size="10">
+				<key column="PromotionID"/>
+                <composite-element class="NHibernate.Test.NHSpecificTest.NH464.DateRange, NHibernate.Test"> 
+                    <property name="Start" column="DateFrom" type="DateTime"/> 
+                    <property name="End" column="DateTo" type="DateTime"/> 
+                </composite-element> 
+			</bag>
+		</component>
+	</class>
+</hibernate-mapping>

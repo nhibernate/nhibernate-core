@@ -88,7 +88,7 @@ namespace NHibernate.Type
 			RegisterType( typeof( Byte ),        NHibernateUtil.Byte,        "byte" );
 			RegisterType( typeof( Char ),        NHibernateUtil.Character,   "character" );
 			RegisterType( typeof( CultureInfo ), NHibernateUtil.CultureInfo, "locale" );
-			RegisterType( typeof( DateTime ),    NHibernateUtil.DateTime,    "date" );
+			RegisterType( typeof( DateTime ),    NHibernateUtil.DateTime,    "datetime" );
 			RegisterType( typeof( Decimal ),     NHibernateUtil.Decimal,     "big_decimal" );
 			RegisterType( typeof( Double ),      NHibernateUtil.Double,      "double" );
 			RegisterType( typeof( Guid ),        NHibernateUtil.Guid,        null );
@@ -149,10 +149,12 @@ namespace NHibernate.Type
 			RegisterType( typeof( Object ), NHibernateUtil.Object, "object" );
 
 			// These are in here for Hibernate mapping compatibility
+			typeByTypeOfName[ "int" ] = NHibernateUtil.Int32;
 			typeByTypeOfName[ "date" ] = NHibernateUtil.Date;
-			typeByTypeOfName[ "serializable" ] = NHibernateUtil.Serializable;
-			typeByTypeOfName[ "timestamp" ] = NHibernateUtil.Timestamp;
 			typeByTypeOfName[ "time" ] = NHibernateUtil.Time;
+			typeByTypeOfName[ "timestamp" ] = NHibernateUtil.Timestamp;
+
+			typeByTypeOfName[ "serializable" ] = NHibernateUtil.Serializable;
 			typeByTypeOfName[ "true_false" ] = NHibernateUtil.TrueFalse;
 			typeByTypeOfName[ "yes_no" ] = NHibernateUtil.YesNo;
 

@@ -21,75 +21,41 @@ namespace NHibernate.Driver
 	/// <a href="http://gborg.postgresql.org/project/npgsql/projdisplay.php">http://gborg.postgresql.org/project/npgsql/projdisplay.php</a>. 
 	/// </p>
 	/// </remarks>
-	public class NpgsqlDriver : DriverBase
+	public class NpgsqlDriver : ReflectionBasedDriver
 	{
-		private System.Type connectionType;
-		private System.Type commandType;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NpgsqlDriver"/> class.
 		/// </summary>
 		/// <exception cref="HibernateException">
-		/// Thrown when the <c>Npgsql</c> assembly is not and can not be loaded.
+		/// Thrown when the <c>Npgsql</c> assembly can not be loaded.
 		/// </exception>
-		public NpgsqlDriver()
+		public NpgsqlDriver() : base(
+			"Npgsql",
+			"Npgsql.NpgsqlConnection",
+			"Npgsql.NpgsqlCommand" )
 		{
-			string assemblyName = "Npgsql";
-			string connectionClassName = "Npgsql.NpgsqlConnection";
-			string commandClassName = "Npgsql.NpgsqlCommand";
-
-			// try to get the Types from an already loaded assembly
-			connectionType = Util.ReflectHelper.TypeFromAssembly( connectionClassName, assemblyName );
-			commandType = Util.ReflectHelper.TypeFromAssembly( commandClassName, assemblyName );
-
-			if( connectionType == null || commandType == null )
-			{
-				throw new HibernateException(
-					"The IDbCommand and IDbConnection implementation in the Assembly Npgsql.dll could not be found.  " +
-						"Please ensure that the Assemblies needed to communicate with PostgreSQL " +
-						"are in the Global Assembly Cache or in a location that NHibernate " +
-						"can use System.Type.GetType(string) to load the types from."
-					);
-			}
 		}
 
-		/// <summary></summary>
-		public override System.Type CommandType
-		{
-			get { return commandType; }
-		}
-
-		/// <summary></summary>
-		public override System.Type ConnectionType
-		{
-			get { return connectionType; }
-		}
-
-		/// <summary></summary>
 		public override bool UseNamedPrefixInSql
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public override bool UseNamedPrefixInParameter
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public override string NamedPrefix
 		{
 			get { return ":"; }
 		}
 
-		/// <summary></summary>
 		public override bool SupportsMultipleOpenReaders
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public override bool SupportsPreparingCommands
 		{
 			// NOTE: Npgsql actually supports this feature but there a bug that results in 

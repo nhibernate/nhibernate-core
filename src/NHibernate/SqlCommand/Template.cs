@@ -128,7 +128,7 @@ namespace NHibernate.SqlCommand
 				{
 					bool isIdentifier = token[ 0 ] == '`' || ( // allow any identifier quoted with backtick
 						Char.IsLetter( token[ 0 ] ) && // only recognizes identifiers beginning with a letter
-							!Keywords.Contains( token.ToLower() ) &&
+							!Keywords.Contains( token.ToLower( System.Globalization.CultureInfo.InvariantCulture ) ) &&
 							token.IndexOf( '.' ) < 0
 						);
 
@@ -152,7 +152,7 @@ namespace NHibernate.SqlCommand
 					}
 					else
 					{
-						if( "from".Equals( token.ToLower() ) )
+						if( "from".Equals( token.ToLower( System.Globalization.CultureInfo.InvariantCulture ) ) )
 						{
 							afterFrom = true;
 						}

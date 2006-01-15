@@ -1391,7 +1391,7 @@ namespace NHibernate.Loader
 		protected static string GenerateAlias( string description, int unique )
 		{
 			return StringHelper.Truncate( StringHelper.Unqualify( description ).TrimStart( '_' ), 10 )
-				.ToLower()
+				.ToLower( System.Globalization.CultureInfo.InvariantCulture )
 				.Replace( '$', '_' )
 				.Replace( '+', '_' ) + // .NET inner classes
 				unique.ToString() +

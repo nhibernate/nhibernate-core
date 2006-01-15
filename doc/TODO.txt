@@ -44,12 +44,13 @@ nhibernate
 + /doc/
   - .ini and *.Hx?		(.chm & .HxS, appear in /build/doc/)
   - "NHibernate.[Reference|Documentation].[chm|HxS]"
-  - "NHibernate.Documentation.html" (single version)	(+ its /NHD_files/ dir)
 + /doc/docbook-xml/
 + /doc/docbook-xsl/
 + /doc/html/		(the chunk version) + html.css
   - /doc/html/reference/
   - /doc/html/images/
++ /doc/html_single/	(single file version)
+
 - /doc/src/				DocBook xml files + doc.build + urls + "DocBook.txt" ...
 
 

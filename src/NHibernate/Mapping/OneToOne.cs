@@ -36,7 +36,7 @@ namespace NHibernate.Mapping
 				if( Type == null )
 				{
 					Type = TypeFactory.OneToOne(
-						ReflectHelper.ReflectedPropertyClass( propertyClass, propertyName ),
+						ReflectHelper.ReflectedPropertyClass( propertyClass, propertyName, propertyAccess ),
 						foreignKeyType,
 						ReferencedPropertyName );
 				}

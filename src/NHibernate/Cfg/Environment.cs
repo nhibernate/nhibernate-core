@@ -31,7 +31,13 @@ namespace NHibernate.Cfg
 	/// </remarks>
 	public sealed class Environment
 	{
-		public const string Version = "1.1-alpha1";
+		/// <summary>
+		/// NHibernate version (informational).
+		/// </summary>
+		public static string Version
+		{
+			get { return "1.1-alpha1"; }
+		}
 
 		public const string ConnectionProvider = "hibernate.connection.provider";
 		public const string ConnectionDriver = "hibernate.connection.driver_class";
@@ -89,13 +95,11 @@ namespace NHibernate.Cfg
 		public const string PropertyUseReflectionOptimizer = "hibernate.use_reflection_optimizer";
 		public const string UseProxyValidator = "hibernate.use_proxy_validator";
 
-		private static bool EnableReflectionOptimizer;
-
 		private static IDictionary GlobalProperties;
 
-		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
+		private static bool EnableReflectionOptimizer;
 
-		private static bool isConfigured = false;
+		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.
@@ -106,15 +110,8 @@ namespace NHibernate.Cfg
 		{
 		}
 
-		// This was a static constructor in Java. Now it is called from
-		// Configuration constructor.
-		internal static void Configure()
+		static Environment()
 		{
-			if( isConfigured )
-			{
-				return;	
-			}
-
 			log.Info( "NHibernate " + Environment.Version );
 
 			GlobalProperties = new Hashtable();
@@ -130,8 +127,6 @@ namespace NHibernate.Cfg
 			{
 				log.Info( "Using reflection optimizer" );
 			}
-
-			isConfigured = true;
 		}
 
 		private static void LoadGlobalPropertiesFromAppConfig()
@@ -180,9 +175,21 @@ namespace NHibernate.Cfg
 			get { return true; }
 		}
 
+		/// <summary>
+		/// Enables or disables use of the reflection optimizer.
+		/// </summary>
+		/// <remarks>
+		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
+		/// of the application configuration file by default. Since it is not
+		/// always convenient to configure NHibernate through the application
+		/// configuration file, it is also possible to set the property value
+		/// manually. This should only be done before a session factory is
+		/// created, otherwise the change may not take effect.
+		/// </remarks>
 		public static bool UseReflectionOptimizer
 		{
 			get { return EnableReflectionOptimizer; }
+			set { EnableReflectionOptimizer = value; }
 		}
 	}
 }

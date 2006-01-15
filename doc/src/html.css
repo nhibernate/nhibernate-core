@@ -1,186 +1,97 @@
+A {
+    color: #003399;
+}
 
-BODY
-{
-	font-family: Verdana;
+A:active {
+    color: #003399;
+}
 
-	SCROLLBAR-FACE-COLOR: #777777;
-	SCROLLBAR-SHADOW-COLOR: #000000;
-	SCROLLBAR-3DLIGHT-COLOR: #101010;
-	SCROLLBAR-ARROW-COLOR: #FAFAFA;
-	SCROLLBAR-TRACK-COLOR: #DDDDDD;
-	SCROLLBAR-DARKSHADOW-COLOR: #FFFFFF;
+A:visited {
+    color: #888888;
+}
+
+P, OL, UL, LI, DL, DT, DD, BLOCKQUOTE {
+    color: #000000;
+}
+
+TD, TH, SPAN {
+    color: #000000;
+}
+
+BLOCKQUOTE {
+    margin-right: 0px;
 }
 
 
-HR  
-{
-	width: 100%;
-	height: 1px;
-	color: #000000;
+H1, H2, H3, H4, H5, H6    {
+    color: #000000;
+    font-weight:500;
+    margin-top:10px;
+    padding-top:15px;
 }
 
-
-A
-{
-	color: #005500;
-}
-A:active
-{
-	color: #000055;
-}
-A:visited
-{
-	color: #550000;
+TABLE  {
+    border-collapse: collapse;
+    border-spacing:0;
+    border: 1px thin black;
+    empty-cells: hide;
 }
 
-
-
-H1
-{
-	color: #800000;
-	font-size: 140%;
-	font-weight: bold;
-	padding-top:15px;
+TD  {
+    padding: 4pt;
 }
 
-H2
-{
-	color: #000080;
-	font-size: 120%;
-	font-weight: bold;
-	padding-top:15px;
+H1 { font-size: 150%; }
+H2 { font-size: 140%; }
+H3 { font-size: 110%; font-weight: bold; }
+H4 { font-size: 110%; font-weight: bold;}
+H5 { font-size: 100%; font-style: italic; }
+H6 { font-size: 100%; font-style: italic; }
+
+TT {
+font-size: 90%;
+    font-family: "Courier New", Courier, monospace;
+    color: #000000;
 }
 
-H3
-{
-	color: #008000;
-	font-size: 110%;
-	font-weight: bold;
+PRE {
+font-size: 100%;
+    padding: 5px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #CCCCCC;
+    background-color: #F4F4F4;
 }
 
-H4, H5, H6
-{
-	color: #000000;
-	font-size: 100%;
-	font-style: italic;
+UL, OL, LI {
+    list-style: disc;
 }
 
-
-
-
-P, DL, DT, DD
-{
-	color: #000000;
+HR  {
+    width: 100%;
+    height: 1px;
+    background-color: #CCCCCC;
+    border-width: 0px;
+    padding: 0px;
+    color: #CCCCCC;
 }
 
-OL, LI
-{
-	color: #000000;
-	list-style: disc;
+.variablelist { 
+    padding-top: 10; 
+    padding-bottom:10; 
+    margin:0;
 }
 
-UL
-{
-	color: #000000;
-	list-style: disc;
-	padding-top: 0;
-	padding-bottom:0;
-	margin:0;
+.itemizedlist, UL { 
+    padding-top: 0; 
+    padding-bottom:0; 
+    margin:0; 
 }
 
-TH, SPAN
-{
-	color: #000000;
-}
-
-TD
-{
-	color: #000000;
-	padding: 4pt;
-}
-
-TT
-{
-	font-size: 90%;
-	font-family: "Courier New", Courier, monospace;
-	color: #000000;
+.term { 
+    font-weight:bold;
 }
 
 
 
-PRE
-{
-	font-size: 90%;
-	font-family: "Courier New";
-	padding: 10px;
-	border-style: solid;
-	border-width: 1px;
-	border-color: #CCCCCC;
-	background-color: #F5F5F5;
-}
-
-
-
-BLOCKQUOTE
-{
-	color: #000000;
-	margin-right: 10px;
-}
-
-
-TABLE
-{
-	text-align: left;
-	background: #F5F5F5;
-	border-collapse: collapse;
-	border-spacing:0;
-	border: 1px thin black;
-	empty-cells: hide;
-}
-
-
-
-div.legalnotice
-{
-	font-size: 75%;
-}
-
-.classname
-{
-	color: #250050;
-}
-
-.methodname
-{
-	color: #002550;
-}
-
-.literal
-{
-	color: #502500;
-}
-
-.filename
-{
-	color: #000050;
-}
-
-
-.variablelist
-{
-	padding-top: 10;
-	padding-bottom:10;
-	margin:0;
-}
-
-.itemizedlist
-{
-	padding-top: 0;
-	padding-bottom:0;
-	margin:30;
-}
-
-.term
-{
-	font-weight:bold;
-}
+    

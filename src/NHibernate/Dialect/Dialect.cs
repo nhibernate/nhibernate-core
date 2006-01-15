@@ -358,7 +358,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public virtual string IdentitySelectString
 		{
-			get { throw new MappingException( "Dialect does not support native key generation" ); }
+			get { throw new MappingException( "Dialect does not support identity key generation" ); }
 		}
 
 		/// <summary>
@@ -366,7 +366,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public virtual string IdentityColumnString
 		{
-			get { throw new MappingException( "Dialect does not support native key generation" ); }
+			get { throw new MappingException( "Dialect does not support identity key generation" ); }
 		}
 
 		/// <summary>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using Iesi.Collections;
 
 namespace NHibernate.Util
 {
@@ -40,13 +41,13 @@ namespace NHibernate.Util
 			return result.ToString();
 		}
 
-		public static string ToString( IList list )
+		private static string ICollectionToString( ICollection collection )
 		{
 			StringBuilder result = new StringBuilder();
 			result.Append( "[" );
 
 			bool first = true;
-			foreach( object item in list )
+			foreach( object item in collection )
 			{
 				if( !first )
 				{
@@ -58,6 +59,16 @@ namespace NHibernate.Util
 
 			result.Append( "]" );
 			return result.ToString();
+		}
+
+		public static string ToString( IList list )
+		{
+			return ICollectionToString( list );
+		}
+
+		public static string ToString( ISet set )
+		{
+			return ICollectionToString( set );
 		}
 	}
 }

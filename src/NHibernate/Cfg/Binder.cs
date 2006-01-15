@@ -2028,7 +2028,10 @@ namespace NHibernate.Cfg
 			{
 				return null;
 			}
-			return ReflectHelper.GetGetter( containingType, propertyName ).ReturnType;
+
+			string access = PropertyAccess( definingNode, mappings );
+
+			return ReflectHelper.ReflectedPropertyClass( containingType, propertyName, access );
 		}
 
 		public static void BindSetSecondPass( XmlNode node, Set model, IDictionary persistentClasses, Mappings mappings )

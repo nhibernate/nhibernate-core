@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5b1//EN"
                "../docbook-xml/docbookx.dtd" [
-				<!ENTITY legalnotice SYSTEM "LegalNotice.xml">
-
 				<!ENTITY preface SYSTEM "Preface.xml">
 				<!ENTITY architecture SYSTEM "Architecture.xml">
 				<!ENTITY configuration SYSTEM "Configuration.xml">
@@ -20,24 +18,18 @@
 				<!ENTITY nullables-chapter SYSTEM "Nullables.xml">
 
 				<!ENTITY support SYSTEM "Support.xml">
-				<!ENTITY license SYSTEM "License.xml">
-				<!ENTITY gnu-lgpl SYSTEM "../../lgpl.txt">
-				<!ENTITY gnu-fdl SYSTEM "../../gfdl.txt">
  ]>
 
 
 <book id="NHibernate.Documentation" lang="en">
 	<bookinfo>
-		<title>NHibernate Documentation</title>
+		<title>NHibernate - Relational Persistence for Idiomatic .NET</title>
 		<releaseinfo>Status: Production/Stable</releaseinfo>
 		<author>
 			<firstname><ulink url="http://www.nhibernate.org/">NHibernate</ulink></firstname>
 			<contrib>Thanks to all the contributors!</contrib>
 			<address>http://www.nhibernate.org/</address>
 		</author>
-
-		&legalnotice;
-
 	</bookinfo>
 
 
@@ -47,7 +39,7 @@
 	&persistent-classes;
 
 
-	<part id="NHibernate.Mapping">
+	<part id="part-mapping">
 		<title>NHibernate Mapping</title>
 		&basic-mapping;
 		&collection-mapping;
@@ -56,7 +48,7 @@
 	</part>
 
 
-	<part id="NHibernateContrib">
+	<part id="part-contrib">
 		<title>NHibernateContrib Documentation</title>
 		&nhc-preface;
 		&nhcaches-chapter;
@@ -65,8 +57,6 @@
 		&nullables-chapter;
 	</part>
 
-
 	&support;
-	&license;
 
 </book>

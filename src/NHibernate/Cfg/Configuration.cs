@@ -153,7 +153,6 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public Configuration()
 		{
-			Environment.Configure();
 			Reset();
 		}
 

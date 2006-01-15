@@ -20,7 +20,7 @@ namespace NHibernate.Test.PropertyTest
 		public void NoNamingStrategy() 
 		{
 			
-			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "Id" );
+			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "Id", "field" );
 
 			Assert.IsNotNull( fieldGetter, "should have found getter" );
 			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );
@@ -33,7 +33,7 @@ namespace NHibernate.Test.PropertyTest
 		[Test]
 		public void CamelCaseNamingStrategy() 
 		{
-			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "PropertyOne" );
+			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "PropertyOne", "field.camelcase" );
 
 			Assert.IsNotNull( fieldGetter, "should have found getter" );
 			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );
@@ -46,7 +46,7 @@ namespace NHibernate.Test.PropertyTest
 		[Test]
 		public void CamelCaseUnderscoreNamingStrategy() 
 		{
-			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "PropertyTwo" );
+			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "PropertyTwo", "field.camelcase-underscore" );
 
 			Assert.IsNotNull( fieldGetter, "should have found getter" );
 			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );
@@ -59,7 +59,7 @@ namespace NHibernate.Test.PropertyTest
 		[Test]
 		public void LowerCaseUnderscoreNamingStrategy() 
 		{
-			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "PropertyFour" );
+			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "PropertyFour", "field.lowercase-underscore" );
 
 			Assert.IsNotNull( fieldGetter, "should have found getter" );
 			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );
@@ -72,7 +72,7 @@ namespace NHibernate.Test.PropertyTest
 		[Test]
 		public void PascalCaseMUnderscoreNamingStrategy() 
 		{
-			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "PropertyThree" );
+			IGetter fieldGetter = ReflectHelper.GetGetter( typeof(FieldGetterFixture.FieldGetterClass), "PropertyThree", "field.pascalcase-m-underscore" );
 
 			Assert.IsNotNull( fieldGetter, "should have found getter" );
 			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );

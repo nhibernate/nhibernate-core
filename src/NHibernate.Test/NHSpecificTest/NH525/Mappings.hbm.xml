@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	namespace="NHibernate.Test.NHSpecificTest.NH525"
+	assembly="NHibernate.Test">
+
+	<class name="AbstractBase" lazy="true">
+	
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+		
+		<discriminator column="discriminator" />
+
+		<subclass name="NonAbstract" lazy="true">
+		</subclass>
+	</class>
+
+</hibernate-mapping>
+ 

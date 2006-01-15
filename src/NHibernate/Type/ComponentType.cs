@@ -78,7 +78,8 @@ namespace NHibernate.Type
 		                      string[ ] propertyNames,
 		                      IGetter[ ] propertyGetters,
 		                      ISetter[ ] propertySetters,
-		                      bool foundCustomAcessor, // not used !?!
+		                      // currently not used, see the comment near the end of the method body
+							  bool foundCustomAcessor,
 		                      IType[ ] propertyTypes,
 		                      FetchMode[ ] joinedFetch,
 		                      Cascades.CascadeStyle[ ] cascade,
@@ -114,7 +115,8 @@ namespace NHibernate.Type
 			this.cascade = cascade;
 			this.joinedFetch = joinedFetch;
 
-			if( !foundCustomAcessor && Cfg.Environment.UseReflectionOptimizer )
+			// NH: reflection optimizer works with custom accessors
+			if( /*!foundCustomAcessor &&*/ Cfg.Environment.UseReflectionOptimizer )
 			{
 				this.getset = GetSetHelperFactory.Create(componentClass, setters, getters);
 			}

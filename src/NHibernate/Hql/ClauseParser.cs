@@ -16,7 +16,7 @@ namespace NHibernate.Hql
 
 		public virtual void Token( string token, QueryTranslator q )
 		{
-			string lcToken = token.ToLower();
+			string lcToken = token.ToLower( System.Globalization.CultureInfo.InvariantCulture );
 
 			if( token.Equals( StringHelper.OpenParen ) )
 			{

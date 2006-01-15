@@ -230,7 +230,7 @@ namespace NHibernate.Dialect
 				string sqlPartString = sqlPart as string;
 				if( sqlPartString != null )
 				{
-					if( sqlPartString.ToLower().TrimStart().StartsWith( "order by" ) )
+					if( sqlPartString.ToLower( System.Globalization.CultureInfo.InvariantCulture ).TrimStart().StartsWith( "order by" ) )
 					{
 						isInOrderBy = true;
 					}

@@ -754,7 +754,7 @@ namespace NHibernate.Hql
 					if( next is string )
 					{
 						string token = ( string ) next;
-						string lc = token.ToLower();
+						string lc = token.ToLower( System.Globalization.CultureInfo.InvariantCulture );
 
 						if( StringHelper.OpenParen.Equals( token ) )
 						{
@@ -1051,7 +1051,7 @@ namespace NHibernate.Hql
 				//update last non-whitespace token, if necessary
 				if( !ParserHelper.IsWhitespace( tokens[ i - 1 ] ) )
 				{
-					last = tokens[ i - 1 ].ToLower();
+					last = tokens[ i - 1 ].ToLower( System.Globalization.CultureInfo.InvariantCulture );
 				}
 
 				string token = tokens[ i ];
@@ -1062,7 +1062,7 @@ namespace NHibernate.Hql
 					{
 						for( nextIndex = i + 1; nextIndex < tokens.Length; nextIndex++ )
 						{
-							next = tokens[ nextIndex ].ToLower();
+							next = tokens[ nextIndex ].ToLower( System.Globalization.CultureInfo.InvariantCulture );
 							if( !ParserHelper.IsWhitespace( next ) )
 							{
 								break;
