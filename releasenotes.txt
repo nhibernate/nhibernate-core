@@ -1,3 +1,50 @@
+Build 1.0.2.0
+========================
+
+Bugs Fixed:
+
+    * [NH-409] - Sybase - Polymorphics Queries - wrong SQL generation about aliases/quotes
+    * [NH-418] - Custom persister cannot be instanciated.
+    * [NH-451] - Query cache does not work correctly with SysCache
+    * [NH-454] - Caching problem with parent pointers in collections
+    * [NH-458] - Hbm2Net doesn't generate files
+    * [NH-464] - DateTime does not work in composite-element mapping
+    * [NH-470] - Disconnect and Close should not close user-supplied connections
+    * [NH-471] - Misspelled property in ICriteria throws NullReferenceException
+    * [NH-472] - Duplicate line in hbm2net source
+    * [NH-476] - GetSetHelperFactory doesn't work with external dependencies
+    * [NH-477] - IncrementGenerator reads Int64 even if Int32 or Int16 is used.
+    * [NH-479] - One-To-One SaveAndUpdateCopy - Reference Identifier Bug
+    * [NH-480] - Should use invariant culture with ToLower and other string calls
+    * [NH-496] - Reflection optimizer should throw a more informative exception when a property is mapped using a wrong type
+    * [NH-500] - Mismatch of assembly versions causing loading errors
+    * [NH-505] - Reflection optimizer does not work with structures
+    * [NH-508] - changes to idbag collection not persisted correctly
+    * [NH-509] - ILMerge is not packaged in the distribution
+    * [NH-512] - Custom properties accessors do not work
+    * [NH-523] - SaveOrUpdateCopy throws PersistentObjectException
+
+New Features:
+
+    * [NH-460] - Add NHibernate.JetDriver in the documentation
+    * [NH-513] - FOR UPDATE NOWAIT in Postgresql 8.1
+
+Improvements:
+
+    * [NH-483] - Improve type resolution to handle dynamic assemblies
+    * [NH-488] - Change log level for GetSetHelper messages to DEBUG so that users are not confused
+    * [NH-489] - Remove logging from ADOException constructor
+    * [NH-491] - SQLite dialect should use DATETIME type for date/time columns
+    * [NH-493] - Correction in the NHibernate.Type.CharType.cs
+    * [NH-497] - Add more Hibernate-compatible type names
+    * [NH-501] - Hbm2DdlTask.cs uses log4net instead of NAnt logging
+    * [NH-502] - hbm2net becomes library
+    * [NH-506] - Make Environment.UseReflectionOptimizer property writable
+    * [NH-516] - Log SQL parameter values
+    * [NH-521] - Locking an unitialized entity causes its initialization
+    * [NH-525] - Upgrade to latest DynamicProxy
+
+
 Build 1.0.1.0
 ========================
 
