@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompanyAttribute("NHibernate.org")]
 [assembly: AssemblyProductAttribute("NHibernate")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
-[assembly: AssemblyVersionAttribute("1.0.1.0")]
+[assembly: AssemblyVersionAttribute("1.0.2.0")]
 [assembly: AssemblyInformationalVersionAttribute("1.0")]
-[assembly: AssemblyFileVersionAttribute("1.0.1.0")]
+[assembly: AssemblyFileVersionAttribute("1.0.2.0")]
 
