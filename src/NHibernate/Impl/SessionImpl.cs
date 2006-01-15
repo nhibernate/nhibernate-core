@@ -1933,6 +1933,13 @@ namespace NHibernate.Impl
 				throw new HibernateException( "Invalid lock mode for Lock()" );
 			}
 
+			if( lockMode == LockMode.None && ReassociateIfUninitializedProxy( obj ) )
+			{
+				// NH-specific: shortcut for uninitialized proxies - reassociate
+				// without initialization
+				return;
+			}
+
 			obj = UnproxyAndReassociate( obj );
 			//TODO: if object was an uninitialized proxy, this is inefficient, 
 			//resulting in two SQL selects 
