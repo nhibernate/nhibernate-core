@@ -172,7 +172,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="array"></param>
 		/// <param name="index"></param>
-		public override void CopyTo( Array array, int index )
+		public void CopyTo( Array array, int index )
 		{
 			Read();
 			internalSet.CopyTo( array, index );
@@ -181,7 +181,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// <see cref="ICollection.Count"/>
 		/// </summary>
-		public override int Count
+		public int Count
 		{
 			get
 			{
@@ -193,7 +193,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// <see cref="ICollection.IsSynchronized"/>
 		/// </summary>
-		public override bool IsSynchronized
+		public bool IsSynchronized
 		{
 			get { return false; }
 		}
@@ -201,7 +201,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// <see cref="ICollection.SyncRoot"/>
 		/// </summary>
-		public override object SyncRoot
+		public object SyncRoot
 		{
 			get { return this; }
 		}
@@ -362,7 +362,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// <see cref="IEnumerable.GetEnumerator"/>
 		/// </summary>
-		public override IEnumerator GetEnumerator()
+		public IEnumerator GetEnumerator()
 		{
 			Read();
 			return internalSet.GetEnumerator();
@@ -459,7 +459,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// <see cref="IPersistentCollection.Entries"/>
 		/// </summary>
-		public override ICollection Entries()
+		public override IEnumerable Entries()
 		{
 			return internalSet;
 		}

@@ -203,7 +203,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public override ICollection Entries()
+		public override IEnumerable Entries()
 		{
 			return Elements();
 		}
@@ -390,7 +390,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="array"></param>
 		/// <param name="index"></param>
-		public override void CopyTo( Array array, int index )
+		public void CopyTo( Array array, int index )
 		{
 			this.array.CopyTo( array, index );
 		}
@@ -398,7 +398,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// 
 		/// </summary>
-		public override int Count
+		public int Count
 		{
 			get { return array.Length; }
 		}
@@ -407,7 +407,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public override IEnumerator GetEnumerator()
+		public IEnumerator GetEnumerator()
 		{
 			return array.GetEnumerator();
 		}
@@ -415,7 +415,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// 
 		/// </summary>
-		public override bool IsSynchronized
+		public bool IsSynchronized
 		{
 			get { return false; }
 		}
@@ -423,7 +423,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// 
 		/// </summary>
-		public override object SyncRoot
+		public object SyncRoot
 		{
 			get { return this; }
 		}

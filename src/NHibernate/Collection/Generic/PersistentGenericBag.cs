@@ -14,12 +14,14 @@ namespace NHibernate.Collection.Generic
 	/// An unordered, unkeyed collection that can contain the same element
 	/// multiple times. The .net collections API, has no <c>Bag</c>.
 	/// The <see cref="ICollection&lt;T&gt;" /> interface closely resembles bag semantics,
-	/// so NHibernate follows this practice.
+	/// however NHibernate for net-1.1 used <see cref="System.Collections.IList"/> so 
+	/// <see cref="IList&lt;T&gt;"/> is used to ensure the easiest transition
+	/// to generics.
 	/// </summary>
 	/// <typeparam name="T">The type of the element the bag should hold.</typeparam>
 	/// <remarks>The underlying collection used is an <see cref="List&lt;T&gt;"/></remarks>
 	[Serializable]
-	class PersistentGenericBag<T> : PersistentCollection, IList<T>
+	class PersistentGenericBag<T> : PersistentCollection, IList<T>, System.Collections.IList
 	{
 		private IList<T> bag;
 
@@ -55,7 +57,7 @@ namespace NHibernate.Collection.Generic
 
 		#region ICollection<T> Members
 
-		void ICollection<T>.Add(T item)
+		public void Add(T item)
 		{
 			if (!QueueAdd(item))
 			{
@@ -64,25 +66,25 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		void ICollection<T>.Clear()
+		public void  Clear()
 		{
 			Write();
 			bag.Clear();
 		}
 
-		bool ICollection<T>.Contains(T item)
+		public bool Contains(T item)
 		{
 			Read();
 			return bag.Contains(item);
 		}
 
-		void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+		public void CopyTo(T[] array, int arrayIndex)
 		{
 			Read();
 			bag.CopyTo(array, arrayIndex);
 		}
 
-		int ICollection<T>.Count
+		public int Count
 		{
 			get 
 			{
@@ -96,7 +98,7 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
-		bool ICollection<T>.Remove(T item)
+		public bool Remove(T item)
 		{
 			Write();
 			return bag.Remove(item);
@@ -152,7 +154,7 @@ namespace NHibernate.Collection.Generic
 
 		#region IEnumerable Members
 
-		public override System.Collections.IEnumerator GetEnumerator()
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			Read();
 			return (System.Collections.IEnumerator)bag.GetEnumerator();
@@ -198,11 +200,9 @@ namespace NHibernate.Collection.Generic
 			return !persister.IsOneToMany;
 		}
 
-		public override System.Collections.ICollection Entries()
+		public override System.Collections.IEnumerable Entries()
 		{
-			// TODO: not sure if this is what I want to do - an List<T> is
-			// an nongeneric ICollection, but not sure this is good
-			return (System.Collections.ICollection)bag;
+			return ((System.Collections.IEnumerable)bag);
 		}
 
 		public override object ReadFrom(System.Data.IDataReader reader, ICollectionPersister persister, object owner)
@@ -390,34 +390,112 @@ namespace NHibernate.Collection.Generic
 			return result;
 		}
 
-		#region System.Collections.ICollection Members
+		#endregion
 
-		public override int Count
+		#region IList Members
+
+		// when the method/property takes an "object" parameter then 
+		// make sure to use a reference to the non-generic interface
+		// so we can ensure that the same exception gets thrown as if
+		// there was no NHibernate wrapper around the collection.  For
+		// the methods that don't take an "object" parameter then we
+		// can just use "this" so we don't duplicate the Read/Write 
+		// logic.
+
+		int System.Collections.IList.Add(object value)
 		{
-			get
+			if (!QueueAdd(value))
 			{
-				Read();
-				return bag.Count;
+				Write();
+				return ((System.Collections.IList)bag).Add(value);
+			}
+			else
+			{
+				return -1;
 			}
 		}
 
-		public override bool IsSynchronized
+		void System.Collections.IList.Clear()
+		{
+			this.Clear();
+		}
+
+		bool System.Collections.IList.Contains(object value)
+		{
+			Read();
+			return ((System.Collections.IList)bag).Contains(value);
+		}
+
+		int System.Collections.IList.IndexOf(object value)
+		{
+			Read();
+			return ((System.Collections.IList)bag).IndexOf(value);
+		}
+
+		void System.Collections.IList.Insert(int index, object value)
+		{
+			Write();
+			((System.Collections.IList)bag).Insert(index, value);
+		}
+
+		bool System.Collections.IList.IsFixedSize
 		{
 			get { return false; }
 		}
 
-		public override void CopyTo(Array array, int index)
+		bool System.Collections.IList.IsReadOnly
 		{
-			Read();
-			((System.Collections.ICollection)bag).CopyTo(array, index);
+			get { return false; }
 		}
 
-		public override object SyncRoot
+		void System.Collections.IList.Remove(object value)
 		{
-			get { return this; }
+			Write();
+			((System.Collections.IList)bag).Remove(value);
+		}
+
+		void System.Collections.IList.RemoveAt(int index)
+		{
+			this.RemoveAt(index);
+		}
+
+		object System.Collections.IList.this[int index]
+		{
+			get
+			{
+				return this[index];
+			}
+			set
+			{
+				Write();
+				((System.Collections.IList)bag)[index] = value;
+			}
 		}
 
 		#endregion
+
+		#region ICollection Members
+
+		void System.Collections.ICollection.CopyTo(Array array, int index)
+		{
+			Read();
+			((System.Collections.IList)bag).CopyTo(array, index);
+		}
+
+		int System.Collections.ICollection.Count
+		{
+			get { return this.Count; }
+		}
+
+		bool System.Collections.ICollection.IsSynchronized
+		{
+			get { return false; ; }
+		}
+
+		object System.Collections.ICollection.SyncRoot
+		{
+			get { return this; }
+		}
 
 		#endregion
 	}

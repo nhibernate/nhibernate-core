@@ -119,7 +119,7 @@ namespace NHibernate.Collection
 			try
 			{
 				IDbCommand st = null;
-				ICollection entries = collection.Entries();
+				IEnumerable entries = collection.Entries();
 				try
 				{
 					int i = 0;

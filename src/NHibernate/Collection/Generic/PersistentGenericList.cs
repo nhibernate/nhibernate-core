@@ -2,8 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
+
 using NHibernate.Engine;
+using NHibernate.Type;
 
 namespace NHibernate.Collection.Generic
 {
@@ -13,7 +16,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="T">The type of the element the list should hold.</typeparam>
 	/// <remarks>The underlying collection used is a <see cref="List&lt;T&gt;"/></remarks>
 	[Serializable]
-	public class PersistentGenericList<T> : PersistentCollection, IList<T>
+	public class PersistentGenericList<T> : PersistentCollection, IList<T>, System.Collections.IList
 	{
 		private IList<T> list;
 
@@ -50,28 +53,33 @@ namespace NHibernate.Collection.Generic
 
 		public int IndexOf(T item)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			Read();
+			return list.IndexOf(item);
 		}
 
 		public void Insert(int index, T item)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			Write();
+			list.Insert(index, item);
 		}
 
 		public void RemoveAt(int index)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			Write();
+			list.RemoveAt(index);
 		}
 
 		public T this[int index]
 		{
 			get
 			{
-				throw new Exception("The method or operation is not implemented.");
+				Read();
+				return list[index];
 			}
 			set
 			{
-				throw new Exception("The method or operation is not implemented.");
+				Write();
+				list[index] = value;
 			}
 		}
 
@@ -81,32 +89,51 @@ namespace NHibernate.Collection.Generic
 
 		public void Add(T item)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			// we could potentially do a QueueAdd here but essentially
+			// won't be <list> mappings don't support inverse collections
+			if (!QueueAdd(item))
+			{
+				Write();
+				list.Add(item);
+			}
 		}
 
 		public void Clear()
 		{
-			throw new Exception("The method or operation is not implemented.");
+			Write();
+			list.Clear();
 		}
 
 		public bool Contains(T item)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			Read();
+			return list.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			Read();
+			list.CopyTo(array, arrayIndex);
+		}
+
+		public int Count
+		{
+			get
+			{
+				Read();
+				return list.Count;
+			}
 		}
 
 		public bool IsReadOnly
 		{
-			get { throw new Exception("The method or operation is not implemented."); }
+			get { return false; }
 		}
 
 		public bool Remove(T item)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			Write();
+			return list.Remove(item);
 		}
 
 		#endregion
@@ -115,14 +142,15 @@ namespace NHibernate.Collection.Generic
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
 		{
-			throw new Exception("The method or operation is not implemented.");
+			Read();
+			return list.GetEnumerator();
 		}
 
 		#endregion
 
 		#region IEnumerable Members
 
-		public override System.Collections.IEnumerator GetEnumerator()
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			Read();
 			return (System.Collections.IEnumerator)list.GetEnumerator();
@@ -132,104 +160,292 @@ namespace NHibernate.Collection.Generic
 
 		#region PersistentCollection Members
 
+		public override void DelayedAddAll(System.Collections.ICollection coll)
+		{
+			foreach (object obj in coll)
+			{
+				list.Add((T)obj);
+			}
+		}
 		public override bool Empty
 		{
-			get { throw new Exception("The method or operation is not implemented."); }
+			get { return list.Count==0; }
 		}
 
 		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			BeforeInitialize(persister);
+			object[] array = (object[])disassembled;
+			for (int i = 0; i < array.Length; i++)
+			{
+				object element = persister.ElementType.Assemble( array[i], this.Session, owner);
+				list.Add((element == null ? default(T) : (T)element));
+			}
+			SetInitialized();
 		}
 
-		public override System.Collections.ICollection Entries()
+		public override System.Collections.IEnumerable Entries()
 		{
-			throw new Exception("The method or operation is not implemented.");
+			return (System.Collections.IEnumerable)list;
 		}
 
-		public override object ReadFrom(System.Data.IDataReader reader, ICollectionPersister persister, object owner)
+		public override object ReadFrom(IDataReader reader, ICollectionPersister persister, object owner)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			object element = persister.ReadElement(reader, owner, this.Session);
+			int index = (int)persister.ReadIndex(reader, this.Session);
+
+			// pad with null from the current last element up to the new index
+			for (int i = list.Count; i < index; i++)
+			{
+				list.Insert(i, default(T));
+			}
+			list[index] = (element==null ? default(T) : (T)element);
+			return element;
 		}
 
-		public override void WriteTo(System.Data.IDbCommand st, ICollectionPersister role, object entry, int i, bool writeOrder)
+		public override void WriteTo(System.Data.IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			persister.WriteElement(st, entry, writeOrder, this.Session);
+			persister.WriteIndex(st, i, writeOrder, this.Session);
 		}
 
 		public override object GetIndex(object entry, int i)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			return i;
 		}
 
 		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			list = new List<T>();
 		}
 
-		public override bool EqualsSnapshot(NHibernate.Type.IType elementType)
+		/// <summary>
+		/// Does the current state of the list exactly match the snapshot?
+		/// </summary>
+		/// <param name="elementType">The <see cref="IType"/> to compare the elements of the Collection.</param>
+		/// <returns>
+		/// <c>true</c> if the wrapped list is different than the snapshot
+		/// of the list or if one of the elements in the collection is
+		/// dirty.
+		/// </returns>
+		public override bool EqualsSnapshot(IType elementType)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			IList<T> sn = (IList<T>)GetSnapshot();
+			if (sn.Count != list.Count)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < list.Count; i++)
+			{
+				if( elementType.IsDirty( list[i], sn[i], this.Session ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+
 		}
 
+		/// <summary>
+		/// Return a new snapshot of the current state.
+		/// </summary>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
+		/// <returns>
+		/// A new <see cref="IList&lt;T&gt;"/> that contains Deep Copies of the 
+		/// Elements stored in this wrapped collection.
+		/// </returns>
 		protected override System.Collections.ICollection Snapshot(ICollectionPersister persister)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			List<T> clonedList = new List<T>(list.Count);
+			foreach (T obj in list)
+			{
+				clonedList.Add((T)persister.ElementType.DeepCopy(obj));
+			}
+			return clonedList;
 		}
 
 		public override object Disassemble(ICollectionPersister persister)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			int length = list.Count;
+			object[] result = new object[length];
+			for (int i = 0; i < length; i++)
+			{
+				result[i] = persister.ElementType.Disassemble(list[i], this.Session);
+			}
+			return result;
 		}
 
 		public override bool EntryExists(object entry, int i)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			return entry != null;
 		}
 
 		public override bool NeedsInserting(object entry, int i, NHibernate.Type.IType elemType)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			IList<T> sn = (IList<T>)GetSnapshot();
+			return list[i] != null && (i >= sn.Count || sn[i] == null);
 		}
 
 		public override bool NeedsUpdating(object entry, int i, NHibernate.Type.IType elemType)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			IList<T> sn = (IList<T>)GetSnapshot();
+			return i < sn.Count && sn[i] != null && list[i] != null && elemType.IsDirty(list[i], sn[i], this.Session);
 		}
 
 		public override System.Collections.ICollection GetDeletes(NHibernate.Type.IType elemType)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			List<int> deletes = new List<int>();
+			IList<T> sn = (IList<T>)GetSnapshot();
+			int end;
+
+			if (sn.Count > list.Count)
+			{
+				for (int i = list.Count; i < sn.Count; i++)
+				{
+					deletes.Add(i);
+				}
+				end = list.Count;
+			}
+			else
+			{
+				end = sn.Count;
+			}
+
+			for (int i = 0; i < end; i++)
+			{
+				if (list[i] == null && sn[i] != null)
+				{
+					deletes.Add(i);
+				}
+			}
+			return (System.Collections.ICollection)deletes;
 		}
 
 		public override bool IsWrapper(object collection)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			return list == collection;
 		}
 
+		/// <summary>
+		/// Get all "orphaned" elements.
+		/// </summary>
+		/// <param name="snapshot">The snapshot of the collection.</param>
+		/// <returns>
+		/// An <see cref="System.Collections.ICollection"/> that contains all of the elements
+		/// that have been orphaned.
+		/// </returns>
 		public override System.Collections.ICollection GetOrphans(object snapshot)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			IList<T> sn = (IList<T>)snapshot;
+			List<T> result = new List<T>(sn.Count);
+			result.AddRange(sn);
+			PersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)list, this.Session);
+			return result;
 		}
 
-		public override bool IsSynchronized
+		#endregion
+
+		#region IList Members
+
+		// when the method/property takes an "object" parameter then 
+		// make sure to use a reference to the non-generic interface
+		// so we can ensure that the same exception gets thrown as if
+		// there was no NHibernate wrapper around the collection.  For
+		// the methods that don't take an "object" parameter then we
+		// can just use "this" so we don't duplicate the Read/Write 
+		// logic.
+
+		int System.Collections.IList.Add(object value)
 		{
-			get { throw new Exception("The method or operation is not implemented."); }
+			// can't perform a Queued Addition because the non-generic
+			// IList interface requires the index the object was added
+			// at to be returned
+			Write();
+			return ((System.Collections.IList)list).Add(value);
 		}
 
-		public override int Count
+		void System.Collections.IList.Clear()
 		{
-			get { throw new Exception("The method or operation is not implemented."); }
+			this.Clear();
 		}
 
-		public override void CopyTo(Array array, int index)
+		bool System.Collections.IList.Contains(object value)
 		{
-			throw new Exception("The method or operation is not implemented.");
+			Read();
+			return ((System.Collections.IList)list).Contains(value);
 		}
 
-		public override object SyncRoot
+		int System.Collections.IList.IndexOf(object value)
 		{
-			get { throw new Exception("The method or operation is not implemented."); }
+			Read();
+			return ((System.Collections.IList)list).IndexOf(value);
+		}
+
+		void System.Collections.IList.Insert(int index, object value)
+		{
+			Write();
+			((System.Collections.IList)list).Insert(index, value);
+		}
+
+		bool System.Collections.IList.IsFixedSize
+		{
+			get { return false; }
+		}
+
+		bool System.Collections.IList.IsReadOnly
+		{
+			get { return false; }
+		}
+
+		void System.Collections.IList.Remove(object value)
+		{
+			Write();
+			((System.Collections.IList)list).Remove(value);
+		}
+
+		void System.Collections.IList.RemoveAt(int index)
+		{
+			this.RemoveAt(index);
+		}
+
+		object System.Collections.IList.this[int index]
+		{
+			get
+			{
+				return this[index];
+			}
+			set
+			{
+				Write();
+				((System.Collections.IList)list)[index] = value;
+			}
+		}
+
+		#endregion
+
+		#region ICollection Members
+
+		void System.Collections.ICollection.CopyTo(Array array, int index)
+		{
+			Read();
+			((System.Collections.IList)list).CopyTo(array, index);
+		}
+
+		int System.Collections.ICollection.Count
+		{
+			get { return this.Count; }
+		}
+
+		bool System.Collections.ICollection.IsSynchronized
+		{
+			get { return false; ; }
+		}
+
+		object System.Collections.ICollection.SyncRoot
+		{
+			get { return this; }
 		}
 
 		#endregion

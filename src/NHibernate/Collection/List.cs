@@ -18,10 +18,13 @@ namespace NHibernate.Collection
 		private IList list;
 
 		/// <summary>
-		/// 
+		/// Return a new snapshot of the current state.
 		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
+		/// <returns>
+		/// A new <see cref="ArrayList"/> that contains Deep Copies of the 
+		/// Elements stored in this wrapped collection.
+		/// </returns>
 		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
 			ArrayList clonedList = new ArrayList( list.Count );
@@ -47,11 +50,15 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Does the current state of the list exactly match the snapshot?
 		/// </summary>
-		/// <param name="elementType"></param>
-		/// <returns></returns>
-		public override bool EqualsSnapshot( IType elementType )
+		/// <param name="elementType">The <see cref="IType"/> to compare the elements of the Collection.</param>
+		/// <returns>
+		/// <c>true</c> if the wrapped list is different than the snapshot
+		/// of the list or if one of the elements in the collection is
+		/// dirty.
+		/// </returns>
+		public override bool EqualsSnapshot(IType elementType)
 		{
 			IList sn = ( IList ) GetSnapshot();
 			if( sn.Count != this.list.Count )
@@ -68,11 +75,6 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
 		public override bool IsWrapper( object collection )
 		{
 			return list == collection;
@@ -102,17 +104,12 @@ namespace NHibernate.Collection
 			IsDirectlyAccessible = true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			this.list = new ArrayList();
 		}
 
-		/// <summary></summary>
-		public override int Count
+		public int Count
 		{
 			get
 			{
@@ -121,56 +118,37 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary></summary>
-		public bool IsEmpty
-		{
-			get
-			{
-				Read();
-				return list.Count == 0;
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="array"></param>
-		/// <param name="index"></param>
-		public override void CopyTo( Array array, int index )
+		public void CopyTo( Array array, int index )
 		{
 			Read();
 			list.CopyTo( array, index );
 		}
 
-		/// <summary></summary>
-		public override object SyncRoot
+		/// <seealso cref="ICollection.SyncRoot"/>
+		public object SyncRoot
 		{
 			get { return this; }
 		}
 
-		/// <summary></summary>
-		public override bool IsSynchronized
+		/// <seealso cref="ICollection.IsSynchronized"/>
+		public bool IsSynchronized
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
+		/// <seealso cref="IList.IsFixedSize"/>
 		public bool IsFixedSize
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
+		/// <seealso cref="IList.IsReadOnly"/>
 		public bool IsReadOnly
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+		/// <seealso cref="IList.Contains(Object)"/>
 		public bool Contains( object obj )
 		{
 			Read();
@@ -178,7 +156,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary></summary>
-		public override IEnumerator GetEnumerator()
+		public IEnumerator GetEnumerator()
 		{
 			Read();
 			return list.GetEnumerator();
@@ -203,15 +181,11 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public int Add( object obj )
 		{
-			if( !QueueAdd( obj ) )
-			{
-				Write();
-				return list.Add( obj );
-			}
-			else
-			{
-				return -1;
-			}
+			// can't perform a Queued Addition because the non-generic
+			// IList interface requires the index the object was added
+			// at to be returned
+			Write();
+			return list.Add( obj );
 		}
 
 		/// <summary>
@@ -327,7 +301,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary></summary>
-		public override ICollection Entries()
+		public override IEnumerable Entries()
 		{
 			return list;
 		}

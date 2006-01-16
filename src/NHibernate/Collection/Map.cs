@@ -125,7 +125,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary></summary>
-		public override int Count
+		public int Count
 		{
 			get
 			{
@@ -135,7 +135,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary></summary>
-		public override bool IsSynchronized
+		public bool IsSynchronized
 		{
 			get { return false; }
 		}
@@ -153,7 +153,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary></summary>
-		public override object SyncRoot
+		public object SyncRoot
 		{
 			get { return this; }
 		}
@@ -180,7 +180,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary></summary>
-		public override IEnumerator GetEnumerator()
+		public IEnumerator GetEnumerator()
 		{
 			Read();
 			return map.GetEnumerator();
@@ -207,7 +207,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="array"></param>
 		/// <param name="index"></param>
-		public override void CopyTo( Array array, int index )
+		public void CopyTo( Array array, int index )
 		{
 			Read();
 			map.CopyTo( array, index );
@@ -320,8 +320,11 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary></summary>
-		public override ICollection Entries()
+		public override IEnumerable Entries()
 		{
+			// TODO: come back to this and document why we are converting this
+			// to an array list instead of just using the IEnumerator returned
+			// by the hashtable
 			ArrayList entries = new ArrayList();
 			foreach( DictionaryEntry entry in map )
 			{

@@ -12,7 +12,7 @@ namespace NHibernate.Collection
 	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
 	[Serializable]
-	public abstract class PersistentCollection : IPersistentCollection, ICollection
+	public abstract class PersistentCollection : IPersistentCollection//, ICollection
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( PersistentCollection ) );
 
@@ -80,10 +80,10 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Queue an addition if the peristent collection supports it
 		/// </summary>
-        /// <returns>
-        /// <c>true</c> if the addition was queued up, <c>false</c> if the persistent collection
-        /// doesn't support Queued Addition.
-        /// </returns>
+		/// <returns>
+		/// <c>true</c> if the addition was queued up, <c>false</c> if the persistent collection
+		/// doesn't support Queued Addition.
+		/// </returns>
 		protected bool QueueAdd( object element )
 		{
 			if( IsQueueAdditionEnabled )
@@ -126,7 +126,12 @@ namespace NHibernate.Collection
 		/// After reading all existing elements from the database,
 		/// add the queued elements to the underlying collection.
 		/// </summary>
-		/// <param name="coll"></param>
+		/// <param name="coll">The <see cref="ICollection"/> to add.</param>
+		/// <remarks>
+		/// The default implementation is to throw an <see cref="AssertionFailure"/>
+		/// because most collections do not support delayed addition.  If the collection
+		/// does then override this method.
+		/// </remarks>
 		public virtual void DelayedAddAll( ICollection coll )
 		{
 			throw new AssertionFailure( "Collection does not support delayed initialization." );
@@ -332,7 +337,7 @@ namespace NHibernate.Collection
 		/// Iterate all collection entries, during update of the database
 		/// </summary>
 		/// <returns></returns>
-		public abstract ICollection Entries();
+		public abstract IEnumerable Entries();
 
         /// <summary>
         /// Reads the row from the <see cref="IDataReader"/>.
@@ -378,7 +383,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Return a new snapshot of the current state
 		/// </summary>
-		/// <param name="persister"></param>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns></returns>
 		protected abstract ICollection Snapshot( ICollectionPersister persister );
 
@@ -472,7 +477,10 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public abstract bool IsWrapper( object collection );
 		
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the Snapshot from the current session the collection 
+		/// is in.
+		/// </summary>
 		protected object GetSnapshot()
 		{
 			return session.GetSnapshot( this );
@@ -630,32 +638,6 @@ namespace NHibernate.Collection
 
 		#endregion
 
-		#region ICollection Members
-
-		/// <summary></summary>
-		public abstract bool IsSynchronized { get; }
-
-		/// <summary></summary>
-		public abstract int Count { get; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="array"></param>
-		/// <param name="index"></param>
-		public abstract void CopyTo( Array array, int index );
-
-		/// <summary></summary>
-		public abstract object SyncRoot { get; }
-
-		#endregion
-
-		#region IEnumerable Members
-
-		/// <summary></summary>
-		public abstract IEnumerator GetEnumerator();
-
-		#endregion
 	}
 
 

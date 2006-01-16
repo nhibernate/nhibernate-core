@@ -571,9 +571,10 @@ namespace NHibernate.Collection
 				try
 				{
 					// create all the new entries
-					ICollection entries = collection.Entries();
-					if( entries.Count > 0 )
-					{
+					IEnumerable entries = collection.Entries();
+					
+					//if( entries.Count > 0 )
+					//{
 						int i = 0;
 						int count = 0;
 						try
@@ -604,14 +605,14 @@ namespace NHibernate.Collection
 						{
 							log.Debug( string.Format( "done inserting collection: {0} rows inserted", count ) );
 						}
-					}
-					else
-					{
-						if( log.IsDebugEnabled )
+					//}
+					//else
+					//{
+						if( count==0 && log.IsDebugEnabled )
 						{
 							log.Debug( "collection was empty" );
 						}
-					}
+					//}
 				}
 				catch( HibernateException )
 				{
@@ -701,7 +702,7 @@ namespace NHibernate.Collection
 				try
 				{
 					// insert all the new entries
-					ICollection entries = collection.Entries();
+					IEnumerable entries = collection.Entries();
 					try
 					{
 						// Moved the IDbCommand outside the loop, because ADO.NET doesn't do batch commands,

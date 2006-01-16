@@ -119,8 +119,11 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Iterate all collection entries, during update of the database
 		/// </summary>
-		/// <returns></returns>
-		ICollection Entries();
+		/// <returns>
+		/// An <see cref="IEnumerable"/> that gives access to all entries
+		/// in the collection.
+		/// </returns>
+		IEnumerable Entries();
 
 		/// <summary>
 		/// Reads the row from the <see cref="IDataReader"/>.
@@ -159,8 +162,12 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Does the current state exactly match the snapshot?
 		/// </summary>
-		/// <param name="elementType"></param>
-		/// <returns></returns>
+		/// <param name="elementType">The <see cref="IType"/> to compare the elements of the Collection.</param>
+		/// <returns>
+		/// <c>true</c> if the wrapped collection is different than the snapshot
+		/// of the collection or if one of the elements in the collection is
+		/// dirty.
+		/// </returns>
 		bool EqualsSnapshot(IType elementType);
 
 		/// <summary>
@@ -270,8 +277,11 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all "orphaned" elements
 		/// </summary>
-		/// <param name="snapshot"></param>
-		/// <returns></returns>
+		/// <param name="snapshot">The snapshot of the collection.</param>
+		/// <returns>
+		/// An <see cref="ICollection"/> that contains all of the elements
+		/// that have been orphaned.
+		/// </returns>
 		ICollection GetOrphans(object snapshot);
 	}
 }

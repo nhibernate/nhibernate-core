@@ -119,7 +119,7 @@ namespace NHibernate.Collection
 			// constraints and so that we can take better advantage of batching
 
 			IDbCommand st;
-			ICollection entries;
+			IEnumerable entries;
 			int i;
 			int count;
 

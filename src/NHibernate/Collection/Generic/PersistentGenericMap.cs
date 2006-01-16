@@ -40,7 +40,7 @@ namespace NHibernate.Collection.Generic
 			throw new Exception("The method or operation is not implemented.");
 		}
 
-		public override System.Collections.ICollection Entries()
+		public override System.Collections.IEnumerable Entries()
 		{
 			throw new Exception("The method or operation is not implemented.");
 		}
@@ -110,27 +110,27 @@ namespace NHibernate.Collection.Generic
 			throw new Exception("The method or operation is not implemented.");
 		}
 
-		public override bool IsSynchronized
+		//public bool IsSynchronized
+		//{
+		//    get { throw new Exception("The method or operation is not implemented."); }
+		//}
+
+		public int Count
 		{
 			get { throw new Exception("The method or operation is not implemented."); }
 		}
 
-		public override int Count
-		{
-			get { throw new Exception("The method or operation is not implemented."); }
-		}
+		//public void CopyTo(Array array, int index)
+		//{
+		//    throw new Exception("The method or operation is not implemented.");
+		//}
 
-		public override void CopyTo(Array array, int index)
-		{
-			throw new Exception("The method or operation is not implemented.");
-		}
+		//public object SyncRoot
+		//{
+		//    get { throw new Exception("The method or operation is not implemented."); }
+		//}
 
-		public override object SyncRoot
-		{
-			get { throw new Exception("The method or operation is not implemented."); }
-		}
-
-		public override System.Collections.IEnumerator GetEnumerator()
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			throw new Exception("The method or operation is not implemented.");
 		}
@@ -219,7 +219,7 @@ namespace NHibernate.Collection.Generic
 
 		#region IEnumerable<KeyValuePair<TKey,TValue>> Members
 
-		IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey,TValue>>.GetEnumerator()
+		public IEnumerator<KeyValuePair<TKey, TValue>>  GetEnumerator()
 		{
 			throw new Exception("The method or operation is not implemented.");
 		}

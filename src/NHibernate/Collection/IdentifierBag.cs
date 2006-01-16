@@ -160,12 +160,12 @@ namespace NHibernate.Collection
 
 		#region ICollection Members
 
-		public override bool IsSynchronized
+		public bool IsSynchronized
 		{
 			get { return false; }
 		}
-
-		public override int Count
+		
+		public int Count
 		{
 			get
 			{
@@ -174,13 +174,13 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public override void CopyTo( Array array, int index )
+		public void CopyTo( Array array, int index )
 		{
 			Read();
 			values.CopyTo( array, index );
 		}
 
-		public override object SyncRoot
+		public object SyncRoot
 		{
 			get { return values.SyncRoot; }
 		}
@@ -189,7 +189,7 @@ namespace NHibernate.Collection
 
 		#region IEnumerable Members
 
-		public override IEnumerator GetEnumerator()
+		public IEnumerator GetEnumerator()
 		{
 			Read();
 			return values.GetEnumerator();
@@ -223,7 +223,7 @@ namespace NHibernate.Collection
 			get { return ( values.Count == 0 ); }
 		}
 
-		public override ICollection Entries()
+		public override IEnumerable Entries()
 		{
 			return values;
 		}
