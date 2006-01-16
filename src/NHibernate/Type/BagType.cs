@@ -26,8 +26,8 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
 		/// <param name="persister"></param>
-		/// <returns></returns>
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		/// <returns>A new <see cref="NHibernate.Collections.Bag"/>.</returns>
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
 			return new Bag( session );
 		}
@@ -39,7 +39,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Wraps an <see cref="IList"/> in a <see cref="Bag"/>.
+		/// Wraps an <see cref="IList"/> in a NHibernate <see cref="Bag"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped <see cref="IList"/>.</param>

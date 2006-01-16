@@ -195,7 +195,7 @@ namespace NHibernate.Collection.Generic
 			int index = (int)persister.ReadIndex(reader, this.Session);
 
 			// pad with null from the current last element up to the new index
-			for (int i = list.Count; i < index; i++)
+			for (int i = list.Count; i <= index; i++)
 			{
 				list.Insert(i, default(T));
 			}

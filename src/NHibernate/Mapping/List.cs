@@ -26,16 +26,14 @@ namespace NHibernate.Mapping
 			get 
 			{
 #if NET_2_0
-				// TODO: uncomment this once PersistentGenricList is actually
-				// implemented
-				//if (this.IsGeneric)
-				//{
-				//    return TypeFactory.GenericList( Role, this.Element.Type.ReturnedClass );
-				//}
-				//else
-				//{
+				if (this.IsGeneric)
+				{
+					return TypeFactory.GenericList( Role, this.Element.Type.ReturnedClass );
+				}
+				else
+				{
 					return TypeFactory.List( Role );
-				//}
+				}
 #else
 				return TypeFactory.List( Role );
 #endif

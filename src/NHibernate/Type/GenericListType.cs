@@ -13,7 +13,7 @@ namespace NHibernate.Type
 {
 	/// <summary>
 	/// An <see cref="IType"/> that maps an <see cref="IList&lt;T&gt;"/> collection
-	/// to the database using bag semantics.
+	/// to the database using list semantics.
 	/// </summary>
 	public class GenericListType : ListType
 	{

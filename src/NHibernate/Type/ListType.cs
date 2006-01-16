@@ -4,24 +4,29 @@ using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
-	/// <summary></summary>
+	/// <summary>
+	/// An <see cref="IType"/> that maps an <see cref="IList"/> collection
+	/// using list semantics to the database.
+	/// </summary>
 	public class ListType : PersistentCollectionType
 	{
 		/// <summary>
-		/// 
+		/// Initializes a new instance of a <see cref="ListType"/> class for
+		/// a specific role.
 		/// </summary>
-		/// <param name="role"></param>
-		public ListType( string role ) : base( role )
+		/// <param name="role">The role the persistent collection is in.</param>
+		public ListType(string role)
+			: base(role)
 		{
 		}
 
 		/// <summary>
-		/// 
+		/// Instantiates a new <see cref="IPersistentCollection"/> for the bag.
 		/// </summary>
-		/// <param name="session"></param>
+		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
 		/// <param name="persister"></param>
-		/// <returns></returns>
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		/// <returns>A new <see cref="NHibernate.Collections.List"/>.</returns>
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
 			return new List( session );
 		}
@@ -33,12 +38,14 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// 
+		/// Wraps an exist <see cref="IList"/> in a NHibernate <see cref="List"/>.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="collection"></param>
-		/// <returns></returns>
-		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
+		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
+		/// <param name="collection">The unwrapped <see cref="IList"/>.</param>
+		/// <returns>
+		/// An <see cref="List"/> that wraps the non NHibernate <see cref="IList"/>.
+		/// </returns>
+		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
 			return new List( session, ( IList ) collection );
 		}
