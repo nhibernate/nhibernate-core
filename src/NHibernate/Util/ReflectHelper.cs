@@ -87,10 +87,10 @@ namespace NHibernate.Util
 		/// <summary>
 		/// Finds the <see cref="IGetter"/> for the property in the <see cref="System.Type"/>.
 		/// </summary>
-		/// <param name="theClass"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="propertyAccessorName"></param>
-		/// <returns></returns>
+		/// <param name="theClass">The <see cref="System.Type"/> to find the property in.</param>
+		/// <param name="propertyName">The name of the Property to find.</param>
+		/// <param name="propertyAccessorName">The name of the property access strategy.</param>
+		/// <returns>The <see cref="IGetter"/> to get the value of the Property.</returns>
 		/// <remarks>
 		/// This one takes a propertyAccessor name as we might know the correct strategy by now so we avoid Exceptions which are costly
 		/// </remarks>
@@ -147,6 +147,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="theClass">The <see cref="System.Type"/> to find the property in.</param>
 		/// <param name="name">The name of the property/field to find in the class.</param>
+		/// <param name="access">The name of the property accessor for the property.</param>
 		/// <returns>The <see cref="System.Type" /> for the named property.</returns>
 		public static System.Type ReflectedPropertyClass( System.Type theClass, string name, string access )
 		{
