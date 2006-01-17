@@ -152,6 +152,7 @@
 
 	<syscache>
 		<cache region="foo" expiration="500" priority="4" />
+		<cache region="bar" expiration="300" priority="3" />
 	</syscache>
 </configuration>]]>
 		</programlisting>
