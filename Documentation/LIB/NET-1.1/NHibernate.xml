@@ -1783,6 +1783,11 @@
             <param name="props"></param>
             <returns></returns>
         </member>
+        <member name="P:NHibernate.Cfg.Environment.Version">
+            <summary>
+            NHibernate version (informational).
+            </summary>
+        </member>
         <member name="P:NHibernate.Cfg.Environment.Properties">
             <summary>
             Gets a copy of the configuration found in <c>&lt;nhibernate&gt;</c> section
@@ -1790,6 +1795,19 @@
             </summary>
             <remarks>
             This is the replacement for hibernate.properties
+            </remarks>
+        </member>
+        <member name="P:NHibernate.Cfg.Environment.UseReflectionOptimizer">
+            <summary>
+            Enables or disables use of the reflection optimizer.
+            </summary>
+            <remarks>
+            This property is read from the <c>&lt;nhibernate&gt;</c> section
+            of the application configuration file by default. Since it is not
+            always convenient to configure NHibernate through the application
+            configuration file, it is also possible to set the property value
+            manually. This should only be done before a session factory is
+            created, otherwise the change may not take effect.
             </remarks>
         </member>
         <member name="T:NHibernate.Cfg.ImprovedNamingStrategy">
@@ -3596,19 +3614,6 @@
             </para>
             </remarks>
         </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.#ctor(NHibernate.Engine.ISessionImplementor)">
-            <summary>
-            
-            </summary>
-            <param name="session"></param>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.#ctor(NHibernate.Engine.ISessionImplementor,System.Collections.ICollection)">
-            <summary>
-            
-            </summary>
-            <param name="session"></param>
-            <param name="coll"></param>
-        </member>
         <member name="M:NHibernate.Collection.IdentifierBag.InitializeFromCache(NHibernate.Collection.ICollectionPersister,System.Object,System.Object)">
             <summary>
             Initializes this Bag from the cached values.
@@ -3616,190 +3621,6 @@
             <param name="persister">The CollectionPersister to use to reassemble the IdentifierBag.</param>
             <param name="disassembled">The disassembled IdentifierBag.</param>
             <param name="owner">The owner object.</param>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.IsWrapper(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="collection"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.RemoveAt(System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="index"></param>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.Insert(System.Int32,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="index"></param>
-            <param name="value"></param>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.Remove(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="value"></param>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.Contains(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.Clear">
-            <summary></summary>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.IndexOf(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.Add(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.CopyTo(System.Array,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="array"></param>
-            <param name="index"></param>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.GetEnumerator">
-            <summary></summary>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.BeforeInitialize(NHibernate.Collection.ICollectionPersister)">
-            <summary>
-            
-            </summary>
-            <param name="persister"></param>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.Disassemble(NHibernate.Collection.ICollectionPersister)">
-            <summary>
-            
-            </summary>
-            <param name="persister"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.Entries">
-            <summary></summary>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.EntryExists(System.Object,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="entry"></param>
-            <param name="i"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.EqualsSnapshot(NHibernate.Type.IType)">
-            <summary>
-            
-            </summary>
-            <param name="elementType"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.GetDeletes(NHibernate.Type.IType)">
-            <summary>
-            
-            </summary>
-            <param name="elemType"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.GetIndex(System.Object,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="entry"></param>
-            <param name="i"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.NeedsInserting(System.Object,System.Int32,NHibernate.Type.IType)">
-            <summary>
-            
-            </summary>
-            <param name="entry"></param>
-            <param name="i"></param>
-            <param name="elemType"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.NeedsUpdating(System.Object,System.Int32,NHibernate.Type.IType)">
-            <summary>
-            
-            </summary>
-            <param name="entry"></param>
-            <param name="i"></param>
-            <param name="elemType"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.ReadFrom(System.Data.IDataReader,NHibernate.Collection.ICollectionPersister,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="reader"></param>
-            <param name="persister"></param>
-            <param name="owner"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.Snapshot(NHibernate.Collection.ICollectionPersister)">
-            <summary>
-            
-            </summary>
-            <param name="persister"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.GetOrphans(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="snapshot"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.PreInsert(NHibernate.Collection.ICollectionPersister)">
-            <summary>
-            
-            </summary>
-            <param name="persister"></param>
-        </member>
-        <member name="M:NHibernate.Collection.IdentifierBag.WriteTo(System.Data.IDbCommand,NHibernate.Collection.ICollectionPersister,System.Object,System.Int32,System.Boolean)">
-            <summary>
-            
-            </summary>
-            <param name="st"></param>
-            <param name="persister"></param>
-            <param name="entry"></param>
-            <param name="i"></param>
-            <param name="writeOrder"></param>
-        </member>
-        <member name="P:NHibernate.Collection.IdentifierBag.IsReadOnly">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Collection.IdentifierBag.Item(System.Int32)">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Collection.IdentifierBag.IsFixedSize">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Collection.IdentifierBag.IsSynchronized">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Collection.IdentifierBag.Count">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Collection.IdentifierBag.SyncRoot">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Collection.IdentifierBag.Empty">
-            <summary></summary>
         </member>
         <member name="T:NHibernate.Collection.List">
             <summary>
@@ -6017,9 +5838,18 @@
         <member name="M:NHibernate.Dialect.OracleDialect.CreateCaseFragment">
             <summary></summary>
         </member>
+        <member name="T:NHibernate.Dialect.PostgreSQL81Dialect">
+            <summary>
+            An SQL dialect for PostgreSQL 8.1 and above.
+            </summary>
+            <remarks>
+            PostgreSQL 8.1 supports <c>FOR UPDATE ... NOWAIT</c> syntax.
+            See <see cref="T:NHibernate.Dialect.PostgreSQLDialect"/> for more information.
+            </remarks>
+        </member>
         <member name="T:NHibernate.Dialect.PostgreSQLDialect">
             <summary>
-             An SQL dialect for PostgreSQL.
+            An SQL dialect for PostgreSQL.
             </summary>
             <remarks>
             The PostgreSQLDialect defaults the following configuration properties:
@@ -6183,6 +6013,12 @@
         </member>
         <member name="M:NHibernate.Dialect.SybaseDialect.#ctor">
             <summary></summary>
+        </member>
+        <member name="M:NHibernate.Dialect.SybaseDialect.QuoteForAliasName(System.String)">
+            <remarks>
+            Sybase does not support quoted aliases, this function thus returns
+            <c>aliasName</c> as is.
+            </remarks>
         </member>
         <member name="P:NHibernate.Dialect.SybaseDialect.AddColumnString">
             <summary></summary>
@@ -6475,58 +6311,6 @@
             </para>
             </remarks>
         </member>
-        <member name="M:NHibernate.Driver.DriverBase.CreateConnection">
-            <summary></summary>
-        </member>
-        <member name="M:NHibernate.Driver.DriverBase.CreateCommand">
-            <summary></summary>
-        </member>
-        <member name="M:NHibernate.Driver.DriverBase.FormatNameForSql(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="parameterName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Driver.DriverBase.FormatNameForSql(System.String,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="tableAlias"></param>
-            <param name="parameterName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Driver.DriverBase.FormatNameForParameter(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="parameterName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Driver.DriverBase.FormatNameForParameter(System.String,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="tableAlias"></param>
-            <param name="parameterName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Driver.DriverBase.GenerateCommand(NHibernate.Dialect.Dialect,NHibernate.SqlCommand.SqlString)">
-            <summary>
-            
-            </summary>
-            <param name="dialect"></param>
-            <param name="sqlString"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Driver.DriverBase.GenerateCommand(NHibernate.Dialect.Dialect,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="dialect"></param>
-            <param name="sqlString"></param>
-            <returns></returns>
-        </member>
         <member name="M:NHibernate.Driver.DriverBase.GenerateParameter(System.Data.IDbCommand,System.String,NHibernate.SqlCommand.Parameter,NHibernate.Dialect.Dialect)">
             <summary>
             Generates an IDbDataParameter for the IDbCommand.  It does not add the IDbDataParameter to the IDbCommand's
@@ -6543,52 +6327,22 @@
             those values are not set, only the DbType and ParameterName are set.
             </remarks>
         </member>
-        <member name="P:NHibernate.Driver.DriverBase.CommandType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DriverBase.ConnectionType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DriverBase.UseNamedPrefixInSql">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DriverBase.UseNamedPrefixInParameter">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DriverBase.NamedPrefix">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DriverBase.SupportsMultipleOpenReaders">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DriverBase.SupportsPreparingCommands">
-            <summary></summary>
+        <member name="M:NHibernate.Driver.ReflectionBasedDriver.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of <see cref="T:NHibernate.Driver.ReflectionBasedDriver"/> with
+            type names that are loaded from the specified assembly.
+            </summary>
+            <param name="driverAssemblyName">Assembly to load the types from.</param>
+            <param name="connectionTypeName">Connection type name.</param>
+            <param name="commandTypeName">Command type name.</param>
         </member>
         <member name="M:NHibernate.Driver.DB2Driver.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:NHibernate.Driver.DB2Driver"/> class.
             </summary>
             <exception cref="T:NHibernate.HibernateException">
-            Thrown when the <c>IBM.Data.DB2</c> assembly is not and can not be loaded.
+            Thrown when the <c>IBM.Data.DB2</c> assembly can not be loaded.
             </exception>
-        </member>
-        <member name="P:NHibernate.Driver.DB2Driver.CommandType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DB2Driver.ConnectionType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DB2Driver.UseNamedPrefixInSql">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DB2Driver.UseNamedPrefixInParameter">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DB2Driver.NamedPrefix">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.DB2Driver.SupportsMultipleOpenReaders">
-            <summary></summary>
         </member>
         <member name="T:NHibernate.Driver.FirebirdDriver">
             <summary>
@@ -6600,23 +6354,8 @@
             Initializes a new instance of the <see cref="T:NHibernate.Driver.FirebirdDriver"/> class.
             </summary>
             <exception cref="T:NHibernate.HibernateException">
-            Thrown when the <c>FirebirdSql.Data.Firebird</c> assembly is not and can not be loaded.
+            Thrown when the <c>FirebirdSql.Data.Firebird</c> assembly can not be loaded.
             </exception>
-        </member>
-        <member name="P:NHibernate.Driver.FirebirdDriver.CommandType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.FirebirdDriver.ConnectionType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.FirebirdDriver.UseNamedPrefixInSql">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.FirebirdDriver.UseNamedPrefixInParameter">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.FirebirdDriver.NamedPrefix">
-            <summary></summary>
         </member>
         <member name="T:NHibernate.Driver.MySqlDataDriver">
             <summary>
@@ -6624,9 +6363,9 @@
             </summary>
             <remarks>
             <p>
-            In order to use this Driver you must have the Assembly <c>MySql.Data.dll</c> available for 
-            NHibernate to load it.  The Assembly <c>ICSharpCode.SharpZipLib.dll</c> is also required by
-            the Assembly <c>MySql.Data.dll</c>.
+            In order to use this Driver you must have the assembly <c>MySql.Data.dll</c> available for 
+            NHibernate to load it.  The assembly <c>ICSharpCode.SharpZipLib.dll</c> is also required by
+            the assembly <c>MySql.Data.dll</c>.
             </p>
             <p>
             Please check the products website 
@@ -6640,22 +6379,8 @@
             Initializes a new instance of the <see cref="T:NHibernate.Driver.MySqlDataDriver"/> class.
             </summary>
             <exception cref="T:NHibernate.HibernateException">
-            Thrown when the MySql.Data assembly is not and can not be loaded.
+            Thrown when the <c>MySql.Data assembly</c> can not be loaded.
             </exception>
-        </member>
-        <member name="P:NHibernate.Driver.MySqlDataDriver.CommandType">
-            <summary>
-            Gets the <see cref="T:System.Type"/> from the MySql.Data assembly
-            that implements <see cref="T:System.Data.IDbCommand"/>
-            </summary>
-            <value>The <c>MySql.Data.MySqlClient.MySqlCommand</c> type.</value>
-        </member>
-        <member name="P:NHibernate.Driver.MySqlDataDriver.ConnectionType">
-            <summary>
-            Gets the <see cref="T:System.Type"/> from the MySql.Data assembly
-            that implements <see cref="T:System.Data.IDbCommand"/>
-            </summary>
-            <value>The <c>MySql.Data.MySqlClient.MySqlConnection</c> type.</value>
         </member>
         <member name="P:NHibernate.Driver.MySqlDataDriver.UseNamedPrefixInSql">
             <summary>
@@ -7294,29 +7019,8 @@
             Initializes a new instance of the <see cref="T:NHibernate.Driver.NpgsqlDriver"/> class.
             </summary>
             <exception cref="T:NHibernate.HibernateException">
-            Thrown when the <c>Npgsql</c> assembly is not and can not be loaded.
+            Thrown when the <c>Npgsql</c> assembly can not be loaded.
             </exception>
-        </member>
-        <member name="P:NHibernate.Driver.NpgsqlDriver.CommandType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.NpgsqlDriver.ConnectionType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.NpgsqlDriver.UseNamedPrefixInSql">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.NpgsqlDriver.UseNamedPrefixInParameter">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.NpgsqlDriver.NamedPrefix">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.NpgsqlDriver.SupportsMultipleOpenReaders">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.NpgsqlDriver.SupportsPreparingCommands">
-            <summary></summary>
         </member>
         <member name="T:NHibernate.Driver.OdbcDriver">
             <summary>
@@ -7392,24 +7096,6 @@
             A NHibernate Driver for using the Oracle DataProvider.
             </summary>
         </member>
-        <member name="M:NHibernate.Driver.OracleClientDriver.#ctor">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.OracleClientDriver.CommandType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.OracleClientDriver.ConnectionType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.OracleClientDriver.UseNamedPrefixInSql">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.OracleClientDriver.UseNamedPrefixInParameter">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.OracleClientDriver.NamedPrefix">
-            <summary></summary>
-        </member>
         <member name="T:NHibernate.Driver.OracleDataClientDriver">
             <summary>
             A NHibernate Driver for using the Oracle.DataAccess DataProvider
@@ -7425,7 +7111,7 @@
             Initializes a new instance of <see cref="T:NHibernate.Driver.OracleDataClientDriver"/>.
             </summary>
             <exception cref="T:NHibernate.HibernateException">
-            Thrown when the <c>Oracle.DataAccess</c> assembly is not and can not be loaded.
+            Thrown when the <c>Oracle.DataAccess</c> assembly can not be loaded.
             </exception>
         </member>
         <member name="M:NHibernate.Driver.OracleDataClientDriver.GenerateParameter(System.Data.IDbCommand,System.String,NHibernate.SqlCommand.Parameter,NHibernate.Dialect.Dialect)">
@@ -7442,12 +7128,6 @@
             This adds logic to ensure that a DbType.Boolean parameter is not created since
             ODP.NET doesn't support it.
             </remarks>
-        </member>
-        <member name="P:NHibernate.Driver.OracleDataClientDriver.CommandType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Driver.OracleDataClientDriver.ConnectionType">
-            <summary></summary>
         </member>
         <member name="P:NHibernate.Driver.OracleDataClientDriver.UseNamedPrefixInSql">
             <summary></summary>
@@ -7568,33 +7248,8 @@
             Initializes a new instance of <see cref="T:NHibernate.Driver.SQLiteDriver"/>.
             </summary>
             <exception cref="T:NHibernate.HibernateException">
-            Thrown when the <c>SQLite.NET</c> assembly is not and can not be loaded.
+            Thrown when the <c>SQLite.NET</c> assembly can not be loaded.
             </exception>
-        </member>
-        <member name="P:NHibernate.Driver.SQLiteDriver.CommandType">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:NHibernate.Driver.SQLiteDriver.ConnectionType">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:NHibernate.Driver.SQLiteDriver.UseNamedPrefixInSql">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:NHibernate.Driver.SQLiteDriver.UseNamedPrefixInParameter">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:NHibernate.Driver.SQLiteDriver.NamedPrefix">
-            <summary>
-            
-            </summary>
         </member>
         <member name="T:NHibernate.Driver.SybaseClientDriver">
             <summary>
@@ -7609,22 +7264,8 @@
             Initializes a new instance of the <see cref="T:NHibernate.Driver.SybaseClientDriver"/> class.
             </summary>
             <exception cref="T:NHibernate.HibernateException">
-            Thrown when the Sybase.Data.AseClient assembly is not and can not be loaded.
+            Thrown when the Sybase.Data.AseClient assembly can not be loaded.
             </exception>
-        </member>
-        <member name="P:NHibernate.Driver.SybaseClientDriver.CommandType">
-            <summary>
-            Gets the <see cref="T:System.Type"/> from the Sybase.Data.AseClient assembly
-            that implements <see cref="T:System.Data.IDbCommand"/>
-            </summary>
-            <value>The <c>Sybase.Data.AseClient.AseCommand</c>c&gt; type.</value>
-        </member>
-        <member name="P:NHibernate.Driver.SybaseClientDriver.ConnectionType">
-            <summary>
-            Gets the <see cref="T:System.Type"/> from the Sybase.Data.AseClient assembly
-            that implements <see cref="T:System.Data.IDbCommand"/>
-            </summary>
-            <value>The <c>Sybase.Data.AseClient.AseConnection</c>c&gt; type.</value>
         </member>
         <member name="P:NHibernate.Driver.SybaseClientDriver.UseNamedPrefixInSql">
             <summary>
@@ -24515,10 +24156,20 @@
 		This is used to establish the class of an array of this Itype
 		</remarks> 
         </member>
-        <member name="T:NHibernate.Type.AnsiStringType">
+        <member name="T:NHibernate.Type.AnsiCharType">
             <summary>
-            Maps a <see cref="T:System.String"/> Property 
-            to a <see cref="F:System.Data.DbType.AnsiString"/> column.
+            Maps a <see cref="T:System.Char"/> Property 
+            to a <c>DbType.AnsiStringFixedLength</c> column.
+            </summary>
+        </member>
+        <member name="T:NHibernate.Type.BaseCharType">
+            <summary>
+            Common base class for <see cref="T:NHibernate.Type.CharType"/> and <see cref="T:NHibernate.Type.AnsiCharType"/>.
+            </summary>
+        </member>
+        <member name="T:NHibernate.Type.ValueTypeType">
+            <summary>
+            Superclass of <see cref="T:System.ValueType"/> types.
             </summary>
         </member>
         <member name="T:NHibernate.Type.ImmutableType">
@@ -24864,6 +24515,59 @@
             not implement the <c>Equals()</c> then set this to <c>false</c>.
             </remarks>
         </member>
+        <member name="T:NHibernate.Type.ILiteralType">
+            <summary>
+            An <see cref="T:NHibernate.Type.IType"/> that may appear as an SQL literal
+            </summary>
+        </member>
+        <member name="M:NHibernate.Type.ILiteralType.ObjectToSQLString(System.Object)">
+            <summary>
+            When implemented by a class, return a <see cref="T:System.String"/> representation 
+            of the value, suitable for embedding in an SQL statement
+            </summary>
+            <param name="value">The object to convert to a string for the SQL statement.</param>
+            <returns>A string that containts a well formed SQL Statement.</returns>
+        </member>
+        <member name="M:NHibernate.Type.ValueTypeType.#ctor(NHibernate.SqlTypes.SqlType)">
+            <summary>
+            Initialize a new instance of the ValueTypeType class using a 
+            <see cref="T:NHibernate.SqlTypes.SqlType"/>. 
+            </summary>
+            <param name="sqlType">The underlying <see cref="T:NHibernate.SqlTypes.SqlType"/>.</param>
+        </member>
+        <member name="M:NHibernate.Type.ValueTypeType.Equals(System.Object,System.Object)">
+            <summary>
+            Compare two instances of the class mapped by this 
+            IType for persistence "equality" - ie. Equality of persistent state.
+            </summary>
+            <param name="x">The left hand side object.</param>
+            <param name="y">The right hand side object.</param>
+            <returns>True if the two objects contain the same values.</returns>
+        </member>
+        <member name="M:NHibernate.Type.ValueTypeType.ToString(System.Object)">
+            <summary>
+            A representation of the value to be embedded in an XML element 
+            </summary>
+            <param name="val">The object that contains the values.
+            </param>
+            <returns>An Xml formatted string.</returns>
+            <remarks>
+            This just calls <see cref="M:System.Object.ToString"/> so if there is 
+            a possibility of this PrimitiveType having any characters
+            that need to be encoded then this method should be overridden.
+            
+            TODO: figure out if this is used to build Xml strings or will have encoding
+            done automattically.
+            </remarks>
+        </member>
+        <member name="M:NHibernate.Type.ValueTypeType.ObjectToSQLString(System.Object)">
+            <summary>
+            When implemented by a class, return a <see cref="T:System.String"/> representation 
+            of the value, suitable for embedding in an SQL statement
+            </summary>
+            <param name="val">The object to convert to a string for the SQL statement.</param>
+            <returns>A string that containts a well formed SQL Statement.</returns>
+        </member>
         <member name="T:NHibernate.Type.IDiscriminatorType">
             <summary>
             An IType that may be used for a discriminator column.
@@ -24892,18 +24596,11 @@
             for the System.Type.
             </remarks>
         </member>
-        <member name="T:NHibernate.Type.ILiteralType">
+        <member name="T:NHibernate.Type.AnsiStringType">
             <summary>
-            An <see cref="T:NHibernate.Type.IType"/> that may appear as an SQL literal
+            Maps a <see cref="T:System.String"/> Property 
+            to a <see cref="F:System.Data.DbType.AnsiString"/> column.
             </summary>
-        </member>
-        <member name="M:NHibernate.Type.ILiteralType.ObjectToSQLString(System.Object)">
-            <summary>
-            When implemented by a class, return a <see cref="T:System.String"/> representation 
-            of the value, suitable for embedding in an SQL statement
-            </summary>
-            <param name="value">The object to convert to a string for the SQL statement.</param>
-            <returns>A string that containts a well formed SQL Statement.</returns>
         </member>
         <member name="M:NHibernate.Type.AnsiStringType.#ctor">
             <summary></summary>
@@ -25277,51 +24974,6 @@
             to a <see cref="F:System.Data.DbType.Boolean"/> column.
             </summary>
         </member>
-        <member name="T:NHibernate.Type.ValueTypeType">
-            <summary>
-            Superclass of <see cref="T:System.ValueType"/> types.
-            </summary>
-        </member>
-        <member name="M:NHibernate.Type.ValueTypeType.#ctor(NHibernate.SqlTypes.SqlType)">
-            <summary>
-            Initialize a new instance of the ValueTypeType class using a 
-            <see cref="T:NHibernate.SqlTypes.SqlType"/>. 
-            </summary>
-            <param name="sqlType">The underlying <see cref="T:NHibernate.SqlTypes.SqlType"/>.</param>
-        </member>
-        <member name="M:NHibernate.Type.ValueTypeType.Equals(System.Object,System.Object)">
-            <summary>
-            Compare two instances of the class mapped by this 
-            IType for persistence "equality" - ie. Equality of persistent state.
-            </summary>
-            <param name="x">The left hand side object.</param>
-            <param name="y">The right hand side object.</param>
-            <returns>True if the two objects contain the same values.</returns>
-        </member>
-        <member name="M:NHibernate.Type.ValueTypeType.ToString(System.Object)">
-            <summary>
-            A representation of the value to be embedded in an XML element 
-            </summary>
-            <param name="val">The object that contains the values.
-            </param>
-            <returns>An Xml formatted string.</returns>
-            <remarks>
-            This just calls <see cref="M:System.Object.ToString"/> so if there is 
-            a possibility of this PrimitiveType having any characters
-            that need to be encoded then this method should be overridden.
-            
-            TODO: figure out if this is used to build Xml strings or will have encoding
-            done automattically.
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Type.ValueTypeType.ObjectToSQLString(System.Object)">
-            <summary>
-            When implemented by a class, return a <see cref="T:System.String"/> representation 
-            of the value, suitable for embedding in an SQL statement
-            </summary>
-            <param name="val">The object to convert to a string for the SQL statement.</param>
-            <returns>A string that containts a well formed SQL Statement.</returns>
-        </member>
         <member name="M:NHibernate.Type.BooleanType.#ctor">
             <summary>
             Initialize a new instance of the BooleanType
@@ -25487,55 +25139,8 @@
         <member name="T:NHibernate.Type.CharType">
             <summary>
             Maps a <see cref="T:System.Char"/> Property 
-            to a DbType.Char column.
+            to a <c>DbType.StringFixedLength</c> column.
             </summary>
-        </member>
-        <member name="M:NHibernate.Type.CharType.#ctor">
-            <summary></summary>
-        </member>
-        <member name="M:NHibernate.Type.CharType.Get(System.Data.IDataReader,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="rs"></param>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.CharType.Get(System.Data.IDataReader,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="rs"></param>
-            <param name="name"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.CharType.Set(System.Data.IDbCommand,System.Object,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="cmd"></param>
-            <param name="value"></param>
-            <param name="index"></param>
-        </member>
-        <member name="M:NHibernate.Type.CharType.ObjectToSQLString(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.CharType.StringToObject(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="xml"></param>
-            <returns></returns>
-        </member>
-        <member name="P:NHibernate.Type.CharType.ReturnedClass">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Type.CharType.Name">
-            <summary></summary>
         </member>
         <member name="T:NHibernate.Type.ClobType">
             <summary>
@@ -29100,12 +28705,12 @@
             </summary>
             <param name="theClass">The <see cref="T:System.Type"/> to find the Property in.</param>
             <param name="name">The name of the property/field to find in the class.</param>
-            <param name="propertyAccess"></param>
+            <param name="access">The name of the property accessor for the property.</param>
             <returns>
             The NHibernate <see cref="T:NHibernate.Type.IType"/> for the named property.
             </returns>
         </member>
-        <member name="M:NHibernate.Util.ReflectHelper.ReflectedPropertyClass(System.Type,System.String)">
+        <member name="M:NHibernate.Util.ReflectHelper.ReflectedPropertyClass(System.Type,System.String,System.String)">
             <summary>
             Get the <see cref="T:System.Type"/> for the named property of a type.
             </summary>
@@ -29125,22 +28730,20 @@
             it to GetType.
             </remarks>
         </member>
-        <member name="M:NHibernate.Util.ReflectHelper.TypeFromAssembly(System.String,System.String)">
+        <member name="M:NHibernate.Util.ReflectHelper.TypeFromAssembly(NHibernate.Util.AssemblyQualifiedTypeName)">
             <summary>
             Returns a <see cref="T:System.Type"/> from an already loaded Assembly or an
             Assembly that is loaded with a partial name.
             </summary>
-            <param name="className">The full name of the class.</param>
-            <param name="assemblyName">
-            The name of the assembly.  This can be the full assembly name or just the partial name.
-            </param>
+            <param name="name">An <see cref="T:NHibernate.Util.AssemblyQualifiedTypeName"/>.</param>
             <returns>
-            The <see cref="T:System.Type"/> for the class in the assembly or 
-            <c>null</c> if a <see cref="T:System.Type"/> can't be found.
+            A <see cref="T:System.Type"/> object that represents the specified type,
+            or <c>null</c> if the type cannot be loaded.
             </returns>
             <remarks>
             Attempts to get a reference to the type from an already loaded assembly.  If the 
-            Type can be found then the Assembly is loaded using LoadWithPartialName.
+            type cannot be found then the assembly is loaded using
+            <see cref="M:System.Reflection.Assembly.LoadWithPartialName(System.String)"/>.
             </remarks>
         </member>
         <member name="M:NHibernate.Util.ReflectHelper.GetConstantValue(System.String,System.String)">

@@ -253,7 +253,7 @@
             <summary>
             
             </summary>
-            <param name="blockParts">A string representing one join block.</param>
+            <param name="block">A string representing one join block.</param>
         </member>
         <member name="M:NHibernate.JetDriver.JetDriver.GetFromPartIndex(NHibernate.SqlCommand.SqlString)">
             <summary>
