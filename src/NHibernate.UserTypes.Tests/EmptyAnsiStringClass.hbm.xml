@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class name="NHibernate.UserTypes.Tests.EmptyStringClass, NHibernate.UserTypes.Tests" table="eas">
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="NotNullString" column="null_str"
+			type="Nullables.NHibernate.EmptyAnsiStringType, Nullables.NHibernate"
+		/>
+	</class>
+</hibernate-mapping>

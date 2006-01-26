@@ -1,0 +1,9 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Debug" />
+  <Config name="Debug" appbase="bin\Debug" binpathtype="Auto">
+    <assembly path="NHibernate.Mapping.Attributes.Test.exe" />
+  </Config>
+  <Config name="Release" appbase="bin\Release" binpathtype="Auto">
+    <assembly path="NHibernate.Mapping.Attributes.Test.exe" />
+  </Config>
+</NUnitProject>

@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class name="NHibernate.UserTypes.Tests.SqlTypesClass, NHibernate.UserTypes.Tests" table="sqlc">
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+		
+		<version name="Version" column="version" />
+		
+		<property name="BooleanProp" column="null_bool"
+			type="NHibernate.UserTypes.SqlTypes.SqlBooleanType, NHibernate.UserTypes.SqlTypes"
+		/>
+		<property name="ByteProp" column="null_byte"
+			type="NHibernate.UserTypes.SqlTypes.SqlByteType, NHibernate.UserTypes.SqlTypes"
+		/>
+		<property name="DateTimeProp" column="null_dt"
+			type="NHibernate.UserTypes.SqlTypes.SqlDateTimeType, NHibernate.UserTypes.SqlTypes"
+		/>
+		<property name="DecimalProp" column="null_dec"
+			type="NHibernate.UserTypes.SqlTypes.SqlDecimalType, NHibernate.UserTypes.SqlTypes"
+		/>
+		<property name="DoubleProp" column="null_doub"
+			type="NHibernate.UserTypes.SqlTypes.SqlDoubleType, NHibernate.UserTypes.SqlTypes"
+		/>
+		<property name="GuidProp" column="null_guid"
+			type="NHibernate.UserTypes.SqlTypes.SqlGuidType, NHibernate.UserTypes.SqlTypes"
+		/>
+		<property name="Int16Prop" column="null_shrt"
+			type="NHibernate.UserTypes.SqlTypes.SqlInt16Type, NHibernate.UserTypes.SqlTypes"
+		/>
+		<property name="Int32Prop" column="null_int"
+			type="NHibernate.UserTypes.SqlTypes.SqlInt32Type, NHibernate.UserTypes.SqlTypes"
+		/>
+		<property name="Int64Prop" column="null_long"
+			type="NHibernate.UserTypes.SqlTypes.SqlInt64Type, NHibernate.UserTypes.SqlTypes"
+		/>
+		<property name="SingleProp" column="null_sing"
+			type="NHibernate.UserTypes.SqlTypes.SqlSingleType, NHibernate.UserTypes.SqlTypes"
+		/>
+		
+	
+	</class>
+	
+</hibernate-mapping>

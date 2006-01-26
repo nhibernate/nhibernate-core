@@ -1,0 +1,69 @@
+<project
+	name="NHibernate.UserTypes.SqlTypes"
+	default="build"
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
+
+	<if test="${clover.enabled}">	
+		<loadtasks assembly="${clover.home}/${clover.assembly}" />
+	</if>
+	
+	<property name="keyFile" value="..\NHibernate.snk" />
+	
+	<target name="build">
+		<if test="${clover.enabled}">	
+			<clover-setup 
+				initstring="..\..\${clover.db}"
+				builddir="..\..\${clover.src}\${nant.project.name}"
+				enabled="${clover.enabled}"
+				flushinterval="1000"
+			/>
+		</if>
+		
+		<!-- ensure the AssemblyInfo is writable -->
+		<attrib file="AssemblyInfo.cs" readonly="false" />
+		
+		<asminfo output="AssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+				<import namespace="System.Runtime.CompilerServices" />
+			</imports>
+			<attributes>
+				<attribute type="CLSCompliantAttribute" value="true" />
+				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
+				<attribute type="AssemblyDescriptionAttribute" value="System.Data.SqlTypes support for NHibernate" />
+				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
+				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
+				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
+				<attribute type="AssemblyVersionAttribute" value="${project.version}" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="${project.version.major}.${project.version.minor}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${project.version}" />
+				<attribute type="AssemblyKeyFileAttribute" value="${keyFile}" if="${sign}"/>
+			</attributes>
+		</asminfo>
+
+		<csc
+			output="${build.dir}/bin/${nant.project.name}.dll"
+			doc="${build.dir}/bin/${nant.project.name}.xml"
+			target="library"
+			debug="${build.debug}"
+			define="${current.build.defines}"
+			optimize="true"
+		>
+			<sources>
+				<include name="**/*.cs" />
+			</sources>
+			<nowarn>
+				<warning number="1591" /> <!-- Missing XML comment for public member -->
+			</nowarn>
+			<references>
+				<include name="System.dll" />
+				<include name="System.Data.dll" />
+				<include name="${build.dir}/bin/NHibernate.dll" />
+				<include name="${build.dir}/bin/log4net.dll" />
+			</references>
+		</csc>
+	
+	</target>
+
+</project>

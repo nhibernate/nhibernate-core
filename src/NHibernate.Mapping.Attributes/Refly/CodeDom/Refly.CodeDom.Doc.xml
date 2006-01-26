@@ -1,0 +1,13 @@
+<doc>
+<remarkss>
+	<remarks name="Expr.New">
+Generated code:
+		<code>
+[C#]
+new type(parameters)
+		</code>
+	</remarks>
+</remarkss>
+<examples>
+</examples>
+</doc>
