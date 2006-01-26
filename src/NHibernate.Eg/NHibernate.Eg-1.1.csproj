@@ -90,14 +90,14 @@
                     HintPath = "..\..\lib\net\log4net.dll"
                 />
                 <Reference
-                    Name = "NHibernate-1.1"
-                    Project = "{EE3B9473-7C64-44FF-B342-91B558D413A8}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "Iesi.Collections"
                     AssemblyName = "Iesi.Collections"
                     HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
+                />
+                <Reference
+                    Name = "NHibernate-1.1"
+                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>
