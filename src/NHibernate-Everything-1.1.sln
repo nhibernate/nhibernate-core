@@ -1,0 +1,205 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate-1.1", "NHibernate\NHibernate-1.1.csproj", "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.DomainModel-1.1", "NHibernate.DomainModel\NHibernate.DomainModel-1.1.csproj", "{E3482030-5828-4112-9906-D4C5153DCE3F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test-1.1", "NHibernate.Test\NHibernate.Test-1.1.csproj", "{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test.Performance-1.1", "NHibernate.Test.Performance\NHibernate.Test.Performance-1.1.csproj", "{C0854E20-0743-424C-8BC9-F2560718678E}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence-1.1", "NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence-1.1.csproj", "{51179C23-5555-45A4-9BBB-8F6E24D05C2B}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence.Tests-1.1", "NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.Tests-1.1.csproj", "{C04709C0-2FF9-424A-82FF-235312877853}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache-1.1", "NHibernate.Caches.SysCache\NHibernate.Caches.SysCache-1.1.csproj", "{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache.Tests-1.1", "NHibernate.Caches.SysCache\NHibernate.Caches.SysCache.Tests-1.1.csproj", "{53E01216-76B6-4920-A386-2486ACEE5AEA}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.JetDriver-1.1", "NHibernate.JetDriver\NHibernate.JetDriver-1.1.csproj", "{3905D37C-CA49-4C13-99A4-4D815EFCAA56}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Mapping.Attributes-1.1", "NHibernate.Mapping.Attributes\NHibernate.Mapping.Attributes-1.1.csproj", "{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tasks-1.1", "NHibernate.Tasks\NHibernate.Tasks-1.1.csproj", "{C6F085E3-17FA-424A-9A09-143F3E177FEB}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.hbm2net-1.1", "NHibernate.Tool.hbm2net\NHibernate.Tool.hbm2net-1.1.csproj", "{136FFE16-EE3B-4556-90FB-E265113CB13F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.hbm2net.Console-1.1", "NHibernate.Tool.hbm2net.Console\NHibernate.Tool.hbm2net.Console-1.1.csproj", "{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.hbm2net.Tests-1.1", "NHibernate.Tool.hbm2net.Tests\NHibernate.Tool.hbm2net.Tests-1.1.csproj", "{F2FBD35E-28C4-461F-804D-0E43BED01185}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.Oracle-1.1", "NHibernate.UserTypes.Oracle\NHibernate.UserTypes.Oracle-1.1.csproj", "{21192DFF-BB53-4164-850F-A500E6ED9A66}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.SqlTypes-1.1", "NHibernate.UserTypes.SqlTypes\NHibernate.UserTypes.SqlTypes-1.1.csproj", "{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.Tests-1.1", "NHibernate.UserTypes.Tests\NHibernate.UserTypes.Tests-1.1.csproj", "{094F49F9-499A-40DE-97E4-AB0C5C883355}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables-1.1", "Nullables\Nullables-1.1.csproj", "{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables.NHibernate-1.1", "Nullables.NHibernate\Nullables.NHibernate-1.1.csproj", "{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables.Tests-1.1", "Nullables.Tests\Nullables.Tests-1.1.csproj", "{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Eg-1.1", "NHibernate.Eg\NHibernate.Eg-1.1.csproj", "{4788CEC1-BC6E-420A-B351-4FDF391E4951}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Examples-1.1", "NHibernate.Examples\NHibernate.Examples-1.1.csproj", "{E3482030-5828-4112-9906-D4C5153DCE3F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "NHibernate.Examples.VB-1.1", "NHibernate.Examples.VB\NHibernate.Examples.VB-1.1.vbproj", "{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Debug.ActiveCfg = Debug|.NET
+		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Debug.Build.0 = Debug|.NET
+		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Release.ActiveCfg = Release|.NET
+		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Release.Build.0 = Release|.NET
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug.ActiveCfg = Debug|.NET
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug.Build.0 = Debug|.NET
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.ActiveCfg = Release|.NET
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.Build.0 = Release|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.ActiveCfg = Debug|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.Build.0 = Debug|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.ActiveCfg = Release|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.Build.0 = Release|.NET
+		{C0854E20-0743-424C-8BC9-F2560718678E}.Debug.ActiveCfg = Debug|.NET
+		{C0854E20-0743-424C-8BC9-F2560718678E}.Debug.Build.0 = Debug|.NET
+		{C0854E20-0743-424C-8BC9-F2560718678E}.Release.ActiveCfg = Release|.NET
+		{C0854E20-0743-424C-8BC9-F2560718678E}.Release.Build.0 = Release|.NET
+		{51179C23-5555-45A4-9BBB-8F6E24D05C2B}.Debug.ActiveCfg = Debug|.NET
+		{51179C23-5555-45A4-9BBB-8F6E24D05C2B}.Debug.Build.0 = Debug|.NET
+		{51179C23-5555-45A4-9BBB-8F6E24D05C2B}.Release.ActiveCfg = Release|.NET
+		{51179C23-5555-45A4-9BBB-8F6E24D05C2B}.Release.Build.0 = Release|.NET
+		{C04709C0-2FF9-424A-82FF-235312877853}.Debug.ActiveCfg = Debug|.NET
+		{C04709C0-2FF9-424A-82FF-235312877853}.Debug.Build.0 = Debug|.NET
+		{C04709C0-2FF9-424A-82FF-235312877853}.Release.ActiveCfg = Release|.NET
+		{C04709C0-2FF9-424A-82FF-235312877853}.Release.Build.0 = Release|.NET
+		{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}.Debug.ActiveCfg = Debug|.NET
+		{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}.Debug.Build.0 = Debug|.NET
+		{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}.Release.ActiveCfg = Release|.NET
+		{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}.Release.Build.0 = Release|.NET
+		{53E01216-76B6-4920-A386-2486ACEE5AEA}.Debug.ActiveCfg = Debug|.NET
+		{53E01216-76B6-4920-A386-2486ACEE5AEA}.Debug.Build.0 = Debug|.NET
+		{53E01216-76B6-4920-A386-2486ACEE5AEA}.Release.ActiveCfg = Release|.NET
+		{53E01216-76B6-4920-A386-2486ACEE5AEA}.Release.Build.0 = Release|.NET
+		{3905D37C-CA49-4C13-99A4-4D815EFCAA56}.Debug.ActiveCfg = Debug|.NET
+		{3905D37C-CA49-4C13-99A4-4D815EFCAA56}.Debug.Build.0 = Debug|.NET
+		{3905D37C-CA49-4C13-99A4-4D815EFCAA56}.Release.ActiveCfg = Release|.NET
+		{3905D37C-CA49-4C13-99A4-4D815EFCAA56}.Release.Build.0 = Release|.NET
+		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Debug.ActiveCfg = Debug|.NET
+		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Debug.Build.0 = Debug|.NET
+		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Release.ActiveCfg = Release|.NET
+		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Release.Build.0 = Release|.NET
+		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Debug.ActiveCfg = Debug|.NET
+		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Debug.Build.0 = Debug|.NET
+		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Release.ActiveCfg = Release|.NET
+		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Release.Build.0 = Release|.NET
+		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Debug.ActiveCfg = Debug|.NET
+		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Debug.Build.0 = Debug|.NET
+		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Release.ActiveCfg = Release|.NET
+		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Release.Build.0 = Release|.NET
+		{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}.Debug.ActiveCfg = Debug|.NET
+		{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}.Debug.Build.0 = Debug|.NET
+		{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}.Release.ActiveCfg = Release|.NET
+		{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}.Release.Build.0 = Release|.NET
+		{F2FBD35E-28C4-461F-804D-0E43BED01185}.Debug.ActiveCfg = Debug|.NET
+		{F2FBD35E-28C4-461F-804D-0E43BED01185}.Debug.Build.0 = Debug|.NET
+		{F2FBD35E-28C4-461F-804D-0E43BED01185}.Release.ActiveCfg = Release|.NET
+		{F2FBD35E-28C4-461F-804D-0E43BED01185}.Release.Build.0 = Release|.NET
+		{21192DFF-BB53-4164-850F-A500E6ED9A66}.Debug.ActiveCfg = Debug|.NET
+		{21192DFF-BB53-4164-850F-A500E6ED9A66}.Debug.Build.0 = Debug|.NET
+		{21192DFF-BB53-4164-850F-A500E6ED9A66}.Release.ActiveCfg = Release|.NET
+		{21192DFF-BB53-4164-850F-A500E6ED9A66}.Release.Build.0 = Release|.NET
+		{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}.Debug.ActiveCfg = Debug|.NET
+		{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}.Debug.Build.0 = Debug|.NET
+		{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}.Release.ActiveCfg = Release|.NET
+		{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}.Release.Build.0 = Release|.NET
+		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Debug.ActiveCfg = Debug|.NET
+		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Debug.Build.0 = Debug|.NET
+		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Release.ActiveCfg = Release|.NET
+		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Release.Build.0 = Release|.NET
+		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Debug.ActiveCfg = Debug|.NET
+		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Debug.Build.0 = Debug|.NET
+		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Release.ActiveCfg = Release|.NET
+		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Release.Build.0 = Release|.NET
+		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Debug.ActiveCfg = Debug|.NET
+		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Debug.Build.0 = Debug|.NET
+		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Release.ActiveCfg = Release|.NET
+		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Release.Build.0 = Release|.NET
+		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Debug.ActiveCfg = Debug|.NET
+		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Debug.Build.0 = Debug|.NET
+		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release.ActiveCfg = Release|.NET
+		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release.Build.0 = Release|.NET
+		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Debug.ActiveCfg = Debug|.NET
+		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Debug.Build.0 = Debug|.NET
+		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Release.ActiveCfg = Release|.NET
+		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Release.Build.0 = Release|.NET
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug.ActiveCfg = Debug|.NET
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug.Build.0 = Debug|.NET
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.ActiveCfg = Release|.NET
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.Build.0 = Release|.NET
+		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Debug.ActiveCfg = Debug|.NET
+		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Debug.Build.0 = Debug|.NET
+		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Release.ActiveCfg = Release|.NET
+		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(SolutionItems) = postSolution
+		..\NHibernateSolution.build = ..\NHibernateSolution.build
+		..\nightly.build = ..\nightly.build
+		..\release.build = ..\release.build
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
+EndGlobal
