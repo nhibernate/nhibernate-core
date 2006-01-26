@@ -25,7 +25,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
 		/// <param name="persister"></param>
-		/// <returns>A new <see cref="NHibernate.Collections.List"/>.</returns>
+		/// <returns>A new <see cref="NHibernate.Collection.List"/>.</returns>
 		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
 			return new List( session );
