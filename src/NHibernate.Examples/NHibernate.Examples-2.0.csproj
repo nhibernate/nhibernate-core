@@ -1,0 +1,181 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E3482030-5828-4112-9906-D4C5153DCE3F}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>NHibernate.Examples</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>NHibernate.Examples</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <Name>nunit.framework</Name>
+      <HintPath>..\..\lib\net\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="NHibernate.Examples.build" />
+    <None Include="NHibernate.Examples.nunit" />
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Blogger\Blog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Blogger\BloggerFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Blogger\BlogItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cascades\Alias.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cascades\CascadeFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cascades\Child.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cascades\Parent.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ForumQuestions\OfferExample\Offer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ForumQuestions\OfferExample\OfferExample.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ForumQuestions\OfferExample\OfferType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ForumQuestions\T1078029\Member.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ForumQuestions\T1078029\MemberFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ForumQuestions\T1104613\A.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ForumQuestions\T1104613\AOuterJoin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ForumQuestions\T1104613\OuterJoinFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ForumQuestions\TestCase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="QuickStart\User.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="QuickStart\UserFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Content Include="hibernate.cfg.xml" />
+    <EmbeddedResource Include="Blogger\Blog.hbm.xml" />
+    <EmbeddedResource Include="Blogger\BlogItem.hbm.xml" />
+    <EmbeddedResource Include="Cascades\Alias.hbm.xml" />
+    <EmbeddedResource Include="Cascades\Child.hbm.xml" />
+    <EmbeddedResource Include="Cascades\Parent.hbm.xml" />
+    <EmbeddedResource Include="ForumQuestions\OfferExample\Offer.hbm.xml" />
+    <EmbeddedResource Include="ForumQuestions\OfferExample\OfferType.hbm.xml" />
+    <EmbeddedResource Include="ForumQuestions\T1078029\Member.hbm.xml" />
+    <EmbeddedResource Include="ForumQuestions\T1104613\A.hbm.xml" />
+    <EmbeddedResource Include="QuickStart\User.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate\NHibernate-2.0.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate-2.0</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>copy /y "$(ProjectDir)App.config" "$(TargetPath).config"
+copy /y "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml"</PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

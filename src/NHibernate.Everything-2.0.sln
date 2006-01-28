@@ -1,0 +1,140 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections-2.0", "Iesi.Collections\Iesi.Collections-2.0.csproj", "{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections.Test-2.0", "Iesi.Collections.Test\Iesi.Collections.Test-2.0.csproj", "{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate-2.0", "NHibernate\NHibernate-2.0.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.DomainModel-2.0", "NHibernate.DomainModel\NHibernate.DomainModel-2.0.csproj", "{5C649B55-1B3F-4C38-9998-1B043E94A244}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test-2.0", "NHibernate.Test\NHibernate.Test-2.0.csproj", "{7AEE5B37-C552-4E59-9B6F-88755BCB5070}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test.Performance-2.0", "NHibernate.Test.Performance\NHibernate.Test.Performance-2.0.csproj", "{13CE8E1E-E87B-4DE1-B091-0C3AA05FFA3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence-2.0", "NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence-2.0.csproj", "{51179C23-5555-45A4-9BBB-8F6E24D05C2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence.Tests-2.0", "NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.Tests-2.0.csproj", "{C04709C0-2FF9-424A-82FF-235312877853}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache-2.0", "NHibernate.Caches.SysCache\NHibernate.Caches.SysCache-2.0.csproj", "{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache.Tests-2.0", "NHibernate.Caches.SysCache\NHibernate.Caches.SysCache.Tests-2.0.csproj", "{53E01216-76B6-4920-A386-2486ACEE5AEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Eg-2.0", "NHibernate.Eg\NHibernate.Eg-2.0.csproj", "{4788CEC1-BC6E-420A-B351-4FDF391E4951}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Examples-2.0", "NHibernate.Examples\NHibernate.Examples-2.0.csproj", "{E3482030-5828-4112-9906-D4C5153DCE3F}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "NHibernate.Examples.VB-2.0", "NHibernate.Examples.VB\NHibernate.Examples.VB-2.0.vbproj", "{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.JetDriver-2.0", "NHibernate.JetDriver\NHibernate.JetDriver-2.0.csproj", "{3905D37C-CA49-4C13-99A4-4D815EFCAA56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tasks-2.0", "NHibernate.Tasks\NHibernate.Tasks-2.0.csproj", "{C6F085E3-17FA-424A-9A09-143F3E177FEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.hbm2net-2.0", "NHibernate.Tool.hbm2net\NHibernate.Tool.hbm2net-2.0.csproj", "{136FFE16-EE3B-4556-90FB-E265113CB13F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.hbm2net.Console-2.0", "NHibernate.Tool.hbm2net.Console\NHibernate.Tool.hbm2net.Console-2.0.csproj", "{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.hbm2net.Tests-2.0", "NHibernate.Tool.hbm2net.Tests\NHibernate.Tool.hbm2net.Tests-2.0.csproj", "{F2FBD35E-28C4-461F-804D-0E43BED01185}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.Oracle-2.0", "NHibernate.UserTypes.Oracle\NHibernate.UserTypes.Oracle-2.0.csproj", "{21192DFF-BB53-4164-850F-A500E6ED9A66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.SqlTypes-2.0", "NHibernate.UserTypes.SqlTypes\NHibernate.UserTypes.SqlTypes-2.0.csproj", "{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.Tests-2.0", "NHibernate.UserTypes.Tests\NHibernate.UserTypes.Tests-2.0.csproj", "{094F49F9-499A-40DE-97E4-AB0C5C883355}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C649B55-1B3F-4C38-9998-1B043E94A244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C649B55-1B3F-4C38-9998-1B043E94A244}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C649B55-1B3F-4C38-9998-1B043E94A244}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C649B55-1B3F-4C38-9998-1B043E94A244}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AEE5B37-C552-4E59-9B6F-88755BCB5070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AEE5B37-C552-4E59-9B6F-88755BCB5070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AEE5B37-C552-4E59-9B6F-88755BCB5070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AEE5B37-C552-4E59-9B6F-88755BCB5070}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13CE8E1E-E87B-4DE1-B091-0C3AA05FFA3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13CE8E1E-E87B-4DE1-B091-0C3AA05FFA3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13CE8E1E-E87B-4DE1-B091-0C3AA05FFA3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13CE8E1E-E87B-4DE1-B091-0C3AA05FFA3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51179C23-5555-45A4-9BBB-8F6E24D05C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51179C23-5555-45A4-9BBB-8F6E24D05C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51179C23-5555-45A4-9BBB-8F6E24D05C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51179C23-5555-45A4-9BBB-8F6E24D05C2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C04709C0-2FF9-424A-82FF-235312877853}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C04709C0-2FF9-424A-82FF-235312877853}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C04709C0-2FF9-424A-82FF-235312877853}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C04709C0-2FF9-424A-82FF-235312877853}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53E01216-76B6-4920-A386-2486ACEE5AEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53E01216-76B6-4920-A386-2486ACEE5AEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53E01216-76B6-4920-A386-2486ACEE5AEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53E01216-76B6-4920-A386-2486ACEE5AEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3905D37C-CA49-4C13-99A4-4D815EFCAA56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3905D37C-CA49-4C13-99A4-4D815EFCAA56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3905D37C-CA49-4C13-99A4-4D815EFCAA56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3905D37C-CA49-4C13-99A4-4D815EFCAA56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F085E3-17FA-424A-9A09-143F3E177FEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{136FFE16-EE3B-4556-90FB-E265113CB13F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2FBD35E-28C4-461F-804D-0E43BED01185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2FBD35E-28C4-461F-804D-0E43BED01185}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2FBD35E-28C4-461F-804D-0E43BED01185}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2FBD35E-28C4-461F-804D-0E43BED01185}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21192DFF-BB53-4164-850F-A500E6ED9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21192DFF-BB53-4164-850F-A500E6ED9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21192DFF-BB53-4164-850F-A500E6ED9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21192DFF-BB53-4164-850F-A500E6ED9A66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
