@@ -40,11 +40,6 @@ namespace NHibernate.Collection.Generic
 			: base(session)
 		{
 			list = coll;
-
-			if (list == null)
-			{
-				list = new List<T>(coll);	
-			}
 			SetInitialized();
 			IsDirectlyAccessible = true;
 		}
@@ -440,7 +435,7 @@ namespace NHibernate.Collection.Generic
 
 		bool System.Collections.ICollection.IsSynchronized
 		{
-			get { return false; ; }
+			get { return false; }
 		}
 
 		object System.Collections.ICollection.SyncRoot

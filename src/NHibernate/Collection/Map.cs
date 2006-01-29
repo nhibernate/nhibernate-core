@@ -322,15 +322,11 @@ namespace NHibernate.Collection
 		/// <summary></summary>
 		public override IEnumerable Entries()
 		{
-			// TODO: come back to this and document why we are converting this
-			// to an array list instead of just using the IEnumerator returned
-			// by the hashtable
-			ArrayList entries = new ArrayList();
-			foreach( DictionaryEntry entry in map )
-			{
-				entries.Add( entry );
-			}
-			return entries;
+			// hibernate has a call to map.entrySet() - we don't need to do
+			// that because .net provides an IEnumerable from a IDictionary
+			// while java has no way to get an Iterator from a Map - so they
+			// convert it to Set via entrySet()
+			return map as IEnumerable;
 		}
 
 		/// <summary>

@@ -24,6 +24,7 @@ namespace NHibernate.Collection
 	/// <remarks>
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
+	// TODO-net-2.0: this really should be a ICollectionPersister<TKey,TIndex,TElement>
 	public interface ICollectionPersister
 	{
 		/// <summary>
@@ -83,6 +84,7 @@ namespace NHibernate.Collection
 		/// <param name="owner"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
+		//TODO: the ReadElement should really be a parameterized TElement
 		object ReadElement( IDataReader rs, object owner, ISessionImplementor session );
 
 		/// <summary>
@@ -91,7 +93,8 @@ namespace NHibernate.Collection
 		/// <param name="rs"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object ReadIndex( IDataReader rs, ISessionImplementor session );
+		//TODO: the ReadIndex should really be a parameterized TIndex
+		object ReadIndex(IDataReader rs, ISessionImplementor session);
 
 		/// <summary>
 		/// Read the identifier from a row of the <see cref="IDataReader" />
@@ -99,7 +102,8 @@ namespace NHibernate.Collection
 		/// <param name="rs"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object ReadIdentifier( IDataReader rs, ISessionImplementor session );
+		//TODO: the ReadIdentifier should really be a parameterized TIdentifier
+		object ReadIdentifier(IDataReader rs, ISessionImplementor session);
 
 		/// <summary>
 		/// Write the key to an <see cref="IDbCommand" />

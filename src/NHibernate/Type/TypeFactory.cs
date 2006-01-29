@@ -803,6 +803,30 @@ namespace NHibernate.Type
 		{
 			return new GenericListType(role, elementClass);
 		}
+
+		/// <summary>
+		/// Creates a new <see cref="PersistentCollectionType"/> for an 
+		/// <see cref="System.Collections.Generic.IDictionary&lt;TKey,TValue&gt;"/>.
+		/// </summary>
+		/// <param name="role">The role the collection is in.</param>
+		/// <param name="indexClass">
+		/// The <see cref="System.Type"/> to use as the <c>TKey</c> to create the
+		/// <see cref="System.Collections.Generic.IDictionary&lt;TKey,TValue&gt;"/> with.
+		/// </param>
+		/// <param name="elementClass">
+		/// The <see cref="System.Type"/> to use as the <c>TValue</c> to create the 
+		///  <see cref="System.Collections.Generic.IDictionary&lt;TKey,TValue&gt;"/> with.
+		/// </param>
+		/// <returns>
+		/// A <see cref="MapType"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType GenericMap(string role, System.Type indexClass, System.Type elementClass)
+		{
+			return new GenericMapType(role, indexClass, elementClass);
+		}
+
+		// TODO: deal with a sorted GenericMap
+
 		// TODO: add the rest of the Generic collection factories here
 #endif
 

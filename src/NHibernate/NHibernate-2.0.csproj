@@ -550,6 +550,7 @@
     <Compile Include="Driver\ReflectionBasedDriver.cs" />
     <Compile Include="Type\AnsiCharType.cs" />
     <Compile Include="Type\BaseCharType.cs" />
+    <Compile Include="Type\GenericMapType.cs" />
     <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
     <None Include="nhibernate-mapping-2.0.xsx">
       <DependentUpon>nhibernate-mapping-2.0.xsd</DependentUpon>

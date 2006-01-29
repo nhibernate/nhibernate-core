@@ -9,21 +9,40 @@ namespace NHibernate.Mapping
 	public class Map : IndexedCollection
 	{
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="Map"/> class.
 		/// </summary>
-		/// <param name="owner"></param>
-		public Map( PersistentClass owner ) : base( owner )
+		/// <param name="owner">The <see cref="PersistentClass"/> that contains this map mapping.</param>
+		public Map(PersistentClass owner)
+			: base(owner)
 		{
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Gets the appropriate <see cref="PersistentCollectionType"/> that is 
+		/// specialized for this list mapping.
+		/// </summary>
 		public override PersistentCollectionType CollectionType
 		{
 			get
 			{
+#if NET_2_0
+				if (this.IsGeneric)
+				{
+					return TypeFactory.GenericMap(Role, this.Index.Type.ReturnedClass, this.Element.Type.ReturnedClass);
+					// TODO: deal with sorting
+				}
+				else
+				{
+					return IsSorted ? 
+							TypeFactory.SortedMap( Role, Comparer ) : 
+							TypeFactory.Map(Role);
+				}
+#else
+
 				return IsSorted ?
 					TypeFactory.SortedMap( Role, Comparer ) :
 					TypeFactory.Map( Role );
+#endif
 			}
 		}
 
