@@ -110,6 +110,9 @@
     <Compile Include="ListGeneric\B.cs" />
     <Compile Include="ListGeneric\ListGenericFixture.cs" />
     <Compile Include="Log4netConfiguration.cs" />
+    <Compile Include="MapGeneric\A.cs" />
+    <Compile Include="MapGeneric\B.cs" />
+    <Compile Include="MapGeneric\MapGenericFixture.cs" />
     <Compile Include="MappingExceptions\A.cs" />
     <Compile Include="MappingExceptions\AddClassFixture.cs" />
     <Compile Include="MappingExceptions\AddResourceFixture.cs" />
@@ -387,6 +390,7 @@
   <ItemGroup>
     <EmbeddedResource Include="BagGeneric\BagGenericFixture.hbm.xml" />
     <EmbeddedResource Include="ListGeneric\ListGenericFixture.hbm.xml" />
+    <EmbeddedResource Include="MapGeneric\MapGenericFixture.hbm.xml" />
     <Content Include="NHSpecificTest\NH386\Mappings.hbm.xml" />
     <Content Include="NHSpecificTest\NH392\Mappings.hbm.xml" />
     <Content Include="NHSpecificTest\NH401\Mappings.hbm.xml" />

@@ -28,6 +28,9 @@ namespace NHibernate.Mapping
 #if NET_2_0
 				if (this.IsGeneric)
 				{
+					//TODO: this is causing problems because it is being called during BindProperty for the class containing
+					// the collection but the Index property is not populated until the 2nd pass in BindMapSecondPass.  Need 
+					// to look at why the index is part of the 2nd pass and can't be done during the initial pass.
 					return TypeFactory.GenericMap(Role, this.Index.Type.ReturnedClass, this.Element.Type.ReturnedClass);
 					// TODO: deal with sorting
 				}
