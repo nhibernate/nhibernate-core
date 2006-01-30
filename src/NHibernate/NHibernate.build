@@ -5,113 +5,33 @@
 	default="build" 
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
-	
-	<!--
-		Required properties:
-			* build.dir				- (path) root level to build to, assemblies will go in ${build.dir}/bin
-			* build.debug			- (true|false) debug build?
-			* current.build.defines - framework-specific build defines
-			* project.version		- full project version
-			* project.version.major	- the major number of the build
-			* project.version.minor - the minor number of the build
-			* project.version.build - the build number
-			* project.company       - value to use for AssemblyCompanyAttribute
-			* sign					- (true|false) indicates if the Assembly should be signed.
-			* clover.enabled		- (true|false) indicates if Clover.NET should handle the build
-			* clover.src			- location of the clovered source to be stored at from the root of nhibernate
-			* clover.db				- location of the coverage db from the root of nhibernate
-			* clover.assembly		- assembly that contains clover tasks for this version of NAnt
-	-->
-	
-	<if test="${clover.enabled}">	
-		<loadtasks assembly="${clover.home}/${clover.assembly}" />
-	</if>
-	
-	<property name="keyFile" value="..\NHibernate.snk" />
-	
-	<target name="build" description="Build NHibernate">
-		
-		<if test="${clover.enabled}">	
-			<clover-setup 
-				initstring="..\..\${clover.db}"
-				builddir="..\..\${clover.src}\${nant.project.name}"
-				enabled="${clover.enabled}"
-				flushinterval="1000"
-			/>
-		</if>
-			
-		<!-- ensure the AssemblyInfo that contains the Version info is writable -->
-		<attrib file="AssemblyInfoVersion.cs" readonly="false" />
-		
-		<asminfo output="AssemblyInfoVersion.cs" language="CSharp">
-			<imports>
-				<import namespace="System" />
-				<import namespace="System.Reflection" />
-			</imports>
-			<attributes>
-				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${framework::get-description(framework::get-target-framework())}" />
-				<attribute type="AssemblyVersionAttribute" value="${project.version}" />
-				<attribute type="AssemblyInformationalVersionAttribute" value="${project.version.major}.${project.version.minor}" />
-				<attribute type="AssemblyFileVersionAttribute" value="${project.version}" />
-			</attributes>
-		</asminfo>
 
-		<csc 
-			target="library" 
-			define="${current.build.defines}" 
-			debug="${build.debug}" 
-			output="${build.dir}/bin/${nant.project.name}.dll" 
-			doc="${build.dir}/bin/${nant.project.name}.xml"
-		>
-			<nowarn>
-				<warning number="1573" />
-				<warning number="1591" />
-			</nowarn>
-			<!--
-				Documentation related warnings.  Basically it's not going to output a warning when there
-				is no attempt at documentation.  If the code has documentation but there is a problem with
-				it then lets warn the developer during the build.
-				
-				CS1571: XML comment on 'construct' has a duplicate param tag for 'parameter'
-				CS1572: XML comment on 'construct' has a param tag for 'parameter', but there is no parameter by that name
-				CS1573: Parameter 'parameter' has no matching param tag in XML comment (but other parameters do)
-				CS1574: XML comment on 'construct' has cref attribute 'item' that could not be found
-				CS1580: Invalid type for parameter 'parameter number' in XML comment cref attribute
-				CS1581: Invalid return type in XML comment cref attribute
-				CS1584: XML comment on 'member' has syntactically incorrect cref attribute 'invalid_syntax'
-				CS1587: XML comment is not placed on a valid language element
-				CS1589: Unable to include XML fragment 'fragment' of file 'file' - reason
-				CS1590: Invalid XML include element - Missing file attribute
-				CS1591: Missing XML comment for publicly visible type or member 'Type_or_Member'
-				CS1592: Badly formed XML in included comments file - 'reason'
-			-->
-			
-			<sources failonempty="true">
-				<include name="**/*.cs" />
-				<exclude name="Dialect/HSQLDialect.cs" />
-				<exclude name="Dialect/InterbaseDialect.cs" />
-				<exclude name="Dialect/SAPDBDialect.cs" />
-				<exclude name="Tool/hbm2net/*.cs" />
-			</sources>
-			
-			<resources prefix="NHibernate" dynamicprefix="true">
-				<include name="*.xsd" />
-				<include name="**/*.xml" />
-				<exclude name="bin/**/*.xml" />
-			</resources>
-			
-			<references basedir="${build.dir}/bin">
-				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.dll" />
-				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.XML.dll" />
-				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.Data.dll" />
-				<include name="Iesi.Collections.dll" />
-				<include name="log4net.dll" />
-				<include name="HashCodeProvider.dll" />
-				<include name="Castle.DynamicProxy.dll" />
-			</references>
-	
-		</csc>
-		
+	<property name="root.dir" value="..\.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+
+	<target name="init" depends="common.init">
+		<property name="assembly.description" value="The Domain Model used by the Unit Tests." />
+
+		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="System.dll" />
+			<include name="System.XML.dll" />
+			<include name="System.Data.dll" />
+			<include name="Iesi.Collections.dll" />
+			<include name="log4net.dll" />
+			<include name="HashCodeProvider.dll" />
+			<include name="Castle.DynamicProxy.dll" />
+		</assemblyfileset>
+
+		<resourcefileset id="project.resources" prefix="NHibernate" dynamicprefix="true">
+			<include name="*.xsd" />
+			<include name="**/*.xml" />
+			<exclude name="bin/**/*.xml" />
+		</resourcefileset>
 	</target>
-	
+
+	<target name="generate-assemblyinfoversion" depends="init common.generate-assemblyinfoversion" />
+
+	<target name="build" description="Build NHibernate"
+		depends="init generate-assemblyinfoversion common.compile-dll" />
+
 </project>

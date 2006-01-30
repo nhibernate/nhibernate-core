@@ -6,46 +6,28 @@
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 
-	<!--
-        Required properties:
-            * build.dir             - (path) root level to build to, assemblies will go in ${build.dir}/bin
-            * build.debug           - (true|false) debug build?
-            * current.build.defines - framework-specific build defines
-    -->
-	<target name="build" description="Simple Examples for NHibernate">
-		
-		<csc 
-			target="library" 
-			define="${current.build.defines}" 
-			debug="${build.debug}"
-			output="${build.dir}/bin/${nant.project.name}.dll" 
-		>
-		
-			<references basedir="${build.dir}/bin">
-				<include name="System.dll" />
-				<include name="System.XML.dll" />
-				<include name="System.Data.dll" />
-				<include name="Iesi.Collections.dll" />
-				<include name="NHibernate.dll" />
-				<include name="nunit.framework.dll" />
-			</references>
-			
-			<resources prefix="NHibernate.Examples" dynamicprefix="true">
-				<include name="**/*.xml" />
-				<exclude name="bin/**/*.xml" />
-			</resources>
-			
-			<sources failonempty="true">
-				<include name="**/*.cs" />
-			</sources>
-			
-			
-		</csc>
-		
-		<copy 
-			file="App.config"
-			tofile="${build.dir}/bin/${nant.project.name}.dll.config" 
-		/>	
+	<property name="root.dir" value="..\.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+
+	<target name="init" depends="common.init">
+		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="System.dll" />
+			<include name="System.XML.dll" />
+			<include name="System.Data.dll" />
+			<include name="Iesi.Collections.dll" />
+			<include name="NHibernate.dll" />
+			<include name="nunit.framework.dll" />
+		</assemblyfileset>
+
+		<resourcefileset id="project.resources" prefix="NHibernate.Examples" dynamicprefix="true">
+			<include name="**/*.xml" />
+			<exclude name="bin/**/*.xml" />
+		</resourcefileset>
 	</target>
-	
+
+	<target name="build" description="Simple Examples for NHibernate"
+		depends="init common.compile-tests" />
+
+	<target name="test" depends="init build common.run-tests" />
+
 </project>

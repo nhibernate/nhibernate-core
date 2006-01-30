@@ -104,11 +104,6 @@
         <Files>
             <Include>
                 <File
-                    RelPath = "AssemblyInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "PrevalenceCacheFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

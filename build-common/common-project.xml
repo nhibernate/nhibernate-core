@@ -1,0 +1,181 @@
+<?xml version="1.0" ?>
+<project xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
+
+	<description>
+		This file contains common tasks tailored specifically for the NHibernate
+		build process. The goal was to define all the actions in this file, so
+		that actual project build files only have to configure a few variables
+		and call tasks in this file.
+
+		Usage
+
+		&lt;property name="root.dir" value="..\.." /&gt;
+		&lt;include buildfile="${root.dir}/build-common/common-project.xml" /&gt;
+
+		These lines should be placed at the top level under the &lt;project&gt;
+		element. Property root.dir defines a relative path to the root of the
+		distribution, that is, NHibernate directory.
+
+		After including the file, a target should be defined to initialize
+		configuration variables according to the project being built.
+		The standard of this target is init (but any other name can be chosen).
+		The init target should depend on (or call) target common.init defined
+		in this file.
+
+		Other predefined targets are:
+
+			- common.compile-tests
+				compile NUnit tests and copy App.config file to the output directory,
+				if it exists.
+
+			- common.compile-dll
+				compile a DLL, generating the documentation and using Clover if enabled.
+
+			- common.generate-assemblyinfo, common.generate-assemblyinfoversion
+				generate an AssemblyInfo.cs or AssemblyInfoVersion.cs file from
+				assembly.* NAnt properties.
+
+			- common.run-tests
+				run compiled NUnit tests.
+
+		All compile/run targets put the output in bin.dir. Common.compile*
+		targets use assembly fileset with id="project.references" and resource
+		fileset with id="project.resources" to compile the sources. The
+		resource fileset is optional.
+
+	</description>
+
+	<include buildfile="common.xml" />
+
+	<target name="common.compile-tests"
+		description="Compile NUnit tests and copy App.config file to the output directory, if it exists.">
+
+		<csc 
+			target="library"
+			define="${current.build.defines}"
+			debug="${build.debug}"
+			output="${bin.dir}/${project::get-name()}.dll"
+		>
+			<sources>
+				<include name="**/*.cs" />
+			</sources>
+			<references refid="project.references" />
+			<resources refid="project.resources" />
+		</csc>
+
+		<copy 
+			file="App.config"
+			tofile="${bin.dir}/${project::get-name()}.dll.config"
+			if="${file::exists('App.config')}"
+		/>
+
+	</target>
+
+	<target name="common.compile-dll" description="Compile sources into a DLL, using Clover if enabled">
+
+		<property name="clover.enabled" value="false" overwrite="false" />
+
+		<if test="${clover.enabled}">
+			<clover-setup 
+				initstring="${root.dir}\${clover.db}"
+				builddir="${root.dir}\${clover.src}\${project::get-name()}"
+				enabled="${clover.enabled}"
+				flushinterval="1000"
+			/>
+		</if>
+
+		<csc
+			target="library" 
+			define="${current.build.defines}" 
+			debug="${build.debug}" 
+			output="${bin.dir}\${project::get-name()}.dll" 
+			doc="${bin.dir}\${project::get-name()}.xml"
+		>
+			<nowarn>
+				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
+			</nowarn>
+			<sources failonempty="true">
+				<include name="**/*.cs" />
+			</sources>
+			<references refid="project.references" />
+			<resources refid="project.resources" />
+		</csc>
+	</target>
+
+	<target name="common.set-assembly-attribute-values">
+		<property overwrite="false" name="assembly.is-cls-compliant" value="false" />
+		<property overwrite="false" name="assembly.description" value="" />
+		<property overwrite="false" name="assembly.product" value="${project::get-name()}" />
+		<property overwrite="false" name="assembly.company" value="${project.company}" />
+		<property overwrite="false" name="assembly.title"
+			value="${project::get-name()} for ${framework::get-description(framework::get-target-framework())}" />
+		<property overwrite="false" name="assembly.version" value="${project.version}" />
+		<property overwrite="false" name="assembly.version.informational" value="${project.version.major}.${project.version.minor}" />
+		<property overwrite="false" name="assembly.copyright" value="Licensed under LGPL." />
+		<property overwrite="false" name="assembly.keyfile" value="${key.file}" />
+	</target>
+
+	<target name="common.generate-assemblyinfo"
+		depends="common.init common.set-assembly-attribute-values"
+		description="Generate AssemblyInfo.cs using assembly.* properties."
+	>
+		<attrib file="AssemblyInfo.cs" readonly="false" />
+		<asminfo output="AssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+				<import namespace="System.Runtime.CompilerServices" />
+			</imports>
+			<attributes>
+				<attribute type="CLSCompliantAttribute" value="${assembly.is-cls-compliant}" />
+				<attribute type="AssemblyTitleAttribute" value="${assembly.title}" />
+				<attribute type="AssemblyDescriptionAttribute" value="${assembly.description}" />
+				<attribute type="AssemblyCompanyAttribute" value="${assembly.company}" />
+				<attribute type="AssemblyProductAttribute" value="${assembly.product}" />
+				<attribute type="AssemblyCopyrightAttribute" value="${assembly.copyright}" />
+				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version}" />
+				<attribute type="AssemblyKeyFileAttribute" value="${assembly.keyfile}" if="${sign}"/>
+				<attribute type="AssemblyDelaySignAttribute" value="false" />
+			</attributes>
+		</asminfo>
+	</target>
+
+	<target name="common.generate-assemblyinfoversion"
+		depends="common.init common.set-assembly-attribute-values"
+		description="Generate AssemblyInfoVersion.cs (containing only variable attributes) using assembly.* properties."
+	>
+		<attrib file="AssemblyInfoVersion.cs" readonly="false" />
+		<asminfo output="AssemblyInfoVersion.cs" language="CSharp">
+			<imports>
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+			</imports>
+			<attributes>
+				<attribute type="AssemblyTitleAttribute" value="${assembly.title}" />
+				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version}" />
+			</attributes>
+		</asminfo>
+	</target>
+
+	<target name="common.run-tests"
+		description="Run NUnit tests">
+
+		<nunit2>
+			<formatter 
+				type="Xml" 
+				usefile="true" 
+				extension=".xml" 
+				outputdir="${bin.dir}"
+			/>
+			<test
+				assemblyname="${bin.dir}\${project::get-name()}.dll"
+				appconfig="${bin.dir}\${project::get-name()}.dll.config" />
+		</nunit2>
+
+	</target>
+
+</project>

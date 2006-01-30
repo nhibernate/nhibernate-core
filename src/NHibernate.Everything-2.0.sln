@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test.Performance
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence-2.0", "NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence-2.0.csproj", "{51179C23-5555-45A4-9BBB-8F6E24D05C2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence.Tests-2.0", "NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.Tests-2.0.csproj", "{C04709C0-2FF9-424A-82FF-235312877853}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence.Tests-2.0", "NHibernate.Caches.Prevalence.Tests\NHibernate.Caches.Prevalence.Tests-2.0.csproj", "{C04709C0-2FF9-424A-82FF-235312877853}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache-2.0", "NHibernate.Caches.SysCache\NHibernate.Caches.SysCache-2.0.csproj", "{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}"
 EndProject

@@ -6,64 +6,29 @@
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 
-	<!--
-		Required properties:
-			* build.dir				 - (path) root level to build to, assemblies will go in ${build.dir}/bin
-			* build.debug			 - (true|false) debug build?
-			* current.build.defines - framework-specific build defines
-			* project.version		- full project version
-			* project.version.major	- the major number of the build
-			* project.version.minor - the minor number of the build
-			* project.version.build - the build number
-			* project.company       - value to use for AssemblyCompanyAttribute
-	-->
-	<target name="build" description="Build the DomainModel that will be used by the Tests">
-		<!-- ensure the AssemblyInfo is writable -->
-		<attrib file="AssemblyInfo.cs" readonly="false" />
+	<property name="root.dir" value="..\.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+
+	<target name="init" depends="common.init">
+		<property name="assembly.description" value="The Domain Model used by the Unit Tests." />
+
+		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="System.dll" />
+			<include name="System.XML.dll" />
+			<include name="System.Data.dll" />
+			<include name="Iesi.Collections.dll" />
+			<include name="NHibernate.dll" />
+		</assemblyfileset>
 		
-		<asminfo output="AssemblyInfo.cs" language="CSharp">
-			<imports>
-				<import namespace="System.Reflection" />
-				<import namespace="System.Runtime.CompilerServices" />
-			</imports>
-			<attributes>
-				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${framework::get-description(framework::get-target-framework())}" />
-				<attribute type="AssemblyDescriptionAttribute" value="The Domain Model used by the Unit Tests." />
-				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
-				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
-				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
-				<attribute type="AssemblyVersionAttribute" value="${project.version}" />
-				<attribute type="AssemblyInformationalVersionAttribute" value="${project.version.major}.${project.version.minor}" />
-				<attribute type="AssemblyFileVersionAttribute" value="${project.version}" />
-				<attribute type="AssemblyDelaySignAttribute" value="false" />
-			</attributes>
-		</asminfo>
-		
-		<csc 
-			target="library" 
-			define="${current.build.defines}" 
-			debug="${build.debug}"
-			output="${build.dir}/bin/${nant.project.name}.dll" 
-		>
-		
-			<references basedir="${build.dir}/bin">
-				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.dll" />
-				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.XML.dll" />
-				<include name="${nant.settings.currentframework.frameworkassemblydirectory}/System.Data.dll" />
-				<include name="Iesi.Collections.dll" />
-				<include name="NHibernate.dll" />
-			</references>
-			
-			<resources prefix="NHibernate.DomainModel" dynamicprefix="true">
-				<include name="**/*.xml" />
-				<exclude name="bin/**/*.xml" />
-			</resources>
-			
-			<sources failonempty="true">
-				<include name="**/*.cs" />
-			</sources>
-		</csc>
-			
+		<resourcefileset id="project.resources" prefix="NHibernate.DomainModel" dynamicprefix="true">
+			<include name="**/*.xml" />
+			<exclude name="bin/**/*.xml" />
+		</resourcefileset>
 	</target>
-	
+
+	<target name="generate-assemblyinfo" depends="common.generate-assemblyinfo" />
+
+	<target name="build" description="Build the DomainModel that will be used by the Tests"
+		depends="init generate-assemblyinfo common.compile-dll" />
+
 </project>

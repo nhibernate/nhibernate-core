@@ -1,151 +1,43 @@
 <?xml version="1.0" ?>
 
 <project 
-	name="NHibernateSolution" 
+	name="NHibernate" 
 	default="build"
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
-	<!-- 
-		Use this to determine if the key file NHibernate.key should be used to 
-		sign the Assemblies.  This defaults to false since users doing their own
-		build have _no_ copy of the private key.  If they do their own private
-		builds then they should make their own key 
-	-->
-	<property name="sign" value="false" overwrite="false" />
 
-	<!-- 
-		Path to the folder that contain the external Assemblies.  For net-1.1 the values will
-		be lib, lib/net, and lib/net/1.1 respectively.
-	-->
-	<property name="lib.dir" value="lib" dynamic="true" />
-	<property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
-	<property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version(framework::get-target-framework())))}" dynamic="true" />
+	<property name="root.dir" value="." />
 
-	<!-- 
-		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
-		then change this to true.  It generates a nice looking html report for the test files
-	-->
-	<property name="nunit2report.installed" value="false" overwrite="false" />
-
-	<!--
-		if Visual Studio Help Integration Kit has been installed
-		then change this to true or include -D:vshik.installed=true in the command line.
-		It generates Visual Studio.NET 2003 documentation.
-	-->
-	<property name="vshik.installed" value="false" overwrite="false" />
-	
-	<!--
-		Cenqua provided a license of Clover.NET for the NHibernate project to use. 
-	-->
-	<property name="clover.enabled" value="false" />
-	<property name="clover.src" value="src\CloverSrc" />
-	<property name="clover.db" value="${clover.src}\clover.cdb" />
-	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET for Visual Studio" />
-	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
-
-	<!-- 
-		These are used to set the correct Attributes in AssemblyInfo.cs.  
-	-->
-	<property name="project.name" value="nhibernate" />
-	<property name="project.company" value="NHibernate.org" />
-	<property name="project.version.major" value="1" overwrite="false" />
-	<property name="project.version.minor" value="0" overwrite="false" />
-	<property name="project.version.build" value="2" overwrite="false" />
-	<property name="project.version.revision" value="0" overwrite="false" />
-	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
-	
-	<!-- default configuration -->
-	<property name="project.config" value="debug" overwrite="false" />
-
-	<!-- debug|release -->
-	<property name="build.defines" value="" />
-
-	<!-- platform specific properties. These are the defaults -->
-	<property name="current.build.defines" value="${build.defines}" />
-
-	<!-- properties used to connect to database for testing -->
-	<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2000Dialect" overwrite="false" />
-	<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlClientDriver" overwrite="false" />
-	<property name="nhibernate.connection.connection_string" value="Server=(local);initial catalog=nhibernate;Integrated Security=SSPI" overwrite="false" />
+	<include buildfile="${root.dir}/build-common/common.xml" />
 
 	<!-- Disable performance tests by default. They take too much time. -->
 	<property name="run.performance.tests" value="false" overwrite="false" />
 
-	<!-- named project configurations -->
-	<target name="debug" description="Perform a 'debug' build">
-		<property name="project.config" value="debug" />
-		<property name="build.debug" value="true" />
-		<property name="build.name" value="${project.name}-${project.config}" />
-		<property name="build.root.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
-		<property name="build.dir" value="${build.root.dir}/${framework::get-target-framework()}" />
-	</target>
-	
-	<target name="release" description="Perform a 'release' build">
-		<property name="project.config" value="release" />
-		<property name="build.debug" value="false" />
-		<property name="build.name" value="${project.name}-${project.version}" />
-		<property name="build.root.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
-		<property name="build.dir" value="${build.root.dir}/${framework::get-target-framework()}" />
-	</target>
-	
-	<target name="init" description="Initializes build properties">
-		<call target="${project.config}" />
-		<call target="set-framework-configuration" />
-	</target>
-	
-	<target name="clean" depends="init" description="Deletes current build">
-		<delete dir="${build.dir}" failonerror="false" />
-	</target>
-	
-	<target name="clean-bin" depends="init" description="Deletes the current bin folder">
-		<delete dir="${build.dir}/bin" failonerror="false" />
-	</target>
-	
-	<target name="cleanall" description="Deletes every build configuration">
-		<echo message="Deleting all builds from all configurations" />
-		<delete dir="build" failonerror="false" />
-	</target>
-	
-	<target 
-		name="build-external" 
+	<target name="init" depends="common.init"
+		description="Initializes build properties" />
+
+	<target
+		name="build-external"
 		depends="init" 
 		description="Builds code that NHibernate depends on but is not a core piece of NHibernate.  The built dll/exes will be distributed in the lib folder so there should be no need for a user to build it."
 	>
-		<nant target="build" buildfile="src/HashCodeProvider/HashCodeProvider.build" />
-		<!-- the Iesi.Collections.build takes care of determining if this is a clover build or not -->
-		<nant target="coverage-report" buildfile="src/Iesi.Collections/Iesi.Collections.build" />
+		<nant target="build">
+			<buildfiles id="external-projects.buildfiles" basedir="src">
+				<include name="HashCodeProvider/HashCodeProvider.build" />
+				<include name="Iesi.Collections/Iesi.Collections.build" />
+			</buildfiles>
+		</nant>
 	</target>
-	
-	<target name="build-with-clover" depends="init" description="Builds current config with Clover coverage">
-		<!-- 
-			mark this as being a clover enabled build and then just let the normal build
-			process take place
-		-->
-		<property name="clover.enabled" value="true" />
-	</target>
-	
-	<target name="build-without-clover" depends="init" description="Ensures the build is done without Clover coverage">
-		<!--
-			This does not really need to be called unless the clover.enabled property has been explicitly 
-			set to true by some other means since clover.enabled defaults to false.  It is my intention
-			to first do a clover build to get the coverage then to do a non-clover build to get the 
-			clover-free dlls.
-		-->
-		<property name="clover.enabled" value="false" />
-	</target>
-	
-	<target name="build" depends="init" description="Builds current configuration">
-		<echo message="Current Directory is ${nant.project.basedir}" />
-		
+
+	<target name="build" depends="init" description="Builds NHibernate in the current configuration">
+		<echo message="Current Directory is ${project::get-base-directory()}" />
 		<echo message="Build Directory is ${build.dir}" />
 		
-		<!-- prepare build directory -->
-		<mkdir dir="${build.dir}/bin" />
-		
-		<copy file="lgpl.txt" tofile="${build.dir}/bin/NHibernate.license.txt"  />
-		
-		<!-- copy framework-neutral libraries -->
-		<copy todir="${build.dir}/bin" >
+		<!-- Prepare build directory -->
+		<mkdir dir="${bin.dir}" />
+
+		<!-- Copy framework-neutral libraries -->
+		<copy todir="${bin.dir}" >
 			<fileset basedir="${lib.dir}">
 				<include name="*.dll" />
 				<include name="*.xml" />
@@ -153,26 +45,26 @@
 			</fileset>
 		</copy>
 		
-		<!-- copy family-specific libraries-->
+		<!-- Copy family-specific libraries -->
 		<!-- 
-			the builds of DynamicProxy, log4net, and nunit all work just fine for all
-			versions of net.  When they do get framework specific extensions then we
+			The builds of log4net and nunit work just fine for all versions of .NET.
+			When they do get framework specific extensions then we
 			can just move them to the framework specific section
 		-->
-		<copy todir="${build.dir}/bin">
+		<copy todir="${bin.dir}">
 			<fileset basedir="${lib.family.dir}">
 				<include name="*.dll" />
 				<include name="*.xml" />
 				<include name="*.license.txt" />
 			</fileset>
 		</copy>
-	
-		<!-- copy framework-specific libraries -->
-		<copy todir="${build.dir}/bin">
+
+		<!-- Copy framework-specific libraries -->
+		<copy todir="${bin.dir}">
 			<fileset basedir="${lib.framework.dir}">
 				<!-- 
-					Excludes the Iesi.Collections Assembly because it is built during the build
-					of NHibernate.  It is in the lib folder for vs.net convenience.  However, we
+					Excludes the Iesi.Collections assembly because it is built during the build
+					of NHibernate.  It is in the lib folder for VS.NET convenience.  However, we
 					do want to copy the license file.
 				-->
 				<exclude name="Iesi.Collections.dll" />
@@ -191,8 +83,6 @@
 		<nant target="build" buildfile="src/NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
 		<nant target="build" buildfile="src/NHibernate.Examples/NHibernate.Examples.build" />
 
-		<call target="merge" />
-		
 	</target>
 
 	<target name="merge">
@@ -200,7 +90,7 @@
 		<if test="${property::exists('merge.targetplatform')}">
 			<exec program="ilmerge.exe" basedir="external-bin" useruntimeengine="true">
 				<arg value="/ndebug:${build.debug}" />
-				<arg value="/lib:${build.dir}/bin" />
+				<arg value="/lib:${bin.dir}" />
 				<arg value="/targetplatform:${merge.targetplatform}" />
 				<arg value="/keyfile:src/NHibernate.snk" if="${sign}" />
 				<arg value="/out:${build.dir}/NHibernate.dll" />
@@ -209,43 +99,11 @@
 			</exec>
 
 			<!-- clean up -->
-			<delete file="${build.dir}/bin/NHibernate.dll" />
-			<delete file="${build.dir}/bin/HashCodeProvider.dll" />
-			<delete file="${build.dir}/bin/HashCodeProvider.license.txt" />
-			<move file="${build.dir}/NHibernate.dll" tofile="${build.dir}/bin/NHibernate.dll" />
+			<delete file="${bin.dir}/NHibernate.dll" />
+			<delete file="${bin.dir}/HashCodeProvider.dll" />
+			<delete file="${bin.dir}/HashCodeProvider.license.txt" />
+			<move file="${build.dir}/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
 		</if>
-	</target>
-
-	<target name="put-connection-settings-into-app-config">
-		<!-- make sure the config file is writable -->
-		<attrib file="${app.config}" readonly="false" />
-		
-		<!-- 
-			Tell nhibernate how to connect to the test database.
-		-->
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.dialect']/@value"
-			value="${nhibernate.dialect}" 
-		/>
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.connection.driver_class']/@value"
-			value="${nhibernate.connection.driver_class}" 
-		/>
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
-			value="${nhibernate.connection.connection_string}" 
-		/>
-	</target>
-
-	<target name="remove-connection-settings-from-app-config">
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
-			value="conn string here" 
-		/>
 	</target>
 
 	<target name="run-nhibernate-tests">
@@ -253,7 +111,7 @@
 			Run tests in ${test.project}, putting connection settings into its App.config
 			before the tests and removing them afterwards.
 		-->
-		<property name="app.config" value="${build.dir}/bin/${test.project}.dll.config" />
+		<property name="app.config" value="${bin.dir}/${test.project}.dll.config" />
 		<call target="put-connection-settings-into-app-config" />
 		<nant target="test" buildfile="src/${test.project}/${test.project}.build" />
 		<call target="remove-connection-settings-from-app-config" />
@@ -291,16 +149,16 @@
 			of the test fixtures.
 		-->
 		<delete> 
-			<fileset basedir="${build.dir}/bin">
-				
+			<fileset basedir="${bin.dir}">
+
 				<!-- Any hbm.xml and cfg.xml files in the bin are for testing purposes -->
 				<include name="*.hbm.xml" />
 				<include name="*.cfg.xml" />
-				
+
 				<!-- The MyTest Assembly was used in the AssemblyOrderer fixtures -->
 				<include name="MyTest*.dll" />
 				<include name="MyTest*.pdb" />
-				
+
 				<!-- 
 					Remove test related assemblies and files so the bin directory is 
 					clean and ready for the downloader to use. Leave test results for
@@ -312,42 +170,46 @@
 				<include name="NHibernate.Test.*" />
 				<include name="nunit.framework.*" />
 				<exclude name="*-results.xml" />
-				
+
 			</fileset>
 		</delete>
 	</target>
 	
 	<target name="coverage-report" description="Builds the Test Coverage reports">
-		
+
 		<mkdir dir="${build.dir}/clover" />
 		<clover-setup 
 			initstring="${clover.db}"
 			flushinterval="1000"
 		/>
+
 		<clover-report>
 			<current title="NHibernate Clover Report" output="${build.dir}/clover" >
 				<format type="html" orderby="Alpha" />
 			</current>
 		</clover-report>
+
 	</target>
 
-	<target name="doc" depends="init" description="Builds the Help Documentation and the API documentation" >
-		<call target="doc-manual" /><!-- Call this first because it deletes the directory /build/doc/ -->
-		<call target="doc-reference" />
+	<target name="doc" depends="init doc-clean doc-manual doc-reference"
+		description="Builds the Help Documentation and the API documentation" />
+
+	<target name="doc-clean">
+		<nant target="clean" buildfile="doc/documentation.build" />
 	</target>
 
 	<target name="doc-manual" depends="init" description="Builds the Help Documentation" >
 		<property name="lang" value="en" />
-		<nant target="clean build" buildfile="doc/documentation.build">
+		<nant target="build" buildfile="doc/documentation.build">
 			<properties>
 				<property name="lang" value="${lang}" />
 			</properties>
 		</nant>
 	</target>
 
-	<target name="doc-reference" depends="init" description="Generates the API documentation (in MSDN sytle and VS.NET 2003 if available)">
+	<target name="doc-reference" depends="init" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
 		<ndoc>
-			<assemblies basedir="${build.dir}/bin">
+			<assemblies basedir="${bin.dir}">
 				<include name="NHibernate.dll" />
 				<include name="Iesi.Collections.dll" />
 			</assemblies>
@@ -408,7 +270,7 @@
 		
 		<if test="${vshik.installed}">
 			<ndoc>
-				<assemblies basedir="${build.dir}/bin">
+				<assemblies basedir="${bin.dir}">
 					<include name="NHibernate.dll" />
 					<include name="Iesi.Collections.dll" />
 				</assemblies>
@@ -467,8 +329,11 @@
 		
 	</target>
 	
-	<target name="package" depends="test doc " description="Creates Zip files for the File Release System on SourceForge">
+	<target name="package" depends="test doc merge" description="Creates Zip files for the File Release System on SourceForge">
 		
+		<!-- Copy and rename the license -->
+		<copy file="lgpl.txt" tofile="${bin.dir}/NHibernate.license.txt"  />
+
 		<copy todir="${build.dir}">
 			<fileset>
 				<!-- copy dlls used by this build -->
@@ -477,19 +342,13 @@
 				<include name="${lib.framework.dir}/*" />
 				<include name="external-bin/ILMerge.exe" />
 
-				<!-- 
-					exclude the UnitTesting project that is no longer used and the
-					Clover modified source files.
-				-->
-				<exclude name="src/UnitTesting/**" />
-				<exclude name="${clover.src}/**" />
-				
-				<!-- exclude ReSharper stuff -->
-				<exclude name="**/_ReSharper*/**" />
-				<exclude name="**/*.resharperoptions" />
-				
-				<!-- copy all of the source -->
-				<include name="src/**" />
+				<!-- copy all of the NHibernate source -->
+				<include name="src/Iesi.Collections.*/**" />
+				<include name="src/NHibernate/**" />
+				<include name="src/NHibernate.DomainModel/**" />
+				<include name="src/NHibernate.Eg/**" />
+				<include name="src/NHibernate.Examples.*/**" />
+				<include name="src/NHibernate.Test*/**" />
 				
 				<include name="NHibernateSolution.build" />
 				<include name="gfdl.txt" />
@@ -497,14 +356,18 @@
 				<include name="releasenotes.txt" />
 				<include name="readme.html" />
 				
+				<!-- exclude the Clover modified source files. -->
+				<exclude name="${clover.src}/**" />
+				
+				<!-- exclude ReSharper stuff -->
+				<exclude name="**/_ReSharper*/**" />
+				<exclude name="**/*.resharperoptions" />
+				
 				<!-- exclude VS.NET stuff -->
 				<exclude name="**/*.suo" />
-				<exclude name="**/*j.user" />
+				<exclude name="**/*proj.user" />
 				<exclude name="**/bin/**" />
 				<exclude name="**/obj/**" />
-				
-				<!-- exclude any keys that exist on the build machine -->
-				<exclude name="**/*.snk" />
 			</fileset>
 		</copy>
 
@@ -525,54 +388,8 @@
 			</fileset>
 		</zip>
 
-		<!-- delete the directory that was used to create the zip -->
-		<!--<delete dir="${build.dir}" />-->
+		<echo message="Created a '${project.config}' package as file://${project.zip-path}" />
 		
-		<echo message="Create a '${project.config}' package as file://${project.zip-path}" />
-		
-	</target>
-
-	<target name="set-framework-configuration">
-		<if test="${not(target::exists('set-'+framework::get-target-framework()+'-framework-configuration'))}">
-			<fail message="The '${framework::get-target-framework()}' framework is not supported by this version of NHibernate." />
-		</if>
-		<call target="set-${framework::get-target-framework()}-framework-configuration" />
-	</target>
-
-	<target name="set-net-1.1-framework-configuration">
-		<property name="nant.settings.currentframework" value="net-1.1" />
-		<property name="current.build.defines" value="${build.defines}NET,NET_1_1" />
-		<property name="link.sdkdoc.version" value="SDK_v1_1" />
-		<property name="merge.targetplatform" value="v1.1" />
-	</target>
-
-	<target name="set-net-2.0-framework-configuration">
-		<property name="nant.settings.currentframework" value="net-2.0" />
-		<property name="current.build.defines" value="${build.defines}NET,NET_2_0" />
-		<!-- not using SDK_v2_0 because ndoc throws an exception -->
-		<property name="link.sdkdoc.version" value="SDK_v1_1" />
-		<property name="merge.targetplatform" value="v2" />
-	</target>
-
-	<target name="set-mono-1.0-framework-configuration">
-		<property name="nant.settings.currentframework" value="mono-1.0" />
-		<property name="current.build.defines" value="${build.defines}MONO,MONO_1_0" />
-		<property name="link.sdkdoc.version" value="MsdnOnline" />
-	</target>
-
-	<target name="display-current-runtime">
-		<echo message="" />
-		<echo message="----------------------------------------------------------" />
-		<echo message=" ${framework::get-description(framework::get-target-framework())}" />
-		<echo message="----------------------------------------------------------" />
-		<echo message="" />
-		<echo message="framework : ${framework::get-target-framework()}" />
-		<echo message="description : ${framework::get-description(framework::get-target-framework())}" />
-		<echo message="sdk directory : ${framework::get-sdk-directory(framework::get-target-framework())}" />
-		<echo message="framework directory : ${framework::get-framework-directory(framework::get-target-framework())}" />
-		<echo message="assembly directory : ${framework::get-assembly-directory(framework::get-target-framework())}" />
-		<echo message="runtime engine : ${framework::get-runtime-engine(framework::get-target-framework())}" />
-		<echo message="" />
 	</target>
 
 	<target name="fxcop" depends="init" >

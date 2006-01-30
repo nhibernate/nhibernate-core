@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalenc
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence.Tests-1.1", "NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.Tests-1.1.csproj", "{C04709C0-2FF9-424A-82FF-235312877853}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence.Tests-1.1", "NHibernate.Caches.Prevalence.Tests\NHibernate.Caches.Prevalence.Tests-1.1.csproj", "{C04709C0-2FF9-424A-82FF-235312877853}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
