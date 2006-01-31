@@ -1,72 +1,28 @@
+<?xml version="1.0" ?>
+
 <project
 	name="NHibernate.UserTypes.Tests"
 	default="build"
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
 
-	<target name="build">
+	<property name="root.dir" value="..\.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
-		<!-- ensure the AssemblyInfo is writable -->
-		<attrib file="AssemblyInfo.cs" readonly="false" />
-		
-		<asminfo output="AssemblyInfo.cs" language="CSharp">
-			<imports>
-				<import namespace="System" />
-				<import namespace="System.Reflection" />
-				<import namespace="System.Runtime.CompilerServices" />
-			</imports>
-			<attributes>
-				<attribute type="CLSCompliantAttribute" value="true" />
-				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
-				<attribute type="AssemblyDescriptionAttribute" value="Tests for NHibernate.UserTypes group of assemblies" />
-				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
-				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
-				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
-				<attribute type="AssemblyVersionAttribute" value="${project.version}" />
-				<attribute type="AssemblyInformationalVersionAttribute" value="${project.version.major}.${project.version.minor}" />
-				<attribute type="AssemblyFileVersionAttribute" value="${project.version}" />
-			</attributes>
-		</asminfo>
+	<target name="init" depends="common.init>
+		<property name="assembly.description" value="Tests for NHibernate.UserTypes group of assemblies" />
 
-		<csc
-			output="${build.dir}/bin/${nant.project.name}.dll"
-			target="library"
-			debug="${build.debug}"
-			define="${current.build.defines}"
-			optimize="true"
-		>
-			<sources>
-				<include name="**/*.cs" />
-			</sources>
-			<references basedir="${build.dir}/bin">
-				<include name="System.dll" />
-				<include name="System.Data.dll" />
-				<include name="NHibernate.dll" />
-				<include name="log4net.dll" />
-				<include name="nunit.framework.dll"/>
-				<include name="NHibernate.UserTypes.SqlTypes.dll" />
-			</references>
-		</csc>
-
-		<copy 
-			file="App.config"
-			tofile="${build.dir}/bin/${nant.project.name}.dll.config" 
-		/>
-
+		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="System.dll" />
+			<include name="System.Data.dll" />
+			<include name="NHibernate.dll" />
+			<include name="log4net.dll" />
+			<include name="nunit.framework.dll"/>
+			<include name="NHibernate.UserTypes.SqlTypes.dll" />
+		</assemblyfileset>
 	</target>
 
-	<target name="test">
-		<nunit2>
-			<formatter 
-				type="Xml" 
-				usefile="true" 
-				extension=".xml" 
-				outputdir="${build.dir}/bin" 
-			/>
-			<test 
-				assemblyname="${build.dir}/bin/${nant.project.name}.dll" 
-				appconfig="${build.dir}/bin/${nant.project.name}.dll.config" 
-			/>
-		</nunit2>
-	</target>
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
+	<target name="build" depends="init generate-assemblyinfo common.compile-tests" />
+	<target name="test" depends="build common.run-tests" />
 
 </project>

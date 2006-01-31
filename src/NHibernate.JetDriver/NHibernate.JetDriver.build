@@ -6,83 +6,23 @@
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 
-	<!--
-		Required properties:
-			* build.dir				- (path) root level to build to, assemblies will go in ${build.dir}/bin
-			* build.debug			- (true|false) debug build?
-			* current.build.defines - framework-specific build defines
-			* project.version		- full project version
-			* project.version.major	- the major number of the build
-			* project.version.minor - the minor number of the build
-			* project.version.build - the build number
-			* project.company       - value to use for AssemblyCompanyAttribute
-			* sign					- (true|false)indicates if the Assembly should be signed.
-			* clover.enabled		- (true|false) indicates if Clover.NET should handle the build
-			* clover.src			- location of the clovered source to be stored at from the root of NHibernateContrib
-			* clover.db				- location of the coverage db from the root of NHibernateContrib
-			* clover.assembly		- assembly that contains clover tasks for this version of NAnt
-	-->
-	
-	<if test="${clover.enabled}">	
-		<loadtasks assembly="${clover.home}/${clover.assembly}" />
-	</if>
-	
-	<property name="keyFile" value="..\NHibernate.snk" />
-	
-	<target name="build" description="Build the Jet (MS Access) driver for NHibernate">
-		
-		<if test="${clover.enabled}">	
-			<clover-setup 
-				initstring="..\..\${clover.db}"
-				builddir="..\..\${clover.src}\${nant.project.name}"
-				enabled="${clover.enabled}"
-				flushinterval="1000"
-			/>
-		</if>
-		
-		<!-- ensure the AssemblyInfo is writable -->
-		<attrib file="AssemblyInfo.cs" readonly="false" />
-		
-		<asminfo output="AssemblyInfo.cs" language="CSharp">
-			<imports>
-				<import namespace="System" />
-				<import namespace="System.Reflection" />
-				<import namespace="System.Runtime.CompilerServices" />
-			</imports>
-			<attributes>
-				<attribute type="CLSCompliantAttribute" value="true" />
-				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
-				<attribute type="AssemblyDescriptionAttribute" value="The Jet driver and dialect for NHibernate ${project.version}." />
-				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
-				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
-				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
-				<attribute type="AssemblyVersionAttribute" value="${project.version}" />
-				<attribute type="AssemblyInformationalVersionAttribute" value="${project.version.major}.${project.version.minor}" />
-				<attribute type="AssemblyFileVersionAttribute" value="${project.version}" />
-				<attribute type="AssemblyKeyFileAttribute" value="${keyFile}" if="${sign}"/>
-			</attributes>
-		</asminfo>
-		
-		<csc 
-			target="library" 
-			define="${current.build.defines}" 
-			debug="${build.debug}"
-			output="${build.dir}/bin/${nant.project.name}.dll" 
-			doc="${build.dir}/bin/${nant.project.name}.xml"
-		>
+	<property name="root.dir" value="..\.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
-			<references basedir="${build.dir}/bin">
-				<include name="System.dll" />
-				<include name="System.Data.dll" />
-				<include name="NHibernate.dll" />
-				<include name="log4net.dll" />
-			</references>
-			
-			<sources failonempty="true">
-				<include name="**/*.cs" />
-			</sources>
-		</csc>
-			
+	<target name="init" depends="common.init">
+		<property name="assembly.description" value="The Jet driver and dialect for NHibernate ${project.version}." />
+
+		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="System.dll" />
+			<include name="System.Data.dll" />
+			<include name="NHibernate.dll" />
+			<include name="log4net.dll" />
+		</references>
 	</target>
-	
+
+	<target name="generate-assemblyinfo" depends="common.generate-assemblyinfo" />
+
+	<target name="build" description="Build the Jet (MS Access) driver for NHibernate"
+		depends="init generate-assemblyinfo compile-dll" />
+
 </project>
