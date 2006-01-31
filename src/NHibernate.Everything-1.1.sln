@@ -79,15 +79,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables.Tests-1.1", "Null
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Eg-1.1", "NHibernate.Eg\NHibernate.Eg-1.1.csproj", "{4788CEC1-BC6E-420A-B351-4FDF391E4951}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Examples-1.1", "NHibernate.Examples\NHibernate.Examples-1.1.csproj", "{E3482030-5828-4112-9906-D4C5153DCE3F}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "NHibernate.Examples.VB-1.1", "NHibernate.Examples.VB\NHibernate.Examples.VB-1.1.vbproj", "{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -177,18 +169,10 @@ Global
 		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Debug.Build.0 = Debug|.NET
 		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release.ActiveCfg = Release|.NET
 		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release.Build.0 = Release|.NET
-		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Debug.ActiveCfg = Debug|.NET
-		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Debug.Build.0 = Debug|.NET
-		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Release.ActiveCfg = Release|.NET
-		{4788CEC1-BC6E-420A-B351-4FDF391E4951}.Release.Build.0 = Release|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug.ActiveCfg = Debug|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Debug.Build.0 = Debug|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.ActiveCfg = Release|.NET
 		{E3482030-5828-4112-9906-D4C5153DCE3F}.Release.Build.0 = Release|.NET
-		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Debug.ActiveCfg = Debug|.NET
-		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Debug.Build.0 = Debug|.NET
-		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Release.ActiveCfg = Release|.NET
-		{586D6BDE-F241-4EBB-AA8D-74A0F2C9FCF8}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		..\NHibernateSolution.build = ..\NHibernateSolution.build
