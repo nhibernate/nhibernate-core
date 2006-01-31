@@ -13,6 +13,43 @@
 	<!-- Disable performance tests by default. They take too much time. -->
 	<property name="run.performance.tests" value="false" overwrite="false" />
 
+	<fileset id="buildfiles.all" basedir="src">
+		<!-- Files have to be in dependency order -->
+		<include name="Iesi.Collections/Iesi.Collections.build" />
+		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
+		<include name="NHibernate/NHibernate.build" />
+		<include name="NHibernate.DomainModel/NHibernate.DomainModel.build" />
+		<include name="NHibernate.Test/NHibernate.Test.build" />
+		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
+		<include name="NHibernate.Examples/NHibernate.Examples.build" />
+		<include name="NHibernate.Caches.SysCache/NHibernate.Caches.SysCache.build" />
+		<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" />
+		<include name="NHibernate.Caches.Prevalence/NHibernate.Caches.Prevalence.build" />
+		<include name="NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.build" />
+		<include name="NHibernate.JetDriver/NHibernate.JetDriver.build" />
+		<include name="NHibernate.Mapping.Attributes/NHibernate.Mapping.Attributes.build" />
+		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
+		<include name="NHibernate.Tasks/NHibernate.Tasks.build" />
+		<include name="NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" />
+		<include name="NHibernate.Tool.hbm2net.Console/NHibernate.Tool.hbm2net.Console.build" />
+		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
+	</fileset>
+
+	<fileset id="buildfiles.tests" basedir="src">
+		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
+		<include name="NHibernate.Test/NHibernate.Test.build" />
+		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build"
+			if="${run.performance.tests}" />
+		<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" />
+		<include name="NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.build" />
+		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
+		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
+	</fileset>
+
+	<fileset id="buildfiles.external" basedir="src">
+		<include name="HashCodeProvider/HashCodeProvider.build" />
+	</fileset>
+
 	<target name="init" depends="common.init"
 		description="Initializes build properties" />
 
@@ -22,20 +59,19 @@
 		description="Builds code that NHibernate depends on but is not a core piece of NHibernate.  The built dll/exes will be distributed in the lib folder so there should be no need for a user to build it."
 	>
 		<nant target="build">
-			<buildfiles id="external-projects.buildfiles" basedir="src">
-				<include name="HashCodeProvider/HashCodeProvider.build" />
-				<include name="Iesi.Collections/Iesi.Collections.build" />
-			</buildfiles>
+			<buildfiles refid="buildfiles.external" />
 		</nant>
 	</target>
 
-	<target name="build" depends="init" description="Builds NHibernate in the current configuration">
+	<target name="prepare-build-directory">
 		<echo message="Current Directory is ${project::get-base-directory()}" />
 		<echo message="Build Directory is ${build.dir}" />
-		
+
 		<!-- Prepare build directory -->
 		<mkdir dir="${bin.dir}" />
+	</target>
 
+	<target name="copy-referenced-assemblies">
 		<!-- Copy framework-neutral libraries -->
 		<copy todir="${bin.dir}" >
 			<fileset basedir="${lib.dir}">
@@ -74,62 +110,23 @@
 				<include name="*.license.txt" />
 			</fileset>
 		</copy>
-		
-		<nant target="build" buildfile="src/Iesi.Collections/Iesi.Collections.build" />
-		<nant target="build" buildfile="src/Iesi.Collections.Test/Iesi.Collections.Test.build" />
-		<nant target="build" buildfile="src/NHibernate/NHibernate.build" />
-		<nant target="build" buildfile="src/NHibernate.DomainModel/NHibernate.DomainModel.build" />
-		<nant target="build" buildfile="src/NHibernate.Test/NHibernate.Test.build" />
-		<nant target="build" buildfile="src/NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
-		<nant target="build" buildfile="src/NHibernate.Examples/NHibernate.Examples.build" />
+	</target>
+
+	<target name="build"
+		depends="init prepare-build-directory copy-referenced-assemblies"
+		description="Builds NHibernate in the current configuration">
+
+		<nant target="build">
+			<buildfiles refid="buildfiles.all" />
+		</nant>
 
 	</target>
 
-	<target name="merge">
-		
-		<if test="${property::exists('merge.targetplatform')}">
-			<exec program="ilmerge.exe" basedir="external-bin" useruntimeengine="true">
-				<arg value="/ndebug:${build.debug}" />
-				<arg value="/lib:${bin.dir}" />
-				<arg value="/targetplatform:${merge.targetplatform}" />
-				<arg value="/keyfile:src/NHibernate.snk" if="${sign}" />
-				<arg value="/out:${build.dir}/NHibernate.dll" />
-				<arg value="NHibernate.dll" />
-				<arg value="HashCodeProvider.dll" />
-			</exec>
+	<target name="test" depends="build" description="Runs all NHibernate tests">
 
-			<!-- clean up -->
-			<delete file="${bin.dir}/NHibernate.dll" />
-			<delete file="${bin.dir}/HashCodeProvider.dll" />
-			<delete file="${bin.dir}/HashCodeProvider.license.txt" />
-			<move file="${build.dir}/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
-		</if>
-	</target>
-
-	<target name="run-nhibernate-tests">
-		<!--
-			Run tests in ${test.project}, putting connection settings into its App.config
-			before the tests and removing them afterwards.
-		-->
-		<property name="app.config" value="${bin.dir}/${test.project}.dll.config" />
-		<call target="put-connection-settings-into-app-config" />
-		<nant target="test" buildfile="src/${test.project}/${test.project}.build" />
-		<call target="remove-connection-settings-from-app-config" />
-	</target>
-
-	<target name="test" depends="build" description="Runs all NHibernate tests" >
-		<!-- Run Iesi.Collections tests -->
-		<nant target="test" buildfile="src/Iesi.Collections.Test/Iesi.Collections.Test.build" />
-
-		<!-- Run NHibernate.Test tests -->
-		<property name="test.project" value="NHibernate.Test" />
-		<call target="run-nhibernate-tests" />
-
-		<!-- Run NHibernate.Test.Performance tests, unless disabled -->
-		<if test="${run.performance.tests}">
-			<property name="test.project" value="NHibernate.Test.Performance" />
-			<call target="run-nhibernate-tests" />
-		</if>
+		<nant target="test">
+			<buildfiles refid="projects.tests" />
+		</nant>
 
 		<if test="${nunit2report.installed}">
 			<mkdir dir="${build.dir}/testresults" />
@@ -328,7 +325,27 @@
 		<delete dir="${build.dir}/doc/temp" />
 		
 	</target>
-	
+
+	<target name="merge">
+		<if test="${property::exists('merge.targetplatform')}">
+			<exec program="ilmerge.exe" basedir="external-bin" useruntimeengine="true">
+				<arg value="/ndebug:${build.debug}" />
+				<arg value="/lib:${bin.dir}" />
+				<arg value="/targetplatform:${merge.targetplatform}" />
+				<arg value="/keyfile:src/NHibernate.snk" if="${sign}" />
+				<arg value="/out:${build.dir}/NHibernate.dll" />
+				<arg value="NHibernate.dll" />
+				<arg value="HashCodeProvider.dll" />
+			</exec>
+
+			<!-- clean up -->
+			<delete file="${bin.dir}/NHibernate.dll" />
+			<delete file="${bin.dir}/HashCodeProvider.dll" />
+			<delete file="${bin.dir}/HashCodeProvider.license.txt" />
+			<move file="${build.dir}/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
+		</if>
+	</target>
+
 	<target name="package" depends="test doc merge" description="Creates Zip files for the File Release System on SourceForge">
 		
 		<!-- Copy and rename the license -->

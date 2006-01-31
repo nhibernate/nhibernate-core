@@ -19,16 +19,17 @@
 		</resourcefileset>
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="log4net.dll" />
 			<include name="System.dll" />
 			<include name="System.Data.dll" />
 			<include name="System.XML.dll" />
 		</assemblyfileset>
 	</target>
 
-	<target name="generate-assemblyinfo" depends="common.generate-assemblyinfo" />
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 
 	<target name="build"
-		depends="init common.generate-assemblyinfo"
+		depends="generate-assemblyinfo common.compile-dll"
 		description="Build NHibernate.Mapping.Attributes" />
 
 </project>

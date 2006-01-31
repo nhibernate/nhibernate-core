@@ -165,38 +165,6 @@
 		<delete dir="${bin.dir}" failonerror="false" />
 	</target>
 
-	<target name="put-connection-settings-into-app-config">
-		<!-- make sure the config file is writable -->
-		<attrib file="${app.config}" readonly="false" />
-		
-		<!-- 
-			Tell nhibernate how to connect to the test database.
-		-->
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.dialect']/@value"
-			value="${nhibernate.dialect}" 
-		/>
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.connection.driver_class']/@value"
-			value="${nhibernate.connection.driver_class}" 
-		/>
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
-			value="${nhibernate.connection.connection_string}" 
-		/>
-	</target>
-
-	<target name="remove-connection-settings-from-app-config">
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
-			value="conn string here" 
-		/>
-	</target>
-
 	<if test="${clover.enabled}">
 		<loadtasks assembly="${clover.home}/${clover.assembly}" />
 	</if>

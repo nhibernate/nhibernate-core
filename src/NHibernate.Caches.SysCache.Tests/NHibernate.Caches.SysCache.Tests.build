@@ -13,7 +13,7 @@
 			<include name="System.dll" />
 			<include name="System.Data.dll" />
 			<include name="System.XML.dll" />
-			<include name="NHibernate.Caches.SysCache.Tests.dll" />
+			<include name="NHibernate.Caches.SysCache.dll" />
 			<include name="NHibernate.dll" />
 			<include name="nunit.framework.dll" />
 			<include name="log4net.dll" />

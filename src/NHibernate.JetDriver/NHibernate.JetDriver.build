@@ -17,12 +17,12 @@
 			<include name="System.Data.dll" />
 			<include name="NHibernate.dll" />
 			<include name="log4net.dll" />
-		</references>
+		</assemblyfileset>
 	</target>
 
-	<target name="generate-assemblyinfo" depends="common.generate-assemblyinfo" />
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 
 	<target name="build" description="Build the Jet (MS Access) driver for NHibernate"
-		depends="init generate-assemblyinfo compile-dll" />
+		depends="generate-assemblyinfo common.compile-dll" />
 
 </project>
