@@ -7,7 +7,6 @@
 >
 
 	<property name="root.dir" value="..\.." />
-
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
