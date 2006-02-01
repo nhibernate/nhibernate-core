@@ -33,6 +33,12 @@
 		<include name="NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" />
 		<include name="NHibernate.Tool.hbm2net.Console/NHibernate.Tool.hbm2net.Console.build" />
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
+		<include name="NHibernate.UserTypes.Oracle/NHibernate.UserTypes.Oracle.build" />
+		<include name="NHibernate.UserTypes.SqlTypes/NHibernate.UserTypes.SqlTypes.build" />
+		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
+		<include name="Nullables/Nullables.build" />
+		<include name="Nullables.NHibernate/Nullables.NHibernate.build" />
+		<include name="Nullables.Tests/Nullables.Tests.build" />
 	</fileset>
 
 	<fileset id="buildfiles.tests" basedir="src">
@@ -44,6 +50,8 @@
 		<include name="NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.build" />
 		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
+		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
+		<include name="Nullables.Tests/Nullables.Tests.build" />
 	</fileset>
 
 	<fileset id="buildfiles.external" basedir="src">
@@ -126,7 +134,7 @@
 	<target name="test" depends="build" description="Runs all NHibernate tests">
 
 		<nant target="test">
-			<buildfiles refid="projects.tests" />
+			<buildfiles refid="buildfiles.tests" />
 		</nant>
 
 		<if test="${nunit2report.installed}">
@@ -421,5 +429,12 @@
  			  commandline="-recurse=src/*.cs -formatter=xml:${build.dir}\bin\simian-results.xml -failOnDuplication-"
  			  failonerror="false"/>
  	</target>
+
+	<target name="visual-studio" depends="init">
+		<property name="visual-studio" value="true" />
+		<nant target="generate-assemblyinfo">
+			<buildfiles refid="buildfiles.all" />
+		</nant>
+	</target>
 
 </project>

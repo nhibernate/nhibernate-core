@@ -9,7 +9,8 @@
 	<property name="root.dir" value="..\.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
-	<target name="init" depends="common.init>
+	<target name="init" depends="common.init">
+		<property name="assembly.is-cls-compliant" value="false" />
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />
 			<include name="System.Data.dll" />
@@ -27,7 +28,7 @@
 	</target>
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
-	<target name="build" depends="init generate-assemblyinfo common.compile-tests" />
+	<target name="build" depends="generate-assemblyinfo common.compile-tests" />
 	<target name="test" depends="build common.run-tests" />
 
 </project>

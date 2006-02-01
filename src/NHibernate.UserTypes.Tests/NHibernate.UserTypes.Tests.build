@@ -8,7 +8,7 @@
 	<property name="root.dir" value="..\.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
-	<target name="init" depends="common.init>
+	<target name="init" depends="common.init">
 		<property name="assembly.description" value="Tests for NHibernate.UserTypes group of assemblies" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">

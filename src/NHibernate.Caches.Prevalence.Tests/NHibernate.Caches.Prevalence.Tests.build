@@ -22,5 +22,8 @@
 	</target>
 
 	<target name="build" depends="init common.compile-tests" />
-	<target name="test" depends="init build common.run-tests" />
+	<target name="test" depends="build common.run-tests" />
+
+	<!-- Intentionally empty -->
+	<target name="generate-assemblyinfo" />
 </project>

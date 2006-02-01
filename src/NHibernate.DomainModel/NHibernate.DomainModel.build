@@ -27,7 +27,7 @@
 		</resourcefileset>
 	</target>
 
-	<target name="generate-assemblyinfo" depends="common.generate-assemblyinfo" />
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 
 	<target name="build" description="Build the DomainModel that will be used by the Tests"
 		depends="init generate-assemblyinfo common.compile-dll" />

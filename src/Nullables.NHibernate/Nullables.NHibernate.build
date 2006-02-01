@@ -9,7 +9,7 @@
 	<property name="root.dir" value="..\.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
-	<target name="init" depends="common.init>
+	<target name="init" depends="common.init">
 		<property name="assembly.description" value="The NHibernate ${project.version} Types for the Nullables." />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">

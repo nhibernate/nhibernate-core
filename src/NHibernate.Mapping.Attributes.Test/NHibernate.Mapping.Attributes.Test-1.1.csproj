@@ -15,7 +15,7 @@
                 DefaultHTMLPageLayout = "Grid"
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
-                OutputType = "Exe"
+                OutputType = "Library"
                 PreBuildEvent = ""
                 PostBuildEvent = ""
                 RootNamespace = "NHibernate.Mapping.Attributes.Test"
@@ -106,11 +106,6 @@
                 />
                 <File
                     RelPath = "DomainModel.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Program.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

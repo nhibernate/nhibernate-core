@@ -108,12 +108,7 @@
                     BuildAction = "None"
                 />
                 <File
-                    RelPath = "AssemblyInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "syscache.nunit"
+                    RelPath = "NHibernate.Caches.SysCache.Tests.nunit"
                     BuildAction = "None"
                 />
                 <File

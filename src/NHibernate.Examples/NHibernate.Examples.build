@@ -25,9 +25,11 @@
 		</resourcefileset>
 	</target>
 
+	<!-- Intentionally empty -->
+	<target name="generate-assemblyinfo" />
+
 	<target name="build" description="Simple Examples for NHibernate"
 		depends="init common.compile-tests" />
 
 	<target name="test" depends="init build common.run-tests" />
-
 </project>

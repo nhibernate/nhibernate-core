@@ -9,7 +9,7 @@
 	<property name="root.dir" value="..\.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
-	<target name="init" depends="common.init>
+	<target name="init" depends="common.init">
 		<property name="assembly.description" value="A library of Nullable Primitive Types to serve as a bridge to .net-2.0." />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">

@@ -10,7 +10,7 @@
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
-		<property name="assembly.description" value="The Domain Model used by the Unit Tests." />
+		<property name="assembly.description" value="An object persistence library for relational databases." />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />
@@ -29,9 +29,9 @@
 		</resourcefileset>
 	</target>
 
-	<target name="generate-assemblyinfoversion" depends="init common.generate-assemblyinfoversion" />
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 
 	<target name="build" description="Build NHibernate"
-		depends="init generate-assemblyinfoversion common.compile-dll" />
+		depends="generate-assemblyinfo common.compile-dll" />
 
 </project>
