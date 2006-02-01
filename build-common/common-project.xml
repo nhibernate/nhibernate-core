@@ -155,25 +155,6 @@
 		</asminfo>
 	</target>
 
-	<target name="common.generate-assemblyinfoversion"
-		depends="common.init common.set-assembly-attribute-values"
-		description="Generate AssemblyInfoVersion.cs (containing only variable attributes) using assembly.* properties."
-	>
-		<attrib file="AssemblyInfoVersion.cs" readonly="false" />
-		<asminfo output="AssemblyInfoVersion.cs" language="CSharp">
-			<imports>
-				<import namespace="System" />
-				<import namespace="System.Reflection" />
-			</imports>
-			<attributes>
-				<attribute type="AssemblyTitleAttribute" value="${assembly.title}" />
-				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
-				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
-				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version}" />
-			</attributes>
-		</asminfo>
-	</target>
-
 	<target name="common.run-tests"
 		description="Run NUnit tests">
 
