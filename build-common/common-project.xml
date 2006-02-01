@@ -39,9 +39,9 @@
 				run compiled NUnit tests.
 
 		All compile/run targets put the output in bin.dir. Common.compile*
-		targets use assembly fileset with id="project.references" and resource
-		fileset with id="project.resources" to compile the sources. The
-		resource fileset is optional.
+		targets use source fileset with id="project.sources", assembly fileset
+		with id="project.references" and resource fileset with id="project.resources"
+		to compile the project. The source and resource filesets are optional.
 
 	</description>
 
@@ -56,9 +56,7 @@
 			debug="${build.debug}"
 			output="${bin.dir}/${project::get-name()}.dll"
 		>
-			<sources>
-				<include name="**/*.cs" />
-			</sources>
+			<sources refid="project.sources" />
 			<references refid="project.references" />
 			<resources refid="project.resources" />
 		</csc>
@@ -94,9 +92,23 @@
 			<nowarn>
 				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
 			</nowarn>
-			<sources failonempty="true">
-				<include name="**/*.cs" />
-			</sources>
+			<sources refid="project.sources" />
+			<references refid="project.references" />
+			<resources refid="project.resources" />
+		</csc>
+	</target>
+
+	<target name="common.compile-exe" description="Compile sources into a console executable">
+		<csc
+			target="exe"
+			define="${current.build.defines}" 
+			debug="${build.debug}"
+			output="${bin.dir}\${project::get-name()}.exe" 
+		>
+			<nowarn>
+				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
+			</nowarn>
+			<sources refid="project.sources" />
 			<references refid="project.references" />
 			<resources refid="project.resources" />
 		</csc>
@@ -113,6 +125,7 @@
 		<property overwrite="false" name="assembly.version.informational" value="${project.version.major}.${project.version.minor}" />
 		<property overwrite="false" name="assembly.copyright" value="Licensed under LGPL." />
 		<property overwrite="false" name="assembly.keyfile" value="${key.file}" />
+		<property overwrite="false" name="assembly.sign" value="${sign}" />
 	</target>
 
 	<target name="common.generate-assemblyinfo"
@@ -136,7 +149,7 @@
 				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
 				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
 				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version}" />
-				<attribute type="AssemblyKeyFileAttribute" value="${assembly.keyfile}" if="${sign}"/>
+				<attribute type="AssemblyKeyFileAttribute" value="${assembly.keyfile}" if="${assembly.sign}"/>
 				<attribute type="AssemblyDelaySignAttribute" value="false" />
 			</attributes>
 		</asminfo>

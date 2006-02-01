@@ -78,6 +78,7 @@
 				<include name="*.dll" />
 				<include name="*.xml" />
 				<include name="*.license.txt" />
+				<include name="nant/*.*" />
 			</fileset>
 		</copy>
 		

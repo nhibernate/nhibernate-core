@@ -9,19 +9,20 @@
 	<property name="root.dir" value="..\.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
-	<target name="init" depends="common.init>
+	<target name="init" depends="common.init">
 		<property name="assembly.description" value="Tests for NHibernate.Tool.hbm2net tool" />
 		<property name="assembly.version" value="0.1.0.0" />
 		<property name="assembly.version.informational" value="0.1" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="NHibernate.Tool.hbm2net.dll" />
+			<include name="NVelocity.dll" />
 			<include name="nunit.framework.dll" />
 		</assemblyfileset>
 		<resourcefileset id="project.resources" prefix="NHibernate.Tool.hbm2net.Tests" dynamicprefix="true">
 			<include name="*.hbm.xml" />
 			<include name="*.csharp" />
-		</resourcefileset id="project.resources">
+		</resourcefileset>
 	</target>
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />

@@ -148,7 +148,10 @@
 	<target name="common.init"
 		depends="set-project-configuration set-framework-configuration"
 		description="Initializes build properties">
-		
+
+		<fileset id="project.sources" failonempty="true">
+			<include name="**/*.cs" />
+		</fileset>
 		<resourcefileset id="project.resources" />
 	</target>
 

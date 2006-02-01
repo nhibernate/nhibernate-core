@@ -7,13 +7,15 @@
 	<property name="root.dir" value="..\.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
-	<target name="init" depends="common.init>
+	<target name="init" depends="common.init">
 		<property name="assembly.description" value="NAnt Tasks for NHibernate ${project.version} Tools." />
+		<!-- NAnt.Core.dll isn't strongly named so the tasks assembly can't be either -->
+		<property name="assembly.sign" value="false" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
-				<include name="System.dll" />
-				<include name="NHibernate.dll" />
-				<include name="nant/NAnt.Core.dll" />
+			<include name="System.dll" />
+			<include name="NHibernate.dll" />
+			<include name="nant/NAnt.Core.dll" />
 		</assemblyfileset>
 	</target>
 

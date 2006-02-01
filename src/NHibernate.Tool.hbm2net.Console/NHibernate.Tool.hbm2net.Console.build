@@ -9,7 +9,7 @@
 	<property name="root.dir" value="..\.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
-	<target name="init" depends="common.init>
+	<target name="init" depends="common.init">
 		<property name="assembly.description" value="Tool to Generate Classes from NHibernate ${project.version} hbm.xml files." />
 		<property name="assembly.is-cls-compliant" value="false" />
 
