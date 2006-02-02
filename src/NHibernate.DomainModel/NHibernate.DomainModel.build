@@ -12,6 +12,7 @@
 	<target name="init" depends="common.init">
 		<property name="assembly.is-cls-compliant" value="false" />
 		<property name="assembly.description" value="The Domain Model used by the Unit Tests." />
+		<property name="clover.instrument" value="false" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />

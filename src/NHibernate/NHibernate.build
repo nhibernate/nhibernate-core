@@ -11,6 +11,7 @@
 
 	<target name="init" depends="common.init">
 		<property name="assembly.description" value="An object persistence library for relational databases." />
+		<property name="clover.instrument" value="true" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />

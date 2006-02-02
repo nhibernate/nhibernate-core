@@ -14,12 +14,14 @@
 			name="assembly.description"
 			value="Library of attributes which can be used to decorate your entities and generate hbm.xml mapping documents for NHibernate ${project.version}." />
 
+		<property name="clover.instrument" value="true" />
+
 		<fileset id="project.sources" failonempty="true">
 			<!-- Don't include Refly and Generator sources -->
 			<include name="*.cs" />
 		</fileset>
 
-		<resourcefileset id="project.resources">
+		<resourcefileset id="project.resources" prefix="NHibernate.Mapping.Attributes">
 			<include name="nhibernate-mapping-2.0.xsd" />
 		</resourcefileset>
 

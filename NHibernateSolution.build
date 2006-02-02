@@ -437,4 +437,19 @@
 		</nant>
 	</target>
 
+	<target name="cleanall" description="Deletes every build configuration">
+		<echo message="Deleting all builds from all configurations" />
+		<delete dir="build" failonerror="false" />
+		<delete dir="${clover.src}" failonerror="false" />
+	</target>
+
+	<target name="clean" depends="init" description="Deletes current build">
+		<delete dir="${build.dir}" failonerror="false" />
+		<delete dir="${clover.src}" failonerror="false" />
+	</target>
+
+	<target name="clean-bin" depends="init" description="Deletes the current bin folder">
+		<delete dir="${bin.dir}" failonerror="false" />
+	</target>
+
 </project>

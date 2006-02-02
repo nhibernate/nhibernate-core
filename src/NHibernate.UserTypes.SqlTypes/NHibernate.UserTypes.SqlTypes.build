@@ -10,6 +10,7 @@
 
 	<target name="init" depends="common.init">
 		<property name="assembly.description" value="System.Data.SqlTypes support for NHibernate ${project.version}" />
+		<property name="clover.instrument" value="true" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />

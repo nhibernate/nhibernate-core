@@ -10,6 +10,7 @@
 
 	<target name="init" depends="common.init">
 		<property name="assembly.description" value="Cache provider for NHibernate ${project.version} using ASP.NET Cache object." />
+		<property name="clover.instrument" value="true" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />

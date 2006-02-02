@@ -32,11 +32,15 @@
 	<!--
 		Cenqua provided a license of Clover.NET for the NHibernate project to use. 
 	-->
-	<property name="clover.enabled" value="false" />
+	<property name="clover.enabled" value="false" overwrite="false" />
 	<property name="clover.src" value="src\CloverSrc" />
 	<property name="clover.db" value="${clover.src}\clover.cdb" />
 	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET for Visual Studio" />
 	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
+
+	<if test="${clover.enabled}">
+		<loadtasks assembly="${clover.home}/${clover.assembly}" />
+	</if>
 
 	<!-- 
 		Path to the folder that contain the external assemblies.  For net-1.1 the values will
@@ -57,7 +61,7 @@
 	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
 
 	<!-- debug|release -->
-	<property name="build.defines" value="STRONG " />
+	<property name="build.defines" value="" />
 
 	<!-- platform specific properties. These are the defaults -->
 	<property name="current.build.defines" value="${build.defines}" />
@@ -161,22 +165,5 @@
 		</fileset>
 		<resourcefileset id="project.resources" />
 	</target>
-
-	<target name="cleanall" description="Deletes every build configuration">
-		<echo message="Deleting all builds from all configurations" />
-		<delete dir="build" failonerror="false" />
-	</target>
-
-	<target name="clean" depends="init" description="Deletes current build">
-		<delete dir="${build.dir}" failonerror="false" />
-	</target>
-
-	<target name="clean-bin" depends="init" description="Deletes the current bin folder">
-		<delete dir="${bin.dir}" failonerror="false" />
-	</target>
-
-	<if test="${clover.enabled}">
-		<loadtasks assembly="${clover.home}/${clover.assembly}" />
-	</if>
 
 </project>

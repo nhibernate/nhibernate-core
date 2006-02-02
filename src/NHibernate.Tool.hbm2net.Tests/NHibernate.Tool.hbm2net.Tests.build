@@ -13,6 +13,7 @@
 		<property name="assembly.description" value="Tests for NHibernate.Tool.hbm2net tool" />
 		<property name="assembly.version" value="0.1.0.0" />
 		<property name="assembly.version.informational" value="0.1" />
+		<property name="clover.instrument" value="false" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="NHibernate.Tool.hbm2net.dll" />

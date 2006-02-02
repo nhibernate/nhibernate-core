@@ -19,6 +19,8 @@
 		<property name="assembly.version" value="1.0.0.1" />
 		<property name="assembly.version.informational" value="1.0" />
 
+		<property name="clover.instrument" value="true" />
+
 		<assemblyfileset basedir="${bin.dir}" id="project.references">
 			<include name="System.dll" />
 			<include name="System.XML.dll" />

@@ -10,6 +10,8 @@
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
+		<property name="clover.instrument" value="true" />
+
 		<property name="assembly.description" value="The Jet driver and dialect for NHibernate ${project.version}." />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">

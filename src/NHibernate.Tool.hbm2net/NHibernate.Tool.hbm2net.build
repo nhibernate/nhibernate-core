@@ -12,6 +12,7 @@
 	<target name="init" depends="common.init">
 		<property name="assembly.description" value="Library to Generate Classes from NHibernate ${project.version} hbm.xml files." />
 		<property name="assembly.is-cls-compliant" value="false" />
+		<property name="clover.instrument" value="true" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="Iesi.Collections.dll" />
