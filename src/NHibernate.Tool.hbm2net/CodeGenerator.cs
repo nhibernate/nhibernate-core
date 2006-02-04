@@ -44,8 +44,8 @@ namespace NHibernate.Tool.hbm2net
 				Console.Error.WriteLine("No arguments provided. Nothing to do. Exit.");
 				Environment.Exit(- 1);
 			}
-			try
-			{
+//			try
+//			{
 				ArrayList mappingFiles = new ArrayList();
 				
 				string outputDir = null;
@@ -144,11 +144,11 @@ namespace NHibernate.Tool.hbm2net
 					g.BaseDirName = outputDir;
 					g.generate(classMappings);
 				}
-			}
-			catch (Exception e)
-			{
-				SupportClass.WriteStackTrace(e, Console.Error);
-			}
+//			}
+//			catch (Exception e)
+//			{
+//				SupportClass.WriteStackTrace(e, Console.Error);
+//			}
 		}
 		
 		private static ICollection GetFiles( string fileSpec )

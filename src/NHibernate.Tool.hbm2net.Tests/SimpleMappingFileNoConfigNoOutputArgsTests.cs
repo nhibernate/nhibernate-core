@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Tool.hbm2net.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Functional Tests")]
 	public class SimpleMappingFileNoConfigNoOutputArgsTests 
 	{
 		FileInfo mappingFile;
@@ -34,7 +34,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 		}
 
 		/// <summary>
-		///  <p>Test when the mapping file resides in same folder as hbm2net put the full path is <b>not</b> supplied.</p>
+		///  <para>Test when the mapping file resides in same folder as hbm2net but the full path is <b>not</b> supplied.</para>
 		/// </summary>
 		[Test]
 		public void MappingFileNoPathSameFolderAsHbm2Net()
@@ -47,7 +47,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 		}
 
 		/// <summary>
-		///  <p>Test when the mapping file resides in same folder as hbm2net put the full path is supplied.</p>
+		///  <para>Test when the mapping file resides in same folder as hbm2net but the full path is supplied.</para>
 		/// </summary>
 		[Test]
 		public void MappingFileInSameFolderAsHbm2Net()
@@ -60,7 +60,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 		}
 
 		/// <summary>
-		///  <p>Test when the mapping file doesn't reside in the same directory as hbm2net.</p>
+		///  <para>Test when the mapping file doesn't reside in the same directory as hbm2net.</para>
 		/// </summary>
 		[Test]
 		public void MappingFileInDifferentFolderThanHbm2Net()

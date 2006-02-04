@@ -84,6 +84,28 @@ namespace NHibernate.Tool.hbm2net
 				p.SetProperty("class.resource.loader.class", "NHibernate.Tool.hbm2net.StringResourceLoader;NHibernate.Tool.hbm2net");
 				templatename = new System.IO.StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Tool.hbm2net.convert.vm")).ReadToEnd();
 			}
+			else
+			{
+				// NH-242 raised issue of where NVelocity looks when supplied with a unpathed file name. Hence
+				// will take responsiblity of explicitly instructing NVelocity where to look.
+				if (!File.Exists(templatename))
+				{
+					string dir = new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).DirectoryName;
+					templatename = Path.Combine(dir, templatename);
+					if(!File.Exists(templatename))
+					{
+						string msg = string.Format("Cannot find template file using absolute path or relative to '{0}'.", dir);
+						throw new IOException(msg);
+					}
+				}
+				p.SetProperty("resource.loader", "class");
+				p.SetProperty("class.resource.loader.class", "NHibernate.Tool.hbm2net.StringResourceLoader;NHibernate.Tool.hbm2net");
+				using(System.IO.StreamReader sr = new StreamReader(System.IO.File.OpenRead(templatename)))
+				{
+					templatename = sr.ReadToEnd();
+					sr.Close();
+				}
+			}
 			ve = new VelocityEngine();
 			ve.Init(p);
 			template = ve.GetTemplate(templatename);

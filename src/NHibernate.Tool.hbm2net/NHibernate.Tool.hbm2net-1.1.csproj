@@ -85,6 +85,11 @@
                     HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
                 />
                 <Reference
+                    Name = "Iesi.Collections"
+                    AssemblyName = "Iesi.Collections"
+                    HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
+                />
+                <Reference
                     Name = "NVelocity"
                     AssemblyName = "NVelocity"
                     HintPath = "..\..\lib\hbm2net\NVelocity.dll"

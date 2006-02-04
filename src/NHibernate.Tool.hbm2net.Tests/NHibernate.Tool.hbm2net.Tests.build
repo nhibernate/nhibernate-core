@@ -23,6 +23,8 @@
 		<resourcefileset id="project.resources" prefix="NHibernate.Tool.hbm2net.Tests" dynamicprefix="true">
 			<include name="*.hbm.xml" />
 			<include name="*.csharp" />
+			<include name="*.vm" />
+			<include name="config.xml" />
 		</resourcefileset>
 	</target>
 

@@ -17,7 +17,7 @@
                 DelaySign = "false"
                 OutputType = "Library"
                 PreBuildEvent = ""
-                PostBuildEvent = "copy $(ProjectDir)\app.config $(TargetDir)\$(TargetFileName).config"
+                PostBuildEvent = 'copy /y "$(ProjectDir)\App.config" "$(TargetDir)\$(TargetFileName).config"'
                 RootNamespace = "NHibernate.Tool.hbm2net.Tests"
                 RunPostBuildEvent = "Always"
                 StartupObject = ""
@@ -108,6 +108,14 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "config.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "convert.vm"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "DomainModel.csharp"
                     SubType = "Code"
                     BuildAction = "EmbeddedResource"
@@ -124,6 +132,11 @@
                 <File
                     RelPath = "Simple.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "SimpleMappingFileConfigFileNoOutputArgsTests.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "SimpleMappingFileNoConfigNoOutputArgsTests.cs"

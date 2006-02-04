@@ -44,7 +44,7 @@ namespace NHibernate.Tool.hbm2net
 		private string extension = "cs";
 		private bool lowerFirstLetter = false;
 		
-		public static NameValueCollection params_Renamed = new NameValueCollection();
+		public NameValueCollection params_Renamed = new NameValueCollection();
 		
 		/// <summary> Constructs a new Generator using the defaults.</summary>
 		public Generator()
