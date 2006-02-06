@@ -1,0 +1,721 @@
+<chapter id="performance">
+    <title>Improving performance</title>
+
+    <sect1 id="performance-collections">
+        <title>Understanding Collection performance</title>
+
+        <para>
+            We've already spent quite some time talking about collections.
+            In this section we will highlight a couple more issues about
+            how collections behave at runtime.
+        </para>
+
+        <sect2 id="performance-collections-taxonomy">
+            <title>Taxonomy</title>
+
+            <para>NHibernate defines three basic kinds of collections:</para>
+
+            <itemizedlist>
+            <listitem>
+                <para>collections of values</para>
+            </listitem>
+            <listitem>
+                <para>one to many associations</para>
+            </listitem>
+            <listitem>
+                <para>many to many associations</para>
+            </listitem>
+            </itemizedlist>
+
+            <para>
+                This classification distinguishes the various table and foreign key
+                relationships but does not tell us quite everything we need to know
+                about the relational model. To fully understand the relational structure
+                and performance characteristics, we must also consider the structure of
+                the primary key that is used by NHibernate to update or delete collection
+                rows. This suggests the following classification:
+            </para>
+
+            <itemizedlist>
+            <listitem>
+                <para>indexed collections</para>
+            </listitem>
+            <listitem>
+                <para>sets</para>
+            </listitem>
+            <listitem>
+                <para>bags</para>
+            </listitem>
+            </itemizedlist>
+
+            <para>
+                All indexed collections (maps, lists, arrays) have a primary key consisting
+                of the <literal>&lt;key&gt;</literal> and <literal>&lt;index&gt;</literal>
+                columns. In this case collection updates are usually extremely efficient -
+                the primary key may be efficiently indexed and a particular row may be efficiently
+                located when NHibernate tries to update or delete it.
+            </para>
+
+            <para>
+                Sets have a primary key consisting of <literal>&lt;key&gt;</literal> and element
+                columns. This may be less efficient for some types of collection element, particularly
+                composite elements or large text or binary fields; the database may not be able to index
+                a complex primary key as efficently.  On the other hand, for one to many or many to many
+                associations, particularly in the case of synthetic identifiers, it is likely to be just
+                as efficient. (Side-note: if you want <literal>SchemaExport</literal> to actually create
+                the primary key of a <literal>&lt;set&gt;</literal> for you, you must declare all columns
+                as <literal>not-null="true"</literal>.)
+            </para>
+
+            <para>
+                Bags are the worst case. Since a bag permits duplicate element values and has no
+                index column, no primary key may be defined. Hibernate has no way of distinguishing
+                between duplicate rows. NHibernate resolves this problem by completely removing
+                (in a single <literal>DELETE</literal>) and recreating the collection whenever it
+                changes. This might be very inefficient.
+            </para>
+
+            <para>
+                Note that for a one-to-many association, the "primary key" may not be the physical
+                primary key of the database table - but even in this case, the above classification
+                is still useful. (It still reflects how NHibernate "locates" individual rows of the
+                collection.)
+            </para>
+
+        </sect2>
+
+        <sect2 id="performance-collections-mostefficientupdate">
+            <title>Lists, maps and sets are the most efficient collections to update</title>
+
+            <para>
+                From the discussion above, it should be clear that indexed collections
+                and (usually) sets allow the most efficient operation in terms of adding,
+                removing and updating elements.
+            </para>
+
+            <para>
+                There is, arguably, one more advantage that indexed collections have over sets for
+                many to many associations or collections of values. Because of the structure of an
+                <literal>ISet</literal>, NHibernate doesn't ever <literal>UPDATE</literal> a row when
+                an element is "changed". Changes to an <literal>ISet</literal> always work via
+                <literal>INSERT</literal> and <literal>DELETE</literal> (of individual rows). Once
+                again, this consideration does not apply to one to many associations.
+            </para>
+
+            <para>
+                After observing that arrays cannot be lazy, we would conclude that lists, maps and sets
+                are the most performant collection types. (With the caveat that a set might be less
+                efficient for some collections of values.)
+            </para>
+
+            <para>
+                Sets are expected to be the most common kind of collection in NHibernate applications.
+            </para>
+
+            <para>
+                <emphasis>There is an undocumented feature in this release of NHibernate. The
+                <literal>&lt;idbag&gt;</literal> mapping implements bag semantics for a collection
+                of values or a many to many association and is more efficient that any other
+                style of collection in this case!</emphasis>
+            </para>
+
+        </sect2>
+
+        <sect2 id="performance-collections-mostefficentinverse">
+            <title>Bags and lists are the most efficient inverse collections</title>
+
+            <para>
+                Just before you ditch bags forever, there is a particular case in which bags (and also lists)
+                are much more performant than sets. For a collection with <literal>inverse="true"</literal>
+                (the standard bidirectional one-to-many relationship idiom, for example) we can add elements
+                to a bag or list without needing to initialize (fetch) the bag elements! This is because
+                <literal>IList.Add()</literal> or <literal>IList.AddRange()</literal> must always
+                succeed for a bag or <literal>IList</literal> (unlike a <literal>Set</literal>). This can
+                make the following common code much faster.
+            </para>
+
+            <programlisting><![CDATA[Parent p = (Parent) sess.Load(typeof(Parent), id);
+    Child c = new Child();
+    c.Parent = p;
+    p.Children.Add(c);  //no need to fetch the collection!
+    sess.Flush();]]></programlisting>
+
+        </sect2>
+
+        <sect2 id="performance-collections-oneshotdelete">
+            <title>One shot delete</title>
+
+            <para>
+                Occasionally, deleting collection elements one by one can be extremely inefficient. NHibernate
+                isn't completly stupid, so it knows not to do that in the case of an newly-empty collection
+                (if you called <literal>list.Clear()</literal>, for example). In this case, NHibernate will
+                issue a single <literal>DELETE</literal> and we are done!
+            </para>
+
+            <para>
+                Suppose we add a single element to a collection of size twenty and then remove two elements.
+                NHibernate will issue one <literal>INSERT</literal> statement and two <literal>DELETE</literal>
+                statements (unless the collection is a bag). This is certainly desirable.
+            </para>
+
+            <para>
+                However, suppose that we remove eighteen elements, leaving two and then add thee new elements.
+                There are two possible ways to proceed
+            </para>
+
+            <itemizedlist>
+            <listitem>
+                <para>delete eighteen rows one by one and then insert three rows</para>
+            </listitem>
+            <listitem>
+                <para>remove the whole collection (in one SQL <literal>DELETE</literal>) and insert
+                all five current elements (one by one)</para>
+            </listitem>
+            </itemizedlist>
+
+            <para>
+                NHibernate isn't smart enough to know that the second option is probably quicker in this case.
+                (And it would probably be undesirable for NHibernate to be that smart; such behaviour might
+                confuse database triggers, etc.)
+            </para>
+
+            <para>
+                Fortunately, you can force this behaviour (ie. the second strategy) at any time by discarding
+                (ie. dereferencing) the original collection and returning a newly instantiated collection with
+                all the current elements. This can be very useful and powerful from time to time.
+            </para>
+
+        </sect2>
+
+    </sect1>
+
+    <para>
+        We have already shown how you can use lazy initialization for persistent collections
+        in the chapter about collection mappings. A similar effect is achievable for ordinary object
+        references, using proxies. We have also mentioned how NHibernate caches persistent
+        objects at the level of an <literal>ISession</literal>. More aggressive caching strategies
+        may be configured upon a class-by-class basis.
+    </para>
+    
+    <para>
+        In the next section, we show you how to use these features, which may be used to
+        achieve much higher performance, where necessary.
+    </para>
+
+    <sect1 id="performance-proxies">
+        <title>Proxies for Lazy Initialization</title>
+
+        <para>
+            NHibernate implements lazy initializing proxies for persistent objects using runtime
+            IL generation (via the excellent Castle.DynamicProxy library).
+        </para>
+
+        <para>
+            The mapping file declares a class or interface to use as the proxy interface
+            for that class. The recommended approach is to specify the class itself:
+        </para>
+        
+        <programlisting><![CDATA[<class name="Eg.Order" proxy="Eg.Order">]]></programlisting>
+        
+        <para>
+            The runtime type of the proxies will be a subclass of <literal>Order</literal>. Note that
+            the proxied class must implement a default constructor with at least protected visibility
+            and that all methods, properties and events of the class should be declared <literal>
+            virtual</literal>.
+        </para>
+        
+        <para>
+            There are some gotchas to be aware of when extending this approach to polymorphic
+            classes, eg.
+        </para>
+
+        <programlisting><![CDATA[<class name="Eg.Cat" proxy="Eg.Cat">
+    ......
+    <subclass name="Eg.DomesticCat" proxy="Eg.DomesticCat">
+        .....
+    </subclass>
+</class>]]></programlisting>
+
+        <para>
+            Firstly, instances of <literal>Cat</literal> will never be castable to 
+            <literal>DomesticCat</literal>, even if the underlying instance is an
+            instance of <literal>DomesticCat</literal>.
+        </para>
+        
+        <programlisting><![CDATA[Cat cat = (Cat) session.Load(typeof(Cat), id);  // instantiate a proxy (does not hit the db)
+if ( cat.IsDomesticCat ) // hit the db to initialize the proxy
+{                  
+    DomesticCat dc = (DomesticCat) cat;       // Error!
+    ....
+}]]></programlisting>
+    
+        <para>
+            Secondly, it is possible to break proxy <literal>==</literal>.
+        </para>
+            
+        <programlisting><![CDATA[
+Cat cat = (Cat) session.Load(typeof(Cat), id);            // instantiate a Cat proxy
+DomesticCat dc = 
+    (DomesticCat) session.Load(typeof(DomesticCat), id);  // required new DomesticCat proxy!
+Console.Out.WriteLine(cat==dc);                            // false]]></programlisting>
+        
+        <para>
+            However, the situation is not quite as bad as it looks. Even though we now have two references
+            to different proxy objects, the underlying instance will still be the same object:
+        </para>
+    
+        <programlisting><![CDATA[cat.Weight = 11.0;  // hit the db to initialize the proxy
+Console.Out.WriteLine( dc.Weight );  // 11.0]]></programlisting>
+
+        <para>
+            Third, you may not use a proxy for a <literal>sealed</literal> class or a class
+            with any <literal>sealed</literal> or non-<literal>virtual</literal> methods.
+        </para>
+        
+        <para>
+            Finally, if your persistent object acquires any resources upon instantiation (eg. in 
+            initializers or default constructor), then those resources will also be acquired by
+            the proxy. The proxy class is an actual subclass of the persistent class.
+        </para>
+        
+        <para>
+            These problems are all due to fundamental limitations in .NET single inheritance model.
+            If you wish to avoid these problems your persistent classes must each implement an interface 
+            that declares its business methods. You should specify these interfaces in the mapping file. eg.
+        </para>
+
+        <programlisting><![CDATA[<class name="Eg.Cat" proxy="Eg.ICat">
+    ......
+    <subclass name="Eg.DomesticCat" proxy="Eg.IDomesticCat">
+        .....
+    </subclass>
+</class>]]></programlisting>
+
+        <para>
+            where <literal>Cat</literal> implements the interface <literal>ICat</literal> and
+            <literal>DomesticCat</literal> implements the interface <literal>IDomesticCat</literal>. Then 
+            proxies for instances of <literal>Cat</literal> and <literal>DomesticCat</literal> may be returned 
+            by <literal>Load()</literal> or <literal>Enumerable()</literal>. (Note that <literal>Find()</literal> 
+            does not return proxies.)
+        </para>
+
+        <programlisting><![CDATA[ICat cat = (ICat) session.Load(typeof(Cat), catid);
+IEnumerable en = session.Enumerable("from cat in class Eg.Cat where cat.Name='fritz'");
+en.MoveNext();
+ICat fritz = (ICat) en.Current;]]></programlisting>
+        
+        <para>
+            Relationships are also lazily initialized. This means you must declare any properties to be of 
+            type <literal>ICat</literal>, not <literal>Cat</literal>.
+        </para>
+        
+        <para>
+            Certain operations do <emphasis>not</emphasis> require proxy initialization
+        </para>
+        
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para>
+                    <literal>Equals()</literal>, if the persistent class does not override
+                    <literal>Equals()</literal>
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>GetHashCode()</literal>, if the persistent class does not override
+                    <literal>GetHashCode()</literal>
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    The identifier getter method (if the class does not use a custom accessor
+                    for the identifier property)
+                </para>
+            </listitem>
+        </itemizedlist>
+            
+        <para>
+            NHibernate will detect persistent classes that override <literal>Equals()</literal> or
+            <literal>GetHashCode()</literal>.
+        </para>
+
+        <para>
+            Exceptions that occur while initializing a proxy are wrapped in a
+            <literal>LazyInitializationException</literal>.
+        </para>
+        
+        <para>
+            Sometimes we need to ensure that a proxy or collection is initialized before closing the
+            <literal>ISession</literal>. Of course, we can alway force initialization by calling 
+            <literal>cat.Sex</literal> or <literal>cat.Kittens.Count</literal>, for example.
+            But that is confusing to readers of the code and is not convenient for generic code.
+            The static methods <literal>NHibernateUtil.Initialize()</literal> and <literal>NHibernateUtil.IsInitialized()</literal>
+            provide the application with a convenient way of working with lazyily initialized collections or
+            proxies. <literal>NHibernateUtil.Initialize(cat)</literal> will force the initialization of a proxy,
+            <literal>cat</literal>, as long as its <literal>ISession</literal> is still open.
+            <literal>NHibernateUtil.Initialize( cat.Kittens )</literal> has a similar effect for the collection
+            of kittens. 
+        </para>
+        
+    </sect1>
+
+    <sect1 id="performance-batchfetching">
+        <title>Using batch fetching</title>
+
+        <para>
+            NHibernate can make efficient use of batch fetching, that is, NHibernate can load several uninitialized
+            proxies if one proxy is accessed. Batch fetching is an optimization for the lazy loading strategy.
+            There are two ways you can tune batch fetching: on the class and the collection level.
+        </para>
+
+        <para>
+            Batch fetching for classes/entities is easier to understand. Imagine you have the following situation
+            at runtime: You have 25 <literal>Cat</literal> instances loaded in an <literal>ISession</literal>, each
+            <literal>Cat</literal> has a reference to its <literal>Owner</literal>, a <literal>Person</literal>.
+            The <literal>Person</literal> class is mapped with a proxy, <literal>lazy="true"</literal>. If you now
+            iterate through all cats and get the <literal>Owner</literal> of each, NHibernate will by default
+            execute 25 <literal>SELECT</literal> statements, to retrieve the proxied owners. You can tune this
+            behavior by specifying a <literal>batch-size</literal> in the mapping of <literal>Person</literal>:
+        </para>
+
+        <programlisting><![CDATA[<class name="Person" lazy="true" batch-size="10">...</class>]]></programlisting>
+
+        <para>
+            NHibernate will now execute only three queries, the pattern is 10, 10, 5. You can see that batch fetching
+            is a blind guess, as far as performance optimization goes, it depends on the number of unitilized proxies
+            in a particular <literal>ISession</literal>.
+        </para>
+
+        <para>
+            You may also enable batch fetching of collections. For example, if each <literal>Person</literal> has
+            a lazy collection of <literal>Cat</literal>s, and 10 persons are currently loaded in the
+            <literal>ISesssion</literal>, iterating through all persons will generate 10 <literal>SELECT</literal>s,
+            one for every read of <literal>Person.Cats</literal>. If you enable batch fetching for the
+            <literal>Cats</literal> collection in the mapping of <literal>Person</literal>, NHibernate can pre-fetch
+            collections:
+        </para>
+
+        <programlisting><![CDATA[<class name="Person">
+    <set name="Cats" lazy="true" batch-size="3">
+        ...
+    </set>
+</class>]]></programlisting>
+
+        <para>
+            With a <literal>batch-size</literal> of 3, NHibernate will load 3, 3, 3, 1 collections in 4
+            <literal>SELECT</literal>s. Again, the value of the attribute depends on the expected number of
+            uninitialized collections in a particular <literal>ISession</literal>.
+        </para>
+
+        <para>
+            Batch fetching of collections is particularly useful if you have a nested tree of items, ie.
+            the typical bill-of-materials pattern.
+        </para>
+
+    </sect1>    
+
+    <sect1 id="performance-cache" revision="1">
+        <title>The Second Level Cache</title>
+
+        <para>
+            A NHibernate <literal>ISession</literal> is a transaction-level cache of persistent data. It is
+            possible to configure a cluster or process-level (<literal>ISessionFactory</literal>-level) cache on 
+            a class-by-class and collection-by-collection basis. You may even plug in a clustered cache. Be 
+            careful. Caches are never aware of changes made to the persistent store by another application 
+            (though they may be configured to regularly expire cached data).
+            <emphasis>In NHibernate 1.0 second level cache does not work correctly in combination with
+            distributed transactions.</emphasis>
+        </para>
+        
+        <para>
+            By default, NHibernate uses HashtableCache for process-level caching. You may choose a different
+            implementation by specifying the name of a class that implements <literal>NHibernate.Cache.ICacheProvider</literal> 
+            using the property <literal>hibernate.cache.provider_class</literal>.
+        </para>
+
+        <table frame="topbot" id="cacheproviders" revision="1">
+            <title>Cache Providers</title>
+            <tgroup cols='5' align='left' colsep='1' rowsep='1'>
+            <colspec colname='c1' colwidth="1*"/>
+            <colspec colname='c2' colwidth="3*"/>
+            <colspec colname='c3' colwidth="1*"/>
+            <colspec colname='c4' colwidth="1*"/>
+            <colspec colname='c5' colwidth="1*"/>
+            <thead>
+            <row>
+                <entry>Cache</entry>
+                <entry>Provider class</entry>
+                <entry>Type</entry>
+                <entry>Cluster Safe</entry>
+                <entry>Query Cache Supported</entry>
+            </row>
+            </thead>
+            <tbody>
+            <row>
+                <entry>Hashtable (not intended for production use)</entry>
+                <entry><literal>NHibernate.Cache.HashtableCacheProvider</literal></entry>
+                <entry>memory</entry>
+                <entry></entry>
+                <entry>yes</entry>
+            </row>
+            <row>
+                <entry>ASP.NET Cache (System.Web.Cache)</entry>
+                <entry><literal>NHibernate.Caches.SysCache.SysCacheProvider, NHibernate.Caches.SysCache</literal></entry>
+                <entry>memory</entry>
+                <entry></entry>
+                <entry>yes</entry>
+            </row>
+            <row>
+                <entry>Prevalence Cache</entry>
+                <entry><literal>NHibernate.Caches.Prevalence.PrevalenceCacheProvider, NHibernate.Caches.Prevalence</literal></entry>
+                <entry>memory, disk</entry>
+                <entry></entry>
+                <entry>yes</entry>
+            </row>
+            </tbody>
+            </tgroup>
+        </table>
+
+        <sect2 id="performance-cache-mapping">
+            <title>Cache mappings</title>
+
+            <para>
+                The <literal>&lt;cache&gt;</literal> element of a class or collection mapping has the
+                following form:
+            </para>
+
+            <programlistingco>
+                <areaspec>
+                    <area id="cache1" coords="2 70"/>
+                </areaspec>
+                <programlisting><![CDATA[<cache 
+    usage="read-write|nonstrict-read-write|read-only"
+/>]]></programlisting>
+                <calloutlist>
+                    <callout arearefs="cache1">
+                        <para>
+                            <literal>usage</literal> specifies the caching strategy:
+                            <literal>read-write</literal>,
+                            <literal>nonstrict-read-write</literal> or
+                            <literal>read-only</literal>
+                        </para>
+                    </callout>                   
+                </calloutlist>
+            </programlistingco>
+            
+            <para>
+                Alternatively (preferrably?), you may specify <literal>&lt;class-cache&gt;</literal> and 
+                <literal>&lt;collection-cache&gt;</literal> elements in <literal>hibernate.cfg.xml</literal>.
+            </para>
+            
+            <para>
+                The <literal>usage</literal> attribute specifies a <emphasis>cache concurrency strategy</emphasis>.
+            </para>
+
+        </sect2>
+
+        <sect2 id="performance-cache-readonly">
+            <title>Strategy: read only</title>
+
+            <para>
+                If your application needs to read but never modify instances of a persistent class, a 
+                <literal>read-only</literal> cache may be used. This is the simplest and best performing
+                strategy. Its even perfectly safe for use in a cluster.
+            </para>
+
+            <programlisting><![CDATA[<class name="Eg.Immutable" mutable="false">
+    <cache usage="read-only"/>
+    ....
+</class>]]></programlisting>
+
+        </sect2>
+
+
+        <sect2 id="performance-cache-readwrite">
+            <title>Strategy: read/write</title>
+
+            <para>
+                If the application needs to update data, a <literal>read-write</literal> cache might be appropriate. 
+                This cache strategy should never be used if serializable transaction isolation level is required.
+                If you wish to use this strategy in a cluster, you should ensure that the underlying cache implementation 
+                supports locking. The built-in cache providers do <emphasis>not</emphasis>.
+            </para>
+            <!--
+            <para>
+                If the application needs to update data, a <literal>read-write</literal> cache might be appropriate. 
+                This cache strategy should never be used if serializable transaction isolation level is required. 
+                If the cache is used in a JTA environment, you must specify the property 
+                <literal>hibernate.transaction.manager_lookup_class</literal>, naming a strategy for obtaining the 
+                JTA <literal>TransactionManager</literal>. In other environments, you should ensure that the transaction 
+                is completed when <literal>Session.close()</literal> or <literal>Session.disconnect()</literal> is called. 
+                If you wish to use this strategy in a cluster, you should ensure that the underlying cache implementation 
+                supports locking. The built-in cache providers do <emphasis>not</emphasis>.
+            </para>
+            -->
+
+            <programlisting><![CDATA[<class name="eg.Cat" .... >
+    <cache usage="read-write"/>
+    ....
+    <set name="kittens" ... >
+        <cache usage="read-write"/>
+        ....
+    </set>
+</class>]]></programlisting>
+
+        </sect2>
+
+        <sect2 id="performance-cache-nonstrict">
+            <title>Strategy: nonstrict read/write</title>
+
+            <para>
+                If the application only occasionally needs to update data (ie. if it is extremely unlikely that two 
+                transactions would try to update the same item simultaneously) and strict transaction isolation is
+                not required, a <literal>nonstrict-read-write</literal> cache might be appropriate.
+                <!-- If the cache is 
+                used in a JTA environment, you must specify <literal>hibernate.transaction.manager_lookup_class</literal>. 
+                In other environments, you should ensure that the transaction is completed when 
+                <literal>Session.close()</literal> or <literal>Session.disconnect()</literal> is called.
+                -->
+            </para>
+
+        </sect2>
+
+        <para>
+            The following table shows which providers are compatible with which concurrency strategies.
+        </para>
+
+        <table frame="topbot">
+            <title>Cache Concurrency Strategy Support</title>
+            <tgroup cols='5' align='left' colsep='1' rowsep='1'>
+            <colspec colname='c1' colwidth="1*"/>
+            <colspec colname='c2' colwidth="1*"/>
+            <colspec colname='c3' colwidth="1*"/>
+            <colspec colname='c4' colwidth="1*"/>
+            <colspec colname='c5' colwidth="1*"/>
+            <thead>
+            <row>
+              <entry>Cache</entry>
+              <entry>read-only</entry>
+              <entry>nonstrict-read-write</entry>
+              <entry>read-write</entry>
+            </row>
+            </thead>
+            <tbody>
+            <row>
+                <entry>Hashtable (not intended for production use)</entry>
+                <entry>yes</entry>
+                <entry>yes</entry>
+                <entry>yes</entry>
+            </row>
+            <row>
+                <entry>SysCache</entry>
+                <entry>yes</entry>
+                <entry>yes</entry>
+                <entry>yes</entry>
+            </row>
+            <row>
+                <entry>PrevalenceCache</entry>
+                <entry>yes</entry>
+                <entry>yes</entry>
+                <entry>yes</entry>
+            </row>
+            </tbody>
+            </tgroup>
+        </table>
+
+    </sect1>
+
+    <sect1 id="performance-sessioncache" revision="2">
+        <title>Managing the <literal>ISession</literal> Cache</title>
+
+        <para>
+            Whenever you pass an object to <literal>Save()</literal>, <literal>Update()</literal>
+            or <literal>SaveOrUpdate()</literal> and whenever you retrieve an object using 
+            <literal>Load()</literal>, <literal>Find()</literal>, <literal>Enumerable()</literal>,
+            or <literal>Filter()</literal>, that object is added to the internal cache of the
+            <literal>ISession</literal>. When <literal>Flush()</literal> is subsequently called,
+            the state of that object will be synchronized with the database. If you do not want
+            this synchronization to occur or if you are processing a huge number of objects and
+            need to manage memory efficiently, the <literal>Evict()</literal> method may be
+            used to remove the object and its collections from the cache.
+        </para>
+        
+        <programlisting><![CDATA[IEnumerable cats = sess.Enumerable("from Eg.Cat as cat"); //a huge result set
+foreach( Cat cat in cats )
+{
+    DoSomethingWithACat(cat);
+    sess.Evict(cat);
+}]]></programlisting>
+
+        <para>
+            NHibernate will evict associated entities automatically if the association is mapped
+            with <literal>cascade="all"</literal> or <literal>cascade="all-delete-orphan"</literal>.
+        </para>
+        
+        <para>
+            The <literal>ISession</literal> also provides a <literal>Contains()</literal> method
+            to determine if an instance belongs to the session cache.
+        </para>
+        
+        <para>
+            To completely evict all objects from the session cache, call <literal>ISession.Clear()</literal>
+        </para>
+        
+        <para>
+            For the second-level cache, there are methods defined on <literal>ISessionFactory</literal> for 
+            evicting the cached state of an instance, entire class, collection instance or entire collection 
+            role.
+        </para>
+        
+    </sect1>
+    
+    <sect1 id="performance-querycache" revision="1">
+        <title>The Query Cache</title>
+
+        <para>
+            Query result sets may also be cached. This is only useful for queries that are run
+            frequently with the same parameters. To use the query cache you must first enable it
+            by setting the property <literal>hibernate.cache.use_query_cache=true</literal>. This
+            causes the creation of two cache regions - one holding cached query result sets 
+            (<literal>NHibernate.Cache.IQueryCache</literal>), the other holding timestamps 
+            of most recent updates to queried tables 
+            (<literal>NHibernate.Cache.UpdateTimestampsCache</literal>). Note that the query
+            cache does not cache the state of any entities in the result set; it caches only 
+            identifier values and results of value type. So the query cache is usually used in
+            conjunction with the second-level cache.
+        </para>
+
+        <para>
+            Most queries do not benefit from caching, so by default queries are not cached. To
+            enable caching, call <literal>IQuery.SetCacheable(true)</literal>. This call allows
+            the query to look for existing cache results or add its results to the cache when
+            it is executed.
+        </para>
+
+        <para>
+            If you require fine-grained control over query cache expiration policies, you may
+            specify a named cache region for a particular query by calling 
+            <literal>IQuery.SetCacheRegion()</literal>.
+        </para>
+        
+        <programlisting><![CDATA[IList blogs = sess.CreateQuery("from Blog blog where blog.Blogger = :blogger")
+    .SetEntity("blogger", blogger)
+    .SetMaxResults(15)
+    .SetCacheable(true)
+    .SetCacheRegion("frontpages")
+    .List();]]></programlisting>
+
+        <para>
+            If the query should force a refresh of its query cache region, you may call
+            <literal>IQuery.SetForceCacheRefresh()</literal> to <literal>true</literal>.
+            This is particularly useful in cases where underlying data may have been updated
+            via a seperate process (i.e., not modified through NHibernate) and allows the
+            application to selectively refresh the query cache regions based on its
+            knowledge of those events. This is an alternative to eviction of a query
+            cache region. If you need fine-grained refresh control for many queries, use
+            this function instead of a new region for each query.
+        </para>
+
+    </sect1>
+
+</chapter>

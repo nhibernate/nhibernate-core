@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5b1//EN"
+               "../docbook-xml/docbookx.dtd" [
+<!ENTITY preface                SYSTEM "modules/preface.xml">
+<!ENTITY quickstart             SYSTEM "modules/quickstart.xml">
+<!ENTITY architecture           SYSTEM "modules/architecture.xml">
+<!ENTITY configuration          SYSTEM "modules/configuration.xml">
+<!ENTITY persistent-classes     SYSTEM "modules/persistent_classes.xml">
+<!ENTITY basic-mapping          SYSTEM "modules/basic_mapping.xml">
+<!ENTITY collection-mapping     SYSTEM "modules/collection_mapping.xml">
+<!ENTITY component-mapping      SYSTEM "modules/component_mapping.xml">
+<!ENTITY inheritance-mapping    SYSTEM "modules/inheritance_mapping.xml">
+<!ENTITY manipulating-data      SYSTEM "modules/manipulating_data.xml">
+<!ENTITY transactions           SYSTEM "modules/transactions.xml">
+<!ENTITY query-hql              SYSTEM "modules/query_hql.xml">
+<!ENTITY query-criteria         SYSTEM "modules/query_criteria.xml">
+<!ENTITY query-sql              SYSTEM "modules/query_sql.xml">
+<!ENTITY performance            SYSTEM "modules/performance.xml">
+<!ENTITY toolset-guide          SYSTEM "modules/toolset_guide.xml">
+<!ENTITY example-parentchild    SYSTEM "modules/example_parentchild.xml">
+<!ENTITY example-weblog         SYSTEM "modules/example_weblog.xml">
+<!ENTITY example-mappings       SYSTEM "modules/example_mappings.xml">
+<!ENTITY best-practices         SYSTEM "modules/best_practices.xml">
+
+<!ENTITY nhc-preface            SYSTEM "modules/nhibernatecontrib_preface.xml">
+<!ENTITY nhcaches-chapter       SYSTEM "modules/nhibernate_caches.xml">
+<!ENTITY nhma-chapter           SYSTEM "modules/nhibernate_mapping_attributes.xml">
+<!ENTITY nhbm2net-chapter       SYSTEM "modules/nhibernate_tool_hbm2net.xml">
+<!ENTITY nullables-chapter      SYSTEM "modules/nullables.xml">
+]>
+
+
+<book lang="en">
+	<bookinfo>
+		<title>NHibernate - Relational Persistence for Idiomatic .NET</title>
+		<subtitle>NHibernate Reference Documentation</subtitle>
+		<releaseinfo>1.0.2</releaseinfo>
+	</bookinfo>
+
+	<toc />
+
+	&quickstart;
+	
+	&architecture;
+	
+	&configuration;
+	
+	&persistent-classes;
+	
+	&basic-mapping;
+	&collection-mapping;
+	&component-mapping;
+	&inheritance-mapping;
+	
+	&manipulating-data;
+	&transactions;
+	
+	&query-hql;
+	&query-criteria;
+	&query-sql;
+	
+	&performance;
+	
+	&toolset-guide;
+	
+	&example-parentchild;
+	&example-weblog;
+	&example-mappings;
+	
+	&best-practices;
+
+	<part id="part-contrib">
+		<title>NHibernateContrib Documentation</title>
+		&nhc-preface;
+		&nhcaches-chapter;
+		&nhma-chapter;
+		&nhbm2net-chapter;
+		&nullables-chapter;
+	</part>
+
+</book>

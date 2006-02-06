@@ -1,0 +1,361 @@
+<chapter id="example-weblog">
+    <title>Example: Weblog Application</title>
+
+    <sect1 id="example-weblog-classes">
+        <title>Persistent Classes</title>
+
+        <para>
+            The persistent classes represent a weblog, and an item posted
+            in a weblog. They are to be modelled as a standard parent/child
+            relationship, but we will use an ordered bag, instead of a set.
+        </para>
+
+        <programlisting><![CDATA[using System;
+using System.Collections;
+
+namespace Eg
+{
+    public class Blog
+    {
+        private long _id;
+        private string _name;
+        private IList _items;
+    
+        public virtual long Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+        
+        public virtual IList Items
+        {
+            get { return _items; }
+            set { _items = value; }
+        }
+        
+        public virtual string Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
+    }
+}]]></programlisting>
+
+        <programlisting><![CDATA[using System;
+
+namespace Eg
+{
+    public class BlogItem
+    {
+        private long _id;
+        private DateTime _dateTime;
+        private string _text;
+        private string _title;
+        private Blog _blog;
+
+        public virtual Blog Blog
+        {
+            get { return _blog; }
+            set { _blog = value; }
+        }
+
+        public virtual DateTime DateTime
+        {
+            get { return _dateTime; }
+            set { _dateTime = value; }
+        }
+
+        public virtual long Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+
+        public virtual string Text
+        {
+            get { return _text; }
+            set { _text = value; }
+        }
+
+        public virtual string Title
+        {
+            get { return _title; }
+            set { _title = value; }
+        }
+    }
+}]]></programlisting>
+
+    </sect1>
+
+    <sect1 id="example-weblog-mappings">
+        <title>Hibernate Mappings</title>
+
+        <para>
+            The XML mappings should now be quite straightforward.
+        </para>
+        
+        <programlisting><![CDATA[<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+    assembly="Eg" namespace="Eg">
+
+    <class 
+        name="Blog" 
+        table="BLOGS" 
+        lazy="true">
+        
+        <id 
+            name="Id" 
+            column="BLOG_ID">
+            
+            <generator class="native"/>
+            
+        </id>
+        
+        <property 
+            name="Name" 
+            column="NAME" 
+            not-null="true" 
+            unique="true"/>
+            
+        <bag 
+            name="Items" 
+            inverse="true" 
+            lazy="true"
+            order-by="DATE_TIME" 
+            cascade="all">
+            
+            <key column="BLOG_ID"/>
+            <one-to-many class="BlogItem"/>
+            
+        </bag>
+        
+    </class>
+    
+</hibernate-mapping>]]></programlisting>
+
+        <programlisting><![CDATA[<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+    assembly="Eg" namespace="Eg">
+    
+    <class 
+        name="BlogItem" 
+        table="BLOG_ITEMS" 
+        dynamic-update="true">
+        
+        <id 
+            name="Id" 
+            column="BLOG_ITEM_ID">
+            
+            <generator class="native"/>
+            
+        </id>
+        
+        <property 
+            name="Title" 
+            column="TITLE" 
+            not-null="true"/>
+            
+        <property 
+            name="Text" 
+            column="TEXT" 
+            not-null="true"/>
+            
+        <property 
+            name="DateTime" 
+            column="DATE_TIME" 
+            not-null="true"/>
+            
+        <many-to-one 
+            name="Blog" 
+            column="BLOG_ID" 
+            not-null="true"/>
+            
+    </class>
+    
+</hibernate-mapping>]]></programlisting>
+
+    </sect1>
+    
+    <sect1 id="example-weblog-code">
+        <title>NHibernate Code</title>
+
+        <para>
+            The following class demonstrates some of the kinds of things
+            we can do with these classes, using NHibernate.
+        </para>
+
+        <programlisting><![CDATA[using System;
+using System.Collections;
+
+using NHibernate.Tool.hbm2ddl;
+
+namespace Eg
+{
+    public class BlogMain
+    {
+        private ISessionFactory _sessions;
+        
+        public void Configure()
+        {
+            _sessions = new Configuration()
+                .AddClass(typeof(Blog))
+                .AddClass(typeof(BlogItem))
+                .BuildSessionFactory();
+        }
+        
+        public void ExportTables()
+        {
+            Configuration cfg = new Configuration()
+                .AddClass(typeof(Blog))
+                .AddClass(typeof(BlogItem));
+            new SchemaExport(cfg).create(true, true);
+        }
+        
+        public Blog CreateBlog(string name)
+        {
+            Blog blog = new Blog();
+            blog.Name = name;
+            blog.Items = new ArrayList();
+            
+            using (ISession session = _sessions.OpenSession())
+            using (ITransaction tx = session.BeginTransaction())
+            {
+                session.Save(blog);
+                tx.Commit();
+            }
+
+            return blog;
+        }
+        
+        public BlogItem CreateBlogItem(Blog blog, string title, string text)
+        {
+            BlogItem item = new BlogItem();
+            item.Title = title;
+            item.Text = text;
+            item.Blog = blog;
+            item.DateTime = DateTime.Now;
+            blog.Items.Add(item);
+            
+            using (ISession session = _sessions.OpenSession())
+            using (ITransaction tx = session.BeginTransaction())
+            {
+                session.Update(blog);
+                tx.Commit();
+            }
+
+            return item;
+        }
+        
+        public BlogItem CreateBlogItem(long blogId, string title, string text)
+        {
+            BlogItem item = new BlogItem();
+            item.Title = title;
+            item.Text = text;
+            item.DateTime = DateTime.Now;
+            
+            using (ISession session = _sessions.OpenSession())
+            using (ITransaction tx = session.BeginTransaction())
+            {
+                Blog blog = (Blog) session.Load(typeof(Blog), blogId);
+                item.Blog = blog;
+                blog.Items.Add(item);
+                tx.Commit();
+            }
+
+            return item;
+        }
+        
+        public void UpdateBlogItem(BlogItem item, string text)
+        {
+            item.Text = text;
+
+            using (ISession session = _sessions.OpenSession())
+            using (ITransaction tx = session.BeginTransaction())
+            {
+                session.Update(item);
+                tx.Commit();
+            }
+        }
+        
+        public void UpdateBlogItem(long itemId, string text)
+        {
+            using (ISession session = _sessions.OpenSession())
+            using (ITransaction tx = session.BeginTransaction())
+            {
+                BlogItem item = (BlogItem) session.Load(typeof(BlogItem), itemId);
+                item.Text = text;
+                tx.Commit();
+            }
+        }
+        
+        public IList listAllBlogNamesAndItemCounts(int max)
+        {
+            IList result = null;
+
+            using (ISession session = _sessions.OpenSession())
+            using (ITransaction tx = session.BeginTransaction())
+            {
+                IQuery q = session.CreateQuery(
+                    "select blog.id, blog.Name, count(blogItem) " +
+                    "from Blog as blog " +
+                    "left outer join blog.Items as blogItem " +
+                    "group by blog.Name, blog.id " +
+                    "order by max(blogItem.DateTime)"
+                );
+                q.SetMaxResults(max);
+                result = q.List();
+                tx.Commit();
+            }
+
+            return result;
+        }
+        
+        public Blog GetBlogAndAllItems(long blogId)
+        {
+            Blog blog = null;
+
+            using (ISession session = _sessions.OpenSession())
+            using (ITransaction tx = session.BeginTransaction())
+            {
+                IQuery q = session.createQuery(
+                    "from Blog as blog " +
+                    "left outer join fetch blog.Items " +
+                    "where blog.id = :blogId"
+                );
+                q.SetParameter("blogId", blogId);
+                blog  = (Blog) q.List()[0];
+                tx.Commit();
+            }
+
+            return blog;
+        }
+        
+        public IList ListBlogsAndRecentItems()
+        {
+            IList result = null;
+
+            using (ISession session = _sessions.OpenSession())
+            using (ITransaction tx = session.BeginTransaction())
+            {
+                IQuery q = session.CreateQuery(
+                    "from Blog as blog " +
+                    "inner join blog.Items as blogItem " +
+                    "where blogItem.DateTime > :minDate"
+                );
+    
+                DateTime date = DateTime.Now.AddMonths(-1);
+                q.SetDateTime("minDate", date);
+                
+                result = q.List();
+                tx.Commit();
+            }
+
+            return result;
+        }
+    }
+}]]></programlisting>
+
+    </sect1>
+
+</chapter>
+

@@ -1,0 +1,169 @@
+<chapter id="architecture">
+
+    <title>Architecture</title>
+
+    <sect1 id="architecture-overview">
+        <title>Overview</title>
+        
+        <para>
+            A (very) high-level view of the NHibernate architecture:
+        </para>
+
+        <mediaobject>
+            <imageobject role="fo">
+                <imagedata fileref="images/overview.svg" format="SVG" align="center"/>
+            </imageobject>
+            <imageobject role="html">
+                <imagedata fileref="../shared/images/overview.gif" format="GIF" align="center"/>
+            </imageobject>
+            <imageobject role="chm">
+                <imagedata fileref="shared/images/overview.gif" format="GIF" align="center"/>
+            </imageobject>
+        </mediaobject>
+
+        <para>
+            This diagram shows NHibernate using the database and configuration data to
+            provide persistence services (and persistent objects) to the application.
+        </para>
+
+        <para>
+            We would like to show a more detailed view of the runtime architecture.
+            Unfortunately, NHibernate is flexible and supports several approaches. We will
+            show the two extremes. The "lite" architecture has the application
+            provide its own ADO.NET connections and manage its own transactions. This approach
+            uses a minimal subset of NHibernate's APIs:
+        </para>
+
+        <mediaobject>
+            <imageobject role="fo">
+                <imagedata fileref="images/lite.svg" format="SVG" align="center"/>
+            </imageobject>
+            <imageobject role="html">
+                <imagedata fileref="../shared/images/lite.gif" format="GIF" align="center"/>
+            </imageobject>
+            <imageobject role="chm">
+                <imagedata fileref="shared/images/lite.gif" format="GIF" align="center"/>
+            </imageobject>
+        </mediaobject>
+
+        <para>
+            The "full cream" architecture abstracts the application away from the
+            underlying ADO.NET APIs and lets NHibernate take care of the details.
+        </para>
+
+        <mediaobject>
+            <imageobject role="fo">
+                <imagedata fileref="images/full_cream.svg" format="SVG" align="center"/>
+            </imageobject>
+            <imageobject role="html">
+                <imagedata fileref="../shared/images/full_cream.gif" format="GIF" align="center"/>
+            </imageobject>
+            <imageobject role="chm">
+                <imagedata fileref="shared/images/full_cream.gif" format="GIF" align="center"/>
+            </imageobject>
+        </mediaobject>
+
+        <para>
+            Heres some definitions of the objects in the diagrams:
+
+            <variablelist spacing="compact">
+                <varlistentry>
+                    <term>ISessionFactory (<literal>NHibernate.ISessionFactory</literal>)</term>
+                    <listitem>
+                        <para>
+                            A threadsafe (immutable) cache of compiled mappings for a single database.
+                            A factory for <literal>ISession</literal> and a client of
+                            <literal>IConnectionProvider</literal>. Might hold an optional (second-level)
+                            cache of data that is reusable between transactions, at a
+                            process- or cluster-level.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>ISession (<literal>NHibernate.ISession</literal>)</term>
+                    <listitem>
+                        <para>
+                            A single-threaded, short-lived object representing a conversation between
+                            the application and the persistent store. Wraps an ADO.NET connection. Factory
+                            for <literal>ITransaction</literal>. Holds a mandatory (first-level) cache
+                            of persistent objects, used when navigating the object graph or looking up
+                            objects by identifier.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Persistent Objects and Collections</term>
+                    <listitem>
+                        <para>
+                            Short-lived, single threaded objects containing persistent state and business
+                            function. These might be ordinary POCOs, the only special thing about
+                            them is that they are currently associated with (exactly one)
+                            <literal>ISession</literal>. As soon as the <literal>Session</literal> is closed,
+                            they will be detached and free to use in any application layer (e.g. directly
+                            as data transfer objects to and from presentation).
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Transient Objects and Collections</term>
+                    <listitem>
+                        <para>
+                            Instances of persistent classes that are not currently associated with a
+                            <literal>ISession</literal>. They may have been instantiated by
+                            the application and not (yet) persisted or they may have been instantiated by a
+                            closed <literal>ISession</literal>.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>ITransaction (<literal>NHibernate.ITransaction</literal>)</term>
+                    <listitem>
+                        <para>
+                            (Optional) A single-threaded, short-lived object used by the application to
+                            specify atomic units of work. Abstracts application from underlying ADO.NET
+                            transaction. An <literal>ISession</literal> might span several
+                            <literal>ITransaction</literal>s in some cases.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>IConnectionProvider (<literal>NHibernate.Connection.IConnectionProvider</literal>)</term>
+                    <listitem>
+                        <para>
+                            (Optional) A factory for ADO.NET connections and commands. Abstracts application
+                            from the concrete vendor-specific implementations of <literal>IDbConnection</literal>
+                            and <literal>IDbCommand</literal>. Not exposed to application, but can be
+                            extended/implemented by the developer.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>IDriver (<literal>NHibernate.Driver.IDriver</literal>)</term>
+                    <listitem>
+                        <para>
+                            (Optional) An interface encapsulating differences between ADO.NET providers, such
+                            as parameter naming conventions and supported ADO.NET features.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>ITransactionFactory (<literal>NHibernate.Transaction.ITransactionFactory</literal>)</term>
+                    <listitem>
+                        <para>
+                            (Optional) A factory for <literal>ITransaction</literal> instances. Not exposed to the
+                            application, but can be extended/implemented by the developer.
+                        </para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </para>
+
+        <para>
+            Given a "lite" architecture, the application bypasses the
+            <literal>ITransaction</literal>/<literal>ITransactionFactory</literal> and/or
+            <literal>IConnectionProvider</literal> APIs to talk to ADO.NET directly.
+        </para>
+    </sect1>
+
+</chapter>
+

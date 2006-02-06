@@ -9,28 +9,18 @@ This is the source files used to generate the NHibernate Documentation.
 These files (in /doc/src/) are represented as DocBook (xml) files.
 
 To build the documentation, you have to install some tools; and after that,
-you can simply run "Build.bat" (the result will be in /doc/build/).
-
+you can simply run "Build.bat" (the result will be in
+/build/NHibernate-<version>/doc/).
 
 ================================================================================
 Required DLLs and EXEs
 ================================================================================
-Download the files at ftp://ftp.zlatkovic.com/pub/libxml/ (or somewhere else ;)
+You need a Java Runtime Environment (JRE) to run Saxon which is used to build
+the documentation. You don't need to download and install Saxon, its jars are
+present in the repository.
 
-Create a "tools" directory (you can use any directory).
-Add these files to the "tools" directory:
-
-iconv.dll		- from iconv-1.9.1.win32.zip
-libexslt.dll	- from libxslt-1.1.12.win32.zip
-libxml2.dll		- from libxml2-2.6.15.win32.zip
-libxslt.dll		- from libxslt-1.1.12.win32.zip
-xmlcatalog.exe	- from libxml2-2.6.15.win32.zip
-xmllint.exe		- from libxml2-2.6.15.win32.zip
-xsltproc.exe	- from libxslt-1.1.12.win32.zip
-zlib1.dll		- from zlib-1.2.1.win32.zip
-
-Add the "tools" directory to your %PATH% so the NAnt build file can use them.
-
+You need HTML Help Workshop to build the CHM help file, and Visual Studio
+Help Integration Kit (VSHIK) to build the HtmlHelp2 help file.
 
 ================================================================================
 Quick Start

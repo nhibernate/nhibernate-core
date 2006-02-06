@@ -4,104 +4,78 @@
 	default="build" 
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
-	<!--
-		Required properties:
-			* build.dir	- (path) root level to build documentation to.  If this is not supplied
-				then it will be built to a folder named build under the doc folder.
-	-->
 
-	<!-- 
-		I have not figured out a way to modify the Path through NAnt so you
-		need to make sure that xsltproc is in the path.  
-		
-		2005-05-03: probably is doable with nant-0.85 but I'm not going to mess with
-		it since the easy solution is put xsltproc in the path.
-	-->
+	<property name="root.dir" value=".." />
+	<include name="${root.dir}\build-common\common.xml" />
 
-	<!--
-		if Visual Studio Help Integration Kit has been installed
-		then change this to true or include -D:vshik.installed=true in the command line.
-		It generates Visual Studio.NET 2003 documentation.
-	-->
-	<property name="vshik.installed" value="false" overwrite="false" />
-
-	<!--
-		The path to the VSHIK executable files. If VSHIK is installed in a different path, then
-		specify the path in the command line using -D:vshik.path=<path>
-	-->
-	<property name="vshik.path" value="${environment::get-folder-path('ProgramFiles')}\Microsoft Help 2.0 SDK" overwrite="false" />
-
-	<property name="lang" value="en" />
-	
-	<!-- 
-		set the default for where all the files are output to, if this file is being 
-		run as part of the NHSolution build then a build.dir property will be passed 
-		in that specifies a location to output all the files
-	-->
-	<property name="output.dir" value="build" />
-	<if test="${property::exists('build.dir')}">
-		<property name="output.dir" value="${build.dir}/doc" />
-	</if>
-
-	<tstamp property="build.date" pattern="u" verbose="true" />
-
-	<target name="init"  unless="${target::has-executed('init')}" description="Set the documentation version and the date of generation.">
-		<copy file="src/Documentation.xml" tofile="src/Documentation.gen" overwrite="true" />
+	<target name="init" depends="common.init">
 		<!--
-			Modify the file "Documentation.gen" instead of the .xml one because:
-			- We don't have to remove these changes after building
-				And it would be hard because the build can fail...
-			- When doing <xmlpoke>, NAnt also change the layout of the xml file.
+			if Visual Studio Help Integration Kit has been installed
+			then change this to true or include -D:vshik.installed=true in the command line.
+			It generates Visual Studio.NET 2003 documentation.
 		-->
-		<if test="${property::exists('project.version')}">
-			<xmlpoke
-				file="src/Documentation.gen"
-				xpath="/book/bookinfo/title"
-				value="NHibernate Documentation ${project.version}"
-			/>
-		</if>
-		<xmlpoke
-			file="src/Documentation.gen"
-			xpath="/book/bookinfo/releaseinfo"
-			value="Status: Production/Stable. Generated on ${build.date}."
-		/>
-	</target>
+		<property name="vshik.installed" value="false" overwrite="false" />
 
-	<target name="clean" description="Cleans any previous builds">
-		<delete dir="${output.dir}" failonerror="false" />
-	</target>
+		<!--
+			The path to the VSHIK executable files. If VSHIK is installed in a different path, then
+			specify the path in the command line using -D:vshik.path=<path>
+		-->
+		<property name="vshik.path" value="${environment::get-folder-path('ProgramFiles')}\Microsoft Help 2.0 SDK" overwrite="false" />
 
+		<property name="lang" value="en" />
 
-	<target name="build" depends="init" description="Generates the documentation in multiple formats from the docbook files.">
-		<call target="build-html" />
-		<call target="build-chm" />
-		<call target="build-help2" />
-	</target>
+		<property name="output.dir" value="${build.dir}/doc" />
 
-	<target name="build-html" depends="init" description="Generates html from docbook files.">
+		<tstamp property="build.date" pattern="u" verbose="true" />
 
 		<property name="build.html.dir" value="${output.dir}" />
 		<property name="build.single.dir" value="${build.html.dir}/html_single" />
 		<property name="build.chunk.dir" value="${build.html.dir}/html" />
 
-		<mkdir dir="${build.html.dir}" failonerror="false" />
+	</target>
+
+	<target name="clean" depends="init" description="Cleans any previous builds">
+		<delete dir="${output.dir}" failonerror="false" />
+	</target>
+
+	<target name="build" depends="init build-html build-chm build-help2"
+		description="Generates the documentation in multiple formats from the docbook files." />
+
+	<target name="build-html.make-directories" depends="init">
+		<mkdir dir="${build.html.dir}"   failonerror="false" />
 		<mkdir dir="${build.single.dir}" failonerror="false" />
-		<mkdir dir="${build.chunk.dir}" failonerror="false" />
+		<mkdir dir="${build.chunk.dir}"  failonerror="false" />
+	</target>
 
-		<exec program="xsltproc" >
-			<arg value="--output" />
-			<arg file="${build.single.dir}/index.html" /><!-- file to output transform results to -->
-			<arg file="html_single.xsl" /><!-- xsl to do the transforming -->
-			<arg file="src/Documentation.gen" /><!-- xml file to transform -->
+	<target name="build-html.generate" depends="init">
+		<path id="saxon.classpath">
+			<include name="support/lib/*.jar" />
+		</path>
+
+		<exec program="java">
+			<arg value="-classpath" />
+			<arg>
+				<path refid="saxon.classpath"/>
+			</arg>
+			<arg value="-o"/>
+			<arg value="${build.single.dir}/index.html"/>
+			<arg value="master.xml"/>
+			<arg value="styles/html.xsl"/>
 		</exec>
 
-		<exec program="xsltproc" >
-			<arg value="--output" />
-			<arg path="${build.chunk.dir}/" /><!-- dir to output transform results to (add the trailing '/' for xsltproc) -->
-			<arg file="html_chunk.xsl" /><!-- xsl to do the transforming -->
-			<arg file="src/Documentation.gen" /><!-- xml file to transform -->
+		<exec program="java">
+			<arg value="-classpath" />
+			<arg>
+				<path refid="saxon.classpath"/>
+			</arg>
+			<arg value="-o"/>
+			<arg value="${build.chunk.dir}/index.html"/>
+			<arg value="master.xml"/>
+			<arg value="styles/html_chunk.xsl"/>
 		</exec>
+	</target>
 
+	<target name="build-html.copy-misc-files" depends="init">
 		<!-- Copy the images and the stylesheet -->
 		<copy todir="${build.single.dir}" overwrite="true" >
 			<fileset basedir="./src/">
@@ -116,6 +90,10 @@
 			</fileset>
 		</copy>
 	</target>
+
+	<target name="build-html"
+		depends="init build-html.make-directories build-html.generate build-html.copy-misc-files"
+		description="Generates html from docbook files." />
 
 	<target name="build-chm" depends="init" description="Generates chm file from docbook files." unless="${target::has-executed('build-chm')}">
 		

@@ -1,0 +1,163 @@
+<?xml version="1.0" ?>
+<project 
+	name="doc" 
+	default="build" 
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+>
+
+	<property name="root.dir" value="../.." />
+	<include buildfile="${root.dir}/build-common/common.xml" />
+
+	<target name="init" depends="common.init">
+		<property name="lang" value="en" />
+		<property name="output.dir" value="${build.dir}/doc" />
+		<tstamp property="build.date" pattern="u" verbose="true" />
+
+		<property name="build.html.dir" value="${output.dir}" />
+		<property name="build.single.dir" value="${build.html.dir}/html_single" />
+		<property name="build.chunk.dir" value="${build.html.dir}/html" />
+		<property name="build.shared.dir" value="${build.html.dir}/shared" />
+		<property name="build.chm.dir" value="${output.dir}/chm" />
+
+		<property name="hhc.exe" value="${environment::get-folder-path('ProgramFiles')}\HTML Help Workshop\hhc" />
+
+		<path id="saxon.classpath" >
+			<pathelement file="support/lib/avalon-framework-cvs-20020806.jar" />
+			<pathelement file="support/lib/batik.jar" />
+			<pathelement file="support/lib/fop-0.20.5-RFC3066-patched.jar" />
+			<pathelement file="support/lib/jai_codec.jar" />
+			<pathelement file="support/lib/jai_core.jar" />
+			<pathelement file="support/lib/rowan-0.1.jar" />
+			<pathelement file="support/lib/saxon.jar" />
+			<pathelement file="support/lib/saxon-dbxsl-extensions.jar" />
+		</path>
+
+	</target>
+
+	<target name="clean" depends="init" description="Cleans any previous builds">
+		<delete dir="${build.html.dir}" failonerror="false" />
+	</target>
+
+	<target name="build" depends="init build-html build-chm build-help2"
+		description="Generates the documentation in multiple formats from the Docbook files." />
+
+	<target name="build-html.make-directories" depends="init">
+		<mkdir dir="${build.single.dir}" failonerror="false" />
+		<mkdir dir="${build.chunk.dir}"  failonerror="false" />
+	</target>
+
+	<target name="build-html.generate" depends="init">
+		<exec program="java" workingdir="${build.chunk.dir}">
+			<arg value="-classpath" />
+			<arg>
+				<path refid="saxon.classpath"/>
+			</arg>
+			<arg value="com.icl.saxon.StyleSheet" />
+			<arg file="master.xml"/>
+			<arg file="styles/html_chunk.xsl"/>
+		</exec>
+
+		<exec program="java">
+			<arg value="-classpath" />
+			<arg>
+				<path refid="saxon.classpath"/>
+			</arg>
+			<arg value="com.icl.saxon.StyleSheet" />
+			<arg value="-o"/>
+			<arg file="${build.single.dir}/index.html"/>
+			<arg file="master.xml"/>
+			<arg file="styles/html.xsl"/>
+		</exec>
+
+	</target>
+
+	<target name="build-html.copy-misc-files" depends="init">
+		<!-- Copy the images and the stylesheet -->
+		<copy todir="${build.shared.dir}/images" overwrite="true" >
+			<fileset basedir="images">
+				<include name="**/*.gif" />
+				<include name="**/*.png" />
+			</fileset>
+		</copy>
+		<copy todir="${build.shared.dir}/css" overwrite="true" >
+			<fileset basedir="styles">
+				<include name="**/*.css" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="build-html"
+		depends="init build-html.make-directories build-html.generate build-html.copy-misc-files"
+		description="Generates html from docbook files." />
+
+	<target name="build-chm" depends="init" description="Generates chm file from docbook files.">
+
+		<mkdir dir="${build.chm.dir}" failonerror="false" />
+
+		<exec program="java" workingdir="${build.chm.dir}">
+			<arg value="-classpath" />
+			<arg>
+				<path refid="saxon.classpath"/>
+			</arg>
+			<arg value="com.icl.saxon.StyleSheet" />
+			<arg file="master.xml"/>
+			<arg file="styles/chm_help.xsl"/>
+		</exec>
+
+		<!-- Copy the images and the stylesheet -->
+		<copy todir="${build.chm.dir}/shared/images" overwrite="true" >
+			<fileset basedir="images">
+				<include name="**/*.gif" />
+				<include name="**/*.png" />
+			</fileset>
+		</copy>
+		<copy todir="${build.chm.dir}/shared/css" overwrite="true" >
+			<fileset basedir="styles">
+				<include name="**/*.css" />
+			</fileset>
+		</copy>
+
+		<!-- hhc.exe returns an inverted error code, so failonerror is set to false -->
+		<exec program="${hhc.exe}" failonerror="false">
+			<arg file="${build.chm.dir}/htmlhelp.hhp" />
+		</exec>
+
+		<copy file="${build.chm.dir}/htmlhelp.chm" tofile="${output.dir}/NHibernate.Documentation.chm" />
+	</target>
+
+	<target name="build-help2" if="${vshik.installed}" depends="build-chm" description="Generates HtmlHelp2 file from CHM file.">
+		<property name="build.help2.dir" value="${output.dir}/help2" />
+		
+		<!-- convert the chm into the HxC -->
+		<exec program="HxConv.exe" basedir="${vshik.path}">
+			<arg path="${output.dir}/NHibernate.Documentation.chm" />
+			<arg value="-o" />
+			<arg path="${build.help2.dir}" />
+			<arg value="-y" />
+		</exec>
+
+		<!--
+			Compile the HxC into an HxS that can be included
+			in a Help2 collection 
+		-->
+		<exec program="HxComp.exe" basedir="${vshik.path}">
+			<arg value="-p" />
+			<arg path="${build.help2.dir}/NHibernate.Documentation.HxC" />
+			<arg value="-o" />
+			<arg path="${output.dir}/NHibernate.Documentation.HxS" />
+		</exec>
+
+		<!--
+			copying the Help2 files from cvs that describe the
+			Help collection, not the files generated by the build
+			that contain the content
+		-->
+		<copy todir="${output.dir}">
+			<fileset basedir="support/help2/">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+
+	</target>
+</project>
+

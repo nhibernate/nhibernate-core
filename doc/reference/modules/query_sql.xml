@@ -1,0 +1,104 @@
+<chapter id="querysql">
+    <title>Native SQL Queries</title>
+
+    <para>
+        You may also express queries in the native SQL dialect of your database. This is useful if you
+        want to utilize database specific features such as the CONNECT keyword in Oracle.
+        This also allows for a cleaner migration path from a direct SQL/ADO.NET based application to 
+        NHibernate.
+    </para>
+
+    <sect1 id="querysql-creating">
+        <title>Creating a SQL based <literal>IQuery</literal></title>
+
+        <para>
+            SQL queries are exposed through the same <literal>IQuery</literal> interface, just like ordinary
+            HQL queries. The only difference is the use of <literal>ISession.CreateSQLQuery()</literal>.
+        </para>
+
+        <programlisting><![CDATA[IQuery sqlQuery = sess.CreateSQLQuery("select {cat.*} from cats {cat}", "cat", typeof(Cat));
+sqlQuery.SetMaxResults(50);
+IList cats = sqlQuery.List();]]></programlisting>
+
+        <para>
+            The three parameters provided to <literal>CreateSQLQuery()</literal> are:
+        </para>
+
+        <itemizedlist>
+        <listitem>
+        <para>
+            the SQL query string
+        </para>
+        </listitem>
+        <listitem>
+        <para>
+            a table alias name
+        </para>
+        </listitem>
+        <listitem>
+        <para>
+            the persistent class returned by the query
+        </para>
+        </listitem>
+        </itemizedlist>
+    
+        <para>
+            The alias name is used inside the SQL string to refer to the properties of the mapped class
+            (in this case  <literal>Cat</literal>). You may retrieve multiple objects per row by supplying
+            a <literal>String</literal> array of alias names and a <literal>System.Type</literal> array of
+            corresponding classes.
+        </para>
+
+    </sect1>
+
+    <sect1 id="querysql-aliasreferences">
+        <title>Alias and property references</title>
+
+        <para>
+            The <literal>{cat.*}</literal> notation used above is a shorthand for "all properties". You
+            may even list the properties explicity, but you must let Hibernate provide SQL column aliases
+            for each property. The placeholders for these column aliases are the property name qualified by
+            the table alias. In the following example, we retrieve <literal>Cat</literal>s from a different
+            table (<literal>cat_log</literal>) to the one declared in the mapping metadata. Notice that we
+            may even use the property aliases in the where clause.
+        </para>
+
+        <programlisting><![CDATA[string sql = "select cat.originalId as {cat.Id}, "
+    + "  cat.mateid as {cat.Mate}, cat.sex as {cat.Sex}, "
+    + "  cat.weight*10 as {cat.Weight}, cat.name as {cat.Name}"
+    + "     from cat_log cat where {cat.Mate} = :catId"
+IList loggedCats = sess.CreateSQLQuery(sql, "cat", typeof(Cat))
+    .SetInt64("catId", catId)
+    .List();
+]]></programlisting>
+
+        <para>
+            <emphasis>Note:</emphasis> if you list each property explicitly, you must include all
+            properties of the class <emphasis>and its subclasses</emphasis>!
+        </para>
+
+    </sect1>
+    
+    <sect1 id="querysql-namedqueries">
+        <title>Named SQL queries</title>
+
+        <para>
+            Named SQL queries may be defined in the mapping document and called in exactly the same way
+            as a named HQL query.
+        </para>
+
+        <programlisting><![CDATA[IList people = sess.GetNamedQuery("mySqlQuery")
+    .SetMaxResults(50)
+    .List();]]></programlisting>
+
+        <programlisting><![CDATA[<sql-query name="mySqlQuery">
+    <return alias="person" class="Eg.Person, Eg"/>
+    SELECT {person}.NAME AS {person.Name},
+           {person}.AGE AS {person.Age},
+           {person}.SEX AS {person.Sex}
+    FROM PERSON {person} WHERE {person}.NAME LIKE 'Hiber%'
+</sql-query>]]></programlisting>
+
+    </sect1>
+
+</chapter>

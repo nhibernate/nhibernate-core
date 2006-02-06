@@ -1,0 +1,216 @@
+<chapter id="querycriteria">
+    <title>Criteria Queries</title>
+
+    <para>
+        NHibernate now features an intuitive, extensible criteria query API. For now, this API
+        is less powerful than the more mature HQL query facilities. In particular, criteria
+        queries do not support projection or aggregation.
+    </para>
+    
+    <sect1 id="querycriteria-creating">
+        <title>Creating an <literal>ICriteria</literal> instance</title>
+
+        <para>
+            The interface <literal>NHibernate.ICriteria</literal> represents a query against
+            a particular persistent class. The <literal>ISession</literal> is a factory for
+            <literal>ICriteria</literal> instances.
+        </para>
+
+        <programlisting><![CDATA[ICriteria crit = sess.CreateCriteria(typeof(Cat));
+crit.SetMaxResults(50);
+List cats = crit.List();]]></programlisting>
+
+    </sect1>
+     
+    <sect1 id="querycriteria-narrowing">
+        <title>Narrowing the result set</title>
+
+        <para>
+            An individual query criterion is an instance of the interface
+            <literal>NHibernate.Expression.ICriterion</literal>. The class
+            <literal>NHibernate.Expression.Expression</literal> defines
+            factory methods for obtaining certain built-in
+            <literal>ICriterion</literal> types.
+        </para>
+
+        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+    .Add( Expression.Like("Name", "Fritz%") )
+    .Add( Expression.Between("Weight", minWeight, maxWeight) )
+    .List();]]></programlisting>
+    
+        <para>
+            Expressions may be grouped logically.
+        </para>
+
+        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+    .Add( Expression.Like("Name", "Fritz%") )
+    .Add( Expression.Or(
+        Expression.Eq( "Age", 0 ),
+        Expression.IsNull("Age")
+    ) )
+    .List();]]></programlisting>
+    
+        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+    .Add( Expression.In( "Name", new String[] { "Fritz", "Izi", "Pk" } ) )
+    .Add( Expression.Disjunction()
+        .Add( Expression.IsNull("Age") )
+    	.Add( Expression.Eq("Age", 0 ) )
+    	.Add( Expression.Eq("Age", 1 ) )
+    	.Add( Expression.Eq("Age", 2 ) )
+    ) )
+    .List();]]></programlisting>
+    
+        <para>
+            There are quite a range of built-in criterion types (<literal>Expression</literal>
+            subclasses), but one that is especially useful lets you specify SQL directly.
+        </para>
+
+        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+    .Add( Expression.Sql(new SqlString( "lower({alias}.Name) like lower(", new Parameter("Fritz%", NHibernateUtil.String), ")" )
+    .List();]]></programlisting>
+    
+        <para>
+            The <literal>{alias}</literal> placeholder with be replaced by the row alias
+            of the queried entity.
+        </para>
+    
+    </sect1>
+     
+    <sect1 id="querycriteria-ordering">
+        <title>Ordering the results</title>
+
+        <para>
+            You may order the results using <literal>NHibernate.Expression.Order</literal>.
+        </para>
+
+        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+    .Add( Expression.Like("Name", "F%")
+    .AddOrder( Order.Asc("Name") )
+    .AddOrder( Order.Desc("Age") )
+    .SetMaxResults(50)
+    .List();]]></programlisting>
+    
+    </sect1>
+    
+    <sect1 id="querycriteria-associations">
+        <title>Associations</title>
+
+        <para>
+            You may easily specify constraints upon related entities by navigating
+            associations using <literal>CreateCriteria()</literal>.
+        </para>
+
+        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+    .Add( Expression.Like("Name", "F%")
+    .CreateCriteria("Kittens")
+        .Add( Expression.Like("Name", "F%") )
+    .List();]]></programlisting>
+
+        <para>
+            note that the second <literal>CreateCriteria()</literal> returns a new
+            instance of <literal>ICriteria</literal>, which refers to the elements of
+            the <literal>Kittens</literal> collection.
+        </para>
+
+        <para>
+            The following, alternate form is useful in certain circumstances.
+        </para>
+
+        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+    .CreateAlias("Kittens", "kt")
+    .CreateAlias("Mate", "mt")
+    .Add( Expression.EqProperty("kt.Name", "mt.Name") )
+    .List();]]></programlisting>
+
+        <para>
+            (<literal>CreateAlias()</literal> does not create a new instance of
+            <literal>ICriteria</literal>.)
+        </para>
+
+        <para>
+            Note that the kittens collections held by the <literal>Cat</literal> instances
+            returned by the previous two queries are <emphasis>not</emphasis> pre-filtered
+            by the criteria! If you wish to retrieve just the kittens that match the
+            criteria, you must use <literal>SetResultTransformer(CriteriaUtil.AliasToEntityMap)</literal>.
+        </para>
+
+        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+    .CreateCriteria("Kittens", "kt")
+        .Add( Expression.Eq("Name", "F%") )
+    .SetResultTransformer(CriteriaUtil.AliasToEntityMap)
+    .List();
+foreach ( IDictionary map in cats )
+{
+    Cat cat = (Cat) map[CriteriaUtil.RootAlias];
+    Cat kitten = (Cat) map["kt"];
+}]]></programlisting>
+
+    </sect1>
+    
+    <sect1 id="querycriteria-dynamicfetching">
+        <title>Dynamic association fetching</title>
+
+        <para>
+            You may specify association fetching semantics at runtime using
+            <literal>SetFetchMode()</literal>.
+        </para>
+
+        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+    .Add( Expression.Like("Name", "Fritz%") )
+    .SetFetchMode("Mate", FetchMode.Eager)
+    .SetFetchMode("Kittens", FetchMode.Eager)
+    .List();]]></programlisting>
+    
+        <para>
+            This query will fetch both <literal>Mate</literal> and <literal>Kittens</literal>
+            by outer join.
+        </para>
+    
+    </sect1>
+     
+    <sect1 id="querycriteria-examples">
+        <title>Example queries</title>
+
+        <para>
+            The class <literal>NHibernate.Expression.Example</literal> allows
+            you to construct a query criterion from a given instance.
+        </para>
+
+        <programlisting><![CDATA[Cat cat = new Cat();
+cat.Sex = 'F';
+cat.Color = Color.Black;
+List results = session.CreateCriteria(typeof(Cat))
+    .Add( Example.Create(cat) )
+    .List();]]></programlisting>
+    
+        <para>
+           Version properties, identifiers and associations are ignored. By default,
+           null valued properties are excluded.
+        </para>
+
+        <para>
+           You can adjust how the <literal>Example</literal> is applied.
+        </para>
+
+        <programlisting><![CDATA[Example example = Example.Create(cat)
+    .ExcludeZeroes()           //exclude zero valued properties
+    .ExcludeProperty("Color")  //exclude the property named "color"
+    .IgnoreCase()              //perform case insensitive string comparisons
+    .EnableLike();             //use like for string comparisons
+IList results = session.CreateCriteria(typeof(Cat))
+    .Add(example)
+    .List();]]></programlisting>
+    
+        <para>
+            You can even use examples to place criteria upon associated objects.
+        </para>
+
+        <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(Cat))
+    .Add( Example.Create(cat) )
+    .CreateCriteria("Mate")
+        .Add( Example.Create( cat.Mate ) )
+    .List();]]></programlisting>
+    
+    </sect1>
+
+</chapter>

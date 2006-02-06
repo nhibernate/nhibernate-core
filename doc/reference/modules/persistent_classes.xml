@@ -1,0 +1,401 @@
+<chapter id="persistent-classes">
+    <title>Persistent Classes</title>
+
+    <para>
+        Persistent classes are classes in an application that implement the entities
+        of the business problem (e.g. Customer and Order in an E-commerce application).
+        Persistent classes have, as the name implies, transient and also persistent
+        instance stored in the database.
+    </para>
+
+    <para>
+        NHibernate works best if these classes follow some simple rules, also known
+        as the Plain Old CLR Object (POCO) programming model.
+    </para>
+
+    <sect1 id="persistent-classes-poco">
+        <title>A simple POCO example</title>
+
+        <para>
+            Most .NET applications require a persistent class representing felines.
+        </para>
+
+        <programlisting><![CDATA[using System;
+using Iesi.Collections;
+
+namespace Eg
+{
+    public class Cat
+    {
+        private long id; // identifier
+        private string name;
+        private DateTime birthdate;
+        private Cat mate;
+        private ISet kittens
+        private Color color;
+        private char sex;
+        private float weight;
+    
+        public virtual long Id
+        {
+            get { return id; }
+            set { id = value; }
+        }
+    
+        public virtual string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+    
+        public virtual Cat Mate
+        {
+            get { return mate; }
+            set { mate = value; }
+        }
+    
+        public virtual DateTime Birthdate
+        {
+            get { return birthdate; }
+            set { birthdate = value; }
+        }
+    
+        public virtual float Weight
+        {
+            get { return weight; }
+            set { weight = value; }
+        }
+    
+        public virtual Color Color
+        {
+            get { return color; }
+            set { color = value; }
+        }
+    
+        public virtual ISet Kittens
+        {
+            get { return kittens; }
+            set { kittens = value; }
+        }
+    
+        // AddKitten not needed by Hibernate
+        public virtual void AddKitten(Cat kitten)
+        {
+            kittens.Add(kitten);
+        }
+    
+        public virtual char Sex
+        {
+            get { return sex; }
+            set { sex = value; }
+        }
+    }
+}]]></programlisting>
+
+        <para>
+            There are four main rules to follow here:
+        </para>
+
+
+        <sect2 id="persistent-classes-poco-accessors">
+            <title>Declare accessors and mutators for persistent fields</title>
+
+            <para>
+                <literal>Cat</literal> declares accessor methods for all its persistent fields.
+                Many other ORM tools directly persist instance variables. We believe 
+                it is far better to decouple this implementation detail from the persistence 
+                mechanism. NHibernate persists properties, using their getter and setter methods.
+            </para>
+
+            <para>
+                Properties need <emphasis>not</emphasis> be declared public - NHibernate can
+                persist a property with an <literal>internal</literal>, <literal>protected</literal>,
+                <literal>protected internal</literal> or <literal>private</literal> visibility.
+            </para>
+        </sect2>
+
+        <sect2 id="persistent-classes-poco-constructor">
+            <title>Implement a default constructor</title>
+
+            <para>
+                <literal>Cat</literal> has an implicit default (no-argument) constructor. All 
+                persistent classes must have a default constructor (which may be non-public) so 
+                NHibernate can instantiate them using <literal>ConstructorInfo.Invoke(null)</literal>.
+            </para>
+        </sect2>
+
+        <sect2 id="persistent-classes-poco-identifier">
+            <title>Provide an identifier property (optional)</title>
+
+            <para>
+                <literal>Cat</literal> has a property called <literal>Id</literal>. This property 
+                holds the primary key column of a database table. The property might have been called 
+                anything, and its type might have been any primitive type, <literal>string</literal>
+                or <literal>System.DateTime</literal>. (If your legacy database table has composite
+                keys, you can even use a user-defined class with properties of these types - see the
+                section on composite identifiers below.)
+            </para>
+
+            <para>
+                The identifier property is optional. You can leave it off and let NHibernate keep track 
+                of object identifiers internally. However, for many applications it is still
+                a good (and very popular) design decision.
+            </para>
+
+            <para>
+                What's more, some functionality is available only to classes which declare an
+                identifier property:
+            </para>
+
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>
+                        Cascaded updates (see "Lifecycle Objects")
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <literal>ISession.SaveOrUpdate()</literal>
+                    </para>
+                </listitem>
+            </itemizedlist>
+
+            <para>
+                We recommend you declare consistently-named identifier properties on persistent
+                classes.
+            </para>
+        </sect2>
+
+        <sect2 id="persistent-classes-poco-sealed">
+            <title>Prefer non-sealed classes and virtual methods (optional)</title>
+            <para>
+                A central feature of NHibernate, <emphasis>proxies</emphasis>, depends upon the
+                persistent class being non-sealed and all its methods, properties and
+                events declared as virtual. Another possibility is for the class to implement
+                an interface that declares all public members.
+            </para>
+            <para>
+                You can persist <literal>sealed</literal> classes that do not implement an interface
+                and don't have virtual members with NHibernate, but you won't be able to use proxies
+                - which will limit your options for performance tuning somewhat.
+            </para>
+        </sect2>
+        
+    </sect1>
+
+    <sect1 id="persistent-classes-inheritance">
+        <title>Implementing inheritance</title>
+
+        <para>
+            A subclass must also observe the first and second rules. It inherits its
+            identifier property from <literal>Cat</literal>.
+        </para>
+
+        <programlisting><![CDATA[using System;
+namespace Eg
+{
+    public class DomesticCat : Cat
+    {
+        private string name;
+
+        public virtual string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+    }
+}]]></programlisting>
+    </sect1>
+
+    <sect1 id="persistent-classes-equalshashcode">
+        <title>Implementing <literal>Equals()</literal> and <literal>GetHashCode()</literal></title>
+
+        <para>
+            You have to override the <literal>Equals()</literal> and <literal>GetHashCode()</literal>
+            methods if you intend to mix objects of persistent classes (e.g. in an <literal>ISet</literal>).
+        </para>
+
+        <para>
+            <emphasis>This only applies if these objects are loaded in two different
+            <literal>ISession</literal>s, as NHibernate only guarantees identity (<literal> a == b </literal>,
+            the default implementation of <literal>Equals()</literal>) inside a single
+            <literal>ISession</literal>!</emphasis>
+        </para>
+
+        <para>
+            Even if both objecs <literal>a</literal> and <literal>b</literal> are the same database row
+            (they have the same primary key value as their identifier), we can't guarantee that they are
+            the same object instance outside of a particular <literal>ISession</literal> context.
+        </para>
+
+        <para>
+            The most obvious way is to implement <literal>Equals()</literal>/<literal>GetHashCode()</literal>
+            by comparing the identifier value of both objects. If the value is the same, both must
+            be the same database row, they are therefore equal (if both are added to an <literal>ISet</literal>,
+            we will only have one element in the <literal>ISet</literal>). Unfortunately, we can't use that
+            approach. NHibernate will only assign identifier values to objects that are persistent,
+            a newly created instance will not have any identifier value! We recommend implementing
+            <literal>Equals()</literal> and <literal>GetHashCode()</literal> using
+            <emphasis>Business key equality</emphasis>.
+        </para>
+
+        <para>
+            Business key equality means that the <literal>Equals()</literal>
+            method compares only the properties that form the business key, a key that would
+            identify our instance in the real world (a <emphasis>natural</emphasis> candidate key):
+        </para>
+
+        <programlisting><![CDATA[public class Cat
+{
+
+    ...
+    public override bool Equals(object other)
+    {
+        if (this == other) return true;
+        
+        Cat cat = other as Cat;
+        if (cat == null) return false; // null or not a cat
+
+        if (Name != cat.Name) return false;
+        if (!Birthday.Equals(cat.Birthday)) return false;
+
+        return true;
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int result;
+            result = Name.GetHashCode();
+            result = 29 * result + Birthday.GetHashCode();
+            return result;
+        }
+    }
+
+}]]></programlisting>
+
+        <para>
+            Keep in mind that our candidate key (in this case a composite of name and birthday)
+            has to be only valid for a particular comparison operation (maybe even only in a
+            single use case). We don't need the stability criteria we usually apply to a real
+            primary key!
+        </para>
+
+    </sect1>
+
+    <sect1 id="persistent-classes-lifecycle">
+        <title>Lifecycle Callbacks</title>
+
+        <para>
+            Optionally, a persistent class might implement the interface 
+            <literal>ILifecycle</literal> which provides some callbacks that allow
+            the persistent object to perform necessary initialization/cleanup after
+            save or load and before deletion or update.
+        </para>
+
+        <para>
+            <!-- TODO: add xref to interceptor -->
+            The NHibernate <literal>IInterceptor</literal> offers a less intrusive
+            alternative, however.
+        </para>
+
+        <programlistingco>
+            <areaspec>
+                <area id="lifecycle1" coords="2 70"/>
+                <area id="lifecycle2" coords="3 70" />
+                <area id="lifecycle3" coords="4 70"/>
+                <area id="lifecycle4" coords="5 70" />
+            </areaspec>                        
+            <programlisting><![CDATA[public interface ILifecycle
+{
+        LifecycleVeto OnSave(ISession s);
+        LifecycleVeto OnUpdate(ISession s);
+        LifecycleVeto OnDelete(ISession s);
+        void OnLoad(ISession s, object id);
+}]]></programlisting>
+            <calloutlist>
+                <callout arearefs="lifecycle1">
+                    <para>
+                        <literal>OnSave</literal> - called just before the object is saved or
+                        inserted
+                    </para>
+                </callout>
+                <callout arearefs="lifecycle2">
+                    <para>
+                        <literal>OnUpdate</literal> - called just before an object is updated 
+                        (when the object is passed to <literal>ISession.Update()</literal>)
+                    </para>
+                </callout>
+                <callout arearefs="lifecycle3">
+                    <para>
+                        <literal>OnDelete</literal> - called just before an object is deleted
+                    </para>
+                </callout>
+                <callout arearefs="lifecycle4">
+                    <para>
+                        <literal>OnLoad</literal> - called just after an object is loaded
+                    </para>
+                </callout>                
+            </calloutlist>
+        </programlistingco>
+        
+        <para>
+            <literal>OnSave()</literal>, <literal>OnDelete()</literal> and
+            <literal>OnUpdate()</literal> may be used to cascade saves and
+            deletions of dependent objects. This is an alternative to declaring cascaded
+            operations in the mapping file. <literal>OnLoad()</literal> may
+            be used to initialize transient properties of the object from its persistent
+            state. It may not be used to load dependent objects since the
+            <literal>ISession</literal> interface may not be invoked from
+            inside this method. A further intended usage of <literal>OnLoad()</literal>, 
+            <literal>OnSave()</literal> and <literal>OnUpdate()</literal> is to store a 
+            reference to the current <literal>ISession</literal> for later use.
+        </para>
+        
+        <para>
+            Note that <literal>OnUpdate()</literal> is not called every time the object's
+            persistent state is updated. It is called only when a transient object is passed
+            to <literal>ISession.Update()</literal>.
+        </para>
+
+        <para>
+            If <literal>OnSave()</literal>, <literal>OnUpdate()</literal> or
+            <literal>OnDelete()</literal> return <literal>LifecycleVeto.Veto</literal>, the operation is 
+            silently vetoed. If a <literal>CallbackException</literal> is thrown, the operation 
+            is vetoed and the exception is passed back to the application.
+        </para>
+
+        <para>
+            Note that <literal>OnSave()</literal> is called after an identifier is assigned to 
+            the object, except when native key generation is used.
+        </para>
+    </sect1>
+
+    <sect1 id="persistent-classes-validatable">
+        <title>IValidatable callback</title>
+
+        <para>
+            If the persistent class needs to check invariants before its state is
+            persisted, it may implement the following interface:
+        </para>
+
+        <programlisting><![CDATA[public interface IValidatable
+{
+        void Validate();
+}]]></programlisting>
+
+        <para>
+            The object should throw a <literal>ValidationFailure</literal> if an invariant 
+            was violated. An instance of <literal>Validatable</literal> should not change 
+            its state from inside <literal>Validate()</literal>.
+        </para>
+        <para>
+            Unlike the callback methods of the <literal>ILifecycle</literal> interface, 
+            <literal>Validate()</literal> might be called at unpredictable times. The
+            application should not rely upon calls to <literal>Validate()</literal> for
+            business functionality.
+        </para>
+    </sect1>
+
+</chapter>
