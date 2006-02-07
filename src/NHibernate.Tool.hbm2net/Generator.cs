@@ -14,11 +14,6 @@ namespace NHibernate.Tool.hbm2net
 	{
 		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		
-		private void  InitBlock()
-		{
-			suffix = string.Empty;
-			prefix = string.Empty;
-		}
 		virtual public string BaseDirName
 		{
 			get
@@ -43,19 +38,21 @@ namespace NHibernate.Tool.hbm2net
 		private string prefix;
 		private string extension = "cs";
 		private bool lowerFirstLetter = false;
-		
+		private DirectoryInfo workingDirectory;
 		public NameValueCollection params_Renamed = new NameValueCollection();
 		
 		/// <summary> Constructs a new Generator using the defaults.</summary>
-		public Generator()
+		public Generator(DirectoryInfo workingDirectory)
 		{
-			InitBlock();
+			this.workingDirectory = workingDirectory;
+			this.suffix = string.Empty;
+			this.prefix = string.Empty;
 		}
-		
+
 		/// <summary> Constructs a new Generator, configured from XML.</summary>
-		public Generator(Element generateElement)
+		public Generator(DirectoryInfo workingDirectory, Element generateElement) : this(workingDirectory)
 		{
-			InitBlock();
+//			InitBlock();			
 			string value_Renamed = null;
 			
 			// set rendererClass field
@@ -114,7 +111,7 @@ namespace NHibernate.Tool.hbm2net
 			Renderer renderer = (Renderer) SupportClass.CreateNewInstance(System.Type.GetType(this.rendererClass));
 			
 			//Configure renderer
-			renderer.configure(params_Renamed);
+			renderer.configure(workingDirectory, params_Renamed);
 			
 			//Running through actual classes
 			for (IEnumerator classMappings = classMappingsCol.Values.GetEnumerator(); classMappings.MoveNext(); )

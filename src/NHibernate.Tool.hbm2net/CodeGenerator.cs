@@ -61,15 +61,17 @@ namespace NHibernate.Tool.hbm2net
 						
 						if (args[i].StartsWith("--config="))
 						{
+							FileInfo configFile = new FileInfo(args[i].Substring(9));
+
 							// parse config xml file
 							Document document = new XmlDocument();
-							document.Load(args[i].Substring(9));
+							document.Load(configFile.FullName);
 							globalMetas = MetaAttributeHelper.loadAndMergeMetaMap((document["codegen"]), null);
 							IEnumerator generateElements = document["codegen"].SelectNodes("generate").GetEnumerator();
 							
 							while (generateElements.MoveNext())
 							{
-								generators.Add(new Generator((Element) generateElements.Current));
+								generators.Add(new Generator(configFile.Directory, (Element) generateElements.Current));
 							}
 						}
 						else if (args[i].StartsWith("--output="))
@@ -91,20 +93,29 @@ namespace NHibernate.Tool.hbm2net
 				// if no config xml file, add a default generator
 				if (generators.Count == 0)
 				{
-					generators.Add(new Generator());
+					generators.Add(new Generator(new DirectoryInfo(Environment.CurrentDirectory)));
 				}
 				
 				Hashtable classMappings = new Hashtable();
 				for (IEnumerator iter = mappingFiles.GetEnumerator(); iter.MoveNext(); )
 				{
-					try
-					{
+//					try
+//					{
 						log.Info(iter.Current.ToString());
+						
+						string mappingFile = (string)iter.Current;
+						if (!Path.IsPathRooted(mappingFile))
+						{
+							mappingFile = Path.Combine(Environment.CurrentDirectory, mappingFile);
+						}
+						if (!File.Exists(mappingFile))
+							throw new FileNotFoundException("Mapping file does not exist.", mappingFile);
+
 						// parse the mapping file
 						NameTable nt = new NameTable();
 						nt.Add("urn:nhibernate-mapping-2.0");
 						Document document = new XmlDocument(nt);
-						document.Load((String) iter.Current);
+						document.Load(mappingFile);
 					
 						Element rootElement = document["hibernate-mapping"];
 
@@ -127,11 +138,11 @@ namespace NHibernate.Tool.hbm2net
 					
 						classElements = rootElement.SelectNodes("urn:joined-subclass", nsmgr).GetEnumerator();
 						handleClass(pkg, me, classMappings, classElements, mm, true);
-					}
-					catch(Exception exc)
-					{
-						log.Error("Error in map",exc);
-					}
+//					}
+//					catch(Exception exc)
+//					{
+//						log.Error("Error in map",exc);
+//					}
 				}
 
 				// Ok, pickup subclasses that we found before their superclasses

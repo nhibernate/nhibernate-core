@@ -10,8 +10,6 @@ namespace NHibernate.Tool.hbm2net.Tests
 		FileInfo mappingFile;
 		const string MappingFileResourceName = "Simple.hbm.xml";
 		const string ExpectedFileResourceName = "DomainModel.csharp";
-		static string ExpectedFileName = Path.Combine(TestHelper.DefaultOutputDirectory.FullName, @"NHibernate\DomainModel\Simple, NHibernate\DomainModel.cs");
-		
 
 		[SetUp]
 		public void Init() {}
@@ -20,26 +18,28 @@ namespace NHibernate.Tool.hbm2net.Tests
 		public void Destroy()
 		{
 			if (TestHelper.DefaultOutputDirectory.Exists) TestHelper.DefaultOutputDirectory.Delete(true);
-			if (mappingFile.Exists) mappingFile.Delete();
+			if (mappingFile != null && mappingFile.Exists) mappingFile.Delete();
 		}
 
 
 		private static void AssertFile()
 		{
-			Assert.IsTrue(File.Exists(ExpectedFileName));
-			using(StreamReader sr = File.OpenText(ExpectedFileName))
+			string expectedFileName = Path.Combine(TestHelper.DefaultOutputDirectory.FullName, @"NHibernate\DomainModel\Simple, NHibernate\DomainModel.cs");
+			Assert.IsTrue(File.Exists(expectedFileName));
+			using(StreamReader sr = File.OpenText(expectedFileName))
 			{
 				Assert.AreEqual(ResourceHelper.GetResource(ExpectedFileResourceName), sr.ReadToEnd());
 			}
 		}
 
 		/// <summary>
-		///  <para>Test when the mapping file resides in same folder as hbm2net but the full path is <b>not</b> supplied.</para>
+		///  <para>Test the mapping file resides in current directory but the full path is <b>not</b> supplied.</para>
 		/// </summary>
 		[Test]
-		public void MappingFileNoPathSameFolderAsHbm2Net()
+		public void MappingFileNoPathSameFolderAsCurrentDirectory()
 		{
-			mappingFile = new FileInfo("Simple.hbm.xml");	
+			Environment.CurrentDirectory = Path.GetTempPath();
+			mappingFile = new FileInfo(Path.Combine(Environment.CurrentDirectory,"Simple.hbm.xml"));	
 			ResourceHelper.WriteToFileFromResource(mappingFile, MappingFileResourceName);
 			string[] args = new string[] {mappingFile.Name};
 			CodeGenerator.Main(args);
@@ -47,23 +47,31 @@ namespace NHibernate.Tool.hbm2net.Tests
 		}
 
 		/// <summary>
-		///  <para>Test when the mapping file resides in same folder as hbm2net but the full path is supplied.</para>
+		///  <para>Test when the mapping file resides in same folder as current directory but the full path is supplied.</para>
 		/// </summary>
 		[Test]
-		public void MappingFileInSameFolderAsHbm2Net()
+		public void MappingFileInSameFolderAsCurrentDirectory()
 		{
-			mappingFile = new FileInfo("Simple.hbm.xml");	
+			mappingFile = new FileInfo("Simple.hbm.xml");
+			Assert.AreEqual(Environment.CurrentDirectory, mappingFile.DirectoryName);
 			ResourceHelper.WriteToFileFromResource(mappingFile, MappingFileResourceName);
 			string[] args = new string[] {mappingFile.FullName};
 			CodeGenerator.Main(args);	
 			AssertFile();
+		}
+		
+		[Test, ExpectedException(typeof(System.IO.FileNotFoundException))]
+		public void MappingFileDoesNotExist()
+		{
+			string[] args = new string[] {"non-existant-file.hbm.xml"};
+			CodeGenerator.Main(args);			
 		}
 
 		/// <summary>
 		///  <para>Test when the mapping file doesn't reside in the same directory as hbm2net.</para>
 		/// </summary>
 		[Test]
-		public void MappingFileInDifferentFolderThanHbm2Net()
+		public void MappingFileInDifferentFolderThanCurrentDirectory()
 		{ 
 			mappingFile = ResourceHelper.CreateFileFromResource(MappingFileResourceName);
 			string[] args = new string[] {mappingFile.FullName};

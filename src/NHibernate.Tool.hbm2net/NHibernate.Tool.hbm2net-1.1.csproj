@@ -85,24 +85,19 @@
                     HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
                 />
                 <Reference
-                    Name = "Iesi.Collections"
-                    AssemblyName = "Iesi.Collections"
-                    HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
+                    Name = "NHibernate-1.1"
+                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
                     Name = "NVelocity"
                     AssemblyName = "NVelocity"
-                    HintPath = "..\..\lib\hbm2net\NVelocity.dll"
+                    HintPath = "..\..\lib\net\NVelocity.dll"
                 />
                 <Reference
                     Name = "log4net"
                     AssemblyName = "log4net"
-                    HintPath = "..\..\lib\net\1.1\log4net.dll"
-                />
-                <Reference
-                    Name = "NHibernate-1.1"
-                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                    HintPath = "..\..\lib\net\log4net.dll"
                 />
             </References>
         </Build>

@@ -17,14 +17,16 @@ namespace NHibernate.Tool.hbm2net
 	public abstract class AbstractRenderer : Renderer
 	{
 		
-		public virtual void  render(string savedToPackage, string savedToClass, ClassMapping classMapping, IDictionary class2classmap, StreamWriter writer)
+		internal NameValueCollection properties;
+		private DirectoryInfo workingDriectory;
+
+		public virtual void render(string savedToPackage, string savedToClass, ClassMapping classMapping, IDictionary class2classmap, StreamWriter writer)
 		{
 		}
 
-		internal NameValueCollection properties;
-		
-		public virtual void  configure(NameValueCollection props)
+		public virtual void configure(DirectoryInfo workingDirectory, NameValueCollection props)
 		{
+			this.workingDriectory = workingDirectory;
 			this.properties = props;
 		}
 		
@@ -68,5 +70,14 @@ namespace NHibernate.Tool.hbm2net
 		{
 			return classMapping.GeneratedPackageName;
 		}
+
+		public DirectoryInfo WorkingDirectory
+		{
+			get
+			{
+				return this.workingDriectory;	
+			}
+		}
+
 	}
 }

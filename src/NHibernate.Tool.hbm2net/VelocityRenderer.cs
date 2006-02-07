@@ -18,7 +18,7 @@ namespace NHibernate.Tool.hbm2net
 	/// To change the template for this generated type comment go to Window -
 	/// Preferences - Java - Code Generation - Code and Comments
 	/// </author>
-	public class VelocityRenderer:AbstractRenderer
+	public class VelocityRenderer : AbstractRenderer
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		
@@ -32,7 +32,7 @@ namespace NHibernate.Tool.hbm2net
 		*      java.lang.String, NHibernate.Tool.hbm2net.ClassMapping,
 		*      java.util.Map, java.io.PrintWriter)
 		*/
-		public override void  render(string savedToPackage, string savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter writer)
+		public override void render(string savedToPackage, string savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter writer)
 		{
 			VelocityContext context = new VelocityContext();
 			
@@ -59,7 +59,7 @@ namespace NHibernate.Tool.hbm2net
 			ve.Evaluate(context, writer, "hbm2net", sw.ToString());
 		}
 	
-		public override void configure(System.Collections.Specialized.NameValueCollection props)
+		public override void configure(DirectoryInfo workingDirectory, System.Collections.Specialized.NameValueCollection props)
 		{
 			try
 			{
@@ -74,41 +74,42 @@ namespace NHibernate.Tool.hbm2net
 				// investigate further.
 				;
 			}
-			base.configure (props);
+			base.configure (workingDirectory, props);
 			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
-			string templatename = props["template"];
-			if (templatename == null)
+			string templateName = props["template"];
+			string templateSrc;
+			if (templateName == null)
 			{
 				log.Info("No template file was specified, using default");	
 				p.SetProperty("resource.loader", "class");
 				p.SetProperty("class.resource.loader.class", "NHibernate.Tool.hbm2net.StringResourceLoader;NHibernate.Tool.hbm2net");
-				templatename = new System.IO.StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Tool.hbm2net.convert.vm")).ReadToEnd();
+				templateSrc = new System.IO.StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Tool.hbm2net.convert.vm")).ReadToEnd();
 			}
 			else
 			{
 				// NH-242 raised issue of where NVelocity looks when supplied with a unpathed file name. Hence
 				// will take responsiblity of explicitly instructing NVelocity where to look.
-				if (!File.Exists(templatename))
+				if (!Path.IsPathRooted(templateName))
 				{
-					string dir = new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).DirectoryName;
-					templatename = Path.Combine(dir, templatename);
-					if(!File.Exists(templatename))
-					{
-						string msg = string.Format("Cannot find template file using absolute path or relative to '{0}'.", dir);
-						throw new IOException(msg);
-					}
+					templateName = Path.Combine(this.WorkingDirectory.FullName, templateName);
 				}
+				if(!File.Exists(templateName))
+				{
+					string msg = string.Format("Cannot find template file using absolute path or relative to '{0}'.", this.WorkingDirectory.FullName);
+					throw new IOException(msg);
+				}
+
 				p.SetProperty("resource.loader", "class");
 				p.SetProperty("class.resource.loader.class", "NHibernate.Tool.hbm2net.StringResourceLoader;NHibernate.Tool.hbm2net");
-				using(System.IO.StreamReader sr = new StreamReader(System.IO.File.OpenRead(templatename)))
+				using(System.IO.StreamReader sr = new StreamReader(System.IO.File.OpenRead(templateName)))
 				{
-					templatename = sr.ReadToEnd();
+					templateSrc = sr.ReadToEnd();
 					sr.Close();
 				}
 			}
 			ve = new VelocityEngine();
 			ve.Init(p);
-			template = ve.GetTemplate(templatename);
+			template = ve.GetTemplate(templateSrc);
 		}
 	}
 }
