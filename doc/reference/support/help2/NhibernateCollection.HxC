@@ -11,12 +11,12 @@
   Title="NHibernate Collection"
   Copyright="">
 
-  <TOCDef File="NhibernateCollection.HxT"/>
+  <TOCDef File="NHibernateCollection.HxT"/>
 
-  <KeywordIndexDef File="NhibernateCollection_K.HxK"/>
-  <KeywordIndexDef File="NhibernateCollection_NamedURL.HxK"/>
-  <KeywordIndexDef File="NhibernateCollection_F.HxK"/>
-  <KeywordIndexDef File="NhibernateCollection_A.HxK"/>
+  <KeywordIndexDef File="NHibernateCollection_K.HxK"/>
+  <KeywordIndexDef File="NHibernateCollection_NamedURL.HxK"/>
+  <KeywordIndexDef File="NHibernateCollection_F.HxK"/>
+  <KeywordIndexDef File="NHibernateCollection_A.HxK"/>
 
   <ItemMoniker Name="!DefaultFullTextSearch" ProgId="HxDs.HxFullTextSearch" InitData="FTS"/>
   <ItemMoniker Name="!DefaultTOC" ProgId="HxDs.HxHierarchy" InitData="NhibernateCollection"/>

@@ -197,23 +197,23 @@
 
 	</target>
 
-	<target name="doc" depends="init doc-clean doc-manual doc-reference"
+	<target name="doc" depends="init doc-clean doc-manual doc-api"
 		description="Builds the Help Documentation and the API documentation" />
 
 	<target name="doc-clean">
-		<nant target="clean" buildfile="doc/documentation.build" />
+		<nant target="clean" buildfile="doc/reference/documentation.build" />
 	</target>
 
 	<target name="doc-manual" depends="init" description="Builds the Help Documentation" >
 		<property name="lang" value="en" />
-		<nant target="build" buildfile="doc/documentation.build">
+		<nant target="build" buildfile="doc/reference/documentation.build">
 			<properties>
 				<property name="lang" value="${lang}" />
 			</properties>
 		</nant>
 	</target>
 
-	<target name="doc-reference" depends="init" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
+	<target name="doc-api" depends="init" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
 		<ndoc>
 			<assemblies basedir="${bin.dir}">
 				<include name="NHibernate.dll" />
@@ -226,7 +226,7 @@
 			<documenters>
 				<documenter name="MSDN">
 					<property name="OutputDirectory" value="${build.dir}/doc/temp" />
-					<property name="HtmlHelpName" value="NHibernate.Reference" />
+					<property name="HtmlHelpName" value="NHibernate.API" />
 					<property name="IncludeFavorites" value="False" />
 					<property name="Title" value="NHibernate Class Library - v.${project.version}" />
 					<property name="SplitTOCs" value="False" />
@@ -287,7 +287,7 @@
 				<documenters>
 					<documenter name="VS.NET 2003">
 						<property name="OutputDirectory" value="${build.dir}/doc/temp" />
-						<property name="HtmlHelpName" value="NHibernate.Reference" />
+						<property name="HtmlHelpName" value="NHibernate.API" />
 						<property name="Title" value="NHibernate Class Library - v.${project.version}" />
 						<property name="HeaderHtml" value="" />
 						<property name="FooterHtml" value="" />
@@ -319,13 +319,13 @@
 				</documenters> 
 			</ndoc>
 
-			<copy todir="${build.dir}/doc">
+			<copy todir="${build.dir}/doc/help2">
 				<fileset basedir="${build.dir}/doc/temp">
 					<include name="*.HxS" />
 				</fileset>
 			</copy>
-			<copy todir="${build.dir}/doc">
-				<fileset basedir="doc/Help2">
+			<copy todir="${build.dir}/doc/help2">
+				<fileset basedir="doc/reference/support/help2">
 					<include name="*" />
 				</fileset>
 			</copy>

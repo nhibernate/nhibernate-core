@@ -14,7 +14,7 @@
    PluginTitle="NHibernate">
 
    <HelpTOCNode NodeType="TOC" Url="Nhibernate.Documentation"/>
-   <HelpTOCNode Title="NHibernate Reference">
-      <HelpTOCNode NodeType="TOC" Url="NHibernate.Reference"/>
+   <HelpTOCNode Title="NHibernate API Reference">
+      <HelpTOCNode NodeType="TOC" Url="NHibernate.API"/>
    </HelpTOCNode>
 </HelpTOC>

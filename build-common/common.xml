@@ -22,6 +22,7 @@
 		It generates Visual Studio.NET 2003 documentation.
 	-->
 	<property name="vshik.installed" value="false" overwrite="false" />
+	<property name="vshik.path" value="${environment::get-folder-path('ProgramFiles')}/Microsoft Help 2.0 SDK" />
 
 	<!-- 
 		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
