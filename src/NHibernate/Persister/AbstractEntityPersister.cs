@@ -1114,7 +1114,7 @@ namespace NHibernate.Persister
 				if( !distinctColumns.Add( col.Name ) )
 				{
 					throw new MappingException(
-						"Repated column in mapping for class " +
+						"Repeated column in mapping for class " +
 							className +
 							" should be mapped with insert=\"false\" update=\"false\": " +
 							col.Name );
