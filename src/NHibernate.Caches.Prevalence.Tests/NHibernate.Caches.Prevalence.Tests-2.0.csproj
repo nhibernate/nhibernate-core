@@ -95,7 +95,7 @@
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-2.0</Name>
     </ProjectReference>
-    <ProjectReference Include="NHibernate.Caches.Prevalence-2.0.csproj">
+    <ProjectReference Include="..\NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence-2.0.csproj">
       <Name>NHibernate.Caches.Prevalence-1.1</Name>
       <Project>{51179C23-5555-45A4-9BBB-8F6E24D05C2B}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>

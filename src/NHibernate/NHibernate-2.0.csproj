@@ -118,8 +118,6 @@
     <Compile Include="Dialect\Dialect.cs" />
     <Compile Include="Dialect\FirebirdDialect.cs" />
     <Compile Include="Dialect\GenericDialect.cs" />
-    <Compile Include="Dialect\HSQLDialect.cs" />
-    <Compile Include="Dialect\InterbaseDialect.cs" />
     <Compile Include="Dialect\ISQLFunction.cs" />
     <Compile Include="Dialect\MsSql2000Dialect.cs" />
     <Compile Include="Dialect\MsSql7Dialect.cs" />
@@ -544,7 +542,6 @@
     <EmbeddedResource Include="nhibernate-mapping-2.0.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="AssemblyInfoVersion.cs" />
     <Compile Include="Collection\Generic\PersistentGenericMap.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
     <Compile Include="Driver\ReflectionBasedDriver.cs" />
