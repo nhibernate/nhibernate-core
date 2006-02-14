@@ -1,6 +1,4 @@
-using System;
 using System.IO;
-using System.Reflection;
 using System.Xml;
 
 namespace NHibernate.Tool.hbm2net.Tests

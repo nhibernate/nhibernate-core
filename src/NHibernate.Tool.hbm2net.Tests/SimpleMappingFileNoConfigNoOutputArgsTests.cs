@@ -60,7 +60,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 			AssertFile();
 		}
 		
-		[Test, ExpectedException(typeof(System.IO.FileNotFoundException))]
+		[Test, ExpectedException(typeof(FileNotFoundException))]
 		public void MappingFileDoesNotExist()
 		{
 			string[] args = new string[] {"non-existant-file.hbm.xml"};

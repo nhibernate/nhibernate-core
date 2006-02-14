@@ -50,7 +50,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 			using(FileStream fs = File.OpenWrite(file.FullName))
 			{
 				StreamWriter s = new StreamWriter(fs);
-				s.Write(ResourceHelper.GetResource(resource, ns));
+				s.Write(GetResource(resource, ns));
 				s.Flush();
 			}
 			return file;
