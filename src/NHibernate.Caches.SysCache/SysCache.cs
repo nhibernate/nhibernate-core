@@ -213,7 +213,7 @@ namespace NHibernate.Caches.SysCache
 				_map.Add( cacheKey, value );
 				_cache.Add(
 					cacheKey, new DictionaryEntry( key, value ), null,
-					DateTime.Now.Add(_expiration), System.Web.Caching.Cache.NoSlidingExpiration, _priority,
+					DateTime.Now.Add(_expiration), AspCache.Cache.NoSlidingExpiration, _priority,
 					new AspCache.CacheItemRemovedCallback( CacheItemRemoved )
 				);
 			}
