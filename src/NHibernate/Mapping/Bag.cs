@@ -26,7 +26,7 @@ namespace NHibernate.Mapping
 #if NET_2_0
 				if (this.IsGeneric)
 				{
-					return TypeFactory.GenericBag( Role, this.Element.Type.ReturnedClass );
+					return TypeFactory.GenericBag( Role, this.GenericArguments[0] );
 				}
 				else
 				{

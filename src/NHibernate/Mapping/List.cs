@@ -28,7 +28,7 @@ namespace NHibernate.Mapping
 #if NET_2_0
 				if (this.IsGeneric)
 				{
-					return TypeFactory.GenericList( Role, this.Element.Type.ReturnedClass );
+					return TypeFactory.GenericList( Role, this.GenericArguments[0] );
 				}
 				else
 				{

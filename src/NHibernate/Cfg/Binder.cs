@@ -741,12 +741,20 @@ namespace NHibernate.Cfg
 				model.OrphanDelete = true;
 			}
 
+#if NET_2_0
 			XmlAttribute genericAtt = node.Attributes["generic"];
 			if (genericAtt != null)
 			{
 				model.IsGeneric = Boolean.Parse(genericAtt.Value);
 			}
 
+			if (model.IsGeneric)
+			{
+				System.Type collectionType = ReflectHelper.ReflectedPropertyClass(model.OwnerClass, path, PropertyAccess(node, mappings));
+				System.Type[] genericArguments = collectionType.GetGenericArguments();
+				model.GenericArguments = genericArguments;
+			}
+#endif
 			//set up second pass
 			if( model is List )
 			{

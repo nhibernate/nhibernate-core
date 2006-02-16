@@ -164,14 +164,15 @@ namespace NHibernate.Collection.Generic
 		{
 			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>)GetSnapshot();
 			KeyValuePair<TKey, TValue> e = (KeyValuePair<TKey, TValue>)entry;
-			return (e.Value != null && sn[e.Key] == null);
+			return ( e.Value!=null && sn.ContainsKey(e.Key)==false );
 		}
 
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
 			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>)GetSnapshot();
 			KeyValuePair<TKey, TValue> e = (KeyValuePair<TKey, TValue>)entry;
-			TValue snValue = sn[e.Key];
+			TValue snValue;
+			sn.TryGetValue(e.Key, out snValue);
 			return (e.Value != null && snValue != null && elemType.IsDirty(snValue, e.Value, Session));
 		}
 
@@ -181,7 +182,7 @@ namespace NHibernate.Collection.Generic
 			foreach (KeyValuePair<TKey, TValue> e in (IDictionary<TKey, TValue>)GetSnapshot())
 			{
 				TKey key = e.Key;
-				if (e.Value != null && map[key] == null)
+				if ( e.Value != null && map.ContainsKey(key)==false )
 				{
 					deletes.Add(key);
 				}

@@ -31,7 +31,6 @@ namespace NHibernate.Test.MapGeneric
 		}
 
 		[Test]
-		[Ignore("test is failing because of binder issues")]
 		public void Simple()
 		{
 			int? newId;

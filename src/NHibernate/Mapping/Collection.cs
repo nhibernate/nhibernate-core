@@ -44,7 +44,10 @@ namespace NHibernate.Mapping
 		private FetchMode fetchMode;
 		private System.Type collectionPersisterClass;
 
+#if NET_2_0
 		private bool isGeneric;
+		private System.Type[] genericArguments;
+#endif
 
 		/// <summary>
 		/// 
@@ -254,6 +257,7 @@ namespace NHibernate.Mapping
 			set { fetchMode = value; }
 		}
 
+#if NET_2_0
 		/// <summary>
 		/// Gets or sets a <see cref="Boolean"/> indicating if this is a 
 		/// mapping for a generic collection.
@@ -271,6 +275,17 @@ namespace NHibernate.Mapping
 			get { return isGeneric; }
 			set { isGeneric = value; }
 		}
+
+		/// <summary>
+		/// Gets or sets a <see cref="System.Type[]"/> that contains the arguments needed
+		/// to construct an instance of a closed type.
+		/// </summary>
+		public System.Type[] GenericArguments
+		{
+			get { return genericArguments; }
+			set { genericArguments = value; }
+		}
+#endif
 
 		/// <summary>
 		/// 
