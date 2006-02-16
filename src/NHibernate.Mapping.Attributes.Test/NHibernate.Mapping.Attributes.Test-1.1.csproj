@@ -82,14 +82,15 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "Iesi.Collections"
-                    AssemblyName = "Iesi.Collections"
-                    HintPath = "..\..\..\lib\net\1.1\Iesi.Collections.dll"
-                />
-                <Reference
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
-                    HintPath = "..\..\..\lib\net\1.1\nunit.framework.dll"
+                    HintPath = "..\..\lib\net\nunit.framework.dll"
+                    Private = "True"
+                />
+                <Reference
+                    Name = "Iesi.Collections"
+                    AssemblyName = "Iesi.Collections"
+                    HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
                 />
             </References>
         </Build>

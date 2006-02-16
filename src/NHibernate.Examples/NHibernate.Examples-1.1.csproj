@@ -93,6 +93,7 @@
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\lib\net\nunit.framework.dll"
+                    Private = "True"
                 />
             </References>
         </Build>

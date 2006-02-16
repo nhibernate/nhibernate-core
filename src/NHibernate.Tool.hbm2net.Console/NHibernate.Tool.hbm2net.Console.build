@@ -16,6 +16,7 @@
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			 <include name="NHibernate.Tool.hbm2net.dll" />
+			 <include name="NVelocity.dll" />
 		</assemblyfileset>
 	</target>
 

@@ -201,7 +201,7 @@ namespace NHibernate.Caches.SysCache.Tests
 
 			public override int GetHashCode()
 			{
-				return 1;
+				return Id.GetHashCode();
 			}
 
 			public override string ToString()
@@ -218,7 +218,7 @@ namespace NHibernate.Caches.SysCache.Tests
 					return false;
 				}
 
-				return other.Id == this.Id;
+				return other.Id == Id;
 			}
 
 		}

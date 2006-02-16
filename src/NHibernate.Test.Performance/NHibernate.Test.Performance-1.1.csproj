@@ -80,11 +80,6 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "..\..\lib\net\nunit.framework.dll"
-                />
-                <Reference
                     Name = "NHibernate.Test-1.1"
                     Project = "{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -103,6 +98,12 @@
                     Name = "Iesi.Collections"
                     AssemblyName = "Iesi.Collections"
                     HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
+                />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\lib\net\nunit.framework.dll"
+                    Private = "True"
                 />
             </References>
         </Build>

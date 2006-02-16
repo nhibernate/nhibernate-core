@@ -92,7 +92,7 @@
       <Name>System.XML</Name>
     </Reference>
     <ProjectReference Include="..\NHibernate.UserTypes.SqlTypes\NHibernate.UserTypes.SqlTypes-2.0.csproj">
-      <Name>NHibernate.UserTypes.SqlTypes-1.1</Name>
+      <Name>NHibernate.UserTypes.SqlTypes-2.0</Name>
       <Project>{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>

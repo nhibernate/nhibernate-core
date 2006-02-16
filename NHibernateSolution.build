@@ -24,6 +24,8 @@
 		<include name="NHibernate.Examples/NHibernate.Examples.build" />
 		<include name="NHibernate.Caches.SysCache/NHibernate.Caches.SysCache.build" />
 		<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" />
+		<include name="NHibernate.Caches.MemCache/NHibernate.Caches.MemCache.build" />
+		<include name="NHibernate.Caches.MemCache.Tests/NHibernate.Caches.MemCache.Tests.build" />
 		<include name="NHibernate.Caches.Prevalence/NHibernate.Caches.Prevalence.build" />
 		<include name="NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.build" />
 		<include name="NHibernate.JetDriver/NHibernate.JetDriver.build" />

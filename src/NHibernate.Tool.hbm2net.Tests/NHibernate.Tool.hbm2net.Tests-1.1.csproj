@@ -83,6 +83,7 @@
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
+                    Private = "True"
                 />
                 <Reference
                     Name = "NHibernate.Tool.hbm2net-1.1"

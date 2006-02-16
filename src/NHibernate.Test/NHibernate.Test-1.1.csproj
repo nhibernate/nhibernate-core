@@ -103,6 +103,7 @@
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\lib\net\nunit.framework.dll"
+                    Private = "True"
                 />
                 <Reference
                     Name = "nmock"
@@ -213,11 +214,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "CompositeCollection\CompositeCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "CompositeCollection\ChildClassA.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -229,6 +225,11 @@
                 />
                 <File
                     RelPath = "CompositeCollection\ChildColl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CompositeCollection\CompositeCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -85,19 +85,20 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "log4net"
-                    AssemblyName = "log4net"
-                    HintPath = "..\..\..\lib\net\1.1\log4net.dll"
+                    Name = "NHibernate-1.1"
+                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
-                    HintPath = "..\..\..\lib\net\1.1\nunit.framework.dll"
+                    HintPath = "..\..\lib\net\nunit.framework.dll"
+                    Private = "True"
                 />
                 <Reference
-                    Name = "NHibernate-1.1"
-                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                    Name = "log4net"
+                    AssemblyName = "log4net"
+                    HintPath = "..\..\lib\net\log4net.dll"
                 />
             </References>
         </Build>

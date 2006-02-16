@@ -39,6 +39,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.SqlTyp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.Tests-2.0", "NHibernate.UserTypes.Tests\NHibernate.UserTypes.Tests-2.0.csproj", "{094F49F9-499A-40DE-97E4-AB0C5C883355}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache-2.0", "NHibernate.Caches.MemCache\NHibernate.Caches.MemCache-2.0.csproj", "{EE1CD14F-FE9F-4DB4-ADE2-A8853935F44E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache.Tests-2.0", "NHibernate.Caches.MemCache.Tests\NHibernate.Caches.MemCache.Tests-2.0.csproj", "{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +125,14 @@ Global
 		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{094F49F9-499A-40DE-97E4-AB0C5C883355}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE1CD14F-FE9F-4DB4-ADE2-A8853935F44E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE1CD14F-FE9F-4DB4-ADE2-A8853935F44E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE1CD14F-FE9F-4DB4-ADE2-A8853935F44E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE1CD14F-FE9F-4DB4-ADE2-A8853935F44E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

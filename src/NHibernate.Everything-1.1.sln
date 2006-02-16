@@ -87,6 +87,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Mapping.Attribut
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache-1.1", "NHibernate.Caches.MemCache\NHibernate.Caches.MemCache-1.1.csproj", "{FD03BBC3-FED0-415B-B905-E9FCAFBA3E70}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache.Tests-1.1", "NHibernate.Caches.MemCache.Tests\NHibernate.Caches.MemCache.Tests-1.1.csproj", "{94E1F299-E404-4DDE-BFCE-A3E4F5AD3D41}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -181,6 +189,14 @@ Global
 		{A6585067-79C1-41A9-A006-A83C3A800B21}.Debug.Build.0 = Debug|.NET
 		{A6585067-79C1-41A9-A006-A83C3A800B21}.Release.ActiveCfg = Release|.NET
 		{A6585067-79C1-41A9-A006-A83C3A800B21}.Release.Build.0 = Release|.NET
+		{FD03BBC3-FED0-415B-B905-E9FCAFBA3E70}.Debug.ActiveCfg = Debug|.NET
+		{FD03BBC3-FED0-415B-B905-E9FCAFBA3E70}.Debug.Build.0 = Debug|.NET
+		{FD03BBC3-FED0-415B-B905-E9FCAFBA3E70}.Release.ActiveCfg = Release|.NET
+		{FD03BBC3-FED0-415B-B905-E9FCAFBA3E70}.Release.Build.0 = Release|.NET
+		{94E1F299-E404-4DDE-BFCE-A3E4F5AD3D41}.Debug.ActiveCfg = Debug|.NET
+		{94E1F299-E404-4DDE-BFCE-A3E4F5AD3D41}.Debug.Build.0 = Debug|.NET
+		{94E1F299-E404-4DDE-BFCE-A3E4F5AD3D41}.Release.ActiveCfg = Release|.NET
+		{94E1F299-E404-4DDE-BFCE-A3E4F5AD3D41}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		..\NHibernateSolution.build = ..\NHibernateSolution.build
