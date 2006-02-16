@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?> 
+<?xml version="1.0" encoding="utf-8" ?> 
 <project xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 	name="NHibernate Nightly Build" 
 	default="package-all"
@@ -14,7 +14,7 @@
 	
 	<target name="package-net-1.1">
 		<!-- do a clover enabled build first to verify code coverage of test -->
-		<nant buildfile="NHibernateSolution.build" target="clean build-with-clover test">
+		<nant buildfile="default.build" target="clean build-with-clover test">
 			<properties>
 				<property name="nant.settings.currentframework" value="net-1.1" />
 				<property name="project.config" value="release" />
@@ -25,7 +25,7 @@
 			clean-bin is first target executed so we can get rid of the 
 			clovered assemblies
 		-->
-		<nant buildfile="NHibernateSolution.build" target="clean-bin package">
+		<nant buildfile="default.build" target="clean-bin package">
 			<properties>
 				<property name="nant.settings.currentframework" value="net-1.1" />
 				<property name="project.config" value="release" />
@@ -37,7 +37,7 @@
 	</target>
 	
 	<target name="package-net-2.0">
-		<nant buildfile="NHibernateSolution.build" target="build package">
+		<nant buildfile="default.build" target="build package">
 			<properties>
 				<property name="nant.settings.currentframework" value="net-2.0" />
 				<property name="project.config" value="release" />
