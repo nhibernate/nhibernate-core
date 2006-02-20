@@ -18,7 +18,7 @@ namespace NHibernate.Loader
 	/// Generates an SQL select string containing all properties of those classes.
 	/// Tablse are joined using an ANSI-style left outer join.
 	/// </remarks>
-	public class OuterJoinLoader : Loader
+	public class OuterJoinLoader : BasicLoader
 	{
 		protected ILoadable[ ] classPersisters;
 		protected LockMode[ ] lockModeArray;
@@ -61,23 +61,6 @@ namespace NHibernate.Loader
 			return IsJoinedFetchEnabled( type, mappingDefault, path, table, foreignKeyColumns) ?
 				JoinType.LeftOuterJoin :
 				JoinType.None;
-		}
-
-		/// <summary></summary>
-		public sealed class OuterJoinableAssociation // struct?
-		{
-			public IJoinable Joinable;
-			
-			// belong to other persister
-			public string[ ] ForeignKeyColumns;
-			public string Subalias;
-			public string[] PrimaryKeyColumns;
-			public string TableName;
-			
-			// the position of the persister we came from in the list
-			public int Owner;
-			public JoinType JoinType;
-			public bool IsOneToOne;
 		}
 
 		/// <summary>
@@ -709,7 +692,7 @@ namespace NHibernate.Loader
 		{
 			JoinFragment outerjoin = dialect.CreateOuterJoinFragment();
 
-			foreach( OuterJoinLoader.OuterJoinableAssociation oj in associations )
+			foreach( OuterJoinableAssociation oj in associations )
 			{
 				outerjoin.AddJoin( oj.TableName, oj.Subalias, oj.ForeignKeyColumns, oj.PrimaryKeyColumns, oj.JoinType );
 				outerjoin.AddJoins( 
@@ -743,7 +726,7 @@ namespace NHibernate.Loader
 
 		protected static bool ContainsCollectionPersister( IList associations )
 		{
-			foreach( OuterJoinLoader.OuterJoinableAssociation oj in associations )
+			foreach( OuterJoinableAssociation oj in associations )
 			{
 				if ( oj.Joinable.IsCollection )
 				{
