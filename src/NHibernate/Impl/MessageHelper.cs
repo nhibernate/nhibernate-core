@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using NHibernate.Collection;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Impl

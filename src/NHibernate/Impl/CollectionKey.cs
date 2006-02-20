@@ -1,6 +1,5 @@
 using System;
-
-using NHibernate.Collection;
+using NHibernate.Persister.Collection;
 
 namespace NHibernate.Impl
 {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
 namespace NHibernate.Collection

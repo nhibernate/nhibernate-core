@@ -4,6 +4,7 @@ using System.Data;
 
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
 using NHibernate.Util;

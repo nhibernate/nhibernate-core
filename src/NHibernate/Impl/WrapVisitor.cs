@@ -1,6 +1,7 @@
 using System;
 using log4net;
 using NHibernate.Collection;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 

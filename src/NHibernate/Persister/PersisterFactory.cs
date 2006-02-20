@@ -4,6 +4,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.Mapping;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Persister

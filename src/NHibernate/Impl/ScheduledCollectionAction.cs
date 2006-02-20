@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 using NHibernate.Cache;
-using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 
 namespace NHibernate.Impl
 {

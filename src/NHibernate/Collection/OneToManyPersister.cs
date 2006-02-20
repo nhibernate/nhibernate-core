@@ -1,15 +1,17 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
-namespace NHibernate.Collection
+namespace NHibernate.Persister.Collection
 {
 	/// <summary>
 	/// Summary description for OneToManyPersister.

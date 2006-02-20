@@ -5,6 +5,7 @@ using log4net;
 
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 
 namespace NHibernate.Impl
 {

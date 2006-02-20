@@ -1,4 +1,4 @@
-using NHibernate.Collection;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
 namespace NHibernate.Hql

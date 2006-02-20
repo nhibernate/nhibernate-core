@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Data;
 using NHibernate.Cache;
-using NHibernate.Collection;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 

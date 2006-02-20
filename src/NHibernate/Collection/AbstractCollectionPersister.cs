@@ -7,6 +7,7 @@ using Iesi.Collections;
 using log4net;
 
 using NHibernate.Cache;
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Id;
@@ -22,7 +23,7 @@ using NHibernate.Util;
 
 using Array = NHibernate.Mapping.Array;
 
-namespace NHibernate.Collection
+namespace NHibernate.Persister.Collection
 {
 	/// <summary>
 	/// Summary description for AbstractCollectionPersister.

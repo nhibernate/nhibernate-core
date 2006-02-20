@@ -11,6 +11,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;

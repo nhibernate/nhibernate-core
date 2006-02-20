@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
 namespace NHibernate.Collection

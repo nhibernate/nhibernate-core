@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Data;
-
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
+using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 
-namespace NHibernate.Collection
+namespace NHibernate.Persister.Collection
 {
 	/// <summary>
 	/// Collection persister for collections of values and many-to-many associations.

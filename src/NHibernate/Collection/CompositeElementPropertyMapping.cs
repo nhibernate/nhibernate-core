@@ -2,7 +2,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
-namespace NHibernate.Collection
+namespace NHibernate.Persister.Collection
 {
 	/// <summary>
 	/// Summary description for CompositeElementPropertyMapping.

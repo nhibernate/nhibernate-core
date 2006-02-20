@@ -1,9 +1,10 @@
 using NHibernate.Loader;
 using NHibernate.Persister;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 
-namespace NHibernate.Collection
+namespace NHibernate.Persister.Collection
 {
 	/// <summary>
 	/// A collection role that may be queried or loaded by outer join.

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Iesi.Collections;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 
 namespace NHibernate.Collection
 {

@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Data;
-using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;

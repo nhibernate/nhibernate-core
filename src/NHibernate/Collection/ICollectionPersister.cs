@@ -1,12 +1,13 @@
 using System.Data;
 
 using NHibernate.Cache;
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Metadata;
 using NHibernate.Type;
 
-namespace NHibernate.Collection
+namespace NHibernate.Persister.Collection
 {
 	/// <summary>
 	/// <p>A strategy for persisting a collection role. Defines a contract between

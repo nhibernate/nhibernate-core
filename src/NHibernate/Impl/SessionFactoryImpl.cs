@@ -8,7 +8,6 @@ using log4net;
 
 using NHibernate.Cache;
 using NHibernate.Cfg;
-using NHibernate.Collection;
 using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Hql;
@@ -16,6 +15,7 @@ using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Persister;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Transaction;

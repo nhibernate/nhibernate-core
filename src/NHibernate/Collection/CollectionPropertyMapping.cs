@@ -1,8 +1,9 @@
+using NHibernate.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Collection
+namespace NHibernate.Persister.Collection
 {
 	/// <summary>
 	/// Summary description for CollectionPropertyMapping.
