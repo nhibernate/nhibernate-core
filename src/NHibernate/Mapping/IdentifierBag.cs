@@ -19,7 +19,7 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override PersistentCollectionType CollectionType
 		{
-			get { return TypeFactory.IdBag( Role ); }
+			get { return TypeFactory.IdBag( Role, ReferencedPropertyName ); }
 		}
 	}
 }

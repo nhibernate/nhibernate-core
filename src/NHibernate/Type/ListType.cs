@@ -15,8 +15,8 @@ namespace NHibernate.Type
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		public ListType(string role)
-			: base(role)
+		public ListType( string role, string propertyRef )
+			: base( role, propertyRef )
 		{
 		}
 

@@ -34,14 +34,14 @@ namespace NHibernate.Mapping
 				else
 				{
 					return IsSorted ? 
-							TypeFactory.SortedMap( Role, Comparer ) : 
-							TypeFactory.Map(Role);
+							TypeFactory.SortedMap( Role, ReferencedPropertyName, Comparer ) : 
+							TypeFactory.Map( Role, ReferencedPropertyName );
 				}
 #else
 
 				return IsSorted ?
-					TypeFactory.SortedMap( Role, Comparer ) :
-					TypeFactory.Map( Role );
+					TypeFactory.SortedMap( Role, ReferencedPropertyName, Comparer ) :
+					TypeFactory.Map( Role, ReferencedPropertyName );
 #endif
 			}
 		}

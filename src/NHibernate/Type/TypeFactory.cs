@@ -672,9 +672,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="ArrayType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Array( string role, System.Type elementClass )
+		public static PersistentCollectionType Array( string role, string propertyRef, System.Type elementClass )
 		{
-			return new ArrayType( role, elementClass );
+			return new ArrayType( role, propertyRef, elementClass );
 		}
 
 		/// <summary>
@@ -684,9 +684,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="ListType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType List(string role)
+		public static PersistentCollectionType List(string role, string propertyRef)
 		{
-			return new ListType( role );
+			return new ListType( role, propertyRef );
 		}
 
 		/// <summary>
@@ -697,9 +697,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="BagType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Bag(string role)
+		public static PersistentCollectionType Bag(string role, string propertyRef)
 		{
-			return new BagType( role );
+			return new BagType( role, propertyRef );
 		}
 
 		/// <summary>
@@ -710,9 +710,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="IdentifierBagType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType IdBag(string role)
+		public static PersistentCollectionType IdBag(string role, string propertyRef)
 		{
-			return new IdentifierBagType( role );
+			return new IdentifierBagType( role, propertyRef );
 		}
 
 		/// <summary>
@@ -722,9 +722,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="MapType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Map(string role)
+		public static PersistentCollectionType Map(string role, string propertyRef)
 		{
-			return new MapType( role );
+			return new MapType( role, propertyRef );
 		}
 
 		/// <summary>
@@ -734,9 +734,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="SetType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Set(string role)
+		public static PersistentCollectionType Set(string role, string propertyRef)
 		{
-			return new SetType( role );
+			return new SetType( role, propertyRef );
 		}
 
 		/// <summary>
@@ -748,9 +748,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="SortedMapType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType SortedMap(string role, IComparer comparer)
+		public static PersistentCollectionType SortedMap(string role, string propertyRef, IComparer comparer)
 		{
-			return new SortedMapType( role, comparer );
+			return new SortedMapType( role, propertyRef, comparer );
 		}
 
 		/// <summary>
@@ -762,9 +762,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="SortedSetType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType SortedSet(string role, IComparer comparer)
+		public static PersistentCollectionType SortedSet(string role, string propertyRef, IComparer comparer)
 		{
-			return new SortedSetType( role, comparer );
+			return new SortedSetType( role, propertyRef, comparer );
 		}
 
 #if NET_2_0

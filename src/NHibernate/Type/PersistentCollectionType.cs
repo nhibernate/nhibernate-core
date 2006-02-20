@@ -17,6 +17,8 @@ namespace NHibernate.Type
 	public abstract class PersistentCollectionType : AbstractType, IAssociationType
 	{
 		private readonly string role;
+		private readonly string foreignKeyPropertyName;
+
 		private static readonly SqlType[ ] NoSqlTypes = {};
 
 		/// <summary>
@@ -24,9 +26,10 @@ namespace NHibernate.Type
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		protected PersistentCollectionType( string role )
+		protected PersistentCollectionType( string role, string foreignKeyPropertyName )
 		{
 			this.role = role;
+			this.foreignKeyPropertyName = foreignKeyPropertyName;
 		}
 
 		public virtual string Role
@@ -215,7 +218,7 @@ namespace NHibernate.Type
 
 		public bool UseLHSPrimaryKey
 		{
-			get { return true; }
+			get { return foreignKeyPropertyName == null; }
 		}
 
 		public IJoinable GetAssociatedJoinable( ISessionFactoryImplementor factory )
@@ -311,5 +314,9 @@ namespace NHibernate.Type
 			return persister.ElementType.Copy( element, null, session, owner, copiedAlready );
 		}
 
+		public string LHSPropertyName
+		{
+			get { return foreignKeyPropertyName; }
+		}
 	}
 }

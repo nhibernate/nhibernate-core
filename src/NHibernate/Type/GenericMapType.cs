@@ -27,8 +27,8 @@ namespace NHibernate.Type
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		public GenericMapType(string role, System.Type indexClass, System.Type elementClass)
-			: base(role)
+		public GenericMapType(string role, string propertyRef, System.Type indexClass, System.Type elementClass)
+			: base(role, propertyRef)
 		{
 			System.Type definition = typeof(Collection.Generic.PersistentGenericMap<,>);
 			System.Type[] typeArgs = new System.Type[] { indexClass, elementClass };

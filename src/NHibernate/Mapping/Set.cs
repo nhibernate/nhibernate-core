@@ -33,8 +33,8 @@ namespace NHibernate.Mapping
 			get
 			{
 				return IsSorted ?
-					TypeFactory.SortedSet( Role, Comparer ) :
-					TypeFactory.Set( Role );
+					TypeFactory.SortedSet( Role, ReferencedPropertyName, Comparer ) :
+					TypeFactory.Set( Role, ReferencedPropertyName );
 			}
 		}
 

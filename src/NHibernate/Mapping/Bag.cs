@@ -26,14 +26,14 @@ namespace NHibernate.Mapping
 #if NET_2_0
 				if (this.IsGeneric)
 				{
-					return TypeFactory.GenericBag( Role, this.GenericArguments[0] );
+					return TypeFactory.GenericBag( Role, ReferencedPropertyName, this.GenericArguments[0] );
 				}
 				else
 				{
-					return TypeFactory.Bag( Role );
+					return TypeFactory.Bag( Role, ReferencedPropertyName );
 				}
 #else
-				return TypeFactory.Bag( Role );
+				return TypeFactory.Bag( Role, ReferencedPropertyName );
 #endif
 			}
 		}

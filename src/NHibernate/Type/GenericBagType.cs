@@ -27,7 +27,8 @@ namespace NHibernate.Type
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		public GenericBagType(string role, System.Type elementClass) : base( role )
+		public GenericBagType(string role, string propertyRef, System.Type elementClass)
+			: base( role, propertyRef )
 		{
 			System.Type definition = typeof(Collection.Generic.PersistentGenericBag<>);
 			System.Type[] typeArgs = new System.Type[] { elementClass };

@@ -332,6 +332,11 @@ namespace NHibernate.Type
 			throw new InvalidOperationException( "any types do not have a unique referenced persister" );
 		}
 
+		public string LHSPropertyName
+		{
+			get { return null; }
+		}
+
 		public override bool Equals(object obj)
 		{
 			return this == obj;

@@ -3,7 +3,6 @@ using System.Collections;
 
 using NHibernate.Cache;
 using NHibernate.Engine;
-using NHibernate.Loader;
 using NHibernate.Type;
 
 namespace NHibernate.Mapping
@@ -43,6 +42,7 @@ namespace NHibernate.Mapping
 		private int batchSize = 1;
 		private FetchMode fetchMode;
 		private System.Type collectionPersisterClass;
+		private string referencedPropertyName;
 
 #if NET_2_0
 		private bool isGeneric;
@@ -335,6 +335,12 @@ namespace NHibernate.Mapping
 		public bool IsValid( IMapping mapping )
 		{
 			return true;
+		}
+
+		public string ReferencedPropertyName
+		{
+			get { return referencedPropertyName; }
+			set { referencedPropertyName = value == null ? null : string.Intern( value ); }
 		}
 
 		/// <summary>

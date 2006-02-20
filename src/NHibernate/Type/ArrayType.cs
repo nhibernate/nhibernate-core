@@ -25,7 +25,8 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This creates a bag that is non-generic.
 		/// </remarks>
-		public ArrayType( string role, System.Type elementClass ) : base( role )
+		public ArrayType( string role, string propertyRef, System.Type elementClass )
+			: base( role, propertyRef )
 		{
 			this.elementClass = elementClass;
 			arrayClass = System.Array.CreateInstance( elementClass, 0 ).GetType();

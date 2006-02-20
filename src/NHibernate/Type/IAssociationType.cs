@@ -22,6 +22,12 @@ namespace NHibernate.Type
 		bool UseLHSPrimaryKey { get; }
 
 		/// <summary>
+		/// Get the name of the property in the owning entity
+		/// that provides the join key (null if the identifier)
+		/// </summary>
+		string LHSPropertyName { get; }
+
+		/// <summary>
 		/// Get the "persister" for this association - a class or collection persister
 		/// </summary>
 		/// <param name="factory"></param>

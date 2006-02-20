@@ -296,6 +296,11 @@ namespace NHibernate.Type
 		/// </summary>
 		public abstract bool UseLHSPrimaryKey { get; }
 
+		public string LHSPropertyName
+		{
+			get { return null; }
+		}
+
 		public override bool Equals(object obj)
 		{
 			if( !base.Equals( obj ) )
