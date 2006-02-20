@@ -1,7 +1,7 @@
 using System;
 using NHibernate.Type;
 
-namespace NHibernate.Persister
+namespace NHibernate.Persister.Entity
 {
 	/// <summary>
 	/// Abstraction of all mappings that define properties: entities, collection elements.

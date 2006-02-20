@@ -4,7 +4,7 @@ using System.Data;
 
 using NHibernate.Collection;
 using NHibernate.Engine;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -230,7 +230,7 @@ namespace NHibernate.Type
 		{
 			//I really, really don't like the fact that a Type now knows about column mappings!
 			//bad seperation of concerns ... could we move this somehow to Joinable interface??
-			return GetAssociatedJoinable( factory ).JoinKeyColumnNames ;
+			return GetAssociatedJoinable( factory ).KeyColumnNames ;
 		}
 
 		public override bool IsModified(object old, object current, ISessionImplementor session)
@@ -317,6 +317,11 @@ namespace NHibernate.Type
 		public string LHSPropertyName
 		{
 			get { return foreignKeyPropertyName; }
+		}
+
+		public string RHSUniqueKeyPropertyName
+		{
+			get { return null; }
 		}
 	}
 }

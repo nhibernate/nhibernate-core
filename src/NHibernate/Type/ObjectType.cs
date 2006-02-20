@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 using NHibernate.Engine;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -333,6 +333,11 @@ namespace NHibernate.Type
 		}
 
 		public string LHSPropertyName
+		{
+			get { return null; }
+		}
+
+		public string RHSUniqueKeyPropertyName
 		{
 			get { return null; }
 		}

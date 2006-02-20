@@ -8,12 +8,13 @@ using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Mapping;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 using Array = System.Array;
 
-namespace NHibernate.Persister
+namespace NHibernate.Persister.Entity
 {
 	/// <summary>
 	/// A <c>IClassPersister</c> implementing the normalized "table-per-subclass" mapping strategy

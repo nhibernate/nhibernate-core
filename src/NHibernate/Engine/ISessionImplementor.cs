@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Collection;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 
 namespace NHibernate.Engine
 {

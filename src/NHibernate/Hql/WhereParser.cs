@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using Iesi.Collections;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;

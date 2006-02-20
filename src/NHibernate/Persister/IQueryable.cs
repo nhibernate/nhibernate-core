@@ -1,7 +1,7 @@
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
-namespace NHibernate.Persister
+namespace NHibernate.Persister.Entity
 {
 	/// <summary>
 	/// Extends the generic <c>ILoadable</c> contract to add operations required by HQL

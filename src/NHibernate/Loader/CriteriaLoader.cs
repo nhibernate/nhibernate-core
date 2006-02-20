@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Expression;
 using NHibernate.Impl;
 using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;

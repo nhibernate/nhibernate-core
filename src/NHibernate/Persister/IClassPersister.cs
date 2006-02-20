@@ -4,7 +4,7 @@ using NHibernate.Id;
 using NHibernate.Metadata;
 using NHibernate.Type;
 
-namespace NHibernate.Persister
+namespace NHibernate.Persister.Entity
 {
 	/// <summary>
 	/// Concrete <c>IClassPersister</c>s implement mapping and persistence logic for a particular class.

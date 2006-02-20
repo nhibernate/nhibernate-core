@@ -22,7 +22,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Persister
+namespace NHibernate.Persister.Entity
 {
 	/// <summary>
 	/// Superclass for built-in mapping strategies. Implements functionalty common to both mapping
@@ -1191,7 +1191,7 @@ namespace NHibernate.Persister
 			return result;
 		}
 
-		public string[ ] JoinKeyColumnNames
+		public string[ ] KeyColumnNames
 		{
 			get { return IdentifierColumnNames; }
 		}
@@ -1532,6 +1532,17 @@ namespace NHibernate.Persister
 		public SqlString SelectFragment( string alias, string suffix, bool includeCollectionColumns )
 		{
 			return SelectFragment( alias, suffix );
+		}
+
+		public SqlString SelectFragment(
+			IJoinable rhs,
+			string rhsAlias,
+			string lhsAlias,
+			string entitySuffix,
+			string collectionSuffix,
+			bool includeCollectionColumns)
+		{
+			return SelectFragment( lhsAlias, entitySuffix );
 		}
 
 		protected ADOException Convert( Exception sqlException, string message )

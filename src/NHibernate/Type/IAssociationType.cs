@@ -1,5 +1,6 @@
+using System;
 using NHibernate.Engine;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 
 namespace NHibernate.Type
 {
@@ -28,6 +29,13 @@ namespace NHibernate.Type
 		string LHSPropertyName { get; }
 
 		/// <summary>
+		/// The name of a unique property of the associated entity 
+		/// that provides the join key (null if the identifier of
+		/// an entity, or key of a collection)
+		/// </summary>
+		string RHSUniqueKeyPropertyName { get; }
+
+		/// <summary>
 		/// Get the "persister" for this association - a class or collection persister
 		/// </summary>
 		/// <param name="factory"></param>
@@ -35,17 +43,18 @@ namespace NHibernate.Type
 		IJoinable GetAssociatedJoinable( ISessionFactoryImplementor factory );
 
 		/// <summary>
-		/// Get the columns referenced by this association.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		string[] GetReferencedColumns( ISessionFactoryImplementor factory );
-
-		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <returns></returns>
 		System.Type GetAssociatedClass( ISessionFactoryImplementor factory );
+
+		/// <summary>
+		/// Get the columns referenced by this association.
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		[Obsolete("Remove for H3")]
+		string[] GetReferencedColumns( ISessionFactoryImplementor factory );
 	}
 }

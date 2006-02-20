@@ -1,5 +1,5 @@
 using NHibernate.Engine;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Collection

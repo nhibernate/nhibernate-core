@@ -1,5 +1,5 @@
 using System;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Impl

@@ -1,7 +1,7 @@
 using System;
 using NHibernate.SqlCommand;
 
-namespace NHibernate.Persister
+namespace NHibernate.Persister.Entity
 {
 	/// <summary>
 	/// Anything that can be loaded by outer join - namely persisters for classes or collections.
@@ -29,6 +29,19 @@ namespace NHibernate.Persister
 		/// <returns></returns>
 		SqlString SelectFragment( string alias, string suffix, bool includeCollectionColumns );
 
+		/* TODO: H3 - replace the overload above with this
+		/// <summary>
+		/// All columns to select, when loading.
+		/// </summary>
+		SqlString SelectFragment(
+			IJoinable rhs,
+			string rhsAlias,
+			string lhsAlias,
+			string currentEntitySuffix,
+			string currentCollectionSuffix,
+			bool includeCollectionColumns );
+		*/
+		
 		/// <summary>
 		/// Get the where clause part of any joins (optional operation)
 		/// </summary>
@@ -50,7 +63,7 @@ namespace NHibernate.Persister
 		/// <summary>
 		/// The columns to join on.
 		/// </summary>
-		string[] JoinKeyColumnNames { get; }
+		string[] KeyColumnNames { get; }
 
 		/// <summary>
 		/// Is this instance actually a ICollectionPersister?

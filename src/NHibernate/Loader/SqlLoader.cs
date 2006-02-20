@@ -8,6 +8,7 @@ using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;

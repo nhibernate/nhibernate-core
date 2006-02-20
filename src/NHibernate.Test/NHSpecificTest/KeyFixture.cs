@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
+using NHibernate.Persister.Entity;
 using NUnit.Framework;
 
 using NHibernate.Engine;
-using NHibernate.Persister;
 
 namespace NHibernate.Test.NHSpecificTest
 {
@@ -130,7 +130,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
-		void NHibernate.Persister.IClassPersister.Insert(object id, object[] fields, object obj, ISessionImplementor session)
+		void IClassPersister.Insert(object id, object[] fields, object obj, ISessionImplementor session)
 		{
 			// TODO:  Add TestingClassPersister.NHibernate.Persister.IClassPersister.Insert implementation
 		}
@@ -224,7 +224,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
-		object NHibernate.Persister.IClassPersister.GetPropertyValue(object obj, int i)
+		object IClassPersister.GetPropertyValue(object obj, int i)
 		{
 			// TODO:  Add TestingClassPersister.NHibernate.Persister.IClassPersister.GetPropertyValue implementation
 			return null;
@@ -358,7 +358,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add TestingClassPersister.SetPropertyValue implementation
 		}
 
-		void NHibernate.Persister.IClassPersister.SetPropertyValue(object obj, int i, object value)
+		void IClassPersister.SetPropertyValue(object obj, int i, object value)
 		{
 			// TODO:  Add TestingClassPersister.NHibernate.Persister.IClassPersister.SetPropertyValue implementation
 		}

@@ -1,5 +1,6 @@
 using NHibernate.Loader;
 using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Collection
@@ -25,11 +26,6 @@ namespace NHibernate.Collection
 		/// Get the names of the collection element columns (or the primary key columns in the case of a one-to-many association)
 		/// </summary>
 		string[] ElementColumnNames { get; }
-
-		/// <summary>
-		/// Get the names of the collection key columns
-		/// </summary>
-		string[] KeyColumnNames { get; }
 
 		/// <summary>
 		/// Get the extra where clause filter SQL

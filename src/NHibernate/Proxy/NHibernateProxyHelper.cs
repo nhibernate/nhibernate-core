@@ -1,4 +1,4 @@
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 
 namespace NHibernate.Proxy
 {

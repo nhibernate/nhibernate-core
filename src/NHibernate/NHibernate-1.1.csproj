@@ -1713,6 +1713,8 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <Folder RelPath = "Persister\Collection\" />
+                <Folder RelPath = "Persister\Entity\" />
                 <File
                     RelPath = "Property\BasicGetter.cs"
                     SubType = "Code"

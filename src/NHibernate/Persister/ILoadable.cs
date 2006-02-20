@@ -2,7 +2,7 @@ using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
-namespace NHibernate.Persister
+namespace NHibernate.Persister.Entity
 {
 	/// <summary>
 	/// Implemented by <c>ClassPersister</c> that uses <c>Loader</c>. There are several optional

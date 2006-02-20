@@ -7,7 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Mapping;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.DomainModel

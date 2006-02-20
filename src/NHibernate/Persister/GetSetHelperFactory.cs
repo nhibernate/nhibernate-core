@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using log4net;
 using Microsoft.CSharp;
+using NHibernate.Persister.Entity;
 using NHibernate.Property;
 
 namespace NHibernate.Persister
@@ -14,7 +15,7 @@ namespace NHibernate.Persister
 	/// of reflection.
 	/// </summary>
 	/// <remarks>
-	/// Used in <see cref="NHibernate.Persister.AbstractEntityPersister"/> and
+	/// Used in <see cref="AbstractEntityPersister"/> and
 	/// <see cref="NHibernate.Type.ComponentType"/>
 	/// </remarks>
 	public class GetSetHelperFactory

@@ -14,7 +14,7 @@ using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Loader;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;

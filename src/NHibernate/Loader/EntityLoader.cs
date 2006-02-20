@@ -2,6 +2,7 @@ using System.Collections;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 

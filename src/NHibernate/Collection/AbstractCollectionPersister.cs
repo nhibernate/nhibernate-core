@@ -15,6 +15,7 @@ using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -823,11 +824,6 @@ namespace NHibernate.Collection
 		public IType Type
 		{
 			get { return elementPropertyMapping.Type; }
-		}
-
-		public string[ ] JoinKeyColumnNames
-		{
-			get { return KeyColumnNames; }
 		}
 
 		public string Name

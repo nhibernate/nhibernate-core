@@ -1,9 +1,8 @@
 using System;
-using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
-namespace NHibernate.Persister
+namespace NHibernate.Persister.Entity
 {
 	/// <summary>
 	/// A <c>ClassPersister</c> that may be loaded by outer join using
@@ -93,5 +92,12 @@ namespace NHibernate.Persister
 		/// <param name="suffix"></param>
 		/// <returns></returns>
 		SqlString SelectFragment( string alias, string suffix );
+
+		/* TODO H3
+		/// <summary>
+		/// Get the column names for the given property path
+		/// </summary>
+		string[ ] GetPropertyColumnNames( string propertyPath );
+		*/
 	}
 }

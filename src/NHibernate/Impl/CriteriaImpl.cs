@@ -3,7 +3,7 @@ using System.Collections;
 
 using NHibernate.Engine;
 using NHibernate.Expression;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;

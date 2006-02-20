@@ -5,6 +5,7 @@ using System.Text;
 
 using NHibernate.Engine;
 using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
 
@@ -208,7 +209,7 @@ namespace NHibernate.Type
 
 			if( uniqueKeyPropertyName == null )
 			{
-				return joinable.JoinKeyColumnNames;
+				return joinable.KeyColumnNames;
 			}
 			else
 			{
@@ -299,6 +300,11 @@ namespace NHibernate.Type
 		public string LHSPropertyName
 		{
 			get { return null; }
+		}
+
+		public string RHSUniqueKeyPropertyName
+		{
+			get { return uniqueKeyPropertyName; }
 		}
 
 		public override bool Equals(object obj)

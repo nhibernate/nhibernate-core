@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 using NHibernate.Engine;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 
 namespace NHibernate.Impl
 {

@@ -16,6 +16,7 @@ using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Transaction;
 using NHibernate.Type;

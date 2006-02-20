@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using log4net;
 using NHibernate.Collection;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Engine

@@ -1,6 +1,6 @@
 using NHibernate.Engine;
 
-namespace NHibernate.Persister
+namespace NHibernate.Persister.Entity
 {
 	/// <summary>
 	/// Describes a class that may be loaded via a unique key.

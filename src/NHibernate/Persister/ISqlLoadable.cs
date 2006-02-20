@@ -2,7 +2,7 @@ using System;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
-namespace NHibernate.Persister
+namespace NHibernate.Persister.Entity
 {
 	/// <summary>
 	/// A class persister that supports queries expressed in the platform native SQL dialect.

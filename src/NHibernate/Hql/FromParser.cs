@@ -1,5 +1,5 @@
 using System.Collections;
-using NHibernate.Persister;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
