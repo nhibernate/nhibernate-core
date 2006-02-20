@@ -536,7 +536,7 @@ namespace NHibernate.Loader
 			JoinType joinType,
 			ISessionFactoryImplementor factory )
 		{
-			IJoinable joinable = type.GetJoinable( factory );
+			IJoinable joinable = type.GetAssociatedJoinable( factory );
 
 			int maxFetchDepth = factory.MaximumFetchDepth;
 
@@ -827,7 +827,7 @@ namespace NHibernate.Loader
 
 		private static string[] GetAliasedForeignKeyColumns( IOuterJoinLoadable persister, string alias, IAssociationType associationType, string[] aliasedPropertyColumns )
 		{
-			if ( associationType.UsePrimaryKeyAsForeignKey )
+			if ( associationType.UseLHSPrimaryKey )
 			{
 				// a one-to-one association or collection
 				return StringHelper.Qualify( alias, persister.IdentifierColumnNames );
@@ -841,7 +841,7 @@ namespace NHibernate.Loader
 
 		private static string[] GetForeignKeyColumns( IOuterJoinLoadable persister, IAssociationType associationType, string[] propertyColumns )
 		{
-			if ( associationType.UsePrimaryKeyAsForeignKey )
+			if ( associationType.UseLHSPrimaryKey )
 			{
 				return persister.IdentifierColumnNames;
 			}

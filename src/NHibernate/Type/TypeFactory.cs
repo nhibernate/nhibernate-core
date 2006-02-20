@@ -624,23 +624,23 @@ namespace NHibernate.Type
 		/// A one-to-one association type for the given class and cascade style.
 		/// </summary>
 		/// <param name="persistentClass"></param>
-		/// <param name="foreignKeyType"></param>
+		/// <param name="foreignKeyDirection"></param>
 		/// <returns></returns>
-		public static IType OneToOne( System.Type persistentClass, ForeignKeyType foreignKeyType )
+		public static IType OneToOne( System.Type persistentClass, ForeignKeyDirection foreignKeyDirection )
 		{
-			return OneToOne( persistentClass, foreignKeyType, null );
+			return OneToOne( persistentClass, foreignKeyDirection, null );
 		}
 
 		/// <summary>
 		/// A one-to-one association type for the given class and cascade style.
 		/// </summary>
 		/// <param name="persistentClass"></param>
-		/// <param name="foreignKeyType"></param>
+		/// <param name="foreignKeyDirection"></param>
 		/// <param name="uniqueKeyPropertyName"></param>
 		/// <returns></returns>
-		public static IType OneToOne( System.Type persistentClass, ForeignKeyType foreignKeyType, string uniqueKeyPropertyName )
+		public static IType OneToOne( System.Type persistentClass, ForeignKeyDirection foreignKeyDirection, string uniqueKeyPropertyName )
 		{
-			return new OneToOneType( persistentClass, foreignKeyType, uniqueKeyPropertyName );
+			return new OneToOneType( persistentClass, foreignKeyDirection, uniqueKeyPropertyName );
 		}
 
 		/// <summary>

@@ -186,9 +186,9 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public virtual ForeignKeyType ForeignKeyType
+		public virtual ForeignKeyDirection ForeignKeyDirection
 		{
-			get { return ForeignKeyType.ForeignKeyToParent; }
+			get { return Type.ForeignKeyDirection.ForeignKeyToParent; }
 		}
 
 		public override object Hydrate( IDataReader rs, string[ ] name, ISessionImplementor session, object owner )
@@ -213,12 +213,12 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public bool UsePrimaryKeyAsForeignKey
+		public bool UseLHSPrimaryKey
 		{
 			get { return true; }
 		}
 
-		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
+		public IJoinable GetAssociatedJoinable( ISessionFactoryImplementor factory )
 		{
 			return (IJoinable) factory.GetCollectionPersister( role );
 		}
@@ -227,7 +227,7 @@ namespace NHibernate.Type
 		{
 			//I really, really don't like the fact that a Type now knows about column mappings!
 			//bad seperation of concerns ... could we move this somehow to Joinable interface??
-			return GetJoinable( factory ).JoinKeyColumnNames ;
+			return GetAssociatedJoinable( factory ).JoinKeyColumnNames ;
 		}
 
 		public override bool IsModified(object old, object current, ISessionImplementor session)

@@ -195,7 +195,7 @@ namespace NHibernate.Type
 			get { return uniqueKeyPropertyName != null; }
 		}
 
-		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
+		public IJoinable GetAssociatedJoinable( ISessionFactoryImplementor factory )
 		{
 			return ( IJoinable ) factory.GetPersister( associatedClass );
 		}
@@ -204,7 +204,7 @@ namespace NHibernate.Type
 		{
 			//I really, really don't like the fact that a Type now knows about column mappings!
 			//bad seperation of concerns ... could we move this somehow to Joinable interface??
-			IJoinable joinable = GetJoinable( factory );
+			IJoinable joinable = GetAssociatedJoinable( factory );
 
 			if( uniqueKeyPropertyName == null )
 			{
@@ -288,13 +288,13 @@ namespace NHibernate.Type
 		/// When implemented by a class, gets the type of foreign key directionality 
 		/// of this association.
 		/// </summary>
-		/// <value>The <see cref="ForeignKeyType"/> of this association.</value>
-		public abstract ForeignKeyType ForeignKeyType { get; }
+		/// <value>The <see cref="ForeignKeyDirection"/> of this association.</value>
+		public abstract ForeignKeyDirection ForeignKeyDirection { get; }
 
 		/// <summary>
 		/// Is the foreign key the primary key of the table?
 		/// </summary>
-		public abstract bool UsePrimaryKeyAsForeignKey { get; }
+		public abstract bool UseLHSPrimaryKey { get; }
 
 		public override bool Equals(object obj)
 		{

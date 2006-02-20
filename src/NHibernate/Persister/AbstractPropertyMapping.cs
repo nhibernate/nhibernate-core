@@ -139,7 +139,7 @@ namespace NHibernate.Persister
 					path, ClassName, type.Name, type.GetColumnSpan( factory ), columns.Length ) );
 			}
 
-			if( type.IsAssociationType && ((IAssociationType) type).UsePrimaryKeyAsForeignKey )
+			if( type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey )
 			{
 				columns = IdentifierColumnNames;
 			}

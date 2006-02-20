@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	{
 		private static readonly SqlType[ ] NoSqlTypes = new SqlType[0];
 
-		private readonly ForeignKeyType foreignKeyType;
+		private readonly ForeignKeyDirection foreignKeyDirection;
 
 		public override int GetColumnSpan( IMapping session )
 		{
@@ -24,9 +24,9 @@ namespace NHibernate.Type
 			return NoSqlTypes;
 		}
 
-		public OneToOneType( System.Type persistentClass, ForeignKeyType foreignKeyType, string uniqueKeyPropertyName ) : base( persistentClass, uniqueKeyPropertyName )
+		public OneToOneType( System.Type persistentClass, ForeignKeyDirection foreignKeyDirection, string uniqueKeyPropertyName ) : base( persistentClass, uniqueKeyPropertyName )
 		{
-			this.foreignKeyType = foreignKeyType;
+			this.foreignKeyDirection = foreignKeyDirection;
 		}
 
 		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
@@ -49,9 +49,9 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override ForeignKeyType ForeignKeyType
+		public override ForeignKeyDirection ForeignKeyDirection
 		{
-			get { return foreignKeyType; }
+			get { return foreignKeyDirection; }
 		}
 
 		public override object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
@@ -70,10 +70,10 @@ namespace NHibernate.Type
 
 		public virtual bool IsNullable
 		{
-			get { return foreignKeyType == ForeignKeyType.ForeignKeyToParent; }
+			get { return foreignKeyDirection == ForeignKeyDirection.ForeignKeyToParent; }
 		}
 
-		public override bool UsePrimaryKeyAsForeignKey
+		public override bool UseLHSPrimaryKey
 		{
 			get { return true; }
 		}

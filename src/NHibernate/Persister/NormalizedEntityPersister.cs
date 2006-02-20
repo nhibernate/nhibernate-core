@@ -1344,7 +1344,7 @@ namespace NHibernate.Persister
 
 		protected override void HandlePath( string path, IType type )
 		{
-			if ( type.IsAssociationType && ( (IAssociationType) type ).UsePrimaryKeyAsForeignKey )
+			if ( type.IsAssociationType && ( (IAssociationType) type ).UseLHSPrimaryKey )
 			{
 				tableNumberByPropertyPath[ path ] = 0 ;
 			}

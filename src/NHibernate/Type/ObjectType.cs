@@ -1,7 +1,6 @@
 using System;
 using System.Data;
 using NHibernate.Engine;
-using NHibernate.Loader;
 using NHibernate.Persister;
 using NHibernate.Proxy;
 using NHibernate.SqlTypes;
@@ -280,12 +279,12 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public ForeignKeyType ForeignKeyType
+		public ForeignKeyDirection ForeignKeyDirection
 		{
 			get
 			{
 				//return AssociationType.FOREIGN_KEY_TO_PARENT; //TODO: this is better but causes a transient object exception... 
-				return ForeignKeyType.ForeignKeyFromParent;
+				return ForeignKeyDirection.ForeignKeyFromParent;
 			}
 		}
 
@@ -297,12 +296,12 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Not really relevant to ObjectType, since it cannot be "joined"
 		/// </summary>
-		public bool UsePrimaryKeyAsForeignKey
+		public bool UseLHSPrimaryKey
 		{
 			get { return false; }
 		}
 
-		public IJoinable GetJoinable( ISessionFactoryImplementor factory )
+		public IJoinable GetAssociatedJoinable( ISessionFactoryImplementor factory )
 		{
 			throw new InvalidOperationException( "any types do not have a unique referenced persister" );
 		}

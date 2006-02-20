@@ -552,7 +552,7 @@ namespace NHibernate.Engine
 			{
 				if( type.IsAssociationType )
 				{
-					if( ( ( IAssociationType ) type ).ForeignKeyType.CascadeNow( cascadeTo ) )
+					if( ( ( IAssociationType ) type ).ForeignKeyDirection.CascadeNow( cascadeTo ) )
 					{
 						if( type.IsEntityType || type.IsObjectType )
 						{

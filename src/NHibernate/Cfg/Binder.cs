@@ -896,7 +896,7 @@ namespace NHibernate.Cfg
 			bool constrained = constrNode != null && constrNode.Value.Equals( "true" );
 			model.IsConstrained = constrained;
 
-			model.ForeignKeyType = ( constrained ? ForeignKeyType.ForeignKeyFromParent : ForeignKeyType.ForeignKeyToParent );
+			model.ForeignKeyDirection = ( constrained ? ForeignKeyDirection.ForeignKeyFromParent : ForeignKeyDirection.ForeignKeyToParent );
 
 			XmlAttribute fkNode = node.Attributes[ "foreign-key" ];
 			if( fkNode != null )
@@ -915,7 +915,7 @@ namespace NHibernate.Cfg
 			{
 				model.Type = TypeFactory.OneToOne(
 					ClassForNameChecked( classNode.Value, mappings, "could not find class: {0}" ),
-					model.ForeignKeyType, model.ReferencedPropertyName );
+					model.ForeignKeyDirection, model.ReferencedPropertyName );
 			}
 		}
 

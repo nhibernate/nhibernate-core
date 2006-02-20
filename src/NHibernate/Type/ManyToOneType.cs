@@ -51,9 +51,9 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override ForeignKeyType ForeignKeyType
+		public override ForeignKeyDirection ForeignKeyDirection
 		{
-			get { return ForeignKeyType.ForeignKeyFromParent; }
+			get { return Type.ForeignKeyDirection.ForeignKeyFromParent; }
 		}
 
 		/// <summary>
@@ -89,7 +89,7 @@ namespace NHibernate.Type
 			return session.InternalLoad( AssociatedClass, id );
 		}
 
-		public override bool UsePrimaryKeyAsForeignKey
+		public override bool UseLHSPrimaryKey
 		{
 			get { return false; }
 		}

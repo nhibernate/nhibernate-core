@@ -10,7 +10,7 @@ namespace NHibernate.Mapping
 	public class OneToOne : ToOne
 	{
 		private bool constrained;
-		private ForeignKeyType foreignKeyType;
+		private ForeignKeyDirection foreignKeyDirection;
 		private SimpleValue identifier;
 
 		/// <summary>
@@ -37,7 +37,7 @@ namespace NHibernate.Mapping
 				{
 					Type = TypeFactory.OneToOne(
 						ReflectHelper.ReflectedPropertyClass( propertyClass, propertyName, propertyAccess ),
-						foreignKeyType,
+						foreignKeyDirection,
 						ReferencedPropertyName );
 				}
 			}
@@ -79,10 +79,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public ForeignKeyType ForeignKeyType
+		public ForeignKeyDirection ForeignKeyDirection
 		{
-			get { return foreignKeyType; }
-			set { foreignKeyType = value; }
+			get { return foreignKeyDirection; }
+			set { foreignKeyDirection = value; }
 		}
 
 		/// <summary></summary>
