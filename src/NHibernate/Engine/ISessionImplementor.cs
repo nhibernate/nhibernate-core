@@ -203,7 +203,7 @@ namespace NHibernate.Engine
 		IEnumerable EnumerableFilter( object collection, string filter, QueryParameters parameters );
 
 		/// <summary>
-		/// Get the <c>IClassPersister</c> for an object
+		/// Get the <c>IEntityPersister</c> for an object
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>

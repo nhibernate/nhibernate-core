@@ -17,7 +17,7 @@ using Array = System.Array;
 namespace NHibernate.Persister.Entity
 {
 	/// <summary>
-	/// A <c>IClassPersister</c> implementing the normalized "table-per-subclass" mapping strategy
+	/// A <c>IEntityPersister</c> implementing the normalized "table-per-subclass" mapping strategy
 	/// </summary>
 	public class JoinedSubclassEntityPersister : AbstractEntityPersister
 	{
@@ -145,10 +145,10 @@ namespace NHibernate.Persister.Entity
 			InitLockers( );
 
 			// initialize the Statements - these are in the PostInstantiate method because we need
-			// to have every other IClassPersister loaded so we can resolve the IType for the 
+			// to have every other IEntityPersister loaded so we can resolve the IType for the 
 			// relationships.  In Hibernate they are able to just use ? and not worry about Parameters until
 			// the statement is actually called.  We need to worry about Parameters when we are building
-			// the IClassPersister...
+			// the IEntityPersister...
 
 			sqlDeleteStrings = GenerateDeleteStrings();
 			sqlInsertStrings = GenerateInsertStrings( false, PropertyInsertability );

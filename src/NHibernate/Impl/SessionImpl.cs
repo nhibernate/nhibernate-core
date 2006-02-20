@@ -2391,7 +2391,7 @@ namespace NHibernate.Impl
 				log.Debug( "loading " + MessageHelper.InfoString( clazz, id ) );
 			}
 
-			IClassPersister persister = GetClassPersister( clazz );
+			IEntityPersister persister = GetClassPersister( clazz );
 			if( !persister.HasProxy )
 			{
 				// this class has no proxies (so do a shortcut)
@@ -2457,7 +2457,7 @@ namespace NHibernate.Impl
 				log.Debug( "loading " + MessageHelper.InfoString( clazz, id ) + " in lock mode: " + lockMode );
 			}
 
-			IClassPersister persister = GetClassPersister( clazz );
+			IEntityPersister persister = GetClassPersister( clazz );
 			ISoftLock myLock = null;
 
 			if( persister.HasCache )
@@ -2591,7 +2591,7 @@ namespace NHibernate.Impl
 				log.Debug( "attempting to resolve " + MessageHelper.InfoString( theClass, id ) );
 			}
 
-			IClassPersister persister = GetClassPersister( theClass );
+			IEntityPersister persister = GetClassPersister( theClass );
 			Key key = new Key( id, persister );
 
 			if( optionalObject != null )
@@ -2655,13 +2655,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private object AssembleCacheEntry( CacheEntry entry, object id, IClassPersister persister, object optionalObject )
+		private object AssembleCacheEntry( CacheEntry entry, object id, IEntityPersister persister, object optionalObject )
 		{
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "resolved object in second-level cache " + MessageHelper.InfoString( persister, id ) );
 			}
-			IClassPersister subclassPersister = GetClassPersister( entry.Subclass );
+			IEntityPersister subclassPersister = GetClassPersister( entry.Subclass );
 			object result = optionalObject != null ? optionalObject : Instantiate( subclassPersister, id );
 			AddEntry( result, Status.Loading, null, id, null, LockMode.None, true, subclassPersister, false );
 			AddEntity( new Key( id, persister ), result );
@@ -2707,7 +2707,7 @@ namespace NHibernate.Impl
 
 			object theObj = UnproxyAndReassociate( obj );
 			EntityEntry e = RemoveEntry( theObj );
-			IClassPersister persister;
+			IEntityPersister persister;
 			object id;
 
 			if( e == null )
@@ -2771,7 +2771,7 @@ namespace NHibernate.Impl
 			{
 				throw new AssertionFailure( "possible non-threadsafe access to the session" );
 			}
-			IClassPersister persister = e.Persister;
+			IEntityPersister persister = e.Persister;
 			object id = e.Id;
 			object[ ] hydratedState = e.LoadedState;
 			IType[ ] types = persister.PropertyTypes;
@@ -3151,7 +3151,7 @@ namespace NHibernate.Impl
 
 		private void FlushEntity( object obj, EntityEntry entry )
 		{
-			IClassPersister persister = entry.Persister;
+			IEntityPersister persister = entry.Persister;
 			Status status = entry.Status;
 			CheckId( obj, persister, entry.Id );
 
@@ -3312,7 +3312,7 @@ namespace NHibernate.Impl
 		}
 
 		private bool IsUpdateNecessary(
-			IClassPersister persister,
+			IEntityPersister persister,
 			bool cannotDirtyCheck,
 			Status status,
 			int[ ] dirtyProperties,
@@ -3345,7 +3345,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private object GetNextVersion( IClassPersister persister, object[ ] values, EntityEntry entry )
+		private object GetNextVersion( IEntityPersister persister, object[ ] values, EntityEntry entry )
 		{
 			if( persister.IsVersioned )
 			{
@@ -3368,7 +3368,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private static void CheckId( object obj, IClassPersister persister, object id )
+		private static void CheckId( object obj, IEntityPersister persister, object id )
 		{
 			// make sure user didn't mangle the id
 			if( persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier )
@@ -3427,9 +3427,9 @@ namespace NHibernate.Impl
 		private System.Type lastClass;
 
 		[NonSerialized]
-		private IClassPersister lastResultForClass;
+		private IEntityPersister lastResultForClass;
 
-		private IClassPersister GetClassPersister( System.Type theClass )
+		private IEntityPersister GetClassPersister( System.Type theClass )
 		{
 			if( lastClass != theClass )
 			{
@@ -3439,7 +3439,7 @@ namespace NHibernate.Impl
 			return lastResultForClass;
 		}
 
-		public IClassPersister GetPersister( object obj )
+		public IEntityPersister GetPersister( object obj )
 		{
 			return GetClassPersister( obj.GetType() );
 		}
@@ -3557,7 +3557,7 @@ namespace NHibernate.Impl
 						ThrowTransientObjectException( obj );
 					}
 
-					IClassPersister persister = GetPersister( obj );
+					IEntityPersister persister = GetPersister( obj );
 					if( persister.IsUnsaved( obj ) )
 					{
 						ThrowTransientObjectException( obj );
@@ -3990,7 +3990,7 @@ namespace NHibernate.Impl
 					{
 						log.Debug( "caching collection: " + MessageHelper.InfoString( persister, lce.Id ) );
 					}
-					IClassPersister ownerPersister = factory.GetPersister( persister.OwnerClass );
+					IEntityPersister ownerPersister = factory.GetPersister( persister.OwnerClass );
 					object version;
 					IComparer versionComparator;
 					if( ownerPersister.IsVersioned )
@@ -4765,9 +4765,9 @@ namespace NHibernate.Impl
 		{
 			// The body of this method is modified from H2.1 version, because the Java version
 			// used factory.GetImplementors which returns a list of implementor class names
-			// obtained from IClassPersister.ClassName property.
+			// obtained from IEntityPersister.ClassName property.
 			//
-			// In Java, calling ReflectHelper.ClassForName( IClassPersister.ClassName )
+			// In Java, calling ReflectHelper.ClassForName( IEntityPersister.ClassName )
 			// works, but in .NET it does not, because the class name does not include the assembly
 			// name. .NET tries to load the class from NHibernate assembly and fails.
 			//
@@ -4831,7 +4831,7 @@ namespace NHibernate.Impl
 
 		private IOuterJoinLoadable GetOuterJoinLoadable( System.Type clazz )
 		{
-			IClassPersister persister = GetClassPersister( clazz );
+			IEntityPersister persister = GetClassPersister( clazz );
 			if( !( persister is IOuterJoinLoadable ) )
 			{
 				throw new MappingException( "class persister is not IOuterJoinLoadable: " + clazz.FullName );
@@ -4881,7 +4881,7 @@ namespace NHibernate.Impl
 			{
 				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) obj );
 				object id = li.Identifier;
-				IClassPersister persister = GetClassPersister( li.PersistentClass );
+				IEntityPersister persister = GetClassPersister( li.PersistentClass );
 				Key key = new Key( id, persister );
 				proxiesByKey.Remove( key );
 				if( !li.IsUninitialized )
@@ -4905,7 +4905,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void DoEvict( IClassPersister persister, object obj )
+		private void DoEvict( IEntityPersister persister, object obj )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -4966,7 +4966,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		private void EvictCachedCollections( IClassPersister persister, object id )
+		private void EvictCachedCollections( IEntityPersister persister, object id )
 		{
 			EvictCachedCollections( persister.PropertyTypes, id );
 		}
@@ -5051,7 +5051,7 @@ namespace NHibernate.Impl
 		/// <param name="id"></param>
 		public void ScheduleBatchLoad( System.Type clazz, object id )
 		{
-			IClassPersister persister = GetClassPersister( clazz );
+			IEntityPersister persister = GetClassPersister( clazz );
 			if( persister.IsBatchLoadable )
 			{
 				batchLoadableEntityKeys.Add( new Key( id, persister ), Marker );
@@ -5152,7 +5152,7 @@ namespace NHibernate.Impl
 
 		private ISqlLoadable GetSqlLoadable( System.Type clazz )
 		{
-			IClassPersister cp = GetClassPersister( clazz );
+			IEntityPersister cp = GetClassPersister( clazz );
 			if( ! ( cp is ISqlLoadable ) )
 			{
 				throw new MappingException( string.Format( "class persister is not ISqlLoadable: {0}", clazz.FullName ) );
@@ -5233,7 +5233,7 @@ namespace NHibernate.Impl
 				return;
 			}
 
-			IClassPersister persister = GetPersister( theObj );
+			IEntityPersister persister = GetPersister( theObj );
 			if( persister.IsUnsaved( theObj ) )
 			{
 				//TODO: generate a new id value for brand new objects
@@ -5439,7 +5439,7 @@ namespace NHibernate.Impl
 			}
 
 			System.Type clazz = obj.GetType();
-			IClassPersister persister = GetClassPersister( clazz );
+			IEntityPersister persister = GetClassPersister( clazz );
 
 			object result;
 			object target;

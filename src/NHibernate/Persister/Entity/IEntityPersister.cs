@@ -7,7 +7,7 @@ using NHibernate.Type;
 namespace NHibernate.Persister.Entity
 {
 	/// <summary>
-	/// Concrete <c>IClassPersister</c>s implement mapping and persistence logic for a particular class.
+	/// Concrete <c>IEntityPersister</c>s implement mapping and persistence logic for a particular class.
 	/// </summary>
 	/// <remarks>
 	/// Implementors must be threadsafe (preferrably immutable) and must provide a constructor of type

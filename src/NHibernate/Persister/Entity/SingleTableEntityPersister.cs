@@ -85,10 +85,10 @@ namespace NHibernate.Persister.Entity
 			InitLockers();
 
 			// initialize the SqlStrings - these are in the PostInstantiate method because we need
-			// to have every other IClassPersister loaded so we can resolve the IType for the 
+			// to have every other IEntityPersister loaded so we can resolve the IType for the 
 			// relationships.  In Hibernate they are able to just use ? and not worry about Parameters until
 			// the statement is actually called.  We need to worry about Parameters when we are building
-			// the IClassPersister...
+			// the IEntityPersister...
 			sqlDeleteString = GenerateDeleteString();
 			sqlInsertString = GenerateInsertString( false, PropertyInsertability );
 			sqlIdentityInsertString = IsIdentifierAssignedByInsert ?

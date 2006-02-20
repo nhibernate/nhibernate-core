@@ -28,7 +28,7 @@ namespace NHibernate.Loader
 	/// It is not intended that this functionality would be directly accessed by client code (Hence,
 	/// all methods of this class are declared <c>protected</c> or <c>private</c>.) This class relies heavily upon the
 	/// <see cref="ILoadable" /> interface, which is the contract between this class and 
-	/// <see cref="IClassPersister" />s that may be loaded by it.
+	/// <see cref="IEntityPersister" />s that may be loaded by it.
 	/// </p>
 	/// <p>
 	/// The present implementation is able to load any number of columns of entities and at most 

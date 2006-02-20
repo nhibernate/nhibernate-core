@@ -10,7 +10,7 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Persister
 {
 	/// <summary>
-	/// Factory for <c>IClassPersister</c> and <c>ICollectionPersister</c> instances.
+	/// Factory for <c>IEntityPersister</c> and <c>ICollectionPersister</c> instances.
 	/// </summary>
 	public sealed class PersisterFactory
 	{

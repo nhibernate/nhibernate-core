@@ -55,7 +55,7 @@ namespace NHibernate.Impl
 		{
 			// TODO: renable
 			/*
-			IClassPersister persister = Persister;
+			IEntityPersister persister = Persister;
 			if ( success && persister.HasCache && !persister.IsCacheInvalidationRequired ) 
 			{
 				persister.Cache.AfterInsert( GeneratedId, cacheEntry );

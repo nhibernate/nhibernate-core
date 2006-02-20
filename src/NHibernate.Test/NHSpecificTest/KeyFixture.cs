@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest
 			get { return NHibernateUtil.Int32; }
 		}
 
-		#region IClassPersister Members
+		#region IEntityPersister Members
 
 		public object IdentifierSpace
 		{
@@ -132,7 +132,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		void IEntityPersister.Insert(object id, object[] fields, object obj, ISessionImplementor session)
 		{
-			// TODO:  Add TestingClassPersister.NHibernate.Persister.IClassPersister.Insert implementation
+			// TODO:  Add TestingClassPersister.NHibernate.Persister.IEntityPersister.Insert implementation
 		}
 
 		public bool IsUnsaved(object obj)
@@ -226,7 +226,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		object IEntityPersister.GetPropertyValue(object obj, int i)
 		{
-			// TODO:  Add TestingClassPersister.NHibernate.Persister.IClassPersister.GetPropertyValue implementation
+			// TODO:  Add TestingClassPersister.NHibernate.Persister.IEntityPersister.GetPropertyValue implementation
 			return null;
 		}
 
@@ -360,7 +360,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		void IEntityPersister.SetPropertyValue(object obj, int i, object value)
 		{
-			// TODO:  Add TestingClassPersister.NHibernate.Persister.IClassPersister.SetPropertyValue implementation
+			// TODO:  Add TestingClassPersister.NHibernate.Persister.IEntityPersister.SetPropertyValue implementation
 		}
 
 		public object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session)

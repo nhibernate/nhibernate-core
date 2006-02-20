@@ -29,7 +29,7 @@ namespace NHibernate.DomainModel
 		{
 		}
 
-		#region IClassPersister Members
+		#region IEntityPersister Members
 
 		public object IdentifierSpace
 		{
