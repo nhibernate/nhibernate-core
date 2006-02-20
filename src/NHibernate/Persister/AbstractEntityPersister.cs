@@ -774,7 +774,8 @@ namespace NHibernate.Persister
 			int tempVersionProperty = -66;
 			bool foundCascade = false;
 			
-			bool foundCustomAccessor = false;
+			// NH: reflection optimizer works with custom accessors
+			//bool foundCustomAccessor = false;
 
 			foreach( Mapping.Property prop in model.PropertyClosureCollection )
 			{
@@ -783,10 +784,11 @@ namespace NHibernate.Persister
 					tempVersionProperty = i;
 				}
 				propertyNames[ i ] = prop.Name;
-				if( !prop.IsBasicPropertyAccessor )
-				{
-					foundCustomAccessor = true;
-				}
+				
+				//if( !prop.IsBasicPropertyAccessor )
+				//{
+				//	foundCustomAccessor = true;
+				//}
 
 				getters[ i ] = prop.GetGetter( mappedClass );
 				setters[ i ] = prop.GetSetter( mappedClass );
