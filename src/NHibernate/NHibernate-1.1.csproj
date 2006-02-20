@@ -814,6 +814,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Engine\JoinHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Engine\Key.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
