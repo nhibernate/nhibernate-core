@@ -21,7 +21,7 @@ namespace NHibernate.Persister.Entity
 	/// Default implementation of the <c>ClassPersister</c> interface. Implements the
 	/// "table-per-class hierarchy" mapping strategy for an entity class.
 	/// </summary>
-	public class EntityPersister : AbstractEntityPersister, IQueryable
+	public class SingleTableEntityPersister : AbstractEntityPersister, IQueryable
 	{
 		private readonly ISessionFactoryImplementor factory;
 
@@ -76,7 +76,7 @@ namespace NHibernate.Persister.Entity
 		private static readonly object NullDiscriminator = new object();
 		private static readonly object NotNullDiscriminator = new object();
 
-		private static readonly ILog log = LogManager.GetLogger( typeof( EntityPersister ) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( SingleTableEntityPersister ) );
 
 		public override void PostInstantiate( ISessionFactoryImplementor factory )
 		{
@@ -928,7 +928,7 @@ namespace NHibernate.Persister.Entity
 
 		//INITIALIZATION:
 
-		public EntityPersister( PersistentClass model, ISessionFactoryImplementor factory )
+		public SingleTableEntityPersister( PersistentClass model, ISessionFactoryImplementor factory )
 			: base( model, factory )
 		{
 			// CLASS + TABLE

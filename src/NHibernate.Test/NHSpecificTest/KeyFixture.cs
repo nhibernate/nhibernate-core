@@ -7,7 +7,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Test.NHSpecificTest
 {
-	public class TestingClassPersister : IClassPersister
+	public class TestingClassPersister : IEntityPersister
 	{
 		public NHibernate.Type.IType IdentifierType
 		{
@@ -130,7 +130,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
-		void IClassPersister.Insert(object id, object[] fields, object obj, ISessionImplementor session)
+		void IEntityPersister.Insert(object id, object[] fields, object obj, ISessionImplementor session)
 		{
 			// TODO:  Add TestingClassPersister.NHibernate.Persister.IClassPersister.Insert implementation
 		}
@@ -224,7 +224,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
-		object IClassPersister.GetPropertyValue(object obj, int i)
+		object IEntityPersister.GetPropertyValue(object obj, int i)
 		{
 			// TODO:  Add TestingClassPersister.NHibernate.Persister.IClassPersister.GetPropertyValue implementation
 			return null;
@@ -358,7 +358,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add TestingClassPersister.SetPropertyValue implementation
 		}
 
-		void IClassPersister.SetPropertyValue(object obj, int i, object value)
+		void IEntityPersister.SetPropertyValue(object obj, int i, object value)
 		{
 			// TODO:  Add TestingClassPersister.NHibernate.Persister.IClassPersister.SetPropertyValue implementation
 		}
@@ -453,7 +453,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test, ExpectedException( typeof( ArgumentException ) )]
 		public void CreateWithWrongTypeOfId()
 		{
-			IClassPersister persister = new TestingClassPersister();
+			IEntityPersister persister = new TestingClassPersister();
 			Key key = new Key(1L, persister);
 		}
 	}

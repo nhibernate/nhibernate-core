@@ -1615,6 +1615,7 @@
                 />
                 <File
                     RelPath = "Persister\Collection\AbstractCollectionPersister.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

@@ -78,7 +78,7 @@ namespace NHibernate.Persister.Collection
 		private readonly Dialect.Dialect dialect;
 		//private readonly SQLExceptionConverter sqlExceptionConverter;
 		private readonly IPropertyMapping elementPropertyMapping;
-		private readonly IClassPersister elementPersister;
+		private readonly IEntityPersister elementPersister;
 
 		private readonly ICollectionInitializer initializer;
 
@@ -268,7 +268,7 @@ namespace NHibernate.Persister.Collection
 			}
 			else
 			{
-				IClassPersister persister = factory.GetPersister( ( ( EntityType ) elementType ).AssociatedClass );
+				IEntityPersister persister = factory.GetPersister( ( ( EntityType ) elementType ).AssociatedClass );
 				// Not all classpersisters implement IPropertyMapping!
 				if( persister is IPropertyMapping )
 				{
@@ -832,7 +832,7 @@ namespace NHibernate.Persister.Collection
 			get { return Role; }
 		}
 
-		public IClassPersister ElementPersister
+		public IEntityPersister ElementPersister
 		{
 			get
 			{

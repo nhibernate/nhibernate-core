@@ -230,7 +230,7 @@ namespace NHibernate.Cfg
 
 			if( model.ClassPersisterClass == null )
 			{
-				model.RootClazz.ClassPersisterClass = typeof( EntityPersister );
+				model.RootClazz.ClassPersisterClass = typeof( SingleTableEntityPersister );
 			}
 
 			model.Table = model.Superclass.Table;
@@ -261,7 +261,7 @@ namespace NHibernate.Cfg
 			// joined subclass
 			if( model.ClassPersisterClass == null )
 			{
-				model.RootClazz.ClassPersisterClass = typeof( NormalizedEntityPersister );
+				model.RootClazz.ClassPersisterClass = typeof( JoinedSubclassEntityPersister );
 			}
 
 			//table + schema names

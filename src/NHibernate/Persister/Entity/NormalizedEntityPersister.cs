@@ -19,7 +19,7 @@ namespace NHibernate.Persister.Entity
 	/// <summary>
 	/// A <c>IClassPersister</c> implementing the normalized "table-per-subclass" mapping strategy
 	/// </summary>
-	public class NormalizedEntityPersister : AbstractEntityPersister
+	public class JoinedSubclassEntityPersister : AbstractEntityPersister
 	{
 		private readonly ISessionFactoryImplementor factory;
 
@@ -132,7 +132,7 @@ namespace NHibernate.Persister.Entity
 
 		private IUniqueEntityLoader loader;
 
-		private static readonly ILog log = LogManager.GetLogger( typeof( NormalizedEntityPersister ) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( JoinedSubclassEntityPersister ) );
 
 		public override void PostInstantiate( ISessionFactoryImplementor factory )
 		{
@@ -966,7 +966,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="model">The PeristentClass to create the EntityPersister for.</param>
 		/// <param name="factory">The SessionFactory that this EntityPersister will be stored in.</param>
-		public NormalizedEntityPersister( PersistentClass model, ISessionFactoryImplementor factory )
+		public JoinedSubclassEntityPersister( PersistentClass model, ISessionFactoryImplementor factory )
 			: base( model, factory )
 		{
 			// I am am making heavy use of the "this." just to help me with debugging what is a local variable to the 

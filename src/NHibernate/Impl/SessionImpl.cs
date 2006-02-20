@@ -644,7 +644,7 @@ namespace NHibernate.Impl
 			object version,
 			LockMode lockMode,
 			bool existsInDatabase,
-			IClassPersister persister,
+			IEntityPersister persister,
 			bool disableVersionIncrement )
 		{
 			EntityEntry e = new EntityEntry( status, loadedState, id, version, lockMode, existsInDatabase, persister, disableVersionIncrement );
@@ -736,7 +736,7 @@ namespace NHibernate.Impl
 
 		private object SaveWithGeneratedIdentifier( object obj, Cascades.CascadingAction action, object anything )
 		{
-			IClassPersister persister = GetPersister( obj );
+			IEntityPersister persister = GetPersister( obj );
 			try
 			{
 				object id = persister.IdentifierGenerator.Generate( this, obj );
@@ -821,7 +821,7 @@ namespace NHibernate.Impl
 		private object DoSave(
 			object obj,
 			object id,
-			IClassPersister persister,
+			IEntityPersister persister,
 			bool useIdentityColumn,
 			Cascades.CascadingAction cascadeAction,
 			object anything )
@@ -876,7 +876,7 @@ namespace NHibernate.Impl
 		private object DoSave(
 			object theObj,
 			Key key,
-			IClassPersister persister,
+			IEntityPersister persister,
 			bool replicate,
 			bool useIdentityColumn,
 			Cascades.CascadingAction cascadeAction,
@@ -1065,7 +1065,7 @@ namespace NHibernate.Impl
 		{
 			if( li.Session != this )
 			{
-				IClassPersister persister = GetClassPersister( li.PersistentClass );
+				IEntityPersister persister = GetClassPersister( li.PersistentClass );
 				Key key = new Key( li.Identifier, persister );
 				if( !proxiesByKey.Contains( key ) )
 				{
@@ -1193,7 +1193,7 @@ namespace NHibernate.Impl
 			obj = UnproxyAndReassociate( obj );
 
 			EntityEntry entry = GetEntry( obj );
-			IClassPersister persister = null;
+			IEntityPersister persister = null;
 			if( entry == null )
 			{
 				log.Debug( "deleting a transient instance" );
@@ -1251,7 +1251,7 @@ namespace NHibernate.Impl
 			DoDelete( obj, entry, persister );
 		}
 
-		private void DoDelete( object obj, EntityEntry entry, IClassPersister persister )
+		private void DoDelete( object obj, EntityEntry entry, IEntityPersister persister )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -1381,13 +1381,13 @@ namespace NHibernate.Impl
 		/// are references to null or to a transient object.
 		/// </summary>
 		/// <param name="values">An object array of values that should be validated.</param>
-		/// <param name="persister">The <see cref="IClassPersister"/> that describes which values can be null.</param>
+		/// <param name="persister">The <see cref="IEntityPersister"/> that describes which values can be null.</param>
 		/// <param name="isUpdate">A <see cref="Boolean"/> indicating if this is an Update operation.</param>
 		/// <exception cref="HibernateException">
 		/// Thrown when a non-nullable property contains a value that would
 		/// persist the value of null to the database.
 		/// </exception>
-		private static void CheckNullability( object[ ] values, IClassPersister persister, bool isUpdate )
+		private static void CheckNullability( object[ ] values, IEntityPersister persister, bool isUpdate )
 		{
 			bool[ ] nullability = persister.PropertyNullability;
 			bool[ ] checkability = isUpdate ? persister.PropertyUpdateability : persister.PropertyInsertability;
@@ -1474,7 +1474,7 @@ namespace NHibernate.Impl
 
 			object theObj = UnproxyAndReassociate( obj );
 
-			IClassPersister persister = GetPersister( theObj );
+			IEntityPersister persister = GetPersister( theObj );
 
 			if( IsEntryFor( theObj ) )
 			{
@@ -1530,7 +1530,7 @@ namespace NHibernate.Impl
 			{
 				// the object is transient
 				object isUnsaved = interceptor.IsUnsaved( theObj );
-				IClassPersister persister = GetPersister( theObj );
+				IEntityPersister persister = GetPersister( theObj );
 				if( isUnsaved == null )
 				{
 					// use unsaved-value
@@ -1598,7 +1598,7 @@ namespace NHibernate.Impl
 			EntityEntry e = GetEntry( theObj );
 			if( e == null )
 			{
-				IClassPersister persister = GetPersister( theObj );
+				IEntityPersister persister = GetPersister( theObj );
 				persister.SetIdentifier( theObj, id );
 				DoUpdate( theObj, id, persister );
 			}
@@ -1614,7 +1614,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void DoUpdateMutable( object obj, object id, IClassPersister persister )
+		private void DoUpdateMutable( object obj, object id, IEntityPersister persister )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -1643,7 +1643,7 @@ namespace NHibernate.Impl
 			AddEntry( obj, Status.Loaded, null, id, persister.GetVersion( obj ), LockMode.None, true, persister, false );
 		}
 
-		private void DoUpdate( object obj, object id, IClassPersister persister )
+		private void DoUpdate( object obj, object id, IEntityPersister persister )
 		{
 			if( !persister.IsMutable )
 			{
@@ -1674,7 +1674,7 @@ namespace NHibernate.Impl
 		/// <param name="version"></param>
 		/// <param name="replicationMode"></param>
 		/// <param name="persister"></param>
-		private void DoReplicate( object obj, object id, object version, ReplicationMode replicationMode, IClassPersister persister )
+		private void DoReplicate( object obj, object id, object version, ReplicationMode replicationMode, IEntityPersister persister )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -1903,7 +1903,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private EntityEntry Reassociate( object obj, object id, IClassPersister persister )
+		private EntityEntry Reassociate( object obj, object id, IEntityPersister persister )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -1948,7 +1948,7 @@ namespace NHibernate.Impl
 			EntityEntry e = GetEntry( obj );
 			if( e == null )
 			{
-				IClassPersister objPersister = GetPersister( obj );
+				IEntityPersister objPersister = GetPersister( obj );
 				object id = objPersister.GetIdentifier( obj );
 
 				if( !IsSaved( obj ) )
@@ -1984,7 +1984,7 @@ namespace NHibernate.Impl
 					throw new ObjectDeletedException( "attempted to lock a deleted instance", entry.Id, obj.GetType() );
 				}
 
-				IClassPersister persister = entry.Persister;
+				IEntityPersister persister = entry.Persister;
 
 				if( log.IsDebugEnabled )
 				{
@@ -2077,7 +2077,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public object Instantiate( IClassPersister persister, object id )
+		public object Instantiate( IEntityPersister persister, object id )
 		{
 			object result = interceptor.Instantiate( persister.MappedClass, id );
 			if( result == null )
@@ -2150,7 +2150,7 @@ namespace NHibernate.Impl
 		/// <param name="key"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public object NarrowProxy( object proxy, IClassPersister persister, Key key, object obj )
+		public object NarrowProxy( object proxy, IEntityPersister persister, Key key, object obj )
 		{
 			if( !persister.ConcreteProxyClass.IsAssignableFrom( proxy.GetType() ) )
 			{
@@ -2187,7 +2187,7 @@ namespace NHibernate.Impl
 		/// <param name="key"></param>
 		/// <param name="impl"></param>
 		/// <returns></returns>
-		public object ProxyFor( IClassPersister persister, Key key, object impl )
+		public object ProxyFor( IEntityPersister persister, Key key, object impl )
 		{
 			if( !persister.HasProxy || key == null )
 			{
@@ -2211,7 +2211,7 @@ namespace NHibernate.Impl
 
 			// can't use e.persister since it is null after addUninitializedEntity 
 			// (when this method is called)
-			IClassPersister p = GetPersister( impl );
+			IEntityPersister p = GetPersister( impl );
 			return ProxyFor( p, new Key( e.Id, p ), impl );
 		}
 
@@ -2239,7 +2239,7 @@ namespace NHibernate.Impl
 		/// <param name="values"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
-		public void PostHydrate( IClassPersister persister, object id, object[ ] values, object obj, LockMode lockMode )
+		public void PostHydrate( IEntityPersister persister, object id, object[ ] values, object obj, LockMode lockMode )
 		{
 			//persister.SetIdentifier( obj, id );
 			object version = Versioning.GetVersion( values, persister );

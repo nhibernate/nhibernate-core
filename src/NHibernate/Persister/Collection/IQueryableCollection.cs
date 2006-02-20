@@ -53,7 +53,7 @@ namespace NHibernate.Persister.Collection
 		/// for a one-to-many association, the returned persister
 		/// must be <c>OuterJoinLoadable</c>.
 		/// </summary>
-		IClassPersister ElementPersister { get; }
+		IEntityPersister ElementPersister { get; }
 
 		/// <summary>
 		/// Should we load this collection role by outer joining?

@@ -21,14 +21,14 @@ namespace NHibernate.Impl
 		/// <param name="instance"></param>
 		/// <param name="persister"></param>
 		/// <param name="session"></param>
-		public ScheduledIdentityInsertion( object[] state, object instance, IClassPersister persister, ISessionImplementor session ) : base( session, null, instance, persister )
+		public ScheduledIdentityInsertion( object[] state, object instance, IEntityPersister persister, ISessionImplementor session ) : base( session, null, instance, persister )
 		{
 			this.state = state;
 		}
 
 		public override void Execute()
 		{
-			IClassPersister persister = Persister;
+			IEntityPersister persister = Persister;
 			ISessionImplementor session = Session;
 			object obj = Instance;
 

@@ -8,7 +8,7 @@ namespace NHibernate.Persister.Entity
 	/// Implemented by <c>ClassPersister</c> that uses <c>Loader</c>. There are several optional
 	/// operations used only by loaders that inherit <c>OuterJoinLoader</c>
 	/// </summary>
-	public interface ILoadable : IClassPersister
+	public interface ILoadable : IEntityPersister
 	{
 		/// <summary>
 		/// Does the persistent class have subclasses?

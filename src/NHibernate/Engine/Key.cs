@@ -39,7 +39,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="p"></param>
-		public Key( object id, IClassPersister p ) : this( id, p.IdentifierType, p.IdentifierSpace, p.MappedClass, p.IsBatchLoadable )
+		public Key( object id, IEntityPersister p ) : this( id, p.IdentifierType, p.IdentifierSpace, p.MappedClass, p.IsBatchLoadable )
 		{
 		}
 

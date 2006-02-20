@@ -52,10 +52,10 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Generate small message that can be used in traces and exception messages.
 		/// </summary>
-		/// <param name="persister">The <see cref="IClassPersister"/> for the class in question</param>
+		/// <param name="persister">The <see cref="IEntityPersister"/> for the class in question</param>
 		/// <param name="id">The id</param>
 		/// <returns>A descriptive <see cref="String" /> in the form <c>[FooBar#id]</c></returns>
-		public static string InfoString( IClassPersister persister, object id )
+		public static string InfoString( IEntityPersister persister, object id )
 		{
 			StringBuilder s = new StringBuilder();
 			s.Append( '[' );
@@ -85,9 +85,9 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Generate small message that can be used in traces and exception messages.
 		/// </summary>
-		/// <param name="persister">The <see cref="IClassPersister"/> for the class in question</param>
+		/// <param name="persister">The <see cref="IEntityPersister"/> for the class in question</param>
 		/// <returns>A descriptive <see cref="String" /> in the form <c>[FooBar]</c></returns>
-		public static String InfoString( IClassPersister persister )
+		public static String InfoString( IEntityPersister persister )
 		{
 			StringBuilder s = new StringBuilder();
 			s.Append( '[' );

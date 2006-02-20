@@ -22,10 +22,10 @@ namespace NHibernate.Loader
 		private readonly Loader smallBatchLoader;
 		private readonly int batchSize;
 		private readonly int smallBatchSize;
-		private readonly IClassPersister persister;
+		private readonly IEntityPersister persister;
 		private readonly IType idType;
 
-		public BatchingEntityLoader( IClassPersister persister, int batchSize, Loader batchLoader, int smallBatchSize, Loader smallBatchLoader, Loader nonBatchLoader )
+		public BatchingEntityLoader( IEntityPersister persister, int batchSize, Loader batchLoader, int smallBatchSize, Loader smallBatchLoader, Loader nonBatchLoader )
 		{
 			this.batchLoader = batchLoader;
 			this.nonBatchLoader = nonBatchLoader;

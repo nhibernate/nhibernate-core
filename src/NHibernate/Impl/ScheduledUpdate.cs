@@ -31,9 +31,9 @@ namespace NHibernate.Impl
 		/// <param name="nextVersion">The version the object should be after update.</param>
 		/// <param name="instance">The actual object instance.</param>
 		/// <param name="updatedState">A deep copy of the <c>fields</c> object array.</param>
-		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for the persisting the object.</param>
+		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for the persisting the object.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledUpdate( object id, object[ ] fields, int[ ] dirtyProperties, object[ ] oldFields, object lastVersion, object nextVersion, object instance, object[ ] updatedState, IClassPersister persister, ISessionImplementor session )
+		public ScheduledUpdate( object id, object[ ] fields, int[ ] dirtyProperties, object[ ] oldFields, object lastVersion, object nextVersion, object instance, object[ ] updatedState, IEntityPersister persister, ISessionImplementor session )
 			: base( session, id, instance, persister )
 		{
 			this.fields = fields;

@@ -51,7 +51,7 @@ namespace NHibernate.Proxy
 			}
 		}
 
-		public static object GetIdentifier( object obj, IClassPersister persister )
+		public static object GetIdentifier( object obj, IEntityPersister persister )
 		{
 			if( obj is INHibernateProxy )
 			{

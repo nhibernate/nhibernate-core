@@ -33,17 +33,17 @@ namespace NHibernate.Persister
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static IClassPersister CreateClassPersister( PersistentClass model, ISessionFactoryImplementor factory )
+		public static IEntityPersister CreateClassPersister( PersistentClass model, ISessionFactoryImplementor factory )
 		{
 			System.Type persisterClass = model.ClassPersisterClass;
 
-			if( persisterClass == null || persisterClass == typeof( EntityPersister ) )
+			if( persisterClass == null || persisterClass == typeof( SingleTableEntityPersister ) )
 			{
-				return new EntityPersister( model, factory );
+				return new SingleTableEntityPersister( model, factory );
 			}
-			else if( persisterClass == typeof( NormalizedEntityPersister ) )
+			else if( persisterClass == typeof( JoinedSubclassEntityPersister ) )
 			{
-				return new NormalizedEntityPersister( model, factory );
+				return new JoinedSubclassEntityPersister( model, factory );
 			}
 			else
 			{
@@ -74,7 +74,7 @@ namespace NHibernate.Persister
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static IClassPersister Create( System.Type persisterClass, PersistentClass model, ISessionFactoryImplementor factory )
+		public static IEntityPersister Create( System.Type persisterClass, PersistentClass model, ISessionFactoryImplementor factory )
 		{
 			ConstructorInfo pc;
 			try
@@ -88,7 +88,7 @@ namespace NHibernate.Persister
 
 			try
 			{
-				return ( IClassPersister ) pc.Invoke( new object[ ] {model, factory} );
+				return ( IEntityPersister ) pc.Invoke( new object[ ] {model, factory} );
 			}
 			catch( TargetInvocationException tie )
 			{

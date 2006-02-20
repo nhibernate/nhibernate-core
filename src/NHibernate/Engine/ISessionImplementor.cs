@@ -207,7 +207,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		IClassPersister GetPersister( object obj );
+		IEntityPersister GetPersister( object obj );
 
 		/// <summary>
 		/// Add an uninitialized instance of an entity class, as a placeholder to ensure object identity.
@@ -226,7 +226,7 @@ namespace NHibernate.Engine
 		/// <param name="values"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
-		void PostHydrate( IClassPersister persister, object id, object[ ] values, object obj, LockMode lockMode );
+		void PostHydrate( IEntityPersister persister, object id, object[ ] values, object obj, LockMode lockMode );
 
 		/// <summary>
 		/// Perform the second step of 2-phase load (ie. fully initialize the entity instance)
@@ -245,11 +245,11 @@ namespace NHibernate.Engine
 		/// Return the existing proxy associated with the given <c>Key</c>, or the second
 		/// argument (the entity associated with the key) if no proxy exists.
 		/// </summary>
-		/// <param name="persister">The <see cref="IClassPersister"/> to see if it should be Proxied.</param>
+		/// <param name="persister">The <see cref="IEntityPersister"/> to see if it should be Proxied.</param>
 		/// <param name="key">The <see cref="Key"/> that identifies the entity.</param>
 		/// <param name="impl"></param>
 		/// <returns>Returns a the Proxy for the class or the parameter impl.</returns>
-		object ProxyFor( IClassPersister persister, Key key, object impl );
+		object ProxyFor( IEntityPersister persister, Key key, object impl );
 
 		/// <summary>
 		/// Return the existing proxy associated with the given object. (Slower than the form above)

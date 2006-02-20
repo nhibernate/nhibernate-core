@@ -607,7 +607,7 @@ namespace NHibernate.Engine
 		/// <param name="parent"></param>
 		/// <param name="action"></param>
 		/// <param name="cascadeTo"></param>
-		public static void Cascade( ISessionImplementor session, IClassPersister persister, object parent, CascadingAction action, CascadePoint cascadeTo )
+		public static void Cascade( ISessionImplementor session, IEntityPersister persister, object parent, CascadingAction action, CascadePoint cascadeTo )
 		{
 			Cascade( session, persister, parent, action, cascadeTo, null );
 		}
@@ -621,7 +621,7 @@ namespace NHibernate.Engine
 		/// <param name="action"></param>
 		/// <param name="cascadeTo"></param>
 		/// <param name="anything"></param>
-		public static void Cascade( ISessionImplementor session, IClassPersister persister, object parent, CascadingAction action, CascadePoint cascadeTo, object anything )
+		public static void Cascade( ISessionImplementor session, IEntityPersister persister, object parent, CascadingAction action, CascadePoint cascadeTo, object anything )
 		{
 			if( persister.HasCascades )
 			{

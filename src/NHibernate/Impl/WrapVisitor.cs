@@ -118,7 +118,7 @@ namespace NHibernate.Impl
 			return null;
 		}
 
-		public override void Process(object obj, IClassPersister persister)
+		public override void Process(object obj, IEntityPersister persister)
 		{
 			object[] values = persister.GetPropertyValues( obj );
 			IType[] types = persister.PropertyTypes;

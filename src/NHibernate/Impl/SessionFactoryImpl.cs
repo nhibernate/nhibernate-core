@@ -35,7 +35,7 @@ namespace NHibernate.Impl
 	/// <item>
 	/// Caches configuration settings (immutably)</item>
 	/// <item>
-	/// Caches "compiled" mappings - ie. <see cref="IClassPersister"/> 
+	/// Caches "compiled" mappings - ie. <see cref="IEntityPersister"/> 
 	/// and <see cref="ICollectionPersister"/>
 	/// </item>
 	/// <item>
@@ -143,7 +143,7 @@ namespace NHibernate.Impl
 
 			foreach( PersistentClass model in cfg.ClassMappings )
 			{
-				IClassPersister cp = PersisterFactory.CreateClassPersister( model, this );
+				IEntityPersister cp = PersisterFactory.CreateClassPersister( model, this );
 				classPersisters[ model.MappedClass ] = cp;
 
 				// Adds the "Namespace.ClassName" (FullClassname) as a lookup to get to the Persiter.
@@ -171,7 +171,7 @@ namespace NHibernate.Impl
 			collectionMetadata = new Hashtable( collectionPersisters );
 
 			// after *all* persisters are registered
-			foreach( IClassPersister persister in classPersisters.Values )
+			foreach( IEntityPersister persister in classPersisters.Values )
 			{
 				// TODO: H2.1 doesn't pass this to PostInstantiate
 				persister.PostInstantiate( this );
@@ -509,12 +509,12 @@ namespace NHibernate.Impl
 			return OpenSession( interceptor );
 		}
 
-		public IClassPersister GetPersister( string className )
+		public IEntityPersister GetPersister( string className )
 		{
 			return GetPersister( className, true );
 		}
 
-		public IClassPersister GetPersister( string className, bool throwIfNotFound )
+		public IEntityPersister GetPersister( string className, bool throwIfNotFound )
 		{
 			// TODO: H2.1 has the code below, an equivalent for .NET would be useful
 			//if( className.StartsWith( "[" ) )
@@ -522,7 +522,7 @@ namespace NHibernate.Impl
 			//	throw new MappingException( "No persister for array result, likely a broken query" );
 			//}
 
-			IClassPersister result = classPersistersByName[ className ] as IClassPersister;
+			IEntityPersister result = classPersistersByName[ className ] as IEntityPersister;
 			if( result == null && throwIfNotFound )
 			{
 				throw new MappingException( "No persister for: " + className );
@@ -535,9 +535,9 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="theClass"></param>
 		/// <returns></returns>
-		public IClassPersister GetPersister( System.Type theClass )
+		public IEntityPersister GetPersister( System.Type theClass )
 		{
-			IClassPersister result = classPersisters[ theClass ] as IClassPersister;
+			IEntityPersister result = classPersisters[ theClass ] as IEntityPersister;
 			if( result == null )
 			{
 				throw new MappingException( "Unknown entity class: " + theClass.FullName );
@@ -742,7 +742,7 @@ namespace NHibernate.Impl
 		public string[ ] GetImplementors( System.Type clazz )
 		{
 			ArrayList results = new ArrayList();
-			foreach( IClassPersister p in classPersisters.Values )
+			foreach( IEntityPersister p in classPersisters.Values )
 			{
 				if( p is IQueryable )
 				{
@@ -783,7 +783,7 @@ namespace NHibernate.Impl
 		public System.Type[ ] GetImplementorClasses( System.Type clazz )
 		{
 			ArrayList results = new ArrayList();
-			foreach( IClassPersister p in classPersisters.Values )
+			foreach( IEntityPersister p in classPersisters.Values )
 			{
 				if( p is IQueryable )
 				{
@@ -844,7 +844,7 @@ namespace NHibernate.Impl
 		{
 			log.Info( "Closing" );
 
-			foreach( IClassPersister p in classPersisters.Values )
+			foreach( IEntityPersister p in classPersisters.Values )
 			{
 				if( p.HasCache )
 				{
@@ -891,7 +891,7 @@ namespace NHibernate.Impl
 
 		public void Evict( System.Type persistentClass, object id )
 		{
-			IClassPersister p = GetPersister( persistentClass );
+			IEntityPersister p = GetPersister( persistentClass );
 			if( p.HasCache )
 			{
 				if( log.IsDebugEnabled )
@@ -904,7 +904,7 @@ namespace NHibernate.Impl
 
 		public void Evict( System.Type persistentClass )
 		{
-			IClassPersister p = GetPersister( persistentClass );
+			IEntityPersister p = GetPersister( persistentClass );
 			if( p.HasCache )
 			{
 				if( log.IsDebugEnabled )

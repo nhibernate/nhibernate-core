@@ -16,7 +16,7 @@ namespace NHibernate.Impl
 		private readonly ISessionImplementor session;
 		private readonly object id;
 		[NonSerialized]
-		private IClassPersister persister;
+		private IEntityPersister persister;
 		private readonly object instance;
 
 		/// <summary>
@@ -25,8 +25,8 @@ namespace NHibernate.Impl
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
 		/// <param name="id">The identifier of the object.</param>
 		/// <param name="instance">The actual object instance.</param>
-		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for the persisting the object.</param>
-		protected ScheduledEntityAction( ISessionImplementor session, object id, object instance, IClassPersister persister )
+		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for the persisting the object.</param>
+		protected ScheduledEntityAction( ISessionImplementor session, object id, object instance, IEntityPersister persister )
 		{
 			this.session = session;
 			this.id = id;
@@ -52,9 +52,9 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Gets the <see cref="IClassPersister"/> that is responsible for persisting the object.
+		/// Gets the <see cref="IEntityPersister"/> that is responsible for persisting the object.
 		/// </summary>
-		protected IClassPersister Persister
+		protected IEntityPersister Persister
 		{
 			get { return persister; }
 		}
@@ -93,7 +93,7 @@ namespace NHibernate.Impl
 		public abstract void AfterTransactionCompletion( bool success );
 
 		/// <summary>
-		/// Execute the action using the <see cref="IClassPersister"/>.
+		/// Execute the action using the <see cref="IEntityPersister"/>.
 		/// </summary>
 		public abstract void Execute();
 

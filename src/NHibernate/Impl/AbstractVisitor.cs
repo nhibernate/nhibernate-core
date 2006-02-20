@@ -77,7 +77,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <param name="persister"></param>
-		public virtual void Process(object obj, IClassPersister persister)
+		public virtual void Process(object obj, IEntityPersister persister)
 		{
 			ProcessValues(
 				persister.GetPropertyValues( obj ),

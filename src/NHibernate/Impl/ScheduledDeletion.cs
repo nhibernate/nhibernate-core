@@ -20,9 +20,9 @@ namespace NHibernate.Impl
 		/// <param name="id">The identifier of the object.</param>
 		/// <param name="version">The version of the object being deleted.</param>
 		/// <param name="instance">The actual object instance.</param>
-		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for the persisting the object.</param>
+		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for the persisting the object.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledDeletion( object id, object version, object instance, IClassPersister persister, ISessionImplementor session )
+		public ScheduledDeletion( object id, object version, object instance, IEntityPersister persister, ISessionImplementor session )
 			: base( session, id, instance, persister )
 		{
 			this.version = version;

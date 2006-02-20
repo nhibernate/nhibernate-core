@@ -100,8 +100,8 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
 		/// <param name="version">The value the version should be set to in the <c>fields</c> parameter.</param>
-		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for persisting the values of the <c>fields</c> parameter.</param>
-		public static void SetVersion( object[ ] fields, object version, IClassPersister persister )
+		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for persisting the values of the <c>fields</c> parameter.</param>
+		public static void SetVersion( object[ ] fields, object version, IEntityPersister persister )
 		{
 			SetVersion( fields, version, persister.VersionProperty, persister.VersionType );
 		}
@@ -110,12 +110,12 @@ namespace NHibernate.Engine
 		/// Get the version number of the given instance state snapshot
 		/// </summary>
 		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
-		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for persisting the values of the <c>fields</c> parameter.</param>
+		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for persisting the values of the <c>fields</c> parameter.</param>
 		/// <returns>
 		/// The value of the version contained in the <c>fields</c> parameter or null if the
 		/// Entity is not versioned.
 		/// </returns>
-		public static object GetVersion( object[ ] fields, IClassPersister persister )
+		public static object GetVersion( object[ ] fields, IEntityPersister persister )
 		{
 			return persister.IsVersioned ? GetVersion( fields, persister.VersionProperty, persister.VersionType ) : null;
 		}

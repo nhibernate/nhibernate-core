@@ -13,7 +13,7 @@ namespace NHibernate.Persister.Entity
 	/// Implementors must be threadsafe (preferrably immutable) and must provide a constructor of type
 	/// (PersistentClass, SessionFactoryImplementor)
 	/// </remarks>
-	public interface IClassPersister
+	public interface IEntityPersister
 	{
 		/// <summary>
 		/// Finish the initialization of this object, once all <c>ClassPersisters</c> have been

@@ -20,7 +20,7 @@ namespace NHibernate.Impl
 		private bool existsInDatabase;
 		private object version;
 		// for convenience to save some lookups
-		[NonSerialized] private IClassPersister persister;
+		[NonSerialized] private IEntityPersister persister;
 		private string className;
 		private bool isBeingReplicated;
 			
@@ -33,9 +33,9 @@ namespace NHibernate.Impl
 		/// <param name="version">The version of the Entity.</param>
 		/// <param name="lockMode">The <see cref="LockMode"/> for the Entity.</param>
 		/// <param name="existsInDatabase">A boolean indicating if the Entity exists in the database.</param>
-		/// <param name="persister">The <see cref="IClassPersister"/> that is responsible for this Entity.</param>
+		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for this Entity.</param>
 		/// <param name="disableVersionIncrement"></param>
-		public EntityEntry(Status status, object[] loadedState, object id, object version, LockMode lockMode, bool existsInDatabase, IClassPersister persister, bool disableVersionIncrement ) 
+		public EntityEntry(Status status, object[] loadedState, object id, object version, LockMode lockMode, bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement ) 
 		{
 			this.status = status;
 			this.loadedState = loadedState;
@@ -114,7 +114,7 @@ namespace NHibernate.Impl
 		/// <value><c>true</c> if it is already in the database.</value>
 		/// <remarks>
 		/// It can also be <c>true</c> if it does not exists in the database yet and the 
-		/// <see cref="IClassPersister.IsIdentifierAssignedByInsert"/> is <c>true</c>.
+		/// <see cref="IEntityPersister.IsIdentifierAssignedByInsert"/> is <c>true</c>.
 		/// </remarks>
 		public bool ExistsInDatabase
 		{
@@ -133,10 +133,10 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="IClassPersister"/> that is responsible for this Entity.
+		/// Gets or sets the <see cref="IEntityPersister"/> that is responsible for this Entity.
 		/// </summary>
-		/// <value>The <see cref="IClassPersister"/> that is reponsible for this Entity.</value>
-		public IClassPersister Persister
+		/// <value>The <see cref="IEntityPersister"/> that is reponsible for this Entity.</value>
+		public IEntityPersister Persister
 		{
 			get { return persister; }
 			set { persister = value; }

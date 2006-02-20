@@ -74,7 +74,7 @@ namespace NHibernate.Type
 
 		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
 		{
-			IClassPersister persister = factory.GetPersister( associatedClass );
+			IEntityPersister persister = factory.GetPersister( associatedClass );
 			if( value == null )
 			{
 				return "null";

@@ -26,7 +26,7 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
 		/// <param name="persister"></param>
 		/// <param name="session"></param>
-		public CacheEntry( object obj, IClassPersister persister, ISessionImplementor session )
+		public CacheEntry( object obj, IEntityPersister persister, ISessionImplementor session )
 		{
 			state = Disassemble( obj, persister, session );
 			subclass = obj.GetType();
@@ -39,7 +39,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		private static object[ ] Disassemble( object obj, IClassPersister persister, ISessionImplementor session )
+		private static object[ ] Disassemble( object obj, IEntityPersister persister, ISessionImplementor session )
 		{
 			object[ ] values = persister.GetPropertyValues( obj );
 			IType[ ] propertyTypes = persister.PropertyTypes;
@@ -58,7 +58,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object[ ] Assemble( object instance, object id, IClassPersister persister, IInterceptor interceptor, ISessionImplementor session )
+		public object[ ] Assemble( object instance, object id, IEntityPersister persister, IInterceptor interceptor, ISessionImplementor session )
 		{
 			if( subclass != persister.MappedClass )
 			{
@@ -77,7 +77,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		private static object[ ] Assemble( object[ ] values, object result, object id, IClassPersister persister, IInterceptor interceptor, ISessionImplementor session )
+		private static object[ ] Assemble( object[ ] values, object result, object id, IEntityPersister persister, IInterceptor interceptor, ISessionImplementor session )
 		{
 			IType[ ] propertyTypes = persister.PropertyTypes;
 			object[ ] assembledProps = new object[propertyTypes.Length];

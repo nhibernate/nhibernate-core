@@ -499,7 +499,7 @@ namespace NHibernate.Loader
 							//TODO: look at the owning property and check that it 
 							//      isn't lazy (by instrumentation)
 							EntityType entityType = type as EntityType;
-							IClassPersister persister = factory.GetPersister( entityType.AssociatedClass );
+							IEntityPersister persister = factory.GetPersister( entityType.AssociatedClass );
 							return !persister.HasProxy;
 						}
 						else
