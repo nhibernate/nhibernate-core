@@ -477,7 +477,7 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		protected bool IsJoinedFetchEnabledByDefault( FetchMode config, IAssociationType type, ISessionFactoryImplementor factory )
 		{
-			if ( !type.IsEntityType && !type.IsPersistentCollectionType )
+			if ( !type.IsEntityType && !type.IsCollectionType )
 			{
 				return false;
 			}

@@ -23,7 +23,7 @@ namespace NHibernate.Hql
 					Token( ".", q );
 					Token( null, q );
 				}
-				else if( type.IsPersistentCollectionType )
+				else if( type.IsCollectionType )
 				{
 					// default to element set if no elements() specified
 					Token( ".", q );

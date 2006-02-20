@@ -71,7 +71,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override string ToString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
 		{
 			IClassPersister persister = factory.GetPersister( associatedClass );
 			if( value == null )
@@ -83,7 +83,7 @@ namespace NHibernate.Type
 			if( persister.HasIdentifierProperty )
 			{
 				result.Append( '#' )
-					.Append( persister.IdentifierType.ToString( NHibernateProxyHelper.GetIdentifier( value, persister ), factory ) );
+					.Append( persister.IdentifierType.ToLoggableString( NHibernateProxyHelper.GetIdentifier( value, persister ), factory ) );
 			}
 
 			return result.ToString();

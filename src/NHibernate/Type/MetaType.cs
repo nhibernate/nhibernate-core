@@ -73,9 +73,9 @@ namespace NHibernate.Type
 			baseType.NullSafeSet( st, value == null ? null : keys[ value ], index, session );
 		}
 
-		public override string ToString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
 		{
-			return NHibernateUtil.Class.ToString( value, factory );
+			return NHibernateUtil.Class.ToLoggableString( value, factory );
 		}
 
 		public override object FromString( string xml )

@@ -1244,7 +1244,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void ToStringWithNoIdentifier()
 		{
-			NHibernateUtil.Entity( typeof( Master ) ).ToString( new Master(),
+			NHibernateUtil.Entity( typeof( Master ) ).ToLoggableString( new Master(),
 				( ISessionFactoryImplementor ) sessions );
 		}
 

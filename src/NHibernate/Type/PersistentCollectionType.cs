@@ -34,7 +34,7 @@ namespace NHibernate.Type
 			get { return role; }
 		}
 
-		public override bool IsPersistentCollectionType
+		public override bool IsCollectionType
 		{
 			get { return true; }
 		}
@@ -72,7 +72,7 @@ namespace NHibernate.Type
 			return 0;
 		}
 
-		public override string ToString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
 		{
 			if( value == null )
 			{
@@ -86,7 +86,7 @@ namespace NHibernate.Type
 				ICollection elements = GetElementsCollection( value );
 				foreach( object element in elements )
 				{
-					list.Add( elemType.ToString( element, factory ) );
+					list.Add( elemType.ToLoggableString( element, factory ) );
 				}
 				return CollectionPrinter.ToString( list );
 			}

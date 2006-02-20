@@ -23,7 +23,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsPersistentCollectionType"]/*'
 		/// /> 
-		bool IsPersistentCollectionType { get; }
+		bool IsCollectionType { get; }
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsComponentType"]/*'
@@ -88,7 +88,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
 		/// /> 
-		string ToString( object value, ISessionFactoryImplementor factory );
+		string ToLoggableString( object value, ISessionFactoryImplementor factory );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'

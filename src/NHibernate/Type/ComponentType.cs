@@ -123,7 +123,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
-		public override bool IsPersistentCollectionType
+		public override bool IsCollectionType
 		{
 			get { return false; }
 		}
@@ -387,7 +387,7 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public override string ToString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
 		{
 			if( value==null ) return "null";
 			IDictionary result = new Hashtable();
@@ -395,7 +395,7 @@ namespace NHibernate.Type
 			
 			for( int i = 0; i < propertyTypes.Length; i++ )
 			{
-				result[ propertyNames[ i ] ] = propertyTypes[ i ].ToString( values[ i ], factory );
+				result[ propertyNames[ i ] ] = propertyTypes[ i ].ToLoggableString( values[ i ], factory );
 			}
 
 			return StringHelper.Unqualify( Name ) + CollectionPrinter.ToString( result );

@@ -558,7 +558,7 @@ namespace NHibernate.Engine
 						{
 							action.Cascade( session, child, anything );
 						}
-						else if( type.IsPersistentCollectionType )
+						else if( type.IsCollectionType )
 						{
 							CascadePoint cascadeVia;
 							if( cascadeTo == CascadePoint.CascadeAfterInsertBeforeDelete )

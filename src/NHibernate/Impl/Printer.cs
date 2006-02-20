@@ -33,7 +33,7 @@ namespace NHibernate.Impl
 			if( cm.HasIdentifierProperty )
 			{
 				result[ cm.IdentifierPropertyName ] =
-					cm.IdentifierType.ToString( cm.GetIdentifier( entity ), _factory );
+					cm.IdentifierType.ToLoggableString( cm.GetIdentifier( entity ), _factory );
 			}
 
 			IType[ ] types = cm.PropertyTypes;
@@ -42,7 +42,7 @@ namespace NHibernate.Impl
 
 			for( int i = 0; i < types.Length; i++ )
 			{
-				result[ names[ i ] ] = types[ i ].ToString( values[ i ], _factory );
+				result[ names[ i ] ] = types[ i ].ToLoggableString( values[ i ], _factory );
 			}
 
 			return cm.MappedClass.FullName + CollectionPrinter.ToString( result );
@@ -55,7 +55,7 @@ namespace NHibernate.Impl
 			{
 				if( types[ i ] != null )
 				{
-					list.Add( types[ i ].ToString( values[ i ], _factory ) );
+					list.Add( types[ i ].ToLoggableString( values[ i ], _factory ) );
 				}
 			}
 			return CollectionPrinter.ToString( list );
@@ -68,7 +68,7 @@ namespace NHibernate.Impl
 			foreach( DictionaryEntry me in namedTypedValues )
 			{
 				TypedValue tv = ( TypedValue ) me.Value;
-				result[ me.Key ] = tv.Type.ToString( tv.Value, _factory );
+				result[ me.Key ] = tv.Type.ToLoggableString( tv.Value, _factory );
 			}
 
 			return CollectionPrinter.ToString( result );

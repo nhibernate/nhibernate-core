@@ -163,7 +163,7 @@ namespace NHibernate.Hql
 					{
 						DereferenceEntity( token, (EntityType) propertyType, q );
 					}
-					else if( propertyType.IsPersistentCollectionType )
+					else if( propertyType.IsCollectionType )
 					{
 						DereferenceCollection( token, ( (PersistentCollectionType) propertyType).Role, q );
 					}
@@ -380,7 +380,7 @@ namespace NHibernate.Hql
 			ignoreInitialJoin = false;
 
 			IType propertyType = PropertyType;
-			if( propertyType != null && propertyType.IsPersistentCollectionType )
+			if( propertyType != null && propertyType.IsCollectionType )
 			{
 				collectionRole = ( ( PersistentCollectionType ) propertyType ).Role;
 				collectionName = q.CreateNameForCollection( collectionRole );
@@ -556,7 +556,7 @@ namespace NHibernate.Hql
 		public bool IsCollectionValued
 		{
 			// TODO: Is there a better way
-			get { return collectionName != null && !PropertyType.IsPersistentCollectionType; }
+			get { return collectionName != null && !PropertyType.IsCollectionType; }
 		}
 
 

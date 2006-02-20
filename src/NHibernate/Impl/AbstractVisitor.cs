@@ -51,7 +51,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		protected object ProcessValue(object value, IType type)
 		{
-			if( type.IsPersistentCollectionType )
+			if( type.IsCollectionType )
 			{
 				// Even process null collections
 				return ProcessCollection( value, (PersistentCollectionType)type );

@@ -173,12 +173,12 @@ namespace NHibernate.Type
 				identifierType.SqlTypes( mapping ) );
 		}
 
-		public override string ToString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
 		{
 			return value == null ?
 				"null" :
 				NHibernateUtil.Entity( NHibernateProxyHelper.GetClass( value ) )
-					.ToString( value, factory );
+					.ToLoggableString( value, factory );
 		}
 
 		public override object FromString( string xml )

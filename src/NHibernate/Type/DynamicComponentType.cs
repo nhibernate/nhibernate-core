@@ -290,7 +290,7 @@ namespace NHibernate.Type
 			return sqlTypes;
 		}
 
-		public override string ToString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
 		{
 			return value == null ? "null" : CollectionPrinter.ToString( ( IDictionary ) value );
 		}

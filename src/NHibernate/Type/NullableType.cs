@@ -101,7 +101,7 @@ namespace NHibernate.Type
 		/// should be in <see cref="ToString(object)"/>.
 		/// </para>
 		/// </remarks>
-		public override sealed string ToString( object value, ISessionFactoryImplementor factory )
+		public override sealed string ToLoggableString( object value, ISessionFactoryImplementor factory )
 		{
 			return ( value == null ) ? null : ToString( value );
 		}

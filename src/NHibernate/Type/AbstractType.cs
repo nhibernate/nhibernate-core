@@ -26,7 +26,7 @@ namespace NHibernate.Type
 		/// Gets a value indicating if the <see cref="AbstractType"/> is a <see cref="PersistentCollectionType"/>.
 		/// </summary>
 		/// <value>false - by default an <see cref="AbstractType"/> is not a <see cref="PersistentCollectionType"/>.</value>
-		public virtual bool IsPersistentCollectionType
+		public virtual bool IsCollectionType
 		{
 			get { return false; }
 		}
@@ -254,7 +254,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
 		/// /> 
-		public abstract string ToString( object value, ISessionFactoryImplementor factory );
+		public abstract string ToLoggableString( object value, ISessionFactoryImplementor factory );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'

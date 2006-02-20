@@ -4974,7 +4974,7 @@ namespace NHibernate.Impl
 		{
 			foreach( IType type in types )
 			{
-				if( type.IsPersistentCollectionType )
+				if( type.IsCollectionType )
 				{
 					factory.EvictCollection( ( ( PersistentCollectionType ) type ).Role, id );
 				}

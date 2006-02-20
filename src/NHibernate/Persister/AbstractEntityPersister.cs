@@ -988,7 +988,7 @@ namespace NHibernate.Persister
 		{
 			for( int i = 0; i < types.Length; i++ )
 			{
-				if( types[ i ].IsPersistentCollectionType )
+				if( types[ i ].IsCollectionType )
 				{
 					return true;
 				}

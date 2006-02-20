@@ -162,7 +162,7 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public override string ToString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
 		{
 			return value == null ? "null" : value.ToString();
 		}
