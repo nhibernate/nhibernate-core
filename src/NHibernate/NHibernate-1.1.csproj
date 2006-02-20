@@ -504,42 +504,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collection\AbstractCollectionPersister.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Collection\ArrayHolder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Collection\Bag.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collection\BasicCollectionPersister.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collection\CollectionPropertyMapping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collection\CompositeElementPropertyMapping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collection\ElementPropertyMapping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collection\ICollectionPersister.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -554,22 +524,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collection\IQueryableCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Collection\List.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Collection\Map.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collection\OneToManyPersister.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1653,7 +1613,42 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-                <Folder RelPath = "Persister\Collection\" />
+                <File
+                    RelPath = "Persister\Collection\AbstractCollectionPersister.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Collection\BasicCollectionPersister.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Collection\CollectionPropertyMapping.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Collection\CompositeElementPropertyMapping.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Collection\ElementPropertyMapping.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Collection\ICollectionPersister.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Collection\IQueryableCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Collection\OneToManyPersister.cs"
+                    BuildAction = "Compile"
+                />
                 <File
                     RelPath = "Persister\Entity\AbstractEntityPersister.cs"
                     SubType = "Code"
