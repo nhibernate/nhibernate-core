@@ -1639,27 +1639,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Persister\AbstractEntityPersister.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\AbstractPropertyMapping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\EntityPersister.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Persister\GetSetHelperFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\IClassPersister.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1669,52 +1649,71 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Persister\IJoinable.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\ILoadable.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\IOuterJoinLoadable.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\IPropertyMapping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\IQueryable.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\ISqlLoadable.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\IUniqueKeyLoadable.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\NormalizedEntityPersister.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Persister\PersisterFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <Folder RelPath = "Persister\Collection\" />
-                <Folder RelPath = "Persister\Entity\" />
+                <File
+                    RelPath = "Persister\Entity\AbstractEntityPersister.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\AbstractPropertyMapping.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\EntityPersister.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\IClassPersister.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\IJoinable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\ILoadable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\IOuterJoinLoadable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\IPropertyMapping.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\IQueryable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\ISqlLoadable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\IUniqueKeyLoadable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\NormalizedEntityPersister.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <File
                     RelPath = "Property\BasicGetter.cs"
                     SubType = "Code"
