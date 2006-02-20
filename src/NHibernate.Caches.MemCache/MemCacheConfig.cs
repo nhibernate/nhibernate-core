@@ -32,6 +32,10 @@ namespace NHibernate.Caches.MemCache
 		private int _port;
 		private int _weight;
 
+		public MemCacheConfig( string host, int port ) : this( host, port, 1 )
+		{
+		}
+
 		public MemCacheConfig( string host, int port, int weight )
 		{
 			if ( host == null || host.Length < 1 ) throw new ArgumentNullException( "host" );
