@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Util;
 
 namespace NHibernate.Type

@@ -781,9 +781,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="BagType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType GenericBag(string role, System.Type elementClass)
+		public static PersistentCollectionType GenericBag(string role, string propertyRef, System.Type elementClass)
 		{
-			return new GenericBagType(role, elementClass);
+			return new GenericBagType(role, propertyRef, elementClass);
 		}
 
 		/// <summary>
@@ -799,9 +799,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="ListType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType GenericList(string role, System.Type elementClass)
+		public static PersistentCollectionType GenericList(string role, string propertyRef, System.Type elementClass)
 		{
-			return new GenericListType(role, elementClass);
+			return new GenericListType(role, propertyRef, elementClass);
 		}
 
 		/// <summary>
@@ -820,9 +820,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="MapType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType GenericMap(string role, System.Type indexClass, System.Type elementClass)
+		public static PersistentCollectionType GenericMap(string role, string propertyRef, System.Type indexClass, System.Type elementClass)
 		{
-			return new GenericMapType(role, indexClass, elementClass);
+			return new GenericMapType(role, propertyRef, indexClass, elementClass);
 		}
 
 		// TODO: deal with a sorted GenericMap

@@ -2,10 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
+
 using NHibernate.Engine;
 using NHibernate.Type;
-using System.Data;
+using NHibernate.Persister.Collection;
 
 namespace NHibernate.Collection.Generic
 {

@@ -1,3 +1,5 @@
+using System;
+
 using NHibernate.Type;
 
 namespace NHibernate.Mapping
@@ -28,7 +30,7 @@ namespace NHibernate.Mapping
 #if NET_2_0
 				if (this.IsGeneric)
 				{
-					return TypeFactory.GenericMap( Role, this.GenericArguments[0], this.GenericArguments[1] );
+					return TypeFactory.GenericMap( Role, ReferencedPropertyName, this.GenericArguments[0], this.GenericArguments[1] );
 					// TODO: deal with sorting
 				}
 				else

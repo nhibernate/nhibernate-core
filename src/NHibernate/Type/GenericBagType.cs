@@ -4,10 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Util;
+using NHibernate.Persister.Collection;
 
 namespace NHibernate.Type
 {

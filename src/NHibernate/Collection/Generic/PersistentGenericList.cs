@@ -6,6 +6,7 @@ using System.Data;
 using System.Text;
 
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
 namespace NHibernate.Collection.Generic
