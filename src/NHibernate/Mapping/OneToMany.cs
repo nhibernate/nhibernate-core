@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using NHibernate.Engine;
-using NHibernate.Loader;
 using NHibernate.Type;
 
 namespace NHibernate.Mapping
@@ -110,6 +110,16 @@ namespace NHibernate.Mapping
 		/// <remarks>No foreign key element for a one-to-many</remarks>
 		public void CreateForeignKey( )
 		{
+		}
+
+		public bool[] ColumnInsertability
+		{
+			get { throw new InvalidOperationException(); }
+		}
+
+		public bool[] ColumnUpdateability
+		{
+			get { throw new InvalidOperationException(); }
 		}
 	}
 }

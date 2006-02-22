@@ -1,6 +1,5 @@
 using System.Collections;
 using NHibernate.Engine;
-using NHibernate.Loader;
 using NHibernate.Type;
 
 namespace NHibernate.Mapping
@@ -54,6 +53,9 @@ namespace NHibernate.Mapping
 		/// null values.
 		/// </summary>
 		bool IsNullable { get; }
+
+		bool[] ColumnUpdateability { get; }
+		bool[] ColumnInsertability { get; }
 
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if this is a SimpleValue

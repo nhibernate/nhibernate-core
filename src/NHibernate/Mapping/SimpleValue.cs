@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Id;
-using NHibernate.Loader;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -243,6 +242,25 @@ namespace NHibernate.Mapping
 		public bool IsValid( IMapping mapping )
 		{
 			return ColumnSpan == Type.GetColumnSpan( mapping );
+		}
+
+		public virtual bool[] ColumnInsertability
+		{
+			get
+			{
+				bool[] result = new bool[ ColumnSpan ];
+				int i = 0;
+				foreach( ISelectable s in ColumnCollection )
+				{
+					result[ i++ ] = !s.IsFormula;
+				}
+				return result;
+			}
+		}
+
+		public virtual bool[] ColumnUpdateability
+		{
+			get { return ColumnInsertability; }
 		}
 	}
 }

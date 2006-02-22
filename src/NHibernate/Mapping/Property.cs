@@ -68,13 +68,6 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public bool IsUpdateable
-		{
-			get { return updateable && !IsFormula; }
-			set { updateable = value; }
-		}
-
-		/// <summary></summary>
 		public bool IsComposite
 		{
 			get { return propertyValue is Component; }
@@ -148,7 +141,12 @@ namespace NHibernate.Mapping
 			set { cascade = value; }
 		}
 
-		/// <summary></summary>
+		public bool IsUpdateable
+		{
+			get { return updateable && !IsFormula; }
+			set { updateable = value; }
+		}
+
 		public bool IsInsertable
 		{
 			get { return insertable && !IsFormula; }

@@ -142,5 +142,43 @@ namespace NHibernate.Mapping
 		{
 			get { return properties; }
 		}
+
+		public override bool[] ColumnInsertability
+		{
+			get
+			{
+				bool[] result = new bool[ ColumnSpan ];
+				int i=0;
+				foreach( Property prop in PropertyCollection )
+				{
+					bool[] chunk = prop.Value.ColumnInsertability;
+					if ( prop.IsInsertable ) 
+					{
+						System.Array.Copy( chunk, 0, result, i, chunk.Length );
+					}
+					i += chunk.Length;
+				}
+				return result;
+			}
+		}
+
+		public override bool[] ColumnUpdateability
+		{
+			get
+			{
+				bool[] result = new bool[ ColumnSpan ];
+				int i=0;
+				foreach( Property prop in PropertyCollection )
+				{
+					bool[] chunk = prop.Value.ColumnUpdateability;
+					if ( prop.IsUpdateable ) 
+					{
+						System.Array.Copy( chunk, 0, result, i, chunk.Length );
+					}
+					i += chunk.Length;
+				}
+				return result;
+			}
+		}
 	}
 }

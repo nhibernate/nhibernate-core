@@ -4,6 +4,7 @@ using System.Collections;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -358,6 +359,16 @@ namespace NHibernate.Mapping
 			{
 				throw new MappingException( string.Format( "collection element key mapping has wrong number of columns: {0} type: {1}", Role, Element.Type.Name ) );
 			}
+		}
+
+		public bool[] ColumnInsertability
+		{
+			get { return ArrayHelper.EmptyBoolArray; }
+		}
+
+		public bool[] ColumnUpdateability
+		{
+			get { return ArrayHelper.EmptyBoolArray; }
 		}
 	}
 }
