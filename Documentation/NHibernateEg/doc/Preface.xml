@@ -1,4 +1,9 @@
 <!-- <!DOCTYPE preface SYSTEM "../../docbook-xml/docbookx.dtd"> -->
+<!--
+  This is part of NHibernateEg documentation.
+  Copyright (C) 2006, Pierre Henri Kuaté.
+  See the GNU Free Documentation License for copying conditions.
+-->
 <preface id="Preface">
 	<title>Preface</title>
 
@@ -36,15 +41,16 @@
 
 
 	<section id="Preface-GetNHibernateEg">
-		<title>Where you can get these tutorials and its code</title>
+		<title>Where you can get these tutorials and its applications</title>
 
 		<para>
-			These tutorials are currently available in English only.
-			You can find the online version here: <ulink url="http://nhibernate.sourceforge.net/NHibernateEg/" />.
-			The French version will be released soon.
+			You can find the online version of these tutorials here:
+			<ulink url="http://nhibernate.sourceforge.net/NHibernateEg/" />.
+			A French version is available here:
+			<ulink url="http://kpixel.developpez.com/NHibernateEg/" />.
 		</para>
 		<para>
-			The source code is available on NHibernate CVS
+			The source code (along with the binaries and this tutorial) is available on NHibernate CVS
 			(<ulink url="http://cvs.sourceforge.net/viewcvs.py/nhibernate/Documentation/NHibernateEg/">in the "Documentation" branch</ulink>)
 			and currently, it can be downloaded here: <ulink url="http://nhibernate.sourceforge.net/NHibernateEg.zip" />.
 		</para>
@@ -55,16 +61,41 @@
 		<title>Requirements</title>
 
 		<para>
-			I expect you to have some basic knowledge in the development of
-			database-based applications with the .NET framework.
-			That is, working with a SQL database, creating a connection to it in a .NET Application,
-			doing basic CRUD operations and manipulating transactions.
+			I expect you to have some basic knowledge in the development of database-based applications with the .NET framework.
+			That is, working with a SQL-based Relational DataBase Management System (RDBMS),
+			creating a connection to it in a .NET Application, doing basic operations and manipulating transactions.
+		</para>
+		<para>
+			As the source code is written in C#, you should be able to understand this language.
 		</para>
 
-		<para>The applications need the .NET framework to be executed.</para>
+		<para>Applications need the .NET 1.1 framework to be executed.</para>
 		<para>
-			To modify and build the source code, you need the .NET SDK and <ulink url="http://nant.sourceforge.net/">NAnt</ulink>
-			or <ulink url="http://www.icsharpcode.net/opensource/sd/">SharpDevelop</ulink> or Visual Studio .NET.
+			To modify and build the source code, you need the .NET SDK and an IDE like
+			<ulink url="http://nant.sourceforge.net/">NAnt</ulink>,
+			<ulink url="http://www.icsharpcode.net/opensource/sd/">SharpDevelop</ulink> or Visual Studio .NET.
+		</para>
+		<para>
+			You are obviously expected to know how to use your IDE.
+			The Visual Studio solution is the file <filename>/src/NHibernateEg.sln</filename>.
+			The SharpDevelop combine is the file <filename>/src/NHibernateEg.cmbx</filename>.
+			If NAnt is correctly set up, you can run the file <filename>/src/Build-in-bin.bat</filename>
+			to build all applications in their /bin/ directories.
+		</para>
+
+		<para>
+			By default, these applications will use a Microsoft Access database (included in the package).
+			So, you shouldn't have to configure the database access.
+			But you can easily change it to use MySQL or SQL Server (or MSDE).
+			It is actually possible to use any RDBMS supported by NHibernate,
+			but you may have to do more modifications.
+		</para>
+
+		<para>
+			You may also download NHibernate (and NHibernateContrib) on
+			<ulink url="http://sourceforge.net/projects/nhibernate/">its sourceforge page</ulink>.
+			These packages contain its binaries, its source code and its documentation.
+			But it is not a requirement for these tutorials.
 		</para>
 	</section>
 
@@ -73,13 +104,13 @@
 		<title>Object / Relational Mapping</title>
 
 		<para>
-			An <emphasis role="strong">Object / Relational Mapper</emphasis> is persistence layer
+			An <emphasis role="strong">Object / Relational Mapping product</emphasis> is persistence layer
 			connecting objects in an object-oriented system to data stored in a relational database.
 			Using Object / Relational Mapping (ORM) allows one to cleanly apply object-oriented design,
 			analysis, and programming techniques while hiding the specifics of dealing with the relational system.
 		</para>
 		<para>
-			ORM is very popular in the Java world; but even if it is still relatively unknown in the .NET world,
+			ORM is very popular in the Java world; and even if it is still relatively unknown in the .NET world,
 			there are already plenty of (commercial / open-source) libraries.
 		</para>
 		<para>
@@ -103,13 +134,14 @@
 			</formalpara></listitem>
 			<listitem><formalpara>
 				<title>Full Object Mapping</title>
-				<para>More advanced solution than Medium Object Mapping; it provides support for complex mapping like inheritance. It has a complete and object-oriented query API and advanced features like concurrency and caching strategies.</para>
+				<para>More advanced solution than Medium Object Mapping; it provides support for complex mapping like inheritance. It has a complete and object-oriented query API and advanced features like concurrency access management and caching strategies.</para>
 			</formalpara></listitem>
 		</itemizedlist>
 
-		<para>The step ahead might be to use a <emphasis>object/XML database</emphasis>; but it can require too much fundamental changes.</para>
-
-		<para>An Object / Relational Mapper uses internally many patterns and .NET features: Unit Of Work, Identity Map, Lazy Loading, Reflection, XML ...</para>
+		<para>
+			An Object / Relational "Mapper" uses internally many patterns and .NET features to provide all needed features:
+			Unit Of Work, Identity Map, Lazy Loading, Reflection, XML, etc.
+		</para>
 
 		<itemizedlist>
 			<title>For more details about ORM, read:</title>
@@ -133,6 +165,47 @@
 			NHibernate is <emphasis role="strong">production-ready</emphasis>; the version 1.0 was released in October 2005.
 			And it is supported by <ulink url="http://www.jboss.org/">JBoss Inc</ulink>.
 		</para>
+	</section>
+
+
+	<section id="Preface-DocConventions">
+		<title>Document Conventions</title>
+
+		<para>These tutorials are not formatted using very strict conventions. The goal is to highlight important words / phrases.</para>
+
+		<table>
+			<title>Typographic conventions</title>
+			<tgroup cols="2">
+				<thead>
+					<row>
+						<entry>Convention</entry>
+						<entry>Example</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>Bold word or phrase</entry>
+						<entry>This feature is called <emphasis role="strong">transparent persistence</emphasis></entry>
+					</row>
+					<row>
+						<entry>File name</entry>
+						<entry>Executable file <filename>NHibernateEg.Tutorial1A.exe</filename></entry>
+					</row>
+					<row>
+						<entry>Class name (also used for .NET attributes)</entry>
+						<entry><classname>Shop</classname> is a class [...]</entry>
+					</row>
+					<row>
+						<entry>Member name (method, field, property)</entry>
+						<entry>public void <methodname>ComputeTotalPrice</methodname>(int unitPrice)</entry>
+					</row>
+					<row>
+						<entry>Literal word or phrase (C# code or XML)</entry>
+						<entry>[...] the section called <literal>&lt;log4net&gt;</literal></entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
 	</section>
 
 </preface>
