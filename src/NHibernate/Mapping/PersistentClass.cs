@@ -191,6 +191,7 @@ namespace NHibernate.Mapping
 		public virtual void AddProperty( Property p )
 		{
 			properties.Add( p.Name, p );
+			p.PersistentClass = this;
 		}
 
 		/// <summary>

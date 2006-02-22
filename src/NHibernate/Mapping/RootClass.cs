@@ -3,7 +3,6 @@ using System.Collections;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Engine;
-using NHibernate.Persister;
 
 namespace NHibernate.Mapping
 {
@@ -51,7 +50,11 @@ namespace NHibernate.Mapping
 		public override Property IdentifierProperty
 		{
 			get { return identifierProperty; }
-			set { identifierProperty = value; }
+			set
+			{
+				identifierProperty = value;
+				identifierProperty.PersistentClass = this;
+			}
 		}
 
 		/// <summary>

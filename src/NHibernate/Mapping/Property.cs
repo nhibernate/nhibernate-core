@@ -18,6 +18,7 @@ namespace NHibernate.Mapping
 		private bool insertable = true;
 		private string propertyAccessorName;
 		private IDictionary metaAttributes;
+		private PersistentClass persistentClass;
 
 		/// <summary>
 		/// 
@@ -246,6 +247,12 @@ namespace NHibernate.Mapping
 				else
 					return null;
 			}
+		}
+
+		public PersistentClass PersistentClass
+		{
+			get { return persistentClass; }
+			set { persistentClass = value; }
 		}
 	}
 }
