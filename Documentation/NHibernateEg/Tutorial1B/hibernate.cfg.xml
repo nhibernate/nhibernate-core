@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<hibernate-configuration  xmlns="urn:nhibernate-configuration-2.0" >
+	<session-factory name="NHibernateEg">
+		<property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
+
+		<!-- Settings to access a Microsoft Access database -->
+		<property name="dialect">NHibernate.JetDriver.JetDialect, NHibernate.JetDriver</property>
+		<property name="connection.driver_class">NHibernate.JetDriver.JetDriver, NHibernate.JetDriver</property>
+		<property name="connection.connection_string">Provider=Microsoft.Jet.OLEDB.4.0;Data Source=nhibernate.mdb</property>
+
+		<!-- Settings to access a SQL Server database -
+		<property name="dialect">NHibernate.Dialect.MsSql2000Dialect</property>
+		<property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
+		<property name="connection.connection_string">Data Source=(local);Initial Catalog=nhibernate;Integrated Security=SSPI</property>
+
+		!- Settings to access a MySQL database -
+		<property name="dialect">NHibernate.Dialect.MySQLDialect</property>
+		<property name="connection.driver_class">NHibernate.Driver.MySqlDataDriver</property>
+		<property name="connection.connection_string">Server=localhost;Database=nhibernate;User ID=root;Password=</property>
+		-->
+
+		<!-- Enable SQL logging -->
+		<property name="show_sql">true</property>
+	</session-factory>
+</hibernate-configuration>

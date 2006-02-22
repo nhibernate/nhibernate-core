@@ -15,9 +15,9 @@
                 DefaultHTMLPageLayout = "Grid"
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
-                OutputType = "WinExe"
+                OutputType = "Exe"
                 PreBuildEvent = ""
-                PostBuildEvent = ""
+                PostBuildEvent = 'copy /-y "$(ProjectDir)..\nhibernate.mdb" "$(TargetDir)nhibernate.mdb"&#xd;&#xa;copy /y "$(ProjectDir)..\..\lib\net-1.1\NHibernate.JetDriver.dll" "$(TargetDir)NHibernate.JetDriver.dll"&#xd;&#xa;copy /y "$(ProjectDir)hibernate.cfg.xml" "$(TargetDir)hibernate.cfg.xml"&#xd;&#xa;copy /y "$(ProjectDir)..\..\lib\net-1.1\MySql.Data.dll" "$(TargetDir)MySql.Data.dll"&#xd;&#xa;copy /y "$(ProjectDir)..\..\lib\net-1.1\ICSharpCode.SharpZipLib.dll" "$(TargetDir)ICSharpCode.SharpZipLib.dll"'
                 RootNamespace = "NHibernateEg.Tutorial1B"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
@@ -82,24 +82,127 @@
                 />
                 <Reference
                     Name = "System.XML"
-                    AssemblyName = "System.XML"
+                    AssemblyName = "System.Xml"
+                />
+                <Reference
+                    Name = "log4net"
+                    AssemblyName = "log4net"
+                    HintPath = "..\..\lib\net-1.1\log4net.dll"
+                />
+                <Reference
+                    Name = "NHibernate"
+                    AssemblyName = "NHibernate"
+                    HintPath = "..\..\lib\net-1.1\NHibernate.dll"
+                />
+                <Reference
+                    Name = "NHibernate.Mapping.Attributes"
+                    AssemblyName = "NHibernate.Mapping.Attributes"
+                    HintPath = "..\..\lib\net-1.1\NHibernate.Mapping.Attributes.dll"
                 />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
+                    RelPath = "App.config"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "App.ico"
                     BuildAction = "Content"
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "hibernate.cfg.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "MainForm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MainForm.resx"
+                    DependentUpon = "MainForm.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Program.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "readme.txt"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Shop.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DomainModel\Order.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DomainModel\Order.hbm.xml"
+                    DependentUpon = "Order.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DomainModel\OrderDetail.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DomainModel\OrderDetail.hbm.xml"
+                    DependentUpon = "OrderDetail.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DomainModel\Product.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DomainModel\Product.hbm.xml"
+                    DependentUpon = "Product.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\OrderForm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\OrderForm.resx"
+                    DependentUpon = "OrderForm.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\OrdersList.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\OrdersList.resx"
+                    DependentUpon = "OrdersList.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\ProductsList.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\ProductsList.resx"
+                    DependentUpon = "ProductsList.cs"
+                    BuildAction = "EmbeddedResource"
                 />
             </Include>
         </Files>
