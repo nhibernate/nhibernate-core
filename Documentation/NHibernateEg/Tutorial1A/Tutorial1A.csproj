@@ -17,7 +17,7 @@
                 DelaySign = "false"
                 OutputType = "Exe"
                 PreBuildEvent = ""
-                PostBuildEvent = 'copy /y "$(ProjectDir)..\..\lib\net-1.1\MySql.Data.dll" "$(TargetDir)MySql.Data.dll"&#xd;&#xa;copy /y "$(ProjectDir)..\..\lib\net-1.1\ICSharpCode.SharpZipLib.dll" "$(TargetDir)ICSharpCode.SharpZipLib.dll"'
+                PostBuildEvent = 'copy /y "$(ProjectDir)..\nhibernate.mdb" "$(TargetDir)nhibernate.mdb"&#xd;&#xa;copy /y "$(ProjectDir)..\..\lib\net-1.1\NHibernate.JetDriver.dll" "$(TargetDir)NHibernate.JetDriver.dll"&#xd;&#xa;copy /y "$(ProjectDir)..\..\lib\net-1.1\MySql.Data.dll" "$(TargetDir)MySql.Data.dll"&#xd;&#xa;copy /y "$(ProjectDir)..\..\lib\net-1.1\ICSharpCode.SharpZipLib.dll" "$(TargetDir)ICSharpCode.SharpZipLib.dll"'
                 RootNamespace = "NHibernateEg.Tutorial1A"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""

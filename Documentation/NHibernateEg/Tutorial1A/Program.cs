@@ -1,7 +1,7 @@
 /******************************************************************************\
  *
  * NHibernateEg.Tutorial1A
- * Copyright © 2005, Pierre Henri Kuaté. All rights reserved.
+ * Copyright © 2006, Pierre Henri Kuaté. All rights reserved.
  *
  * This product is under the terms of the GNU Lesser General Public License.
  * Read the file "license.txt" for more details.
@@ -17,7 +17,7 @@ namespace NHibernateEg.Tutorial1A
 	/// </summary>
 	internal sealed class Program
 	{
-		/// <summary> Instanciation forbidden. </summary>
+		/// <summary> Instantiation forbidden. </summary>
 		private Program()
 		{
 			throw new System.NotSupportedException();

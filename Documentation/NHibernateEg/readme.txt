@@ -1,7 +1,7 @@
 /******************************************************************************\
  *
  * NHibernateEg
- * Copyright © 2005, Pierre Henri Kuaté. All rights reserved.
+ * Copyright © 2006, Pierre Henri Kuaté. All rights reserved.
  * Contact: kpixel@users.sourceforge.net
  *
  * This product is under the terms of the GNU Lesser General Public License.
@@ -12,18 +12,17 @@
 
 Open the file "doc/index.html" to read the tutorials.
 
-The source code of Tutorial1A is in "src/Tutorial1A/"
-and the binaries are in "src/Tutorial1A/bin/".
+For Tutorial1A and Tutorial1B:
+- The source code of Tutorial1X is in "src/Tutorial1X/"
+- The binaries are in "src/Tutorial1X/bin/".
 
 The VS .NET 2003 solution of the tutorials is the file "src/NHibernateEg.sln".
+The SharpDevelop combine of the tutorials is the file "src/NHibernateEg.cmbx".
 You can also build the source code by running the file "src/Build-in-bin.bat".
 (make sure that you correctly set up NAnt)
 
-
---------------------------------------------------------------------------------
-TODO:
------
-- Add #D combines!
+The up-to-date version is available online:
+http://nhibernate.sourceforge.net/NHibernateEg/
 
 
 --------------------------------------------------------------------------------
@@ -42,7 +41,7 @@ Tutorial1B:
 - Relationship: Order - OrderDetail - Product
 - Lazy loading for Order.Details and Product
 - Product.<version>
-- Windows listing, editing & reporting (=> untyped Dataset & Databinding)
+- Windows listing, editing & reporting using untyped Dataset & Databinding
 
 
 --------------------------------------------------------------------------------
@@ -51,7 +50,7 @@ Tutorial1C:
 - Put NHibernate configuration in Web.config
 - ProductEx as <joined-subclass> with Supplier as <component> + Nullables
 - "Advanced" HQL query (+ Count(order) & Sum(price)) and Criteria usage
-- Web App: 2nd level caching, list/edit/report (=> typed Dataset & Databinding)
+- Web App: 2nd level caching, list/edit/report using typed Dataset & Databinding
 
 
 --------------------------------------------------------------------------------

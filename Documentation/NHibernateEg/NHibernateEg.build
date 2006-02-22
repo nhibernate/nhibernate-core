@@ -24,7 +24,7 @@
 
 
 
-	<target name="copy-files" depends="init" description="Deletes current build">
+	<target name="copy-files" depends="init" description="Copy 'common' files">
 		<property name="tutorial.bin" value="${build.dir}/${tutorial.name}/bin" />
 		<!-- copy license files in the bin directory of the current tutorial -->
 		<delete dir="${tutorial.bin}" failonerror="false" />
@@ -32,13 +32,15 @@
 
 		<copy file="../gnu-lgpl.txt" tofile="${tutorial.bin}/NHibernateEg.${tutorial.name}.license.txt" />
 
+		<copy file="nhibernate.mdb" tofile="${tutorial.bin}/nhibernate.mdb" />
+
 		<!-- copy framework-neutral files -->
 		<copy todir="${tutorial.bin}">
 			<fileset basedir="../lib"><include name="*.txt" /></fileset>
 		</copy>
 
 		<!-- copy framework-specific libraries used by all tutorials -->
-		<copy todir="${tutorial.bin}">
+		<copy todir="${tutorial.bin}" overwrite="true">
 			<fileset basedir="${lib.dir}">
 				<include name="Castle.DynamicProxy.dll" />
 				<include name="HashCodeProvider.dll" />
@@ -47,6 +49,7 @@
 				<include name="MySql.Data.dll" />
 				<include name="log4net.dll" />
 				<include name="NHibernate.dll" />
+				<include name="NHibernate.JetDriver.dll" />
 				<include name="NHibernate.Mapping.Attributes.dll" />
 			</fileset>
 		</copy>
@@ -58,7 +61,7 @@
 		<!-- Build NHibernateEg.Tutorial1A -->
 		<property name="tutorial.name" value="Tutorial1A" />
 		<call target="copy-files" />
-		<copy file="${tutorial.name}/App.config" tofile="${tutorial.bin}/NHibernateEg.${tutorial.name}.exe.config" />
+		<copy file="${tutorial.name}/App.config" tofile="${tutorial.bin}/NHibernateEg.${tutorial.name}.exe.config" overwrite="true" />
 		<csc
 			target="exe"
 			debug="${build.debug}"
@@ -80,8 +83,8 @@
 		<!-- Build NHibernateEg.Tutorial1B -->
 		<property name="tutorial.name" value="Tutorial1B" />
 		<call target="copy-files" />
-		<copy file="${tutorial.name}/App.config" tofile="${tutorial.bin}/NHibernateEg.${tutorial.name}.exe.config" />
-		<copy file="${tutorial.name}/hibernate.cfg.xml" tofile="${tutorial.bin}/hibernate.cfg.xml" />
+		<copy file="${tutorial.name}/App.config" tofile="${tutorial.bin}/NHibernateEg.${tutorial.name}.exe.config" overwrite="true" />
+		<copy file="${tutorial.name}/hibernate.cfg.xml" tofile="${tutorial.bin}/hibernate.cfg.xml" overwrite="true" />
 		<csc
 			target="winexe"
 			debug="${build.debug}"
@@ -122,18 +125,20 @@
 				<include name="*.txt" />
 			</fileset>
 		</copy>
-		<copy todir="build/lib"><!-- copy libraries -->
-			<fileset basedir="../lib/">
+		<copy todir="build/lib" overwrite="true">
+			<fileset basedir="../lib/"><!-- copy libraries -->
 				<include name="**/*" />
 			</fileset>
 		</copy>
-		<copy todir="${build.dir}">
+		<copy todir="${build.dir}" overwrite="true">
 			<fileset>
 				<!-- copy the source of all tutorials -->
 				<include name="Tutorial*/**" />
 
+				<include name="nhibernate.mdb" />
 				<include name="NHibernateEg.build" />
 				<include name="NHibernateEg.sln" />
+				<include name="NHibernateEg.cmbx" />
 				<include name="Build-in-bin.bat" />
 
 				<!-- exclude ReSharper stuff -->

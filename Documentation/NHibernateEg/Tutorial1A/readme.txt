@@ -1,7 +1,7 @@
 /******************************************************************************\
  *
  * NHibernateEg.Tutorial1A
- * Copyright © 2005, Pierre Henri Kuaté. All rights reserved.
+ * Copyright © 2006, Pierre Henri Kuaté. All rights reserved.
  * Contact: kpixel@users.sourceforge.net
  *
  * This product is under the terms of the GNU Lesser General Public License.

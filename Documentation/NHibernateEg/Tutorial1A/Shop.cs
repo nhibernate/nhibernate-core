@@ -1,7 +1,7 @@
 /******************************************************************************\
  *
  * NHibernateEg.Tutorial1A
- * Copyright © 2005, Pierre Henri Kuaté. All rights reserved.
+ * Copyright © 2006, Pierre Henri Kuaté. All rights reserved.
  *
  * This product is under the terms of the GNU Lesser General Public License.
  * Read the file "license.txt" for more details.
@@ -31,28 +31,34 @@ namespace NHibernateEg.Tutorial1A
 			NHibernate.Cfg.Configuration cfg = new NHibernate.Cfg.Configuration();
 			cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionProvider, "NHibernate.Connection.DriverConnectionProvider");
 
-			System.Console.Out.WriteLine("Use database: <" + database + ">\n");
+			System.Console.Out.WriteLine("Use database: <" + database
+				 + ">\nConnectionString: <" + connectionString + ">\n");
 
-			if("MSSQL" == database)
+			if("Access" == database)
+			{
+				cfg.SetProperty(NHibernate.Cfg.Environment.Dialect, "NHibernate.JetDriver.JetDialect, NHibernate.JetDriver");
+				cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionDriver, "NHibernate.JetDriver.JetDriver, NHibernate.JetDriver");
+			}
+			else if("MSSQL" == database)
 			{
 				cfg.SetProperty(NHibernate.Cfg.Environment.Dialect, "NHibernate.Dialect.MsSql2000Dialect");
 				cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionDriver, "NHibernate.Driver.SqlClientDriver");
-				cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionString, connectionString);
 			}
 			else if("MySQL" == database)
 			{
 				cfg.SetProperty(NHibernate.Cfg.Environment.Dialect, "NHibernate.Dialect.MySQLDialect");
 				cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionDriver, "NHibernate.Driver.MySqlDataDriver");
-				cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionString, connectionString);
 			}
 			else
 				throw new System.InvalidOperationException("The database '" + database + "' is not valid.");
+
+			cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionString, connectionString);
 
 
 			// Use NHibernate.Mapping.Attributes to create information about our entities
 			System.IO.MemoryStream stream = new System.IO.MemoryStream(); // Where the information will be written in
 			NHibernate.Mapping.Attributes.HbmSerializer.Default.Validate = true; // Enable validation (optional)
-			// Ask to NHibernate to use fields instead of properties
+			// Ask to NHibernate to use fields instead of properties (in entities)
 			NHibernate.Mapping.Attributes.HbmSerializer.Default.HbmDefaultAccess = "field.camelcase-underscore";
 			// Gather information from this assembly (can also be done class by class)
 			System.Console.Out.WriteLine("NHibernate.Mapping.Attributes.HbmSerializer.Default.Serialize()...\n");
@@ -183,7 +189,7 @@ namespace NHibernateEg.Tutorial1A
 		}
 
 
-		/// <summary> Add 'n' hours to all orders. </summary>
+		/// <summary> Add 'n' hours to the date of all orders. </summary>
 		public void ChangeTimeZone(int n)
 		{
 			NHibernate.ISession session = null;
@@ -195,12 +201,12 @@ namespace NHibernateEg.Tutorial1A
 				session = _sessionFactory.OpenSession();
 				transaction = session.BeginTransaction();
 
-				System.Collections.IList commandes = session.CreateCriteria(typeof(Order)).List();//session.Find("from Order");
-				foreach(Order o in commandes)
+				System.Collections.IList orders = session.CreateCriteria(typeof(Order)).List();//session.Find("from Order");
+				foreach(Order o in orders)
 					o.ChangeTimeZone(n);
 				// It is useless to call Update(), the Session will automatically
 				// detect modified entities (as long as it loaded them)
-				System.Console.Out.WriteLine(commandes.Count + " updated orders!");
+				System.Console.Out.WriteLine(orders.Count + " updated orders!");
 
 				// Commit modifications (=> Build and execute queries)
 				transaction.Commit();
