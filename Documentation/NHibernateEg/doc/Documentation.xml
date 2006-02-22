@@ -1,4 +1,9 @@
 <?xml version="1.0"?>
+<!--
+  This is part of NHibernateEg documentation.
+  Copyright (C) 2006, Pierre Henri Kuaté.
+  See the GNU Free Documentation License for copying conditions.
+-->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5b1//EN"
 	"../../docbook-xml/docbookx.dtd" [
 		<!ENTITY Legal-Information SYSTEM "../../src/Legal.Information.xml">
@@ -36,6 +41,10 @@
 
 		<releaseinfo>This work is in progress and will heavily evolve in the next weeks.</releaseinfo>
 		<revhistory>
+			<revision>
+				<date>x Feb 2006</date>
+				<revremark>Update to use NHibernate 1.0.2.0 and a Microsoft Access database by default; add a #Develop combine. And many minor changes in the documentation.</revremark>
+			</revision>
 			<revision>
 				<date>14 Nov 2005</date>
 				<revremark>First release with <link linkend="NHibernateEg.Tutorial1A">Tutorial1A</link> only.</revremark>

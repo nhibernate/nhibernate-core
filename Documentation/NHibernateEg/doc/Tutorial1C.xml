@@ -1,4 +1,9 @@
 <!-- <!DOCTYPE chapter SYSTEM "../../docbook-xml/docbookx.dtd"> -->
+<!--
+  This is part of NHibernateEg documentation.
+  Copyright (C) 2006, Pierre Henri Kuaté.
+  See the GNU Free Documentation License for copying conditions.
+-->
 <chapter id="NHibernateEg.Tutorial1C">
 	<title>NHibernateEg.Tutorial1C</title>
 
