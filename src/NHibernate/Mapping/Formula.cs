@@ -7,7 +7,8 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// A formula is a derived column value.
 	/// </summary>
-	public class Formula
+	[Serializable]
+	public class Formula : ISelectable
 	{
 		private static int formulaUniqueInteger = 0;
 
@@ -41,6 +42,36 @@ namespace NHibernate.Mapping
 		{
 			get { return formula; }
 			set { this.formula = value; }
+		}
+
+		public string GetText( Dialect.Dialect dialect )
+		{
+			return FormulaString;
+		}
+		
+		public string Text
+		{
+			get { return FormulaString; }
+		}
+
+		public string GetAlias( Dialect.Dialect dialect ) 
+		{
+			return "formula" + uniqueInteger.ToString() + '_';
+		}
+
+		public string GetAlias(Dialect.Dialect dialect, Table table) 
+		{
+			return GetAlias(dialect);
+		}
+
+		public bool IsFormula
+		{
+			get { return false; }
+		}
+
+		public override string ToString() 
+		{
+			return GetType().FullName + "( " + formula + " )";
 		}
 	}
 }

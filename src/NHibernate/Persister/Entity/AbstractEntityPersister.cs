@@ -701,7 +701,7 @@ namespace NHibernate.Persister.Entity
 			foreach( Column col in idValue.ColumnCollection )
 			{
 				identifierColumnNames[ i ] = col.GetQuotedName( Dialect );
-				identifierAliases[ i ] = col.Alias( Dialect );
+				identifierAliases[ i ] = col.GetAlias( Dialect );
 				i++;
 			}
 
@@ -947,7 +947,7 @@ namespace NHibernate.Persister.Entity
 					int l = 0;
 					foreach( Column thing in prop.ColumnCollection )
 					{
-						aliases[ l ] = thing.Alias( dialect );
+						aliases[ l ] = thing.GetAlias( dialect );
 						cols[ l ] = thing.GetQuotedName( dialect );
 						l++;
 					}

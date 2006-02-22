@@ -118,7 +118,7 @@ namespace NHibernate.Persister.Collection
 			foreach( Column col in collection.Key.ColumnCollection )
 			{
 				keyColumnNames[ k ] = col.GetQuotedName( dialect );
-				keyAliases[ k ] = col.Alias( dialect );
+				keyAliases[ k ] = col.GetAlias( dialect );
 				k++;
 			}
 			keyColumnAliases = alias.ToAliasStrings( keyAliases, dialect );
@@ -159,7 +159,7 @@ namespace NHibernate.Persister.Collection
 			foreach( Column col in iter )
 			{
 				elementColumnNames[ j ] = col.GetQuotedName( dialect );
-				aliases[ j ] = col.Alias( dialect );
+				aliases[ j ] = col.GetAlias( dialect );
 				j++;
 			}
 
@@ -182,7 +182,7 @@ namespace NHibernate.Persister.Collection
 				int i = 0;
 				foreach( Column indexCol in indexedCollection.Index.ColumnCollection )
 				{
-					indexAliases[ i ] = indexCol.Alias( dialect );
+					indexAliases[ i ] = indexCol.GetAlias( dialect );
 					indexColumnNames[ i ] = indexCol.GetQuotedName( dialect );
 					i++;
 				}
@@ -221,7 +221,7 @@ namespace NHibernate.Persister.Collection
 				identifierColumnName = col.GetQuotedName( dialect );
 				selectType = new string[ ] {identifierColumnName};
 				selectColumns = identifierType;
-				identifierColumnAlias = alias.ToAliasString( col.Alias( dialect ), dialect );
+				identifierColumnAlias = alias.ToAliasString( col.GetAlias( dialect ), dialect );
 				unquotedIdentifierColumnName = identifierColumnAlias;
 				identifierGenerator = idColl.Identifier.CreateIdentifierGenerator( dialect );
 				CheckColumnDuplication( distinctColumns, idColl.Identifier.ColumnCollection );

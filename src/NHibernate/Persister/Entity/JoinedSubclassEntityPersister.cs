@@ -1118,7 +1118,7 @@ namespace NHibernate.Persister.Entity
 					{
 						string colname = col.GetQuotedName( Dialect );
 						propCols[ j ] = colname;
-						propAliases[ j ] = col.Alias( Dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore );
+						propAliases[ j ] = col.GetAlias( Dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore );
 						j++;
 					}
 					this.propertyColumnNames[ i ] = propCols;
@@ -1182,7 +1182,7 @@ namespace NHibernate.Persister.Entity
 						columns.Add( col.GetQuotedName( Dialect ) );
 						coltables.Add( tabnum );
 						cols[ l++ ] = col.GetQuotedName( Dialect );
-						aliases.Add( col.Alias( Dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore ) );
+						aliases.Add( col.GetAlias( Dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore ) );
 					}
 					propColumns.Add( cols );
 				}

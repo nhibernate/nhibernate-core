@@ -10,7 +10,8 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// Represents the mapping to a column in a database.
 	/// </summary>
-	public class Column
+	[Serializable]
+	public class Column : ISelectable
 	{
 		private static readonly int DefaultPropertyLength = -1;
 
@@ -109,7 +110,7 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that can be used as the alias for this Column.
 		/// </returns>
-		public string Alias( Dialect.Dialect d )
+		public string GetAlias( Dialect.Dialect d )
 		{
 			if( quoted || name[0] == StringHelper.SingleQuote || char.IsDigit( name, 0 ) )
 			{
@@ -126,6 +127,11 @@ namespace NHibernate.Mapping
 			}
 		}
 
+		public string GetAlias( Dialect.Dialect dialect, Table table )
+		{
+			return GetAlias(dialect) + table.UniqueInteger + '_';
+		}
+
 		/// <summary>
 		/// Gets an Alias for the column name.
 		/// </summary>
@@ -134,7 +140,7 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that can be used as the alias for this Column.
 		/// </returns>
-		public string Alias( Dialect.Dialect d, string suffix )
+		public string GetAlias( Dialect.Dialect d, string suffix )
 		{
 			if( quoted || name[0] == StringHelper.SingleQuote || char.IsDigit( name, 0 ) )
 			{
@@ -353,6 +359,31 @@ namespace NHibernate.Mapping
 		public bool HasCheckConstraint
 		{
 			get { return checkConstraint != null && checkConstraint.Length > 0; }
+		}
+
+		public string Text
+		{
+			get { return Name; }
+		}
+
+		public string GetText( Dialect.Dialect dialect )
+		{
+			return GetQuotedName( dialect );
+		}
+
+		public bool IsFormula
+		{
+			get { return false; }
+		}
+
+		public string GetTemplate( Dialect.Dialect dialect )
+		{
+			return GetQuotedName( dialect );
+		}
+
+		public override string ToString() 
+		{
+			return GetType().FullName + "( " + name + " )";
 		}
 	}
 }

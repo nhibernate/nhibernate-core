@@ -957,7 +957,7 @@ namespace NHibernate.Persister.Entity
 				foreach( Column discColumn in d.ColumnCollection )
 				{
 					discriminatorColumnName = discColumn.GetQuotedName( Dialect );
-					discriminatorAlias = discColumn.Alias( Dialect );
+					discriminatorAlias = discColumn.GetAlias( Dialect );
 				}
 				discriminatorType = model.Discriminator.Type;
 
@@ -1045,7 +1045,7 @@ namespace NHibernate.Persister.Entity
 					int j = 0;
 					foreach( Column col in prop.ColumnCollection )
 					{
-						colAliases[ j ] = col.Alias( Dialect );
+						colAliases[ j ] = col.GetAlias( Dialect );
 						colNames[ j ] = col.GetQuotedName( Dialect );
 						j++;
 						if( prop.IsUpdateable )
@@ -1099,7 +1099,7 @@ namespace NHibernate.Persister.Entity
 					foreach( Column col in prop.ColumnCollection )
 					{
 						columns.Add( col.GetQuotedName( Dialect ) );
-						aliases.Add( col.Alias( Dialect ) );
+						aliases.Add( col.GetAlias( Dialect ) );
 						cols[ l++ ] = col.GetQuotedName( Dialect );
 					}
 					propColumns.Add( cols );
