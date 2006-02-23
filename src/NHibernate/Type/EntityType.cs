@@ -4,7 +4,6 @@ using System.Data;
 using System.Text;
 
 using NHibernate.Engine;
-using NHibernate.Persister;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
@@ -322,5 +321,6 @@ namespace NHibernate.Type
 			return associatedClass.GetHashCode();
 		}
 
+		public abstract bool IsAlwaysDirtyChecked { get; }
 	}
 }

@@ -1,5 +1,4 @@
 using System;
-
 using log4net;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -12,7 +11,6 @@ namespace NHibernate.Engine
 	public class Versioning
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( Versioning ) );
-
 
 		/// <summary>
 		/// Increment the given version number
@@ -53,7 +51,7 @@ namespace NHibernate.Engine
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
 		/// <param name="force">Force the version to initialize</param>
 		/// <returns><c>true</c> if the version property needs to be seeded with an initial value.</returns>
-		public static bool SeedVersion( object[ ] fields, int versionProperty, IVersionType versionType, bool force )
+		public static bool SeedVersion( object[] fields, int versionProperty, IVersionType versionType, bool force )
 		{
 			object initialVersion = fields[ versionProperty ];
 			if( initialVersion == null || force )
@@ -78,7 +76,7 @@ namespace NHibernate.Engine
 		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
 		/// <returns>The value of the version.</returns>
-		private static object GetVersion( object[ ] fields, int versionProperty, IVersionType versionType )
+		private static object GetVersion( object[] fields, int versionProperty, IVersionType versionType )
 		{
 			return fields[ versionProperty ];
 		}
@@ -90,7 +88,7 @@ namespace NHibernate.Engine
 		/// <param name="version">The value the version should be set to in the <c>fields</c> parameter.</param>
 		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
-		private static void SetVersion( object[ ] fields, object version, int versionProperty, IVersionType versionType )
+		private static void SetVersion( object[] fields, object version, int versionProperty, IVersionType versionType )
 		{
 			fields[ versionProperty ] = version;
 		}
@@ -101,7 +99,7 @@ namespace NHibernate.Engine
 		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
 		/// <param name="version">The value the version should be set to in the <c>fields</c> parameter.</param>
 		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for persisting the values of the <c>fields</c> parameter.</param>
-		public static void SetVersion( object[ ] fields, object version, IEntityPersister persister )
+		public static void SetVersion( object[] fields, object version, IEntityPersister persister )
 		{
 			SetVersion( fields, version, persister.VersionProperty, persister.VersionType );
 		}
@@ -115,11 +113,34 @@ namespace NHibernate.Engine
 		/// The value of the version contained in the <c>fields</c> parameter or null if the
 		/// Entity is not versioned.
 		/// </returns>
-		public static object GetVersion( object[ ] fields, IEntityPersister persister )
+		public static object GetVersion( object[] fields, IEntityPersister persister )
 		{
 			return persister.IsVersioned ? GetVersion( fields, persister.VersionProperty, persister.VersionType ) : null;
 		}
 
+		/// <summary>
+		/// Do we need to increment the version number, given the dirty properties?
+		/// </summary>
+		public static bool IsVersionIncrementRequired(
+			int[] dirtyProperties,
+			bool hasDirtyCollections,
+			bool[] propertyVersionability )
+		{
+			if( hasDirtyCollections )
+			{
+				return true;
+			}
+			
+			for( int i = 0; i < dirtyProperties.Length; i++ )
+			{
+				if( propertyVersionability[ dirtyProperties[ i ] ] )
+				{
+					return true;
+				}
+			}
+			
+			return false;
+		}
 
 	}
 }

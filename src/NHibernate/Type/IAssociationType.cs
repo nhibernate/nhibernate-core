@@ -56,5 +56,11 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		[Obsolete("Remove for H3")]
 		string[] GetReferencedColumns( ISessionFactoryImplementor factory );
+
+		/// <summary>
+		/// Do we dirty check this association, even when there are
+		/// no columns to be updated.
+		/// </summary>
+		bool IsAlwaysDirtyChecked { get; }
 	}
 }

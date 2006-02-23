@@ -87,5 +87,16 @@ namespace NHibernate.Type
 		{
 			return ResolveIdentifier( session.GetEntityIdentifier( owner ), session, owner );
 		}
+
+		/// <summary>
+		/// We don't need to dirty check one-to-one because of how 
+		/// assemble/disassemble is implemented and because a one-to-one 
+		/// association is never dirty
+		/// </summary>
+		public override bool IsAlwaysDirtyChecked
+		{
+			get { return false; }
+		}
+
 	}
 }

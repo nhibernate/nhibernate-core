@@ -351,5 +351,10 @@ namespace NHibernate.Type
 		{
 			return 1; // Originally: System.identityHashCode(this);
 		}
+
+		public bool IsAlwaysDirtyChecked
+		{
+			get { return false; }
+		}
 	}
 }

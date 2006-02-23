@@ -82,6 +82,11 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
+		public bool[] PropertyCheckability
+		{
+			get { return null; }
+		}
+
 		public bool HasCascades
 		{
 			get

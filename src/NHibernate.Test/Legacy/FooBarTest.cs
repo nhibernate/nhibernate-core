@@ -1522,28 +1522,37 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Bar bar = new Bar();
+			Assert.IsNull( bar.Bytes );
 			s.Save( bar );
+			Assert.IsNotNull( bar.Bytes );
 			s.Flush();
+			Assert.IsNotNull( bar.Bytes );
 
 			bar.String = "changed";
 			Baz baz = new Baz();
 			baz.Foo = bar;
 			s.Save( baz );
+			Assert.IsNotNull( bar.Bytes );
 
 			IQuery q = s.CreateQuery( "from Foo foo, Bar bar" );
 			q.SetLockMode( "bar", LockMode.Upgrade );
 			object[ ] result = ( object[ ] ) q.List()[ 0 ];
+			Assert.IsNotNull( bar.Bytes );
 
 			object b = result[ 0 ];
 
 			Assert.IsTrue( s.GetCurrentLockMode( b ) == LockMode.Write && s.GetCurrentLockMode( result[ 1 ] ) == LockMode.Write );
 			s.Flush();
+			Assert.IsNotNull( bar.Bytes );
 			s.Disconnect();
 
 			s.Reconnect();
+			Assert.IsNotNull( bar.Bytes );
 
 			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode( b ) );
+			Assert.IsNotNull( bar.Bytes );
 			s.Find( "from Foo foo" );
+			Assert.IsNotNull( bar.Bytes );
 			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode( b ) );
 			q = s.CreateQuery( "from Foo foo" );
 			q.SetLockMode( "foo", LockMode.Read );

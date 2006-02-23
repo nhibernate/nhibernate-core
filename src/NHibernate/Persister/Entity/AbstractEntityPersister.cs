@@ -104,6 +104,11 @@ namespace NHibernate.Persister.Entity
 		private readonly string[ ] propertyNames;
 		private readonly IType[ ] propertyTypes;
 		private readonly bool[ ] propertyUpdateability;
+		private readonly bool[ ] propertyCheckability;
+
+		// properties that are to be dirty-checked - includes all updateable properties
+		// and one-to-many associations.
+
 		private readonly bool[ ] propertyInsertability;
 		private readonly bool[ ] propertyNullability;
 		private readonly IGetter[ ] getters;
@@ -262,7 +267,7 @@ namespace NHibernate.Persister.Entity
 		/// <returns></returns>
 		public virtual int[ ] FindDirty( object[ ] x, object[ ] y, object obj, ISessionImplementor session )
 		{
-			int[ ] props = TypeFactory.FindDirty( propertyTypes, x, y, propertyUpdateability, session );
+			int[ ] props = TypeFactory.FindDirty( propertyTypes, x, y, propertyCheckability, session );
 			if( props == null )
 			{
 				return null;
@@ -290,7 +295,7 @@ namespace NHibernate.Persister.Entity
 		/// <returns></returns>
 		public virtual int[ ] FindModified( object[ ] old, object[ ] current, object obj, ISessionImplementor session )
 		{
-			int[ ] props = TypeFactory.FindModified( propertyTypes, old, current, propertyUpdateability, session );
+			int[ ] props = TypeFactory.FindModified( propertyTypes, old, current, propertyCheckability, session );
 			if( props == null )
 			{
 				return null;
@@ -781,6 +786,7 @@ namespace NHibernate.Persister.Entity
 			propertyTypes = new IType[hydrateSpan];
 			propertyNames = new string[hydrateSpan];
 			propertyUpdateability = new bool[hydrateSpan];
+			propertyCheckability  = new bool[hydrateSpan];
 			propertyInsertability = new bool[hydrateSpan];
 			propertyNullability = new bool[hydrateSpan];
 			getters = new IGetter[hydrateSpan];
@@ -819,6 +825,11 @@ namespace NHibernate.Persister.Entity
 				propertyUpdateability[ i ] = prop.IsUpdateable;
 				propertyInsertability[ i ] = prop.IsInsertable;
 				propertyNullability[ i ] = prop.IsNullable;
+				
+				bool propertyAlwaysDirtyChecked = prop.Type.IsAssociationType && 
+				( ( IAssociationType ) prop.Type ).IsAlwaysDirtyChecked;
+
+				propertyCheckability[ i ] = propertyAlwaysDirtyChecked || prop.IsUpdateable;
 
 				gettersByPropertyName[ propertyNames[ i ] ] = getters[ i ];
 				settersByPropertyName[ propertyNames[ i ] ] = setters[ i ];
@@ -1048,6 +1059,11 @@ namespace NHibernate.Persister.Entity
 		public virtual bool[ ] PropertyUpdateability
 		{
 			get { return propertyUpdateability; }
+		}
+
+		public virtual bool[ ] PropertyCheckability
+		{
+			get { return propertyCheckability; }
 		}
 
 		public virtual bool[ ] PropertyNullability

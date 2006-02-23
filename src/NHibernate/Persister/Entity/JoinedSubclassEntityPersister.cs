@@ -824,24 +824,29 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Decide which tables need to be updated
 		/// </summary>
-		/// <param name="dirtyFields"></param>
+		/// <param name="dirtyProperties"></param>
 		/// <returns></returns>
-		private bool[] GetTableUpdateNeeded( int[] dirtyFields )
+		private bool[] GetTableUpdateNeeded( int[] dirtyProperties )
 		{
-			if( dirtyFields == null )
+			if( dirtyProperties == null )
 			{
 				return propertyHasColumns; //for object that came in via update()
 			}
 			else
 			{
+				bool[ ] updateability = PropertyUpdateability;
 				bool[ ] tableUpdateNeeded = new bool[naturalOrderTableNames.Length];
-				for( int i = 0; i < dirtyFields.Length; i++ )
+				for( int i = 0; i < dirtyProperties.Length; i++ )
 				{
-					tableUpdateNeeded[ naturalOrderPropertyTables[ dirtyFields[ i ] ] ] = true;
+					int property = dirtyProperties[ i ];
+					int table = naturalOrderPropertyTables[ property ];
+					tableUpdateNeeded[ table ] = tableUpdateNeeded[ table ] || 
+						( propertyColumnSpans[ property ] > 0 && updateability[ property ] );
 				}
 				if( IsVersioned )
 				{
 					tableUpdateNeeded[ 0 ] = true;
+					// = tableUpdateNeeded[ 0 ] || Versioning.IsVersionIncrementRequired(...);
 				}
 				return tableUpdateNeeded;
 			}

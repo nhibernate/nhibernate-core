@@ -68,6 +68,11 @@ namespace NHibernate.DomainModel
 			get { return Mutability; }
 		}
 
+		public bool[] PropertyCheckability
+		{
+			get { return Mutability; }
+		}
+
 		public bool[] PropertyNullability
 		{
 			get { return Nullability; }

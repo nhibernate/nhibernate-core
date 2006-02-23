@@ -1625,6 +1625,7 @@
                 />
                 <File
                     RelPath = "Persister\Collection\BasicCollectionPersister.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -1644,6 +1645,7 @@
                 />
                 <File
                     RelPath = "Persister\Collection\ICollectionPersister.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -1653,6 +1655,7 @@
                 />
                 <File
                     RelPath = "Persister\Collection\OneToManyPersister.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

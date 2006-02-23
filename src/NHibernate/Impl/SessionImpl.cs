@@ -3273,7 +3273,7 @@ namespace NHibernate.Impl
 				if( status == Status.Loaded )
 				{
 					updatedState = new object[values.Length];
-					TypeFactory.DeepCopy( values, types, persister.PropertyUpdateability, updatedState );
+					TypeFactory.DeepCopy( values, types, persister.PropertyCheckability, updatedState );
 				}
 
 				// if it was dirtied by a collection only

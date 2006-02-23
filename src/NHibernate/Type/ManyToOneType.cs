@@ -138,5 +138,11 @@ namespace NHibernate.Type
 				return ResolveIdentifier( id, session );
 			}
 		}
+
+		public override bool IsAlwaysDirtyChecked
+		{
+			// TODO H3: get { return ignoreNotFound; }
+			get { return false; }
+		}
 	}
 }

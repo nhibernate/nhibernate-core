@@ -324,5 +324,15 @@ namespace NHibernate.Type
 		{
 			get { return null; }
 		}
+
+		/// <summary>
+		/// We always need to dirty check the collection because we sometimes 
+		/// need to incremement version number of owner and also because of 
+		/// how assemble/disassemble is implemented for uks
+		/// </summary>
+		public bool IsAlwaysDirtyChecked
+		{
+			get { return true; }
+		}
 	}
 }

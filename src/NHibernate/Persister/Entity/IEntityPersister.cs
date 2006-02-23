@@ -310,6 +310,12 @@ namespace NHibernate.Persister.Entity
 		bool[ ] PropertyUpdateability { get; }
 
 		/// <summary>
+		/// Properties that may be dirty (and thus should be dirty-checked). These
+		/// include all updatable properties and some associations.
+		/// </summary>
+		bool[ ] PropertyCheckability { get; }
+
+		/// <summary>
 		/// Get the nullability of the properties of this class
 		/// </summary>
 		bool[ ] PropertyNullability { get; }
