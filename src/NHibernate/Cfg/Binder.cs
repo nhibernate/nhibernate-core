@@ -350,7 +350,7 @@ namespace NHibernate.Cfg
 						{
 							throw new MappingException( "must specify an identifier type: " + model.MappedClass.Name );
 						}
-						model.IdentifierProperty = null;
+						//model.IdentifierProperty = null;
 					}
 					else
 					{
@@ -376,7 +376,7 @@ namespace NHibernate.Cfg
 					{
 						BindComponent( subnode, compId, null, model.Name, "id", false, mappings );
 						model.HasEmbeddedIdentifier = compId.IsEmbedded;
-						model.IdentifierProperty = null;
+						//model.IdentifierProperty = null;
 					}
 					else
 					{
@@ -1097,10 +1097,12 @@ namespace NHibernate.Cfg
 				{
 					throw new MappingException( "properties of components may not be formulas: " + prop.Name );
 				}
+				/*
 				if( !prop.IsInsertable || !prop.IsUpdateable )
 				{
 					throw new MappingException( "insert=\"false\", update=\"false\" not supported for properties of components: " + prop.Name );
 				}
+				*/
 				names[ i ] = prop.Name;
 				types[ i ] = prop.Type;
 				cascade[ i ] = prop.CascadeStyle;

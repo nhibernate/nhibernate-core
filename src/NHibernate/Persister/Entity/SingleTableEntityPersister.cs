@@ -40,13 +40,6 @@ namespace NHibernate.Persister.Entity
 		private SqlString sqlConcreteSelectString;
 		private SqlString sqlVersionSelectString;
 
-		// properties of this class, including inherited properties
-		private readonly int[ ] propertyColumnSpans;
-		private readonly bool[ ] propertyDefinedOnSubclass;
-		private readonly string[ ][ ] propertyColumnNames;
-		private readonly string[ ][ ] propertyColumnAliases;
-		private readonly string[ ] propertyFormulaTemplates;
-
 		// the closure of all columns used by the entire hierarchy including
 		// subclasses and superclasses of this class
 		private readonly string[ ] subclassColumnClosure;

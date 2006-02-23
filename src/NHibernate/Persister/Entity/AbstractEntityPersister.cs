@@ -126,6 +126,26 @@ namespace NHibernate.Persister.Entity
 
         private readonly IGetSetHelper getset = null;
 
+
+		//information about properties of this class,
+		//including inherited properties
+		//(only really needed for updatable/insertable properties)
+
+		// temporarily 'protected' instead of 'private readonly'
+
+		// the number of columns that the property spans
+		// the array is indexed as propertyColumnSpans[propertyIndex] = ##
+		protected int[ ] propertyColumnSpans;
+		protected bool[ ] propertyDefinedOnSubclass;
+		// the names of the columns for the property
+		// the array is indexed as propertyColumnNames[propertyIndex][columnIndex] = "columnName"
+		protected string[ ][ ] propertyColumnNames;
+		// the alias names for the columns of the property.  This is used in the AS portion for 
+		// selecting a column.  It is indexed the same as propertyColumnNames
+		protected string[ ][ ] propertyColumnAliases;
+		protected string[ ] propertyFormulaTemplates;
+
+
 		protected SqlString GetLockString( LockMode lockMode )
 		{
 			return ( SqlString ) lockers[ lockMode ];

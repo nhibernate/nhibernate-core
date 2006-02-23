@@ -243,5 +243,18 @@ namespace NHibernate.Util
 			for( int i = 0; i < y.Length; i++ ) result[ i + x.Length ] = y[ i ];
 			return result;
 		}
+
+		public static bool IsAllFalse( bool[] array )
+		{
+			foreach( bool value in array )
+			{
+				if( value )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 	}
 }

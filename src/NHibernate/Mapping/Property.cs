@@ -2,6 +2,7 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Property;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -143,13 +144,31 @@ namespace NHibernate.Mapping
 
 		public bool IsUpdateable
 		{
-			get { return updateable && !IsFormula; }
+			get
+			{
+				bool[] columnUpdateability = propertyValue.ColumnUpdateability;
+				return updateable &&
+					!IsFormula && // temporary
+					(
+						// columnUpdateability.Length == 0 ||
+						!ArrayHelper.IsAllFalse(columnUpdateability)
+					);
+			}
 			set { updateable = value; }
 		}
 
 		public bool IsInsertable
 		{
-			get { return insertable && !IsFormula; }
+			get
+			{
+				bool[] columnInsertability = propertyValue.ColumnInsertability;
+				return insertable &&
+					!IsFormula && // temporary
+					(
+						columnInsertability.Length == 0 ||
+						!ArrayHelper.IsAllFalse( columnInsertability )
+					);
+			}
 			set { insertable = value; }
 		}
 

@@ -72,28 +72,12 @@ namespace NHibernate.Persister.Entity
 		private SqlString[ ] sqlIdentityInsertStrings;
 		private SqlString[ ] sqlUpdateStrings;
 
-		/* 
-		 * properties of this class, including inherited properties
-		 */
-
-		// the number of columns that the property spans
-		// the array is indexed as propertyColumnSpans[propertyIndex] = ##
-		private readonly int[ ] propertyColumnSpans;
-
 		// the index of the table that the property is coming from
 		// the array is indexed as propertyTables[propertyIndex] = tableIndex 
 		private readonly int[ ] propertyTables;
 		private readonly int[ ] naturalOrderPropertyTables;
 		private bool[ ] propertyHasColumns;
 
-		// the names of the columns for the property
-		// the array is indexed as propertyColumnNames[propertyIndex][columnIndex] = "columnName"
-		private readonly string[ ][ ] propertyColumnNames;
-
-		// the alias names for the columns of the property.  This is used in the AS portion for 
-		// selecting a column.  It is indexed the same as propertyColumnNames
-		private readonly string[ ][ ] propertyColumnNameAliases;
-		private readonly string[ ] propertyFormulaTemplates;
 
 		// the closure of all properties in the entire hierarchy including
 		// subclasses and superclasses of this class
@@ -102,7 +86,6 @@ namespace NHibernate.Persister.Entity
 		private readonly IType[ ] subclassPropertyTypeClosure;
 		private readonly string[ ] subclassPropertyNameClosure;
 		private readonly FetchMode[ ] subclassPropertyFetchModeClosure;
-		private readonly bool[ ] propertyDefinedOnSubclass;
 
 		private readonly Hashtable tableNumberByPropertyPath = new Hashtable();
 
@@ -212,7 +195,7 @@ namespace NHibernate.Persister.Entity
 
 		public override string[ ] GetPropertyColumnNames( int i )
 		{
-			return propertyColumnNameAliases[ i ];
+			return propertyColumnAliases[ i ];
 		}
 
 		/// <summary></summary>
@@ -1083,7 +1066,7 @@ namespace NHibernate.Persister.Entity
 			this.propertyTables = new int[HydrateSpan];
 			this.naturalOrderPropertyTables = new int[HydrateSpan];
 			this.propertyColumnNames = new string[HydrateSpan][ ];
-			this.propertyColumnNameAliases = new string[HydrateSpan][ ];
+			this.propertyColumnAliases = new string[HydrateSpan][ ];
 			this.propertyColumnSpans = new int[HydrateSpan];
 			this.propertyFormulaTemplates = new string[ HydrateSpan ];
 
@@ -1101,7 +1084,7 @@ namespace NHibernate.Persister.Entity
 
 				if ( prop.IsFormula )
 				{
-					this.propertyColumnNameAliases[ i ] = new string[] { prop.Formula.Alias };
+					this.propertyColumnAliases[ i ] = new string[] { prop.Formula.Alias };
 					this.propertyColumnSpans[ i ] = 1;
 					this.propertyFormulaTemplates[ i ] = prop.Formula.GetTemplate( Dialect );
 					foundFormula = true;
@@ -1122,7 +1105,7 @@ namespace NHibernate.Persister.Entity
 						j++;
 					}
 					this.propertyColumnNames[ i ] = propCols;
-					this.propertyColumnNameAliases[ i ] = propAliases;
+					this.propertyColumnAliases[ i ] = propAliases;
 				}
 
 				i++;
@@ -1452,7 +1435,7 @@ namespace NHibernate.Persister.Entity
 					frag.AddColumns(
 						Alias( alias, propertyTables[ i ] ),
 						propertyColumnNames[ i ],
-						propertyColumnNameAliases[ i ] );
+						propertyColumnAliases[ i ] );
 				}
 			}
 
