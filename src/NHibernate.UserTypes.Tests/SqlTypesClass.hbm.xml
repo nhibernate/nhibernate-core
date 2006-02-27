@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
-	<class name="NHibernate.UserTypes.Tests.SqlTypesClass, NHibernate.UserTypes.Tests" table="sqlc">
+	<class name="NHibernate.UserTypes.Tests.SqlTypesClass, NHibernate.UserTypes.Tests" table="sqlc" lazy="false">
 		<id name="Id" column="id">
 			<generator class="assigned" />
 		</id>
