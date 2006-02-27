@@ -136,20 +136,22 @@ namespace NHibernate.Persister.Entity
 		//including inherited properties
 		//(only really needed for updatable/insertable properties)
 
-		// temporarily 'protected' instead of 'private readonly'
-
 		// the number of columns that the property spans
 		// the array is indexed as propertyColumnSpans[propertyIndex] = ##
-		protected int[ ] propertyColumnSpans;
-		protected bool[ ] propertyDefinedOnSubclass;
+		private readonly int[ ] propertyColumnSpans;
 		// the names of the columns for the property
 		// the array is indexed as propertyColumnNames[propertyIndex][columnIndex] = "columnName"
-		protected string[ ][ ] propertyColumnNames;
+		private readonly string[ ][ ] propertyColumnNames;
 		// the alias names for the columns of the property.  This is used in the AS portion for 
 		// selecting a column.  It is indexed the same as propertyColumnNames
-		protected string[ ][ ] propertyColumnAliases;
-		protected string[ ] propertyFormulaTemplates;
+		private readonly string[ ][ ] propertyColumnAliases;
+		private readonly string[ ] propertyFormulaTemplates;
 
+		private readonly bool hasFormulaProperties;
+
+		// temporarily 'protected' instead of 'private readonly'
+
+		protected bool[ ] propertyDefinedOnSubclass;
 
 		protected SqlString GetLockString( LockMode lockMode )
 		{
@@ -597,8 +599,15 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected abstract string[ ] GetActualPropertyColumnNames( int i );
-		protected abstract string GetFormulaTemplate( int i );
+		protected string[ ] GetActualPropertyColumnNames( int i )
+		{
+			return propertyColumnNames[ i ];
+		}
+
+		protected string GetFormulaTemplate( int i )
+		{
+			return propertyFormulaTemplates[ i ];
+		}
 
 		protected void InitPropertyPaths( ISessionFactoryImplementor factory )
 		{
@@ -844,6 +853,52 @@ namespace NHibernate.Persister.Entity
 				i++;
 			}
 
+
+			// PROPERTIES (FROM ABSTRACTENTITYPERSISTER SUBCLASSES)
+			propertyColumnNames = new string[HydrateSpan][ ];
+			propertyColumnAliases = new string[HydrateSpan][ ];
+			propertyColumnSpans = new int[HydrateSpan];
+			propertyFormulaTemplates = new string[ HydrateSpan ];
+			HashedSet thisClassProperties = new HashedSet();
+			i = 0;
+			bool foundFormula = false;
+
+			foreach( Mapping.Property prop in model.PropertyClosureCollection )
+			{
+				thisClassProperties.Add( prop );
+
+				if ( prop.IsFormula )
+				{
+					propertyColumnAliases[ i ] = new string[] { prop.Formula.Alias };
+					propertyColumnSpans[ i ] = 1;
+					propertyFormulaTemplates[ i ] = prop.Formula.GetTemplate( Dialect );
+					foundFormula = true;
+				}
+				else
+				{
+					int span = prop.ColumnSpan;
+					propertyColumnSpans[ i ] = span;
+
+					string[ ] propCols = new string[ span ];
+					string[ ] propAliases = new string[ span ];
+
+					int j = 0;
+
+					foreach( Column col in prop.ColumnCollection )
+					{
+						propCols[ j ] = col.GetQuotedName( Dialect );
+						propAliases[ j ] = col.GetAlias( Dialect, prop.Value.Table );
+						j++;
+					}
+					propertyColumnNames[ i ] = propCols;
+					propertyColumnAliases[ i ] = propAliases;
+				}
+
+				i++;
+			}
+
+			hasFormulaProperties = foundFormula;
+
 			// NH: reflection optimizer works with custom accessors
 			if( /*!foundCustomAccessor &&*/ Cfg.Environment.UseReflectionOptimizer )
 			{
@@ -978,7 +1033,7 @@ namespace NHibernate.Persister.Entity
 					int l = 0;
 					foreach( Column thing in prop.ColumnCollection )
 					{
-						aliases[ l ] = thing.GetAlias( dialect );
+						aliases[ l ] = thing.GetAlias( dialect, prop.Value.Table );
 						cols[ l ] = thing.GetQuotedName( dialect );
 						l++;
 					}
@@ -1253,7 +1308,7 @@ namespace NHibernate.Persister.Entity
 		public string[ ] GetPropertyAliases( string suffix, int i )
 		{
 			// NOTE: this assumes something about how pPropertySelectFragment is implemented by the subclass!
-			return new Alias( suffix ).ToUnquotedAliasStrings( GetPropertyColumnNames( i ), dialect );
+			return new Alias( suffix ).ToUnquotedAliasStrings( propertyColumnAliases[ i ], dialect );
 		}
 
 		public string GetDiscriminatorAlias( string suffix )
@@ -1561,9 +1616,15 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Get the column names for the numbered property of <em>this</em> class
 		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public abstract string[ ] GetPropertyColumnNames( int i );
+		public string[ ] GetPropertyColumnNames( int i )
+		{
+			return propertyColumnNames[ i ];
+		}
+
+		protected int GetPropertyColumnSpan( int i )
+		{
+			return propertyColumnSpans[ i ];
+		}
 
 		public SqlString SelectFragment( string alias, string suffix, bool includeCollectionColumns )
 		{
@@ -1619,7 +1680,10 @@ namespace NHibernate.Persister.Entity
 
 		public abstract IType GetSubclassPropertyType( int i );
 
-		public abstract bool IsDefinedOnSubclass( int i );
+		public bool IsDefinedOnSubclass( int i )
+		{
+			return propertyDefinedOnSubclass[ i ];
+		}
 
 		public abstract SqlString PropertySelectFragment( string alias, string suffix );
 
@@ -1653,6 +1717,16 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return true;
+		}
+
+		protected bool HasFormulaProperties
+		{
+			get { return hasFormulaProperties; }
+		}
+
+		protected string[] GetPropertyColumnAliases( int i )
+		{
+			return propertyColumnAliases[ i ];
 		}
 	}
 }

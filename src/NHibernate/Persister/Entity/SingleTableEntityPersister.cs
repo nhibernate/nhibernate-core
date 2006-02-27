@@ -28,9 +28,7 @@ namespace NHibernate.Persister.Entity
 		// the class hierarchy structure
 		private readonly string qualifiedTableName;
 		private readonly string[ ] tableNames;
-		private readonly bool hasUpdateableColumns;
 		private readonly System.Type[ ] subclassClosure;
-		private readonly bool hasFormulaProperties;
 
 		// SQL strings
 		private SqlString sqlDeleteString;
@@ -108,11 +106,6 @@ namespace NHibernate.Persister.Entity
 			CreateUniqueKeyLoaders( factory );
 		}
 
-		public override bool IsDefinedOnSubclass( int i )
-		{
-			return propertyDefinedOnSubclass[ i ];
-		}
-
 		public override string DiscriminatorColumnName
 		{
 			get { return discriminatorColumnName; }
@@ -151,11 +144,6 @@ namespace NHibernate.Persister.Entity
 		public override string[ ] GetSubclassPropertyColumnNames( int i )
 		{
 			return subclassPropertyColumnNameClosure[ i ];
-		}
-
-		public override string[ ] GetPropertyColumnNames( int i )
-		{
-			return propertyColumnAliases[ i ];
 		}
 
 		public override IType DiscriminatorType
@@ -269,7 +257,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if( includeProperty[ i ] )
 				{
-					builder.AddColumn( propertyColumnNames[ i ], PropertyTypes[ i ] );
+					builder.AddColumn( GetPropertyColumnNames( i ), PropertyTypes[ i ] );
 				}
 			}
 
@@ -367,7 +355,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if( includeProperty[ i ] )
 				{
-					builder.AddColumns( propertyColumnNames[ i ], propertyColumnAliases[ i ] );
+					builder.AddColumns( GetPropertyColumnNames( i ), GetPropertyColumnAliases( i ) );
 				}
 			}
 
@@ -381,18 +369,24 @@ namespace NHibernate.Persister.Entity
 		}
 
 		/// <summary>
-		/// Generate the SQL that selects a row by id, excluding subclasses
+		/// Generate the SQL that updates a row by id, excluding subclasses
 		/// </summary>
 		/// <param name="includeProperty"></param>
 		/// <returns></returns>
 		protected SqlString GenerateUpdateString( bool[ ] includeProperty )
 		{
-			return GenerateUpdate( includeProperty ).ToSqlString();
+			SqlUpdateBuilder builder = GenerateUpdate( includeProperty );
+			return builder != null ? builder.ToSqlString() : null;
 		}
 
 		protected SqlString GenerateUpdateString( bool[ ] includeProperty, object[ ] oldFields )
 		{
 			SqlUpdateBuilder builder = GenerateUpdate( includeProperty );
+
+			if( builder == null )
+			{
+				return null;
+			}
 
 			if( OptimisticLockMode > OptimisticLockMode.Version && oldFields != null )
 			{
@@ -406,14 +400,14 @@ namespace NHibernate.Persister.Entity
 					{
 						if( oldFields[ i ] == null )
 						{
-							foreach( string column in propertyColumnNames[ i ] )
+							foreach( string column in GetPropertyColumnNames( i ) )
 							{
 								builder.AddWhereFragment( column + " is null" );
 							}
 						}
 						else
 						{
-							builder.AddWhereFragment( propertyColumnNames[ i ], PropertyTypes[ i ], "=" );
+							builder.AddWhereFragment( GetPropertyColumnNames( i ), PropertyTypes[ i ], "=" );
 						}
 					}
 				}
@@ -425,6 +419,7 @@ namespace NHibernate.Persister.Entity
 		protected virtual SqlUpdateBuilder GenerateUpdate( bool[ ] includeProperty )
 		{
 			SqlUpdateBuilder builder = new SqlUpdateBuilder( factory );
+			bool hasColumns = false;
 
 			builder.SetTableName( TableName );
 
@@ -432,7 +427,8 @@ namespace NHibernate.Persister.Entity
 			{
 				if( includeProperty[ i ] )
 				{
-					builder.AddColumns( propertyColumnNames[ i ], PropertyTypes[ i ] );
+					hasColumns = hasColumns || GetPropertyColumnSpan( i ) > 0;
+					builder.AddColumns( GetPropertyColumnNames( i ), PropertyTypes[ i ] );
 				}
 			}
 
@@ -442,10 +438,11 @@ namespace NHibernate.Persister.Entity
 				if( OptimisticLockMode == OptimisticLockMode.Version )
 				{
 					builder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+					hasColumns = true;
 				}
 			}
 
-			return builder;
+			return hasColumns ? builder : null;
 		}
 
 		/// <summary>
@@ -520,7 +517,7 @@ namespace NHibernate.Persister.Entity
 				if( includeProperty[ j ] )
 				{
 					PropertyTypes[ j ].NullSafeSet( st, fields[ j ], index, session );
-					index += propertyColumnSpans[ j ];
+					index += GetPropertyColumnSpan( j );
 				}
 			}
 
@@ -829,6 +826,13 @@ namespace NHibernate.Persister.Entity
 				propsToUpdate = PropertyUpdateability;
 				updateString = SqlUpdateString;
 			}
+
+			if( updateString == null )
+			{
+				// Nothing to update
+				return;
+			}
+
 			Update( id, fields, oldFields, propsToUpdate, oldVersion, obj, updateString, session );
 		}
 
@@ -843,10 +847,12 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
+			/*
 			if( !hasUpdateableColumns )
 			{
 				return;
 			}
+			*/
 
 			try
 			{
@@ -876,7 +882,7 @@ namespace NHibernate.Persister.Entity
 							if( includeOldField[ j ] && oldFields[ j ] != null )
 							{
 								PropertyTypes[ j ].NullSafeSet( statement, oldFields[ j ], index, session );
-								index += propertyColumnSpans[ j ];
+								index += GetPropertyColumnSpan( j );
 							}
 						}
 					}
@@ -1006,60 +1012,12 @@ namespace NHibernate.Persister.Entity
 			}
 
 			// PROPERTIES
-			CheckColumnDuplication( distinctColumns, model.Key.ColumnCollection );
+			HashedSet thisClassProperties = new HashedSet();
 
-			propertyColumnNames = new string[HydrateSpan][ ];
-			propertyColumnAliases = new string[HydrateSpan][ ];
-			propertyColumnSpans = new int[HydrateSpan];
-			propertyFormulaTemplates = new string[HydrateSpan];
-			ArrayList thisClassProperties = new ArrayList();
-
-			int i = 0;
-			bool foundColumn = false;
-			bool foundFormula = false;
 			foreach( Mapping.Property prop in model.PropertyClosureCollection )
 			{
 				thisClassProperties.Add( prop );
-
-				if( prop.IsFormula )
-				{
-					propertyColumnAliases[ i ] = new string[ ] {prop.Formula.Alias};
-					propertyColumnSpans[ i ] = 1;
-					propertyFormulaTemplates[ i ] = prop.Formula.GetTemplate( Dialect );
-					foundFormula = true;
-				}
-				else
-				{
-					int span = prop.ColumnSpan;
-					propertyColumnSpans[ i ] = span;
-
-					string[ ] colNames = new string[span];
-					string[ ] colAliases = new string[span];
-					int j = 0;
-					foreach( Column col in prop.ColumnCollection )
-					{
-						colAliases[ j ] = col.GetAlias( Dialect );
-						colNames[ j ] = col.GetQuotedName( Dialect );
-						j++;
-						if( prop.IsUpdateable )
-						{
-							foundColumn = true;
-						}
-					}
-					propertyColumnNames[ i ] = colNames;
-					propertyColumnAliases[ i ] = colAliases;
-				}
-				i++;
-
-				// columns must be unique across all subclasses
-				if( prop.IsUpdateable || prop.IsInsertable )
-				{
-					CheckColumnDuplication( distinctColumns, prop.ColumnCollection );
-				}
 			}
-
-			hasFormulaProperties = foundFormula;
-			hasUpdateableColumns = foundColumn;
 
 			ArrayList columns = new ArrayList();
 			ArrayList aliases = new ArrayList();
@@ -1092,7 +1050,7 @@ namespace NHibernate.Persister.Entity
 					foreach( Column col in prop.ColumnCollection )
 					{
 						columns.Add( col.GetQuotedName( Dialect ) );
-						aliases.Add( col.GetAlias( Dialect ) );
+						aliases.Add( col.GetAlias( Dialect, prop.Value.Table ) );
 						cols[ l++ ] = col.GetQuotedName( Dialect );
 					}
 					propColumns.Add( cols );
@@ -1271,16 +1229,6 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected override string[ ] GetActualPropertyColumnNames( int i )
-		{
-			return propertyColumnNames[ i ];
-		}
-
-		protected override string GetFormulaTemplate( int i )
-		{
-			return propertyFormulaTemplates[ i ];
-		}
-
 		protected override SqlString ConcreteSelectString
 		{
 			get { return sqlConcreteSelectString; }
@@ -1289,7 +1237,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary></summary>
 		public override bool IsCacheInvalidationRequired
 		{
-			get { return hasFormulaProperties || ( !IsVersioned && UseDynamicUpdate ); }
+			get { return HasFormulaProperties || ( !IsVersioned && UseDynamicUpdate ); }
 		}
 
 		/// <summary></summary>

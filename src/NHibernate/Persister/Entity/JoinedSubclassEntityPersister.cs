@@ -36,7 +36,6 @@ namespace NHibernate.Persister.Entity
 		// two dimensional array that is indexed as tableKeyColumns[tableIndex][columnIndex]
 		private readonly string[ ][ ] tableKeyColumns;
 		private readonly string[ ][ ] naturalOrderTableKeyColumns;
-		private readonly bool hasFormulaProperties;
 
 		// the Type of objects for the subclass
 		// the array is indexed as subclassClosure[subclassIndex].  
@@ -78,11 +77,12 @@ namespace NHibernate.Persister.Entity
 		private readonly int[ ] naturalOrderPropertyTables;
 		private bool[ ] propertyHasColumns;
 
+		private readonly int[ ] subclassPropertyTableNumberClosure;
+		private readonly int[ ] subclassColumnTableNumberClosure;
 
 		// the closure of all properties in the entire hierarchy including
 		// subclasses and superclasses of this class
 		private readonly string[ ][ ] subclassPropertyColumnNameClosure;
-		private readonly int[ ] subclassPropertyTableNumberClosure;
 		private readonly IType[ ] subclassPropertyTypeClosure;
 		private readonly string[ ] subclassPropertyNameClosure;
 		private readonly FetchMode[ ] subclassPropertyFetchModeClosure;
@@ -91,7 +91,6 @@ namespace NHibernate.Persister.Entity
 
 		// the closure of all columns used by the entire hierarchy including
 		// subclasses and superclasses of this class
-		private readonly int[ ] subclassColumnTableNumberClosure;
 		private readonly string[ ] subclassColumnClosure;
 		private readonly string[ ] subclassColumnClosureAliases;
 		private readonly int[ ] subclassFormulaTableNumberClosure;
@@ -152,11 +151,6 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public override bool IsDefinedOnSubclass( int i )
-		{
-			return propertyDefinedOnSubclass[ i ];
-		}
-
 		public override string DiscriminatorColumnName
 		{
 			get { return discriminatorColumnName; }
@@ -191,11 +185,6 @@ namespace NHibernate.Persister.Entity
 		public override string[ ] GetSubclassPropertyColumnNames( int i )
 		{
 			return subclassPropertyColumnNameClosure[ i ];
-		}
-
-		public override string[ ] GetPropertyColumnNames( int i )
-		{
-			return propertyColumnAliases[ i ];
 		}
 
 		/// <summary></summary>
@@ -319,7 +308,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if( includeProperty[ i ] && naturalOrderPropertyTables[ i ] == j )
 					{
-						builder.AddColumn( propertyColumnNames[ i ], PropertyTypes[ i ] );
+						builder.AddColumn( GetPropertyColumnNames( i ), PropertyTypes[ i ] );
 					}
 				}
 
@@ -367,12 +356,12 @@ namespace NHibernate.Persister.Entity
 
 				//TODO: figure out what the hasColumns variable comes into play for??
 				bool hasColumns = false;
-				for( int i = 0; i < propertyColumnNames.Length; i++ )
+				for( int i = 0; i < PropertyNames.Length; i++ )
 				{
 					if( includeProperty[ i ] && naturalOrderPropertyTables[ i ] == j )
 					{
-						updateBuilder.AddColumns( propertyColumnNames[ i ], PropertyTypes[ i ] );
-						hasColumns = hasColumns || propertyColumnNames[ i ].Length > 0;
+						updateBuilder.AddColumns( GetPropertyColumnNames( i ), PropertyTypes[ i ] );
+						hasColumns = hasColumns || GetPropertyColumnSpan( i ) > 0;
 					}
 				}
 				results[ j ] = hasColumns ?	updateBuilder.ToSqlString() : null;
@@ -519,7 +508,7 @@ namespace NHibernate.Persister.Entity
 				if( includeProperty[ j ] && naturalOrderPropertyTables[ j ] == table )
 				{
 					PropertyTypes[ j ].NullSafeSet( statement, fields[ j ], index, session );
-					index += propertyColumnSpans[ j ];
+					index += GetPropertyColumnSpan( j );
 				}
 			}
 
@@ -841,7 +830,7 @@ namespace NHibernate.Persister.Entity
 					int property = dirtyProperties[ i ];
 					int table = naturalOrderPropertyTables[ property ];
 					tableUpdateNeeded[ table ] = tableUpdateNeeded[ table ] || 
-						( propertyColumnSpans[ property ] > 0 && updateability[ property ] );
+						( GetPropertyColumnSpan( property ) > 0 && updateability[ property ] );
 				}
 				if( IsVersioned )
 				{
@@ -1070,15 +1059,10 @@ namespace NHibernate.Persister.Entity
 			// initialize the lengths of all of the Property related fields in the class
 			this.propertyTables = new int[HydrateSpan];
 			this.naturalOrderPropertyTables = new int[HydrateSpan];
-			this.propertyColumnNames = new string[HydrateSpan][ ];
-			this.propertyColumnAliases = new string[HydrateSpan][ ];
-			this.propertyColumnSpans = new int[HydrateSpan];
-			this.propertyFormulaTemplates = new string[ HydrateSpan ];
 
 			HashedSet thisClassProperties = new HashedSet();
 
 			int i = 0;
-			bool foundFormula = false;
 			foreach( Mapping.Property prop in model.PropertyClosureCollection )
 			{
 				thisClassProperties.Add( prop );
@@ -1086,47 +1070,7 @@ namespace NHibernate.Persister.Entity
 				string tabname = tab.GetQualifiedName( Dialect, factory.DefaultSchema );
 				this.propertyTables[ i ] = GetTableId( tabname, this.tableNames );
 				this.naturalOrderPropertyTables[ i ] = GetTableId( tabname, this.naturalOrderTableNames );
-
-				if ( prop.IsFormula )
-				{
-					this.propertyColumnAliases[ i ] = new string[] { prop.Formula.Alias };
-					this.propertyColumnSpans[ i ] = 1;
-					this.propertyFormulaTemplates[ i ] = prop.Formula.GetTemplate( Dialect );
-					foundFormula = true;
-				}
-				else
-				{
-					this.propertyColumnSpans[ i ] = prop.ColumnSpan;
-
-					string[ ] propCols = new string[propertyColumnSpans[ i ]];
-					string[ ] propAliases = new string[propertyColumnSpans[ i ]];
-
-					int j = 0;
-					foreach( Column col in prop.ColumnCollection )
-					{
-						string colname = col.GetQuotedName( Dialect );
-						propCols[ j ] = colname;
-						propAliases[ j ] = col.GetAlias( Dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore );
-						j++;
-					}
-					this.propertyColumnNames[ i ] = propCols;
-					this.propertyColumnAliases[ i ] = propAliases;
-				}
-
 				i++;
-			}
-
-			this.hasFormulaProperties = foundFormula;
-
-			// check distinctness of columns for this specific subclass only
-			HashedSet distinctColumns = new HashedSet();
-			CheckColumnDuplication( distinctColumns, model.Key.ColumnCollection );
-			foreach( Mapping.Property prop in model.PropertyCollection )
-			{
-				if( prop.IsUpdateable || prop.IsInsertable )
-				{
-					CheckColumnDuplication( distinctColumns, prop.ColumnCollection );
-				}
 			}
 
 			// subclass closure properties
@@ -1170,7 +1114,7 @@ namespace NHibernate.Persister.Entity
 						columns.Add( col.GetQuotedName( Dialect ) );
 						coltables.Add( tabnum );
 						cols[ l++ ] = col.GetQuotedName( Dialect );
-						aliases.Add( col.GetAlias( Dialect, tab.UniqueInteger.ToString() + StringHelper.Underscore ) );
+						aliases.Add( col.GetAlias( Dialect, tab ) );
 					}
 					propColumns.Add( cols );
 				}
@@ -1428,9 +1372,9 @@ namespace NHibernate.Persister.Entity
 				subclassPropertyColumnNameClosure[ i ] );
 		}
 
-		private SqlString ConcretePropertySelectFragment( string alias, bool[] includeProperty )
+		protected SqlString ConcretePropertySelectFragment( string alias, bool[] includeProperty )
 		{
-			int propertyCount = propertyColumnNames.Length;
+			int propertyCount = PropertyNames.Length;
 			SelectFragment frag = new SelectFragment( Dialect );
 
 			for( int i = 0; i < propertyCount; i++ )
@@ -1439,8 +1383,8 @@ namespace NHibernate.Persister.Entity
 				{
 					frag.AddColumns(
 						Alias( alias, propertyTables[ i ] ),
-						propertyColumnNames[ i ],
-						propertyColumnAliases[ i ] );
+						GetPropertyColumnNames( i ),
+						GetPropertyColumnAliases( i ) );
 				}
 			}
 
@@ -1538,19 +1482,9 @@ namespace NHibernate.Persister.Entity
 			get { return tableKeyColumns[ 0 ]; }
 		}
 
-		protected override string[ ] GetActualPropertyColumnNames( int i )
-		{
-			return propertyColumnNames[ i ];
-		}
-
-		protected override string GetFormulaTemplate( int i )
-		{
-			return propertyFormulaTemplates[ i ];
-		}
-
 		public override bool IsCacheInvalidationRequired
 		{
-			get { return hasFormulaProperties || ( !IsVersioned && UseDynamicUpdate ); }
+			get { return HasFormulaProperties || ( !IsVersioned && UseDynamicUpdate ); }
 		}
 
 		protected override string VersionedTableName
