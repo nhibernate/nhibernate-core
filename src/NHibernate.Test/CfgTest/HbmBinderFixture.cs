@@ -11,7 +11,7 @@ using NHibernate.Mapping;
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
-	public class BinderFixture
+	public class HbmBinderFixture
 	{
 		private XmlDocument LoadAndValidate( string xml )
 		{
@@ -44,7 +44,7 @@ namespace NHibernate.Test.CfgTest
 			XmlDocument document = LoadAndValidate( XML );
 			XmlNode node = document.GetElementsByTagName( versionTag )[0];
 			SimpleValue model = new SimpleValue();
-			Binder.MakeVersion( node, model );
+			HbmBinder.MakeVersion( node, model );
 			Assert.IsNull( model.NullValue,
 				"default unsaved-value for tag {0} should be null, but is '{1}'",
 				versionTag, model.NullValue );

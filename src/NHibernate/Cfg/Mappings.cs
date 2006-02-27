@@ -286,7 +286,7 @@ namespace NHibernate.Cfg
 		/// 
 		/// </summary>
 		/// <param name="sp"></param>
-		internal void AddSecondPass( Binder.AbstractSecondPass sp )
+		internal void AddSecondPass( HbmBinder.AbstractSecondPass sp )
 		{
 			secondPasses.Add( sp );
 		}

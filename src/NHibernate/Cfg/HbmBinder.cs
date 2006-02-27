@@ -18,9 +18,9 @@ using Array = NHibernate.Mapping.Array;
 
 namespace NHibernate.Cfg
 {
-	public class Binder
+	public class HbmBinder
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( Binder ) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( HbmBinder ) );
 
 		private static XmlNamespaceManager nsmgr;
 
@@ -1602,7 +1602,7 @@ namespace NHibernate.Cfg
 			foreach( XmlNode n in hmNode.SelectNodes( nsClass, nsmgr ) )
 			{
 				RootClass rootclass = new RootClass();
-				Binder.BindRootClass( n, rootclass, model );
+				HbmBinder.BindRootClass( n, rootclass, model );
 				model.AddClass( rootclass );
 			}
 
@@ -1757,7 +1757,7 @@ namespace NHibernate.Cfg
 
 			public override void SecondPass( IDictionary persistentClasses )
 			{
-				Binder.BindCollectionSecondPass( node, collection, persistentClasses, mappings );
+				HbmBinder.BindCollectionSecondPass( node, collection, persistentClasses, mappings );
 			}
 		}
 
@@ -1770,7 +1770,7 @@ namespace NHibernate.Cfg
 
 			public override void SecondPass( IDictionary persistentClasses )
 			{
-				Binder.BindIdentifierCollectionSecondPass( node, ( IdentifierCollection ) collection, persistentClasses, mappings );
+				HbmBinder.BindIdentifierCollectionSecondPass( node, ( IdentifierCollection ) collection, persistentClasses, mappings );
 			}
 		}
 
@@ -1783,7 +1783,7 @@ namespace NHibernate.Cfg
 
 			public override void SecondPass( IDictionary persistentClasses )
 			{
-				Binder.BindMapSecondPass( node, ( Map ) collection, persistentClasses, mappings );
+				HbmBinder.BindMapSecondPass( node, ( Map ) collection, persistentClasses, mappings );
 			}
 		}
 
@@ -1796,7 +1796,7 @@ namespace NHibernate.Cfg
 
 			public override void SecondPass( IDictionary persistentClasses )
 			{
-				Binder.BindSetSecondPass( node, ( Set ) collection, persistentClasses, mappings );
+				HbmBinder.BindSetSecondPass( node, ( Set ) collection, persistentClasses, mappings );
 			}
 		}
 
@@ -1809,7 +1809,7 @@ namespace NHibernate.Cfg
 
 			public override void SecondPass( IDictionary persistentClasses )
 			{
-				Binder.BindListSecondPass( node, ( List ) collection, persistentClasses, mappings );
+				HbmBinder.BindListSecondPass( node, ( List ) collection, persistentClasses, mappings );
 			}
 		}
 
@@ -1839,7 +1839,7 @@ namespace NHibernate.Cfg
 				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
 				{
 					Map map = new Map( owner );
-					Binder.BindCollection( node, map, prefix, path, mappings );
+					HbmBinder.BindCollection( node, map, prefix, path, mappings );
 					return map;
 				}
 			}
@@ -1855,7 +1855,7 @@ namespace NHibernate.Cfg
 				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
 				{
 					Set setCollection = new Set( owner );
-					Binder.BindCollection( node, setCollection, prefix, path, mappings );
+					HbmBinder.BindCollection( node, setCollection, prefix, path, mappings );
 					return setCollection;
 				}
 			}
@@ -1871,7 +1871,7 @@ namespace NHibernate.Cfg
 				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
 				{
 					List list = new List( owner );
-					Binder.BindCollection( node, list, prefix, path, mappings );
+					HbmBinder.BindCollection( node, list, prefix, path, mappings );
 					return list;
 				}
 			}
@@ -1887,7 +1887,7 @@ namespace NHibernate.Cfg
 				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
 				{
 					Bag bag = new Bag( owner );
-					Binder.BindCollection( node, bag, prefix, path, mappings );
+					HbmBinder.BindCollection( node, bag, prefix, path, mappings );
 					return bag;
 				}
 
@@ -1904,7 +1904,7 @@ namespace NHibernate.Cfg
 				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
 				{
 					IdentifierBag bag = new IdentifierBag( owner );
-					Binder.BindCollection( node, bag, prefix, path, mappings );
+					HbmBinder.BindCollection( node, bag, prefix, path, mappings );
 					return bag;
 				}
 
@@ -1921,7 +1921,7 @@ namespace NHibernate.Cfg
 				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
 				{
 					Array array = new Array( owner );
-					Binder.BindArray( node, array, prefix, path, mappings );
+					HbmBinder.BindArray( node, array, prefix, path, mappings );
 					return array;
 				}
 			}
@@ -1937,7 +1937,7 @@ namespace NHibernate.Cfg
 				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
 				{
 					PrimitiveArray array = new PrimitiveArray( owner );
-					Binder.BindArray( node, array, prefix, path, mappings );
+					HbmBinder.BindArray( node, array, prefix, path, mappings );
 					return array;
 				}
 			}

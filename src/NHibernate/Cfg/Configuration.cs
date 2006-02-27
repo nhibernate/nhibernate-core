@@ -342,8 +342,8 @@ namespace NHibernate.Cfg
 		{
 			try
 			{
-				Binder.dialect = Dialect.Dialect.GetDialect( properties );
-				Binder.BindRoot( doc, CreateMappings() );
+				HbmBinder.dialect = Dialect.Dialect.GetDialect( properties );
+				HbmBinder.BindRoot( doc, CreateMappings() );
 			}
 			catch( MappingException me )
 			{
@@ -856,7 +856,7 @@ namespace NHibernate.Cfg
 		{
 			log.Info( "processing one-to-many association mappings" );
 
-			foreach( Binder.AbstractSecondPass sp in secondPasses )
+			foreach( HbmBinder.AbstractSecondPass sp in secondPasses )
 			{
 				sp.DoSecondPass( classes );
 			}
