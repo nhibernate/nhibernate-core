@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Text;
 using Iesi.Collections;
@@ -15,6 +16,7 @@ namespace NHibernate.SqlCommand
 		private IList columnAliases = new ArrayList();
 		private Dialect.Dialect dialect;
 		private string[] usedAliases;
+		private SqlString extraSelectList;
 
 		/// <summary>
 		/// 
@@ -211,7 +213,30 @@ namespace NHibernate.SqlCommand
 					found = true;
 				}
 			}
+
+			if( extraSelectList != null )
+			{
+				if( found || includeLeadingComma )
+				{
+					buf.Append( StringHelper.CommaSpace );
+				}
+
+				buf.Append( extraSelectList.ToString() );
+			}
+
 			return new SqlString( buf.ToString() );
+		}
+
+		public SelectFragment SetExtraSelectList( SqlString extraSelectList )
+		{
+			this.extraSelectList = extraSelectList;
+			return this;
+		}
+
+		public SelectFragment SetExtraSelectList( CaseFragment caseFragment, string fragmentAlias )
+		{
+			SetExtraSelectList( caseFragment.SetReturnColumnName( fragmentAlias, suffix ).ToSqlStringFragment() );
+			return this;
 		}
 	}
 }

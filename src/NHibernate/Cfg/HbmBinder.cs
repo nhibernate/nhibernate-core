@@ -545,7 +545,7 @@ namespace NHibernate.Cfg
 			{
 				Formula f = new Formula();
 				f.FormulaString = formulaNode.InnerText;
-				model.Formula = f;
+				model.AddFormula( f );
 			}
 			else
 			{
@@ -613,7 +613,7 @@ namespace NHibernate.Cfg
 		{
 			StringBuilder columns = new StringBuilder();
 			bool first = true;
-			foreach( Column col in val.ColumnCollection )
+			foreach( ISelectable col in val.ColumnCollection )
 			{
 				if( first )
 				{
@@ -623,7 +623,7 @@ namespace NHibernate.Cfg
 				{
 					columns.Append( ", " );
 				}
-				columns.Append( col.Name );
+				columns.Append( col.Text );
 			}
 			return columns.ToString();
 		}
@@ -1093,16 +1093,6 @@ namespace NHibernate.Cfg
 			int i = 0;
 			foreach( Mapping.Property prop in model.PropertyCollection )
 			{
-				if( prop.IsFormula )
-				{
-					throw new MappingException( "properties of components may not be formulas: " + prop.Name );
-				}
-				/*
-				if( !prop.IsInsertable || !prop.IsUpdateable )
-				{
-					throw new MappingException( "insert=\"false\", update=\"false\" not supported for properties of components: " + prop.Name );
-				}
-				*/
 				names[ i ] = prop.Name;
 				types[ i ] = prop.Type;
 				cascade[ i ] = prop.CascadeStyle;

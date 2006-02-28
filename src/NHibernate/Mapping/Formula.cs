@@ -32,12 +32,6 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public string Alias
-		{
-			get { return "f" + uniqueInteger.ToString() + StringHelper.Underscore; }
-		}
-
-		/// <summary></summary>
 		public string FormulaString
 		{
 			get { return formula; }
@@ -66,7 +60,7 @@ namespace NHibernate.Mapping
 
 		public bool IsFormula
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public override string ToString() 

@@ -103,27 +103,39 @@ namespace NHibernate.Mapping
 				name;
 		}
 
-		/// <summary>
-		/// Gets an Alias for the column name.
-		/// </summary>
-		/// <param name="d">The <see cref="Dialect.Dialect"/> that contains the rules for Aliasing.</param>
-		/// <returns>
-		/// A string that can be used as the alias for this Column.
-		/// </returns>
-		public string GetAlias( Dialect.Dialect d )
+		/**
+		 * For any column name, generate an alias that is unique
+		 * to that column name, and also 10 characters or less
+		 * in length.
+		 */
+		public string GetAlias(Dialect.Dialect dialect) 
 		{
-			if( quoted || name[0] == StringHelper.SingleQuote || char.IsDigit( name, 0 ) )
+			string alias = name;
+			string unique = uniqueInteger.ToString() + '_';
+			int lastLetter = StringHelper.LastIndexOfLetter(name);
+			if( lastLetter == -1 )
 			{
-				return "y" + uniqueInteger.ToString() + StringHelper.Underscore;
+				alias = "column";
 			}
-
-			if( name.Length < 11 )
+			else if( lastLetter < name.Length-1 ) 
 			{
-				return name;
+				alias = name.Substring(0, lastLetter+1);
 			}
-			else
+			if ( alias.Length > dialect.MaxAliasLength ) 
 			{
-				return ( new Alias( 10, uniqueInteger.ToString() + StringHelper.Underscore ) ).ToAliasString( name, d );
+				alias = alias.Substring( 0, dialect.MaxAliasLength - unique.Length );
+			}
+			bool useRawName = name.Equals(alias) && 
+				!quoted &&
+				!name.ToLower(System.Globalization.CultureInfo.InvariantCulture).Equals("rowid");
+			
+			if ( useRawName )
+			{
+				return alias;
+			}
+			else 
+			{
+				return alias + unique;
 			}
 		}
 

@@ -256,5 +256,12 @@ namespace NHibernate.Util
 
 			return true;
 		}
+
+		public static string[][] To2DStringArray( ICollection coll )
+		{
+			string[][] result = new string[ coll.Count ][];
+			coll.CopyTo( result, 0 );
+			return result;
+		}
 	}
 }

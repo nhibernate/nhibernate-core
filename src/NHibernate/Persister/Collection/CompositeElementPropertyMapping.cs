@@ -17,11 +17,12 @@ namespace NHibernate.Persister.Collection
 		/// <param name="elementColumns"></param>
 		/// <param name="compositeType"></param>
 		/// <param name="factory"></param>
-		public CompositeElementPropertyMapping( string[] elementColumns, IAbstractComponentType compositeType, ISessionFactoryImplementor factory )
+		public CompositeElementPropertyMapping( string[] elementColumns, string[] elementFormulaTemplates,
+			IAbstractComponentType compositeType, ISessionFactoryImplementor factory )
 		{
 			this.compositeType = compositeType;
 
-			InitComponentPropertyPaths( null, compositeType, elementColumns, factory );
+			InitComponentPropertyPaths( null, compositeType, elementColumns, elementFormulaTemplates, factory );
 		}
 
 		/// <summary></summary>

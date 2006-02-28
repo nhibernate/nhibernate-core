@@ -928,6 +928,11 @@ namespace NHibernate.Dialect
 				Quote( schemaName );
 		}
 
+		public virtual int MaxAliasLength
+		{
+			get { return 10; }
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

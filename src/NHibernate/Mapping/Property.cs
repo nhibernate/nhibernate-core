@@ -148,7 +148,6 @@ namespace NHibernate.Mapping
 			{
 				bool[] columnUpdateability = propertyValue.ColumnUpdateability;
 				return updateable &&
-					!IsFormula && // temporary
 					(
 						// columnUpdateability.Length == 0 ||
 						!ArrayHelper.IsAllFalse(columnUpdateability)
@@ -163,25 +162,12 @@ namespace NHibernate.Mapping
 			{
 				bool[] columnInsertability = propertyValue.ColumnInsertability;
 				return insertable &&
-					!IsFormula && // temporary
 					(
 						columnInsertability.Length == 0 ||
 						!ArrayHelper.IsAllFalse( columnInsertability )
 					);
 			}
 			set { insertable = value; }
-		}
-
-		/// <summary></summary>
-		public Formula Formula
-		{
-			get { return propertyValue.Formula; }
-		}
-
-		/// <summary></summary>
-		public bool IsFormula
-		{
-			get { return Formula != null; }
 		}
 
 		/// <summary></summary>
@@ -247,7 +233,7 @@ namespace NHibernate.Mapping
 		/// <returns></returns>
 		public bool IsValid( IMapping mapping )
 		{
-			return IsFormula ? ColumnSpan == 0 : Value.IsValid( mapping );
+			return Value.IsValid( mapping );
 		}
 
 		/// <summary>

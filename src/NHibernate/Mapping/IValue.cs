@@ -35,15 +35,6 @@ namespace NHibernate.Mapping
 		Table Table { get; }
 
 		/// <summary>
-		/// Gets the <see cref="Formula"/> used to populate the Value.
-		/// </summary>
-		/// <remarks>
-		/// If a <see cref="Formula"/> is not used then this will be 
-		/// <c>null</c>.
-		/// </remarks>
-		Formula Formula { get; }
-		
-		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if this Value is unique.
 		/// </summary>
 		bool IsUnique { get; }

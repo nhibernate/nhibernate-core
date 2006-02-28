@@ -21,8 +21,6 @@ namespace NHibernate.Persister.Entity
 	/// </summary>
 	public class JoinedSubclassEntityPersister : AbstractEntityPersister
 	{
-		private readonly ISessionFactoryImplementor factory;
-
 		// the class hierarchy structure
 		private readonly string qualifiedTableName;
 
@@ -80,22 +78,9 @@ namespace NHibernate.Persister.Entity
 		private readonly int[ ] subclassPropertyTableNumberClosure;
 		private readonly int[ ] subclassColumnTableNumberClosure;
 
-		// the closure of all properties in the entire hierarchy including
-		// subclasses and superclasses of this class
-		private readonly string[ ][ ] subclassPropertyColumnNameClosure;
-		private readonly IType[ ] subclassPropertyTypeClosure;
-		private readonly string[ ] subclassPropertyNameClosure;
-		private readonly FetchMode[ ] subclassPropertyFetchModeClosure;
-
 		private readonly Hashtable tableNumberByPropertyPath = new Hashtable();
 
-		// the closure of all columns used by the entire hierarchy including
-		// subclasses and superclasses of this class
-		private readonly string[ ] subclassColumnClosure;
-		private readonly string[ ] subclassColumnClosureAliases;
 		private readonly int[ ] subclassFormulaTableNumberClosure;
-		private readonly string[ ] subclassFormulaTemplateClosure;
-		private readonly string[ ] subclassFormulaAliasClosure;
 
 		// subclass discrimination works by assigning particular values to certain 
 		// combinations of null primary key values in the outer join using an SQL CASE
@@ -162,29 +147,9 @@ namespace NHibernate.Persister.Entity
 			get { return DiscriminatorColumnName; }
 		}
 
-		public override IType GetSubclassPropertyType( int i )
-		{
-			return subclassPropertyTypeClosure[ i ];
-		}
-
-		public override string GetSubclassPropertyName( int i )
-		{
-			return subclassPropertyNameClosure[ i ];
-		}
-
-		public override int CountSubclassProperties()
-		{
-			return subclassPropertyTypeClosure.Length;
-		}
-
 		public override string GetSubclassPropertyTableName( int i )
 		{
 			return subclassTableNameClosure[ subclassPropertyTableNumberClosure[ i ] ];
-		}
-
-		public override string[ ] GetSubclassPropertyColumnNames( int i )
-		{
-			return subclassPropertyColumnNameClosure[ i ];
 		}
 
 		/// <summary></summary>
@@ -202,11 +167,6 @@ namespace NHibernate.Persister.Entity
 		public override System.Type GetSubclassForDiscriminatorValue( object value )
 		{
 			return ( System.Type ) subclassesByDiscriminatorValue[ value ];
-		}
-
-		public override FetchMode GetFetchMode( int i )
-		{
-			return subclassPropertyFetchModeClosure[ i ];
 		}
 
 		public override object[ ] PropertySpaces
@@ -269,7 +229,7 @@ namespace NHibernate.Persister.Entity
 
 			for( int i = 0; i < naturalOrderTableNames.Length; i++ )
 			{
-				SqlDeleteBuilder deleteBuilder = new SqlDeleteBuilder( factory );
+				SqlDeleteBuilder deleteBuilder = new SqlDeleteBuilder( Factory );
 
 				// TODO: find out why this is using tableKeyColumns and when
 				// they would ever be different between the two tables - I thought
@@ -301,7 +261,7 @@ namespace NHibernate.Persister.Entity
 
 			for( int j = 0; j < naturalOrderTableNames.Length; j++ )
 			{
-				SqlInsertBuilder builder = new SqlInsertBuilder( factory );
+				SqlInsertBuilder builder = new SqlInsertBuilder( Factory );
 				builder.SetTableName( naturalOrderTableNames[ j ] );
 
 				for( int i = 0; i < PropertyTypes.Length; i++ )
@@ -345,7 +305,7 @@ namespace NHibernate.Persister.Entity
 
 			for( int j = 0; j < naturalOrderTableNames.Length; j++ )
 			{
-				SqlUpdateBuilder updateBuilder = new SqlUpdateBuilder( factory )
+				SqlUpdateBuilder updateBuilder = new SqlUpdateBuilder( Factory )
 					.SetTableName( naturalOrderTableNames[ j ] )
 					.SetIdentityColumn( naturalOrderTableKeyColumns[ j ], IdentifierType );
 
@@ -386,7 +346,7 @@ namespace NHibernate.Persister.Entity
 
 			if( sqlString == null )
 			{
-				SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder( factory );
+				SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder( Factory );
 
 				// set the table name and add the columns to select
 				builder.SetTableName( qualifiedTableName )
@@ -437,7 +397,7 @@ namespace NHibernate.Persister.Entity
 				.Add( " where " )
 				.Add( WhereJoinFragment( ConcreteAlias, true, false ) );
 
-			Parameter[] idParameters = Parameter.GenerateParameters( factory, ConcreteAlias, IdentifierColumnNames, IdentifierType );
+			Parameter[] idParameters = Parameter.GenerateParameters( Factory, ConcreteAlias, IdentifierColumnNames, IdentifierType );
 
 			for( int i = 0; i < idParameters.Length; i++ )
 			{
@@ -455,7 +415,7 @@ namespace NHibernate.Persister.Entity
 			if( IsVersioned )
 			{
 				Parameter[] versionParameters = Parameter.GenerateParameters(
-					factory, ConcreteAlias, new string[1] { VersionColumnName }, VersionType );
+					Factory, ConcreteAlias, new string[1] { VersionColumnName }, VersionType );
 				select.Add( " and " )
 					.Add( VersionColumnName )
 					.Add( " = " )
@@ -952,9 +912,8 @@ namespace NHibernate.Persister.Entity
 
 			// CLASS + TABLE
 
-			this.factory = factory;
 			Table table = model.RootTable;
-			this.qualifiedTableName = table.GetQualifiedName( Dialect, factory.DefaultSchema );
+			this.qualifiedTableName = table.GetQualifiedName( Dialect, Factory.DefaultSchema );
 
 			// DISCRIMINATOR
 
@@ -1073,79 +1032,37 @@ namespace NHibernate.Persister.Entity
 				i++;
 			}
 
-			// subclass closure properties
+			// SUBCLASS CLOSURE PROPERTIES
 
-			ArrayList columns = new ArrayList(); //this.subclassColumnClosure
-			ArrayList aliases = new ArrayList();
-			ArrayList formulaAliases = new ArrayList();
-			ArrayList formulaTemplates = new ArrayList();
-			ArrayList types = new ArrayList(); //this.subclassPropertyTypeClosure
-			ArrayList names = new ArrayList(); //this.subclassPropertyNameClosure
-			ArrayList propColumns = new ArrayList(); //this.subclassPropertyColumnNameClosure
-			ArrayList coltables = new ArrayList(); //this.subclassColumnTableNumberClosure
-			ArrayList formtables = new ArrayList();
-			ArrayList joinedFetchesList = new ArrayList(); //this.subclassPropertyEnableJoinedFetch
-			ArrayList propTables = new ArrayList(); // this.subclassPropertyTableNameClosure
-			ArrayList definedBySubclass = new ArrayList(); // this.propertyDefinedOnSubclass
+			ArrayList columnTableNumbers = new ArrayList(); //this.subclassColumnTableNumberClosure
+			ArrayList formulaTableNumbers = new ArrayList();
+			ArrayList propTableNumbers = new ArrayList(); // this.subclassPropertyTableNameClosure
 
 			foreach( Mapping.Property prop in model.SubclassPropertyClosureCollection )
 			{
-				names.Add( prop.Name );
-				definedBySubclass.Add( !thisClassProperties.Contains( prop ) );
 				Table tab = prop.Value.Table;
-				string tabname = tab.GetQualifiedName( Dialect, factory.DefaultSchema );
+				String tabname = tab.GetQualifiedName( 
+					factory.Dialect, 
+					factory.DefaultSchema );
 				int tabnum = GetTableId( tabname, subclassTableNameClosure );
-				propTables.Add( tabnum );
-				types.Add( prop.Type );
+				propTableNumbers.Add(tabnum);
 
-				if ( prop.IsFormula )
+				foreach( ISelectable thing in prop.ColumnCollection )
 				{
-					formulaTemplates.Add( prop.Formula.GetTemplate( Dialect ) );
-					propColumns.Add( new string [] { } ) ;
-					formulaAliases.Add( prop.Formula.Alias );
-					formtables.Add( tabnum );
-				}
-				else
-				{
-					string[ ] cols = new string[prop.ColumnSpan];
-					int l = 0;
-					foreach( Column col in prop.ColumnCollection )
+					if ( thing.IsFormula ) 
 					{
-						columns.Add( col.GetQuotedName( Dialect ) );
-						coltables.Add( tabnum );
-						cols[ l++ ] = col.GetQuotedName( Dialect );
-						aliases.Add( col.GetAlias( Dialect, tab ) );
+						formulaTableNumbers.Add(tabnum);
 					}
-					propColumns.Add( cols );
+					else 
+					{
+						columnTableNumbers.Add(tabnum);
+					}
 				}
-
-				joinedFetchesList.Add( prop.Value.FetchMode );
 			}
 
-			subclassColumnClosure = ( string[ ] ) columns.ToArray( typeof( string ) );
-			subclassColumnClosureAliases = ( string[ ] ) aliases.ToArray( typeof( string ) );
-			subclassColumnTableNumberClosure = ( int[ ] ) coltables.ToArray( typeof( int ) );
-			subclassPropertyTypeClosure = ( IType[ ] ) types.ToArray( typeof( IType ) );
-			subclassPropertyNameClosure = ( string[ ] ) names.ToArray( typeof( string ) );
-			subclassPropertyTableNumberClosure = ( int[ ] ) propTables.ToArray( typeof( int ) );
-			subclassFormulaAliasClosure = ( string[ ] ) formulaAliases.ToArray( typeof( string ) );
-			subclassFormulaTemplateClosure = ( string[ ] ) formulaTemplates.ToArray( typeof( string ) );
-			subclassFormulaTableNumberClosure = ( int[ ] ) formtables.ToArray( typeof( int ) );
-			subclassPropertyColumnNameClosure = ( string[ ][ ] ) propColumns.ToArray( typeof( string[ ] ) );
-
-			subclassPropertyFetchModeClosure = new FetchMode[ joinedFetchesList.Count ];
-			int n = 0;
-			foreach( FetchMode fm in joinedFetchesList )
-			{
-				subclassPropertyFetchModeClosure[ n++ ] = fm;
-			}
-
-			propertyDefinedOnSubclass = new bool[ definedBySubclass.Count ];
-			n = 0;
-			foreach( bool pdos in definedBySubclass )
-			{
-				propertyDefinedOnSubclass[ n++ ] = pdos;
-			}
+			subclassColumnTableNumberClosure = ArrayHelper.ToIntArray( columnTableNumbers );
+			subclassPropertyTableNumberClosure = ArrayHelper.ToIntArray( propTableNumbers );
+			subclassFormulaTableNumberClosure = ArrayHelper.ToIntArray( formulaTableNumbers );
 
 			// ****** Moved the sql generation to PostIntantiate *****
 
@@ -1301,7 +1218,7 @@ namespace NHibernate.Persister.Entity
 
 		private JoinFragment Outerjoin( string name, bool innerJoin, bool includeSubclasses )
 		{
-			JoinFragment outerjoin = factory.Dialect.CreateOuterJoinFragment();
+			JoinFragment outerjoin = Factory.Dialect.CreateOuterJoinFragment();
 			for( int i = 1; i < subclassTableNameClosure.Length; i++ )
 			{
 				if( includeSubclasses || isClassOrSuperclassTable[ i ] )
@@ -1353,23 +1270,10 @@ namespace NHibernate.Persister.Entity
 				// is being converted to a string for existing interfaces to work.
 				return new string[ ] {DiscriminatorFragment( alias ).ToSqlStringFragment().ToString()};
 			}
-
-			object objTab = tableNumberByPropertyPath[ property ];
-			if( objTab == null )
+			else
 			{
-				throw new QueryException( string.Format( "could not resolve property:{0} of :{1}", property, ClassName ) );
+				return base.ToColumns( alias, property );
 			}
-			int tab = (int) objTab;
-
-			return base.ToColumns( Alias( alias, tab ), property );
-		}
-
-		public override string[ ] ToColumns( string alias, int i )
-		{
-			int tab = subclassPropertyTableNumberClosure[ i ];
-			return StringHelper.Qualify(
-				Alias( alias, tab ),
-				subclassPropertyColumnNameClosure[ i ] );
 		}
 
 		protected SqlString ConcretePropertySelectFragment( string alias, bool[] includeProperty )
@@ -1391,46 +1295,6 @@ namespace NHibernate.Persister.Entity
 			return frag.ToSqlStringFragment( );
 		}
 
-		public override SqlString PropertySelectFragment( string alias, string suffix )
-		{
-			SelectFragment frag = new SelectFragment( factory.Dialect )
-				.SetSuffix( suffix )
-				.SetUsedAliases( IdentifierAliases );
-
-			for( int i = 0; i < subclassColumnClosure.Length; i++ )
-			{
-				string subalias = Alias( alias, subclassColumnTableNumberClosure[ i ] );
-				frag.AddColumn( subalias, subclassColumnClosure[ i ], subclassColumnClosureAliases[ i ]	);
-			}
-
-			for( int i = 0; i < subclassFormulaTemplateClosure.Length; i++ )
-			{
-				string subalias = Alias( alias, subclassFormulaTableNumberClosure[ i ] );
-				frag.AddFormula( subalias, subclassFormulaTemplateClosure[ i ], subclassFormulaAliasClosure[ i ]	);
-			}
-
-			if( HasSubclasses )
-			{
-				SqlStringBuilder builder = new SqlStringBuilder( 3 );
-
-				builder.Add( StringHelper.CommaSpace );
-				builder.Add(
-					DiscriminatorFragment( alias )
-						.SetReturnColumnName( DiscriminatorAlias, suffix )
-						.ToSqlStringFragment()
-					);
-
-				builder.Add( frag.ToSqlStringFragment() );
-
-				return builder.ToSqlString();
-			}
-			else
-			{
-				return frag.ToSqlStringFragment();
-			}
-		}
-
-
 		private CaseFragment DiscriminatorFragment( string alias )
 		{
 			CaseFragment cases = Dialect.CreateCaseFragment();
@@ -1444,15 +1308,6 @@ namespace NHibernate.Persister.Entity
 					);
 			}
 			return cases;
-		}
-
-		private string Alias( string name, int tableNumber )
-		{
-			if( tableNumber == 0 )
-			{
-				return name;
-			}
-			return Dialect.QuoteForAliasName( Dialect.UnQuote( name ) + StringHelper.Underscore + tableNumber + StringHelper.Underscore );
 		}
 
 		public override SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
@@ -1490,6 +1345,26 @@ namespace NHibernate.Persister.Entity
 		protected override string VersionedTableName
 		{
 			get	{ return qualifiedTableName; }
+		}
+
+		protected override int GetSubclassPropertyTableNumber(int i)
+		{
+			return subclassPropertyTableNumberClosure[ i ];
+		}
+
+		protected override void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
+		{
+			select.SetExtraSelectList( DiscriminatorFragment( name ), DiscriminatorAlias );
+		}
+
+		protected override int[] SubclassColumnTableNumberClosure
+		{
+			get { return subclassColumnTableNumberClosure; }
+		}
+
+		protected override int[] SubclassFormulaTableNumberClosure
+		{
+			get { return subclassFormulaTableNumberClosure; }
 		}
 	}
 }

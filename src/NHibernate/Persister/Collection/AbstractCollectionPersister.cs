@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using Iesi.Collections;
-
 using log4net;
-
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -15,12 +12,10 @@ using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
-using NHibernate.Persister;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-
 using Array = NHibernate.Mapping.Array;
 
 namespace NHibernate.Persister.Collection
@@ -47,13 +42,15 @@ namespace NHibernate.Persister.Collection
 		private readonly IType keyType;
 		private readonly IType indexType;
 		private readonly IType elementType;
-		private readonly string[ ] keyColumnNames;
-		private readonly string[ ] indexColumnNames;
-		private readonly string[ ] elementColumnNames;
-		protected readonly string[ ] rowSelectColumnNames;
-		private readonly string[ ] indexColumnAliases;
-		private readonly string[ ] elementColumnAliases;
-		private readonly string[ ] keyColumnAliases;
+		private readonly string[] keyColumnNames;
+		private readonly string[] indexColumnNames;
+		private readonly string[] elementColumnNames;
+		private readonly string[] elementFormulaTemplates;
+		private readonly string[] elementFormulas;
+		protected readonly string[] rowSelectColumnNames;
+		private readonly string[] indexColumnAliases;
+		private readonly string[] elementColumnAliases;
+		private readonly string[] keyColumnAliases;
 		protected readonly IType rowSelectType;
 		private readonly bool primitiveArray;
 		private readonly bool array;
@@ -113,7 +110,7 @@ namespace NHibernate.Persister.Collection
 			keyType = collection.Key.Type;
 			int keySpan = collection.Key.ColumnSpan;
 			keyColumnNames = new string[keySpan];
-			string[ ] keyAliases = new string[keySpan];
+			string[] keyAliases = new string[keySpan];
 			int k = 0;
 			foreach( Column col in collection.Key.ColumnCollection )
 			{
@@ -133,7 +130,6 @@ namespace NHibernate.Persister.Collection
 
 			IValue element = collection.Element;
 			int elementSpan = element.ColumnSpan;
-			ICollection iter = element.ColumnCollection;
 			Table table = collection.CollectionTable;
 			fetchMode = element.FetchMode;
 			elementType = element.Type;
@@ -153,20 +149,30 @@ namespace NHibernate.Persister.Collection
 			}
 
 			qualifiedTableName = table.GetQualifiedName( dialect, factory.DefaultSchema );
-			string[ ] aliases = new string[elementSpan];
+			elementColumnAliases = new string[elementSpan];
 			elementColumnNames = new string[elementSpan];
+			elementFormulaTemplates = new string[elementSpan];
+			elementFormulas = new string[elementSpan];
 			int j = 0;
-			foreach( Column col in iter )
+			foreach( ISelectable selectable in element.ColumnCollection )
 			{
-				elementColumnNames[ j ] = col.GetQuotedName( dialect );
-				aliases[ j ] = col.GetAlias( dialect );
+				elementColumnAliases[ j ] = selectable.GetAlias( dialect );
+				if( selectable.IsFormula )
+				{
+					Formula form = ( Formula ) selectable;
+					elementFormulaTemplates[ j ] = form.GetTemplate( dialect );
+					elementFormulas[ j ] = form.FormulaString;
+				}
+				else
+				{
+					Column col = ( Column ) selectable;
+					elementColumnNames[ j ] = col.GetQuotedName( dialect );
+				}
 				j++;
 			}
 
-			elementColumnAliases = alias.ToAliasStrings( aliases, dialect );
-
 			IType selectColumns;
-			string[ ] selectType;
+			string[] selectType;
 
 			hasIndex = collection.IsIndexed;
 
@@ -178,7 +184,7 @@ namespace NHibernate.Persister.Collection
 				int indexSpan = indexedCollection.Index.ColumnSpan;
 				indexColumnNames = new string[indexSpan];
 
-				string[ ] indexAliases = new string[indexSpan];
+				string[] indexAliases = new string[indexSpan];
 				int i = 0;
 				foreach( Column indexCol in indexedCollection.Index.ColumnCollection )
 				{
@@ -219,7 +225,7 @@ namespace NHibernate.Persister.Collection
 				}
 
 				identifierColumnName = col.GetQuotedName( dialect );
-				selectType = new string[ ] {identifierColumnName};
+				selectType = new string[] {identifierColumnName};
 				selectColumns = identifierType;
 				identifierColumnAlias = alias.ToAliasString( col.GetAlias( dialect ), dialect );
 				unquotedIdentifierColumnName = identifierColumnAlias;
@@ -260,7 +266,9 @@ namespace NHibernate.Persister.Collection
 
 			if( elementType.IsComponentType )
 			{
-				elementPropertyMapping = new CompositeElementPropertyMapping( elementColumnNames, ( IAbstractComponentType ) elementType, factory );
+				elementPropertyMapping = new CompositeElementPropertyMapping(
+					elementColumnNames, elementFormulaTemplates,
+					( IAbstractComponentType ) elementType, factory );
 			}
 			else if( !elementType.IsEntityType )
 			{
@@ -484,17 +492,17 @@ namespace NHibernate.Persister.Collection
 			return frag.ToSqlStringFragment( false );
 		}
 
-		public string[ ] IndexColumnNames
+		public string[] IndexColumnNames
 		{
 			get { return indexColumnNames; }
 		}
 
-		public string[ ] ElementColumnNames
+		public string[] ElementColumnNames
 		{
 			get { return elementColumnNames; }
 		}
 
-		public string[ ] KeyColumnNames
+		public string[] KeyColumnNames
 		{
 			get { return keyColumnNames; }
 		}
@@ -574,46 +582,46 @@ namespace NHibernate.Persister.Collection
 				{
 					// create all the new entries
 					IEnumerable entries = collection.Entries();
-					
+
 					//if( entries.Count > 0 )
 					//{
-						int i = 0;
-						int count = 0;
-						try
-						{
-							collection.PreInsert( this );
+					int i = 0;
+					int count = 0;
+					try
+					{
+						collection.PreInsert( this );
 
-							foreach( object entry in entries )
+						foreach( object entry in entries )
+						{
+							if( collection.EntryExists( entry, i ) )
 							{
-								if( collection.EntryExists( entry, i ) )
-								{
-									IDbCommand st = session.Batcher.PrepareBatchCommand( SqlInsertRowString );
-									WriteKey( st, id, false, session );
-									collection.WriteTo( st, this, entry, i, false );
-									session.Batcher.AddToBatch( 1 );
-									collection.AfterRowInsert( this, entry, i );
-									count++;
-								}
-								i++;
+								IDbCommand st = session.Batcher.PrepareBatchCommand( SqlInsertRowString );
+								WriteKey( st, id, false, session );
+								collection.WriteTo( st, this, entry, i, false );
+								session.Batcher.AddToBatch( 1 );
+								collection.AfterRowInsert( this, entry, i );
+								count++;
 							}
-						} 
-							//TODO: change to SqlException
-						catch( Exception e )
-						{
-							session.Batcher.AbortBatch( e );
-							throw;
+							i++;
 						}
-						if( log.IsDebugEnabled )
-						{
-							log.Debug( string.Format( "done inserting collection: {0} rows inserted", count ) );
-						}
+					} 
+						//TODO: change to SqlException
+					catch( Exception e )
+					{
+						session.Batcher.AbortBatch( e );
+						throw;
+					}
+					if( log.IsDebugEnabled )
+					{
+						log.Debug( string.Format( "done inserting collection: {0} rows inserted", count ) );
+					}
 					//}
 					//else
 					//{
-						if( count==0 && log.IsDebugEnabled )
-						{
-							log.Debug( "collection was empty" );
-						}
+					if( count == 0 && log.IsDebugEnabled )
+					{
+						log.Debug( "collection was empty" );
+					}
 					//}
 				}
 				catch( HibernateException )
@@ -809,7 +817,7 @@ namespace NHibernate.Persister.Collection
 			return elementPropertyMapping.ToType( propertyName );
 		}
 
-		public string[ ] ToColumns( string alias, string propertyName )
+		public string[] ToColumns( string alias, string propertyName )
 		{
 			if( "index".Equals( propertyName ) )
 			{
