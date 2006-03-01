@@ -209,8 +209,8 @@ namespace NHibernate.Tuple
 			hasLazyProperties = hasLazy;
 			if (hasLazyProperties) log.Info("lazy property fetching available for: " + type.FullName);
 
+			lazy = persistentClass.IsLazy;
 			// TODO H3:
-			lazy = false;
 //			lazy = persistentClass.IsLazy && (
 //				// TODO: this disables laziness even in non-pojo entity modes:
 //				!persistentClass.HasPojoRepresentation ||
