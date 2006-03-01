@@ -2010,5 +2010,10 @@ namespace NHibernate.Persister.Entity
 		protected virtual void AddDiscriminatorToSelect( SelectFragment select, string name, string suffix )
 		{
 		}
+
+		public string[] GetPropertyColumnNames( string propertyName )
+		{
+			return GetColumnNames( propertyName );
+		}
 	}
 }

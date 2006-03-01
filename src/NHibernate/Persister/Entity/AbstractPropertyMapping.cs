@@ -197,5 +197,16 @@ namespace NHibernate.Persister.Entity
 		protected virtual void HandlePath( string path, IType type )
 		{
 		}
+
+		public string[] GetColumnNames( string propertyName )
+		{
+			string[] cols = ( string[] ) columnsByPropertyPath[ propertyName ];
+			if( cols == null )
+			{
+				throw new MappingException( "unknown property: " + propertyName );
+			}
+			return cols;
+		}
+
 	}
 }

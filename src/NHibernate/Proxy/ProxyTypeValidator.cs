@@ -1,6 +1,8 @@
 using System;
 using System.Reflection;
 
+using NHibernate.Util;
+
 namespace NHibernate.Proxy
 {
 	public class ProxyTypeValidator
@@ -18,6 +20,7 @@ namespace NHibernate.Proxy
 			}
 			CheckHasVisibleDefaultConstructor( type );
 			CheckEveryPublicMemberIsVirtual( type );
+			CheckNotSealed( type );
 		}
 
 		public static void Error( System.Type type, string reason )
@@ -82,6 +85,14 @@ namespace NHibernate.Proxy
 
 			return constructor != null
 				&& !constructor.IsPrivate;
+		}
+
+		public static void CheckNotSealed( System.Type type )
+		{
+			if( ReflectHelper.IsFinalClass( type ) )
+			{
+				Error( type, "type is sealed" );
+			}
 		}
 	}
 }

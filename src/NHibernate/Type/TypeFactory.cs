@@ -648,7 +648,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public static IType ManyToOne( System.Type persistentClass )
+		public static EntityType ManyToOne( System.Type persistentClass )
 		{
 			return ManyToOne( persistentClass, null );
 		}
@@ -659,7 +659,7 @@ namespace NHibernate.Type
 		/// <param name="persistentClass"></param>
 		/// <param name="uniqueKeyPropertyName"></param>
 		/// <returns></returns>
-		public static IType ManyToOne( System.Type persistentClass, string uniqueKeyPropertyName )
+		public static EntityType ManyToOne( System.Type persistentClass, string uniqueKeyPropertyName )
 		{
 			return new ManyToOneType( persistentClass, uniqueKeyPropertyName );
 		}

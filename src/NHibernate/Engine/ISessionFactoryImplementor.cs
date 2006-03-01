@@ -1,6 +1,6 @@
-using System.Collections;
 using System.Data;
 using NHibernate.Cache;
+using NHibernate.Id;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -150,7 +150,12 @@ namespace NHibernate.Engine
 		/// </summary>
 		bool PrepareSql { get; }
 
-		// TODO: H2.1
+		// TODO H2.1:
 		// bool IsWrapDataReadersEnabled { get; }
+
+		/// <summary>
+		/// Get the identifier generator for the hierarchy
+		/// </summary>
+		IIdentifierGenerator GetIdentifierGenerator( System.Type rootClass );
 	}
 }

@@ -207,6 +207,12 @@ namespace NHibernate.Mapping
 			set { table = value; }
 		}
 
+		public virtual int PropertyClosureSpan
+		{
+			get { return properties.Count; }
+			// TODO H3: add properties of <join>s.
+		}
+
 		/// <summary>
 		/// Gets an <see cref="ICollection"/> of <see cref="Property"/> objects.
 		/// </summary>
@@ -626,6 +632,18 @@ namespace NHibernate.Mapping
 					throw new MappingException( string.Format( "property mapping has wrong number of columns: {0} type: {1}", StringHelper.Qualify( MappedClass.Name, Name ), prop.Type.Name ) );
 				}
 			}
+		}
+
+		public bool HasPojoRepresentation
+		{
+			// TODO H3:
+			get { return true; }
+		}
+
+		public object IsAbstract
+		{
+			// TODO H3:
+			get { return null; }
 		}
 	}
 }

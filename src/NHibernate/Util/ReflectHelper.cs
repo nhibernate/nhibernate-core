@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Reflection;
 using log4net;
 using NHibernate.Property;
@@ -361,6 +360,11 @@ namespace NHibernate.Util
 		public static bool IsAbstractClass( System.Type type )
 		{
 			return ( type.IsAbstract || type.IsInterface );
+		}
+
+		public static bool IsFinalClass( System.Type type )
+		{
+			return type.IsSealed;
 		}
 	}
 }

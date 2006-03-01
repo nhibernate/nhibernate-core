@@ -10,7 +10,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// Any value that maps to columns.
 	/// </summary>
-	public class SimpleValue : IValue
+	public class SimpleValue : IKeyValue
 	{
 		private ArrayList columns = new ArrayList();
 		private IType type;

@@ -79,6 +79,9 @@ namespace NHibernate.Impl
 		private readonly IDictionary collectionMetadata;
 
 		[NonSerialized]
+		private readonly IDictionary identifierGenerators;
+
+		[NonSerialized]
 		private readonly IDictionary namedQueries;
 
 		[NonSerialized]
@@ -134,6 +137,26 @@ namespace NHibernate.Impl
 				log.Debug( "instantiating session factory with properties: "
 					+ CollectionPrinter.ToString( properties ) );
 			}
+
+			// Generators:
+			identifierGenerators = new Hashtable();
+			foreach( PersistentClass model in cfg.ClassMappings )
+			{
+				if ( !model.IsInherited ) 
+				{
+					// TODO H3:
+					IIdentifierGenerator generator = model.Identifier.CreateIdentifierGenerator(
+						settings.Dialect );
+//					IIdentifierGenerator generator = model.Identifier.CreateIdentifierGenerator(
+//						settings.Dialect,
+//						settings.DefaultCatalogName,
+//						settings.DefaultSchemaName,
+//						(RootClass) model
+//						);
+					identifierGenerators[ model.MappedClass ] = generator;
+				}
+			}
+
 
 			// Persisters:
 
@@ -788,7 +811,6 @@ namespace NHibernate.Impl
 				if( p is IQueryable )
 				{
 					IQueryable q = ( IQueryable ) p;
-					string className = q.ClassName;
 					bool isMappedClass = clazz.Equals( q.MappedClass );
 					if( q.IsExplicitPolymorphism )
 					{
@@ -1114,5 +1136,10 @@ namespace NHibernate.Impl
 				throw new ADOException( "cannot close connection", e );
 			}
 		}
+
+        public IIdentifierGenerator GetIdentifierGenerator( System.Type rootClass )
+        {
+        	return ( IIdentifierGenerator ) identifierGenerators[ rootClass ];
+        }
 	}
 }

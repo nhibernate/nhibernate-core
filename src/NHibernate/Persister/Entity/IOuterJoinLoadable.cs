@@ -93,11 +93,15 @@ namespace NHibernate.Persister.Entity
 		/// <returns></returns>
 		SqlString SelectFragment( string alias, string suffix );
 
-		/* TODO H3
 		/// <summary>
 		/// Get the column names for the given property path
 		/// </summary>
 		string[ ] GetPropertyColumnNames( string propertyPath );
-		*/
+
+		// TODO H3:
+//		/// <summary>
+//		/// Get the table name for the given property path
+//		/// </summary>
+//		string GetPropertyTableName( string propertyName );
 	}
 }

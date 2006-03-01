@@ -1474,6 +1474,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Mapping\IKeyValue.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Mapping\Index.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2160,6 +2165,36 @@
                 />
                 <File
                     RelPath = "Transform\RootEntityResultTransformer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tuple\EntityMetamodel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tuple\IdentifierProperty.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tuple\Property.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tuple\PropertyFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tuple\StandardProperty.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tuple\VersionProperty.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

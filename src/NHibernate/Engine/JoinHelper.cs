@@ -1,13 +1,15 @@
 using System;
-using NHibernate.Persister;
+
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
 	public sealed class JoinHelper
 	{
-		private JoinHelper() { }
+		private JoinHelper()
+		{
+		}
 
 		/*
 		/// <summary>
@@ -152,24 +154,24 @@ namespace NHibernate.Engine
 				}
 			}
 		}
+		*/
 
 		/// <summary>
 		/// Get the columns of the associated table which are to 
 		/// be used in the join
 		/// </summary>
-		public static string[] GetRHSColumnNames(IAssociationType type, ISessionFactoryImplementor factory) 
+		public static string[] GetRHSColumnNames( IAssociationType type, ISessionFactoryImplementor factory )
 		{
 			string uniqueKeyPropertyName = type.RHSUniqueKeyPropertyName;
-			IJoinable joinable = type.GetAssociatedJoinable(factory);
-			if (uniqueKeyPropertyName==null) 
+			IJoinable joinable = type.GetAssociatedJoinable( factory );
+			if( uniqueKeyPropertyName == null )
 			{
 				return joinable.KeyColumnNames;
 			}
-			else 
+			else
 			{
-				return ( (IOuterJoinLoadable) joinable ).GetPropertyColumnNames(uniqueKeyPropertyName);
+				return ( ( IOuterJoinLoadable ) joinable ).GetPropertyColumnNames( uniqueKeyPropertyName );
 			}
 		}
-		*/
 	}
 }
