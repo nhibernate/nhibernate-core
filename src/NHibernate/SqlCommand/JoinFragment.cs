@@ -103,17 +103,5 @@ namespace NHibernate.SqlCommand
 		{
 			AddJoins( ojf.ToFromFragmentString, ojf.ToWhereFragmentString );
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fromFragment"></param>
-		/// <param name="whereFragment"></param>
-		[Obsolete( "should use SqlString instead" )]
-		public virtual void AddJoins( string fromFragment, string whereFragment )
-		{
-			this.AddJoins( new SqlString( fromFragment ), new SqlString( whereFragment ) );
-		}
-
 	}
 }

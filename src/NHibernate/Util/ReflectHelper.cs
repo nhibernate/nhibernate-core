@@ -100,30 +100,6 @@ namespace NHibernate.Util
 			return accessor.GetGetter( theClass, propertyName );
 		}
 
-		/// <summary>
-		/// Finds the <see cref="IGetter"/> for the property in the <see cref="System.Type"/>.
-		/// </summary>
-		/// <param name="theClass">The <see cref="System.Type"/> to find the Property/Field in.</param>
-		/// <param name="propertyName">The name of the Property/Field to find.</param>
-		/// <returns>The <see cref="IGetter"/> for the property.</returns>
-		/// <remarks>
-		/// <para>
-		/// This does not use the <c>access=""</c> attribute specified in the mapping.  It
-		/// first checks to see if there is a Property in your class with the same name.  If
-		/// no Property is found then it moves through each <see cref="IPropertyAccessor"/> strategy
-		/// and tries to find an <see cref="IGetter"/> through them.
-		/// </para>
-		/// </remarks>
-		/// <exception cref="PropertyNotFoundException">
-		/// No Property or Field with the <c>propertyName</c> could be found.
-		/// </exception>
-		[Obsolete( "Use the overload with property access parameter" )]
-		public static IGetter GetGetter( System.Type theClass, string propertyName )
-		{
-			// first try the basicPropertyAccessor since that will be the most likely strategy used.
-			return GetGetter( theClass, propertyName, "property" );
-		}
-
 		//TODO: add a method in here ReflectedPropertyClass and replace most calls to GetGetter
 		// with calls to it
 

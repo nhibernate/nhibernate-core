@@ -39,16 +39,6 @@ namespace NHibernate.Property
 		}
 
 		/// <summary>
-		/// Gets an <see cref="IDictionary"/> of the built in <see cref="IPropertyAccessor"/> strategies.
-		/// </summary>
-		/// <value>An <see cref="IDictionary"/> of the built in <see cref="IPropertyAccessor"/> strategies.</value>
-		[Obsolete( "Use GetPropertyAccessor method" )]
-		public static IDictionary PropertyAccessors
-		{
-			get { return accessors; }
-		}
-
-		/// <summary>
 		/// Gets or creates the <see cref="IPropertyAccessor" /> specified by the type.
 		/// </summary>
 		/// <param name="type"></param>

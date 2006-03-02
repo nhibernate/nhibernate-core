@@ -75,48 +75,6 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		// TODO: figure out if OuterJoins can ever use the ? operator - I don't know
-		// why they would be able to - but you never know.
-		/// <summary>
-		/// Sets the SQL for the OUTER JOINs.  
-		/// </summary>
-		/// <remarks>
-		/// All of the SQL needs to be included in the SELECT.  No OUTER JOINS will automatically be
-		/// added.
-		/// </remarks>
-		/// <param name="outerJoinsAfterFrom">The outerJoinsAfterFrom to set</param>
-		/// <param name="outerJoinsAfterWhere">The outerJoinsAfterWhere to set</param>
-		/// <returns>The SqlSelectBuilder</returns>
-		[Obsolete( "Should use SqlString version instead" )]
-		public SqlSelectBuilder SetOuterJoins( string outerJoinsAfterFrom, string outerJoinsAfterWhere )
-		{
-			return this.SetOuterJoins( new SqlString( outerJoinsAfterFrom ), new SqlString( outerJoinsAfterWhere ) );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="outerJoinsAfterFrom"></param>
-		/// <param name="outerJoinsAfterWhere"></param>
-		/// <returns></returns>
-		[Obsolete( "Should use SqlString version instead" )]
-		public SqlSelectBuilder SetOuterJoins( SqlString outerJoinsAfterFrom, string outerJoinsAfterWhere )
-		{
-			return this.SetOuterJoins( outerJoinsAfterFrom, new SqlString( outerJoinsAfterWhere ) );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="outerJoinsAfterFrom"></param>
-		/// <param name="outerJoinsAfterWhere"></param>
-		/// <returns></returns>
-		[Obsolete( "Should use SqlString version instead" )]
-		public SqlSelectBuilder SetOuterJoins( string outerJoinsAfterFrom, SqlString outerJoinsAfterWhere )
-		{
-			return this.SetOuterJoins( new SqlString( outerJoinsAfterFrom ), outerJoinsAfterWhere );
-		}
-
 		/// <summary>
 		/// Sets the SqlString for the OUTER JOINs.  
 		/// </summary>

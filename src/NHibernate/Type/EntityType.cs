@@ -200,12 +200,6 @@ namespace NHibernate.Type
 			return ( IJoinable ) factory.GetPersister( associatedClass );
 		}
 
-		[Obsolete("Replace by JoinHelper.GetReferencedColumns(this, factory)")]
-		public string[ ] GetReferencedColumns( ISessionFactoryImplementor factory )
-		{
-			return JoinHelper.GetRHSColumnNames( this, factory );
-		}
-
 		protected IType GetIdentifierType( ISessionImplementor session )
 		{
 			return session.Factory.GetIdentifierType( associatedClass );

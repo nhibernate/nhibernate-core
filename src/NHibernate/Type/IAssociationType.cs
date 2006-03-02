@@ -50,14 +50,6 @@ namespace NHibernate.Type
 		System.Type GetAssociatedClass( ISessionFactoryImplementor factory );
 
 		/// <summary>
-		/// Get the columns referenced by this association.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		[Obsolete("Remove for H3")]
-		string[] GetReferencedColumns( ISessionFactoryImplementor factory );
-
-		/// <summary>
 		/// Do we dirty check this association, even when there are
 		/// no columns to be updated.
 		/// </summary>
