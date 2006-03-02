@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug-2.0\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -23,7 +23,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release-2.0\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -35,6 +35,13 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="DictionarySet.cs" />
+    <Compile Include="Generic\DictionarySet.cs" />
+    <Compile Include="Generic\HashedSet.cs" />
+    <Compile Include="Generic\ImmutableSet.cs" />
+    <Compile Include="Generic\ISet.cs" />
+    <Compile Include="Generic\Set.cs" />
+    <Compile Include="Generic\SortedSet.cs" />
+    <Compile Include="Generic\SynchronizedSet.cs" />
     <Compile Include="HashedSet.cs" />
     <Compile Include="HybridSet.cs" />
     <Compile Include="ImmutableSet.cs" />
