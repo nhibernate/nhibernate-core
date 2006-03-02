@@ -176,6 +176,11 @@ namespace NHibernate.Mapping
 			get { return propertyValue == null || propertyValue.IsNullable; }
 		}
 
+		public bool IsOptional
+		{
+			get { return IsNullable; }
+		}
+
 		/// <summary></summary>
 		public string PropertyAccessorName
 		{

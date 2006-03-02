@@ -4,7 +4,6 @@ using NHibernate.Persister.Collection;
 using NUnit.Framework;
 using NHibernate.Collection;
 using NHibernate.Engine;
-using NHibernate.Persister;
 using NHibernate.Type;
 
 namespace NHibernate.Test.NHSpecificTest
@@ -330,6 +329,10 @@ namespace NHibernate.Test.NHSpecificTest
 		public void WriteIdentifier(System.Data.IDbCommand st, object idx, bool writeOrder, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.WriteIdentifier implementation
+		}
+
+		public void PostInstantiate()
+		{
 		}
 
 		#endregion

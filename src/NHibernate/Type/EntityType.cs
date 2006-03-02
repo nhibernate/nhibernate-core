@@ -200,20 +200,10 @@ namespace NHibernate.Type
 			return ( IJoinable ) factory.GetPersister( associatedClass );
 		}
 
+		[Obsolete("Replace by JoinHelper.GetReferencedColumns(this, factory)")]
 		public string[ ] GetReferencedColumns( ISessionFactoryImplementor factory )
 		{
-			//I really, really don't like the fact that a Type now knows about column mappings!
-			//bad seperation of concerns ... could we move this somehow to Joinable interface??
-			IJoinable joinable = GetAssociatedJoinable( factory );
-
-			if( uniqueKeyPropertyName == null )
-			{
-				return joinable.KeyColumnNames;
-			}
-			else
-			{
-				return ( ( IUniqueKeyLoadable ) joinable ).GetUniqueKeyColumnNames( uniqueKeyPropertyName );
-			}
+			return JoinHelper.GetRHSColumnNames( this, factory );
 		}
 
 		protected IType GetIdentifierType( ISessionImplementor session )
@@ -221,7 +211,7 @@ namespace NHibernate.Type
 			return session.Factory.GetIdentifierType( associatedClass );
 		}
 
-		public IType GetIdentifierOrUniqueKeyType( ISessionFactoryImplementor factory )
+		public IType GetIdentifierOrUniqueKeyType( IMapping factory )
 		{
 			if( uniqueKeyPropertyName == null )
 			{
@@ -229,11 +219,11 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return factory.GetPersister( associatedClass ).GetPropertyType( uniqueKeyPropertyName );
+				return factory.GetPropertyType( associatedClass, uniqueKeyPropertyName );
 			}
 		}
 
-		public string GetIdentifierOrUniqueKeyPropertyName( ISessionFactoryImplementor factory )
+		public string GetIdentifierOrUniqueKeyPropertyName( IMapping factory )
 		{
 			if( uniqueKeyPropertyName == null )
 			{

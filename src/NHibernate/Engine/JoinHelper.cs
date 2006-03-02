@@ -2,6 +2,7 @@ using System;
 
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -11,7 +12,6 @@ namespace NHibernate.Engine
 		{
 		}
 
-		/*
 		/// <summary>
 		/// Get the aliased columns of the owning entity which are to 
 		/// be used in the join
@@ -154,7 +154,6 @@ namespace NHibernate.Engine
 				}
 			}
 		}
-		*/
 
 		/// <summary>
 		/// Get the columns of the associated table which are to 

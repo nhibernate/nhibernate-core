@@ -405,5 +405,11 @@ namespace NHibernate.Mapping
 
 			Key.CreateForeignKeyOfClass( Superclass.MappedClass );
 		}
+
+		public override int PropertyClosureSpan
+		{
+			get { return Superclass.PropertyClosureSpan + base.PropertyClosureSpan; }
+		}
+
 	}
 }

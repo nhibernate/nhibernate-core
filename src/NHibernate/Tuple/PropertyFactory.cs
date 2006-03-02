@@ -130,7 +130,7 @@ namespace NHibernate.Tuple
 				property.IsUpdateable,
 				false, // TODO H3: property.getGeneration() == PropertyGeneration.INSERT || property.getGeneration() == PropertyGeneration.ALWAYS,
 				false, // TODO H3: property.getGeneration() == PropertyGeneration.ALWAYS,
-				false, // TODO H3: property.IsOptional,
+				property.IsOptional, // TODO H3: property.IsOptional,
 				alwaysDirtyCheck || property.IsUpdateable,
 				true, // TODO H3: property.IsOptimisticLocked,
 				property.CascadeStyle

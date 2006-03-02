@@ -234,11 +234,6 @@ namespace NHibernate.Type
 			return GetAssociatedJoinable( factory ).KeyColumnNames ;
 		}
 
-		public override bool IsModified(object old, object current, ISessionImplementor session)
-		{
-			return false;
-		}
-
 		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
 		{
 			try
@@ -333,6 +328,16 @@ namespace NHibernate.Type
 		public bool IsAlwaysDirtyChecked
 		{
 			get { return true; }
+		}
+
+		public override bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session )
+		{
+			return IsDirty( old, current, session );
+		}
+
+		public override bool IsModified(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session)
+		{
+			return false;
 		}
 	}
 }

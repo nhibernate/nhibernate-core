@@ -219,5 +219,11 @@ namespace NHibernate.Type
 		{
 			return userType.GetHashCode();
 		}
+
+		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			return checkable[ 0 ] && IsDirty(old, current, session);
+		}
+
 	}
 }

@@ -21,11 +21,20 @@ namespace NHibernate.Persister
 		{
 		}
 
-		private static readonly System.Type[ ] PersisterConstructorArgs = new System.Type[ ] {typeof( PersistentClass ), typeof( ISessionFactoryImplementor )};
+		private static readonly System.Type[ ] PersisterConstructorArgs = new System.Type[ ]
+			{
+				typeof( PersistentClass ),
+				typeof( ISessionFactoryImplementor ),
+				typeof( IMapping )
+			};
 
 		// TODO: is it really neceassry to provide Configuration to CollectionPersisters ? Should it not be enough with associated class ?
 		// or why does ClassPersister's not get access to configuration ?
-		private static readonly System.Type[ ] CollectionPersisterConstructorArgs = new System.Type[] { typeof( Mapping.Collection ), typeof( ISessionFactoryImplementor ) };
+		private static readonly System.Type[ ] CollectionPersisterConstructorArgs = new System.Type[]
+			{
+				typeof( Mapping.Collection ),
+				typeof( ISessionFactoryImplementor )
+			};
 
 		/// <summary>
 		/// Creates a built in Entity Persister or a custom Persister.
@@ -33,21 +42,21 @@ namespace NHibernate.Persister
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static IEntityPersister CreateClassPersister( PersistentClass model, ISessionFactoryImplementor factory )
+		public static IEntityPersister CreateClassPersister( PersistentClass model, ISessionFactoryImplementor factory, IMapping cfg )
 		{
 			System.Type persisterClass = model.ClassPersisterClass;
 
 			if( persisterClass == null || persisterClass == typeof( SingleTableEntityPersister ) )
 			{
-				return new SingleTableEntityPersister( model, factory );
+				return new SingleTableEntityPersister( model, factory, cfg );
 			}
 			else if( persisterClass == typeof( JoinedSubclassEntityPersister ) )
 			{
-				return new JoinedSubclassEntityPersister( model, factory );
+				return new JoinedSubclassEntityPersister( model, factory, cfg );
 			}
 			else
 			{
-				return Create( persisterClass, model, factory );
+				return Create( persisterClass, model, factory, cfg );
 			}
 		}
 
@@ -74,7 +83,7 @@ namespace NHibernate.Persister
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static IEntityPersister Create( System.Type persisterClass, PersistentClass model, ISessionFactoryImplementor factory )
+		public static IEntityPersister Create( System.Type persisterClass, PersistentClass model, ISessionFactoryImplementor factory, IMapping cfg )
 		{
 			ConstructorInfo pc;
 			try
@@ -88,7 +97,7 @@ namespace NHibernate.Persister
 
 			try
 			{
-				return ( IEntityPersister ) pc.Invoke( new object[ ] {model, factory} );
+				return ( IEntityPersister ) pc.Invoke( new object[ ] {model, factory, cfg} );
 			}
 			catch( TargetInvocationException tie )
 			{

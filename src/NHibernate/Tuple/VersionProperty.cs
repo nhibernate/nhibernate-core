@@ -55,9 +55,9 @@ namespace NHibernate.Tuple
 			this.unsavedValue = unsavedValue;
 		}
 
-		public Cascades.VersionValue getUnsavedValue() 
+		public Cascades.VersionValue UnsavedValue
 		{
-			return unsavedValue;
+			get { return unsavedValue; }
 		}
 	}
 }

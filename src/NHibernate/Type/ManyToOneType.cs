@@ -1,4 +1,5 @@
 using System.Data;
+
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -26,12 +27,13 @@ namespace NHibernate.Type
 			return GetReferencedType( mapping ).GetColumnSpan( mapping );
 		}
 
-		public override SqlType[ ] SqlTypes( IMapping mapping )
+		public override SqlType[] SqlTypes( IMapping mapping )
 		{
 			return GetReferencedType( mapping ).SqlTypes( mapping );
 		}
 
-		public ManyToOneType( System.Type persistentClass ) : this( persistentClass, null )
+		public ManyToOneType( System.Type persistentClass )
+			: this( persistentClass, null )
 		{
 		}
 
@@ -53,7 +55,7 @@ namespace NHibernate.Type
 
 		public override ForeignKeyDirection ForeignKeyDirection
 		{
-			get { return Type.ForeignKeyDirection.ForeignKeyFromParent; }
+			get { return ForeignKeyDirection.ForeignKeyFromParent; }
 		}
 
 		/// <summary>
@@ -66,12 +68,12 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.
 		/// </returns>
-		public override object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
+		public override object Hydrate( IDataReader rs, string[] names, ISessionImplementor session, object owner )
 		{
 			object id = GetIdentifierOrUniqueKeyType( session.Factory )
 				.NullSafeGet( rs, names, session, owner );
 
-			if ( id != null )
+			if( id != null )
 			{
 				session.ScheduleBatchLoad( AssociatedClass, id );
 			}
@@ -94,22 +96,23 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override bool IsModified(object old, object current, ISessionImplementor session)
+		public override bool IsModified( object old, object current, bool[] checkable, ISessionImplementor session )
 		{
-			if ( current == null )
+			if( current == null )
 			{
 				return old != null;
 			}
-			if ( old == null )
+			if( old == null )
 			{
-				return current != null ;
+				return current != null;
 			}
-			return GetIdentifierOrUniqueKeyType( session.Factory ).IsModified( old, GetIdentifier( current, session ), session );
+			//the ids are fully resolved, so compare them with isDirty(), not isModified()
+			return GetIdentifierOrUniqueKeyType( session.Factory ).IsDirty( old, GetIdentifier( current, session ), session );
 		}
 
 		public override object Disassemble( object value, ISessionImplementor session )
 		{
-			if ( value == null )
+			if( value == null )
 			{
 				return null;
 			}
@@ -118,7 +121,7 @@ namespace NHibernate.Type
 				// cache the actual id of the object, not the value of the
 				// property-ref, which might not be initialized
 				object id = session.GetEntityIdentifierIfNotUnsaved( value );
-				if ( id == null )
+				if( id == null )
 				{
 					throw new AssertionFailure( "cannot cache a reference to an object with a null id: " + AssociatedClass.Name );
 				}
@@ -129,7 +132,7 @@ namespace NHibernate.Type
 		public override object Assemble( object oid, ISessionImplementor session, object owner )
 		{
 			object id = GetIdentifierType( session ).Assemble( oid, session, owner );
-			if ( id == null )
+			if( id == null )
 			{
 				return null;
 			}
@@ -144,5 +147,42 @@ namespace NHibernate.Type
 			// TODO H3: get { return ignoreNotFound; }
 			get { return false; }
 		}
+
+		public override bool IsDirty( object old, object current, ISessionImplementor session )
+		{
+			if( IsSame( old, current ) )
+			{
+				return false;
+			}
+
+			object oldid = GetIdentifier( old, session );
+			object newid = GetIdentifier( current, session );
+			return GetIdentifierType( session ).IsDirty( oldid, newid, session );
+		}
+
+		public bool IsSame( object x, object y )
+		{
+			return x == y;
+		}
+
+		public override bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session )
+		{
+			if( IsAlwaysDirtyChecked )
+			{
+				return IsDirty( old, current, session );
+			}
+			else
+			{
+				if( IsSame( old, current ) )
+				{
+					return false;
+				}
+
+				object oldid = GetIdentifier( old, session );
+				object newid = GetIdentifier( current, session );
+				return GetIdentifierType( session ).IsDirty( oldid, newid, checkable, session );
+			}
+		}
+
 	}
 }

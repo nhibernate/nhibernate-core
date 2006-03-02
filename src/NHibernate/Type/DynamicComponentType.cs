@@ -3,7 +3,6 @@ using System.Collections;
 using System.Data;
 
 using NHibernate.Engine;
-using NHibernate.Loader;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -158,25 +157,65 @@ namespace NHibernate.Type
 			return true;
 		}
 
-		public override bool IsDirty( object old, object current, ISessionImplementor session )
+		public override bool IsDirty( object x, object y, ISessionImplementor session )
 		{
-			if( old == current )
+			if( x == y )
 			{
 				return false;
 			}
-			if( old == null || current == null )
+			if( x == null || y == null )
+			{
+				return true;
+			}
+			object[] xvalues = GetPropertyValues( x );
+			object[] yvalues = GetPropertyValues( y );
+			for( int i = 0; i < xvalues.Length; i++ )
+			{
+				if( propertyTypes[ i ].IsDirty( xvalues[ i ], yvalues[ i ], session ) )
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public override bool IsDirty( object x, object y, bool[] checkable, ISessionImplementor session )
+		{
+			if( x == y )
+			{
+				return false;
+			}
+			if( x == null || y == null )
 			{
 				return true;
 			}
 
-			IDictionary xbean = old as IDictionary;
-			IDictionary ybean = current as IDictionary;
-			for( int i = 0; i < propertySpan; i++ )
+			object[] xvalues = GetPropertyValues( x );
+			object[] yvalues = GetPropertyValues( y );
+			int loc = 0;
+			for( int i = 0; i < xvalues.Length; i++ )
 			{
-				if( propertyTypes[ i ].IsDirty( xbean[ propertyNames[ i ] ], ybean[ propertyNames[ i ] ], session ) )
+				int len = propertyTypes[ i ].GetColumnSpan( session.Factory );
+				if( len <= 1 )
 				{
-					return true;
+					bool dirty = ( len == 0 || checkable[ loc ] ) &&
+						propertyTypes[ i ].IsDirty( xvalues[ i ], yvalues[ i ], session );
+					if( dirty )
+					{
+						return true;
+					}
 				}
+				else
+				{
+					bool[] subcheckable = new bool[len];
+					Array.Copy( checkable, loc, subcheckable, 0, len );
+					bool dirty = propertyTypes[ i ].IsDirty( xvalues[ i ], yvalues[ i ], subcheckable, session );
+					if( dirty )
+					{
+						return true;
+					}
+				}
+				loc += len;
 			}
 			return false;
 		}

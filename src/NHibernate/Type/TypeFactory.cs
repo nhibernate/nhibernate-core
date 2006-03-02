@@ -3,6 +3,7 @@ using System.Collections;
 using System.Globalization;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Tuple;
 using NHibernate.Util;
 
 namespace NHibernate.Type
@@ -853,23 +854,30 @@ namespace NHibernate.Type
 		/// returning an array containing indexes of
 		/// the dirty fields or null if no fields are dirty.
 		/// </summary>
-		/// <param name="types"></param>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <param name="check"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public static int[ ] FindDirty( IType[ ] types, object[ ] x, object[ ] y, bool[ ] check, ISessionImplementor session )
+		public static int[ ] FindDirty(
+			StandardProperty[ ] properties,
+			object[ ] x,
+			object[ ] y,
+			bool[ ][ ] includeColumns,
+			bool anyUninitializedProperties,
+			ISessionImplementor session )
 		{
 			int[ ] results = null;
 			int count = 0;
-			for( int i = 0; i < types.Length; i++ )
+			int span = properties.Length;
+
+			for( int i = 0; i < span; i++ )
 			{
-				if( check[ i ] && types[ i ].IsDirty( x[ i ], y[ i ], session ) )
+				bool dirty = 
+					// TODO H3: x[ i ] != LazyPropertyInitializer.UnfetchedProperty && //x is the "current" state
+					properties[ i ].IsDirtyCheckable( anyUninitializedProperties )
+					&& properties[i].Type.IsDirty( y[i], x[i], includeColumns[ i ], session );
+
+				if( dirty )
 				{
 					if( results == null )
 					{
-						results = new int[types.Length];
+						results = new int[ span ];
 					}
 					results[ count++ ] = i;
 				}
@@ -891,17 +899,30 @@ namespace NHibernate.Type
 		/// returning an array containing indexes of
 		/// the dirty fields or null if no fields are modified.
 		/// </summary>
-		public static int[ ] FindModified( IType[ ] types, object[ ] old, object[ ] current, bool[ ] check, ISessionImplementor session )
+		public static int[ ] FindModified(
+			StandardProperty[ ] properties,
+			object[ ] x,
+			object[ ] y,
+			bool[ ][ ] includeColumns,
+			bool anyUninitializedProperties,
+			ISessionImplementor session )
 		{
 			int[ ] results = null;
 			int count = 0;
-			for( int i = 0; i < types.Length; i++ )
+			int span = properties.Length;
+
+			for( int i = 0; i < span; i++ )
 			{
-				if( check[ i ] && types[ i ].IsModified( old[ i ], current[ i ], session ) )
+				bool dirty = 
+					// TODO H3: x[ i ] != LazyPropertyInitializer.UnfetchedProperty && //x is the "current" state
+					properties[ i ].IsDirtyCheckable( anyUninitializedProperties )
+					&& properties[i].Type.IsModified( y[i], x[i], includeColumns[ i ], session );
+
+				if( dirty )
 				{
 					if( results == null )
 					{
-						results = new int[types.Length];
+						results = new int[ span ];
 					}
 					results[ count++ ] = i;
 				}

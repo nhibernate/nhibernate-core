@@ -77,7 +77,7 @@ namespace NHibernate.Persister.Collection
 		private readonly IPropertyMapping elementPropertyMapping;
 		private readonly IEntityPersister elementPersister;
 
-		private readonly ICollectionInitializer initializer;
+		private ICollectionInitializer initializer;
 
 		private readonly string role;
 
@@ -261,8 +261,6 @@ namespace NHibernate.Persister.Collection
 				// for non-arrays, we don't need to know the element class
 				elementClass = null;
 			}
-
-			initializer = CreateCollectionInitializer( factory );
 
 			if( elementType.IsComponentType )
 			{
@@ -933,5 +931,10 @@ namespace NHibernate.Persister.Collection
 		public abstract bool ConsumesAlias();
 		public abstract bool IsManyToMany { get; }
 		public abstract bool IsOneToMany { get; }
+
+		public void PostInstantiate()
+		{
+			initializer = CreateCollectionInitializer( factory );
+		}
 	}
 }

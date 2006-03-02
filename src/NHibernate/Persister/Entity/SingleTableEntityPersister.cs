@@ -10,7 +10,6 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Mapping;
-using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
@@ -24,8 +23,8 @@ namespace NHibernate.Persister.Entity
 	{
 		// the class hierarchy structure
 		private readonly string qualifiedTableName;
-		private readonly string[ ] tableNames;
-		private readonly System.Type[ ] subclassClosure;
+		private readonly string[] tableNames;
+		private readonly System.Type[] subclassClosure;
 
 		// SQL strings
 		private SqlString sqlDeleteString;
@@ -53,8 +52,6 @@ namespace NHibernate.Persister.Entity
 
 		public override void PostInstantiate( ISessionFactoryImplementor factory )
 		{
-			InitPropertyPaths( factory );
-
 			InitLockers();
 
 			// initialize the SqlStrings - these are in the PostInstantiate method because we need
@@ -113,7 +110,7 @@ namespace NHibernate.Persister.Entity
 			get { return discriminatorSQLValue; }
 		}
 
-		public virtual System.Type[ ] SubclassClosure
+		public virtual System.Type[] SubclassClosure
 		{
 			get { return subclassClosure; }
 		}
@@ -135,7 +132,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public override object[ ] PropertySpaces
+		public override object[] PropertySpaces
 		{
 			get { return tableNames; }
 		}
@@ -179,7 +176,6 @@ namespace NHibernate.Persister.Entity
 
 		// Generate all the SQL
 
-
 		/// <summary>
 		/// Generate the SQL that deletes a row by id (and version)
 		/// </summary>
@@ -192,7 +188,7 @@ namespace NHibernate.Persister.Entity
 
 			if( IsVersioned )
 			{
-				deleteBuilder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+				deleteBuilder.SetVersionColumn( new string[] {VersionColumnName}, VersionType );
 			}
 
 			return deleteBuilder.ToSqlString();
@@ -205,7 +201,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="identityInsert"></param>
 		/// <param name="includeProperty"></param>
 		/// <returns>A SqlString for an Insert</returns>
-		protected virtual SqlString GenerateInsertString( bool identityInsert, bool[ ] includeProperty )
+		protected virtual SqlString GenerateInsertString( bool identityInsert, bool[] includeProperty )
 		{
 			SqlInsertBuilder builder = new SqlInsertBuilder( Factory )
 				.SetTableName( TableName );
@@ -300,7 +296,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="includeProperty"></param>
 		/// <returns></returns>
-		protected virtual SqlString GenerateConcreteSelectString( bool[ ] includeProperty )
+		protected virtual SqlString GenerateConcreteSelectString( bool[] includeProperty )
 		{
 			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder( Factory );
 
@@ -319,7 +315,7 @@ namespace NHibernate.Persister.Entity
 			builder.SetIdentityColumn( IdentifierColumnNames, IdentifierType );
 			if( IsVersioned )
 			{
-				builder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+				builder.SetVersionColumn( new string[] {VersionColumnName}, VersionType );
 			}
 
 			return builder.ToSqlString();
@@ -330,13 +326,13 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="includeProperty"></param>
 		/// <returns></returns>
-		protected SqlString GenerateUpdateString( bool[ ] includeProperty )
+		protected SqlString GenerateUpdateString( bool[] includeProperty )
 		{
 			SqlUpdateBuilder builder = GenerateUpdate( includeProperty );
 			return builder != null ? builder.ToSqlString() : null;
 		}
 
-		protected SqlString GenerateUpdateString( bool[ ] includeProperty, object[ ] oldFields )
+		protected SqlString GenerateUpdateString( bool[] includeProperty, object[] oldFields )
 		{
 			SqlUpdateBuilder builder = GenerateUpdate( includeProperty );
 
@@ -347,7 +343,7 @@ namespace NHibernate.Persister.Entity
 
 			if( OptimisticLockMode > OptimisticLockMode.Version && oldFields != null )
 			{
-				bool[ ] includeInWhere = OptimisticLockMode == OptimisticLockMode.All ?
+				bool[] includeInWhere = OptimisticLockMode == OptimisticLockMode.All ?
 					PropertyUpdateability :
 					includeProperty;
 
@@ -373,7 +369,7 @@ namespace NHibernate.Persister.Entity
 			return builder.ToSqlString();
 		}
 
-		protected virtual SqlUpdateBuilder GenerateUpdate( bool[ ] includeProperty )
+		protected virtual SqlUpdateBuilder GenerateUpdate( bool[] includeProperty )
 		{
 			SqlUpdateBuilder builder = new SqlUpdateBuilder( Factory );
 			bool hasColumns = false;
@@ -394,7 +390,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if( OptimisticLockMode == OptimisticLockMode.Version )
 				{
-					builder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+					builder.SetVersionColumn( new string[] {VersionColumnName}, VersionType );
 					hasColumns = true;
 				}
 			}
@@ -428,7 +424,7 @@ namespace NHibernate.Persister.Entity
 				builder.SetIdentityColumn( IdentifierColumnNames, IdentifierType );
 				if( IsVersioned )
 				{
-					builder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+					builder.SetVersionColumn( new string[] {VersionColumnName}, VersionType );
 				}
 
 				sqlBuilder = new SqlStringBuilder( builder.ToSqlString() );
@@ -447,7 +443,6 @@ namespace NHibernate.Persister.Entity
 			return sqlBuilder.ToSqlString();
 		}
 
-
 		/// <summary>
 		/// Marshall the fields of a persistent instance to a prepared statement
 		/// </summary>
@@ -457,7 +452,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="st"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected virtual int Dehydrate( object id, object[ ] fields, bool[ ] includeProperty, IDbCommand st, ISessionImplementor session )
+		protected virtual int Dehydrate( object id, object[] fields, bool[] includeProperty, IDbCommand st, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -518,11 +513,11 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public override object Insert( object[ ] fields, object obj, ISessionImplementor session )
+		public override object Insert( object[] fields, object obj, ISessionImplementor session )
 		{
 			if( UseDynamicInsert )
 			{
-				bool[ ] notNull = GetNotNullInsertableColumns( fields );
+				bool[] notNull = GetNotNullInsertableColumns( fields );
 				return Insert( fields, notNull, GenerateInsertString( true, notNull ), obj, session );
 			}
 			else
@@ -531,11 +526,11 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public override void Insert( object id, object[ ] fields, object obj, ISessionImplementor session )
+		public override void Insert( object id, object[] fields, object obj, ISessionImplementor session )
 		{
 			if( UseDynamicInsert )
 			{
-				bool[ ] notNull = GetNotNullInsertableColumns( fields );
+				bool[] notNull = GetNotNullInsertableColumns( fields );
 				Insert( id, fields, notNull, GenerateInsertString( false, notNull ), obj, session );
 			}
 			else
@@ -553,7 +548,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="sql"></param>
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
-		public void Insert( object id, object[ ] fields, bool[ ] notNull, SqlString sql, object obj, ISessionImplementor session )
+		public void Insert( object id, object[] fields, bool[] notNull, SqlString sql, object obj, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -606,7 +601,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object Insert( object[ ] fields, bool[ ] notNull, SqlString sql, object obj, ISessionImplementor session )
+		public object Insert( object[] fields, bool[] notNull, SqlString sql, object obj, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -710,7 +705,6 @@ namespace NHibernate.Persister.Entity
 					deleteCmd = session.Batcher.PrepareBatchCommand( SqlDeleteString );
 				}
 
-
 				try
 				{
 					// Do the key.  The key is immutable so we can use the _current_ object state - not necessarily
@@ -765,11 +759,11 @@ namespace NHibernate.Persister.Entity
 		/// <param name="oldVersion"></param>
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
-		public override void Update( object id, object[ ] fields, int[ ] dirtyFields, object[ ] oldFields, object oldVersion, object obj, ISessionImplementor session )
+		public override void Update( object id, object[] fields, int[] dirtyFields, object[] oldFields, object oldVersion, object obj, ISessionImplementor session )
 		{
 			//note: dirtyFields==null means we had no snapshot, and we couldn't get one using select-before-update
 			//      oldFields==null just means we had no snapshot to begin with (we might have used select-before-update to get the dirtyFields)
-			bool[ ] propsToUpdate;
+			bool[] propsToUpdate;
 			SqlString updateString;
 
 			if( UseDynamicUpdate && dirtyFields != null )
@@ -793,7 +787,7 @@ namespace NHibernate.Persister.Entity
 			Update( id, fields, oldFields, propsToUpdate, oldVersion, obj, updateString, session );
 		}
 
-		protected virtual void Update( object id, object[ ] fields, object[ ] oldFields, bool[ ] includeProperty, object oldVersion, object obj, SqlString sqlUpdateString, ISessionImplementor session )
+		protected virtual void Update( object id, object[] fields, object[] oldFields, bool[] includeProperty, object oldVersion, object obj, SqlString sqlUpdateString, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -830,7 +824,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else if( OptimisticLockMode.Version < OptimisticLockMode && null != oldFields )
 					{
-						bool[ ] includeOldField = OptimisticLockMode == OptimisticLockMode.All ?
+						bool[] includeOldField = OptimisticLockMode == OptimisticLockMode.All ?
 							PropertyUpdateability :
 							includeProperty;
 
@@ -884,7 +878,7 @@ namespace NHibernate.Persister.Entity
 
 		//INITIALIZATION:
 
-		public SingleTableEntityPersister( PersistentClass model, ISessionFactoryImplementor factory )
+		public SingleTableEntityPersister( PersistentClass model, ISessionFactoryImplementor factory, IMapping mapping )
 			: base( model, factory )
 		{
 			// CLASS + TABLE
@@ -892,7 +886,7 @@ namespace NHibernate.Persister.Entity
 			System.Type mappedClass = model.MappedClass;
 			Table table = model.RootTable;
 			qualifiedTableName = table.GetQualifiedName( Dialect, factory.DefaultSchema );
-			tableNames = new string[ ] {qualifiedTableName};
+			tableNames = new string[] {qualifiedTableName};
 
 			// detect mapping errors
 			HashedSet distinctColumns = new HashedSet();
@@ -1025,6 +1019,7 @@ namespace NHibernate.Persister.Entity
 			//InitLockers();
 
 			InitSubclassPropertyAliasesMap( model );
+			PostConstruct( mapping );
 		}
 
 		public override SqlString FromTableFragment( string alias )
@@ -1064,7 +1059,7 @@ namespace NHibernate.Persister.Entity
 		{
 			InFragment frag = new InFragment()
 				.SetColumn( alias, DiscriminatorColumnName );
-			System.Type[ ] subclasses = SubclassClosure;
+			System.Type[] subclasses = SubclassClosure;
 			for( int i = 0; i < subclasses.Length; i++ )
 			{
 				frag.AddValue(
@@ -1120,12 +1115,12 @@ namespace NHibernate.Persister.Entity
 			get { return qualifiedTableName; }
 		}
 
-		protected override int GetSubclassPropertyTableNumber(int i)
+		protected override int GetSubclassPropertyTableNumber( int i )
 		{
 			return 0;
 		}
 
-		protected override void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
+		protected override void AddDiscriminatorToSelect( SelectFragment select, string name, string suffix )
 		{
 			// TODO H3:
 //			if( IsDiscriminatorFormula ) 
@@ -1134,25 +1129,23 @@ namespace NHibernate.Persister.Entity
 //			}
 //			else 
 //			{
-				select.AddColumn( name, DiscriminatorColumnName,  DiscriminatorAlias );
+			select.AddColumn( name, DiscriminatorColumnName, DiscriminatorAlias );
 //			}
 		}
 
 		protected override int[] SubclassColumnTableNumberClosure
 		{
-			get
-			{
-				return new int[ SubclassColumnClosure.Length ];
-			}
+			get { return new int[SubclassColumnClosure.Length]; }
 		}
 
 		protected override int[] SubclassFormulaTableNumberClosure
 		{
-			get
-			{
-				return new int[ SubclassFormulaClosure.Length ];
-			}
+			get { return new int[SubclassFormulaClosure.Length]; }
 		}
 
+		public override string GetPropertyTableName( string propertyName )
+		{
+			return TableName;
+		}
 	}
 }

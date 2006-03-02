@@ -1374,7 +1374,8 @@ namespace NHibernate.Cfg
 			// This is done here 'cos we might only know the type here (ugly!)
 			if( value is ToOne )
 			{
-				string propertyRef = ( ( ToOne ) value ).ReferencedPropertyName;
+				ToOne toOne = ( ToOne ) value;
+				string propertyRef = toOne.ReferencedPropertyName;
 				if( propertyRef != null )
 				{
 					mappings.AddUniquePropertyReference( ( ( EntityType ) value.Type ).AssociatedClass, propertyRef );

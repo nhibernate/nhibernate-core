@@ -1,17 +1,18 @@
 using System;
 using System.Collections;
 using System.Data;
-using Iesi.Collections;
+
 using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Mapping;
-using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+
 using Array = System.Array;
 
 namespace NHibernate.Persister.Entity
@@ -28,12 +29,12 @@ namespace NHibernate.Persister.Entity
 		// it is indexed as tableNames[tableIndex]
 		// for both the superclass and subclass the index of 0=basetable
 		// for the base class there is only 1 table
-		private readonly string[ ] tableNames;
-		private readonly string[ ] naturalOrderTableNames;
+		private readonly string[] tableNames;
+		private readonly string[] naturalOrderTableNames;
 
 		// two dimensional array that is indexed as tableKeyColumns[tableIndex][columnIndex]
-		private readonly string[ ][ ] tableKeyColumns;
-		private readonly string[ ][ ] naturalOrderTableKeyColumns;
+		private readonly string[][] tableKeyColumns;
+		private readonly string[][] naturalOrderTableKeyColumns;
 
 		// the Type of objects for the subclass
 		// the array is indexed as subclassClosure[subclassIndex].  
@@ -42,54 +43,54 @@ namespace NHibernate.Persister.Entity
 		// in the example of JoinedSubclassBase/One the values are :
 		// subclassClosure[0] = JoinedSubclassOne
 		// subclassClosure[1] = JoinedSubclassBase
-		private readonly System.Type[ ] subclassClosure;
+		private readonly System.Type[] subclassClosure;
 
 		// the names of the tables for the subclasses
 		// the array is indexed as subclassTableNameColsure[tableIndex] = "tableName"
 		// for the RootClass the index 0 is the base table
 		// for the subclass the index 0 is also the base table
-		private readonly string[ ] subclassTableNameClosure;
+		private readonly string[] subclassTableNameClosure;
 
 		// the names of the columns that are the Keys for the table - I don't know why they would
 		// be different - I thought the subclasses didn't have their own PK, but used the one generated
 		// by the base class??
 		// the array is indexed as subclassTableKeyColumns[tableIndex][columnIndex] = "columnName"
-		private readonly string[ ][ ] subclassTableKeyColumns;
+		private readonly string[][] subclassTableKeyColumns;
 
 		// TODO: figure out what this is being used for - when initializing the base class the values
 		// are isClassOrSuperclassTable[0] = true, isClassOrSuperclassTable[1] = false
 		// when initialized the subclass the values are [0]=true, [1]=true.  I believe this is telling
 		// us that the table is used to populate this class or the superclass.
 		// I would guess this is telling us specifically which tables this Persister will write information to.
-		private readonly bool[ ] isClassOrSuperclassTable;
+		private readonly bool[] isClassOrSuperclassTable;
 
 		// SQL strings
-		private SqlString[ ] sqlDeleteStrings;
-		private SqlString[ ] sqlInsertStrings;
-		private SqlString[ ] sqlIdentityInsertStrings;
-		private SqlString[ ] sqlUpdateStrings;
+		private SqlString[] sqlDeleteStrings;
+		private SqlString[] sqlInsertStrings;
+		private SqlString[] sqlIdentityInsertStrings;
+		private SqlString[] sqlUpdateStrings;
 
 		// the index of the table that the property is coming from
 		// the array is indexed as propertyTables[propertyIndex] = tableIndex 
-		private readonly int[ ] propertyTables;
-		private readonly int[ ] naturalOrderPropertyTables;
-		private bool[ ] propertyHasColumns;
+		private readonly int[] propertyTables;
+		private readonly int[] naturalOrderPropertyTables;
+		private bool[] propertyHasColumns;
 
-		private readonly int[ ] subclassPropertyTableNumberClosure;
-		private readonly int[ ] subclassColumnTableNumberClosure;
+		private readonly int[] subclassPropertyTableNumberClosure;
+		private readonly int[] subclassColumnTableNumberClosure;
 
 		private readonly Hashtable tableNumberByPropertyPath = new Hashtable();
 
-		private readonly int[ ] subclassFormulaTableNumberClosure;
+		private readonly int[] subclassFormulaTableNumberClosure;
 
 		// subclass discrimination works by assigning particular values to certain 
 		// combinations of null primary key values in the outer join using an SQL CASE
 
 		// key = DiscrimatorValue, value = Subclass Type
 		private readonly Hashtable subclassesByDiscriminatorValue = new Hashtable();
-		private readonly string[ ] discriminatorValues;
-		private readonly string[ ] notNullColumns;
-		private readonly int[ ] tableNumbers;
+		private readonly string[] discriminatorValues;
+		private readonly string[] notNullColumns;
+		private readonly int[] tableNumbers;
 
 		private readonly IDiscriminatorType discriminatorType;
 		private readonly string discriminatorSQLString;
@@ -103,13 +104,11 @@ namespace NHibernate.Persister.Entity
 
 		public override void PostInstantiate( ISessionFactoryImplementor factory )
 		{
-			InitPropertyPaths( factory );
-
 			loader = CreateEntityLoader( factory );
 
 			CreateUniqueKeyLoaders( factory );
 
-			InitLockers( );
+			InitLockers();
 
 			// initialize the Statements - these are in the PostInstantiate method because we need
 			// to have every other IEntityPersister loaded so we can resolve the IType for the 
@@ -169,7 +168,7 @@ namespace NHibernate.Persister.Entity
 			return ( System.Type ) subclassesByDiscriminatorValue[ value ];
 		}
 
-		public override object[ ] PropertySpaces
+		public override object[] PropertySpaces
 		{
 			get
 			{
@@ -183,7 +182,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The queries that delete rows by id (and version)
 		/// </summary>
-		protected SqlString[ ] SqlDeleteStrings
+		protected SqlString[] SqlDeleteStrings
 		{
 			get { return sqlDeleteStrings; }
 		}
@@ -191,7 +190,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The queries that insert rows with a given id
 		/// </summary>
-		protected SqlString[ ] SqlInsertStrings
+		protected SqlString[] SqlInsertStrings
 		{
 			get { return sqlInsertStrings; }
 		}
@@ -199,7 +198,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The queries that insert rows, letting the database generate an id
 		/// </summary>
-		protected SqlString[ ] SqlIdentityInsertStrings
+		protected SqlString[] SqlIdentityInsertStrings
 		{
 			get { return sqlIdentityInsertStrings; }
 		}
@@ -207,7 +206,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The queries that update rows by id (and version)
 		/// </summary>
-		protected SqlString[ ] SqlUpdateStrings
+		protected SqlString[] SqlUpdateStrings
 		{
 			get { return sqlUpdateStrings; }
 		}
@@ -223,9 +222,9 @@ namespace NHibernate.Persister.Entity
 		/// Generate the SQL that deletes rows by id (and version)
 		/// </summary>
 		/// <returns>An array of SqlStrings</returns>
-		protected virtual SqlString[ ] GenerateDeleteStrings()
+		protected virtual SqlString[] GenerateDeleteStrings()
 		{
-			SqlString[ ] deleteStrings = new SqlString[ naturalOrderTableNames.Length ];
+			SqlString[] deleteStrings = new SqlString[naturalOrderTableNames.Length];
 
 			for( int i = 0; i < naturalOrderTableNames.Length; i++ )
 			{
@@ -240,7 +239,7 @@ namespace NHibernate.Persister.Entity
 
 				if( i == 0 && IsVersioned )
 				{
-					deleteBuilder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+					deleteBuilder.SetVersionColumn( new string[] {VersionColumnName}, VersionType );
 				}
 
 				deleteStrings[ i ] = deleteBuilder.ToSqlString();
@@ -255,9 +254,9 @@ namespace NHibernate.Persister.Entity
 		/// <param name="identityInsert"></param>
 		/// <param name="includeProperty"></param>
 		/// <returns>An array of SqlStrings</returns>
-		protected virtual SqlString[ ] GenerateInsertStrings( bool identityInsert, bool[ ] includeProperty )
+		protected virtual SqlString[] GenerateInsertStrings( bool identityInsert, bool[] includeProperty )
 		{
-			SqlString[ ] insertStrings = new SqlString[naturalOrderTableNames.Length];
+			SqlString[] insertStrings = new SqlString[naturalOrderTableNames.Length];
 
 			for( int j = 0; j < naturalOrderTableNames.Length; j++ )
 			{
@@ -293,15 +292,14 @@ namespace NHibernate.Persister.Entity
 			return insertStrings;
 		}
 
-
 		/// <summary>
 		/// Generate the SQL that updates rows by id (and version)
 		/// </summary>
 		/// <param name="includeProperty"></param>
 		/// <returns>An array of SqlStrings</returns>
-		protected virtual SqlString[ ] GenerateUpdateStrings( bool[ ] includeProperty )
+		protected virtual SqlString[] GenerateUpdateStrings( bool[] includeProperty )
 		{
-			SqlString[ ] results = new SqlString[naturalOrderTableNames.Length];
+			SqlString[] results = new SqlString[naturalOrderTableNames.Length];
 
 			for( int j = 0; j < naturalOrderTableNames.Length; j++ )
 			{
@@ -311,7 +309,7 @@ namespace NHibernate.Persister.Entity
 
 				if( j == 0 && IsVersioned )
 				{
-					updateBuilder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+					updateBuilder.SetVersionColumn( new string[] {VersionColumnName}, VersionType );
 				}
 
 				//TODO: figure out what the hasColumns variable comes into play for??
@@ -324,7 +322,7 @@ namespace NHibernate.Persister.Entity
 						hasColumns = hasColumns || GetPropertyColumnSpan( i ) > 0;
 					}
 				}
-				results[ j ] = hasColumns ?	updateBuilder.ToSqlString() : null;
+				results[ j ] = hasColumns ? updateBuilder.ToSqlString() : null;
 			}
 
 			return results;
@@ -356,7 +354,7 @@ namespace NHibernate.Persister.Entity
 				builder.SetIdentityColumn( base.IdentifierColumnNames, IdentifierType );
 				if( IsVersioned )
 				{
-					builder.SetVersionColumn( new string[ ] {VersionColumnName}, VersionType );
+					builder.SetVersionColumn( new string[] {VersionColumnName}, VersionType );
 				}
 
 				sqlBuilder = new SqlStringBuilder( builder.ToSqlString() );
@@ -382,14 +380,14 @@ namespace NHibernate.Persister.Entity
 
 		private const string ConcreteAlias = "x";
 
-		protected virtual SqlString GenerateConcreteSelectString( )
+		protected virtual SqlString GenerateConcreteSelectString()
 		{
 			SqlStringBuilder select = new SqlStringBuilder();
 
 			select
 				.Add( "select " )
 				.Add( string.Join( StringHelper.CommaSpace,
-					StringHelper.Qualify( ConcreteAlias, IdentifierColumnNames ) ) )
+				                   StringHelper.Qualify( ConcreteAlias, IdentifierColumnNames ) ) )
 				.Add( ConcretePropertySelectFragment( ConcreteAlias, PropertyUpdateability ) )
 				.Add( " from " )
 				.Add( FromTableFragment( ConcreteAlias ) )
@@ -415,7 +413,7 @@ namespace NHibernate.Persister.Entity
 			if( IsVersioned )
 			{
 				Parameter[] versionParameters = Parameter.GenerateParameters(
-					Factory, ConcreteAlias, new string[1] { VersionColumnName }, VersionType );
+					Factory, ConcreteAlias, new string[1] {VersionColumnName}, VersionType );
 				select.Add( " and " )
 					.Add( VersionColumnName )
 					.Add( " = " )
@@ -434,7 +432,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="statements"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected virtual int Dehydrate( object id, object[ ] fields, bool[ ] includeProperty, IDbCommand[ ] statements, ISessionImplementor session )
+		protected virtual int Dehydrate( object id, object[] fields, bool[] includeProperty, IDbCommand[] statements, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -455,7 +453,7 @@ namespace NHibernate.Persister.Entity
 			return versionParm;
 		}
 
-		private int Dehydrate( object id, object[ ] fields, bool[ ] includeProperty, int table, IDbCommand statement, ISessionImplementor session )
+		private int Dehydrate( object id, object[] fields, bool[] includeProperty, int table, IDbCommand statement, ISessionImplementor session )
 		{
 			if( statement == null )
 			{
@@ -498,7 +496,7 @@ namespace NHibernate.Persister.Entity
 			{
 				log.Debug( "Materializing entity: " + MessageHelper.InfoString( this, id ) );
 			}
-			
+
 			try
 			{
 				object result = loader.Load( session, id, optionalObject );
@@ -520,11 +518,11 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public override object Insert( object[ ] fields, object obj, ISessionImplementor session )
+		public override object Insert( object[] fields, object obj, ISessionImplementor session )
 		{
 			if( UseDynamicInsert )
 			{
-				bool[ ] notNull = GetNotNullInsertableColumns( fields );
+				bool[] notNull = GetNotNullInsertableColumns( fields );
 				return Insert( fields, notNull, GenerateInsertStrings( true, notNull ), obj, session );
 			}
 			else
@@ -533,11 +531,11 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public override void Insert( object id, object[ ] fields, object obj, ISessionImplementor session )
+		public override void Insert( object id, object[] fields, object obj, ISessionImplementor session )
 		{
 			if( UseDynamicInsert )
 			{
-				bool[ ] notNull = GetNotNullInsertableColumns( fields );
+				bool[] notNull = GetNotNullInsertableColumns( fields );
 				Insert( id, fields, notNull, GenerateInsertStrings( false, notNull ), obj, session );
 			}
 			else
@@ -555,7 +553,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="sql"></param>
 		/// <param name="obj">The object to Insert into the database.  I don't see where this is used???</param>
 		/// <param name="session">The Session to use when Inserting the object.</param>
-		public void Insert( object id, object[ ] fields, bool[ ] notNull, SqlString[ ] sql, object obj, ISessionImplementor session )
+		public void Insert( object id, object[] fields, bool[] notNull, SqlString[] sql, object obj, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -569,7 +567,7 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// render the SQL query
-				IDbCommand[ ] insertCmds = new IDbCommand[tableNames.Length];
+				IDbCommand[] insertCmds = new IDbCommand[tableNames.Length];
 
 				try
 				{
@@ -586,7 +584,7 @@ namespace NHibernate.Persister.Entity
 					{
 						session.Batcher.ExecuteNonQuery( insertCmds[ i ] );
 					}
-				} 
+				}
 				finally
 				{
 					for( int i = 0; i < tableNames.Length; i++ )
@@ -618,7 +616,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object Insert( object[ ] fields, bool[ ] notNull, SqlString[ ] sql, object obj, ISessionImplementor session )
+		public object Insert( object[] fields, bool[] notNull, SqlString[] sql, object obj, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -634,39 +632,37 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				//TODO: refactor all this stuff up to AbstractEntityPersister:
-				SqlString insertSelectSQL = Dialect.AddIdentitySelectToInsert( sql[0] );
-				if (insertSelectSQL != null) 
+				SqlString insertSelectSQL = Dialect.AddIdentitySelectToInsert( sql[ 0 ] );
+				if( insertSelectSQL != null )
 				{
-				
 					//use one statement to insert the row and get the generated id
-					IDbCommand insertSelect = session.Batcher.PrepareCommand(insertSelectSQL);
+					IDbCommand insertSelect = session.Batcher.PrepareCommand( insertSelectSQL );
 					IDataReader dr = null;
-					try 
+					try
 					{
-						Dehydrate(null, fields, notNull, 0, insertSelect, session);
+						Dehydrate( null, fields, notNull, 0, insertSelect, session );
 						dr = session.Batcher.ExecuteReader( insertSelect );
 						id = GetGeneratedIdentity( obj, session, dr );
 					}
-					finally 
+					finally
 					{
 						session.Batcher.CloseCommand( insertSelect, dr );
 					}
 				}
-				else 
+				else
 				{
-		  
 					//do the insert
-					IDbCommand statement = session.Batcher.PrepareCommand( sql[0] );
-					try 
+					IDbCommand statement = session.Batcher.PrepareCommand( sql[ 0 ] );
+					try
 					{
-						Dehydrate(null, fields, notNull, 0, statement, session);
+						Dehydrate( null, fields, notNull, 0, statement, session );
 						session.Batcher.ExecuteNonQuery( statement );
 					}
-					finally 
+					finally
 					{
 						session.Batcher.CloseCommand( statement, null );
 					}
-				
+
 					// fetch the generated id in a separate query
 					IDbCommand idselect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect ) );
 					IDataReader dr = null;
@@ -675,27 +671,27 @@ namespace NHibernate.Persister.Entity
 						dr = session.Batcher.ExecuteReader( idselect );
 						id = GetGeneratedIdentity( obj, session, dr );
 					}
-					finally 
+					finally
 					{
 						session.Batcher.CloseCommand( idselect, dr );
 					}
 				}
-			
-				for ( int i=1; i<naturalOrderTableNames.Length; i++ )
+
+				for( int i = 1; i < naturalOrderTableNames.Length; i++ )
 				{
-					IDbCommand statement = session.Batcher.PrepareCommand( sql[i] );
-				
-					try 
+					IDbCommand statement = session.Batcher.PrepareCommand( sql[ i ] );
+
+					try
 					{
 						Dehydrate( id, fields, notNull, i, statement, session );
 						session.Batcher.ExecuteNonQuery( statement );
 					}
-					finally 
+					finally
 					{
 						session.Batcher.CloseCommand( statement, null );
 					}
 				}
-			
+
 				return id;
 
 			}
@@ -726,7 +722,7 @@ namespace NHibernate.Persister.Entity
 
 			try
 			{
-				IDbCommand[ ] statements = new IDbCommand[naturalOrderTableNames.Length];
+				IDbCommand[] statements = new IDbCommand[naturalOrderTableNames.Length];
 				try
 				{
 					for( int i = 0; i < naturalOrderTableNames.Length; i++ )
@@ -747,7 +743,7 @@ namespace NHibernate.Persister.Entity
 
 						Check( session.Batcher.ExecuteNonQuery( statements[ i ] ), id );
 					}
-				} 
+				}
 				finally
 				{
 					for( int i = 0; i < naturalOrderTableNames.Length; i++ )
@@ -783,13 +779,13 @@ namespace NHibernate.Persister.Entity
 			}
 			else
 			{
-				bool[ ] updateability = PropertyUpdateability;
-				bool[ ] tableUpdateNeeded = new bool[naturalOrderTableNames.Length];
+				bool[] updateability = PropertyUpdateability;
+				bool[] tableUpdateNeeded = new bool[naturalOrderTableNames.Length];
 				for( int i = 0; i < dirtyProperties.Length; i++ )
 				{
 					int property = dirtyProperties[ i ];
 					int table = naturalOrderPropertyTables[ property ];
-					tableUpdateNeeded[ table ] = tableUpdateNeeded[ table ] || 
+					tableUpdateNeeded[ table ] = tableUpdateNeeded[ table ] ||
 						( GetPropertyColumnSpan( property ) > 0 && updateability[ property ] );
 				}
 				if( IsVersioned )
@@ -811,9 +807,9 @@ namespace NHibernate.Persister.Entity
 		/// <param name="oldVersion"></param>
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
-		public override void Update( object id, object[ ] fields, int[ ] dirtyFields, object[] oldFields, object oldVersion, object obj, ISessionImplementor session )
+		public override void Update( object id, object[] fields, int[] dirtyFields, object[] oldFields, object oldVersion, object obj, ISessionImplementor session )
 		{
-			bool[ ] tableUpdateNeeded = GetTableUpdateNeeded( dirtyFields );
+			bool[] tableUpdateNeeded = GetTableUpdateNeeded( dirtyFields );
 
 			SqlString[] updateStrings;
 			bool[] propsToUpdate;
@@ -832,7 +828,7 @@ namespace NHibernate.Persister.Entity
 			Update( id, fields, propsToUpdate, tableUpdateNeeded, oldVersion, obj, updateStrings, session );
 		}
 
-		protected virtual void Update( object id, object[ ] fields, bool[ ] includeProperty, bool[ ] includeTable, object oldVersion, object obj, SqlString[ ] sql, ISessionImplementor session )
+		protected virtual void Update( object id, object[] fields, bool[] includeProperty, bool[] includeTable, object oldVersion, object obj, SqlString[] sql, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -847,7 +843,7 @@ namespace NHibernate.Persister.Entity
 
 			try
 			{
-				IDbCommand[ ] statements = new IDbCommand[tables];
+				IDbCommand[] statements = new IDbCommand[tables];
 
 				try
 				{
@@ -873,7 +869,7 @@ namespace NHibernate.Persister.Entity
 							Check( session.Batcher.ExecuteNonQuery( statements[ i ] ), id );
 						}
 					}
-				} 
+				}
 				finally
 				{
 					for( int i = 0; i < tables; i++ )
@@ -903,7 +899,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="model">The PeristentClass to create the EntityPersister for.</param>
 		/// <param name="factory">The SessionFactory that this EntityPersister will be stored in.</param>
-		public JoinedSubclassEntityPersister( PersistentClass model, ISessionFactoryImplementor factory )
+		public JoinedSubclassEntityPersister( PersistentClass model, ISessionFactoryImplementor factory, IMapping mapping )
 			: base( model, factory )
 		{
 			// I am am making heavy use of the "this." just to help me with debugging what is a local variable to the 
@@ -964,7 +960,7 @@ namespace NHibernate.Persister.Entity
 				if( !tabname.Equals( qualifiedTableName ) )
 				{
 					tables.Add( tabname );
-					string[ ] key = new string[tab.PrimaryKey.ColumnCollection.Count];
+					string[] key = new string[tab.PrimaryKey.ColumnCollection.Count];
 					int k = 0;
 					foreach( Column col in tab.PrimaryKey.ColumnCollection )
 					{
@@ -974,8 +970,8 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			this.naturalOrderTableNames = ( string[ ] ) tables.ToArray( typeof( string ) );
-			this.naturalOrderTableKeyColumns = ( string[ ][ ] ) keyColumns.ToArray( typeof( string[ ] ) );
+			this.naturalOrderTableNames = ( string[] ) tables.ToArray( typeof( string ) );
+			this.naturalOrderTableKeyColumns = ( string[][] ) keyColumns.ToArray( typeof( string[] ) );
 
 			// the description of these variables is the same as before
 			ArrayList subtables = new ArrayList();
@@ -988,7 +984,7 @@ namespace NHibernate.Persister.Entity
 				if( !tabname.Equals( qualifiedTableName ) )
 				{
 					subtables.Add( tabname );
-					string[ ] key = new string[tab.PrimaryKey.ColumnCollection.Count];
+					string[] key = new string[tab.PrimaryKey.ColumnCollection.Count];
 					int k = 0;
 					foreach( Column col in tab.PrimaryKey.ColumnCollection )
 					{
@@ -999,8 +995,8 @@ namespace NHibernate.Persister.Entity
 			}
 
 			// convert the local ArrayList variables into arrays for the fields in the class
-			this.subclassTableNameClosure = ( string[ ] ) subtables.ToArray( typeof( string ) );
-			this.subclassTableKeyColumns = ( string[ ][ ] ) keyColumns.ToArray( typeof( string[ ] ) );
+			this.subclassTableNameClosure = ( string[] ) subtables.ToArray( typeof( string ) );
+			this.subclassTableKeyColumns = ( string[][] ) keyColumns.ToArray( typeof( string[] ) );
 			this.isClassOrSuperclassTable = new bool[this.subclassTableNameClosure.Length];
 			for( int j = 0; j < subclassTableNameClosure.Length; j++ )
 			{
@@ -1019,12 +1015,9 @@ namespace NHibernate.Persister.Entity
 			this.propertyTables = new int[HydrateSpan];
 			this.naturalOrderPropertyTables = new int[HydrateSpan];
 
-			HashedSet thisClassProperties = new HashedSet();
-
 			int i = 0;
 			foreach( Mapping.Property prop in model.PropertyClosureCollection )
 			{
-				thisClassProperties.Add( prop );
 				Table tab = prop.Value.Table;
 				string tabname = tab.GetQualifiedName( Dialect, factory.DefaultSchema );
 				this.propertyTables[ i ] = GetTableId( tabname, this.tableNames );
@@ -1041,21 +1034,21 @@ namespace NHibernate.Persister.Entity
 			foreach( Mapping.Property prop in model.SubclassPropertyClosureCollection )
 			{
 				Table tab = prop.Value.Table;
-				String tabname = tab.GetQualifiedName( 
-					factory.Dialect, 
+				String tabname = tab.GetQualifiedName(
+					factory.Dialect,
 					factory.DefaultSchema );
 				int tabnum = GetTableId( tabname, subclassTableNameClosure );
-				propTableNumbers.Add(tabnum);
+				propTableNumbers.Add( tabnum );
 
 				foreach( ISelectable thing in prop.ColumnCollection )
 				{
-					if ( thing.IsFormula ) 
+					if( thing.IsFormula )
 					{
-						formulaTableNumbers.Add(tabnum);
+						formulaTableNumbers.Add( tabnum );
 					}
-					else 
+					else
 					{
-						columnTableNumbers.Add(tabnum);
+						columnTableNumbers.Add( tabnum );
 					}
 				}
 			}
@@ -1143,6 +1136,7 @@ namespace NHibernate.Persister.Entity
 			//InitLockers( );
 
 			InitSubclassPropertyAliasesMap( model );
+			PostConstruct( mapping );
 		}
 
 		/// <summary>
@@ -1150,10 +1144,10 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="objects">The original array.</param>
 		/// <returns>A new array in the reverse order of the original array.</returns>
-		private static string[ ] Reverse( string[ ] objects )
+		private static string[] Reverse( string[] objects )
 		{
 			int len = objects.Length;
-			string[ ] temp = new string[len];
+			string[] temp = new string[len];
 			for( int i = 0; i < len; i++ )
 			{
 				temp[ i ] = objects[ len - i - 1 ];
@@ -1167,10 +1161,10 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="objects">The original array.</param>
 		/// <returns>A new array in the reverse order of the original array.</returns>
-		private static string[ ][ ] Reverse( string[ ][ ] objects )
+		private static string[][] Reverse( string[][] objects )
 		{
 			int len = objects.Length;
-			string[ ][ ] temp = new string[len][ ];
+			string[][] temp = new string[len][];
 			for( int i = 0; i < len; i++ )
 			{
 				temp[ i ] = objects[ len - i - 1 ];
@@ -1182,9 +1176,9 @@ namespace NHibernate.Persister.Entity
 		{
 			string[] propertyNames = PropertyNames;
 
-			for ( int i = 0; i < propertyNames.Length; i++ )
+			for( int i = 0; i < propertyNames.Length; i++ )
 			{
-				if ( propertyName.Equals( propertyNames[ i ] ) )
+				if( propertyName.Equals( propertyNames[ i ] ) )
 				{
 					return propertyTables[ i ];
 				}
@@ -1194,9 +1188,9 @@ namespace NHibernate.Persister.Entity
 
 		protected override void HandlePath( string path, IType type )
 		{
-			if ( type.IsAssociationType && ( (IAssociationType) type ).UseLHSPrimaryKey )
+			if( type.IsAssociationType && ( ( IAssociationType ) type ).UseLHSPrimaryKey )
 			{
-				tableNumberByPropertyPath[ path ] = 0 ;
+				tableNumberByPropertyPath[ path ] = 0;
 			}
 			else
 			{
@@ -1214,7 +1208,6 @@ namespace NHibernate.Persister.Entity
 		{
 			get { return subclassTableNameClosure[ 0 ]; }
 		}
-
 
 		private JoinFragment Outerjoin( string name, bool innerJoin, bool includeSubclasses )
 		{
@@ -1243,7 +1236,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="tables">The array of table names</param>
 		/// <returns>The Index of the table in the array.</returns>
 		/// <exception cref="AssertionFailure">Thrown when the tableName specified can't be found</exception>
-		private int GetTableId( string tableName, string[ ] tables )
+		private int GetTableId( string tableName, string[] tables )
 		{
 			for( int tableIndex = 0; tableIndex < tables.Length; tableIndex++ )
 			{
@@ -1256,7 +1249,7 @@ namespace NHibernate.Persister.Entity
 			throw new AssertionFailure( string.Format( "table [{0}] not found", tableName ) );
 		}
 
-		public override string[ ] ToColumns( string alias, string property )
+		public override string[] ToColumns( string alias, string property )
 		{
 			if( PathExpressionParser.EntityClass.Equals( property ) )
 			{
@@ -1268,7 +1261,7 @@ namespace NHibernate.Persister.Entity
 
 				//TODO: this will need to be changed to return a SqlString but for now the SqlString
 				// is being converted to a string for existing interfaces to work.
-				return new string[ ] {DiscriminatorFragment( alias ).ToSqlStringFragment().ToString()};
+				return new string[] {DiscriminatorFragment( alias ).ToSqlStringFragment().ToString()};
 			}
 			else
 			{
@@ -1292,7 +1285,7 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			return frag.ToSqlStringFragment( );
+			return frag.ToSqlStringFragment();
 		}
 
 		private CaseFragment DiscriminatorFragment( string alias )
@@ -1332,7 +1325,7 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
-		public override string[ ] IdentifierColumnNames
+		public override string[] IdentifierColumnNames
 		{
 			get { return tableKeyColumns[ 0 ]; }
 		}
@@ -1344,15 +1337,15 @@ namespace NHibernate.Persister.Entity
 
 		protected override string VersionedTableName
 		{
-			get	{ return qualifiedTableName; }
+			get { return qualifiedTableName; }
 		}
 
-		protected override int GetSubclassPropertyTableNumber(int i)
+		protected override int GetSubclassPropertyTableNumber( int i )
 		{
 			return subclassPropertyTableNumberClosure[ i ];
 		}
 
-		protected override void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
+		protected override void AddDiscriminatorToSelect( SelectFragment select, string name, string suffix )
 		{
 			select.SetExtraSelectList( DiscriminatorFragment( name ), DiscriminatorAlias );
 		}
@@ -1366,5 +1359,16 @@ namespace NHibernate.Persister.Entity
 		{
 			get { return subclassFormulaTableNumberClosure; }
 		}
+
+		public override string GetPropertyTableName( string propertyName )
+		{
+			object index = EntityMetamodel.GetPropertyIndexOrNull( propertyName );
+			if( index == null )
+			{
+				return null;
+			}
+			return tableNames[ propertyTables[ ( int ) index ] ];
+		}
+
 	}
 }

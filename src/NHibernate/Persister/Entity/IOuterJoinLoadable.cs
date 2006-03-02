@@ -98,10 +98,9 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		string[ ] GetPropertyColumnNames( string propertyPath );
 
-		// TODO H3:
-//		/// <summary>
-//		/// Get the table name for the given property path
-//		/// </summary>
-//		string GetPropertyTableName( string propertyName );
+		/// <summary>
+		/// Get the table name for the given property path
+		/// </summary>
+		string GetPropertyTableName( string propertyName );
 	}
 }

@@ -17,10 +17,8 @@ namespace NHibernate.Persister.Entity
 		object LoadByUniqueKey( string propertyName, object uniqueKey, ISessionImplementor session );
 
 		/// <summary>
-		/// Get the columns of the unique key.
+		/// Get the property number of the unique key property
 		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
-		string[] GetUniqueKeyColumnNames( string propertyName );
+		int GetPropertyIndex( string propertyName );
 	}
 }

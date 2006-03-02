@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -53,7 +54,8 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
-		internal ObjectType() : this( NHibernateUtil.Class, NHibernateUtil.Serializable )
+		internal ObjectType()
+			: this( NHibernateUtil.Class, NHibernateUtil.Serializable )
 		{
 		}
 
@@ -113,7 +115,7 @@ namespace NHibernate.Type
 			throw new NotSupportedException( "object is a multicolumn type" );
 		}
 
-		public override object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
+		public override object NullSafeGet( IDataReader rs, string[] names, ISessionImplementor session, object owner )
 		{
 			return Resolve(
 				( System.Type ) metaType.NullSafeGet( rs, names[ 0 ], session, owner ),
@@ -121,14 +123,14 @@ namespace NHibernate.Type
 				session );
 		}
 
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object Hydrate( IDataReader rs, string[] names, ISessionImplementor session, object owner )
 		{
 			System.Type clazz = ( System.Type ) metaType.NullSafeGet( rs, names[ 0 ], session, owner );
 			object id = identifierType.NullSafeGet( rs, names[ 1 ], session, owner );
 			return new ObjectTypeCacheEntry( clazz, id );
 		}
 
-		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
+		public override object ResolveIdentifier( object value, ISessionImplementor session, object owner )
 		{
 			ObjectTypeCacheEntry holder = ( ObjectTypeCacheEntry ) value;
 			return Resolve( holder.clazz, holder.id, session );
@@ -136,7 +138,7 @@ namespace NHibernate.Type
 
 		private object Resolve( System.Type clazz, object id, ISessionImplementor session )
 		{
-			return (clazz == null || id == null ) ?
+			return ( clazz == null || id == null ) ?
 				null :
 				session.InternalLoad( clazz, id );
 		}
@@ -165,7 +167,7 @@ namespace NHibernate.Type
 			get { return typeof( object ); }
 		}
 
-		public override SqlType[ ] SqlTypes( IMapping mapping )
+		public override SqlType[] SqlTypes( IMapping mapping )
 		{
 			return ArrayHelper.Join(
 				metaType.SqlTypes( mapping ),
@@ -182,7 +184,7 @@ namespace NHibernate.Type
 
 		public override object FromString( string xml )
 		{
-			throw new NotSupportedException();//TODO: is this right??
+			throw new NotSupportedException(); //TODO: is this right??
 		}
 
 		[Serializable]
@@ -228,9 +230,9 @@ namespace NHibernate.Type
 			return FetchMode.Select;
 		}
 
-		private static readonly string[ ] PROPERTY_NAMES = new string[ ] {"class", "id"};
+		private static readonly string[] PROPERTY_NAMES = new string[] {"class", "id"};
 
-		public string[ ] PropertyNames
+		public string[] PropertyNames
 		{
 			get { return ObjectType.PROPERTY_NAMES; }
 		}
@@ -242,9 +244,9 @@ namespace NHibernate.Type
 				Id( component, session );
 		}
 
-		public object[ ] GetPropertyValues( Object component, ISessionImplementor session )
+		public object[] GetPropertyValues( Object component, ISessionImplementor session )
 		{
-			return new object[ ] { NHibernateProxyHelper.GetClass( component ), Id( component, session )};
+			return new object[] {NHibernateProxyHelper.GetClass( component ), Id( component, session )};
 		}
 
 		private object Id( object component, ISessionImplementor session )
@@ -259,12 +261,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public IType[ ] Subtypes
+		public IType[] Subtypes
 		{
-			get { return new IType[ ] { metaType, identifierType }; }
+			get { return new IType[] {metaType, identifierType}; }
 		}
 
-		public void SetPropertyValues( object component, object[ ] values )
+		public void SetPropertyValues( object component, object[] values )
 		{
 			throw new NotSupportedException();
 		}
@@ -311,22 +313,6 @@ namespace NHibernate.Type
 			throw new InvalidOperationException( "any types do not have unique referenced columns" );
 		}
 
-		public override bool IsModified(object old, object current, ISessionImplementor session)
-		{
-			if ( current == null )
-			{
-				return old != null;
-			}
-			if ( old == null )
-			{
-				return current != null;
-			}
-			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) old;
-
-			return holder.clazz != NHibernateProxyHelper.GetClass( current ) ||
-				identifierType.IsModified( holder.id, Id( current, session ), session );
-		}
-
 		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
 		{
 			throw new InvalidOperationException( "any types do not have a unique referenced persister" );
@@ -342,7 +328,7 @@ namespace NHibernate.Type
 			get { return null; }
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals( object obj )
 		{
 			return this == obj;
 		}
@@ -355,6 +341,28 @@ namespace NHibernate.Type
 		public bool IsAlwaysDirtyChecked
 		{
 			get { return false; }
+		}
+
+		public override bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session )
+		{
+			return IsDirty( old, current, session );
+		}
+
+		public override bool IsModified( object old, object current, bool[] checkable, ISessionImplementor session )
+		{
+			if( current == null )
+			{
+				return old != null;
+			}
+			if( old == null )
+			{
+				return current != null;
+			}
+			ObjectTypeCacheEntry holder = ( ObjectTypeCacheEntry ) old;
+			bool[] idcheckable = new bool[checkable.Length - 1];
+			Array.Copy( checkable, 1, idcheckable, 0, idcheckable.Length );
+			return ( checkable[ 0 ] && holder.clazz != NHibernateProxyHelper.GetClass( current ) ) ||
+				identifierType.IsModified( holder.id, Id( current, session ), idcheckable, session );
 		}
 	}
 }

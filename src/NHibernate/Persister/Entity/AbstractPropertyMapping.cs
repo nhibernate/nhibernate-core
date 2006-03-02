@@ -89,7 +89,7 @@ namespace NHibernate.Persister.Entity
 			HandlePath( path, type );
 		}
 
-		protected void InitPropertyPaths( string path, IType type, string[] columns, string[] formulaTemplates, ISessionFactoryImplementor factory )
+		protected void InitPropertyPaths( string path, IType type, string[] columns, string[] formulaTemplates, IMapping factory )
 		{
 			if( columns.Length != type.GetColumnSpan( factory ) )
 			{
@@ -125,7 +125,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="etype"></param>
 		/// <param name="columns"></param>
 		/// <param name="factory"></param>
-		protected void InitIdentifierPropertyPaths( string path, EntityType etype, string[] columns, ISessionFactoryImplementor factory )
+		protected void InitIdentifierPropertyPaths( string path, EntityType etype, string[] columns, IMapping factory )
 		{
 			IType idtype = etype.GetIdentifierOrUniqueKeyType( factory );
 
@@ -152,7 +152,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="type"></param>
 		/// <param name="columns"></param>
 		/// <param name="factory"></param>
-		protected void InitComponentPropertyPaths( string path, IAbstractComponentType type, string[] columns, string[] formulaTemplates, ISessionFactoryImplementor factory )
+		protected void InitComponentPropertyPaths( string path, IAbstractComponentType type, string[] columns, string[] formulaTemplates, IMapping factory )
 		{
 			IType[] types = type.Subtypes;
 			string[] properties = type.PropertyNames;

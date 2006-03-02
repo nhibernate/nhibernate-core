@@ -249,5 +249,7 @@ namespace NHibernate.Persister.Collection
 		object CollectionSpace { get; }
 
 		ICollectionMetadata CollectionMetadata { get; }
+
+		void PostInstantiate();
 	}
 }

@@ -24,7 +24,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override SqlType[ ] SqlTypes( IMapping mapping )
+		public override SqlType[] SqlTypes( IMapping mapping )
 		{
 			return baseType.SqlTypes( mapping );
 		}
@@ -46,7 +46,7 @@ namespace NHibernate.Type
 
 		public override object NullSafeGet(
 			IDataReader rs,
-			string[ ] names,
+			string[] names,
 			ISessionImplementor session,
 			object owner )
 		{
@@ -102,5 +102,11 @@ namespace NHibernate.Type
 		{
 			get { return true; }
 		}
+
+		public override bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session )
+		{
+			return checkable[ 0 ] && IsDirty( old, current, session );
+		}
+
 	}
 }

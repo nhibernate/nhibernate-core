@@ -130,19 +130,43 @@ namespace NHibernate.Cfg
 				this.configuration = configuration;
 			}
 
+			private PersistentClass GetPersistentClass( System.Type type )
+			{
+				PersistentClass pc = ( PersistentClass )configuration.classes[ type ];
+				if( pc == null )
+				{
+					throw new MappingException( "persistent class not known: " + type.FullName );
+				}
+				return pc;
+			}
+
 			public IType GetIdentifierType( System.Type persistentClass )
 			{
-				return ( ( PersistentClass ) configuration.classes[ persistentClass ] ).Identifier.Type;
+				return GetPersistentClass( persistentClass ).Identifier.Type;
 			}
 
 			public string GetIdentifierPropertyName( System.Type persistentClass )
 			{
-				return ( ( PersistentClass ) configuration.classes[ persistentClass ] ).IdentifierProperty.Name;
+				PersistentClass pc = GetPersistentClass( persistentClass );
+				if( !pc.HasIdentifierProperty )
+				{
+					return null;
+				}
+				return pc.IdentifierProperty.Name;
 			}
 
 			public IType GetPropertyType( System.Type persistentClass, string propertyName )
 			{
-				return ( ( PersistentClass ) configuration.classes[ persistentClass ] ).GetProperty( propertyName ).Type;
+				PersistentClass pc = GetPersistentClass( persistentClass );
+				NHibernate.Mapping.Property prop = pc.GetProperty( propertyName );
+
+				if( prop == null )
+				{
+					throw new MappingException(
+						"property not known: " +
+						persistentClass.FullName + '.' + propertyName );
+				}
+				return prop.Type;
 			}
 		}
 
@@ -980,7 +1004,7 @@ namespace NHibernate.Cfg
 			MappingSchemaCollection = null;
 			CfgSchemaCollection = null;
 
-			return new SessionFactoryImpl( this, settings );
+			return new SessionFactoryImpl( this, mapping, settings );
 		}
 
 		/// <summary>

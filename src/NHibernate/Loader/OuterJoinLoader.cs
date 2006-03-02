@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using Iesi.Collections;
-using NHibernate.Collection;
 using NHibernate.Engine;
-using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -563,7 +561,7 @@ namespace NHibernate.Loader
 
 				assoc.Joinable = joinable;
 				assoc.TableName = joinable.TableName;
-				assoc.PrimaryKeyColumns = type.GetReferencedColumns( factory );
+				assoc.PrimaryKeyColumns = JoinHelper.GetRHSColumnNames( type, factory );
 				assoc.ForeignKeyColumns = aliasedForeignKeyColumns;
 				assoc.Subalias = subalias;
 				assoc.Owner = GetPosition( alias, associations );

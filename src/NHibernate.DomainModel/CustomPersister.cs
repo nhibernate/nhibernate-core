@@ -25,7 +25,7 @@ namespace NHibernate.DomainModel
 		private static readonly bool[] Mutability = new bool[] { true };
 		private static readonly bool[] Nullability = new bool[] { true };
 
-		public CustomPersister(PersistentClass model, ISessionFactory factory )
+		public CustomPersister( PersistentClass model, ISessionFactory factory, IMapping mapping )
 		{
 		}
 

@@ -154,13 +154,10 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Says whether the value has been modified
 		/// </summary>
-		/// <param name="old"></param>
-		/// <param name="current"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public virtual bool IsModified(
 			object old,
 			object current,
+			bool[] checkable,
 			ISessionImplementor session )
 		{
 			return IsDirty( old, current, session );
@@ -260,5 +257,7 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
 		/// /> 
 		public abstract object FromString( string xml );
+
+		public abstract bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session );
 	}
 }

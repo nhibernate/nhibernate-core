@@ -44,11 +44,6 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override bool IsModified( object old, object current, ISessionImplementor session )
-		{
-			return false;
-		}
-
 		public override ForeignKeyDirection ForeignKeyDirection
 		{
 			get { return foreignKeyDirection; }
@@ -96,6 +91,11 @@ namespace NHibernate.Type
 		public override bool IsAlwaysDirtyChecked
 		{
 			get { return false; }
+		}
+
+		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			return false;
 		}
 
 	}

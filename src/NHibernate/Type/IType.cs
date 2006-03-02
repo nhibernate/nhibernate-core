@@ -65,10 +65,9 @@ namespace NHibernate.Type
 		/// /> 
 		bool IsDirty( object old, object current, ISessionImplementor session );
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.IsModified"]/*'
-		/// /> 
-		bool IsModified( object oldHydratedState, object currentState, ISessionImplementor session );
+		bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session );
+
+		bool IsModified( object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String[], ISessionImplementor, Object)"]/*'

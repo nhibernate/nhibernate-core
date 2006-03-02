@@ -194,7 +194,8 @@ namespace NHibernate.Tuple
 				MapPropertyToIndex(prop, i);
 				i++;
 			}
-		
+
+			// TODO H3:
 //			if( naturalIdNumbers.Count == 0 )
 //			{
 //				naturalIdPropertyNumbers = null;

@@ -124,7 +124,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="cfg"></param>
 		/// <param name="settings"></param>
-		public SessionFactoryImpl( Configuration cfg, Settings settings )
+		public SessionFactoryImpl( Configuration cfg, IMapping mapping, Settings settings )
 		{
 			log.Info( "building session factory" );
 
@@ -166,7 +166,7 @@ namespace NHibernate.Impl
 
 			foreach( PersistentClass model in cfg.ClassMappings )
 			{
-				IEntityPersister cp = PersisterFactory.CreateClassPersister( model, this );
+				IEntityPersister cp = PersisterFactory.CreateClassPersister( model, this, mapping );
 				classPersisters[ model.MappedClass ] = cp;
 
 				// Adds the "Namespace.ClassName" (FullClassname) as a lookup to get to the Persiter.
@@ -192,13 +192,6 @@ namespace NHibernate.Impl
 					.CollectionMetadata;
 			}
 			collectionMetadata = new Hashtable( collectionPersisters );
-
-			// after *all* persisters are registered
-			foreach( IEntityPersister persister in classPersisters.Values )
-			{
-				// TODO: H2.1 doesn't pass this to PostInstantiate
-				persister.PostInstantiate( this );
-			}
 
 			//TODO:
 			// For databinding:
@@ -230,6 +223,18 @@ namespace NHibernate.Impl
 			}
 
 			imports = new Hashtable( cfg.Imports );
+
+			// after *all* persisters and named queries are registered
+			foreach( IEntityPersister persister in classPersisters.Values )
+			{
+				// TODO: H2.1 doesn't pass this to PostInstantiate
+				persister.PostInstantiate( this );
+			}
+
+			foreach( ICollectionPersister persister in collectionPersisters.Values )
+			{
+				persister.PostInstantiate();
+			}
 
 			log.Debug( "Instantiated session factory" );
 

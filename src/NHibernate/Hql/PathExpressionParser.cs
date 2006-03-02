@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
-using NHibernate.Collection;
-using NHibernate.Persister;
+using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -217,7 +216,7 @@ namespace NHibernate.Hql
 				string[] keyColNames;
 				try 
 				{
-					keyColNames = propertyType.GetReferencedColumns( q.Factory );
+					keyColNames = JoinHelper.GetRHSColumnNames( propertyType, q.Factory );
 				}
 				catch (MappingException me) 
 				{
@@ -420,8 +419,8 @@ namespace NHibernate.Hql
 			{
 				IQueryable persister = (IQueryable) collPersister.ElementPersister;
 				ojf.AddJoins(
-					( (IJoinable) persister).FromJoinFragment( collectionName, true, false ),
-					( (IJoinable) persister).WhereJoinFragment( collectionName, true, false )
+					persister.FromJoinFragment( collectionName, true, false ),
+					persister.WhereJoinFragment( collectionName, true, false )
 					);
 			}
 
