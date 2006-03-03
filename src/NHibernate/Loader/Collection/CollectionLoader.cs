@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Loader
+namespace NHibernate.Loader.Collection
 {
 	/// <summary>
 	/// Loads a collection of values or a many-to-many association

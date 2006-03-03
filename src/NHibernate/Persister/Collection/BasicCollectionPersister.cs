@@ -5,6 +5,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
+using NHibernate.Loader.Collection;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 

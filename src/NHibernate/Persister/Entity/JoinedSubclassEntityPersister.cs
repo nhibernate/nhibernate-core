@@ -7,7 +7,7 @@ using log4net;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Impl;
-using NHibernate.Loader;
+using NHibernate.Loader.Entity;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;

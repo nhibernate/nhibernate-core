@@ -6,13 +6,14 @@ using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Expression;
 using NHibernate.Impl;
+using NHibernate.Loader.Entity;
 using NHibernate.Persister;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Loader
+namespace NHibernate.Loader.Criteria
 {
 	/// <summary>
 	/// A <c>Loader</c> for <see cref="ICriteria"/> queries. 

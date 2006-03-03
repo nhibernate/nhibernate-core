@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Loader.Collection;
 using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -9,7 +10,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Loader
+namespace NHibernate.Loader.Collection
 {
 	/// <summary>
 	/// Loads one-to-many associations

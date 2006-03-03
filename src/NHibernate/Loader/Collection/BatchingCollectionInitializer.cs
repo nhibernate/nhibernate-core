@@ -4,7 +4,7 @@ using log4net;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 
-namespace NHibernate.Loader
+namespace NHibernate.Loader.Collection
 {
 	/// <summary>
 	/// "Batch" loads collections, using multiple foreign key values in the SQL Where clause

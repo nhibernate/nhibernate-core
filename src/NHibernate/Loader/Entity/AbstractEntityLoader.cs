@@ -10,7 +10,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Loader
+namespace NHibernate.Loader.Entity
 {
 	/// <summary>
 	/// Abstract superclass for entity loaders that use outer joins

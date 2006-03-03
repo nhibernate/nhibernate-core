@@ -1,6 +1,6 @@
 using NHibernate.Engine;
 
-namespace NHibernate.Loader
+namespace NHibernate.Loader.Entity
 {
 	/// <summary></summary>
 	public interface IUniqueEntityLoader

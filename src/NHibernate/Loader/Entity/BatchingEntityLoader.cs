@@ -7,7 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
-namespace NHibernate.Loader
+namespace NHibernate.Loader.Entity
 {
 	/// <summary>
 	/// "Batch" loads entities, using multiple primary key values in the

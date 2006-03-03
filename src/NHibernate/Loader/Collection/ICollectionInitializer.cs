@@ -1,6 +1,6 @@
 using NHibernate.Engine;
 
-namespace NHibernate.Loader
+namespace NHibernate.Loader.Collection
 {
 	/// <summary>
 	/// An interface for collection loaders

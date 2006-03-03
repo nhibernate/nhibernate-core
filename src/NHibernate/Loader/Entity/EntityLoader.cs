@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Loader.Entity;
 using NHibernate.Persister;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
-namespace NHibernate.Loader
+namespace NHibernate.Loader.Entity
 {
 	/// <summary>
 	/// Load an entity using outerjoin fetching to fetch associated entities.

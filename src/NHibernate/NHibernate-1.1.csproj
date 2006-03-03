@@ -1329,37 +1329,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Loader\AbstractEntityLoader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Loader\BasicLoader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Loader\BatchingCollectionInitializer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Loader\BatchingEntityLoader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Loader\CollectionLoader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Loader\CriteriaLoader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Loader\EntityLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1369,27 +1339,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Loader\ICollectionInitializer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Loader\IEntityAliases.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Loader\IUniqueEntityLoader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Loader\Loader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Loader\OneToManyLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1404,15 +1359,61 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Loader\SimpleEntityLoader.cs"
+                    RelPath = "Loader\Collection\BatchingCollectionInitializer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Loader\SqlLoader.cs"
+                    RelPath = "Loader\Collection\CollectionLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <File
+                    RelPath = "Loader\Collection\ICollectionInitializer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Collection\OneToManyLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Criteria\CriteriaLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\SqlLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Entity\AbstractEntityLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Entity\BatchingEntityLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Entity\EntityLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Entity\IUniqueEntityLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Entity\SimpleEntityLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <Folder RelPath = "Loader\Hql\" />
                 <File
                     RelPath = "Mapping\Any.cs"
                     SubType = "Code"

@@ -9,7 +9,7 @@ using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Id;
 using NHibernate.Impl;
-using NHibernate.Loader;
+using NHibernate.Loader.Collection;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;

@@ -14,6 +14,7 @@ using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Loader;
+using NHibernate.Loader.Entity;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Property;
