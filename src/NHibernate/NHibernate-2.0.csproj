@@ -14,17 +14,17 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug-2.0\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET,NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\NHibernate.XML</DocumentationFile>
     <NoWarn>1573;1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release-2.0\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -77,7 +77,6 @@
     <Compile Include="Cache\UpdateTimestampsCache.cs" />
     <Compile Include="CallbackException.cs" />
     <Compile Include="Cfg\AssemblyHbmOrderer.cs" />
-    <Compile Include="Cfg\Binder.cs" />
     <Compile Include="Cfg\Configuration.cs" />
     <Compile Include="Cfg\ConfigurationSectionHandler.cs" />
     <Compile Include="Cfg\DefaultNamingStrategy.cs" />
@@ -270,19 +269,8 @@
     <Compile Include="IUserType.cs" />
     <Compile Include="IValidatable.cs" />
     <Compile Include="LazyInitializationException.cs" />
-    <Compile Include="Loader\AbstractEntityLoader.cs" />
-    <Compile Include="Loader\BatchingCollectionInitializer.cs" />
-    <Compile Include="Loader\BatchingEntityLoader.cs" />
-    <Compile Include="Loader\CollectionLoader.cs" />
-    <Compile Include="Loader\CriteriaLoader.cs" />
-    <Compile Include="Loader\EntityLoader.cs" />
-    <Compile Include="Loader\ICollectionInitializer.cs" />
-    <Compile Include="Loader\IUniqueEntityLoader.cs" />
     <Compile Include="Loader\Loader.cs" />
-    <Compile Include="Loader\OneToManyLoader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
-    <Compile Include="Loader\SimpleEntityLoader.cs" />
-    <Compile Include="Loader\SqlLoader.cs" />
     <Compile Include="LockMode.cs" />
     <Compile Include="MappingException.cs" />
     <Compile Include="Mapping\Any.cs" />
@@ -522,14 +510,28 @@
     <EmbeddedResource Include="nhibernate-mapping-2.0.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Compile Include="Cfg\HbmBinder.cs" />
     <Compile Include="Collection\Generic\PersistentGenericMap.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
     <Compile Include="Driver\ReflectionBasedDriver.cs" />
     <Compile Include="Engine\JoinHelper.cs" />
     <Compile Include="Loader\BasicLoader.cs" />
+    <Compile Include="Loader\Collection\BatchingCollectionInitializer.cs" />
+    <Compile Include="Loader\Collection\CollectionLoader.cs" />
+    <Compile Include="Loader\Collection\ICollectionInitializer.cs" />
+    <Compile Include="Loader\Collection\OneToManyLoader.cs" />
+    <Compile Include="Loader\Criteria\CriteriaLoader.cs" />
+    <Compile Include="Loader\Custom\SqlLoader.cs" />
+    <Compile Include="Loader\Entity\AbstractEntityLoader.cs" />
+    <Compile Include="Loader\Entity\BatchingEntityLoader.cs" />
+    <Compile Include="Loader\Entity\EntityLoader.cs" />
+    <Compile Include="Loader\Entity\IUniqueEntityLoader.cs" />
+    <Compile Include="Loader\Entity\SimpleEntityLoader.cs" />
     <Compile Include="Loader\ICollectionAliases.cs" />
     <Compile Include="Loader\IEntityAliases.cs" />
     <Compile Include="Loader\OuterJoinableAssociation.cs" />
+    <Compile Include="Mapping\IKeyValue.cs" />
+    <Compile Include="Mapping\ISelectable.cs" />
     <Compile Include="Persister\Collection\AbstractCollectionPersister.cs" />
     <Compile Include="Persister\Collection\BasicCollectionPersister.cs" />
     <Compile Include="Persister\Collection\CollectionPropertyMapping.cs" />
@@ -550,6 +552,12 @@
     <Compile Include="Persister\Entity\IUniqueKeyLoadable.cs" />
     <Compile Include="Persister\Entity\JoinedSubclassEntityPersister.cs" />
     <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
+    <Compile Include="Tuple\EntityMetamodel.cs" />
+    <Compile Include="Tuple\IdentifierProperty.cs" />
+    <Compile Include="Tuple\Property.cs" />
+    <Compile Include="Tuple\PropertyFactory.cs" />
+    <Compile Include="Tuple\StandardProperty.cs" />
+    <Compile Include="Tuple\VersionProperty.cs" />
     <Compile Include="Type\AnsiCharType.cs" />
     <Compile Include="Type\BaseCharType.cs" />
     <Compile Include="Type\ForeignKeyDirection.cs" />
@@ -563,10 +571,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="NamespaceSummary.xml" />
-    <Content Include="Util\ObjectUtils.java" />
-    <Content Include="Util\SequencedHashMap.java" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Loader\Hql\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

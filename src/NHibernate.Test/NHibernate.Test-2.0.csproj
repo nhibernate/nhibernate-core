@@ -14,7 +14,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug-2.0\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET,NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -22,7 +22,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release-2.0\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -55,9 +55,9 @@
     <Compile Include="BagGeneric\BagGenericFixture.cs" />
     <Compile Include="CacheTest\CacheFixture.cs" />
     <Compile Include="CacheTest\TimestamperFixture.cs" />
-    <Compile Include="CfgTest\BinderFixture.cs" />
     <Compile Include="CfgTest\ConfigurationFixture.cs" />
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
+    <Compile Include="CfgTest\HbmBinderFixture.cs" />
     <Compile Include="CfgTest\HbmOrderingFixture.cs" />
     <Compile Include="CompositeCollection\BaseClassA.cs" />
     <Compile Include="CompositeCollection\BaseClassB.cs" />
@@ -373,9 +373,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="DriverTest\.#OracleClientDriverFixture.cs.1.1" />
-    <None Include="NHibernate.Test-2.0.nunit" />
     <None Include="NHibernate.Test.build" />
+    <None Include="NHibernate.Test.nunit" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel-2.0.csproj">
