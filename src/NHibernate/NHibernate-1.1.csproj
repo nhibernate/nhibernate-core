@@ -609,6 +609,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\MsSql2005Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\MsSql7Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1254,21 +1259,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Impl\SessionFactoryImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Impl\ScheduledCollectionAction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1310,6 +1300,21 @@
                 />
                 <File
                     RelPath = "Impl\ScheduledUpdate.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionFactoryImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2255,6 +2260,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\CharBooleanType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\CharType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\ClobType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2321,16 +2336,6 @@
                 />
                 <File
                     RelPath = "Type\GuidType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\CharBooleanType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\CharType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

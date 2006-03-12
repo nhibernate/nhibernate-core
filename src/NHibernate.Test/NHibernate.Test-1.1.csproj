@@ -214,11 +214,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "CompositeCollection\CompositeCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "CompositeCollection\ChildClassA.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -230,6 +225,11 @@
                 />
                 <File
                     RelPath = "CompositeCollection\ChildColl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CompositeCollection\CompositeCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -254,6 +254,11 @@
                 />
                 <File
                     RelPath = "DialectTest\DialectFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialectTest\MsSql2005DialectFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

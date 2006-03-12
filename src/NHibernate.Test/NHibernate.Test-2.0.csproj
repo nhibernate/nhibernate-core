@@ -70,6 +70,7 @@
     <Compile Include="CompositeId\Id.cs" />
     <Compile Include="DebugConnectionProvider.cs" />
     <Compile Include="DialectTest\DialectFixture.cs" />
+    <Compile Include="DialectTest\MsSql2005DialectFixture.cs" />
     <Compile Include="DialectTest\MsSqlDialectFixture.cs" />
     <Compile Include="DriverTest\NullReferenceFixture.cs" />
     <Compile Include="DriverTest\OracleClientDriverFixture.cs" />
