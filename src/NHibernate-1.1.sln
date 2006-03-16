@@ -39,7 +39,7 @@ Global
 		{C0854E20-0743-424C-8BC9-F2560718678E}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
-		..\NHibernateSolution.build = ..\NHibernateSolution.build
+		..\default.build = ..\default.build
 		..\nightly.build = ..\nightly.build
 		..\release.build = ..\release.build
 	EndGlobalSection
