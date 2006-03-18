@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE chapter SYSTEM "../../docbook-xml/docbookx.dtd"> -->
+ï»¿<!-- <!DOCTYPE chapter SYSTEM "../../docbook-xml/docbookx.dtd"> -->
 <!--
   This is part of NHibernateEg documentation.
   Copyright (C) 2006, Pierre Henri KuatÃ©.
@@ -112,29 +112,29 @@ sessionFact = cfg.BuildSessionFactory();
 Saving 3 aleatory orders...
 
 3 orders found!
-  Order N°1,  Date=2005-12-06 23:01:03Z,  Product=P1
-  Order N°2,  Date=2005-12-06 23:01:03Z,  Product=P2
-  Order N°3,  Date=2005-12-06 23:01:03Z,  Product=P3
+  Order NÂ°1,  Date=2005-12-06 23:01:03Z,  Product=P1
+  Order NÂ°2,  Date=2005-12-06 23:01:03Z,  Product=P2
+  Order NÂ°3,  Date=2005-12-06 23:01:03Z,  Product=P3
 
-Loading order N° 1...
+Loading order NÂ° 1...
 
-Order N°1
- Date = mardi 6 décembre 2005 22:01:03
+Order NÂ°1
+ Date = tuesday 6 december 2005 22:01:03
  Product=P1 (updated),  Quantity=3,  TotalPrice=9
 
-Update the order N° 1...
+Update the order NÂ° 1...
 
-Save the order N° 0...
+Save the order NÂ° 0...
 
 Change the time zone of all orders: n=25...
 4 updated orders!
 
-Deleting the order N° 2...
+Deleting the order NÂ° 2...
 
 3 orders found!
-  Order N°1,  Date=2005-12-08 00:01:03Z,  Product=P1 (updated)
-  Order N°3,  Date=2005-12-08 00:01:03Z,  Product=P3
-  Order N°4,  Date=2005-12-08 00:01:04Z,  Product=New
+  Order NÂ°1,  Date=2005-12-08 00:01:03Z,  Product=P1 (updated)
+  Order NÂ°3,  Date=2005-12-08 00:01:03Z,  Product=P3
+  Order NÂ°4,  Date=2005-12-08 00:01:04Z,  Product=New
 
 Application is closed!
 </programlisting>
@@ -765,7 +765,7 @@ stream.Close();</programlisting>
 
 			System.Console.Out.WriteLine("\n" + result.Count + " orders found!");
 			foreach(System.Collections.IList l in result)
-				System.Console.Out.WriteLine("  Order N°"
+				System.Console.Out.WriteLine("  Order NÂ°"
 					+ l[0] + ",  Date=" + ((System.DateTime)l[1]).ToString("u")
 					+ ",  Product=" + l[2]);
 		} // finally { session.Close(); }	is done by using()
@@ -794,7 +794,7 @@ stream.Close();</programlisting>
 			<programlisting>
 	public Order LoadOrder(int id)
 	{
-		System.Console.Out.WriteLine("\nLoading order N° " + id + "...");
+		System.Console.Out.WriteLine("\nLoading order NÂ° " + id + "...");
 		using(NHibernate.ISession session = _sessionFactory.OpenSession())
 			return <literal>session.Load(typeof(Order), id)</literal> as <classname>Order</classname>;
 		// finally { session.Close(); }	is done by using()
@@ -823,7 +823,7 @@ stream.Close();</programlisting>
 
 		// That's how the Session decide to save or to update; set NHMA.Id(UnsavedValue=x) to replace 0
 		System.Console.Out.Write("\n"  +  (<literal>o.Id == 0  ?  "Save"  :  "Update"</literal>));
-		System.Console.Out.WriteLine(" the order N° " + o.Id + "...");
+		System.Console.Out.WriteLine(" the order NÂ° " + o.Id + "...");
 		try
 		{
 			session = _sessionFactory.OpenSession();
@@ -939,7 +939,7 @@ stream.Close();</programlisting>
 		NHibernate.ISession session = null;
 		NHibernate.ITransaction transaction = null;
 
-		System.Console.Out.WriteLine("\nDeleting the order N° " + id + "...");
+		System.Console.Out.WriteLine("\nDeleting the order NÂ° " + id + "...");
 		try
 		{
 			session = _sessionFactory.OpenSession();
