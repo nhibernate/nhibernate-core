@@ -286,7 +286,7 @@ namespace QuickStart
         </para>
 
         <para>
-            We implement a <literal>NHibernateUtil</literal> helper class:
+            We implement a <literal>NHibernateHelper</literal> helper class:
         </para>
 
         <programlisting><![CDATA[using System;
@@ -296,12 +296,12 @@ using NHibernate.Cfg;
 
 namespace QuickStart
 {
-    public sealed class NHibernateUtil
+    public sealed class NHibernateHelper
     {
         private const string CurrentSessionKey = "nhibernate.current_session";
         private static readonly ISessionFactory sessionFactory;
 
-        static NHibernateUtil()
+        static NHibernateHelper()
         {
             sessionFactory = new Configuration().Configure().BuildSessionFactory();
         }
@@ -359,7 +359,7 @@ namespace QuickStart
             are closed when all work is completed:
         </para>
 
-        <programlisting><![CDATA[ISession session = NHibernateUtil.GetCurrentSession();
+        <programlisting><![CDATA[ISession session = NHibernateHelper.GetCurrentSession();
 
 ITransaction tx = session.BeginTransaction();
 
@@ -371,7 +371,7 @@ princess.Weight = 7.4f;
 session.Save(princess);
 tx.Commit();
 
-NHibernateUtil.CloseSession();]]></programlisting>
+NHibernateHelper.CloseSession();]]></programlisting>
 
         <para>
             In an <literal>ISession</literal>, every database operation occurs inside a
@@ -382,7 +382,7 @@ NHibernateUtil.CloseSession();]]></programlisting>
         </para>
 
         <para>
-            Also note that you may call <literal>NHibernateUtil.GetCurrentSession();</literal>
+            Also note that you may call <literal>NHibernateHelper.GetCurrentSession();</literal>
             as many times as you like, you will always get the current <literal>ISession</literal>
             of this thread. You have to make sure the <literal>ISession</literal> is closed
             after your unit-of-work completes, either in <literal>Application_EndRequest</literal>

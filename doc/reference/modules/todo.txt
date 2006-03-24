@@ -1,9 +1,5 @@
 Documentation notes:
 
-- query_criteria
-    ! Expression.sql example needs work (supplying an SqlString)
-    ! document NH-specific Expression.Example stuff
-
 - manipulating_data
     ! I'm unsure about the distributed transactions stuff
 
@@ -21,7 +17,6 @@ Documentation notes:
     - should HttpSessionState be small in .NET?
 
 - quickstart
-    ! need to rename NHibernateUtil to something else
     ! say something about Embedded Resource there somewhere
     - add exception handling to static initializer of NHibernateUtil?
 

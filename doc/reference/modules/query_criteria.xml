@@ -65,9 +65,19 @@ List cats = crit.List();]]></programlisting>
             subclasses), but one that is especially useful lets you specify SQL directly.
         </para>
 
-        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
-    .Add( Expression.Sql(new SqlString( "lower({alias}.Name) like lower(", new Parameter("Fritz%", NHibernateUtil.String), ")" )
-    .List();]]></programlisting>
+        <programlisting><![CDATA[
+        // Create a string parameter for the SqlString below
+        Parameter paramName = new Parameter("someName", new StringSqlType());
+
+        IList cats = sess.CreateCriteria(typeof(Cat))
+            .Add( Expression.Sql(
+                new SqlString( new object[] {
+                    "lower({alias}.Name) like lower(",
+                    paramName,
+                    ")" } ),
+                "Fritz%",
+                NHibernateUtil.String )
+            .List();]]></programlisting>
     
         <para>
             The <literal>{alias}</literal> placeholder with be replaced by the row alias
@@ -185,7 +195,8 @@ List results = session.CreateCriteria(typeof(Cat))
     
         <para>
            Version properties, identifiers and associations are ignored. By default,
-           null valued properties are excluded.
+           null valued properties and properties which return an empty string from
+           the call to <code>ToString()</code> are excluded.
         </para>
 
         <para>
@@ -193,7 +204,7 @@ List results = session.CreateCriteria(typeof(Cat))
         </para>
 
         <programlisting><![CDATA[Example example = Example.Create(cat)
-    .ExcludeZeroes()           //exclude zero valued properties
+    .ExcludeZeroes()           //exclude null or zero valued properties
     .ExcludeProperty("Color")  //exclude the property named "color"
     .IgnoreCase()              //perform case insensitive string comparisons
     .EnableLike();             //use like for string comparisons
