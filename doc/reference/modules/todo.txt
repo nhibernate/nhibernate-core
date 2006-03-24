@@ -1,7 +1,7 @@
 Documentation notes:
 
 - manipulating_data
-    ! I'm unsure about the distributed transactions stuff
+    - Check and uncomment distributed transactions stuff
 
 - persistent_classes
     - replace XDoclet markup section by NHMA example (at the end)?
@@ -10,11 +10,8 @@ Documentation notes:
     - maybe use AddAssembly instead of two AddClass calls?
 
 - transactions
-    ! need to check ASP.NET example (do people store ISessionFactory in Application.Items?)
-    ! do people store ISessionFactory in Active Directory?
     - stateless session bean = ? (paragraph removed completely)
     - is there really a "special handling of distributed transactions"?
-    - should HttpSessionState be small in .NET?
 
 - quickstart
     ! say something about Embedded Resource there somewhere

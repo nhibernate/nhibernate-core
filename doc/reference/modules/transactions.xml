@@ -18,16 +18,16 @@
             is an inexpensive, non-threadsafe object that should be used once, for a single
             business process, and then discarded. For example, when using NHibernate in an
             ASP.NET application, pages could obtain an <literal>ISessionFactory</literal> 
-            using
+            using:
         </para>
 
-        <programlisting><![CDATA[ISessionFactory sf = (ISessionFactory)Application["my.session.factory"];]]></programlisting>
+        <programlisting><![CDATA[ISessionFactory sf = Global.SessionFactory;]]></programlisting>
 
         <para>
             Each call to a service method could create a new <literal>ISession</literal>,
-            <literal>Flush()</literal> it, <literal>Commit()</literal> its connection,
+            <literal>Flush()</literal> it, <literal>Commit()</literal> its transaction,
             <literal>Close()</literal> it and finally discard it. (The <literal>ISessionFactory</literal>
-            may also be kept in Active Directory or a static <emphasis>Singleton</emphasis> helper variable.)
+            may also be kept in <!-- Active Directory or --> a static <emphasis>Singleton</emphasis> helper variable.)
         </para>
 
         <para>

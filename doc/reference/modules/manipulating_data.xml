@@ -944,6 +944,7 @@ finally
     sess.Close();
 }]]></programlisting>
 
+<!--
 		<para>
 			Or, when using a distributed transaction:
 		</para>
@@ -964,7 +965,7 @@ finally
 {
     sess.Close();
 }]]></programlisting>
-
+-->
 	</sect1>
 
     <sect1 id="manipulatingdata-graphs">
