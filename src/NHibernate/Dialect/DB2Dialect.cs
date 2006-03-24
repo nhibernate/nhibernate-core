@@ -148,9 +148,9 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string IdentitySelectString
+		public override string IdentitySelectString( string identityColumn, string tableName )
 		{
-			get { return "values IDENTITY_VAL_LOCAL()"; }
+			return "values IDENTITY_VAL_LOCAL()";
 		}
 
 		/// <summary></summary>

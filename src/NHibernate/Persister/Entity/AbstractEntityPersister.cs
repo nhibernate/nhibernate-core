@@ -559,10 +559,10 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Returns the SQL used to get the Identity value from the last insert.
 		/// </summary>
-		/// <remarks>This is not a NHibernate Command because there are no parameters.</remarks>
-		public string SqlIdentitySelect
+		/// <remarks>This is not a NHibernate Command because the SQL contains no parameters.</remarks>
+		public string SqlIdentitySelect( string identityColumn, string tableName )
 		{
-			get { return factory.Dialect.IdentitySelectString; }
+			return factory.Dialect.IdentitySelectString( identityColumn, tableName );
 		}
 
 		public virtual IIdentifierGenerator IdentifierGenerator
@@ -1749,8 +1749,7 @@ namespace NHibernate.Persister.Entity
 
 			try
 			{
-				//TODO: refactor all this stuff up to AbstractEntityPersister:
-				SqlString insertSelectSQL = Dialect.AddIdentitySelectToInsert( sql );
+				SqlString insertSelectSQL = Dialect.AddIdentitySelectToInsert( sql, IdentifierColumnNames[ 0 ], TableName );
 
 				if( insertSelectSQL != null )
 				{
@@ -1785,7 +1784,7 @@ namespace NHibernate.Persister.Entity
 					}
 
 					// Fetch the generated id in a separate query
-					IDbCommand idselect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect ) );
+					IDbCommand idselect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect( IdentifierColumnNames[ 0 ], TableName ) ) );
 					IDataReader rs = null;
 					try
 					{

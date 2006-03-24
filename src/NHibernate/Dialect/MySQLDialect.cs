@@ -90,9 +90,9 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string IdentitySelectString
+		public override string IdentitySelectString( string identityColumn, string tableName )
 		{
-			get { return "SELECT LAST_INSERT_ID()"; }
+			return "SELECT LAST_INSERT_ID()";
 		}
 
 		/// <summary></summary>

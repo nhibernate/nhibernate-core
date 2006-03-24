@@ -203,9 +203,9 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="insertSql">The SqlString that contains the INSERT sql.</param>
 		/// <returns>A new SqlString with <c>; SELECT SCOPE_IDENTITY()</c> at the end.</returns>
-		public override SqlString AddIdentitySelectToInsert( SqlString insertSql )
+		public override SqlString AddIdentitySelectToInsert( SqlString insertSql, string identityColumn, string tableName )
 		{
-			return insertSql.Append( "; " + IdentitySelectString );
+			return insertSql.Append( "; " + IdentitySelectString( identityColumn, tableName ) );
 		}
 
 		/// <summary></summary>
@@ -215,9 +215,9 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string IdentitySelectString
+		public override string IdentitySelectString( string identityColumn, string tableName )
 		{
-			get { return "select SCOPE_IDENTITY()"; }
+			return "select SCOPE_IDENTITY()";
 		}
 
 		/// <summary></summary>

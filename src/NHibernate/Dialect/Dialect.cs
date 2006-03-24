@@ -308,7 +308,7 @@ namespace NHibernate.Dialect
 		/// </para>
 		/// <para>
 		/// If this is overridden and returns <c>true</c> then the Dialect
-		/// is expected to override the method <see cref="AddIdentitySelectToInsert(SqlString)"/>
+		/// is expected to override the method <see cref="AddIdentitySelectToInsert(SqlString, string, string)"/>
 		/// </para>
 		/// </remarks>
 		public virtual bool SupportsIdentitySelectInInsert
@@ -347,7 +347,7 @@ namespace NHibernate.Dialect
 		/// and also gets the identifier of the inserted row.
 		/// Return <c>null</c> if this dialect doesn't support this feature.
 		/// </returns>
-		public virtual SqlString AddIdentitySelectToInsert( SqlString insertSql )
+		public virtual SqlString AddIdentitySelectToInsert( SqlString insertSql, string identityColumn, string tableName )
 		{
 			return null;
 		}
@@ -356,9 +356,9 @@ namespace NHibernate.Dialect
 		/// The syntax that returns the identity value of the last insert, if native
 		/// key generation is supported
 		/// </summary>
-		public virtual string IdentitySelectString
+		public virtual string IdentitySelectString( string identityColumn, string tableName )
 		{
-			get { throw new MappingException( "Dialect does not support identity key generation" ); }
+			throw new MappingException( "Dialect does not support identity key generation" );
 		}
 
 		/// <summary>
