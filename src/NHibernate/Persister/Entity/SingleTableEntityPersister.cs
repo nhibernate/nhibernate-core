@@ -444,6 +444,11 @@ namespace NHibernate.Persister.Entity
 			return sqlBuilder.ToSqlString();
 		}
 
+		protected override int Dehydrate( object id, object[] fields, bool[] includeProperty, int table, IDbCommand statement, ISessionImplementor session )
+		{
+			return Dehydrate( id, fields, includeProperty, statement, session);
+		}
+
 		/// <summary>
 		/// Marshall the fields of a persistent instance to a prepared statement
 		/// </summary>
@@ -604,75 +609,7 @@ namespace NHibernate.Persister.Entity
 		/// <returns></returns>
 		public object Insert( object[] fields, bool[] notNull, SqlString sql, object obj, ISessionImplementor session )
 		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Inserting entity: " + ClassName + " (native id)" );
-				if( IsVersioned )
-				{
-					log.Debug( "Version: " + Versioning.GetVersion( fields, this ) );
-				}
-			}
-
-			try
-			{
-				//TODO: refactor all this stuff up to AbstractEntityPersister:
-				SqlString insertSelectSQL = Dialect.AddIdentitySelectToInsert( sql );
-
-				if( insertSelectSQL != null )
-				{
-					//use one statement to insert the row and get the generated id
-					IDbCommand insertSelect = session.Batcher.PrepareCommand( insertSelectSQL );
-					IDataReader rs = null;
-					try
-					{
-						Dehydrate( null, fields, notNull, insertSelect, session );
-						rs = session.Batcher.ExecuteReader( insertSelect );
-						return GetGeneratedIdentity( obj, session, rs );
-					}
-					finally
-					{
-						session.Batcher.CloseCommand( insertSelect, rs );
-					}
-				}
-				else
-				{
-					//do the insert
-					IDbCommand statement = session.Batcher.PrepareCommand( sql );
-					try
-					{
-						Dehydrate( null, fields, notNull, statement, session );
-						session.Batcher.ExecuteNonQuery( statement );
-					}
-					finally
-					{
-						session.Batcher.CloseCommand( statement, null );
-					}
-
-					//fetch the generated id in a separate query
-					IDbCommand idselect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect ) );
-					IDataReader rs = null;
-					try
-					{
-						rs = session.Batcher.ExecuteReader( idselect );
-						return GetGeneratedIdentity( obj, session, rs );
-					}
-					finally
-					{
-						session.Batcher.CloseCommand( idselect, rs );
-					}
-
-				}
-			}
-			catch( HibernateException )
-			{
-				// Do not call Convert on HibernateExceptions
-				throw;
-			}
-			catch( Exception sqle )
-			{
-				throw Convert( sqle, "could not insert: " + MessageHelper.InfoString( this ) );
-
-			}
+			return InsertImpl( fields, notNull, sql, obj, session);
 		}
 
 		/// <summary>

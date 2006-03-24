@@ -453,7 +453,7 @@ namespace NHibernate.Persister.Entity
 			return versionParm;
 		}
 
-		private int Dehydrate( object id, object[] fields, bool[] includeProperty, int table, IDbCommand statement, ISessionImplementor session )
+		protected override int Dehydrate( object id, object[] fields, bool[] includeProperty, int table, IDbCommand statement, ISessionImplementor session )
 		{
 			if( statement == null )
 			{
@@ -627,55 +627,9 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			object id = null;
-
 			try
 			{
-				//TODO: refactor all this stuff up to AbstractEntityPersister:
-				SqlString insertSelectSQL = Dialect.AddIdentitySelectToInsert( sql[ 0 ] );
-				if( insertSelectSQL != null )
-				{
-					//use one statement to insert the row and get the generated id
-					IDbCommand insertSelect = session.Batcher.PrepareCommand( insertSelectSQL );
-					IDataReader dr = null;
-					try
-					{
-						Dehydrate( null, fields, notNull, 0, insertSelect, session );
-						dr = session.Batcher.ExecuteReader( insertSelect );
-						id = GetGeneratedIdentity( obj, session, dr );
-					}
-					finally
-					{
-						session.Batcher.CloseCommand( insertSelect, dr );
-					}
-				}
-				else
-				{
-					//do the insert
-					IDbCommand statement = session.Batcher.PrepareCommand( sql[ 0 ] );
-					try
-					{
-						Dehydrate( null, fields, notNull, 0, statement, session );
-						session.Batcher.ExecuteNonQuery( statement );
-					}
-					finally
-					{
-						session.Batcher.CloseCommand( statement, null );
-					}
-
-					// fetch the generated id in a separate query
-					IDbCommand idselect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect ) );
-					IDataReader dr = null;
-					try
-					{
-						dr = session.Batcher.ExecuteReader( idselect );
-						id = GetGeneratedIdentity( obj, session, dr );
-					}
-					finally
-					{
-						session.Batcher.CloseCommand( idselect, dr );
-					}
-				}
+				object id = InsertImpl( fields, notNull, sql[0], obj, session);
 
 				for( int i = 1; i < naturalOrderTableNames.Length; i++ )
 				{
@@ -693,7 +647,6 @@ namespace NHibernate.Persister.Entity
 				}
 
 				return id;
-
 			}
 			catch( HibernateException )
 			{
