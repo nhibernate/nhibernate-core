@@ -54,6 +54,9 @@ namespace NHibernate.Id
 		private string tableName;
 		private string columnName;
 		private string query;
+		
+		protected SqlType columnSqlType;
+		protected ValueTypeType columnType;
 
 		private SqlString updateSql;
 
@@ -82,9 +85,36 @@ namespace NHibernate.Id
 				query += " for update";
 			}
 
+			columnType = type as ValueTypeType;
+			if (columnType == null)
+			{
+				log.Error("Column type for TableGenerator is not a value type");
+				throw new ArgumentException("type is not a ValueTypeType", "type");
+			}
+
+
 			// build the sql string for the Update since it uses parameters
-			Parameter setParam = new Parameter( columnName, new Int32SqlType() );
-			Parameter whereParam = new Parameter( columnName, new Int32SqlType() );
+			Parameter setParam = null;
+			Parameter whereParam = null;
+
+			if (type is Type.Int16Type)
+			{
+				setParam = new Parameter( columnName, new Int16SqlType() );
+				whereParam = new Parameter( columnName, new Int16SqlType() );
+				columnSqlType = new Int16SqlType();
+			}
+			else if (type is Type.Int64Type)
+			{
+				setParam = new Parameter( columnName, new Int64SqlType() );
+				whereParam = new Parameter( columnName, new Int64SqlType() );
+				columnSqlType = new Int64SqlType();
+			}
+			else
+			{
+				setParam = new Parameter( columnName, new Int32SqlType() );
+				whereParam = new Parameter( columnName, new Int32SqlType() );
+				columnSqlType = new Int32SqlType();
+			}
 
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add( "update " + tableName + " set " )
@@ -132,7 +162,7 @@ namespace NHibernate.Id
 				conn = session.Factory.OpenConnection();
 			}
 
-			int result;
+			long result;
 			int rows;
 			try
 			{
@@ -162,7 +192,8 @@ namespace NHibernate.Id
 							log.Error( err );
 							throw new IdentifierGenerationException( err );
 						}
-						result = Convert.ToInt32( rs[ 0 ] );
+						result = Convert.ToInt64(columnType.Get(rs, 0));
+						
 					} 
 						// TODO: change to SqlException
 					catch( Exception e )
@@ -182,9 +213,9 @@ namespace NHibernate.Id
 
 					try
 					{
-						( ( IDbDataParameter ) ups.Parameters[ 0 ] ).Value = result + 1;
-						( ( IDbDataParameter ) ups.Parameters[ 1 ] ).Value = result;
-
+						columnType.Set( ups, result + 1, 0 );
+						columnType.Set( ups, result, 1 );
+	
 						rows = ups.ExecuteNonQuery();
 					} 
 						// TODO: change to SqlException
@@ -238,7 +269,7 @@ namespace NHibernate.Id
 			// defaulting <id>'s with Int32 types at.
 			return new string[ ]
 				{
-					"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName( SqlTypeFactory.GetInt32() ) + " )",
+					"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName( columnSqlType ) + " )",
 					"insert into " + tableName + " values ( 1 )"
 				};
 		}

@@ -20,6 +20,7 @@
     <DefineConstants>TRACE;DEBUG;NET,NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -93,7 +94,14 @@
     <Compile Include="ExpressionTest\QueryByExampleTest.cs" />
     <Compile Include="ExpressionTest\SimpleExpressionFixture.cs" />
     <Compile Include="ExpressionTest\SQLExpressionFixture.cs" />
+    <Compile Include="IdTest\HiLoTableGeneratorInt64Fixture.cs" />
+    <Compile Include="IdTest\HiLoInt64Class.cs" />
+    <Compile Include="IdTest\HiLoTableGeneratorInt32Fixture.cs" />
+    <Compile Include="IdTest\HiLoInt32Class.cs" />
+    <Compile Include="IdTest\HiLoInt16Class.cs" />
+    <Compile Include="IdTest\HiLoTableGeneratorInt16Fixture.cs" />
     <Compile Include="IdTest\IdentifierGeneratorFactoryFixture.cs" />
+    <Compile Include="IdTest\IdFixtureBase.cs" />
     <Compile Include="JoinedSubclass\Address.cs" />
     <Compile Include="JoinedSubclass\Customer.cs" />
     <Compile Include="JoinedSubclass\Employee.cs" />
@@ -395,6 +403,9 @@
     <EmbeddedResource Include="BagGeneric\BagGenericFixture.hbm.xml" />
     <EmbeddedResource Include="ListGeneric\ListGenericFixture.hbm.xml" />
     <EmbeddedResource Include="MapGeneric\MapGenericFixture.hbm.xml" />
+    <EmbeddedResource Include="IdTest\HiLoInt16Class.hbm.xml" />
+    <EmbeddedResource Include="IdTest\HiLoInt32Class.hbm.xml" />
+    <EmbeddedResource Include="IdTest\HiLoInt64Class.hbm.xml" />
     <Content Include="NHSpecificTest\NH386\Mappings.hbm.xml" />
     <Content Include="NHSpecificTest\NH392\Mappings.hbm.xml" />
     <Content Include="NHSpecificTest\NH401\Mappings.hbm.xml" />

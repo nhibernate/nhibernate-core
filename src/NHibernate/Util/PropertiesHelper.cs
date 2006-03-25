@@ -60,6 +60,19 @@ namespace NHibernate.Util
 		/// <param name="properties"></param>
 		/// <param name="defaultValue"></param>
 		/// <returns></returns>
+		public static long GetInt64(string property, IDictionary properties, long defaultValue)
+		{
+			string propValue = properties[property] as string;
+			return (propValue == null) ? defaultValue : long.Parse(propValue);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="property"></param>
+		/// <param name="properties"></param>
+		/// <param name="defaultValue"></param>
+		/// <returns></returns>
 		public static string GetString( string property, IDictionary properties, string defaultValue )
 		{
 			string propValue = properties[ property ] as string;

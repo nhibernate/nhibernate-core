@@ -353,7 +353,54 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "IdTest\HiLoInt16Class.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "IdTest\HiLoInt16Class.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "IdTest\HiLoInt32Class.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "IdTest\HiLoInt32Class.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "IdTest\HiLoInt64Class.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "IdTest\HiLoInt64Class.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "IdTest\HiLoTableGeneratorInt16Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "IdTest\HiLoTableGeneratorInt32Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "IdTest\HiLoTableGeneratorInt64Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "IdTest\IdentifierGeneratorFactoryFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "IdTest\IdFixtureBase.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

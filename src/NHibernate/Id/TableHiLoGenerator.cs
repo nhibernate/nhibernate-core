@@ -46,8 +46,8 @@ namespace NHibernate.Id
 		public const string MaxLo = "max_lo";
 
 		private long hi;
-		private int lo;
-		private int maxLo;
+		private long lo;
+		private long maxLo;
 		private System.Type returnClass;
 
 		#region IConfigurable Members
@@ -62,7 +62,7 @@ namespace NHibernate.Id
 		public override void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
 		{
 			base.Configure( type, parms, dialect );
-			maxLo = PropertiesHelper.GetInt32( MaxLo, parms, short.MaxValue );
+			maxLo = PropertiesHelper.GetInt64( MaxLo, parms, short.MaxValue );
 			lo = maxLo + 1; // so we "clock over" on the first invocation
 			returnClass = type.ReturnedClass;
 		}
@@ -83,7 +83,7 @@ namespace NHibernate.Id
 		{
 			if( lo > maxLo )
 			{
-				int hival = ( ( int ) base.Generate( session, obj ) );
+				long hival = ( ( long ) base.Generate( session, obj ) );
 				lo = 1;
 				hi = hival*( maxLo + 1 );
 				log.Debug( "new hi value: " + hival );
