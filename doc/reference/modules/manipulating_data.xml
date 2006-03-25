@@ -113,7 +113,7 @@ sess.Refresh(cat); //re-read the state (after the trigger executes)]]></programl
 
         <para>
             If you don't know the identifier(s) of the object(s) you are looking for, use the <literal>Find()
-            </literal> methods of <literal>ISession</literal>. Hibernate supports a simple but powerful object 
+            </literal> methods of <literal>ISession</literal>. NHibernate supports a simple but powerful object 
             oriented query language.
         </para>
 

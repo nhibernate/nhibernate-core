@@ -1798,7 +1798,7 @@
 
             <para>
                 Suppose your application has two persistent classes with the same name, and you don't want to
-                specify the fully qualified (package) name in NHibernate queries. Classes may be "imported" 
+                specify the fully qualified name in NHibernate queries. Classes may be "imported" 
                 explicitly, rather than relying upon <literal>auto-import="true"</literal>. You may even import 
                 classes and interfaces that are not explicitly mapped.
             </para>

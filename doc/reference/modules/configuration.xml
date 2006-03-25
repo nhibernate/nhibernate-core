@@ -25,7 +25,7 @@
         <para>
             You may obtain a <literal>Configuration</literal> instance by
             instantiating it directly. Heres an example of setting up a datastore from 
-            mappings defined in two XML configuration files (in the classpath):
+            mappings defined in two XML configuration files:
         </para>
 
         <programlisting><![CDATA[Configuration cfg = new Configuration()
@@ -33,8 +33,8 @@
     .AddFile("Bid.hbm.xml");]]></programlisting>
 
         <para>
-            An alternative (sometimes better) way is to let Hibernate load a mapping file
-            using <literal>getResourceAsStream()</literal>:
+            An alternative (sometimes better) way is to let NHibernate load a mapping file
+            from an embedded resource:
         </para>
 
         <programlisting><![CDATA[Configuration cfg = new Configuration()
@@ -60,13 +60,14 @@
         <para>
             Then NHibernate will look through the assembly for any resources that
             end with <literal>.hbm.xml</literal>.  This approach eliminates 
-            any hardcoded filenames and ensures the mapping files in the Assembly
+            any hardcoded filenames and ensures the mapping files in the assembly
             get added.
         </para>
         
         <para>
-            If VisualStudio.NET or NAnt is used to build the Assembly then make sure
-            that the hbm.xml files are added as <literal>Embedded Resources</literal>.
+            If a tool like Visual Studio .NET or NAnt is used to build the assembly,
+            then make sure that the <literal>.hbm.xml</literal> files are compiled
+            into the assembly as <literal>Embedded Resources</literal>.
         </para>
         
         <para>
@@ -572,6 +573,10 @@ ISession session = sessions.OpenSession(conn);
                         <row>
                             <entry>Firebird</entry> 
                             <entry><literal>NHibernate.Dialect.FirebirdDialect</literal></entry>
+                        </row>
+                        <row>
+                            <entry>SQLite</entry>
+                            <entry><literal>NHibernate.Dialect.SQLiteDialect</literal></entry>
                         </row>
                     </tbody>
                 </tgroup>

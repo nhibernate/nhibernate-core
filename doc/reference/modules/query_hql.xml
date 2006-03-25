@@ -503,7 +503,7 @@ from Eg.DomesticCat cat where cat.Name not in ( 'Foo', 'Bar', 'Baz' )]]></progra
         </para>
 
         <para>
-            Booleans may be easily used in expressions by declaring HQL query substitutions in Hibernate
+            Booleans may be easily used in expressions by declaring HQL query substitutions in NHibernate
             configuration:
         </para>
 

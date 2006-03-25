@@ -430,7 +430,7 @@ tx.Commit();]]></programlisting>
 
         <para>
             Keep in mind that NHibernate, as a data access layer, is tightly integrated into
-            your application. Usually, all other layers depent on the persistence mechanism.
+            your application. Usually, all other layers depend on the persistence mechanism.
             Make sure you understand the implications of this design.
         </para>
 

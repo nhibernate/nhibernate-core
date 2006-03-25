@@ -56,7 +56,7 @@ IList cats = sqlQuery.List();]]></programlisting>
 
         <para>
             The <literal>{cat.*}</literal> notation used above is a shorthand for "all properties". You
-            may even list the properties explicity, but you must let Hibernate provide SQL column aliases
+            may even list the properties explicity, but you must let NHibernate provide SQL column aliases
             for each property. The placeholders for these column aliases are the property name qualified by
             the table alias. In the following example, we retrieve <literal>Cat</literal>s from a different
             table (<literal>cat_log</literal>) to the one declared in the mapping metadata. Notice that we

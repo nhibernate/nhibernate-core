@@ -69,7 +69,7 @@
 
             <para>
                 Bags are the worst case. Since a bag permits duplicate element values and has no
-                index column, no primary key may be defined. Hibernate has no way of distinguishing
+                index column, no primary key may be defined. NHibernate has no way of distinguishing
                 between duplicate rows. NHibernate resolves this problem by completely removing
                 (in a single <literal>DELETE</literal>) and recreating the collection whenever it
                 changes. This might be very inefficient.
@@ -622,6 +622,10 @@ ICat fritz = (ICat) en.Current;]]></programlisting>
             </tbody>
             </tgroup>
         </table>
+
+        <para>
+            Refer to <link linkend="caches" /> for more details.
+        </para>
 
     </sect1>
 
