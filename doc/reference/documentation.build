@@ -13,6 +13,7 @@
 		<tstamp property="build.date" pattern="u" verbose="true" />
 
 		<property name="output.dir" value="${build.dir}/doc" />
+		<property name="output.html.basename" value="NHibernate.Documentation" />
 		<property name="output.help2.dir" value="${output.dir}/help2" />
 
 		<property name="build.html.dir" value="${output.dir}" />
@@ -126,7 +127,7 @@
 			<arg file="${build.chm.dir}/htmlhelp.hhp" />
 		</exec>
 
-		<copy file="${build.chm.dir}/htmlhelp.chm" tofile="${output.dir}/NHibernate.Documentation.chm" />
+		<copy file="${build.chm.dir}/htmlhelp.chm" tofile="${output.dir}/${output.html.basename}.chm" />
 
 		<delete dir="${build.chm.dir}" />
 	</target>
@@ -134,7 +135,7 @@
 	<target name="build-help2" if="${vshik.installed}" depends="build-chm" description="Generates HtmlHelp2 file from CHM file.">
 		<!-- convert the chm into the HxC -->
 		<exec program="HxConv.exe" basedir="${vshik.path}">
-			<arg path="${output.dir}/NHibernate.Documentation.chm" />
+			<arg path="${output.dir}/${output.html.basename}.chm" />
 			<arg value="-o" />
 			<arg path="${build.help2.dir}" />
 			<arg value="-y" />
@@ -148,9 +149,9 @@
 		-->
 		<exec program="HxComp.exe" basedir="${vshik.path}">
 			<arg value="-p" />
-			<arg path="${build.help2.dir}/NHibernate.Documentation.HxC" />
+			<arg path="${build.help2.dir}/${output.html.basename}.HxC" />
 			<arg value="-o" />
-			<arg path="${output.help2.dir}/NHibernate.Documentation.HxS" />
+			<arg path="${output.help2.dir}/${output.html.basename}.HxS" />
 		</exec>
 
 		<!--
