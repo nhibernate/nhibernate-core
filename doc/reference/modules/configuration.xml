@@ -582,6 +582,12 @@ ISession session = sessions.OpenSession(conn);
                 </tgroup>
             </table>
 
+            <para>
+                Additional dialects may be available in the NHibernateContrib package (see
+                <xref linkend="part-contrib" />). At the time of writing this package contains
+                support for Microsoft Access (Jet) database engine.
+            </para>
+
         </sect2>
 
         <sect2 id="configuration-optional-outerjoin">

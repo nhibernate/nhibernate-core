@@ -165,8 +165,8 @@ namespace QuickStart
             No special interface has to be implemented for persistent classes nor do we have
             to subclass from a special root persistent class. NHibernate also doesn't use any
             build time processing, such as IL manipulation, it relies solely on
-            .NET reflection and runtime class enhancement (through Castle.DynamicProxy). So,
-            without any dependency in the POCO class on NHibernate, we can map it to
+            .NET reflection and runtime class enhancement (through Castle.DynamicProxy library).
+            So, without any dependency in the POCO class on NHibernate, we can map it to
             a database table.
         </para>
 

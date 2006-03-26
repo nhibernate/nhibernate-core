@@ -50,8 +50,8 @@
 				Consider reading <emphasis>Hibernate in Action</emphasis>
 				(http://www.manning.com/bauer) if you need more help with application
 				design or if you prefer a step-by-step tutorial. Also visit
-				http://caveatemptor.hibernate.org and download the example application
-				for Hibernate in Action (in Java).
+				http://nhibernate.sourceforge.net/NHibernateEg/ for NHibernate
+				tutorial with examples.
 			</para>
 		</listitem>
 		<listitem>
