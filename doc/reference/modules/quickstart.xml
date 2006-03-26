@@ -384,7 +384,7 @@ NHibernateHelper.CloseSession();]]></programlisting>
         <para>
             Also note that you may call <literal>NHibernateHelper.GetCurrentSession();</literal>
             as many times as you like, you will always get the current <literal>ISession</literal>
-            of this thread. You have to make sure the <literal>ISession</literal> is closed
+            of this HTTP request. You have to make sure the <literal>ISession</literal> is closed
             after your unit-of-work completes, either in <literal>Application_EndRequest</literal>
             event handler in your application class or in a <literal>HttpModule</literal> before
             the HTTP response is sent. The nice side effect of the latter is easy lazy

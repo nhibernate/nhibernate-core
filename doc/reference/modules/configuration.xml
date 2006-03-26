@@ -74,7 +74,7 @@
             A <literal>Configuration</literal> also specifies various optional properties:
         </para>
 
-        <programlisting><![CDATA[Properties props = new Properties();
+        <programlisting><![CDATA[IDictionary props = new Hashtable();
 ...
 Configuration cfg = new Configuration()
     .AddClass(typeof(NHibernate.Auction.Item))
@@ -175,7 +175,7 @@ ISession session = sessions.OpenSession(conn);
             If you take this approach, opening an <literal>ISession</literal> is as simple as:
         </para>
 
-        <programlisting><![CDATA[ISession session = sessions.openSession(); // open a new Session
+        <programlisting><![CDATA[ISession session = sessions.OpenSession(); // open a new Session
 // do some data access work, an ADO.NET connection will be used on demand]]></programlisting>
 
         <para>
@@ -226,6 +226,11 @@ ISession session = sessions.OpenSession(conn);
                         <literal>full.classname.of.Driver</literal> if the Driver 
                         is built into NHibernate, or <literal>full.classname.of.Driver, assembly</literal> 
                         if using an implementation of IDriver not included in NHibernate.
+                    </para>
+                    <para>
+						This is usually not needed, most of the time the <literal>hibernate.dialect</literal> will
+						take care of setting the IDriver using a sensible default.  See the API documentation of the
+						specific IDialect for the defaults.
                     </para>
                 </entry>
             </row>
@@ -473,7 +478,7 @@ ISession session = sessions.OpenSession(conn);
                             <literal>hibernate.query.substitutions</literal>
                         </entry>
                         <entry>
-                            Mapping from tokens in Hibernate queries to SQL tokens
+                            Mapping from tokens in NHibernate queries to SQL tokens
                             (tokens might be function or literal names, for example).
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 

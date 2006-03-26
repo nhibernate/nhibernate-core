@@ -78,7 +78,7 @@ namespace Eg
             set { kittens = value; }
         }
     
-        // AddKitten not needed by Hibernate
+        // AddKitten not needed by NHibernate
         public virtual void AddKitten(Cat kitten)
         {
             kittens.Add(kitten);
