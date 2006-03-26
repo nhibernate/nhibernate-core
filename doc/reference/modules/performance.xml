@@ -624,7 +624,7 @@ ICat fritz = (ICat) en.Current;]]></programlisting>
         </table>
 
         <para>
-            Refer to <link linkend="caches" /> for more details.
+            Refer to <xref linkend="caches" /> for more details.
         </para>
 
     </sect1>

@@ -154,7 +154,7 @@ namespace QuickStart
             and <literal>DateTime</literal>) can be mapped, including classes from the
             <literal>System.Collections</literal> namespace. You can map them as values,
             collections of values, or associations to other entities. The <literal>Id</literal>
-            is a special property that represents the database identifer (primary key) of
+            is a special property that represents the database identifier (primary key) of
             that class, it is highly recommended for entities like a <literal>Cat</literal>.
             NHibernate can use identifiers only internally, without having to declare them
             on the class, but we would lose some of the flexibility in our application
