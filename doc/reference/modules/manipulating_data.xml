@@ -365,7 +365,7 @@ IList cats = q.List();]]></programlisting>
            <title>Criteria queries</title>
             <para>
                 HQL is extremely powerful but some people prefer to build queries dynamically, using an
-                object oriented API, rather than embedding strings in their Java code. For these people,
+                object oriented API, rather than embedding strings in their .NET code. For these people,
                 NHibernate provides an intuitive <literal>ICriteria</literal> query API.
             </para>
 

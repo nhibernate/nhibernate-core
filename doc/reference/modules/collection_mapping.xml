@@ -449,7 +449,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
         <programlisting><![CDATA[<array name="Foos" table="BAR_FOOS" cascade="all">
     <key column="BAR_ID"/>
     <index column="I"/>
-    <many-to-many column="FOO_ID" class="Eg.Foo"/>
+    <many-to-many column="FOO_ID" class="Eg.Foo, Eg"/>
 </array>]]></programlisting>
 
         <para>
@@ -471,7 +471,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
     <index column="posn"/>
     <composite-element class="Eg.Car.CarComponent">
             <property name="Price" type="float"/>
-            <property name="Type" type="Eg.Car.ComponentType"/>
+            <property name="Type" type="Eg.Car.ComponentType, Eg"/>
             <property name="SerialNumber" column="serial_no" type="String"/>
     </composite-element>
 </list>]]></programlisting>
@@ -540,7 +540,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
 
         <programlisting><![CDATA[<set name="Bars">
     <key column="foo_id"/>
-    <one-to-many class="Eg.Bar"/>
+    <one-to-many class="Eg.Bar, Eg"/>
 </set>]]></programlisting>
 
         <para>
@@ -741,7 +741,7 @@ int count = (int) countEn.Current;]]></programlisting>
     </sect1>
 
    <sect1 id="collections-idbag" revision="1">
-        <title><literal>Using an &lt;idbag&gt;</literal></title>
+        <title>Using an <literal>&lt;idbag&gt;</literal></title>
 
         <para>
             If you've fully embraced our view that composite keys are a bad thing and that

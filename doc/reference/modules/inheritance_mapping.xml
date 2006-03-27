@@ -113,7 +113,7 @@
 
         <programlisting><![CDATA[<many-to-one name="Payment"
     column="PAYMENT"
-    class="Payment"/>]]></programlisting>
+    class="IPayment"/>]]></programlisting>
     
         <para>The table-per-concrete-class strategy is very different.</para>
 
