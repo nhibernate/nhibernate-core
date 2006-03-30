@@ -1,5 +1,6 @@
 using System;
 
+using NHibernate.SqlCommand;
 using NHibernate.Util;
 
 namespace NHibernate.Exceptions
@@ -23,6 +24,13 @@ namespace NHibernate.Exceptions
 			ADOExceptionReporter.LogExceptions( sqlException, message );
 			// return converter.Convert( sqlException, message );
 			return new ADOException( message, sqlException );
+		}
+
+		public static ADOException Convert( System.Exception sqlException, string message, SqlString sql )
+		{
+			ADOExceptionReporter.LogExceptions( sqlException, message + " [" + sql + "]" );
+			return new ADOException( message, sqlException, sql );
+
 		}
 	}
 }

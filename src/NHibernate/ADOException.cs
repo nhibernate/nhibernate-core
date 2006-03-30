@@ -1,7 +1,7 @@
 using System;
-using System.Data;
 using System.Runtime.Serialization;
-using log4net;
+
+using NHibernate.SqlCommand;
 
 namespace NHibernate
 {
@@ -16,6 +16,8 @@ namespace NHibernate
 	[ Serializable ]
 	public class ADOException : HibernateException
 	{
+		private SqlString sql;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADOException"/> class.
 		/// </summary>
@@ -27,6 +29,12 @@ namespace NHibernate
 		/// </param>
 		public ADOException( string message, Exception innerException ) : base( message, innerException )
 		{
+		}
+
+		public ADOException( string message, Exception innerException, SqlString sql )
+			: base( message, innerException )
+		{
+			this.sql = sql;
 		}
 
 		/// <summary>
@@ -41,7 +49,18 @@ namespace NHibernate
 		/// </param>
 		protected ADOException( SerializationInfo info, StreamingContext context ) : base( info, context )
 		{
+			this.sql = ( SqlString ) info.GetValue( "sql", typeof( SqlString ) );
 		}
 
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData( info, context );
+			info.AddValue( "sql", sql );
+		}
+
+		public SqlString SqlString
+		{
+			get { return sql; }
+		}
 	}
 }
