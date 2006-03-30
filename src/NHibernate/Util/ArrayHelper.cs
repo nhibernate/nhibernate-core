@@ -158,6 +158,16 @@ namespace NHibernate.Util
 			return result;
 		}
 
+		public static LockMode[] FillArray( LockMode lockMode, int length )
+		{
+			LockMode[] result = new LockMode[length];
+			for( int i = 0; i < length; i++ )
+			{
+				result[ i ] = lockMode;
+			}
+			return result;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -318,6 +328,15 @@ namespace NHibernate.Util
 			}
 			sb.Append( "]" );
 			return sb.ToString();
+		}
+
+		// NH-specific
+		public static void AddAll( IList to, IList from )
+		{
+			foreach( object obj in from )
+			{
+				to.Add( obj );
+			}
 		}
 	}
 }

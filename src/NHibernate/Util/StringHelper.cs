@@ -53,9 +53,9 @@ namespace NHibernate.Util
 			return buf.ToString();
 		}
 
-		public static string[] Add( string[] x, string sep, string[] y )
+		public static string[ ] Add( string[ ] x, string sep, string[ ] y )
 		{
-			string[] result = new string[x.Length];
+			string[ ] result = new string[x.Length];
 			for( int i = 0; i < x.Length; i++ )
 			{
 				result[ i ] = x[ i ] + sep + y[ i ];
@@ -71,7 +71,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string Repeat( string str, int times )
 		{
-			StringBuilder buf = new StringBuilder( str.Length * times );
+			StringBuilder buf = new StringBuilder( str.Length*times );
 			for( int i = 0; i < times; i++ )
 			{
 				buf.Append( str );
@@ -104,10 +104,10 @@ namespace NHibernate.Util
 				return new StringBuilder( template.Substring( 0, loc ) )
 					.Append( replacement )
 					.Append( Replace(
-						template.Substring( loc + placeholder.Length ),
-						placeholder,
-						replacement
-						) ).ToString();
+					         	template.Substring( loc + placeholder.Length ),
+					         	placeholder,
+					         	replacement
+					         	) ).ToString();
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace NHibernate.Util
 		/// <param name="separators">separators for the tokens of the list</param>
 		/// <param name="list">the string that will be broken into tokens</param>
 		/// <returns></returns>
-		public static string[] Split( string separators, string list )
+		public static string[ ] Split( string separators, string list )
 		{
 			return list.Split( separators.ToCharArray() );
 		}
@@ -158,7 +158,7 @@ namespace NHibernate.Util
 		/// This is more powerful than Split because you have the option of including or 
 		/// not including the seperators in the tokens.
 		/// </remarks>
-		public static string[] Split( string separators, string list, bool include )
+		public static string[ ] Split( string separators, string list, bool include )
 		{
 			StringTokenizer tokens = new StringTokenizer( list, separators, include );
 			ArrayList results = new ArrayList();
@@ -166,7 +166,7 @@ namespace NHibernate.Util
 			{
 				results.Add( token );
 			}
-			return ( string[] ) results.ToArray( typeof( string ) );
+			return ( string[ ] ) results.ToArray( typeof( string ) );
 		}
 
 		/// <summary>
@@ -209,7 +209,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string GetClassname( string typeName )
 		{
-			string[] splitClassname = GetFullClassname( typeName ).Split( '.' );
+			string[ ] splitClassname = GetFullClassname( typeName ).Split( '.' );
 
 			return splitClassname[ splitClassname.Length - 1 ];
 		}
@@ -238,13 +238,13 @@ namespace NHibernate.Util
 		/// <param name="columns"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		public static string[] Suffix( string[] columns, string suffix )
+		public static string[ ] Suffix( string[ ] columns, string suffix )
 		{
 			if( suffix == null )
 			{
 				return columns;
 			}
-			string[] qualified = new string[columns.Length];
+			string[ ] qualified = new string[columns.Length];
 			for( int i = 0; i < columns.Length; i++ )
 			{
 				qualified[ i ] = Suffix( columns[ i ], suffix );
@@ -261,8 +261,8 @@ namespace NHibernate.Util
 		public static string Suffix( string name, string suffix )
 		{
 			return ( suffix == null ) ?
-				name :
-				name + suffix;
+			       name :
+			       name + suffix;
 		}
 
 		/// <summary>
@@ -271,13 +271,13 @@ namespace NHibernate.Util
 		/// <param name="columns"></param>
 		/// <param name="prefix"></param>
 		/// <returns></returns>
-		public static string[] Prefix( string[] columns, string prefix )
+		public static string[ ] Prefix( string[ ] columns, string prefix )
 		{
 			if( prefix == null )
 			{
 				return columns;
 			}
-			string[] qualified = new string[columns.Length];
+			string[ ] qualified = new string[columns.Length];
 			for( int i = 0; i < columns.Length; i++ )
 			{
 				qualified[ i ] = prefix + columns[ i ];
@@ -294,8 +294,8 @@ namespace NHibernate.Util
 		{
 			int loc = qualifiedName.IndexOf( "." );
 			return ( loc < 0 )
-				? qualifiedName
-				: qualifiedName.Substring( 0, loc );
+			       	? qualifiedName
+			       	: qualifiedName.Substring( 0, loc );
 		}
 
 		/// <summary>
@@ -317,7 +317,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="array"></param>
 		/// <returns></returns>
-		public static string ToString( object[] array )
+		public static string ToString( object[ ] array )
 		{
 			int len = array.Length;
 
@@ -327,10 +327,10 @@ namespace NHibernate.Util
 				return String.Empty;
 			}
 
-			StringBuilder buf = new StringBuilder( len * 12 );
+			StringBuilder buf = new StringBuilder( len*12 );
 			for( int i = 0; i < len - 1; i++ )
 			{
-				buf.Append( array[ i ] ).Append( StringHelper.CommaSpace );
+				buf.Append( array[ i ] ).Append( CommaSpace );
 			}
 			return buf.Append( array[ len - 1 ] ).ToString();
 		}
@@ -342,13 +342,13 @@ namespace NHibernate.Util
 		/// <param name="placeholders"></param>
 		/// <param name="replacements"></param>
 		/// <returns></returns>
-		public static string[] Multiply( string str, IEnumerator placeholders, IEnumerator replacements )
+		public static string[ ] Multiply( string str, IEnumerator placeholders, IEnumerator replacements )
 		{
-			string[] result = new string[] {str};
+			string[ ] result = new string[ ] {str};
 			while( placeholders.MoveNext() )
 			{
 				replacements.MoveNext();
-				result = Multiply( result, placeholders.Current as string, replacements.Current as string[] );
+				result = Multiply( result, placeholders.Current as string, replacements.Current as string[ ] );
 			}
 			return result;
 		}
@@ -360,9 +360,9 @@ namespace NHibernate.Util
 		/// <param name="placeholder"></param>
 		/// <param name="replacements"></param>
 		/// <returns></returns>
-		public static string[] Multiply( string[] strings, string placeholder, string[] replacements )
+		public static string[ ] Multiply( string[ ] strings, string placeholder, string[ ] replacements )
 		{
-			string[] results = new string[replacements.Length * strings.Length];
+			string[ ] results = new string[replacements.Length*strings.Length];
 			int n = 0;
 			for( int i = 0; i < replacements.Length; i++ )
 			{
@@ -391,7 +391,7 @@ namespace NHibernate.Util
 			// embedded within a quote-block can really be handled as two seperate
 			// quote-blocks for the purposes of this method...
 			int count = 0;
-			char[] chars = str.ToCharArray();
+			char[ ] chars = str.ToCharArray();
 			int stringLength = str == null ? 0 : chars.Length;
 			bool inQuote = false;
 			for( int indx = 0; indx < stringLength; indx++ )
@@ -431,9 +431,9 @@ namespace NHibernate.Util
 			char first = name[ 0 ];
 
 			// Should we check for prefix == string.Empty rather than a length check?
-			if( prefix != null && prefix.Length > 0 && first != StringHelper.SingleQuote && !char.IsDigit( first ) )
+			if( prefix != null && prefix.Length > 0 && first != SingleQuote && !char.IsDigit( first ) )
 			{
-				return prefix + StringHelper.Dot + name;
+				return prefix + Dot + name;
 			}
 			else
 			{
@@ -441,13 +441,13 @@ namespace NHibernate.Util
 			}
 		}
 
-		public static string[] Qualify( string prefix, string[] names )
+		public static string[ ] Qualify( string prefix, string[ ] names )
 		{
 			// Should we check for prefix == string.Empty rather than a length check?
 			if( prefix != null && prefix.Length > 0 )
 			{
 				int len = names.Length;
-				string[] qualified = new string[len];
+				string[ ] qualified = new string[len];
 				for( int i = 0; i < len; i++ )
 				{
 					qualified[ i ] = Qualify( prefix, names[ i ] );
@@ -487,6 +487,38 @@ namespace NHibernate.Util
 				}
 			}
 			return str.Length - 1;
+		}
+
+		/// <summary>
+		/// Generate a nice alias for the given class name or collection role
+		/// name and unique integer. Subclasses do <em>not</em> have to use
+		/// aliases of this form.
+		/// </summary>
+		/// <param name="description"></param>
+		/// <param name="unique"></param>
+		/// <returns>an alias of the form <c>foo1_</c></returns>
+		public static string GenerateAlias( string description, int unique )
+		{
+			// TODO H3: update to H3
+			return Truncate( Unqualify( description ).TrimStart( '_' ), 10 )
+			       	.ToLower( CultureInfo.InvariantCulture )
+			       	.Replace( '$', '_' )
+			       	.Replace( '+', '_' ) + // .NET inner classes
+			       unique.ToString() +
+			       Underscore;
+		}
+
+		public static string MoveAndToBeginning( string filter )
+		{
+			if( filter.Trim().Length > 0 )
+			{
+				filter += " and ";
+				if( filter.StartsWith( " and " ) )
+				{
+					filter = filter.Substring( 4 );
+				}
+			}
+			return filter;
 		}
 	}
 }
