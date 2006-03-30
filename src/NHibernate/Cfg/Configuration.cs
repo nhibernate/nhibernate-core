@@ -630,7 +630,7 @@ namespace NHibernate.Cfg
 
 			foreach( FileInfo hbmXml in dir.GetFiles( "*.hbm.xml" ) )
 			{
-				AddFile( hbmXml.Name );
+				AddFile( hbmXml.FullName );
 			}
 
 			return this;
