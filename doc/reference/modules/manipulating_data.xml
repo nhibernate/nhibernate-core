@@ -583,7 +583,7 @@ secondSession.SaveOrUpdate(mate);  // save the new instance (mate has a null id)
                 <listitem>
                     <para>
                         the application persists these modifications by calling
-                        <literal>update()</literal> in a second session
+                        <literal>Update()</literal> in a second session
                     </para>
                 </listitem>
             </itemizedlist>
@@ -600,13 +600,13 @@ secondSession.SaveOrUpdate(mate);  // save the new instance (mate has a null id)
                 </listitem>
                 <listitem>
                     <para>
-                        if the object has no identifier property, <literal>save()</literal> it
+                        if the object has no identifier property, <literal>Save()</literal> it
                     </para>
                 </listitem>
                 <listitem>
                     <para>
                         if the object's identifier matches the criteria specified by
-                        <literal>unsaved-value</literal>, <literal>save()</literal> it
+                        <literal>unsaved-value</literal>, <literal>Save()</literal> it
                     </para>
                 </listitem>
                 <listitem>
@@ -756,7 +756,7 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
         <para>
             Except when you explicity <literal>Flush()</literal>, there are absolutely no 
             guarantees about <emphasis>when</emphasis> the <literal>Session</literal> executes 
-            the JDBC calls, only the <emphasis>order</emphasis> in which they are executed.
+            the ADO.NET calls, only the <emphasis>order</emphasis> in which they are executed.
             However, NHibernate does guarantee that the <literal>ISession.Find(..)</literal> 
             methods will never return stale data; nor will they return the wrong data.
         </para>
@@ -820,7 +820,7 @@ tx.Commit(); //flush occurs]]></programlisting>
                 If you happen to be using the <literal>ITransaction</literal> API, you don't
                 need to worry about this step. It will be performed implicitly when the 
                 transaction is committed. Otherwise you should call 
-                <literal>Session.Flush()</literal> to ensure that all changes are synchronized
+                <literal>ISession.Flush()</literal> to ensure that all changes are synchronized
                 with the database.
             </para>
 
@@ -1230,7 +1230,7 @@ IType[] propertyTypes = catMeta.PropertyTypes;
 // get an IDictionary of all properties which are not collections or associations
 // TODO: what about components?
 
-IDictionary namedValues = new HashMap();
+IDictionary namedValues = new Hashtable();
 for ( int i=0; i<propertyNames.Length; i++ )
 {
     if ( !propertyTypes[i].IsEntityType && !propertyTypes[i].IsCollectionType )
