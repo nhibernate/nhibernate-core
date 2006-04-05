@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	/// any notion that is visible to the <b>application</b>. 
 	/// </summary>
 	[Serializable]
-	internal enum Status
+	public enum Status
 	{
 		/// <summary>
 		/// The Entity is snapshotted in the Session with the same state as the database.

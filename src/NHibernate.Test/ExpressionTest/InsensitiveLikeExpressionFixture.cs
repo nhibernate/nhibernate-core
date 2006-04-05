@@ -21,21 +21,21 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void InsentitiveLikeSqlStringTest() 
 		{
-			
 			ISession session = factory.OpenSession();
 			
 			NExpression.ICriterion expression = NExpression.Expression.InsensitiveLike("Address", "12 Adress");
 
-			SqlString sqlString = expression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
+			CreateObjects( typeof( Simple ), session );
+			SqlString sqlString = expression.ToSqlString( criteria, criteriaQuery );
 			
-			string expectedSql = "lower(simple_alias.address) like :simple_alias.address";
+			string expectedSql = "lower(sql_alias.address) like :sql_alias.address";
 			if ((factory as ISessionFactoryImplementor).Dialect is Dialect.PostgreSQLDialect)
 			{
-				expectedSql = "simple_alias.address ilike :simple_alias.address";
+				expectedSql = "sql_alias.address ilike :sql_alias.address";
 			}
 			Parameter[] expectedParams = new Parameter[1];
 
-			Parameter firstParam = new Parameter( "address", "simple_alias", new SqlTypes.StringSqlType() );
+			Parameter firstParam = new Parameter( "address", "sql_alias", new SqlTypes.StringSqlType() );
 			expectedParams[0] = firstParam;
 
 			CompareSqlStrings(sqlString, expectedSql, expectedParams);

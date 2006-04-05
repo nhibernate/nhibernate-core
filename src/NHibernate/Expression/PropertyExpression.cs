@@ -28,19 +28,10 @@ namespace NHibernate.Expression
 			_rhsPropertyName = rhsPropertyName;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="persistentClass"></param>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
+		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-
-			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _lhsPropertyName, alias, aliasClasses );
-			string[ ] otherColumnNames = AbstractCriterion.GetColumns( factory, persistentClass, _rhsPropertyName, alias, aliasClasses );
+			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _lhsPropertyName );
+			string[ ] otherColumnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _rhsPropertyName );
 
 			string result = string.Join(
 				" and ",
@@ -56,13 +47,7 @@ namespace NHibernate.Expression
 			//TODO: get SQL rendering out of this package!
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
+		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			return NoTypedValues;
 		}

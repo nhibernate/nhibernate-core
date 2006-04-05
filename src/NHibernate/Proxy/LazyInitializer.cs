@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.Runtime.Serialization;
-using log4net;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.Util;
 
 namespace NHibernate.Proxy
@@ -31,6 +29,7 @@ namespace NHibernate.Proxy
 		protected static readonly object InvokeImplementation = new object();
 
 		private object _target = null;
+		private bool initialized;
 		private object _id;
 
 		[NonSerialized]
@@ -71,50 +70,25 @@ namespace NHibernate.Proxy
 		/// </exception>
 		public void Initialize()
 		{
-			if( _target == null )
+			if( !initialized )
 			{
 				if( _session == null )
 				{
-					throw new HibernateException( "Could not initialize proxy - no Session." );
+					throw new LazyInitializationException( "Could not initialize proxy - no Session." );
 				}
 				else if( !_session.IsOpen )
 				{
-					throw new HibernateException( "Could not initialize proxy - the owning Session was closed." );
+					throw new LazyInitializationException( "Could not initialize proxy - the owning Session was closed." );
 				}
 				else if( !_session.IsConnected )
 				{
-					throw new HibernateException( "Could not initialize proxy - the owning Session is disconnected." );
+					throw new LazyInitializationException( "Could not initialize proxy - the owning Session is disconnected." );
 				}
 				else
 				{
 					_target = _session.ImmediateLoad( _persistentClass, _id );
+					initialized = true;
 				}
-			}
-		}
-
-		/// <summary>
-		/// Initializes the Proxy.
-		/// </summary>
-		/// <remarks>
-		/// If an Exception is thrown then it will be logged and wrapped into a 
-		/// <see cref="LazyInitializationException" />.
-		/// </remarks>
-		/// <exception cref="LazyInitializationException">
-		/// Thrown whenever a problem is encountered during the Initialization of the Proxy.
-		/// </exception>
-		private void InitializeWrapExceptions()
-		{
-			try
-			{
-				Initialize();
-			}
-			catch( Exception e )
-			{
-				LogManager.GetLogger( typeof( LazyInitializer ) ).Error( "Exception initializing proxy.", e );
-				throw new LazyInitializationException(
-					"Exception initializing proxy: " +
-						MessageHelper.InfoString( _persistentClass, _id ),
-					e );
 			}
 		}
 
@@ -250,7 +224,7 @@ namespace NHibernate.Proxy
 		/// <returns>The Persistent Object this proxy is Proxying.</returns>
 		public object GetImplementation()
 		{
-			InitializeWrapExceptions();
+			Initialize();
 			return _target;
 		}
 
@@ -263,6 +237,12 @@ namespace NHibernate.Proxy
 		{
 			Key key = new Key( Identifier, s.Factory.GetPersister( PersistentClass ) );
 			return s.GetEntity( key );
+		}
+
+		public void SetImplementation( object target )
+		{
+			this._target = target;
+			initialized = true;
 		}
 
 	}

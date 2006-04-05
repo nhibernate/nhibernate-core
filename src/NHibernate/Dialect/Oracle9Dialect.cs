@@ -170,6 +170,12 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		public override string ForUpdateNowaitString
+		{
+			get { return " for update nowait"; }
+		}
+
+
 		/// <summary></summary>
 		public override bool SupportsSequences
 		{

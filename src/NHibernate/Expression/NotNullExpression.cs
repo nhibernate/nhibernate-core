@@ -24,13 +24,12 @@ namespace NHibernate.Expression
 			_propertyName = propertyName;
 		}
 
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
+		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
-
+			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
 
 			bool opNeeded = false;
 
@@ -56,7 +55,7 @@ namespace NHibernate.Expression
 			return sqlBuilder.ToSqlString();
 		}
 
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
+		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			return NoValues;
 		}

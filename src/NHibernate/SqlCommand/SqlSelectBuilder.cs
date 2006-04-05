@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
 {
@@ -16,17 +16,17 @@ namespace NHibernate.SqlCommand
 		private string selectClause;
 		private string fromClause;
 		private SqlString outerJoinsAfterFrom;
+		private SqlString whereClause;
 		private SqlString outerJoinsAfterWhere;
 		private string orderByClause;
+		private string groupByClause;
+		private LockMode lockMode;
+		
+		public readonly Dialect.Dialect dialect;
 
-		private SqlString whereClause;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
 		public SqlSelectBuilder( ISessionFactoryImplementor factory ) : base( factory )
 		{
+			this.dialect = factory.Dialect;
 		}
 
 		/// <summary>
@@ -76,6 +76,17 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Sets the text that should appear after the GROUP BY.
+		/// </summary>
+		/// <param name="groupByClause">The groupByClause to set</param>
+		/// <returns>The SqlSelectBuilder</returns>
+		public SqlSelectBuilder SetGroupByClause( string groupByClause )
+		{
+			this.groupByClause = groupByClause;
+			return this;
+		}
+
+		/// <summary>
 		/// Sets the SqlString for the OUTER JOINs.  
 		/// </summary>
 		/// <remarks>
@@ -88,7 +99,14 @@ namespace NHibernate.SqlCommand
 		public SqlSelectBuilder SetOuterJoins( SqlString outerJoinsAfterFrom, SqlString outerJoinsAfterWhere )
 		{
 			this.outerJoinsAfterFrom = outerJoinsAfterFrom;
-			this.outerJoinsAfterWhere = outerJoinsAfterWhere;
+			
+			SqlString tmpOuterJoinsAfterWhere = outerJoinsAfterWhere.Trim();
+			if( tmpOuterJoinsAfterWhere.StartsWith( "and" ) )
+			{
+				tmpOuterJoinsAfterWhere = tmpOuterJoinsAfterWhere.Substring( 4 );
+			}
+			
+			this.outerJoinsAfterWhere = tmpOuterJoinsAfterWhere;
 			return this;
 		}
 
@@ -127,6 +145,12 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		public SqlSelectBuilder SetLockMode( LockMode lockMode )
+		{
+			this.lockMode = lockMode;
+			return this;
+		}
+
 		#region ISqlStringBuilder Members
 
 		/// <summary></summary>
@@ -148,15 +172,40 @@ namespace NHibernate.SqlCommand
 				.Add( fromClause )
 				.Add( outerJoinsAfterFrom );
 
-			sqlBuilder.Add( " WHERE " );
-			sqlBuilder.Add( whereClause );
+			if( StringHelper.IsNotEmpty( whereClause ) || StringHelper.IsNotEmpty( outerJoinsAfterWhere ) )
+			{
+				sqlBuilder.Add( " WHERE " );
+				// the outerJoinsAfterWhere needs to come before where clause to properly
+				// handle dynamic filters
+				if( StringHelper.IsNotEmpty( outerJoinsAfterWhere ) )
+				{
+					sqlBuilder.Add( outerJoinsAfterWhere );
+					if( StringHelper.IsNotEmpty( whereClause ) )
+					{
+						sqlBuilder.Add( " AND " );
+					}
+				}
 
-			sqlBuilder.Add( outerJoinsAfterWhere );
+				if( StringHelper.IsNotEmpty( whereClause ) )
+				{
+					sqlBuilder.Add( whereClause );
+				}
+			}
 
-			if( orderByClause != null && orderByClause.Trim().Length > 0 )
+			if( StringHelper.IsNotEmpty( groupByClause ) )
+			{
+				sqlBuilder.Add( " GROUP BY " )
+					.Add( groupByClause );
+			}
+			if( StringHelper.IsNotEmpty( orderByClause ) )
 			{
 				sqlBuilder.Add( " ORDER BY " )
 					.Add( orderByClause );
+			}
+
+			if( lockMode != null )
+			{
+				sqlBuilder.Add( dialect.GetForUpdateString( lockMode ) );
 			}
 
 			if( log.IsDebugEnabled )
@@ -176,7 +225,6 @@ namespace NHibernate.SqlCommand
 			}
 
 			return sqlBuilder.ToSqlString();
-
 		}
 
 		#endregion

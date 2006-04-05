@@ -18,19 +18,13 @@ namespace NHibernate.Expression
 		/// <summary>
 		/// Render a SqlString fragment for the expression.
 		/// </summary>
-		/// <param name="sessionFactory">The ISessionFactory that contains the mapping for the Type.</param>
-		/// <param name="persistentClass">The Class the Expression is being built for.</param>
-		/// <param name="alias">The alias to use for the table.</param>
-		/// <param name="aliasClasses"></param>
 		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
-		SqlString ToSqlString( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias, IDictionary aliasClasses );
+		SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery );
 
 		/// <summary>
 		/// Return typed values for all parameters in the rendered SQL fragment
 		/// </summary>
-		/// <param name="sessionFactory">The ISessionFactory that contains the mapping for the Type.</param>
-		/// <param name="persistentClass">The Class the Expression is being built for.</param>
 		/// <returns>An array of TypedValues for the Expression.</returns>
-		TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses );
+		TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery );
 	}
 }

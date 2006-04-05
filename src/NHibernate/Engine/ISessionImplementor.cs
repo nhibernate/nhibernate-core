@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Collection;
+using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 
@@ -380,5 +381,12 @@ namespace NHibernate.Engine
 		/// <param name="collectionPersister"></param>
 		/// <returns></returns>
 		object GetCollectionOwner( object key, ICollectionPersister collectionPersister );
+
+		/// <summary>
+		/// Retrieve the <see cref="EntityEntry" /> representation of the given entity.
+		/// </summary>
+		/// <param name="entity">The entity for which to locate the EntityEntry.</param>
+		/// <returns>The EntityEntry for the given entity.</returns>
+		EntityEntry GetEntry( object entity );
 	}
 }

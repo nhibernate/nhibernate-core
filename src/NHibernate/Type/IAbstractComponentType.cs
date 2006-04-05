@@ -1,5 +1,4 @@
 using NHibernate.Engine;
-using NHibernate.Loader;
 
 namespace NHibernate.Type
 {
@@ -8,49 +7,37 @@ namespace NHibernate.Type
 	/// </summary>
 	public interface IAbstractComponentType : IType
 	{
-		/// <summary></summary>
+		/// <summary>Get the types of the component properties</summary>
 		IType[ ] Subtypes { get; }
 
-		/// <summary></summary>
+		/// <summary>Get the names of the component properties</summary>
 		string[ ] PropertyNames { get; }
+		
+		/// <summary>
+		/// Optional operation
+		/// </summary>
+		/// <value>nullability of component properties</value>
+		bool[ ] PropertyNullability { get; }
 
 		/// <summary>
-		/// 
+		/// Get the values of the component properties of 
+		/// a component instance
 		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		object[ ] GetPropertyValues( object component, ISessionImplementor session );
 
 		/// <summary>
 		/// Optional Operation
 		/// </summary>
-		/// <param name="component"></param>
-		/// <returns></returns>
 		object[] GetPropertyValues(object component);
 
 		/// <summary>
 		/// Optional operation
 		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="values"></param>
 		void SetPropertyValues( object component, object[ ] values );
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="i"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		object GetPropertyValue( object component, int i, ISessionImplementor session );
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		Cascades.CascadeStyle Cascade( int i );
+		Cascades.CascadeStyle GetCascadeStyle( int i );
 
 		FetchMode GetFetchMode( int i );
 	}

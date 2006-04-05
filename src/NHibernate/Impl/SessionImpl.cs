@@ -13,8 +13,6 @@ using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Id;
-using NHibernate.Loader.Entity;
-using NHibernate.Loader.Collection;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
 using NHibernate.Persister.Collection;
@@ -35,7 +33,7 @@ namespace NHibernate.Impl
 	/// NOT THREADSAFE
 	/// </remarks>
 	[Serializable]
-	internal class SessionImpl : ISessionImplementor, ISerializable, IDeserializationCallback
+	public sealed class SessionImpl : ISessionImplementor, ISerializable, IDeserializationCallback
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( SessionImpl ) );
 
@@ -655,7 +653,7 @@ namespace NHibernate.Impl
 			return e;
 		}
 
-		private EntityEntry GetEntry( object obj )
+		public EntityEntry GetEntry( object obj )
 		{
 			return ( EntityEntry ) entityEntries[ obj ];
 		}
@@ -1196,7 +1194,7 @@ namespace NHibernate.Impl
 			obj = UnproxyAndReassociate( obj );
 
 			EntityEntry entry = GetEntry( obj );
-			IEntityPersister persister = null;
+			IEntityPersister persister;
 			if( entry == null )
 			{
 				log.Debug( "deleting a transient instance" );
@@ -1711,12 +1709,12 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IList Find( string query )
 		{
-			return Find( query, NoArgs, NoTypes );
+			return Find( query, new QueryParameters( ) );
 		}
 
 		public IList Find( string query, object value, IType type )
 		{
-			return Find( query, new object[ ] {value}, new IType[ ] {type} );
+			return Find( query, new QueryParameters( type, value ) );
 		}
 
 		public IList Find( string query, object[ ] values, IType[ ] types )
@@ -2403,7 +2401,7 @@ namespace NHibernate.Impl
 			else
 			{
 				Key key = new Key( id, persister );
-				object proxy = null;
+				object proxy;
 
 				if( GetEntity( key ) != null )
 				{
@@ -4445,7 +4443,7 @@ namespace NHibernate.Impl
 		/// If this Session is being Finalized (<c>isDisposing==false</c>) then make sure not
 		/// to call any methods that could potentially bring this Session back to life.
 		/// </remarks>
-		protected virtual void Dispose( bool isDisposing )
+		protected void Dispose( bool isDisposing )
 		{
 			if( _isAlreadyDisposed )
 			{
@@ -4545,7 +4543,7 @@ namespace NHibernate.Impl
 		/// <param name="parameters"></param>
 		/// <param name="scalar"></param>
 		/// <returns></returns>
-		private FilterTranslator GetFilterTranslator( object collection, string filter, QueryParameters parameters, bool scalar )
+		private QueryTranslator GetFilterTranslator( object collection, string filter, QueryParameters parameters, bool scalar )
 		{
 			if( collection == null )
 			{
@@ -4561,7 +4559,7 @@ namespace NHibernate.Impl
 			CollectionEntry entry = GetCollectionEntryOrNull( collection );
 			ICollectionPersister roleBeforeFlush = ( entry == null ) ? null : entry.loadedPersister;
 
-			FilterTranslator filterTranslator;
+			QueryTranslator filterTranslator;
 			if( roleBeforeFlush == null )
 			{
 				// if it was previously unreferenced, we need
@@ -4651,7 +4649,7 @@ namespace NHibernate.Impl
 		public IList Filter( object collection, string filter, QueryParameters parameters )
 		{
 			string[ ] concreteFilters = QueryTranslator.ConcreteQueries( filter, factory );
-			FilterTranslator[ ] filters = new FilterTranslator[concreteFilters.Length];
+			QueryTranslator[ ] filters = new QueryTranslator[concreteFilters.Length];
 
 			for( int i = 0; i < concreteFilters.Length; i++ )
 			{
@@ -4703,7 +4701,7 @@ namespace NHibernate.Impl
 		public IEnumerable EnumerableFilter( object collection, string filter, QueryParameters parameters )
 		{
 			string[ ] concreteFilters = QueryTranslator.ConcreteQueries( filter, factory );
-			FilterTranslator[ ] filters = new FilterTranslator[concreteFilters.Length];
+			QueryTranslator[ ] filters = new QueryTranslator[concreteFilters.Length];
 
 			for( int i = 0; i < concreteFilters.Length; i++ )
 			{
@@ -4784,12 +4782,13 @@ namespace NHibernate.Impl
 
 			for( int i = 0; i < size; i++ )
 			{
-				System.Type newCriteriaClazz = implementors[ i ];
-
 				loaders[ i ] = new CriteriaLoader(
-					GetOuterJoinLoadable( newCriteriaClazz ),
+					GetOuterJoinLoadable( implementors[ i ] ),
 					factory,
-					new CriteriaImpl( newCriteriaClazz, criteria )
+					criteria,
+					implementors[ i ],
+					CollectionHelper.EmptyMap
+					// TODO H3: enabledFilters
 					);
 
 				spaces.AddAll( loaders[ i ].QuerySpaces );
@@ -5516,7 +5515,7 @@ namespace NHibernate.Impl
 			return DoCopy( obj, id, IdentityMap.Instantiate( 10 ) );
 		}
 
-		protected ADOException Convert( Exception sqlException, string message )
+		private ADOException Convert( Exception sqlException, string message )
 		{
 			return ADOExceptionHelper.Convert( /*Factory.SQLExceptionConverter,*/ sqlException, message );
 		}

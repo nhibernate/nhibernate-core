@@ -1085,8 +1085,9 @@ namespace NHibernate.Cfg
 			}
 
 			int span = model.PropertySpan;
-			string[ ] names = new string[span];
-			IType[ ] types = new IType[span];
+			string[ ] names = new string[ span ];
+			IType[ ] types = new IType[ span ];
+			bool[ ]  nullabilities = new bool[ span ];
 			Cascades.CascadeStyle[ ] cascade = new Cascades.CascadeStyle[span];
 			FetchMode[ ] joinedFetch = new FetchMode[ span ];
 
@@ -1095,6 +1096,7 @@ namespace NHibernate.Cfg
 			{
 				names[ i ] = prop.Name;
 				types[ i ] = prop.Type;
+				nullabilities[ i ] = prop.IsNullable;
 				cascade[ i ] = prop.CascadeStyle;
 				joinedFetch[ i ] = prop.Value.FetchMode;
 				i++;
@@ -1103,7 +1105,7 @@ namespace NHibernate.Cfg
 			IType componentType;
 			if( model.IsDynamic )
 			{
-				componentType = new DynamicComponentType( names, types, joinedFetch, cascade );
+				componentType = new DynamicComponentType( names, types, nullabilities, joinedFetch, cascade );
 			}
 			else
 			{
@@ -1129,6 +1131,7 @@ namespace NHibernate.Cfg
 					setters,
 					foundCustomAccessor,
 					types,
+					nullabilities,
 					joinedFetch,
 					cascade,
 					model.ParentProperty );

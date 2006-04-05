@@ -35,35 +35,28 @@ namespace NHibernate.Expression
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="persistentClass"></param>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
+		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			IType propertyType = AbstractCriterion.GetType( factory, persistentClass, _propertyName, aliasClasses );
-			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
-			Parameter[ ] parameters = Parameter.GenerateParameters( factory, columnNames, propertyType );
+			IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
+			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
+			Parameter[ ] parameters = Parameter.GenerateParameters( criteriaQuery.Factory, columnNames, propertyType );
 
 			if( columnNames.Length != 1 )
 			{
 				throw new HibernateException( "insensitive like may only be used with single-column properties" );
 			}
 
-			if( factory.Dialect is PostgreSQLDialect )
+			if( criteriaQuery.Factory.Dialect is PostgreSQLDialect )
 			{
 				sqlBuilder.Add( columnNames[ 0 ] );
 				sqlBuilder.Add( " ilike " );
 			}
 			else
 			{
-				sqlBuilder.Add( factory.Dialect.LowercaseFunction )
+				sqlBuilder.Add( criteriaQuery.Factory.Dialect.LowercaseFunction )
 					.Add( "(" )
 					.Add( columnNames[ 0 ] )
 					.Add( ")" )
@@ -75,15 +68,12 @@ namespace NHibernate.Expression
 			return sqlBuilder.ToSqlString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
+		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
-			return new TypedValue[ ] {AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _value.ToString().ToLower(), aliasClasses )};
+			return new TypedValue[ ]
+				{
+					criteriaQuery.GetTypedValue( criteria, _propertyName, _value.ToString().ToLower() )
+				};
 		}
 
 		/// <summary></summary>

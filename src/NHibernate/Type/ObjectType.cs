@@ -135,6 +135,11 @@ namespace NHibernate.Type
 			ObjectTypeCacheEntry holder = ( ObjectTypeCacheEntry ) value;
 			return Resolve( holder.clazz, holder.id, session );
 		}
+		
+		public override object SemiResolve( object value, ISessionImplementor session, object owner )
+		{
+			throw new NotSupportedException( "any mappings may not form part of a property-ref" );
+		}
 
 		private object Resolve( System.Type clazz, object id, ISessionImplementor session )
 		{
@@ -220,7 +225,7 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public Cascades.CascadeStyle Cascade( int i )
+		public Cascades.CascadeStyle GetCascadeStyle( int i )
 		{
 			return Cascades.CascadeStyle.StyleNone;
 		}
@@ -363,6 +368,11 @@ namespace NHibernate.Type
 			Array.Copy( checkable, 1, idcheckable, 0, idcheckable.Length );
 			return ( checkable[ 0 ] && holder.clazz != NHibernateProxyHelper.GetClass( current ) ) ||
 				identifierType.IsModified( holder.id, Id( current, session ), idcheckable, session );
+		}
+
+		public bool[] PropertyNullability
+		{
+			get { return null; }
 		}
 	}
 }

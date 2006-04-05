@@ -1,14 +1,12 @@
 using System;
-using System.Data;
-using System.Text;
-
-using NHibernate.Engine;
-using NExpression = NHibernate.Expression;
-using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 using NHibernate.DomainModel;
+using NHibernate.Expression;
+using NHibernate.SqlCommand;
+
 using NUnit.Framework;
+
+using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -22,20 +20,19 @@ namespace NHibernate.Test.ExpressionTest
 	[TestFixture]
 	public class LogicalExpressionFixture : BaseExpressionFixture
 	{
-		
 		[Test]
-		public void LogicalSqlStringTest() 
+		public void LogicalSqlStringTest()
 		{
 			ISession session = factory.OpenSession();
-			
-			NExpression.ICriterion orExpression = NExpression.Expression.Or(NExpression.Expression.IsNull("Address"),NExpression.Expression.Between("Count", 5, 10) );
 
-			
-			SqlString sqlString = orExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
+			ICriterion orExpression = Expression.Expression.Or( Expression.Expression.IsNull( "Address" ), Expression.Expression.Between( "Count", 5, 10 ) );
 
-			string expectedSql = "(simple_alias.address is null or simple_alias.count_ between :simple_alias.count__lo and :simple_alias.count__hi)";
-			
-			CompareSqlStrings(sqlString, expectedSql, 2);
+			CreateObjects( typeof( Simple ), session );
+			SqlString sqlString = orExpression.ToSqlString( criteria, criteriaQuery );
+
+			string expectedSql = "(sql_alias.address is null or sql_alias.count_ between :sql_alias.count__lo and :sql_alias.count__hi)";
+
+			CompareSqlStrings( sqlString, expectedSql, 2 );
 
 			session.Close();
 		}

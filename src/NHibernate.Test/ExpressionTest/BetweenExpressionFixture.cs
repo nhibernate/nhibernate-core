@@ -7,13 +7,8 @@ using NHibernate.SqlTypes;
 
 using NUnit.Framework;
 
-using NExpression = NHibernate.Expression;
-
 namespace NHibernate.Test.ExpressionTest
 {
-	/// <summary>
-	/// Summary description for BetweenExpressionFixture.
-	/// </summary>
 	[TestFixture]
 	public class BetweenExpressionFixture : BaseExpressionFixture
 	{
@@ -22,22 +17,22 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 
+			CreateObjects( typeof( Simple ), session );
 			ICriterion betweenExpression = Expression.Expression.Between( "Count", 5, 10 );
-			SqlString sqlString = betweenExpression.ToSqlString( factoryImpl, typeof( Simple ), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
+			SqlString sqlString = betweenExpression.ToSqlString( criteria, criteriaQuery );
 
-			string expectedSql = "simple_alias.count_ between :simple_alias.count__lo and :simple_alias.count__hi";
-			Parameter[] expectedParams = new Parameter[2];
+			string expectedSql = "sql_alias.count_ between :sql_alias.count__lo and :sql_alias.count__hi";
+			Parameter[ ] expectedParams = new Parameter[2];
 
-			Parameter firstBetweenParam = new Parameter( "count__lo", "simple_alias", new Int32SqlType() );
+			Parameter firstBetweenParam = new Parameter( "count__lo", "sql_alias", new Int32SqlType() );
 			expectedParams[ 0 ] = firstBetweenParam;
 
-			Parameter secondBetweenParam = new Parameter( "count__hi", "simple_alias", new Int32SqlType() );
+			Parameter secondBetweenParam = new Parameter( "count__hi", "sql_alias", new Int32SqlType() );
 			expectedParams[ 1 ] = secondBetweenParam;
 
 			CompareSqlStrings( sqlString, expectedSql, expectedParams );
 
 			session.Close();
-
 		}
 	}
 }

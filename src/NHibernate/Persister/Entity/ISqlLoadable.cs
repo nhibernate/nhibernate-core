@@ -20,10 +20,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// All columns to select, when loading.
 		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
-		SqlString SelectFragment( string alias, string suffix );
+		string SelectFragment( string alias, string suffix );
 
 		/// <summary>
 		/// Get the type

@@ -21,19 +21,13 @@ namespace NHibernate.Expression
 			_criterion = criterion;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="persistentClass"></param>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
+		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			//TODO: set default capacity
 			SqlStringBuilder builder = new SqlStringBuilder();
 
-			if( factory.Dialect is Dialect.MySQLDialect )
+			bool needsParens = criteriaQuery.Factory.Dialect is Dialect.MySQLDialect;
+			if( needsParens )
 			{
 				builder.Add( "not (" );
 			}
@@ -42,9 +36,9 @@ namespace NHibernate.Expression
 				builder.Add( "not " );
 			}
 
-			builder.Add( _criterion.ToSqlString( factory, persistentClass, alias, aliasClasses ) );
+			builder.Add( _criterion.ToSqlString( criteria, criteriaQuery ) );
 
-			if( factory.Dialect is Dialect.MySQLDialect )
+			if( needsParens )
 			{
 				builder.Add( ")" );
 			}
@@ -52,18 +46,11 @@ namespace NHibernate.Expression
 			return builder.ToSqlString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
+		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
-			return _criterion.GetTypedValues( sessionFactory, persistentClass, aliasClasses );
+			return _criterion.GetTypedValues( criteria, criteriaQuery );
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			return "not " + _criterion.ToString();

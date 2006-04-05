@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 
+using NHibernate.Util;
+
 namespace NHibernate.SqlCommand
 {
 	/// <summary>
@@ -70,7 +72,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>This SqlStringBuilder</returns>
 		public SqlStringBuilder Add( string sql )
 		{
-			if ( sql != null )
+			if ( StringHelper.IsNotEmpty( sql ) )
 			{
 				sqlParts.Add( sql );
 			}
@@ -113,13 +115,13 @@ namespace NHibernate.SqlCommand
 			}
 
 			string stringPart = part as String;
-			if( stringPart!=null )
+			if( StringHelper.IsNotEmpty( stringPart ) )
 			{
 				return this.Add( stringPart );
 			}
 			
 			SqlString sqlPart = part as SqlString;
-			if( sqlPart!=null )
+			if( StringHelper.IsNotEmpty( sqlPart ) )
 			{
 				return this.Add( sqlPart, null, null, null );
 			}
@@ -139,14 +141,14 @@ namespace NHibernate.SqlCommand
 		/// <remarks>This calls the overloaded Add(sqlString, null, null, null, false)</remarks>
 		public SqlStringBuilder Add( SqlString sqlString )
 		{
-			if ( sqlString == null )
-			{
-				return this;
-			} 
-			else 
+			if( StringHelper.IsNotEmpty( sqlString ) )
 			{
 				return Add( sqlString, null, null, null, false );
 			}
+			else 
+			{
+				return this;
+			} 
 		}
 
 
@@ -206,7 +208,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>This SqlStringBuilder</returns>
 		public SqlStringBuilder Add( SqlString[ ] sqlStrings, string prefix, string op, string postfix, bool wrapStatement )
 		{
-			if( prefix != null )
+			if( StringHelper.IsNotEmpty( prefix ) )
 			{
 				sqlParts.Add( prefix );
 			}

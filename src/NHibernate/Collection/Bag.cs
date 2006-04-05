@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
@@ -18,19 +19,10 @@ namespace NHibernate.Collection
 	{
 		private IList bag;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
 		internal Bag( ISessionImplementor session ) : base( session )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="coll"></param>
 		internal Bag( ISessionImplementor session, ICollection coll ) : base( session )
 		{
 			bag = coll as IList;
@@ -45,75 +37,33 @@ namespace NHibernate.Collection
 			IsDirectlyAccessible = true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override bool Empty
 		{
 			get { return bag.Count == 0; }
 		}
 
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
 		public override bool IsWrapper( object collection )
 		{
 			return bag == collection;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public override IEnumerable Entries()
 		{
 			return bag;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="reader"></param>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, object owner )
+		public override object ReadFrom( IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner )
 		{
-			object element = persister.ReadElement( reader, owner, Session );
+			object element = role.ReadElement( reader, owner, descriptor.SuffixedElementAliases, Session );
 			bag.Add( element );
 			return element;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="persister"></param>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="writeOrder"></param>
-		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
-		{
-			persister.WriteElement( st, entry, writeOrder, Session );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			this.bag = new ArrayList();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elementType"></param>
-		/// <returns></returns>
 		public override bool EqualsSnapshot( IType elementType )
 		{
 			IList sn = ( IList ) GetSnapshot();
@@ -247,12 +197,7 @@ namespace NHibernate.Collection
 		// Anyway, here we implement <set> semantics for a
 		// <one-to-many> <bag>!
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
-		public override ICollection GetDeletes( IType elemType )
+		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
 			ArrayList deletes = new ArrayList();
 			IList sn = ( IList ) GetSnapshot();
@@ -518,23 +463,22 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public override object GetIndex( object entry, int i )
 		{
 			throw new NotSupportedException( "Bags don't have indexes" );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
+		public override object GetElement(object entry)
+		{
+			return entry;
+		}
+
+		public override object GetSnapshotElement(object entry, int i)
+		{
+			IList sn = ( IList ) GetSnapshot();
+			return sn[ i ];
+		}
+
 		public override bool EntryExists( object entry, int i )
 		{
 			return entry != null;

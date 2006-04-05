@@ -33,24 +33,21 @@ namespace NHibernate.Expression
 		/// </summary>
 		protected abstract String Op { get; }
 
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
+		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			ArrayList typedValues = new ArrayList();
 
 			foreach( ICriterion criterion in _criteria )
 			{
-				TypedValue[ ] subvalues = criterion.GetTypedValues( sessionFactory, persistentClass, aliasClasses );
-				for( int i = 0; i < subvalues.Length; i++ )
-				{
-					typedValues.Add( subvalues[ i ] );
-				}
+				TypedValue[ ] subvalues = criterion.GetTypedValues( criteria, criteriaQuery );
+				ArrayHelper.AddAll( typedValues, subvalues );
 			}
 
 			return ( TypedValue[ ] ) typedValues.ToArray( typeof( TypedValue ) );
 
 		}
 
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
+		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			if( _criteria.Count == 0 )
 			{
@@ -65,12 +62,12 @@ namespace NHibernate.Expression
 			for( int i = 0; i < _criteria.Count - 1; i++ )
 			{
 				sqlBuilder.Add(
-					( ( ICriterion ) _criteria[ i ] ).ToSqlString( factory, persistentClass, alias, aliasClasses ) );
+					( ( ICriterion ) _criteria[ i ] ).ToSqlString( criteria, criteriaQuery ) );
 				sqlBuilder.Add( Op );
 			}
 
 			sqlBuilder.Add(
-				( ( ICriterion ) _criteria[ _criteria.Count - 1 ] ).ToSqlString( factory, persistentClass, alias, aliasClasses ) );
+				( ( ICriterion ) _criteria[ _criteria.Count - 1 ] ).ToSqlString( criteria, criteriaQuery ) );
 
 
 			sqlBuilder.Add( ")" );

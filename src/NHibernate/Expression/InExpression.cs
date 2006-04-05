@@ -45,7 +45,7 @@ namespace NHibernate.Expression
 			return parameters;
 		}
 
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
+		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			if( _values.Length == 0 )
 			{
@@ -56,10 +56,10 @@ namespace NHibernate.Expression
 			//TODO: add default capacity
 			SqlStringBuilder result = new SqlStringBuilder();
 
-			IType propertyType = AbstractCriterion.GetType( factory, persistentClass, _propertyName, aliasClasses );
+			IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
 
-			SqlType[ ] columnSqlTypes = propertyType.SqlTypes( factory );
-			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
+			SqlType[ ] columnSqlTypes = propertyType.SqlTypes( criteriaQuery.Factory );
+			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
 
 			// Generate SqlString of the form:
 			// columnName1 in (values) and columnName2 in (values) and ...
@@ -94,10 +94,10 @@ namespace NHibernate.Expression
 			return result.ToSqlString();
 		}
 
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
+		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			ArrayList list = new ArrayList();
-			IType type = GetType( sessionFactory, persistentClass, _propertyName, aliasClasses );
+			IType type = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName);
 
 			if( type.IsComponentType )
 			{

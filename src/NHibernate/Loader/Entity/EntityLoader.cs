@@ -1,10 +1,7 @@
 using System.Collections;
-using System.Data;
+
 using NHibernate.Engine;
-using NHibernate.Loader.Entity;
-using NHibernate.Persister;
 using NHibernate.Persister.Entity;
-using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Loader.Entity
@@ -16,75 +13,69 @@ namespace NHibernate.Loader.Entity
 	/// The <see cref="IEntityPersister"/> must implement <see cref="ILoadable" />. For other entities,
 	/// create a customized subclass of <see cref="Loader" />.
 	/// </remarks>
-	public class EntityLoader : AbstractEntityLoader, IUniqueEntityLoader
+	public class EntityLoader : AbstractEntityLoader
 	{
-		private readonly IType uniqueKeyType;
 		private readonly bool batchLoader;
 
-		public EntityLoader( IOuterJoinLoadable persister, int batchSize, ISessionFactoryImplementor factory )
-			: this( persister, persister.IdentifierColumnNames, persister.IdentifierType, batchSize, factory )
+		public EntityLoader(
+			IOuterJoinLoadable persister,
+			LockMode lockMode,
+			ISessionFactoryImplementor factory,
+			IDictionary enabledFilters )
+			: this( persister, 1, lockMode, factory, enabledFilters )
 		{
 		}
 
-		public EntityLoader( IOuterJoinLoadable persister, string[] uniqueKey, IType uniqueKeyType, int batchSize, ISessionFactoryImplementor factory )
-			: base( persister, factory )
+		public EntityLoader(
+			IOuterJoinLoadable persister,
+			int batchSize,
+			LockMode lockMode,
+			ISessionFactoryImplementor factory,
+			IDictionary enabledFilters )
+			: this(
+				persister,
+				persister.IdentifierColumnNames,
+				persister.IdentifierType,
+				batchSize,
+				lockMode,
+				factory,
+				enabledFilters )
 		{
-			this.uniqueKeyType = uniqueKeyType;
+		}
 
-			IList associations = WalkTree( persister, Alias, factory );
-			InitClassPersisters( associations );
-			SqlString whereString = WhereString( factory, Alias, uniqueKey, uniqueKeyType, batchSize ).ToSqlString();
-			RenderStatement( associations, whereString, factory );
+		public EntityLoader(
+			IOuterJoinLoadable persister,
+			string[ ] uniqueKey,
+			IType uniqueKeyType,
+			int batchSize,
+			LockMode lockMode,
+			ISessionFactoryImplementor factory,
+			IDictionary enabledFilters )
+			: base( persister, uniqueKeyType, factory, enabledFilters )
+		{
+			JoinWalker walker = new EntityJoinWalker(
+				persister,
+				uniqueKey,
+				uniqueKeyType,
+				batchSize,
+				lockMode,
+				factory,
+				enabledFilters
+				);
+			InitFromWalker( walker );
 
 			PostInstantiate();
 
 			batchLoader = batchSize > 1;
+
+			log.Debug( "Static select for entity " + entityName + ": " + SqlString );
 		}
 
-		public object Load( ISessionImplementor session, object id, object optionalObject )
+		public object LoadByUniqueKey( ISessionImplementor session, object key )
 		{
-			return Load( session, id, optionalObject, id );
+			return Load( session, key, null, null );
 		}
 
-		public object LoadByUniqueKey( ISessionImplementor session, object id )
-		{
-			return Load( session, id, null, null );
-		}
-	
-		public object Load( ISessionImplementor session, object id, object optionalObject, object optionalId )
-		{
-			IList list = LoadEntity( session, id, uniqueKeyType, optionalObject, optionalId );
-			if( list.Count == 1 )
-			{
-				return list[ 0 ];
-			}
-			else if( list.Count == 0 )
-			{
-				return null;
-			}
-			else
-			{
-				if ( CollectionOwner > -1 )
-				{
-					return list[ 0 ];
-				}
-				else
-				{
-					throw new HibernateException(
-						"More than one row with the given identifier was found: " +
-						id +
-						", for class: " +
-						Persister.ClassName );
-				}
-			}
-		}
-
-		protected override object GetResultColumnOrRow( object[ ] row, IDataReader rs, ISessionImplementor session )
-		{
-			return row[ row.Length - 1 ];
-		}
-
-		/// <summary></summary>
 		protected override bool IsSingleRowLoader
 		{
 			get { return !batchLoader; }

@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Text;
 
+using NHibernate.Util;
+
 namespace NHibernate.SqlCommand
 {
 	/// <summary>
@@ -19,18 +21,18 @@ namespace NHibernate.SqlCommand
 
 		public static readonly SqlString Empty = new SqlString(new object[0]);
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sqlPart"></param>
-		public SqlString( string sqlPart ) : this( new object[ ] {sqlPart} )
+		public SqlString( string sqlPart )
 		{
+			if( StringHelper.IsNotEmpty( sqlPart ) )
+			{
+				sqlParts = new object[] { sqlPart };
+			}
+			else
+			{
+				sqlParts = new object[0];
+			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sqlParts"></param>
 		public SqlString( object[ ] sqlParts )
 		{
 			this.sqlParts = sqlParts;
@@ -61,11 +63,7 @@ namespace NHibernate.SqlCommand
 		/// </remarks>
 		public SqlString Append( SqlString rhs )
 		{
-			object[ ] temp = new object[rhs.SqlParts.Length + sqlParts.Length];
-			Array.Copy( sqlParts, 0, temp, 0, sqlParts.Length );
-			Array.Copy( rhs.SqlParts, 0, temp, sqlParts.Length, rhs.SqlParts.Length );
-
-			return new SqlString( temp );
+			return new SqlString( ArrayHelper.Join( sqlParts, rhs.sqlParts ) );
 		}
 
 		/// <summary>
@@ -80,11 +78,17 @@ namespace NHibernate.SqlCommand
 		/// </remarks>
 		public SqlString Append( string rhs )
 		{
-			object[ ] temp = new object[sqlParts.Length + 1];
-			Array.Copy( sqlParts, 0, temp, 0, sqlParts.Length );
-			temp[ sqlParts.Length ] = rhs;
-
-			return new SqlString( temp );
+			if( StringHelper.IsNotEmpty( rhs ) )
+			{
+				object[ ] temp = new object[sqlParts.Length + 1];
+				Array.Copy( sqlParts, temp, sqlParts.Length );
+				temp[ sqlParts.Length ] = rhs;
+				return new SqlString( temp );
+			}
+			else
+			{
+				return this;
+			}
 		}
 
 		/// <summary>
@@ -427,6 +431,11 @@ namespace NHibernate.SqlCommand
 			}
 
 			return builder.ToSqlString();
+		}
+
+		public static SqlString operator+(SqlString lhs, SqlString rhs)
+		{
+			return lhs.Append( rhs );
 		}
 
 		#region System.Object Members

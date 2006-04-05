@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -46,13 +45,11 @@ namespace NHibernate.Expression
 		/// Combines the <see cref="TypedValue"/> for the Left Hand Side and the 
 		/// Right Hand Side of the Expression into one array.
 		/// </summary>
-		/// <param name="sessionFactory">The ISessionFactory to get the Persistence information from.</param>
-		/// <param name="persistentClass">The Type we are constructing the Expression for.</param>
 		/// <returns>An arry of <see cref="TypedValue"/>s.</returns>
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
+		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
-			TypedValue[ ] lhstv = _lhs.GetTypedValues( sessionFactory, persistentClass, aliasClasses );
-			TypedValue[ ] rhstv = _rhs.GetTypedValues( sessionFactory, persistentClass, aliasClasses );
+			TypedValue[ ] lhstv = _lhs.GetTypedValues( criteria, criteriaQuery );
+			TypedValue[ ] rhstv = _rhs.GetTypedValues( criteria, criteriaQuery );
 			TypedValue[ ] result = new TypedValue[lhstv.Length + rhstv.Length];
 			Array.Copy( lhstv, 0, result, 0, lhstv.Length );
 			Array.Copy( rhstv, 0, result, lhstv.Length, rhstv.Length );
@@ -62,18 +59,15 @@ namespace NHibernate.Expression
 		/// <summary>
 		/// Converts the LogicalExpression to a <see cref="SqlString"/>.
 		/// </summary>
-		/// <param name="factory">The ISessionFactory to use to build the SqlString.</param>
-		/// <param name="persistentClass">The Type we are constructing the Expression for.</param>
-		/// <param name="alias">The alias to use when referencing the table.</param>
 		/// <returns>A well formed SqlString for the Where clause.</returns>
 		/// <remarks>The SqlString will be enclosed by <c>(</c> and <c>)</c>.</remarks>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
+		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			SqlString lhSqlString = _lhs.ToSqlString( factory, persistentClass, alias, aliasClasses );
-			SqlString rhSqlString = _rhs.ToSqlString( factory, persistentClass, alias, aliasClasses );
+			SqlString lhSqlString = _lhs.ToSqlString( criteria, criteriaQuery );
+			SqlString rhSqlString = _rhs.ToSqlString( criteria, criteriaQuery );
 
 			sqlBuilder.Add( new SqlString[ ] {lhSqlString, rhSqlString},
 			                "(",

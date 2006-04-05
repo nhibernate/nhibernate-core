@@ -1,3 +1,14 @@
+Build 1.1-alpha1
+========================
+
+Breaking Changes:
+    * Entities and collections are lazy by default. Change by setting
+      default-lazy="false" in <hibernate-mapping>
+    * Types used as proxies are now validated (a check is done that all
+      public members are virtual). Validation can be disabled by setting
+      hibernate.use_proxy_validator property to false.
+    * ISession.Get/Load now obey where="..." attribute of <class>.
+
 Build 1.0.2.0
 ========================
 

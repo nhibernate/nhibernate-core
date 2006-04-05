@@ -227,8 +227,7 @@ namespace NHibernate.Impl
 			// after *all* persisters and named queries are registered
 			foreach( IEntityPersister persister in classPersisters.Values )
 			{
-				// TODO: H2.1 doesn't pass this to PostInstantiate
-				persister.PostInstantiate( this );
+				persister.PostInstantiate();
 			}
 
 			foreach( ICollectionPersister persister in collectionPersisters.Values )
@@ -285,13 +284,6 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly IDictionary softQueryCache = new Hashtable(); //TODO: make soft reference map
 		// both keys and values may be soft since value keeps a hard ref to the key (and there is a hard ref to MRU values)
-
-		/// <summary></summary>
-		static SessionFactoryImpl()
-		{
-			// used to do some CGLIB stuff in here for QueryKeyFactory and FilterKeyFactory
-		}
-
 
 		/// <summary>
 		/// A class that can be used as a Key in a Hashtable for 
@@ -434,16 +426,16 @@ namespace NHibernate.Impl
 			QueryTranslator[ ] queries = new QueryTranslator[length];
 			for( int i = 0; i < length; i++ )
 			{
-				queries[ i ] = new QueryTranslator( concreteQueryStrings[ i ] );
+				queries[ i ] = new QueryTranslator( this, concreteQueryStrings[ i ] );
 			}
 			Put( cacheKey, queries );
 			return queries;
 		}
 
 		[MethodImpl( MethodImplOptions.Synchronized )]
-		private FilterTranslator CreateFilterTranslator( string filterString, FilterCacheKey cacheKey )
+		private QueryTranslator CreateFilterTranslator( string filterString, FilterCacheKey cacheKey )
 		{
-			FilterTranslator filter = new FilterTranslator( filterString );
+			QueryTranslator filter = new QueryTranslator( this, filterString );
 			Put( cacheKey, filter );
 			return filter;
 		}
@@ -469,24 +461,24 @@ namespace NHibernate.Impl
 
 			foreach( QueryTranslator q in queries )
 			{
-				q.Compile( this, settings.QuerySubstitutions, shallow );
+				q.Compile( settings.QuerySubstitutions, shallow );
 			}
 			// see comment above. note that QueryTranslator.compile() is synchronized
 
 			return queries;
 		}
 
-		public FilterTranslator GetFilter( string filterString, string collectionRole, bool scalar )
+		public QueryTranslator GetFilter( string filterString, string collectionRole, bool scalar )
 		{
 			FilterCacheKey cacheKey = new FilterCacheKey( collectionRole, filterString, scalar );
 
-			FilterTranslator filter = ( FilterTranslator ) Get( cacheKey );
+			QueryTranslator filter = ( QueryTranslator ) Get( cacheKey );
 			if( filter == null )
 			{
 				filter = CreateFilterTranslator( filterString, cacheKey );
 			}
 
-			filter.Compile( collectionRole, this, settings.QuerySubstitutions, scalar );
+			filter.Compile( collectionRole, settings.QuerySubstitutions, scalar );
 			return filter;
 		}
 

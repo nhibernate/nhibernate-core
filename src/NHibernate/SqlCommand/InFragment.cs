@@ -9,19 +9,17 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class InFragment
 	{
-		/// <summary></summary>
-		public static readonly object Null = new object();
-		/// <summary></summary>
-		public static readonly object NotNull = new object();
+		public static readonly string Null = "null";
+		public static readonly string NotNull = "not null";
 
 		private string columnName;
 		private ArrayList values = new ArrayList();
 
 		/// <summary>
-		/// 
+		/// Add a value to the value list. Value may be a string,
+		/// a <see cref="Parameter" />, or one of special values
+		/// <see cref="Null" /> or <see cref="NotNull" />.
 		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public InFragment AddValue( object value )
 		{
 			values.Add( value );
@@ -70,11 +68,12 @@ namespace NHibernate.SqlCommand
 				buf.Add( " in (" );
 				for( int i = 0; i < values.Count; i++ )
 				{
-					if( Null.Equals( values[ i ] ) )
+					object value = values[ i ];
+					if( Null.Equals( value ) )
 					{
 						allowNull = true;
 					}
-					else if ( NotNull.Equals( values[ i ] ) )
+					else if ( NotNull.Equals( value ) )
 					{
 						throw new ArgumentOutOfRangeException( "not null makes no sense for in expression" ) ;
 					}
@@ -84,7 +83,15 @@ namespace NHibernate.SqlCommand
 						{
 							buf.Add( StringHelper.CommaSpace );
 						}
-						buf.Add( ( string ) values[ i ] );
+
+						if( value is Parameter )
+						{
+							buf.Add( ( Parameter ) value );
+						}
+						else
+						{
+							buf.Add( ( string ) value );
+						}
 
 						// a value has been added into the IN clause so the next
 						// one needs a comma before it
@@ -117,7 +124,7 @@ namespace NHibernate.SqlCommand
 				}
 				else
 				{
-					buf.Add( "=" + values[ 0 ] );
+					buf.Add( "=" ).AddObject( values[ 0 ] );
 				}
 			}
 			return buf.ToSqlString();

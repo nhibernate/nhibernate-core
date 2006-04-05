@@ -32,7 +32,9 @@ namespace NHibernate.Test.SqlCommandTest
 			
 			select.SetSelectClause("column1, column2");
 			select.SetFromClause("select_test", "select_test_alias");
-			select.SetOuterJoins( new SqlString(" LEFT OUTER JOIN before ON select_test_alias.column1 = before.column1"), new SqlString(" LEFT OUTER JOIN after ON select_test_alias.column1 = after.column1") );
+			select.SetOuterJoins(
+				new SqlString(" LEFT OUTER JOIN before ON select_test_alias.column1 = before.column1"),
+				new SqlString(" after.some_field = after.another_field ") );
 			select.SetOrderByClause("column1 DESC");
 
 			select.SetWhereClause("select_test_alias", new string[] {"identity_column"}, NHibernateUtil.Int64);
@@ -43,8 +45,10 @@ namespace NHibernate.Test.SqlCommandTest
 				.Append("column1, column2 ")
 				.Append("FROM select_test select_test_alias ")
 				.Append("LEFT OUTER JOIN before ON select_test_alias.column1 = before.column1 ")
-				.Append("WHERE select_test_alias.identity_column = :select_test_alias.identity_column ")
-				.Append("LEFT OUTER JOIN after ON select_test_alias.column1 = after.column1 ")
+				.Append("WHERE ")
+				.Append("after.some_field = after.another_field")
+				.Append(" AND ")
+				.Append("select_test_alias.identity_column = :select_test_alias.identity_column ")
 				.Append("ORDER BY column1 DESC")
 				.ToString();
 				

@@ -271,5 +271,11 @@ namespace NHibernate.Dialect
 
 			return pagingBuilder.ToSqlString();
 		}
+		
+		public override string ForUpdateString
+		{
+			get { return " for read only with rs"; }
+		}
+
 	}
 }

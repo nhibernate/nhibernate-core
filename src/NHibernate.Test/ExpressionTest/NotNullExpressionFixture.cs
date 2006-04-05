@@ -25,9 +25,10 @@ namespace NHibernate.Test.ExpressionTest
 			
 			NExpression.ICriterion notNullExpression = NExpression.Expression.IsNotNull("Address");
 
-			SqlString sqlString = notNullExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
+			CreateObjects( typeof( Simple ), session );
+			SqlString sqlString = notNullExpression.ToSqlString( criteria, criteriaQuery );
 
-			string expectedSql = "simple_alias.address is not null";
+			string expectedSql = "sql_alias.address is not null";
 			CompareSqlStrings(sqlString, expectedSql, 0);
 
 			session.Close();

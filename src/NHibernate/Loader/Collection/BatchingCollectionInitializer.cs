@@ -1,8 +1,9 @@
 using System;
+using System.Collections;
 
-using log4net;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
+using NHibernate.Util;
 
 namespace NHibernate.Loader.Collection
 {
@@ -11,51 +12,81 @@ namespace NHibernate.Loader.Collection
 	/// </summary>
 	public class BatchingCollectionInitializer : ICollectionInitializer
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( BatchingCollectionInitializer ) );
-
-		private readonly Loader nonBatchLoader;
-		private readonly Loader batchLoader;
-		private readonly Loader smallBatchLoader;
-		private readonly int batchSize;
-		private readonly int smallBatchSize;
+		private readonly Loader[] loaders;
+		private readonly int[] batchSizes;
 		private readonly ICollectionPersister collectionPersister;
 
-		public BatchingCollectionInitializer( ICollectionPersister collPersister, int batchSize, Loader batchLoader, int smallBatchSize, Loader smallBatchLoader, Loader nonBatchLoader )
+		public BatchingCollectionInitializer(
+			ICollectionPersister collectionPersister,
+			int[] batchSizes,
+			Loader[] loaders )
 		{
-			this.batchLoader = batchLoader;
-			this.nonBatchLoader = nonBatchLoader;
-			this.batchSize = batchSize;
-			this.collectionPersister = collPersister;
-			this.smallBatchLoader = smallBatchLoader;
-			this.smallBatchSize = smallBatchSize;
+			this.loaders = loaders;
+			this.batchSizes = batchSizes;
+			this.collectionPersister = collectionPersister;
 		}
 
 		public void Initialize( object id, ISessionImplementor session )
 		{
-			object[ ] batch = session.GetCollectionBatch( collectionPersister, id, batchSize );
-			if( smallBatchSize == 1 || batch[ smallBatchSize - 1 ] == null )
+			object[ ] batch = session.GetCollectionBatch( collectionPersister, id, batchSizes[ 0 ] );
+			
+			for( int i = 0; i < batchSizes.Length; i++ )
 			{
-				nonBatchLoader.LoadCollection( session, id, collectionPersister.KeyType );
-			}
-			else if( batch[ batchSize - 1 ] == null )
-			{
-				if( log.IsDebugEnabled )
+				int smallBatchSize = batchSizes[ i ];
+				if( batch[ smallBatchSize - 1 ] != null )
 				{
-					log.Debug( string.Format( "batch loading collection role (small batch): {0}", collectionPersister.Role ) );
+					object[] smallBatch = new object[ smallBatchSize ];
+					Array.Copy( batch, 0, smallBatch, 0, smallBatchSize );
+					loaders[ i ].LoadCollectionBatch( session, smallBatch, collectionPersister.KeyType );
+					return; //EARLY EXIT!
 				}
-				object[ ] smallBatch = new object[smallBatchSize];
-				Array.Copy( batch, 0, smallBatch, 0, smallBatchSize );
-				smallBatchLoader.LoadCollectionBatch( session, smallBatch, collectionPersister.KeyType );
-				log.Debug( "done batch load" );
+			}
+			
+			loaders[ batchSizes.Length - 1 ].LoadCollection( session, id, collectionPersister.KeyType );
+		}
+
+		public static ICollectionInitializer CreateBatchingOneToManyInitializer(
+			OneToManyPersister persister,
+			int maxBatchSize,
+			ISessionFactoryImplementor factory,
+			IDictionary enabledFilters )
+		{
+			if( maxBatchSize > 1 )
+			{
+				int[] batchSizesToCreate = ArrayHelper.GetBatchSizes( maxBatchSize );
+				Loader[] loadersToCreate = new Loader[ batchSizesToCreate.Length ];
+				for( int i = 0; i < batchSizesToCreate.Length; i++ )
+				{
+					loadersToCreate[ i ] = new OneToManyLoader( persister, batchSizesToCreate[ i ], factory, enabledFilters );
+				}
+				
+				return new BatchingCollectionInitializer( persister, batchSizesToCreate, loadersToCreate );
 			}
 			else
 			{
-				if( log.IsDebugEnabled )
+				return new OneToManyLoader( persister, factory, enabledFilters );
+			}
+		}
+		
+		public static ICollectionInitializer CreateBatchingCollectionInitializer(
+			IQueryableCollection persister,
+			int maxBatchSize,
+			ISessionFactoryImplementor factory,
+			IDictionary enabledFilters )
+		{
+			if( maxBatchSize > 1 )
+			{
+				int[] batchSizesToCreate = ArrayHelper.GetBatchSizes( maxBatchSize );
+				Loader[] loadersToCreate = new Loader[ batchSizesToCreate.Length ];
+				for( int i = 0; i < batchSizesToCreate.Length; i++ )
 				{
-					log.Debug( string.Format( "batch loading collection role (small batch): {0}", collectionPersister.Role ) );
+					loadersToCreate[ i ] = new BasicCollectionLoader( persister, batchSizesToCreate[ i ], factory, enabledFilters );
 				}
-				batchLoader.LoadCollectionBatch( session, batch, collectionPersister.KeyType );
-				log.Debug( "done batch load" );
+				return new BatchingCollectionInitializer( persister, batchSizesToCreate, loadersToCreate );
+			}
+			else
+			{
+				return new BasicCollectionLoader( persister, factory, enabledFilters );
 			}
 		}
 	}

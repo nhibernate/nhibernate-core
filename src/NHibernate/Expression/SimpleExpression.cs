@@ -62,24 +62,21 @@ namespace NHibernate.Expression
 		/// <summary>
 		/// Converts the SimpleExpression to a <see cref="SqlString"/>.
 		/// </summary>
-		/// <param name="factory">The ISessionFactory that contains the mapping for the Type.</param>
-		/// <param name="persistentClass">The Class the Expression is being built for.</param>
-		/// <param name="alias">The alias to use for the table.</param>
 		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
+		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
-			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
-			IType propertyType = AbstractCriterion.GetType( factory, persistentClass, _propertyName, aliasClasses );
+			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
+			IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
 
 			if( propertyType.IsCollectionType )
 			{
 				throw new QueryException( string.Format (
 					"cannot use collection property ({0}.{1}) directly in a criterion,"
 					+ " use ICriteria.CreateCriteria instead",
-					persistentClass.FullName, _propertyName ) );
+					criteriaQuery.GetEntityName( criteria ), _propertyName ) );
 			}
 
-			Parameter[ ] parameters = Parameter.GenerateParameters( factory, columnNames, propertyType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( criteriaQuery.Factory, columnNames, propertyType );
 
 			if( _ignoreCase )
 			{
@@ -91,7 +88,7 @@ namespace NHibernate.Expression
 				}
 
 				return new SqlStringBuilder( 6 )
-					.Add( factory.Dialect.LowercaseFunction )
+					.Add( criteriaQuery.Factory.Dialect.LowercaseFunction )
 					.Add( StringHelper.OpenParen )
 					.Add( columnNames[ 0 ] )
 					.Add( StringHelper.ClosedParen )
@@ -120,12 +117,12 @@ namespace NHibernate.Expression
 			}
 		}
 
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
+		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			object icvalue = _ignoreCase ? _value.ToString().ToLower() : _value;
 			return new TypedValue[ ]
 				{
-					AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, icvalue, aliasClasses )
+					criteriaQuery.GetTypedValue( criteria, _propertyName, icvalue )
 				};
 		}
 

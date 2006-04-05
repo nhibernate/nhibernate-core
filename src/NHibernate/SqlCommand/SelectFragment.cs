@@ -18,51 +18,29 @@ namespace NHibernate.SqlCommand
 		private string[] usedAliases;
 		private SqlString extraSelectList;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="d"></param>
 		public SelectFragment( Dialect.Dialect d )
 		{
 			this.dialect = d;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public SelectFragment SetUsedAliases( string[] usedAliases )
 		{
 			this.usedAliases = usedAliases;
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
 		public SelectFragment SetSuffix( string suffix )
 		{
 			this.suffix = suffix;
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="columnName"></param>
-		/// <returns></returns>
 		public SelectFragment AddColumn( string columnName )
 		{
 			AddColumn( null, columnName );
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="columnNames"></param>
-		/// <returns></returns>
 		public SelectFragment AddColumns( string[ ] columnNames )
 		{
 			for( int i = 0; i < columnNames.Length; i++ )
@@ -72,24 +50,11 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableAlias"></param>
-		/// <param name="columnName"></param>
-		/// <returns></returns>
 		public SelectFragment AddColumn( string tableAlias, string columnName )
 		{
 			return AddColumn( tableAlias, columnName, columnName );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableAlias"></param>
-		/// <param name="columnName"></param>
-		/// <param name="columnAlias"></param>
-		/// <returns></returns>
 		public SelectFragment AddColumn( string tableAlias, string columnName, string columnAlias )
 		{
 			if( tableAlias == null || tableAlias.Length == 0 )
@@ -105,12 +70,6 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableAlias"></param>
-		/// <param name="columnNames"></param>
-		/// <returns></returns>
 		public SelectFragment AddColumns( string tableAlias, string[ ] columnNames )
 		{
 			for( int i = 0; i < columnNames.Length; i++ )
@@ -120,13 +79,6 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableAlias"></param>
-		/// <param name="columnNames"></param>
-		/// <param name="columnAliases"></param>
-		/// <returns></returns>
 		public SelectFragment AddColumns( string tableAlias, string[ ] columnNames, string[ ] columnAliases )
 		{
 			for( int i = 0; i < columnNames.Length; i++ )
@@ -136,13 +88,6 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableAlias"></param>
-		/// <param name="formulas"></param>
-		/// <param name="formulaAliases"></param>
-		/// <returns></returns>
 		public SelectFragment AddFormulas( string tableAlias, string[ ] formulas, string[ ] formulaAliases )
 		{
 			for( int i = 0; i < formulas.Length; i++ )
@@ -153,13 +98,6 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableAlias"></param>
-		/// <param name="formula"></param>
-		/// <param name="formulaAlias"></param>
-		/// <returns></returns>
 		public SelectFragment AddFormula( string tableAlias, string formula, string formulaAlias )
 		{
 			AddColumn(
@@ -170,19 +108,13 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		/// <summary></summary>
-		public SqlString ToSqlStringFragment()
+		public string ToSqlStringFragment()
 		{
 			// this preserves the way this existing method works now.
 			return ToSqlStringFragment( true );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="includeLeadingComma"></param>
-		/// <returns></returns>
-		public SqlString ToSqlStringFragment( bool includeLeadingComma )
+		public string ToSqlStringFragment( bool includeLeadingComma )
 		{
 			StringBuilder buf = new StringBuilder( columns.Count*10 );
 			HashedSet columnsUnique = new HashedSet();
@@ -224,7 +156,7 @@ namespace NHibernate.SqlCommand
 				buf.Append( extraSelectList.ToString() );
 			}
 
-			return new SqlString( buf.ToString() );
+			return buf.ToString();
 		}
 
 		public SelectFragment SetExtraSelectList( SqlString extraSelectList )

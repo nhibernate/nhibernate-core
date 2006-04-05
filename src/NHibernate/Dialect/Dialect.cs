@@ -183,6 +183,41 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+
+		/// <summary>
+		/// Retrieves the <c>FOR UPDATE</c> syntax specific to this dialect
+		/// </summary>
+		/// <value>The appropriate <c>FOR UPDATE</c> clause string.</value>
+		public virtual string ForUpdateString
+		{
+			get { return " for update"; }
+		}
+
+		/// <summary>
+		/// Retrieves the <c>FOR UPDATE NOWAIT</c> syntax specific to this dialect
+		/// </summary>
+		/// <value>The appropriate <c>FOR UPDATE NOWAIT</c> clause string.</value>
+		public virtual string ForUpdateNowaitString
+		{
+			get { return ForUpdateString; }
+		}
+
+		public virtual string GetForUpdateString( LockMode lockMode )
+		{
+			if( lockMode == LockMode.Upgrade )
+			{
+				return SupportsForUpdate ? ForUpdateString : string.Empty;
+			}
+			else if( lockMode == LockMode.UpgradeNoWait )
+			{
+				return SupportsForUpdateNoWait ? ForUpdateNowaitString : string.Empty;
+			}
+			else
+			{
+				return string.Empty;
+			}
+		}
+
 		/// <summary>
 		/// Does this dialect support the <c>FOR UDPATE OF</c> syntax?
 		/// </summary>
@@ -933,6 +968,11 @@ namespace NHibernate.Dialect
 			get { return 10; }
 		}
 
+		public bool ForUpdateOfColumns
+		{
+			get { return false; }
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -1028,7 +1068,5 @@ namespace NHibernate.Dialect
 
 			#endregion
 		}
-
-
 	}
 }

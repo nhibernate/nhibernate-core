@@ -1,5 +1,4 @@
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 namespace NHibernate.Persister.Entity
 {
@@ -27,7 +26,7 @@ namespace NHibernate.Persister.Entity
 		/// The discriminator value for this particular concrete subclass, as a string that may be
 		/// embedded in a select statement
 		/// </summary>
-		object DiscriminatorSQLValue { get; }
+		string DiscriminatorSQLValue { get; }
 
 		/// <summary>
 		/// Get the where clause fragment, give a query alias
@@ -44,7 +43,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="name"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		SqlString IdentifierSelectFragment( string name, string suffix );
+		string IdentifierSelectFragment( string name, string suffix );
 
 		/// <summary>
 		/// Given a query alias and an identifying suffix, render the property select fragment.
@@ -52,11 +51,6 @@ namespace NHibernate.Persister.Entity
 		/// <param name="alias"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		SqlString PropertySelectFragment( string alias, string suffix );
-
-		/// <summary>
-		/// Get the names of columns used to persist the identifier
-		/// </summary>
-		string[] IdentifierColumnNames { get; }
+		string PropertySelectFragment( string alias, string suffix );
 	}
 }

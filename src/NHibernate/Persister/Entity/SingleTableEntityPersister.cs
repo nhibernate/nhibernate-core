@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Text;
 
 using Iesi.Collections;
 
@@ -8,8 +9,6 @@ using log4net;
 
 using NHibernate.Engine;
 using NHibernate.Impl;
-using NHibernate.Loader;
-using NHibernate.Loader.Entity;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -41,18 +40,17 @@ namespace NHibernate.Persister.Entity
 		private readonly string discriminatorColumnName;
 		private readonly string discriminatorAlias;
 		private readonly IType discriminatorType;
-		private readonly object discriminatorSQLValue;
+		private readonly string discriminatorSQLValue;
 		private readonly bool discriminatorInsertable;
-
-		private readonly IDictionary loaders = new Hashtable();
 
 		private static readonly object NullDiscriminator = new object();
 		private static readonly object NotNullDiscriminator = new object();
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( SingleTableEntityPersister ) );
 
-		public override void PostInstantiate( ISessionFactoryImplementor factory )
+		public override void PostInstantiate()
 		{
+			base.PostInstantiate();
 			InitLockers();
 
 			// initialize the SqlStrings - these are in the PostInstantiate method because we need
@@ -68,22 +66,7 @@ namespace NHibernate.Persister.Entity
 
 			sqlUpdateString = GenerateUpdateString( PropertyUpdateability );
 			sqlConcreteSelectString = GenerateConcreteSelectString( PropertyUpdateability );
-			sqlVersionSelectString = GenerateSelectVersionString( factory );
-
-			IUniqueEntityLoader loader = CreateEntityLoader( factory );
-
-			loaders.Add( LockMode.None, loader );
-			loaders.Add( LockMode.Read, loader );
-
-			SqlString selectForUpdate = Dialect.SupportsForUpdate ? GenerateSelectForUpdateString() : GenerateSelectString( null );
-
-			loaders.Add( LockMode.Upgrade, new SimpleEntityLoader( this, selectForUpdate, LockMode.Upgrade ) );
-
-			SqlString selectForUpdateNoWaitString = Dialect.SupportsForUpdateNoWait ? GenerateSelectForUpdateNoWaitString() : selectForUpdate.Clone();
-
-			loaders.Add( LockMode.UpgradeNoWait, new SimpleEntityLoader( this, selectForUpdateNoWaitString, LockMode.UpgradeNoWait ) );
-
-			CreateUniqueKeyLoaders( factory );
+			sqlVersionSelectString = GenerateSelectVersionString();
 		}
 
 		public override string DiscriminatorColumnName
@@ -106,7 +89,7 @@ namespace NHibernate.Persister.Entity
 			get { return discriminatorType; }
 		}
 
-		public override object DiscriminatorSQLValue
+		public override string DiscriminatorSQLValue
 		{
 			get { return discriminatorSQLValue; }
 		}
@@ -217,7 +200,7 @@ namespace NHibernate.Persister.Entity
 
 			if( discriminatorInsertable )
 			{
-				builder.AddColumn( DiscriminatorColumnName, DiscriminatorSQLValue.ToString() );
+				builder.AddColumn( DiscriminatorColumnName, DiscriminatorSQLValue );
 			}
 
 			if( !identityInsert )
@@ -345,7 +328,7 @@ namespace NHibernate.Persister.Entity
 			if( OptimisticLockMode > OptimisticLockMode.Version && oldFields != null )
 			{
 				bool[] includeInWhere = OptimisticLockMode == OptimisticLockMode.All ?
-					PropertyUpdateability :
+				PropertyUpdateability :
 					includeProperty;
 
 				for( int i = 0; i < HydrateSpan; i++ )
@@ -411,7 +394,7 @@ namespace NHibernate.Persister.Entity
 		/// </remarks>
 		protected override SqlString GenerateLockString( SqlString sqlString, string forUpdateFragment )
 		{
-			SqlStringBuilder sqlBuilder = null;
+			SqlStringBuilder sqlBuilder;
 
 			if( sqlString == null )
 			{
@@ -486,37 +469,6 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return index;
-		}
-
-		/// <summary>
-		/// Load an instance uing either the <c>forUpdateLoader</c> or the outer joining <c>loader</c>,
-		/// depending upon the value of the <c>lock</c> parameter
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="optionalObject"></param>
-		/// <param name="lockMode"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public override object Load( object id, object optionalObject, LockMode lockMode, ISessionImplementor session )
-		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Materializing entity: " + ClassName + '#' + id );
-			}
-
-			try
-			{
-				return ( ( IUniqueEntityLoader ) loaders[ lockMode ] ).Load( session, id, optionalObject );
-			}
-			catch( HibernateException )
-			{
-				// Do not call Convert on HibernateExceptions
-				throw;
-			}
-			catch( Exception sqle )
-			{
-				throw Convert( sqle, "could not load: " + MessageHelper.InfoString( this, id ) );
-			}
 		}
 
 		public override object Insert( object[] fields, object obj, ISessionImplementor session )
@@ -763,7 +715,7 @@ namespace NHibernate.Persister.Entity
 					else if( OptimisticLockMode.Version < OptimisticLockMode && null != oldFields )
 					{
 						bool[] includeOldField = OptimisticLockMode == OptimisticLockMode.All ?
-							PropertyUpdateability :
+						PropertyUpdateability :
 							includeProperty;
 
 						for( int j = 0; j < HydrateSpan; j++ )
@@ -876,8 +828,8 @@ namespace NHibernate.Persister.Entity
 					catch( Exception e )
 					{
 						string msg = String.Format( "Could not format discriminator value '{0}' to sql string using the IType {1}",
-						                            model.DiscriminatorValue,
-						                            model.Discriminator.Type.ToString() );
+							model.DiscriminatorValue,
+							model.Discriminator.Type.ToString() );
 
 						throw new MappingException( msg, e );
 					}
@@ -967,7 +919,7 @@ namespace NHibernate.Persister.Entity
 
 		public override SqlString QueryWhereFragment( string name, bool innerJoin, bool includeSubclasses )
 		{
-			if( innerJoin && UseDiscriminator )
+			if( innerJoin && NeedsDiscriminator )
 			{
 				SqlStringBuilder builder = new SqlStringBuilder();
 				builder.Add( " and " + DiscriminatorWhereCondition( name ) );
@@ -1008,11 +960,6 @@ namespace NHibernate.Persister.Entity
 			return frag.ToFragmentString();
 		}
 
-		private bool UseDiscriminator
-		{
-			get { return forceDiscriminator || IsInherited; }
-		}
-
 		public override string GetSubclassPropertyTableName( int i )
 		{
 			return qualifiedTableName;
@@ -1025,15 +972,7 @@ namespace NHibernate.Persister.Entity
 
 		public override SqlString WhereJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
 		{
-			// Changed from H2.1 code to fix NH-295.
-			if( innerJoin && UseDiscriminator )
-			{
-				return new SqlString( " and " + DiscriminatorWhereCondition( alias ) );
-			}
-			else
-			{
-				return SqlString.Empty;
-			}
+			return SqlString.Empty;
 		}
 
 		protected override SqlString ConcreteSelectString
@@ -1061,14 +1000,14 @@ namespace NHibernate.Persister.Entity
 		protected override void AddDiscriminatorToSelect( SelectFragment select, string name, string suffix )
 		{
 			// TODO H3:
-//			if( IsDiscriminatorFormula ) 
-//			{
-//				select.AddFormula( name, DiscriminatorFormulaTemplate, DiscriminatorAlias );
-//			}
-//			else 
-//			{
+			//if( IsDiscriminatorFormula ) 
+			//{
+			//	select.AddFormula( name, DiscriminatorFormulaTemplate, DiscriminatorAlias );
+			//}
+			//else 
+			//{
 			select.AddColumn( name, DiscriminatorColumnName, DiscriminatorAlias );
-//			}
+			//}
 		}
 
 		protected override int[] SubclassColumnTableNumberClosure
@@ -1085,5 +1024,68 @@ namespace NHibernate.Persister.Entity
 		{
 			return TableName;
 		}
+
+		public override string FilterFragment(string alias)
+		{
+			string result = DiscriminatorFilterFragment( alias );
+			if ( HasWhere )
+			{
+				result += " and " + GetSQLWhereString( alias );
+			}
+			return result;
+		}
+
+		private string DiscriminatorFilterFragment( string alias )
+		{
+			if ( NeedsDiscriminator ) 
+			{
+				InFragment frag = new InFragment();
+
+				// TODO H3:
+//				if ( IsDiscriminatorFormula ) 
+//				{
+//					frag.SetFormula( alias, DiscriminatorFormulaTemplate );
+//				}
+//				else 
+//				{
+					frag.SetColumn( alias, DiscriminatorColumnName );
+//				}
+
+				System.Type[] subclasses = SubclassClosure;
+				for ( int i=0; i<subclasses.Length; i++ ) 
+				{
+					IQueryable queryable = (IQueryable) Factory.GetPersister( subclasses[i] );
+					
+					// TODO H3:
+//					if ( !queryable.IsAbstract )
+//					{
+						frag.AddValue( queryable.DiscriminatorSQLValue );
+//					}
+				}
+
+				StringBuilder buf = new StringBuilder(50)
+					.Append(" and ")
+					.Append( frag.ToFragmentString().ToString() );
+
+				return buf.ToString();
+			}
+			else 
+			{
+				return "";
+			}
+		}
+
+		private bool NeedsDiscriminator
+		{
+			get { return forceDiscriminator || IsInherited; }
+		}
+
+		public override string OneToManyFilterFragment( string alias )
+		{
+			return forceDiscriminator ?
+				DiscriminatorFilterFragment( alias ) :
+				string.Empty;
+		}
+
 	}
 }

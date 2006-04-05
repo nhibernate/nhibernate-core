@@ -23,6 +23,7 @@ namespace NHibernate.Persister.Entity
 	public class JoinedSubclassEntityPersister : AbstractEntityPersister
 	{
 		// the class hierarchy structure
+		private readonly int tableSpan;
 		private readonly string qualifiedTableName;
 
 		// all of the table names that this Persister uses for just its data 
@@ -98,16 +99,11 @@ namespace NHibernate.Persister.Entity
 		private SqlString sqlConcreteSelectString;
 		private SqlString sqlVersionSelectString;
 
-		private IUniqueEntityLoader loader;
-
 		private static readonly ILog log = LogManager.GetLogger( typeof( JoinedSubclassEntityPersister ) );
 
-		public override void PostInstantiate( ISessionFactoryImplementor factory )
+		public override void PostInstantiate()
 		{
-			loader = CreateEntityLoader( factory );
-
-			CreateUniqueKeyLoaders( factory );
-
+			base.PostInstantiate();
 			InitLockers();
 
 			// initialize the Statements - these are in the PostInstantiate method because we need
@@ -124,7 +120,7 @@ namespace NHibernate.Persister.Entity
 
 			sqlUpdateStrings = GenerateUpdateStrings( PropertyUpdateability );
 
-			sqlVersionSelectString = GenerateSelectVersionString( factory );
+			sqlVersionSelectString = GenerateSelectVersionString();
 			sqlConcreteSelectString = GenerateConcreteSelectString();
 
 			// This is used to determine updates for objects that came in via update()
@@ -151,14 +147,12 @@ namespace NHibernate.Persister.Entity
 			return subclassTableNameClosure[ subclassPropertyTableNumberClosure[ i ] ];
 		}
 
-		/// <summary></summary>
 		public override IType DiscriminatorType
 		{
 			get { return discriminatorType; }
 		}
 
-		/// <summary></summary>
-		public override object DiscriminatorSQLValue
+		public override string DiscriminatorSQLValue
 		{
 			get { return discriminatorSQLString; }
 		}
@@ -480,43 +474,6 @@ namespace NHibernate.Persister.Entity
 		}
 
 		// Execute the SQL:
-
-		/// <summary>
-		/// Load an instance using either the <c>ForUpdateLoader</c> or the outer joining <c>loader</c>,
-		/// depending on the value of the <c>lock</c> parameter
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="optionalObject"></param>
-		/// <param name="lockMode"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public override object Load( object id, object optionalObject, LockMode lockMode, ISessionImplementor session )
-		{
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( "Materializing entity: " + MessageHelper.InfoString( this, id ) );
-			}
-
-			try
-			{
-				object result = loader.Load( session, id, optionalObject );
-
-				if( result != null )
-				{
-					Lock( id, GetVersion( result ), result, lockMode, session );
-				}
-				return result;
-			}
-			catch( HibernateException )
-			{
-				// Do not call Convert on HibernateExceptions
-				throw;
-			}
-			catch( Exception sqle )
-			{
-				throw Convert( sqle, "could not load by id: " + MessageHelper.InfoString( this, id ) );
-			}
-		}
 
 		public override object Insert( object[] fields, object obj, ISessionImplementor session )
 		{
@@ -957,6 +914,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			int len = naturalOrderTableNames.Length;
+			tableSpan = naturalOrderTableNames.Length;
 			tableNames = Reverse( naturalOrderTableNames );
 			tableKeyColumns = Reverse( naturalOrderTableKeyColumns );
 			Array.Reverse( subclassTableNameClosure, 0, len );
@@ -1222,7 +1180,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected SqlString ConcretePropertySelectFragment( string alias, bool[] includeProperty )
+		protected string ConcretePropertySelectFragment( string alias, bool[] includeProperty )
 		{
 			int propertyCount = PropertyNames.Length;
 			SelectFragment frag = new SelectFragment( Dialect );
@@ -1321,6 +1279,18 @@ namespace NHibernate.Persister.Entity
 				return null;
 			}
 			return tableNames[ propertyTables[ ( int ) index ] ];
+		}
+
+		public override string FilterFragment( string alias )
+		{
+			return HasWhere ?
+			       " and " + GetSQLWhereString( GenerateFilterConditionAlias( alias ) ) :
+			       "";
+		}
+
+		public override string GenerateFilterConditionAlias( string rootAlias ) 
+		{
+			return GenerateTableAlias( rootAlias, tableSpan - 1 );
 		}
 
 	}

@@ -1,5 +1,3 @@
-using NHibernate.Loader;
-using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Persister.Entity
@@ -26,6 +24,11 @@ namespace NHibernate.Persister.Entity
 		/// <param name="value"></param>
 		/// <returns></returns>
 		System.Type GetSubclassForDiscriminatorValue( object value );
+
+		/// <summary>
+		/// Get the names of columns used to persist the identifier
+		/// </summary>
+		string[] IdentifierColumnNames { get; }
 
 		/// <summary>
 		/// Get the result set aliases used for the identifier columns, given a suffix

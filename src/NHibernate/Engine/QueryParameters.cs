@@ -1,7 +1,11 @@
+using System;
 using System.Collections;
+
 using log4net;
-using NHibernate.Type;
+
 using NHibernate.Impl;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -20,16 +24,37 @@ namespace NHibernate.Engine
 		private bool _cacheable;
 		private string _cacheRegion;
 		private bool _forceCacheRefresh;
+		private object[ ] _collectionKeys;
+		private object _optionalObject;
+		private System.Type _optionalEntityClass;
+		private object _optionalId;
+		private string _comment;
+		private bool _isNaturalKeyLookup;
+		private bool _readOnly;
+
 		// not implemented: private ScrollMode _scrollMode;
 
-		/// <summary>
-		/// Initializes an instance of the <see cref="QueryParameters"/> class.
-		/// </summary>
-		/// <param name="positionalParameterTypes">An array of <see cref="IType"/> objects for the parameters.</param>
-		/// <param name="positionalParameterValues">An array of <see cref="object"/> objects for the parameters.</param>
-		public QueryParameters( IType[ ] positionalParameterTypes, object[ ] positionalParameterValues )
-			: this( positionalParameterTypes, positionalParameterValues, null, null )
+		public QueryParameters()
+			: this( ArrayHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray )
 		{
+		}
+
+		public QueryParameters( IType type, object value )
+			: this( new IType[ ] {type}, new object[ ] {value} )
+		{
+		}
+
+		public QueryParameters(
+			IType[ ] positionalParameterTypes,
+			object[ ] positionalParameterValues,
+			object optionalObject,
+			System.Type optionalEntityClass,
+			object optionalId )
+			: this( positionalParameterTypes, positionalParameterValues )
+		{
+			_optionalObject = optionalObject;
+			_optionalId = optionalId;
+			_optionalEntityClass = optionalEntityClass;
 		}
 
 		/// <summary>
@@ -37,10 +62,44 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="positionalParameterTypes">An array of <see cref="IType"/> objects for the parameters.</param>
 		/// <param name="positionalParameterValues">An array of <see cref="object"/> objects for the parameters.</param>
-		/// <param name="lockModes">An <see cref="IDictionary"/> that is hql alias keyed to a LockMode value.</param>
-		/// <param name="rowSelection"></param>
-		public QueryParameters( IType[ ] positionalParameterTypes, object[ ] positionalParameterValues, IDictionary lockModes, RowSelection rowSelection )
-			: this( positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, false, null, false )
+		public QueryParameters(
+			IType[ ] positionalParameterTypes,
+			object[ ] positionalParameterValues )
+			: this(
+				positionalParameterTypes,
+				positionalParameterValues,
+				null,
+				null )
+		{
+		}
+
+		public QueryParameters(
+			IType[ ] positionalParameterTypes,
+			object[ ] positionalParameterValues,
+			object[ ] collectionKeys )
+			: this(
+				positionalParameterTypes,
+				positionalParameterValues,
+				null,
+				collectionKeys )
+		{
+		}
+
+		public QueryParameters(
+			IType[ ] positionalParameterTypes,
+			object[ ] positionalParameterValues,
+			IDictionary namedParameters,
+			object[ ] collectionKeys )
+			: this(
+				positionalParameterTypes,
+				positionalParameterValues,
+				namedParameters,
+				null,
+				null,
+				false,
+				null,
+				false,
+				collectionKeys )
 		{
 		}
 
@@ -60,7 +119,8 @@ namespace NHibernate.Engine
 			RowSelection rowSelection,
 			bool cacheable,
 			string cacheRegion,
-			bool forceCacheRefresh )
+			bool forceCacheRefresh,
+			object[ ] collectionKeys )
 		{
 			_positionalParameterTypes = positionalParameterTypes;
 			_positionalParameterValues = positionalParameterValues;
@@ -70,6 +130,58 @@ namespace NHibernate.Engine
 			_cacheable = cacheable;
 			_cacheRegion = cacheRegion;
 			_forceCacheRefresh = forceCacheRefresh;
+			_collectionKeys = collectionKeys;
+		}
+
+		public QueryParameters(
+			IType[] positionalParameterTypes,
+			object[] positionalParameterValues,
+			IDictionary lockModes,
+			RowSelection rowSelection,
+			bool cacheable,
+			string cacheRegion,
+			//bool forceCacheRefresh,
+			string comment,
+			bool isLookupByNaturalKey ) 
+			: this(
+				positionalParameterTypes,
+				positionalParameterValues,
+				null,
+				lockModes,
+				rowSelection,
+				false,
+				cacheable,
+				cacheRegion, 
+				comment,
+				null )
+		{
+			_isNaturalKeyLookup = isLookupByNaturalKey;
+		}
+
+		public QueryParameters(
+			IType[] positionalParameterTypes,
+			object[] positionalParameterValues,
+			IDictionary namedParameters,
+			IDictionary lockModes,
+			RowSelection rowSelection,
+			bool readOnly,
+			bool cacheable,
+			string cacheRegion,
+			//final boolean forceCacheRefresh,
+			string comment,
+			object[] collectionKeys ) 
+		{
+			_positionalParameterTypes = positionalParameterTypes;
+			_positionalParameterValues = positionalParameterValues;
+			_namedParameters = namedParameters;
+			_lockModes = lockModes;
+			_rowSelection = rowSelection;
+			_cacheable = cacheable;
+			_cacheRegion = cacheRegion;
+			//this.forceCacheRefresh = forceCacheRefresh;
+			_comment = comment;
+			_collectionKeys = collectionKeys;
+			_readOnly = readOnly;
 		}
 
 		/// <summary></summary>
@@ -129,11 +241,14 @@ namespace NHibernate.Engine
 			set { _lockModes = value; }
 		}
 
-        private int SafeLength( System.Array array )
-        {
-            if( array == null ) return 0;
-            return array.Length;
-        }            
+		private int SafeLength( Array array )
+		{
+			if( array == null )
+			{
+				return 0;
+			}
+			return array.Length;
+		}
 
 		/// <summary></summary>
 		public void LogParameters( ISessionFactoryImplementor factory )
@@ -142,13 +257,13 @@ namespace NHibernate.Engine
 			if( _positionalParameterValues.Length != 0 )
 			{
 				log.Debug( "parameters: "
-					+ print.ToString( _positionalParameterTypes, _positionalParameterValues ) );
+				           + print.ToString( _positionalParameterTypes, _positionalParameterValues ) );
 			}
 
 			if( _namedParameters != null )
 			{
 				log.Debug( "named parameters: "
-					+ print.ToString( _namedParameters ) );
+				           + print.ToString( _namedParameters ) );
 			}
 		}
 
@@ -187,6 +302,29 @@ namespace NHibernate.Engine
 			get { return _forceCacheRefresh; }
 			set { _forceCacheRefresh = value; }
 		}
-	}
 
+		public System.Type OptionalEntityClass
+		{
+			get { return _optionalEntityClass; }
+			set { _optionalEntityClass = value; }
+		}
+
+		public object OptionalId
+		{
+			get { return _optionalId; }
+			set { _optionalId = value; }
+		}
+
+		public object OptionalObject
+		{
+			get { return _optionalObject; }
+			set { _optionalObject = value; }
+		}
+
+		public object[ ] CollectionKeys
+		{
+			get { return _collectionKeys; }
+			set { _collectionKeys = value; }
+		}
+	}
 }

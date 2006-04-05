@@ -1,7 +1,11 @@
 using System;
 using System.Text;
+
+using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
@@ -46,6 +50,104 @@ namespace NHibernate.Impl
 			}
 			s.Append( ']' );
 
+			return s.ToString();
+		}
+
+		/// <summary>
+		/// Generate small message that can be used in traces and exception messages.
+		/// </summary>
+		/// <param name="persister">The <see cref="IEntityPersister" /> for the class in question.</param>
+		/// <param name="id">The identifier of the object.</param>
+		/// <returns>A descriptive <see cref="String" /> in the format of <c>[classname#id]</c></returns>
+		public static string InfoString( IEntityPersister persister, object id, ISessionFactoryImplementor factory )
+		{
+			StringBuilder s = new StringBuilder();
+			s.Append( '[' );
+			if( persister == null )
+			{
+				s.Append( "<null Class>" );
+			}
+			else
+			{
+				s.Append( persister.ClassName );
+			}
+			s.Append( '#' );
+
+			if( id == null )
+			{
+				s.Append( "<null>" );
+			}
+			else
+			{
+				s.Append( persister.IdentifierType.ToLoggableString( id, factory ) );
+			}
+			s.Append( ']' );
+
+			return s.ToString();
+		}
+
+		/// <summary>
+		/// Generate small message that can be used in traces and exception messages.
+		/// </summary>
+		/// <param name="persister">The <see cref="IEntityPersister" /> for the class in question.</param>
+		/// <param name="id">The identifier of the object.</param>
+		/// <returns>A descriptive <see cref="String" /> in the format of <c>[classname#id]</c></returns>
+		public static string InfoString( IEntityPersister persister, object id, IType identifierType, ISessionFactoryImplementor factory )
+		{
+			StringBuilder s = new StringBuilder();
+			s.Append( '[' );
+			if( persister == null )
+			{
+				s.Append( "<null Class>" );
+			}
+			else
+			{
+				s.Append( persister.ClassName );
+			}
+			s.Append( '#' );
+
+			if( id == null )
+			{
+				s.Append( "<null>" );
+			}
+			else
+			{
+				s.Append( identifierType.ToLoggableString( id, factory ) );
+			}
+			s.Append( ']' );
+
+			return s.ToString();
+		}
+
+		public static string InfoString(
+			IEntityPersister persister,
+			object[] ids,
+			ISessionFactoryImplementor factory )
+		{
+			StringBuilder s = new StringBuilder();
+			s.Append('[');
+			
+			if( persister == null )
+			{
+				s.Append( "<null IEntityPersister>" );
+			}
+			else
+			{
+				s.Append( persister.ClassName )
+					.Append("#<");
+
+				for( int i = 0; i < ids.Length; i++ )
+				{
+					s.Append( persister.IdentifierType.ToLoggableString( ids[ i ], factory ) );
+					if( i < ids.Length - 1 )
+					{
+						s.Append( StringHelper.CommaSpace );
+					}
+					s.Append( '>' );
+				}
+			}
+				
+			s.Append( ']' );
 			return s.ToString();
 		}
 

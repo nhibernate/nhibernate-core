@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Reflection;
 using System.Text;
+
 using Iesi.Collections;
 
 using log4net;
@@ -13,7 +14,6 @@ using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Impl;
-using NHibernate.Loader;
 using NHibernate.Loader.Entity;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
@@ -24,6 +24,9 @@ using NHibernate.Tuple;
 using NHibernate.Type;
 using NHibernate.Util;
 
+using Array=System.Array;
+using Environment=NHibernate.Cfg.Environment;
+
 namespace NHibernate.Persister.Entity
 {
 	/// <summary>
@@ -31,7 +34,7 @@ namespace NHibernate.Persister.Entity
 	/// strategies
 	/// </summary>
 	/// <remarks>
-	/// May be considred an immutable view of the mapping object
+	/// May be considered an immutable view of the mapping object
 	/// </remarks>
 	public abstract class AbstractEntityPersister : AbstractPropertyMapping, IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable
 	{
@@ -99,10 +102,9 @@ namespace NHibernate.Persister.Entity
 
 		private readonly Hashtable lockers = new Hashtable();
 
-        private readonly IGetSetHelper getset = null;
+		private readonly IGetSetHelper getset = null;
 
 		private readonly EntityMetamodel entityMetamodel;
-
 
 		//information about properties of this class,
 		//including inherited properties
@@ -136,15 +138,18 @@ namespace NHibernate.Persister.Entity
 
 		// the closure of all properties in the entire hierarchy including
 		// subclasses and superclasses of this class
-		private readonly string[ ][ ] subclassPropertyColumnNameClosure;
 		private readonly string[ ][ ] subclassPropertyFormulaTemplateClosure;
+		private readonly string[ ][ ] subclassPropertyColumnNameClosure;
+		private readonly bool[ ] subclassPropertyNullabilityClosure;
 		private readonly string[ ] subclassPropertyNameClosure;
 		private readonly IType[ ] subclassPropertyTypeClosure;
 		private readonly FetchMode[ ] subclassPropertyFetchModeClosure;
 
 		// temporarily 'protected' instead of 'private readonly'
-
 		protected bool[ ] propertyDefinedOnSubclass;
+
+		private readonly Cascades.CascadeStyle[ ] subclassPropertyCascadeStyleClosure;
+		private IDictionary loaders = new Hashtable();
 
 		protected SqlString GetLockString( LockMode lockMode )
 		{
@@ -166,7 +171,7 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.RootType.AssemblyQualifiedName; }
 		}
 
-		public virtual SqlString IdentifierSelectFragment( string name, string suffix )
+		public virtual string IdentifierSelectFragment( string name, string suffix )
 		{
 			return new SelectFragment( dialect )
 				.SetSuffix( suffix )
@@ -182,52 +187,52 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Set the given values to the mapped properties of the given object
 		/// </summary>
-        /// <remarks>
-        /// Use the IGetSetHelper if available
-        /// </remarks>
+		/// <remarks>
+		/// Use the IGetSetHelper if available
+		/// </remarks>
 		/// <param name="obj"></param>
 		/// <param name="values"></param>
 		public virtual void SetPropertyValues( object obj, object[ ] values )
 		{
-            if (getset == null)
-            {
-                //TODO: optimizer implementation
-                for (int j = 0; j < HydrateSpan; j++)
-                {
-                    Setters[j].Set(obj, values[j]);
-                }
-            }
-            else
-            {
-                getset.SetPropertyValues(obj, values);
-            }
+			if( getset == null )
+			{
+				//TODO: optimizer implementation
+				for( int j = 0; j < HydrateSpan; j++ )
+				{
+					Setters[ j ].Set( obj, values[ j ] );
+				}
+			}
+			else
+			{
+				getset.SetPropertyValues( obj, values );
+			}
 		}
 
 		/// <summary>
 		/// Return the values of the mapped properties of the object
 		/// </summary>
-        /// <remarks>
-        /// Use the IGetSetHelper if available
-        /// </remarks>
-        /// <param name="obj"></param>
+		/// <remarks>
+		/// Use the IGetSetHelper if available
+		/// </remarks>
+		/// <param name="obj"></param>
 		/// <returns></returns>
 		public virtual object[ ] GetPropertyValues( object obj )
 		{
-            if (getset == null)
-            {
-                int span = HydrateSpan;
-                //TODO: optimizer implementation
-                object[] result = new object[span];
-                for (int j = 0; j < span; j++)
-                {
-                    result[j] = Getters[j].Get(obj);
-                }
-                return result;
-            }
-            else
-            {
-                return getset.GetPropertyValues(obj);
-            }
+			if( getset == null )
+			{
+				int span = HydrateSpan;
+				//TODO: optimizer implementation
+				object[ ] result = new object[span];
+				for( int j = 0; j < span; j++ )
+				{
+					result[ j ] = Getters[ j ].Get( obj );
+				}
+				return result;
+			}
+			else
+			{
+				return getset.GetPropertyValues( obj );
+			}
 		}
 
 		/// <summary>
@@ -252,8 +257,7 @@ namespace NHibernate.Persister.Entity
 			Setters[ i ].Set( obj, value );
 		}
 
-
-		private void LogDirtyProperties( int[] props )
+		private void LogDirtyProperties( int[ ] props )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -613,8 +617,8 @@ namespace NHibernate.Persister.Entity
 
 			if( IsPolymorphic )
 			{
-				AddPropertyPath( PathExpressionParser.EntityClass, DiscriminatorType, new string[ ] { DiscriminatorColumnName },
-					null
+				AddPropertyPath( PathExpressionParser.EntityClass, DiscriminatorType, new string[ ] {DiscriminatorColumnName},
+				                 null
 					// TODO H3: new string[ ] { DiscriminatorFormulaTemplate }
 					);
 			}
@@ -626,15 +630,15 @@ namespace NHibernate.Persister.Entity
 			dialect = factory.Dialect;
 			//sqlExceptionConverter = factory.SQLExceptionConverter;
 
-			this.entityMetamodel = new EntityMetamodel( persistentClass, factory );
+			entityMetamodel = new EntityMetamodel( persistentClass, factory );
 
 			// CLASS
 			mappedClass = persistentClass.MappedClass;
 
 			sqlWhereString = persistentClass.Where;
 			sqlWhereStringTemplate = sqlWhereString == null ?
-				null :
-				Template.RenderWhereStringTemplate( sqlWhereString, Dialect );
+			                         null :
+			                         Template.RenderWhereStringTemplate( sqlWhereString, Dialect );
 
 			batchSize = persistentClass.BatchSize;
 			constructor = ReflectHelper.GetDefaultConstructor( mappedClass );
@@ -691,8 +695,8 @@ namespace NHibernate.Persister.Entity
 			// IDENTIFIER 
 
 			identifierColumnSpan = persistentClass.Identifier.ColumnSpan;
-			rootTableKeyColumnNames = new string[ identifierColumnSpan ];
-			identifierAliases = new string[ identifierColumnSpan ];
+			rootTableKeyColumnNames = new string[identifierColumnSpan];
+			identifierAliases = new string[identifierColumnSpan];
 
 			int i = 0;
 			foreach( Column col in idValue.ColumnCollection )
@@ -737,7 +741,7 @@ namespace NHibernate.Persister.Entity
 			System.Type[ ] classes = new System.Type[hydrateSpan];
 
 			i = 0;
-			
+
 			// NH: reflection optimizer works with custom accessors
 			//bool foundCustomAccessor = false;
 
@@ -753,7 +757,7 @@ namespace NHibernate.Persister.Entity
 				getterNames[ i ] = getters[ i ].PropertyName;
 				setterNames[ i ] = setters[ i ].PropertyName;
 				classes[ i ] = getters[ i ].ReturnType;
-				
+
 				string propertyName = prop.Name;
 				gettersByPropertyName[ propertyName ] = getters[ i ];
 				settersByPropertyName[ propertyName ] = setters[ i ];
@@ -761,15 +765,14 @@ namespace NHibernate.Persister.Entity
 				i++;
 			}
 
-
 			// PROPERTIES (FROM ABSTRACTENTITYPERSISTER SUBCLASSES)
-			propertyColumnNames = new string[ HydrateSpan ][ ];
-			propertyColumnAliases = new string[ HydrateSpan ][ ];
-			propertyColumnSpans = new int[ HydrateSpan ];
-			propertyColumnFormulaTemplates = new string[ HydrateSpan ][ ];
-			propertyColumnUpdateable = new bool[ HydrateSpan ][];
-			propertyColumnInsertable = new bool[ HydrateSpan ][];
-			propertyUniqueness = new bool[ HydrateSpan ];
+			propertyColumnNames = new string[HydrateSpan][ ];
+			propertyColumnAliases = new string[HydrateSpan][ ];
+			propertyColumnSpans = new int[HydrateSpan];
+			propertyColumnFormulaTemplates = new string[HydrateSpan][ ];
+			propertyColumnUpdateable = new bool[HydrateSpan][ ];
+			propertyColumnInsertable = new bool[HydrateSpan][ ];
+			propertyUniqueness = new bool[HydrateSpan];
 
 			HashedSet thisClassProperties = new HashedSet();
 			i = 0;
@@ -781,22 +784,22 @@ namespace NHibernate.Persister.Entity
 
 				int span = prop.ColumnSpan;
 				propertyColumnSpans[ i ] = span;
-				string[] colNames = new string[span];
-				string[] colAliases = new string[span];
-				string[] templates = new string[span];
+				string[ ] colNames = new string[span];
+				string[ ] colAliases = new string[span];
+				string[ ] templates = new string[span];
 
 				int k = 0;
 				foreach( ISelectable thing in prop.ColumnCollection )
 				{
-					colAliases[ k ] = thing.GetAlias( factory.Dialect , prop.Value.Table );
-					if ( thing.IsFormula ) 
+					colAliases[ k ] = thing.GetAlias( factory.Dialect, prop.Value.Table );
+					if( thing.IsFormula )
 					{
 						foundFormula = true;
 						templates[ k ] = thing.GetTemplate( factory.Dialect );
 					}
-					else 
+					else
 					{
-						colNames[ k ] = thing.GetTemplate( factory.Dialect );					
+						colNames[ k ] = thing.GetTemplate( factory.Dialect );
 					}
 					k++;
 				}
@@ -813,12 +816,13 @@ namespace NHibernate.Persister.Entity
 			hasFormulaProperties = foundFormula;
 
 			// NH: reflection optimizer works with custom accessors
-			if( /*!foundCustomAccessor &&*/ Cfg.Environment.UseReflectionOptimizer )
+			if( /*!foundCustomAccessor &&*/ Environment.UseReflectionOptimizer )
 			{
 				getset = GetSetHelperFactory.Create( MappedClass, Setters, Getters );
 			}
 
 			// SUBCLASS PROPERTY CLOSURE
+
 			ArrayList columns = new ArrayList(); //this.subclassColumnClosure
 			ArrayList aliases = new ArrayList();
 			ArrayList formulaAliases = new ArrayList();
@@ -828,41 +832,45 @@ namespace NHibernate.Persister.Entity
 			ArrayList subclassTemplates = new ArrayList();
 			ArrayList propColumns = new ArrayList(); //this.subclassPropertyColumnNameClosure
 			ArrayList joinedFetchesList = new ArrayList(); //this.subclassPropertyEnableJoinedFetch
+			ArrayList cascades = new ArrayList();
 			ArrayList definedBySubclass = new ArrayList(); // this.propertyDefinedOnSubclass
 			ArrayList formulas = new ArrayList();
+			ArrayList propNullables = new ArrayList();
 
 			foreach( Mapping.Property prop in persistentClass.SubclassPropertyClosureCollection )
 			{
 				names.Add( prop.Name );
+				bool isDefinedBySubclass = !thisClassProperties.Contains( prop );
+				definedBySubclass.Add( isDefinedBySubclass );
+				propNullables.Add( prop.IsOptional || isDefinedBySubclass ); //TODO: is this completely correct?
 				types.Add( prop.Type );
-				definedBySubclass.Add( !thisClassProperties.Contains( prop ) );
 
-				string[] cols = new string[prop.ColumnSpan];
-				string[] forms = new string[prop.ColumnSpan];
-				int[] colnos = new int[prop.ColumnSpan];
-				int[] formnos = new int[prop.ColumnSpan];
+				string[ ] cols = new string[prop.ColumnSpan];
+				string[ ] forms = new string[prop.ColumnSpan];
+				int[ ] colnos = new int[prop.ColumnSpan];
+				int[ ] formnos = new int[prop.ColumnSpan];
 				int l = 0;
 
 				foreach( ISelectable thing in prop.ColumnCollection )
 				{
-					if ( thing.IsFormula ) 
+					if( thing.IsFormula )
 					{
 						string template = thing.GetTemplate( factory.Dialect );
-						formnos[l] = formulaTemplates.Count;
-						colnos[l] = -1;
+						formnos[ l ] = formulaTemplates.Count;
+						colnos[ l ] = -1;
 						formulaTemplates.Add( template );
-						forms[l] = template;
+						forms[ l ] = template;
 						formulas.Add( thing.GetText( factory.Dialect ) );
 						formulaAliases.Add( thing.GetAlias( factory.Dialect ) );
 						// TODO H3: formulasLazy.add( lazy );
 					}
-					else 
+					else
 					{
 						String colName = thing.GetTemplate( factory.Dialect );
-						colnos[l] = columns.Count; //before add :-)
-						formnos[l] = -1;
+						colnos[ l ] = columns.Count; //before add :-)
+						formnos[ l ] = -1;
 						columns.Add( colName );
-						cols[l] = colName;
+						cols[ l ] = colName;
 						aliases.Add( thing.GetAlias( factory.Dialect, prop.Value.Table ) );
 						// TODO H3: columnsLazy.add( lazy );
 						// TODO H3: columnSelectables.add( new Boolean( prop.isSelectable() ) );
@@ -876,7 +884,7 @@ namespace NHibernate.Persister.Entity
 				//propFormulaNumbers.Add( formnos );
 
 				joinedFetchesList.Add( prop.Value.FetchMode );
-				// TODO H3: cascades.Add( prop.CascadeStyle );
+				cascades.Add( prop.CascadeStyle );
 			}
 
 			subclassColumnClosure = ( string[ ] ) columns.ToArray( typeof( string ) );
@@ -886,17 +894,25 @@ namespace NHibernate.Persister.Entity
 			subclassColumnAliasClosure = ( string[ ] ) aliases.ToArray( typeof( string ) );
 			subclassFormulaAliasClosure = ( string[ ] ) formulaAliases.ToArray( typeof( string ) );
 			subclassPropertyNameClosure = ( string[ ] ) names.ToArray( typeof( string ) );
+			subclassPropertyNullabilityClosure = ( bool[ ] ) propNullables.ToArray( typeof( bool ) );
 			subclassPropertyFormulaTemplateClosure = ArrayHelper.To2DStringArray( subclassTemplates );
 			subclassPropertyColumnNameClosure = ( string[ ][ ] ) propColumns.ToArray( typeof( string[ ] ) );
 
-			subclassPropertyFetchModeClosure = new FetchMode[ joinedFetchesList.Count ];
+			subclassPropertyCascadeStyleClosure = new Cascades.CascadeStyle[cascades.Count];
 			int m = 0;
+			foreach( Cascades.CascadeStyle cs in cascades )
+			{
+				subclassPropertyCascadeStyleClosure[ m++ ] = cs;
+			}
+
+			subclassPropertyFetchModeClosure = new FetchMode[joinedFetchesList.Count];
+			m = 0;
 			foreach( FetchMode qq in joinedFetchesList )
 			{
 				subclassPropertyFetchModeClosure[ m++ ] = qq;
 			}
 
-			propertyDefinedOnSubclass = new bool[ definedBySubclass.Count ];
+			propertyDefinedOnSubclass = new bool[definedBySubclass.Count];
 			m = 0;
 			foreach( bool val in definedBySubclass )
 			{
@@ -924,7 +940,7 @@ namespace NHibernate.Persister.Entity
 					{
 						throw new MappingException(
 							"proxy must be either an interface, or the class itself: " +
-								mappedClass.FullName );
+							mappedClass.FullName );
 					}
 
 					proxyInterfaces.Add( concreteProxyClass );
@@ -943,7 +959,7 @@ namespace NHibernate.Persister.Entity
 						if( subclassProxy == null )
 						{
 							throw new MappingException( "All subclasses must also have proxies: "
-								+ mappedClass.Name );
+							                            + mappedClass.Name );
 						}
 
 						if( !subclass.MappedClass.Equals( subclassProxy ) )
@@ -1041,11 +1057,11 @@ namespace NHibernate.Persister.Entity
 		{
 			SqlString lockString = GenerateLockString( null, null );
 			SqlString lockExclusiveString = Dialect.SupportsForUpdate ?
-				GenerateLockString( lockString, " for update" ) :
-				GenerateLockString( lockString, null );
+			                                GenerateLockString( lockString, " for update" ) :
+			                                GenerateLockString( lockString, null );
 			SqlString lockExclusiveNowaitString = Dialect.SupportsForUpdateNoWait ?
-				GenerateLockString( lockString, " for update nowait" ) :
-				GenerateLockString( lockExclusiveString, null );
+			                                      GenerateLockString( lockString, " for update nowait" ) :
+			                                      GenerateLockString( lockExclusiveString, null );
 
 			lockers.Add( LockMode.Read, lockString );
 			lockers.Add( LockMode.Upgrade, lockExclusiveString );
@@ -1171,49 +1187,46 @@ namespace NHibernate.Persister.Entity
 				{
 					throw new MappingException(
 						"Repeated column in mapping for class " +
-							ClassName +
-							" should be mapped with insert=\"false\" update=\"false\": " +
-							col.Name );
+						ClassName +
+						" should be mapped with insert=\"false\" update=\"false\": " +
+						col.Name );
 				}
 			}
 		}
 
-		protected IUniqueEntityLoader CreateEntityLoader( ISessionFactoryImplementor factory )
+		protected IUniqueEntityLoader CreateEntityLoader( LockMode lockMode, IDictionary enabledFilters )
 		{
-			Loader.Loader nonBatchLoader = new EntityLoader( this, 1, factory );
-			if( batchSize > 1 )
-			{
-				Loader.Loader batchLoader = new EntityLoader( this, batchSize, factory );
-				int smallBatchSize = ( int ) Math.Round( Math.Sqrt( batchSize ) );
-				Loader.Loader smallBatchLoader = new EntityLoader( this, smallBatchSize, factory );
-				return new BatchingEntityLoader( this, batchSize, batchLoader, smallBatchSize, smallBatchLoader, nonBatchLoader );
-			}
-			else
-			{
-				return ( IUniqueEntityLoader ) nonBatchLoader;
-			}
+			//TODO: disable batch loading if lockMode > READ?
+			return BatchingEntityLoader.CreateBatchingEntityLoader( this, batchSize, lockMode, Factory, enabledFilters );
 		}
 
-		protected void CreateUniqueKeyLoaders( ISessionFactoryImplementor factory )
+		protected IUniqueEntityLoader CreateEntityLoader( LockMode lockMode )
 		{
-			IType[] propertyTypes = PropertyTypes;
-			string[] propertyNames = PropertyNames;
+			return CreateEntityLoader( lockMode, CollectionHelper.EmptyMap );
+		}
+
+		protected void CreateUniqueKeyLoaders()
+		{
+			IType[ ] propertyTypes = PropertyTypes;
+			string[ ] propertyNames = PropertyNames;
 
 			// TODO: Does not handle components, or properties of a joined subclass
 			for( int i = 0; i < entityMetamodel.PropertySpan; i++ )
 			{
 				if( propertyUniqueness[ i ] )
 				{
+					//don't need filters for the static loaders
 					uniqueKeyLoaders[ propertyNames[ i ] ] =
-						CreateUniqueKeyLoader( 
-								propertyTypes[ i ],
-								GetPropertyColumnNames( i ) // TODO H3: , new Hashtable()
+						CreateUniqueKeyLoader(
+							propertyTypes[ i ],
+							GetPropertyColumnNames( i ),
+							CollectionHelper.EmptyMap
 							);
 				}
 			}
 		}
 
-		private EntityLoader CreateUniqueKeyLoader( IType uniqueKeyType, string[ ] columns ) // TODO H3: add enabledFilters
+		private EntityLoader CreateUniqueKeyLoader( IType uniqueKeyType, string[ ] columns, IDictionary enabledFilters )
 		{
 			if( uniqueKeyType.IsEntityType )
 			{
@@ -1221,7 +1234,7 @@ namespace NHibernate.Persister.Entity
 				uniqueKeyType = Factory.GetPersister( type ).IdentifierType;
 			}
 
-			return new EntityLoader( this, columns, uniqueKeyType, 1, Factory );
+			return new EntityLoader( this, columns, uniqueKeyType, 1, LockMode.None, Factory, enabledFilters );
 		}
 
 		public override IType Type
@@ -1266,9 +1279,10 @@ namespace NHibernate.Persister.Entity
 			get { return ClassName; }
 		}
 
-		public SqlString SelectFragment( string alias, string suffix )
+		public string SelectFragment( string alias, string suffix )
 		{
-			return IdentifierSelectFragment( alias, suffix ).Append( PropertySelectFragment( alias, suffix ) );
+			return IdentifierSelectFragment( alias, suffix ) +
+			       PropertySelectFragment( alias, suffix );
 		}
 
 		public string[ ] GetIdentifierAliases( string suffix )
@@ -1291,8 +1305,8 @@ namespace NHibernate.Persister.Entity
 			// was toUnqotedAliasStrings( getdiscriminatorColumnName() ) before - now tried
 			// to remove that unquoting and missing aliases..		
 			return HasSubclasses ?
-				new Alias( suffix ).ToAliasString( DiscriminatorAlias, dialect ) :
-				null;
+			       new Alias( suffix ).ToAliasString( DiscriminatorAlias, dialect ) :
+			       null;
 		}
 
 		protected abstract string DiscriminatorAlias { get; }
@@ -1307,9 +1321,14 @@ namespace NHibernate.Persister.Entity
 			get { return false; }
 		}
 
-		public bool ConsumesAlias()
+		public bool ConsumesEntityAlias()
 		{
 			return true;
+		}
+
+		public bool ConsumesCollectionAlias()
+		{
+			return false;
 		}
 
 		public virtual IType GetPropertyType( string path )
@@ -1374,11 +1393,6 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Do a version check
 		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="version"></param>
-		/// <param name="obj"></param>
-		/// <param name="lockMode"></param>
-		/// <param name="session"></param>
 		public virtual void Lock( object id, object version, object obj, LockMode lockMode, ISessionImplementor session )
 		{
 			if( lockMode != LockMode.None )
@@ -1516,7 +1530,7 @@ namespace NHibernate.Persister.Entity
 		/// Generate the SQL that selects the version number by id
 		/// </summary>
 		/// <returns></returns>
-		protected SqlString GenerateSelectVersionString( ISessionFactoryImplementor factory )
+		protected SqlString GenerateSelectVersionString()
 		{
 			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder( factory );
 			builder.SetTableName( VersionedTableName );
@@ -1590,18 +1604,18 @@ namespace NHibernate.Persister.Entity
 			return propertyColumnSpans[ i ];
 		}
 
-		public SqlString SelectFragment( string alias, string suffix, bool includeCollectionColumns )
+		public string SelectFragment( string alias, string suffix, bool includeCollectionColumns )
 		{
 			return SelectFragment( alias, suffix );
 		}
 
-		public SqlString SelectFragment(
+		public string SelectFragment(
 			IJoinable rhs,
 			string rhsAlias,
 			string lhsAlias,
 			string entitySuffix,
 			string collectionSuffix,
-			bool includeCollectionColumns)
+			bool includeCollectionColumns )
 		{
 			return SelectFragment( lhsAlias, entitySuffix );
 		}
@@ -1611,10 +1625,9 @@ namespace NHibernate.Persister.Entity
 			return ADOExceptionHelper.Convert( /* sqlExceptionConverter, */ sqlException, message );
 		}
 
-
 		public abstract SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSubclasses );
 
-		public abstract object DiscriminatorSQLValue { get; }
+		public abstract string DiscriminatorSQLValue { get; }
 
 		public abstract void Delete( object id, object version, object obj, ISessionImplementor session );
 
@@ -1623,10 +1636,6 @@ namespace NHibernate.Persister.Entity
 		public abstract void Insert( object id, object[ ] fields, object obj, ISessionImplementor session );
 
 		public abstract object Insert( object[ ] fields, object obj, ISessionImplementor session );
-
-		public abstract object Load( object id, object optionalObject, LockMode lockMode, ISessionImplementor session );
-
-		public abstract void PostInstantiate( ISessionFactoryImplementor factory );
 
 		public abstract void Update( object id, object[ ] fields, int[ ] dirtyFields, object[ ] oldFields, object oldVersion, object obj, ISessionImplementor session );
 
@@ -1643,25 +1652,25 @@ namespace NHibernate.Persister.Entity
 			return propertyDefinedOnSubclass[ i ];
 		}
 
-		public SqlString PropertySelectFragment( string name, string suffix )
+		public string PropertySelectFragment( string name, string suffix )
 		{
 			SelectFragment select = new SelectFragment( Factory.Dialect )
 				.SetSuffix( suffix )
 				.SetUsedAliases( IdentifierAliases );
 
-			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
-			string[] columnAliases = SubclassColumnAliasClosure;
-			string[] columns = SubclassColumnClosure;
+			int[ ] columnTableNumbers = SubclassColumnTableNumberClosure;
+			string[ ] columnAliases = SubclassColumnAliasClosure;
+			string[ ] columns = SubclassColumnClosure;
 
 			for( int i = 0; i < columns.Length; i++ )
 			{
 				string subalias = Alias( name, columnTableNumbers[ i ] );
-				select.AddColumn( subalias, columns[ i ], columnAliases[ i ]	);
+				select.AddColumn( subalias, columns[ i ], columnAliases[ i ] );
 			}
 
-			int[] formulaTableNumbers = SubclassFormulaTableNumberClosure;
-			string[] formulaTemplates = SubclassFormulaTemplateClosure;
-			string[] formulaAliases = SubclassFormulaAliasClosure;
+			int[ ] formulaTableNumbers = SubclassFormulaTableNumberClosure;
+			string[ ] formulaTemplates = SubclassFormulaTemplateClosure;
+			string[ ] formulaAliases = SubclassFormulaAliasClosure;
 
 			for( int i = 0; i < formulaTemplates.Length; i++ )
 			{
@@ -1677,55 +1686,55 @@ namespace NHibernate.Persister.Entity
 			return select.ToSqlStringFragment();
 		}
 
-		protected abstract int[] SubclassColumnTableNumberClosure { get; }
-		protected abstract int[] SubclassFormulaTableNumberClosure { get; }
+		protected abstract int[ ] SubclassColumnTableNumberClosure { get; }
+		protected abstract int[ ] SubclassFormulaTableNumberClosure { get; }
 
-		protected string[] SubclassColumnClosure
+		protected string[ ] SubclassColumnClosure
 		{
 			get { return subclassColumnClosure; }
 		}
 
-		protected string[] SubclassColumnAliasClosure
+		protected string[ ] SubclassColumnAliasClosure
 		{
 			get { return subclassColumnAliasClosure; }
 		}
 
-		protected string[] SubclassFormulaTemplateClosure
+		protected string[ ] SubclassFormulaTemplateClosure
 		{
 			get { return subclassFormulaTemplateClosure; }
 		}
-		
-		protected string[] SubclassFormulaAliasClosure
+
+		protected string[ ] SubclassFormulaAliasClosure
 		{
 			get { return subclassFormulaAliasClosure; }
 		}
 
-		protected string[] SubclassFormulaClosure
+		protected string[ ] SubclassFormulaClosure
 		{
 			get { return subclassFormulaClosure; }
 		}
 
-		protected string[] SubclassPropertyNameClosure
+		protected string[ ] SubclassPropertyNameClosure
 		{
 			get { return subclassPropertyNameClosure; }
 		}
 
-		protected IType[] SubclassPropertyTypeClosure
+		protected IType[ ] SubclassPropertyTypeClosure
 		{
 			get { return subclassPropertyTypeClosure; }
 		}
 
-		protected string[][] SubclassPropertyColumnNameClosure
+		protected string[ ][ ] SubclassPropertyColumnNameClosure
 		{
 			get { return subclassPropertyColumnNameClosure; }
 		}
 
-		protected string[][] SubclassPropertyFormulaTemplateClosure
+		protected string[ ][ ] SubclassPropertyFormulaTemplateClosure
 		{
 			get { return subclassPropertyFormulaTemplateClosure; }
 		}
 
-		protected abstract int Dehydrate( object id, object[] fields, bool[] includeProperty, int table, IDbCommand statement, ISessionImplementor session );
+		protected abstract int Dehydrate( object id, object[ ] fields, bool[ ] includeProperty, int table, IDbCommand statement, ISessionImplementor session );
 
 		/// <summary>
 		/// Persist an object, using a natively generated identifier
@@ -1736,7 +1745,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected object InsertImpl( object[] fields, bool[] notNull, SqlString sql, object obj, ISessionImplementor session )
+		protected object InsertImpl( object[ ] fields, bool[ ] notNull, SqlString sql, object obj, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -1813,17 +1822,17 @@ namespace NHibernate.Persister.Entity
 		public string[ ] ToColumns( string name, int i )
 		{
 			string alias = Alias( name, GetSubclassPropertyTableNumber( i ) );
-			string[] cols = GetSubclassPropertyColumnNames( i );
-			string[] templates = SubclassPropertyFormulaTemplateClosure[ i ];
-			string[] result = new string[ cols.Length ];
+			string[ ] cols = GetSubclassPropertyColumnNames( i );
+			string[ ] templates = SubclassPropertyFormulaTemplateClosure[ i ];
+			string[ ] result = new string[cols.Length];
 
 			for( int j = 0; j < cols.Length; j++ )
 			{
-				if( cols[ j ] == null ) 
+				if( cols[ j ] == null )
 				{
 					result[ j ] = StringHelper.Replace( templates[ j ], Template.Placeholder, alias );
 				}
-				else 
+				else
 				{
 					result[ j ] = StringHelper.Qualify( alias, cols[ j ] );
 				}
@@ -1839,11 +1848,11 @@ namespace NHibernate.Persister.Entity
 		/// SingleTableEntityPersister defines an overloaded form
 		/// which takes the entity name.
 		/// </remarks>
-		public int GetSubclassPropertyTableNumber(string propertyPath) 
+		public int GetSubclassPropertyTableNumber( string propertyPath )
 		{
-			string rootPropertyName = StringHelper.Root(propertyPath);
+			string rootPropertyName = StringHelper.Root( propertyPath );
 			IType type = ToType( rootPropertyName );
-			if ( type.IsAssociationType && ( (IAssociationType) type ).UseLHSPrimaryKey ) 
+			if( type.IsAssociationType && ( ( IAssociationType ) type ).UseLHSPrimaryKey )
 			{
 				return 0;
 			}
@@ -1855,11 +1864,11 @@ namespace NHibernate.Persister.Entity
 					return getSubclassColumnTableNumberClosure()[idx];
 				}
 			}*/
-			int index = System.Array.IndexOf( SubclassPropertyNameClosure, rootPropertyName ); //TODO: optimize this better!
+			int index = Array.IndexOf( SubclassPropertyNameClosure, rootPropertyName ); //TODO: optimize this better!
 			return index == -1 ? 0 : GetSubclassPropertyTableNumber( index );
 		}
 
-		public override string[] ToColumns(string alias, string propertyName)
+		public override string[ ] ToColumns( string alias, string propertyName )
 		{
 			return base.ToColumns( Alias( alias, GetSubclassPropertyTableNumber( propertyName ) ), propertyName );
 		}
@@ -1895,7 +1904,7 @@ namespace NHibernate.Persister.Entity
 			get { return hasFormulaProperties; }
 		}
 
-		protected string[] GetPropertyColumnAliases( int i )
+		protected string[ ] GetPropertyColumnAliases( int i )
 		{
 			return propertyColumnAliases[ i ];
 		}
@@ -1912,7 +1921,7 @@ namespace NHibernate.Persister.Entity
 
 		public string GetSubclassPropertyName( int i )
 		{
-			return this.subclassPropertyNameClosure[ i ];
+			return subclassPropertyNameClosure[ i ];
 		}
 
 		public int CountSubclassProperties()
@@ -1959,7 +1968,7 @@ namespace NHibernate.Persister.Entity
 		{
 		}
 
-		public string[] GetPropertyColumnNames( string propertyName )
+		public string[ ] GetPropertyColumnNames( string propertyName )
 		{
 			return GetColumnNames( propertyName );
 		}
@@ -1979,6 +1988,115 @@ namespace NHibernate.Persister.Entity
 		protected void PostConstruct( IMapping mapping )
 		{
 			InitPropertyPaths( mapping );
+		}
+
+		public virtual void PostInstantiate()
+		{
+			CreateLoaders();
+			CreateUniqueKeyLoaders();
+		}
+
+		public Cascades.CascadeStyle GetCascadeStyle( int i )
+		{
+			return subclassPropertyCascadeStyleClosure[ i ];
+		}
+
+		public bool IsSubclassPropertyNullable( int i )
+		{
+			return subclassPropertyNullabilityClosure[ i ];
+		}
+
+		public EntityType EntityType
+		{
+			get { return entityMetamodel.EntityType; }
+		}
+
+		public abstract string FilterFragment( string alias );
+		
+		public string FilterFragment( string alias, IDictionary enabledFilters )
+		{
+			return FilterFragment( alias );
+		}
+
+		protected string GenerateTableAlias( string rootAlias, int tableNumber )
+		{
+			if ( tableNumber == 0 )
+			{
+				return rootAlias;
+			}
+			
+			StringBuilder buf = new StringBuilder().Append( rootAlias );
+			if ( !rootAlias.EndsWith( "_" ) )
+			{
+				buf.Append( '_' );
+			}
+			
+			return buf.Append( tableNumber ).Append( '_' ).ToString();
+		}
+
+		public virtual string GenerateFilterConditionAlias( string rootAlias ) 
+		{
+			return rootAlias;
+		}
+
+		/// <summary>
+		/// Load an instance using the appropriate loader (as determined by <see cref="GetAppropriateLoader" />
+		/// </summary>
+		public object Load( object id, object optionalObject, LockMode lockMode, ISessionImplementor session )
+		{
+			if( log.IsDebugEnabled )
+			{
+				log.Debug(
+					"Fetching entity: " +
+					MessageHelper.InfoString( this, id, Factory )
+					);
+			}
+			
+			IUniqueEntityLoader loader = GetAppropriateLoader( lockMode, session );
+			return loader.Load( id, optionalObject, session );
+		}
+
+		private IUniqueEntityLoader GetAppropriateLoader( LockMode lockMode, ISessionImplementor session )
+		{
+			IDictionary enabledFilters = CollectionHelper.EmptyMap; // TODO H3: session.EnabledFilters;
+//			if( queryLoader != null )
+//			{
+//				return queryLoader;
+//			}
+//			else
+			if( enabledFilters == null || enabledFilters.Count == 0 )
+			{
+//				if( session.FetchProfile != null && LockMode.Upgrade.GreaterThan( lockMode ) )
+//				{
+//					return ( IUniqueEntityLoader ) loaders[ session.FetchProfile ];
+//				}
+//				else
+//				{
+					return ( IUniqueEntityLoader ) loaders[ lockMode ];
+//				}
+			}
+			else
+			{
+				return CreateEntityLoader( lockMode, enabledFilters );
+			}
+		}
+
+		private void CreateLoaders()
+		{
+			loaders.Add( LockMode.None, CreateEntityLoader( LockMode.None ) );
+			loaders.Add( LockMode.Read, CreateEntityLoader( LockMode.Read ) );
+			loaders.Add( LockMode.Upgrade, CreateEntityLoader( LockMode.Upgrade ) );
+			loaders.Add( LockMode.UpgradeNoWait, CreateEntityLoader( LockMode.UpgradeNoWait ) );
+		}
+		
+		public object[] QuerySpaces
+		{
+			get { return PropertySpaces; }
+		}
+
+		public virtual string OneToManyFilterFragment( string alias )
+		{
+			return string.Empty;
 		}
 	}
 }

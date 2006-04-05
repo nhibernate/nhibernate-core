@@ -20,6 +20,7 @@ namespace NHibernate.Type
 		private readonly IGetter[] getters;
 		private readonly ISetter[] setters;
 		private readonly string[] propertyNames;
+		private readonly bool[] propertyNullability;
 		private readonly int propertySpan;
 		private readonly Cascades.CascadeStyle[] cascade;
 		private readonly FetchMode[] joinedFetch;
@@ -27,11 +28,6 @@ namespace NHibernate.Type
 		private IGetter parentGetter;
 		private IGetSetHelper getset = null;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns></returns>
 		public override SqlType[] SqlTypes( IMapping mapping )
 		{
 			//not called at runtime so doesn't matter if its slow :)
@@ -48,11 +44,6 @@ namespace NHibernate.Type
 			return sqlTypes;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns></returns>
 		public override int GetColumnSpan( IMapping mapping )
 		{
 			int span = 0;
@@ -63,18 +54,6 @@ namespace NHibernate.Type
 			return span;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="componentClass"></param>
-		/// <param name="propertyNames"></param>
-		/// <param name="propertyGetters"></param>
-		/// <param name="propertySetters"></param>
-		/// <param name="foundCustomAcessor"></param>
-		/// <param name="propertyTypes"></param>
-		/// <param name="joinedFetch"></param>
-		/// <param name="cascade"></param>
-		/// <param name="parentProperty"></param>
 		public ComponentType( System.Type componentClass,
 		                      string[] propertyNames,
 		                      IGetter[] propertyGetters,
@@ -82,12 +61,14 @@ namespace NHibernate.Type
 		                      // currently not used, see the comment near the end of the method body
 		                      bool foundCustomAcessor,
 		                      IType[] propertyTypes,
+							  bool[] nullabilities,
 		                      FetchMode[] joinedFetch,
 		                      Cascades.CascadeStyle[] cascade,
 		                      string parentProperty )
 		{
 			this.componentClass = componentClass;
 			this.propertyTypes = propertyTypes;
+			this.propertyNullability = nullabilities;
 			propertySpan = propertyNames.Length;
 			getters = propertyGetters;
 			setters = propertySetters;
@@ -546,7 +527,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public Cascades.CascadeStyle Cascade( int i )
+		public Cascades.CascadeStyle GetCascadeStyle( int i )
 		{
 			return cascade[ i ];
 		}
@@ -658,17 +639,23 @@ namespace NHibernate.Type
 			{
 				object result = Instantiate( owner, session );
 				object[] values = ( object[] ) value;
+				object[] resolvedValues = new object[ values.Length ]; //only really need new array during semiresolve!
 				for( int i = 0; i < values.Length; i++ )
 				{
-					values[ i ] = propertyTypes[ i ].ResolveIdentifier( values[ i ], session, owner );
+					resolvedValues[ i ] = propertyTypes[ i ].ResolveIdentifier( values[ i ], session, owner );
 				}
-				SetPropertyValues( result, values );
+				SetPropertyValues( result, resolvedValues );
 				return result;
 			}
 			else
 			{
 				return null;
 			}
+		}
+
+		public override object SemiResolve( object value, ISessionImplementor session, object owner )
+		{
+			return ResolveIdentifier( value, session, owner );
 		}
 
 		public override bool IsModified( object old, object current, bool[] checkable, ISessionImplementor session )
@@ -698,5 +685,9 @@ namespace NHibernate.Type
 			return false;
 		}
 
+		public bool[] PropertyNullability
+		{
+			get { return propertyNullability; }
+		}
 	}
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 
-using NHibernate.Expression;
 using NHibernate.DomainModel;
 
 using NUnit.Framework;
@@ -321,8 +320,7 @@ namespace NHibernate.Test.Legacy
 			baz = (Baz) s.CreateCriteria( typeof( Baz ) ).UniqueResult();
 			Assert.AreEqual( 1, s.CreateFilter( baz.Parts, "" ).List().Count );
 			//assertTrue( baz.getParts().size()==1 );
-			s.Delete( s.Get( typeof( Part ), p1.Id ) );
-			s.Delete( s.Get( typeof( Part ), p2.Id ) );
+			s.Delete( "from Part" );
 			s.Delete( baz );
 			t.Commit();
 			s.Close();

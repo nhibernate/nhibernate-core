@@ -142,6 +142,11 @@ namespace NHibernate.Type
 			return value;
 		}
 
+		public virtual object SemiResolve( object value, ISessionImplementor session, object owner )
+		{
+			return value;
+		}
+
 		/// <summary>
 		///Gets a value indicating if the implementation is an "object" type
 		/// </summary>

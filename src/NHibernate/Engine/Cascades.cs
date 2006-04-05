@@ -589,7 +589,7 @@ namespace NHibernate.Engine
 					IType[ ] types = ctype.Subtypes;
 					for( int i = 0; i < types.Length; i++ )
 					{
-						CascadeStyle componentPropertyStyle = ctype.Cascade( i );
+						CascadeStyle componentPropertyStyle = ctype.GetCascadeStyle( i );
 						if( componentPropertyStyle.DoCascade( action ) )
 						{
 							Cascade( session, children[ i ], types[ i ], action, componentPropertyStyle, cascadeTo, anything );

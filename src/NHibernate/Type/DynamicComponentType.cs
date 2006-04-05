@@ -15,6 +15,7 @@ namespace NHibernate.Type
 	{
 		private string[ ] propertyNames;
 		private IType[ ] propertyTypes;
+		private readonly bool[] propertyNullability;
 		private int propertySpan;
 		private readonly Cascades.CascadeStyle[ ] cascade;
 		private readonly FetchMode[ ] joinedFetch;
@@ -22,18 +23,20 @@ namespace NHibernate.Type
 		public DynamicComponentType(
 			string[ ] propertyNames,
 			IType[ ] propertyTypes,
+			bool[] nullabilities,
 			FetchMode[ ] joinedFetch,
 			Cascades.CascadeStyle[ ] cascade
 			)
 		{
 			this.propertyNames = propertyNames;
 			this.propertyTypes = propertyTypes;
+			this.propertyNullability = nullabilities;
 			this.joinedFetch = joinedFetch;
 			this.cascade = cascade;
 			propertySpan = propertyTypes.Length;
 		}
 
-		public Cascades.CascadeStyle Cascade( int i )
+		public Cascades.CascadeStyle GetCascadeStyle( int i )
 		{
 			return cascade[ i ];
 		}
@@ -342,6 +345,11 @@ namespace NHibernate.Type
 		public override bool IsComponentType
 		{
 			get { return true; }
+		}
+
+		public bool[] PropertyNullability
+		{
+			get { return propertyNullability; }
 		}
 	}
 }

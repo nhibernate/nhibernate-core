@@ -4,6 +4,7 @@ using System.Data;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
@@ -344,20 +345,11 @@ namespace NHibernate.Collection
         /// Reads the row from the <see cref="IDataReader"/>.
         /// </summary>
         /// <param name="reader">The IDataReader that contains the value of the Identifier</param>
-        /// <param name="persister">The persister for this Collection.</param>
-        /// <param name="owner">The owner of this Collection.</param>
+        /// <param name="role">The persister for this Collection.</param>
+		/// <param name="descriptor">The descriptor providing result set column names</param>
+		/// <param name="owner">The owner of this Collection.</param>
         /// <returns>The object that was contained in the row.</returns>
-        public abstract object ReadFrom(IDataReader reader, ICollectionPersister persister, object owner);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="role"></param>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="writeOrder"></param>
-		public abstract void WriteTo( IDbCommand st, ICollectionPersister role, object entry, int i, bool writeOrder );
+        public abstract object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
 
 		/// <summary>
 		/// Get the index of the given collection entry
@@ -366,6 +358,10 @@ namespace NHibernate.Collection
 		/// <param name="i"></param>
 		/// <returns></returns>
 		public abstract object GetIndex( object entry, int i );
+
+		public abstract object GetElement( object entry );
+		
+		public abstract object GetSnapshotElement( object entry, int i );
 
 		/// <summary>
 		/// Called before any elements are read into the collection,
@@ -467,9 +463,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all the elements that need deleting
 		/// </summary>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
-		public abstract ICollection GetDeletes( IType elemType );
+		public abstract ICollection GetDeletes( IType elemType, bool indexIsFormula );
 
 		/// <summary>
 		/// Is this the wrapper for the given underlying collection instance?
@@ -552,7 +546,7 @@ namespace NHibernate.Collection
 			IEnumerator enumer = collection.GetEnumerator();
 			while( enumer.MoveNext() )
 			{
-				PersistentCollection.IdentityRemove( list, enumer.Current, session );
+				IdentityRemove( list, enumer.Current, session );
 			}
 		}
 
@@ -594,6 +588,11 @@ namespace NHibernate.Collection
 			}
 
 			return res;
+		}
+
+		public virtual object GetIdentifier( object entry, int i )
+		{
+			throw new NotSupportedException();
 		}
 
 		public static void IdentityRemove( IList list, object obj, ISessionImplementor session )

@@ -11,7 +11,7 @@ namespace NHibernate.Transform
 			for( int i = 0; i < tuple.Length; i++ )
 			{
 				string alias = aliases[ i ];
-				if( !alias.EndsWith( "_" ) )
+				if( alias != null )
 				{
 					// TODO: Incredibly dodgy!! what if the user defines an alias ending in "_"
 					result[ alias ] = tuple[ i ];

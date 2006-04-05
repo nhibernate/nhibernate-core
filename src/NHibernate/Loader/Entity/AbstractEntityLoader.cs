@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 
+using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister;
@@ -15,193 +17,75 @@ namespace NHibernate.Loader.Entity
 	/// <summary>
 	/// Abstract superclass for entity loaders that use outer joins
 	/// </summary>
-	public abstract class AbstractEntityLoader : OuterJoinLoader
+	public abstract class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
-		private readonly IOuterJoinLoadable persister;
-		private ICollectionPersister collectionPersister;
-		private int collectionOwner;
-		private string alias;
-		private string[ ] aliases;
+		protected static readonly ILog log = LogManager.GetLogger( typeof( AbstractEntityLoader ) );
+		protected readonly IOuterJoinLoadable persister;
+		protected readonly IType uniqueKeyType;
+		protected readonly System.Type entityName;
 
-		public AbstractEntityLoader( IOuterJoinLoadable persister, ISessionFactoryImplementor factory )
-			: base( factory.Dialect )
+		public AbstractEntityLoader(
+			IOuterJoinLoadable persister,
+			IType uniqueKeyType,
+			ISessionFactoryImplementor factory,
+			IDictionary enabledFilters )
+			: base( factory, enabledFilters )
 		{
+			this.uniqueKeyType = uniqueKeyType;
+			this.entityName = persister.MappedClass;
 			this.persister = persister;
-			alias = GenerateRootAlias( persister.ClassName );
 		}
 
-		protected void RenderStatement( IList associations, SqlString condition, ISessionFactoryImplementor factory )
+		public object Load( object id, object optionalObject, ISessionImplementor session )
 		{
-			InitStatementString( associations, condition, string.Empty, factory );
+			return Load( session, id, optionalObject, id );
 		}
 
-		protected void AddAllToPropertySpaces( object[ ] spaces )
+		protected virtual object Load( ISessionImplementor session, object id, object optionalObject, object optionalId )
 		{
-			for( int i = 0; i < spaces.Length; i++ )
+			IList list = LoadEntity(
+				session,
+				id,
+				uniqueKeyType,
+				optionalObject,
+				entityName,
+				optionalId,
+				persister );
+
+			if( list.Count == 1 )
 			{
-				AddToPropertySpaces( spaces[ i ] );
+				return list[ 0 ];
 			}
-		}
-
-		protected virtual void AddToPropertySpaces( object space )
-		{
-			throw new AssertionFailure( "only criteria queries need to autoflush" );
-		}
-
-		protected void InitClassPersisters( IList associations )
-		{
-			int joins = CountClassPersisters( associations );
-
-			collectionOwner = -1; // if no collection found
-			classPersisters = new ILoadable[ joins + 1 ];
-			Owners = new int[ joins + 1 ];
-			aliases = new string[ joins + 1 ];
-			lockModeArray = CreateLockModeArray( joins + 1, LockMode.None );
-			int i = 0;
-			foreach( OuterJoinableAssociation oj in associations )
+			else if( list.Count == 0 )
 			{
-				object subpersister = oj.Joinable;
-				if( subpersister is ILoadable )
+				return null;
+			}
+			else
+			{
+				if( CollectionOwners != null )
 				{
-					classPersisters[ i ] = ( ILoadable ) subpersister;
-					Owners[ i ] = ToOwner( oj, joins, oj.IsOneToOne );
-					aliases[ i ] = oj.Subalias;
-					if( oj.JoinType == JoinType.InnerJoin )
-					{
-						AddAllToPropertySpaces( classPersisters[ i ].PropertySpaces );
-					}
-					i++;
+					return list[ 0 ];
 				}
 				else
 				{
-					IQueryableCollection collPersister = ( IQueryableCollection ) subpersister;
-					// TODO: ?? suppress initialization of collections with a where condition
-					if( oj.JoinType == JoinType.LeftOuterJoin )
-					{
-						collectionPersister = collPersister;
-						collectionOwner = ToOwner( oj, joins, true );
-					}
-					else
-					{
-						AddToPropertySpaces( collPersister.CollectionSpace );
-					}
-
-					if( collPersister.IsOneToMany )
-					{
-						classPersisters[ i ] = ( ILoadable ) collPersister.ElementPersister;
-						aliases[ i ] = oj.Subalias;
-						i++;
-					}
+					throw new HibernateException(
+						"More than one row with the given identifier was found: " +
+						id +
+						", for class: " +
+						persister.MappedClass
+						);
 				}
 			}
-			classPersisters[ joins ] = persister;
-			Owners[ joins ] = -1;
-			aliases[ joins ] = alias;
-
-			if( ArrayHelper.IsAllNegative( Owners ) )
-			{
-				Owners = null;
-			}
 		}
 
-		protected void InitStatementString(
-			IList associations,
-			SqlString condition,
-			string orderBy,
-			ISessionFactoryImplementor factory )
+		protected override object GetResultColumnOrRow(object[] row, System.Data.IDataReader rs, ISessionImplementor session)
 		{
-			int joins = CountClassPersisters( associations );
-
-			Suffixes = GenerateSuffixes( joins + 1 );
-
-			JoinFragment ojf = MergeOuterJoins( associations );
-
-			this.SqlString = new SqlSelectBuilder( factory )
-                .SetSelectClause(
-					persister.SelectFragment( alias, Suffixes[ joins ] ) +
-					SelectString( associations, factory )
-				)
-				.SetFromClause(
-					persister.FromTableFragment( alias ).Append(
-					persister.FromJoinFragment( alias, true, true ) )
-				)
-				.SetWhereClause( condition )
-				.SetOuterJoins(
-					ojf.ToFromFragmentString,
-					ojf.ToWhereFragmentString.Append( GetWhereFragment() )
-				)
-				.SetOrderByClause( orderBy )
-				.ToSqlString();
+			return row[ row.Length - 1 ];
 		}
 
-		/// <summary>
-		/// Include discriminator, don't include the class where string.
-		/// </summary>
-		/// <returns></returns>
-		protected virtual SqlString GetWhereFragment()
+		protected override bool IsSingleRowLoader
 		{
-			return persister.WhereJoinFragment( alias, true, true );
-		}
-
-		/// <summary>
-		/// Gets the <see cref="ILoadable"/> Persister.
-		/// </summary>
-		protected ILoadable Persister
-		{
-			get { return persister; }
-		}
-
-		/// <summary></summary>
-		protected string Alias
-		{
-			get { return alias; }
-			set { alias = value; }
-		}
-
-		/// <summary></summary>
-		protected override ICollectionPersister CollectionPersister
-		{
-			get { return collectionPersister; }
-		}
-
-		/// <summary></summary>
-		protected override int CollectionOwner
-		{
-			get { return collectionOwner; }
-		}
-
-		/// <summary></summary>
-		protected string[ ] EntityAliases
-		{
-			get { return aliases; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="mappingDefault"></param>
-		/// <param name="path"></param>
-		/// <param name="table"></param>
-		/// <param name="foreignKeyColumns"></param>
-		/// <returns></returns>
-		protected override bool IsJoinedFetchEnabled(
-			IType type,
-			bool mappingDefault,
-			string path,
-			string table,
-			string[ ] foreignKeyColumns )
-		{
-			return mappingDefault;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return this.GetType().Name + " for " + Persister.ClassName;
+			get { return true; }
 		}
 	}
 }

@@ -295,7 +295,6 @@ namespace NHibernate.DomainModel
 				session.InitializeEntity(clone);
 			}
 			return clone;
-
 		}
 
 		public ICacheConcurrencyStrategy Cache
@@ -308,7 +307,7 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
-		public void PostInstantiate(ISessionFactoryImplementor factory)
+		public void PostInstantiate()
 		{
 		}
 
@@ -366,6 +365,11 @@ namespace NHibernate.DomainModel
 		public object CreateProxy( object id, ISessionImplementor session )
 		{
 			throw new NotSupportedException("CustomPersister.CreateProxy is not implemented");
+		}
+		
+		public object[] QuerySpaces
+		{
+			get { return null; }
 		}
 		#endregion
 	}

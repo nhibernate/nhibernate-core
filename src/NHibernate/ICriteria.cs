@@ -42,6 +42,12 @@ namespace NHibernate
 		// NH: Static declarations moved to CriteriaUtil class (CriteriaUtil.cs)
 
 		/// <summary>
+		/// Get the alias of the entity encapsulated by this criteria instance.
+		/// </summary>
+		/// <value>The alias for the encapsulated entity.</value>
+		string Alias { get; }
+
+		/// <summary>
 		/// Set a limit upon the number of objects to be retrieved
 		/// </summary>
 		/// <param name="maxResults"></param>
@@ -124,19 +130,7 @@ namespace NHibernate
 		/// <returns></returns>
 		ICriteria CreateCriteria( string associationPath, string alias );
 
-		/// <summary>
-		/// Get the persistent class that this <c>ICriteria</c> applies to
-		/// </summary>
-		System.Type CriteriaClass { get; }
-
 		// NH: Deprecated methods not ported
-
-		/// <summary>
-		/// Get the persistent class that the alias refers to
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		System.Type GetCriteriaClass( string alias );
 
 		/// <summary>
 		/// Set a strategy for handling the query results. This determines the

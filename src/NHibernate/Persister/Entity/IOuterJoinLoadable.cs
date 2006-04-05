@@ -1,4 +1,6 @@
 using System;
+
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
@@ -11,11 +13,6 @@ namespace NHibernate.Persister.Entity
 	/// </summary>
 	public interface IOuterJoinLoadable : ILoadable, IJoinable
 	{
-		/// <summary>
-		/// Get the names of columns used to persist the identifier
-		/// </summary>
-		string[] IdentifierColumnNames { get; }
-
 		/// <summary>
 		/// Get the name of the column used as a discriminator
 		/// </summary>
@@ -33,6 +30,11 @@ namespace NHibernate.Persister.Entity
 		/// <param name="i"></param>
 		/// <returns></returns>
 		FetchMode GetFetchMode( int i );
+
+		/// <summary>
+		/// Get the cascade style of this (subclass closure) property
+		/// </summary>
+		Cascades.CascadeStyle GetCascadeStyle( int i );
 
 		/// <summary>
 		/// Is this property defined on a subclass of the mapped class?
@@ -55,6 +57,11 @@ namespace NHibernate.Persister.Entity
 		/// <param name="i"></param>
 		/// <returns></returns>
 		string GetSubclassPropertyName( int i );
+
+		/// <summary>
+		/// Is the numbered property of the class of subclass nullable?
+		/// </summary>
+		bool IsSubclassPropertyNullable( int i );
 
 		/// <summary>
 		/// Return the column names used to persist all properties of all sublasses of the persistent class
@@ -91,7 +98,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="alias"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		SqlString SelectFragment( string alias, string suffix );
+		string SelectFragment( string alias, string suffix );
 
 		/// <summary>
 		/// Get the column names for the given property path
@@ -102,5 +109,7 @@ namespace NHibernate.Persister.Entity
 		/// Get the table name for the given property path
 		/// </summary>
 		string GetPropertyTableName( string propertyName );
+
+		EntityType EntityType { get; }
 	}
 }

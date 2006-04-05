@@ -3,6 +3,8 @@ using System.Collections;
 using System.Globalization;
 using System.Text;
 
+using NHibernate.SqlCommand;
+
 namespace NHibernate.Util
 {
 	/// <summary></summary>
@@ -33,6 +35,8 @@ namespace NHibernate.Util
 		public const string NamePrefix = ":";
 		/// <summary></summary>
 		public const string SqlParameter = "?";
+
+		public const int AliasTruncateLength = 10;
 
 		public static string Join( string separator, IEnumerable objects )
 		{
@@ -420,6 +424,11 @@ namespace NHibernate.Util
 			return str != null && str.Length > 0;
 		}
 
+		public static bool IsNotEmpty( SqlString str )
+		{
+			return str != null && str.Count > 0;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -489,23 +498,45 @@ namespace NHibernate.Util
 			return str.Length - 1;
 		}
 
+		public static string UnqualifyEntityName( string entityName )
+		{
+			string result = Unqualify( entityName );
+			int slashPos = result.IndexOf( '/' );
+			if( slashPos > 0 )
+			{
+				result = result.Substring( 0, slashPos - 1);
+			}
+			return result;
+		}
+
 		/// <summary>
 		/// Generate a nice alias for the given class name or collection role
 		/// name and unique integer. Subclasses do <em>not</em> have to use
 		/// aliases of this form.
 		/// </summary>
-		/// <param name="description"></param>
-		/// <param name="unique"></param>
 		/// <returns>an alias of the form <c>foo1_</c></returns>
 		public static string GenerateAlias( string description, int unique )
 		{
-			// TODO H3: update to H3
-			return Truncate( Unqualify( description ).TrimStart( '_' ), 10 )
-			       	.ToLower( CultureInfo.InvariantCulture )
-			       	.Replace( '$', '_' )
-			       	.Replace( '+', '_' ) + // .NET inner classes
-			       unique.ToString() +
-			       Underscore;
+			return GenerateAliasRoot( description ) +
+				unique.ToString() +
+				Underscore;
+		}
+
+		private static string GenerateAliasRoot( string description )
+		{
+			string result = Truncate( UnqualifyEntityName( description ), AliasTruncateLength )
+				.ToLower( CultureInfo.InvariantCulture )
+				.Replace( '/', '_' ) // entityNames may now include slashes for the representations
+				.Replace( '+', '_' ); // classname may be an inner class
+
+			if( char.IsDigit( result, result.Length - 1 ) )
+			{
+				return result + "x"; //ick!
+			}
+			else
+			{
+				return result;
+			}
 		}
 
 		public static string MoveAndToBeginning( string filter )
@@ -519,6 +550,12 @@ namespace NHibernate.Util
 				}
 			}
 			return filter;
+		}
+
+		public static string Unroot( string qualifiedName )
+		{
+			int loc = qualifiedName.IndexOf( "." );
+			return ( loc < 0 ) ? qualifiedName : qualifiedName.Substring( loc + 1 );
 		}
 	}
 }

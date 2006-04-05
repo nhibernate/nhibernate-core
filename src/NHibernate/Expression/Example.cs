@@ -253,16 +253,12 @@ namespace NHibernate.Expression
 				_selector.Include( value, name, type );
 		}
 
-		public override SqlString ToSqlString(
-			ISessionFactoryImplementor factory,
-			System.Type persistentClass,
-			string alias,
-			IDictionary aliasClasses )
+		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add( StringHelper.OpenParen );
 
-			IClassMetadata meta = factory.GetClassMetadata( persistentClass );
+			IClassMetadata meta = criteriaQuery.Factory.GetClassMetadata( criteriaQuery.GetEntityName( criteria ) );
 			String[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
 			object[] propertyValues = meta.GetPropertyValues( _entity );
@@ -281,10 +277,8 @@ namespace NHibernate.Expression
 							propertyName,
 							propertyValue,
 							(IAbstractComponentType)propertyTypes[ i ],
-							persistentClass,
-							alias,
-							aliasClasses,
-							factory,
+							criteria,
+							criteriaQuery,
 							builder
 							);
 					}
@@ -293,10 +287,8 @@ namespace NHibernate.Expression
 						AppendPropertyCondition(
 							propertyName,
 							propertyValue,
-							persistentClass,
-							alias,
-							aliasClasses,
-							factory,
+							criteria,
+							criteriaQuery,
 							builder
 							);
 					}
@@ -311,9 +303,9 @@ namespace NHibernate.Expression
 			return builder.ToSqlString();
 		}
 
-		public override TypedValue[] GetTypedValues(ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses)
+		public override TypedValue[] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
-			IClassMetadata meta = sessionFactory.GetClassMetadata( persistentClass );
+			IClassMetadata meta = criteriaQuery.Factory.GetClassMetadata( criteriaQuery.GetEntityName( criteria ) );
 			string[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
 			object[] values = meta.GetPropertyValues( _entity );
@@ -409,10 +401,8 @@ namespace NHibernate.Expression
 		protected void AppendPropertyCondition(
 			String propertyName,
 			object propertyValue,
-			System.Type persistentClass,
-			String alias,
-			IDictionary aliasClasses,
-			ISessionFactoryImplementor sessionFactory,
+			ICriteria criteria,
+			ICriteriaQuery cq,
 			SqlStringBuilder builder)
 		{
 			if( builder.Count > 1 )
@@ -433,17 +423,15 @@ namespace NHibernate.Expression
 			{
 				crit = new NullExpression( propertyName );
 			}
-			builder.Add( crit.ToSqlString( sessionFactory, persistentClass, alias, aliasClasses ) );
+			builder.Add( crit.ToSqlString( criteria, cq ) );
 		}
 
 		protected void AppendComponentCondition(
 			String path,
 			object component,
 			IAbstractComponentType type,
-			System.Type persistentClass,
-			String alias,
-			IDictionary aliasClasses,
-			ISessionFactoryImplementor sessionFactory,
+			ICriteria criteria,
+			ICriteriaQuery criteriaQuery,
 			SqlStringBuilder builder)
 		{
 			if( component != null )
@@ -464,10 +452,8 @@ namespace NHibernate.Expression
 								subpath,
 								value,
 								(IAbstractComponentType)subtype,
-								persistentClass,
-								alias,
-								aliasClasses,
-								sessionFactory,
+								criteria,
+								criteriaQuery,
 								builder );
 						}
 						else
@@ -475,10 +461,8 @@ namespace NHibernate.Expression
 							AppendPropertyCondition(
 								subpath,
 								value,
-								persistentClass,
-								alias,
-								aliasClasses,
-								sessionFactory,
+								criteria,
+								criteriaQuery,
 								builder
 								);
 						}

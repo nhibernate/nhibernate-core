@@ -14,10 +14,10 @@ namespace NHibernate.Util
 	/// </summary>
 	public sealed class ArrayHelper
 	{
-		public static readonly object[] EmptyObjectArray = new object[0];
-		public static readonly IType[] EmptyTypeArray = new IType[0];
-		public static readonly int[] EmptyIntArray = new int[0];
-		public static readonly bool[] EmptyBoolArray = new bool[0];
+		public static readonly object[ ] EmptyObjectArray = new object[0];
+		public static readonly IType[ ] EmptyTypeArray = new IType[0];
+		public static readonly int[ ] EmptyIntArray = new int[0];
+		public static readonly bool[ ] EmptyBoolArray = new bool[0];
 
 		private ArrayHelper()
 		{
@@ -28,7 +28,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="array"></param>
 		/// <returns></returns>
-		public static bool IsAllNegative( int[] array )
+		public static bool IsAllNegative( int[ ] array )
 		{
 			for( int i = 0; i < array.Length; i++ )
 			{
@@ -47,7 +47,7 @@ namespace NHibernate.Util
 		/// <param name="lhs">The byte[] array on the Left Hand Side </param>
 		/// <param name="rhs">The byte[] array on the Right Hand Side</param>
 		/// <returns>true if they contain the same items</returns>
-		public static bool Equals( byte[] lhs, byte[] rhs )
+		public static bool Equals( byte[ ] lhs, byte[ ] rhs )
 		{
 			// just for luck, check for reference equality
 			if( lhs == rhs )
@@ -123,18 +123,12 @@ namespace NHibernate.Util
 			}
 
 			return true;
-
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="objects"></param>
-		/// <returns></returns>
-		public static string[] ToStringArray( object[] objects )
+		public static string[ ] ToStringArray( object[ ] objects )
 		{
 			int length = objects.Length;
-			string[] result = new string[length];
+			string[ ] result = new string[length];
 			for( int i = 0; i < length; i++ )
 			{
 				result[ i ] = objects[ i ].ToString();
@@ -142,15 +136,9 @@ namespace NHibernate.Util
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="str"></param>
-		/// <param name="length"></param>
-		/// <returns></returns>
-		public static string[] FillArray( string str, int length )
+		public static string[ ] FillArray( string str, int length )
 		{
-			string[] result = new string[length];
+			string[ ] result = new string[length];
 			for( int i = 0; i < length; i++ )
 			{
 				result[ i ] = str;
@@ -158,9 +146,9 @@ namespace NHibernate.Util
 			return result;
 		}
 
-		public static LockMode[] FillArray( LockMode lockMode, int length )
+		public static LockMode[ ] FillArray( LockMode lockMode, int length )
 		{
-			LockMode[] result = new LockMode[length];
+			LockMode[ ] result = new LockMode[length];
 			for( int i = 0; i < length; i++ )
 			{
 				result[ i ] = lockMode;
@@ -168,153 +156,89 @@ namespace NHibernate.Util
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="coll"></param>
-		/// <returns></returns>
-		public static string[] ToStringArray( ICollection coll )
+		public static IType[ ] FillArray( IType type, int length )
 		{
-			string[] result = new string[coll.Count];
-			int i = 0;
-			foreach( object obj in coll )
-			{
-				result[ i++ ] = obj.ToString();
-			}
-			return result;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="coll"></param>
-		/// <returns></returns>
-		public static int[] ToIntArray( ICollection coll )
-		{
-			int[] result = new int[coll.Count];
-			int i = 0;
-			foreach( object obj in coll )
-			{
-				result[ i++ ] = int.Parse( obj.ToString() );
-			}
-			return result;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="strings"></param>
-		/// <param name="begin"></param>
-		/// <param name="length"></param>
-		/// <returns></returns>
-		public static string[] Slice( string[] strings, int begin, int length )
-		{
-			string[] result = new string[length];
+			IType[ ] result = new IType[length];
 			for( int i = 0; i < length; i++ )
 			{
-				result[ i ] = strings[ begin + i ];
+				result[ i ] = type;
 			}
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="objects"></param>
-		/// <param name="begin"></param>
-		/// <param name="length"></param>
-		/// <returns></returns>
-		public static object[] Slice( object[] objects, int begin, int length )
+		public static string[ ] ToStringArray( ICollection coll )
 		{
-			object[] result = new object[length];
-			for( int i = 0; i < length; i++ )
-			{
-				result[ i ] = objects[ begin + i ];
-			}
-			return result;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public static string[] Join( string[] x, string[] y )
-		{
-			string[] result = new string[x.Length + y.Length];
-			for( int i = 0; i < x.Length; i++ )
-			{
-				result[ i ] = x[ i ];
-			}
-			for( int i = 0; i < y.Length; i++ )
-			{
-				result[ i + x.Length ] = y[ i ];
-			}
-			return result;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public static DbType[] Join( DbType[] x, DbType[] y )
-		{
-			DbType[] result = new DbType[x.Length + y.Length];
-			for( int i = 0; i < x.Length; i++ )
-			{
-				result[ i ] = x[ i ];
-			}
-			for( int i = 0; i < y.Length; i++ )
-			{
-				result[ i + x.Length ] = y[ i ];
-			}
-			return result;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public static SqlType[] Join( SqlType[] x, SqlType[] y )
-		{
-			SqlType[] result = new SqlType[x.Length + y.Length];
-			for( int i = 0; i < x.Length; i++ )
-			{
-				result[ i ] = x[ i ];
-			}
-			for( int i = 0; i < y.Length; i++ )
-			{
-				result[ i + x.Length ] = y[ i ];
-			}
-			return result;
-		}
-
-		public static bool IsAllFalse( bool[] array )
-		{
-			foreach( bool value in array )
-			{
-				if( value )
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		public static string[][] To2DStringArray( ICollection coll )
-		{
-			string[][] result = new string[coll.Count][];
+			string[ ] result = new string[coll.Count];
 			coll.CopyTo( result, 0 );
 			return result;
 		}
 
-		public static string ToString( object[] array )
+		public static int[ ] ToIntArray( ICollection coll )
+		{
+			int[ ] result = new int[coll.Count];
+			coll.CopyTo( result, 0 );
+			return result;
+		}
+
+		public static string[ ] Slice( string[ ] strings, int begin, int length )
+		{
+			string[ ] result = new string[length];
+			Array.Copy( strings, begin, result, 0, length );
+			return result;
+		}
+
+		public static object[ ] Slice( object[ ] objects, int begin, int length )
+		{
+			object[ ] result = new object[length];
+			Array.Copy( objects, begin, result, 0, length );
+			return result;
+		}
+
+		public static string[ ] Join( string[ ] x, string[ ] y )
+		{
+			string[ ] result = new string[x.Length + y.Length];
+			Array.Copy( x, 0, result, 0, x.Length );
+			Array.Copy( y, 0, result, x.Length, y.Length );
+			return result;
+		}
+
+		public static DbType[ ] Join( DbType[ ] x, DbType[ ] y )
+		{
+			DbType[ ] result = new DbType[x.Length + y.Length];
+			Array.Copy( x, 0, result, 0, x.Length );
+			Array.Copy( y, 0, result, x.Length, y.Length );
+			return result;
+		}
+
+		public static SqlType[ ] Join( SqlType[ ] x, SqlType[ ] y )
+		{
+			SqlType[ ] result = new SqlType[x.Length + y.Length];
+			Array.Copy( x, 0, result, 0, x.Length );
+			Array.Copy( y, 0, result, x.Length, y.Length );
+			return result;
+		}
+
+		public static object[ ] Join( object[ ] x, object[ ] y )
+		{
+			object[ ] result = new object[ x.Length + y.Length ];
+			Array.Copy( x, 0, result, 0, x.Length );
+			Array.Copy( y, 0, result, x.Length, y.Length );
+			return result;
+		}
+
+		public static bool IsAllFalse( bool[ ] array )
+		{
+			return Array.IndexOf( array, true ) < 0;
+		}
+
+		public static string[ ][ ] To2DStringArray( ICollection coll )
+		{
+			string[ ][ ] result = new string[coll.Count][ ];
+			coll.CopyTo( result, 0 );
+			return result;
+		}
+
+		public static string ToString( object[ ] array )
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.Append( "[" );
@@ -336,6 +260,45 @@ namespace NHibernate.Util
 			foreach( object obj in from )
 			{
 				to.Add( obj );
+			}
+		}
+
+		public static int[ ] GetBatchSizes( int maxBatchSize )
+		{
+			int batchSize = maxBatchSize;
+			int n = 1;
+
+			while( batchSize > 1 )
+			{
+				batchSize = GetNextBatchSize( batchSize );
+				n++;
+			}
+
+			int[ ] result = new int[n];
+			batchSize = maxBatchSize;
+
+			for( int i = 0; i < n; i++ )
+			{
+				result[ i ] = batchSize;
+				batchSize = GetNextBatchSize( batchSize );
+			}
+
+			return result;
+		}
+
+		private static int GetNextBatchSize( int batchSize )
+		{
+			if( batchSize <= 10 )
+			{
+				return batchSize - 1; // allow 9,8,7,6,5,4,3,2,1
+			}
+			else if( batchSize/2 < 10 )
+			{
+				return 10;
+			}
+			else
+			{
+				return batchSize/2;
 			}
 		}
 	}

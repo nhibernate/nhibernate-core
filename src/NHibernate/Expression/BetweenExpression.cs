@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -30,21 +29,21 @@ namespace NHibernate.Expression
 			_hi = hi;
 		}
 
-		public override SqlString ToSqlString( ISessionFactoryImplementor factory, System.Type persistentClass, string alias, IDictionary aliasClasses )
+		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			//TODO: add a default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-
-			IType propertyType = AbstractCriterion.GetType( factory, persistentClass,_propertyName, aliasClasses );
-			string[ ] columnNames = AbstractCriterion.GetColumns( factory, persistentClass, _propertyName, alias, aliasClasses );
+			
+			IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
+			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
 
 			Parameter[ ] loParameters = Parameter.GenerateParameters(
-				factory,
+				criteriaQuery.Factory,
 				StringHelper.Suffix( columnNames, "_lo" ),
 				propertyType );
 
 			Parameter[ ] hiParameters = Parameter.GenerateParameters(
-				factory,
+				criteriaQuery.Factory,
 				StringHelper.Suffix( columnNames, "_hi" ),
 				propertyType );
 			
@@ -68,12 +67,12 @@ namespace NHibernate.Expression
 			return sqlBuilder.ToSqlString();
 		}
 
-		public override TypedValue[ ] GetTypedValues( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, IDictionary aliasClasses )
+		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			return new TypedValue[ ]
 				{
-					AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _lo, aliasClasses ),
-					AbstractCriterion.GetTypedValue( sessionFactory, persistentClass, _propertyName, _hi, aliasClasses )
+					criteriaQuery.GetTypedValue( criteria, _propertyName, _lo ),
+					criteriaQuery.GetTypedValue( criteria, _propertyName, _hi )
 				};
 		}
 

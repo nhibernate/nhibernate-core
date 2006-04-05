@@ -1,5 +1,9 @@
 using System.Collections;
+using System.Text;
+
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
+using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
@@ -27,18 +31,39 @@ namespace NHibernate.Expression
 		/// <summary>
 		/// Render the SQL fragment
 		/// </summary>
-		/// <param name="sessionFactory"></param>
-		/// <param name="persistentClass"></param>
-		/// <param name="alias"></param>
-		/// <returns></returns>
-		public string ToSqlString( ISessionFactoryImplementor sessionFactory, System.Type persistentClass, string alias )
+		public string ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
-			string[ ] columns = AbstractCriterion.GetColumns( sessionFactory, persistentClass, _propertyName, alias, emptyMap );
-			if( columns.Length != 1 )
+			string[ ] columns = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
+			IType type = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
+
+			StringBuilder fragment = new StringBuilder();
+
+			ISessionFactoryImplementor factory = criteriaQuery.Factory;
+			for( int i = 0; i < columns.Length; i++ )
 			{
-				throw new HibernateException( "Cannot order by multi-column property: " + _propertyName );
+				// TODO H3: bool lower = _ignoreCase && type.SqlTypes( factory )[ i ] == Types.VARCHAR
+				bool lower = false;
+				if( lower )
+				{
+					fragment.Append( factory.Dialect.LowercaseFunction )
+						.Append( '(' );
+				}
+				fragment.Append( columns[ i ] );
+				
+				if( lower )
+				{
+					fragment.Append( ')' );
+				}
+				
+				fragment.Append( _ascending ? " asc" : " desc" );
+				
+				if( i < columns.Length - 1)
+				{
+					fragment.Append( ", " );
+				}
 			}
-			return columns[ 0 ] + ( _ascending ? " asc" : " desc" );
+			
+			return fragment.ToString();
 		}
 
 		/// <summary>

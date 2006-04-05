@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using Iesi.Collections;
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
@@ -55,11 +56,6 @@ namespace NHibernate.Collection
 			return clonedMap;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="snapshot"></param>
-		/// <returns></returns>
 		public override ICollection GetOrphans( object snapshot )
 		{
 			/*
@@ -73,10 +69,6 @@ namespace NHibernate.Collection
 			return PersistentCollection.GetOrphans( sn.Keys, internalSet, Session );
 		}
 
-		/// <summary>
-		/// <see cref="IPersistentCollection.EqualsSnapshot"/>
-		/// </summary>
-		/// <param name="elementType"></param>
 		public override bool EqualsSnapshot( IType elementType )
 		{
 			IDictionary snapshot = ( IDictionary ) GetSnapshot();
@@ -99,11 +91,6 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
 		public override bool IsWrapper( object collection )
 		{
 			return internalSet == collection;
@@ -112,7 +99,6 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// This constructor is NOT meant to be called from user code.
 		/// </summary>
-		/// <param name="session"></param>
 		public Set( ISessionImplementor session ) : base( session )
 		{
 		}
@@ -121,8 +107,6 @@ namespace NHibernate.Collection
 		/// Creates a new Set initialized to the values in the Map.
 		/// This constructor is NOT meant to be called from user code.
 		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="collection"></param>
 		/// <remarks>
 		/// Only call this constructor if you consider the map initialized.
 		/// </remarks>
@@ -150,10 +134,6 @@ namespace NHibernate.Collection
 			SetInitialized();
 		}
 
-		/// <summary>
-		/// <see cref="IPersistentCollection.BeforeInitialize"/>
-		/// </summary>
-		/// <param name="persister"></param>
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			if( persister.HasOrdering )
@@ -382,54 +362,20 @@ namespace NHibernate.Collection
 
 		#endregion
 
-		/*
-		/// <summary>
-		/// <see cref="PersistentCollection.Elements"/>
-		/// </summary>
-		public override ICollection Elements()
-		{
-			return internalSet;
-		}
-		*/
-
-		/// <summary>
-		/// <see cref="IPersistentCollection.Empty"/>
-		/// </summary>
 		public override bool Empty
 		{
 			get { return internalSet.Count == 0; }
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			Read();
 			return internalSet.ToString();
 		}
 
-		/// <summary>
-		/// <see cref="IPersistentCollection.WriteTo"/>
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="persister"></param>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="writeOrder"></param>
-		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
+		public override object ReadFrom( IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner )
 		{
-			persister.WriteElement( st, entry, writeOrder, Session );
-		}
-
-		/// <summary>
-		/// <see cref="IPersistentCollection.ReadFrom"/>
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
-		{
-			object element = persister.ReadElement(rs, owner, Session);
+			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			tempList.Add( element );
 			return element;
 		}
@@ -457,19 +403,11 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		/// <summary>
-		/// <see cref="IPersistentCollection.Entries"/>
-		/// </summary>
 		public override IEnumerable Entries()
 		{
 			return internalSet;
 		}
 
-
-		/// <summary>
-		/// <see cref="IPersistentCollection.Disassemble"/>
-		/// </summary>
-		/// <param name="persister"></param>
 		public override object Disassemble( ICollectionPersister persister )
 		{
 			object[ ] result = new object[internalSet.Count];
@@ -482,11 +420,7 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		/// <summary>
-		/// <see cref="IPersistentCollection.GetDeletes"/>
-		/// </summary>
-		/// <param name="elemType"></param>
-		public override ICollection GetDeletes( IType elemType )
+		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
 			IList deletes = new ArrayList();
 			IDictionary snapshot = ( IDictionary ) GetSnapshot();
@@ -517,13 +451,6 @@ namespace NHibernate.Collection
 
 		}
 
-		/// <summary>
-		/// <see cref="IPersistentCollection.NeedsInserting"/>
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsInserting( object entry, int i, IType elemType )
 		{
 			IDictionary sn = ( IDictionary ) GetSnapshot();
@@ -535,35 +462,26 @@ namespace NHibernate.Collection
 
 		}
 
-		/// <summary>
-		/// <see cref="IPersistentCollection.NeedsUpdating"/>
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsUpdating( object entry, int i, IType elemType )
 		{
 			return false;
 		}
 
-		/// <summary>
-		/// <see cref="IPersistentCollection.GetIndex"/>
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public override object GetIndex( object entry, int i )
 		{
 			throw new NotImplementedException( "Sets don't have indexes" );
 		}
 
-		/// <summary>
-		/// <see cref="IPersistentCollection.EntryExists"/>
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
+		public override object GetElement(object entry)
+		{
+			return entry;
+		}
+
+		public override object GetSnapshotElement(object entry, int i)
+		{
+			throw new NotSupportedException( "Sets don't support updating by element" );
+		}
+
 		public override bool EntryExists( object entry, int i )
 		{
 			return true;

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
@@ -36,11 +37,6 @@ namespace NHibernate.Collection
 			return clonedList;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="snapshot"></param>
-		/// <returns></returns>
 		public override ICollection GetOrphans( object snapshot )
 		{
 			IList sn = ( IList ) snapshot;
@@ -156,17 +152,12 @@ namespace NHibernate.Collection
 			return list.Contains( obj );
 		}
 
-		/// <summary></summary>
 		public IEnumerator GetEnumerator()
 		{
 			Read();
 			return list.GetEnumerator();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="coll"></param>
 		public override void DelayedAddAll( ICollection coll )
 		{
 			foreach( object obj in coll )
@@ -175,11 +166,6 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		public int Add( object obj )
 		{
 			// can't perform a Queued Addition because the non-generic
@@ -189,35 +175,24 @@ namespace NHibernate.Collection
 			return list.Add( obj );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="obj"></param>
 		public void Insert( int index, object obj )
 		{
 			Write();
 			list.Insert( index, obj );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
 		public void Remove( object obj )
 		{
 			Write();
 			list.Remove( obj );
 		}
 
-		/// <summary></summary>
 		public void Clear()
 		{
 			Write();
 			list.Clear();
 		}
 
-		/// <summary></summary>
 		public object this[ int index ]
 		{
 			get
@@ -232,65 +207,33 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="index"></param>
 		public void RemoveAt( int index )
 		{
 			Write();
 			list.RemoveAt( index );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		public int IndexOf( object obj )
 		{
 			Read();
 			return list.IndexOf( obj );
 		}
 
-		/// <summary></summary>
 		public override bool Empty
 		{
 			get { return list.Count == 0; }
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			Read();
 			return list.ToString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="persister"></param>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="writeOrder"></param>
-		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
+		public override object ReadFrom( IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner )
 		{
-			persister.WriteElement( st, entry, writeOrder, Session );
-			persister.WriteIndex( st, i, writeOrder, Session );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
-		{
-			object element = persister.ReadElement(rs, owner, Session);
-			int index = (int)persister.ReadIndex( rs, Session );
+			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
+			int index = (int)role.ReadIndex( rs, descriptor.SuffixedIndexAliases, Session );
 
 			for( int i=list.Count; i<=index; i++ )
 			{
@@ -301,7 +244,6 @@ namespace NHibernate.Collection
 			return element;
 		}
 
-		/// <summary></summary>
 		public override IEnumerable Entries()
 		{
 			return list;
@@ -324,11 +266,6 @@ namespace NHibernate.Collection
 			SetInitialized();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
 		public override object Disassemble( ICollectionPersister persister )
 		{
 			int length = list.Count;
@@ -340,12 +277,7 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
-		public override ICollection GetDeletes( IType elemType )
+		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
 			IList deletes = new ArrayList();
 			IList sn = ( IList ) GetSnapshot();
@@ -354,7 +286,7 @@ namespace NHibernate.Collection
 			{
 				for( int i = list.Count; i < sn.Count; i++ )
 				{
-					deletes.Add( i );
+					deletes.Add( indexIsFormula ? sn[ i ] : i );
 				}
 				end = list.Count;
 			}
@@ -366,61 +298,43 @@ namespace NHibernate.Collection
 			{
 				if( list[ i ] == null && sn[ i ] != null )
 				{
-					deletes.Add( i );
+					deletes.Add( indexIsFormula ? sn[ i ] : i );
 				}
 			}
 			return deletes;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsInserting( object entry, int i, IType elemType )
 		{
 			IList sn = ( IList ) GetSnapshot();
 			return list[ i ] != null && ( i >= sn.Count || sn[ i ] == null );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsUpdating( object entry, int i, IType elemType )
 		{
 			IList sn = ( IList ) GetSnapshot();
 			return i < sn.Count && sn[ i ] != null && list[ i ] != null && elemType.IsDirty( list[ i ], sn[ i ], Session );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public override object GetIndex( object entry, int i )
 		{
 			return i;
 		}
 
+		public override object GetElement(object entry)
+		{
+			return entry;
+		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
+		public override object GetSnapshotElement(object entry, int i)
+		{
+			IList sn = ( IList ) GetSnapshot();
+			return sn[ i ];
+		}
+
 		public override bool EntryExists( object entry, int i )
 		{
 			return entry != null;
 		}
-
-
 	}
 }

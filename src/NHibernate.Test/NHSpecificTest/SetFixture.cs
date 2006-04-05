@@ -133,6 +133,11 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
+		public string GetManyToManyFilterFragment( string alias, IDictionary enabledFilters )
+		{
+			throw new NotImplementedException();
+		}
+
 		public System.Type ElementClass
 		{
 			get
@@ -215,7 +220,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add CollectionPersisterStub.Remove implementation
 		}
 
-		public object ReadElement(System.Data.IDataReader rs, object owner, ISessionImplementor session)
+		public object ReadElement(System.Data.IDataReader rs, object owner, string[] aliases, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadElement implementation
 			return null;
@@ -239,15 +244,10 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public object ReadIndex(System.Data.IDataReader rs, ISessionImplementor session)
+		public object ReadIndex(System.Data.IDataReader rs, string[] aliases, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadIndex implementation
 			return null;
-		}
-
-		public void WriteKey(System.Data.IDbCommand st, object key, bool writeOrder, ISessionImplementor session)
-		{
-			// TODO:  Add CollectionPersisterStub.WriteKey implementation
 		}
 
 		public void Initialize(object key, ISessionImplementor session)
@@ -255,7 +255,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add CollectionPersisterStub.Initialize implementation
 		}
 
-		public object ReadKey(System.Data.IDataReader rs, ISessionImplementor session)
+		public object ReadKey(System.Data.IDataReader rs, string[] aliases, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadKey implementation
 			return null;
@@ -297,15 +297,10 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public object ReadIdentifier(System.Data.IDataReader rs, ISessionImplementor session)
+		public object ReadIdentifier(System.Data.IDataReader rs, string alias, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadIdentifier implementation
 			return null;
-		}
-
-		public void WriteIndex(System.Data.IDbCommand st, object idx, bool writeOrder, ISessionImplementor session)
-		{
-			// TODO:  Add CollectionPersisterStub.WriteIndex implementation
 		}
 
 		public object CollectionSpace
@@ -326,13 +321,28 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public void WriteIdentifier(System.Data.IDbCommand st, object idx, bool writeOrder, ISessionImplementor session)
-		{
-			// TODO:  Add CollectionPersisterStub.WriteIdentifier implementation
-		}
-
 		public void PostInstantiate()
 		{
+		}
+
+		public string[ ] GetKeyColumnAliases( string suffix )
+		{
+			return null;
+		}
+
+		public string[ ] GetIndexColumnAliases( string suffix )
+		{
+			return null;
+		}
+
+		public string[ ] GetElementColumnAliases( string suffix )
+		{
+			return null;
+		}
+
+		public string GetIdentifierColumnAlias( string suffix )
+		{
+			return null;
 		}
 
 		#endregion

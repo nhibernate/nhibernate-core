@@ -4952,10 +4952,10 @@ namespace NHibernate.Test.Legacy
 			{
 				bool proxyBoolean = ( ( FooProxy ) s.Load( typeof( Foo ), id ) ).Boolean;
 			}
-				// this won't work until Proxies are implemented because now it throws an 
-				// ObjectNotFoundException
-			catch( LazyInitializationException lie )
+			catch( ObjectNotFoundException lie )
 			{
+				// Proxy initialization which failed because the object was not found
+				// now throws ONFE instead of LazyInitializationException
 				Assert.IsNotNull( lie ); //getting ride of 'lie' is never used compile warning
 				err = true;
 			}

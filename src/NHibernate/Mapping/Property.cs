@@ -93,7 +93,7 @@ namespace NHibernate.Mapping
 					int length = actype.Subtypes.Length;
 					for( int i = 0; i < length; i++ )
 					{
-						if( actype.Cascade( i ) != Cascades.CascadeStyle.StyleNone )
+						if( actype.GetCascadeStyle( i ) != Cascades.CascadeStyle.StyleNone )
 						{
 							return Cascades.CascadeStyle.StyleAll;
 						}

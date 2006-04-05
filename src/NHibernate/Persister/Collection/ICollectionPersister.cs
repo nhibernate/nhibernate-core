@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Data;
 
 using NHibernate.Cache;
@@ -73,74 +74,29 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Read the key from a row of the <see cref="IDataReader" />
 		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		object ReadKey( IDataReader rs, ISessionImplementor session );
+		object ReadKey( IDataReader rs, string[] keyAliases, ISessionImplementor session );
 
 		/// <summary>
 		/// Read the element from a row of the <see cref="IDataReader" />
 		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="owner"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		//TODO: the ReadElement should really be a parameterized TElement
-		object ReadElement( IDataReader rs, object owner, ISessionImplementor session );
+		object ReadElement(
+			IDataReader rs,
+			object owner,
+			string[] columnAliases,
+			ISessionImplementor session );
 
 		/// <summary>
 		/// Read the index from a row of the <see cref="IDataReader" />
 		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		//TODO: the ReadIndex should really be a parameterized TIndex
-		object ReadIndex(IDataReader rs, ISessionImplementor session);
+		object ReadIndex( IDataReader rs, string[] columnAliases, ISessionImplementor session );
 
 		/// <summary>
 		/// Read the identifier from a row of the <see cref="IDataReader" />
 		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		//TODO: the ReadIdentifier should really be a parameterized TIdentifier
-		object ReadIdentifier(IDataReader rs, ISessionImplementor session);
-
-		/// <summary>
-		/// Write the key to an <see cref="IDbCommand" />
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="key"></param>
-		/// <param name="writeOrder"></param>
-		/// <param name="session"></param>
-		void WriteKey( IDbCommand st, object key, bool writeOrder, ISessionImplementor session );
-
-		/// <summary>
-		/// Write the element to an <see cref="IDbCommand" />
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="elt"></param>
-		/// <param name="writeOrder"></param>
-		/// <param name="session"></param>
-		void WriteElement( IDbCommand st, object elt, bool writeOrder, ISessionImplementor session );
-
-		/// <summary>
-		/// Write the index to an <see cref="IDbCommand" />
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="idx"></param>
-		/// <param name="writeOrder"></param>
-		/// <param name="session"></param>
-		void WriteIndex( IDbCommand st, object idx, bool writeOrder, ISessionImplementor session );
-
-		/// <summary>
-		/// Write the identifier to an <see cref="IDbCommand" />
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="idx"></param>
-		/// <param name="writeOrder"></param>
-		/// <param name="session"></param>
-		void WriteIdentifier( IDbCommand st, object idx, bool writeOrder, ISessionImplementor session );
+		object ReadIdentifier( IDataReader rs, string columnAlias, ISessionImplementor session );
 
 		/// <summary>
 		/// Is this an array or primitive values?
@@ -156,6 +112,8 @@ namespace NHibernate.Persister.Collection
 		/// Is this a one-to-many association?
 		/// </summary>
 		bool IsOneToMany { get; }
+
+		string GetManyToManyFilterFragment( string alias, IDictionary enabledFilters );
 
 		/// <summary>
 		/// Is this an "indexed" collection? (list or map)
@@ -251,5 +209,37 @@ namespace NHibernate.Persister.Collection
 		ICollectionMetadata CollectionMetadata { get; }
 
 		void PostInstantiate();
+
+		/// <summary>
+		/// Generates the collection's key column aliases, based on the given
+		/// suffix.
+		/// </summary>
+		/// <param name="suffix">The suffix to use in the key column alias generation.</param>
+		/// <returns>The key column aliases.</returns>
+		string[] GetKeyColumnAliases( string suffix );
+
+		/// <summary>
+		/// Generates the collection's index column aliases, based on the given
+		/// suffix.
+		/// </summary>
+		/// <param name="suffix">The suffix to use in the index column alias generation.</param>
+		/// <returns>The index column aliases, or null if not indexed.</returns>
+		string[] GetIndexColumnAliases( string suffix );
+
+		/// <summary>
+		/// Generates the collection's element column aliases, based on the given
+		/// suffix.
+		/// </summary>
+		/// <param name="suffix">The suffix to use in the element column alias generation.</param>
+		/// <returns>The element column aliases.</returns>
+		string[] GetElementColumnAliases( string suffix );
+
+		/// <summary>
+		/// Generates the collection's identifier column aliases, based on the given
+		/// suffix.
+		/// </summary>
+		/// <param name="suffix">The suffix to use in the identifier column alias generation.</param>
+		/// <returns>The identifier column aliases.</returns>
+		string GetIdentifierColumnAlias( string suffix );
 	}
 }

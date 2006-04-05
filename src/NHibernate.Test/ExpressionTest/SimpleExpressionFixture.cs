@@ -30,18 +30,20 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 			
+			CreateObjects( typeof( Simple ), session );
+			
 			NExpression.ICriterion andExpression = NExpression.Expression.Eq("Address", "12 Adress");
 
-			SqlString sqlString = andExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
+			SqlString sqlString = andExpression.ToSqlString( criteria, criteriaQuery );
 
-			string expectedSql = "simple_alias.address = :simple_alias.address";
+			string expectedSql = "sql_alias.address = :sql_alias.address";
 			Parameter[] expectedParams = new Parameter[1];
 			
 			// even though a String parameter is a Size based Parameter it will not
 			// be a ParameterLength unless in the mapping file it is defined as
 			// type="String(200)" -> in the mapping file it is now defined as 
 			// type="String" length="200"
-			Parameter firstAndParam = new Parameter( "address", "simple_alias", new SqlTypes.StringSqlType() );
+			Parameter firstAndParam = new Parameter( "address", "sql_alias", new SqlTypes.StringSqlType() );
 			expectedParams[0] = firstAndParam;
 
 			CompareSqlStrings(sqlString, expectedSql, expectedParams);
@@ -52,46 +54,53 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void TestQuoting() 
 		{
-			ISession session = factory.OpenSession();
-			DateTime now = DateTime.Now;
+			using( ISession session = factory.OpenSession() )
+			{
+				DateTime now = DateTime.Now;
 
-			NExpression.ICriterion andExpression = NExpression.Expression.Eq( "Date", now );
+				CreateObjects( typeof( SimpleComponent ), session );
 
-			SqlString sqlString = andExpression.ToSqlString( factoryImpl, typeof(SimpleComponent), "simp_comp", BaseExpressionFixture.EmptyAliasClasses  );
-			string quotedColumn = dialect.QuoteForColumnName( "d[at]e_" );
-			string expectedSql = "simp_comp." + quotedColumn + " = :simp_comp." + quotedColumn;
+				NExpression.ICriterion andExpression = NExpression.Expression.Eq( "Date", now );
+
+				SqlString sqlString = andExpression.ToSqlString( criteria, criteriaQuery );
+				string quotedColumn = dialect.QuoteForColumnName( "d[at]e_" );
+				string expectedSql = "sql_alias." + quotedColumn + " = :sql_alias." + quotedColumn;
 			
-			CompareSqlStrings( sqlString, expectedSql );
-			
-			session.Close();
+				CompareSqlStrings( sqlString, expectedSql );
+			}
 		}
 
 		[Test]
 		public void SimpleDateExpression() 
 		{
-			ISession session = factory.OpenSession();
+			using( ISession session = factory.OpenSession() )
+			{
+				CreateObjects( typeof( Simple ), session );
+				NExpression.ICriterion andExpression = NExpression.Expression.Ge( "Date", DateTime.Now );
+
+				SqlString sqlString = andExpression.ToSqlString( criteria, criteriaQuery );
+
+				string expectedSql = "sql_alias.date_ >= :sql_alias.date_";
+				Parameter[] expectedParams = new Parameter[1];
 			
-			NExpression.ICriterion andExpression = NExpression.Expression.Ge( "Date", DateTime.Now );
+				Parameter firstAndParam = new Parameter( "date_", "sql_alias", new SqlTypes.DateTimeSqlType() );
+				expectedParams[0] = firstAndParam;
 
-			SqlString sqlString = andExpression.ToSqlString( factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses  );
-
-			string expectedSql = "simple_alias.date_ >= :simple_alias.date_";
-			Parameter[] expectedParams = new Parameter[1];
-			
-			Parameter firstAndParam = new Parameter( "date_", "simple_alias", new SqlTypes.DateTimeSqlType() );
-			expectedParams[0] = firstAndParam;
-
-			CompareSqlStrings(sqlString, expectedSql, expectedParams);
-
-			session.Close();
+				CompareSqlStrings(sqlString, expectedSql, expectedParams);
+			}
 		}
 
 		[Test]
 		[ExpectedException(typeof(QueryException))]
 		public void MisspelledPropertyWithNormalizedEntityPersister() 
 		{
-			NExpression.ICriterion expression = NExpression.Expression.Eq( "MisspelledProperty", DateTime.Now );
-			expression.ToSqlString( factoryImpl, typeof(Multi), "multi", BaseExpressionFixture.EmptyAliasClasses  );
+			using( ISession session = factory.OpenSession() )
+			{
+				CreateObjects( typeof( Multi ), session );
+
+				NExpression.ICriterion expression = NExpression.Expression.Eq( "MisspelledProperty", DateTime.Now );
+				expression.ToSqlString( criteria, criteriaQuery );
+			}
 		}
 
 	}

@@ -4,6 +4,7 @@ using System.Data;
 
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
@@ -154,9 +155,14 @@ namespace NHibernate.Type
 
 		private bool IsOwnerVersioned( ISessionImplementor session )
 		{
-			System.Type ownerClass = session.Factory.GetCollectionPersister( role ).OwnerClass;
+			System.Type ownerClass = GetPersister( session ).OwnerClass;
 
 			return session.Factory.GetPersister( ownerClass ).IsVersioned;
+		}
+
+		private ICollectionPersister GetPersister( ISessionImplementor session )
+		{
+			return session.Factory.GetCollectionPersister( role );
 		}
 
 		public override bool IsDirty( object old, object current, ISessionImplementor session )
@@ -212,6 +218,11 @@ namespace NHibernate.Type
 			}
 		}
 
+		public override object SemiResolve( object value, ISessionImplementor session, object owner )
+		{
+			throw new NotSupportedException( "collection mappings may not form part of a property-ref" );
+		}
+
 		public virtual bool IsArrayType
 		{
 			get { return false; }
@@ -224,7 +235,7 @@ namespace NHibernate.Type
 
 		public IJoinable GetAssociatedJoinable( ISessionFactoryImplementor factory )
 		{
-			return (IJoinable) factory.GetCollectionPersister( role );
+			return ( IJoinable ) factory.GetCollectionPersister( role );
 		}
 
 		public string[] GetReferencedColumns( ISessionFactoryImplementor factory )
@@ -338,6 +349,48 @@ namespace NHibernate.Type
 		public override bool IsModified(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session)
 		{
 			return false;
+		}
+
+		/// <summary>
+		/// Get the key value from the owning entity instance, usually the identifier, but might be some
+		/// other unique key, in the case of property-ref
+		/// </summary>
+		public object GetKeyOfOwner( object owner, ISessionImplementor session ) 
+		{
+			EntityEntry entityEntry = session.GetEntry( owner );
+			if ( entityEntry == null )
+			{
+				// This just handles a particular case of component
+				// projection, perhaps get rid of it and throw an exception
+				return null;
+			}
+		
+			if ( foreignKeyPropertyName == null ) 
+			{
+				return entityEntry.Id;
+			}
+			else 
+			{
+				// TODO: at the point where we are resolving collection references, we don't
+				// know if the uk value has been resolved (depends if it was earlier or
+				// later in the mapping document) - now, we could try and use e.getStatus()
+				// to decide to semiResolve(), trouble is that initializeEntity() reuses
+				// the same array for resolved and hydrated values
+				object id = entityEntry.GetLoadedValue( foreignKeyPropertyName );
+
+				// NOTE VERY HACKISH WORKAROUND!!
+				IType keyType = GetPersister( session ).KeyType;
+				if ( !keyType.ReturnedClass.IsInstanceOfType( id ) ) 
+				{
+					id = keyType.SemiResolve(
+						entityEntry.GetLoadedValue( foreignKeyPropertyName ),
+						session,
+						owner 
+						);
+				}
+
+				return id;
+			}
 		}
 	}
 }

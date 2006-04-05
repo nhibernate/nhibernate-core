@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
@@ -167,31 +168,10 @@ namespace NHibernate.Collection
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="persister"></param>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="writeOrder"></param>
-		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
+		public override object ReadFrom( IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner )
 		{
-			persister.WriteElement( st, entry, writeOrder, Session );
-			persister.WriteIndex( st, i, writeOrder, Session );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
-		{
-			object element = persister.ReadElement(rs, owner, Session);
-			int index = ( int ) persister.ReadIndex( rs, Session );
+			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
+			int index = ( int ) role.ReadIndex( rs, descriptor.SuffixedIndexAliases, Session );
 			for( int i = tempList.Count; i <= index; i++ )
 			{
 				tempList.Insert( i, null );
@@ -306,11 +286,11 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="elemType"></param>
 		/// <returns></returns>
-		public override ICollection GetDeletes( IType elemType )
+		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
 			IList deletes = new ArrayList();
 			Array sn = GetSnapshot() as Array;
-			int snSize = ( ( Array ) sn ).Length;
+			int snSize = sn.Length;
 			int arraySize = array.Length;
 			int end;
 			if( snSize > arraySize )
@@ -373,6 +353,17 @@ namespace NHibernate.Collection
 		public override object GetIndex( object entry, int i )
 		{
 			return i;
+		}
+
+		public override object GetElement(object entry)
+		{
+			return entry;
+		}
+
+		public override object GetSnapshotElement(object entry, int i)
+		{
+			Array sn = ( Array ) GetSnapshot();
+			return sn.GetValue( i );
 		}
 
 		/// <summary>

@@ -228,7 +228,7 @@ namespace NHibernate.Hql
 
 				if( bracketsSinceSelect == -1 )
 				{
-					QueryTranslator subq = new QueryTranslator( subselect.ToString() );
+					QueryTranslator subq = new QueryTranslator( q.Factory, subselect.ToString() );
 					try
 					{
 						subq.Compile( q );
@@ -458,7 +458,7 @@ namespace NHibernate.Hql
 				IQueryable persister = q.GetPersisterUsingImports( token );
 				if( persister != null ) // the name of a class
 				{
-					object discrim = persister.DiscriminatorSQLValue;
+					string discrim = persister.DiscriminatorSQLValue;
 					if ( InFragment.Null == discrim || InFragment.NotNull == discrim )
 					{
 						throw new QueryException( "subclass test not allowed for null or not null discriminator" );
@@ -481,7 +481,7 @@ namespace NHibernate.Hql
 					{
 						fieldName = StringHelper.Unqualify( token );
 						typeName = StringHelper.Qualifier( token );
-						importedName = q.factory.GetImportedClassName( typeName );
+						importedName = q.Factory.GetImportedClassName( typeName );
 					}
 
 					if( indexOfDot > - 1 &&

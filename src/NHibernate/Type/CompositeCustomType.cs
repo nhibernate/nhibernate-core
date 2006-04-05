@@ -118,7 +118,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public virtual Cascades.CascadeStyle Cascade( int i )
+		public virtual Cascades.CascadeStyle GetCascadeStyle( int i )
 		{
 			return Cascades.CascadeStyle.StyleNone;
 		}
@@ -329,5 +329,9 @@ namespace NHibernate.Type
 			return IsDirty( old, current, session );
 		}
 
+		public bool[] PropertyNullability
+		{
+			get { return null; }
+		}
 	}
 }

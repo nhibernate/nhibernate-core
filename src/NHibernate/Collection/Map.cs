@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
@@ -15,14 +16,8 @@ namespace NHibernate.Collection
 	[Serializable]
 	public class Map : PersistentCollection, IDictionary
 	{
-		/// <summary></summary>
 		protected IDictionary map;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
 		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
 			Hashtable clonedMap = new Hashtable( map.Count );
@@ -33,11 +28,6 @@ namespace NHibernate.Collection
 			return clonedMap;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="snapshot"></param>
-		/// <returns></returns>
 		public override ICollection GetOrphans( object snapshot )
 		{
 			IDictionary sn = ( IDictionary ) snapshot;
@@ -47,11 +37,6 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elementType"></param>
-		/// <returns></returns>
 		public override bool EqualsSnapshot( IType elementType )
 		{
 			IDictionary xmap = ( IDictionary ) GetSnapshot();
@@ -69,19 +54,11 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
 		public override bool IsWrapper( object collection )
 		{
 			return map == collection;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		internal Map( ) : base( )
 		{
 		}
@@ -106,10 +83,6 @@ namespace NHibernate.Collection
 			IsDirectlyAccessible = true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			if( persister.HasOrdering )
@@ -125,7 +98,6 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary></summary>
 		public int Count
 		{
 			get
@@ -135,31 +107,26 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary></summary>
 		public bool IsSynchronized
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public bool IsFixedSize
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public bool IsReadOnly
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public object SyncRoot
 		{
 			get { return this; }
 		}
 
-		/// <summary></summary>
 		public ICollection Keys
 		{
 			get
@@ -169,7 +136,6 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary></summary>
 		public ICollection Values
 		{
 			get
@@ -180,7 +146,6 @@ namespace NHibernate.Collection
 
 		}
 
-		/// <summary></summary>
 		public IEnumerator GetEnumerator()
 		{
 			Read();
@@ -188,7 +153,6 @@ namespace NHibernate.Collection
 
 		}
 
-		/// <summary></summary>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			Read();
@@ -203,40 +167,24 @@ namespace NHibernate.Collection
 			return map.GetEnumerator();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="array"></param>
-		/// <param name="index"></param>
 		public void CopyTo( Array array, int index )
 		{
 			Read();
 			map.CopyTo( array, index );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
 		public void Add( object key, object value )
 		{
 			Write();
 			map.Add( key, value );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <returns></returns>
 		public bool Contains( object key )
 		{
 			Read();
 			return map.Contains( key );
 		}
 
-		/// <summary></summary>
 		public object this[ object key ]
 		{
 			get
@@ -251,83 +199,45 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
 		public void Remove( object key )
 		{
 			Write();
 			map.Remove( key );
 		}
 
-		/// <summary></summary>
 		public void Clear()
 		{
 			Write();
 			map.Clear();
 		}
 
-		/*
-		/// <summary></summary>
-		public override ICollection Elements()
-		{
-			return map.Values;
-		}
-		*/
-
-		/// <summary></summary>
 		public override bool Empty
 		{
 			get { return map.Count == 0; }
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			Read();
 			return map.ToString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="persister"></param>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="writeOrder"></param>
-		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
+		public override object ReadFrom( IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner )
 		{
-			DictionaryEntry e = ( DictionaryEntry ) entry;
-			persister.WriteElement( st, e.Value, writeOrder, Session );
-			persister.WriteIndex( st, e.Key, writeOrder, Session );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="persister"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object ReadFrom( IDataReader rs, ICollectionPersister persister, object owner )
-		{
-			object element = persister.ReadElement(rs, owner, Session);
-			object index = persister.ReadIndex( rs, Session );
+			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
+			object index = role.ReadIndex( rs, descriptor.SuffixedIndexAliases, Session );
 
 			map[ index ] = element;
 			return element;
 		}
 
-		/// <summary></summary>
 		public override IEnumerable Entries()
 		{
 			// hibernate has a call to map.entrySet() - we don't need to do
 			// that because .net provides an IEnumerable from a IDictionary
 			// while java has no way to get an Iterator from a Map - so they
 			// convert it to Set via entrySet()
-			return map as IEnumerable;
+			return map;
 		}
 
 		/// <summary>
@@ -348,11 +258,6 @@ namespace NHibernate.Collection
 			SetInitialized();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
 		public override object Disassemble( ICollectionPersister persister )
 		{
 			object[ ] result = new object[map.Count*2];
@@ -365,12 +270,7 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
-		public override ICollection GetDeletes( IType elemType )
+		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
 			IList deletes = new ArrayList();
 			foreach( DictionaryEntry e in ( ( IDictionary ) GetSnapshot() ) )
@@ -378,19 +278,12 @@ namespace NHibernate.Collection
 				object key = e.Key;
 				if( e.Value != null && map[ key ] == null )
 				{
-					deletes.Add( key );
+					deletes.Add( indexIsFormula ? e.Value : key );
 				}
 			}
 			return deletes;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsInserting( object entry, int i, IType elemType )
 		{
 			IDictionary sn = ( IDictionary ) GetSnapshot();
@@ -398,13 +291,6 @@ namespace NHibernate.Collection
 			return ( e.Value != null && sn[ e.Key ] == null );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsUpdating( object entry, int i, IType elemType )
 		{
 			IDictionary sn = ( IDictionary ) GetSnapshot();
@@ -413,28 +299,25 @@ namespace NHibernate.Collection
 			return ( e.Value != null && snValue != null && elemType.IsDirty( snValue, e.Value, Session ) );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public override object GetIndex( object entry, int i )
 		{
 			return ( ( DictionaryEntry ) entry ).Key;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
+		public override object GetElement(object entry)
+		{
+			return ( ( DictionaryEntry ) entry ).Value;
+		}
+
+		public override object GetSnapshotElement(object entry, int i)
+		{
+			IDictionary sn = ( IDictionary ) GetSnapshot();
+			return sn[ ( ( DictionaryEntry ) entry ).Key ];
+		}
+
 		public override bool EntryExists( object entry, int i )
 		{
 			return ( ( DictionaryEntry ) entry ).Value != null;
 		}
-
-
 	}
 }

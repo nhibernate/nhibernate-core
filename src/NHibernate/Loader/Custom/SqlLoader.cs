@@ -8,6 +8,7 @@ using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Persister;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -18,8 +19,10 @@ namespace NHibernate.Loader.Custom
 	/// <summary>
 	/// Summary description for SqlLoader.
 	/// </summary>
-	public class SqlLoader : OuterJoinLoader
+	public class SqlLoader : Loader
 	{
+		private LockMode[] lockModes;
+
 		private int parameterCount = 0;
 		private readonly IDictionary namedParameters = new Hashtable( 4 );
 		private readonly string sqlQuery;
@@ -27,6 +30,12 @@ namespace NHibernate.Loader.Custom
 		private readonly string[ ] aliases;
 		private ISet querySpaces = new HashedSet();
 		private IType[ ] resultTypes;
+
+		private SqlString sql;
+		private IEntityAliases[] entityDescriptors;
+		private ICollectionAliases[] collectionDescriptors;
+		private ILoadable[] persisters;
+		private ICollectionPersister[] collectionPersisters;
 
 		// NH: Remember the factory for the PopulateSqlString call.
 		private IMapping factory;
@@ -36,8 +45,40 @@ namespace NHibernate.Loader.Custom
 			get { return querySpaces; }
 		}
 
+		protected internal override SqlString SqlString
+		{
+			get { return sql; }
+			set { sql = value; }
+		}
+
+		protected override LockMode[] GetLockModes(IDictionary lockModes)
+		{
+			return this.lockModes;
+		}
+
+		protected override IEntityAliases[] EntityAliases
+		{
+			get { return entityDescriptors; }
+		}
+
+		protected override ICollectionAliases[] CollectionAliases
+		{
+			get { return collectionDescriptors; }
+		}
+
+		protected override ILoadable[] EntityPersisters
+		{
+			get { return persisters; }
+			set { persisters = value; }
+		}
+
+		protected override ICollectionPersister[] CollectionPersisters
+		{
+			get { return collectionPersisters; }
+		}
+
 		public SqlLoader( string[ ] aliases, ISqlLoadable[ ] persisters, ISessionFactoryImplementor factory, string sqlQuery, ICollection additionalQuerySpaces )
-			: base( factory.Dialect )
+			: base( factory )
 		{
 			this.sqlQuery = sqlQuery;
 			this.aliases = aliases;
@@ -72,9 +113,9 @@ namespace NHibernate.Loader.Custom
 		{
 			int loadables = persisters.Length;
 
-			Persisters = persisters;
-			Suffixes = GenerateSuffixes( loadables );
-			lockModeArray = CreateLockModeArray( loadables, LockMode.None );
+			EntityPersisters = persisters;
+			// TODO... Suffixes = GenerateSuffixes( loadables );
+			// TODO... lockModes = CreateLockModeArray( loadables, LockMode.None );
 
 			SqlString = SubstituteParams( SubstituteBrackets() );
 		}
@@ -87,7 +128,7 @@ namespace NHibernate.Loader.Custom
 
 		protected override object GetResultColumnOrRow( object[ ] row, IDataReader rs, ISessionImplementor session )
 		{
-			if( Persisters.Length == 1 )
+			if( EntityPersisters.Length == 1 )
 			{
 				return row[ row.Length - 1 ];
 			}
@@ -118,6 +159,7 @@ namespace NHibernate.Loader.Custom
 					break;
 				}
 
+				// append everything up until the next encountered open brace
 				result.Append( sqlString.Substring( curr, left - curr ) );
 
 				if( ( right = sqlString.IndexOf( '}', left + 1 ) ) < 0 )
@@ -158,7 +200,7 @@ namespace NHibernate.Loader.Custom
 
 					if( "*".Equals( propertyName ) )
 					{
-						result.Append( currentPersister.SelectFragment( aliasName, Suffixes[ currentPersisterIndex ] ) );
+						result.Append( currentPersister.SelectFragment( aliasName, "someSuffix" /*TODO Suffixes[ currentPersisterIndex ]*/ ) );
 					}
 					else
 					{
@@ -176,7 +218,7 @@ namespace NHibernate.Loader.Custom
 						}
 						else
 						*/
-						columnAliases = currentPersister.GetSubclassPropertyColumnAliases( propertyName, Suffixes[ currentPersisterIndex ] );
+						columnAliases = currentPersister.GetSubclassPropertyColumnAliases( propertyName, "someSuffix" /*Suffixes[ currentPersisterIndex ]*/ );
 
 						if( columnAliases == null || columnAliases.Length == 0 )
 						{

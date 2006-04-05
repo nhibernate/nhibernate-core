@@ -6,11 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Iesi.Collections;
 using log4net;
-using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
-using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -54,7 +52,6 @@ namespace NHibernate.Hql
 		private IType[ ] returnTypes;
 		private IType[ ] actualReturnTypes;
 		private string[ ][ ] scalarColumnNames;
-		internal ISessionFactoryImplementor factory;
 		private IDictionary tokenReplacements;
 		private int nameCount = 0;
 		private int parameterCount = 0;
@@ -80,7 +77,8 @@ namespace NHibernate.Hql
 		/// Construct a query translator
 		/// </summary>
 		/// <param name="queryString"></param>
-		public QueryTranslator( string queryString )
+		public QueryTranslator( ISessionFactoryImplementor factory, string queryString )
+			: base( factory )
 		{
 			this.queryString = queryString;
 		}
@@ -91,7 +89,6 @@ namespace NHibernate.Hql
 		/// <param name="superquery"></param>
 		protected internal void Compile( QueryTranslator superquery )
 		{
-			this.factory = superquery.factory;
 			this.tokenReplacements = superquery.tokenReplacements;
 			this.superQuery = superquery;
 			this.shallowQuery = true;
@@ -103,19 +100,29 @@ namespace NHibernate.Hql
 		/// Compile a "normal" query. This method may be called multiple
 		/// times. Subsequent invocations are no-ops.
 		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="replacements"></param>
-		/// <param name="scalar"></param>
 		[MethodImpl( MethodImplOptions.Synchronized )]
-		public void Compile( ISessionFactoryImplementor factory, IDictionary replacements, bool scalar )
+		public void Compile( IDictionary replacements, bool scalar )
 		{
 			if( !Compiled )
 			{
-				this.factory = factory;
 				this.tokenReplacements = replacements;
 				this.shallowQuery = scalar;
 
 				Compile( );
+			}
+		}
+
+		/// <summary>
+		/// Compile a filter. This method may be called multiple
+		/// times. Subsequent invocations are no-ops.
+		/// </summary>
+		[MethodImpl( MethodImplOptions.Synchronized )]
+		public void Compile( string collectionRole, IDictionary replacements, bool scalar )
+		{
+			if( !Compiled )
+			{
+				AddFromAssociation( "this", collectionRole );
+				Compile( replacements, scalar );
 			}
 		}
 
@@ -169,7 +176,7 @@ namespace NHibernate.Hql
 		/// <c>setter</c> will attempt to cast the <c>ILoadable</c> array passed in into an 
 		/// <c>IQueryable</c> array.
 		/// </remarks>
-		protected override ILoadable[ ] Persisters
+		protected override ILoadable[ ] EntityPersisters
 		{
 			get { return persisters; }
 			set { persisters = ( IQueryable[ ] ) value; }
@@ -266,12 +273,12 @@ namespace NHibernate.Hql
 
 		internal string CreateNameFor( System.Type type )
 		{
-			return GenerateAlias( type.Name, NextCount() );
+			return StringHelper.GenerateAlias( type.Name, NextCount() );
 		}
 
 		internal string CreateNameForCollection( string role )
 		{
-			return GenerateAlias( role, NextCount() );
+			return StringHelper.GenerateAlias( role, NextCount() );
 		}
 
 		internal System.Type GetType( string name )
@@ -357,8 +364,8 @@ namespace NHibernate.Hql
 		{
 			// Slightly altered from H2.1 to avoid needlessly throwing
 			// and catching a MappingException.
-			return ( IQueryable ) factory.GetPersister(
-				factory.GetImportedClassName( className ),
+			return ( IQueryable ) Factory.GetPersister(
+				Factory.GetImportedClassName( className ),
 				false );
 		}
 
@@ -366,7 +373,7 @@ namespace NHibernate.Hql
 		{
 			try
 			{
-				return ( IQueryable ) factory.GetPersister( clazz );
+				return ( IQueryable ) Factory.GetPersister( clazz );
 			}
 			catch( Exception )
 			{
@@ -378,7 +385,7 @@ namespace NHibernate.Hql
 		{
 			try
 			{
-				return (IQueryableCollection) factory.GetCollectionPersister( role );
+				return (IQueryableCollection) Factory.GetCollectionPersister( role );
 			}
 			catch( InvalidCastException )
 			{
@@ -609,7 +616,7 @@ namespace NHibernate.Hql
 				returnTypes[ i ] = ( IType ) scalarTypes[ i ];
 			}
 
-			QuerySelect sql = new QuerySelect( factory.Dialect );
+			QuerySelect sql = new QuerySelect( Factory.Dialect );
 			sql.Distinct = distinct;
 
 			if( !shallowQuery )
@@ -618,9 +625,9 @@ namespace NHibernate.Hql
 				RenderPropertiesSelect( sql );
 			}
 
-			if( CollectionPersister != null )
+			if( collectionPersister != null )
 			{
-				sql.AddSelectFragmentString( collectionPersister.SelectFragment( fetchName ) );
+				sql.AddSelectFragmentString( collectionPersister.SelectFragment( fetchName, "__" ) );
 			}
 			if( hasScalars || shallowQuery )
 			{
@@ -641,7 +648,7 @@ namespace NHibernate.Hql
 				sql.AddOrderBy( collectionPersister.GetSQLOrderByString( fetchName ) );
 			}
 
-			scalarColumnNames = GenerateColumnNames( returnTypes, factory );
+			scalarColumnNames = GenerateColumnNames( returnTypes, Factory );
 
 			// initialize the set of queried identifer spaces (ie. tables)
 			foreach( string name in collections.Values )
@@ -882,9 +889,22 @@ namespace NHibernate.Hql
 			get { return superQuery != null; }
 		}
 
-		protected override ICollectionPersister CollectionPersister
+		protected override ICollectionPersister[] CollectionPersisters
 		{
-			get { return collectionPersister; }
+			get
+			{
+				if( collectionPersister == null )
+				{
+					return null;
+				}
+				return new ICollectionPersister[] { collectionPersister };
+			}
+		}
+
+		protected override string[] CollectionSuffixes
+		{
+			get { return collectionPersister == null ? null : new string[] { "__" }; }
+			set { throw new InvalidOperationException("QueryTranslator.CollectionSuffixes_set"); }
 		}
 
 		public void SetCollectionToFetch( string role, string name, string ownerName, string entityName )
@@ -1000,8 +1020,6 @@ namespace NHibernate.Hql
 
 		public IList List( ISessionImplementor session, QueryParameters queryParameters )
 		{
-			LogQuery( queryString, sqlString.ToString() );
-
 			// NH: added this call to initialize parameter types in SqlString
 			// so that it gets cached and looked up properly in the call to List
 			PopulateSqlString( queryParameters );
@@ -1011,8 +1029,6 @@ namespace NHibernate.Hql
 
 		public IEnumerable GetEnumerable( QueryParameters parameters, ISessionImplementor session )
 		{
-			LogQuery( queryString, sqlString.ToString() );
-			
 			// NH: added this call to initialize parameter types in SqlString
 			PopulateSqlString( parameters );
 
@@ -1130,7 +1146,7 @@ namespace NHibernate.Hql
 		/// <returns>A <see cref="System.Type"/> if <c>name</c> is an Imported Class, <c>null</c> otherwise.</returns>
 		internal System.Type GetImportedClass( string name )
 		{
-			return GetImportedClass( name, factory );
+			return GetImportedClass( name, Factory );
 		}
 
 		/// <summary>
@@ -1238,7 +1254,7 @@ namespace NHibernate.Hql
 
 		internal QueryJoinFragment CreateJoinFragment( bool useThetaStyleInnerJoins )
 		{
-			return new QueryJoinFragment( factory.Dialect, useThetaStyleInnerJoins );
+			return new QueryJoinFragment( Factory.Dialect, useThetaStyleInnerJoins );
 		}
 
 		internal System.Type HolderClass
@@ -1279,22 +1295,32 @@ namespace NHibernate.Hql
 
 		protected override SqlString ApplyLocks( SqlString sql, IDictionary lockModes, Dialect.Dialect dialect )
 		{
+			SqlString result;
 			if( lockModes == null || lockModes.Count == 0 )
 			{
-				return sql;
+				result = sql;
 			}
 			else 
 			{
 				IDictionary aliasedLockModes = new Hashtable();
-				IEnumerator keys = lockModes.Keys.GetEnumerator();
-				object key;
-				while ( keys.MoveNext() ) 
+				foreach( DictionaryEntry de in  lockModes )
 				{
-					key = keys.Current;
-					aliasedLockModes.Add( GetAliasName( (String)  key ), lockModes[key] );
+					aliasedLockModes[ GetAliasName( ( string ) de.Key ) ] = de.Value;
 				}
-				return sql.Append(new ForUpdateFragment(aliasedLockModes).ToSqlStringFragment(dialect));
+				
+				IDictionary keyColumnNames = null;
+				if( dialect.ForUpdateOfColumns )
+				{
+					keyColumnNames = new Hashtable();
+					for( int i = 0; i < names.Length; i++ )
+					{
+						keyColumnNames[ names[ i ] ] = persisters[ i ].IdentifierColumnNames;
+					}
+				}
+				result = sql.Append(new ForUpdateFragment( dialect, aliasedLockModes, keyColumnNames ).ToSqlStringFragment());
 			}
+			LogQuery( queryString, result.ToString() );
+			return result;
 		}
 
 		protected override bool UpgradeLocks()
@@ -1302,15 +1328,9 @@ namespace NHibernate.Hql
 			return true;
 		}
 
-		protected override int CollectionOwner
+		protected override int[] CollectionOwners
 		{
-			get { return collectionOwnerColumn; }
-		}
-
-		protected internal ISessionFactoryImplementor Factory
-		{
-			set { this.factory = value; }
-			get { return factory; }
+			get { return new int[] { collectionOwnerColumn }; }
 		}
 
 		protected bool Compiled
@@ -1377,13 +1397,13 @@ namespace NHibernate.Hql
 					{
 						for( int i = 0; i < parameters.PositionalParameterTypes.Length; i++ )
 						{
-							string[ ] colNames = new string[parameters.PositionalParameterTypes[ i ].GetColumnSpan( factory )];
+							string[ ] colNames = new string[parameters.PositionalParameterTypes[ i ].GetColumnSpan( Factory )];
 							for( int j = 0; j < colNames.Length; j++ )
 							{
 								colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
 							}
 
-							Parameter[ ] sqlParameters = Parameter.GenerateParameters( factory, colNames, parameters.PositionalParameterTypes[ i ] );
+							Parameter[ ] sqlParameters = Parameter.GenerateParameters( Factory, colNames, parameters.PositionalParameterTypes[ i ] );
 
 							foreach( Parameter param in sqlParameters )
 							{
@@ -1430,14 +1450,14 @@ namespace NHibernate.Hql
 							for( int i = 0; i < paramTypeList.Count; i++ )
 							{
 								IType type = ( IType ) paramTypeList[ i ];
-								string[ ] colNames = new string[type.GetColumnSpan( factory )];
+								string[ ] colNames = new string[type.GetColumnSpan( Factory )];
 
 								for( int j = 0; j < colNames.Length; j++ )
 								{
 									colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
 								}
 
-								Parameter[ ] sqlParameters = Parameter.GenerateParameters( factory, colNames, type );
+								Parameter[ ] sqlParameters = Parameter.GenerateParameters( Factory, colNames, type );
 
 								foreach( Parameter param in sqlParameters )
 								{

@@ -29,7 +29,7 @@ namespace NHibernate
 			get
 			{
 				return string.Format(
-					"Type '{0}' cannot be specified as a proxy: {1}",
+					"Type '{0}' cannot be specified as proxy: {1}",
 					type.FullName, base.Message );
 			}
 		}

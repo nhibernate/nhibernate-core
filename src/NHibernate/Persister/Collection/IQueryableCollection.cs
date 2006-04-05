@@ -1,5 +1,3 @@
-using NHibernate.Loader;
-using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -16,7 +14,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		SqlString SelectFragment( string alias );
+		string SelectFragment( string alias, string columnSuffix );
 
 		/// <summary>
 		/// Get the names of the collection index columns if this is an indexed collection (optional operation)
@@ -27,6 +25,13 @@ namespace NHibernate.Persister.Collection
 		/// Get the names of the collection element columns (or the primary key columns in the case of a one-to-many association)
 		/// </summary>
 		string[] ElementColumnNames { get; }
+
+		/// <summary>
+		/// Get the names of the collection element columns (or the primary
+		/// key columns in the case of a one-to-many association),
+		/// aliased by the given table alias
+		/// </summary>
+		string[] GetElementColumnNames( string alias );
 
 		/// <summary>
 		/// Get the extra where clause filter SQL

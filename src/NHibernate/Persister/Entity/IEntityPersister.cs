@@ -19,8 +19,7 @@ namespace NHibernate.Persister.Entity
 		/// Finish the initialization of this object, once all <c>ClassPersisters</c> have been
 		/// instantiated. Called only once, before any other method.
 		/// </summary>
-		/// <param name="factory"></param>
-		void PostInstantiate( ISessionFactoryImplementor factory );
+		void PostInstantiate();
 
 		/// <summary>
 		/// Returns an object that identifies the space in which identifiers of this class hierarchy
@@ -369,6 +368,12 @@ namespace NHibernate.Persister.Entity
 		/// Is batch loading enabled?
 		/// </summary>
 		bool IsBatchLoadable { get; }
+
+		/// <summary>
+		/// Returns an array of objects that identify spaces in which properties of this class are persisted,
+		/// for instances of this class and its subclasses.
+		/// </summary>
+		object[] QuerySpaces { get; }
 
 		/// <summary>
 		/// Get the current database state of the object, in a "hydrated" form, without resolving identifiers

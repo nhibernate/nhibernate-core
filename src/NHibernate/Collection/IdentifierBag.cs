@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
@@ -261,7 +262,7 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		public override ICollection GetDeletes( IType elemType )
+		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
 			IDictionary snap = ( IDictionary ) GetSnapshot();
 			IList deletes = new ArrayList( snap.Keys );
@@ -280,6 +281,23 @@ namespace NHibernate.Collection
 		public override object GetIndex( object entry, int i )
 		{
 			return new NotImplementedException( "Bags don't have indexes" );
+		}
+
+		public override object GetElement(object entry)
+		{
+			return entry;
+		}
+
+		public override object GetIdentifier(object entry, int i)
+		{
+			return identifiers[ i ];
+		}
+
+		public override object GetSnapshotElement(object entry, int i)
+		{
+			IDictionary snap = ( IDictionary ) GetSnapshot();
+			object id = identifiers[ i ];
+			return snap[ id ];
 		}
 
 		public override bool NeedsInserting( object entry, int i, IType elemType )
@@ -308,11 +326,11 @@ namespace NHibernate.Collection
 			return old != null && elemType.IsDirty( old, entry, Session );
 		}
 
-		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, object owner )
+		public override object ReadFrom( IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner )
 		{
-			object element = persister.ReadElement( reader, owner, Session );
+			object element = role.ReadElement( reader, owner, descriptor.SuffixedElementAliases, Session );
 			values.Add( element );
-			identifiers[ values.Count - 1 ] = persister.ReadIdentifier( reader, Session );
+			identifiers[ values.Count - 1 ] = role.ReadIdentifier( reader, descriptor.SuffixedIdentifierAlias, Session );
 			return element;
 		}
 
@@ -362,13 +380,6 @@ namespace NHibernate.Collection
 			{
 				throw new ADOException( "Could not generate idbag row id.", sqle );
 			}
-		}
-
-		public override void WriteTo( IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder )
-		{
-			persister.WriteElement( st, entry, writeOrder, Session );
-			// TODO: if not using identity columns:
-			persister.WriteIdentifier( st, identifiers[ i ], writeOrder, Session );
 		}
 
 		private void BeforeRemove( int index ) 

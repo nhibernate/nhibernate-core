@@ -24,14 +24,15 @@ namespace NHibernate.Test.ExpressionTest
 
 			ICriterion inExpression = Expression.Expression.In( "Count", new int[ ] {3, 4, 5} );
 
-			SqlString sqlString = inExpression.ToSqlString( factoryImpl, typeof( Simple ), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
+			CreateObjects( typeof( Simple ), session );
+			SqlString sqlString = inExpression.ToSqlString( criteria, criteriaQuery );
 
-			string expectedSql = "simple_alias.count_ in (:simple_alias.count__0, :simple_alias.count__1, :simple_alias.count__2)";
+			string expectedSql = "sql_alias.count_ in (:sql_alias.count__0, :sql_alias.count__1, :sql_alias.count__2)";
 			Parameter[ ] expectedParams = new Parameter[3];
 
 			for( int i = 0; i < expectedParams.Length; i++ )
 			{
-				Parameter param = new Parameter( "count_" + "_" + i, "simple_alias", new Int32SqlType() );
+				Parameter param = new Parameter( "count_" + "_" + i, "sql_alias", new Int32SqlType() );
 				expectedParams[ i ] = param;
 			}
 
@@ -43,9 +44,12 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void InEmptyList()
 		{
+			ISession session = factory.OpenSession();
 			InExpression expression = new InExpression( "Count", new object[0] );
-			SqlString sql = expression.ToSqlString( factoryImpl, typeof( Simple ), "simple_alias", EmptyAliasClasses );
+			CreateObjects( typeof( Simple ), session );
+			SqlString sql = expression.ToSqlString( criteria, criteriaQuery );
 			Assert.AreEqual( "1=0", sql.ToString() );
+			session.Close();
 		}
 	}
 }

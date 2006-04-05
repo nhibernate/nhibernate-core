@@ -4,6 +4,8 @@ using System.Reflection;
 
 using NHibernate.Cfg;
 using NHibernate.Engine;
+using NHibernate.Impl;
+using NHibernate.Loader.Criteria;
 using NHibernate.SqlCommand;
 
 using NHibernate.DomainModel;
@@ -19,8 +21,18 @@ namespace NHibernate.Test.ExpressionTest
 		protected ISessionFactory factory;
 		protected ISessionFactoryImplementor factoryImpl;
 		protected Dialect.Dialect dialect;
-		
-		protected static readonly IDictionary EmptyAliasClasses = new Hashtable();
+
+		protected const string SqlAlias = "sql_alias";
+		protected CriteriaImpl            criteria;
+		protected CriteriaQueryTranslator criteriaQuery;
+
+		protected void CreateObjects( System.Type rootClass, ISession session )
+		{						
+			criteria = ( CriteriaImpl ) session.CreateCriteria( rootClass );
+			criteriaQuery = new CriteriaQueryTranslator(
+				( ISessionFactoryImplementor ) factory,
+				criteria, criteria.CriteriaClass, SqlAlias );
+		}
 
 		[SetUp]
 		public virtual void SetUp() 

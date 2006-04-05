@@ -879,6 +879,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\ICriteriaQuery.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\ICriterion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -979,11 +984,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\FilterTranslator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Hql\FromParser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1045,6 +1045,11 @@
                 />
                 <File
                     RelPath = "Hql\WhereParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Util\SessionFactoryHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1259,6 +1264,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\SessionFactoryImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\ScheduledCollectionAction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1304,21 +1324,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Impl\SessionFactoryImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Impl\SqlQueryImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1334,7 +1339,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Loader\AbstractEntityJoinWalker.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Loader\BasicLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\DefaultEntityAliases.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\GeneratedCollectionAliases.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1345,6 +1365,11 @@
                 />
                 <File
                     RelPath = "Loader\IEntityAliases.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\JoinWalker.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1364,7 +1389,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Loader\Collection\BasicCollectionJoinWalker.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Collection\BasicCollectionLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Loader\Collection\BatchingCollectionInitializer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Collection\CollectionJoinWalker.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1379,12 +1419,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Loader\Collection\OneToManyJoinWalker.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Loader\Collection\OneToManyLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Loader\Criteria\CriteriaJoinWalker.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Loader\Criteria\CriteriaLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Criteria\CriteriaQueryTranslator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1404,17 +1459,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Loader\Entity\CascadeEntityJoinWalker.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Entity\EntityJoinWalker.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Loader\Entity\EntityLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Loader\Entity\IUniqueEntityLoader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Loader\Entity\SimpleEntityLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1721,6 +1781,11 @@
                 />
                 <File
                     RelPath = "Persister\Entity\JoinedSubclassEntityPersister.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\LoadableConstants.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2260,16 +2325,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\CharBooleanType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\CharType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Type\ClobType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2336,6 +2391,16 @@
                 />
                 <File
                     RelPath = "Type\GuidType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\CharBooleanType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\CharType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2570,6 +2635,11 @@
                 />
                 <File
                     RelPath = "Util\AssemblyQualifiedTypeName.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\CollectionHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

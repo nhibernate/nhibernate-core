@@ -1,11 +1,8 @@
 using System;
-using System.Data;
-using System.Text;
 
 using NHibernate.Engine;
 using NExpression = NHibernate.Expression;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -36,9 +33,14 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void SqlString()
 		{
-			SqlString sqlString = _conjunction.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
+			SqlString sqlString;
+			using( ISession session = factory.OpenSession() )
+			{
+				CreateObjects( typeof( Simple ), session );
+				sqlString = _conjunction.ToSqlString( criteria, criteriaQuery );
+			}
 			
-			string expectedSql = "(simple_alias.address is null and simple_alias.count_ between :simple_alias.count__lo and :simple_alias.count__hi)";
+			string expectedSql = "(sql_alias.address is null and sql_alias.count_ between :sql_alias.count__lo and :sql_alias.count__hi)";
 			
 			CompareSqlStrings(sqlString, expectedSql, 2);
 	
@@ -47,7 +49,12 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void GetTypedValues() 
 		{
-			TypedValue[] typedValues = _conjunction.GetTypedValues( factoryImpl, typeof(Simple), BaseExpressionFixture.EmptyAliasClasses );
+			TypedValue[] typedValues;
+			using( ISession session = factory.OpenSession() )
+			{
+				CreateObjects( typeof( Simple ), session );
+				typedValues = _conjunction.GetTypedValues( criteria, criteriaQuery );
+			}
 
 			TypedValue[] expectedTV = new TypedValue[2];
 			expectedTV[0] = new TypedValue(NHibernateUtil.Int32, 5);

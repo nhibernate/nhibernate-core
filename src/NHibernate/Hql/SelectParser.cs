@@ -276,7 +276,7 @@ namespace NHibernate.Hql
 			{
 				argType = retType;
 				string funcToken = ( string ) funcTokenList[ i ];
-				retType = GetFunction( funcToken, q ).ReturnType( argType, q.factory ) ;
+				retType = GetFunction( funcToken, q ).ReturnType( argType, q.Factory ) ;
 			}
 			return retType;
 		}

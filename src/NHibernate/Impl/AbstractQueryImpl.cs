@@ -929,7 +929,8 @@ namespace NHibernate.Impl
 				selection,
 				cacheable,
 				cacheRegion,
-				forceCacheRefresh);
+				forceCacheRefresh,
+				null);
 		}
 
 		public IQuery SetCacheable( bool cacheable )

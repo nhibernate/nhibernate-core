@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Persister.Entity
@@ -23,25 +25,8 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// All columns to select, when loading.
 		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="suffix"></param>
-		/// <param name="includeCollectionColumns"></param>
-		/// <returns></returns>
-		SqlString SelectFragment( string alias, string suffix, bool includeCollectionColumns );
+		string SelectFragment( IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix, string currentCollectionSuffix, bool includeCollectionColumns );
 
-		/* TODO: H3 - replace the overload above with this
-		/// <summary>
-		/// All columns to select, when loading.
-		/// </summary>
-		SqlString SelectFragment(
-			IJoinable rhs,
-			string rhsAlias,
-			string lhsAlias,
-			string currentEntitySuffix,
-			string currentCollectionSuffix,
-			bool includeCollectionColumns );
-		*/
-		
 		/// <summary>
 		/// Get the where clause part of any joins (optional operation)
 		/// </summary>
@@ -66,6 +51,11 @@ namespace NHibernate.Persister.Entity
 		string[] KeyColumnNames { get; }
 
 		/// <summary>
+		/// Get the where clause filter, given a query alias and considering enabled session filters
+		/// </summary>
+		string FilterFragment( string alias, IDictionary enabledFilters );
+
+		/// <summary>
 		/// Is this instance actually a ICollectionPersister?
 		/// </summary>
 		bool IsCollection { get; }
@@ -76,9 +66,19 @@ namespace NHibernate.Persister.Entity
 		bool IsManyToMany { get; }
 
 		/// <summary>
-		/// Ugly, very ugly....
+		/// Very, very, very ugly...
 		/// </summary>
-		/// <returns></returns>
-		bool ConsumesAlias( );
+		/// <value>Does this persister "consume" entity column aliases in the result
+		/// set?</value>
+		bool ConsumesEntityAlias( );
+
+		/// <summary>
+		/// Very, very, very ugly...
+		/// </summary>
+		/// <value>Does this persister "consume" collection column aliases in the result
+		/// set?</value>
+		bool ConsumesCollectionAlias( );
+
+		string OneToManyFilterFragment( string alias );
 	}
 }

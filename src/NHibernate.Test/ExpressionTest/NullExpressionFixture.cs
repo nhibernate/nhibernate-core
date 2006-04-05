@@ -1,14 +1,12 @@
 using System;
-using System.Data;
-using System.Text;
-
-using NHibernate.Engine;
-using NExpression = NHibernate.Expression;
-using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 using NHibernate.DomainModel;
+using NHibernate.Expression;
+using NHibernate.SqlCommand;
+
 using NUnit.Framework;
+
+using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -18,18 +16,18 @@ namespace NHibernate.Test.ExpressionTest
 	[TestFixture]
 	public class NullExpressionFixture : BaseExpressionFixture
 	{
-		
 		[Test]
-		public void NullSqlStringTest() 
+		public void NullSqlStringTest()
 		{
 			ISession session = factory.OpenSession();
-			
-			NExpression.ICriterion expression = NExpression.Expression.IsNull("Address");
 
-			SqlString sqlString = expression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
+			ICriterion expression = Expression.Expression.IsNull( "Address" );
 
-			string expectedSql = "simple_alias.address is null";
-			CompareSqlStrings(sqlString, expectedSql, 0);
+			CreateObjects( typeof( Simple ), session );
+			SqlString sqlString = expression.ToSqlString( criteria, criteriaQuery );
+
+			string expectedSql = "sql_alias.address is null";
+			CompareSqlStrings( sqlString, expectedSql, 0 );
 
 			session.Close();
 		}

@@ -97,5 +97,10 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+		
+		public override string ForUpdateString
+		{
+			get { return " with lock"; }
+		}
 	}
 }

@@ -25,13 +25,14 @@ namespace NHibernate.Test.ExpressionTest
 			
 			NExpression.ICriterion notExpression = NExpression.Expression.Not(NExpression.Expression.Eq("Address", "12 Adress"));
 
-			SqlString sqlString = notExpression.ToSqlString(factoryImpl, typeof(Simple), "simple_alias", BaseExpressionFixture.EmptyAliasClasses );
+			CreateObjects( typeof( Simple ), session );
+			SqlString sqlString = notExpression.ToSqlString( criteria, criteriaQuery );
 
 			string expectedSql = dialect is Dialect.MySQLDialect ?
-				"not (simple_alias.address = :simple_alias.address)" :
-				"not simple_alias.address = :simple_alias.address";
+				"not (sql_alias.address = :sql_alias.address)" :
+				"not sql_alias.address = :sql_alias.address";
 			
-			Parameter firstParam = new Parameter( "address", "simple_alias", new SqlTypes.StringSqlType() );
+			Parameter firstParam = new Parameter( "address", "sql_alias", new SqlTypes.StringSqlType() );
 			CompareSqlStrings(sqlString, expectedSql, new Parameter[] {firstParam});
 			
 			session.Close();

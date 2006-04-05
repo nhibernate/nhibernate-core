@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.Collections;
-using NHibernate.Dialect;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -11,49 +10,62 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class ForUpdateFragment
 	{
+		private Dialect.Dialect dialect;
 		private StringBuilder aliases = new StringBuilder();
 		private bool nowait;
 
-		/// <summary></summary>
-		public ForUpdateFragment()
+		public ForUpdateFragment( Dialect.Dialect dialect )
 		{
+			this.dialect = dialect;
 		}
-		public ForUpdateFragment(IDictionary lockModes)  {
+
+		public ForUpdateFragment( Dialect.Dialect dialect, IDictionary lockModes, IDictionary keyColumnNames )
+			: this( dialect )
+		{
 			LockMode upgradeType = null;
-			IEnumerator keys = lockModes.Keys.GetEnumerator();
-			object current;
-			while ( keys.MoveNext() ) 
+			
+			foreach( DictionaryEntry me in lockModes )
 			{
-				current = keys.Current;
-				LockMode lockMode = (LockMode) lockModes[current];
+				LockMode lockMode = ( LockMode ) me.Value;
 				if ( LockMode.Read.LessThan(lockMode) )
 				{
-					AddTableAlias((string) current);
+					string tableAlias = ( string ) me.Key;
+					if( dialect.ForUpdateOfColumns )
+					{
+						string[] keyColumns = ( string[] ) keyColumnNames[ tableAlias ];
+						if( keyColumns == null )
+						{
+							throw new ArgumentException( "alias not found: " + tableAlias );
+						}
+						keyColumns = StringHelper.Qualify( tableAlias, keyColumns );
+						for( int i = 0; i < keyColumns.Length; i++ )
+						{
+							AddTableAlias( keyColumns[ i ] );
+						}
+					}
+					else
+					{
+						AddTableAlias( tableAlias );
+					}
 					if ( upgradeType != null && lockMode != upgradeType )
 					{
 						throw new QueryException("mixed LockModes");
 					}
 					upgradeType = lockMode;
 				}
+				
 				if ( upgradeType == LockMode.UpgradeNoWait ){
-					this.NoWait = true;
+					NoWait = true;
 				}
 			}
 		}
 
-
-		/// <summary></summary>
 		public bool NoWait
 		{
 			get { return nowait; }
 			set { nowait = value; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <returns></returns>
 		public ForUpdateFragment AddTableAlias( string alias )
 		{
 			if( aliases.Length > 0 )
@@ -64,12 +76,11 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		/// <summary></summary>
-		public SqlString ToSqlStringFragment( Dialect.Dialect dialect )
+		public SqlString ToSqlStringFragment()
 		{
 			if ( aliases.Length == 0 )
 			{
-				return new SqlString( String.Empty );
+				return SqlString.Empty;
 			}
 			bool nowait = NoWait && dialect.SupportsForUpdateNoWait;
 			if ( dialect.SupportsForUpdateOf )

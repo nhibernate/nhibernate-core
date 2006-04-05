@@ -407,7 +407,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public void PostInstantiate(ISessionFactoryImplementor factory)
+		public void PostInstantiate()
 		{
 			// TODO:  Add TestingClassPersister.PostInstantiate implementation
 		}
@@ -449,6 +449,10 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
+		public object[] QuerySpaces
+		{
+			get { return null; }
+		}
 		#endregion
 	}
 
