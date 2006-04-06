@@ -1,4 +1,4 @@
-#if NET_2_0
+//#if NET_2_0
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
+using NHibernate.Loader;
 
 namespace NHibernate.Collection.Generic
 {
@@ -185,10 +186,10 @@ namespace NHibernate.Collection.Generic
 			return (System.Collections.IEnumerable)list;
 		}
 
-		public override object ReadFrom(IDataReader reader, ICollectionPersister persister, object owner)
+        public override object ReadFrom(IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner)
 		{
-			object element = persister.ReadElement(reader, owner, this.Session);
-			int index = (int)persister.ReadIndex(reader, this.Session);
+            object element = persister.ReadElement(reader, owner, descriptor.SuffixedElementAliases, this.Session);
+			int index = (int)persister.ReadIndex(reader, descriptor.SuffixedIndexAliases, this.Session);
 
 			// pad with null from the current last element up to the new index
 			for (int i = list.Count; i <= index; i++)
@@ -199,11 +200,22 @@ namespace NHibernate.Collection.Generic
 			return element;
 		}
 
-		public override void WriteTo(System.Data.IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder)
-		{
-			persister.WriteElement(st, entry, writeOrder, this.Session);
-			persister.WriteIndex(st, i, writeOrder, this.Session);
-		}
+//		public override void WriteTo(System.Data.IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder)
+//		{
+//			persister.WriteElement(st, entry, writeOrder, this.Session);
+//			persister.WriteIndex(st, i, writeOrder, this.Session);
+//		}
+
+        public override object GetElement(object entry)
+        {
+            return entry;
+        }
+
+        public override object GetSnapshotElement(object entry, int i)
+        {
+            IList<T> sn = (IList<T>)GetSnapshot();
+            return sn[i];
+        }
 
 		public override object GetIndex(object entry, int i)
 		{
@@ -212,7 +224,7 @@ namespace NHibernate.Collection.Generic
 
 		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			list = new List<T>();
+			list = new System.Collections.Generic.List<T>();
 		}
 
 		/// <summary>
@@ -254,7 +266,7 @@ namespace NHibernate.Collection.Generic
 		/// </returns>
 		protected override System.Collections.ICollection Snapshot(ICollectionPersister persister)
 		{
-			List<T> clonedList = new List<T>(list.Count);
+            System.Collections.Generic.List<T> clonedList = new System.Collections.Generic.List<T>(list.Count);
 			foreach (T obj in list)
 			{
 				clonedList.Add((T)persister.ElementType.DeepCopy(obj));
@@ -290,9 +302,9 @@ namespace NHibernate.Collection.Generic
 			return i < sn.Count && sn[i] != null && list[i] != null && elemType.IsDirty(list[i], sn[i], this.Session);
 		}
 
-		public override System.Collections.ICollection GetDeletes(NHibernate.Type.IType elemType)
+		public override System.Collections.ICollection GetDeletes(NHibernate.Type.IType elemType, bool indexIsFormula)
 		{
-			List<int> deletes = new List<int>();
+            System.Collections.Generic.List<int> deletes = new System.Collections.Generic.List<int>();
 			IList<T> sn = (IList<T>)GetSnapshot();
 			int end;
 
@@ -335,7 +347,7 @@ namespace NHibernate.Collection.Generic
 		public override System.Collections.ICollection GetOrphans(object snapshot)
 		{
 			IList<T> sn = (IList<T>)snapshot;
-			List<T> result = new List<T>(sn.Count);
+            System.Collections.Generic.List<T> result = new System.Collections.Generic.List<T>(sn.Count);
 			result.AddRange(sn);
 			PersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)list, this.Session);
 			return result;
@@ -447,4 +459,4 @@ namespace NHibernate.Collection.Generic
 		#endregion
 	}
 }
-#endif
+//#endif

@@ -42,10 +42,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\HashCodeProvider.dll</HintPath>
     </Reference>
-    <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
-    </Reference>
     <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\log4net.dll</HintPath>
@@ -93,8 +89,6 @@
     <Compile Include="Cfg\SettingsFactory.cs" />
     <Compile Include="Collection\ArrayHolder.cs" />
     <Compile Include="Collection\Bag.cs" />
-    <Compile Include="Collection\Generic\PersistentGenericBag.cs" />
-    <Compile Include="Collection\Generic\PersistentGenericList.cs" />
     <Compile Include="Collection\IdentifierBag.cs" />
     <Compile Include="Collection\IPersistentCollection.cs" />
     <Compile Include="Collection\List.cs" />
@@ -188,7 +182,6 @@
     <Compile Include="FlushMode.cs" />
     <Compile Include="HibernateException.cs" />
     <Compile Include="Hql\ClauseParser.cs" />
-    <Compile Include="Hql\FilterTranslator.cs" />
     <Compile Include="Hql\FromParser.cs" />
     <Compile Include="Hql\FromPathExpressionParser.cs" />
     <Compile Include="Hql\GroupByParser.cs" />
@@ -443,8 +436,6 @@
     <Compile Include="Type\DynamicComponentType.cs" />
     <Compile Include="Type\EntityType.cs" />
     <Compile Include="Type\EnumStringType.cs" />
-    <Compile Include="Type\GenericBagType.cs" />
-    <Compile Include="Type\GenericListType.cs" />
     <Compile Include="Type\GuidType.cs" />
     <Compile Include="Type\IAbstractComponentType.cs" />
     <Compile Include="Type\IAssociationType.cs" />
@@ -515,25 +506,48 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Cfg\HbmBinder.cs" />
-    <Compile Include="Collection\Generic\PersistentGenericMap.cs" />
+    <Compile Include="Collection\Generic\PersistentGenericBag.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collection\Generic\PersistentGenericList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collection\Generic\PersistentGenericMap.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Dialect\MsSql2005Dialect.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
     <Compile Include="Driver\ReflectionBasedDriver.cs" />
     <Compile Include="Engine\JoinHelper.cs" />
+    <Compile Include="Expression\ICriteriaQuery.cs" />
+    <Compile Include="Hql\Util\SessionFactoryHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Loader\AbstractEntityJoinWalker.cs" />
     <Compile Include="Loader\BasicLoader.cs" />
+    <Compile Include="Loader\Collection\BasicCollectionJoinWalker.cs" />
+    <Compile Include="Loader\Collection\BasicCollectionLoader.cs" />
     <Compile Include="Loader\Collection\BatchingCollectionInitializer.cs" />
+    <Compile Include="Loader\Collection\CollectionJoinWalker.cs" />
     <Compile Include="Loader\Collection\CollectionLoader.cs" />
     <Compile Include="Loader\Collection\ICollectionInitializer.cs" />
+    <Compile Include="Loader\Collection\OneToManyJoinWalker.cs" />
     <Compile Include="Loader\Collection\OneToManyLoader.cs" />
+    <Compile Include="Loader\Criteria\CriteriaJoinWalker.cs" />
     <Compile Include="Loader\Criteria\CriteriaLoader.cs" />
+    <Compile Include="Loader\Criteria\CriteriaQueryTranslator.cs" />
     <Compile Include="Loader\Custom\SqlLoader.cs" />
+    <Compile Include="Loader\DefaultEntityAliases.cs" />
     <Compile Include="Loader\Entity\AbstractEntityLoader.cs" />
     <Compile Include="Loader\Entity\BatchingEntityLoader.cs" />
+    <Compile Include="Loader\Entity\CascadeEntityJoinWalker.cs" />
+    <Compile Include="Loader\Entity\EntityJoinWalker.cs" />
     <Compile Include="Loader\Entity\EntityLoader.cs" />
     <Compile Include="Loader\Entity\IUniqueEntityLoader.cs" />
-    <Compile Include="Loader\Entity\SimpleEntityLoader.cs" />
+    <Compile Include="Loader\GeneratedCollectionAliases.cs" />
     <Compile Include="Loader\ICollectionAliases.cs" />
     <Compile Include="Loader\IEntityAliases.cs" />
+    <Compile Include="Loader\JoinWalker.cs" />
     <Compile Include="Loader\OuterJoinableAssociation.cs" />
     <Compile Include="Mapping\IKeyValue.cs" />
     <Compile Include="Mapping\ISelectable.cs" />
@@ -556,6 +570,7 @@
     <Compile Include="Persister\Entity\ISqlLoadable.cs" />
     <Compile Include="Persister\Entity\IUniqueKeyLoadable.cs" />
     <Compile Include="Persister\Entity\JoinedSubclassEntityPersister.cs" />
+    <Compile Include="Persister\Entity\LoadableConstants.cs" />
     <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
     <Compile Include="Tuple\EntityMetamodel.cs" />
     <Compile Include="Tuple\IdentifierProperty.cs" />
@@ -566,8 +581,17 @@
     <Compile Include="Type\AnsiCharType.cs" />
     <Compile Include="Type\BaseCharType.cs" />
     <Compile Include="Type\ForeignKeyDirection.cs" />
-    <Compile Include="Type\GenericMapType.cs" />
+    <Compile Include="Type\GenericBagType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Type\GenericListType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Type\GenericMapType.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
+    <Compile Include="Util\CollectionHelper.cs" />
     <None Include="nhibernate-mapping-2.0.xsx">
       <DependentUpon>nhibernate-mapping-2.0.xsd</DependentUpon>
     </None>
@@ -576,6 +600,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="NamespaceSummary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Iesi.Collections\Iesi.Collections-2.0.csproj">
+      <Project>{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}</Project>
+      <Name>Iesi.Collections-2.0</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Loader\Hql\" />

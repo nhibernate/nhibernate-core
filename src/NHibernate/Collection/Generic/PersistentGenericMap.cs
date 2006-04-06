@@ -1,4 +1,4 @@
-#if NET_2_0
+//#if NET_2_0
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Persister.Collection;
+using NHibernate.Loader;
 
 namespace NHibernate.Collection.Generic
 {
@@ -74,12 +75,12 @@ namespace NHibernate.Collection.Generic
 			return map as System.Collections.IEnumerable;
 		}
 
-		public override object ReadFrom(IDataReader reader, ICollectionPersister persister, object owner)
+        public override object ReadFrom(IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner)
 		{
 			// this really negates the value of generics - need to get the IPersistentCollection and
 			// ICollectionPersister to be generic versions themselves to get the benefits of generics
-			object element = persister.ReadElement(reader, owner, Session);
-			object index = persister.ReadIndex(reader, Session);
+			object element = persister.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
+			object index = persister.ReadIndex(reader, descriptor.SuffixedIndexAliases, Session);
 
 			TValue typedElement = (element!=null ? (TValue)element : default(TValue));
 			TKey typedIndex = (index!=null ? (TKey)index : default(TKey));
@@ -88,12 +89,12 @@ namespace NHibernate.Collection.Generic
 			return typedElement;
 		}
 
-		public override void WriteTo(IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder)
-		{
-			KeyValuePair<TKey, TValue> e = (KeyValuePair<TKey, TValue>)entry;
-			persister.WriteElement(st, e.Value, writeOrder, this.Session);
-			persister.WriteIndex(st, e.Key, writeOrder, this.Session);
-		}
+//		public override void WriteTo(IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder)
+//		{
+//			KeyValuePair<TKey, TValue> e = (KeyValuePair<TKey, TValue>)entry;
+//			persister.WriteElement(st, e.Value, writeOrder, this.Session);
+//			persister.WriteIndex(st, e.Key, writeOrder, this.Session);
+//		}
 
 		public override object GetIndex(object entry, int i)
 		{
@@ -178,9 +179,9 @@ namespace NHibernate.Collection.Generic
 			return (e.Value != null && snValue != null && elemType.IsDirty(snValue, e.Value, Session));
 		}
 
-		public override System.Collections.ICollection GetDeletes(IType elemType)
+		public override System.Collections.ICollection GetDeletes(IType elemType, bool indexIsFormula)
 		{
-			IList<TKey> deletes = new List<TKey>();
+            System.Collections.Generic.IList<TKey> deletes = new System.Collections.Generic.List<TKey>();
 			foreach (KeyValuePair<TKey, TValue> e in (IDictionary<TKey, TValue>)GetSnapshot())
 			{
 				TKey key = e.Key;
@@ -200,11 +201,21 @@ namespace NHibernate.Collection.Generic
 		public override System.Collections.ICollection GetOrphans(object snapshot)
 		{
 			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>)snapshot;
-			List<TValue> result = new List<TValue>(sn.Values.Count);
+            System.Collections.Generic.List<TValue> result = new System.Collections.Generic.List<TValue>(sn.Values.Count);
 			result.AddRange(sn.Values);
 			PersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)map.Values, Session);
 			return result;
 		}
+        public override object GetElement(object entry)
+        {
+            return entry;
+        }
+
+        public override object GetSnapshotElement(object entry, int i)
+        {
+            IList<TValue> sn = (IList<TValue>)GetSnapshot();
+            return sn[i];
+        }
 
 		#endregion
 
@@ -446,4 +457,4 @@ namespace NHibernate.Collection.Generic
 		#endregion
 	}
 }
-#endif
+//#endif

@@ -1,4 +1,4 @@
-#if NET_2_0
+//#if NET_2_0
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Persister.Collection;
+using NHibernate.Loader;
 
 namespace NHibernate.Collection.Generic
 {
@@ -49,8 +50,8 @@ namespace NHibernate.Collection.Generic
 
 			if (bag == null)
 			{
-				bag = new List<T>();
-				((List<T>)bag).AddRange(coll);
+                bag = new System.Collections.Generic.List<T>();
+                ((System.Collections.Generic.List<T>)bag).AddRange(coll);
 			}
 			SetInitialized();
 			IsDirectlyAccessible = true;
@@ -206,9 +207,9 @@ namespace NHibernate.Collection.Generic
 			return ((System.Collections.IEnumerable)bag);
 		}
 
-		public override object ReadFrom(System.Data.IDataReader reader, ICollectionPersister persister, object owner)
+        public override object ReadFrom(System.Data.IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner)
 		{
-			object element = persister.ReadElement(reader, owner, Session);
+			object element = persister.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
 			// TODO: to make this more net-2.0 friendly the value returned from persister.ReadElement
 			// should be specified by a type parameter.  However, that would really break NH with net-1.1
 			// and I don't want to do that yet - so the cast is appropriate.
@@ -216,19 +217,31 @@ namespace NHibernate.Collection.Generic
 			return element;
 		}
 
-		public override void WriteTo(IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder)
-		{
-			persister.WriteElement(st, entry, writeOrder, Session);
-		}
+//		public override void WriteTo(IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder)
+//		{
+//			persister.WriteElement(st, entry, writeOrder, Session);
+//		}
 
 		public override object GetIndex(object entry, int i)
 		{
 			throw new NotSupportedException("Bags don't have indexes");
 		}
 
+        public override object GetElement(object entry)
+        {
+            return entry;
+        }
+
+        public override object GetSnapshotElement(object entry, int i)
+        {
+            IList<T> sn = (IList<T>)GetSnapshot();
+            return sn[i];
+
+        }
+
 		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			this.bag = new List<T>();
+            this.bag = new System.Collections.Generic.List<T>();
 		}
 
 		public override bool EqualsSnapshot(IType elementType)
@@ -276,7 +289,7 @@ namespace NHibernate.Collection.Generic
 
 		protected override System.Collections.ICollection Snapshot(ICollectionPersister persister)
 		{
-			List<T> clonedList = new List<T>();
+            System.Collections.Generic.List<T> clonedList = new System.Collections.Generic.List<T>();
 			foreach (T obj in bag)
 			{
 				clonedList.Add((T)persister.ElementType.DeepCopy(obj));
@@ -332,7 +345,7 @@ namespace NHibernate.Collection.Generic
 			return false;
 		}
 
-		public override System.Collections.ICollection GetDeletes(IType elemType)
+		public override System.Collections.ICollection GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			System.Collections.ArrayList deletes = new System.Collections.ArrayList();
 			System.Collections.IList sn = (System.Collections.IList)GetSnapshot();
@@ -501,4 +514,4 @@ namespace NHibernate.Collection.Generic
 		#endregion
 	}
 }
-#endif
+//#endif
