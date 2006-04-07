@@ -220,7 +220,7 @@ namespace NHibernate.Loader
 					GetLockModes( queryParameters.LockModes ),
 					null,
 					hydratedObjects,
-					new Key[entitySpan],
+					new EntityKey[entitySpan],
 					returnProxies );
 			}
 			catch( HibernateException )
@@ -242,7 +242,7 @@ namespace NHibernate.Loader
 
 		// Not ported: sequentialLoad, loadSequentialRowsForward, loadSequentialRowsReverse
 
-		private static Key GetOptionalObjectKey( QueryParameters queryParameters, ISessionImplementor session )
+		private static EntityKey GetOptionalObjectKey( QueryParameters queryParameters, ISessionImplementor session )
 		{
 			object optionalObject = queryParameters.OptionalObject;
 			object optionalId = queryParameters.OptionalId;
@@ -250,7 +250,7 @@ namespace NHibernate.Loader
 
 			if ( optionalObject != null && optionalEntityClass != null ) 
 			{
-				return new Key( 
+				return new EntityKey( 
 					optionalId,
 					session.GetPersister( optionalObject ) // TODO H3: session.GetEntityPersister( optionalEntityName, optionalObject )
 					// TODO H3: session.getEntityMode()
@@ -268,9 +268,9 @@ namespace NHibernate.Loader
 			ISessionImplementor session,
 			QueryParameters queryParameters,
 			LockMode[] lockModeArray,
-			Key optionalObjectKey,
+			EntityKey optionalObjectKey,
 			IList hydratedObjects,
-			Key[ ] keys,
+			EntityKey[ ] keys,
 			bool returnProxies )
 		{
 			ILoadable[ ] persisters = EntityPersisters;
@@ -398,7 +398,7 @@ namespace NHibernate.Loader
 // Would need to change the way the max-row stuff is handled (i.e. behind an interface) so
 // that I could do the control breaking at the means to know when to stop
 			LockMode[] lockModeArray = GetLockModes( queryParameters.LockModes );
-			Key optionalObjectKey = GetOptionalObjectKey( queryParameters, session );
+			EntityKey optionalObjectKey = GetOptionalObjectKey( queryParameters, session );
 
 			// TODO H3: bool createSubselects = IsSubselectLoadingEnabled;
 			// TODO H3: IList subselectResultKeys = createSubselects ? new ArrayList() : null;
@@ -407,7 +407,7 @@ namespace NHibernate.Loader
 			try
 			{
 				HandleEmptyCollections( queryParameters.CollectionKeys, rs, session );
-				Key[ ] keys = new Key[ entitySpan ]; // we can reuse it each time
+				EntityKey[ ] keys = new EntityKey[ entitySpan ]; // we can reuse it each time
 
 				if( log.IsDebugEnabled )
 				{
@@ -436,7 +436,7 @@ namespace NHibernate.Loader
 					// TODO H3: if( createSubselects )
 					// TODO H3: {
 					// TODO H3: 	subselectResultKeys.Add( keys );
-					// TODO H3: 	keys = new Key[ entitySpan ]; //can't reuse in this case
+					// TODO H3: 	keys = new EntityKey[ entitySpan ]; //can't reuse in this case
 					// TODO H3: }
 				}
 
@@ -566,7 +566,7 @@ namespace NHibernate.Loader
 		/// session.
 		/// </summary>
 		private void RegisterNonExists(
-			Key[ ] keys,
+			EntityKey[ ] keys,
 			ILoadable[ ] persisters,
 			ISessionImplementor session
 			)
@@ -580,7 +580,7 @@ namespace NHibernate.Loader
 					int owner = owners[ i ];
 					if( owner > -1 )
 					{
-						Key ownerKey = keys[ owner ];
+						EntityKey ownerKey = keys[ owner ];
 						if( keys[ i ] == null && ownerKey != null )
 						{
 							//bool isOneToOneAssociation = ownerAssociationTypes != null &&
@@ -589,7 +589,7 @@ namespace NHibernate.Loader
 
 							//if( isOneToOneAssociation )
 							//{
-								session.AddNonExist( new Key( ownerKey.Identifier, persisters[ i ] ) );
+								session.AddNonExist( new EntityKey( ownerKey.Identifier, persisters[ i ] ) );
 							//}
 						}
 					}
@@ -698,7 +698,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Read a row of <c>Key</c>s from the <c>IDataReader</c> into the given array.
+		/// Read a row of <c>EntityKey</c>s from the <c>IDataReader</c> into the given array.
 		/// </summary>
 		/// <remarks>
 		/// Warning: this method is side-effecty. If an <c>id</c> is given, don't bother going
@@ -710,7 +710,7 @@ namespace NHibernate.Loader
 		/// <param name="session"></param>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		private Key GetKeyFromResultSet( int i, ILoadable persister, object id, IDataReader rs, ISessionImplementor session )
+		private EntityKey GetKeyFromResultSet( int i, ILoadable persister, object id, IDataReader rs, ISessionImplementor session )
 		{
 			object resultId;
 
@@ -734,7 +734,7 @@ namespace NHibernate.Loader
 				}
 			}
 
-			return ( resultId == null ) ? null : new Key( resultId, persister );
+			return ( resultId == null ) ? null : new EntityKey( resultId, persister );
 		}
 
 		/// <summary>
@@ -779,9 +779,9 @@ namespace NHibernate.Loader
 		private object[ ] GetRow(
 			IDataReader rs,
 			ILoadable[ ] persisters,
-			Key[ ] keys,
+			EntityKey[ ] keys,
 			object optionalObject,
-			Key optionalObjectKey,
+			EntityKey optionalObjectKey,
 			LockMode[ ] lockModes,
 			IList hydratedObjects,
 			ISessionImplementor session )
@@ -798,7 +798,7 @@ namespace NHibernate.Loader
 			for( int i = 0; i < cols; i++ )
 			{
 				object obj = null;
-				Key key = keys[ i ];
+				EntityKey key = keys[ i ];
 
 				if( keys[ i ] == null )
 				{
@@ -831,7 +831,7 @@ namespace NHibernate.Loader
 			IDataReader rs,
 			int i,
 			ILoadable persister,
-			Key key,
+			EntityKey key,
 			object obj,
 			LockMode lockMode,
 			ISessionImplementor session )
@@ -859,7 +859,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// The entity instance is not in the session cache
 		/// </summary>
-		private object InstanceNotYetLoaded( IDataReader dr, int i, ILoadable persister, Key key, LockMode lockMode, Key optionalObjectKey, object optionalObject, IList hydratedObjects, ISessionImplementor session )
+		private object InstanceNotYetLoaded( IDataReader dr, int i, ILoadable persister, EntityKey key, LockMode lockMode, EntityKey optionalObjectKey, object optionalObject, IList hydratedObjects, ISessionImplementor session )
 		{
 			object obj;
 
@@ -899,7 +899,7 @@ namespace NHibernate.Loader
 			int i,
 			object obj,
 			System.Type instanceClass,
-			Key key,
+			EntityKey key,
 			LockMode lockMode,
 			ILoadable rootPersister,
 			ISessionImplementor session )

@@ -214,7 +214,7 @@ namespace NHibernate.Engine
 		/// <param name="key"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
-		void AddUninitializedEntity( Key key, object obj, LockMode lockMode );
+		void AddUninitializedEntity( EntityKey key, object obj, LockMode lockMode );
 
 		/// <summary>
 		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading
@@ -233,21 +233,21 @@ namespace NHibernate.Engine
 		void InitializeEntity( object obj );
 
 		/// <summary>
-		/// Get the entity instance associated with the given <c>Key</c>
+		/// Get the entity instance associated with the given <c>EntityKey</c>
 		/// </summary>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		object GetEntity( Key key );
+		object GetEntity( EntityKey key );
 
 		/// <summary>
-		/// Return the existing proxy associated with the given <c>Key</c>, or the second
+		/// Return the existing proxy associated with the given <c>EntityKey</c>, or the second
 		/// argument (the entity associated with the key) if no proxy exists.
 		/// </summary>
 		/// <param name="persister">The <see cref="IEntityPersister"/> to see if it should be Proxied.</param>
-		/// <param name="key">The <see cref="Key"/> that identifies the entity.</param>
+		/// <param name="key">The <see cref="EntityKey"/> that identifies the entity.</param>
 		/// <param name="impl"></param>
 		/// <returns>Returns a the Proxy for the class or the parameter impl.</returns>
-		object ProxyFor( IEntityPersister persister, Key key, object impl );
+		object ProxyFor( IEntityPersister persister, EntityKey key, object impl );
 
 		/// <summary>
 		/// Return the existing proxy associated with the given object. (Slower than the form above)
@@ -361,7 +361,7 @@ namespace NHibernate.Engine
 		/// new in 2.1 no javadoc
 		/// </summary>
 		/// <param name="key"></param>
-		void AddNonExist( Key key );
+		void AddNonExist( EntityKey key );
 
 		/// <summary>
 		/// new in 2.1 no javadoc

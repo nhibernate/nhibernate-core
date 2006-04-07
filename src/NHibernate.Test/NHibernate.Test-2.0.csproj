@@ -144,9 +144,9 @@
     <Compile Include="NHSpecificTest\Docs\ExampleParentChild\UpdateFixture.cs" />
     <Compile Include="NHSpecificTest\Docs\PersistentClasses\Cat.cs" />
     <Compile Include="NHSpecificTest\EmptyMappingsFixture.cs" />
+    <Compile Include="NHSpecificTest\EntityKeyFixture.cs" />
     <Compile Include="NHSpecificTest\GetSetHelperFixture.cs" />
     <Compile Include="NHSpecificTest\GetTest.cs" />
-    <Compile Include="NHSpecificTest\KeyFixture.cs" />
     <Compile Include="NHSpecificTest\LazyLoadBugTest.cs" />
     <Compile Include="NHSpecificTest\MapFixture.cs" />
     <Compile Include="NHSpecificTest\NH251\CustomAccessDO.cs" />

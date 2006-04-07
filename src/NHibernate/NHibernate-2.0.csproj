@@ -17,7 +17,7 @@
     <OutputPath>bin\Debug-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NET,NET_2_0</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\NHibernate.XML</DocumentationFile>
@@ -29,7 +29,7 @@
     <OutputPath>bin\Release-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -131,7 +131,6 @@
     <Compile Include="Engine\IMapping.cs" />
     <Compile Include="Engine\ISessionFactoryImplementor.cs" />
     <Compile Include="Engine\ISessionImplementor.cs" />
-    <Compile Include="Engine\Key.cs" />
     <Compile Include="Engine\OptimisticLockMode.cs" />
     <Compile Include="Engine\QueryParameters.cs" />
     <Compile Include="Engine\RowSelection.cs" />
@@ -518,6 +517,7 @@
     <Compile Include="Dialect\MsSql2005Dialect.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
     <Compile Include="Driver\ReflectionBasedDriver.cs" />
+    <Compile Include="Engine\EntityKey.cs" />
     <Compile Include="Engine\JoinHelper.cs" />
     <Compile Include="Expression\ICriteriaQuery.cs" />
     <Compile Include="Hql\Util\SessionFactoryHelper.cs">

@@ -162,7 +162,7 @@ namespace NHibernate.Proxy
 
 					if( _target == null & _session != null )
 					{
-						Key key = new Key( _id, _session.Factory.GetPersister( _persistentClass ) );
+						EntityKey key = new EntityKey( _id, _session.Factory.GetPersister( _persistentClass ) );
 						_target = _session.GetEntity( key );
 					}
 
@@ -235,7 +235,7 @@ namespace NHibernate.Proxy
 		/// <returns>The Persistent Object this proxy is Proxying, or <c>null</c>.</returns>
 		public object GetImplementation( ISessionImplementor s )
 		{
-			Key key = new Key( Identifier, s.Factory.GetPersister( PersistentClass ) );
+			EntityKey key = new EntityKey( Identifier, s.Factory.GetPersister( PersistentClass ) );
 			return s.GetEntity( key );
 		}
 

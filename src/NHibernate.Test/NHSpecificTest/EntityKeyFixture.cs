@@ -457,13 +457,13 @@ namespace NHibernate.Test.NHSpecificTest
 	}
 
 	[TestFixture]
-	public class KeyFixture
+	public class EntityKeyFixture
 	{
 		[Test, ExpectedException( typeof( ArgumentException ) )]
 		public void CreateWithWrongTypeOfId()
 		{
 			IEntityPersister persister = new TestingClassPersister();
-			Key key = new Key(1L, persister);
+			EntityKey key = new EntityKey(1L, persister);
 		}
 	}
 }

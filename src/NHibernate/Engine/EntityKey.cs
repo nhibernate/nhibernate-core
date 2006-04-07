@@ -9,14 +9,14 @@ namespace NHibernate.Engine
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public sealed class Key
+	public sealed class EntityKey
 	{
 		private readonly object identifier;
 		private readonly object identifierSpace;
 		private readonly System.Type clazz;
 		private readonly bool isBatchLoadable;
 
-		private Key( object id, IType identifierType, object identifierSpace, System.Type clazz, bool isBatchLoadable )
+		private EntityKey( object id, IType identifierType, object identifierSpace, System.Type clazz, bool isBatchLoadable )
 		{
 			if( id == null )
 			{
@@ -39,7 +39,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="p"></param>
-		public Key( object id, IEntityPersister p ) : this( id, p.IdentifierType, p.IdentifierSpace, p.MappedClass, p.IsBatchLoadable )
+		public EntityKey( object id, IEntityPersister p ) : this( id, p.IdentifierType, p.IdentifierSpace, p.MappedClass, p.IsBatchLoadable )
 		{
 		}
 
@@ -74,7 +74,7 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		public override bool Equals( object other )
 		{
-			Key otherKey = other as Key;
+			EntityKey otherKey = other as EntityKey;
 			if( otherKey == null )
 			{
 				return false;

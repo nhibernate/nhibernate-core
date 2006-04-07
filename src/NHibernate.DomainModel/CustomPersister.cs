@@ -290,7 +290,7 @@ namespace NHibernate.DomainModel
 			if(obj!=null) 
 			{
 				clone = (Custom)obj.Clone();
-				session.AddUninitializedEntity( new Key(id, this), clone, LockMode.None );
+				session.AddUninitializedEntity( new EntityKey(id, this), clone, LockMode.None );
 				session.PostHydrate( this, id, new string[] {obj.Name}, clone, LockMode.None );
 				session.InitializeEntity(clone);
 			}
