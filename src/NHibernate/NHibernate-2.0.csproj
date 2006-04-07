@@ -38,10 +38,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\Castle.DynamicProxy.dll</HintPath>
     </Reference>
-    <Reference Include="HashCodeProvider, Version=1.0.0.0, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\HashCodeProvider.dll</HintPath>
-    </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
@@ -527,6 +523,7 @@
     <Compile Include="Hql\Util\SessionFactoryHelper.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IdentityHashCodeProvider.cs" />
     <Compile Include="Loader\AbstractEntityJoinWalker.cs" />
     <Compile Include="Loader\BasicLoader.cs" />
     <Compile Include="Loader\Collection\BasicCollectionJoinWalker.cs" />

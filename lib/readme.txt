@@ -1,7 +1,3 @@
-HashCodeProvider
-- Implementation of System.Collections.IHashCodeProvider
-- runtime, required
-
 Castle.DynamicProxy
 - Proxy Generation Library
 - runtime, required
