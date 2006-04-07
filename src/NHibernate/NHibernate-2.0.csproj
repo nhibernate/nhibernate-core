@@ -42,6 +42,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\HashCodeProvider.dll</HintPath>
     </Reference>
+    <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\log4net.dll</HintPath>
@@ -600,12 +604,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="NamespaceSummary.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Iesi.Collections\Iesi.Collections-2.0.csproj">
-      <Project>{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}</Project>
-      <Name>Iesi.Collections-2.0</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Loader\Hql\" />

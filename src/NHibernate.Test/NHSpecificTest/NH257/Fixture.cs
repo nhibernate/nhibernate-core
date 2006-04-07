@@ -17,9 +17,21 @@ namespace NHibernate.Test.NHSpecificTest.NH257
 			cfg.AddResource( "NHibernate.Test.NHSpecificTest.NH257.Mappings.hbm.xml", assembly );
 			
 			string[] script = cfg.GenerateSchemaCreationScript(new Dialect.MsSql2000Dialect());
-			string createManyToManyTable = script[1];
-			Assert.AreEqual("create table users_in_groups (group_id INT not null, user_id INT not null, primary key (user_id, group_id))",
-				createManyToManyTable);
+
+            bool found = false;
+
+            foreach( string line in script )
+            {
+                if( string.Compare(
+                    line,
+                    "create table users_in_groups (group_id INT not null, user_id INT not null, primary key (user_id, group_id))",
+                    true ) == 0 )
+                {
+                    found = true;
+                }
+            }
+
+            Assert.IsTrue( found, "Script should contain the correct create table statement" );
 		}
 	}
 }

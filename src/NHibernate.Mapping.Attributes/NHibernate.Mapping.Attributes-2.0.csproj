@@ -1,0 +1,280 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>NHibernate.Mapping.Attributes</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>NHibernate.Mapping.Attributes</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ArrayAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BagAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BaseAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CacheAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CacheUsage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CascadeStyle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ClassAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CollectionIdAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ColumnAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentPropertyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CompositeElementAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CompositeIdAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CompositeIndexAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DiscriminatorAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicComponentAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ElementAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FetchMode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GeneratorAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HbmSerializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HbmWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HbmWriterEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HbmWriterHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HbmWriterHelperEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HibernateMappingAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IdAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IdBagAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ImportAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IndexAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IndexManyToAnyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IndexManyToManyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="JcsCacheAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="JcsCacheUsage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="JoinedSubclassAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="KeyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="KeyManyToOneAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="KeyPropertyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ListAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ManyToAnyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ManyToManyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ManyToOneAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MapAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MetaAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MetaValueAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NestedCompositeElementAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OneToManyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OneToOneAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OptimisticLockMode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OuterJoinStrategy.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ParamAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ParentAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PolymorphismType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PrimitiveArrayAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PropertyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SetAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SubclassAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TimestampAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UnsavedValueType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VersionAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="nhibernate-mapping-2.0.xsd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

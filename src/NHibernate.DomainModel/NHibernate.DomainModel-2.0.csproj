@@ -222,8 +222,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="NHSpecific\GetSetHelper.hbm.xml" />
-    <Content Include="NHSpecific\Optimistic.hbm.xml" />
+    <EmbeddedResource Include="NHSpecific\GetSetHelper.hbm.xml" />
+    <EmbeddedResource Include="NHSpecific\Optimistic.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

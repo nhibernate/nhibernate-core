@@ -100,15 +100,13 @@
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-2.0</Name>
     </ProjectReference>
-    <ProjectReference Include="Nullables-1.1">
-      <Name>Nullables-1.1</Name>
-      <Project>{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
-    <ProjectReference Include="Nullables.NHibernate-1.1">
-      <Name>Nullables.NHibernate-1.1</Name>
+    <ProjectReference Include="..\Nullables.NHibernate\Nullables.NHibernate-2.0.csproj">
       <Project>{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+      <Name>Nullables.NHibernate-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nullables\Nullables-2.0.csproj">
+      <Project>{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}</Project>
+      <Name>Nullables-2.0</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

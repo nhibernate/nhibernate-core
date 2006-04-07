@@ -196,7 +196,7 @@ namespace NHibernate.JetDriver
 		/// </summary>
 		/// <param name="insertSql">The SqlString that contains the INSERT sql.</param>
 		/// <returns>null.</returns>
-		public override SqlString AddIdentitySelectToInsert( SqlString insertSql )
+        public override SqlString AddIdentitySelectToInsert( SqlString insertSql, string identityColumn, string tableName )
 		{
 			//return insertSql.Append( "; " + IdentitySelectString );
 			return null;
@@ -209,9 +209,9 @@ namespace NHibernate.JetDriver
 		}
 
 		/// <summary></summary>
-		public override string IdentitySelectString
+		public override string IdentitySelectString( string identityColumn, string tableName )
 		{
-			get { return "select @@identity"; }
+			return "select @@identity";
 		}
 
 		/// <summary>

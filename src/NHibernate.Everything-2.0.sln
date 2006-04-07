@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+# Visual C# Express 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections-2.0", "Iesi.Collections\Iesi.Collections-2.0.csproj", "{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections.Test-2.0", "Iesi.Collections.Test\Iesi.Collections.Test-2.0.csproj", "{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}"
@@ -42,6 +42,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache-2.0", "NHibernate.Caches.MemCache\NHibernate.Caches.MemCache-2.0.csproj", "{EE1CD14F-FE9F-4DB4-ADE2-A8853935F44E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache.Tests-2.0", "NHibernate.Caches.MemCache.Tests\NHibernate.Caches.MemCache.Tests-2.0.csproj", "{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables-2.0", "Nullables\Nullables-2.0.csproj", "{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables.NHibernate-2.0", "Nullables.NHibernate\Nullables.NHibernate-2.0.csproj", "{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables.Tests-2.0", "Nullables.Tests\Nullables.Tests-2.0.csproj", "{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Mapping.Attributes-2.0", "NHibernate.Mapping.Attributes\NHibernate.Mapping.Attributes-2.0.csproj", "{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Mapping.Attributes.Test-2.0", "NHibernate.Mapping.Attributes.Test\NHibernate.Mapping.Attributes.Test-2.0.csproj", "{A6585067-79C1-41A9-A006-A83C3A800B21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,6 +143,26 @@ Global
 		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6585067-79C1-41A9-A006-A83C3A800B21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6585067-79C1-41A9-A006-A83C3A800B21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6585067-79C1-41A9-A006-A83C3A800B21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6585067-79C1-41A9-A006-A83C3A800B21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

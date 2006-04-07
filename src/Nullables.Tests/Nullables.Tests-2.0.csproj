@@ -1,0 +1,169 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Nullables.Tests</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Nullables.Tests</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <Name>log4net</Name>
+      <HintPath>..\..\lib\net\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <Name>nunit.framework</Name>
+      <HintPath>..\..\lib\net\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Nullables.Tests.build" />
+    <None Include="Nullables.Tests.nunit" />
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NHibernate\NullablesClass.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NHibernate\NullablesFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NHibernate\TestCase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableBooleanFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableByteFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableCharFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableDateTimeFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableDecimalFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableDoubleFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableGuidFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableInt16Fixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableInt32Fixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableInt64Fixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableSByteFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NullableSingleFixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="NHibernate\NullablesClass.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate\NHibernate-2.0.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nullables.NHibernate\Nullables.NHibernate-2.0.csproj">
+      <Project>{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}</Project>
+      <Name>Nullables.NHibernate-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nullables\Nullables-2.0.csproj">
+      <Project>{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}</Project>
+      <Name>Nullables-2.0</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>copy /y "$(ProjectDir)App.config" "$(TargetPath).config"</PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>
