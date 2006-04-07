@@ -49,7 +49,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
-			return new ArrayHolder( session, persister );
+			return new PersistentArrayHolder( session, persister );
 		}
 
 		/// <summary>
@@ -90,16 +90,16 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Wraps a <see cref="System.Array"/> in a <see cref="ArrayHolder"/>.
+		/// Wraps a <see cref="System.Array"/> in a <see cref="PersistentArrayHolder"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="array">The unwrapped array.</param>
 		/// <returns>
-		/// An <see cref="ArrayHolder"/> that wraps the non NHibernate <see cref="System.Array"/>.
+		/// An <see cref="PersistentArrayHolder"/> that wraps the non NHibernate <see cref="System.Array"/>.
 		/// </returns>
 		public override IPersistentCollection Wrap( ISessionImplementor session, object array )
 		{
-			return new ArrayHolder( session, array );
+			return new PersistentArrayHolder( session, array );
 		}
 
 		/// <summary></summary>

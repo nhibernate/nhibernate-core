@@ -13,9 +13,9 @@ namespace NHibernate.Collection
 	/// A persistent wrapper for an array. lazy initialization is NOT supported
 	/// </summary>
 	[Serializable]
-	public class ArrayHolder : PersistentCollection
+	public class PersistentArrayHolder : AbstractPersistentCollection
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( ArrayHolder ) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( PersistentArrayHolder ) );
 
 		/// <summary>
 		/// The <see cref="Array"/> that NHibernate is wrapping.
@@ -26,7 +26,7 @@ namespace NHibernate.Collection
 		private System.Type elementClass;
 
 		/// <summary>
-		/// A temporary list that holds the objects while the ArrayHolder is being
+		/// A temporary list that holds the objects while the PersistentArrayHolder is being
 		/// populated from the database.
 		/// </summary>
 		[NonSerialized]
@@ -38,7 +38,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="array"></param>
-		internal ArrayHolder( ISessionImplementor session, object array ) : base( session )
+		internal PersistentArrayHolder( ISessionImplementor session, object array ) : base( session )
 		{
 			this.array = (Array) array;
 			SetInitialized();
@@ -85,7 +85,7 @@ namespace NHibernate.Collection
 			}
 			for( int i = 0; i < sn.Length; i++ )
 			{
-				PersistentCollection.IdentityRemove( result, arr[ i ], Session );
+				AbstractPersistentCollection.IdentityRemove( result, arr[ i ], Session );
 			}
 			return result;
 		}
@@ -96,7 +96,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="persister"></param>
-		public ArrayHolder( ISessionImplementor session, ICollectionPersister persister )
+		public PersistentArrayHolder( ISessionImplementor session, ICollectionPersister persister )
 			: base( session )
 		{
 			elementClass = persister.ElementClass;
@@ -190,7 +190,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Before the <c>ReadFrom()</c> is called the ArrayHolder needs to setup 
+		/// Before the <c>ReadFrom()</c> is called the PersistentArrayHolder needs to setup 
 		/// a temporary list to hold the objects.
 		/// </summary>
 		public override void BeginRead()
@@ -271,7 +271,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Returns the user-visible portion of the NHibernate ArrayHolder.
+		/// Returns the user-visible portion of the NHibernate PersistentArrayHolder.
 		/// </summary>
 		/// <returns>
 		/// The array that contains the data, not the NHibernate wrapper.

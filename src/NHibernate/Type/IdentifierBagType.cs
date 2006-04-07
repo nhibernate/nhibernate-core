@@ -29,7 +29,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
-			return new IdentifierBag( session );
+			return new PersistentIdentifierBag( session );
 		}
 
 		/// <summary></summary>
@@ -39,16 +39,16 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Wraps an <see cref="IList"/> in a <see cref="IdentifierBag"/>.
+		/// Wraps an <see cref="IList"/> in a <see cref="PersistentIdentifierBag"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped <see cref="IList"/>.</param>
 		/// <returns>
-		/// An <see cref="IdentifierBag"/> that wraps the non NHibernate <see cref="IList"/>.
+		/// An <see cref="PersistentIdentifierBag"/> that wraps the non NHibernate <see cref="IList"/>.
 		/// </returns>
 		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return new IdentifierBag( session, ( ICollection ) collection );
+			return new PersistentIdentifierBag( session, ( ICollection ) collection );
 		}
 
 		protected override void Clear( ICollection collection )

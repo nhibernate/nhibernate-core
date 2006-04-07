@@ -186,7 +186,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Checks to see if the <see cref="PersistentCollection"/> has had any changes to the 
+		/// Checks to see if the <see cref="AbstractPersistentCollection"/> has had any changes to the 
 		/// collections contents or if any of the elements in the collection have been modified.
 		/// </summary>
 		/// <param name="coll"></param>
@@ -243,7 +243,7 @@ namespace NHibernate.Impl
 		/// Updates the CollectionEntry to reflect that the <see cref="IPersistentCollection"/>
 		/// has been initialized.
 		/// </summary>
-		/// <param name="collection">The initialized <see cref="PersistentCollection"/> that this Entry is for.</param>
+		/// <param name="collection">The initialized <see cref="AbstractPersistentCollection"/> that this Entry is for.</param>
 		internal void PostInitialize( IPersistentCollection collection )
 		{
 			initialized = true;

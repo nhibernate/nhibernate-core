@@ -34,7 +34,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
-			SortedSet sortedSet = new SortedSet( session, comparer );
+			PersistentSortedSet sortedSet = new PersistentSortedSet( session, comparer );
 			return sortedSet;
 		}
 
@@ -43,16 +43,16 @@ namespace NHibernate.Type
 		// doesn't have that I don't need to override it.
 
 		/// <summary>
-		/// Wraps an <see cref="Iesi.Collections.ISet"/> in a <see cref="SortedSet"/>.
+		/// Wraps an <see cref="Iesi.Collections.ISet"/> in a <see cref="PersistentSortedSet"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped <see cref="Iesi.Collections.ISet"/>.</param>
 		/// <returns>
-		/// An <see cref="SortedSet"/> that wraps the non NHibernate <see cref="Iesi.Collections.ISet"/>.
+		/// An <see cref="PersistentSortedSet"/> that wraps the non NHibernate <see cref="Iesi.Collections.ISet"/>.
 		/// </returns>
 		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return new SortedSet( session, ( Iesi.Collections.ISet ) collection, comparer );
+			return new PersistentSortedSet( session, ( Iesi.Collections.ISet ) collection, comparer );
 
 		}
 	}

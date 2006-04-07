@@ -65,8 +65,8 @@ namespace NHibernate.Impl
 				{
 					// if not wrappered yet, its dirty (this can't occur, because 
 					// we now always call wrap() before getting to here) 
-					// return ( ! (obj is PersistentCollection) ) ?
-					//	true : SearchForDirtyCollections( (PersistentCollection) obj, type );
+					// return ( ! (obj is AbstractPersistentCollection) ) ?
+					//	true : SearchForDirtyCollections( (AbstractPersistentCollection) obj, type );
 					coll = (IPersistentCollection)collection;
 				}
 

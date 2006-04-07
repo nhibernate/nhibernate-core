@@ -10,7 +10,7 @@ namespace NHibernate.Collection
 {
 	/// <summary>
 	/// An <c>IdentiferBag</c> implements "bag" semantics more efficiently than
-	/// a regular <see cref="Bag" /> by adding a synthetic identifier column to the
+	/// a regular <see cref="PersistentBag" /> by adding a synthetic identifier column to the
 	/// table.
 	/// </summary>
 	/// <remarks>
@@ -20,21 +20,21 @@ namespace NHibernate.Collection
 	/// application. 
 	/// </para>
 	/// <para>
-	/// <c>IdentifierBag</c>s may not be used for a many-to-one association.  Furthermore,
+	/// <c>PersistentIdentifierBag</c>s may not be used for a many-to-one association.  Furthermore,
 	/// there is no reason to use <c>inverse="true"</c>.
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class IdentifierBag : PersistentCollection, IList
+	public class PersistentIdentifierBag : AbstractPersistentCollection, IList
 	{
 		private IList values;	//element
 		private IDictionary identifiers; //index -> id 
 
-		internal IdentifierBag( ISessionImplementor session ) : base( session )
+		internal PersistentIdentifierBag( ISessionImplementor session ) : base( session )
 		{
 		}
 
-		internal IdentifierBag( ISessionImplementor session, ICollection coll ) : base( session )
+		internal PersistentIdentifierBag( ISessionImplementor session, ICollection coll ) : base( session )
 		{
 			IList list = coll as IList;
 
@@ -59,8 +59,8 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Initializes this Bag from the cached values.
 		/// </summary>
-		/// <param name="persister">The CollectionPersister to use to reassemble the IdentifierBag.</param>
-		/// <param name="disassembled">The disassembled IdentifierBag.</param>
+		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentIdentifierBag.</param>
+		/// <param name="disassembled">The disassembled PersistentIdentifierBag.</param>
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
@@ -354,11 +354,11 @@ namespace NHibernate.Collection
 			IDictionary sn = ( IDictionary ) GetSnapshot();
 			ArrayList result = new ArrayList();
 			result.AddRange( sn.Values );
-			PersistentCollection.IdentityRemoveAll( result, values, session );
+			AbstractPersistentCollection.IdentityRemoveAll( result, values, session );
 			return result;
 			*/
 
-			return PersistentCollection.GetOrphans( ( ( IDictionary ) snapshot).Values, values, Session );
+			return AbstractPersistentCollection.GetOrphans( ( ( IDictionary ) snapshot).Values, values, Session );
 		}
 
 		public override void PreInsert( ICollectionPersister persister )

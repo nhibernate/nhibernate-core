@@ -15,7 +15,7 @@ namespace NHibernate.Collection
 	/// The underlying collection used in an <see cref="ArrayList"/>.
 	/// </remarks>
 	[Serializable]
-	public class List : PersistentCollection, IList
+	public class PersistentList : AbstractPersistentCollection, IList
 	{
 		private IList list;
 
@@ -42,7 +42,7 @@ namespace NHibernate.Collection
 			IList sn = ( IList ) snapshot;
 			ArrayList result = new ArrayList( sn.Count );
 			result.AddRange( sn );
-			PersistentCollection.IdentityRemoveAll( result, list, Session );
+			AbstractPersistentCollection.IdentityRemoveAll( result, list, Session );
 			return result;
 		}
 
@@ -78,22 +78,22 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Initializes an instance of the <see cref="List"/>
+		/// Initializes an instance of the <see cref="PersistentList"/>
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
-		internal List(ISessionImplementor session)
+		internal PersistentList(ISessionImplementor session)
 			: base(session)
 		{
 		}
 
 		/// <summary>
-		/// Initializes an instance of the <see cref="List"/>
+		/// Initializes an instance of the <see cref="PersistentList"/>
 		/// that wraps an existing <see cref="IList"/> in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
 		/// <param name="list">The <see cref="IList"/> to wrap.</param>
-		internal List(ISessionImplementor session, IList list)
+		internal PersistentList(ISessionImplementor session, IList list)
 			: base(session)
 		{
 			this.list = list;
@@ -250,10 +250,10 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Initializes this List from the cached values.
+		/// Initializes this PersistentList from the cached values.
 		/// </summary>
-		/// <param name="persister">The CollectionPersister to use to reassemble the List.</param>
-		/// <param name="disassembled">The disassembled List.</param>
+		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentList.</param>
+		/// <param name="disassembled">The disassembled PersistentList.</param>
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{

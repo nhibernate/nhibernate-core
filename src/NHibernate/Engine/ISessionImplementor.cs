@@ -26,17 +26,14 @@ namespace NHibernate.Engine
 		object GetSnapshot( IPersistentCollection collection );
 
 		/// <summary>
-		/// Get the <c>PersistentCollection</c> object for an array
+		/// Get the <see cref="IPersistentCollection" /> object for an array
 		/// </summary>
-		/// <param name="array"></param>
-		/// <returns></returns>
-		ArrayHolder GetArrayHolder( object array );
+		PersistentArrayHolder GetArrayHolder( object array );
 
 		/// <summary>
-		/// Register a <c>PersistentCollection</c> object for an array
+		/// Register a <see cref="IPersistentCollection" /> object for an array
 		/// </summary>
-		/// <param name="holder"></param>
-		void AddArrayHolder( ArrayHolder holder );
+		void AddArrayHolder( PersistentArrayHolder holder );
 
 		/// <summary>
 		/// Initialize the collection (if not already initialized)

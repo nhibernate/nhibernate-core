@@ -18,7 +18,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="T">The type of the element the list should hold.</typeparam>
 	/// <remarks>The underlying collection used is a <see cref="List&lt;T&gt;"/></remarks>
 	[Serializable]
-	public class PersistentGenericList<T> : PersistentCollection, IList<T>, System.Collections.IList
+	public class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, System.Collections.IList
 	{
 		private IList<T> list;
 
@@ -155,7 +155,7 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
-		#region PersistentCollection Members
+		#region AbstractPersistentCollection Members
 
 		public override void DelayedAddAll(System.Collections.ICollection coll)
 		{
@@ -349,7 +349,7 @@ namespace NHibernate.Collection.Generic
 			IList<T> sn = (IList<T>)snapshot;
             System.Collections.Generic.List<T> result = new System.Collections.Generic.List<T>(sn.Count);
 			result.AddRange(sn);
-			PersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)list, this.Session);
+			AbstractPersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)list, this.Session);
 			return result;
 		}
 

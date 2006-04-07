@@ -58,7 +58,7 @@ namespace NHibernate.Impl
 			}
 			else if( _collection.NeedsRecreate( Persister ) )
 			{
-				// certain collections (Bag) have to be recreated in the db each
+				// certain collections (PersistentBag) have to be recreated in the db each
 				// time - if the snapshot was not empty then there are some existing
 				// rows that need to be removed.
 				if( !_emptySnapshot )

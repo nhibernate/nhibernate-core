@@ -15,15 +15,15 @@ namespace NHibernate.Collection
 	/// so NHibernate follows this practice.
 	/// </summary>
 	[Serializable]
-	public class Bag : PersistentCollection, IList
+	public class PersistentBag : AbstractPersistentCollection, IList
 	{
 		private IList bag;
 
-		internal Bag( ISessionImplementor session ) : base( session )
+		internal PersistentBag( ISessionImplementor session ) : base( session )
 		{
 		}
 
-		internal Bag( ISessionImplementor session, ICollection coll ) : base( session )
+		internal PersistentBag( ISessionImplementor session, ICollection coll ) : base( session )
 		{
 			bag = coll as IList;
 
@@ -107,11 +107,6 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
 		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
 			ArrayList clonedList = new ArrayList( bag.Count );
@@ -122,25 +117,15 @@ namespace NHibernate.Collection
 			return clonedList;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="snapshot"></param>
-		/// <returns></returns>
 		public override ICollection GetOrphans( object snapshot )
 		{
 			IList sn = ( IList ) snapshot;
 			ArrayList result = new ArrayList();
 			result.AddRange( sn );
-			PersistentCollection.IdentityRemoveAll( result, bag, Session );
+			AbstractPersistentCollection.IdentityRemoveAll( result, bag, Session );
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
 		public override object Disassemble( ICollectionPersister persister )
 		{
 			int length = bag.Count;
@@ -155,10 +140,10 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Initializes this Bag from the cached values.
+		/// Initializes this PersistentBag from the cached values.
 		/// </summary>
-		/// <param name="persister">The CollectionPersister to use to reassemble the Bag.</param>
-		/// <param name="disassembled">The disassembled Bag.</param>
+		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentBag.</param>
+		/// <param name="disassembled">The disassembled PersistentBag.</param>
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
@@ -173,7 +158,7 @@ namespace NHibernate.Collection
 
 
 		/// <summary>
-		/// Gets a <see cref="Boolean"/> indicating if this Bag needs to be recreated
+		/// Gets a <see cref="Boolean"/> indicating if this PersistentBag needs to be recreated
 		/// in the database.
 		/// </summary>
 		/// <param name="persister"></param>
@@ -233,13 +218,6 @@ namespace NHibernate.Collection
 			return deletes;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsInserting( object entry, int i, IType elemType )
 		{
 			IList sn = ( IList ) GetSnapshot();
@@ -262,13 +240,6 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsUpdating( object entry, int i, IType elemType )
 		{
 			return false;
@@ -276,17 +247,11 @@ namespace NHibernate.Collection
 
 		#region IList Members
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public bool IsReadOnly
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public object this[ int index ]
 		{
 			get
@@ -301,73 +266,42 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="index"></param>
 		public void RemoveAt( int index )
 		{
 			Write();
 			bag.RemoveAt( index );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="value"></param>
 		public void Insert( int index, object value )
 		{
 			Write();
 			bag.Insert( index, value );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
 		public void Remove( object value )
 		{
 			Write();
 			bag.Remove( value );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public bool Contains( object value )
 		{
 			Read();
 			return bag.Contains( value );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public void Clear()
 		{
 			Write();
 			bag.Clear();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public int IndexOf( object value )
 		{
 			Read();
 			return bag.IndexOf( value );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public int Add( object value )
 		{
 			if( !QueueAdd( value ) )
@@ -384,9 +318,6 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public bool IsFixedSize
 		{
 			get { return false; }
@@ -396,17 +327,11 @@ namespace NHibernate.Collection
 
 		#region ICollection Members
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public bool IsSynchronized
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public int Count
 		{
 			get
@@ -416,20 +341,12 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="array"></param>
-		/// <param name="index"></param>
 		public void CopyTo( Array array, int index )
 		{
 			Read();
 			bag.CopyTo( array, index );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public object SyncRoot
 		{
 			get { return this; }
@@ -439,10 +356,6 @@ namespace NHibernate.Collection
 
 		#region IEnumerable Members
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public IEnumerator GetEnumerator()
 		{
 			Read();
@@ -451,10 +364,6 @@ namespace NHibernate.Collection
 
 		#endregion
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="coll"></param>
 		public override void DelayedAddAll( ICollection coll )
 		{
 			foreach( object obj in coll )

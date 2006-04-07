@@ -34,7 +34,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
-			SortedMap sortedMap = new SortedMap( session, comparer );
+			PersistentSortedMap sortedMap = new PersistentSortedMap( session, comparer );
 			return sortedMap;
 		}
 
@@ -43,16 +43,16 @@ namespace NHibernate.Type
 		// doesn't have that I don't need to override it.
 
 		/// <summary>
-		/// Wraps an <see cref="IDictionary"/> in a <see cref="SortedMap"/>.
+		/// Wraps an <see cref="IDictionary"/> in a <see cref="PersistentSortedMap"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped <see cref="IDictionary"/>.</param>
 		/// <returns>
-		/// An <see cref="SortedMap"/> that wraps the non NHibernate <see cref="IDictionary"/>.
+		/// An <see cref="PersistentSortedMap"/> that wraps the non NHibernate <see cref="IDictionary"/>.
 		/// </returns>
 		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return new SortedMap( session, ( IDictionary ) collection, comparer );
+			return new PersistentSortedMap( session, ( IDictionary ) collection, comparer );
 		}
 	}
 }

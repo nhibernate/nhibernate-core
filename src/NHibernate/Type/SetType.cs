@@ -31,7 +31,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
-			return new Set( session );
+			return new PersistentSet( session );
 		}
 
 		/// <summary>
@@ -43,16 +43,16 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Wraps an <see cref="Iesi.Collections.ISet"/> in a <see cref="Set"/>.
+		/// Wraps an <see cref="Iesi.Collections.ISet"/> in a <see cref="PersistentSet"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped <see cref="Iesi.Collections.ISet"/>.</param>
 		/// <returns>
-		/// An <see cref="Set"/> that wraps the non NHibernate <see cref="Iesi.Collections.ISet"/>.
+		/// An <see cref="PersistentSet"/> that wraps the non NHibernate <see cref="Iesi.Collections.ISet"/>.
 		/// </returns>
 		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return new Set( session, ( Iesi.Collections.ISet ) collection );
+			return new PersistentSet( session, ( Iesi.Collections.ISet ) collection );
 		}
 
 		/// <summary>

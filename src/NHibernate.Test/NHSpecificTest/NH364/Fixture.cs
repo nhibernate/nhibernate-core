@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 		}
 
 		[Test]
-		[Ignore("NH-364: comment in IdentifierBag.PreInsert is 'TODO: native ids'")]
+		[Ignore("NH-364: comment in PersistentIdentifierBag.PreInsert is 'TODO: native ids'")]
 		public void IdBagIdentity()
 		{
 			using( ISession s = OpenSession() )

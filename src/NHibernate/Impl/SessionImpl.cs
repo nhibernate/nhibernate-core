@@ -84,7 +84,7 @@ namespace NHibernate.Impl
 
 		/// <summary>
 		/// An <see cref="IdentityMap"/> with the <see cref="Array"/> as the key
-		/// and an <see cref="ArrayHolder"/> as the value.
+		/// and an <see cref="PersistentArrayHolder"/> as the value.
 		/// </summary>
 		private readonly IdentityMap arrayHolders;
 
@@ -4178,16 +4178,16 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="array"></param>
 		/// <returns></returns>
-		public ArrayHolder GetArrayHolder( object array )
+		public PersistentArrayHolder GetArrayHolder( object array )
 		{
-			return ( ArrayHolder ) arrayHolders[ array ];
+			return ( PersistentArrayHolder ) arrayHolders[ array ];
 		}
 
 		/// <summary>
 		/// associate a holder with an array - called after loading an array
 		/// </summary>
 		/// <param name="holder"></param>
-		public void AddArrayHolder( ArrayHolder holder )
+		public void AddArrayHolder( PersistentArrayHolder holder )
 		{
 			//TODO:refactor + make this method private
 			arrayHolders[ holder.Array ] = holder;
@@ -5329,7 +5329,7 @@ namespace NHibernate.Impl
 				if( persister.IsArray )
 				{
 					InitializeCollection( collection, false );
-					AddArrayHolder( ( ArrayHolder ) collection );
+					AddArrayHolder( ( PersistentArrayHolder ) collection );
 				}
 				else if( !persister.IsLazy )
 				{

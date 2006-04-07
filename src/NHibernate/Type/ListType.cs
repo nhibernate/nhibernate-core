@@ -26,10 +26,10 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
 		/// <param name="persister"></param>
-		/// <returns>A new <see cref="NHibernate.Collection.List"/>.</returns>
+		/// <returns>A new <see cref="NHibernate.Collection.PersistentList"/>.</returns>
 		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
-			return new List( session );
+			return new PersistentList( session );
 		}
 
 		/// <summary></summary>
@@ -39,16 +39,16 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Wraps an exist <see cref="IList"/> in a NHibernate <see cref="List"/>.
+		/// Wraps an exist <see cref="IList"/> in a NHibernate <see cref="PersistentList"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped <see cref="IList"/>.</param>
 		/// <returns>
-		/// An <see cref="List"/> that wraps the non NHibernate <see cref="IList"/>.
+		/// An <see cref="PersistentList"/> that wraps the non NHibernate <see cref="IList"/>.
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new List( session, ( IList ) collection );
+			return new PersistentList( session, ( IList ) collection );
 		}
 
 		protected override void Add( ICollection collection, object element )

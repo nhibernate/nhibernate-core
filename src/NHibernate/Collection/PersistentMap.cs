@@ -14,7 +14,7 @@ namespace NHibernate.Collection
 	/// is a <see cref="Hashtable" />.
 	/// </summary>
 	[Serializable]
-	public class Map : PersistentCollection, IDictionary
+	public class PersistentMap : AbstractPersistentCollection, IDictionary
 	{
 		protected IDictionary map;
 
@@ -33,7 +33,7 @@ namespace NHibernate.Collection
 			IDictionary sn = ( IDictionary ) snapshot;
 			ArrayList result = new ArrayList( sn.Values.Count );
 			result.AddRange( sn.Values );
-			PersistentCollection.IdentityRemoveAll( result, map.Values, Session );
+			AbstractPersistentCollection.IdentityRemoveAll( result, map.Values, Session );
 			return result;
 		}
 
@@ -59,24 +59,24 @@ namespace NHibernate.Collection
 			return map == collection;
 		}
 
-		internal Map( ) : base( )
+		internal PersistentMap( ) : base( )
 		{
 		}
 
 		/// <summary>
-		/// Construct an uninitialized Map.
+		/// Construct an uninitialized PersistentMap.
 		/// </summary>
-		/// <param name="session">The ISession the Map should be a part of.</param>
-		internal Map( ISessionImplementor session ) : base( session )
+		/// <param name="session">The ISession the PersistentMap should be a part of.</param>
+		internal PersistentMap( ISessionImplementor session ) : base( session )
 		{
 		}
 
 		/// <summary>
-		/// Construct an initialized Map based off the values from the existing IDictionary.
+		/// Construct an initialized PersistentMap based off the values from the existing IDictionary.
 		/// </summary>
-		/// <param name="session">The ISession the Map should be a part of.</param>
+		/// <param name="session">The ISession the PersistentMap should be a part of.</param>
 		/// <param name="map">The IDictionary that contains the initial values.</param>
-		internal Map( ISessionImplementor session, IDictionary map ) : base( session )
+		internal PersistentMap( ISessionImplementor session, IDictionary map ) : base( session )
 		{
 			this.map = map;
 			SetInitialized();
@@ -160,7 +160,6 @@ namespace NHibernate.Collection
 
 		}
 
-		/// <summary></summary>
 		IDictionaryEnumerator IDictionary.GetEnumerator()
 		{
 			Read();
@@ -241,10 +240,10 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Initializes this Map from the cached values.
+		/// Initializes this PersistentMap from the cached values.
 		/// </summary>
-		/// <param name="persister">The CollectionPersister to use to reassemble the Map.</param>
-		/// <param name="disassembled">The disassembled Map.</param>
+		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentMap.</param>
+		/// <param name="disassembled">The disassembled PersistentMap.</param>
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{

@@ -54,10 +54,10 @@ namespace NHibernate.Impl
 
 			if( collectionType.IsArrayType )
 			{
-				ArrayHolder ah = Session.GetArrayHolder( collection );
+				PersistentArrayHolder ah = Session.GetArrayHolder( collection );
 				if( ah == null )
 				{
-					ah = new ArrayHolder( Session, collection );
+					ah = new PersistentArrayHolder( Session, collection );
 					Session.AddNewCollection( ah, persister );
 					Session.AddArrayHolder( ah );
 				}

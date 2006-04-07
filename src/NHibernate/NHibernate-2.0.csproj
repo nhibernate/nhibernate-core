@@ -87,16 +87,7 @@
     <Compile Include="Cfg\Mappings.cs" />
     <Compile Include="Cfg\Settings.cs" />
     <Compile Include="Cfg\SettingsFactory.cs" />
-    <Compile Include="Collection\ArrayHolder.cs" />
-    <Compile Include="Collection\Bag.cs" />
-    <Compile Include="Collection\IdentifierBag.cs" />
     <Compile Include="Collection\IPersistentCollection.cs" />
-    <Compile Include="Collection\List.cs" />
-    <Compile Include="Collection\Map.cs" />
-    <Compile Include="Collection\PersistentCollection.cs" />
-    <Compile Include="Collection\Set.cs" />
-    <Compile Include="Collection\SortedMap.cs" />
-    <Compile Include="Collection\SortedSet.cs" />
     <Compile Include="Connection\ConnectionProvider.cs" />
     <Compile Include="Connection\ConnectionProviderFactory.cs" />
     <Compile Include="Connection\DriverConnectionProvider.cs" />
@@ -506,6 +497,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Cfg\HbmBinder.cs" />
+    <Compile Include="Collection\AbstractPersistentCollection.cs" />
     <Compile Include="Collection\Generic\PersistentGenericBag.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -515,6 +507,14 @@
     <Compile Include="Collection\Generic\PersistentGenericMap.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Collection\PersistentArrayHolder.cs" />
+    <Compile Include="Collection\PersistentBag.cs" />
+    <Compile Include="Collection\PersistentIdentifierBag.cs" />
+    <Compile Include="Collection\PersistentList.cs" />
+    <Compile Include="Collection\PersistentMap.cs" />
+    <Compile Include="Collection\PersistentSet.cs" />
+    <Compile Include="Collection\PersistentSortedMap.cs" />
+    <Compile Include="Collection\PersistentSortedSet.cs" />
     <Compile Include="Dialect\MsSql2005Dialect.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
     <Compile Include="Driver\ReflectionBasedDriver.cs" />

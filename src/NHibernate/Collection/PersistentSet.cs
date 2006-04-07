@@ -20,7 +20,7 @@ namespace NHibernate.Collection
 	/// to .NET</a> that was written by JasonSmith.
 	/// </remarks>
 	[Serializable]
-	public class Set : PersistentCollection, ISet
+	public class PersistentSet : AbstractPersistentCollection, ISet
 	{
 		/// <summary>
 		/// The <see cref="ISet"/> that NHibernate is wrapping.
@@ -28,11 +28,11 @@ namespace NHibernate.Collection
 		protected ISet internalSet;
 
 		/// <summary>
-		/// A temporary list that holds the objects while the Set is being
+		/// A temporary list that holds the objects while the PersistentSet is being
 		/// populated from the database.  
 		/// </summary>
 		/// <remarks>
-		/// This is necessary to ensure that the object being added to the Set doesn't
+		/// This is necessary to ensure that the object being added to the PersistentSet doesn't
 		/// have its' <c>GetHashCode()</c> and <c>Equals()</c> methods called during the load
 		/// process.
 		/// </remarks>
@@ -42,7 +42,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Returns a Hashtable where the Key &amp; the Value are both a Copy of the
 		/// same object.
-		/// <see cref="PersistentCollection.Snapshot(ICollectionPersister)"/>
+		/// <see cref="AbstractPersistentCollection.Snapshot(ICollectionPersister)"/>
 		/// </summary>
 		/// <param name="persister"></param>
 		protected override ICollection Snapshot( ICollectionPersister persister )
@@ -62,11 +62,11 @@ namespace NHibernate.Collection
 			IDictionary sn = ( IDictionary ) snapshot;
 			ArrayList result = new ArrayList( sn.Keys.Count );
 			result.AddRange( sn.Keys );
-			PersistentCollection.IdentityRemoveAll( result, internalSet, Session );
+			AbstractPersistentCollection.IdentityRemoveAll( result, internalSet, Session );
 			return result;
 			*/
 			IDictionary sn = ( IDictionary ) snapshot;
-			return PersistentCollection.GetOrphans( sn.Keys, internalSet, Session );
+			return AbstractPersistentCollection.GetOrphans( sn.Keys, internalSet, Session );
 		}
 
 		public override bool EqualsSnapshot( IType elementType )
@@ -99,18 +99,18 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// This constructor is NOT meant to be called from user code.
 		/// </summary>
-		public Set( ISessionImplementor session ) : base( session )
+		public PersistentSet( ISessionImplementor session ) : base( session )
 		{
 		}
 
 		/// <summary>
-		/// Creates a new Set initialized to the values in the Map.
+		/// Creates a new PersistentSet initialized to the values in the Map.
 		/// This constructor is NOT meant to be called from user code.
 		/// </summary>
 		/// <remarks>
 		/// Only call this constructor if you consider the map initialized.
 		/// </remarks>
-		public Set( ISessionImplementor session, ISet collection ) : base( session )
+		public PersistentSet( ISessionImplementor session, ISet collection ) : base( session )
 		{
 			internalSet = collection;
 			SetInitialized();
@@ -118,10 +118,10 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Initializes this Set from the cached values.
+		/// Initializes this PersistentSet from the cached values.
 		/// </summary>
-		/// <param name="persister">The CollectionPersister to use to reassemble the Set.</param>
-		/// <param name="disassembled">The disassembled Set.</param>
+		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentSet.</param>
+		/// <param name="disassembled">The disassembled PersistentSet.</param>
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
@@ -191,22 +191,12 @@ namespace NHibernate.Collection
 
 		#region Iesi.Collections.ISet Memebers
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public bool Add( object value )
 		{
 			Write();
 			return internalSet.Add( value );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="coll"></param>
-		/// <returns></returns>
 		public bool AddAll( ICollection coll )
 		{
 			if( coll.Count > 0 )
@@ -220,58 +210,36 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary></summary>
 		public void Clear()
 		{
 			Write();
 			internalSet.Clear();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <returns></returns>
 		public bool Contains( object key )
 		{
 			Read();
 			return internalSet.Contains( key );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="c"></param>
-		/// <returns></returns>
 		public bool ContainsAll( ICollection c )
 		{
 			Read();
 			return internalSet.ContainsAll( c );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="a"></param>
-		/// <returns></returns>
 		public ISet ExclusiveOr( ISet a )
 		{
 			Read();
 			return internalSet.ExclusiveOr( a );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="a"></param>
-		/// <returns></returns>
 		public ISet Intersect( ISet a )
 		{
 			Read();
 			return internalSet.Intersect( a );
 		}
 
-		/// <summary></summary>
 		public bool IsEmpty
 		{
 			get
@@ -281,55 +249,30 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="a"></param>
-		/// <returns></returns>
 		public ISet Minus( ISet a )
 		{
 			Read();
 			return internalSet.Minus( a );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <returns></returns>
 		public bool Remove( object key )
 		{
 			Write();
 			return internalSet.Remove( key );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="c"></param>
-		/// <returns></returns>
 		public bool RemoveAll( ICollection c )
 		{
 			Write();
 			return internalSet.RemoveAll( c );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="c"></param>
-		/// <returns></returns>
 		public bool RetainAll( ICollection c )
 		{
 			Write();
 			return internalSet.RetainAll( c );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="a"></param>
-		/// <returns></returns>
 		public ISet Union( ISet a )
 		{
 			Read();
@@ -353,7 +296,6 @@ namespace NHibernate.Collection
 
 		#region System.Collections.ICloneable Members
 
-		/// <summary></summary>
 		public object Clone()
 		{
 			Read();
@@ -393,7 +335,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Takes the contents stored in the temporary list created during <c>BeginRead()</c>
 		/// that was populated during <c>ReadFrom()</c> and write it to the underlying 
-		/// Set.
+		/// PersistentSet.
 		/// </summary>
 		public override bool EndRead()
 		{
@@ -456,7 +398,7 @@ namespace NHibernate.Collection
 			IDictionary sn = ( IDictionary ) GetSnapshot();
 			object oldKey = sn[ entry ];
 			// note that it might be better to iterate the snapshot but this is safe,
-			// assuming the user implements equals() properly, as required by the Set
+			// assuming the user implements equals() properly, as required by the PersistentSet
 			// contract!
 			return oldKey == null || elemType.IsDirty( oldKey, entry, Session );
 

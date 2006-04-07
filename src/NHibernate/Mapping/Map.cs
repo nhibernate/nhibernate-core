@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	public class Map : IndexedCollection
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Map"/> class.
+		/// Initializes a new instance of the <see cref="PersistentMap"/> class.
 		/// </summary>
 		/// <param name="owner">The <see cref="PersistentClass"/> that contains this map mapping.</param>
 		public Map(PersistentClass owner)

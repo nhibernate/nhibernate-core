@@ -31,7 +31,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
-			return new Map( session );
+			return new PersistentMap( session );
 		}
 
 		/// <summary></summary>
@@ -51,16 +51,16 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Wraps an <see cref="IDictionary"/> in a <see cref="Map"/>.
+		/// Wraps an <see cref="IDictionary"/> in a <see cref="PersistentMap"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped <see cref="IDictionary"/>.</param>
 		/// <returns>
-		/// An <see cref="Map"/> that wraps the non NHibernate <see cref="IDictionary"/>.
+		/// An <see cref="PersistentMap"/> that wraps the non NHibernate <see cref="IDictionary"/>.
 		/// </returns>
 		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return new Map( session, ( IDictionary ) collection );
+			return new PersistentMap( session, ( IDictionary ) collection );
 		}
 
 		protected override void Add( ICollection collection, object element )

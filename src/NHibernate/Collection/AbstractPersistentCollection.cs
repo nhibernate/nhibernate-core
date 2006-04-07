@@ -14,9 +14,9 @@ namespace NHibernate.Collection
 	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
 	[Serializable]
-	public abstract class PersistentCollection : IPersistentCollection//, ICollection
+	public abstract class AbstractPersistentCollection : IPersistentCollection //, ICollection
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( PersistentCollection ) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( AbstractPersistentCollection ) );
 
 		[NonSerialized]
 		private ISessionImplementor session;
@@ -158,7 +158,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Not called by Hibernate, but used by non-NET serialization, eg. SOAP libraries.
 		/// </summary>
-		public PersistentCollection()
+		public AbstractPersistentCollection()
 		{
 		}
 
@@ -166,7 +166,7 @@ namespace NHibernate.Collection
 		/// Not called by Hibernate, but used by non-NET serialization, eg. SOAP libraries.
 		/// </summary>
 		/// <param name="session"></param>
-		protected PersistentCollection( ISessionImplementor session )
+		protected AbstractPersistentCollection( ISessionImplementor session )
 		{
 			this.session = session;
 		}
@@ -177,7 +177,7 @@ namespace NHibernate.Collection
 		/// <returns>
 		/// By default, the NHibernate wrapper is an acceptable collection for
 		/// the end user code to work with because it is interface compatible.
-		/// An NHibernate List is an IList, an NHibernate Map is an IDictionary
+		/// An NHibernate PersistentList is an IList, an NHibernate PersistentMap is an IDictionary
 		/// and those are the types user code is expecting.
 		/// </returns>
 		public virtual object GetValue()
@@ -398,7 +398,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
 		/// <c>false</c> by default since most collections can determine which rows need to be
-		/// individually updated/inserted/deleted.  Currently only <see cref="Bag"/>'s for <c>many-to-many</c>
+		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentBag"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>
 		public virtual bool NeedsRecreate( ICollectionPersister persister )

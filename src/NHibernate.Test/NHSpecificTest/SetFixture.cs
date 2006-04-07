@@ -354,7 +354,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void DisassembleAndAssemble()
 		{
-			Set set = new Set( null, new Iesi.Collections.ListSet() );
+			PersistentSet set = new PersistentSet( null, new Iesi.Collections.ListSet() );
 
 			set.CollectionSnapshot = new CollectionSnapshotStub();
 
@@ -366,7 +366,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			object disassembled = set.Disassemble(collectionPersister);
 
-			Set assembledSet = new Set( null );
+			PersistentSet assembledSet = new PersistentSet( null );
 			assembledSet.InitializeFromCache( collectionPersister, disassembled, null );
 
 			Assert.AreEqual( 2, assembledSet.Count );

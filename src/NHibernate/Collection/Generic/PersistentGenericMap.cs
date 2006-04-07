@@ -19,7 +19,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="TKey">The type of the keys in the IDictionary.</typeparam>
 	/// <typeparam name="TValue">The type of the elements in the IDictionary.</typeparam>
 	[Serializable]
-	public class PersistentGenericMap<TKey, TValue> : PersistentCollection, IDictionary<TKey, TValue>, System.Collections.IDictionary
+	public class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, System.Collections.IDictionary
 	{
 		protected IDictionary<TKey, TValue> map;
 
@@ -48,7 +48,7 @@ namespace NHibernate.Collection.Generic
 			IsDirectlyAccessible = true;
 		}
 
-		#region PersistentCollection Members
+		#region AbstractPersistentCollection Members
 
 		public override bool Empty
 		{
@@ -203,7 +203,7 @@ namespace NHibernate.Collection.Generic
 			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>)snapshot;
             System.Collections.Generic.List<TValue> result = new System.Collections.Generic.List<TValue>(sn.Values.Count);
 			result.AddRange(sn.Values);
-			PersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)map.Values, Session);
+			AbstractPersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)map.Values, Session);
 			return result;
 		}
         public override object GetElement(object entry)

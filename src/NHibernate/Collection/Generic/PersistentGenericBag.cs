@@ -14,7 +14,7 @@ namespace NHibernate.Collection.Generic
 {
 	/// <summary>
 	/// An unordered, unkeyed collection that can contain the same element
-	/// multiple times. The .net collections API, has no <c>Bag</c>.
+	/// multiple times. The .NET collections API, has no <c>Bag</c>.
 	/// The <see cref="ICollection&lt;T&gt;" /> interface closely resembles bag semantics,
 	/// however NHibernate for net-1.1 used <see cref="System.Collections.IList"/> so 
 	/// <see cref="IList&lt;T&gt;"/> is used to ensure the easiest transition
@@ -23,7 +23,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="T">The type of the element the bag should hold.</typeparam>
 	/// <remarks>The underlying collection used is an <see cref="List&lt;T&gt;"/></remarks>
 	[Serializable]
-	class PersistentGenericBag<T> : PersistentCollection, IList<T>, System.Collections.IList
+	class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, System.Collections.IList
 	{
 		private IList<T> bag;
 
@@ -164,7 +164,7 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
-		#region PersistentCollection Members
+		#region AbstractPersistentCollection Members
 
 		/// <summary>
 		/// Is the initialized GenericBag empty?
@@ -400,7 +400,7 @@ namespace NHibernate.Collection.Generic
 			System.Collections.ArrayList result = new System.Collections.ArrayList();
 			result.AddRange(sn);
 			// HACK: careful with cast here...
-			PersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)bag, Session);
+			AbstractPersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)bag, Session);
 			return result;
 		}
 

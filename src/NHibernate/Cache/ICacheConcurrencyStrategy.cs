@@ -12,7 +12,7 @@ namespace NHibernate.Cache
 	/// <para>
 	/// When used to Cache Entities and Collections the <c>key</c> is the <c>id</c> of the
 	/// Entity/Collection and the <c>value</c> should be set to the <see cref="Impl.CacheEntry"/> 
-	/// for an Entity and the results of <see cref="Collection.PersistentCollection"/>.Disassemble for a Collection.
+	/// for an Entity and the results of <see cref="Collection.AbstractPersistentCollection"/>.Disassemble for a Collection.
 	/// </para>
 	/// </remarks>
 	public interface ICacheConcurrencyStrategy

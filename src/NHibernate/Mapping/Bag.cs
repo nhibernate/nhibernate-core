@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	public class Bag : Collection
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Bag"/> class.
+		/// Initializes a new instance of the <see cref="PersistentBag"/> class.
 		/// </summary>
 		/// <param name="owner">The <see cref="PersistentClass"/> that contains this bag mapping.</param>
 		public Bag( PersistentClass owner ) : base( owner )

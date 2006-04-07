@@ -21,11 +21,11 @@ namespace NHibernate.Collection
 	/// </para>
 	/// <para>
 	/// NHibernate "wraps" a collection in an instance of
-	/// PersistentCollection. This mechanism is designed to support
-	/// tracking of changes to the collection's persistent state and
-	/// lazy instantiation of collection elements. The downside is that
-	/// only certain abstract collection types are supported and any
-	/// extra semantics are lost.
+	/// <see cref="IPersistentCollection" />. This mechanism is designed
+    /// to support tracking of changes to the collection's persistent
+    /// state and lazy instantiation of collection elements. The downside
+    /// is that only certain abstract collection types are supported and
+    /// any extra semantics are lost.
 	/// </para>
 	/// <para>
 	/// Applications should <b>never</b> use classes in this namespace
@@ -62,7 +62,7 @@ namespace NHibernate.Collection
 		/// <returns>
 		/// By default, the NHibernate wrapper is an acceptable collection for
 		/// the end user code to work with because it is interface compatible.
-		/// An NHibernate List is an IList, an NHibernate Map is an IDictionary
+		/// An NHibernate PersistentList is an IList, an NHibernate PersistentMap is an IDictionary
 		/// and those are the types user code is expecting.
 		/// </returns>
 		object GetValue();
@@ -185,7 +185,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
 		/// <c>false</c> by default since most collections can determine which rows need to be
-		/// individually updated/inserted/deleted.  Currently only <see cref="Bag"/>'s for <c>many-to-many</c>
+		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentBag"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>
 		bool NeedsRecreate( ICollectionPersister persister );
@@ -200,7 +200,7 @@ namespace NHibernate.Collection
 		/// immediate initalization.
 		/// </summary>
 		/// <remarks>
-		/// This method is similar to <see cref="PersistentCollection.Initialize" />, except that different exceptions are thrown.
+		/// This method is similar to <see cref="AbstractPersistentCollection.Initialize" />, except that different exceptions are thrown.
 		/// </remarks>
 		void ForceInitialization();
 
@@ -227,9 +227,9 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Is this the wrapper for the given underlying collection instance?
 		/// </summary>
-		/// <param name="collection">The collection to see if this PersistentCollection is wrapping.</param>
+		/// <param name="collection">The collection to see if this IPersistentCollection is wrapping.</param>
 		/// <returns>
-		/// <c>true</c> if the PersistentCollection is wrappping the collection instance,
+		/// <c>true</c> if the IPersistentCollection is wrappping the collection instance,
 		/// <c>false</c> otherwise.
 		/// </returns>
 		bool IsWrapper( object collection );
