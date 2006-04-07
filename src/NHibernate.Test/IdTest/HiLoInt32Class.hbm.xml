@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" default-lazy="false">
+	<class 
+		name="NHibernate.Test.IdTest.HiLoInt32Class, NHibernate.Test"
+		table="hiloInt32"
+	>
+		<id name="Id" type="Int32">
+			<generator class="hilo" />
+		</id>
+		
+		
+	</class>
+</hibernate-mapping>
