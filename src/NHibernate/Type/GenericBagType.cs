@@ -29,28 +29,26 @@ namespace NHibernate.Type
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		public GenericBagType(string role, string propertyRef, System.Type elementClass)
+		public GenericBagType( string role, string propertyRef, System.Type elementClass )
 			: base( role, propertyRef )
 		{
-			System.Type definition = typeof(Collection.Generic.PersistentGenericBag<>);
+			System.Type definition = typeof( Collection.Generic.PersistentGenericBag<> );
 			System.Type[] typeArgs = new System.Type[] { elementClass };
 
-			constructedType = definition.MakeGenericType(typeArgs);
-			wrappedType = typeof(System.Collections.Generic.IList<>).MakeGenericType(typeArgs);
+			constructedType = definition.MakeGenericType( typeArgs );
+			wrappedType = typeof( System.Collections.Generic.IList<> ).MakeGenericType( typeArgs );
 
-			nonwrappedConstructor = constructedType.GetConstructor(ReflectHelper.AnyVisibilityInstance, null, new System.Type[] { typeof(ISessionImplementor) }, null);
-			wrappedConstructor = constructedType.GetConstructor(ReflectHelper.AnyVisibilityInstance, null, new System.Type[] { typeof(ISessionImplementor), wrappedType }, null);
+			nonwrappedConstructor = constructedType.GetConstructor( ReflectHelper.AnyVisibilityInstance, null, new System.Type[] { typeof( ISessionImplementor ) }, null );
+			wrappedConstructor = constructedType.GetConstructor( ReflectHelper.AnyVisibilityInstance, null, new System.Type[] { typeof( ISessionImplementor ), wrappedType }, null );
 		}
 
 		/// <summary>
 		/// Instantiates a new <see cref="IPersistentCollection"/> for the bag.
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
-		/// <param name="persister"></param>
-		/// <returns></returns>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
-			return nonwrappedConstructor.Invoke(new object[] { session }) as IPersistentCollection;
+			return nonwrappedConstructor.Invoke( new object[] { session } ) as IPersistentCollection;
 		}
 
 		/// <summary></summary>
@@ -67,11 +65,11 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="PersistentGenericBag&lt;T&gt;"/> that wraps the non NHibernate <see cref="IList&lt;T&gt;"/>.
 		/// </returns>
-		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
+		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return wrappedConstructor.Invoke(new object[] { session, collection }) as IPersistentCollection;
+			return wrappedConstructor.Invoke( new object[] { session, collection } ) as IPersistentCollection;
 		}
-
+		
 		//TODO: Add() & Clear() methods - need to see if these should be refactored back into
 		// their own version of Copy or a DoCopy.  The Copy() method used to be spread out amongst
 		// the various collections, but since they all had common code Add() and Clear() were made
