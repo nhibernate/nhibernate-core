@@ -206,9 +206,10 @@ namespace NHibernate.Collection.Generic
 			AbstractPersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)map.Values, Session);
 			return result;
 		}
+
         public override object GetElement(object entry)
         {
-            return entry;
+            return ( ( KeyValuePair<TKey, TValue> ) entry ).Value;
         }
 
         public override object GetSnapshotElement(object entry, int i)

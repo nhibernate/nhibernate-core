@@ -28,9 +28,10 @@
     <OutputPath>bin\Release-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NET,NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
@@ -55,9 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="BagGeneric\A.cs" />
-    <Compile Include="BagGeneric\B.cs" />
-    <Compile Include="BagGeneric\BagGenericFixture.cs" />
     <Compile Include="CacheTest\CacheFixture.cs" />
     <Compile Include="CacheTest\TimestamperFixture.cs" />
     <Compile Include="CfgTest\ConfigurationFixture.cs" />
@@ -94,6 +92,15 @@
     <Compile Include="ExpressionTest\QueryByExampleTest.cs" />
     <Compile Include="ExpressionTest\SimpleExpressionFixture.cs" />
     <Compile Include="ExpressionTest\SQLExpressionFixture.cs" />
+    <Compile Include="GenericTest\BagGeneric\A.cs" />
+    <Compile Include="GenericTest\BagGeneric\B.cs" />
+    <Compile Include="GenericTest\BagGeneric\BagGenericFixture.cs" />
+    <Compile Include="GenericTest\ListGeneric\A.cs" />
+    <Compile Include="GenericTest\ListGeneric\B.cs" />
+    <Compile Include="GenericTest\ListGeneric\ListGenericFixture.cs" />
+    <Compile Include="GenericTest\MapGeneric\A.cs" />
+    <Compile Include="GenericTest\MapGeneric\B.cs" />
+    <Compile Include="GenericTest\MapGeneric\MapGenericFixture.cs" />
     <Compile Include="IdTest\HiLoInt16Class.cs" />
     <Compile Include="IdTest\HiLoInt32Class.cs" />
     <Compile Include="IdTest\HiLoInt64Class.cs" />
@@ -119,13 +126,7 @@
     <Compile Include="Legacy\SimpleTest.cs" />
     <Compile Include="Legacy\SQLFunctionsTest.cs" />
     <Compile Include="Legacy\SQLLoaderTest.cs" />
-    <Compile Include="ListGeneric\A.cs" />
-    <Compile Include="ListGeneric\B.cs" />
-    <Compile Include="ListGeneric\ListGenericFixture.cs" />
     <Compile Include="Log4netConfiguration.cs" />
-    <Compile Include="MapGeneric\A.cs" />
-    <Compile Include="MapGeneric\B.cs" />
-    <Compile Include="MapGeneric\MapGenericFixture.cs" />
     <Compile Include="MappingExceptions\A.cs" />
     <Compile Include="MappingExceptions\AddClassFixture.cs" />
     <Compile Include="MappingExceptions\AddResourceFixture.cs" />
@@ -400,9 +401,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="BagGeneric\BagGenericFixture.hbm.xml" />
-    <EmbeddedResource Include="ListGeneric\ListGenericFixture.hbm.xml" />
-    <EmbeddedResource Include="MapGeneric\MapGenericFixture.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH386\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH392\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH401\Mappings.hbm.xml" />
@@ -420,6 +418,11 @@
     <EmbeddedResource Include="IdTest\HiLoInt16Class.hbm.xml" />
     <EmbeddedResource Include="IdTest\HiLoInt32Class.hbm.xml" />
     <EmbeddedResource Include="IdTest\HiLoInt64Class.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GenericTest\BagGeneric\BagGenericFixture.hbm.xml" />
+    <EmbeddedResource Include="GenericTest\ListGeneric\ListGenericFixture.hbm.xml" />
+    <EmbeddedResource Include="GenericTest\MapGeneric\MapGenericFixture.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

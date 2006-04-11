@@ -5,15 +5,15 @@ using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
 
-namespace NHibernate.Test.BagGeneric
+namespace NHibernate.Test.GenericTest.MapGeneric
 {
 	[TestFixture]
-	public class BagGenericFixture : TestCase
+	public class MapGenericFixture : TestCase
 	{
 
 		protected override System.Collections.IList Mappings
 		{
-			get { return new string[] { "BagGeneric.BagGenericFixture.hbm.xml" }; }
+			get { return new string[] { "GenericTest.MapGeneric.MapGenericFixture.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -36,14 +36,14 @@ namespace NHibernate.Test.BagGeneric
 			int? newId;
 			A a = new A();
 			a.Name = "first generic type";
-			a.Items = new List<B>();
+			a.Items = new Dictionary<string,B>();
 			B firstB = new B();
 			firstB.Name = "first b";
 			B secondB = new B();
 			secondB.Name = "second b";
 
-			a.Items.Add( firstB );
-			a.Items.Add( secondB );
+			a.Items.Add( "first", firstB );
+			a.Items.Add( "second", secondB );
 
 			ISession s = OpenSession();
 			s.SaveOrUpdate(a);
@@ -61,7 +61,7 @@ namespace NHibernate.Test.BagGeneric
 			B thirdB = new B();
 			thirdB.Name = "third B";
 			// ensuring the correct generic type was constructed
-			a.Items.Add( thirdB );
+			a.Items.Add( "third", thirdB );
 			Assert.AreEqual( 3, a.Items.Count, "3 items in the bag now" );
 			s.Flush();
 			s.Close();

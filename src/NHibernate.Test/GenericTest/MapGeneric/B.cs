@@ -4,15 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NHibernate.Test.MapGeneric
+namespace NHibernate.Test.GenericTest.MapGeneric
 {
-	public class A
+	public class B
 	{
 		private int? _id;
 		private string _name;
-		private IDictionary<string, B> _items;
 
-		public A() { }
+		public B() { }
 
 		public int? Id
 		{
@@ -25,13 +24,6 @@ namespace NHibernate.Test.MapGeneric
 			get { return _name; }
 			set { _name = value; }
 		}
-
-		public IDictionary<string,B> Items
-		{
-			get { return _items; }
-			set { _items = value; }
-		}
-
 	}
 }
 #endif

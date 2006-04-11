@@ -4,15 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NHibernate.Test.BagGeneric
+namespace NHibernate.Test.GenericTest.ListGeneric
 {
-	public class A
+	public class B
 	{
 		private int? _id;
 		private string _name;
-		private IList<B> _items;
 
-		public A() { }
+		public B() { }
 
 		public int? Id
 		{
@@ -25,13 +24,7 @@ namespace NHibernate.Test.BagGeneric
 			get { return _name; }
 			set { _name = value; }
 		}
-
-		public IList<B> Items
-		{
-			get { return _items; }
-			set { _items = value; }
-		}
-
 	}
 }
+
 #endif

@@ -253,7 +253,7 @@ namespace NHibernate.Util
 					"There is a problem with your mappings.  You are probably trying to map a System.ValueType to " +
 						"a <class> which NHibernate does not allow or you are incorrectly using the " +
 						"IDictionary that is mapped to a <set>.  \n\n" +
-						"A ValueType can not be used with IdentityKey.  " +
+						"A ValueType (" + obj.GetType() + ") can not be used with IdentityKey.  " +
 						"The thread at google has a good description about what happens with boxing " +
 						"and unboxing ValueTypes and why they can not be used as an IdentityKey: " +
 						"http://groups.google.com/groups?hl=en&lr=&ie=UTF-8&oe=UTF-8&threadm=bds2rm%24ruc%241%40charly.heeg.de&rnum=1&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8%26oe%3DUTF-8%26q%3DSystem.Runtime.CompilerServices.RuntimeHelpers.GetHashCode%26sa%3DN%26tab%3Dwg"

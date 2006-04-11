@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NHibernate.Test.BagGeneric
+namespace NHibernate.Test.GenericTest.BagGeneric
 {
 	public class B
 	{

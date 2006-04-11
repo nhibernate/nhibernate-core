@@ -3,18 +3,17 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 using NUnit.Framework;
 
-namespace NHibernate.Test.ListGeneric
+namespace NHibernate.Test.GenericTest.BagGeneric
 {
 	[TestFixture]
-	public class ListGenericFixture : TestCase
+	public class BagGenericFixture : TestCase
 	{
 
 		protected override System.Collections.IList Mappings
 		{
-			get { return new string[] { "ListGeneric.ListGenericFixture.hbm.xml" }; }
+			get { return new string[] { "GenericTest.BagGeneric.BagGenericFixture.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -43,8 +42,8 @@ namespace NHibernate.Test.ListGeneric
 			B secondB = new B();
 			secondB.Name = "second b";
 
-			a.Items.Add(firstB);
-			a.Items.Add(secondB);
+			a.Items.Add( firstB );
+			a.Items.Add( secondB );
 
 			ISession s = OpenSession();
 			s.SaveOrUpdate(a);
@@ -58,14 +57,12 @@ namespace NHibernate.Test.ListGeneric
 			Assert.IsNotNull(secondB.Id);
 
 			s = OpenSession();
-			a = s.Load<A>(a.Id);
-			Assert.AreEqual("first b", a.Items[0].Name, "first item should be 'first b'");
-			Assert.AreEqual("second b", a.Items[1].Name, "second item should be 'second b'");
+			a = s.Load<A>(a.Id );
 			B thirdB = new B();
 			thirdB.Name = "third B";
 			// ensuring the correct generic type was constructed
-			a.Items.Add(thirdB);
-			Assert.AreEqual(3, a.Items.Count, "3 items in the bag now");
+			a.Items.Add( thirdB );
+			Assert.AreEqual( 3, a.Items.Count, "3 items in the bag now" );
 			s.Flush();
 			s.Close();
 		}

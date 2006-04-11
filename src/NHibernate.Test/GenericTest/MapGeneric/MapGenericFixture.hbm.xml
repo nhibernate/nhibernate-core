@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.Test" namespace="NHibernate.Test.ListGeneric">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.Test" namespace="NHibernate.Test.GenericTest.MapGeneric">
 	<class name="A" table="a" lazy="false">
 		<id name="Id" column="id" unsaved-value="null">
 			<generator class="native" />
 		</id>
 		<property name="Name" column="aname" />
-		<list name="Items" cascade="all-delete-orphan" generic="true">
+		<map name="Items" cascade="all-delete-orphan" generic="true">
 			<key column="a_id" />
-			<index column="a_idx" />
+			<index column="idx" type="String" />
 			<one-to-many class="B" />
-		</list>
+		</map>
 	</class>
 	<class name="B" table="b" lazy="false">
 		<id name="Id" column="id" unsaved-value="null">

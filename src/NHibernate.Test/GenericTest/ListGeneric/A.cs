@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NHibernate.Test.ListGeneric
+namespace NHibernate.Test.GenericTest.ListGeneric
 {
 	public class A
 	{

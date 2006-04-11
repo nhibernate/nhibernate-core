@@ -3,17 +3,18 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using NUnit.Framework;
 
-namespace NHibernate.Test.MapGeneric
+namespace NHibernate.Test.GenericTest.ListGeneric
 {
 	[TestFixture]
-	public class MapGenericFixture : TestCase
+	public class ListGenericFixture : TestCase
 	{
 
 		protected override System.Collections.IList Mappings
 		{
-			get { return new string[] { "MapGeneric.MapGenericFixture.hbm.xml" }; }
+			get { return new string[] { "GenericTest.ListGeneric.ListGenericFixture.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -36,14 +37,14 @@ namespace NHibernate.Test.MapGeneric
 			int? newId;
 			A a = new A();
 			a.Name = "first generic type";
-			a.Items = new Dictionary<string,B>();
+			a.Items = new List<B>();
 			B firstB = new B();
 			firstB.Name = "first b";
 			B secondB = new B();
 			secondB.Name = "second b";
 
-			a.Items.Add( "first", firstB );
-			a.Items.Add( "second", secondB );
+			a.Items.Add(firstB);
+			a.Items.Add(secondB);
 
 			ISession s = OpenSession();
 			s.SaveOrUpdate(a);
@@ -57,12 +58,14 @@ namespace NHibernate.Test.MapGeneric
 			Assert.IsNotNull(secondB.Id);
 
 			s = OpenSession();
-			a = s.Load<A>(a.Id );
+			a = s.Load<A>(a.Id);
+			Assert.AreEqual("first b", a.Items[0].Name, "first item should be 'first b'");
+			Assert.AreEqual("second b", a.Items[1].Name, "second item should be 'second b'");
 			B thirdB = new B();
 			thirdB.Name = "third B";
 			// ensuring the correct generic type was constructed
-			a.Items.Add( "third", thirdB );
-			Assert.AreEqual( 3, a.Items.Count, "3 items in the bag now" );
+			a.Items.Add(thirdB);
+			Assert.AreEqual(3, a.Items.Count, "3 items in the bag now");
 			s.Flush();
 			s.Close();
 		}
