@@ -197,7 +197,7 @@ namespace NHibernate.Type
 		/// /> 
 		/// <remarks>
 		/// This has been sealed because no other class should override it.  This 
-		/// method calss <see cref="NullSafeGet(IDataReader, String)" /> for a single value.  
+		/// method calls <see cref="NullSafeGet(IDataReader, String)" /> for a single value.  
 		/// It only takes the first name from the string[] names parameter - that is a 
 		/// safe thing to do because a Nullable Type only has one field.
 		/// </remarks>

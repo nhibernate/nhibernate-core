@@ -17,46 +17,30 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IList&lt;T&gt;"/> collection
 	/// to the database using list semantics.
 	/// </summary>
-	public class GenericListType : ListType
+	public class GenericListType<T> : ListType
 	{
-		System.Type constructedType = null;
-		System.Type wrappedType = null;
-		ConstructorInfo nonwrappedConstructor = null;
-		ConstructorInfo wrappedConstructor = null;
-
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericListType"/> class for
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		public GenericListType(string role, string propertyRef, System.Type elementClass)
+		public GenericListType( string role, string propertyRef )
 			: base( role, propertyRef )
 		{
-			System.Type definition = typeof(Collection.Generic.PersistentGenericList<>);
-			System.Type[] typeArgs = new System.Type[] { elementClass };
-
-			constructedType = definition.MakeGenericType(typeArgs);
-			wrappedType = typeof(System.Collections.Generic.IList<>).MakeGenericType(typeArgs);
-
-			nonwrappedConstructor = constructedType.GetConstructor(ReflectHelper.AnyVisibilityInstance, null, new System.Type[] { typeof(ISessionImplementor) }, null);
-			wrappedConstructor = constructedType.GetConstructor(ReflectHelper.AnyVisibilityInstance, null, new System.Type[] { typeof(ISessionImplementor), wrappedType }, null);
 		}
 
 		/// <summary>
 		/// Instantiates a new <see cref="IPersistentCollection"/> for the list.
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the list.</param>
-		/// <param name="persister"></param>
-		/// <returns></returns>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
-			return nonwrappedConstructor.Invoke(new object[] { session }) as IPersistentCollection;
+			return new PersistentGenericList<T>( session );
 		}
 
-		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return wrappedType; }
+			get { return typeof( IList<T> ); }
 		}
 
 		/// <summary>
@@ -67,9 +51,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="PersistentGenericList&lt;T&gt;"/> that wraps the non NHibernate <see cref="IList&lt;T&gt;"/>.
 		/// </returns>
-		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
+		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return wrappedConstructor.Invoke(new object[] { session, collection }) as IPersistentCollection;
+			return new PersistentGenericList<T>( session, ( IList<T> ) collection );
 		}
 
 		//TODO: Add() & Clear() methods - need to see if these should be refactored back into

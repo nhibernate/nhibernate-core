@@ -38,7 +38,7 @@ namespace NHibernate.Mapping
 		private string where;
 		private PersistentClass owner;
 		private bool sorted;
-		private IComparer comparer;
+		private object comparer;
 		private bool orphanDelete;
 		private int batchSize = 1;
 		private FetchMode fetchMode;
@@ -125,8 +125,9 @@ namespace NHibernate.Mapping
 			set { collectionPersisterClass = value; }
 		}
 
-		/// <summary></summary>
-		public IComparer Comparer
+		// The type of this property is object, so as to accomodate
+		// both IComparer and IComparer<T>.
+		public object Comparer
 		{
 			get { return comparer; }
 			set { comparer = value; }

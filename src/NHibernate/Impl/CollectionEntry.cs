@@ -119,7 +119,7 @@ namespace NHibernate.Impl
 		internal object loadedKey;
 
 		/// <summary>session-start/post-flush persistent state</summary>
-		internal ICollection snapshot;
+		private ICollection snapshot;
 
 		/// <summary>allow the snapshot to be serialized</summary>
 		private string role;

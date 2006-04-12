@@ -62,7 +62,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			thirdB.Name = "third B";
 			// ensuring the correct generic type was constructed
 			a.Items.Add( "third", thirdB );
-			Assert.AreEqual( 3, a.Items.Count, "3 items in the bag now" );
+			Assert.AreEqual( 3, a.Items.Count, "3 items in the map now" );
 			s.Flush();
 			s.Close();
 		}

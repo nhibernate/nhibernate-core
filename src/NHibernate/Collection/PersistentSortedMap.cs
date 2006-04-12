@@ -65,7 +65,7 @@ namespace NHibernate.Collection
 		/// <param name="map">The IDictionary that contains the initial values.</param>
 		/// <param name="comparer">The IComparer to use for Sorting.</param>
 		internal PersistentSortedMap( ISessionImplementor session, IDictionary map, IComparer comparer )
-			: base( session, new SortedList( map, comparer ) )
+			: base( session, map )
 		{
 			this.comparer = comparer;
 		}

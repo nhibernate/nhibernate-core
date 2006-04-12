@@ -27,8 +27,8 @@ namespace NHibernate.Type
 			PrecisionScale
 		}
 
-		private static char[ ] precisionScaleSplit = new char[ ] {'(', ')', ','};
-		private static char[ ] lengthSplit = new char[ ] {'(', ')'};
+		private static char[] precisionScaleSplit = new char[] { '(', ')', ',' };
+		private static char[] lengthSplit = new char[] { '(', ')' };
 
 		/*
 		 * Maps the string representation of the type to the IType.  The string 
@@ -60,13 +60,13 @@ namespace NHibernate.Type
 
 		private static void RegisterType( System.Type systemType, IType nhibernateType, string additionalName )
 		{
-			typeByTypeOfName[ systemType.FullName ]              = nhibernateType;
+			typeByTypeOfName[ systemType.FullName ] = nhibernateType;
 			typeByTypeOfName[ systemType.AssemblyQualifiedName ] = nhibernateType;
-			typeByTypeOfName[ nhibernateType.Name ]              = nhibernateType;
+			typeByTypeOfName[ nhibernateType.Name ] = nhibernateType;
 
 			if( additionalName != null )
 			{
-				typeByTypeOfName[ additionalName ]                   = nhibernateType;
+				typeByTypeOfName[ additionalName ] = nhibernateType;
 			}
 		}
 
@@ -84,45 +84,45 @@ namespace NHibernate.Type
 			//basicTypes.Add(NHibernate.Timezone.Name, NHibernate.Timezone);
 
 			// set up the mappings of .NET Classes/Structs to their NHibernate types.
-			RegisterType( typeof( Byte[ ] ),     NHibernateUtil.Binary,      "binary" );
-			RegisterType( typeof( Boolean ),     NHibernateUtil.Boolean,     "boolean" );
-			RegisterType( typeof( Byte ),        NHibernateUtil.Byte,        "byte" );
-			RegisterType( typeof( Char ),        NHibernateUtil.Character,   "character" );
+			RegisterType( typeof( Byte[] ), NHibernateUtil.Binary, "binary" );
+			RegisterType( typeof( Boolean ), NHibernateUtil.Boolean, "boolean" );
+			RegisterType( typeof( Byte ), NHibernateUtil.Byte, "byte" );
+			RegisterType( typeof( Char ), NHibernateUtil.Character, "character" );
 			RegisterType( typeof( CultureInfo ), NHibernateUtil.CultureInfo, "locale" );
-			RegisterType( typeof( DateTime ),    NHibernateUtil.DateTime,    "datetime" );
-			RegisterType( typeof( Decimal ),     NHibernateUtil.Decimal,     "big_decimal" );
-			RegisterType( typeof( Double ),      NHibernateUtil.Double,      "double" );
-			RegisterType( typeof( Guid ),        NHibernateUtil.Guid,        null );
-			RegisterType( typeof( Int16 ),       NHibernateUtil.Int16,       "short" );
-			RegisterType( typeof( Int32 ),       NHibernateUtil.Int32,       "integer" );
-			RegisterType( typeof( Int64 ),       NHibernateUtil.Int64,       "long" );
-			RegisterType( typeof( SByte ),       NHibernateUtil.SByte,       null );
-			RegisterType( typeof( Single ),      NHibernateUtil.Single,      "float" );
-			RegisterType( typeof( String ),      NHibernateUtil.String,      "string" );
-			RegisterType( typeof( TimeSpan ),    NHibernateUtil.TimeSpan,    null );
-			RegisterType( typeof( System.Type ), NHibernateUtil.Class,       "class" );
+			RegisterType( typeof( DateTime ), NHibernateUtil.DateTime, "datetime" );
+			RegisterType( typeof( Decimal ), NHibernateUtil.Decimal, "big_decimal" );
+			RegisterType( typeof( Double ), NHibernateUtil.Double, "double" );
+			RegisterType( typeof( Guid ), NHibernateUtil.Guid, null );
+			RegisterType( typeof( Int16 ), NHibernateUtil.Int16, "short" );
+			RegisterType( typeof( Int32 ), NHibernateUtil.Int32, "integer" );
+			RegisterType( typeof( Int64 ), NHibernateUtil.Int64, "long" );
+			RegisterType( typeof( SByte ), NHibernateUtil.SByte, null );
+			RegisterType( typeof( Single ), NHibernateUtil.Single, "float" );
+			RegisterType( typeof( String ), NHibernateUtil.String, "string" );
+			RegisterType( typeof( TimeSpan ), NHibernateUtil.TimeSpan, null );
+			RegisterType( typeof( System.Type ), NHibernateUtil.Class, "class" );
 
-			RegisterType( typeof( UInt16 ),      NHibernateUtil.UInt16,      null );
-			RegisterType( typeof( UInt32 ),      NHibernateUtil.UInt32,      null );
-			RegisterType( typeof( UInt64 ),      NHibernateUtil.UInt64,      null );
+			RegisterType( typeof( UInt16 ), NHibernateUtil.UInt16, null );
+			RegisterType( typeof( UInt32 ), NHibernateUtil.UInt32, null );
+			RegisterType( typeof( UInt64 ), NHibernateUtil.UInt64, null );
 
 #if NET_2_0
-			RegisterType(typeof(Nullable<Boolean>), NHibernateUtil.Boolean, "Boolean?");
-			RegisterType(typeof(Nullable<Byte>), NHibernateUtil.Byte, "Byte?");
-			RegisterType(typeof(Nullable<Char>), NHibernateUtil.Character, "Char?");
-			RegisterType(typeof(Nullable<DateTime>), NHibernateUtil.DateTime, "DateTime?");
-			RegisterType(typeof(Nullable<Decimal>), NHibernateUtil.Decimal, "Decimal?");
-			RegisterType(typeof(Nullable<Double>), NHibernateUtil.Double, "Double?");
-			RegisterType(typeof(Nullable<Guid>), NHibernateUtil.Guid, "Guid?");
-			RegisterType(typeof(Nullable<Int16>), NHibernateUtil.Int16, "Int16?");
-			RegisterType(typeof(Nullable<Int32>), NHibernateUtil.Int32, "Int32?");
-			RegisterType(typeof(Nullable<Int64>), NHibernateUtil.Int64, "Int64?");
-			RegisterType(typeof(Nullable<SByte>), NHibernateUtil.SByte, "SByte?");
-			RegisterType(typeof(Nullable<Single>), NHibernateUtil.Single, "Single?");
-			RegisterType(typeof(Nullable<TimeSpan>), NHibernateUtil.TimeSpan, "TimeSpan?");
-			RegisterType(typeof(Nullable<UInt16>), NHibernateUtil.UInt16, "UInt16?");
-			RegisterType(typeof(Nullable<UInt32>), NHibernateUtil.UInt32, "UInt32?");
-			RegisterType(typeof(Nullable<UInt64>), NHibernateUtil.UInt64, "UInt64?");
+			RegisterType( typeof( Nullable<Boolean> ), NHibernateUtil.Boolean, "Boolean?" );
+			RegisterType( typeof( Nullable<Byte> ), NHibernateUtil.Byte, "Byte?" );
+			RegisterType( typeof( Nullable<Char> ), NHibernateUtil.Character, "Char?" );
+			RegisterType( typeof( Nullable<DateTime> ), NHibernateUtil.DateTime, "DateTime?" );
+			RegisterType( typeof( Nullable<Decimal> ), NHibernateUtil.Decimal, "Decimal?" );
+			RegisterType( typeof( Nullable<Double> ), NHibernateUtil.Double, "Double?" );
+			RegisterType( typeof( Nullable<Guid> ), NHibernateUtil.Guid, "Guid?" );
+			RegisterType( typeof( Nullable<Int16> ), NHibernateUtil.Int16, "Int16?" );
+			RegisterType( typeof( Nullable<Int32> ), NHibernateUtil.Int32, "Int32?" );
+			RegisterType( typeof( Nullable<Int64> ), NHibernateUtil.Int64, "Int64?" );
+			RegisterType( typeof( Nullable<SByte> ), NHibernateUtil.SByte, "SByte?" );
+			RegisterType( typeof( Nullable<Single> ), NHibernateUtil.Single, "Single?" );
+			RegisterType( typeof( Nullable<TimeSpan> ), NHibernateUtil.TimeSpan, "TimeSpan?" );
+			RegisterType( typeof( Nullable<UInt16> ), NHibernateUtil.UInt16, "UInt16?" );
+			RegisterType( typeof( Nullable<UInt32> ), NHibernateUtil.UInt32, "UInt32?" );
+			RegisterType( typeof( Nullable<UInt64> ), NHibernateUtil.UInt64, "UInt64?" );
 #endif
 
 			// add the mappings of the NHibernate specific names that are used in type=""
@@ -260,7 +260,7 @@ namespace NHibernate.Type
 				byte precision;
 				byte scale;
 
-				string[ ] parsedName = name.Split( precisionScaleSplit );
+				string[] parsedName = name.Split( precisionScaleSplit );
 				if( parsedName.Length < 4 )
 				{
 					throw new ApplicationException( "The name " + name + " is not a valid Precision/Scale name" );
@@ -285,7 +285,7 @@ namespace NHibernate.Type
 				GetNullableTypeWithLength lengthDelegate;
 				int length;
 
-				string[ ] parsedName = name.Split( lengthSplit );
+				string[] parsedName = name.Split( lengthSplit );
 				if( parsedName.Length < 3 )
 				{
 					throw new ApplicationException( "The name " + name + " is not a valid Length name" );
@@ -295,7 +295,7 @@ namespace NHibernate.Type
 				length = Int32.Parse( parsedName[ 1 ].Trim() );
 
 				if( getTypeDelegatesWithLength.ContainsKey( typeName ) == false )
-					// we were not able to find a delegate to get the Type
+				// we were not able to find a delegate to get the Type
 				{
 					return null;
 				}
@@ -365,7 +365,7 @@ namespace NHibernate.Type
 
 			if( type == null )
 			{
-				string[ ] parsedTypeName;
+				string[] parsedTypeName;
 				TypeClassification typeClassification = GetTypeClassification( typeName );
 				if( typeClassification == TypeClassification.Length )
 				{
@@ -377,7 +377,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					parsedTypeName = new string[ ] {typeName};
+					parsedTypeName = new string[] { typeName };
 				}
 
 
@@ -685,7 +685,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="ListType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType List(string role, string propertyRef)
+		public static PersistentCollectionType List( string role, string propertyRef )
 		{
 			return new ListType( role, propertyRef );
 		}
@@ -698,7 +698,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="BagType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Bag(string role, string propertyRef)
+		public static PersistentCollectionType Bag( string role, string propertyRef )
 		{
 			return new BagType( role, propertyRef );
 		}
@@ -711,7 +711,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="IdentifierBagType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType IdBag(string role, string propertyRef)
+		public static PersistentCollectionType IdBag( string role, string propertyRef )
 		{
 			return new IdentifierBagType( role, propertyRef );
 		}
@@ -723,7 +723,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="MapType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Map(string role, string propertyRef)
+		public static PersistentCollectionType Map( string role, string propertyRef )
 		{
 			return new MapType( role, propertyRef );
 		}
@@ -735,7 +735,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="SetType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Set(string role, string propertyRef)
+		public static PersistentCollectionType Set( string role, string propertyRef )
 		{
 			return new SetType( role, propertyRef );
 		}
@@ -749,7 +749,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="SortedMapType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType SortedMap(string role, string propertyRef, IComparer comparer)
+		public static PersistentCollectionType SortedMap( string role, string propertyRef, IComparer comparer )
 		{
 			return new SortedMapType( role, propertyRef, comparer );
 		}
@@ -763,7 +763,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="SortedSetType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType SortedSet(string role, string propertyRef, IComparer comparer)
+		public static PersistentCollectionType SortedSet( string role, string propertyRef, IComparer comparer )
 		{
 			return new SortedSetType( role, propertyRef, comparer );
 		}
@@ -782,9 +782,11 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="BagType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType GenericBag(string role, string propertyRef, System.Type elementClass)
+		public static PersistentCollectionType GenericBag( string role, string propertyRef, System.Type elementClass )
 		{
-			return new GenericBagType(role, propertyRef, elementClass);
+			return ( PersistentCollectionType ) Activator.CreateInstance(
+				typeof( GenericBagType<> ).MakeGenericType( elementClass ),
+				role, propertyRef );
 		}
 
 		/// <summary>
@@ -800,9 +802,11 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="ListType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType GenericList(string role, string propertyRef, System.Type elementClass)
+		public static PersistentCollectionType GenericList( string role, string propertyRef, System.Type elementClass )
 		{
-			return new GenericListType(role, propertyRef, elementClass);
+			return ( PersistentCollectionType ) Activator.CreateInstance(
+				typeof( GenericListType<> ).MakeGenericType( elementClass ),
+				role, propertyRef );
 		}
 
 		/// <summary>
@@ -821,14 +825,41 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="MapType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType GenericMap(string role, string propertyRef, System.Type indexClass, System.Type elementClass)
+		public static PersistentCollectionType GenericMap( string role, string propertyRef, System.Type indexClass, System.Type elementClass )
 		{
-			return new GenericMapType(role, propertyRef, indexClass, elementClass);
+			return ( PersistentCollectionType ) Activator.CreateInstance(
+				typeof( GenericMapType<,> ).MakeGenericType( indexClass, elementClass ),
+				role, propertyRef );
 		}
 
 		// TODO: deal with a sorted GenericMap
 
 		// TODO: add the rest of the Generic collection factories here
+
+		/// <summary>
+		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet`1" />.
+		/// </summary>
+		/// <param name="role">The role the collection is in.</param>
+		/// <returns>A <see cref="GenericSetType" /> for the specified role.</returns>
+		public static PersistentCollectionType GenericSet( string role, string propertyRef, System.Type elementClass )
+		{
+			return ( PersistentCollectionType ) Activator.CreateInstance(
+				typeof( GenericSetType<> ).MakeGenericType( elementClass ),
+				role, propertyRef );
+		}
+
+		/// <summary>
+		/// Creates a new <see cref="PersistentCollectionType"/> for a sorted <see cref="Iesi.Collections.Generic.ISet`1" />.
+		/// </summary>
+		/// <param name="role">The role the collection is in.</param>
+		/// <returns>A <see cref="GenericSetType" /> for the specified role.</returns>
+		public static PersistentCollectionType GenericSortedSet( string role, string propertyRef, object comparer, System.Type elementType )
+		{
+			return ( PersistentCollectionType ) Activator.CreateInstance(
+				typeof( GenericSortedSetType<> ).MakeGenericType( elementType ),
+				role, propertyRef, comparer );
+		}
+
 #endif
 
 		/// <summary>
@@ -838,7 +869,7 @@ namespace NHibernate.Type
 		/// <param name="types"></param>
 		/// <param name="copy"></param>
 		/// <param name="target"></param>
-		public static void DeepCopy( object[ ] values, IType[ ] types, bool[ ] copy, object[ ] target )
+		public static void DeepCopy( object[] values, IType[] types, bool[] copy, object[] target )
 		{
 			for( int i = 0; i < types.Length; i++ )
 			{
@@ -854,24 +885,24 @@ namespace NHibernate.Type
 		/// returning an array containing indexes of
 		/// the dirty fields or null if no fields are dirty.
 		/// </summary>
-		public static int[ ] FindDirty(
-			StandardProperty[ ] properties,
-			object[ ] x,
-			object[ ] y,
-			bool[ ][ ] includeColumns,
+		public static int[] FindDirty(
+			StandardProperty[] properties,
+			object[] x,
+			object[] y,
+			bool[][] includeColumns,
 			bool anyUninitializedProperties,
 			ISessionImplementor session )
 		{
-			int[ ] results = null;
+			int[] results = null;
 			int count = 0;
 			int span = properties.Length;
 
 			for( int i = 0; i < span; i++ )
 			{
-				bool dirty = 
+				bool dirty =
 					// TODO H3: x[ i ] != LazyPropertyInitializer.UnfetchedProperty && //x is the "current" state
 					properties[ i ].IsDirtyCheckable( anyUninitializedProperties )
-					&& properties[i].Type.IsDirty( y[i], x[i], includeColumns[ i ], session );
+					&& properties[ i ].Type.IsDirty( y[ i ], x[ i ], includeColumns[ i ], session );
 
 				if( dirty )
 				{
@@ -888,7 +919,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				int[ ] trimmed = new int[count];
+				int[] trimmed = new int[ count ];
 				System.Array.Copy( results, 0, trimmed, 0, count );
 				return trimmed;
 			}
@@ -899,24 +930,24 @@ namespace NHibernate.Type
 		/// returning an array containing indexes of
 		/// the dirty fields or null if no fields are modified.
 		/// </summary>
-		public static int[ ] FindModified(
-			StandardProperty[ ] properties,
-			object[ ] x,
-			object[ ] y,
-			bool[ ][ ] includeColumns,
+		public static int[] FindModified(
+			StandardProperty[] properties,
+			object[] x,
+			object[] y,
+			bool[][] includeColumns,
 			bool anyUninitializedProperties,
 			ISessionImplementor session )
 		{
-			int[ ] results = null;
+			int[] results = null;
 			int count = 0;
 			int span = properties.Length;
 
 			for( int i = 0; i < span; i++ )
 			{
-				bool dirty = 
+				bool dirty =
 					// TODO H3: x[ i ] != LazyPropertyInitializer.UnfetchedProperty && //x is the "current" state
 					properties[ i ].IsDirtyCheckable( anyUninitializedProperties )
-					&& properties[i].Type.IsModified( y[i], x[i], includeColumns[ i ], session );
+					&& properties[ i ].Type.IsModified( y[ i ], x[ i ], includeColumns[ i ], session );
 
 				if( dirty )
 				{
@@ -933,7 +964,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				int[ ] trimmed = new int[count];
+				int[] trimmed = new int[ count ];
 				System.Array.Copy( results, 0, trimmed, 0, count );
 				return trimmed;
 			}
@@ -950,7 +981,7 @@ namespace NHibernate.Type
 		public static object[] Assemble( object[] row, IType[] types, ISessionImplementor session, object owner )
 		{
 			object[] assembled = new object[ row.Length ];
-			for ( int i = 0; i < row.Length; i++ )
+			for( int i = 0; i < row.Length; i++ )
 			{
 				assembled[ i ] = types[ i ].Assemble( row[ i ], session, owner );
 			}
@@ -964,10 +995,10 @@ namespace NHibernate.Type
 		/// <param name="types"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public static object[] Disassemble( object[] row, IType[] types, ISessionImplementor session)
+		public static object[] Disassemble( object[] row, IType[] types, ISessionImplementor session )
 		{
 			object[] disassembled = new object[ row.Length ];
-			for ( int i = 0; i < row.Length; i++ )
+			for( int i = 0; i < row.Length; i++ )
 			{
 				disassembled[ i ] = types[ i ].Disassemble( row[ i ], session );
 			}
@@ -987,7 +1018,7 @@ namespace NHibernate.Type
 		public static object[] Copy( object[] original, object[] target, IType[] types, ISessionImplementor session, object owner, IDictionary copiedAlready )
 		{
 			object[] copied = new object[ original.Length ];
-			for ( int i = 0; i < original.Length; i++ )
+			for( int i = 0; i < original.Length; i++ )
 			{
 				copied[ i ] = types[ i ].Copy( original[ i ], target[ i ], session, owner, copiedAlready );
 			}

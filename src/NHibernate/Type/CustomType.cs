@@ -224,6 +224,5 @@ namespace NHibernate.Type
 		{
 			return checkable[ 0 ] && IsDirty(old, current, session);
 		}
-
 	}
 }

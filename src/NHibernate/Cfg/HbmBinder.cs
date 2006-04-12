@@ -722,11 +722,11 @@ namespace NHibernate.Cfg
 			{
 				model.IsSorted = true;
 				string comparatorClassName = FullClassName( sortedAtt.Value, mappings );
-				if( !comparatorClassName.Equals( "natural" ) )
+				if( !sortedAtt.Value.Equals( "natural" ) )
 				{
 					try
 					{
-						model.Comparer = ( IComparer ) Activator.CreateInstance( ReflectHelper.ClassForName( comparatorClassName ) );
+						model.Comparer = Activator.CreateInstance( ReflectHelper.ClassForName( comparatorClassName ) );
 					}
 					catch
 					{

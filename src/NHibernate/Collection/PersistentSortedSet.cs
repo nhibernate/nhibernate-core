@@ -21,6 +21,8 @@ namespace NHibernate.Collection
 
 		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
+			// NH: I think the snapshot does not necessarily have to be sorted, but
+			// Hibernate uses a sorted collection, so we do too.
 			SortedList clonedSet = new SortedList( comparer, internalSet.Count );
 			foreach( object obj in internalSet )
 			{
@@ -38,7 +40,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
-			internalSet = new Iesi.Collections.SortedSet( Comparer );
+			internalSet = new Iesi.Collections.SortedSet( comparer );
 		}
 
 		/// <summary>
@@ -46,7 +48,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="comparer">The IComparer to user for Sorting.</param>
-		internal PersistentSortedSet( ISessionImplementor session, IComparer comparer ) : base( session )
+		public PersistentSortedSet( ISessionImplementor session, IComparer comparer ) : base( session )
 		{
 			this.comparer = comparer;
 		}
@@ -55,10 +57,10 @@ namespace NHibernate.Collection
 		/// Construct a new PersistentSortedSet initialized with the map values.
 		/// </summary>
 		/// <param name="session">The Session to be bound to.</param>
-		/// <param name="map">The initial values.</param>
+		/// <param name="set">The initial values.</param>
 		/// <param name="comparer">The IComparer to use for Sorting.</param>
-		internal PersistentSortedSet( ISessionImplementor session, ISet map, IComparer comparer )
-			: base( session, new Iesi.Collections.SortedSet( map, comparer ) )
+		public PersistentSortedSet( ISessionImplementor session, ISet set, IComparer comparer )
+			: base( session, set )
 		{
 			this.comparer = comparer;
 		}

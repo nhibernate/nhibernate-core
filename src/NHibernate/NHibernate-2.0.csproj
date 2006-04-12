@@ -493,10 +493,12 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="nhibernate-mapping-2.0.xsd">
-      <SubType>Designer</SubType>
+      <SubType>
+      </SubType>
     </EmbeddedResource>
     <Compile Include="Cfg\HbmBinder.cs" />
     <Compile Include="Collection\AbstractPersistentCollection.cs" />
+    <Compile Include="Collection\Generic\PersistentGenericSet.cs" />
     <Compile Include="Collection\Generic\PersistentGenericBag.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -506,6 +508,7 @@
     <Compile Include="Collection\Generic\PersistentGenericMap.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Collection\Generic\PersistentGenericSortedSet.cs" />
     <Compile Include="Collection\PersistentArrayHolder.cs" />
     <Compile Include="Collection\PersistentBag.cs" />
     <Compile Include="Collection\PersistentIdentifierBag.cs" />
@@ -581,6 +584,8 @@
     <Compile Include="Tuple\VersionProperty.cs" />
     <Compile Include="Type\AnsiCharType.cs" />
     <Compile Include="Type\BaseCharType.cs" />
+    <Compile Include="Type\GenericSortedSetType.cs" />
+    <Compile Include="Type\GenericSetType.cs" />
     <Compile Include="Type\ForeignKeyDirection.cs" />
     <Compile Include="Type\GenericBagType.cs">
       <SubType>Code</SubType>

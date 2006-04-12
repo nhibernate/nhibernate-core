@@ -65,7 +65,7 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 			thirdB.Name = "third B";
 			// ensuring the correct generic type was constructed
 			a.Items.Add(thirdB);
-			Assert.AreEqual(3, a.Items.Count, "3 items in the bag now");
+			Assert.AreEqual(3, a.Items.Count, "3 items in the list now");
 			s.Flush();
 			s.Close();
 		}

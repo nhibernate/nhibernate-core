@@ -32,9 +32,24 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
+#if NET_2_0
+				if( this.IsGeneric )
+				{
+					return IsSorted ?
+						TypeFactory.GenericSortedSet( Role, ReferencedPropertyName, Comparer, this.GenericArguments[ 0 ] ) :
+						TypeFactory.GenericSet( Role, ReferencedPropertyName, this.GenericArguments[ 0 ] );
+				}
+				else
+				{
+					return IsSorted ?
+							TypeFactory.SortedSet( Role, ReferencedPropertyName, ( System.Collections.IComparer ) Comparer ) :
+							TypeFactory.Set( Role, ReferencedPropertyName );
+				}
+#else
 				return IsSorted ?
-					TypeFactory.SortedSet( Role, ReferencedPropertyName, Comparer ) :
+					TypeFactory.SortedSet( Role, ReferencedPropertyName, ( IComparer ) Comparer ) :
 					TypeFactory.Set( Role, ReferencedPropertyName );
+#endif
 			}
 		}
 

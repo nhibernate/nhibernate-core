@@ -17,29 +17,16 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IDictionary&lt;TKey,Tvalue&gt;"/> collection
 	/// to the database.
 	/// </summary>
-	public class GenericMapType : MapType
+	public class GenericMapType<TKey, TValue> : MapType
 	{
-		System.Type constructedType = null;
-		System.Type wrappedType = null;
-		ConstructorInfo nonwrappedConstructor = null;
-		ConstructorInfo wrappedConstructor = null;
-
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericMapType"/> class for
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		public GenericMapType(string role, string propertyRef, System.Type indexClass, System.Type elementClass)
-			: base(role, propertyRef)
+		public GenericMapType( string role, string propertyRef )
+			: base( role, propertyRef )
 		{
-			System.Type definition = typeof(Collection.Generic.PersistentGenericMap<,>);
-			System.Type[] typeArgs = new System.Type[] { indexClass, elementClass };
-
-			constructedType = definition.MakeGenericType(typeArgs);
-			wrappedType = typeof(System.Collections.Generic.IDictionary<,>).MakeGenericType(typeArgs);
-
-			nonwrappedConstructor = constructedType.GetConstructor(ReflectHelper.AnyVisibilityInstance, null, new System.Type[] { typeof(ISessionImplementor) }, null);
-			wrappedConstructor = constructedType.GetConstructor(ReflectHelper.AnyVisibilityInstance, null, new System.Type[] { typeof(ISessionImplementor), wrappedType }, null);
 		}
 
 		/// <summary>
@@ -48,15 +35,14 @@ namespace NHibernate.Type
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the map.</param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
-			return nonwrappedConstructor.Invoke(new object[] { session }) as IPersistentCollection;
+			return new PersistentGenericMap<TKey, TValue>( session );
 		}
 
-		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return wrappedType; }
+			get { return typeof( IDictionary<TKey, TValue> ); }
 		}
 
 		/// <summary>
@@ -68,9 +54,9 @@ namespace NHibernate.Type
 		/// An <see cref="PersistentGenericMap&lt;TKey,TValue&gt;"/> that wraps the 
 		/// non NHibernate <see cref="IDictionary&lt;TKey,TValue&gt;"/>.
 		/// </returns>
-		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
+		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return wrappedConstructor.Invoke(new object[] { session, collection }) as IPersistentCollection;
+			return new PersistentGenericMap<TKey, TValue>( session, ( IDictionary<TKey, TValue> ) collection );
 		}
 
 		//TODO: Add() & Clear() methods - need to see if these should be refactored back into

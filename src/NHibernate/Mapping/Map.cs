@@ -1,6 +1,7 @@
 using System;
 
 using NHibernate.Type;
+using System.Collections;
 
 namespace NHibernate.Mapping
 {
@@ -36,13 +37,13 @@ namespace NHibernate.Mapping
 				else
 				{
 					return IsSorted ? 
-							TypeFactory.SortedMap( Role, ReferencedPropertyName, Comparer ) : 
+							TypeFactory.SortedMap( Role, ReferencedPropertyName, ( IComparer ) Comparer ) : 
 							TypeFactory.Map( Role, ReferencedPropertyName );
 				}
 #else
 
 				return IsSorted ?
-					TypeFactory.SortedMap( Role, ReferencedPropertyName, Comparer ) :
+					TypeFactory.SortedMap( Role, ReferencedPropertyName, ( IComparer ) Comparer ) :
 					TypeFactory.Map( Role, ReferencedPropertyName );
 #endif
 			}

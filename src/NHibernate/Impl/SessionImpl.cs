@@ -4200,7 +4200,7 @@ namespace NHibernate.Impl
 
 		public object GetSnapshot( IPersistentCollection coll )
 		{
-			return GetCollectionEntry( coll ).snapshot;
+			return GetCollectionEntry( coll ).Snapshot;
 		}
 
 		public object GetLoadedCollectionKey( IPersistentCollection coll )

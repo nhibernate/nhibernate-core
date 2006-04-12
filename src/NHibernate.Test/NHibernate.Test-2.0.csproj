@@ -101,6 +101,9 @@
     <Compile Include="GenericTest\MapGeneric\A.cs" />
     <Compile Include="GenericTest\MapGeneric\B.cs" />
     <Compile Include="GenericTest\MapGeneric\MapGenericFixture.cs" />
+    <Compile Include="GenericTest\SetGeneric\A.cs" />
+    <Compile Include="GenericTest\SetGeneric\B.cs" />
+    <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
     <Compile Include="IdTest\HiLoInt16Class.cs" />
     <Compile Include="IdTest\HiLoInt32Class.cs" />
     <Compile Include="IdTest\HiLoInt64Class.cs" />
@@ -423,6 +426,9 @@
     <EmbeddedResource Include="GenericTest\BagGeneric\BagGenericFixture.hbm.xml" />
     <EmbeddedResource Include="GenericTest\ListGeneric\ListGenericFixture.hbm.xml" />
     <EmbeddedResource Include="GenericTest\MapGeneric\MapGenericFixture.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GenericTest\SetGeneric\SetGenericFixture.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
