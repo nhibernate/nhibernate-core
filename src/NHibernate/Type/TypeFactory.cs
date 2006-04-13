@@ -772,20 +772,40 @@ namespace NHibernate.Type
 
 		/// <summary>
 		/// Creates a new <see cref="PersistentCollectionType"/> for an 
-		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with bag semantics.
+		/// <see cref="System.Collections.Generic.IList`1"/> with bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="elementClass">
 		/// The <see cref="System.Type"/> to use to create the 
-		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with.
+		/// <see cref="System.Collections.Generic.IList`1"/> with.
 		/// </param>
 		/// <returns>
-		/// A <see cref="BagType"/> for the specified role.
+		/// A <see cref="GenericBagType`1"/> for the specified role.
 		/// </returns>
 		public static PersistentCollectionType GenericBag( string role, string propertyRef, System.Type elementClass )
 		{
 			return ( PersistentCollectionType ) Activator.CreateInstance(
 				typeof( GenericBagType<> ).MakeGenericType( elementClass ),
+				role, propertyRef );
+		}
+
+		/// <summary>
+		/// Creates a new <see cref="PersistentCollectionType"/> for an 
+		/// <see cref="System.Collections.Generic.IList`1"/> with identifier
+		/// bag semantics.
+		/// </summary>
+		/// <param name="role">The role the collection is in.</param>
+		/// <param name="elementClass">
+		/// The <see cref="System.Type"/> to use to create the 
+		/// <see cref="System.Collections.Generic.IList`1"/> with.
+		/// </param>
+		/// <returns>
+		/// A <see cref="GenericIdentifierBagType`1"/> for the specified role.
+		/// </returns>
+		public static PersistentCollectionType GenericIdBag( string role, string propertyRef, System.Type elementClass )
+		{
+			return ( PersistentCollectionType ) Activator.CreateInstance(
+				typeof( GenericIdentifierBagType<> ).MakeGenericType( elementClass ),
 				role, propertyRef );
 		}
 
@@ -833,8 +853,6 @@ namespace NHibernate.Type
 		}
 
 		// TODO: deal with a sorted GenericMap
-
-		// TODO: add the rest of the Generic collection factories here
 
 		/// <summary>
 		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet`1" />.

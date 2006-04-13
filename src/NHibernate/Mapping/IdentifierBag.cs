@@ -8,18 +8,22 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class IdentifierBag : IdentifierCollection
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="owner"></param>
 		public IdentifierBag( PersistentClass owner ) : base( owner )
 		{
 		}
 
-		/// <summary></summary>
 		public override PersistentCollectionType CollectionType
 		{
-			get { return TypeFactory.IdBag( Role, ReferencedPropertyName ); }
+			get
+			{
+#if NET_2_0
+				if( this.IsGeneric )
+				{
+					return TypeFactory.GenericIdBag( Role, ReferencedPropertyName, GenericArguments[ 0 ] );
+				}
+#endif
+				return TypeFactory.IdBag( Role, ReferencedPropertyName );
+			}
 		}
 	}
 }

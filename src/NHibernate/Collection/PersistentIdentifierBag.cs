@@ -9,7 +9,7 @@ using NHibernate.Type;
 namespace NHibernate.Collection
 {
 	/// <summary>
-	/// An <c>IdentiferBag</c> implements "bag" semantics more efficiently than
+	/// An <c>IdentifierBag</c> implements "bag" semantics more efficiently than
 	/// a regular <see cref="PersistentBag" /> by adding a synthetic identifier column to the
 	/// table.
 	/// </summary>
@@ -342,7 +342,10 @@ namespace NHibernate.Collection
 			foreach( object obj in values )
 			{
 				object key = identifiers[ i++ ];
-				map[ key ] = persister.ElementType.DeepCopy( obj );
+				if( key != null )
+				{
+					map[ key ] = persister.ElementType.DeepCopy( obj );
+				}
 			}
 
 			return map;

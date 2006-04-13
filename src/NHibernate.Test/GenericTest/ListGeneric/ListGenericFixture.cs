@@ -34,7 +34,6 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 		[Test]
 		public void Simple()
 		{
-			int? newId;
 			A a = new A();
 			a.Name = "first generic type";
 			a.Items = new List<B>();

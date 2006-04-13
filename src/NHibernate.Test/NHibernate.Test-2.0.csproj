@@ -62,6 +62,8 @@
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
     <Compile Include="CfgTest\HbmBinderFixture.cs" />
     <Compile Include="CfgTest\HbmOrderingFixture.cs" />
+    <Compile Include="CollectionTest\A.cs" />
+    <Compile Include="CollectionTest\IdBagFixture.cs" />
     <Compile Include="CompositeCollection\BaseClassA.cs" />
     <Compile Include="CompositeCollection\BaseClassB.cs" />
     <Compile Include="CompositeCollection\ChildClassA.cs" />
@@ -95,6 +97,8 @@
     <Compile Include="GenericTest\BagGeneric\A.cs" />
     <Compile Include="GenericTest\BagGeneric\B.cs" />
     <Compile Include="GenericTest\BagGeneric\BagGenericFixture.cs" />
+    <Compile Include="GenericTest\IdBagGeneric\A.cs" />
+    <Compile Include="GenericTest\IdBagGeneric\IdBagGenericFixture.cs" />
     <Compile Include="GenericTest\ListGeneric\A.cs" />
     <Compile Include="GenericTest\ListGeneric\B.cs" />
     <Compile Include="GenericTest\ListGeneric\ListGenericFixture.cs" />
@@ -429,6 +433,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="GenericTest\SetGeneric\SetGenericFixture.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GenericTest\IdBagGeneric\IdBagGenericFixture.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CollectionTest\IdBagFixture.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

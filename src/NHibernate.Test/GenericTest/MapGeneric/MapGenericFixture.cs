@@ -33,7 +33,6 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 		[Test]
 		public void Simple()
 		{
-			int? newId;
 			A a = new A();
 			a.Name = "first generic type";
 			a.Items = new Dictionary<string,B>();

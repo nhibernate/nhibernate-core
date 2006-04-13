@@ -30,13 +30,8 @@ namespace NHibernate.Mapping
 				{
 					return TypeFactory.GenericList( Role, ReferencedPropertyName, this.GenericArguments[0] );
 				}
-				else
-				{
-					return TypeFactory.List( Role, ReferencedPropertyName );
-				}
-#else
-				return TypeFactory.List( Role, ReferencedPropertyName );
 #endif
+				return TypeFactory.List( Role, ReferencedPropertyName );
 			}
 		}
 	}

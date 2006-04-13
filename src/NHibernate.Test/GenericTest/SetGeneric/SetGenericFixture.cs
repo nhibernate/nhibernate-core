@@ -35,7 +35,6 @@ namespace NHibernate.Test.GenericTest.SetGeneric
 		[Test]
 		public void Simple()
 		{
-			int? newId;
 			A a = new A();
 			a.Name = "first generic type";
 			a.Items = new HashedSet<B>();

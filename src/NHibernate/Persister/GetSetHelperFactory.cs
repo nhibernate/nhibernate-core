@@ -239,10 +239,11 @@ namespace NHibernate.Persister
 			for( int i = 0; i < setters.Length; i++ )
 			{
 				ISetter setter = setters[ i ];
-				System.Type type = setters[ i ].Property.PropertyType;
 
 				if( setter is BasicSetter && IsPublic( setter.PropertyName ) )
 				{
+					System.Type type = setter.Property.PropertyType;
+
 					if( type.IsValueType )
 					{
 						sb.AppendFormat(
