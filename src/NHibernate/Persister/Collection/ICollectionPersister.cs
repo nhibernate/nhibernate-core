@@ -49,7 +49,7 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Get the associated <c>IType</c>
 		/// </summary>
-		PersistentCollectionType CollectionType { get; }
+		CollectionType CollectionType { get; }
 
 		/// <summary>
 		/// Get the "key" type (the type of the foreign key)

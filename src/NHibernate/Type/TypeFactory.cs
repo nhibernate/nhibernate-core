@@ -666,82 +666,82 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="System.Array"/>.
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="System.Array"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="elementClass">The <see cref="System.Type"/> to use to create the array.</param>
 		/// <returns>
 		/// An <see cref="ArrayType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Array( string role, string propertyRef, System.Type elementClass )
+		public static CollectionType Array( string role, string propertyRef, System.Type elementClass )
 		{
 			return new ArrayType( role, propertyRef, elementClass );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IList"/>.
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <returns>
 		/// A <see cref="ListType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType List( string role, string propertyRef )
+		public static CollectionType List( string role, string propertyRef )
 		{
 			return new ListType( role, propertyRef );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IList"/>
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>
 		/// with bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <returns>
 		/// A <see cref="BagType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Bag( string role, string propertyRef )
+		public static CollectionType Bag( string role, string propertyRef )
 		{
 			return new BagType( role, propertyRef );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IList"/>
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>
 		/// with id-bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <returns>
 		/// A <see cref="IdentifierBagType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType IdBag( string role, string propertyRef )
+		public static CollectionType IdBag( string role, string propertyRef )
 		{
 			return new IdentifierBagType( role, propertyRef );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IDictionary"/>.
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="IDictionary"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <returns>
 		/// A <see cref="MapType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Map( string role, string propertyRef )
+		public static CollectionType Map( string role, string propertyRef )
 		{
 			return new MapType( role, propertyRef );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="Iesi.Collections.ISet"/>.
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.ISet"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <returns>
 		/// A <see cref="SetType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType Set( string role, string propertyRef )
+		public static CollectionType Set( string role, string propertyRef )
 		{
 			return new SetType( role, propertyRef );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="IDictionary"/>
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="IDictionary"/>
 		/// that is sorted by an <see cref="IComparer"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
@@ -749,13 +749,13 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="SortedMapType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType SortedMap( string role, string propertyRef, IComparer comparer )
+		public static CollectionType SortedMap( string role, string propertyRef, IComparer comparer )
 		{
 			return new SortedMapType( role, propertyRef, comparer );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="Iesi.Collections.ISet"/>
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.ISet"/>
 		/// that is sorted by an <see cref="IComparer"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
@@ -763,38 +763,38 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="SortedSetType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType SortedSet( string role, string propertyRef, IComparer comparer )
+		public static CollectionType SortedSet( string role, string propertyRef, IComparer comparer )
 		{
 			return new SortedSetType( role, propertyRef, comparer );
 		}
 
 #if NET_2_0
 
-		private static PersistentCollectionType CreateCollectionType(
+		private static CollectionType CreateCollectionType(
 			System.Type genericCollectionType,
 			string role,
 			string propertyRef,
 			params System.Type[] typeArguments )
 		{
-			return ( PersistentCollectionType ) Activator.CreateInstance(
+			return ( CollectionType ) Activator.CreateInstance(
 				genericCollectionType.MakeGenericType( typeArguments ),
 				role, propertyRef );
 		}
 
-		private static PersistentCollectionType CreateSortedCollectionType(
+		private static CollectionType CreateSortedCollectionType(
 			System.Type genericCollectionType,
 			string role,
 			string propertyRef,
 			object comparer,
 			params System.Type[] typeArguments )
 		{
-			return ( PersistentCollectionType ) Activator.CreateInstance(
+			return ( CollectionType ) Activator.CreateInstance(
 				genericCollectionType.MakeGenericType( typeArguments ),
 				role, propertyRef, comparer );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an 
+		/// Creates a new <see cref="CollectionType"/> for an 
 		/// <see cref="System.Collections.Generic.IList`1"/> with bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
@@ -805,13 +805,13 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="GenericBagType`1"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType GenericBag( string role, string propertyRef, System.Type elementClass )
+		public static CollectionType GenericBag( string role, string propertyRef, System.Type elementClass )
 		{
 			return CreateCollectionType( typeof( GenericBagType<> ), role, propertyRef, elementClass );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an 
+		/// Creates a new <see cref="CollectionType"/> for an 
 		/// <see cref="System.Collections.Generic.IList`1"/> with identifier
 		/// bag semantics.
 		/// </summary>
@@ -823,13 +823,13 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="GenericIdentifierBagType`1"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType GenericIdBag( string role, string propertyRef, System.Type elementClass )
+		public static CollectionType GenericIdBag( string role, string propertyRef, System.Type elementClass )
 		{
 			return CreateCollectionType( typeof( GenericIdentifierBagType<> ), role, propertyRef, elementClass );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an 
+		/// Creates a new <see cref="CollectionType"/> for an 
 		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with list 
 		/// semantics.
 		/// </summary>
@@ -841,13 +841,13 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="ListType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType GenericList( string role, string propertyRef, System.Type elementClass )
+		public static CollectionType GenericList( string role, string propertyRef, System.Type elementClass )
 		{
 			return CreateCollectionType( typeof( GenericListType<> ), role, propertyRef, elementClass );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an 
+		/// Creates a new <see cref="CollectionType"/> for an 
 		/// <see cref="System.Collections.Generic.IDictionary&lt;TKey,TValue&gt;"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
@@ -862,37 +862,37 @@ namespace NHibernate.Type
 		/// <returns>
 		/// A <see cref="MapType"/> for the specified role.
 		/// </returns>
-		public static PersistentCollectionType GenericMap( string role, string propertyRef, System.Type indexClass, System.Type elementClass )
+		public static CollectionType GenericMap( string role, string propertyRef, System.Type indexClass, System.Type elementClass )
 		{
 			return CreateCollectionType( typeof( GenericMapType<,> ), role, propertyRef, indexClass, elementClass );
 		}
 
-		public static PersistentCollectionType GenericSortedList( string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass )
+		public static CollectionType GenericSortedList( string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass )
 		{
 			return CreateSortedCollectionType( typeof( GenericSortedListType<,> ), role, propertyRef, comparer, indexClass, elementClass );
 		}
 
-		public static PersistentCollectionType GenericSortedDictionary( string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass )
+		public static CollectionType GenericSortedDictionary( string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass )
 		{
 			return CreateSortedCollectionType( typeof( GenericSortedDictionaryType<,> ), role, propertyRef, comparer, indexClass, elementClass );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet`1" />.
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet`1" />.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <returns>A <see cref="GenericSetType" /> for the specified role.</returns>
-		public static PersistentCollectionType GenericSet( string role, string propertyRef, System.Type elementClass )
+		public static CollectionType GenericSet( string role, string propertyRef, System.Type elementClass )
 		{
 			return CreateCollectionType( typeof( GenericSetType<> ), role, propertyRef, elementClass );
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="PersistentCollectionType"/> for a sorted <see cref="Iesi.Collections.Generic.ISet`1" />.
+		/// Creates a new <see cref="CollectionType"/> for a sorted <see cref="Iesi.Collections.Generic.ISet`1" />.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <returns>A <see cref="GenericSetType" /> for the specified role.</returns>
-		public static PersistentCollectionType GenericSortedSet( string role, string propertyRef, object comparer, System.Type elementType )
+		public static CollectionType GenericSortedSet( string role, string propertyRef, object comparer, System.Type elementType )
 		{
 			return CreateSortedCollectionType( typeof( GenericSortedSetType<> ), role, propertyRef, comparer, elementType );
 		}

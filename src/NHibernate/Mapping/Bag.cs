@@ -16,10 +16,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets the appropriate <see cref="PersistentCollectionType"/> that is 
+		/// Gets the appropriate <see cref="CollectionType"/> that is 
 		/// specialized for this bag mapping.
 		/// </summary>
-		public override PersistentCollectionType CollectionType
+		public override CollectionType CollectionType
 		{
 			get
 			{

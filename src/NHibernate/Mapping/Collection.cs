@@ -172,7 +172,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public abstract PersistentCollectionType CollectionType { get; }
+		public abstract CollectionType CollectionType { get; }
 		
 		/// <summary></summary>
 		public IType Type

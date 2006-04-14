@@ -77,7 +77,7 @@ namespace NHibernate.Persister.Collection
 		protected readonly int batchSize;
 		private readonly System.Type elementClass;
 		private readonly ICacheConcurrencyStrategy cache;
-		private readonly PersistentCollectionType collectionType;
+		private readonly CollectionType collectionType;
 		private readonly FetchMode fetchMode;
 		private readonly System.Type ownerClass;
 		//private readonly bool isSorted;
@@ -316,7 +316,7 @@ namespace NHibernate.Persister.Collection
 			get { return cache != null; }
 		}
 
-		public PersistentCollectionType CollectionType
+		public CollectionType CollectionType
 		{
 			get { return collectionType; }
 		}

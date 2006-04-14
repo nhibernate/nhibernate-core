@@ -47,7 +47,7 @@ namespace NHibernate.Impl
 			get { return _dirty; }
 		}
 
-		protected override object ProcessCollection(object collection, PersistentCollectionType type)
+		protected override object ProcessCollection(object collection, CollectionType type)
 		{
 			if( collection != null )
 			{

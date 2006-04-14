@@ -16,7 +16,7 @@ namespace NHibernate.Impl
 			_owner = owner;
 		}
 
-		protected override object ProcessCollection(object collection, PersistentCollectionType type)
+		protected override object ProcessCollection(object collection, CollectionType type)
 		{
 			if( log.IsDebugEnabled )
 			{

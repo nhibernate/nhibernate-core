@@ -12,7 +12,7 @@ namespace NHibernate.Mapping
 		{
 		}
 
-		public override PersistentCollectionType CollectionType
+		public override CollectionType CollectionType
 		{
 			get
 			{

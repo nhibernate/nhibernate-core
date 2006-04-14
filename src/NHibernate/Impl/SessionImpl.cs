@@ -3695,7 +3695,7 @@ namespace NHibernate.Impl
 			}
 			ce.reached = true;
 
-			ICollectionPersister persister = GetCollectionPersister( ( ( PersistentCollectionType ) type ).Role );
+			ICollectionPersister persister = GetCollectionPersister( ( ( CollectionType ) type ).Role );
 			ce.currentPersister = persister;
 			ce.currentKey = GetEntityIdentifier( owner ); //TODO: better to pass the id in as an argument?
 
@@ -4923,7 +4923,7 @@ namespace NHibernate.Impl
 			Cascades.Cascade( this, persister, obj, Cascades.CascadingAction.ActionEvict, CascadePoint.CascadeOnEvict );
 		}
 
-		internal void EvictCollection( object value, PersistentCollectionType type )
+		internal void EvictCollection( object value, CollectionType type )
 		{
 			object pc;
 			if( type.IsArrayType )
@@ -4979,7 +4979,7 @@ namespace NHibernate.Impl
 			{
 				if( type.IsCollectionType )
 				{
-					factory.EvictCollection( ( ( PersistentCollectionType ) type ).Role, id );
+					factory.EvictCollection( ( ( CollectionType ) type ).Role, id );
 				}
 				else if( type.IsComponentType )
 				{

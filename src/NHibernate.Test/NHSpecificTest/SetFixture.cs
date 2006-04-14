@@ -170,7 +170,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public NHibernate.Type.PersistentCollectionType CollectionType
+		public NHibernate.Type.CollectionType CollectionType
 		{
 			get
 			{

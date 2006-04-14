@@ -25,7 +25,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public override PersistentCollectionType CollectionType
+		public override CollectionType CollectionType
 		{
 			get { return TypeFactory.Array( Role, ReferencedPropertyName, ElementClass ); }
 		}

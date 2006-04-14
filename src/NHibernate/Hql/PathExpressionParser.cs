@@ -166,7 +166,7 @@ namespace NHibernate.Hql
 					}
 					else if( propertyType.IsCollectionType )
 					{
-						DereferenceCollection( token, ( (PersistentCollectionType) propertyType).Role, q );
+						DereferenceCollection( token, ( (CollectionType) propertyType).Role, q );
 					}
 					else if( token != null )
 					{
@@ -383,7 +383,7 @@ namespace NHibernate.Hql
 			IType propertyType = PropertyType;
 			if( propertyType != null && propertyType.IsCollectionType )
 			{
-				collectionRole = ( ( PersistentCollectionType ) propertyType ).Role;
+				collectionRole = ( ( CollectionType ) propertyType ).Role;
 				collectionName = q.CreateNameForCollection( collectionRole );
 				PrepareForIndex( q );
 			}

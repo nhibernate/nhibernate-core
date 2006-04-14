@@ -83,7 +83,7 @@ namespace NHibernate.Engine
 			/// <summary>
 			/// The children to whom we should cascade.
 			/// </summary>
-			public abstract ICollection CascadableChildrenCollection( PersistentCollectionType collectionType, object collection );
+			public abstract ICollection CascadableChildrenCollection( CollectionType collectionType, object collection );
 
 			/// <summary>
 			/// Do we need to handle orphan delete for this action?
@@ -104,7 +104,7 @@ namespace NHibernate.Engine
 					}
 				}
 
-				public override ICollection CascadableChildrenCollection( PersistentCollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
 				{
 					return Cascades.GetAllElementsCollection( collectionType, collection );
 				}
@@ -126,7 +126,7 @@ namespace NHibernate.Engine
 					session.Lock( child, (LockMode) anything );
 				}
 
-				public override ICollection CascadableChildrenCollection( PersistentCollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
 				{
 					return Cascades.GetLoadedElementsCollection( collectionType, collection );
 				}
@@ -148,7 +148,7 @@ namespace NHibernate.Engine
 					session.Evict( child );
 				}
 
-				public override ICollection CascadableChildrenCollection( PersistentCollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
 				{
 					return Cascades.GetLoadedElementsCollection( collectionType, collection );
 				}
@@ -170,7 +170,7 @@ namespace NHibernate.Engine
 					session.SaveOrUpdate( child );
 				}
 
-				public override ICollection CascadableChildrenCollection( PersistentCollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
 				{
 					return Cascades.GetLoadedElementsCollection( collectionType, collection );
 				}
@@ -192,7 +192,7 @@ namespace NHibernate.Engine
 					session.Copy( child, (IDictionary) anything );
 				}
 
-				public override ICollection CascadableChildrenCollection( PersistentCollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
 				{
 					// saves / updates don't cascade to uninitialized collections
 					return Cascades.GetLoadedElementsCollection( collectionType, collection );
@@ -216,7 +216,7 @@ namespace NHibernate.Engine
 					session.Replicate( child, (ReplicationMode) anything );
 				}
 
-				public override ICollection CascadableChildrenCollection( PersistentCollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
 				{
 					return Cascades.GetLoadedElementsCollection( collectionType, collection );
 				}
@@ -570,7 +570,7 @@ namespace NHibernate.Engine
 							{
 								cascadeVia = cascadeTo;
 							}
-							PersistentCollectionType pctype = ( PersistentCollectionType ) type;
+							CollectionType pctype = ( CollectionType ) type;
 							ICollectionPersister persister = session.Factory.GetCollectionPersister( pctype.Role );
 							IType elemType = persister.ElementType;
 
@@ -660,7 +660,7 @@ namespace NHibernate.Engine
 		private static void CascadeCollection(
 			CascadingAction action,
 			CascadeStyle style,
-			PersistentCollectionType collectionType,
+			CollectionType collectionType,
 			IType elemType,
 			object child,
 			CascadePoint cascadeVia, 
@@ -700,7 +700,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		internal static ICollection GetLoadedElementsCollection( PersistentCollectionType collectionType, object collection )
+		internal static ICollection GetLoadedElementsCollection( CollectionType collectionType, object collection )
 		{
 			if ( CollectionIsInitialized( collection ) )
 			{
@@ -715,7 +715,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		internal static ICollection GetAllElementsCollection( PersistentCollectionType collectionType, object collection )
+		internal static ICollection GetAllElementsCollection( CollectionType collectionType, object collection )
 		{
 			return collectionType.GetElementsCollection( collection );
 		}

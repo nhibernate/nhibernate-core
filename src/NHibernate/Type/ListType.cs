@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IList"/> collection
 	/// using list semantics to the database.
 	/// </summary>
-	public class ListType : PersistentCollectionType
+	public class ListType : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="ListType"/> class for

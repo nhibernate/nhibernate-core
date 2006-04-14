@@ -20,7 +20,7 @@ namespace NHibernate.Impl
 		{
 		}
 
-		protected override object ProcessCollection(object collection, PersistentCollectionType type)
+		protected override object ProcessCollection(object collection, CollectionType type)
 		{
 			ICollectionPersister persister = Session.GetCollectionPersister( type.Role );
 

@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="Iesi.Collections.ISet"/> collection
 	/// to the database.
 	/// </summary>
-	public class SetType : PersistentCollectionType
+	public class SetType : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="SetType"/> class for

@@ -26,7 +26,7 @@ namespace NHibernate.Impl
 		{
 		}
 
-		protected override object ProcessCollection(object collection, PersistentCollectionType collectionType)
+		protected override object ProcessCollection(object collection, CollectionType collectionType)
 		{
 			if( collection != null && (collection is IPersistentCollection) )
 			{
@@ -43,7 +43,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private object ProcessArrayOrNewCollection(object collection, PersistentCollectionType collectionType)
+		private object ProcessArrayOrNewCollection(object collection, CollectionType collectionType)
 		{
 			if( collection == null )
 			{

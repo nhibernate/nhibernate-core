@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IList"/> collection
 	/// using bag semantics with an identifier to the database.
 	/// </summary>
-	public class IdentifierBagType : PersistentCollectionType
+	public class IdentifierBagType : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="IdentifierBagType"/> class for

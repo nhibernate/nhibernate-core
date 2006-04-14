@@ -28,7 +28,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// <see cref="Collection.Type"/>
 		/// </summary>
-		public override PersistentCollectionType CollectionType
+		public override CollectionType CollectionType
 		{
 			get
 			{

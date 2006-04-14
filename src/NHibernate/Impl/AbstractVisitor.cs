@@ -54,7 +54,7 @@ namespace NHibernate.Impl
 			if( type.IsCollectionType )
 			{
 				// Even process null collections
-				return ProcessCollection( value, (PersistentCollectionType)type );
+				return ProcessCollection( value, (CollectionType)type );
 			}
 			else if( type.IsEntityType )
 			{
@@ -90,7 +90,7 @@ namespace NHibernate.Impl
 		/// <param name="collection"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		protected virtual object ProcessCollection(object collection, PersistentCollectionType type)
+		protected virtual object ProcessCollection(object collection, CollectionType type)
 		{
 			return null;
 		}

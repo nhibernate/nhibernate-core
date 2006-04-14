@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="Array"/> collection
 	/// to the database.
 	/// </summary>
-	public class ArrayType : PersistentCollectionType
+	public class ArrayType : CollectionType
 	{
 		private readonly System.Type elementClass;
 		private readonly System.Type arrayClass;

@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	/// The base class for an <see cref="IType"/> that maps collections
 	/// to the database.
 	/// </summary>
-	public abstract class PersistentCollectionType : AbstractType, IAssociationType
+	public abstract class CollectionType : AbstractType, IAssociationType
 	{
 		private readonly string role;
 		private readonly string foreignKeyPropertyName;
@@ -24,11 +24,11 @@ namespace NHibernate.Type
 		private static readonly SqlType[ ] NoSqlTypes = {};
 
 		/// <summary>
-		/// Initializes a new instance of a <see cref="PersistentCollectionType"/> class for
+		/// Initializes a new instance of a <see cref="CollectionType"/> class for
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		protected PersistentCollectionType( string role, string foreignKeyPropertyName )
+		protected CollectionType( string role, string foreignKeyPropertyName )
 		{
 			this.role = role;
 			this.foreignKeyPropertyName = foreignKeyPropertyName;
@@ -55,7 +55,7 @@ namespace NHibernate.Type
 
 		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
 		{
-			throw new AssertionFailure( "bug in PersistentCollectionType" );
+			throw new AssertionFailure( "bug in CollectionType" );
 		}
 
 		public override object NullSafeGet( IDataReader rs, string[ ] name, ISessionImplementor session, object owner )
@@ -305,14 +305,14 @@ namespace NHibernate.Type
 		protected virtual void Clear( ICollection collection )
 		{
 			throw new NotImplementedException(
-				"PersistentCollectionType.Clear was not overriden for type "
+				"CollectionType.Clear was not overriden for type "
 				+ GetType().FullName );
 		}
 
 		protected virtual void Add( ICollection collection, object element )
 		{
 			throw new NotImplementedException(
-				"PersistentCollectionType.Add was not overriden for type "
+				"CollectionType.Add was not overriden for type "
 				+ GetType().FullName );
 		}
 

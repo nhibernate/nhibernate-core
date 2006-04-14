@@ -23,9 +23,9 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Gets a value indicating if the <see cref="AbstractType"/> is a <see cref="PersistentCollectionType"/>.
+		/// Gets a value indicating if the <see cref="AbstractType"/> is a <see cref="CollectionType"/>.
 		/// </summary>
-		/// <value>false - by default an <see cref="AbstractType"/> is not a <see cref="PersistentCollectionType"/>.</value>
+		/// <value>false - by default an <see cref="AbstractType"/> is not a <see cref="CollectionType"/>.</value>
 		public virtual bool IsCollectionType
 		{
 			get { return false; }

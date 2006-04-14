@@ -21,10 +21,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets the appropriate <see cref="PersistentCollectionType"/> that is 
+		/// Gets the appropriate <see cref="CollectionType"/> that is 
 		/// specialized for this list mapping.
 		/// </summary>
-		public override PersistentCollectionType CollectionType
+		public override CollectionType CollectionType
 		{
 			get
 			{

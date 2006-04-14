@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IDictionary"/> collection
 	/// to the database.
 	/// </summary>
-	public class MapType : PersistentCollectionType
+	public class MapType : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="MapType"/> class for
